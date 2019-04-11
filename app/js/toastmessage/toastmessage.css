@@ -1,0 +1,150 @@
+.toast-container {
+	width:480px; max-width:98%;	/**** MODIF ****/
+	z-index: 1000000;			/**** MODIF ****/
+}
+
+* html .toast-container {
+	position: absolute;
+}
+
+.toast-item {
+	height: auto;
+	background: #333;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	color: #eee;
+	padding: 30px;					/**** MODIF ****/
+	padding-left: 0px;				/**** MODIF ****/
+	font-family: Arial,Helvetica,Tahoma,Sans-Serif;	/**** MODIF ****/
+	font-size: 13px;				/**** MODIF ****/
+	border: 2px solid #555;			/**** MODIF ****/
+	display: block;
+	position: relative;
+	margin: 0 0 12px 0;
+	box-shadow:2px 2px 6px 3px rgba(0,0,0,0.3);	/**** MODIF ****/
+}
+
+.toast-item p {
+    text-align: center;
+	line-height: 22px;
+    margin-left: 50px;
+	cursor:pointer;
+}
+
+.toast-item-close {
+    background:url(close.gif);
+    width:22px;
+    height:22px;
+    position: absolute;
+    top:2px;						/**** MODIF ****/
+    right:2px;						/**** MODIF ****/
+}
+
+.toast-item-image {
+    width:32px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    margin-top: -16px;
+    left: 10px;
+}
+
+.toast-item-image-notice {
+    background:url(notice.png);
+}
+
+.toast-item-image-success {
+    background:url(success.png);
+}
+
+.toast-item-image-warning {
+    background:url(warning.png);
+}
+
+.toast-item-image-error {
+    background:url(error.png);
+}
+
+
+/**
+ * toast types
+ *
+ * pattern: toast-type-[value]
+ * where 'value' is the real value of the plugin option 'type'
+ *
+ */
+.toast-type-notice {
+    color: white;
+}
+
+.toast-type-success {
+    color: white;
+}
+
+.toast-type-warning {
+    color: white;
+    border-color: #FF8800;
+}
+
+.toast-type-error {
+    color: white;
+    border-color: #B32B2B;
+}
+
+/**
+ * positions
+ *
+ * pattern: toast-position-[value]
+ * where 'value' is the real value of the plugin option 'position'
+ *
+ */
+.toast-position-top-left {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+}
+
+.toast-position-top-center {
+    position: fixed;
+    top: 150px;
+    left: 50%;
+    margin-left: -240px;			/**** MODIF : la moitié du width de .toast-container ****/
+}
+/*RESPONSIVE*/						/**** MODIF ****/
+@media screen and (max-width:600px){
+	.toast-position-top-center {
+		top: 100px;
+		left:3px;
+		margin-left:0px;
+	}
+}
+
+.toast-position-top-right {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+
+.toast-position-middle-left {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    margin-top: -40px;
+}
+
+.toast-position-middle-center {
+    position: fixed;
+    left: 50%;
+    margin-left: -140px;
+    margin-top: -40px;
+    top: 50%;
+}
+
+.toast-position-middle-right {
+    position: fixed;
+    right: 20px;
+    margin-left: -140px;
+    margin-top: -40px;
+    top: 50%;
+}

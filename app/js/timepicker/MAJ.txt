@@ -1,0 +1,5 @@
+activer meme si "readonly" actif (cf. mode responsive)
+=>  dans  "jquery.timepicker.min.js"  supprimer  "!e.prop("readonly")&&"
+
+agrandir l'affichage
+=> dans  "jquery.timepicker.css"  modifier ".ui-timepicker-wrapper"  avec  "max-height:250px;"

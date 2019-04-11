@@ -1,0 +1,28 @@
+sur "smoothness/jquery-ui.css", modifier:
+-----------------------------------------
+
+.ui-widget-header {
+	color: #222222;
+	font-weight: bold;
+}
+.ui-widget-header .ui-state-default {
+	border: 1px solid #ddd;
+	background:linear-gradient(180deg,#fff,#f1f1f1);
+	font-weight: normal;
+	color: #555555;
+}
+
+
+sur "ui-darkness/jquery-ui.css", modifier:
+------------------------------------------
+
+.ui-widget-header {
+	color: #ffffff;
+	font-weight: bold;
+}
+.ui-widget-header .ui-state-default {
+	border: 1px solid #444;
+	background:linear-gradient(180deg,#444,#222);
+	font-weight: bold;
+	color: #eeeeee;
+}

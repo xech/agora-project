@@ -1,0 +1,7 @@
+.JS
+FERMER EN CLIQUANT SUR LE MESSAGE :   $(".toast-item-wrapper").click(function() { $().toastmessage('removeToast',toastItemInner, localSettings); });
+inEffectDuration: 	200
+stayTime: 			4000
+
+CSS
+.toast-item p {text-align: center; cursor:pointer;}

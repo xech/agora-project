@@ -1,0 +1,4 @@
+#Mise en cache des images durant 2 semaines max (ne pas utiliser de header php ou html)
+<IfModule mod_headers.c>
+	Header set Cache-Control "max-age=1209600, public"
+</IfModule>

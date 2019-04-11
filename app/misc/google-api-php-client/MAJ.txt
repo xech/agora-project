@@ -1,0 +1,1 @@
+Supprimer "\vendor\google\apiclient-services\" => garder uniquement "\vendor\google\Auth\"
