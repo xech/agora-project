@@ -1,6 +1,6 @@
 # Agora-Project
 
-Create your workspace to communicate with your team and share files, calendars, newsfeed, polls, tasks, send newsletters, etc. Omnispace is ideal for easily working on a common project.
+Create your workspace to communicate with your team : share files, calendars, publish on a newsfeed, make polls, manage tasks, send newsletters, etc. Omnispace is ideal to work easily on a common project.
 
 See the [project page](https://www.agora-project.net/?curTrad=english) for documentation and a demonstration.
 
