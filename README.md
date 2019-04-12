@@ -28,7 +28,7 @@ Please try to be as detailed as possible in your report.
 
 1. Check that your web server has a PHP version 5.5 or later, if possible with the "Imagick" library (creation of thumbnails of images).
 2. Download the latest version of Agora-Project, then unpack the archive on your computer.
-3. Go to your webserver (if necessary via FTP) and add the "app", "doc" and "DATAS" folders on your webserver.
+3. Go to your webserver (if necessary via FTP) and add the "app", "docs" and "DATAS" folders on your webserver.
 4. Then, Add the file "index.php" : as long as this file is not present, the app will not be accessible.
 5. Give "read", "write" and "execute" access rights to new folders and files (chmod 770 -R).
 6. With your web browser, go to the URL of your new application, fill in the installation form and then validate it: your space is ready for use !
