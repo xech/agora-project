@@ -1,0 +1,34 @@
+# ./docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - ~/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Agora_Mysql_docker
+      MYSQL_DATABASE: agora
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "3306:3306"
+
+  web:
+    image: php:7.2.2-apache
+    container_name: php_agora
+    links:
+      - db:db
+    volumes:
+      - ./:/var/www/html/
+    ports:
+      - "80:80"
+
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8000:80"
+    links:
+      - db:db
