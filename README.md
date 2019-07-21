@@ -35,36 +35,47 @@ Please try to be as detailed as possible in your report.
 7. If you can, modify the "php.ini" file of your web server and modify the "post_max_size" and "upload_max_filesize" parameters to increase the size of the uploaded files.
 
 
-## SCREENSHOTS
+## Screenshots
 <p align="center">
-  File manager
+
+  <b>File manager</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/file.jpg">
-</p>
-<p align="center">
-  Shared calendars
+   <br><br><br><br>
+ 
+  <b>Shared calendars</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/calendar.jpg">
-</p>
-<p align="center">
-  News and Polls
+  <br><br><br><br>
+
+  <b>News and Polls</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/dashboard.jpg">
-</p>
-<p align="center">
-  Polls
+  <br><br><br><br>
+
+
+  <b>Polls</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/dashboardPoll.jpg">
-</p>
-<p align="center">
-  Forum
+  <br><br><br><br>
+
+  <b>Forum</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/forum.jpg">
-</p>
-<p align="center">
-  Shared Tasks/Notes
+  <br><br><br><br>
+
+  <b>Shared Tasks/Notes</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/task.jpg">
-</p>
-<p align="center">
-  Newsletters
+  <br><br><br><br>
+
+
+  <b>Newsletters</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/mail.jpg">
-</p>
-<p align="center">
-  Contacts directory
+  <br><br><br><br>
+
+  <b>Contacts directory</b>
+  <br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/contact.jpg">
 </p>
