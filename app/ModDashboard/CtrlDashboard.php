@@ -46,20 +46,37 @@ class CtrlDashboard extends Ctrl
 			$vDatas["pluginPeriodOptions"]["day"]=	["timeBegin"=>strtotime(date("Y-m-d 00:00:00")),				"timeEnd"=>strtotime(date("Y-m-d 23:59:59"))];
 			$vDatas["pluginPeriodOptions"]["week"]=	["timeBegin"=>strtotime("Monday this week 00:00:00"),			"timeEnd"=>strtotime("Sunday this week 23:59:59")];
 			$vDatas["pluginPeriodOptions"]["month"]=["timeBegin"=>strtotime("First day of this month 00:00:00"),	"timeEnd"=>strtotime("Last day of this month 23:59:59")];
-			// Récupère les nouveaux éléments de chaque module (si la methode "plugin()" existe)
+			//Récupère les nouveaux éléments de chaque module (si la methode "plugin()" existe)
 			$periodTimes=$vDatas["pluginPeriodOptions"][$vDatas["pluginPeriod"]];//début/fin de la période sélectionnée
 			$pluginParams=array("type"=>"dashboard", "dateTimeBegin"=>date("Y-m-d H:i",$periodTimes["timeBegin"]), "dateTimeEnd"=>date("Y-m-d H:i",$periodTimes["timeEnd"]));
 			$vDatas["pluginsList"]=[];
 			foreach(self::$curSpace->moduleList() as $tmpModule)
 			{
-				if(method_exists($tmpModule["ctrl"],"plugin")){
-					foreach($tmpModule["ctrl"]::plugin($pluginParams) as $tmpObj){
-						//Ajoute un pseudo "_targetObjId" pour les "pluginSpecificMenu"
-						if(!isset($tmpObj->_targetObjId))	{$tmpObj->_targetObjId="pluginSpecificMenu";}
-						//Passe l'objet si lui ou son conteneur sont déjà dans la liste (exple: fichier d'un nouveau dossier)
-						elseif(array_key_exists($tmpObj->_targetObjId,$vDatas["pluginsList"])  ||  (is_object($tmpObj->containerObj()) && array_key_exists($tmpObj->containerObj()->_targetObjId,$vDatas["pluginsList"])))  {continue;}
-						//..Sinon on ajoute l'objet
-						$vDatas["pluginsList"][$tmpObj->_targetObjId]=$tmpObj;
+				if(method_exists($tmpModule["ctrl"],"plugin"))
+				{
+					foreach($tmpModule["ctrl"]::plugin($pluginParams) as $tmpObj)
+					{
+						//Ajoute un "pluginSpecificMenu"
+						if(isset($tmpObj->pluginSpecificMenu))	{$vDatas["pluginsList"]["pluginSpecificMenu"]=$tmpObj;}
+						//Sinon on passe l'objet s'il possède un conteneur qui est déjà dans la "pluginsList" (exple: nouveau dossier et ses fichiers)
+						elseif(is_object($tmpObj->containerObj()) && array_key_exists($tmpObj->containerObj()->_targetObjId,$vDatas["pluginsList"]))  {continue;}
+						//Sinon on prépare l'affichage de l'objet
+						else
+						{
+							//Label : suppr les balises html (cf. TinyMce) et réduit la taille du texte
+							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel),100);
+							//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
+							$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
+							//Tooltip : ajoute si besoin l'icone "Elements courants" (evts et taches)
+							if($tmpObj->pluginIsCurrent){
+								$tmpObj->pluginTooltip=" <img src='app/img/newObj2.png'> ".Txt::trad("DASHBOARD_pluginsCurrent")."<hr>".$tmpObj->pluginTooltip;
+								$tmpObj->pluginLabel.=" <img src='app/img/newObj2.png'>";
+							}
+							//Ajoute l'auteur et la date de création
+							if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("creation")." : ".Txt::displayDate($tmpObj->dateCrea,"full")."<hr>".$tmpObj->displayAutor(true,true);}
+							//Ajoute à la "pluginsList"
+							$vDatas["pluginsList"][$tmpObj->_targetObjId]=$tmpObj;
+						}
 					}
 				}
 			}

@@ -29,10 +29,11 @@ class Trad extends Txt
 		self::$trad["none"]="aucun";
 		self::$trad["or"]="ou";
 		self::$trad["and"]="et";
+		self::$trad["by"]="par";
 		self::$trad["goToPage"]="Aller à la page";
 		self::$trad["alphabetFilter"]="Filtre alphabétique";
 		self::$trad["displayAll"]="Tout afficher";
-		self::$trad["anyCategory"]="Toutes les categories";
+		self::$trad["allCategory"]="Toutes les categories";
 		self::$trad["important"]="Important";
 		self::$trad["show"]="afficher";
 		self::$trad["hide"]="masquer";
@@ -157,7 +158,7 @@ class Trad extends Txt
 		self::$trad["description"]="Description";
 		self::$trad["specifyName"]="Merci de spécifier un nom";
 		self::$trad["editorDraft"]="Récupérer mon texte";
-		self::$trad["editorDraftConfirm"]="Récupérer le dernier texte spécifié (conservé 12h)";
+		self::$trad["editorDraftConfirm"]="Récupérer le dernier texte que j'ai saisi (conservé 24h)";
 		
 		////	Validation des formulaires
 		self::$trad["add"]=" Ajouter";
@@ -310,16 +311,16 @@ class Trad extends Txt
 		self::$trad["noResults"]="Aucun résultat";
 		
 		////	Gestion des inscriptions d'utilisateur
-		self::$trad["usersInscription"]="m'inscrire sur l'espace";
-		self::$trad["usersInscriptionInfo"]="Créer un nouveau compte utilisateur, qui sera par la suite validé par un administrateur. Une notification par email vous sera dès lors envoyée.";
-		self::$trad["usersInscriptionSpace"]="m'inscrire sur l'espace";//.."trucmuche"
-		self::$trad["usersInscriptionRecorded"]="votre inscription a bien été enregistrée : elle sera validée dès que possible par l'administrateur de l'espace";
-		self::$trad["usersInscriptionOptionSpace"]="Formulaire d'inscription en page de connexion";
-		self::$trad["usersInscriptionOptionSpaceInfo"]="Les visiteurs peuvent demander à s'inscrire sur l'espace pour avoir un compte utilisateur : la demande doit être validée par l'administrateur de l'espace !";
-		self::$trad["usersInscriptionValidate"]="Valider l'inscription d'utilisateurs";
-		self::$trad["usersInscriptionValidateInfo"]="Valider l'inscription d'utilisateurs sur l'espace";
-		self::$trad["usersInscriptionInvalidate"]="Invalider";
-		self::$trad["usersInscriptionInvalidateMail"]="Votre compte n'a pas été validé sur";
+		self::$trad["userInscription"]="m'inscrire sur l'espace";
+		self::$trad["userInscriptionInfo"]="Créer un nouveau compte utilisateur, qui sera par la suite validé par un administrateur. Une notification par email vous sera dès lors envoyée.";
+		self::$trad["userInscriptionSpace"]="m'inscrire sur l'espace";//.."trucmuche"
+		self::$trad["userInscriptionRecorded"]="votre inscription a bien été enregistrée : elle sera validée dès que possible par l'administrateur de l'espace";
+		self::$trad["userInscriptionOptionSpace"]="Formulaire d'inscription en page de connexion";
+		self::$trad["userInscriptionOptionSpaceInfo"]="Les visiteurs peuvent demander à s'inscrire sur l'espace pour avoir un compte utilisateur : la demande doit être validée par l'administrateur de l'espace !";
+		self::$trad["userInscriptionValidate"]="Valider l'inscription d'utilisateurs";
+		self::$trad["userInscriptionValidateInfo"]="Valider l'inscription d'utilisateurs sur l'espace";
+		self::$trad["userInscriptionInvalidate"]="Invalider";
+		self::$trad["userInscriptionInvalidateMail"]="Votre compte n'a pas été validé sur";
 		
 		////	Importer ou Exporter : Contact OU Utilisateurs
 		self::$trad["export"]="Export";
@@ -360,7 +361,7 @@ class Trad extends Txt
 		self::$trad["MESSENGER_messenger"]="Messagerie instantanée";
 		self::$trad["MESSENGER_currentlyAlone"]="Actuellement le seul connecté à l'espace";
 		self::$trad["MESSENGER_connected"]="Connecté";
-		self::$trad["MESSENGER_connectedNobody"]="Plus personne n'est connecté : voir les anciens messages" ;
+		self::$trad["MESSENGER_connectedNobody"]="Personne n'est actuellement connecté : voir les anciens messages" ;
 		self::$trad["MESSENGER_connectedSince"]="connecté depuis";//connecté depuis 12:45
 		self::$trad["MESSENGER_sendAt"]="Envoyé à";
 		self::$trad["MESSENGER_addMessageToSelection"]="Mon message (personnes selectionnées)";

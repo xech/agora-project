@@ -155,11 +155,11 @@ abstract class Ctrl
 				$vDatasHeader["pluginsShortcut"]=array();
 				$pluginParams=array("type"=>"shortcut");
 				foreach(self::$curSpace->moduleList() as $tmpModule){
-					if(method_exists($tmpModule["ctrl"],"plugin"))	{$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"],$tmpModule["ctrl"]::plugin($pluginParams));}
+					if(method_exists($tmpModule["ctrl"],"plugin"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"],$tmpModule["ctrl"]::plugin($pluginParams));}
 				}
-				//Validation d'inscription d'utilisateurs
-				$vDatasHeader["userInscriptionValidation"]=(self::$curUser->isAdminSpace() && Db::getVal("SELECT count(*) FROM ap_userInscription WHERE _idSpace=".(int)self::$curSpace->_id)>0);
-				//Liste des modules (Url, Description, Libellé, Class de l'icone)
+				//Validation d'inscription d'utilisateurs  && Affiche la liste des espaces  && Liste des modules (Url, Description, Libellé, Class de l'icone)
+				$vDatasHeader["userInscriptionValidate"]=(self::$curUser->isAdminSpace() && Db::getVal("SELECT count(*) FROM ap_userInscription WHERE _idSpace=".(int)self::$curSpace->_id)>0);
+				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1) ? true : false;
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
 				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName)  ?  true  : false;}
 				//retourne les vues du Header & du livecounter
@@ -472,7 +472,8 @@ abstract class Ctrl
 			$objFolder->pluginModule=static::moduleName;
 			$objFolder->pluginIcon="folder/folderSmall.png";
 			$objFolder->pluginLabel=$objFolder->name;
-			$objFolder->pluginTooltip=$objFolder->folderPath("text")."<br>".$objFolder->displayAutor(true,true)."<hr>".Txt::reduce($objFolder->description);
+			$objFolder->pluginTooltip=$objFolder->folderPath("text");
+			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
 			$objFolder->pluginJsIcon="windowParent.redir('".$objFolder->getUrl("container")."');";//Redir vers le dossier conteneur
 			$objFolder->pluginJsLabel=$objFolder->pluginJsIcon;
 			$objFolder->pluginIsFolder=true;

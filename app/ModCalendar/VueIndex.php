@@ -148,10 +148,10 @@ $(function(){
 
 			////	CATEGORIES D'EVT (FILTRE)
 			//Init les options
-			$curCatLabel=Req::isParam("_idCatFilter")  ?  "<span class='sLinkSelect'>".Ctrl::getObj("calendarEventCategory",Req::getParam("_idCatFilter"))->display()."</span>"  :  Txt::trad("anyCategory");
+			$curCatLabel=Req::isParam("_idCatFilter")  ?  "<span class='sLinkSelect'>".Ctrl::getObj("calendarEventCategory",Req::getParam("_idCatFilter"))->display()."</span>"  :  Txt::trad("allCategory");
 			$catOptions=MdlCalendarEventCategory::addRight()  ?  "<a onclick=\"lightboxOpen('?ctrl=calendar&action=CalendarEventCategoryEdit');\" id='categoryEdit'><img src='app/img/edit.png'> ".Txt::trad("CALENDAR_editCategories")."</a><hr>"  :  null;
-			$catOptions.="<label>".Txt::trad("CALENDAR_filterByCategory")." :</label><a href='?ctrl=calendar' ".(Req::isParam("_idCatFilter")?null:"class='sLinkSelect'")."><div id='categoryColorAll' class='categoryColor'>&nbsp;</div> ".Txt::trad("anyCategory")."</a>";
-			foreach(MdlCalendarEventCategory::getCategories() as $tmpCategory)  {$catOptions.="<a href=\"?ctrl=calendar&_idCatFilter=".$tmpCategory->_id."\" ".(Req::getParam("_idCatFilter")==$tmpCategory->_id?'class="sLinkSelect"':null)." title=\"".$tmpCategory->description."\">".$tmpCategory->display()."</a>";}
+			$catOptions.="<label>".Txt::trad("CALENDAR_filterByCategory")." :</label><a href='?ctrl=calendar' ".(Req::isParam("_idCatFilter")?null:"class='sLinkSelect'")."> &nbsp; <div id='categoryColorAll' class='categoryColor'>&nbsp;</div> ".Txt::trad("allCategory")."</a>";
+			foreach(MdlCalendarEventCategory::getCategories() as $tmpCategory)  {$catOptions.="<a href=\"?ctrl=calendar&_idCatFilter=".$tmpCategory->_id."\" ".(Req::getParam("_idCatFilter")==$tmpCategory->_id?'class="sLinkSelect"':null)." title=\"".$tmpCategory->description."\"> &nbsp; ".$tmpCategory->display()."</a>";}
 			//Affiche le menu
 			echo "<div class='menuLine sLink'>
 					<div class='menuIcon'><img src='app/img/category.png'></div>
@@ -251,10 +251,10 @@ $(function(){
 					?>
 				</div>
 				<div class="vCalendarPeriod">
-					<img src="app/img/navPrevious.png" class="vCalendarPrevNext sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $timePrev ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
+					<img src="app/img/navPrevious.png" class="vCalendarPrevNext sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimePrev.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
 					<span for="calMonthPeriodMenu<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><?= $labelPeriod ?></span>
 					<?php if(!empty($calMonthPeriodMenu))  {echo "<div class='menuContext' id='calMonthPeriodMenu".$tmpCal->_targetObjId."'><div id='calMonthPeriodMenu2'>".$calMonthPeriodMenu."</div></div>";} ?>
-					<img src="app/img/navNext.png" class="vCalendarPrevNext sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
+					<img src="app/img/navNext.png" class="vCalendarPrevNext sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimeNext.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
 				</div>
 				<div class="vCalendarDisplayMode">
 					<span for="menuDisplayMode<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.gif"> <span class="vCalendarDisplayModeLabel"><?= Txt::trad("CALENDAR_display".ucfirst($displayMode)) ?></span> <img src="app/img/arrowBottom.png"></span>

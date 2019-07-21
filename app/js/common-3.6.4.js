@@ -68,14 +68,14 @@ function mainPageDisplay(fullMode)
 	////	Affiche les "Title" avec Tooltipster
 	var tooltipsterOptions={contentAsHTML:true,delay:400,maxWidth:500,theme:"tooltipster-shadow"};
 	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);
-	$("[title*='http']").tooltipster(Object.assign(tooltipsterOptions,{interactive:true}));//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
+	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
 
 	////	Fancybox des images & inline (contenu html)
 	var fancyboxImagesButtons=(isMobile()) ? ['close'] : ['fullScreen','thumbs','close'];
 	$("[data-fancybox='images']").fancybox({buttons:fancyboxImagesButtons});
 	$("[data-fancybox='inline']").fancybox({touch:false,arrows:false,infobar:false,smallBtn:false,buttons:['close']});//Pas de navigation entre les elements "inline" ("touch","arrow","infobar"). Pas de "smallBtn" close, mais plutôt celui en haut à droite.
 
-	//Initialise toute la page
+	////	Initialise toute la page
 	if(fullMode===true)
 	{
 		////	Calcule la largeur des objets ".objContainer" (Affichage "block" uniquement. Calculé en fonction de la largeur de la page : après loading ou resize de la page)
@@ -103,6 +103,14 @@ function mainPageDisplay(fullMode)
 		////	Affichage du footer
 		$("#pageFooterHtml").css("max-width", parseInt($(window).width()-$("#pageFooterIcon").width()-20));//Pour que "pageFooterHtml" ne se superpose pas à "pageFooterIcon"
 		setTimeout(function(){  $(".pageFull,.pageCenter").css("margin-bottom",footerHeight());  },300);//"margin-bottom" sous le contenu principal : pour pas être masqué par le Footer. Timeout car "footerHeight()" est fonction du "#livecounterMain" chargé en Ajax..
+
+		////	Enregistre la résolution de la fenêtre (cf. "Req::isMobile()")
+		if(isMainPage==true){
+			$(window).on("load resize",function(){
+				document.cookie="windowWidth="+$(window).width();
+				document.cookie="windowHeight="+$(window).height();
+			});
+		}
 	}
 }
 
@@ -193,9 +201,9 @@ function showMenuContext(thisLauncher, event)
 	$(menuId).css("max-height", Math.round($(window).height()-30)+"px");
 
 	////	Position en fonction : de la position de la souris (click droit sur ".objContainer")  OU  de la position du launcher survolé
-	if(event.type=="contextmenu")																		{var menuPosX=event.pageX - $(thisLauncher).offset().left;	var menuPosY=event.pageY - $(thisLauncher).offset().top;}//".objContainer" tjs en position relative/absolute : ajuste donc la position du menu car il doit être calculé en fonction du ".objContainer" et non de la page (cf. event.pageX et event.pageY)
-	else if(/edge/i.test(navigator.appVersion) && $(thisLauncher).parent().css("position")!="relative")	{var menuPosX=$(thisLauncher).offset().left;				var menuPosY=$(thisLauncher).offset().top;}/*Utiliser "offset()" pour un affichage normal des menus sous MS Edge*/
-	else																								{var menuPosX=$(thisLauncher).position().left;				var menuPosY=$(thisLauncher).position().top;}
+	if(event.type=="contextmenu")																					{var menuPosX=event.pageX - $(thisLauncher).offset().left;	var menuPosY=event.pageY - $(thisLauncher).offset().top;}//".objContainer" tjs en position relative/absolute : ajuste donc la position du menu car il doit être calculé en fonction du ".objContainer" et non de la page (cf. event.pageX et event.pageY)
+	else if(/(trident|edge)/i.test(navigator.userAgent) && $(thisLauncher).parent().css("position")!="relative")	{var menuPosX=$(thisLauncher).offset().left;				var menuPosY=$(thisLauncher).offset().top;}/*Utiliser "offset()" pour un affichage normal des menus sous IE/Edge*/
+	else																											{var menuPosX=$(thisLauncher).position().left;				var menuPosY=$(thisLauncher).position().top;}
 
 	////	Repositionne le menu s'il est au bord droit/bas de la page
 	//Positions du menu + largeur/hauteur : bordure droite et bas du menu
@@ -273,8 +281,8 @@ function responsiveSwipe()
 			else if($("#headerMainMenu").exist())	{var menuId="headerMainMenu";}
 			else									{var menuId=null;}
 			if(menuId!=null){
-				var isSwipeLeft =((xDown - event.touches[0].clientX) > 50);//50px de mouv. minimum
-				var isSwipeRight=((xDown - event.touches[0].clientX) < -50);//idem
+				var isSwipeLeft =((xDown - event.touches[0].clientX) > 80);//80px minimum pour ouvrir
+				var isSwipeRight=((xDown - event.touches[0].clientX) < -120);//120 mnimum pour fermer
 				//Swipe left à moins de 70px du bord droit : affiche le menu s'il n'est pas visible  ||  Swipe right et menu affiché : masque le menu
 				if(isSwipeLeft==true && parseInt($(window).width()-xDown)<70)	{showRespMenu(menuId,"pageModMenu");}
 				else if(isSwipeRight==true)										{hideRespMenu();}

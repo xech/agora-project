@@ -232,7 +232,7 @@ class MdlPerson extends MdlObject
 	}
 
 	/*
-	 * Balise <img> de l'image
+	 * Balise <img> de l'image du profil user || du contact
 	 */
 	public function getImg($openProfile=false, $smallImg=false, $getDefaultImg=false)
 	{

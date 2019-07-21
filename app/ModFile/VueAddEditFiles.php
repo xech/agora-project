@@ -12,8 +12,8 @@ lightboxSetWidth(520);
 
 // Init
 $(function(){
+	////	NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)
 	<?php if(Req::isParam("addVersion")){ ?>
-		////	Nouvelle version de fichier avec un nom différent : affiche une notif.
 		$("[name='addFileVersion']").on("change",function(){
 			if($("[name='curFileName']").val()!=$("[name='addFileVersion']").val().split('\\').pop())  {notify("<?= Txt::trad("FILE_updatedName") ?>");}
 		});
@@ -24,42 +24,28 @@ $(function(){
 		url:"?ctrl=file&action=UploadTmpFile&tmpFolderName=<?= $tmpFolderName ?>",
 		max_file_size:"<?= (int)ini_get("upload_max_filesize") ?>mb",//remplace 'mo' par 'mb'
 		max_file_count:200,//200 fichiers max
-		unique_names:true,//On n'envoie pas plusieurs fichiers avec le même nom
-		dragdrop:true,//Fonction de Glisser/déposer de fichiers
-		views:{list:true,thumbs:true,active:"list"},//Différentes vues des fichiers à uploader
+		unique_names:true,//On n'envoie pas plusieurs fichiers avec le meme nom
+		dragdrop:true,//Fonction de Glisser/deposer de fichiers
 		init:{
-			//Ajout de fichiers : triggers
+			//Ajout de fichier : Masque le "Déposer les fichiers ici" && Ajoute si besoin l'option pour optimiser l'image
 			FilesAdded:function(uploader,tmpFiles){
-				for(var key=0; key<tmpFiles.length; key++)  {imageOptimize(tmpFiles[key].name);}//Optimise l'image?
-				$(".plupload_droptext").hide();//Masque le "Déposer les fichiers ici"
+				$(".plupload_droptext").hide();
+				for(var key=0; key<tmpFiles.length; key++){//
+					if(/(jpg|jpeg|png)$/i.test(tmpFiles[key].name))  {$("#imageResizeOption").show();}
+				}
 			}
 		}
 	});
-
-	////	PlUpload : Ajoute la taille Max des fichiers dans le "title" du bouton  "selectionner les fichiers"
+	////	PlUpload : Ajoute la taille Max des fichiers dans le "title" du bouton  "Ajouter les fichiers"
 	$(".plupload_add").attr("title","<?= File::displaySize(File::uploadMaxFilesize()) ?> Max. <?= Txt::trad("FILE_addMultipleFilesInfo") ?>");
-	
-	////	Responsive : le formulaire simple est affiché par défaut
-	isMobile() ? uploadFormChange("uploadSimple") : uploadFormChange("uploadMultiple");
 	<?php } ?>
-
-	////	Affiche l'option d'optimisation d'image
-	$("[name='addFileSimple'],[name='addFileVersion']").on("change",function(){ imageOptimize($(this).val()); });
 });
 
 ////	Change le formulaire d'upload : simple/multiple
 function uploadFormChange(uploadForm)
 {
-	//Masque les 2 formualaires ...puis affiche celui sélectionné
 	$("#uploadMultiple,#uploadSimple").hide();
 	$("#"+uploadForm).show();
-}
-
-////	Affiche l'option "redimension d'image" OU Affiche les fichiers au format "liste"
-function imageOptimize(fileName)
-{
-	if(/(jpg|jpeg|png)$/i.test(fileName))	{$("#imageResizeOption").show();}
-	else									{$("label[for='uploader_view_list']").trigger("click");}
 }
 
 ////	Contrôle du formulaire
@@ -74,7 +60,7 @@ function formControl()
 				$("#filesForm")[0].submit();
 			});
 		}
-		return false;//Retourne "false" car c'est l'uploader (ci-dessus) qui valide le formulaire
+		return false;//Retourne "false" car c'est PLUpload qui valide le formulaire (cf. ".on('complete')") : une fois tous les fichiers envoyés dans le dossier temporaire
 	}
 	//Input File : nouvelle version de fichier
 	else{
@@ -86,56 +72,65 @@ function formControl()
 
 
 <style>
-/*Init*/
-#uploadMultiple, #uploadSimple, #imageResizeOption, #inputDescription	{display:none;}
-[name='uploadForm']			{margin-bottom:10px;}
-.vUploadOptions				{margin-top:15px; text-align:right;}
-
 /*Surcharge de Plupload*/
-.plupload_wrapper			{min-width:100%!important; max-width:100%!important;}/*Evite le scroll horizontal*/
-.plupload_container			{height:250px; min-height:250px;}
-.plupload_logo, .plupload_header_title, .plupload_header_text, .plupload_start, .plupload_filelist_header	{display:none;}/*masque les elements inutiles : logo, titre, etc.*/
-.plupload_header_content	{height:35px;}/*Header de l'uploader à 35px au lieu de 57px*/
-.plupload_view_list .plupload_content, .plupload_view_thumbs .plupload_content	{top:35px;}	/*Repositionne la liste des fichiers. Cf. "plupload_header_content" ci-dessus*/
-.plupload_view_switch		{top:5px; right:10px;}/*repositionne le menu list/thumbs*/
-.plupload_droptext 			{text-transform:uppercase; color:#aaa;}/*texte "Déposer les fichiers ici"*/
-.plupload_add				{text-transform:uppercase; width:220px; font-weight:bold!important;}/*Bouton d'ajout de fichiers*/
+.plupload_container					{height:210px; min-height:210px; border-radius:3px 3px 0px 0px;}/*conteneur principal*/
+.plupload_wrapper					{min-width:100%!important; max-width:100%!important;}/*Evite le scroll horizontal*/
+.plupload_header_content			{display:none;}
+.plupload_content					{top:0px;}/*Repositionne la liste des fichiers, car ".plupload_header_content" est masqué*/
+.plupload_droptext					{text-transform:uppercase; color:#aaa;}/*texte "Déposer les fichiers ici"*/
+.plupload_cell, .plupload_buttons	{width:100%; text-align:center; padding:12px;}/*conteneur des boutons principaux*/
+.plupload_buttons .plupload_button	{text-transform:uppercase; height:28px; padding-top:18px!important; font-weight:bold!important;}/*Boutons principaux (Ajouter, Arreter, etc)*/
+.plupload_buttons .plupload_add 	{width:220px;}/*Boutons Ajouter*/
+
+/*Options d'upload*/
+#uploadSimple, #uploadAdd			{padding:10px; border:1px solid #aaa; border-bottom:0px;}/*input d'upload simple : au dessus des options*/
+#uploadOptions						{padding:10px; text-align:center; border:1px solid #aaa; border-top:0px; border-radius:0px 0px 3px 3px;}
+#uploadOptions>span					{margin-left:20px;}/*Options d'upload*/
+#inputDescription					{margin-top:15px;}
+#uploadSimple, #imageResizeOption, #inputDescription	{display:none;}
+
+/*Masque les elements inutiles de Plupload (header, progress, etc.)*/
+.plupload_filelist_header, .plupload_start, .plupload_progress_container, .plupload_filelist_footer .plupload_file_size, .plupload_filelist_footer .plupload_file_status	{display:none;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	.plupload_droptext 	{color:#fff;}
-	.plupload_container	{height:200px; min-height:200px;}
+	.plupload_droptext 	{display:none!important;}
+	.plupload_container	{height:150px; min-height:150px;}
 }
 </style>
 
 
 <form action="index.php" method="post" onsubmit="return formControl()" id="filesForm" enctype="multipart/form-data" class="lightboxContent">
+
+	<!--NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)-->
 	<?php if(Req::isParam("addVersion")){ ?>
-		<!--NOUVELLE VERSION D'UN FICHIER-->
-		<input type="file" name="addFileVersion" title="<?= File::displaySize(File::uploadMaxFilesize()) ?> Max">
-		<input type="hidden" name="curFileName" value="<?= $curObj->name ?>">
-		<input type="hidden" name="addVersion" value="true">
+		<div id="uploadAdd">
+			<input type="file" name="addFileVersion" title="<?= File::displaySize(File::uploadMaxFilesize()) ?> Max">
+			<input type="hidden" name="curFileName" value="<?= $curObj->name ?>">
+			<input type="hidden" name="addVersion" value="true">
+		</div>
 	<?php }else{ ?>
-		<!--NOUVEAU FICHIER :  UPLOAD MULTIPLE (PLUPLOAD) || UPLOAD SIMPLE -->
-		<select name="uploadForm" onchange="uploadFormChange(this.value)">
-			<option value="uploadMultiple"><?= Txt::trad("FILE_uploadMultiple") ?></option>
-			<option value="uploadSimple"><?= Txt::trad("FILE_uploadSimple") ?></option>
-		</select>
 		<div id="uploadMultiple"><input type="file" name="addFileMultiple" title="<?= File::displaySize(File::uploadMaxFilesize()) ?> Max"></div>
 		<div id="uploadSimple"><input type="file" name="addFileSimple" title="<?= File::displaySize(File::uploadMaxFilesize()) ?> Max"></div>
 		<input type="hidden" name="tmpFolderName" value="<?= $tmpFolderName ?>">
 	<?php } ?>
-
-	<!--imageResize-->
-	<div class="vUploadOptions" id="imageResizeOption">
-		<input type="checkbox" name="imageResize" id="imageResizeInput" value="1" checked> 
-		<label for="imageResizeInput"><?= Txt::trad("FILE_imgReduce") ?></label>
-	</div>
-
-	<!--description-->
-	<div class="vUploadOptions">
-		<div class="sLink" onclick="$('#inputDescription').slideToggle();"><?= Txt::trad("description") ?> <img src="app/img/description.png"></div>
-		<textarea name="description" placeholder="<?= Txt::trad("description") ?>" id="inputDescription"></textarea>
+		
+	<!--OPTIONS : UPLOAD MULTIPLE/SIMPLE && IMAGERESIZE && DESCRIPTION-->
+	<div id="uploadOptions">
+		<?php if(Req::isParam("addVersion")==false){ ?>
+		<select name="uploadForm" onchange="uploadFormChange(this.value)">
+			<option value="uploadMultiple"><?= Txt::trad("FILE_uploadMultiple") ?></option>
+			<option value="uploadSimple"><?= Txt::trad("FILE_uploadSimple") ?></option>
+		</select>
+		<?php } ?>
+		<span id="imageResizeOption">
+			<input type="checkbox" name="imageResize" id="imageResizeInput" value="1" checked> 
+			<label for="imageResizeInput"><?= Txt::trad("FILE_imgReduce") ?></label>
+		</span>
+		<span>
+			<span class="sLink" onclick="$('#inputDescription').slideToggle();"><?= Txt::trad("description") ?> <img src="app/img/description.png"></span>
+			<textarea name="description" placeholder="<?= Txt::trad("description") ?>" id="inputDescription"></textarea>
+		</span>
 	</div>
 
 	<!--MENU COMMUN-->

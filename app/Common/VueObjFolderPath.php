@@ -2,7 +2,7 @@
 	<?php
 	$curFolder=Ctrl::$curContainer;
 	//Responsive : affiche le "dossier parent"
-	if(Req::isMobile() && $curFolder->isRootFolder()==false)  {echo "<div style='width:50px;' onclick=\"redir('".$curFolder->containerObj()->getUrl()."')\"><img src='app/img/arrowTop.png'> Top</div>";}
+	if(Req::isMobile() && $curFolder->isRootFolder()==false)  {echo "<div class='pathIconMenu' onclick=\"redir('".$curFolder->containerObj()->getUrl()."')\"><img src='app/img/arrowTop.png'> Top</div>";}
 	//Chemin du dossier courant
 	$curFolderPath=$curFolder->folderPath("object");
 	foreach($curFolderPath as $tmpKey=>$tmpFolder){
@@ -13,7 +13,7 @@
 	}
 	////	Ajout d'élément
 	if(!empty($addElemLabel) && $curFolder->editContentRight()){
-		echo "<div style='width:60px;'>
+		echo "<div class='pathIconMenu'>
 				<img src='app/img/arrowRightAdd.png'> <img src='app/img/plus.png' class='menuLaunch' for='folderPathAddMenu'>
 				<div id='folderPathAddMenu' class='menuContext'>
 					<div class='menuLine sLink' onclick=\"lightboxOpen('".$addElemUrl."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".$addElemLabel."</div></div>

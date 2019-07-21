@@ -29,10 +29,11 @@ class Trad extends Txt
 		self::$trad["none"]="no";
 		self::$trad["or"]="or";
 		self::$trad["and"]="and";
+		self::$trad["by"]="por";
 		self::$trad["goToPage"]="Go to the page";
 		self::$trad["alphabetFilter"]="Alphabetical Filter";
 		self::$trad["displayAll"]="Display all";
-		self::$trad["anyCategory"]="Any category";
+		self::$trad["allCategory"]="Any category";
 		self::$trad["important"]="Important";
 		self::$trad["show"]="show";
 		self::$trad["hide"]="hide";
@@ -157,7 +158,7 @@ class Trad extends Txt
 		self::$trad["description"]="Description";
 		self::$trad["specifyName"]="Thank you to specify a name";
 		self::$trad["editorDraft"]="Retrieve my text";
-		self::$trad["editorDraftConfirm"]="Retrieve the last specified text (kept 12h)";
+		self::$trad["editorDraftConfirm"]="Retrieve the last specified text (kept 24h)";
 		
 		////	Validation des formulaires
 		self::$trad["add"]=" Add";
@@ -310,16 +311,16 @@ class Trad extends Txt
 		self::$trad["noResults"]="No result";
 		
 		////	Gestion des inscriptions d'utilisateur
-		self::$trad["usersInscription"]="register on the space";
-		self::$trad["usersInscriptionInfo"]="create a new user account (validated by an administrator)";
-		self::$trad["usersInscriptionSpace"]="register on the space";
-		self::$trad["usersInscriptionRecorded"]="Your registration was recorded : it will be validated as soon as possible by the administrator of the space";
-		self::$trad["usersInscriptionOptionSpace"]="Allow visitors to register on the space";
-		self::$trad["usersInscriptionOptionSpaceInfo"]="The registration is on the homepage of the site. Registration must then be validated by the administrator of the space.";
-		self::$trad["usersInscriptionValidate"]="User registrations";
-		self::$trad["usersInscriptionValidateInfo"]="Validate user registrations on the site";
-		self::$trad["usersInscriptionInvalidate"]="invalidate";
-		self::$trad["usersInscriptionInvalidateMail"]="Your account has not been validated on";
+		self::$trad["userInscription"]="register on the space";
+		self::$trad["userInscriptionInfo"]="create a new user account (validated by an administrator)";
+		self::$trad["userInscriptionSpace"]="register on the space";
+		self::$trad["userInscriptionRecorded"]="Your registration was recorded : it will be validated as soon as possible by the administrator of the space";
+		self::$trad["userInscriptionOptionSpace"]="Allow visitors to register on the space";
+		self::$trad["userInscriptionOptionSpaceInfo"]="The registration is on the homepage of the site. Registration must then be validated by the administrator of the space.";
+		self::$trad["userInscriptionValidate"]="User registrations";
+		self::$trad["userInscriptionValidateInfo"]="Validate user registrations on the site";
+		self::$trad["userInscriptionInvalidate"]="invalidate";
+		self::$trad["userInscriptionInvalidateMail"]="Your account has not been validated on";
 
 		////	Importer ou Exporter : Contact OU Utilisateurs
 		self::$trad["export"]="Export";

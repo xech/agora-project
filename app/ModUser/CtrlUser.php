@@ -53,8 +53,7 @@ class CtrlUser extends Ctrl
 				$tmpObj->pluginIcon=self::moduleName."/accesUser.png";
 				$tmpObj->pluginLabel=$tmpObj->getLabel("all");
 				$tmpObj->pluginTooltip=$tmpObj->pluginLabel;
-				$tmpObj->pluginJsIcon="lightboxOpen('".$tmpObj->getUrl("vue")."');";//Affiche l'user
-				$tmpObj->pluginJsLabel=$tmpObj->pluginJsIcon;
+				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";//Affiche l'user
 				$pluginsList[]=$tmpObj;
 			}
 			return $pluginsList;
@@ -398,20 +397,20 @@ class CtrlUser extends Ctrl
 	/*
 	 * ACTION : Inscription des utilisateurs au site
 	 */
-	public static function actionRegisterUser()
+	public static function actionUserInscriptionValidate()
 	{
 		//Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
 		if(Ctrl::$curUser->isAdminSpace()==false || MdlUser::usersQuotaOk()==false)	{static::lightboxClose();}
 		//Validation du form
-		if(Req::isParam("formValidate") && Req::isParam("inscriptionValidation"))
+		if(Req::isParam("formValidate") && Req::isParam("inscriptionValidate"))
 		{
 			//Créé chaque utilisateur validé
-			foreach(Req::getParam("inscriptionValidation") as $idInscription)
+			foreach(Req::getParam("inscriptionValidate") as $idInscription)
 			{
 				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".$idInscription);
 				//Invalidation/Validation de l'user
 				if(Req::isParam("submitAlternative")){
-					$subject=$mainMessage=Txt::trad("usersInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getSpaceUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
+					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getSpaceUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
 					$mainMessage="<b>".$mainMessage."</b>";
 					Tool::sendMail($tmpInscription["mail"], $subject, $mainMessage);
 				}else{
@@ -428,6 +427,6 @@ class CtrlUser extends Ctrl
 		}
 		//Affiche le formulaire
 		$vDatas["inscriptionList"]=Db::getTab("SELECT * FROM ap_userInscription WHERE _idSpace=".Ctrl::$curSpace->_id);
-		static::displayPage("VueUsersInscriptionValidate.php",$vDatas);
+		static::displayPage("VueUserInscriptionValidate.php",$vDatas);
 	}
 }

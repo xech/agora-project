@@ -131,7 +131,7 @@ class Req
 	public static function isMobile()
 	{
 		if(self::$_isMobile===null)
-			{self::$_isMobile=(preg_match("/(android|iphone|ipad|blackberry|windows phone|tablet|touch)/i",$_SERVER['HTTP_USER_AGENT']) || (isset($_SESSION["windowWidth"]) && $_SESSION["windowWidth"]<=1023));}
+			{self::$_isMobile=(preg_match("/(android|iphone|ipad|blackberry|windows phone|tablet|touch)/i",$_SERVER['HTTP_USER_AGENT']) || (isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1023));}
 		return self::$_isMobile;
 	}
 
@@ -140,7 +140,7 @@ class Req
 	 */
 	public static function isMobileApp()
 	{
-		return (!empty($_COOKIE["mobileAppliUrlSwitchSpace"]));
+		return (!empty($_COOKIE["mobileAppliTrue"]));
 	}
 
 	/*
@@ -161,7 +161,7 @@ class Req
 	/***************************************************************************************************************************/
 
 	/*
-	 * Recupère l'URL de l'espace (exple  "www.mon-espace.net/agora/index.php?ctrl=file"  devient  "www.mon-espace.net/agora")
+	 * Recupère l'URL de l'espace (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&targetObjId=file-55"  devient  "https://www.mon-espace.net/agora")
 	 */
 	public static function getSpaceUrl($httpPrefix=true)
 	{

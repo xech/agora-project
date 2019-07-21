@@ -34,10 +34,10 @@ class CtrlCalendar extends Ctrl
 		////	AFFICHAGE : PREPARE LES TIMES/DATES
 		//AFFICHAGE MOIS
 		if($displayMode=="month"){
-			$vDatas["timeBegin"]=strtotime(date("Y-m",$curTime)."-01 00:00");
-			$vDatas["timeEnd"]  =strtotime(date("Y-m",$curTime)."-".date("t",$curTime)." 23:59");
-			$vDatas["timePrev"]=strtotime("-1 month",$curTime);
-			$vDatas["timeNext"]=strtotime("+1 month",$curTime);
+			$vDatas["timeBegin"]	=strtotime(date("Y-m",$curTime)."-01 00:00");
+			$vDatas["timeEnd"]		=strtotime(date("Y-m",$curTime)."-".date("t",$curTime)." 23:59");
+			$vDatas["urlTimePrev"]	=strtotime("-1 month",$curTime);
+			$vDatas["urlTimeNext"]	=strtotime("+1 month",$curTime);
 			$vDatas["timeDisplayedBegin"]=strtotime("-".(date("N",$vDatas["timeBegin"])-1)." days", $vDatas["timeBegin"]);//On commence l'affichage par un lundi : si le mois commence un mercredi, on affiche aussi le lundi/mardi du mois précédent
 			$vDatas["timeDisplayedEnd"]=strtotime("+".(7-date("N",$vDatas["timeEnd"]))." days", $vDatas["timeEnd"]);	  //On termine l'affichage par un dimanche (Idem)
 		}
@@ -45,25 +45,27 @@ class CtrlCalendar extends Ctrl
 		elseif(preg_match("/week/i",$displayMode)){
 			$weekTimeBegin=strtotime("-".(date("N",$curTime)-1)." days",$curTime);//lundi=0 => dimanche=6
 			$weekTimeEnd=($displayMode=="week") ? strtotime("+6 days",$weekTimeBegin) : strtotime("+4 days",$weekTimeBegin);
-			$vDatas["timeBegin"]=strtotime(date("Y-m-d",$weekTimeBegin)." 00:00");
-			$vDatas["timeEnd"]	=strtotime(date("Y-m-d",$weekTimeEnd)." 23:59");
-			$vDatas["timePrev"]=strtotime("-1 week",$curTime);
-			$vDatas["timeNext"]=strtotime("+1 week",$curTime);
+			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$weekTimeBegin)." 00:00");
+			$vDatas["timeEnd"]		=strtotime(date("Y-m-d",$weekTimeEnd)." 23:59");
+			$vDatas["urlTimePrev"]	=strtotime("-1 week",$curTime);
+			$vDatas["urlTimeNext"]	=strtotime("+1 week",$curTime);
 		}
 		//AFFICHAGE 3 PROCHAINS JOURS
 		elseif($displayMode=="3Days"){
-			$vDatas["timeBegin"]=strtotime(date("Y-m-d",$curTime)." 00:00");
-			$vDatas["timeEnd"]	=$vDatas["timeBegin"]+259199;//259199 = 3 jours - 1sec
-			$vDatas["timePrev"]=strtotime("-3 day",$curTime);
-			$vDatas["timeNext"]=strtotime("+3 day",$curTime);
+			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$curTime)." 00:00");
+			$vDatas["timeEnd"]		=$vDatas["timeBegin"]+259199;//259199 = 3 jours - 1sec
+			$vDatas["urlTimePrev"]	=strtotime("-3 day",$curTime);
+			$vDatas["urlTimeNext"]	=strtotime("+3 day",$curTime);
 		}
 		//AFFICHAGE JOUR
 		elseif($displayMode=="day"){
-			$vDatas["timeBegin"]=strtotime(date("Y-m-d",$curTime)." 00:00");
-			$vDatas["timeEnd"]	=strtotime(date("Y-m-d",$curTime)." 23:59");
-			$vDatas["timePrev"]=strtotime("-1 day",$curTime);
-			$vDatas["timeNext"]=strtotime("+1 day",$curTime);
+			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$curTime)." 00:00");
+			$vDatas["timeEnd"]		=strtotime(date("Y-m-d",$curTime)." 23:59");
+			$vDatas["urlTimePrev"]	=strtotime("-1 day",$curTime);
+			$vDatas["urlTimeNext"]	=strtotime("+1 day",$curTime);
 		}
+		//CONSERVE LES FILTRE DES CATEGORIES DANS LES LIENS "urlTimePrev" et "urlTimeNext" ?
+		$vDatas["urlCatFilter"]=(Req::isParam("_idCatFilter"))  ?  "&_idCatFilter=".Req::isParam("_idCatFilter")  :  null;
 		////	LIBELLES ET MENU DE LA PERIODE DE L'AGENDA
 		//"month"
 		if($displayMode=="month")
@@ -243,7 +245,7 @@ class CtrlCalendar extends Ctrl
 						$tmpEvt->pluginModule=self::moduleName;
 						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
 						$tmpEvt->pluginLabel=Txt::displayDate($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
-						$tmpEvt->pluginTooltip=Txt::displayDate($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<br>".$tmpEvt->affectedCalendarsLabel();
+						$tmpEvt->pluginTooltip=Txt::displayDate($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
 						$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl("container")."');";//Redir vers l'agenda principal "datetime" & "displayType" (month/week/day)
 						$tmpEvt->pluginJsLabel="lightboxOpen('".$tmpEvt->getUrl("vue")."');";
 						$pluginsList[]=$tmpEvt;
@@ -355,10 +357,10 @@ class CtrlCalendar extends Ctrl
 			//Prépare l'affichage de chaque agenda
 			foreach($vDatas["affectationCalendars"] as $tmpCal){
 				//Ajoute quelques propriétés à l'agenda
-				$tmpCal->inputType=($tmpCal->editContentRight() || in_array($tmpCal,$curObj->affectedCalendars(true)))  ?  "affectation"  :  "proposition";	//Input d'affectation OU de proposition pour l'agenda
-				$tmpCal->isChecked=($tmpCal->_id==Req::getParam("_idCal") || in_array($tmpCal,$curObj->affectedCalendars("all")))  ?  "checked"  :  null;	//Check l'agenda si besoin (présélection de l'agenda OU agenda déjà affecté)
-				$tmpCal->isDisabled=($tmpCal->editContentRight()==false && $curObj->fullRight()==false)  ?  "disabled"  :  null;							//Désactive l'input de l'agenda, au besoin (agenda pas accessible en écriture && user courant pas auteur de l'evt)
-				$tmpCal->reinitCalendarInput=($curObj->isNew()==false && $tmpCal->isDisabled==null)  ?  true  :  false;										//Input de réinitialisation de l'affectation (modif d'evt et input pas "disabled")
+				$tmpCal->inputType=($tmpCal->editContentRight() || in_array($tmpCal,$curObj->affectedCalendars()))  ?  "affectation"  :  "proposition";		//Input principal : affectation OU proposition pour l'agenda
+				$tmpCal->isChecked=($tmpCal->_id==Req::getParam("_idCal") || in_array($tmpCal,$curObj->affectedCalendars("all")))  ?  "checked"  :  null;	//Input principal : check l'agenda s'il est présélectionné ou déjà affecté
+				$tmpCal->isDisabled=($tmpCal->editContentRight()==false && $curObj->fullRight()==false)  ?  "disabled"  :  null;							//Input principal : désactive l'agenda s'il n'est pas accessible en écriture && user courant pas auteur de l'evt
+				$tmpCal->reinitCalendarInput=($curObj->isNew()==false && $tmpCal->isDisabled==null)  ?  true  :  false;										//Ajoute l'input "hidden" de réinitialisation de l'affectation : modif d'evt et input pas "disabled"
 				//Tooltip du label
 				if($tmpCal->isDisabled!=null)				{$tmpCal->tooltip=Txt::trad("CALENDAR_noModifInfo");}			//"Modification non autorisé..." (tjs mettre en premier)
 				elseif($tmpCal->inputType=="affectation")	{$tmpCal->tooltip=Txt::trad("CALENDAR_addEvtTooltipBis");}		//"Ajouter l'événement.."
@@ -564,18 +566,20 @@ class CtrlCalendar extends Ctrl
 		if($curObj::objectType=="calendarEvent"){
 			$eventList=[$curObj];
 			$objCalendar=$curObj->containerObj();
+			$icalCalname=null;
 		}elseif($curObj::objectType=="calendar"){
 			$periodBegin=time()-(86400*365);//Time - 1 an
 			$periodEnd=time()+(86400*365*5);//Time + 5 ans
 			$eventList=$curObj->evtList($periodBegin,$periodEnd);
 			$objCalendar=$curObj;
+			$icalCalname="X-WR-CALNAME:".$objCalendar->title."\n";
 		}else{return false;}
 
 		////	Prépare le fichier Ical
 		$ical=	"BEGIN:VCALENDAR\n".
 				"METHOD:PUBLISH\n".
 				"VERSION:2.0\n".
-				"X-WR-CALNAME:".$objCalendar->title."\n".
+				$icalCalname.
 				"PRODID:-//Agora-Project//".self::$agora->name."//EN\n".
 				"X-WR-TIMEZONE:".self::$curTimezone."\n".
 				"CALSCALE:GREGORIAN\n".

@@ -170,7 +170,7 @@ class MdlObject
 			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=FolderEdit&targetObjId=".$this->_targetObjId;}						//Edite un dossier dans la lightbox (Folders)
 			elseif($display=="edit")							{return $urlBase.$this->_targetObjId."&action=".static::objectType."Edit";}						//Edite un objet dans la lightbox (tout types d'objets)
 			elseif($display=="delete")							{return "?ctrl=object&action=delete&targetObjects[".static::objectType."]=".$this->_id;}		//Suppression d'un objet via "?ctrl=object&action=delete" (tout types d'objets)
-			elseif($display=="container" && (static::isFolder==true || static::isContainerContent()))  {return $urlBase.$this->containerObj()->_targetObjId."&targetObjIdChild=".$this->_targetObjId;}//Conteneur de l'objet (file/contact/task/link & Folders & forumMessage). Surchargé pour calendarEvent & forumSubject (spécifie le thème)
+			elseif($display=="container" && (static::isFolder==true || static::isContainerContent()))  {return $urlBase.$this->containerObj()->_targetObjId."&targetObjIdChild=".$this->_targetObjId;}//Conteneur de l'objet (file/contact/task/link & Folders & forumMessage). Surchargé sur les "calendarEvent" & "forumSubject" (car on spécifie le thème)
 			else												{return $urlBase.$this->_targetObjId;}															//Cible directement l'objet (forumSubject & Folders)
 		}
 	}

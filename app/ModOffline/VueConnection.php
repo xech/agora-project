@@ -193,7 +193,7 @@ function controlConnect()
 		if(Ctrl::$agora->gSigninEnabled() || !empty($usersInscription)){
 			echo $separateHrOr."<div id='connectOptions'>";
 				if(Ctrl::$agora->gSigninEnabled())	{echo "<div><button id='gSignInButton' title=\"".Txt::trad("gSigninButtonInfo")."\"><img src='app/img/gSignin.png'> ".Txt::trad("gSigninButton")."</button></div>";}
-				if(!empty($usersInscription))		{echo "<div><button onclick=\"lightboxOpen('?action=usersInscription')\" title=\"".Txt::trad("usersInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("usersInscription")."</button></div>";}
+				if(!empty($usersInscription))		{echo "<div><button onclick=\"lightboxOpen('?action=usersInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>";}
 			echo "</div>";
 		}
 
@@ -217,7 +217,7 @@ function controlConnect()
 
 		<?php
 		////	MOBILE APP : SWITCH SPACE
-		if(Ctrl::isHost() && Req::isMobileApp())  {$separateHrOr.Host::mobileAppliUrlSwitchSpaceMenu();}
+		if(Ctrl::isHost() && Req::isMobileApp())  {echo $separateHrOr.Host::mobileAppliSwitchSpaceMenu();}
 		?>
 	</div>
 </div>

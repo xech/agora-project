@@ -5,18 +5,19 @@
 		<meta charset="UTF-8">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 		<meta http-equiv="content-language" content="<?= Txt::trad("HEADER_HTTP") ?>">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="icon" type="image/gif" href="app/img/favicon.png" />
 		<title><?= !empty(Ctrl::$agora->name) ? Ctrl::$agora->name : "Omnispace.fr - Agora-Project" ?></title>
+		<!--REFERENCEMENT-->
 		<meta name="Description" content="<?= !empty(Ctrl::$agora->description) ? Ctrl::$agora->description : "Omnispace.fr - Agora-Project" ?>">
 		<meta name="application-name" content="Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge"><!--mode compatibilité IE-->
-		<link rel="icon" type="image/gif" href="app/img/favicon.png" />
 		<!-- JQUERY & JQUERY-UI -->
-		<script src="app/js/jquery-3.3.1.min.js"></script>
+		<script src="app/js/jquery-3.4.1.min.js"></script>
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
-		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("DATEPICKER") ?>.js"></script><!--lang du jquery-ui datepicker-->
-		<link rel="stylesheet" href="app/js/jquery-ui/<?= $skinCss=="white"?"smoothness":"ui-darkness" ?>/jquery-ui.css"><!--skin du jquery-ui-->
+		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">
+		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("DATEPICKER") ?>.js"></script><!--langue du jquery-ui datepicker-->
 		<!-- JQUERY PLUGINS -->
 		<link  href="app/js/fancybox/dist/jquery.fancybox.css" rel="stylesheet">
 		<script src="app/js/fancybox/dist/jquery.fancybox.min.js"></script>
@@ -28,13 +29,13 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JS & CSS DE L'AGORA -->
-		<script src="app/js/common-3.6.3.js"></script><!--toujours après Jquery & plugins Jquery !!-->
-		<link href="app/css/common-3.6.3.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-3.6.4.js"></script><!--toujours après Jquery & plugins Jquery !!-->
+		<link href="app/css/common-3.6.4.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 
 		<script>
-		//Alerte pour MSIE
-		if(/msie/i.test(navigator.userAgent) || /trident/i.test(navigator.userAgent))  {alert("<?= Txt::trad("ieObsolete") ?>");}
+		//Alerte pour MSIE (sauf IE-11: encore très utilisé)
+		if(/msie/i.test(navigator.userAgent))  {alert("<?= Txt::trad("ieObsolete") ?>");}
 		//Divers params
 		isMainPage=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
 		windowParent=(isMainPage==true) ? window : window.parent;//Si l'espace est intégré dans un Iframe (cf. redirection "invisible" de domaine)

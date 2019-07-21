@@ -42,28 +42,29 @@ class CtrlFile extends Ctrl
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplayedObjects(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
-			//Téléchargement direct du fichier (dans un nouvelle fenêtre si >20Mo)
-			$downloadBlank=($tmpFile->octetSize>(File::sizeMo*20))  ?  "window.open('".$tmpFile->urlDownloadDisplay()."','_blank');"  :  "redir('".$tmpFile->urlDownloadDisplay()."');";
-			$tmpFile->downloadHref="href=\"javascript:if(confirm('".Txt::trad("download",true)." ?')) ".$downloadBlank."\"";
-			//Lien de l'icone du fichier : lightbox image || lightbox pdf/text/html || lightbox vidéo/mp3 || telechargement direct
-			if(File::controlType("imageBrowser",$tmpFile->name))							{$tmpFile->iconHref="href=\"".$tmpFile->urlDownloadDisplay("display")."\" data-fancybox='images'";}
-			elseif(File::controlType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconHref="href=\"javascript:lightboxOpen('".$tmpFile->urlDownloadDisplay("display")."');\"";}
-			elseif(File::controlType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconHref="href=\"javascript:lightboxOpen('".$tmpFile->filePath()."');\"";}
-			else																			{$tmpFile->iconHref=$tmpFile->downloadHref;}//telechargement direct
+			//Href du label du fichier : Téléchargement (dans une nouvelle fenêtre si >50Mo)
+			$downloadConfirmed=($tmpFile->octetSize>(File::sizeMo*50))  ?  "window.open('".$tmpFile->urlDownloadDisplay()."','_blank');"  :  "redir('".$tmpFile->urlDownloadDisplay()."');";
+			$tmpFile->downloadHref="href=\"javascript:if(confirm('".Txt::trad("download",true)." ?')) ".$downloadConfirmed."\"";
+			//Href de l'icone du fichier
+			if(File::controlType("imageBrowser",$tmpFile->name))							{$tmpFile->iconHref="href=\"".$tmpFile->urlDownloadDisplay("display")."\" data-fancybox='images'";}		//Lightbox pour une image
+			elseif(File::controlType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconHref="href=\"javascript:lightboxOpen('".$tmpFile->urlDownloadDisplay("display")."');\"";}//Lightbox pour un pdf/text
+			elseif(File::controlType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconHref="href=\"javascript:lightboxOpen('".$tmpFile->filePath()."');\"";}					//Lightbox pour une vidéo/mp3
+			else																			{$tmpFile->iconHref=$tmpFile->downloadHref;}															//Telechargement direct
 			//Tooltips et description
 			$tmpFile->tooltip=Txt::trad("download")." <i>".$tmpFile->name."</i>";
 			$tmpFile->iconTooltip=$tmpFile->name." - ".File::displaySize($tmpFile->octetSize);
 			if(!empty($tmpFile->description))	{$tmpFile->iconTooltip.="<hr>".Txt::formatTooltip($tmpFile->description);}
-			//Definition en pixel d'une image (ajoute au tooltip)  &&  Class "thumbLandscape"/"thumbPortrait" d'une vignette (image/pdf)
+			//Vignette d'image/pdf
 			if($tmpFile->hasThumb())
 			{
-				$imgWidth=$imgHeight=null;
-				if(File::controlType("imageResize",$tmpFile->name)){
+				//Classe de la vignette : "thumb"
+				$tmpFile->hasThumbClass="hasThumb";
+				//Image (pas pdf) : ajoute la résolution d'image && la classe "thumbLandscape" ou "thumbPortrait"
+				if(File::controlType("imageBrowser",$tmpFile->name)){
 					list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
 					$tmpFile->iconTooltip.=" - ".$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
+					$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
 				}
-				$tmpFile->hasThumbClass="hasThumb";
-				$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
 			}
 			//Ajoute le fichier
 			$vDatas["filesList"][$fileKey]=$tmpFile;
@@ -83,9 +84,9 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
 			$tmpObj->pluginLabel=$tmpObj->name;
-			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<br>".$tmpObj->displayAutor(true,true);
+			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl("container")."');";//Redir vers le dossier conteneur
-			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownloadDisplay("container")."');}";
+			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownloadDisplay()."');}";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;

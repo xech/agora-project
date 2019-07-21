@@ -7,13 +7,13 @@
 */
 
 //Version du soft
-define("VERSION_AGORA","3.6.3");//sur 3 niveaux (4 max.)
+define("VERSION_AGORA","3.6.4");//sur 3 niveaux (4 max.)
 define("VERSION_AGORA_PHP_MINIMUM","5.5");
 
 //Config de base
 define("LIVECOUNTER_REFRESH",12);
 define("LIVECOUNTER_TIMEOUT",30);
-define("MESSENGER_TIMEOUT",43200);//12h
+define("MESSENGER_TIMEOUT",86400);//24h (idem "editorDraft")
 define("OMNISPACE_URL_PUBLIC","https://www.omnispace.fr/AP-OMNISPACE");
 define("OMNISPACE_URL_LABEL","www.omnispace.fr");
 

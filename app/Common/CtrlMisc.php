@@ -73,9 +73,9 @@ class CtrlMisc extends Ctrl
 			////	INIT LE MESSENGER EN DEBUT DE SESSION
 			if(!isset($_SESSION["livercounterUsers"]))
 			{
-				//Supprime les vieux messages du messenger (12h maxi) & livecounters des users déconnectés
+				//Supprime les vieux messages du messenger (24h maxi) & livecounters des users déconnectés
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE date < ".intval(time()-MESSENGER_TIMEOUT));
-				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-MESSENGER_TIMEOUT));//12h aussi car on conserve le "editorDraft" du tinyMce, même si le "LIVECOUNTER_TIMEOUT" ne dure que quelques secondes..
+				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-MESSENGER_TIMEOUT));//24h aussi car on conserve le "editorDraft" du tinyMce, même si le "LIVECOUNTER_TIMEOUT" ne dure que quelques secondes..
 				//Garde en session les users que l'on peut voir et n'ayant pas bloqué leur messenger
 				$idsUsers=[0];//pseudo user
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsers[]=$tmpUser->_id;}
@@ -91,7 +91,7 @@ class CtrlMisc extends Ctrl
 			//Verif si ya un changement du livecounter (connection/deconnection)
 			$livercounterUsersOld=$_SESSION["livercounterUsers"];
 			$_SESSION["livercounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".intval(time()-LIVECOUNTER_TIMEOUT));
-			$result["livercounterChanged"]=(count($livercounterUsersOld)!=count($_SESSION["livercounterUsers"]));//ne pas comparer directement les tableaux d'objet.. mais leur taille
+			$result["livercounterChanged"]=(count($livercounterUsersOld)!=count($_SESSION["livercounterUsers"]));//ne pas comparer directement les tableaux d'objet.. mais leur taille (uliliser plutot "mb_strlen(serialize($array))" ?)
 			//Affichage des users connectés
 			if($result["livercounterChanged"]==true)
 			{
@@ -140,12 +140,12 @@ class CtrlMisc extends Ctrl
 															 </div>";
 					}
 				}
-				//Users que l'on "pulsate" car ils viennent de poster un nouveau message (pas encore vu)
+				//On "pulsate" les autres users qui viennent de poster un nouveau message qui n'a pas encore été vu par l'user courant
 				foreach($_SESSION["messengerMessagesList"] as $message){
-					$userLastDisplayTime=(isset($_SESSION["messengerUpdateDisplayedUser"][$message["_idUser"]]))  ?  $_SESSION["messengerUpdateDisplayedUser"][$message["_idUser"]]  :  0;
-					if($message["_idUser"]!=Ctrl::$curUser->_id && $message["date"]>$userLastDisplayTime)  {$result["messengerPulsateUsers"][]=$message["_idUser"];}
+					$idUserTmp=$message["_idUser"];
+					//User pas encore ajouté à "messengerPulsateUsers"  &&  User toujours présent dans le livecounter  &&  (User pas encore affiché || affiché avant l'envoi de son message)
+					if(!isset($result["messengerPulsateUsers"][$idUserTmp])  &&  isset($_SESSION["livercounterUsers"][$idUserTmp])  && (!isset($_SESSION["messengerUpdateDisplayedUser"][$idUserTmp]) || $message["date"]>$_SESSION["messengerUpdateDisplayedUser"][$idUserTmp]))   {$result["messengerPulsateUsers"][]=$idUserTmp;}
 				}
-				$result["messengerPulsateUsers"]=array_unique($result["messengerPulsateUsers"]);
 			}
 
 			////	RETOURNE LE RÉSULTAT (format JSON)
@@ -154,8 +154,6 @@ class CtrlMisc extends Ctrl
 			$result["messengerMessagesHtml"]=$_SESSION["messengerMessagesHtml"];
 			echo json_encode($result);
 		}
-		////	WIDTH DE LA PAGE POUR LE TEST RESPONSIVE
-		if(Req::isParam("windowWidth"))  {$_SESSION["windowWidth"]=Req::getParam("windowWidth");}
 	}
 
 	/*
@@ -328,12 +326,13 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*
-	 * URL : Download de fichier depuis mobileApp
+	 * URL : Download un fichier depuis mobileApp ("AttachedFile" ou "modFile")
 	 */
 	public static function appGetFileUrl($downloadUrl, $fileName)
 	{
-		$downloadUrl.=(stristr($downloadUrl,"ctrl=object"))  ?  "&fileType=attached"  :  "&fileType=modFile";//AttachedFile / File object
-		return str_ireplace(["ctrl=object","ctrl=file"],"ctrl=misc",$downloadUrl)."&nameMd5=".md5($fileName);//Change le controleur et utilise "actionGetFile" ci-dessus, car $initCtrlFull=false
+		$downloadUrl=str_ireplace(["ctrl=object","ctrl=file"],"ctrl=misc",$downloadUrl);						//Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
+		$downloadUrl.=(stristr($downloadUrl,"ctrl=object"))  ?  "&fileType=attached"  :  "&fileType=modFile";	//Fichier joint d'un objet lambda OU Fichier du gestionnaire de fichier
+		return $downloadUrl.="&nameMd5=".md5($fileName);														//Ajoute le "nameMd5" pour le controle d'accès (cf. "CtrlObject::actionGetFile()" && "CtrlFile::actionGetFile()")
 	}
 	
 	/*

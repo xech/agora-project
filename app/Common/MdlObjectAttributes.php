@@ -63,7 +63,7 @@ trait MdlObjectAttributes
 			{
 				foreach($this->getAttachedFileList() as $tmpFile){
 					$getFileUrl="?ctrl=object&action=getFile&_id=".$tmpFile["_id"];
-					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::appGetFileUrl($getFileUrl,$tmpFile["name"]);}//Download depuis mobileApp
+					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::appGetFileUrl($getFileUrl,$tmpFile["name"]);}//Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
 					$this->_attachedFilesMenu.="<div class='menuAttachedFile sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
 				}
 			}

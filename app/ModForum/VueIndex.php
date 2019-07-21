@@ -29,6 +29,7 @@ $(function(){
 .vThemeTitle					{text-transform:uppercase;}
 .vThemeDescription				{margin-top:7px; font-weight:normal;}
 /*Sujet & Message*/
+.objContainer .vSubjectMessages	{user-select:text!important;}/*Surcharge de ".objContainer" pour la sélection du text*/
 .vSubjectMessages				{cursor:default;}
 .vSubjectMessages>div			{vertical-align:top!important;}
 .vSubjMessDescription			{margin-top:10px; font-weight:normal;}
@@ -75,11 +76,11 @@ $(function(){
 		if($displayForum!="theme")
 		{
 			$pathMenuOptions="<div><img src='app/img/forum/iconSmall.png'></div><div class='sLink' onclick=\"redir('?ctrl=forum')\">".Txt::trad("FORUM_forumRoot")."</div>";
-			$labelLength=(Req::isMobile())  ?  25  :  50;
+			$labelLength=(Req::isMobile())  ?  40  :  100;
 			if(!empty($curTheme))	{$pathMenuOptions.="<div><img src='app/img/arrowRightBig.png'></div><div class='sLink' onclick=\"redir('?ctrl=forum&_idTheme=".$curTheme->idThemeUrl."')\">".Txt::reduce($curTheme->display(),$labelLength)."</div>";}
 			if(!empty($curSubject))	{$pathMenuOptions.="<div><img src='app/img/arrowRightBig.png'></div><div>".strip_tags(Txt::reduce($curSubject->title?$curSubject->title:$curSubject->description,$labelLength))."</div>";}
-			if($displayForum=="subjects" && MdlForumSubject::addRight())				{$pathMenuOptions.="<div><img src='app/img/arrowRightAdd.png'></div><div class='sLink' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/plus.png'></div>";}
-			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{$pathMenuOptions.="<div><img src='app/img/arrowRightAdd.png'></div><div class='sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."');\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/plus.png'></div>";}
+			if($displayForum=="subjects" && MdlForumSubject::addRight())				{$pathMenuOptions.="<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightAdd.png'> <img src='app/img/plus.png'></div>";}
+			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{$pathMenuOptions.="<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."');\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightAdd.png'> <img src='app/img/plus.png'></div>";}
 			echo "<div class='pathMenu miscContainer'>".$pathMenuOptions."</div>";
 		}
 
@@ -132,7 +133,7 @@ $(function(){
 			if(MdlForumSubject::addRight())  {echo "<div class='objBottomMenu'><div class='miscContainer sLink' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("FORUM_addSubject")."</div></div>";}
 		}
 
-		////	LISTE DES MESSAGES ..PRECEDE DU SUJET
+		////	LISTE DES MESSAGES ..PRECÉDÉ DU SUJET
 		if($displayForum=="messages")
 		{
 			////SUJET

@@ -88,9 +88,9 @@ class CtrlTask extends Ctrl
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
-			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<br>".$tmpObj->displayAutor(true,true)."<br>".Txt::reduce($tmpObj->description);
+			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<hr>".Txt::reduce($tmpObj->description);
 			if(!empty($tmpObj->dateBegin) || !empty($tmpObj->dateEnd)){
-				if(!empty($tmpObj->dateBegin))		{$displayTime=Txt::displayDate($tmpObj->dateBegin,"normal",$tmpObj->dateEnd);}
+				if(!empty($tmpObj->dateBegin))		{$displayTime=Txt::displayDate($tmpObj->dateBegin,"full",$tmpObj->dateEnd);}
 				elseif(!empty($tmpObj->dateEnd))	{$displayTime=Txt::trad("end")." : ".Txt::displayDate($tmpObj->dateEnd,"normal");}
 				$tmpObj->pluginTooltip.="<br>".$displayTime;
 			}			

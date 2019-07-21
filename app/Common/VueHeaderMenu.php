@@ -17,13 +17,13 @@
 @media screen and (max-width:1023px){
 	/*MENU PRINCIPAL*/
 	#headerMainMenuTab, #headerMainMenuTab>div	{display:block; padding-right:0px!important; border:0px;}
-	#headerMainMenuRight	{border:0px;}
-	#headerMainMenuOmnispace{display:none;}
+	#headerMainMenuRight						{border:0px;}
+	#headerMainMenuOmnispace					{display:none;}
 	/*MENU DES MODULES*/
-	#headerModuleTab		{display:none;}										/*liste des modules masqués dans le menu principal...*/
-	.vHeaderModule			{display:inline-block; width:150px; padding:8px;}	/*...mais copiés dans le menu responsive*/
+	#headerModuleTab							{display:none;}															 /*liste des modules masqués dans le menu principal...*/
+	.vHeaderModule								{display:inline-block; width:145px; padding:8px; margin:0px 0px 5px 5px;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
 	.vHeaderModule:hover, .vHeaderCurModule		{<?= Ctrl::$agora->skin=="black" ? "background:#333;border-color:#555;" : "background:#f9f9f9;border-color:#ddd;" ?> border-radius:5px;}
-	.vHeaderModule img		{max-width:30px;}/*Modules du menu contextuel*/
+	.vHeaderModule img							{max-width:30px;}/*Modules du menu contextuel*/
 	#headerMainMenuLaucher, #headerModuleResp	{display:block; font-size:1.1em!important;}/*Affiche le label du module courant*/
 }
 
@@ -41,6 +41,8 @@
 		<label id="headerMainMenuLaucher" class="menuLaunch" for="headerMainMenu">
 			<img src="app/img/<?= Req::isMobile()?"logoMobile.png":"logo.png"?>">&nbsp;
 			<?php
+			//Icone de rappel de "Validation d'inscription d'utilisateur" (pas en responsive)
+			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo " &nbsp;<img src='app/img/check.png' class='vHeaderUserInscription'>&nbsp; ";}
 			//Labels de l'utilisateur et de l'espace courant
 			if(Ctrl::$curUser->isUser() && Req::isMobile()==false)  {echo Ctrl::$curUser->getLabel()."<img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			echo (Req::isMobile())  ?  Txt::reduce(Ctrl::$curSpace->name,25)  :  Ctrl::$curSpace->name;
@@ -52,22 +54,16 @@
 				<div>
 					<?php
 					////	VALIDE L'INSCRIPTION D'UTILISATEURS
-					if($userInscriptionValidation==true){
-						echo "<div class='menuLine sLink' id='headerRegisterUser' onclick=\"lightboxOpen('?ctrl=user&action=registerUser')\" title=\"".Txt::trad("usersInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("usersInscriptionValidate")."</div></div>"
-							."<hr><script> $('#headerRegisterUser').effect('pulsate',{times:100},100000); </script>";
+					if($userInscriptionValidate==true){
+						echo "<div class='menuLine sLink vHeaderUserInscription' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div><hr>"
+							."<script> $('.vHeaderUserInscription').effect('pulsate',{times:20},15000); </script>";
 					}
-					////	INVITE (CONNEXION)  ||  UTILISATEUR
+					////	CONNEXION D'UN INVITE  ||  MENU PRINCIPAL DE L'ESPACE => RECHERCHER SUR L'ESPACE + ENVOI D'INVITATION (?) + DOCUMENTATION
 					if(Ctrl::$curUser->isUser()==false)  {echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("connect")."</div></div>";}
 					else{
-						////	RECHERCHER SUR L'ESPACE + ENVOYER INVITATION + DOCUMENTATION
 						echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=misc&action=Search')\"><div class='menuIcon'><img src='app/img/search.png'></div><div>".Txt::trad("HEADER_searchElem")."</div></div>";
 						if(Ctrl::$curUser->sendInvitationRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\" title=\"".Txt::trad("USER_sendInvitationInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 						echo "<div class='menuLine sLink' onclick=\"lightboxOpen('docs/DOCUMENTATION_".(Txt::trad("CURLANG")=='fr'?'FR':'EN').".pdf')\"><div class='menuIcon'><img src='app/img/info.png'></div><div>".Txt::trad("HEADER_documentation")."</div></div>";
-						echo "<hr>";
-						////	EDIT PROFILE + EDIT MESSENGER + DECONNEXION
-						echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curUser->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".Txt::trad("USER_myProfilEdit")."</div></div>";
-						if(Ctrl::$curUser->messengerEdit())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&targetObjId=".Ctrl::$curUser->_targetObjId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messenger.png'></div><div>".Txt::trad("USER_myMessengerEdit")."</div></div>";}
-						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
 					}
 					////	ADMIN SPACE => EDITION DE L'ESPACE COURANT + LOGS/HISTORIQUE DES ELEMENTS + AFFICHAGE ADMIN
 					if(Ctrl::$curUser->isAdminSpace()){
@@ -84,17 +80,24 @@
 							."<div class='menuLine sLink' onclick=\"redir('?ctrl=space')\" title=\"".Txt::trad("SPACE_moduleInfo")."\"><div class='menuIcon'><img src='app/img/space.png'></div><div>".Txt::trad("SPACE_manageSpaces")."</div></div>"
 							."<div class='menuLine'><div class='menuIcon'><img src='app/img/diskSpace".($diskSpaceAlert==true?'Alert':null).".png'></div><div>".Txt::trad("diskSpaceUsed")." : ".$diskSpacePercent."% ".Txt::trad("from")." ".File::displaySize(limite_espace_disque)."</div></div>";
 					}
+					////	MENU DE L'USER => EDITION DU PROFIL + EDITION DU MESSENGER + DECONNEXION
+					if(Ctrl::$curUser->isUser()){
+						echo "<hr>"
+							."<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curUser->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".Txt::trad("USER_myProfilEdit")." ".Ctrl::$curUser->getImg(false,true)."</div></div>";
+						if(Ctrl::$curUser->messengerEdit())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&targetObjId=".Ctrl::$curUser->_targetObjId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messenger.png'></div><div>".Txt::trad("USER_myMessengerEdit")."</div></div>";}
+						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
+					}
 					////	LOGO OMNISPACE
 					echo "<hr><div class='menuLine sLink' id='headerMainMenuOmnispace' onclick=\"window.open('".OMNISPACE_URL_PUBLIC."')\" title=\"".OMNISPACE_URL_LABEL."\"><div class='menuIcon'>&nbsp;</div><div><img src='app/img/logoLabel.png'></div></div>";
 					?>
 				</div>
 				<?php
 				////	PANNEAU DE DROITE : ESPACES DISPONIBLES && RACCOURCIS
-				if(count(Ctrl::$curUser->getSpaces())>1 || !empty($pluginsShortcut))
+				if($showSpaceList==true || !empty($pluginsShortcut))
 				{
 					echo "<div id='headerMainMenuRight'>";
 					////	ESPACES DISPONIBLES
-					if(count(Ctrl::$curUser->getSpaces())>1){
+					if($showSpaceList==true){
 						echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/space.png'></div><div>".Txt::trad("HEADER_displaySpace")." :</div></div>";
 						foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
 							$curSpaceEdit=($tmpSpace->isCurSpace() && Ctrl::$curUser->isAdminSpace())  ?  "<img src='app/img/edit.png' id='curSpaceEdit' onclick=\"lightboxOpen('".$tmpSpace->getUrl("edit")."');event.stopPropagation();\" title=\"".Txt::trad("SPACE_config")."\">"  :  null;
@@ -103,7 +106,8 @@
 					}
 					////	Affiche les plugins "shortcut" ("pluginLabel" : Réduit le label & suppr toutes les balises html)
 					if(!empty($pluginsShortcut)){
-						echo "<hr><div class='menuLine'><div class='menuIcon'><img src='app/img/shortcut.png'></div><div>".Txt::trad("HEADER_shortcuts")." :</div></div>";
+						if($showSpaceList==true)  {echo "<hr>";}
+						echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/shortcut.png'></div><div>".Txt::trad("HEADER_shortcuts")." :</div></div>";
 						foreach($pluginsShortcut as $tmpPlugin)  {echo "<div class='menuLine sLink' onclick=\"".$tmpPlugin->pluginJsLabel."\" title=\"".$tmpPlugin->pluginTooltip."\"><div class='menuIcon'><img src='app/img/".$tmpPlugin->pluginIcon."'></div><div>".Txt::reduce(strip_tags($tmpPlugin->pluginLabel),40)."</div></div>";}
 					}
 					echo "</div>";
@@ -128,6 +132,6 @@
 		</div>
 		
 		<!--RESPONSIVE : MODULE COURANT-->
-		<div id="headerModuleResp" class="menuLaunch" for="headerModuleTab" forBis="pageModMenu"><?= isset($respModLabel) ? $respModLabel : null ?> <img src='app/img/menuSmall.png'>&nbsp;</div>
+		<div id="headerModuleResp" class="menuLaunch" for="headerModuleTab" forBis="pageModMenu"><?= isset($respModLabel) ? $respModLabel : null ?> &nbsp;<img src='app/img/menuSmall.png'>&nbsp;</div>
 	</div>
 </div>

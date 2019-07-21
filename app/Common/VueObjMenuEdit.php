@@ -263,7 +263,7 @@ if(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 					//BLOCK DE L'ESPACE
 					echo "<div id=\"spaceTable".$tmpSpace->_id."\">";
 						//TABLEAU D'UN ESPACE
-						echo "<div class='vSpaceTable'>";
+						echo "<div class='vSpaceTable noSelect'>";
 							//ENTETE DE L'ESPACE
 							echo "<div class='vSpaceTitle'>
 									<div class='vSpaceLabel' title=\"".$tmpSpace->description."\">".($tmpSpace->isCurSpace()?'&nbsp;':Txt::reduce($tmpSpace->name,35))."</div>

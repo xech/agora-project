@@ -29,17 +29,26 @@ $(function(){
 
 	////	Check/Unckeck l'input d'un agenda
 	$(".vCalendarInput").change(function(){
-		//Annule si besoin le dernier "setTimeout" : pas de cumul si on sélectionne un groupe d'user
-		if(typeof timeoutNotifPropose!="undefined")  {clearTimeout(timeoutNotifPropose);}
-		//Affiche "l'événement sera proposé..", avec un "timeout" (passe l'input en parametre via "this")
-		timeoutNotifPropose=setTimeout(function(thisInput){
+		//Affiche "l'événement sera proposé.." avec un "timeout" (Annule si besoin le dernier "setTimeout", car pas de cumul si on sélectionne un groupe d'user)
+		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}
+		timeoutPropose=setTimeout(function(thisInput){
 			if(/proposition/i.test(thisInput.name) && $(thisInput).prop("checked"))  {notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
-		}, 300, this);
-		//Surligne l'agenda s'il est sélectionné
-		if(this.checked)	{$(this).parents(".vAffectationBlock").addClass("sTableRowSelect");}
+		}, 300, this);//Transmet l'input via "this"
+		//Surligne l'agenda s'il est sélectionné (et affiche l'input de proposition, s'il est présent)
+		if(this.checked)	{$(this).parents(".vAffectationBlock").addClass("sTableRowSelect").find(".vAffectationAddProposition").show();}
 		else				{$(this).parents(".vAffectationBlock").removeClass("sTableRowSelect");}
+		//Déselectionne par défaut l'input de proposition, s'il est présent
+		$(this).parents(".vAffectationBlock").find(".vCalendarInputProposition").prop("checked",false);
 		//Controle d'occupation du créneau horaire de chaque agenda sélectionné
 		timeSlotBusy();
+	});
+	
+	////	Sélectionne une proposition d'agenda (optionnelle) : décoche l'affectation principale et affiche une notification
+	$(".vCalendarInputProposition").change(function(){
+		if(this.checked){
+			$(this).parents(".vAffectationBlock").find(".vCalendarInput").prop("checked",false);
+			notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");
+		}
 	});
 
 	////	Sélection d'un groupe d'users
@@ -102,11 +111,12 @@ function timeSlotBusy()
 		//Prépare la requete de controle Ajax, avec la liste des Agendas sélectionnés : affectations accessibles en écriture
 		if($("[name='dateBegin']").isEmpty()==false && $("[name='dateEnd']").isEmpty()==false)
 		{
+			//Init l'url, avec le créneau horaire et les agendas concernés
 			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy"+
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
 						"&_evtId=<?= $curObj->_id ?>&targetObjects[calendar]=";
-			$(".vCalendarInput:checked").each(function(){ ajaxUrl+=this.value+"-"; });
+			$(".vCalendarInput:checked, .vCalendarInputProposition:checked").each(function(){ ajaxUrl+=this.value+"-"; });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
 				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".vTimeSlotBusyTable").html(txtResult); }
@@ -120,7 +130,7 @@ function timeSlotBusy()
 function formControl()
 {
 	//Controle le nombre d'affectations aux agendas
-	if($(".vCalendarInput:checked").isEmpty())  {notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>"); return false;}
+	if($(".vCalendarInput:checked, .vCalendarInputProposition:checked").isEmpty())  {notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>"); return false;}
 	//Controle final (champs obligatoires, etc)
 	return mainFormControl();
 }
@@ -141,12 +151,12 @@ function formControl()
 #periodDetails				{text-decoration:underline;}
 
 /*AFFECTATION AUX AGENDAS*/
-.vAffectationCalendars		{max-height:105px; overflow-y:auto;}
+.vAffectationCalendars		{max-height:135px; overflow-y:auto;}
 .vAffectationBlock			{display:inline-block; width:49%; padding:5px; border-radius:3px;}
-.vAffectationBlock input	{display:none;}
-.vAffectationBlock label	{display:inline-block; width:100%;}
-.vAffectationBlock img		{max-height:16px; margin-right:5px;}
-.vAffectationBlock b		{font-size:1.1em;}
+.vAffectationBlock .vCalendarInput	{display:none;}
+.vAffectationBlock label			{display:inline-block; width:80%;}
+.vAffectationBlock img				{max-height:18px;}
+.vAffectationAddProposition			{display:none; float:right;}
 
 /*DÉTAILS SUR L'AFFECTATION*/
 #timeSlotBusy				{display:none;}
@@ -282,18 +292,26 @@ function formControl()
 		////	AGENDAS DE RESSOURCES & AGENDAS PERSONNELS
 		foreach($affectationCalendars as $tmpCal)
 		{
-			//Init l'affichage
-			$calIcon=($tmpCal->type=="user")  ?  "typeUser.png"  :  "typeRessource.png";									//Icone d'agenda de ressource OU user
-			$calInputName=($tmpCal->inputType=="affectation")  ?  "affectationCalendars[]"  :  "propositionCalendars[]";	//Input d'affectation OU proposition
-			if($tmpCal->inputType=="proposition" && $tmpCal->isDisabled==null)  {$tmpCal->title.="<b>*</b>";}				//Agenda à proposer : ajoute "*" au titre
-			if($tmpCal->isDisabled!=null)  {$tmpCal->title.="<b>**</b>";}													//Agenda non modifiable : ajoute "**" au titre
-			$reinitCalendarInput=($tmpCal->reinitCalendarInput==true)  ?  "<input type='hidden' name='reinitCalendars[]' value=\"".$tmpCal->_id."\">"  :  null;	//Réinit l'affectation/proposition (après validation du form)
+			//Icone ressource/user && nom du champ affectation/proposition
+			$calIcon=($tmpCal->type=="user")  ?  "typeUser.png"  :  "typeRessource.png";
+			$calInputName=($tmpCal->inputType=="affectation")  ?  "affectationCalendars[]"  :  "propositionCalendars[]";
+			//Astérisque sur les agendas non-modifiables || proposition
+			if($tmpCal->isDisabled!=null)				{$tmpCal->title.=" &#42;&#42;";}
+			elseif($tmpCal->inputType=="proposition")	{$tmpCal->title.=" &#42;";}
+			//Réinit l'affectation/proposition (après validation du form)
+			$moreInputs=($tmpCal->reinitCalendarInput==true)  ?  "<input type='hidden' name='reinitCalendars[]' value=\"".$tmpCal->_id."\">"  :  null;
+			//Option de proposition d'événement (en plus de l'ajout simple)
+			if($tmpCal->inputType=="affectation" && $tmpCal->isMyPerso()==false){
+				$propositionShow=$propositionChecked=null;
+				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'"; $propositionChecked="checked"; $tmpCal->isChecked=null;}//Proposition déjà sélectionnée : décoche l'input principal
+				$moreInputs.="<div class='vAffectationAddProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltip")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
+			}
 			//Affiche l'input d'affectation/proposition
 			echo "<div class='vAffectationBlock sTableRow'>
 					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"inputCalendar".$tmpCal->_id."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." data-typeiduser=\"".$tmpCal->type."_".$tmpCal->_idUser."\">
 					<label for=\"inputCalendar".$tmpCal->_id."\" title=\"".$tmpCal->tooltip."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
-					".$reinitCalendarInput."
-				</div>";
+					".$moreInputs."
+				  </div>";
 		}
 		////	GROUPES d'UTILISATEURS
 		if(!empty($userGroups))

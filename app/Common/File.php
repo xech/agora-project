@@ -118,22 +118,30 @@ class File
 	 */
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		// Fichier généré à la volée ($fileContent) OU présent dans DATAS/
-		if(!empty($fileContent) || is_file($filePath))
+		////	"MobileApp" : download annulé depuis l'appli (sinon ça bloque l'appli) puis download lancé via le browser "system" ("fromMobileApp" cf. appli)
+		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
+		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
+		elseif(!empty($fileContent) || is_file($filePath))
 		{
-			////	Augmente la duree du script && Headers
-			@set_time_limit(120);//pas en safemode
+			////	Augmente la duree du script (pas en safemode)
+			@set_time_limit(120);
+			////	Headers
 			header("Content-Type: application/octet-stream");
 			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName,"download")."\"");
 			header("Cache-Control: no-cache, no-store, must-revalidate");//HTTP 1.1
 			header("Pragma: no-cache");//HTTP 1.0
 			header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0");
-			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}
-			////	Envoi d'un fichier généré à la volée  /  Envoi direct du fichier si <20 mo   /  Envoi du fichier par tranche de 1mo si >20 mo
-			if(!empty($fileContent))  {header("Content-Type: text/plain; charset=utf-8");  echo $fileContent;}
-			elseif(filesize($filePath)<20971520)  {
+			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}//fichier dans DATAS
+			////	Download d'un fichier généré à la volée
+			if(!empty($fileContent)){
+				header("Content-Type: text/plain; charset=utf-8");
+				echo $fileContent;
+			}
+			////	Download direct d'un fichier < 50 mo
+			elseif(filesize($filePath)<(self::sizeMo*50)){
 				readfile($filePath);
 			}
+			////	Download du fichier par tranche de 1mo
 			else{
 				session_write_close();//permet de continuer à naviguer sur le site durant le téléchargement!
 				$handle=fopen($filePath,"rb");

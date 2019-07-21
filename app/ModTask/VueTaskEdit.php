@@ -1,5 +1,5 @@
 <script>
-lightboxSetWidth(580);//Resize
+lightboxSetWidth(750);//Resize
 
 ////	Init la page
 $(function(){
@@ -23,15 +23,16 @@ $(function(){
 [name='title']			{width:80%; margin-right:10px;}
 #blockDescription		{margin-top:20px; <?= empty($curObj->description)?"display:none;":null ?>}
 [name='description']	{width:100%; height:70px; <?= empty($curObj->description)?"display:none;":null ?>}
-.taskOption				{display:inline-block; margin:10px 10px 10px 0px;}
+.vTaskOption			{display:inline-block; margin:10px 10px 10px 0px;}
 img[src*='arrowRight']	{margin-left:5px; margin-right:5px;}
 img[src*='user/icon']	{height:20px;}
+#labelResponsiblePersons{cursor:pointer; line-height:25px;}
 #divResponsiblePersons	{display:none; overflow:auto; max-height:100px;}
 .divResponsiblePerson	{display:inline-block; width:32%; padding:3px;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	.divResponsible		{width:48%;}	
+	.divResponsiblePerson	{width:48%;}	
 }
 </style>
 
@@ -46,7 +47,7 @@ img[src*='user/icon']	{height:20px;}
 	<br><br>
 
 	<!--DATE DEBUT & FIN-->
-	<div class="taskOption">
+	<div class="vTaskOption">
 		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
 		<input type="text" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM",true) ?>" placeholder="H:m">
 		<img src="app/img/arrowRight.png">
@@ -55,7 +56,7 @@ img[src*='user/icon']	{height:20px;}
 	</div>
 
 	<!--PRIORITE-->
-	<div class="taskOption">
+	<div class="vTaskOption">
 		<select name="priority">
 			<option value=""><?= Txt::trad("TASK_priority")." : ".Txt::trad("no") ?></option>
 			<?php for($i=1;$i<=4;$i++)  {echo "<option value='".$i."'>".Txt::trad("TASK_priority")." ".Txt::trad("TASK_priority".$i)."</option>";} ?>
@@ -64,7 +65,7 @@ img[src*='user/icon']	{height:20px;}
 	</div>
 	
 	<!--AVANCEMENT-->
-	<div class="taskOption">
+	<div class="vTaskOption">
 		<select name="advancement">
 			<option value=""><?= Txt::trad("TASK_advancement")." : ".Txt::trad("no") ?></option>
 			<?php for($i=0;$i<=100;$i+=10)  {echo "<option value='".$i."'>".Txt::trad("TASK_advancement")." : ".$i." %</option>";} ?>
@@ -72,9 +73,9 @@ img[src*='user/icon']	{height:20px;}
 	</div>
 	
 	<!--RESPONSABLES-->
-	<div class="taskOption labelMargin sLink" onclick="$('#divResponsiblePersons').slideToggle();">
+	<label class="vTaskOption" id="labelResponsiblePersons" onclick="$('#divResponsiblePersons').slideToggle();">
 		<img src="app/img/user/icon.png"> <?= txt::trad("TASK_responsiblePersons") ?> <img src="app/img/arrowBottom.png">
-	</div>
+	</label>
 	<div id="divResponsiblePersons">
 		<?php
 		//Affiche chaque responsable

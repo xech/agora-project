@@ -39,7 +39,7 @@ class CtrlLink extends Ctrl
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->description))  ?  $tmpObj->description  :  $tmpObj->adress;
-			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<br>".$tmpObj->displayAutor(true,true);
+			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl("container")."');";//Redir vers le dossier conteneur
 			$tmpObj->pluginJsLabel="window.open('".addslashes($tmpObj->adress)."');";
 			$pluginsList[]=$tmpObj;

@@ -47,7 +47,7 @@ class Tool
 
 		////	Parametrage DKIM / SMTP
 		if(defined("DKIM_domain") && defined("DKIM_private") && defined("DKIM_selector"))   {$mail->DKIM_domain=DKIM_domain;   $mail->DKIM_private=DKIM_private;   $mail->DKIM_selector=DKIM_selector;}
-		if(is_file("../smtpParams.php"))  {require_once "../smtpParams.php";}//Parametrage smtp spécifique
+		if(is_file("../smtpParams.php"))  {require_once "../smtpParams.php";/*$mail->SMTPDebug=2;*/}//Parametrage smtp spécifique, avec un mode "debug" si besoin
 		if(!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)){
 			$mail->isSMTP();
 			$mail->Host=Ctrl::$agora->smtpHost;

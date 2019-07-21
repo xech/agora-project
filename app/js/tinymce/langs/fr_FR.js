@@ -3,7 +3,7 @@ tinymce.addI18n('fr_FR',{
 "Undo": "Annuler",
 "Cut": "Couper",
 "Copy": "Copier",
-"Paste": "Coller.  sinon faire un clic droit puis 'coller'",
+"Paste": "Coller (Alternative : clic droit puis 'coller')",
 "Select all": "Tout s\u00e9lectionner",
 "New document": "Nouveau document",
 "Ok": "Ok",

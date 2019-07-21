@@ -1,11 +1,11 @@
-Mise à jour TinyMCE V4.9.2
+Mise à jour TinyMCE V4.9.5
 
 - télécharger la dernière version "Community" de prod.	-> https://www.tiny.cloud/get-tiny/self-hosted/
 - télécharger les traductions "fr_FR" + "en_GB" + "es"	-> https://www.tiny.cloud/download/language-packages/
 - vérifier le fonctionnement du plugin "autoresize"
 - remplacer dans la trad francaise "fr_FR.js" :
-	- "Taille de police" -> "Taille du texte"
-	- "Source"	->  "Source / Adresse web"
-	- "coller"	->  "Coller.  sinon faire un clic droit puis 'coller'"
-	- "Votre navigateur ne supporte pas la copie directe [...]"   ->   "Votre navigateur ne supporte pas la copie directe : merci de faire un click droit dans le texte puis 'coller'"
-	-> "Zone Texte Riche [...]" -> RIEN !
+	- "Taille de police" 						-> "Taille du texte"
+	- "Source"									-> "Source / Adresse web"
+	- "coller"									-> "Coller (Alternative : clic droit puis 'coller')"
+	- "Votre navigateur ne supporte pas [...]"	-> "Votre navigateur ne supporte pas la copie directe : merci de faire un click droit dans le texte puis 'coller'"
+	-> "Rich Text Area [...]"					-> RIEN !

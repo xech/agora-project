@@ -1,10 +1,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0">
 
 <style>
-.objBlocks .objContainer				{height:130px; width:150px; min-width:150px; max-width:250px;}/*surcharge*/
-.objBlocks .hasThumb .objMiscMenuDiv	{filter:contrast(150%);}/*met en avant le menu context*/
-.objBlocks .hasThumb .objIcon img		{margin-top:0%;}/*thumb*/
-.objBlocks .thumbLandscape .objIcon img	{height:100%; width:100%; border-radius:4px;}/*thumb en affichage "full"*/
+.objBlocks .objContainer				{height:150px; width:150px; min-width:150px; max-width:250px;}/*surcharge*/
+.objBlocks .hasThumb .objMenuBurger, .objBlocks .hasThumb .objMiscMenus	{filter:contrast(150%);}/*met en avant le menu context*/
+.objBlocks .hasThumb .objIcon img		{margin-top:0px;}/*thumb*/
+.objBlocks .thumbLandscape .objIcon img, .objBlocks .thumbPortrait .objIcon img	{min-width:100%; min-height:100%; max-width:none; max-height:none;}/*Surcharge ".objBlocks .objIcon img" : couvre toute la surface du Block*/
+.objBlocks .thumbLandscape .objIcon img	{height:100%;}/*Vignette paysage*/
+.objBlocks .thumbPortrait .objIcon img	{width:100%; margin-top:-40%;}/*Vignette portrait : recentré*/
 .objBlocks .pdfIcon						{position:absolute; top:0px; right:0px;}
 .objBlocks .objLabel					{line-height:13px;}/*surcharge : tester avec des noms sur 2 lignes (min & maj)*/
 .hasThumb [data-fancybox='images']		{cursor:url("app/img/search.png"),all-scroll!important;}
@@ -38,7 +40,7 @@
 		{
 			echo $tmpFile->divContainer("objContentCenter ".$tmpFile->hasThumbClass).$tmpFile->contextMenu().
 				"<div class=\"objContent ".$tmpFile->thumbClass."\">
-					<div class='objIcon'><a ".$tmpFile->iconHref." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$tmpFile->typeIcon()."\"></a></div>
+					<div class='objIcon'><a ".$tmpFile->iconHref." title=\"".$tmpFile->iconTooltip."\" onclick=\"event.stopPropagation();\"><img src=\"".$tmpFile->typeIcon()."\"></a></div>
 					<div class='objLabel'><a ".$tmpFile->downloadHref." title=\"".$tmpFile->tooltip."\">".Txt::reduce($tmpFile->name,50)."</a>".$tmpFile->versionsMenu("icon")."</div>
 					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->displayAutorDate()."</div>

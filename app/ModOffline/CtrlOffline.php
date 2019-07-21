@@ -90,7 +90,7 @@ class CtrlOffline extends Ctrl
 			elseif(CtrlMisc::captchaControl(Req::getParam("captcha"))==false)	{$result["notifError"]=Txt::trad("captchaError");}
 			else{
 				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", password=".Db::formatParam("password").", message=".Db::formatParam("message").", date=".Db::dateNow());
-				$result["redirSuccess"]="index.php?msgNotif[]=usersInscriptionRecorded";
+				$result["redirSuccess"]="index.php?msgNotif[]=userInscriptionRecorded";
 			}
 			//Renvoie le résultat
 			echo json_encode($result);

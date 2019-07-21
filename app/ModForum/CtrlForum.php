@@ -97,7 +97,7 @@ class CtrlForum extends Ctrl
 			$objSubject->pluginModule=self::moduleName;
 			$objSubject->pluginIcon=self::moduleName."/icon.png";
 			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  $objSubject->description;
-			$objSubject->pluginTooltip=$objSubject->displayAutor(true,true);
+			$objSubject->pluginTooltip=$objSubject->pluginLabel;
 			$objSubject->pluginJsIcon="windowParent.redir('".$objSubject->getUrl()."');";//Redir vers le sujet
 			$objSubject->pluginJsLabel=$objSubject->pluginJsIcon;
 			$pluginsList[]=$objSubject;
@@ -110,7 +110,7 @@ class CtrlForum extends Ctrl
 				$objMessage->pluginModule=self::moduleName;
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  $objMessage->description;
-				$objMessage->pluginTooltip=$objMessage->displayAutor(true,true);
+				$objMessage->pluginTooltip=$objSubject->pluginLabel;
 				$objMessage->pluginJsIcon="windowParent.redir('".$objMessage->getUrl("container")."');";//Redir vers le sujet (conteneur)
 				$objMessage->pluginJsLabel=$objMessage->pluginJsIcon;
 				$pluginsList[]=$objMessage;

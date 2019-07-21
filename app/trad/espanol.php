@@ -29,10 +29,11 @@ class Trad extends Txt
 		self::$trad["none"]="no";
 		self::$trad["or"]="o";
 		self::$trad["and"]="y";
+		self::$trad["by"]="by";
 		self::$trad["goToPage"]="Ir a la página";
 		self::$trad["alphabetFilter"]="Filtro alfabético";
 		self::$trad["displayAll"]="Mostrar todo";
-		self::$trad["anyCategory"]="Cualquier categoría";
+		self::$trad["allCategory"]="Cualquier categoría";
 		self::$trad["important"]="importante";
 		self::$trad["show"]="mostrar";
 		self::$trad["hide"]="ocultar";
@@ -157,7 +158,7 @@ class Trad extends Txt
 		self::$trad["description"]="Descripción";
 		self::$trad["specifyName"]="Gracias por especificar un nombre";
 		self::$trad["editorDraft"]="Recuperar mi texto";
-		self::$trad["editorDraftConfirm"]="Recuperar el último texto especificado (mantenido 12h)";
+		self::$trad["editorDraftConfirm"]="Recuperar el último texto especificado (mantenido 24h)";
 		
 		////	Validation des formulaires
 		self::$trad["add"]="Añadir";
@@ -310,16 +311,16 @@ class Trad extends Txt
 		self::$trad["noResults"]="No hay resultados";
 		
 		////	Gestion des inscriptions d'utilisateur
-		self::$trad["usersInscription"]="registrarme al espacio";
-		self::$trad["usersInscriptionInfo"]="crear una nueva cuenta de usuario (validado por un administrador)";
-		self::$trad["usersInscriptionSpace"]="registrarme al espacio";
-		self::$trad["usersInscriptionRecorded"]="Su registro será validado tan pronto como sea posible por el administrador del espacio";
-		self::$trad["usersInscriptionOptionSpace"]="Permitir a los visitantes que se registren en el espacio";
-		self::$trad["usersInscriptionOptionSpaceInfo"]="El registro se encuentra en la página de inicio. Debe ser validado por el administrador del espacio.";
-		self::$trad["usersInscriptionValidate"]="Registros de usuarios";
-		self::$trad["usersInscriptionValidateInfo"]="Validar registros de usuarios al espacio";
-		self::$trad["usersInscriptionInvalidate"]="invalidar";
-		self::$trad["usersInscriptionInvalidateMail"]="Su cuenta no ha sido validado en";
+		self::$trad["userInscription"]="registrarme al espacio";
+		self::$trad["userInscriptionInfo"]="crear una nueva cuenta de usuario (validado por un administrador)";
+		self::$trad["userInscriptionSpace"]="registrarme al espacio";
+		self::$trad["userInscriptionRecorded"]="Su registro será validado tan pronto como sea posible por el administrador del espacio";
+		self::$trad["userInscriptionOptionSpace"]="Permitir a los visitantes que se registren en el espacio";
+		self::$trad["userInscriptionOptionSpaceInfo"]="El registro se encuentra en la página de inicio. Debe ser validado por el administrador del espacio.";
+		self::$trad["userInscriptionValidate"]="Registros de usuarios";
+		self::$trad["userInscriptionValidateInfo"]="Validar registros de usuarios al espacio";
+		self::$trad["userInscriptionInvalidate"]="invalidar";
+		self::$trad["userInscriptionInvalidateMail"]="Su cuenta no ha sido validado en";
 		
 		////	Importer ou Exporter : Contact OU Utilisateurs
 		self::$trad["export"]="Exportar";

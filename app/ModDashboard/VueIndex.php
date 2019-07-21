@@ -249,27 +249,19 @@ function dashboardOption(menuName)
 			<div class="miscContainer">
 			<?php
 			////	NOUVEAUX ELEMENTS DE CHAQUE MODULES (cf. plugins)
-			foreach($pluginsList as $tmpPlugin)
+			foreach($pluginsList as $tmpObj)
 			{
 				//Affiche le libellé du module?
-				if(empty($tmpModuleName) || $tmpModuleName!=$tmpPlugin->pluginModule){
-					echo "<div class='vContentElemsModuleLabel'><img src='app/img/".$tmpPlugin->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpPlugin->pluginModule)."_headerModuleName")."<hr></div>";
-					$tmpModuleName=$tmpPlugin->pluginModule;
+				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj->pluginModule){
+					echo "<div class='vContentElemsModuleLabel'><img src='app/img/".$tmpObj->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpObj->pluginModule)."_headerModuleName")."<hr></div>";
+					$tmpModuleName=$tmpObj->pluginModule;
 				}
-				//Plugin Spécifique (exple: evts à confirmer)
-				if(isset($tmpPlugin->pluginSpecificMenu))  {echo $tmpPlugin->pluginSpecificMenu;}
-				//Affichage normal
-				else
-				{
-					//Ajoute si besoin les "Elements courants" du plugin (evenement/taches/etc affichés sur le dashboard)
-					if($tmpPlugin->pluginIsCurrent){
-						$tmpPlugin->pluginTooltip=" <img src='app/img/newObj2.png'> ".Txt::trad("DASHBOARD_pluginsCurrent")."<br>".$tmpPlugin->pluginTooltip;
-						$tmpPlugin->pluginLabel.=" <img src='app/img/newObj2.png'>";
-					}
-					//Affiche les plugins "dashboard" ("pluginLabel" : Réduit le label & suppr toutes les balises html)
+				//Plugin Spécifique (exple: events à confirmer)  ||  Affichage normal
+				if(isset($tmpObj->pluginSpecificMenu))  {echo $tmpObj->pluginSpecificMenu;}
+				else{
 					echo "<div class='menuLine sLink objHover'>
-							<div class='menuIcon' title=\"".(stristr($tmpPlugin->pluginJsIcon,"targetObjIdChild")?Txt::trad("DASHBOARD_pluginsTooltipRedir"):null)."\" onclick=\"".$tmpPlugin->pluginJsIcon."\"><img src='app/img/".$tmpPlugin->pluginIcon."'></div>
-							<div title=\"".$tmpPlugin->pluginTooltip."\" onclick=\"".$tmpPlugin->pluginJsLabel."\">".Txt::reduce(strip_tags($tmpPlugin->pluginLabel),100)."</div>
+							<div title=\"".$tmpObj->pluginTooltipIcon."\" onclick=\"".$tmpObj->pluginJsIcon."\" class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div>
+							<div title=\"".$tmpObj->pluginTooltip."\" onclick=\"".$tmpObj->pluginJsLabel."\">".$tmpObj->pluginLabel."</div>
 						  </div>";
 				}
 			}

@@ -30,7 +30,7 @@ input, textarea			{width:100%!important;}
 
 
 <form id="usersInscriptionForm" class="lightboxContent noConfirmClose">
-	<div class="lightboxTitle"><?= ucfirst(Txt::trad("usersInscriptionSpace")) ?></div>
+	<div class="lightboxTitle"><?= ucfirst(Txt::trad("userInscriptionSpace")) ?></div>
 	
 	<select name="_idSpace">
 		<?php foreach($objSpacesInscription as $tmpSpace){ ?>

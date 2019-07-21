@@ -1,21 +1,26 @@
+VERSION 3.6.4 (07-2019)
+#######################
+- FR
+Gestionnaire de fichiers : Amélioration de l'affichage des vignettes d'image et du menu d'upload de fichiers
+Messenger : Amélioration de l'ergonomie et correction de l'affichage du formulaire sur mobile (Responsive)
+Amélioration de l'affichage des nouveaux éléments dans les Actualités
+Mise à jour de Jquery en v3.4.1
+Mise à jour de Jquery UI en v1.12.1
+Mise à jour de l'éditeur TinyMce en v4.9.5
+Corrections et optimisations diverses
+- En
+File Manager: Improved image thumbnail display and file upload menu
+Messenger: Improvement of the ergonomics and correction of the display of the form on mobile (Responsive)
+Improved display of new items in the News module
+Update of Jquery in v3.4.1
+Update of Jquery UI in v1.12.1
+Update of TinyMce in v4.9.5
+Various corrections and optimizations
+
+
 VERSION 3.6.3 (04-2019)
 #######################
-Improved presentation and ergonomics of the main menu
-Consolidation of forms control / validation processes via Ajax
-Optimizing the registration process of a user on the space
-Improvement of the file sending menu (addition of a simple form)
-Folder path menu: new options for adding an item or folder
-Improvement of the path menu of a folder in mobile / responsive mode
-Improved the application installation process
-Best presentation of event proposals for calendars
-Improved how the search engine works, especially on News
-Improvement of the edition of the themes of the forum / categories of events / groups of users
-Simplifying calendar assignment rights when editing an event
-Simplification of access rights for guests / guests
-Optimizing JQuery "triggers" to load pages
-Fixed the display of the option "Move to another folder" from context menus
-Various corrections and optimizations
----
+- FR
 Amélioration de la présentation et l'ergonomie du menu principal
 Consolidation des processus de contrôle/validation des formulaires via Ajax
 Optimisation de la procédure d'inscription d'un utilisateur sur l'espace 
@@ -31,6 +36,22 @@ Simplification des droits d'accès pour les guests/invités
 Optimisation des "triggers" JQuery au chargement des pages
 Correction d'affichage de l'option "Deplacer vers un autre dossier" des menus contextuels
 Corrections et optimisations diverses
+- En
+Improved presentation and ergonomics of the main menu
+Consolidation of forms control / validation processes via Ajax
+Optimizing the registration process of a user on the space
+Improvement of the file sending menu (addition of a simple form)
+Folder path menu: new options for adding an item or folder
+Improvement of the path menu of a folder in mobile / responsive mode
+Improved the application installation process
+Best presentation of event proposals for calendars
+Improved how the search engine works, especially on News
+Improvement of the edition of the themes of the forum / categories of events / groups of users
+Simplifying calendar assignment rights when editing an event
+Simplification of access rights for guests / guests
+Optimizing JQuery "triggers" to load pages
+Fixed the display of the option "Move to another folder" from context menus
+Various corrections and optimizations
 
 VERSION 3.5.0.1 (12-2018)
 #########################
