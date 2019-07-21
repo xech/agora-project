@@ -54,7 +54,7 @@ Please try to be as detailed as possible in your report.
   <b>Forum</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/forum.jpg"><br><br><br>
 
-  <b>Shared Tasks/Notes</b><br>
+  <b>Shared Tasks/Notes</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/task.jpg"><br><br><br>
 
   <b>Newsletters</b><br><br>
