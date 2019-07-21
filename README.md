@@ -33,3 +33,38 @@ Please try to be as detailed as possible in your report.
 5. Give "read", "write" and "execute" access rights to new folders and files (chmod 770 -R).
 6. With your web browser, go to the URL of your new application, fill in the installation form and then validate it: your space is ready for use !
 7. If you can, modify the "php.ini" file of your web server and modify the "post_max_size" and "upload_max_filesize" parameters to increase the size of the uploaded files.
+
+
+## SCREENSHOTS
+<p align="center">
+  File manager
+  <img src="https://www.agora-project.net/app/img/printScreen/file.jpg">
+</p>
+<p align="center">
+  Shared calendars
+  <img src="https://www.agora-project.net/app/img/printScreen/calendar.jpg">
+</p>
+<p align="center">
+  News and Polls
+  <img src="https://www.agora-project.net/app/img/printScreen/dashboard.jpg">
+</p>
+<p align="center">
+  Polls
+  <img src="https://www.agora-project.net/app/img/printScreen/dashboardPoll.jpg">
+</p>
+<p align="center">
+  Forum
+  <img src="https://www.agora-project.net/app/img/printScreen/forum.jpg">
+</p>
+<p align="center">
+  Shared Tasks/Notes
+  <img src="https://www.agora-project.net/app/img/printScreen/task.jpg">
+</p>
+<p align="center">
+  Newsletters
+  <img src="https://www.agora-project.net/app/img/printScreen/mail.jpg">
+</p>
+<p align="center">
+  Contacts directory
+  <img src="https://www.agora-project.net/app/img/printScreen/contact.jpg">
+</p>
