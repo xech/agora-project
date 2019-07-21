@@ -38,29 +38,28 @@ Please try to be as detailed as possible in your report.
 ## Screenshots
 <p align="center">
 
-  <br><b>File manager</b><br>
+  <b>File manager</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/file.jpg"><br><br><br>
  
-  <b>Shared calendars</b><br>
+  <b>Shared calendars</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/calendar.jpg"><br><br><br>
 
-  <b>News and Polls</b><br>
+  <b>News and Polls</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/dashboard.jpg"><br><br><br>
 
 
-  <b>Polls</b><br>
+  <b>Polls</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/dashboardPoll.jpg"><br><br><br>
 
-  <b>Forum</b><br>
+  <b>Forum</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/forum.jpg"><br><br><br>
 
   <b>Shared Tasks/Notes</b><br>
   <img src="https://www.agora-project.net/app/img/printScreen/task.jpg"><br><br><br>
 
-
-  <b>Newsletters</b><br>
+  <b>Newsletters</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/mail.jpg"><br><br><br>
 
-  <b>Contacts directory</b><br>
+  <b>Contacts directory</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/contact.jpg">
 </p>
