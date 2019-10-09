@@ -8,7 +8,7 @@ button[type='submit']				{width:60%; display:inline;}/*surcharge*/
 button[type='submit']:last-child	{width:30%;}/*surcharge*/
 .userInscription					{padding:10px;}
 .userInscription label				{margin-right:10px;}
-div[id^='tmpMessage']				{display:none;}
+div[id^='tmpMessage']				{display:none; padding:10px; margin-top:5px; background-color:rgba(200,200,200,0.5); border-radius:3px;}
 </style>
 
 

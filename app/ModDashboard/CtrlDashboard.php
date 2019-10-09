@@ -30,9 +30,9 @@ class CtrlDashboard extends Ctrl
 		////	Objets Sondages/Polls (sauf guest)
 		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isUser()==false) ?  false  :  true;
 		if($vDatas["isPolls"]==true){
-			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("list",0,true,true);//Sondages non votés & affichés avec les news
+			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("list",0,true,true);//Sondages pas encore votés : affichés à gauche des news
 			$vDatas["pollsNotVotedNb"]=MdlDashboardPoll::getPolls("count",0,true);//Nombre de sondages non votés
-			$vDatasPollsMain["pollsList"]=MdlDashboardPoll::getPolls("list",0,Req::getParam("pollsNotVoted"));//Affichage par défaut
+			$vDatasPollsMain["pollsList"]=MdlDashboardPoll::getPolls("list",0,Req::getParam("pollsNotVoted"));//Affichage principal des sondages
 			$vDatas["vuePollsListInitial"]=self::getVue(Req::getCurModPath()."VuePollsList.php", $vDatasPollsMain);
 		}
 		////	Plugin des nouveaux éléments (sauf guest)
@@ -159,15 +159,17 @@ class CtrlDashboard extends Ctrl
 		$curObj=Ctrl::getTargetObj();
 		$curObj->controlEdit();
 		if(MdlDashboardPoll::addRight()==false)  {self::noAccessExit();}
-		$pollIsVoted=($curObj->votesNb()>0);
+		$pollIsVoted=($curObj->votesNbTotal()>0);
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", multipleResponses=".Db::formatParam("multipleResponses").", newsDisplay=".Db::formatParam("newsDisplay").", dateEnd=".Db::formatParam("dateEnd","date"));
-			//Si le sondage n'a pas déjà été voté : edition des réponses
-			if($curObj->votesNb()==0)
+			$curObj=$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", multipleResponses=".Db::formatParam("multipleResponses").", publicVote=".Db::formatParam("publicVote").", newsDisplay=".Db::formatParam("newsDisplay").", dateEnd=".Db::formatParam("dateEnd","date"));
+			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
+			if($pollIsVoted==false)
 			{
+				//Affiche la notif "Attention : dès que le sondage est voté la modif des réponses est impossible"
+				Ctrl::addNotif("DASHBOARD_votedPollNotif");
 				//Récupère les réponses et éventuellement leur fichier associé ("_idResponse" comme clé)
 				$responses=Req::getParam("responses");
 				//Supprime si besoin les réponses effacées (modif du sondage)
@@ -197,8 +199,6 @@ class CtrlDashboard extends Ctrl
 					}
 				}
 			}
-			//Notif "Attention : dès que le sondage est voté la modif des réponses est impossible"
-			if($pollIsVoted==false)  {Ctrl::addNotif("DASHBOARD_votedPollNotif");}
 			//Notif par mail & Ferme la page ("dashboardPoll=true" : cf. "dashboardOption()")
 			$pollVote="<ul style='padding-left:20px;'>";
 			foreach($curObj->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}

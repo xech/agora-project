@@ -201,11 +201,12 @@ class Trad extends Txt
 		////	Visibilité d'un Objet : auteur et droits d'accès
 		self::$trad["autor"]="Auteur";
 		self::$trad["postBy"]="Posté par";
+		self::$trad["guest"]="invité";
 		self::$trad["creation"]="Création";
 		self::$trad["modification"]="Modif.";
 		self::$trad["objHistory"]="Historique de l'élément";
 		self::$trad["all"]="tous";
-		self::$trad["unknown"]="inconnu";
+		self::$trad["unknown"]="personne inconnue";
 		self::$trad["accessRead"]="Lecture";
 		self::$trad["readInfos"]="Accès en lecture";
 		self::$trad["accessWriteLimit"]="Ecriture limitée";
@@ -373,31 +374,34 @@ class Trad extends Txt
 		self::$trad["EDIT_notifNoSelection"]="Vous devez sélectionner au moins une personne ou un espace";
 		self::$trad["EDIT_notifNoPersoAccess"]="Vous n'êtes pas affecté à l'élément. valider tout de même ?";
 		self::$trad["EDIT_notifWriteAccess"]="Il doit y avoir au moins une personne, groupe ou un espace avec un accès en écriture";
-		self::$trad["EDIT_parentFolderAccessError"]="Vérifiez l'accès de <i>--TARGET_LABEL--</i> au dossier parent <i>--FOLDER_NAME--</i> : S'il n'y est pas affecté, l'accès au dossier courant lui sera impossible.";
+		self::$trad["EDIT_parentFolderAccessError"]="Pensez à vérifiez les droits d'accès du dossier parent ''<i>--FOLDER_NAME--</i>'': S'il n'est pas aussi affecté à ''<i>--TARGET_LABEL--</i>'', le présent dossier ne lui sera pas accessible.";
 		self::$trad["EDIT_accessRight"]="Droits d'accès";
 		self::$trad["EDIT_accessRightContent"]="Droits d'accès au contenu";
 		self::$trad["EDIT_spaceNoModule"]="Le module courant n'a pas encore été ajouté à cet espace";
 		self::$trad["EDIT_allUsers"]="Tout les utilisateurs";
-		self::$trad["EDIT_allUsersInfo"]="Tous les utilisateurs de l'espace <i>--SPACENAME--</i>";
+		self::$trad["EDIT_allUsersInfo"]="Droit d'acccès pour tous les utilisateurs de l'espace <i>--SPACENAME--</i>";
 		self::$trad["EDIT_allUsersAndGuests"]="Tout les utilisateurs et invités";
-		self::$trad["EDIT_allUsersAndGuestsInfo"]="Droit d'acccès pour tous les utilisateurs de l'espace <i>--SPACENAME--</i>, ainsi qu'aux invités, mais en lecture uniquement (invités : personnes n'ayant pas de compte utilisateur)";
-		self::$trad["EDIT_adminSpace"]="Administrateur de l'espace : accède en écriture à tous les éléments de l'espace !";
-		self::$trad["EDIT_showAllSpaceUsers"]="Afficher tous les utilisateurs";
-		self::$trad["EDIT_mySpaces"]="Afficher mes espaces";
+		self::$trad["EDIT_allUsersAndGuestsInfo"]="Droit d'acccès pour tous les utilisateurs et invités de l'espace <i>--SPACENAME--</i><hr>Les invités ne peuvent avoir qu'un accès en lecture seule aux éléments (invité : personne se connectant à l'espace sans s'identifier).";
+		self::$trad["EDIT_adminSpace"]="Administrateur : accès total à tous les éléments de l'espace";
+		self::$trad["EDIT_showAllSpaceUsers"]="Voir tous les utilisateurs";
+		self::$trad["EDIT_mySpaces"]="Afficher tous mes espaces";
 		self::$trad["EDIT_notifMail"]="Notifier par email";
 		self::$trad["EDIT_notifMail2"]="Envoyer un email de notification de création";
 		self::$trad["EDIT_notifMailInfo"]="La notification sera envoyée aux personnes affectées à l'élément. Si vous ne souhaitez l'envoyer qu'à certains utilisateurs, utilisez l'option ''Spécifier les destinataires''.";
 		self::$trad["EDIT_notifMailAddFiles"]="Joindre le/les fichiers à la notification";
 		self::$trad["EDIT_notifMailSelect"]="Spécifier les destinataires des notifications";
 		self::$trad["EDIT_notifMailMoreUsers"]="Afficher + d'utilisateurs";
-		self::$trad["EDIT_accessRightSubFolders"]="Donner les mêmes droits aux sous-dossiers";
-		self::$trad["EDIT_accessRightSubFolders_info"]="Etendre les droits d'accès aux sous-dossiers :<br>uniquement ceux qui vous sont accessibles en écriture";
+		self::$trad["EDIT_accessRightSubFolders"]="Donner les mêmes droits d'accès aux sous-dossiers";
+		self::$trad["EDIT_accessRightSubFolders_info"]="Etendre les droits d'accès aux sous-dossiers <br>(uniquement ceux accessibles en écriture)";
 		self::$trad["EDIT_shortcut"]="Raccourci";
 		self::$trad["EDIT_shortcutInfo"]="Afficher un raccourci dans la barre de menu principal";
 		self::$trad["EDIT_attachedFile"]="Ajouter une image ou un fichier";
 		self::$trad["EDIT_attachedFileInfo"]="Attacher une image, video ou autre fichier (peut être intégré au texte)";
 		self::$trad["EDIT_attachedFileInsert"]="Intégrer dans le texte";
 		self::$trad["EDIT_attachedFileInsertInfo"]="Intégrer l'image ou la video dans le texte.<br>L'insertion sera réalisé après validation du formulaire !<br>Les images doivent être au format jpg ou png et les vidéos au format mp4";
+		self::$trad["EDIT_guestName"]="Votre Nom / Pseudo";
+		self::$trad["EDIT_guestNameNotif"]="Merci de préciser un nom ou un pseudo";
+		self::$trad["EDIT_guestElementRegistered"]="Merci pour votre proposition. Celle-ci sera examinée dans les plus brefs délais avant validation.";
 
 		////	Formulaire d'installation
 		self::$trad["INSTALL_dbConnect"]="Connexion à la base de données";
@@ -434,18 +438,18 @@ class Trad extends Txt
 		self::$trad["AGORA_diskSpaceInvalid"]="L'espace disque pour les fichiers : doit être un entier";
 		self::$trad["AGORA_confirmModif"]="Confirmez-vous les modifications ?";
 		self::$trad["AGORA_name"]="Nom du site";
-		self::$trad["AGORA_footerHtml"]="Footer texte/html";
+		self::$trad["AGORA_footerHtml"]="Texte en bas de page";
 		self::$trad["AGORA_lang"]="Langue par défaut";
 		self::$trad["AGORA_timezone"]="Fuseau horaire";
 		self::$trad["AGORA_spaceName"]="Nom de l'espace principal";
 		self::$trad["AGORA_diskSpaceLimit"]="Espace disque pour les fichiers";
 		self::$trad["AGORA_logsTimeOut"]="Durée de conservation des Logs (historique)";
-		self::$trad["AGORA_skin"]="Couleur de l'interface";
+		self::$trad["AGORA_skin"]="Couleur de l'affichage général";
 		self::$trad["AGORA_black"]="Noir";
 		self::$trad["AGORA_white"]="Blanc";
 		self::$trad["AGORA_wallpaperLogoError"]="L'image de fond d'écran et le logo doivent être au format .jpg ou .png";
 		self::$trad["AGORA_deleteWallpaper"]="Supprimer le fond d'écran ?";
-		self::$trad["AGORA_logo"]="Logo du footer";
+		self::$trad["AGORA_logo"]="Logo en bas de page";
 		self::$trad["AGORA_logoUrl"]="URL";
 		self::$trad["AGORA_logoConnect"]="Logo en page de connexion";
 		self::$trad["AGORA_logoConnectInfo"]="Affiché au dessus du formulaire de connexion";
@@ -531,7 +535,7 @@ class Trad extends Txt
 		self::$trad["SPACE_manageSpaces"]="Gérer les espaces du site";
 		self::$trad["SPACE_config"]="Paramétrer l'espace courant";
 		//Index
-		self::$trad["SPACE_confirmDeleteDbl"]="ATTENTION : les données uniquement affectées à cet espace seront perdues. Cependant si vous souhaitez les conserver, pensez d'abord à les réaffecter à un autre espace. Confirmez tout de même la suppression?";
+		self::$trad["SPACE_confirmDeleteDbl"]="Notez que seules les données affectées uniquement à cet espace seront effacées. Cependant si vous souhaitez les conserver, pensez d'abord à les réaffecter à un autre espace. Confirmez tout de même la suppression de cet espace ?";
 		self::$trad["SPACE_space"]="espace";
 		self::$trad["SPACE_spaces"]="espaces";
 		self::$trad["SPACE_accessRightUndefined"]="A définir !";
@@ -543,7 +547,8 @@ class Trad extends Txt
 		self::$trad["SPACE_spaceModules"]="Modules de l'espace";
 		self::$trad["SPACE_moduleRank"]="Déplacer le module pour modifier son ordre d'affichage dans la barre de menu";
 		self::$trad["SPACE_publicSpace"]="Espace public";
-		self::$trad["SPACE_publicInfo"]="Donne accès aux personnes qui n'ont pas de compte utilisateur : les ''invités''. Il est possible de spécifier un mot de passe pour protéger l'accès à l'espace. Les modules suivants seront inaccessibles aux invités : 'mail' et 'utilisateur' (si l'espace public n'a pas de mot de passe)";
+		self::$trad["SPACE_publicSpaceInfo"]="Donne accès aux personnes qui n'ont pas de compte utilisateur : les ''invités''. Il est possible de spécifier un mot de passe pour protéger l'accès à l'espace. Les modules suivants seront inaccessibles aux invités : 'mail' et 'utilisateur' (si l'espace public n'a pas de mot de passe)";
+		self::$trad["SPACE_publicSpaceNotif"]="Si votre espace public contient des données sensibles telles que des coordonnées personnelles (module Contact) ou des documents sensibles (module Fichier) : vous êtes tenu d'y ajouter un <u>mot de passe</u>, pour être conforme à la RGPD.<br><br>Le Règlement Général sur la Protection des Données est un règlement de l'Union Européenne constituant le texte de référence en matière de protection des données personnelles.";
 		self::$trad["SPACE_usersInvitation"]="Les utilisateurs peuvent envoyer des invitations par email";
 		self::$trad["SPACE_usersInvitationInfo"]="Tous les utilisateurs peuvent envoyer des invitations par email pour rejoindre l'espace";
 		self::$trad["SPACE_allUsers"]="Tous les utilisateurs";
@@ -649,9 +654,12 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_noNews"]="Aucune actualité pour le moment";
 		self::$trad["DASHBOARD_addPoll"]="Ajouter un sondage";
 		self::$trad["DASHBOARD_pollsNotVoted"]="Sondages en cours";
-		self::$trad["DASHBOARD_pollsNotVotedInfo"]="Afficher uniquement les sondages pour lesquels vous n'avez pas encore voté";
+		self::$trad["DASHBOARD_pollsNotVotedInfo"]="Afficher uniquement les sondages que vous n'avez pas encore voté";
 		self::$trad["DASHBOARD_vote"]="Voter et voir les résultats !";
-		self::$trad["DASHBOARD_votesNb"]="votes";//55 votes
+		self::$trad["DASHBOARD_voteTooltip"]="Le vote est anonyme : personne n'aura connaissance de votre choix";
+		self::$trad["DASHBOARD_answerVotesNb"]="Voté --NB_VOTES-- fois";
+		self::$trad["DASHBOARD_pollVotesNb"]="Le sondage a été voté --NB_VOTES-- fois";
+		self::$trad["DASHBOARD_pollVotedBy"]="Le sondage a été voté par";//Bibi, boby, etc
 		self::$trad["DASHBOARD_noPoll"]="Aucun sondage pour le moment";
 		self::$trad["DASHBOARD_plugins"]="Nouveaux éléments";
 		self::$trad["DASHBOARD_pluginsInfo"]="Eléments créés ou ayant lieu";//"aujourd'hui"..
@@ -676,12 +684,14 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_titleQuestion"]="Titre / Question";
 		self::$trad["DASHBOARD_multipleResponses"]="Plusieurs réponses possibles pour chaque vote";
 		self::$trad["DASHBOARD_newsDisplay"]="Afficher avec les actualités, dans le menu de gauche";
+		self::$trad["DASHBOARD_publicVote"]="Vote public : le choix de chaque votant est public";
+		self::$trad["DASHBOARD_publicVoteInfos"]="Le choix de chaque votant sera affiché dans le résultat du sondage. Notez que le vote public peut être un frein à la participation au sondage.";
 		self::$trad["DASHBOARD_dateEnd"]="Date de fin des votes";
 		self::$trad["DASHBOARD_responseList"]="Responses possibles";
 		self::$trad["DASHBOARD_responseNb"]="Response n°";
 		self::$trad["DASHBOARD_addResponse"]="Ajouter une réponse";
 		self::$trad["DASHBOARD_controlResponseNb"]="Merci de spécifier au moins 2 réponses possibles";
-		self::$trad["DASHBOARD_votedPollNotif"]="Attention : dès que le sondage a commencé à être voté, il n'est plus possible de modifier le titre ou les réponses";
+		self::$trad["DASHBOARD_votedPollNotif"]="Attention : dès que le sondage a commencé à être voté, il n'est plus possible de modifier le titre et les réponses";
 		self::$trad["DASHBOARD_voteNoResponse"]="Merci de sélectionner une réponse";
 	
 		////	MODULE_AGENDA
@@ -707,7 +717,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_exportEvtMailList"]="liste des événements au format .Ical";
 		self::$trad["CALENDAR_icalUrl"]="Url d'accès en lecture à l'agenda (Ical)";
 		self::$trad["CALENDAR_icalUrlCopy"]="Copier cette adresse ? Celle-ci vous permettra d'accéder en lecture à cet agenda, à partir d'un autre application";
-		self::$trad["CALENDAR_importIcal"]="Importer les événements (iCal)";
+		self::$trad["CALENDAR_importIcal"]="Importer des événements (iCal)";
 		self::$trad["CALENDAR_importIcalState"]="Etat";
 		self::$trad["CALENDAR_importIcalStatePresent"]="Déjà présent";
 		self::$trad["CALENDAR_importIcalStateImport"]="A importer";
@@ -722,7 +732,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_periodPrevious"]="Période précédente";
 		self::$trad["CALENDAR_evtAffects"]="Dans l'agenda de";
 		self::$trad["CALENDAR_evtAffectToConfirm"]="Attente de confirmation pour les agendas : ";
-		self::$trad["CALENDAR_evtProposedFor"]="Proposé pour l'agenda"; // "Videoprojecteur" / "salle de réunion" / etc.
+		self::$trad["CALENDAR_evtProposedFor"]="Evenement proposé pour";//"Videoprojecteur" / "salle de réunion" / etc.
 		self::$trad["CALENDAR_evtProposedForMe"]="Proposé pour mon agenda";
 		self::$trad["CALENDAR_evtProposedBy"]="Proposé par";  // "Proposé par" M. Bidule
 		self::$trad["CALENDAR_evtIntegrate"]="Intégrer l'événement à l'agenda ?";
@@ -756,7 +766,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addEvtTooltip"]="Ajouter un événement à l'agenda";
 		self::$trad["CALENDAR_addEvtTooltipBis"]="Ajouter l'événement à l'agenda";
 		self::$trad["CALENDAR_proposeEvtTooltip"]="Proposer un événement au propriétaire de l'agenda";
-		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proposer l'événement au propriétaire de l'agenda <br>(vous n'avez pas accès en écriture à cet agenda)";
+		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proposer l'événement au propriétaire de cet agenda";
+		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Proposer l'événement au propriétaire de l'agenda <br>(vous n'avez pas accès en écriture à cet agenda)";
 		self::$trad["CALENDAR_verifCalNb"]="Merci de sélectionner au moins un agenda";
 		self::$trad["CALENDAR_noModifInfo"]="Modification non autorisé <br>(vous n'avez pas accès en écriture à cet agenda)";
 		self::$trad["CALENDAR_editLimit"]="Vous n'êtes pas l'auteur de l'événement :<br> Vous ne pouvez donc gérer que les affectations à vos agendas";
@@ -777,7 +788,9 @@ class Trad extends Txt
 		self::$trad["FILE_addFile"]="Nouveau fichier";
 		self::$trad["FILE_addFileAlert"]="Dossier du serveur inaccessible en écriture!  merci de contacter l'administrateur";
 		self::$trad["FILE_downloadSelection"]="télécharger la sélection";
-		self::$trad["FILE_nbFileVersions"]="versions du fichier"; // n versions du fichier
+		self::$trad["FILE_nbFileVersions"]="versions du fichier";//"55 versions du fichier"
+		self::$trad["FILE_downloadsNb"]="Fichier Téléchargé --NB_DOWNLOAD-- fois";
+		self::$trad["FILE_downloadedBy"]="Fichier Téléchargé par";//"..boby, will"
 		self::$trad["FILE_addFileVersion"]="Ajouter nouvelle version du fichier";
 		self::$trad["FILE_noFile"]="Aucun fichier pour le moment";
 		// fichier_edit_ajouter  &  Fichier_edit

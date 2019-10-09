@@ -260,11 +260,8 @@ class CtrlUser extends Ctrl
 						$vDatas["searchFieldsValues"][$fieldName]=$fieldVal;
 					}
 				}
-				//Liste des users
-				if(!empty($sqlSearch)){
-					$userIds="0,".implode(",",Ctrl::$curSpace->getUsers("ids"));
-					$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE _id NOT IN (".trim($userIds,",").") AND (".trim($sqlSearch,"OR").")");
-				}
+				//Liste des users toujours pas affectés à l'espace courant
+				if(!empty($sqlSearch))  {$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE _id NOT IN (".Ctrl::$curSpace->getUsers("idsSql").") AND (".trim($sqlSearch,"OR").")");}
 			}
 		}
 		////	Formulaire

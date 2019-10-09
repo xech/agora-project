@@ -746,9 +746,9 @@ class DbUpdate extends Db
 			////	MAJ V3.6.3
 			if(self::updateVersion("3.6.3"))
 			{
-				//Supprime les tables "guest" dans les table ou il est présent (avec "dateCrea" et "_idUser")
+				//Supprime les tables "guest" dans les table ou il est présent (avec "_idUser"), sauf dans la table "ap_calendarEvent"
 				foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tmpTable){
-					if(self::fieldExist($tmpTable,"guest") && self::fieldExist($tmpTable,"dateCrea") && self::fieldExist($tmpTable,"_idUser"))  {self::query("ALTER TABLE ".$tmpTable." DROP guest");}
+					if(self::fieldExist($tmpTable,"guest") && self::fieldExist($tmpTable,"_idUser") && $tmpTable!="ap_calendarEvent")  {self::query("ALTER TABLE ".$tmpTable." DROP guest");}
 				}
 				//Corrige l'accès aux emoticons sur AP v3.5.0 (tinyMce v4.8.2)
 				foreach(["ap_dashboardNews","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)  {self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'app/js/tinymce_4.8.2/','app/js/tinymce/')");}
@@ -760,10 +760,23 @@ class DbUpdate extends Db
 				//Suppression de l'ancien champ "personalCalendarsDisabled"
 				if(self::fieldExist("ap_agora","personalCalendarsDisabled"))  {self::query("ALTER TABLE ap_agora DROP personalCalendarsDisabled");}
 			}
-			////	MODIFIER SI BESOIN LA BDD "ModOffline/db.sql" !!!!
-			////	MODIFIER LE NUMÉRO DE VERSION ("app/Common/Params.php"  +  "app/Common/VueStructure.php"  +  "app/js/common-3.x.x.js"  +  "app/css/common-3.x.x.js" +  "RELEASES.txt")
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			////	MAJ V3.6.5
+			if(self::updateVersion("3.6.5"))
+			{
+				//Correction du champ "guest" pour les propositions d'événements
+				if(self::fieldExist("ap_calendarEvent","guest")==false)  {self::query("ALTER TABLE ap_calendarEvent ADD guest varchar(255) DEFAULT NULL AFTER _idUser");}
+				//Suppression des affectations obsoletes aux dossiers racine (résiduelles)
+				self::query("DELETE FROM ap_objectTarget WHERE objectType IN ('fileFolder','contactFolder','taskFolder','linkFolder') AND _idObject='1'");
+				//Fichiers : Ajoute un champ pour la liste des personnes ayant téléchargé un fichier
+				self::query("ALTER TABLE ap_file ADD downloadedBy varchar(10000) DEFAULT NULL AFTER downloadsNb");
+				//Sondage : Ajoute une option pour pouvoir afficher le résultat de chaque votant 
+				self::query("ALTER TABLE ap_dashboardPoll ADD publicVote tinyint(1) DEFAULT NULL AFTER newsDisplay");
+			}
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			////!!!!	MODIFIER SI BESOIN LA BDD "ModOffline/db.sql"	!!!!!!!!!!!!
+			////!!!!	MODIFIER LE NUMERO DE VERSION DANS  "app/Common/Params.php" + "app/Common/VueStructure.php" + "app/js/common-3.x.x.js"  +  "app/css/common-3.x.x.js" + "RELEASES.txt"
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

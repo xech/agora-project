@@ -42,11 +42,11 @@
 	}
 
 	/*
-	 * SURCHARGE : Droit d'ajouter du contenu dans le dossier racine / un dossier lambda?
+	 * SURCHARGE : Droit d'ajouter du contenu dans le dossier racine OU dans un dossier lambda
 	 */
 	public function editContentRight()
 	{
-		if($this->isRootFolder())	{return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}
+		if($this->isRootFolder())	{return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}//"true" si "isAdminSpace()" ou aucune limite pour les users lambda
 		else						{return parent::editContentRight();}
 	}
 
@@ -55,7 +55,7 @@
 	 */
 	public function getAffectations()
 	{
-		//Nouveau dossier, mais pas à la racine : récupère les droits d'accès du dossier conteneur (pré-affectation)
+		//Nouveau dossier, mais pas à la racine : récupère les droits d'accès du dossier conteneur pour faire une "pré-affectation"
 		if($this->isNew() && $this->containerObj()->isRootFolder()==false)	{return $this->containerObj()->getAffectations();}
 		else																{return parent::getAffectations();}
 	}

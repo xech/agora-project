@@ -11,7 +11,7 @@ $(function(){
 				$(this).addClass("objMenuLabelUnselect");
 			});
 			//Affiche le block sélectionné
-			$("#"+$(this).attr("for")).show();//affichage direct, pas "fadeIn" (cf. "lightboxResize()")
+			$("#"+$(this).attr("for")).show();//Affichage direct (pas de "fadeIn" car trop lent)
 			$(this).removeClass("objMenuLabelUnselect");
 		});
 		//Affiche le menu du premier onglet
@@ -59,20 +59,25 @@ $(function(){
 	});
 
 	////	AFFICHE TOUS LES USERS D'UN ESPACE
-	$(".vShowAllSpaceUsers").click(function(){
-		$($(this).attr("for")+" .vSpaceHideSelection").hide().removeClass('vSpaceHideSelection').fadeIn(500);//enlève la class pour masquer les users.. et raffiche avec un fadeIn
-		lightboxResize();//resize le lightbox
-		$('body').css('overflow-x','hidden');//enlège l'overflow ajouté dans la foulée..
-		$(this).hide();//masque le menu
+	$(".vShowAllUsers").click(function(){
+		$($(this).attr("for")+" .vSpaceHideTarget").hide().removeClass("vSpaceHideTarget").fadeIn();//Enlève la class pour masquer les users puis raffiche avec un fadeIn
+		$(this).hide();//Masque le menu pour afficher tous les users
+		lightboxResize();//Resize le lightbox
 	});
 
 	////	AFFICHE/MASQUE LES BLOCKS D'ESPACES
-	//Masque les espaces sans affectations (sauf espace courant)
+	//Masque par défaut tous les espaces sans affectations (sauf espace courant)
 	$("[id^=spaceTable]").each(function(){
 		if(this.id!="spaceTable<?= Ctrl::$curSpace->_id ?>" && $("#"+this.id+" [name='objectRight[]']:checked").length==0)  {$(this).hide();}
 	});
-	//Montre "Afficher tous les espaces" ?
-	if($(".vSpaceTable:hidden").exist())  {$(".vShowAllSpaces").fadeIn();}
+	//Masque si besoin le menu "Afficher tous mes espaces"
+	if($(".vSpaceTable:hidden").exist())  {$("#ShowAllSpaces").fadeIn();}
+	//Click sur "Afficher tous mes espaces"
+	$("#ShowAllSpaces").click(function(){
+		$(this).hide();//Masque le menu
+		$('[id^=spaceTable]').fadeIn();//Affiche tous les blocks d'espace
+		$(".vSpaceTitle .vSpaceLabel").removeClass("vSpaceLabelHide");//Raffiche le nom de l'espace courant (masqué par défaut)
+	});
 
 	////	INIT LA PAGE
 	//Masque et désactive les droits "boxWriteLimit"
@@ -143,7 +148,7 @@ function mainFormControl()
 	//Init
 	var validForm=true;
 
-	////	Verif si besoin les champs obligatoires : si vide, affiche une notification et focus le champ
+	////	Verif les champs obligatoires. Si ya des champs vides : "focusRed()" et notification sur les champs concernés
 	var notifRequiredFields="";
 	<?php
 	foreach($curObj::$requiredFields as $tmpField){
@@ -151,13 +156,13 @@ function mainFormControl()
 		echo "if($('[name=".$tmpField."]').exist() && ".$isEmptyField.")   {validForm=false;  $('[name=".$tmpField."]').focusRed();  notifRequiredFields+=\"&nbsp;".Txt::trad($tmpField)."<br>\";}";
 	}
 	?>
-	//Notif sur les champs vides
+	//Notify sur les champs vides
 	if(notifRequiredFields.length>0)  {notify("<?= Txt::trad("requiredFields") ?> : "+notifRequiredFields);}
 
-	////	Controle un mail (si besoin)
+	////	Controle si besoin les mail
 	if($("input[name='mail']").isEmpty()==false && $("input[name='mail']").isMail()==false)   {validForm=false;  notify("<?= Txt::trad("mailInvalid"); ?>");}
 
-	////	Controle le formatage des dates
+	////	Controle si besoin le formatage des dates
 	$(".dateInput,.dateBegin,.dateEnd").each(function(){
 		if(this.value.length>0){
 			var dateMatch=/^\d{2}\/\d{2}\/\d{4}$/.exec(this.value);
@@ -165,8 +170,8 @@ function mainFormControl()
 		}
 	});
 
-	////	Controle les affectations
-	if($("[name='objectRight[]']").exist())
+	////	Controle si besoin des affectations
+	if($("input[name='objectRight[]']").exist())
 	{
 		//Aucune affectation : false
 		if($(":checked[name='objectRight[]']").length==0)   {validForm=false;  notify("<?= Txt::trad("EDIT_notifNoSelection") ?>");}
@@ -177,6 +182,15 @@ function mainFormControl()
 		if(nbCurUserAccess==0 && confirm("<?= Txt::trad("EDIT_notifNoPersoAccess") ?>")==false)  {validForm=false;}
 	}
 
+	////	Controle des GUEST
+	if($("input[name='guest']").exist()){
+		//Controle du champ "guest
+		if($("input[name='guest']").val().length<3)  {validForm=false;  notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");}
+		//Controle du Captcha
+		var ajaxResult=$.ajax({url:"?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val()),async:false}).responseText;//Attend la réponse Ajax pour passer à la suite (async:false)
+		if(ajaxResult!="true")  {validForm=false;  notify("<?=Txt::trad("captchaError") ?>");}
+	}
+
 	////	Controle OK
 	if(validForm==true)  {$(".loadingImg").css("display","block");}
 	return validForm;
@@ -185,48 +199,56 @@ function mainFormControl()
 
 <style>
 /*OPTIONS D'EDITION (ex 'fieldset')*/
-#objMenuBlocks				{text-align:left; margin-top:33px;}
-#objMenuLabels				{display:table; width:100%; margin:33px 0px -33px 0px;}
-.objMenuLabel				{display:table-cell; padding:3px; padding-top:8px; padding-bottom:8px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
+#objMenuBlocks							{text-align:left; margin-top:33px;}
+#objMenuLabels							{display:table; width:100%; margin:33px 0px -33px 0px;}
+.objMenuLabel							{display:table-cell; padding:3px; padding-top:8px; padding-bottom:8px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
 .objMenuLabel[for='objMenuMain']		{min-width:150px!important;}
 .objMenuLabel>span						{display:inline-block; margin-left:10px;}
 .objMenuLabel:not(.objMenuLabelUnselect){border-bottom:none!important;}
-.objMenuLabelUnselect		{opacity:0.7;}
+.objMenuLabelUnselect					{opacity:0.7;}
 
 /*DROITS D'ACCÈS*/
-#objMenuMain				{text-align:center;}
-[id^=spaceTable]			{text-align:center; margin-top:20px; margin-bottom:40px;}
-.vSpaceTable				{display:inline-table; min-width:400px; max-width:97%;}/*idem responsive!*/
-.vSpaceTable img			{max-height:15px;}
-.vSpaceTable>div			{display:table-row;}
-.vSpaceTable>div>div		{display:table-cell; padding:4px;}
-.vSpaceTable .vSpaceLabel	{cursor:pointer; text-align:left;}
-.vSpaceTitle				{background-color:#f9f9f9;}
-.vSpaceTitle>div:not(:first-child)	{width:70px; text-align:center;}/*colonne des checkboxes*/
-.vSpaceHideSelection		{display:none!important;}
-.vShowAllSpaceUsers, .vShowAllSpaces, .vExtendToSubfolders	{text-align:center; cursor:pointer;}
-.vShowAllSpaceUsers						{margin-top:10px;}
-.vShowAllSpaces,.vExtendToSubfolders	{margin-top:20px;}
+#objMenuMain							{text-align:center;}
+[id^=spaceTable]						{text-align:center; margin-top:20px; margin-bottom:40px;}
+.vSpaceTable							{display:inline-table; min-width:450px; max-width:100%; background-color:#f8f8f8;}/*idem responsive!*/
+.vSpaceTable>div						{display:table-row;}
+.vSpaceTable>div>div					{display:table-cell; padding:5px 3px 5px 3px;}
+.vSpaceTable img						{max-height:15px;}
+.vSpaceLabel							{cursor:pointer; text-align:left;}
+.vSpaceTitle>div						{vertical-align:middle;}
+.vSpaceTitle .vSpaceLabelHide			{visibility:hidden;}/*masque le nom de l'espace courant*/
+.vSpaceTitle>div:first-child			{font-style:italic;}/*nom de l'espace*/
+.vSpaceTitle>div:not(:first-child)		{width:65px; text-align:center;}/*colonne des checkboxes*/
+.vSpaceTargetIcon						{margin-right:10px;}/*icone de target/de user*/
+.vSpaceTargetIconAdmin					{filter:brightness(0.9);}/*icone d'admin : plus foncé*/
+.vShowAllUsers .vSpaceLabel				{padding-top:10px;}/*"Voir tous les users"*/
+.vSpaceHideTarget						{display:none!important;}/*Users de l'espace courant non sélectionnés: masqués par défaut*/
+#ShowAllSpaces, #ExtendToSubfolders		{text-align:center; cursor:pointer; margin-top:10px; margin-bottom:5px;}
 
 /*FICHIERS JOINTS*/
-#addAttachedFileLabel		{margin-top:10px; margin-bottom:20px;}
+#addAttachedFileLabel					{margin-top:10px; margin-bottom:20px;}
 [id^='addAttachedFileDiv'], [id^='menuAttachedFile']	{margin:15px;}
 [id^='addAttachedFileDiv']:not(#addAttachedFileDiv1)	{display:none;}/*Affiche par défaut le premier Input*/
-.addAttachedFileInsertOpt	{display:none;}
+.addAttachedFileInsertOpt				{display:none;}
 
 /*NOTIFICATION PAR MAIL AND CO*/
 #notifMailUsersPlus, #notifMailSelectList, #notifMailOptions	{display:none;}
-#notifMailSelectList		{padding-left:25px; border-radius:3px;}
-#notifMailSelectList>div	{display:inline-block; width:190px; padding:3px;}
-#notifMailOptions>div		{margin-left:10px; margin-top:8px;}
+#notifMailSelectList					{padding-left:25px; border-radius:3px;}
+#notifMailSelectList>div				{display:inline-block; width:190px; padding:3px;}
+#notifMailSelectList>hr					{margin:3px;}
+#notifMailOptions>div					{margin-left:10px; margin-top:8px;}
 
+/*MENU GUEST*/
+#guestMenu								{border:1px solid #ccc!important; text-align:center;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.objMenuLabel[for='objMenuMain']	{min-width:80px!important;}
 	.objMenuLabel img					{display:none;}
-	.vSpaceTable						{min-width:300px;}
-	.vSpaceTitle>div:not(:first-child)	{width:60px;}/*colonne des checkboxes*/
+	.vSpaceTable						{min-width:100%;}
+	.vSpaceTitle>div					{font-size:0.9em;}/*Entête du tableau*/
+	.vSpaceTitle>div:not(:first-child)	{width:50px;}/*colonne des checkboxes*/
+	.vSpaceTargetIcon					{display:none;}
 }
 </style>
 
@@ -235,8 +257,12 @@ function mainFormControl()
 ////	INITIALISE L'EDITEUR HTML D'UN CHAMP (description ou autre) ?
 if($curObj::htmlEditorField!==null)  {echo CtrlMisc::initHtmlEditor($curObj::htmlEditorField);}
 
-////	CONTENU DES MENUS
-if(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
+////	MENU D'IDENTIFICATION : GUESTS
+if(Ctrl::$curUser->isUser()==false){
+	echo "<div class='lightboxBlock' id='guestMenu'><input type='text' name='guest' onkeyup=\"this.value=this.value.slice(0,150)\" placeholder=\"".Txt::trad("EDIT_guestName")."\"><hr>".CtrlMisc::menuCaptcha()."</div>";
+}
+////	MENU PRINCIPAL
+elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 {
 	////	ONGLETS DES MENUS
 	echo "<div id='objMenuLabels' class='noSelect'>";
@@ -264,9 +290,9 @@ if(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 					echo "<div id=\"spaceTable".$tmpSpace->_id."\">";
 						//TABLEAU D'UN ESPACE
 						echo "<div class='vSpaceTable noSelect'>";
-							//ENTETE DE L'ESPACE
+							//ENTETE DE L'ESPACE (nom de l'espace et droits d'acces)
 							echo "<div class='vSpaceTitle'>
-									<div class='vSpaceLabel' title=\"".$tmpSpace->description."\">".($tmpSpace->isCurSpace()?'&nbsp;':Txt::reduce($tmpSpace->name,35))."</div>
+									<div class='vSpaceLabel ".($tmpSpace->isCurSpace()?'vSpaceLabelHide':null)."' title=\"".$tmpSpace->name."<br>".$tmpSpace->description."\">".Txt::reduce($tmpSpace->name,35)."</div>
 									<div class='vSpaceRead noTooltip' title=\"".Txt::trad("readInfos")."\">".Txt::trad("accessRead")."</div>
 									<div class='vSpaceWriteLimit noTooltip' title=\"".$writeReadLimitInfos."\">".Txt::trad("accessWriteLimit")."</div>
 									<div class='vSpaceWrite noTooltip' title=\"".Txt::trad("writeInfos")."\">".Txt::trad("accessWrite")."</div>
@@ -275,26 +301,31 @@ if(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 							$tmpSpace->hiddenSelection=false;
 							foreach($tmpSpace->targetLines as $targetLine)
 							{
-								$targetLine["classHideUser"]=(empty($targetLine["isChecked"]) && $tmpSpace->isCurSpace())  ?  "vSpaceHideSelection"  :  null;
+								$targetLine["classHideUser"]=(empty($targetLine["isChecked"]) && $tmpSpace->isCurSpace())  ?  "vSpaceHideTarget"  :  null;
 								if(!empty($targetLine["classHideUser"]))  {$tmpSpace->hiddenSelection=true;}
 								$targetLine["tooltip"]=(!empty($targetLine["tooltip"]))  ?  "title=\"".$targetLine["tooltip"]."\""  :  null;
-								$targetLine["icon"]=(!empty($targetLine["icon"]))  ?  "<img src='app/img/".$targetLine["icon"]."'>"  :  null;
+								$userIconClass=(!empty($targetLine["onlyFullAccess"]))  ?  "vSpaceTargetIcon vSpaceTargetIconAdmin"  :  "vSpaceTargetIcon";
+								$targetLine["icon"]=(!empty($targetLine["icon"]))  ?  "<img src='app/img/".$targetLine["icon"]."' class='".$userIconClass."'>"  :  null;
 								echo "<div class='vSpaceTarget sTableRow ".$targetLine["classHideUser"]."' id=\"targetLine".$targetLine["targetId"]."\">
-										<div class='vSpaceLabel' id=\"".$targetLine["targetId"]."\" ".$targetLine["tooltip"].">".$targetLine["icon"]." &nbsp;".$targetLine["label"]."</div>
+										<div class='vSpaceLabel' id=\"".$targetLine["targetId"]."\" ".$targetLine["tooltip"].">".$targetLine["icon"]."".$targetLine["label"]."</div>
 										<div class='vSpaceRead noTooltip' title=\"".Txt::trad("readInfos")."\"><input type='checkbox' name='objectRight[]' ".$targetLine["boxProp"]["1"]."></div>
 										<div class='vSpaceWriteLimit noTooltip' title=\"".$writeReadLimitInfos."\"><input type='checkbox' name='objectRight[]' ".$targetLine["boxProp"]["1.5"]."></div>
 										<div class='vSpaceWrite noTooltip' title=\"".Txt::trad("writeInfos")."\"><input type='checkbox' name='objectRight[]' ".$targetLine["boxProp"]["2"]."></div>
 									  </div>";
 							}
+							//"AFFICHER TOUS LES UTILISATEURS"
+							if($tmpSpace->hiddenSelection==true){
+								echo "<div class='vShowAllUsers' for='#spaceTable".$tmpSpace->_id."'>
+										<div class='vSpaceLabel'>".Txt::trad("EDIT_showAllSpaceUsers")." <img src='app/img/arrowBottom.png'></div>
+									  </div>";
+							}
 						echo "</div>";
-						//BOUTON "AFFICHER TOUS LES UTILISATEURS"
-						if($tmpSpace->hiddenSelection==true)  {echo "<div class='vShowAllSpaceUsers' for='#spaceTable".$tmpSpace->_id."'>".Txt::trad("EDIT_showAllSpaceUsers")." <img src='app/img/arrowBottom.png'></div>";}
 					//BLOCK DE L'ESPACE
 					echo "</div>";
 				}
-				// "AFFICHER TOUS LES ESPACES"  /  ETENDRE LES DROITS AUX SOUS-DOSSIERS
-				if(count($spacesAccessRight)>1)  {echo "<div class='vShowAllSpaces' onclick=\"$(this).hide();$('[id^=spaceTable]').fadeIn();\"><hr>".Txt::trad("EDIT_mySpaces")." <img src='app/img/arrowBottom.png'></div>";}
-				if(!empty($extendToSubfolders))  {echo "<div class='vExtendToSubfolders'><hr><label for='extendToSubfolders' title=\"".Txt::trad("EDIT_accessRightSubFolders_info")."\">".Txt::trad("EDIT_accessRightSubFolders")."</label><input type='checkbox' name='extendToSubfolders' id='extendToSubfolders' value='1'></div>";}
+				//ETENDRE LES DROITS AUX SOUS-DOSSIERS  &&  "AFFICHER TOUS LES ESPACES"
+				if(!empty($extendToSubfolders))  {echo "<div id='ExtendToSubfolders'><hr><input type='checkbox' name='extendToSubfolders' id='extendToSubfolders' value='1' checked='checked'><label for='extendToSubfolders' title=\"".Txt::trad("EDIT_accessRightSubFolders_info")."\">".Txt::trad("EDIT_accessRightSubFolders")."</label></div><script>$('#ExtendToSubfolders').effect('pulsate',{times:4},4000);</script>";}
+				if(count($spacesAccessRight)>1)  {echo "<div id='ShowAllSpaces'><hr>".Txt::trad("EDIT_mySpaces")." <img src='app/img/arrowBottom.png'></div>";}
 			echo "</div>";
 		}
 
@@ -337,24 +368,39 @@ if(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 			if(!empty($notifMail))
 			{
 				//CHECKBOX PRINCIPAL & OPTIONS
-				echo "<img src='app/img/editNotif.png'>&nbsp;<input type='checkbox' name='notifMail' id='boxNotifMail' value='1' onChange=\"$('#notifMailOptions').slideToggle();\"> <label for='boxNotifMail' title=\"".Txt::trad("EDIT_notifMailInfo")."\">".Txt::trad("EDIT_notifMail2")."</label>
-					<div id='notifMailOptions'>";
+				echo "<img src='app/img/editNotif.png'> <input type='checkbox' name='notifMail' id='boxNotifMail' value='1' onChange=\"$('#notifMailOptions').slideToggle();\"> <label for='boxNotifMail' title=\"".Txt::trad("EDIT_notifMailInfo")."\">".Txt::trad("EDIT_notifMail2")."</label>";
+				echo "<div id='notifMailOptions'>";
 					//JOINDRE L'OBJET FICHIER A LA NOTIFICATION ?
 					if($curObj::objectType=="file" && $curObj->_id==0)  {echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailAddFiles' id='boxNotifMailAddFiles' value='1'><label for='boxNotifMailAddFiles' title=\"".Txt::trad("FILE_fileSizeLimit")." ".File::displaySize(File::mailMaxFilesSize)."\">".Txt::trad("EDIT_notifMailAddFiles")."</label></div>";}
 					//MONTRER LES DESTINATAIRES DANS LE MESSAGE  /  ACCUSE DE RECEPTION  /  SPECIFIER LES DESTINATAIRES
 					echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='hideRecipients' id='boxhideRecipients' value='1'><label for='boxhideRecipients' title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\">".Txt::trad("MAIL_hideRecipients")."</label></div>
 						  <div><img src='app/img/dependency.png'><input type='checkbox' name='receptionNotif' id='boxReceptionNotif' value='1'><label for='boxReceptionNotif' title=\"".Txt::trad("MAIL_receptionNotifInfo")."\">".Txt::trad("MAIL_receptionNotif")."</label></div>
 						  <div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailSelect' id='boxNotifMailSelect' value='1' onclick=\"$('#notifMailSelectList').slideToggle();\"><label for='boxNotifMailSelect'>".Txt::trad("EDIT_notifMailSelect")."</label></div>";
-					//LISTE DETAILLE DES UTILISATEURS (masque d'abord les users absent de l'espace courant)
+					//LISTE DETAILLE DES UTILISATEURS
 					echo "<div id='notifMailSelectList'>";
-						foreach($notifMailUsers as $tmpUser)  {echo "<div id=\"divNotifMailUser".$tmpUser->_id."\" ".(!in_array($tmpUser->_id,$curSpaceUsersIds)?"style='display:none'":null)."><input type='checkbox' name='notifMailUsers[]' value=\"".$tmpUser->_id."\" id=\"boxNotifMailUsers".$tmpUser->_id."\"> <label for=\"boxNotifMailUsers".$tmpUser->_id."\" title=\"".$tmpUser->mail."\">".$tmpUser->getLabel()."</label></div>";}
-						if(count($notifMailUsers)>count($curSpaceUsersIds))  {echo "<br><div onclick=\"$('[id^=divNotifMailUser]').fadeIn();$(this).fadeOut();\" class='sLink'>".Txt::trad("EDIT_notifMailMoreUsers")."</div>";}
+						//Affiche les users de tous mes espaces
+						foreach($notifMailUsers as $tmpUser){
+							echo "<div id=\"divNotifMailUser".$tmpUser->_id."\" ".(!in_array($tmpUser->_id,$curSpaceUsersIds)?"style='display:none'":null).">
+									<input type='checkbox' name='notifMailUsers[]' value=\"".$tmpUser->_id."\" id=\"boxNotif".$tmpUser->_targetObjId."\" data-idUser=\"".$tmpUser->_id."\">
+									<label for=\"boxNotif".$tmpUser->_targetObjId."\" title=\"".$tmpUser->mail."\">".$tmpUser->getLabel()."</label>
+								  </div>";
+						}
+						//Selection d'un groupe d'utilisateurs
+						if(!empty($curSpaceUserGroups))  {echo "<hr>";}
+						foreach($curSpaceUserGroups as $tmpGroup){
+							echo "<div title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
+									<input type='checkbox' name=\"notifUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='notifUsersGroup".$tmpGroup->_targetObjId."' onchange=\"userGroupSelect(this,'#notifMailSelectList');\">
+									<label for='notifUsersGroup".$tmpGroup->_targetObjId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
+								  </div>";
+						}
 					echo "</div>";
+					//Masque par défaut les users absent de l'espace courant
+					if(count($notifMailUsers)>count($curSpaceUsersIds))  {echo "<br><div onclick=\"$('[id^=divNotifMailUser]').fadeIn();$(this).fadeOut();\" class='sLink'>".Txt::trad("EDIT_notifMailMoreUsers")."</div>";}
 				echo "</div>";
 			}
 			////	MENU "SHORTCUT" (raccourci)
-			if(!empty($shortcut))
-				{echo "<br><br><img src='app/img/shortcut.png'>&nbsp; <input type='checkbox' name='shortcut' id='boxShortcut' value='1' ".$shortcutChecked."><label for='boxShortcut'>".Txt::trad("EDIT_shortcutInfo")."</label>";}
+			if(!empty($shortcut))  {echo "<br><br><img src='app/img/shortcut.png'>&nbsp; <input type='checkbox' name='shortcut' id='boxShortcut' value='1' ".$shortcutChecked."><label for='boxShortcut'>".Txt::trad("EDIT_shortcutInfo")."</label>";}
+			////	Fin de "objMenuMoreOptions"
 			echo "</div>";
 		}
 	//OPTIONS D'EDITION: FIN

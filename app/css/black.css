@@ -1,7 +1,6 @@
 /**SKIN NOIR**/
 
 /*Basic*/
-body										{background-color:#000;}/*cf. lightboxes*/
 body, a, .sLink								{color:#ddd;}
 a:hover, .sLink:hover						{color:#f77;}
 a:active, .sLinkSelect, input:checked+label	{color:#f77;}
@@ -15,7 +14,7 @@ a:active, .sLinkSelect, input:checked+label	{color:#f77;}
 .objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#111; background-image:none;}/*ligne survolée / ligne en affichage alterné (paire/impaire)*/
 .objBlocks .hasThumb .objLabel				{background:rgba(0,0,0,0.95);}
 .emptyContainer								{background:rgba(0,0,0,0.7);}
-.menuContext .menuLine:hover, .sTableRow:hover, .sTableRowSelect	{background:#111;}/*survol une ligne du menu / sélectionne une ligne de menu (affectation)*/
+.menuContext .menuLine:hover, .sTableRow:hover, .sTableRowSelect	{background:#333;}/*survol une ligne du menu / sélectionne une ligne de menu (affectation)*/
 @media screen and (max-width:1023px){
 	.objContainer, .miscContainer, .emptyContainer	{box-shadow:1px 1px 2px rgba(144,144,144,0.4);}/*hover=touch*/
 }

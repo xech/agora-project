@@ -17,7 +17,7 @@ function livecounterUpdate(livecounterInit)
 	//// Init l'url du "LivecounterUpdate"
 	var livecounterUpdateUrl="?ctrl=misc&action=LivecounterUpdate";
 	// Vérif si un autre user edite en meme temps le meme element (édition lightbox) : params "editObjId"
-	if($(".fancybox-iframe").exist() && find("edit",$(".fancybox-iframe").prop("src")))  {livecounterUpdateUrl+="&editObjId="+getUrlParam("targetObjId",$(".fancybox-iframe").prop("src"));}
+	if($(".fancybox-iframe").exist() && find("edit",$(".fancybox-iframe").attr("src")))  {livecounterUpdateUrl+="&editObjId="+getUrlParam("targetObjId",$(".fancybox-iframe").attr("src"));}
 	// Edition d'un texte via tinymce : on l'enregistre automatiquement en tant que brouillon/draft (cf. "confirmCloseForm")
 	if(confirmCloseForm==true){
 		if(typeof tinymce!=="undefined"  ||  ($(".fancybox-iframe").exist() && typeof $(".fancybox-iframe")[0].contentWindow.tinymce!=="undefined")){
@@ -85,7 +85,7 @@ function livecounterUpdate(livecounterInit)
 		//// Relance "livecounterUpdate()" après 12 secondes (cf. "LIVECOUNTER_REFRESH")
 		if(typeof livecounterTimeFirstLoad=="undefined")  {livecounterTimeFirstLoad=Date.now();}					//Init le time du premier "livecounterUpdate()"
 		if(document.visibilityState!="hidden" || (Date.now()-livecounterTimeFirstLoad)<900000){						//Pas de "livecounterUpdate()" si la page n'est pas affichée depuis + de 15mn : pas de requetes Ajax inutiles en tache de fond..
-			if(typeof livecounterUpdateTimeout!="undefined")  {clearTimeout(livecounterUpdateTimeout);}				//Annule le dernier "setTimeout" (pas de cumul de "setTimeout")
+			if(typeof livecounterUpdateTimeout!="undefined")  {clearTimeout(livecounterUpdateTimeout);}				//Pas de cumul de Timeout
 			livecounterUpdateTimeout=setTimeout(function(){ livecounterUpdate(); },<?= LIVECOUNTER_REFRESH*1000 ?>);//Relance le "livecounterUpdate()"
 		}
 	});

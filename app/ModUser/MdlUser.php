@@ -152,15 +152,11 @@ class MdlUser extends MdlPerson
 	}
 
 	/*
-	 * STATIC SQL (SURCHARGE) : selectionne les users de l'espace / de tout le site
+	 * STATIC SQL (SURCHARGE) : selectionne les users de tout le site OU les users de l'espace courant
 	 */
 	public static function sqlDisplayedObjects($containerObj=null, $keyId=null)
 	{
-		if($_SESSION["displayUsers"]=="all")	{return "1";}
-		else{
-			$_idUsers=array_merge([0], Ctrl::$curSpace->getUsers("ids"));//ajoute user "0" au cas ou ya personne..
-			return "_id IN (".implode(',',$_idUsers).")";
-		}
+		return ($_SESSION["displayUsers"]=="all")  ?  "1"  :  "_id IN (".Ctrl::$curSpace->getUsers("idsSql").")";
 	}
 
 	/*
@@ -220,15 +216,15 @@ class MdlUser extends MdlPerson
 	}
 
 	/*
-	 *  Users qu'il peut voir, sur l'ensemble de ses espaces
+	 *  Autres users que l'user courant peut voir, sur l'ensemble de ses espaces
 	 */
 	public function usersVisibles($mailFilter=false)
 	{
 		//Init
 		if($this->_usersVisibles===null){
-			$usersIds=[0];//pseudo user
-			foreach($this->getSpaces() as $objSpace)  {$usersIds=array_merge($usersIds,$objSpace->getUsers("ids"));}
-			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".implode(",",$usersIds).") ORDER BY ".Ctrl::$agora->personsSort);
+			$idsSql=null;
+			foreach($this->getSpaces() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
+			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Ctrl::$agora->personsSort);
 		}
 		//Par défaut, on enlève l'user courant  /  "mailFilter" => garde uniquement les users avec mail (cf. notifMailUsers)
 		$usersVisibles=$this->_usersVisibles;

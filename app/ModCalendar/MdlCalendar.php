@@ -20,7 +20,7 @@ class MdlCalendar extends MdlObject
 	const MdlObjectContent="MdlCalendarEvent";
 	//Propriétés d'IHM
 	const hasAttachedFiles=true;
-	//Droit de supprimer l'agenda perso. True si suppression de l'user correspondant
+	//Droit de supprimer l'agenda personel : "true" si on supprime l'user en question
 	public static $persoCalendarDeleteRight=false;
 	//Champs obligatoires, Champs de recherche et Champs de tri d'affichage
 	public static $requiredFields=array("title");
@@ -63,19 +63,20 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * SURCHARGE : Droit d'ajouter des evenements -> pas pour les "guest"
-	 */
-	public function editContentRight()
-	{
-		return (Ctrl::$curUser->isUser())  ?  parent::editContentRight()  :  false;
-	}
-
-	/*
-	 * Droit d'ajouter un agenda (partagé)
+	 * Droit d'ajouter un agenda de ressource
 	 */
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddRessourceCalendar")==false));
+	}
+
+	/*
+	 * Droit d'ajouter/proposer un événement :  Toujours ok pour les users  ||  Pour les Guests, ok si l'agenda est affecté en écriture à tous les users de l'espace
+	 */
+	public function addProposeEvtRight()
+	{
+		if(Ctrl::$curUser->isUser())	{return true;}
+		else							{return (Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND _idSpace=".Ctrl::$curSpace->_id." AND target='spaceUsers' AND accessRight>1")>0);}
 	}
 
 	/*
@@ -107,7 +108,7 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Evenements de l'agenda en fonction d'une période (confirmés)
+	 * Evenements de l'agenda en fonction d'une période (evt confirmés)
 	 */
 	public function evtList($curBegin=null, $curEnd=null, $accessRightMini=0.5, $orderByHourMinute=true, $pluginParams=null)
 	{
@@ -199,12 +200,13 @@ class MdlCalendar extends MdlObject
 	 */
 	public static function visibleCalendars()
 	{
-
-		if(self::$_visibleCalendars===null){
-			//Agendas de ressource
+		if(self::$_visibleCalendars===null)
+		{
+			//Init la sélection
 			$sqlDisplayedObjects=self::sqlDisplayedObjects();
+			//Récupère les agendas de ressource
 			self::$_visibleCalendars=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplayedObjects);
-			//Ajoute notre agenda perso et les agendas persos auquels on est affecté et qui ne sont pas "disabled" (réservé aux users, pas aux guests)
+			//Ajoute notre agenda perso && les agendas persos auquels on est affecté et qui sont "activés" (pas pour les guests)
 			if(Ctrl::$curUser->isUser()){
 				$personnalCals=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (_idUser=".Ctrl::$curUser->_id." OR ".$sqlDisplayedObjects.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
 				self::$_visibleCalendars=array_merge(self::$_visibleCalendars,$personnalCals);
@@ -235,17 +237,19 @@ class MdlCalendar extends MdlObject
 	 */
 	public static function affectationCalendars()
 	{
-		if(self::$_affectationCalendars===null && Ctrl::$curUser->isUser())
+		if(self::$_affectationCalendars===null)
 		{
-			//Agendas visibles
+			//// Ajoute les agendas accessibles en lecture
 			self::$_affectationCalendars=self::visibleCalendars();
-			//Ajoute les agendas pour les propositions d'événement : agendas persos des users de l'espace courant et qui ne sont pas "disabled" (les agendas de "ressource" non visibles ne sont pas ajoutés..)
-			if(count(Ctrl::$curSpace->getUsers("ids"))>0){
-				foreach(Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND _idUser IN (".implode(",",Ctrl::$curSpace->getUsers("ids")).") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)") as $tmpCal){
-					if(in_array($tmpCal,self::$_affectationCalendars)==false)  {self::$_affectationCalendars[]=$tmpCal;}
+			//// Puis ajoute les agendas persos non accessibles en lecture : pour pouvoir faire les propositions d'événement (Pas dispo pour les "guest")  
+			if(Ctrl::$curUser->isUser() && count(Ctrl::$curSpace->getUsers())>0)
+			{
+				//Ajoute les agendas qui ne sont pas encore dans la liste
+				foreach(Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND _idUser IN (".Ctrl::$curSpace->getUsers("idsSql").") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)") as $tmpCal){
+					if(!in_array($tmpCal,self::$_affectationCalendars))  {self::$_affectationCalendars[]=$tmpCal;}
 				}
 				//Tri les agendas par leur nom
-				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);
+				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);//Tri les agendas par leur nom
 			}
 		}
 		return self::$_affectationCalendars;
@@ -256,21 +260,32 @@ class MdlCalendar extends MdlObject
 	 */
 	public static function displayedCalendars($visibleCalendars)
 	{
-		//init
+		//Init les agendas à retourner && Récup éventuellement les agendas enregistrés en préférence
 		$displayedCalendars=[];
-		$prefDisplayedCalendars=Txt::txt2tab(Ctrl::prefUser("displayedCalendars"));//Agendas enregistrés en préférence?
-		//Agendas à afficher :  agendas spécifiés dans les préférences  OU  agenda de l'espace, créé par défaut  (on ne prend pas par défaut l'agenda perso)
+		$prefCalendars=Txt::txt2tab(Ctrl::prefUser("displayedCalendars"));
+		//Récupère les agendas à afficher :  Agendas enregistrés en préférences  OU  Agenda de l'espace créé par défaut (_id=1)
 		foreach($visibleCalendars as $tmpCal){
-			if(in_array($tmpCal->_id,$prefDisplayedCalendars) || (empty($prefDisplayedCalendars) && $tmpCal->_id==1))   {$displayedCalendars[]=$tmpCal;}
+			if(in_array($tmpCal->_id,$prefCalendars)  || (empty($prefCalendars) && $tmpCal->_id==1 && $tmpCal->type=="ressource"))   {$displayedCalendars[]=$tmpCal;}
 		}
-		//Pas d'agendas affiché : prend le premier de la liste
+		//Toujours pas d'agendas à afficher : on prend le premier des $visibleCalendars
 		if(empty($displayedCalendars) && !empty($visibleCalendars))  {$displayedCalendars[]=$visibleCalendars[0];}
-		//New session : supprime les anciens evt des agendas affichés
-		if(empty($_SESSION["calendarsCleanEvt"])){
-			foreach($displayedCalendars as $tmpCal)	{$tmpCal->deleteOldEvts();}
+		//Supprime les evénements de plus de 3 ans (lancé en début de session)
+		if(empty($_SESSION["calendarsCleanEvt"]))
+		{
+			//Période des evenements "old"
+			$time100YearsAgo=time()-(86400*365*100);
+			$time3YearsAgo=time()-(86400*365*3);
+			//Sélectionne les agendas avec "editFullContentRight()"
+			foreach($displayedCalendars as $tmpCal){
+				if($tmpCal->editFullContentRight()){
+					foreach($tmpCal->evtList($time100YearsAgo,$time3YearsAgo,2) as $tmpEvt){
+						if($tmpEvt->isOldEvt($time3YearsAgo))  {$tmpEvt->delete();}//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+					}
+				}
+			}
 			$_SESSION["calendarsCleanEvt"]=true;
 		}
-		//retour le résultat
+		//Retour les agendas à afficher
 		return $displayedCalendars;
 	}
 
@@ -294,21 +309,6 @@ class MdlCalendar extends MdlObject
 	//Comparaison binaire de caractere, mais insensible à la casse
 	public static function sortCompareCalendars($obj1, $obj2){
 		return strcasecmp($obj1->sortField, $obj2->sortField);
-	}
-
-	/*
-	 * Supprime les événements de l'agenda de plus de 3 ans
-	 */
-	public function deleteOldEvts()
-	{
-		//Evénements toute période confondu, avec accessRight>=2 : Supprime si la date de fin est passé && (sans périodicité || avec périodicité terminé)
-		if($this->editRight())
-		{
-			$time3YearsAgo=time()-(86400*365*3);
-			foreach($this->evtList(null,null,2) as $tmpEvt){
-				if($tmpEvt->isOldEvt($time3YearsAgo))  {$tmpEvt->delete($this->_id);}
-			}
-		}
 	}
 
 	/*

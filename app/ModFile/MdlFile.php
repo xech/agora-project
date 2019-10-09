@@ -152,16 +152,26 @@ class MdlFile extends MdlObject
 	 */
 	public function contextMenu($options=null)
 	{
-		//"Télécharger le fichier (Téléchargé X fois)"
+		//"Télécharger le fichier"
 		$options["specificOptions"][]=array(
 			"actionJs"=>"window.open('".$this->urlDownloadDisplay()."')",
 			"iconSrc"=>"download.png",
-			"label"=>Txt::trad("download")." (".$this->downloadsNb." downloads)"
+			"label"=>Txt::trad("download")
 		);
-		//"X versions du fichier"
+		//Admin d'espace : "téléchargé par"
+		$tooltipDownloadedBy=null;
+		if(Ctrl::$curUser->isAdminSpace() && !empty($this->downloadedBy)){
+			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
+			$tooltipDownloadedBy="title=\"".Txt::trad("FILE_downloadedBy")." :<br>".trim($tooltipDownloadedBy, ", ")."\"";
+		}
+		//"Fichier téléchargé XX fois"
+		$options["specificOptions"][]=array(
+			"iconSrc"=>"info.png",
+			"label"=>"<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"
+		);
+		//"X versions du fichier" ("versionsMenu()" contient le lien vers les versions : donc pas de "actionJs")
 		if(count($this->getVersions())>1){
 			$options["specificOptions"][]=array(
-				"actionJs"=>null,
 				"iconSrc"=>"file/versions.png",
 				"label"=>$this->versionsMenu("label")
 			);

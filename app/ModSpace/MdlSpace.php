@@ -33,7 +33,7 @@ class MdlSpace extends MdlObject
 	{
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();//Droit par défaut
-			if($this->userAccessRight(Ctrl::$curUser)>$this->_accessRight)	{$this->_accessRight=$this->userAccessRight(Ctrl::$curUser);}
+			if($this->userAccessRight(Ctrl::$curUser) > $this->_accessRight)  {$this->_accessRight=$this->userAccessRight(Ctrl::$curUser);}
 		}
 		return $this->_accessRight;
  	}
@@ -104,7 +104,7 @@ class MdlSpace extends MdlObject
 
 	/*
 	 * Utilisateurs affectés à l'espace
-	 * $return => une liste d'objets : "objects" OU une liste d'identifiants : "ids"
+	 * $return= "objects" ou "idsTab" ou "idsSql"
 	 */
 	public function getUsers($return="objects")
 	{
@@ -114,12 +114,20 @@ class MdlSpace extends MdlObject
 			$objUsers=($this->allUsersAffected())  ?  Db::getObjTab("user","SELECT * FROM ap_user ".$personsSort)  :  Db::getObjTab("user","SELECT DISTINCT T1.* FROM ap_user T1, ap_joinSpaceUser T2 WHERE T1._id=T2._idUser AND T2._idSpace=".$this->_id." ".$personsSort);
 			$this->_spaceUsers=$objUsers;
 		}
-		// Retourne un tableau d'objets  OU  d'identifiants
+		//Retourne un tableau d'objets OU une liste d'identifiants
 		if($return=="objects")	{return $this->_spaceUsers;}
-		else{
-			$tabIds=[];
-			foreach($this->_spaceUsers as $objUser)  {$tabIds[]=$objUser->_id;}
-			return $tabIds;
+		else
+		{
+			//Liste des ids d'users
+			$idsList=[];
+			foreach($this->_spaceUsers as $objUser)  {$idsList[]=$objUser->_id;}
+			//Retourne le tableau d'identifiants
+			if($return=="idsTab")  {return $idsList;}
+			//Sinon retourne une liste d'identifiants pour les requêtes SQL (exple: "WHERE _idUser IN (1,3,5,0)")
+			elseif($return=="idsSql"){
+				$idsList[]=0;//Ajoute un pseudo user pour pas avoir d'erreur SQL si la liste est vide
+				return implode(",",$idsList);
+			}
 		}
 	}
 
@@ -130,6 +138,7 @@ class MdlSpace extends MdlObject
 	 */
 	public function userAccessRight($objUser)
 	{
+		//Récupère et met en cache le droit d'accès de l'user demandé
 		if(empty($this->_usersAccessRight[$objUser->_id]))
 		{
 			if($objUser->isAdminGeneral())	{$this->_usersAccessRight[$objUser->_id]=2;}
@@ -182,49 +191,22 @@ class MdlSpace extends MdlObject
 	{
 		if($this->deleteRight())
 		{
-			//Supprime tous les objets affectés uniquement à l'espace courant
-			$_idSpaceFirstOther=Db::getVal("SELECT min(_id) FROM ap_space WHERE _id!=".$this->_id);
-			$foldersInOtherSpace=Db::getCol("SELECT CONCAT(objectType,'-',_idObject) FROM ap_objectTarget WHERE objectType like '%folder%' AND (_idSpace!=".$this->_id." or _idSpace is null)");
-			$objectsInSpace=Db::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".$this->_id." AND concat(objectType,_idObject) NOT IN (select concat(objectType,_idObject) from ap_objectTarget where _idSpace!=".$this->_id." or _idSpace is null) ORDER BY objectType, _idObject");
-			foreach($objectsInSpace as $tmpObject)
-			{
-				//Charge l'objet s'il existe toujours (pas encore supprimé depuis le début de la procédure.. cf. arborescences)
+			//Supprime les objets affectés uniquement à l'espace courant
+			$objectsOnlyInCurSpace=Db::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".$this->_id." AND concat(objectType,_idObject) NOT IN (select concat(objectType,_idObject) from ap_objectTarget where _idSpace!=".$this->_id." or _idSpace is null) ORDER BY objectType, _idObject");
+			foreach($objectsOnlyInCurSpace as $tmpObject){
+				//Charge l'objet et vérifie qu'il est bien supprimable (important : vérifie que c'est pas un dossier racine ou un agenda perso)
 				$tmpObj=Ctrl::getObj($tmpObject["objectType"],$tmpObject["_idObject"]);
-				if(is_object($tmpObj) && $tmpObj->isNew()==false)
-				{
-					//Init
-					$confirmDelete=true;
-					//Dossier : supprime uniquement les dossiers dont toute l'arborescence est accessible à l'espace
-					if($tmpObj::isFolder==true)
-					{
-						//Vérifie s'il y a des sous-dossiers affectés aussi à d'autres espaces..
-						$tmpFolderTree=$tmpObj->folderTree("all");
-						foreach($tmpFolderTree as $subFolder){
-							if(in_array($subFolder::objectType."-".$subFolder->_id, $foldersInOtherSpace))	{$confirmDelete=false;}
-						}
-						//Si on ne supprime pas le dossier : on réaffecte à l'user courant sur le premier espace (exple : "_idSpace"=>"1","target"=>"U2","accessRight"=>"2")
-						if($confirmDelete==false){
-							Ctrl::addNotif("Folder ".$tmpObj->name." (".$tmpObj::objectType.") : not deleted!");
-							foreach($tmpFolderTree as $subFolder)	{$subFolder->setAffectations([$_idSpaceFirstOther."_U".Ctrl::$curUser->_id."_2"]);}
-						}
-					}
-					//Agenda perso : pas de suppression, mais une réaffectation au proprio de l'agenda, sur le premier espace (exple : "_idSpace"=>"1","target"=>"U2","accessRight"=>"2")
-					if($tmpObj::objectType=="calendar" && $tmpObj->type=="user"){
-						$confirmDelete=false;
-						$tmpObj->setAffectations([$_idSpaceFirstOther."_U".$tmpObj->_idUser."_2"]);
-					}
-					//Supprime l'objet?
-					if($confirmDelete==true)	{$tmpObj->delete();}
-				}
+				if(is_object($tmpObj) && $tmpObj->isNew()==false && $tmpObj->isRootFolder()==false && $tmpObj::objectType!="calendar" && $tmpObj->type!="user")   {$tmpObj->delete();}
 			}
-			//Suppr les jointures & les invitations
+			//Supprime les affectations espace->modules, espace->users, espace->objets (pour les objets affectés à plusieurs espaces) et espace->invitations
 			Db::query("DELETE FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id);
 			Db::query("DELETE FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id);
 			Db::query("DELETE FROM ap_objectTarget WHERE _idSpace=".$this->_id);
 			Db::query("DELETE FROM ap_invitation WHERE _idSpace=".$this->_id);
-			//Suppr l'espace & Recalcule la taille du 'DATAS/'
+			//Supprime l'espace && Recalcule la taille du 'DATAS/' && affiche une notification
 			parent::delete();
 			File::datasFolderSize(true);
+			Ctrl::addNotif("Suppression OK");
 		}
 	}
 }

@@ -53,7 +53,7 @@ $(function(){
 						$(".vPollsContainer").fadeIn(500);
 						pollsLoading=false;//reste à false si ya plus rien à charger (évite les requêtes inutiles)
 						pollsOffsetCpt+=1;
-						//Nouveaux sondages : relance l'affichage (tooltips and co)  & les menus contextuels  & le trigger de vote des sondages
+						//Nouveaux sondages : relance l'affichage (MAJ des tooltips, etc), les menus contextuels et le "trigger" de vote des sondages
 						mainPageDisplay(false);  initMenuContext();  dashboardPollVote();
 					}
 					//Masque l'icone loading
@@ -79,7 +79,10 @@ function dashboardPollVote()
 		else{
 			$.ajax({url:"?ctrl=dashboard&action=pollVote",data:$(this).serialize(),dataType:"json"}).done(function(result){
 				//Affiche le résultat du sondage (remplace le formulaire principal, et si besoin le formulaire "newsDisplay")
-				if(result.vuePollResult.length>0)  {$(".vPollContent"+result._idPoll).html(result.vuePollResult);}
+				if(result.vuePollResult.length>0){
+					$(".vPollContent"+result._idPoll).html(result.vuePollResult);
+					mainPageDisplay(false);//MAJ des tooltips
+				}
 			});
 		}
 	});

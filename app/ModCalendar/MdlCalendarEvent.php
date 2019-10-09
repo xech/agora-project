@@ -79,7 +79,7 @@ class MdlCalendarEvent extends MdlObject
 	 */
 	public function delete()
 	{
-		//init
+		//Id de l'agenda à désaffecter de l'evt
 		$calDeleteOn=(Req::isParam("_idCalDeleteOn"))  ?  Ctrl::getObj("calendar",Req::getParam("_idCalDeleteOn"))  :  null;
 		//Supprime sur un agenda spécifique ("deleteAffectation()")  ||  Supprime un evt périodique à une date précise ("periodDateExceptions")  ||  Suppression de l'evt sur tous les agendas ("DELETE FROM ap_calendarEventAffectation")
 		if(!empty($calDeleteOn) && ($this->fullRight() || $calDeleteOn->editRight()))	{$this->deleteAffectation($calDeleteOn->_id);}
@@ -100,9 +100,9 @@ class MdlCalendarEvent extends MdlObject
 			$tmpPriority=0;
 			foreach($this->affectedCalendars() as $tmpCal){
 				if($tmpCal->isMyPerso())								{$this->_containerObj=$tmpCal;	break;}
-				elseif($tmpPriority<3 && $tmpCal->fullRight())			{$this->_containerObj=$tmpCal;	$tmpPriority=3;}
-				elseif($tmpPriority<2 && $tmpCal->editContentRight())	{$this->_containerObj=$tmpCal;	$tmpPriority=2;}
-				elseif($tmpPriority<1 && $tmpCal->readRight())			{$this->_containerObj=$tmpCal;	$tmpPriority=1;}
+				elseif($tmpPriority<3 && $tmpCal->accessRight()==3)		{$this->_containerObj=$tmpCal;	$tmpPriority=3;}
+				elseif($tmpPriority<2 && $tmpCal->accessRight()==2)		{$this->_containerObj=$tmpCal;	$tmpPriority=2;}
+				elseif($tmpPriority==0 && $tmpCal->accessRight()>0)		{$this->_containerObj=$tmpCal;	$tmpPriority=1;}
 			}
 		}
 		return $this->_containerObj;
@@ -201,9 +201,15 @@ class MdlCalendarEvent extends MdlObject
 	/*
 	 * Supprime une affectation à un agenda
 	 */
-	public function deleteAffectation($_idCal)
+	public function deleteAffectation($_idCal, $editEvtReinitAffectations=false)
 	{
-		 $curCal=Ctrl::getObj("calendar",$_idCal);
-		 if($this->fullRight() || $curCal->editContentRight())  {Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id." AND _idCal=".$curCal->_id);}
+		//Vérif l'accès total à l'evt OU l'accès en écriture au contenu de l'agenda
+		if($this->fullRight() || Ctrl::getObj("calendar",$_idCal)->editContentRight())
+		{
+			//Supprime l'affectation à l'agenda en question
+			Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id." AND _idCal=".(int)$_idCal);
+			//Supprime l'evt s'il n'est affecté à aucun agenda (sauf en cas de modif d'evt et de réinitialisation des affectations, via "actionCalendarEventEdit()")
+			if($editEvtReinitAffectations==false && count(Db::getTab("SELECT * FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id))==0)  {parent::delete();}//Pas de "$this->delete();" (sinon boucle infinie!)
+		}
 	}
 }

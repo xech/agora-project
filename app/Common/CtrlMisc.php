@@ -235,11 +235,14 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*
-	 * Controle du Captcha
+	 * Controle du Captcha (Ajax ou Direct)
 	 */
-	public static function captchaControl($captcha)
+	public static function actionCaptchaControl()
 	{
-		return (!empty($captcha) && $captcha==$_SESSION["captcha"]);
+		if($_SESSION["captcha"]==Req::getParam("captcha")){
+			if(Req::$curAction=="CaptchaControl")	{echo "true";}//Controle Ajax
+			else									{return true;}//Controle Direct
+		}
 	}
 
 	/*

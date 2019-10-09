@@ -201,6 +201,7 @@ class Trad extends Txt
 		////	Visibilité d'un Objet : auteur et droits d'accès
 		self::$trad["autor"]="Autor";
 		self::$trad["postBy"]="publicado por";
+		self::$trad["guest"]="invitado";
 		self::$trad["creation"]="Creación";
 		self::$trad["modification"]="Modif";
 		self::$trad["objHistory"]="histórico del elemento";
@@ -373,7 +374,7 @@ class Trad extends Txt
 		self::$trad["EDIT_notifNoSelection"]="Debe seleccionar al menos una persona o un espacio";
 		self::$trad["EDIT_notifNoPersoAccess"]="Usted no se ha asignado al elemento. validar todos lo mismo ?";
 		self::$trad["EDIT_notifWriteAccess"]="Debe haber al menos una persona o un espacio asignado para escribir";
-		self::$trad["EDIT_parentFolderAccessError"]="Comprobar el derecho de acceso de <i>--TARGET_LABEL--</i> a la carpeta <i>--FOLDER_NAME--</i>: <br><br>si no hay asignaciónes, el acceso a la carpeta actual será imposible.";
+		self::$trad["EDIT_parentFolderAccessError"]="Recuerde verificar los derechos de acceso de la carpeta superior ''<i>--FOLDER_NAME--</i>'': si no está también asignada a ''<i>--TARGET_LABEL--</i>'', el archivo actual no será accesible para el.";
 		self::$trad["EDIT_accessRight"]="Derechos de acceso";
 		self::$trad["EDIT_accessRightContent"]="Derechos de acceso al contenido";
 		self::$trad["EDIT_spaceNoModule"]="El módulo actual aún no se ha añadido a este espacio";
@@ -398,6 +399,9 @@ class Trad extends Txt
 		self::$trad["EDIT_attachedFileInfo"]="Añadir fotos, vídeos, PDF, Word.. al objeto actual.<br>Imágenes y videos se pueden integrar directamente en el editor.";
 		self::$trad["EDIT_attachedFileInsert"]="Mostrar en la descripción";
 		self::$trad["EDIT_attachedFileInsertInfo"]="Mostrar la imagen / video / mp3... en la descripción anterior. La inserción se realiza después de la validación del formulario.";
+		self::$trad["EDIT_guestName"]="Su nombre / apodo";
+		self::$trad["EDIT_guestNameNotif"]="Por favor, especifique un nombre / apodo";
+		self::$trad["EDIT_guestElementRegistered"]="Gracias por su propuesta : será examinada lo antes posible antes de la validación";
 		
 		////	Formulaire d'installation
 		self::$trad["INSTALL_dbConnect"]="Conexión a la base de datos";
@@ -499,7 +503,7 @@ class Trad extends Txt
 		self::$trad["AGORA_ldapDnInfo"]="Localización de los usuarios del directorio.<br> por ejemplo ''ou=users,o=my_company''";
 		self::$trad["AGORA_ldapConnectError"]="Error al conectar con el servidor LDAP !";
 		self::$trad["AGORA_ldapCreaAutoUsers"]="Auto creación de usuarios después identificación";
-		self::$trad["AGORA_ldapCreaAutoUsersInfo"]="Creación automática de un usuario si no está en el Agora, pero presente en el servidor LDAP : se le asignará a las áreas accesibles a ''todos los usuarios del sitio''.<br>De lo contrario, el usuario no se creará.";
+		self::$trad["AGORA_ldapCreaAutoUsersInfo"]="Creación automática de un usuario si no está en el Agora, pero presente en el servidor LDAP : se le asignará a los espacios accesibles a ''todos los usuarios del sitio''.<br>De lo contrario, el usuario no se creará.";
 		self::$trad["AGORA_ldapPassEncrypt"]="Contraseñas cifrado en el servidor";
 		self::$trad["AGORA_ldapDisabled"]="Módulo PHP para la conexión a un servidor LDAP no está instalado";
 
@@ -543,7 +547,8 @@ class Trad extends Txt
 		self::$trad["SPACE_spaceModules"]="Módulos del espacio";
 		self::$trad["SPACE_moduleRank"]="Mover a establecer el orden de presentación de los módulos";
 		self::$trad["SPACE_publicSpace"]="Espacio Público";
-		self::$trad["SPACE_publicInfo"]="Proporciona acceso a las personas que no tienen cuentas en el sitio : invitados. Capacidad de especificar una contraseña para proteger el acceso.";
+		self::$trad["SPACE_publicSpaceInfo"]="Da acceso a personas que no tienen una cuenta de usuario : los 'invitados'. Es posible especificar una contraseña para proteger el acceso al espacio. Los siguientes módulos serán inaccesibles para los invitados : 'mail' y 'user' (si el espacio público no tiene una contraseña)";
+		self::$trad["SPACE_publicSpaceNotif"]="Si el espacio público contiene datos confidenciales, como información de contacto personal (módulo de Contacto) o documentos (módulo de Archivo): debe agregar una contraseña de acceso para cumplir con el GDPR. <Hr> El Reglamento general de protección de datos es un reglamento de la Unión Europea que constituye el texto de referencia para la protección de datos personales.";
 		self::$trad["SPACE_usersInvitation"]="Los usuarios pueden enviar invitaciones por correo";
 		self::$trad["SPACE_usersInvitationInfo"]="Todos los usuarios pueden enviar invitaciones por correo electrónico para unirse al espacio";
 		self::$trad["SPACE_allUsers"]="Todos los usuarios";
@@ -651,7 +656,10 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_pollsNotVoted"]="Encuestas actuales : no votadas";
 		self::$trad["DASHBOARD_pollsNotVotedInfo"]="Mostrar solo las encuestas que aún no has votado";
 		self::$trad["DASHBOARD_vote"]="Votar y ver los resultados !";
-		self::$trad["DASHBOARD_votesNb"]="votos";//55 votes
+		self::$trad["DASHBOARD_voteTooltip"]="Los votos son anónimos : nadie sabrá su elección de voto";
+		self::$trad["DASHBOARD_answerVotesNb"]="Votada --NB_VOTES-- veces";//55 votes (sur la réponse)
+		self::$trad["DASHBOARD_pollVotesNb"]="La encuesta fue votada --NB_VOTES-- veces";
+		self::$trad["DASHBOARD_pollVotedBy"]="La encuesta fue votada por";//Bibi, boby, etc
 		self::$trad["DASHBOARD_noPoll"]="No hay encuesta por el momento";
 		self::$trad["DASHBOARD_plugins"]="Nuevos elementos";
 		self::$trad["DASHBOARD_pluginsInfo"]="Elementos creados";
@@ -676,6 +684,8 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_titleQuestion"]="Título / Pregunta";
 		self::$trad["DASHBOARD_multipleResponses"]="Varias respuestas posibles para cada voto";
 		self::$trad["DASHBOARD_newsDisplay"]="Mostrar con noticias (menú izquierdo)";
+		self::$trad["DASHBOARD_publicVote"]="Voto público: la elección de los votantes es pública";
+		self::$trad["DASHBOARD_publicVoteInfos"]="Tenga en cuenta que la votación pública puede ser una barrera para la participación en la encuesta.";
 		self::$trad["DASHBOARD_dateEnd"]="Fecha de fin de la encuesta";
 		self::$trad["DASHBOARD_responseList"]="Posibles respuestas";
 		self::$trad["DASHBOARD_responseNb"]="Respuesta n°";
@@ -753,11 +763,11 @@ class Trad extends Txt
 		self::$trad["CALENDAR_periodDateEnd"]="Fin de periodicidad";
 		self::$trad["CALENDAR_periodException"]="Excepción de periodicidad";
 		self::$trad["CALENDAR_calendarAffectations"]="Asignación a los calendarios";
-		self::$trad["CALENDAR_proposition"]="(Proponer)";
 		self::$trad["CALENDAR_addEvtTooltip"]="Añadir un evento";
 		self::$trad["CALENDAR_addEvtTooltipBis"]="Añadir el evento al calendario";
 		self::$trad["CALENDAR_proposeEvtTooltip"]="Proponer un evento al propietario del calendario";
-		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proponer el evento al propietario del calendario (calendario accesible solo de lectura)";
+		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proponer el evento al propietario del calendario";
+		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Proponer el evento al propietario del calendario : calendario accesible solo en lectura";
 		self::$trad["CALENDAR_verifCalNb"]="Gracias por seleccionar por lo menos un calendario";
 		self::$trad["CALENDAR_noModifInfo"]="Edición prohibida porque no tiene acceso de escritura al calendario";
 		self::$trad["CALENDAR_editLimit"]="Usted no es el autor de el evento : sólo puedes editar las asignaciones a sus calendarios";
@@ -778,7 +788,9 @@ class Trad extends Txt
 		self::$trad["FILE_addFile"]="Añadir archivos";
 		self::$trad["FILE_addFileAlert"]="Los directorios del servidor no son accesible en escritura !  gracias de contactar el administrador";
 		self::$trad["FILE_downloadSelection"]="Descargar selección";
-		self::$trad["FILE_nbFileVersions"]="Archivo versiones"; // n versions du fichier
+		self::$trad["FILE_nbFileVersions"]="Archivo versiones";//"55 versions du fichier"
+		self::$trad["FILE_downloadsNb"]="Archivo descargado --NB_DOWNLOAD-- veces";
+		self::$trad["FILE_downloadedBy"]="Archivo subido por";//"..boby, will"
 		self::$trad["FILE_addFileVersion"]="Añadir nueva versión del archivo";
 		self::$trad["FILE_noFile"]="No hay archivo en este momento";
 		// fichier_edit_ajouter  &  Fichier_edit

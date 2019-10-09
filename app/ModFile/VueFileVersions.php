@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(500);
+lightboxSetWidth(550);
 
 ////	Confirmation de suppression de version
 function confirmDeleteVersion(dateCrea)

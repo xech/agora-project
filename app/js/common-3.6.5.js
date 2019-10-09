@@ -125,11 +125,11 @@ function mainPageTriggers()
 		////	Click/DblClick sur les blocks conteneurs des objets : Sélectionne ou Edite un objet
 		if($(".objContainer").exist())
 		{
-			//Trigger si ya click sur le block et que les actions par défaut sont autorisées (cf. "noClickAction")
-			$(".objContainer:not(.noClickAction)").click(function(){
+			//Trigger si ya click sur le block et que les actions par défaut sont autorisées
+			$(".objContainer").click(function(){
 				//Init
 				var blockId="#"+this.id;
-				timeDblClick=400;//intervalle entre 2 clics
+				timeDblClick=300;//intervalle entre 2 clics (pas plus de 300ms: cela doit rester un raccourcis du menu contextuel)
 				if(typeof timeLastClick=="undefined")	{timeLastClick=Date.now();  containerIdLastClick=this.id;}
 				//Double click?
 				diffNowAndLastClick=(Date.now()-timeLastClick);
@@ -156,7 +156,7 @@ function mainPageTriggers()
 
 		////	Resize la page : relance "mainPageDisplay()"
 		$(window).resize(function(){
-			if(typeof mainPageDisplayTimeout!="undefined")  {clearTimeout(mainPageDisplayTimeout);}//annule le dernier "setTimeout" (pas de cumul)
+			if(typeof mainPageDisplayTimeout!="undefined")  {clearTimeout(mainPageDisplayTimeout);}//Pas de cumul de Timeout
 			mainPageDisplayTimeout=setTimeout(function(){ mainPageDisplay(true); },200);
 		});
 	}
@@ -322,7 +322,7 @@ function inputControls()
 	}
 
 	////	Readonly sur les datepickers et timepickers
-	if(isMobile())	{$(".dateInput,.dateBegin,.dateEnd,.timeBegin,.timeEnd").attr("readonly","readonly").css("background-color","white");}
+	if(isMobile())	{$(".dateInput,.dateBegin,.dateEnd,.timeBegin,.timeEnd").prop("readonly",true).css("background-color","white");}
 
 	////	Controle les dates de début/fin
 	$(".dateBegin, .dateEnd, .timeBegin, .timeEnd").change(function(){
@@ -439,7 +439,7 @@ function notify(message, typeNotif)
 }
 
 /*
- * Redirige la page courante
+ * Controle les redirections de page
  */
 function redir(adress)
 {
@@ -448,14 +448,21 @@ function redir(adress)
 	//Redirection : depuis une page principale ou une lightbox
 	location.href=adress;
 }
+/*Idem avec "<a href>"*/
+$(function(){
+	$("a").click(function(event){
+		//On annule la fermeture d'un formulaire en cours  ?
+		if(closeFormCanceled())  {event.preventDefault();  return false;}
+	});
+});
 
 /*
  * Annule la fermeture du formulaire en cours d'édition (lightbox OU page principale)
  */
 function closeFormCanceled()
 {
-	if(windowParent.confirmCloseForm==true && !confirm(windowParent.labelConfirmCloseForm))	{return true;}//Annule la fermeture du formulaire
-	else																					{windowParent.confirmCloseForm=false;}//Réinit le "confirmCloseForm" pour éviter un nouveau "confirm()" via un "redir()"
+	if(windowParent.confirmCloseForm==true && confirm(windowParent.labelConfirmCloseForm)==false)	{return true;}//Annule la fermeture du formulaire
+	else																							{windowParent.confirmCloseForm=false;}//Réinit le "confirmCloseForm" pour éviter un nouveau "confirm()" via un "redir()"
 }
 
 /*
@@ -508,7 +515,7 @@ function lightboxOpen(urlSrc)
 }
 
 /*
- * Width d'une Lightbox : appelé depuis une lightbox!
+ * Width d'une Lightbox : appelé depuis une lightbox (530px minimum pour l'édition d'un objet : cf. menu des droits d'accès)
  */
 function lightboxSetWidth(iframeBodyWidth)
 {
@@ -522,24 +529,24 @@ function lightboxSetWidth(iframeBodyWidth)
 }
 
 /*
- * Agrandit si besoin la hauteur d'une Lightbox :  Suite à un fadeIn(), FadeOut(), etc  OU  au chargement du TinyMce
+ * Agrandit si besoin la hauteur d'une Lightbox Iframe :  Suite à un fadeIn(), FadeOut(), etc  OU  au chargement du TinyMce
  */
 function lightboxResize()
 {
 	//Resize si le lightbox est visible
-	if(typeof windowParent.$.fancybox!="undefined" && windowParent.$(".fancybox-container").is(":visible"))
+	if(isMainPage!=true && windowParent.$(".fancybox-iframe").is(":visible"))
 	{
-		//Annule le dernier "setTimeout", pour ne pas les cumuler
+		//Pas de cumul de Timeout
 		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}
-		//Ajoute un timeout de 200ms minimum (le temps d'un "fadeIn" ou autre : cf. "$.fx.speeds._default" à 100ms)
+		//Ajoute un timeout de 350ms minimum (temps minimum pour laisser les "fadeIn" ou autre se faire : cf. "$.fx.speeds._default" à 100ms)
 		lightboxResizeTimeout=setTimeout(function(){
 			//Resize uniquement s'il y a augmentation de la hauteur (pas si ya diminution: évite ainsi les resizes trop fréquents)
-			var lightboxHeightNew=(isMainPage!==true)  ?  windowParent.$(".fancybox-iframe").contents().height()  :  $(".fancybox-inner").contents().height();//Opérateur ternaire pour Firefox..
+			var lightboxHeightNew=windowParent.$(".fancybox-iframe").contents().height();
 			if(typeof lightboxHeightOld=="undefined" || lightboxHeightNew > lightboxHeightOld){
 				lightboxHeightOld=lightboxHeightNew;//MAJ du "lightboxHeightOld" qu'on garde en référence
 				windowParent.$.fancybox.getInstance().update();//lance l'update!
 			}
-		},200);
+		},350);
 	}
 }
 
@@ -760,5 +767,30 @@ function usersLikeValidate(targetObjId, likeValue)
 			if(result.nbLikes>0 || result.nbDontlikes>0)	{$(menuId).parent().removeClass("hideMiscMenu");}
 			else											{$(menuId).parent().addClass("hideMiscMenu");}
 		});
+	}
+}
+
+/*
+ * Check/uncheck un groupe d'users (tester l'edition d'evt avec les groupes pour affectation aux agendas ET les groupes pour notification par email)
+ * Note : les inputs des groupes doivent avoir un "name" spécifique ET les inputs d'user doivent avoir une propriété "data-idUser"
+ * On passe en paramètre le "this" de l'input du groupe ET l'id du conteneur des inputs d'users ("idContainerUsers") pour définir le périmère des inputs d'users
+ */
+function userGroupSelect(thisGroup, idContainerUsers)
+{
+	//Check/uncheck chaque users du groupe
+	var idUsers=$(thisGroup).val().split(",");
+	for(var tmpKey in idUsers)
+	{
+		//Groupe "checked" : check l'user du groupe  ||  Sinon on vérifie si l'user est aussi sélectionné dans un autre groupe
+		if($(thisGroup).prop("checked"))  {var userChecked=true;}
+		else{
+			var userChecked=false;
+			$("[name='"+thisGroup.name+"']:checked").not(thisGroup).each(function(){
+				var otherGroupUserIds=$(this).val().split(",");
+				if($.inArray(idUsers[tmpKey],otherGroupUserIds)!==-1)  {userChecked=true;}
+			});
+		}
+		//Check l'user courant
+		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//"trigger" pour le style du label
 	}
 }

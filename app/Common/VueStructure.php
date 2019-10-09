@@ -29,8 +29,8 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JS & CSS DE L'AGORA -->
-		<script src="app/js/common-3.6.4.js"></script><!--toujours après Jquery & plugins Jquery !!-->
-		<link href="app/css/common-3.6.4.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-3.6.5.js"></script><!--toujours après Jquery & plugins Jquery !!-->
+		<link href="app/css/common-3.6.5.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 
 		<script>
@@ -70,11 +70,16 @@
 		?>
 		
 		<style>
-		<?php if(Ctrl::$isMainPage==true && Req::isMobile()){ ?>
-		html	{height:100%; background:url(app/img/logoMobileBg.png) <?= (is_object(Ctrl::$agora) && Ctrl::$agora->skin=="black") ?"#333":"#f2f2f2" ?>; background-repeat:no-repeat; background-position:center 95%;}/*100% pour un affichage toute la hauteur (tester sur Forum)*/
-		body	{background-color:transparent!important;}/*réinitialise les valeurs par défaut (cf. black/white.css) pour afficher le background "html' ci-dessus */
-		<?php } ?>
-		#backgroundImg		{position:fixed; z-index:-10; left:0px; top:0px; width:100%; height:100%;}
+		<?php
+		////	Wallpaper
+		if(Ctrl::$isMainPage==true){
+			if(Req::isMobile())		{echo "html  {background:url(app/img/logoMobileBg.png) no-repeat center 95%; height:100%; }";}//Logo centré sur l'appli mobile
+			else					{echo "html  {background:url(".$pathWallpaper.") no-repeat center fixed; background-size:cover;}";}//Sinon Wallpaper "fullsize" (cf. "cover")
+		}
+		////	Background-color
+		if(is_object(Ctrl::$agora) && Ctrl::$agora->skin=="black")	{echo "html  {background-color:".(Ctrl::$isMainPage==true?"#333":"#000").";}";}//"dark mode" : page principale/lightbox
+		elseif(Ctrl::$isMainPage==true && Req::isMobile())			{echo "html  {background-color:#f2f2f2;}";}//"background-color" du logo centré sur l'appli mobile
+		?>
 		#pageFooterHtml, #pageFooterIcon	{position:fixed; bottom:0px; z-index:20; display:inline-block; font-weight:normal;}/*pas de margin*/
 		#pageFooterHtml		{left:0px; padding:5px; padding-right:10px; color:#eee; text-shadow:0px 0px 9px #000;}
 		#pageFooterIcon		{right:2px; bottom:3px;}
@@ -93,27 +98,24 @@
 
 	<body>
 		<?php
-		////	PAGE PRINCIPALE : WALLPAPER & CONTENU DES LIGHTBOX & MENU RESPONSIVE
-		if(Ctrl::$isMainPage==true)
-		{
-			//Image du background
-			if(Req::isMobile()==false)  {echo "<img src=\"".$pathWallpaper."\" id='backgroundImg' class='noPrint'>";}
-			//Menu responsive (le menu responsive peux fusionner 2 menu principaux. exple : menu des modules)
-			echo "<div id='respMenuBg'></div>
-				  <div id='respMenuMain'>
-					<div id='respMenuClose'><img src='app/img/closeResp.png'></div>
-					<div id='respMenuContent'><div id='respMenuContentOne'></div><hr id='respMenuHrSeparator'><div id='respMenuContentTwo'></div></div>
-				  </div>";
-		}
-
-		////	MENU PRINCIPAL (HEADER) & CORPS DE LA PAGE
+		////	VUES PRINCIPALES : MENU DU HEADER + CORPS DE LA PAGE + MESSENGER
 		echo $headerMenu.$mainContent.$messengerLivecounter;
 
-		////	PAGE PRINCIPALE : FOOTER PERSONNALISE (script de stats, etc)  &  ICONE DE L'ESPACE
+		////	PAGE PRINCIPALE : FOOTER + MENU RESPONSIVE
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora))
 		{
+			////	FOOTER : TEXTE PERSONNALISE (TEXT OU SCRIPT)  &  ICONE DE L'ESPACE
 			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>
 				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".$pathLogoTitle."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
+
+			////	MENU RESPONSIVE (le menu responsive peux fusionner 2 menus principaux. exple : menu des modules)
+			if(Req::isMobile()){
+				echo "<div id='respMenuBg'></div>
+					  <div id='respMenuMain'>
+						<div id='respMenuClose'><img src='app/img/closeResp.png'></div>
+						<div id='respMenuContent'><div id='respMenuContentOne'></div><hr id='respMenuHrSeparator'><div id='respMenuContentTwo'></div></div>
+					  </div>";
+			}
 		}
 		?>
 	</body>

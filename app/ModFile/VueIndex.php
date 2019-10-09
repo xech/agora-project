@@ -8,7 +8,7 @@
 .objBlocks .thumbLandscape .objIcon img	{height:100%;}/*Vignette paysage*/
 .objBlocks .thumbPortrait .objIcon img	{width:100%; margin-top:-40%;}/*Vignette portrait : recentré*/
 .objBlocks .pdfIcon						{position:absolute; top:0px; right:0px;}
-.objBlocks .objLabel					{line-height:13px;}/*surcharge : tester avec des noms sur 2 lignes (min & maj)*/
+.objBlocks .objLabel					{line-height:15px;}/*surcharge : tester avec des noms sur 2 lignes (min & maj)*/
 .hasThumb [data-fancybox='images']		{cursor:url("app/img/search.png"),all-scroll!important;}
 .vVersionsMenu							{margin-left:5px;}
 </style>

@@ -14,17 +14,34 @@ class MdlPerson extends MdlObject
 {
 	//Valeurs mises en cache
 	private $_hasImg=null;
+	private $_personLabel=null;
 	//Champs obligatoires, de recherche et de tri des résultats
 	public static $displayModeOptions=array("block","line");
 	public static $requiredFields=array("name","firstName","login");
 	public static $searchFields=array("name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment");
-	//Formats .csv  (champ agora=>champ specifique)
+	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
 	public static $csvFormats=array(
 		//AGORA
 		"csv_agora"=>array(
 			"delimiter"=>";",
 			"enclosure"=>'"',
-			"fieldKeys"=>array("civility","name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment","login","password")
+			"fieldKeys"=>array(
+				"civility"=>"civility",
+				"name"=>"name",
+				"firstName"=>"firstName",
+				"companyOrganization"=>"companyOrganization",
+				"function"=>"function",
+				"adress"=>"adress",
+				"postalCode"=>"postalCode",
+				"city"=>"city",
+				"country"=>"country",
+				"telephone"=>"telephone",
+				"telmobile"=>"telmobile",
+				"mail"=>"mail",
+				"comment"=>"comment",
+				"login"=>"login",
+				"password"=>"password"
+			)
 		),
 		//GMAIL
 		"csv_gmail"=>array(
@@ -122,16 +139,19 @@ class MdlPerson extends MdlObject
 	}
 
 	/*
-	 * SURCHARGE : Affiche le Prénom/Nom de l'utilisateur/contact
+	 * SURCHARGE : Affiche le "Prénom NOM" de l'utilisateur ou contact
 	 */
-	public function getLabel($displayMode=null)
+	public function getLabel($labelType=null)
 	{
-		if(empty($this->firstName) && empty($this->name))  {return "<i>".Txt::trad("unknown")."</i>";}
-		else{
-			if($displayMode=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$displayMode "firstName"	=> Prénom
-			elseif($displayMode=="all")									{return $this->civility." ".$this->firstName." ".$this->name;}	//$displayMode "all"		=> Civilité Prénom Nom
-			else														{return $this->firstName." ".$this->name;}						//$displayMode par défaut	=> Prénom Nom
+		//Label par défaut en cache
+		if($this->_personLabel===null){
+			if(empty($this->firstName) && empty($this->name))	{$this->_personLabel="<i>".Txt::trad("unknown")."</i>";}//"Personne inconnue"
+			else												{$this->_personLabel=$this->firstName." ".$this->name;} //Exple : Bobby SMITH
 		}
+		//Renvoie le label par défaut ou un label spécifique
+		if($labelType==null)										{return $this->_personLabel;}									//$labelType par défaut (Exple: Bobby SMITH)
+		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType "firstName", pour le messenger ou autre (Exple: Bobby)
+		else														{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType "full", pour le profil utilisateur ou autre (Exple: Mr Bobby SMITH)
 	}
 
 	/*
@@ -288,21 +308,29 @@ class MdlPerson extends MdlObject
 		////	EXPORT CSV
 		if(strstr($exportType,"csv"))
 		{
-			//Nom et entete du fichier
+			//Nom et champs du .csv
 			$csv=static::$csvFormats[$exportType];
 			$fileName=$exportType.".csv";
-			foreach($csv["fieldKeys"] as $fieldAgora=>$fieldCsv)	{$fileContent.=$csv["enclosure"].$fieldCsv.$csv["enclosure"].$csv["delimiter"];}
+			//Enlève la colonne "password" pour tous les exports csv  &&  la colonne "login" pour les contacts 
+			unset($csv["fieldKeys"]["password"]);
+			if(static::objectType!="user")  {unset($csv["fieldKeys"]["login"]);}
+			//Créé l'entête du fichier CSV (ajoute la colonne "groups" pour les users)
+			foreach($csv["fieldKeys"] as $fieldAgora=>$fieldCsv)  {$fileContent.=$csv["enclosure"].$fieldCsv.$csv["enclosure"].$csv["delimiter"];}
+			if(static::objectType=="user")  {$fileContent.=$csv["enclosure"]."groups".$csv["enclosure"].$csv["delimiter"];}
 			$fileContent.="\n";
-			//Ajout de chaque personne
+			//Ajoute chaque user/contact
 			foreach($personObjList as $tmpPerson)
 			{
-				foreach($csv["fieldKeys"] as $fieldAgora=>$fieldCsv)
-				{
-					if(is_numeric($fieldAgora))	{$fieldAgora=$fieldCsv;}//pour le type "csv_agora"
-					if($csv["enclosure"]=="'")	{$tmpPerson->$fieldAgora=addslashes($tmpPerson->$fieldAgora);}
-					if($fieldCsv=="password")	{$tmpPerson->$fieldAgora=null;}//of course..
+				//Ajoute chaque champ du user/contact
+				foreach($csv["fieldKeys"] as $fieldAgora=>$fieldCsv){
+					if($csv["enclosure"]=="'")	{$tmpPerson->$fieldAgora=addslashes($tmpPerson->$fieldAgora);}//Addslashes de la valeur si besoin
 					$fileContent.=(!empty($tmpPerson->$fieldAgora))  ?  $csv["enclosure"].$tmpPerson->$fieldAgora.$csv["enclosure"].$csv["delimiter"]  :  $csv["delimiter"];
 				}
+				//User : ajoute la liste des groupes
+				if(static::objectType=="user"){
+					foreach(MdlUserGroup::getGroups(null,$tmpPerson) as $tmpGroup)  {$fileContent.=$csv["enclosure"].$tmpGroup->title.$csv["enclosure"].$csv["delimiter"];}
+				}
+				//Retour à la ligne
 				$fileContent.="\n";
 			}
 		}

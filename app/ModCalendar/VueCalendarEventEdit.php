@@ -18,54 +18,38 @@ $(function(){
 		displayPeriodType();
 		timeSlotBusy();
 	<?php } ?>
-	//Surligne les agendas sélectionnés
+	//Surligne les agendas déjà sélectionnés
 	$(".vCalendarInput:checked").each(function(){
 		$(this).parents(".vAffectationBlock").addClass("sTableRowSelect");
 	});
 
-	////	Change la date/heure/périodicité :  Controle des créneaux horaires occupés  &  Affiche les details de périodicité?
+	////	Change de date/heure/périodicité (sauf pour les guests) :  Controle si les créneaux horaires sont déjà occupés  &  Affiche si besoin les details de périodicité
+	<?php if(Ctrl::$curUser->isUser()){ ?>
 	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").change(function(){ timeSlotBusy(); });
 	$("[name='periodType'],[name='dateBegin']").change(function(){ displayPeriodType(); });
+	<?php } ?>
 
-	////	Check/Unckeck l'input d'un agenda
+	////	Check/Unckeck l'input principal d'un agenda (via son "label")
 	$(".vCalendarInput").change(function(){
-		//Affiche "l'événement sera proposé.." avec un "timeout" (Annule si besoin le dernier "setTimeout", car pas de cumul si on sélectionne un groupe d'user)
-		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}
+		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
+		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout
 		timeoutPropose=setTimeout(function(thisInput){
 			if(/proposition/i.test(thisInput.name) && $(thisInput).prop("checked"))  {notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
-		}, 300, this);//Transmet l'input via "this"
-		//Surligne l'agenda s'il est sélectionné (et affiche l'input de proposition, s'il est présent)
+		},500,this);//Affiche avec un timeout (cf. sélection d'un groupe d'users). Transmet l'input courant en paramètre via "this"
+		//Agenda sélectionné : on surligne le block et affiche si besoin l'option de proposition
 		if(this.checked)	{$(this).parents(".vAffectationBlock").addClass("sTableRowSelect").find(".vAffectationAddProposition").show();}
-		else				{$(this).parents(".vAffectationBlock").removeClass("sTableRowSelect");}
-		//Déselectionne par défaut l'input de proposition, s'il est présent
+		else				{$(this).parents(".vAffectationBlock").removeClass("sTableRowSelect").find(".vAffectationAddProposition").hide();}
+		//"uncheck" si besoin l'option de proposition
 		$(this).parents(".vAffectationBlock").find(".vCalendarInputProposition").prop("checked",false);
 		//Controle d'occupation du créneau horaire de chaque agenda sélectionné
 		timeSlotBusy();
 	});
-	
-	////	Sélectionne une proposition d'agenda (optionnelle) : décoche l'affectation principale et affiche une notification
-	$(".vCalendarInputProposition").change(function(){
-		if(this.checked){
-			$(this).parents(".vAffectationBlock").find(".vCalendarInput").prop("checked",false);
-			notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");
-		}
-	});
 
-	////	Sélection d'un groupe d'users
-	$("[name='groupList[]']").on("change",function(){
-		//Pour chaque user du groupe : check/uncheck ?
-		var idUsers=$(this).val().split(",");
-		for(var tmpKey in idUsers){
-			//User déjà sélectionné dans un autre groupe?
-			userInOtherGroup=false;
-			$("[name='groupList[]']:checked").not(this).each(function(){
-				var otherGroupUserIds=$(this).val().split(",");
-				if($.inArray(idUsers[tmpKey],otherGroupUserIds)!==-1)  {userInOtherGroup=true;}
-			});
-			//Check l'user (actif) si le groupe courant est checked OU si l'user est dans un autre groupe checked
-			var tmpUserCheck=($(this).prop("checked") || userInOtherGroup==true)  ?  true  :  false;
-			$("input[data-typeiduser=user_"+idUsers[tmpKey]+"]:enabled").prop("checked",tmpUserCheck).trigger("change");//"trigger" pour gérer le style de la sélection
-		}
+	////	Check/Uncheck l'option de proposition pour un agenda
+	$(".vCalendarInputProposition").change(function(){
+		//"checked" : décoche l'affectation principale et affiche la notif "l'événement sera proposé..."   ||   "unchecked" : masque l'option de proposition et enlève le surlignage de la ligne (retour à l'état initial)
+		if(this.checked)	{$(this).parents(".vAffectationBlock").find(".vCalendarInput").prop("checked",false);  notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
+		else				{$(this).parents(".vAffectationBlock").removeClass("sTableRowSelect").find(".vAffectationAddProposition").hide();}
 	});
 });
 
@@ -73,7 +57,7 @@ $(function(){
 function displayPeriodType()
 {
 	//Réinitialise les options de périodicité & Affiche au besoin l'options sélectionnée
-	$("[id^=periodOption_], #periodDetails, #periodDateEnd, #periodDateExceptions").hide();
+	$("[id^=periodOption_],#periodDetails,#periodDateEnd,#periodDateExceptions").hide();
 	if($("[name='periodType']").isEmpty()==false){
 		$("#periodOption_"+$("[name='periodType']").val()).show();
 		$("#periodDetails, #periodDateEnd, #periodDateExceptions").show();
@@ -104,9 +88,8 @@ function deletePeriodDateExceptions(exceptionCpt)
 ////	Controle occupation créneaux horaires des agendas sélectionnés : en AJAX
 function timeSlotBusy()
 {
-	//Annule si besoin le dernier "setTimeout" : pas de cumul si on sélectionne un groupe d'user
-	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}
 	//Lance la requête ajax, avec un "timeout"
+	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout
 	timeoutTimeSlotBusy=setTimeout(function(){
 		//Prépare la requete de controle Ajax, avec la liste des Agendas sélectionnés : affectations accessibles en écriture
 		if($("[name='dateBegin']").isEmpty()==false && $("[name='dateEnd']").isEmpty()==false)
@@ -116,7 +99,7 @@ function timeSlotBusy()
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
 						"&_evtId=<?= $curObj->_id ?>&targetObjects[calendar]=";
-			$(".vCalendarInput:checked, .vCalendarInputProposition:checked").each(function(){ ajaxUrl+=this.value+"-"; });
+			$(".vCalendarInput:checked,.vCalendarInputProposition:checked").each(function(){ ajaxUrl+=this.value+"-"; });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
 				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".vTimeSlotBusyTable").html(txtResult); }
@@ -130,7 +113,7 @@ function timeSlotBusy()
 function formControl()
 {
 	//Controle le nombre d'affectations aux agendas
-	if($(".vCalendarInput:checked, .vCalendarInputProposition:checked").isEmpty())  {notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>"); return false;}
+	if($(".vCalendarInput:checked,.vCalendarInputProposition:checked").isEmpty())  {notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>"); return false;}
 	//Controle final (champs obligatoires, etc)
 	return mainFormControl();
 }
@@ -139,7 +122,7 @@ function formControl()
 <style>
 #blockDescription			{margin-top:15px; <?= empty($curObj->description)?"display:none;":null ?>}
 #eventDetails				{text-align:center;}
-.vEventDetail				{display:inline-block; margin:10px;}
+.vEventDetails				{display:inline-block; margin:10px;}
 .vContentVisibleTitle		{text-align:left;}
 
 /*PÉRIODICITÉ*/
@@ -151,12 +134,19 @@ function formControl()
 #periodDetails				{text-decoration:underline;}
 
 /*AFFECTATION AUX AGENDAS*/
-.vAffectationCalendars		{max-height:135px; overflow-y:auto;}
-.vAffectationBlock			{display:inline-block; width:49%; padding:5px; border-radius:3px;}
+#divAffectationCalendars			{max-height:135px; overflow-y:auto;}
+.vAffectationBlock					{display:inline-block; width:48%; margin:2px; margin-right:5px; border-radius:3px;}
 .vAffectationBlock .vCalendarInput	{display:none;}
-.vAffectationBlock label			{display:inline-block; width:80%;}
+.vAffectationBlock label			{display:inline-block; width:75%; padding:5px;}
 .vAffectationBlock img				{max-height:18px;}
-.vAffectationAddProposition			{display:none; float:right;}
+.vAffectationAddProposition			{display:none; float:right; padding:3px; background:#ddd;}
+.vAffectationAddProposition input	{margin-right:2px;}
+input[name='calUsersGroup[]']		{display:none;}
+
+/*GUESTS : MASQUE LES OPTIONS AVANCEES & LE MENU D'AFFECTATION AUX AGENDAS (conserve en "background" l'agenda présélectionné pour l'enregistrement du formulaire)*/
+<?php if(Ctrl::$curUser->isUser()==false){ ?>
+.vEventDetailsAdvanced, .optionsAffect	{display:none;}
+<?php } ?>
 
 /*DÉTAILS SUR L'AFFECTATION*/
 #timeSlotBusy				{display:none;}
@@ -166,9 +156,9 @@ function formControl()
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	.vEventDetail			{margin:8px;}
 	select[name="periodType"], select[name="contentVisible"]	{margin-top:10px;}
-	.vAffectationBlock		{width:98%;}
+	.vAffectationBlock											{width:98%;}
+	.vAffectationBlock label									{padding:8px;}
 }
 </style>
 
@@ -188,7 +178,7 @@ function formControl()
 		<br><br>
 
 		<!--DATE DEBUT & FIN-->
-		<span class="vEventDetail">
+		<span class="vEventDetails">
 			<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>">
 			<input type="text" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" placeholder="H:m">
 			&nbsp; <img src="app/img/arrowRight.png"> &nbsp; 
@@ -197,7 +187,7 @@ function formControl()
 		</span>
 		
 		<!--CATEGORIE-->
-		<span class="vEventDetail">
+		<span class="vEventDetails">
 			<?= Txt::trad("CALENDAR_category") ?>
 			<select name="_idCat">
 				<option value=""></option>
@@ -208,7 +198,7 @@ function formControl()
 		</span>
 		
 		<!--IMPORTANT-->
-		<span class="vEventDetail">
+		<span class="vEventDetails vEventDetailsAdvanced">
 			<?= Txt::trad("important") ?>
 			<select name="important">
 				<option value="0"><?= Txt::trad("no") ?></option>
@@ -217,7 +207,7 @@ function formControl()
 		</span>
 	
 		<!--VISIBILITE-->
-		<span class="vEventDetail">
+		<span class="vEventDetails vEventDetailsAdvanced">
 			<select name="contentVisible" title="<div class='vContentVisibleTitle'><?= Txt::trad("CALENDAR_visibilityInfo") ?></div>">
 				<option value="public"><?= Txt::trad("CALENDAR_visibilityPublic") ?></option>
 				<option value="public_cache"><?= Txt::trad("CALENDAR_visibilityPublicHide") ?></option>
@@ -226,7 +216,7 @@ function formControl()
 		</span>
 	
 		<!--PERIODICITE-->
-		<span class="vEventDetail">
+		<span class="vEventDetails vEventDetailsAdvanced">
 			<select name="periodType">
 				<option value=""><?= Txt::trad("CALENDAR_noPeriodicity") ?></option>
 				<option value="weekDay"><?= Txt::trad("CALENDAR_period_weekDay") ?></option>
@@ -236,7 +226,7 @@ function formControl()
 		</span>
 
 		<!--PERIODICITE: DETAIL (exple: "le 15 du mois"-->
-		<div id="periodDetails"></div>
+		<div id="periodDetails">&nbsp;</div>
 
 		<!--PERIODICITE: JOURS DE LA SEMAINE-->
 		<div id="periodOption_weekDay">
@@ -288,42 +278,40 @@ function formControl()
 	<div class="lightboxBlockTitle optionsAffect"><?= Txt::trad("CALENDAR_calendarAffectations") ?> <img src="app/img/switch.png" class="sLink" onclick="$('.vCalendarInput:enabled').trigger('click');" title="<?= Txt::trad("invertSelection") ?>"></div>
 	<div class="lightboxBlock optionsAffect">
 		<?php
-		echo "<div class='vAffectationCalendars'>";
+		echo "<div id='divAffectationCalendars'>";
 		////	AGENDAS DE RESSOURCES & AGENDAS PERSONNELS
 		foreach($affectationCalendars as $tmpCal)
 		{
-			//Icone ressource/user && nom du champ affectation/proposition
-			$calIcon=($tmpCal->type=="user")  ?  "typeUser.png"  :  "typeRessource.png";
+			//Nom de l'input
 			$calInputName=($tmpCal->inputType=="affectation")  ?  "affectationCalendars[]"  :  "propositionCalendars[]";
+			//Réinit l'affectation/proposition après validation du form?
+			$moreInputs=($tmpCal->reinitCalendarInput==true)  ?  "<input type='hidden' name='reinitCalendars[]' value=\"".$tmpCal->_id."\">"  :  null;
+			//Agenda d'user ou de ressource
+			if($tmpCal->type=="user")	{$calIcon="typeUser.png";		$calIdUser="data-idUser=\"".$tmpCal->_idUser."\"";}
+			else						{$calIcon="typeRessource.png";	$calIdUser=null;}
 			//Astérisque sur les agendas non-modifiables || proposition
 			if($tmpCal->isDisabled!=null)				{$tmpCal->title.=" &#42;&#42;";}
 			elseif($tmpCal->inputType=="proposition")	{$tmpCal->title.=" &#42;";}
-			//Réinit l'affectation/proposition (après validation du form)
-			$moreInputs=($tmpCal->reinitCalendarInput==true)  ?  "<input type='hidden' name='reinitCalendars[]' value=\"".$tmpCal->_id."\">"  :  null;
-			//Option de proposition d'événement (en plus de l'ajout simple)
+			//Affiche l'option de proposition d'événement (en plus du champ principal avec le label)
 			if($tmpCal->inputType=="affectation" && $tmpCal->isMyPerso()==false){
-				$propositionShow=$propositionChecked=null;
-				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'"; $propositionChecked="checked"; $tmpCal->isChecked=null;}//Proposition déjà sélectionnée : décoche l'input principal
-				$moreInputs.="<div class='vAffectationAddProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltip")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
+				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'"; $propositionChecked="checked"; $tmpCal->isChecked=null;}//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
+				else																				{$propositionShow=$propositionChecked=null;}														//Sinon on masque par défaut l'option de proposition
+				$moreInputs.="<div class='vAffectationAddProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
 			}
 			//Affiche l'input d'affectation/proposition
 			echo "<div class='vAffectationBlock sTableRow'>
-					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"inputCalendar".$tmpCal->_id."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." data-typeiduser=\"".$tmpCal->type."_".$tmpCal->_idUser."\">
-					<label for=\"inputCalendar".$tmpCal->_id."\" title=\"".$tmpCal->tooltip."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
+					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"box".$tmpCal->_targetObjId."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." ".$calIdUser.">
+					<label for=\"box".$tmpCal->_targetObjId."\" title=\"".$tmpCal->tooltip."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
 					".$moreInputs."
 				  </div>";
 		}
-		////	GROUPES d'UTILISATEURS
-		if(!empty($userGroups))
-		{
-			echo "<hr>";
-			foreach($userGroups as $tmpGroup)
-			{
-				echo "<div class='vAffectationBlock sTableRow' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
-						<input type='checkbox' name=\"groupList[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='box".$tmpGroup->_targetObjId."'>
-						<label for='box".$tmpGroup->_targetObjId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
-					  </div>";
-			}
+		////	SELECTION D'UN GROUPE D'UTILISATEURS
+		if(!empty($curSpaceUserGroups))  {echo "<hr>";}
+		foreach($curSpaceUserGroups as $tmpGroup){
+			echo "<div class='vAffectationBlock sTableRow' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
+					<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_targetObjId."' onchange=\"userGroupSelect(this,'#divAffectationCalendars');\">
+					<label for='calUsersGroup".$tmpGroup->_targetObjId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
+				  </div>";
 		}
 		echo "</div>";
 		?>

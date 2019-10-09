@@ -147,7 +147,7 @@ abstract class Ctrl
 			{
 				//Mise à jour récente : notification dans le "pageFooterHtml" pour l'admin de l'espace
 				if(self::$curUser->isAdminSpace() && self::$curUser->previousConnection<strtotime(self::$agora->dateUpdateDb))
-					{self::$agora->footerHtml="<span id='footerHtmlUpdate'>".Txt::trad("NOTIF_update")." ".Txt::displayDate(self::$agora->dateUpdateDb,"dateMini")." : v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').effect('pulsate',{times:5},10000);</script>";}
+					{self::$agora->footerHtml="<span id='footerHtmlUpdate'>".Txt::trad("NOTIF_update")." ".Txt::displayDate(self::$agora->dateUpdateDb,"dateMini")." : v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').effect('pulsate',{times:10},10000);</script>";}
 				//Espace Disk
 				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
 				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70) ? true : false;

@@ -1,7 +1,7 @@
 <script>
 ////	Captcha toujours en majuscule
 $(function(){
-	$("input[name='captcha']").on("change keyup",function(){
+	$("#captchaText").on("change keyup",function(){
 		$(this).val(this.value.toUpperCase());
 	});
 });

@@ -99,13 +99,24 @@ class CtrlFile extends Ctrl
 	{
 		if(Req::isParam("targetObjId"))
 		{
+			//Récupère le fichier et controle le droit d'accès
 			$curFile=self::getTargetObj();
 			if($curFile->readRight()  ||  (Req::isParam("nameMd5") && md5($curFile->name)==Req::getParam("nameMd5")))
 			{
-				//Affichage ou Download du fichier
+				//Affichage du fichier
 				if(Req::isParam("display"))  {File::display($curFile->filePath());}
-				else{
-					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1) WHERE _id=".$curFile->_id);
+				//Download du fichier
+				else
+				{
+					//Ajout l'user courant à "downloadedBy"
+					$sqlDownloadedBy=null;
+					if(Ctrl::$curUser->isUser()){
+						$curFile->downloadedBy=array_unique(array_merge([Ctrl::$curUser->_id], Txt::txt2tab($curFile->downloadedBy)));//"array_unique()" car l'user courant peut avoir déjà téléchargé le fichier
+						$sqlDownloadedBy=", downloadedBy=".Db::format(Txt::tab2txt($curFile->downloadedBy));
+					}
+					//Update la table en incrémentant "downloadsNb" et si possible "downloadedBy"
+					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1) ".$sqlDownloadedBy." WHERE _id=".$curFile->_id);
+					//Télécharge ensuite le fichier
 					$curVersion=$curFile->getVersion(Req::getParam("dateCrea"));
 					File::download($curVersion["name"], $curFile->filePath(Req::getParam("dateCrea")));
 				}

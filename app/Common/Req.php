@@ -56,9 +56,12 @@ class Req
 		require_once PATH_DATAS."config.inc.php";
 		//Lance l'action demandée
 		try{
-			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}//Install : pas d'initialisation du controleur
+			//"isInstalling" : pas d'initialisation du controleur
+			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}
+			//Lance le controleur / Lance une 'Exception' / Erreur '404' dans le header
 			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}
-			else												{throw new Exception("Action '".$curActionMethod."' not found");}
+			elseif(self::isDevServer())							{throw new Exception("Action '".$curActionMethod."' not found");}
+			else												{header("HTTP/1.0 404 Not Found"); exit;}
 		}
 		//Gestion des exceptions
 		catch(Exception $e){
@@ -126,6 +129,14 @@ class Req
 	}
 
 	/*
+	 * Vérifie si on est en mode 'DEV'
+	 */
+	public static function isDevServer()
+	{
+		return stristr($_SERVER["HTTP_HOST"],"debian");
+	}
+
+	/*
 	 * Navigation sur appareil tactile (PHP && COMMON.JS && COMMON.CSS : width de 1023px maxi)
 	 */
 	public static function isMobile()
@@ -148,7 +159,7 @@ class Req
 	 */
     private function displayExeption(Exception $exception)
 	{
-		//Install à réaliser et pas de hosting : redirigevers le formulaire d'install
+		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
 		if(preg_match("/dbInstall/i",$exception) && self::isInstalling()==false && Ctrl::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		//Affiche le message
         echo "<h3 style='text-align:center;margin-top:50px;'><img src='app/img/important.png' style='vertical-align:middle'> internal error  :<br><br>".(Ctrl::isHost()?$exception->getMessage():$exception)."<br><br>[<a href='?ctrl=offline'>Back</a>]</h3>";

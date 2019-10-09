@@ -13,8 +13,8 @@
 class Db
 {
 	private static $_objPDO=null;
-	public static $readsNb=null;
-	public static $writesNb=null;
+	//public static $readsNb=null;
+	//public static $writesNb=null;
 
 	/*
 	 * renvoie l'objet PDO initialisé qu'une seule fois

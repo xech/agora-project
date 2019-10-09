@@ -1,5 +1,5 @@
 <script>
-lightboxSetWidth(520);//Resize
+lightboxSetWidth(550);//Resize
 </script>
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">

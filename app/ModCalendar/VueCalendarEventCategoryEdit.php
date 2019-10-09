@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(580);
+lightboxSetWidth(600);
 
 ////	Init la page
 $(function(){

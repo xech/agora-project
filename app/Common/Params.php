@@ -7,7 +7,7 @@
 */
 
 //Version du soft
-define("VERSION_AGORA","3.6.4");//sur 3 niveaux (4 max.)
+define("VERSION_AGORA","3.6.5");//sur 3 niveaux (4 max.)
 define("VERSION_AGORA_PHP_MINIMUM","5.5");
 
 //Config de base
@@ -17,9 +17,12 @@ define("MESSENGER_TIMEOUT",86400);//24h (idem "editorDraft")
 define("OMNISPACE_URL_PUBLIC","https://www.omnispace.fr/AP-OMNISPACE");
 define("OMNISPACE_URL_LABEL","www.omnispace.fr");
 
-//Chemin de base & Co
-if(is_file("Host.php"))	{require_once "Host.php";  Host::initHost();}
-else					{define("PATH_DATAS","DATAS/");}
+//Init le "PATH_DATAS" & CO
+if(is_file("Host.php"))  {require_once "Host.php";  Host::initHost();}
+else{
+	define("PATH_DATAS","DATAS/");
+	if(!is_dir(PATH_DATAS) && is_dir("stock_fichiers/"))  {rename("stock_fichiers/",PATH_DATAS);}//Update V2
+}
 
 //Chemins spécifiques
 define("PATH_MOD_FILE",	PATH_DATAS."modFile/");

@@ -5,6 +5,7 @@
 #headerMainMenuTab>div	{display:table-cell; padding:0px; padding-right:10px!important;}
 #headerMainMenuRight	{border-left:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
 #headerMainMenuRight .menuIconArrow	{text-align:right!important;}
+#headerMainMenuOmnispace{text-align:center;}
 #curSpaceEdit			{margin-left:10px; height:20px; transform:scaleX(-1);}/*"scaleX" : inverse l'image*/
 /*MENU DES MODULES*/
 #headerModuleTab		{display:inline-table; height:100%;}
@@ -56,7 +57,7 @@
 					////	VALIDE L'INSCRIPTION D'UTILISATEURS
 					if($userInscriptionValidate==true){
 						echo "<div class='menuLine sLink vHeaderUserInscription' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div><hr>"
-							."<script> $('.vHeaderUserInscription').effect('pulsate',{times:20},15000); </script>";
+							."<script> $('.vHeaderUserInscription').effect('pulsate',{times:30},30000); </script>";
 					}
 					////	CONNEXION D'UN INVITE  ||  MENU PRINCIPAL DE L'ESPACE => RECHERCHER SUR L'ESPACE + ENVOI D'INVITATION (?) + DOCUMENTATION
 					if(Ctrl::$curUser->isUser()==false)  {echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("connect")."</div></div>";}
@@ -88,7 +89,7 @@
 						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
 					}
 					////	LOGO OMNISPACE
-					echo "<hr><div class='menuLine sLink' id='headerMainMenuOmnispace' onclick=\"window.open('".OMNISPACE_URL_PUBLIC."')\" title=\"".OMNISPACE_URL_LABEL."\"><div class='menuIcon'>&nbsp;</div><div><img src='app/img/logoLabel.png'></div></div>";
+					echo "<hr><div class='menuLine sLink' id='headerMainMenuOmnispace' onclick=\"window.open('".OMNISPACE_URL_PUBLIC."')\" title=\"".OMNISPACE_URL_LABEL."\"><img src='app/img/logoLabel.png'></div>";
 					?>
 				</div>
 				<?php

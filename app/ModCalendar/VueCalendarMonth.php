@@ -76,8 +76,8 @@ function calendarDimensions()
 		if(date("N",$tmpDay["timeBegin"])==1)	{echo "<div class='vCalMonthDaysLine'>";}
 
 		////	AFFICHE LE JOUR
-		//Lien pour ajouter un evt (sauf pour les guests)
-		$onclickAddEvt=(Ctrl::$curUser->isUser())  ? "onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$tmpCal->_id."&newEvtTimeBegin=".strtotime(date("Y-m-d",$tmpDay["timeBegin"])." ".date("H:00"))."')\""  :  null;
+		//Lien pour ajouter un evt (agenda accessible en lecture seule : on propose l'événement)
+		$onclickAddEvt=($addProposeEvtRight==true)  ?  "onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$tmpCal->_id."&newEvtTimeBegin=".strtotime(date("Y-m-d",$tmpDay["timeBegin"])." ".date("H:00"))."')\""  :  null;
 		//Styles de la cellule du jour
 		$styleDay=(!empty($onclickAddEvt))  ?  "sLink"  :  null;										//Init : ajout d'evt possible?
 		if(date("m",$tmpDay["timeBegin"])!=date("m",$curTime))	{$styleDay.=" vCalMonthDayOtherMonth";}	//Jour du mois précédent/futur (à celui affiché)
@@ -85,9 +85,9 @@ function calendarDimensions()
 		if(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d"))	{$styleDay.=" vCalMonthToday";}			//Aujourd'hui
 		//Cellule du jour
 		echo "<div class='vCalMonthDayCell ".$styleDay."' ".$onclickAddEvt.">
-				<div class='vCalMonthDayLabel'>
+				<div class='vCalMonthDayLabel' title=\"".$addEvtTxt."\">
 					".date("j",$tmpDay["timeBegin"])."<span class='vCalMonthDayCelebration'>".$tmpDay["celebrationDay"]."</span>
-					<img src='app/img/plusSmall.png' class='vCalMonthDayAddEvt' title=\"".$txtAddEvt."\">
+					<img src='app/img/plusSmall.png' class='vCalMonthDayAddEvt'>
 				</div>";
 				//EVENEMENTS DU JOUR
 				foreach($eventList[$tmpDay["date"]] as $tmpEvt){

@@ -201,6 +201,7 @@ class Trad extends Txt
 		////	Visibilité d'un Objet : auteur et droits d'accès
 		self::$trad["autor"]="Author";
 		self::$trad["postBy"]="Post by";
+		self::$trad["guest"]="guest";
 		self::$trad["creation"]="Creation";
 		self::$trad["modification"]="Modif";
 		self::$trad["objHistory"]="History of the element";
@@ -373,7 +374,7 @@ class Trad extends Txt
 		self::$trad["EDIT_notifNoSelection"]="You must select at least a person or a space";
 		self::$trad["EDIT_notifNoPersoAccess"]="You are not assigned to the element. validate all the same ?";
 		self::$trad["EDIT_notifWriteAccess"]="There must be at least a person or a space assigned in writing";
-		self::$trad["EDIT_parentFolderAccessError"]="Check <i>--TARGET_LABEL--</i> access rights to the parent folder <i>--FOLDER_NAME--</i> : <br><br>if no assignment is made there, access to the current folder will be impossible.";
+		self::$trad["EDIT_parentFolderAccessError"]="Remember to check the access rights of the parent folder ''<i>--FOLDER_NAME--</i>'': If it is not also assigned to ''<i>--TARGET_LABEL--</i>'', the present file will not be accessible to him.";
 		self::$trad["EDIT_accessRight"]="Access rights";
 		self::$trad["EDIT_accessRightContent"]="Access rights to the content";
 		self::$trad["EDIT_spaceNoModule"]="The current module has not yet been added to this space";
@@ -382,7 +383,7 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsersInfo"]="All the users of the space <i>--SPACENAME--</i>";
 		self::$trad["EDIT_allUsersAndGuestsInfo"]="All the users of the space <i>--SPACENAME--</i> and guests but with a read only access (guests : people who do not have a user account)";
 		self::$trad["EDIT_adminSpace"]="Administrator of this space:<br>write access to all the elements of this space";
-		self::$trad["EDIT_showAllSpaceUsers"]="Display more users";
+		self::$trad["EDIT_showAllSpaceUsers"]="Show all users";
 		self::$trad["EDIT_mySpaces"]="Display all my spaces";
 		self::$trad["EDIT_notifMail"]="Notify";
 		self::$trad["EDIT_notifMail2"]="Send a notification of creation/modification by email";
@@ -398,6 +399,9 @@ class Trad extends Txt
 		self::$trad["EDIT_attachedFileInfo"]="Attach pictures, videos, Pdf, Word, etc to the current object.<br>Images and videos can be integrated directly to the text editor.";
 		self::$trad["EDIT_attachedFileInsert"]="Display in the description";
 		self::$trad["EDIT_attachedFileInsertInfo"]="Display the image / video / mp3 player ... in the description above. The insertion is performed after form validation.";
+		self::$trad["EDIT_guestName"]="Your Name / Nickname";
+		self::$trad["EDIT_guestNameNotif"]="Thank you to specify a Name / Nickname";
+		self::$trad["EDIT_guestElementRegistered"]="Thanks for your proposition. This will be examined as soon as possible before validation";
 		
 		////	Formulaire d'installation
 		self::$trad["INSTALL_dbConnect"]="Connection to the database";
@@ -543,7 +547,8 @@ class Trad extends Txt
 		self::$trad["SPACE_spaceModules"]="Modules of the space";
 		self::$trad["SPACE_moduleRank"]="Move to set the display order of modules";
 		self::$trad["SPACE_publicSpace"]="Public space";
-		self::$trad["SPACE_publicInfo"]="Provides access to people who do not have accounts on the site : guests. Ability to specify a password to protect access.";
+		self::$trad["SPACE_publicSpaceInfo"]="Gives access to people who do not have a user account : the 'guests'. It is possible to specify a password to protect access to the space. The following modules will not be accessible to guests : 'mail' and 'user' (if the public space does not have a password)";
+		self::$trad["SPACE_publicSpaceNotif"]="If your public space contains sensitive data such as personal contact details (Contact module) or documents (File module): you are required to add password access to your public space, to comply with the GDPR.<hr>The General Data Protection Regulation is a regulation of the European Union constituting the reference text for the protection of personal data.";
 		self::$trad["SPACE_usersInvitation"]="Users can send invitations by email";
 		self::$trad["SPACE_usersInvitationInfo"]="All users can send email invitations to join the space";
 		self::$trad["SPACE_allUsers"]="All the users";
@@ -651,7 +656,10 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_pollsNotVoted"]="Current polls : not voted";
 		self::$trad["DASHBOARD_pollsNotVotedInfo"]="Show only polls that you have not voted yet";
 		self::$trad["DASHBOARD_vote"]="Vote and see the results !";
-		self::$trad["DASHBOARD_votesNb"]="votes";//55 votes
+		self::$trad["DASHBOARD_voteTooltip"]="The votes are anonymous : nobody will know your choice of vote";
+		self::$trad["DASHBOARD_answerVotesNb"]="Voté --NB_VOTES-- times";
+		self::$trad["DASHBOARD_pollVotesNb"]="The poll was voted --NB_VOTES-- times";
+		self::$trad["DASHBOARD_pollVotedBy"]="The poll was voted by";//Bibi, boby, etc
 		self::$trad["DASHBOARD_noPoll"]="No poll for the moment";
 		self::$trad["DASHBOARD_plugins"]="New Elements";
 		self::$trad["DASHBOARD_pluginsInfo"]="Elements created";
@@ -676,6 +684,8 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_titleQuestion"]="Title / Question";
 		self::$trad["DASHBOARD_multipleResponses"]="Several answers possible for each vote";
 		self::$trad["DASHBOARD_newsDisplay"]="Show with news (left menu)";
+		self::$trad["DASHBOARD_publicVote"]="Public vote: the choice of voters is  public";
+		self::$trad["DASHBOARD_publicVoteInfos"]="Note that a public vote can be a barrier to participation to the survey.";
 		self::$trad["DASHBOARD_dateEnd"]="End date of the poll";
 		self::$trad["DASHBOARD_responseList"]="Possible answers";
 		self::$trad["DASHBOARD_responseNb"]="Answer n°";
@@ -753,11 +763,11 @@ class Trad extends Txt
 		self::$trad["CALENDAR_periodDateEnd"]="End of periodicity";
 		self::$trad["CALENDAR_periodException"]="Exception de périodicité";
 		self::$trad["CALENDAR_calendarAffectations"]="Assign to the following calendars";
-		self::$trad["CALENDAR_proposition"]="(Propose)";
 		self::$trad["CALENDAR_addEvtTooltip"]="Add an event";
 		self::$trad["CALENDAR_addEvtTooltipBis"]="Add the event to the calendar";
 		self::$trad["CALENDAR_proposeEvtTooltip"]="Propose an event to the owner of the calendar";
-		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Propose the event to the owner of the calendar (calendar accessible only for reading)";
+		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Propose the event to the owner of the calendar";
+		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Propose the event to the owner of the calendar : calendar accessible only for reading";
 		self::$trad["CALENDAR_verifCalNb"]="Thank you to select at least a calendar";
 		self::$trad["CALENDAR_noModifInfo"]="Modification forbidden because you don't have access in writing to this calendar";
 		self::$trad["CALENDAR_editLimit"]="You are not the author of the event: you can only manage your calendars assignments";
@@ -778,7 +788,9 @@ class Trad extends Txt
 		self::$trad["FILE_addFile"]="Add files";
 		self::$trad["FILE_addFileAlert"]="Folder on the server not accessible in writing! thank you to contact the administrator";
 		self::$trad["FILE_downloadSelection"]="Download Selection";
-		self::$trad["FILE_nbFileVersions"]="versions of the file"; // n versions du fichier
+		self::$trad["FILE_nbFileVersions"]="versions of the file";//"55 versions du fichier"
+		self::$trad["FILE_downloadsNb"]="File Downloaded --NB_DOWNLOAD-- times";
+		self::$trad["FILE_downloadedBy"]="File Downloaded by";//"..boby, will"
 		self::$trad["FILE_addFileVersion"]="add a new file version";
 		self::$trad["FILE_noFile"]="No file for the moment";
 		// Fichier_edit  &  Dossier_edit  &  fichier_edit_ajouter  &  Versions_fichier

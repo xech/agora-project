@@ -8,7 +8,7 @@
 
 <script>
 ////	Resize
-lightboxSetWidth(520);
+lightboxSetWidth(550);
 
 // Init
 $(function(){

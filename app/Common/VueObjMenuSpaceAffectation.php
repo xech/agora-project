@@ -11,7 +11,7 @@ $(function(){
 
 <style>
 [id^='spaceListMenu']	{margin-top:10px; overflow:auto; max-height:100px; <?= $displayMenu==false?"display:none;":null ?>}
-.spaceListAffectation	{display:inline-block; width:48%; padding:3px;}
+.spaceListAffectation	{display:inline-block; width:49%; padding:3px;}
 label[data-value='all']	{font-style:italic;}
 </style>
 

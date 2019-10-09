@@ -15,11 +15,8 @@ lightboxSetWidth(450);
 	<div class="personVueFields"><?= $curObj->getFieldsValues("profile") ?></div>
 	<?php
 	//Groupes d'utilisateurs
-	$userGroups=MdlUserGroup::getGroups(null,$curObj);
-	if(!empty($userGroups)){
-		$groupsLabel=null;
-		foreach($userGroups as $tmpGroup)  {$groupsLabel.="<img src='app/img/arrowRight.png'> ".$tmpGroup->title."<br>";}
-		echo "<div class='objField'><div class='fieldLabel'><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";
-	}
+	$groupsLabel=null;
+	foreach(MdlUserGroup::getGroups(null,$curObj) as $tmpGroup)  {$groupsLabel.="<img src='app/img/arrowRight.png'> ".$tmpGroup->title."<br>";}
+	if(!empty($groupsLabel))  {echo "<div class='objField'><div class='fieldLabel'><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";}
 	?>
 </div>

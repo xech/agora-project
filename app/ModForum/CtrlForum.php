@@ -110,7 +110,7 @@ class CtrlForum extends Ctrl
 				$objMessage->pluginModule=self::moduleName;
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  $objMessage->description;
-				$objMessage->pluginTooltip=$objSubject->pluginLabel;
+				$objMessage->pluginTooltip=$objMessage->pluginLabel;
 				$objMessage->pluginJsIcon="windowParent.redir('".$objMessage->getUrl("container")."');";//Redir vers le sujet (conteneur)
 				$objMessage->pluginJsLabel=$objMessage->pluginJsIcon;
 				$pluginsList[]=$objMessage;

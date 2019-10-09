@@ -1,4 +1,7 @@
-<?php if($cptCal==0){ ?>
+<?php
+////Charge le Javascript uniquement au premier agenda
+if($cptCal==0){
+?>
 <script>
 ////	Gère l'affichage de la vue "week" (cf. "VueIndex.php")
 function calendarDimensions(printCalendar)
@@ -137,6 +140,7 @@ function calendarDimensions(printCalendar)
 </style>
 <?php } ?>
 
+
 <div class="vCalWeekMain">
 	<!--HEADER DES JOURS : FIXE-->
 	<div class="vCalWeekHeader">
@@ -176,7 +180,7 @@ function calendarDimensions(printCalendar)
 		echo "<div class='vCalWeekTable'>";
 			for($H=0; $H<=23; $H++)
 			{
-				//créneau hors du "Timeslot" de l'agenda?
+				//CRÉNEAU HORS DU "TIMESLOT" DE L'AGENDA?
 				$tmpHourClass=($H<$tmpCal->timeSlotBegin || $H>$tmpCal->timeSlotEnd || $H==12 || $H==13)  ?  "vCalWeekHourOutTimeslot"  :  null;
 				//LIGNE + LABEL DE L'HEURE COURANTE + HEURE COURANTE POUR CHAQUE JOUR
 				echo "<div class='vCalWeekLine'>";
@@ -184,26 +188,26 @@ function calendarDimensions(printCalendar)
 					foreach($periodDays as $dayCpt=>$tmpDay)
 					{
 						echo "<div class='vCalWeekCell ".$tmpHourClass."' data-dayCpt=\"".$dayCpt."\">";
+						if($addProposeEvtRight==true)
+						{
 							echo "<div class='vCalWeekHourSubLines'>";
-								//DIVISE L'HEURE EN CELLULES DE 15 MN POUR L'AJOUT D'EVT (SAUF POUR LES GUESTS)
-								if(Ctrl::$curUser->isUser())
+								//DIVISE L'HEURE EN CELLULES DE 15 MN POUR L'AJOUT D'EVT (agenda accessible en lecture seule : on propose l'événement)
+								foreach([0,1,2,3] as $quarterHour)
 								{
-									foreach([0,1,2,3] as $quarterHour)
-									{
-										//Init
-										$quarterHourBegin=$tmpDay["timeBegin"]+(3600*$H)+(900*$quarterHour);
-										$quarterHourEnd=$quarterHourBegin+900;	
-										if(time()>$quarterHourBegin && time()<$quarterHourEnd)	{$halfCellClass="vCalWeekHourSubLineCurrent";}
-										elseif($quarterHourBegin<time())						{$halfCellClass="vCalWeekHourSubLinePastTime";}
-										else													{$halfCellClass=null;}
-										$tmpNewDateTitle=$txtAddEvt." [".date("H:i",$quarterHourBegin)."]";
-										$tmpNewDate=date("Ymd",$quarterHourBegin);
-										echo "<div class='vCalWeekHourSubLine'>
-												<div class=\"vCalWeekHourSubCell noTooltip ".$halfCellClass."\" title=\"".$tmpNewDateTitle."\" data-idCal=\"".$tmpCal->_id."\" data-newEvtTimeBegin=\"".$quarterHourBegin."\" data-selectedDate=\"".$tmpNewDate."\">&nbsp;</div>
-											  </div>";
-									}
+									//Init
+									$quarterHourBegin=$tmpDay["timeBegin"]+(3600*$H)+(900*$quarterHour);
+									$quarterHourEnd=$quarterHourBegin+900;	
+									if(time()>$quarterHourBegin && time()<$quarterHourEnd)	{$halfCellClass="vCalWeekHourSubLineCurrent";}
+									elseif($quarterHourBegin<time())						{$halfCellClass="vCalWeekHourSubLinePastTime";}
+									else													{$halfCellClass=null;}
+									$tmpNewDateTitle=$addEvtTxt." [".date("H:i",$quarterHourBegin)."]";
+									$tmpNewDate=date("Ymd",$quarterHourBegin);
+									echo "<div class='vCalWeekHourSubLine'>
+											<div class=\"vCalWeekHourSubCell noTooltip ".$halfCellClass."\" title=\"".$tmpNewDateTitle."\" data-idCal=\"".$tmpCal->_id."\" data-newEvtTimeBegin=\"".$quarterHourBegin."\" data-selectedDate=\"".$tmpNewDate."\">&nbsp;</div>
+										  </div>";
 								}
 							echo "</div>";
+						}
 						echo "</div>";
 					}
 				echo "</div>";

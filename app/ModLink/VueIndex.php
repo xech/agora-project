@@ -1,7 +1,7 @@
 <style>
 .objLabelBg					{background-image:url(app/img/link/iconBg.png);}
 .linkIcon					{margin-right:5px;}
-.linkAdress					{margin-top:5px; font-weight:normal; color:#888;}
+.linkAdress					{margin-top:5px; font-weight:normal; color:#888; word-break:break-all;}/*"break-all" évite que l'url dépasse du block'*/
 </style>
 
 <div class="pageFull">
@@ -28,13 +28,13 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{
-			$tmpDescription=!empty($tmpLink->description)  ?  "<span title=\"".$tmpLink->description."\">".Txt::reduce($tmpLink->description,120)."</span>"  :  null;
+			$tmpDescription=!empty($tmpLink->description)  ?  "<span title=\"".$tmpLink->description."\">".Txt::reduce($tmpLink->description,100)."</span>"  :  null;
 			echo $tmpLink->divContainer().$tmpLink->contextMenu().
 				"<div class='objContent'>
 					<div class='objLabel objLabelBg'>
 						<a href=\"".$tmpLink->adress."\" target='_blank'>
-							<img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\" class='linkIcon'>".$tmpDescription.
-							"<div class='linkAdress'>".substr($tmpLink->adress,0,80)."</div>
+							<img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\" class='linkIcon'>".$tmpDescription."
+							<div class='linkAdress'>".Txt::reduce($tmpLink->adress,40)."</div>
 						</a>
 					</div>
 					<div class='objAutorDate'>".$tmpLink->displayAutorDate()."</div>

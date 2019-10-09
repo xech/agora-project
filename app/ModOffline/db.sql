@@ -64,6 +64,7 @@ CREATE TABLE `ap_calendarEvent` (
   `periodDateExceptions` text,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `guest` varchar(255) DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` mediumint(8) unsigned DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -143,6 +144,7 @@ CREATE TABLE `ap_file` (
   `description` text,
   `octetSize` int(11) DEFAULT NULL,
   `downloadsNb` int(10) unsigned NOT NULL DEFAULT '0',
+  `downloadedBy` varchar(10000) DEFAULT NULL,
   `shortcut` tinyint(1) unsigned DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,

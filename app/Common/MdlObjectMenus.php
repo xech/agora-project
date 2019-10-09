@@ -36,11 +36,12 @@ trait MdlObjectMenus
 
 	/*
 	 * VUE : Menu contextuel (édition, droit d'accès, etc)
-	 * $options => "deleteLabel" / "specificOptions"
+	 * $options =>  "inlineLauncher" (Bool : menu mini "burger")  &&  "deleteLabel" (label spécifique de suppression)  &&  "specificOptions" (options à ajouter au menu, cf. ci-dessous)
+	 * Exple de "specificOptions" =>  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option spécifique", "tooltip"=>"mon tooltip"]
 	 */
 	public function contextMenu($options=null)
 	{
-		////	INIT  &  DIVERSES OPTIONS (exple: "array('actionJs'=>'?ctrl=file&action=monAction','iconSrc'=>'app/img/plus.png','label'=>'mon option spécifique','tooltip'=>'mon tooltip')")
+		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
 		$vDatas["inlineLauncher"]=(!empty($options["inlineLauncher"])) ? true : false;
 		$vDatas["specificOptions"]=(!empty($options["specificOptions"])) ? $options["specificOptions"] : array();
@@ -95,26 +96,25 @@ trait MdlObjectMenus
 				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$confirmDeleteParams.")";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
-			////	INFOS DES DROITS D'ACCESS (AUX ESPACES, USERS, ETC)
-			if(static::hasAccessRight==true)
+			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC
+			if(static::hasAccessRight==true && Ctrl::$curUser->isUser() && $this->isIndependant())
 			{
-				if(Ctrl::$curUser->isUser() && $this->isIndependant())
-				{
-					//Init
-					$vDatas["isPersoAccess"]=true;
-					$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
-					//Libellé des affectations (& Icone d'element Perso?)
-					foreach($this->getAffectations() as $tmpAffect){
-						if(!empty($tmpAffect["targetType"]) && $tmpAffect["targetType"]!="user" || Ctrl::$curUser->_id!=$tmpAffect["target_id"])  {$vDatas["isPersoAccess"]=false;}
-						$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";
-					}
-					foreach($vDatas["affectLabels"] as $affectRight=>$affectLabel)	{$vDatas["affectLabels"][$affectRight]=trim($affectLabel,", ");}//Enlève dernières virgules pour les affectation d'users
-					//Tooltip des droits d'accès
-					$affectAutor=(static::isContainer())  ?  "<hr>".$this->tradObject("autorPrivilege")  :  null;//"Seul l'auteur peut modifier les droits d'accès.."
-					if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=Txt::trad("readInfos");}
-					if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObject("readLimitInfos").$affectAutor;}
-					if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $this->tradObject("writeInfosContainer").$affectAutor  :  Txt::trad("writeInfos");}//si c'est un conteneur : "possibilité de modifier tous les elements du dossier"
+				//Init le tableau des libellés
+				$objAffects=$this->getAffectations();
+				$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
+				//Ajoute le label de chaque affectation : pour chaque type de droit d'accès (lecture/ecriture limité/ecriture). Ajoute ausi le nom de l'espace, si ça ne concerne pas l'espace courant
+				foreach($objAffects as $tmpAffect){
+					if($tmpAffect["targetType"]!="spaceUsers" && $tmpAffect["_idSpace"]!=Ctrl::$curSpace->_id)  {$tmpAffect["label"].=" (".Ctrl::getObj("space",$tmpAffect["_idSpace"])->name.")";}
+					$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";
 				}
+				//Affiche si l'objet est personnel ("isPersoAccess")
+				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
+				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["target_id"]==Ctrl::$curUser->_id);
+				//Tooltip pour chaque type de droit d'accès
+				$affectAutor=(static::isContainer())  ?  "<hr>".$this->tradObject("autorPrivilege")  :  null;//Ex: "Seul l'auteur ou l'admin peuvent modifier/supprimer le dossier"
+				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=Txt::trad("readInfos").$affectAutor;}
+				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObject("readLimitInfos").$affectAutor;}
+				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $this->tradObject("writeInfosContainer").$affectAutor  :  Txt::trad("writeInfos");}
 			}
 			////	AUTEUR ET DATE
 			//Auteur + date création (optionnelle)
@@ -177,16 +177,16 @@ trait MdlObjectMenus
 					////	Tous les utilisateurs de l'espace  (..."et les invités" : si l'espace est public et que l'objet n'est pas un agenda perso)
 					if(!empty($tmpSpace->public) && $this->type!="user")	{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests");	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsInfo");}
 					else													{$allUsersLabel=Txt::trad("EDIT_allUsers");				$allUsersLabelInfo=Txt::trad("EDIT_allUsersInfo");}
-					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel."*", "icon"=>"user/icon.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
+					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/icon.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
 					////	Groupe d'utilisateurs de l'espace
 					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
 						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_G".$tmpGroup->_id, "label"=>$tmpGroup->title, "icon"=>"user/userGroup.png", "tooltip"=>Txt::reduce($tmpGroup->usersLabel)];
 					}
 					////	Chaque user de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
-						$curUserTooltip=($tmpSpace->userAccessRight($tmpUser)==2)  ?  Txt::trad("EDIT_adminSpace")  :  null;
-						$curUserFullAccess=($tmpSpace->userAccessRight($tmpUser)==2 || $tmpUser->_id==Ctrl::$curUser->_id)  ?  true  :  false;
-						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "tooltip"=>$curUserTooltip, "onlyFullAccess"=>$curUserFullAccess, "isUser"=>true];
+						if($tmpSpace->userAccessRight($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}//Admin d'espace
+						else										{$tmpUserFullAccess=false;	$tmpUserTooltip=null;}//User lambda
+						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>"user/user.png", "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
 					}
 					////	Ajoute l'espace
 					$vDatas["spacesAccessRight"][]=$tmpSpace;
@@ -225,7 +225,8 @@ trait MdlObjectMenus
 		if(static::hasNotifMail==true && function_exists("mail")){
 			$vDatas["moreOptions"]=$vDatas["notifMail"]=true;
 			$vDatas["notifMailUsers"]=Ctrl::$curUser->usersVisibles(true);
-			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("ids");
+			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");
+			$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 		}
 		////	OPTION "SHORTCUT"
 		if(static::hasShortcut==true){

@@ -86,8 +86,8 @@ class CtrlOffline extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Verifie si le login existe déjà  &&  Vérif le Captcha  &&  Si tout est ok, on enregistre l'user et renvoi l'url avec le message de succès
-			if(MdlUser::loginAlreadyExist(Req::getParam("mail")))				{$result["notifError"]=Txt::trad("USER_loginAlreadyExist");}
-			elseif(CtrlMisc::captchaControl(Req::getParam("captcha"))==false)	{$result["notifError"]=Txt::trad("captchaError");}
+			if(MdlUser::loginAlreadyExist(Req::getParam("mail")))	{$result["notifError"]=Txt::trad("USER_loginAlreadyExist");}
+			elseif(CtrlMisc::actionCaptchaControl()==false)			{$result["notifError"]=Txt::trad("captchaError");}
 			else{
 				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", password=".Db::formatParam("password").", message=".Db::formatParam("message").", date=".Db::dateNow());
 				$result["redirSuccess"]="index.php?msgNotif[]=userInscriptionRecorded";

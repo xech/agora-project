@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(580);
+lightboxSetWidth(600);
 
 ////	Init la page
 $(function(){
@@ -30,7 +30,7 @@ $(function(){
 .miscContainer:last-of-type		{display:none; border:#999 2px solid;}/*masque le dernier formulaire : ajout d'element*/
 input[name='title']				{width:50%;}
 .vUserListMenu					{margin-top:20px; overflow:auto; max-height:150px;}
-.userListUser					{display:inline-block; width:32%; padding:2px;}
+.userListUser					{display:inline-block; width:33%; padding:2px;}
 .userListUser input				{display:none;}
 .vAutorButtons					{display:table; width:100%; margin-top:20px;}
 .vAutorButtons>div				{display:table-cell; vertical-align:middle;}

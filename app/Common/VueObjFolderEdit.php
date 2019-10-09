@@ -1,12 +1,12 @@
 <script>
 ////	Resize
-lightboxSetWidth(520);
+lightboxSetWidth(550);
 
 $(function(){
 	////	Change l'icone du dossier
 	$("select[name='icon']").change(function(){
 		var iconPath=$("option[value='"+this.value+"']").attr("data-filePath");
-		$("#folderIconImg").prop("src",iconPath);
+		$("#folderIconImg").attr("src",iconPath);
 	});
 	
 	////	Validation du formulaire

@@ -41,7 +41,7 @@ audio			{min-width:350px;}
 }
 
 /*** BLOCK D'OBJETS : INIT*/
-.objContainer, .miscContainer, .emptyContainer	{border-radius:2px; margin:0px 3px 3px 0px; box-sizing:border-box;}/*"miscContainer" : menu de gauche, folderPath, etc. Calcul du width avec prise en compte de la bordure : "border-box"*/
+.objContainer, .miscContainer, .emptyContainer	{border-radius:2px; margin:0px 4px 4px 0px; box-sizing:border-box;}/*"miscContainer" : menu de gauche, folderPath, etc. Calcul du width avec prise en compte de la bordure : "border-box"*/
 .objContainer				{position:relative; padding:0px; padding-right:35px;}/*"padding-right" pour l'affichage vertical des "objMiscMenus"*/
 .objContainer.isSelectable	{cursor:url("../img/check.png"),default;}
 .emptyContainer				{padding:30px; text-align:center;}/*Aucun contenu sur la page*/
@@ -71,7 +71,7 @@ audio			{min-width:350px;}
 .objBlocks .objFolders .objIcon img		{max-width:80%; max-height:80%;}/*affichage des dossiers (fichier/contact/lien/tache)*/
 /*"modFile": image au centre & label "bandeau"*/
 .objBlocks .objContentCenter .objIcon		{position:absolute; width:100%!important; height:100%!important; overflow:hidden;}
-.objBlocks .objContentCenter .objIcon img	{margin-top:10px;}/*exple: icone de type de fichier*/
+.objBlocks .objContentCenter .objIcon img	{margin-top:20px;}/*exple : icone de fichier ou de dossier (..pas les "thumbnails")*/
 .objBlocks .objContentCenter .objLabel		{position:absolute; bottom:0px; width:100%; border-radius:0px 0px 2px 2px; padding:5px 2px 5px 2px; text-align:center;}
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){

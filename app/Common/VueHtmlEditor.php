@@ -21,7 +21,7 @@ tinymce.init({
 	////parametrage général
 	<?php if(strlen(Txt::trad("HTML_EDITOR")))  {echo 'language:"'.Txt::trad("HTML_EDITOR").'",';} ?>
 	width: "100%",
-	autoresize_min_height:180,//Hauteur par défaut de l'iframe/textarea de l'éditeur (à préciser pour que le "lightboxResize()" au chargement de la page ne le réduise pas à "130px")
+	autoresize_min_height:(isMainPage==true?350:180),//Hauteur par défaut de l'iframe/textarea de l'éditeur (à préciser pour que le "lightboxResize()" au chargement de la page ne le réduise pas à "130px")
 	selector: "textarea[name='<?= $fieldName ?>']",//selecteur du textarea
 	content_style: "body {font-size:13px;font-family:Arial,Helvetica,Tahoma,Sans-Serif;padding-top:5px;}  p {margin:0px;padding:2px;}",//Style de l'iframe/textarea de l'éditeur (cf. <body> et <p> de "app/css/common.css")
 	//forced_root_block: "div",//Désactivé car l'option "content_style" des balises <p> (ci-dessus) est + souple à gérer
@@ -51,7 +51,7 @@ tinymce.init({
 		});
 		//Modif le contenu de l'éditeur
 		editor.on("change keyup",function(){
-			lightboxResize();//Resize le lightbox en fonction du contenu de l'éditeur (cf. "autoresize")
+			lightboxResize();//Resize le lightbox (auquel cas) en fonction du contenu de l'éditeur (cf. "autoresize")
 			windowParent.confirmCloseForm=true;//Marqueur pour demander confirmation de sortie de formulaire (précise "parent" si l'éditeur se trouve dans une lightbox)
 		});
 		//Ajoute si besoin un bouton pour récupérer le brouillon/draft (cf. enregistrements dans "ap_userLivecounter")
