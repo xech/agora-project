@@ -30,7 +30,7 @@ $(function(){
 			$("#imgLoading").show();
 			$.ajax({url:"index.php",data:$(this).serialize(),dataType:"json"}).done(function(result){
 				if(result.notifError)			{notify(result.notifError,"warning");  $("#imgLoading").hide();}//Affiche un message d'erreur (de Db?) et masque le "loading"
-				else if(result.redirSuccess)	{redir(result.redirSuccess);}									//Sinon l'install s'est bien déroulé : redirection
+				else if(result.redirSuccess)	{setTimeout(function(){ redir(result.redirSuccess); },2000);}	//Sinon l'install s'est bien déroulé : redirection avec timeout (le temps que le "config.inc.php" soit bien enregistré)
 			});
 		}
 	});

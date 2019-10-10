@@ -451,6 +451,7 @@ CREATE TABLE `ap_dashboardPoll` (
   `dateEnd` date DEFAULT NULL,
   `multipleResponses` tinyint(1) unsigned DEFAULT NULL,
   `newsDisplay` tinyint(1) unsigned DEFAULT NULL,
+  `publicVote` tinyint(1) unsigned DEFAULT NULL,
   `dateCrea` datetime NOT NULL,
   `_idUser` mediumint(8) unsigned NOT NULL,
   `dateModif` datetime DEFAULT NULL,

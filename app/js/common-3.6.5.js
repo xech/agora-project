@@ -37,6 +37,11 @@ function extendJquery(){
 		var mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return mailRegex.test(this.val());
 	};
+	////	Fait clignoter un element avec l'effet "pulsate" (5 fois par défaut. Toujours lancé après chargement de la page!)
+	$.fn.blink=function(times){
+		if(typeof times=="undefined")  {var times=5;}
+		this.effect("pulsate",{times:parseInt(times)},parseInt(times*1000));
+	};
 	////	Focus sur un champs surligné en rouge
 	$.fn.focusRed=function(){
 		this.addClass("focusRed").focus();
@@ -185,8 +190,8 @@ function initMenuContext()
 		$(".menuLaunch").on("mouseover click",function(event){ showMenuContext(this,event); });
 		////	Affiche via Click Droit sur le block de l'objet. "Return false" pour ne pas afficher le menu du browser
 		$("[for^='objMenu_']").on("contextmenu",function(event){ showMenuContext(this,event);  return false; });
-		////	Arrête de survoler un menu contextuel : on le masque
-		$(".menuContext").on("mouseleave",function(){ $(this).slideUp(50); });
+		////	Arrête de survoler un menu contextuel : on le masque (direct sans "sideUp" ou autre!)
+		$(".menuContext").on("mouseleave",function(){ $(this).hide(); });
 		////	Survol le block d'un objet : Masque les menus contextuels qui ne le concernent pas
 		$("[for^='objMenu_']").on("mouseenter",function(){  $(".menuContext").not("#"+this.getAttribute("for")).slideUp(50);  });
 	}
