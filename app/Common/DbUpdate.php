@@ -764,13 +764,13 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.6.5"))
 			{
 				//Correction du champ "guest" pour les propositions d'événements
-				if(self::fieldExist("ap_calendarEvent","guest")==false)  {self::query("ALTER TABLE ap_calendarEvent ADD guest varchar(255) DEFAULT NULL AFTER _idUser");}
+				self::fieldExist("ap_calendarEvent","guest",		"ALTER TABLE ap_calendarEvent ADD guest varchar(255) DEFAULT NULL AFTER _idUser");
+				//Fichiers : Ajoute un champ pour la liste des personnes ayant téléchargé un fichier
+				self::fieldExist("ap_file","downloadedBy",			"ALTER TABLE ap_file ADD downloadedBy varchar(10000) DEFAULT NULL AFTER downloadsNb");
+				//Sondage : Ajoute une option pour pouvoir afficher le résultat de chaque votant 
+				self::fieldExist("ap_dashboardPoll","publicVote",	"ALTER TABLE ap_dashboardPoll ADD publicVote tinyint(1) DEFAULT NULL AFTER newsDisplay");
 				//Suppression des affectations obsoletes aux dossiers racine (résiduelles)
 				self::query("DELETE FROM ap_objectTarget WHERE objectType IN ('fileFolder','contactFolder','taskFolder','linkFolder') AND _idObject='1'");
-				//Fichiers : Ajoute un champ pour la liste des personnes ayant téléchargé un fichier
-				self::query("ALTER TABLE ap_file ADD downloadedBy varchar(10000) DEFAULT NULL AFTER downloadsNb");
-				//Sondage : Ajoute une option pour pouvoir afficher le résultat de chaque votant 
-				self::query("ALTER TABLE ap_dashboardPoll ADD publicVote tinyint(1) DEFAULT NULL AFTER newsDisplay");
 			}
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			////!!!!	MODIFIER SI BESOIN LA BDD "ModOffline/db.sql"	!!!!!!!!!!!!

@@ -274,12 +274,12 @@ class MdlCalendar extends MdlObject
 		{
 			//Période des evenements "old"
 			$time100YearsAgo=time()-(86400*365*100);
-			$time3YearsAgo=time()-(86400*365*3);
+			$time5YearsAgo=time()-(86400*365*5);
 			//Sélectionne les agendas avec "editFullContentRight()"
 			foreach($displayedCalendars as $tmpCal){
 				if($tmpCal->editFullContentRight()){
-					foreach($tmpCal->evtList($time100YearsAgo,$time3YearsAgo,2) as $tmpEvt){
-						if($tmpEvt->isOldEvt($time3YearsAgo))  {$tmpEvt->delete();}//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+					foreach($tmpCal->evtList($time100YearsAgo,$time5YearsAgo,2) as $tmpEvt){
+						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
 					}
 				}
 			}
