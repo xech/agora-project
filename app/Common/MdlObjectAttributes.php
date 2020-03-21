@@ -19,6 +19,14 @@ trait MdlObjectAttributes
 	private $_usersLike=null;
 
 	/*
+	 * INPUT "HIDDEN" DE SÉLECTION (cf. "VueObjMenuContext.php" & Co)
+	 */
+	public function targetObjectsInput()
+	{
+		return "<input type='checkbox' name='targetObjects[]' class='targetObjectsInput' value=\"".$this->_targetObjId."\" id=\"".$this->menuId("objBlock")."_selectBox\">";
+	}
+
+	/*
 	 * FICHIER JOINT : Infos sur un fichier joint
 	 */
 	public static function getAttachedFile($tmpFile)
@@ -54,22 +62,25 @@ trait MdlObjectAttributes
 	 */
 	public function menuAttachedFiles($separator="<hr>")
 	{
-		//Mise en cache du menu des fichiers joints
-		if($this->_attachedFilesMenu===null)
+		if(static::hasAttachedFiles==true)
 		{
-			$this->_attachedFilesMenu="";
-			//Affiche le menu avec chaque fichiers
-			if(count($this->getAttachedFileList())>0)
+			//Mise en cache du menu des fichiers joints
+			if($this->_attachedFilesMenu===null)
 			{
-				foreach($this->getAttachedFileList() as $tmpFile){
-					$getFileUrl="?ctrl=object&action=getFile&_id=".$tmpFile["_id"];
-					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::appGetFileUrl($getFileUrl,$tmpFile["name"]);}//Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
-					$this->_attachedFilesMenu.="<div class='menuAttachedFile sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
+				$this->_attachedFilesMenu="";
+				//Affiche le menu avec chaque fichiers
+				if(count($this->getAttachedFileList())>0)
+				{
+					foreach($this->getAttachedFileList() as $tmpFile){
+						$getFileUrl="?ctrl=object&action=getFile&_id=".$tmpFile["_id"];
+						if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::appGetFileUrl($getFileUrl,$tmpFile["name"]);}//Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
+						$this->_attachedFilesMenu.="<div class='menuAttachedFile sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
+					}
 				}
 			}
+			//Retoune les résultats, avec un séparateur différent pour chaque affichage
+			if($this->_attachedFilesMenu)  {return $separator.$this->_attachedFilesMenu;}
 		}
-		//Retoune les résultats, avec un séparateur différent pour chaque affichage
-		if($this->_attachedFilesMenu)  {return $separator.$this->_attachedFilesMenu;}
 	}
 
 	/*
@@ -81,9 +92,9 @@ trait MdlObjectAttributes
 		$insertText=null;
 		$curFile=self::getAttachedFile($_idFile);
 		//Récupère l'image OU le player du média
-		if(File::controlType("imageBrowser",$curFile["path"]))		{$insertText="<img src='".$curFile["url"]."' style='max-width:100%;'>";}//garder le "style" pour tinyMce..
-		elseif(File::controlType("mp3",$curFile["path"]))			{$insertText=File::getMediaPlayer($curFile["url"]);}
-		elseif(File::controlType("videoPlayer",$curFile["path"]))	{$insertText=File::getMediaPlayer($curFile["path"]);}//affichage direct
+		if(File::isType("imageBrowser",$curFile["path"]))		{$insertText="<img src='".$curFile["url"]."' style='max-width:100%;'>";}//garder le "style" pour tinyMce..
+		elseif(File::isType("mp3",$curFile["path"]))			{$insertText=File::getMediaPlayer($curFile["url"]);}
+		elseif(File::isType("videoPlayer",$curFile["path"]))	{$insertText=File::getMediaPlayer($curFile["path"]);}//affichage direct
 		//Objet "DashboardNews : ajoute un lien pour le lightBox
 		if(static::objectType=="dashboardNews")  {$insertText="<a href='".$curFile["url"]."' data-fancybox='images'>".$insertText."</a>";}
 		//Retourne le résultat
@@ -113,11 +124,11 @@ trait MdlObjectAttributes
 					if($isMoved!=false)
 					{
 						//Optimise le fichier
-						if(File::controlType("imageResize",$fileDestPath))	{File::imageResize($fileDestPath,$fileDestPath,1400);}
+						if(File::isType("imageResize",$fileDestPath))  {File::imageResize($fileDestPath,$fileDestPath,1400);}
 						File::setChmod($fileDestPath);
 						//Ajoute l'image/vidéo/Mp3 dans la description
 						$insertCheckboxId=str_replace("addAttachedFile","addAttachedFileInsert",$inputId);
-						if(static::htmlEditorField!=null && Req::isParam($insertCheckboxId) && File::controlType("attachedFileInsert",$tmpFile["name"])){
+						if(static::htmlEditorField!=null && Req::isParam($insertCheckboxId) && File::isType("attachedFileInsert",$tmpFile["name"])){
 							$newEditorValue=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id).self::attachedFileInsert($attachedFileId,false);
 							Db::query("UPDATE ".static::dbTable." SET ".static::htmlEditorField."=".Db::format($newEditorValue,"editor")." WHERE _id=".$this->_id);
 						}

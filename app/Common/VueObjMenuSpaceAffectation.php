@@ -13,6 +13,11 @@ $(function(){
 [id^='spaceListMenu']	{margin-top:10px; overflow:auto; max-height:100px; <?= $displayMenu==false?"display:none;":null ?>}
 .spaceListAffectation	{display:inline-block; width:49%; padding:3px;}
 label[data-value='all']	{font-style:italic;}
+
+/*RESPONSIVE FANCYBOX (440px)*/
+@media screen and (max-width:440px){
+	.spaceListAffectation  {display:block; width:98%; padding:5px;}
+}
 </style>
 
 <div id="spaceListMenu<?= $curObj->_targetObjId ?>">

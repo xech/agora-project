@@ -15,7 +15,6 @@ class MdlUserGroup extends MdlObject
 	const moduleName="user";
 	const objectType="userGroup";
 	const dbTable="ap_userGroup";
-	//Champs obligatoires et de tri des résultats
 	public static $requiredFields=array("title");
 	public static $sortFields=array("title@asc","title@desc");
 
@@ -38,6 +37,7 @@ class MdlUserGroup extends MdlObject
 	 */
 	public function accessRight()
 	{
+		//Init la mise en cache
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();
 			//Ajoute l'accès en lecture si :  User courant se trouve dans le groupe  OU  l'espace du groupe fait partie des espaces de l'user (pour les affectations d'objet)

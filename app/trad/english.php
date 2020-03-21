@@ -55,6 +55,7 @@ class Trad extends Txt
 		self::$trad["confirm"]="Confirm ?";
 		self::$trad["comment"]="Comment";
 		self::$trad["commentAdd"]="Add a comment";
+		self::$trad["optional"]="(optional)";
 		
 		////	Menu/Menu contextuel
 		self::$trad["objNew"]="new item";
@@ -96,7 +97,7 @@ class Trad extends Txt
 		self::$trad["specifyPassword"]="Thank you to specify a password";
 		self::$trad["resetPassword"]="Forgotten login info ?";
 		self::$trad["resetPassword2"]="Enter your email address to receive your login and password";
-		self::$trad["resetPasswordError"]="The email address is not listed";
+		self::$trad["resetPasswordNotif"]="An email has just been sent to your address to reset your password. If you have not received an email, please verify that the address specified is correct, or that the email is not in your spams.";
 		self::$trad["resetPasswordMailTitle"]="Reset your password";
 		self::$trad["resetPasswordMailPassword"]="To login to your space and reset your password";
 		self::$trad["resetPasswordMailPassword2"]="please click here";
@@ -110,7 +111,8 @@ class Trad extends Txt
 		
 		////	Sélectionner / Déselectionner tous les éléments
 		self::$trad["select"]="Select";
-		self::$trad["selectUnselect"]="Select / unselect";
+		self::$trad["selectUnselect"]="Select / Unselect";
+		self::$trad["selectUnselectAll"]="Select/unselect all";
 		self::$trad["selectAll"]="Select all";
 		self::$trad["invertSelection"]="Reverse the selection";
 		self::$trad["deleteElems"]="Remove the selected elements";
@@ -158,7 +160,7 @@ class Trad extends Txt
 		self::$trad["description"]="Description";
 		self::$trad["specifyName"]="Thank you to specify a name";
 		self::$trad["editorDraft"]="Retrieve my text";
-		self::$trad["editorDraftConfirm"]="Retrieve the last specified text (kept 24h)";
+		self::$trad["editorDraftConfirm"]="Retrieve the last specified text (kept 48h)";
 		
 		////	Validation des formulaires
 		self::$trad["add"]=" Add";
@@ -210,11 +212,11 @@ class Trad extends Txt
 		self::$trad["accessRead"]="read";
 		self::$trad["readInfos"]="Access in reading";
 		self::$trad["accessWriteLimit"]="limited writing";
-		self::$trad["readLimitInfos"]="Limited access in writing: Ability to add -LABELCONTENT-s, without modify or delete those created by other users";
+		self::$trad["readLimitInfos"]="Limited access in writing: Ability to add --OBJCONTENT--s, without modify or delete those created by other users";
 		self::$trad["accessWrite"]="write";
 		self::$trad["writeInfos"]="Access in writing";
-		self::$trad["writeInfosContainer"]="Access in writing : Ability to add, modify or delete all the -LABELCONTENT-s of the -LABELTHIS-";
-		self::$trad["autorPrivilege"]="Only the author and administrators can edit the access rights or delete the -LABELTHIS-";
+		self::$trad["writeInfosContainer"]="Access in writing : Ability to add, modify or delete all the --OBJCONTENT--s of the -OBJLABEL-";
+		self::$trad["autorPrivilege"]="Only the author and administrators can edit the access rights or delete the -OBJLABEL-";
 		self::$trad["folderContent"]="content";
 		
 		////	Libellé des objets
@@ -250,8 +252,8 @@ class Trad extends Txt
 		self::$trad["MAIL_sendNotif"]="The notification email was sent !";
 		self::$trad["MAIL_notSend"]="The email could not be sent...";
 		self::$trad["MAIL_fromTheSpace"]="from the space";//Mon espace
-		self::$trad["MAIL_elemCreatedBy"]="-LABELTHIS- created by";//boby
-		self::$trad["MAIL_elemModifiedBy"]="-LABELTHIS- modified by";//boby
+		self::$trad["MAIL_elemCreatedBy"]="-OBJLABEL- created by";//boby
+		self::$trad["MAIL_elemModifiedBy"]="-OBJLABEL- modified by";//boby
 		self::$trad["MAIL_elemAccessLink"]="Click here to access the element on your space";
 
 		////	Dossier & fichier
@@ -354,16 +356,17 @@ class Trad extends Txt
 		////	header menu / Footer
 		self::$trad["HEADER_displaySpace"]="Available spaces";
 		self::$trad["HEADER_displayAdmin"]="Administrator view";
-		self::$trad["HEADER_displayAdminInfo"]="Show all elements of the current space : reserved for administrators.";
+		self::$trad["HEADER_displayAdminEnabled"]="Administrator view enabled";
+		self::$trad["HEADER_displayAdminInfo"]="Show all elements of the current space (reserved for administrators)";
 		self::$trad["HEADER_searchElem"]="Search on the space";
 		self::$trad["HEADER_documentation"]="Documentation";
 		self::$trad["HEADER_disconnect"]="Log out from the Agora";
 		self::$trad["HEADER_shortcuts"]="Shortcuts";
 		self::$trad["MESSENGER_messenger"]="Instant messaging";
-		self::$trad["MESSENGER_currentlyAlone"]="Currently alone on the site";
+		self::$trad["MESSENGER_messengerInfo"]="chat with several persons at the same time";
 		self::$trad["MESSENGER_connected"]="Online";
 		self::$trad["MESSENGER_connectedSince"]="connected at";//connecté depuis 12:45
-		self::$trad["MESSENGER_connectedNobody"]="No one is logged in: view old messages";
+		self::$trad["MESSENGER_connectedNobody"]="No one is currently logged in : see old messages";
 		self::$trad["MESSENGER_sendAt"]="Sent to";
 		self::$trad["MESSENGER_addMessageToSelection"]="My message (selected persons)";
 		self::$trad["MESSENGER_addMessageTo"]="My message to";
@@ -443,7 +446,8 @@ class Trad extends Txt
 		self::$trad["AGORA_timezone"]="Timezone";
 		self::$trad["AGORA_spaceName"]="Name of principal space";
 		self::$trad["AGORA_diskSpaceLimit"]="Space available for the storage of the files";
-		self::$trad["AGORA_logsTimeOut"]="Shelf life of Logs";
+		self::$trad["AGORA_logsTimeOut"]="Duration of event history (logs)";
+		self::$trad["AGORA_logsTimeOutInfo"]="The retention period of the events history concerns the addition or modification of the elements. The deletion logs are kept for at least 1 year.";
 		self::$trad["AGORA_skin"]="Color of the interface";
 		self::$trad["AGORA_black"]="Black";
 		self::$trad["AGORA_white"]="White";
@@ -511,6 +515,7 @@ class Trad extends Txt
 		////
 		self::$trad["LOG_headerModuleName"]="Logs";
 		self::$trad["LOG_moduleDescription"]="Logs - Event Log";
+		self::$trad["LOG_path"]="Path";
 		self::$trad["LOG_filter"]="filter";
 		self::$trad["LOG_date"]="Date / Time";
 		self::$trad["LOG_spaceName"]="space";
@@ -567,9 +572,9 @@ class Trad extends Txt
 		self::$trad["USER_allUsers"]="View all users";
 		self::$trad["USER_allUsersInfo"]="View all users from all spaces";
 		self::$trad["USER_spaceUsers"]="Users of the space";
-		self::$trad["USER_confirmDeleteFromSpace"]="Confirm the unassignment of the user to current space ?";
 		self::$trad["USER_deleteDefinitely"]="Delete definitely";
-		self::$trad["USER_deleteFromSpace"]="Unassign to the space";
+		self::$trad["USER_deleteFromCurSpace"]="Unassign to the current space";
+		self::$trad["USER_deleteFromCurSpaceConfirm"]="Confirm the unassignment of the user to current space ?";
 		self::$trad["USER_allUsersOnSpaceNotif"]="All the users are affected to this space";
 		self::$trad["USER_user"]="User";
 		self::$trad["USER_users"]="users";
@@ -664,9 +669,10 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_plugins"]="New Elements";
 		self::$trad["DASHBOARD_pluginsInfo"]="Elements created";
 		self::$trad["DASHBOARD_pluginsInfo2"]="between";
-		self::$trad["DASHBOARD_plugins_day"]="Elements of today";
-		self::$trad["DASHBOARD_plugins_week"]="Elements of this week";
-		self::$trad["DASHBOARD_plugins_month"]="Elements of the month";
+		self::$trad["DASHBOARD_plugins_day"]="of today";
+		self::$trad["DASHBOARD_plugins_week"]="of this week";
+		self::$trad["DASHBOARD_plugins_month"]="of the month";
+		self::$trad["DASHBOARD_plugins_previousConnection"]="since the last connection";
 		self::$trad["DASHBOARD_pluginsNew"]="New Element";
 		self::$trad["DASHBOARD_pluginsCurrent"]="Current element";
 		self::$trad["DASHBOARD_pluginsTooltipRedir"]="View the element in is folder";
@@ -705,7 +711,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="The calendar will have the same name than the space. This can be useful if the calendars of the users are disabled.";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Available calendars";
-		self::$trad["CALENDAR_displayAllCals"]="Show all calendars";
+		self::$trad["CALENDAR_displayAllCals"]="Show all calendars (for administrators)";
 		self::$trad["CALENDAR_hideAllCals"]="Hide all calendars";
 		self::$trad["CALENDAR_printCalendars"]="Print calendar(s)";
 		self::$trad["CALENDAR_printCalendarsInfos"]="print in landscape mode";
@@ -723,7 +729,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_importIcalStateImport"]="To import";
 		self::$trad["CALENDAR_inputProposed"]="The event will be proposed to the owner of the calendar";
 		self::$trad["CALENDAR_displayDay"]="Day";
-		self::$trad["CALENDAR_display3Days"]="3 days";
+		self::$trad["CALENDAR_display4Days"]="4 days";
 		self::$trad["CALENDAR_displayWorkWeek"]="Working week";
 		self::$trad["CALENDAR_displayWeek"]="Week";
 		self::$trad["CALENDAR_displayMonth"]="Month";
@@ -753,7 +759,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_visibilityPrivate"]="private visibility";
 		self::$trad["CALENDAR_visibilityInfo"]="<u>semi-private visibility</u> : Only the time slot is displayed (without title and details) if the event is read-only. <br><br><u>private visibility</ u>: visible only to those whose event is accessible in writing";
 		// Agenda : edit
-		self::$trad["CALENDAR_timeSlot"]="Time slot";
+		self::$trad["CALENDAR_timeSlot"]="Time range of the ''week'' display";
 		// Evenement : edit
 		self::$trad["CALENDAR_noPeriodicity"]="Punctual event";
 		self::$trad["CALENDAR_period_weekDay"]="Every week";
@@ -763,6 +769,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_periodDateEnd"]="End of periodicity";
 		self::$trad["CALENDAR_periodException"]="Exception de périodicité";
 		self::$trad["CALENDAR_calendarAffectations"]="Assign to the following calendars";
+		self::$trad["CALENDAR_addEvt"]="Add an event";
 		self::$trad["CALENDAR_addEvtTooltip"]="Add an event";
 		self::$trad["CALENDAR_addEvtTooltipBis"]="Add the event to the calendar";
 		self::$trad["CALENDAR_proposeEvtTooltip"]="Propose an event to the owner of the calendar";
@@ -776,7 +783,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_editCategories"]="Manage event categories";
 		self::$trad["CALENDAR_editCategoriesRight"]="Each category can be modified by its author or the general administrator";
 		self::$trad["CALENDAR_addCategory"]="Add a category";
-		self::$trad["CALENDAR_filterByCategory"]="View events by caterory";
+		self::$trad["CALENDAR_filterByCategory"]="View only events by caterory";
 
 		////	MODULE_FICHIER
 		////
@@ -821,13 +828,15 @@ class Trad extends Txt
 		self::$trad["FORUM_subjects"]="topics";
 		self::$trad["FORUM_message"]="message";
 		self::$trad["FORUM_messages"]="messages";
-		self::$trad["FORUM_lastPost"]="last post";
+		self::$trad["FORUM_lastSubject"]="last topic from";
+		self::$trad["FORUM_lastMessage"]="last message from";
+		self::$trad["FORUM_noSubject"]="No subject for the moment";
+		self::$trad["FORUM_noMessage"]="No message for the moment";
 		self::$trad["FORUM_subjectBy"]="Subjet by";
 		self::$trad["FORUM_addSubject"]="New topic";
 		self::$trad["FORUM_displaySubject"]="View topic";
 		self::$trad["FORUM_addMessage"]="Answer";
 		self::$trad["FORUM_quoteMessage"]="Answer and quote this message";
-		self::$trad["FORUM_noSubject"]="No topic for the moment";
 		self::$trad["FORUM_notifyLastPost"]="Notify by email";
 		self::$trad["FORUM_notifyLastPostInfo"]="Send me a notification by email to each new message";
 		// Sujet_edit  &  Message_edit
@@ -835,7 +844,9 @@ class Trad extends Txt
 		self::$trad["FORUM_themeSpaceAccessInfo"]="The topic is available in the spaces";
 		// Themes
 		self::$trad["FORUM_subjectTheme"]="Theme";
-		self::$trad["FORUM_forumRoot"]="Forum";
+		self::$trad["FORUM_subjectThemes"]="Themes";
+		self::$trad["FORUM_forumRoot"]="Forum Home";
+		self::$trad["FORUM_forumRootResp"]="Home";
 		self::$trad["FORUM_noTheme"]="Without theme";
 		self::$trad["FORUM_editThemes"]="Manage themes";
 		self::$trad["FORUM_editThemesInfo"]="Each theme can be modified by its author or the general administrator";

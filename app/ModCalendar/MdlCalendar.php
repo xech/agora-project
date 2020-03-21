@@ -12,23 +12,22 @@
  */
 class MdlCalendar extends MdlObject
 {
-	//Propriétés principales
 	const moduleName="calendar";
 	const objectType="calendar";
 	const dbTable="ap_calendar";
 	const hasAccessRight=true;
 	const MdlObjectContent="MdlCalendarEvent";
-	//Propriétés d'IHM
 	const hasAttachedFiles=true;
-	//Droit de supprimer l'agenda personel : "true" si on supprime l'user en question
-	public static $persoCalendarDeleteRight=false;
-	//Champs obligatoires, Champs de recherche et Champs de tri d'affichage
 	public static $requiredFields=array("title");
 	public static $searchFields=array("title","description");
+	//Droit de supprimer l'agenda personel : "true" si on supprime l'user en question
+	public static $persoCalendarDeleteRight=false;
 	//Valeurs mises en cache
 	private static $_visibleCalendars=null;
 	private static $_myCalendars=null;
 	private static $_affectationCalendars=null;
+	private static $_addProposeEvtRight=null;
+	
 
 
 	/*
@@ -71,12 +70,15 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Droit d'ajouter/proposer un événement :  Toujours ok pour les users  ||  Pour les Guests, ok si l'agenda est affecté en écriture à tous les users de l'espace
+	 * Droit d'ajouter/proposer un événement :  Toujours ok pour les users, sinon pour les Guests on renvoie "true" uniquement si l'agenda courant est affecté en écriture à tous les users de l'espace
 	 */
 	public function addProposeEvtRight()
 	{
-		if(Ctrl::$curUser->isUser())	{return true;}
-		else							{return (Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND _idSpace=".Ctrl::$curSpace->_id." AND target='spaceUsers' AND accessRight>1")>0);}
+		if(self::$_addProposeEvtRight===null){
+			if(Ctrl::$curUser->isUser())	{self::$_addProposeEvtRight=true;}
+			else							{self::$_addProposeEvtRight=(Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND _idSpace=".Ctrl::$curSpace->_id." AND target='spaceUsers' AND accessRight>1")>0);}
+		}
+		return self::$_addProposeEvtRight;
 	}
 
 	/*
@@ -321,12 +323,12 @@ class MdlCalendar extends MdlObject
 		{
 			//init
 			$urlExportIcs="?ctrl=calendar&action=exportEvents&targetObjId=".$this->_targetObjId;
-			$icalUrlInput="<br><input id='urlIcal".$this->_targetObjId."' value=\"".Req::getSpaceUrl()."/?ctrl=misc&action=DisplayIcal&targetObjId=".$this->_targetObjId."&md5Id=".$this->md5Id()."\" style='width:280px;margin-top:5px;' readonly>";
+			$icalUrlInput=Txt::trad("CALENDAR_icalUrl")." : <br><input id='urlIcal".$this->_targetObjId."' value=\"".Req::getSpaceUrl()."/?ctrl=misc&action=DisplayIcal&targetObjId=".$this->_targetObjId."&md5Id=".$this->md5Id()."\" style='width:250px;margin-top:5px;' readonly>";
 			//Ajoute les options au menu
-			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&targetObjId=".$this->_targetObjId."')",  "iconSrc"=>"dataImport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
-			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('".$urlExportIcs."')",  "iconSrc"=>"dataExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
+			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&targetObjId=".$this->_targetObjId."')",  "iconSrc"=>"calendar/icalImport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
+			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('".$urlExportIcs."')",  "iconSrc"=>"calendar/icalExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
 			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('".$urlExportIcs."&sendMail=true')",  "iconSrc"=>"mail.png",  "label"=>Txt::trad("CALENDAR_exportEvtMail"), "tooltip"=>Txt::trad("CALENDAR_exportEvtMailInfo")."<br>".Txt::trad("sendTo")." ".Ctrl::$curUser->mail];
-			$options["specificOptions"][]=["actionJs"=>"$('#urlIcal".$this->_targetObjId."').select(); if(confirm('".Txt::trad("CALENDAR_icalUrlCopy",true)."')){document.execCommand('copy');}",  "iconSrc"=>"public.png",  "label"=>Txt::trad("CALENDAR_icalUrl")." : ".$icalUrlInput];
+			$options["specificOptions"][]=["actionJs"=>"$('#urlIcal".$this->_targetObjId."').select(); if(confirm('".Txt::trad("CALENDAR_icalUrlCopy",true)."')){document.execCommand('copy');}",  "iconSrc"=>"public.png",  "label"=>$icalUrlInput];
 		}
 		//Renvoie le menu surchargé
 		return parent::contextMenu($options);

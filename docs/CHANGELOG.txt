@@ -1,3 +1,38 @@
+VERSION 3.7.0 (03-2020)
+########################
+Ajout de l'éditeur TinyMce dans la description des Sondages
+Amélioration du menu principal
+Amélioration de l'ergonomie du Forum et de l'Agenda (surtout sur mobile/responsive)
+Module Actualité : ajout de la période "dernière connexion" dans les nouveaux éléments
+Meilleure présentation des Barres des tâches
+Intégration de l'icone de recherche dans la barre de menu principale
+Amélioration du menu d'upload de fichiers
+Optimisation des menus contextuels des éléments
+Messenger : amélioration de l'ergonomie 
+Vue responsive (mobile & interfaces tactiles) :
+- nouvelle possibilité de "swiper" d'une période à l'autre dans le module Agenda
+- menu principal plus ergonomique et optimisé (liste des modules et options du module courant)
+- nouveaux boutons en bas de chaque page pour l'ajout d'elements (News, fichiers, Événements, etc)
+- ajout du menu contextuel dans l'affichage détaillé d'un evenement, contact, tache, etc.
+Corrections et optimisations diverses
+------
+Addition of the TinyMce editor in the description of the Polls
+Improvement to the ergonomics of the main menu
+Improvement to the ergonomics of the Forum and the Agenda (especially on mobile / responsive)
+News module: addition of the "last connection" period in the list of new elements
+Better presentation of taskbars
+Integration of the search icon in the main menu bar
+Improvement of the file upload menu
+Optimization of context menus of elements
+Messenger: Improvement of the ergonomics
+Responsive view (mobile & tactile interfaces):
+- new possibility to "swipe" from one period to another in the Agenda module
+- main menu more ergonomic and optimized (list of modules and options of the current module)
+- new buttons at the bottom of each page for adding elements (News, files, Events, etc.)
+- addition of the contextual menu in the detailed display of an event, contact, task, etc.
+Various corrections and optimizations
+
+
 VERSION 3.6.5 (09-2019)
 #######################
 Nouvelle option de sélection des groupes d'utilisateurs dans les notifications par email
@@ -37,7 +72,7 @@ Corrections et optimisations diverses
 ------
 File Manager: Improved image thumbnail display and file upload menu
 Messenger: Improvement of the ergonomics and correction of the display of the form on mobile (Responsive)
-Improved display of new items in the News module
+Improved display of new elements in the News module
 Update of Jquery in v3.4.1
 Update of Jquery UI in v1.12.1
 Update of TinyMce in v4.9.5

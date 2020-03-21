@@ -78,8 +78,8 @@ class MdlFile extends MdlObject
 	public function getThumbPath()
 	{
 		if($this->_tumbPath===null){
-			if(File::controlType("imageResize",$this->name) || (File::controlType("pdf",$this->name) && extension_loaded("imagick")))	{$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();}
-			else																														{$this->_tumbPath="";}
+			if(File::isType("imageResize",$this->name) || (File::isType("pdf",$this->name) && extension_loaded("imagick")))		{$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();}
+			else																												{$this->_tumbPath="";}
 		}
 		return $this->_tumbPath;
 	}
@@ -102,8 +102,8 @@ class MdlFile extends MdlObject
 		//Fichier de moins de 8Mo?
 		if(filesize($this->filePath()) < (File::sizeMo*8))
 		{
-			if(File::controlType("imageResize",$this->name))    {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
-			elseif(File::controlType("pdf",$this->name) && extension_loaded("imagick"))
+			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
+			elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))
 			{
 				$tmpThumb=new Imagick($this->filePath()."[0]");
 				$tmpThumb=$tmpThumb->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);//Pour pas avoir de background noir
@@ -193,24 +193,24 @@ class MdlFile extends MdlObject
 	public function typeIcon()
 	{
 		$pathFileTypes="app/img/file/fileType/";
-		if($this->hasThumb())									{return $this->getThumbPath();}
-		elseif(File::controlType("pdf",$this->name))			{return $pathFileTypes."pdf.png";}
-		elseif(File::controlType("textEditor",$this->name))		{return $pathFileTypes."textEditor.png";}
-		elseif(File::controlType("text",$this->name))			{return $pathFileTypes."text.png";}
-		elseif(File::controlType("calc",$this->name))			{return $pathFileTypes."calc.png";}
-		elseif(File::controlType("presentation",$this->name))	{return $pathFileTypes."presentation.png";}
-		elseif(File::controlType("image",$this->name))			{return $pathFileTypes."image.png";}
-		elseif(File::controlType("archive",$this->name))		{return $pathFileTypes."archive.png";}
-		elseif(File::controlType("audio",$this->name))			{return $pathFileTypes."audio.png";}
-		elseif(File::controlType("video",$this->name))			{return $pathFileTypes."video.png";}
-		elseif(File::controlType("executable",$this->name))		{return $pathFileTypes."executable.png";}
-		elseif(File::controlType("web",$this->name))			{return $pathFileTypes."web.png";}
-		elseif(File::controlType("autocad",$this->name))		{return $pathFileTypes."autocad.png";}
-		else													{return $pathFileTypes."misc.png";}
+		if($this->hasThumb())								{return $this->getThumbPath();}
+		elseif(File::isType("pdf",$this->name))				{return $pathFileTypes."pdf.png";}
+		elseif(File::isType("textEditor",$this->name))		{return $pathFileTypes."textEditor.png";}
+		elseif(File::isType("text",$this->name))			{return $pathFileTypes."text.png";}
+		elseif(File::isType("calc",$this->name))			{return $pathFileTypes."calc.png";}
+		elseif(File::isType("presentation",$this->name))	{return $pathFileTypes."presentation.png";}
+		elseif(File::isType("image",$this->name))			{return $pathFileTypes."image.png";}
+		elseif(File::isType("archive",$this->name))			{return $pathFileTypes."archive.png";}
+		elseif(File::isType("audio",$this->name))			{return $pathFileTypes."audio.png";}
+		elseif(File::isType("video",$this->name))			{return $pathFileTypes."video.png";}
+		elseif(File::isType("executable",$this->name))		{return $pathFileTypes."executable.png";}
+		elseif(File::isType("web",$this->name))				{return $pathFileTypes."web.png";}
+		elseif(File::isType("autocad",$this->name))			{return $pathFileTypes."autocad.png";}
+		else												{return $pathFileTypes."misc.png";}
 	}
 
 	/*
-	 * SURCHARGE : Supprime un fichier
+	 * SURCHARGE : Supprime un fichier (toutes ses versions OU une version spécifique)
 	 */
 	public function delete($versionDateCrea="all")
 	{
@@ -220,19 +220,17 @@ class MdlFile extends MdlObject
 			$fileVersions=$this->getVersions();
 			if($versionDateCrea==$fileVersions[0]["dateCrea"] && count($fileVersions)>1)
 				{Db::query("UPDATE ap_file SET name=".Db::format($fileVersions[1]["name"]).", octetSize=".Db::format($fileVersions[1]["octetSize"]).", dateModif=".Db::format($fileVersions[1]["dateCrea"]).", _idUserModif=".$fileVersions[1]["_idUser"]." WHERE _id=".$this->_id);}
-			////	Supprime la/les versions => disque & BDD
-			$versionsDelete=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." AND length(realName)>0 ".($versionDateCrea!="all"?"AND dateCrea=".Db::format($versionDateCrea):null));
-			foreach($versionsDelete as $tmpVersion)
-			{
+			////	Supprime chaque version du fichier => du disque puis en BDD
+			$sqlFilterVersion=($versionDateCrea!="all")  ?  "AND dateCrea=".Db::format($versionDateCrea)  :  null;
+			$fileVersionsToDelete=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." AND length(realName)>0 ".$sqlFilterVersion);
+			foreach($fileVersionsToDelete as $tmpVersion){
 				$tmpFilePath=$this->filePath($tmpVersion["dateCrea"]);
-				if(is_file($tmpFilePath)){
-					$deleteResult=File::rm($tmpFilePath);
-					if($deleteResult==true)   {Db::query("DELETE FROM ap_fileVersion WHERE _idFile=".$this->_id." AND realName=".Db::format($tmpVersion["realName"]));}
-				}
+				if(is_file($tmpFilePath))  {File::rm($tmpFilePath);}//fichier tjs accessible?
+				Db::query("DELETE FROM ap_fileVersion WHERE _idFile=".$this->_id." AND realName=".Db::format($tmpVersion["realName"]));
 			}
 			////	Supprime le fichier s'il ne reste plus aucune version
 			if(Db::getVal("SELECT count(*) FROM ap_fileVersion WHERE _idFile=".$this->_id)==0){
-				if($this->hasThumb())   {File::rm($this->getThumbPath());}
+				if($this->hasThumb())  {File::rm($this->getThumbPath());}
 				parent::delete();
 			}
 			////	si besoin, recharge la liste des versions puis recréé la vignette

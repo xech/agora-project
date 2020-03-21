@@ -1,4 +1,5 @@
 <script>
+////	INIT
 $(function(){
 	////	Logo du footer
 	$("select[name='logo']").change(function(){
@@ -71,8 +72,8 @@ function formControl()
 </style>
 
 
-<div class="pageCenter">
-	<div class="pageCenterContent">
+<div id="pageCenter">
+	<div id="pageCenterContent">
 		<form action="index.php" method="post" onsubmit="return formControl()" class="miscContainer" enctype="multipart/form-data">
 			<!--NAME-->
 			<div class="objField">
@@ -173,7 +174,7 @@ function formControl()
 			<?php } ?>
 			<!--LOGS TIMEOUT-->
 			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/log.png"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
+				<div class="fieldLabel"><img src="app/img/log.png"> <abbr title="<?= Txt::trad("AGORA_logsTimeOutInfo") ?>"><?= Txt::trad("AGORA_logsTimeOut") ?></abbr></div>
 				<div>
 					<select name="logsTimeOut">
 						<?php foreach($logsTimeOut as $tmpTime)  {echo "<option value='".$tmpTime."' ".($tmpTime==Ctrl::$agora->logsTimeOut?"selected":null).">".$tmpTime."</option>";} ?>

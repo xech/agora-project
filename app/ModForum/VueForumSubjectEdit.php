@@ -1,7 +1,8 @@
 <script>
 ////	Resize
 lightboxSetWidth(750);
-//Init la page
+
+////	INIT
 $(function(){
 	//Au changement du thème ou d'affectation d'un espace : Vérifie la dispo du thème pour l'espace
 	$("select[name='_idTheme']").on("change",function(){ checkThemeSpace(); });
@@ -38,8 +39,11 @@ function checkThemeSpace()
 </style>
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
+	<!--TITRE RESPONSIVE-->
+	<?php echo $curObj->editRespTitle("FORUM_addSubject"); ?>
+	
 	<!--TITRE & THEME-->
-	<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title") ?>"> &nbsp;
+	<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title")." ".Txt::trad("optional") ?>"> &nbsp;
 	<?php if(!empty($themesList)){ ?>
 		<span class="vEvtOptionsLabel">
 			<img src="app/img/category.png"><?= Txt::trad("FORUM_subjectTheme") ?>

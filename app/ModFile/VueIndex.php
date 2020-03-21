@@ -1,20 +1,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0">
 
+<script>
+////	INIT
+$(function(){
+	//Télécharge/visualise un fichier : on ne sélectionne pas le block!
+	$(".objIcon span,.objLabel span").on("click",function(event){
+		event.stopPropagation();
+	});
+});
+</script>
+
 <style>
-.objBlocks .objContainer				{height:150px; width:150px; min-width:150px; max-width:250px;}/*surcharge*/
-.objBlocks .hasThumb .objMenuBurger, .objBlocks .hasThumb .objMiscMenus	{filter:contrast(150%);}/*met en avant le menu context*/
-.objBlocks .hasThumb .objIcon img		{margin-top:0px;}/*thumb*/
-.objBlocks .thumbLandscape .objIcon img, .objBlocks .thumbPortrait .objIcon img	{min-width:100%; min-height:100%; max-width:none; max-height:none;}/*Surcharge ".objBlocks .objIcon img" : couvre toute la surface du Block*/
-.objBlocks .thumbLandscape .objIcon img	{height:100%;}/*Vignette paysage*/
-.objBlocks .thumbPortrait .objIcon img	{width:100%; margin-top:-40%;}/*Vignette portrait : recentré*/
-.objBlocks .pdfIcon						{position:absolute; top:0px; right:0px;}
-.objBlocks .objLabel					{line-height:15px;}/*surcharge : tester avec des noms sur 2 lignes (min & maj)*/
-.hasThumb [data-fancybox='images']		{cursor:url("app/img/search.png"),all-scroll!important;}
-.vVersionsMenu							{margin-left:5px;}
+/*basic*/
+.objIcon span							{cursor:pointer;}										/*cursor de l'icone/image : pas de "select"*/
+.objLabel span							{cursor:url("app/img/download.png"),pointer!important;}	/*cursor du nom du fichier*/
+.vVersionsMenu							{margin-left:10px;}										/*bouton "versions de fichiers"*/
+.hasThumb [data-fancybox='images']		{cursor:url("app/img/search.png"),pointer!important;}	/*vignettes d'images*/
+.objIconDownload						{height:12px; margin-right:5px; filter:grayscale(0.8);}	/*bouton download*/
+.objBlocks .objIconDownload				{float:right;}											/*idem: blocks*/
+
+/*Affichage Block*/
+.objBlocks .objContainer				{height:150px; width:150px; min-width:150px; max-width:250px;}	/*surcharge: taille des "block"*/
+.objBlocks .hasThumb .objMenuBurger, .objBlocks .hasThumb .objMiscMenus	{filter:contrast(150%);}		/*images/vignettes pdf : met en avant le menu context*/
+.objBlocks .hasThumb img				{margin-top:0px!important;}										/*images/vignettes pdf : pas de margin-top*/
+.objBlocks .thumbLandscape .objIcon img, .objBlocks .thumbPortrait .objIcon img  {min-width:100%; max-width:none; min-height:100%; max-height:none;}/*les images couvrent tout le Block*/
+.objBlocks .thumbLandscape .objIcon img	{height:100%;}													/*image paysage: 100% de haut*/
+.objBlocks .thumbPortrait .objIcon img	{width:100%; margin-top:-45%!important;}						/*image portrait: 100% de large + recentré*/
 </style>
 
-<div class="pageFull">
-	<div class="pageModMenuContainer">
+<div id="pageFull">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
@@ -30,7 +45,7 @@
 			?>
 		</div>
 	</div>
-	<div class="pageFullContent <?= (MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks") ?>">
+	<div id="pageFullContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo CtrlObject::folderPathMenu(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles());
@@ -40,8 +55,8 @@
 		{
 			echo $tmpFile->divContainer("objContentCenter ".$tmpFile->hasThumbClass).$tmpFile->contextMenu().
 				"<div class=\"objContent ".$tmpFile->thumbClass."\">
-					<div class='objIcon'><a ".$tmpFile->iconHref." title=\"".$tmpFile->iconTooltip."\" onclick=\"event.stopPropagation();\"><img src=\"".$tmpFile->typeIcon()."\"></a></div>
-					<div class='objLabel'><a ".$tmpFile->downloadHref." title=\"".$tmpFile->tooltip."\">".Txt::reduce($tmpFile->name,50)."</a>".$tmpFile->versionsMenu("icon")."</div>
+					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$tmpFile->typeIcon()."\"></span></div>
+					<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='objIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
 					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->displayAutorDate()."</div>
 				</div>

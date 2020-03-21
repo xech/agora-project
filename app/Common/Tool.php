@@ -47,7 +47,7 @@ class Tool
 
 		////	Parametrage DKIM / SMTP
 		if(defined("DKIM_domain") && defined("DKIM_private") && defined("DKIM_selector"))   {$mail->DKIM_domain=DKIM_domain;   $mail->DKIM_private=DKIM_private;   $mail->DKIM_selector=DKIM_selector;}
-		if(is_file("../smtpParams.php"))  {require_once "../smtpParams.php";/*$mail->SMTPDebug=2;*/}//Parametrage smtp spécifique, avec un mode "debug" si besoin
+		if(defined("SMTP_CONFIG") && is_file(SMTP_CONFIG))  {require_once SMTP_CONFIG;}//Parametrage smtp spécifique (cf "config.inc.php" & "params.php")
 		if(!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)){
 			$mail->isSMTP();
 			$mail->Host=Ctrl::$agora->smtpHost;
@@ -258,18 +258,17 @@ class Tool
 	/*
 	 * Barre de pourcentage
 	 */
-	public static function percentBar($fillPercent, $txtBar, $txtTooltip, $orangeBar=false, $barWidth=null, $barHeight=null)
+	public static function percentBar($fillPercent, $txtBar, $txtTooltip, $orangeBarAlert=false, $barWidth=null)
 	{
-		//init
+		//Width de "100%" par défaut && Remplissage à 100% maximum
 		if(empty($barWidth))	{$barWidth="100%";}
-		if(empty($barHeight))	{$barHeight="20px";}
 		if($fillPercent>100)	{$fillPercent=100;}
 		//Couleur de barre de remplissage
-		if($orangeBar==true)		{$percentBarImg="percentBarO";}//avancement retard (ou autre) : barre orange
-		elseif($fillPercent==100)	{$percentBarImg="percentBarB";}//terminé à 100% : bleu
-		else						{$percentBarImg="percentBarG";}//en dessous de 100% : vert
+		if($orangeBarAlert==true)	{$percentBarImg="percentBarAlert";}//avancement retard ou autre (barre orange)
+		elseif($fillPercent==100)	{$percentBarImg="percentBar100";}//terminé à 100% : vert clair
+		else						{$percentBarImg="percentBarCurrent";}//en cours : vert pale
 		//renvoie la percentbar
-		return "<div class='percentBar' style='width:".$barWidth.";height:".$barHeight.";' title=\"".$txtTooltip."\">
+		return "<div class='percentBar' style='width:".$barWidth.";' title=\"".$txtTooltip."\">
 					<div class='percentBarContent' style='background-image:url(app/img/".$percentBarImg.".png);background-size:".(int)$fillPercent."% 100%;'>".$txtBar."</div>
 				</div>";
 	}

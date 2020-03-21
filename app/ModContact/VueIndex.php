@@ -11,8 +11,8 @@ function contactAddUser(targetObjId)
 .objBlocks .objContainer	{height:140px; width:250px; min-width:250px; max-width:450px;}/*surcharge. height de 140 minimum!*/
 </style>
 
-<div class="pageFull">
-	<div class="pageModMenuContainer">
+<div id="pageFull">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
@@ -28,7 +28,7 @@ function contactAddUser(targetObjId)
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= Ctrl::$curContainer->folderContentDescription() ?></div></div>
 		</div>
 	</div>
-	<div class="pageFullContent <?= (MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks") ?>">
+	<div id="pageFullContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo CtrlObject::folderPathMenu(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());

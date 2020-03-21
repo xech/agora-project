@@ -1,8 +1,8 @@
 <script>
 ////	Resize
-lightboxSetWidth(520);
+lightboxSetWidth(600);
 
-////	SONDAGE DEJA VOTÉ : DESACTIVE CERTAINS CHAMPS
+////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
 <?php if($pollIsVoted==true){ ?>
 $(function(){
 	$("input[name='title'],.vPollResponseDiv input,#multipleResponsesInput").prop("disabled",true);
@@ -34,27 +34,33 @@ function formControl()
 
 <style>
 input[name=title]						{width:90%; margin-right:8px;}
-textarea[name=description]				{margin-top:12px; <?= empty($objPoll->description)?"display:none;":null ?>}
-#responseListLabel						{margin-top:20px;}
+#blockDescription						{margin-top:30px; <?= empty($objPoll->description)?"display:none;":null ?>}
+[name='description']					{width:100%; height:70px; <?= empty($objPoll->description)?"display:none;":null ?>}
+#responseListLabel						{margin-top:30px;}
 .vPollResponseDiv						{margin-top:12px;}
 .vPollResponseDiv input[type=text]		{width:90%; margin-right:5px;}
 .vPollResponseDiv div.responseFile		{padding:10px;}
 .vPollResponseDiv div.responseFileHide	{display:none;}
 .vPollResponseHidden					{display:none;}
-#responseAdd							{margin-top:12px; text-align:right;}
+#responseAdd							{margin:15px 30px 0px 10px;}
 form .infos								{margin:0px; margin-bottom:20px;}
-.pollOptions							{margin-top:20px;}
+.pollOptions							{margin-top:15px;}
 </style>
 
 
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data" class="lightboxContent">
+	<!--TITRE RESPONSIVE-->
+	<?php echo $objPoll->editRespTitle("DASHBOARD_addPoll"); ?>
+	
 	<!--SONDAGE DEJA VOTÉ : AFFICHE UNE NOTIFICATION "Attention : dès que le sondage est voté la modif des réponses est impossible"-->
 	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.png"> <?= Txt::trad("DASHBOARD_votedPollNotif") ?></div><?php } ?>
 
 	<!--TITRE & DESCRIPTION-->
 	<input type="text" name="title" value="<?= $objPoll->title ?>"  placeholder="<?= Txt::trad("DASHBOARD_titleQuestion") ?>" >
-	<img src="app/img/description.png" class="sLink" onclick="$('textarea[name=description]').slideToggle();" title="<?= Txt::trad("description") ?>">
-	<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $objPoll->description ?></textarea>
+	<img src="app/img/description.png" class="sLink" title="<?= Txt::trad("description") ?>" onclick="$('#blockDescription').slideToggle()">
+	<div id="blockDescription">
+		<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $objPoll->description ?></textarea>
+	</div>
 
 	<!--LISTE DES REPONSES POSSIBLES (10 maxi)-->
 	<div id="responseListLabel"><?= Txt::trad("DASHBOARD_responseList") ?> :</div>
@@ -81,6 +87,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 	<?php if($pollIsVoted==false){ ?><div id="responseAdd" class="sLink" onclick="$('.vPollResponseDiv:hidden:first').fadeIn();$('.vPollResponseDiv input:visible:last').focus();"><img src="app/img/plusSmall.png"> <?= Txt::trad("DASHBOARD_addResponse") ?></div><?php } ?>
 
 	<!--REPONSES MULTIPLES  &&  VOTE PUBLIC  &&  AFFICHAGE AVEC LES NEWS ("checked" par défaut)  &&  DATE DE FIN-->
+	<br><br>
 	<div class="pollOptions">
 		<input type="checkbox" name="multipleResponses" value="1" id="multipleResponsesInput" <?= !empty($objPoll->multipleResponses) ? "checked" : null ?> >
 		<label for="multipleResponsesInput"><?= Txt::trad("DASHBOARD_multipleResponses") ?>

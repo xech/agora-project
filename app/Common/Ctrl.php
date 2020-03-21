@@ -33,7 +33,7 @@ abstract class Ctrl
 	public static function initCtrl()
 	{
 		////	Init la session
-		if(defined("db_name"))	{session_name("Agora_".db_name);}//si plusieurs espaces sur le même serveur
+		if(defined("db_name"))  {session_name("Agora_".db_name);}//Une session pour chaque espace et DB du serveur
 		session_cache_limiter("nocache");
 		session_start();
 
@@ -41,7 +41,7 @@ abstract class Ctrl
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
-			setcookie("AGORAP_PASS", null, (time()-31536000), null, null, false, true);//reinit
+			setcookie("AGORAP_PASS", null, (time()+315360000));
 		}
 
 		////	Controle la mise à jour PUIS Récup le parametrage de l'espace (apres "session_start")
@@ -69,7 +69,10 @@ abstract class Ctrl
 			////	Chargement des trads et des "locales"
 			Txt::loadTrads();
 			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
-			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin"))  {$_SESSION["displayAdmin"]=(Req::getParam("displayAdmin")=="true") ? true : false;}
+			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
+				$_SESSION["displayAdmin"]=(Req::getParam("displayAdmin")=="true");
+				if($_SESSION["displayAdmin"]==true)  {Ctrl::addNotif(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+			}
 			////	Affichage des utilisateurs : space/all
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
 			////	Objet à charger et à controler (tjs après chargement des trads!)
@@ -262,33 +265,34 @@ abstract class Ctrl
 			elseif($connectViaCookie==true)	{$login=$_COOKIE["AGORAP_LOG"];			$passwordSha1=$_COOKIE["AGORAP_PASS"];}
 			//Identification + recup des infos sur l'user
 			$sqlPasswordSha1="AND password=".Db::format($passwordSha1);
-			if(self::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::getParam("connectPassword"),$sqlPasswordSha1);}//SHORT.C?
+			if(self::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::getParam("connectPassword"),$sqlPasswordSha1);}
 			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE login=".Db::format($login)." ".$sqlPasswordSha1);
-			//Aucun user correspondant : tente une identification LDAP et creation d'user à la volee
+			//User pas connecté : tente une identification LDAP (avec creation d'user à la volee)
 			if(empty($tmpUser) && $connectViaForm==true)  {$tmpUser=MdlUser::ldapConnectCreateUser(Req::getParam("connectLogin"),Req::getParam("connectPassword"));}
-			//...Toujours pas connecté : message d'erreur et déconnexion
+			//...User toujours pas connecté : message d'erreur et déconnexion
 			if(empty($tmpUser))   {self::addNotif("NOTIF_identification");  self::redir("?disconnect=1");}
-			//Compte en cours d'utilisation sur un autre poste avec une autre ip (pas de controle sur l'appli)
+			//User déjà connecté sur un autre poste & avec une autre ip (pas de controle sur l'appli)
 			if(Req::isMobileApp()==false){
 				$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND date > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
 				if($autreIpConnected>0)   {self::addNotif("NOTIF_presentIp");  self::redir("?disconnect=1");}
 			}
+
 			////	VALIDATION DE L'UTILISATEUR
-			//Connexion validé :reinitialise la session, charge l'utilisateur courant, etc
-			$_SESSION=array();
-			$_SESSION["_idUser"]=(int)$tmpUser["_id"];
+			//Init la session
+			$_SESSION=["_idUser"=>(int)$tmpUser["_id"]];//Id du client
+			//Maj les dates de "lastConnection" && "previousConnection"
 			$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
 			Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".(int)$tmpUser["_id"]);
+			//Charge l'utilisateur courant !!
 			self::$curUser=self::getObj("user",$_SESSION["_idUser"]);
 			self::$userHasConnected=true;
 			self::addLog("connexion");
 			//Récupère les préférences
-			foreach(Db::getTab("select * from ap_userPreference where _idUser=".self::$curUser->_id) as $tmpPref)
-				{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
-			//Enregistre login & password pour une connexion auto(10A)
+			foreach(Db::getTab("select * from ap_userPreference where _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
+			//Enregistre login & password pour une connexion auto
 			if(Req::isParam("rememberMe")){
-				setcookie("AGORAP_LOG", $login, (time()+315360000), null, null, false, true);
-				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000), null, null, false, true);
+				setcookie("AGORAP_LOG", $login, (time()+315360000));
+				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000));
 			}
 		}
 	}
@@ -441,23 +445,23 @@ abstract class Ctrl
 				$moduleName=$curObj::moduleName;
 				$sqlObjectType=$curObj::objectType;
 				$sqlObjectId=$curObj->_id;
-				if(!empty($comment))	{$comment.=" - ";}
+				if(!empty($comment))	{$comment.=" : ";}
 				//Commentaire de base : nom / titre / description / adresse 
 				if(!empty($curObj->name))			{$comment.=$curObj->name;}
 				elseif(!empty($curObj->title))		{$comment.=Txt::reduce($curObj->title);}
 				elseif(!empty($curObj->description)){$comment.=Txt::reduce($curObj->description);}
 				elseif(!empty($curObj->adress))		{$comment.=Txt::reduce($curObj->adress);}
 				//Ajoute si besoin le chemin de l'objet (format zip : minimaliste)
-				if($curObj::isInArbo() && $curObj->isRootFolder()==false)  {$comment.=" - chemin (path) : ".$curObj->containerObj()->folderPath("zip");}
+				if($curObj::isInArbo() && $curObj->isRootFolder()==false)  {$comment.=" (".Txt::trad("LOG_path")." : ".$curObj->containerObj()->folderPath("zip").")";}
 				//On ne dépasse pas les 300 carac en bdd (sinon renvoie une erreur)
 				$comment=Txt::reduce($comment,290);
 			}
 			////	Ajoute le log
 			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", comment=".Db::format($comment).", ".$sqlValues);
 			////	Supprime les anciens logs
-			Db::query("DELETE FROM ap_log WHERE action='connexion' AND UNIX_TIMESTAMP(date) <= ".intval(time()-(7*86400)));						//logs de plus d'une semaine
-			Db::query("DELETE FROM ap_log WHERE action='modif' AND UNIX_TIMESTAMP(date) <= ".intval(time()-(360*86400)));						//logs de plus d'un an
-			Db::query("DELETE FROM ap_log WHERE action='delete' AND UNIX_TIMESTAMP(date) <= ".intval(time()-(self::$agora->logsTimeOut*86400)));//logs en fonction du "logsTimeOut"
+			Db::query("DELETE FROM ap_log WHERE action='connexion'	AND UNIX_TIMESTAMP(date) <= ".intval(time()-(14*86400)));											//Logs de connexion		: conservés 2 semaines
+			Db::query("DELETE FROM ap_log WHERE action='delete'		AND UNIX_TIMESTAMP(date) <= ".intval(time()-(360*86400)));											//logs de suppression	: conservés un an
+			Db::query("DELETE FROM ap_log WHERE action NOT IN ('connexion','delete') AND UNIX_TIMESTAMP(date) <= ".intval(time()-(self::$agora->logsTimeOut*86400)));	//Logs Add/Modif/Etc	: en fonction du "logsTimeOut" (120j par défaut)
 		}
 	}
 

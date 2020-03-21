@@ -1,29 +1,32 @@
-<?php if($cptCal==0){ ?>
+<?php if($tmpCal->isFirstCal==true){ ?>
 <style>
 /*conteneur principal et header*/
-.vCalMonthMain						{display:table; width:100%; height:100%;}
-.vCalMonthMain>div					{display:table-row;}
-.vCalMonthMain>div>div				{display:table-cell;}
-.vCalMonthMain>div:first-child		{height:15px;}/*ligne du header*/
-.vCalMonthWeekNb					{width:15px; vertical-align:middle; font-size:0.9em; opacity:0.4;}
-.vCalMonthDayHeader					{text-align:center;}
+.vCalMonthMain									{display:table; width:100%; height:100%;}		/*Tableau des jours du mois*/
+.vCalMonthMain>div								{display:table-row;}							/*Ligne de chaque jour de la semaine*/
+.vCalMonthMain>div>div							{display:table-cell;}							/*Cellule principale de chaque jour*/
+.vCalMonthMain>div:first-child					{height:15px;}									/*ligne du header*/
+.vCalMonthWeekNb								{width:15px; vertical-align:middle; font-size:0.9em; opacity:0.4;}
+.vCalMonthDayHeader								{text-align:center;}							/*label des jours de la semaine*/
 /*Cellules du jour*/
-.vCalMonthDayCell							{color:#222; border-top:solid 1px #ddd; border-right:solid 1px #ccc; border-bottom:solid 1px #fff; background-color:#fff;}/*background-color à préciser pour le style "black"*/
-.vCalMonthToday								{background:#f8f8f8;}
-.vCalMonthToday .vCalMonthDayLabel			{color:#c00; background:#eee;}
-.vCalMonthDayOtherMonth .vCalMonthDayLabel	{opacity:0.3;}/*jours passés ou jours du futur mois*/
-.vCalMonthDayPast .vCalEvtLabel				{opacity:0.7;}/*Idem : applique au label des Evenements (pas tout le block!)*/
-.vCalMonthDayLabel							{padding-top:8px; padding-left:8px;}
-.vCalMonthDayCell:hover						{background:#fcfcfc;}
-.vCalMonthDayCell:hover .vCalMonthDayLabel	{color:#c00;}
-.vCalMonthDayCell.sLink:hover .vCalMonthDayAddEvt	{display:block; float:right; margin-right:5px;}/*Affiche si besoin le "+" au survol du block du jour*/
-.vCalMonthDayAddEvt							{display:none;}
-.vCalMonthDayCelebration					{color:#070; font-style:italic; margin-left:7px;}
+.vCalMonthDayCell								{color:#222; border-top:solid 1px #ddd; border-right:solid 1px #ccc; border-bottom:solid 1px #fff; background-color:#fff;}/*background-color à préciser pour le style "black"*/
+.vCalMonthDayCell:hover, .vCalMonthToday		{background:#f9f9f9;}							/*Aujourd'hui ou jour survolé : bg du block*/
+.vCalMonthToday .vCalMonthDayLabel				{color:#c00; font-size:1.2em;}					/*Aujourd'hui survolé : style du label*/
+.vCalMonthDayOtherMonth .vCalMonthDayLabel		{opacity:0.3;}									/*jour d'un mois passé/futur : style du label*/
+.vCalMonthDayPast .vCalEvtLabel					{opacity:0.7;}									/*jour passé : label de chaque événement (pas appliquer à tout le block)*/
+.vCalMonthDayLabel								{height:28px;}									/*ligne du label du jour*/
+.vCalMonthDayLabel>div							{display:inline-block; margin:5px 0px 0px 5px;}	/*ligne du label du jour : contenus*/
+.vCalMonthDayCell:hover .vCalMonthDayLabel		{color:#c00;}									/*jour survolé : ligne du label*/
+.vCalMonthImgAddEvt								{display:none;}									/*"Plus" d'ajout d'evt : masqué par défaut*/
+.vCalMonthDayAddEvt:hover .vCalMonthImgAddEvt	{display:block; float:right;}					/*"Plus" d'ajout d'evt : affiche au survol du jour*/
+.vCalMonthDayCelebration						{color:#070; font-style:italic;}					/*Jour férié*/
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.vCalMonthDayHeader, .vCalMonthDayLabel		{font-size:0.9em;}
+	.vCalMonthDayLabel							{height:20px; font-size:0.9em!important; text-align:center;}
+	.vCalMonthDayLabel>div						{margin:2px 0px 0px 2px;}
+	.vCalMonthImgAddEvt							{height:20px;}
 	.vCalMonthWeekNb, .vCalMonthDayCelebration	{display:none!important;}
+	.vCalEvtBlock .vCalEvtLabel					{text-transform:lowercase; font-size:0.85em; line-height:0.95em;}
 }
 
 /* IMPRESSION */
@@ -76,27 +79,31 @@ function calendarDimensions()
 		if(date("N",$tmpDay["timeBegin"])==1)	{echo "<div class='vCalMonthDaysLine'>";}
 
 		////	AFFICHE LE JOUR
+		$styleDayCell=$addEvtLink=null;
 		//Lien pour ajouter un evt (agenda accessible en lecture seule : on propose l'événement)
-		$onclickAddEvt=($addProposeEvtRight==true)  ?  "onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$tmpCal->_id."&newEvtTimeBegin=".strtotime(date("Y-m-d",$tmpDay["timeBegin"])." ".date("H:00"))."')\""  :  null;
+		if($tmpCal->addProposeEvtRight())  {$styleDayCell.="vCalMonthDayAddEvt";  $addEvtLink="onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$tmpCal->_id."&newEvtTimeBegin=".strtotime(date("Y-m-d",$tmpDay["timeBegin"])." ".date("H:00"))."')\"";}
 		//Styles de la cellule du jour
-		$styleDay=(!empty($onclickAddEvt))  ?  "sLink"  :  null;										//Init : ajout d'evt possible?
-		if(date("m",$tmpDay["timeBegin"])!=date("m",$curTime))	{$styleDay.=" vCalMonthDayOtherMonth";}	//Jour du mois précédent/futur (à celui affiché)
-		if($tmpDay["timeEnd"]<time())							{$styleDay.=" vCalMonthDayPast";}		//Jour déjà passé
-		if(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d"))	{$styleDay.=" vCalMonthToday";}			//Aujourd'hui
+		if(date("m",$tmpDay["timeBegin"])!=date("m",$curTime))		{$styleDayCell.=" vCalMonthDayOtherMonth";}	//Jour d'un mois précédent/futur à celui affiché ?
+		if($tmpDay["timeEnd"]<time())								{$styleDayCell.=" vCalMonthDayPast";}		//Jour déjà passé?
+		elseif(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d"))	{$styleDayCell.=" vCalMonthToday";}			//Aujourd'hui?
 		//Cellule du jour
-		echo "<div class='vCalMonthDayCell ".$styleDay."' ".$onclickAddEvt.">
-				<div class='vCalMonthDayLabel' title=\"".$addEvtTxt."\">
-					".date("j",$tmpDay["timeBegin"])."<span class='vCalMonthDayCelebration'>".$tmpDay["celebrationDay"]."</span>
-					<img src='app/img/plusSmall.png' class='vCalMonthDayAddEvt'>
-				</div>";
+		echo "<div class='vCalMonthDayCell ".$styleDayCell."'>";
+				//LABEL DU JOUR ET BOUTON "ADD"
+				echo "<div class='vCalMonthDayLabel'>
+						<div>".date("j",$tmpDay["timeBegin"])."</div><div class='vCalMonthDayCelebration'>".$tmpDay["celebrationDay"]."</div>
+						<img src='app/img/plus.png' class='vCalMonthImgAddEvt sLink' ".$addEvtLink." title=\"".$tmpCal->addEventLabel."\">
+					  </div>";
 				//EVENEMENTS DU JOUR
-				foreach($eventList[$tmpDay["date"]] as $tmpEvt){
-					$titleMaxSize=Req::isMobile() ? 20 : 45;//Voir en 1366x768
-					$tmpEvtTooltip=ucfirst(Txt::displayDate($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd))." : ".$tmpEvt->title;
-					$tmpEvtImportant=(!empty($tmpEvt->important))  ?  " <img src='app/img/important.png'>"  :  null;
-					$evtAttr="onclick=\"event.stopPropagation();lightboxOpen('".$tmpEvt->getUrl("vue")."')\" data-catColor='".$tmpEvt->catColor."' ";
-					echo $tmpEvt->divContainer("vCalEvtBlock",$evtAttr).$tmpEvt->contextMenu(["inlineLauncher"=>true,"_idCal"=>$tmpCal->_id,"curDateTime"=>strtotime($tmpEvt->dateBegin)])."
-							<div class='vCalEvtLabel' title=\"".$tmpEvtTooltip."\">".Txt::displayDate($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).": ".Txt::reduce($tmpEvt->title,$titleMaxSize).$tmpEvtImportant."</div>
+				foreach($tmpCal->eventList[$tmpDay["date"]] as $tmpEvt)
+				{
+					//Init l'evt (pas de menu context ni de "displayDate()" en responsive)
+					$divContainerAttr="data-catColor='".$tmpEvt->catColor."' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."');event.stopPropagation();\"";
+					$evtContextMenu=(Req::isMobile()==false)  ?  $tmpEvt->contextMenu(["iconBurger"=>"small","_idCal"=>$tmpCal->_id,"curDateTime"=>strtotime($tmpEvt->dateBegin)])  :  null;
+					$evtDisplayDate=(Req::isMobile()==false)  ?  Txt::displayDate($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)."&nbsp; "  :  null;
+					$evtImportant=(!empty($tmpEvt->important))  ?  " <img src='app/img/important.png'>"  :  null;
+					//Affiche l'evt
+					echo $tmpEvt->divContainer("vCalEvtBlock",$divContainerAttr).$evtContextMenu.
+							"<div class='vCalEvtLabel'>".$evtDisplayDate.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$evtImportant."</div>
 						 </div>";
 				}
 		echo "</div>";

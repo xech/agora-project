@@ -1,5 +1,17 @@
 <script>
-////	Acces guest à un espace  (accès direct ou avec mot de passe)
+////	INIT
+$(function(){
+	// apparition en "fade" du formulaire
+	$(".miscContainer").fadeIn(500);
+	// On met le focus sur l'input du login (ou le password)
+    $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();
+	//Fait clignoter le "labelResetPassword" si une mauvaise authentification vient d'être faite
+	<?php if(Req::isParam("msgNotif") && in_array("NOTIF_identification",Req::getParam("msgNotif"))){ ?>
+		$("#labelResetPassword").addClass("sLinkSelect").effect("pulsate",{times:10},10000);
+	<?php } ?>
+});
+
+////	Accès guest à un espace  (accès direct ou avec mot de passe)
 function publicSpaceAccess(_idSpace, password)
 {
 	// Accès direct sans password
@@ -32,17 +44,16 @@ function resetPasswordControlNew()
 	if($("[name='newPassword']").val()!=$("[name='newPasswordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError") ?>");	return false;}//Passwords différents
 }
 
-////	Init la page
-$(function(){
-	// apparition en "fade" du formulaire
-	$(".miscContainer").fadeIn(500);
-	// On met le focus sur l'input du login (ou le password)
-    $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();
-	//Fait clignoter le "labelResetPassword" si une mauvaise authentification vient d'être faite
-	<?php if(Req::isParam("msgNotif") && in_array(Txt::trad("NOTIF_identification"),Req::getParam("msgNotif"))){ ?>
-		$("#labelResetPassword").addClass("sLinkSelect").effect("pulsate",{times:10},10000);
-	<?php } ?>
-});
+////	Contrôle d'identification / connexion!
+function controlConnect()
+{
+	var inputLogin=$("[name=connectLogin]");
+	var inputPassword=$("[name=connectPassword]");
+	if(inputLogin.isEmpty() || inputLogin.val()==inputLogin.attr("placeholder") || inputPassword.isEmpty() || inputPassword.val()==inputPassword.attr("placeholder")){
+		notify(labelSpecifyLoginPassword);
+		return false;
+	}
+}
 </script>
 
 
@@ -51,6 +62,7 @@ $(function(){
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
 <script src="https://apis.google.com/js/api:client.js"></script>
 <script>
+////	INIT
 $(function(){
 	////	Init l'authentification "auth2"  (https://developers.google.com/api-client-library/javascript/  && https://developers.google.com/api-client-library/php/)
 	gapi.load("auth2", function(){
@@ -69,34 +81,21 @@ $(function(){
 		console.log("gSignin : "+errorJson.error);
 	};
 });
-
-/*
- * Contrôle d'identification / connexion
- */
-function controlConnect()
-{
-	var inputLogin=$("[name=connectLogin]");
-	var inputPassword=$("[name=connectPassword]");
-	if(inputLogin.isEmpty() || inputLogin.val()==inputLogin.attr("placeholder") || inputPassword.isEmpty() || inputPassword.val()==inputPassword.attr("placeholder")){
-		notify(labelSpecifyLoginPassword);
-		return false;
-	}
-}
 </script>
 <?php } ?>
 
 
 <style>
-.pageCenter				{margin-top:120px;}/*surcharge*/
-.headerBar>div			{padding:10px;}/*surcharge*/
+#pageCenter				{margin-top:120px;}/*surcharge*/
 .miscContainer			{display:none; max-width:500px;/*pour le responsive*/ padding:30px 10px 30px 10px; margin:0px auto 0px auto; background:rgba(255,255,255,0.9); border-radius:5px; text-align:center;}/*surcharge*/
+#headerBar>div			{padding:10px;}/*surcharge*/
 #customLogo				{margin-bottom:40px;}
 #customLogo img			{max-width:100%; max-height:250px;}
-#formConnect input[type=text], #formConnect input[type=password], #formConnect button	{width:80%; max-width:280px!important; height:35px; margin-bottom:15px;}/*surcharge*/
-#connectOptions			{text-align:center;}
-#connectOptions>div		{display:inline-block; padding:10px;}
-#connectOptions button	{height:40px; width:200px;}
-#connectOptions #gSignInButton:not(:hover) img	{filter:grayscale(30%);}
+#formConnect input[type=text], #formConnect input[type=password], #formConnect button	{width:80%!important; max-width:280px!important; height:35px; margin-bottom:15px;}/*surcharge*/
+.vConnectOptions		{display:inline-table;}
+.vConnectOptions>div	{display:table-cell; padding:15px;}
+.vConnectOptions button	{height:40px; width:200px;}
+.vConnectOptions #gSignInButton:not(:hover) img	{filter:grayscale(30%);}
 .vPasswordForms			{display:none;}
 .vPasswordForms input	{height:35px; margin:5px; width:230px;}
 .vPasswordForms button	{height:35px; margin:5px; width:150px;}
@@ -107,22 +106,23 @@ function controlConnect()
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.pageCenter				{margin-top:70px;}/*surcharge*/
+	#pageCenter				{margin-top:70px;}/*surcharge*/
 	.miscContainer			{width:95%!important;}
-	.headerBar>div			{padding:8px; font-weight:normal;}/*surcharge*/
-	#publicSpaceListTitle	{margin-left:0px;}
-	#publicSpaceList li		{margin-left:20px;}
+	#headerBar>div			{padding:8px; font-weight:normal;}/*surcharge*/
+	#connectOptionsMain.vConnectOptions, #connectOptionsMain.vConnectOptions>div	{display:block;}
+	#publicSpaceListTitle	{margin-left:10px;}
+	#publicSpaceList li		{margin-left:30px;}
 }
 </style>
 
 
-<div class="headerBar">
+<div id="headerBar">
 	<div><?= Ctrl::$agora->name ?></div>
 	<div><?= Ctrl::$agora->description ?></div>
 </div>
 
 
-<div class="pageCenter">
+<div id="pageCenter">
 	<div class="miscContainer">
 		<?php
 		//Logo custom et Séparateur "-or-"
@@ -139,13 +139,13 @@ function controlConnect()
 				<input type="hidden" name="_idSpaceAccess" value="<?= Req::getParam("_idSpaceAccess") ?>">
 			<?php } ?>
 			<button type="submit"><?= Txt::trad("connect") ?></button>
-			<div id="connectOptions">
+			<div class="vConnectOptions">
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked><label for="boxRememberMe" title="<?= Txt::trad("connectAutoInfo") ?>"><?= Txt::trad("connectAuto") ?></label></div>
-				<div id="labelResetPassword"><a href="javascript:;" data-fancybox="inline" data-src="#formResetPassword"><?= Txt::trad("resetPassword") ?></a></div>
+				<div><a href="javascript:;" data-fancybox="inline" data-src="#formResetPassword" id="labelResetPassword"><?= Txt::trad("resetPassword") ?></a></div>
 			</div>
 		</form>
 
-		<!--RESET DU PASSWORD : FORMULAIRE INITIAL POUR L'ENVOI DU MAIL-->
+		<!--RESET DU PASSWORD : FORMULAIRE D'ENVOI DU MAIL-->
 		<form id="formResetPassword" class="vPasswordForms" action="index.php" method="post" onsubmit="return resetPasswordControlSend();">
 			<?= Txt::trad("resetPassword2") ?><hr>
 			<input type="text" name="resetPasswordMail" placeholder="<?= Txt::trad("mail") ?>">
@@ -153,16 +153,16 @@ function controlConnect()
 			<?= Txt::submit("send",false) ?>
 		</form>
 
-		<!--RESET DU PASSWORD : FORMULAIRE DU NOUVEAU PASSWORD (cf. lien du mail)-->
+		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD (2ème etape)-->
 		<?php if(!empty($resetPasswordIdOk) && Req::isParam("newPassword")==false){ ?>
 			<div><a href="javascript:;" data-fancybox="inline" data-src="#formResetPasswordBis" id="formResetPasswordBisLabel"><?= Txt::trad("passwordModify") ?></a></div>
 			<form id="formResetPasswordBis" class="vPasswordForms" action="index.php" method="post" onsubmit="return resetPasswordControlNew();">
 				<?= Txt::trad("passwordModify") ?><hr>
 				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br><!--nouveau password-->
-				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>"><!--idem-->
-				<input type="hidden" name="resetPasswordMail" value="<?= Req::getParam("resetPasswordMail") ?>"><!--pour récupérer le compte client-->
+				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">
+				<input type="hidden" name="resetPasswordMail" value="<?= Req::getParam("resetPasswordMail") ?>"><!--vérif du reset-->
 				<input type="hidden" name="resetPasswordId" value="<?= Req::getParam("resetPasswordId") ?>"><!--idem-->
-				<input type="hidden" name="connectMailLogin" value="<?= Req::getParam("resetPasswordMail") ?>"><!--pour le pré-remplissage du champ après maj du compte-->
+				<input type="hidden" name="login" value="<?= Req::getParam("resetPasswordMail") ?>"><!--pré-remplissage du champ après reset-->
 				<br><?= Txt::submit("validate",false) ?>
 			</form>
 			<script>
@@ -177,9 +177,9 @@ function controlConnect()
 			<form id="formInvitPassword" class="vPasswordForms" action="index.php" method="post" onsubmit="return resetPasswordControlNew();">
 				<?= Txt::trad("USER_invitPassword2") ?><hr>
 				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br><!--nouveau password-->
-				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>"><!--idem-->
+				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">
 				<input type="hidden" name="_idInvitation" value="<?= Req::getParam("_idInvitation") ?>"><!--pour récupérer l'invit-->
-				<input type="hidden" name="mail" value="<?= Req::getParam("mail") ?>"><!--idem-->
+				<input type="hidden" name="mail" value="<?= Req::getParam("mail") ?>">
 				<br><?= Txt::submit("validate",false) ?>
 			</form>
 			<script>
@@ -187,11 +187,11 @@ function controlConnect()
 			setTimeout(function(){ $("#formInvitPasswordLabel").trigger("click"); },300);
 			</script>
 		<?php } ?>
-	
+
 		<?php
 		////	CONNEXION AVEC GSIGNIN  /  INSCRIPTION D'USER
 		if(Ctrl::$agora->gSigninEnabled() || !empty($usersInscription)){
-			echo $separateHrOr."<div id='connectOptions'>";
+			echo $separateHrOr."<div id='connectOptionsMain' class='vConnectOptions'>";
 				if(Ctrl::$agora->gSigninEnabled())	{echo "<div><button id='gSignInButton' title=\"".Txt::trad("gSigninButtonInfo")."\"><img src='app/img/gSignin.png'> ".Txt::trad("gSigninButton")."</button></div>";}
 				if(!empty($usersInscription))		{echo "<div><button onclick=\"lightboxOpen('?action=usersInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>";}
 			echo "</div>";

@@ -60,7 +60,7 @@ class CtrlAgora extends Ctrl
 				ldap_crea_auto_users=".Db::formatParam("ldap_crea_auto_users").",
 				ldap_pass_cryptage=".Db::formatParam("ldap_pass_cryptage"));
 			////	Ajoute un Wallpaper
-			if(isset($_FILES["wallpaperFile"]) && File::controlType("imageResize",$_FILES["wallpaperFile"]["name"])){
+			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"])){
 				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"]);
 				$wallpaperName=str_replace(".".File::extension($wallpaperName), ".thumb.jpg", $wallpaperName);
 				$wallpaperPath=PATH_WALLPAPER_CUSTOM.$wallpaperName;
@@ -75,7 +75,7 @@ class CtrlAgora extends Ctrl
 				if(is_file(PATH_DATAS.Ctrl::$agora->logo))  {File::rm(PATH_DATAS.Ctrl::$agora->logo);}//pas de "pathLogoFooter()" car il renvoie toujours un logo..
 			}
 			//Ajoute un nouveau logo
-			if(isset($_FILES["logoFile"]) && File::controlType("imageResize",$_FILES["logoFile"]["name"])){
+			if(isset($_FILES["logoFile"]) && File::isType("imageResize",$_FILES["logoFile"]["name"])){
 				$logoFileName="logo_thumb.".File::extension($_FILES["logoFile"]["name"]);
 				move_uploaded_file($_FILES["logoFile"]["tmp_name"], PATH_DATAS.$logoFileName);
 				File::imageResize(PATH_DATAS.$logoFileName, PATH_DATAS.$logoFileName, 200, 80);
@@ -88,7 +88,7 @@ class CtrlAgora extends Ctrl
 				if(is_file(PATH_DATAS.Ctrl::$agora->logoConnect))  {File::rm(PATH_DATAS.Ctrl::$agora->logoConnect);}
 			}
 			//Ajoute un nouveau logo
-			if(isset($_FILES["logoConnectFile"]) && File::controlType("imageResize",$_FILES["logoConnectFile"]["name"])){
+			if(isset($_FILES["logoConnectFile"]) && File::isType("imageResize",$_FILES["logoConnectFile"]["name"])){
 				$logoConnectFileName="logoConnect.".File::extension($_FILES["logoConnectFile"]["name"]);
 				move_uploaded_file($_FILES["logoConnectFile"]["tmp_name"], PATH_DATAS.$logoConnectFileName);
 				File::imageResize(PATH_DATAS.$logoConnectFileName, PATH_DATAS.$logoConnectFileName, 700, 300);
@@ -111,7 +111,7 @@ class CtrlAgora extends Ctrl
 			File::rm($wallpaperPath);
 		}
 		//Affiche la page
-		$vDatas["logsTimeOut"]=array(0,30,120,360);
+		$vDatas["logsTimeOut"]=array(0,30,120,360,720);
 		$vDatas["alertMessageBigSav"]=(File::datasFolderSize()>(File::sizeMo*200))  ?  true : false;
 		static::displayPage("VueIndex.php",$vDatas);
 	}

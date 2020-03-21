@@ -12,22 +12,17 @@
  */
 class MdlUser extends MdlPerson
 {
-	//Propriétés de base
 	const moduleName="user";
 	const objectType="user";
 	const dbTable="ap_user";
-	//Propriétés d'IHM
 	const isSelectable=true;
-	const nbObjectsByPage=50;
-	//Valeurs en cache (calculées qu'une fois)
+	public static $requiredFields=array("login","name");//password facultatif si modification de l'user
+	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc");
+	//Valeurs en cache
 	private $_userSpaces=null;
 	private $_isAdminCurSpace=null;
 	private $_usersVisibles=null;
-	private $_userVueHref=null;
 	private $_messengerEnabled=null;
-	//Champs obligatoires et de tri des résultats
-	public static $requiredFields=array("login","name");//password facultatif si modif
-	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc");
 
 	/*
 	 * Photo d'un utilisateur
@@ -58,7 +53,7 @@ class MdlUser extends MdlPerson
 	 */
 	public function isAdminSpace()
 	{
-		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->userAccessRight($this)==2) ? true : false;}
+		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->userAccessRight($this)==2);}
 		return $this->_isAdminCurSpace;
 	}
 	
@@ -70,7 +65,7 @@ class MdlUser extends MdlPerson
 	}
 
 	/*
-	 * SURCHARGE : Droit d'accès à l'objet						(cf. ex "controle_affichage_utilisateur()")
+	 * SURCHARGE : Droit d'accès à l'objet (cf. ex "controle_affichage_utilisateur()")
 	 */
 	public function accessRight()
 	{
@@ -113,7 +108,7 @@ class MdlUser extends MdlPerson
 	 */
 	public function deleteFromCurSpaceRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() &&  Ctrl::$curSpace->allUsersAffected()==false);
+		return (Ctrl::$curUser->isAdminSpace() && Ctrl::$curSpace->allUsersAffected()==false);
 	}
 
 	/*
@@ -138,8 +133,7 @@ class MdlUser extends MdlPerson
 	 */
 	public function messengerEnabled()
 	{
-		if($this->_messengerEnabled===null)
-			{$this->_messengerEnabled=($this->messengerEdit() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0)  ?  true  :  false;}
+		if($this->_messengerEnabled===null)  {$this->_messengerEnabled=($this->messengerEdit() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
 		return $this->_messengerEnabled;
 	}
 
@@ -152,7 +146,7 @@ class MdlUser extends MdlPerson
 	}
 
 	/*
-	 * STATIC SQL (SURCHARGE) : selectionne les users de tout le site OU les users de l'espace courant
+	 * SURCHARGE : selectionne les users de tout le site OU les users de l'espace courant
 	 */
 	public static function sqlDisplayedObjects($containerObj=null, $keyId=null)
 	{
@@ -238,15 +232,6 @@ class MdlUser extends MdlPerson
 	}
 
 	/*
-	 * Lien vers la fiche de l'utilisateur courant
-	 */
-	public function userVueHref()
-	{
-		if($this->_userVueHref===null)	{$this->_userVueHref=(Ctrl::$curUser->isUser())  ?  "onclick=\"lightboxOpen('".$this->getUrl("vue")."');\""  :  "";}
-		return $this->_userVueHref;
-	}
-
-	/*
 	 * Verifie si le login existe déjà chez un autre user
 	 */
 	public static function loginAlreadyExist($login, $_idUserIgnore=null)
@@ -327,7 +312,7 @@ class MdlUser extends MdlPerson
 	/*
 	 * Envoi du mail de reset de password
 	 */
-	public function resetPasswordSendMail($notify=true)
+	public function resetPasswordSendMail()
 	{
 		//Récupère l'email (login en priorité)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
@@ -340,8 +325,7 @@ class MdlUser extends MdlPerson
 			$message=Txt::trad("MAIL_hello").",<br><br>".
 					 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
 					 "<br><br>".Txt::trad("resetPasswordMailLoginRemind")." : <i>".$this->login."</i>";
-			$mailOptions=($notify==false)  ?  "noSendNotif"  :  null;//Notif d'envoi du mail ?
-			return Tool::sendMail($mailTo, $subject, $message, $mailOptions);
+			return Tool::sendMail($mailTo, $subject, $message, "noSendNotif");
 		}
 	}
 

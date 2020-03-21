@@ -62,9 +62,10 @@ class CtrlTask extends Ctrl
 				$vDatas["timelineDays"][]=array(
 					"curDate"=>date("Y-m-d",$dayTimeBegin),
 					"timeBegin"=>$dayTimeBegin,
-					"newMonthLabel"=>$newMonth==true ? ucfirst(Txt::formatime("%B %Y",$dayTimeBegin)) : null,
+					"newMonthLabel"=>($newMonth==true ? ucfirst(Txt::formatime("%B %Y",$dayTimeBegin)) : null),
 					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
-					"classBorderLeft"=>($dayTimeBegin==$timelineBegin || date("N",$dayTimeBegin)==1 || date("j",$dayTimeBegin)==1)  ?  "vTimelineLeftBorder"  :  null,//début de timeline/de mois/de semaine : affiche les pointillés
+					"vTimelineLeftBorder"=>(($dayTimeBegin==$timelineBegin || date("N",$dayTimeBegin)==1 || date("j",$dayTimeBegin)==1)  ?  "vTimelineLeftBorder"  :  null),//début de timeline/de mois/de semaine : affiche les pointillés
+					"vTimelineToday"=>(date("Y-m-d",$dayTimeBegin)==date("Y-m-d")  ?  "vTimelineToday"  :  null),//Label d'aujourd'hui
 					"dayLabel"=>date("j",$dayTimeBegin),
 					"dayLabelTitle"=>Txt::displayDate($dayTimeBegin,"dateFull")
 				);
@@ -102,9 +103,9 @@ class CtrlTask extends Ctrl
 	}
 
 	/*
-	 * ACTION : tache détaillé
+	 * ACTION : Vue détaillée d'une tache
 	 */
-	public static function actionTaskVue()
+	public static function actionVueTask()
 	{
 		$curObj=Ctrl::getTargetObj();
 		$curObj->controlRead();

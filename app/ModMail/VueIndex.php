@@ -1,4 +1,5 @@
 <script>
+////	INIT
 $(function(){
 	////	Init l'affichage de l'arborescence de contacts
 	$(".vMailsBlock").each(function(){
@@ -17,8 +18,8 @@ $(function(){
 	
 	////	Déplace si besoin le menu des destinataires à coté du menu des "options" (ne pas utiliser "isMobile()" car ne doit pas etre activé sur tablettes en mode paysage)
 	if(document.body.clientWidth<=1023){
-		$("#recipiententMainMenu>*").appendTo("#recipiententRespMenu");
-		$("#recipiententRespMenu").show();
+		$("#recipientMainMenu>*").appendTo("#mobileRecipients");
+		$("#mobileRecipients").show();
 	}
 });
 
@@ -34,38 +35,38 @@ function formControl()
 
 <style>
 /*Menu de gauche*/
-.pageModMenuContainer			{width:300px;}/*surcharge*/
-#recipiententLabel				{text-align:center;}
-#recipiententLabel hr			{margin:2px;}
-#recipiententLabel img			{height:18px;}
-.vMailsBlock					{margin:10px 0px 0px 4px;}
+#pageModuleMenu			{width:300px;}/*surcharge*/
+#recipientLabel					{text-align:center; margin-top:5px;}
+#recipientLabel hr				{margin:5px;}/*surcharge*/
+#recipientLabel img				{height:20px;}
+.vMailsBlock					{margin:20px 0px 0px 10px;}
 .vMailsBlock img				{max-width:22px;}
 .vMailsMenu						{padding-left:18px!important; display:none;}
 .vMailsMenu.vMailsMenuDisplay	{display:block;}
-.vMailsMenu>div					{padding:2px;}
+.vMailsMenu>div					{padding:3px;}
 .vMailsMenu img					{max-width:18px;}
 /*formulaire principal*/
-.vMailMain						{padding:10px;}
-.vMailMain [name='title']		{width:100%; margin-bottom:20px;}
-.vMailOptions					{display:table; width:100%; margin-top:20px;}
-.vMailOptions>div				{display:table-cell;}
-.vMailOptions>div:last-child	{text-align:right;}
-[id^='files']:not([id='files1']){display:none;}
-#recipiententRespMenu			{display:none; margin-top:30px;}
-.formMainButton					{margin-top:10px;}/*surcharge*/
+#mailContainer					{padding:10px;}
+#mailContainer [name='title']	{width:100%; margin-bottom:20px;}
+#mailOptions					{display:table; width:100%; margin-top:20px;}
+#mailOptions>div				{display:table-cell;}
+#mailOptions>div:last-child		{text-align:right;}
+#mailOptions>div>div			{margin:7px;}
+#mailOptions [id^='files']:not([id='files1'])	{display:none;}
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.vMailOptions, .vMailOptions>div	{display:inline-block; margin-bottom:10px;}
+	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
+	#mailOptions, #mailOptions>div	{display:inline-block;}
 }
 </style>
 
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data">
-<div class="pageCenter">
-	<div class="pageModMenuContainer">
+<div id="pageCenter">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
-			<div id="recipiententMainMenu">
-				<div id="recipiententLabel"><img src="app/img/mail.png"> <?= Txt::trad("MAIL_recipients") ?> <hr></div>
+			<div id="recipientMainMenu">
+				<div id="recipientLabel"><img src="app/img/mail.png"> <?= Txt::trad("MAIL_recipients") ?> :<hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS DE L'AGORA / DU MODULE CONTACT
 				foreach($containerList as $tmpContainer)
@@ -114,26 +115,36 @@ function formControl()
 		</div>
 	</div>
 
-	<div class="pageCenterContent">
-		<div class="vMailMain miscContainer">
-			<!--Formulaire principal-->
+	<div id="pageCenterContent">
+		<div id="mailContainer" class="miscContainer">
+
+			<!--TITRE ET EDITEUR DU MAIL-->
 			<input type="text" name="title" placeholder="<?= txt::trad("MAIL_title") ?>">
 			<textarea name="description"></textarea>
 			<?= CtrlMisc::initHtmlEditor("description") ?>
-			<!--Menu des destinataires en mode responsive-->
-			<div id="recipiententRespMenu" class="miscContainer"></div>
-			<!--Options-->
-			<div class="vMailOptions">
+
+			<!--RESPONSIVE : LISTE DES DESTINATAIRES-->
+			<div id="mobileRecipients"></div>
+
+			<!--OPTIONS DU MAIL-->
+			<div id="mailOptions">
 				<div>
-					<?php if(!empty(Ctrl::$curUser->mail)){ ?><div title="<?= Txt::trad("MAIL_receptionNotifInfo") ?>"><input type="checkbox" name="receptionNotif" value="1" id="receptionNotif"><label for="receptionNotif"><?= Txt::trad("MAIL_receptionNotif") ?></label></div><?php } ?>
-					<div title="<?= Txt::trad("MAIL_hideRecipientsInfo") ?>"><input type="checkbox" name="hideRecipients" value="1" id="hideRecipients" <?= $checkhideRecipients ?>><label for="hideRecipients"><?= Txt::trad("MAIL_hideRecipients") ?></label></div>
-					<div title="<?= Txt::trad("MAIL_noFooterInfo") ?>"><input type="checkbox" name="noFooter" value="1" id="noFooter"><label for="noFooter"><?= Txt::trad("MAIL_noFooter") ?></label></div>
+					<?php
+					//Accusé de réception && Masquer les desctinataires && Ne pas signer le message
+					if(!empty(Ctrl::$curUser->mail))  {echo "<div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>";}
+					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients' ".$checkhideRecipients."> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>";
+					echo "<div title=\"".Txt::trad("MAIL_noFooterInfo")."\"><input type='checkbox' name='noFooter' value='1' id='noFooter'> <label for='noFooter'>".Txt::trad("MAIL_noFooter")."</label></div>";
+					?>
 				</div>
-				<div title="<?= File::uploadMaxFilesize("info") ?>">
-					<?php for($i=1; $i<=10; $i++){ ?><div id="files<?= $i ?>"><?= Txt::trad("MAIL_attachedFile") ?>  <input type="file" name="files<?= $i ?>" onChange="$('#files<?= $i+1 ?>').fadeIn();"></div><?php } ?>
+				<div>
+					<?php
+					//Ajout de fichiers joints
+					for($cpt=1; $cpt<=10; $cpt++)  {echo "<div id=\"files".$cpt."\">".Txt::trad("MAIL_attachedFile")."  <input type='file' name=\"files".$cpt."\" onChange=\"$('#files".($cpt+1)."').fadeIn();\"></div>";}
+					?>
 				</div>
 			</div>
-			<!--"Submit"-->
+
+			<!--BOUTON "SUBMIT"-->
 			<?= Txt::submit("send",true) ?>
 		</div>
 	</div>

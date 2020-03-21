@@ -21,7 +21,7 @@
 	public static $requiredFields=array("name");
 	public static $searchFields=array("name","description");
 	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc");
-	//Valeurs mises en cache
+	//Valeurs en cache
 	private $_visibleFolderTree=null;
 
 	/*
@@ -115,6 +115,7 @@
 	 */
 	public function folderContentDescription()
 	{
+		//Init la mise en cache
 		if($this->_contentDescription===null)
 		{
 			//Init

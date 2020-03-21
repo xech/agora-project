@@ -4,8 +4,8 @@
 .linkAdress					{margin-top:5px; font-weight:normal; color:#888; word-break:break-all;}/*"break-all" évite que l'url dépasse du block'*/
 </style>
 
-<div class="pageFull">
-	<div class="pageModMenuContainer">
+<div id="pageFull">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
@@ -20,7 +20,7 @@
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= Ctrl::$curContainer->folderContentDescription() ?></div></div>
 		</div>
 	</div>
-	<div class="pageFullContent <?= (MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks") ?>">
+	<div id="pageFullContent" class="<?= MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo CtrlObject::folderPathMenu(Txt::trad("LINK_addLink"),MdlLink::getUrlNew());

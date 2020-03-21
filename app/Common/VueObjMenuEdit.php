@@ -102,7 +102,7 @@ function labelStyleRightControl(boxId)
 {
 	//Réinitialise les class des lignes et labels
 	$(".vSpaceTable:visible .vSpaceLabel").removeClass("sAccessRead sAccessWriteLimit sAccessWrite");
-	$(".vSpaceTable:visible [id^=targetLine]").removeClass("sTableRowSelect");
+	$(".vSpaceTable:visible [id^=targetLine]").removeClass("sLineSelect");
 	//Stylise les labels des checkbox sélectionnées
 	$("[name='objectRight[]']:checked").each(function(){
 		//Récupère le droit de la checkbox && l'id du label correspondant
@@ -113,7 +113,7 @@ function labelStyleRightControl(boxId)
 		else if(targetRight=="15")	{$("#"+targetLabelId).addClass("sAccessWriteLimit");}
 		else if(targetRight=="2")	{$("#"+targetLabelId).addClass("sAccessWrite");}
 		//Ligne sélectionnée : surligne
-		$("#targetLine"+targetLabelId).addClass("sTableRowSelect");
+		$("#targetLine"+targetLabelId).addClass("sLineSelect");
 		//Sujet du forum : affiche "preférez le droit écriture limité" ?	=> pas un droit "écriture limité"  & box que l'on vient de sélectionner (pas les pré-sélections)
 		if("<?= $curObj::objectType ?>"=="forumSubject" && targetRight!="15" && boxId && boxId==this.id)
 			{notify("<?= Txt::trad("FORUM_accessRightInfos") ?>");}
@@ -202,10 +202,10 @@ function mainFormControl()
 #objMenuBlocks							{text-align:left; margin-top:33px;}
 #objMenuLabels							{display:table; width:100%; margin:33px 0px -33px 0px;}
 .objMenuLabel							{display:table-cell; padding:3px; padding-top:8px; padding-bottom:8px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
-.objMenuLabel[for='objMenuMain']		{min-width:150px!important;}
-.objMenuLabel>span						{display:inline-block; margin-left:10px;}
+.objMenuLabel[for='objMenuMain']		{min-width:150px!important;}/*droits d'accès*/
+.objMenuLabel>span						{display:inline-block; margin-left:15px;}
 .objMenuLabel:not(.objMenuLabelUnselect){border-bottom:none!important;}
-.objMenuLabelUnselect					{opacity:0.7;}
+.objMenuLabelUnselect					{opacity:0.8;}
 
 /*DROITS D'ACCÈS*/
 #objMenuMain							{text-align:center;}
@@ -244,9 +244,9 @@ function mainFormControl()
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.objMenuLabel[for='objMenuMain']	{min-width:80px!important;}
-	.objMenuLabel img					{display:none;}
+	.objMenuLabel img					{display:none; }
 	.vSpaceTable						{min-width:100%;}
-	.vSpaceTitle>div					{font-size:0.9em;}/*Entête du tableau*/
+	.vSpaceTitle, .vSpaceLabel			{font-size:0.9em;}/*Entête du tableau et label des "targets"*/
 	.vSpaceTitle>div:not(:first-child)	{width:50px;}/*colonne des checkboxes*/
 	.vSpaceTargetIcon					{display:none;}
 }
@@ -266,12 +266,12 @@ elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions
 {
 	////	ONGLETS DES MENUS
 	echo "<div id='objMenuLabels' class='noSelect'>";
-		if(!empty($accessRightMenu))	{echo "<div class='objMenuLabel' for='objMenuMain'><img src='app/img/edit.png'> ".$accessRightMenuLabel."</div>";}
+		if(!empty($accessRightMenu))	{echo "<div class='objMenuLabel' for='objMenuMain'><img src='app/img/accessRight.png'> ".$accessRightMenuLabel."</div>";}
 		if(!empty($attachedFiles))		{echo "<div class='objMenuLabel ".(!empty($attachedFilesList)?"sLinkSelect":null)."' for='objMenuAttachedFiles'><img src='app/img/editAttachment.png'> ".Txt::trad("EDIT_attachedFile")."</div>";}
 		if(!empty($moreOptions)){
 			echo "<div class='objMenuLabel' for='objMenuMoreOptions'>";
-				if(!empty($notifMail))	{echo "<span> <img src='app/img/editNotif.png'> ".Txt::trad("EDIT_notifMail")." &nbsp;</span>";}
-				if(!empty($shortcut))	{echo "<span title=\"".Txt::trad("EDIT_shortcutInfo")."\" ".(!empty($shortcutChecked)?"class='sLinkSelect'":null)."><img src='app/img/shortcut.png'> ".Txt::trad("EDIT_shortcut")." &nbsp;</span>";}
+				if(!empty($notifMail))	{echo "<span><img src='app/img/editNotif.png'> ".Txt::trad("EDIT_notifMail")." &nbsp;</span>";}
+				if(!empty($shortcut))	{echo "<span title=\"".Txt::trad("EDIT_shortcutInfo")."\" ".(!empty($shortcutChecked)?"class='sLinkSelect'":null)."><img src='app/img/shortcut.png'> ".Txt::trad("EDIT_shortcut")."</span>";}
 			echo "</div>";
 		}
 	echo "</div>";
@@ -353,7 +353,7 @@ elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions
 						echo "<hr>";
 						foreach($attachedFilesList as $tmpFile){
 							$fileOptions=" &nbsp;<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"deleteAttachedFile(".$tmpFile["_id"].");\">";
-							if($curObj::htmlEditorField!==null && File::controlType("attachedFileInsert",$tmpFile["name"]))  {$fileOptions.=" &nbsp;<img src='app/img/editAttachmentInsertText.png' title=\"".Txt::trad("EDIT_attachedFileInsertInfo")."\" ".MdlObject::attachedFileInsert($tmpFile["_id"],true)." class='sLink'>";}
+							if($curObj::htmlEditorField!==null && File::isType("attachedFileInsert",$tmpFile["name"]))  {$fileOptions.=" &nbsp;<img src='app/img/editAttachmentInsertText.png' title=\"".Txt::trad("EDIT_attachedFileInsertInfo")."\" ".MdlObject::attachedFileInsert($tmpFile["_id"],true)." class='sLink'>";}
 							echo "<div id=\"menuAttachedFile".$tmpFile["_id"]."\"><img src='app/img/dot.png'> ".$tmpFile["name"]." ".$fileOptions."</div>";
 						}
 					}
@@ -368,7 +368,7 @@ elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions
 			if(!empty($notifMail))
 			{
 				//CHECKBOX PRINCIPAL & OPTIONS
-				echo "<img src='app/img/editNotif.png'> <input type='checkbox' name='notifMail' id='boxNotifMail' value='1' onChange=\"$('#notifMailOptions').slideToggle();\"> <label for='boxNotifMail' title=\"".Txt::trad("EDIT_notifMailInfo")."\">".Txt::trad("EDIT_notifMail2")."</label>";
+				echo "<br><img src='app/img/editNotif.png'>&nbsp;<input type='checkbox' name='notifMail' id='boxNotifMail' value='1' onChange=\"$('#notifMailOptions').slideToggle();\">&nbsp;<label for='boxNotifMail' title=\"".Txt::trad("EDIT_notifMailInfo")."\">".Txt::trad("EDIT_notifMail2")."</label>";
 				echo "<div id='notifMailOptions'>";
 					//JOINDRE L'OBJET FICHIER A LA NOTIFICATION ?
 					if($curObj::objectType=="file" && $curObj->_id==0)  {echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailAddFiles' id='boxNotifMailAddFiles' value='1'><label for='boxNotifMailAddFiles' title=\"".Txt::trad("FILE_fileSizeLimit")." ".File::displaySize(File::mailMaxFilesSize)."\">".Txt::trad("EDIT_notifMailAddFiles")."</label></div>";}
@@ -399,7 +399,7 @@ elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions
 				echo "</div>";
 			}
 			////	MENU "SHORTCUT" (raccourci)
-			if(!empty($shortcut))  {echo "<br><br><img src='app/img/shortcut.png'>&nbsp; <input type='checkbox' name='shortcut' id='boxShortcut' value='1' ".$shortcutChecked."><label for='boxShortcut'>".Txt::trad("EDIT_shortcutInfo")."</label>";}
+			if(!empty($shortcut))  {echo "<br><br><img src='app/img/shortcut.png'>&nbsp;<input type='checkbox' name='shortcut' id='boxShortcut' value='1' ".$shortcutChecked.">&nbsp;<label for='boxShortcut'>".Txt::trad("EDIT_shortcutInfo")."</label>";}
 			////	Fin de "objMenuMoreOptions"
 			echo "</div>";
 		}

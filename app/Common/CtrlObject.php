@@ -27,7 +27,7 @@ class CtrlObject extends Ctrl
 	}
 
 	/*
-	 * ACTION : Telecharge un fichier joint
+	 * ACTION : Telecharge un "AttachedFile"
 	 */
 	public static function actionGetFile()
 	{

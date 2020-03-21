@@ -85,7 +85,7 @@ class File
 	/*
 	 * Controle le type de fichier en fonction de son extension
 	 */
-	public static function controlType($typeKey, $fileName)
+	public static function isType($typeKey, $fileName)
 	{
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
 	}
@@ -98,9 +98,9 @@ class File
 		//Init le $datasFolderSize
 		$datasFolderSize=(!empty($datasFolderSize))  ?  $datasFolderSize  :  self::datasFolderSize();
 		////	Controle du type de fichier  &  L'espace disque disponible
-		if(File::controlType("forbidden",$fileName))					{Ctrl::addNotif(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
-		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)		{Ctrl::addNotif("NOTIF_diskSpace");  return false;}
-		else															{return true;}
+		if(File::isType("forbidden",$fileName))						{Ctrl::addNotif(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
+		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)	{Ctrl::addNotif("NOTIF_diskSpace");  return false;}
+		else														{return true;}
 	}
 
 	/*
@@ -108,9 +108,9 @@ class File
 	 */
 	public static function getMediaPlayer($filePath)
 	{
-		if(self::controlType("videoPlayer",$filePath))	{return "<br><br><video controls controlsList='nodownload' onclick='this.play()'><source src='".$filePath."' type='video/".self::extension($filePath)."'>HTML5 browser is required</video>";}
-		elseif(self::controlType("mp3",$filePath))		{return "<br><br><audio controls controlsList='nodownload'><source src='".$filePath."' type='audio/mp3'>HTML5 browser is required</audio>";}
-		elseif(self::controlType("flash",$filePath))	{return "<br><br><object type='application/x-shockwave-flash' data='".$filePath."'><param name='movie' value='".$filePath."'></object>";}
+		if(self::isType("videoPlayer",$filePath))	{return "<br><br><video controls controlsList='nodownload' onclick='this.play()'><source src='".$filePath."' type='video/".self::extension($filePath)."'>HTML5 browser is required</video>";}
+		elseif(self::isType("mp3",$filePath))		{return "<br><br><audio controls controlsList='nodownload'><source src='".$filePath."' type='audio/mp3'>HTML5 browser is required</audio>";}
+		elseif(self::isType("flash",$filePath))		{return "<br><br><object type='application/x-shockwave-flash' data='".$filePath."'><param name='movie' value='".$filePath."'></object>";}
 	}
 
 	/*
@@ -118,7 +118,7 @@ class File
 	 */
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		////	"MobileApp" : download annulé depuis l'appli (sinon ça bloque l'appli) puis download lancé via le browser "system" ("fromMobileApp" cf. appli)
+		////	Annule le download depuis l'appli, pour ne pas bloquer InAppBrowser. Download ensuite le fichier via le browser system, avec en paramètre "fromMobileApp". Note: InAppBrowser et le browser system utilisent les mêmes cookies : "Tool::isMobileApp()" renvoie donc toujours "true"..
 		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
 		elseif(!empty($fileContent) || is_file($filePath))
@@ -153,7 +153,7 @@ class File
 				fclose($handle);
 				ob_end_clean();//Détruit les données du tampon de sortie et éteint la temporisation de sortie
 			}
-			////	Fin de script
+			////	Fin de script : fonctionnement par défaut ..sauf par exemple si on veut supprimer le fichier temporaire
 			if($exitScript==true)  {exit;}
 		}
 	}
@@ -166,10 +166,10 @@ class File
 		if(is_file($filePath))
 		{
 			//Init le "Content-Type"
-			if(self::controlType("imageBrowser",$filePath))	{$contentType="image/".self::extension($filePath);}
-			elseif(self::controlType("pdf",$filePath))		{$contentType="application/pdf";}
-			elseif(self::controlType("text",$filePath))		{$contentType="text/plain;";}
-			else											{$contentType="application/octet-stream";}
+			if(self::isType("imageBrowser",$filePath))	{$contentType="image/".self::extension($filePath);}
+			elseif(self::isType("pdf",$filePath))		{$contentType="application/pdf";}
+			elseif(self::isType("text",$filePath))		{$contentType="text/plain;";}
+			else										{$contentType="application/octet-stream";}
 			//Envoie le "Header"
 			header('Content-Type: '.$contentType);
 			header('Content-Length: '.filesize($filePath));
@@ -245,7 +245,7 @@ class File
 	}
 
 	/*
-	 * Retourne la taille max des fichiers uploadés (en Octets)
+	 * Retourne la taille max des fichiers uploadés : en Octets
 	 */
 	public static function uploadMaxFilesize($message=false)
 	{
@@ -293,7 +293,7 @@ class File
 	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)
 	{
 		// Verifs de base
-		if(self::controlType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth))
+		if(self::isType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth))
 		{
 			////	Récupère la taile de l'image et vérifie l'intégrité du fichier
 			$getimagesize=@getimagesize($imgPathSrc);

@@ -346,15 +346,15 @@ class DbUpdate extends Db
 					//Nouveau chemin des fichiers joint (images, mp3, videos)
 					foreach(self::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".$objectType."'") as $tmpFile)
 					{
-						if(File::controlType("imageBrowser",$tmpFile["name"]) || File::controlType("mp3",$tmpFile["name"]) || File::controlType("videoPlayer",$tmpFile["name"]))
+						if(File::isType("imageBrowser",$tmpFile["name"]) || File::isType("mp3",$tmpFile["name"]) || File::isType("videoPlayer",$tmpFile["name"]))
 						{
 							//chemin du fichier joint
 							$fileExtension=".".File::extension($tmpFile["name"]);
 							$oldPath="../".(Ctrl::isHost()?PATH_DATAS:'stock_fichiers/')."fichiers_objet/".$tmpFile["_id"].$fileExtension;//exple : "../stock_fichiers/fichiers_objet/123.jpg"
 							$newPath="index.php?ctrl=object&action=DisplayAttachedFile&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObjectAttributes.php"
 							//Mp3 ("url_encode" : lecteur mp3)  ||  Videos 
-							if(File::controlType("mp3",$tmpFile["name"]))	{$newPath=urlencode($newPath);}
-							elseif(File::controlType("videoPlayer",$tmpFile["name"])){
+							if(File::isType("mp3",$tmpFile["name"]))  {$newPath=urlencode($newPath);}
+							elseif(File::isType("videoPlayer",$tmpFile["name"])){
 								$oldPath="../".$oldPath;//Racine depuis le player : "../../"
 								$newPath="../".str_replace("fichiers_objet","objectAttachment",$oldPath);//Racine depuis le player : "../../../"
 							}
@@ -771,6 +771,14 @@ class DbUpdate extends Db
 				self::fieldExist("ap_dashboardPoll","publicVote",	"ALTER TABLE ap_dashboardPoll ADD publicVote tinyint(1) DEFAULT NULL AFTER newsDisplay");
 				//Suppression des affectations obsoletes aux dossiers racine (résiduelles)
 				self::query("DELETE FROM ap_objectTarget WHERE objectType IN ('fileFolder','contactFolder','taskFolder','linkFolder') AND _idObject='1'");
+			}
+			////	MAJ V3.7.0
+			if(self::updateVersion("3.7.0"))
+			{
+				//Durée par défaut des logs : 120 jours
+				Db::query("UPDATE ap_agora SET logsTimeOut=120 WHERE logsTimeOut=30");
+				//Modifie la préférence d'affichage de l'agenda : "3days" devient "4days"
+				Db::query("UPDATE ap_userPreference SET value='4days' WHERE keyVal='calendarDisplayMode' AND value='3days'");
 			}
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			////!!!!	MODIFIER SI BESOIN LA BDD "ModOffline/db.sql"	!!!!!!!!!!!!

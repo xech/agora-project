@@ -48,9 +48,9 @@ class CtrlContact extends Ctrl
 	}
 
 	/*
-	 * ACTION : contact détaillé
+	 * ACTION : Vue détaillée d'un contact
 	 */
-	public static function actionContactVue()
+	public static function actionVueContact()
 	{
 		$curObj=Ctrl::getTargetObj();
 		$curObj->controlRead();

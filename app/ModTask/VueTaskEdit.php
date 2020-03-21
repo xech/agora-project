@@ -1,7 +1,8 @@
 <script>
-lightboxSetWidth(750);//Resize
+////	Resize
+lightboxSetWidth(750);
 
-////	Init la page
+////	INIT
 $(function(){
 	////	Masque les heures si une date n'est pas sélectionnée
 	if($(".dateBegin").isEmpty())	{$(".timeBegin").hide();}
@@ -18,6 +19,7 @@ $(function(){
 	if($(":checked[name='responsiblePersons[]']").length>0)	{$("#divResponsiblePersons").show();}
 });
 </script>
+
 
 <style>
 [name='title']			{width:80%; margin-right:10px;}
@@ -36,7 +38,10 @@ img[src*='user/icon']	{height:20px;}
 }
 </style>
 
+
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
+	<!--TITRE RESPONSIVE-->
+	<?php echo $curObj->editRespTitle("TASK_addTask"); ?>
 
 	<!--TITRE & DESCRIPTION (EDITOR)-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("title") ?>">
@@ -48,8 +53,8 @@ img[src*='user/icon']	{height:20px;}
 
 	<!--DATE DEBUT & FIN-->
 	<div class="vTaskOption">
-		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
-		<input type="text" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM",true) ?>" placeholder="H:m">
+		<input type="text" name="dateBegin" class="dateBegin" autocomplete="off" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
+		<input type="text" name="timeBegin" class="timeBegin" autocomplete="off" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM",true) ?>" placeholder="H:m">
 		<img src="app/img/arrowRight.png">
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" title="<?= Txt::trad("end") ?>">
 		<input type="text" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM",true) ?>" placeholder="H:m">

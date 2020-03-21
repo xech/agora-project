@@ -17,8 +17,6 @@ class MdlTaskFolder extends MdlObjectFolder
 	const dbTable="ap_taskFolder";
 	const hasAccessRight=true;
 	const MdlObjectContent="MdlTask";
-	const barWidth="150px";
-	const barWidthBis="130px";
 	
 	/*
 	 * SURCHARGE : Details complementaires du dossier -> synthese des "advancement" et "dateBeginEnd()" des taches du dossier
@@ -32,15 +30,15 @@ class MdlTaskFolder extends MdlObjectFolder
 		if(!empty($folderDetails["advancementAverage"])){
 			$txtBar="<img src='app/img/task/advancement.png'> ".$folderDetails["advancementAverage"]." %";
 			$txtTooltip="<img src='app/img/task/advancement.png'> ".Txt::trad("TASK_advancementAverage")." : ".$folderDetails["advancementAverage"]." %";
-			$textReturn.=Tool::percentBar((int)$folderDetails["advancementAverage"], $txtBar, $txtTooltip, false, static::barWidthBis);
+			$textReturn.=Tool::percentBar((int)$folderDetails["advancementAverage"], $txtBar, $txtTooltip, false, MdlTask::barWidth);
 		}
 		//Synthese des "dateBeginEnd()" des tâches
 		if(!empty($folderDetails["dateBegin"]) && !empty($folderDetails["dateEnd"])){
 			$fillPercent=((time()-strtotime($folderDetails["dateBegin"])) / (strtotime($folderDetails["dateEnd"])-strtotime($folderDetails["dateBegin"]))) * 100;
 			$txtBar="<img src='app/img/task/date.png'> ".Txt::displayDate($folderDetails["dateBegin"],"mini",$folderDetails["dateEnd"]);
 			$txtTooltip=Txt::displayDate($folderDetails["dateBegin"],"full",$folderDetails["dateEnd"]);
-			$textReturn.=Tool::percentBar($fillPercent, $txtBar, $txtTooltip, false, static::barWidth);
+			$textReturn.=Tool::percentBar($fillPercent, $txtBar, $txtTooltip, false, MdlTask::barWidth);
 		}
-		return $textReturn;
+		return $textReturn." &nbsp; &nbsp; ";
 	}
 }

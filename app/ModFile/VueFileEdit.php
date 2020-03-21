@@ -2,6 +2,7 @@
 ////	Resize
 lightboxSetWidth(<?= (isset($fileContent)) ? 750 : 550 ?>);
 
+////	INIT
 $(function(){
 	////	Validation du formulaire
 	$("#mainForm").submit(function(event){

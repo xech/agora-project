@@ -7,6 +7,9 @@ input[name='adress']	{width:99%; height:25px;}
 </style>
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
+	<!--TITRE RESPONSIVE-->
+	<?php echo $curObj->editRespTitle("LINK_addLink"); ?>
+	
 	<!--URL & DESCRIPTION-->
 	<input type="url" name="adress" value="<?= empty($curObj->adress)?"http://":$curObj->adress ?>" placeholder="<?= Txt::trad("LINK_adress") ?>">
 	<br><br>

@@ -539,7 +539,7 @@ ALTER TABLE `ap_dashboardPoll`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUT
 
 
 
-INSERT INTO ap_agora SET name='Omnispace / Agora-Project', personsSort='firstName', logsTimeOut='30', version_agora='3.0.0', dateUpdateDb=NOW(), usersLike='likeSimple', usersComment=1, mapTool='gmap', gSignin='1';
+INSERT INTO ap_agora SET name='Omnispace / Agora-Project', personsSort='firstName', logsTimeOut='120', version_agora='3.0.0', dateUpdateDb=NOW(), usersLike='likeSimple', usersComment=1, mapTool='gmap', gSignin='1';
 
 INSERT INTO ap_space SET _id=1, usersInvitation=1;
 

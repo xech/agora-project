@@ -23,23 +23,24 @@ class CtrlForum extends Ctrl
 	{
 		//Init
 		$vDatas["themeList"]=MdlForumTheme::getThemes();
-		$vDatas["pageFullOrCenter"]="pageFull";
-		////	AFFICHAGE D'UN SUJET & SES MESSAGES(?)
+		$vDatas["editThemeMenu"]=false;
+		////	AFFICHE D'UN SUJET ET SES MESSAGES
 		$curSubject=Ctrl::getTargetObj();
 		if(is_object($curSubject) && $curSubject::objectType=="forumSubject")
 		{
-			$curSubject->curUserConsultLastMessageMaj();//Met à jour si besoin la consultation du dernier message
-			$vDatas["subjectMessages"]=$curSubject->getMessages();
-			$vDatas["curSubject"]=$curSubject;
 			$vDatas["displayForum"]="messages";
+			$curSubject->curUserConsultLastMessageMaj();//Met à jour si besoin la consultation du dernier message
+			$vDatas["curSubject"]=$curSubject;
+			$vDatas["subjectMessages"]=$curSubject->getMessages();
 		}
-		////	AFFICHAGE DES THÈMES DE SUJET
+		////	AFFICHE LES THÈMES DE SUJET
 		elseif(!empty($vDatas["themeList"]) && Req::isParam("_idTheme")==false)
 		{
-			$vDatas["displayForum"]="theme";
-			$vDatas["editTheme"]=MdlForumTheme::addRight();
-			if($vDatas["editTheme"]==false)  {$vDatas["pageFullOrCenter"]="pageCenter";}
-			$vDatas["themeList"][]=new MdlForumTheme(["undefinedTheme"=>true]);//ajoute le pseudo theme "sans theme"
+			//Init
+			$vDatas["displayForum"]="themes";
+			if(MdlForumTheme::addRight())  {$vDatas["editThemeMenu"]=true;}
+			$vDatas["themeList"][]=new MdlForumTheme(["undefinedTheme"=>true]);//Pseudo theme "sans theme"
+			//Liste des themes
 			foreach($vDatas["themeList"] as $tmpKey=>$tmpTheme)
 			{
 				//Nombre de sujets & Objet du dernier sujet
@@ -59,11 +60,12 @@ class CtrlForum extends Ctrl
 				}
 			}
 		}
-		////	AFFICHAGE DES SUJETS (D'UN THEME SPECIFIQUE?)
+		////	AFFICHE LES SUJETS (D'UN THEME SPECIFIQUE?)
 		else
 		{
+			//Init
 			$vDatas["displayForum"]="subjects";
-			$vDatas["editTheme"]=(empty($vDatas["themeList"]) && MdlForumTheme::addRight());
+			if(MdlForumTheme::addRight() && empty($vDatas["themeList"]))  {$vDatas["editThemeMenu"]=true;}
 			//Liste les sujets
 			if(Req::getParam("_idTheme")=="undefinedTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
 			elseif(Req::isParam("_idTheme"))				{$sqlThemeFilter="AND _idTheme=".Db::formatParam("_idTheme");}	//sujets d'un theme précis
@@ -75,7 +77,7 @@ class CtrlForum extends Ctrl
 			foreach($vDatas["subjectsDisplayed"] as $tmpSubject)  {$tmpSubject->getMessages(true);}
 		}
 		////	THEME COURANT POUR LE MENU PATH
-		if($vDatas["displayForum"]!="theme" && !empty($vDatas["themeList"])){
+		if($vDatas["displayForum"]!="themes" && !empty($vDatas["themeList"])){
 			if(Req::getParam("_idTheme")=="undefinedTheme" || (is_object($curSubject) && empty($curSubject->_idTheme)))	{$vDatas["curTheme"]=new MdlForumTheme(["undefinedTheme"=>true]);}
 			elseif(is_object($curSubject) && !empty($curSubject->_idTheme))												{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}
 			elseif(Req::getParam("_idTheme"))																			{$vDatas["curTheme"]=self::getObj("forumTheme",Req::getParam("_idTheme"));}

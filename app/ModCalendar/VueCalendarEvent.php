@@ -8,9 +8,8 @@ lightboxSetWidth(550);
 
 <div class="lightboxContent">
 	<?php
-	////	ICONE EDIT / TITRE
-	$editIcon=($curObj->editRight())  ?  "<a href=\"javascript:lightboxOpen('".$curObj->getUrl("edit")."')\" class='lightboxTitleEdit' title=\"".Txt::trad("modify")."\"><img src='app/img/edit.png'></a>"  :  null;
-	echo "<div class='lightboxTitle'>".$editIcon.$curObj->title."</div>";
+	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
+	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->title."</div>";
 
 	////	DATE / PERIODICITE
 	echo "<div class='vEventDetails'><img src='app/img/calendar/clock.png'> &nbsp; ".Txt::displayDate($curObj->dateBegin,"full",$curObj->dateEnd)."</div>";

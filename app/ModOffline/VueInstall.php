@@ -1,6 +1,6 @@
 <script src="app/js/jstz.min.js"></script>
 <script>
-////	Init la page
+////	INIT
 $(function(){
 	////	Init le timezone avec "jstz"
 	var curTimezone=$("[data-tzName='"+jstz.determine().name()+"']").val();
@@ -12,7 +12,7 @@ $(function(){
 	});
 
 	////	Validation du formulaire
-	$("#mainForm").submit(function(event){
+	$("form").submit(function(event){
 		//Pas de validation par défaut du formulaire
 		event.preventDefault();
 		//Vérifie que tous les champs sont remplis (sauf password, qui peut être vide)
@@ -38,26 +38,26 @@ $(function(){
 </script>
 
 <style>
-.pageCenter			{padding-top:20px; padding-bottom:30px;}
-.pageCenterContent	{width:600px; padding:10px; margin-top:50px;}
-form				{margin-top:40px;}
-.vHeader			{margin-bottom:30px;}
-[src*='logo.png']	{float:right; max-height:50px;}
-h3					{margin-top:20px; font-style:italic;}
-#spaceDiskLimit		{width:40px;}
-.vSubmitButton		{text-align:center; margin-top:30px;}
-#imgLoading			{display:none; float:right;}
+#pageCenter						{padding-top:20px; padding-bottom:30px;}
+#pageCenterContent				{width:600px; padding:10px; margin-top:50px;}
+form							{margin-top:40px;}
+.vHeader						{margin-bottom:40px;}
+.vHeader img[src*='logo']		{float:right;}
+h3								{margin-top:20px; font-style:italic;}
+#spaceDiskLimit					{width:40px;}
+.vSubmitButton					{text-align:center; margin-top:30px;}
+#imgLoading						{display:none; float:right;}
 </style>
 
-<div class="pageCenter">
+<div id="pageCenter">
 	<!--CONTROLE L'ACCESS AU DOSSIER DATAS-->
 	<?php if(!is_writable(PATH_DATAS)){ ?>
 		<h3><img src="app/img/important.png"> <?= Txt::trad("NOTIF_chmodDATAS") ?></h3>
 	<!--FORMULAIRE D'INSTALL-->
 	<?php }else{ ?>
-	<form id="mainForm" class="pageCenterContent miscContainer noConfirmClose" enctype="multipart/form-data">
+	<form id="pageCenterContent" class="miscContainer noConfirmClose" enctype="multipart/form-data">
 		<!--HEADER-->
-		<div class="vHeader"><img src="app/img/install.png"> &nbsp; &nbsp; <img src="app/img/logoLabel.png"></div>
+		<div class="vHeader"><img src="app/img/install.png"><img src="app/img/logoLabel.png"></div>
 		<!--LANGUE-->
 		<div class="objField"><div class="fieldLabel"><?= Txt::trad("USER_langs") ?></div><div><?= Txt::menuTrad("install",Req::getParam("curTrad")) ?></div></div>
 		<!--CONFIG DB-->

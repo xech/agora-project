@@ -61,7 +61,7 @@ class Req
 			//Lance le controleur / Lance une 'Exception' / Erreur '404' dans le header
 			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}
 			elseif(self::isDevServer())							{throw new Exception("Action '".$curActionMethod."' not found");}
-			else												{header("HTTP/1.0 404 Not Found"); exit;}
+			else												{header("HTTP/1.0 404 Not Found");  exit;}
 		}
 		//Gestion des exceptions
 		catch(Exception $e){
@@ -70,7 +70,7 @@ class Req
 	}
 
 	/*
-	 * Verifie si des parametres GET/POST ont été spécifiés (et non vides)
+	 * Verifie si tous les parametres GET/POST ont été spécifiés et ne sont pas vides
 	 */
 	public static function isParam($keys)
 	{
@@ -137,12 +137,11 @@ class Req
 	}
 
 	/*
-	 * Navigation sur appareil tactile (PHP && COMMON.JS && COMMON.CSS : width de 1023px maxi)
+	 * Navigation en mode "mobile" si le width est inférieur à 1023px  (cf. Req.php && Common.js && Common.css)
 	 */
 	public static function isMobile()
 	{
-		if(self::$_isMobile===null)
-			{self::$_isMobile=(preg_match("/(android|iphone|ipad|blackberry|windows phone|tablet|touch)/i",$_SERVER['HTTP_USER_AGENT']) || (isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1023));}
+		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1023);}
 		return self::$_isMobile;
 	}
 

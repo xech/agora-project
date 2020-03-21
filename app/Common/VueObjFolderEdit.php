@@ -35,6 +35,8 @@ textarea[name='description']	{<?= empty($curObj->description)?"display:none;":nu
 
 
 <form action="index.php" method="post" id="mainForm" class="lightboxContent" enctype="multipart/form-data">
+	<!--TITRE RESPONSIVE-->
+	<?php echo $curObj->editRespTitle("addFolder"); ?>
 
 	<!--NOM & DESCRIPTION-->
 	<input type="text" name="name" value="<?= $curObj->name ?>" class="textBig" placeholder="<?= Txt::trad("name") ?>">

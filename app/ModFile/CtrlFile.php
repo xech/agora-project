@@ -42,14 +42,13 @@ class CtrlFile extends Ctrl
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplayedObjects(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
-			//Href du label du fichier : Téléchargement (dans une nouvelle fenêtre si >50Mo)
-			$downloadConfirmed=($tmpFile->octetSize>(File::sizeMo*50))  ?  "window.open('".$tmpFile->urlDownloadDisplay()."','_blank');"  :  "redir('".$tmpFile->urlDownloadDisplay()."');";
-			$tmpFile->downloadHref="href=\"javascript:if(confirm('".Txt::trad("download",true)." ?')) ".$downloadConfirmed."\"";
-			//Href de l'icone du fichier
-			if(File::controlType("imageBrowser",$tmpFile->name))							{$tmpFile->iconHref="href=\"".$tmpFile->urlDownloadDisplay("display")."\" data-fancybox='images'";}		//Lightbox pour une image
-			elseif(File::controlType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconHref="href=\"javascript:lightboxOpen('".$tmpFile->urlDownloadDisplay("display")."');\"";}//Lightbox pour un pdf/text
-			elseif(File::controlType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconHref="href=\"javascript:lightboxOpen('".$tmpFile->filePath()."');\"";}					//Lightbox pour une vidéo/mp3
-			else																			{$tmpFile->iconHref=$tmpFile->downloadHref;}															//Telechargement direct
+			//Lien du label du fichier : Télécharge le fichier (dans une nouvelle fenêtre car cela peut bloquer la page si c'est un gros fichier)
+			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) window.open('".$tmpFile->urlDownloadDisplay()."','_blank');\"";
+			//Lien de l'icone du fichier :
+			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDownloadDisplay("display")."\" data-fancybox='images'";}	//Lightbox d'image ("href" et "data-fancybox" obligatoires)
+			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->urlDownloadDisplay("display")."');\"";}	//Lightbox de pdf ou text
+			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."');\"";}						//Lightbox de vidéo ou mp3
+			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}															//Telechargement direct
 			//Tooltips et description
 			$tmpFile->tooltip=Txt::trad("download")." <i>".$tmpFile->name."</i>";
 			$tmpFile->iconTooltip=$tmpFile->name." - ".File::displaySize($tmpFile->octetSize);
@@ -60,7 +59,7 @@ class CtrlFile extends Ctrl
 				//Classe de la vignette : "thumb"
 				$tmpFile->hasThumbClass="hasThumb";
 				//Image (pas pdf) : ajoute la résolution d'image && la classe "thumbLandscape" ou "thumbPortrait"
-				if(File::controlType("imageBrowser",$tmpFile->name)){
+				if(File::isType("imageBrowser",$tmpFile->name)){
 					list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
 					$tmpFile->iconTooltip.=" - ".$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
 					$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
@@ -198,9 +197,9 @@ class CtrlFile extends Ctrl
 		{
 			$vDatas["curObj"]=$curObj;
 			//Fichier directement éditable (text/html) ?
-			if(File::controlType("text",$curObj->name) || File::controlType("html",$curObj->name)){
+			if(File::isType("text",$curObj->name) || File::isType("html",$curObj->name)){
 				$vDatas["fileContent"]=implode("",file($curObj->filePath()));
-				if(File::controlType("html",$curObj->name))	{$vDatas["initHtmlEditor"]=true;}
+				if(File::isType("html",$curObj->name))  {$vDatas["initHtmlEditor"]=true;}
 			}
 			static::displayPage("VueFileEdit.php",$vDatas);
 		}
@@ -266,7 +265,7 @@ class CtrlFile extends Ctrl
 					File::setChmod($tmpObj->filePath());
 					////	Creation de vignette && ImageResize à 1600px maxi?
 					$tmpObj->createThumb();
-					if(File::controlType("imageResize",$tmpFile["name"]) && Req::isParam("imageResize")){
+					if(File::isType("imageResize",$tmpFile["name"]) && Req::isParam("imageResize")){
 						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1600);
 						clearstatcache();//Pour mettre à jour le "filesize()"
 						$fileSize=(int)filesize($tmpObj->filePath());
@@ -291,6 +290,7 @@ class CtrlFile extends Ctrl
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
 		$vDatas["tmpFolderName"]="tmpUploadFolder".uniqid(mt_rand());
+		$vDatas["uploadMaxFilesize"]=File::displaySize(File::uploadMaxFilesize());
 		static::displayPage("VueAddEditFiles.php",$vDatas);
 	}
 

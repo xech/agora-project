@@ -1,7 +1,8 @@
 <script>
-lightboxSetWidth("90%");//Resize
+////	Resize
+lightboxSetWidth("90%");
 
-////	Init la page
+////	INIT
 $(function(){
 	//Affiche le formulaire d'import ou d'export
 	var actionImportExport="<?= Req::getParam("actionImportExport")=="import"?"import":"export" ?>";
@@ -23,10 +24,10 @@ $(function(){
 	}
 
 	//Tableau d'import: init le background des lignes sélectionnées
-	$("[id^=rowPerson]:has(input[name^='personsImport']:checked)").addClass("sTableRowSelect");
+	$("[id^=rowPerson]:has(input[name^='personsImport']:checked)").addClass("sLineSelect");
 	//Tableau d'import: Change le background des ligne sélectionnées
 	$("input[name^='personsImport']").change(function(){
-		(this.checked)  ?  $("#rowPerson"+$(this).val()).addClass("sTableRowSelect")  :  $("#rowPerson"+$(this).val()).removeClass("sTableRowSelect");
+		(this.checked)  ?  $("#rowPerson"+$(this).val()).addClass("sLineSelect")  :  $("#rowPerson"+$(this).val()).removeClass("sLineSelect");
 	});
 	//Tableau d'import: vérifie que le champ agora (<select>) n'est pas déjà sélectionné sur une autre colonne
 	$("select[name^='agoraFields']").change(function(){

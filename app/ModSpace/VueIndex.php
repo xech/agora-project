@@ -15,15 +15,15 @@
 }
 </style>
 
-<div class="pageFull">
-	<div class="pageModMenuContainer">
+<div id="pageFull">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>');" title="<?= Txt::trad("SPACE_moduleInfo") ?>"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div><hr>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
 		</div>
 	</div>
-	<div class="pageFullContent objBlocks">
+	<div id="pageFullContent" class="objBlocks">
 		<?php
 		////	LISTE DES ESPACES
 		foreach($spaceList as $tmpSpace)

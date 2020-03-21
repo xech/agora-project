@@ -18,8 +18,8 @@ class MdlDashboardPoll extends MdlObject
 	const hasAccessRight=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
-	const dontHideMiscMenu=true;
 	const hasUsersComment=true;
+	const htmlEditorField="description";
 	public static $requiredFields=array("title");
 	public static $searchFields=array("title","description");
 	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");
@@ -191,8 +191,8 @@ class MdlDashboardPoll extends MdlObject
 		//Il y a un fichier ?
 		if(!empty($tmpResponse["fileName"])){
 			//Image avec un lien pour l'afficher OU Nom du fichier avec un lien de téléchargement
-			if(File::controlType("imageBrowser",$tmpResponse["fileName"]))	{$responseFileDiv="<a href=\"".$this->responseFilePath($tmpResponse)."\" data-fancybox='images' title=\"".$tmpResponse["fileName"]."\"><img src=\"".$this->responseFilePath($tmpResponse)."\"></a>";}
-			else															{$responseFileDiv="<a href=\"".$tmpResponse["fileUrlDownload"]."\" title=\"".Txt::trad("download")."\"><img src='app/img/attachment.png'> ".$tmpResponse["fileName"]."</a>";}
+			if(File::isType("imageBrowser",$tmpResponse["fileName"]))	{$responseFileDiv="<a href=\"".$this->responseFilePath($tmpResponse)."\" data-fancybox='images' title=\"".$tmpResponse["fileName"]."\"><img src=\"".$this->responseFilePath($tmpResponse)."\"></a>";}
+			else														{$responseFileDiv="<a href=\"".$tmpResponse["fileUrlDownload"]."\" title=\"".Txt::trad("download")."\"><img src='app/img/attachment.png'> ".$tmpResponse["fileName"]."</a>";}
 			return "<div class='vPollsResponseFile'>".$responseFileDiv."</div>";
 		}
 	}

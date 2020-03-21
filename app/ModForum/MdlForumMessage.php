@@ -20,7 +20,6 @@ class MdlForumMessage extends MdlObject
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
-	const dontHideMiscMenu=true;
 	public static $requiredFields=array("description");
 	public static $searchFields=array("title","description");
 	public static $sortFields=array("dateCrea@@asc","dateCrea@@desc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");

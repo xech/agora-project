@@ -24,25 +24,29 @@ class CtrlOffline extends Ctrl
 		////	Reset du password
 		if(Req::isParam("resetPasswordMail"))
 		{
+			// Affiche la notif d'envoie de l'email (que l'email soit bon ou pas, par mesure de sécurité) : "Un email vient de vous être envoyé [...] Si vous ne l'avez pas reçu, vérifiez que l’adresse saisie est bien la bonne"
+			if(Req::isParam("resetPasswordSendMail"))  {Ctrl::addNotif("resetPasswordNotif");}
 			// Vérif si l'user existe
 			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::formatParam("resetPasswordMail")." OR login=".Db::formatParam("resetPasswordMail"));
-			if(empty($tmpUser))  {Ctrl::addNotif(Txt::trad("resetPasswordError")." : ".Req::getParam("resetPasswordMail"));}
-			else
+			if(!empty($tmpUser))
 			{
 				// Récupère l'user
 				$tmpUser=Ctrl::getObj("user",$tmpUser);
-				// Envoi du mail de reset de password
-				if(Req::isParam("resetPasswordSendMail"))	{$tmpUser->resetPasswordSendMail();}
-				// Formulaire puis enregistrement du nouveau password
+				// Envoie l'email de reset du password
+				if(Req::isParam("resetPasswordSendMail"))  {$tmpUser->resetPasswordSendMail();}
+				// L'user clique ensuite sur le lien présent dans l'email : affiche puis enregistre le formulaire du nouveau password
 				elseif(Req::isParam("resetPasswordId"))
 				{
+					//Vérifie le "resetPasswordId()"
 					$vDatas["resetPasswordIdOk"]=($tmpUser->resetPasswordId()==Req::getParam("resetPasswordId"));
-					if($vDatas["resetPasswordIdOk"]!=true)  {self::addNotif("resetPasswordIdExpired");}
-					elseif(Req::isParam("newPassword")){//Enregistre le nouveau password!
+					//"resetPasswordId" OK : enregistre le nouveau password!					
+					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
 						$sqlNewPassword=MdlUser::passwordSha1(Req::getParam("newPassword"));
 						Db::query("UPDATE ".MdlUser::dbTable." SET password=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
 						Ctrl::addNotif("modifRecorded","success");
 					}
+					//"resetPasswordId" pas OK : affiche "Le lien de renouvellement de password a expiré"
+					elseif($vDatas["resetPasswordIdOk"]!=true)  {self::addNotif("resetPasswordIdExpired");}
 				}
 			}
 		}
@@ -70,7 +74,7 @@ class CtrlOffline extends Ctrl
 		////	Affiche la page
 		$vDatas["usersInscription"]=(Db::getVal("select count(*) from ap_space where usersInscription=1")>0  &&  Req::isMobileApp()==false);
 		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "select * from ap_space where public=1 order by name");
-		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::getParam("login");}//Login par défaut : en parametre
+		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::getParam("login");}//Login par défaut : passé en parametre
 		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}//Login par défaut : en cookie
 		else									{$vDatas["defaultLogin"]=null;}
 		//Affiche la vue
@@ -227,7 +231,7 @@ class CtrlOffline extends Ctrl
 		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::formatParam("_idSpace")." AND BINARY password=".Db::formatParam("password"));//"BINARY"=>case sensitive
 		echo (empty($password)) ? "false" : "true";
 	}
-	
+
 	/*
 	 * AJAX : Authentification via gSignIn
 	 */
@@ -244,10 +248,10 @@ class CtrlOffline extends Ctrl
 			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE login=".Db::format($gClientUser["email"]));
 			if(!empty($tmpUser))
 			{
-				//Récup l'user (obj) && Init la connexion auto
+				//Récup l'user (obj) && Enregistre login & password pour une connexion auto
 				$objUser=Ctrl::getObj("user",$tmpUser);
-				setcookie("AGORAP_LOG", $gClientUser["email"], (time()+63072000), null, null, false, true);
-				setcookie("AGORAP_PASS", $objUser->password, (time()+63072000), null, null, false, true);
+				setcookie("AGORAP_LOG", $objUser->login, (time()+315360000));
+				setcookie("AGORAP_PASS", $objUser->password, (time()+315360000));
 				//Enregistre l'image de l'user?
 				if($objUser->hasImg()==false && !empty($gClientUser["picture"])){
 					$tmpImagePath=sys_get_temp_dir()."/".uniqid().".".File::extension($gClientUser["picture"]);

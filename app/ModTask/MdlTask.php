@@ -19,7 +19,6 @@ class MdlTask extends MdlObject
 	const hasAccessRight=true;//Elems à la racine
 	const MdlObjectContainer="MdlTaskFolder";
 	const isFolderContent=true;
-	//Propriétés d'IHM
 	const isSelectable=true;
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
@@ -27,8 +26,7 @@ class MdlTask extends MdlObject
 	const hasUsersComment=true;
 	const hasUsersLike=true;
 	const htmlEditorField="description";
-	const barWidth="160px";
-	const barWidthBis="130px";
+	const barWidth="150px";
 	public static $displayModeOptions=array("line","block");
 	public static $requiredFields=array("title");
 	public static $searchFields=array("title","description");
@@ -68,7 +66,7 @@ class MdlTask extends MdlObject
 	}
 
 	/*
-	 * icone & label "dateBegin" & "dateEnd"
+	 * "percentBar()" : Icone & label "dateBegin" & "dateEnd"
 	 */
 	public function dateBeginEnd($percentBar=null)
 	{
@@ -85,36 +83,20 @@ class MdlTask extends MdlObject
 	}
 
 	/*
-	 * Barre de la "timeline"
-	 */
-	public function timelineBeginEnd()
-	{
-		if(!empty($this->dateBegin) || !empty($this->dateEnd)){
-			$txtBar=null;
-			$txtTooltip=$this->title."<br>".Txt::displayDate($this->dateBegin,"full",$this->dateEnd);
-			if(!empty($this->advancement)){
-				$txtBar.="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".$this->advancement."%";
-				$txtTooltip.="<br><img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".Txt::trad("TASK_advancement")." : ".$this->advancement." % <br>".$this->isDelayed(true);
-			}
-			return "<a href=\"javascript:lightboxOpen('".$this->getUrl("vue")."')\">".Tool::percentBar($this->fillPercent(), $txtBar, $txtTooltip, $this->isDelayed())."</a>";
-		}
-	}
-
-	/*
-	 * Icone & label "Advancement" (Icones / Barre)
+	 * "percentBar()" : Icone & label "Advancement" (Icones / Barre)
 	 */
 	public function advancement($percentBar=null)
 	{
 		if(!empty($this->advancement)){
-			$icon="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'>";
+			$advancementIcon="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'>";
 			$txtTooltip=Txt::trad("TASK_advancement")." : ".$this->advancement." %"." <br>".$this->isDelayed(true);
-			if($percentBar==null && MdlTask::getDisplayMode()=="block")		{return "<span class='cursorHelp' title=\"".$txtTooltip."\">".$icon."</span>";}
-			else															{return Tool::percentBar($this->advancement, $icon." : ".$this->advancement."%", $txtTooltip, $this->isDelayed(), static::barWidthBis);}
+			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".$txtTooltip."\">".$advancementIcon."</span>";}
+			else														{return Tool::percentBar($this->advancement, $advancementIcon." ".$this->advancement."%", $txtTooltip, $this->isDelayed(), static::barWidth);}
 		}
 	}
 
 	/*
-	 * icone & label "responsiblePersons"
+	 * "percentBar()" : Icone & label "responsiblePersons"
 	 */
 	public function responsiblePersons($percentBar=null)
 	{
@@ -132,8 +114,24 @@ class MdlTask extends MdlObject
 			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".$txtTooltip."\">".$personsIcon."</span>";}
 			else{
 				$txtBar=substr(Txt::trad("TASK_responsiblePersons"),0,4)." : ".trim($responsiblePersonsFirstname,", ");
-				return Tool::percentBar(0, $personsIcon." ".Txt::reduce($txtBar,60), $txtTooltip, false, static::barWidth);
+				return Tool::percentBar(0, $personsIcon." ".Txt::reduce($txtBar,80), $txtTooltip, false, "220px");
 			}
+		}
+	}
+
+	/*
+	 * "percentBar()" de la "timeline"
+	 */
+	public function timelineBeginEnd()
+	{
+		if(!empty($this->dateBegin) || !empty($this->dateEnd)){
+			$txtBar=null;
+			$txtTooltip=$this->title."<br>".Txt::displayDate($this->dateBegin,"full",$this->dateEnd);
+			if(!empty($this->advancement)){
+				$txtBar.="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".$this->advancement."%";
+				$txtTooltip.="<br><img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".Txt::trad("TASK_advancement")." : ".$this->advancement." % <br>".$this->isDelayed(true);
+			}
+			return "<a href=\"javascript:lightboxOpen('".$this->getUrl("vue")."')\">".Tool::percentBar($this->fillPercent(), $txtBar, $txtTooltip, $this->isDelayed())."</a>";
 		}
 	}
 }

@@ -1,9 +1,9 @@
 <script>
-////	Init la page
+////	INIT
 $(function(){
 	$("[name=displayUsers]").val("<?= $_SESSION["displayUsers"] ?>");
-	if($("[name=displayUsers]").val()=="all")	{$("[name=displayUsers]").addClass("vInputSelectAllUsers");}
-})
+	if($("[name=displayUsers]").val()=="all")  {$("[name=displayUsers]").addClass("vInputSelectAllUsers");}
+});
 </script>
 
 <style>
@@ -12,10 +12,11 @@ $(function(){
 .vInputSelectAllUsers		{color:#b00; font-weight:bold;}
 .vGroupLabel				{margin-top:5px; cursor:help;}
 #menuAlphabet>a				{margin-right:5px;}
+.vAdminRightIcon			{position:absolute; bottom:5px; right:5px; cursor:help;}
 </style>
 
-<div class="pageFull">
-	<div class="pageModMenuContainer">
+<div id="pageFull">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	MENU "USERS DE L'ESPACE"/"TOUS LES USERS"
@@ -39,10 +40,10 @@ $(function(){
 					  </div><hr>";
 			}
 			////	AJOUTER UN UTILISATEUR  /  AFFECTER UN USER EXISTANT A L'ESPACE  /  ENVOYER DES INVITATIONS  /  IMPORTER DES UTILISATEURS  /  ENVOI DES COORDONNEES DE CONNEXION
-			if(self::$curUser->isAdminSpace())		{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" title=\"".Txt::trad($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
+			if(self::$curUser->isAdminSpace())			{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" title=\"".Txt::trad($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
 			if(self::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" title=\"".Txt::trad("USER_addExistUserTitle")."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
 			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendInvitationInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
-			if(self::$curUser->isAdminSpace())		{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_user")."</div></div>";}
+			if(self::$curUser->isAdminSpace())			{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_user")."</div></div>";}
 			if(self::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendCoordsInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendCoordinates');\"><div class='menuIcon'><img src='app/img/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
 			////	SELECTION D'UTILISATEURS / TYPE D'AFFICHAGE / TRI D'AFFICHAGE
 			echo "<hr>".MdlUser::menuSelectObjects().MdlUser::menuDisplayMode().MdlUser::menuSort();
@@ -59,13 +60,20 @@ $(function(){
 			?>
 		</div>
 	</div>
-	<div class="pageFullContent <?= (MdlUser::getDisplayMode()=="line"?"objLines":"objBlocks") ?>">
+	<div id="pageFullContent" class="<?= MdlUser::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	LISTE DES USERS
 		foreach($displayedUsers as $tmpUser)
 		{
+			//Menu contextuel OU Input de sélection de l'user
+			$contextMenu=null;
+			if($tmpUser->editRight())			{$contextMenu=$tmpUser->contextMenu();}
+			elseif(Ctrl::$curUser->isUser())	{$contextMenu=$tmpUser->targetObjectsInput();}
+			//Icone "admin general" OU Icone"admin space"
+			if($tmpUser->isAdminGeneral())		{$contextMenu.="<img src='app/img/user/adminGeneral.png' title=\"".Txt::trad("USER_adminGeneral")."\" class='vAdminRightIcon'>";}
+			elseif($tmpUser->isAdminSpace())	{$contextMenu.="<img src='app/img/user/adminSpace.png' title=\"".Txt::trad("USER_adminSpace")."\" class='vAdminRightIcon'>";}
 			//Affiche le block
-			echo $tmpUser->divContainer().$tmpUser->contextMenu().
+			echo $tmpUser->divContainer().$contextMenu.
 				"<div class='objContentScroll'>
 					<div class='objContent objPerson'>
 						<div class='objIcon'>".$tmpUser->getImg(true,false,true)."</div>

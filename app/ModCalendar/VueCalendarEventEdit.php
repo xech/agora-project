@@ -2,7 +2,7 @@
 ////	Resize
 lightboxSetWidth(600);
 
-//Init la page
+////	INIT
 $(function(){
 	////	INIT LA PAGE
 	<?php if($curObj->fullRight()==false){ ?>
@@ -20,7 +20,7 @@ $(function(){
 	<?php } ?>
 	//Surligne les agendas déjà sélectionnés
 	$(".vCalendarInput:checked").each(function(){
-		$(this).parents(".vAffectationBlock").addClass("sTableRowSelect");
+		$(this).parents(".vCalAffectBlock").addClass("sLineSelect");
 	});
 
 	////	Change de date/heure/périodicité (sauf pour les guests) :  Controle si les créneaux horaires sont déjà occupés  &  Affiche si besoin les details de périodicité
@@ -28,6 +28,13 @@ $(function(){
 	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").change(function(){ timeSlotBusy(); });
 	$("[name='periodType'],[name='dateBegin']").change(function(){ displayPeriodType(); });
 	<?php } ?>
+
+	////	Switch la sélection des agendas
+	$("#calsAffectSwitch").click(function(){
+		var calsSelector=".vCalendarInput:enabled";
+		if($(calsSelector).length==$(calsSelector+":checked").length)	{$(calsSelector+":checked").trigger("click");}/*désélectionne tous les agendas*/
+		else															{$(calsSelector+":not(:checked)").trigger("click");}/*sélectionne les agendas pas encore sélectionnés*/
+	});
 
 	////	Check/Unckeck l'input principal d'un agenda (via son "label")
 	$(".vCalendarInput").change(function(){
@@ -37,10 +44,10 @@ $(function(){
 			if(/proposition/i.test(thisInput.name) && $(thisInput).prop("checked"))  {notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
 		},500,this);//Affiche avec un timeout (cf. sélection d'un groupe d'users). Transmet l'input courant en paramètre via "this"
 		//Agenda sélectionné : on surligne le block et affiche si besoin l'option de proposition
-		if(this.checked)	{$(this).parents(".vAffectationBlock").addClass("sTableRowSelect").find(".vAffectationAddProposition").show();}
-		else				{$(this).parents(".vAffectationBlock").removeClass("sTableRowSelect").find(".vAffectationAddProposition").hide();}
+		if(this.checked)	{$(this).parents(".vCalAffectBlock").addClass("sLineSelect").find(".vCalAffectProposition").show();}
+		else				{$(this).parents(".vCalAffectBlock").removeClass("sLineSelect").find(".vCalAffectProposition").hide();}
 		//"uncheck" si besoin l'option de proposition
-		$(this).parents(".vAffectationBlock").find(".vCalendarInputProposition").prop("checked",false);
+		$(this).parents(".vCalAffectBlock").find(".vCalendarInputProposition").prop("checked",false);
 		//Controle d'occupation du créneau horaire de chaque agenda sélectionné
 		timeSlotBusy();
 	});
@@ -48,8 +55,8 @@ $(function(){
 	////	Check/Uncheck l'option de proposition pour un agenda
 	$(".vCalendarInputProposition").change(function(){
 		//"checked" : décoche l'affectation principale et affiche la notif "l'événement sera proposé..."   ||   "unchecked" : masque l'option de proposition et enlève le surlignage de la ligne (retour à l'état initial)
-		if(this.checked)	{$(this).parents(".vAffectationBlock").find(".vCalendarInput").prop("checked",false);  notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
-		else				{$(this).parents(".vAffectationBlock").removeClass("sTableRowSelect").find(".vAffectationAddProposition").hide();}
+		if(this.checked)	{$(this).parents(".vCalAffectBlock").find(".vCalendarInput").prop("checked",false);  notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
+		else				{$(this).parents(".vCalAffectBlock").removeClass("sLineSelect").find(".vCalAffectProposition").hide();}
 	});
 });
 
@@ -57,10 +64,10 @@ $(function(){
 function displayPeriodType()
 {
 	//Réinitialise les options de périodicité & Affiche au besoin l'options sélectionnée
-	$("[id^=periodOption_],#periodDetails,#periodDateEnd,#periodDateExceptions").hide();
+	$("#periodOption_weekDay, #periodOption_month, #periodDetails, #periodDateEnd, #periodDateExceptions").hide();
 	if($("[name='periodType']").isEmpty()==false){
-		$("#periodOption_"+$("[name='periodType']").val()).show();
-		$("#periodDetails, #periodDateEnd, #periodDateExceptions").show();
+		$("#periodOption_"+$("[name='periodType']").val()).fadeIn();
+		$("#periodDetails, #periodDateEnd, #periodDateExceptions").fadeIn();
 	}
 	//Pré-check si besoin tous les mois
 	if($("[name='periodType']").val()=="month" && $("[name*='periodValues_month']:checked").length==0)  {$("input[name*='periodValues_month']").prop("checked","true");}
@@ -120,50 +127,53 @@ function formControl()
 </script>
 
 <style>
-#blockDescription			{margin-top:15px; <?= empty($curObj->description)?"display:none;":null ?>}
-#eventDetails				{text-align:center;}
-.vEventDetails				{display:inline-block; margin:10px;}
-.vContentVisibleTitle		{text-align:left;}
+#blockDescription						{margin-top:15px; <?= empty($curObj->description)?"display:none;":null ?>}
+#eventDetails							{text-align:center;}
+.vEventDetails							{display:inline-block; margin:10px;}
+.vContentVisibleTitle					{text-align:left;}
 
 /*PÉRIODICITÉ*/
-[id^='periodOption_'], #periodDetails, #periodDateEnd, #periodDateExceptions	{display:none; margin:10px; text-align:left; vertical-align:middle; margin-left:30px;}
-[id^='periodOption_']>div	{display:inline-block;}
-#periodOption_weekDay>div	{width:24%;}
-#periodOption_month>div		{width:24%;}
-#periodDateExceptions>div	{margin:5px;}
-#periodDetails				{text-decoration:underline;}
+#periodOption_weekDay, #periodOption_month, #periodDetails, #periodDateEnd, #periodDateExceptions	{display:none; margin-top:15px; margin-left:20px; text-align:left; vertical-align:middle;}
+#periodOption_weekDay>div, #periodOption_month>div													{display:inline-block; width:24%; padding:3px;}
+#periodDateExceptions>div				{margin:5px;}
+#periodDetails							{text-decoration:underline;}
 
 /*AFFECTATION AUX AGENDAS*/
-#divAffectationCalendars			{max-height:135px; overflow-y:auto;}
-.vAffectationBlock					{display:inline-block; width:48%; margin:2px; margin-right:5px; border-radius:3px;}
-.vAffectationBlock .vCalendarInput	{display:none;}
-.vAffectationBlock label			{display:inline-block; width:75%; padding:5px;}
-.vAffectationBlock img				{max-height:18px;}
-.vAffectationAddProposition			{display:none; float:right; padding:3px; background:#ddd;}
-.vAffectationAddProposition input	{margin-right:2px;}
-input[name='calUsersGroup[]']		{display:none;}
+.lightboxBlock.vCalAffectOptions		{padding:4px 0px 4px 6px;}/*surcharge*/
+#calsAffectDiv							{max-height:135px; overflow-y:auto;}
+.vCalAffectBlock						{display:inline-block; width:48%; margin:2px; margin-right:5px; border-radius:3px;}
+.vCalAffectBlock .vCalendarInput		{display:none;}
+.vCalAffectBlock label					{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
+.vCalAffectBlock img					{max-height:16px;}
+.vCalAffectBlockBis label				{width:100%;}
+.vCalAffectProposition					{display:none; float:right; padding:3px; background:#ddd;}
+.vCalAffectProposition input			{margin-right:2px;}
+input[name='calUsersGroup[]']			{display:none;}
 
 /*GUESTS : MASQUE LES OPTIONS AVANCEES & LE MENU D'AFFECTATION AUX AGENDAS (conserve en "background" l'agenda présélectionné pour l'enregistrement du formulaire)*/
 <?php if(Ctrl::$curUser->isUser()==false){ ?>
-.vEventDetailsAdvanced, .optionsAffect	{display:none;}
+.vEventDetailsAdvanced, .vCalAffectOptions	{display:none;}
 <?php } ?>
 
 /*DÉTAILS SUR L'AFFECTATION*/
-#timeSlotBusy				{display:none;}
-.vTimeSlotBusyTable			{display:table; margin-top:6px;}
-.vTimeSlotBusyRow			{display:table-row;}/*cf. "actionTimeSlotBusy()"*/
-.vTimeSlotBusyCell			{display:table-cell; padding:4px; vertical-align:middle;}/*idem*/
+#timeSlotBusy							{display:none;}
+.vTimeSlotBusyTable						{display:table; margin-top:6px;}
+.vTimeSlotBusyRow						{display:table-row;}/*cf. "actionTimeSlotBusy()"*/
+.vTimeSlotBusyCell						{display:table-cell; padding:4px; vertical-align:middle;}/*idem*/
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	select[name="periodType"], select[name="contentVisible"]	{margin-top:10px;}
-	.vAffectationBlock											{width:98%;}
-	.vAffectationBlock label									{padding:8px;}
+	.vCalAffectBlock											{width:96%;}
+	.vCalAffectBlock label										{padding:8px 3px 8px 3px;}
+	#periodOption_weekDay>div, #periodOption_month>div			{width:33%;}
 }
 </style>
 
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data" class="lightboxContent">
-
+	<!--TITRE RESPONSIVE-->
+	<?php echo $curObj->editRespTitle("CALENDAR_addEvt"); ?>
+	
 	<!--PAS AUTEUR DE L'EVT : "VOUS N'AVEZ PAS D'ACCES AUX DETAILS"-->
 	<?php if($curObj->fullRight()==false)  {echo "<div class='infos'><img src='app/img/info.png'> ".Txt::trad("CALENDAR_editLimit")."</div><br>";} ?>
 
@@ -275,10 +285,10 @@ input[name='calUsersGroup[]']		{display:none;}
 	</div>
 
 	<!--AFFECTATIONS AUX AGENDAS-->
-	<div class="lightboxBlockTitle optionsAffect"><?= Txt::trad("CALENDAR_calendarAffectations") ?> <img src="app/img/switch.png" class="sLink" onclick="$('.vCalendarInput:enabled').trigger('click');" title="<?= Txt::trad("invertSelection") ?>"></div>
-	<div class="lightboxBlock optionsAffect">
+	<div class="lightboxBlockTitle vCalAffectOptions"><?= Txt::trad("CALENDAR_calendarAffectations") ?></div>
+	<div class="lightboxBlock vCalAffectOptions">
 		<?php
-		echo "<div id='divAffectationCalendars'>";
+		echo "<div id='calsAffectDiv'>";
 		////	AGENDAS DE RESSOURCES & AGENDAS PERSONNELS
 		foreach($affectationCalendars as $tmpCal)
 		{
@@ -289,29 +299,32 @@ input[name='calUsersGroup[]']		{display:none;}
 			//Agenda d'user ou de ressource
 			if($tmpCal->type=="user")	{$calIcon="typeUser.png";		$calIdUser="data-idUser=\"".$tmpCal->_idUser."\"";}
 			else						{$calIcon="typeRessource.png";	$calIdUser=null;}
-			//Astérisque sur les agendas non-modifiables || proposition
+			//Astérisque "*" sur les agendas non-modifiables || proposition
 			if($tmpCal->isDisabled!=null)				{$tmpCal->title.=" &#42;&#42;";}
 			elseif($tmpCal->inputType=="proposition")	{$tmpCal->title.=" &#42;";}
 			//Affiche l'option de proposition d'événement (en plus du champ principal avec le label)
 			if($tmpCal->inputType=="affectation" && $tmpCal->isMyPerso()==false){
 				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'"; $propositionChecked="checked"; $tmpCal->isChecked=null;}//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
 				else																				{$propositionShow=$propositionChecked=null;}														//Sinon on masque par défaut l'option de proposition
-				$moreInputs.="<div class='vAffectationAddProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
+				$moreInputs.="<div class='vCalAffectProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
 			}
 			//Affiche l'input d'affectation/proposition
-			echo "<div class='vAffectationBlock sTableRow'>
+			echo "<div class='vCalAffectBlock sTableRow'>
 					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"box".$tmpCal->_targetObjId."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." ".$calIdUser.">
-					<label for=\"box".$tmpCal->_targetObjId."\" title=\"".$tmpCal->tooltip."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
+					<label for=\"box".$tmpCal->_targetObjId."\" class='noTooltip' title=\"".$tmpCal->tooltip."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
 					".$moreInputs."
 				  </div>";
 		}
-		////	SELECTION D'UN GROUPE D'UTILISATEURS
-		if(!empty($curSpaceUserGroups))  {echo "<hr>";}
-		foreach($curSpaceUserGroups as $tmpGroup){
-			echo "<div class='vAffectationBlock sTableRow' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
-					<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_targetObjId."' onchange=\"userGroupSelect(this,'#divAffectationCalendars');\">
-					<label for='calUsersGroup".$tmpGroup->_targetObjId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
-				  </div>";
+		////	TOUT SELECTIONNER/DESELECTIONNER  OU SELECTION D'UN GROUPE D'UTILISATEURS
+		if(count($affectationCalendars)>2)
+		{
+			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis sTableRow' id='calsAffectSwitch'><label><img src='app/img/check.png'> ".Txt::trad("selectUnselectAll")."</label></div>";
+			foreach($curSpaceUserGroups as $tmpGroup){
+				echo "<div class='vCalAffectBlock vCalAffectBlockBis sTableRow' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
+						<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_targetObjId."' onchange=\"userGroupSelect(this,'#calsAffectDiv');\">
+						<label for='calUsersGroup".$tmpGroup->_targetObjId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
+					  </div>";
+			}
 		}
 		echo "</div>";
 		?>

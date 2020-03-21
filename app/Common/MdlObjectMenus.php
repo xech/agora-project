@@ -12,8 +12,8 @@
  */
 trait MdlObjectMenus
 {
-	//Type d'affichage en préference (ligne/block)
-	protected static $_displayMode=null;
+	public static $pageNbObjects=50;		//Nb d'éléments affichés par page : 50 par défaut
+	public static $displayModeCurrent=null;	//Type d'affichage en préference (ligne/block)
 
 	/*
 	 * Balise ouvrante du block de l'objet : contient l'Url d'édition (pour le DblClick)  et l'id du menu contextuel (Click droit)
@@ -28,23 +28,27 @@ trait MdlObjectMenus
 	/*
 	 * Identifiant du menu contextuel : "objBlock"/"objBlock"/"objAttachment" (Cf. "initMenuContext()"!)
 	 */
-	public function menuId($prefix, $reloadUniqid=false)
+	public function menuId($prefix)
 	{
-		if(empty($this->contextMenuId) || $reloadUniqid==true)  {$this->contextMenuId=Txt::uniqId();}//Un menu par instance de l'objet (Tester avec les evts récurrents ou les menus d'agendas)
+		if(empty($this->contextMenuId))  {$this->contextMenuId=Txt::uniqId();}//Un menu par instance de l'objet (Tester avec les evts récurrents ou les menus d'agendas)
 		return $prefix."_".$this->contextMenuId;
 	}
 
 	/*
 	 * VUE : Menu contextuel (édition, droit d'accès, etc)
-	 * $options =>  "inlineLauncher" (Bool : menu mini "burger")  &&  "deleteLabel" (label spécifique de suppression)  &&  "specificOptions" (options à ajouter au menu, cf. ci-dessous)
-	 * Exple de "specificOptions" =>  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option spécifique", "tooltip"=>"mon tooltip"]
+	 * $options["iconBurger"] (text)		: icone "burger" du launcher ("small", "big" ou "float" par défaut)
+	 * $options["deleteLabel"] (Bool)		: label spécifique de suppression
+	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu. Exemple avec  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
+	 * $options["specificLabels"] (Array)	: Texte à afficher. Exemple avec les "affectedCalendarsLabel()" pour afficher la liste des agendas ou est affecté un evenement
 	 */
 	public function contextMenu($options=null)
 	{
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
-		$vDatas["inlineLauncher"]=(!empty($options["inlineLauncher"])) ? true : false;
-		$vDatas["specificOptions"]=(!empty($options["specificOptions"])) ? $options["specificOptions"] : array();
+		$vDatas["iconBurger"]=(!empty($options["iconBurger"]))  ?  $options["iconBurger"]  :  "float";//Icone "burger" du launcher : "small" inline / "big" inline / "float" en position absolute (par défaut)
+		$vDatas["specificOptions"]=(!empty($options["specificOptions"]))  ?  $options["specificOptions"]  :  array();
+		$vDatas["specificLabels"]=(!empty($options["specificLabels"]))  ?  $options["specificLabels"]  :  array();
+
 		////	OBJET USER
 		if(static::objectType=="user")
 		{
@@ -55,8 +59,8 @@ trait MdlObjectMenus
 			}
 			////	SUPPRESSION DE L'ESPACE COURANT
 			if($this->deleteFromCurSpaceRight()){
-				$deleteFromSpaceUrl="?ctrl=user&action=deleteFromCurSpace&targetObjects[".static::objectType."]=".$this->_id;
-				$vDatas["confirmDeleteFromSpace"]="confirmDelete('".$deleteFromSpaceUrl."', '".Txt::trad("USER_confirmDeleteFromSpace",true)."')";
+				$deleteFromCurSpaceUrl="?ctrl=user&action=deleteFromCurSpace&targetObjects[".static::objectType."]=".$this->_id;
+				$vDatas["deleteFromCurSpaceConfirm"]="confirmDelete('".$deleteFromCurSpaceUrl."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')";
 			}
 			////	SUPPRESSION DEFINITIVE
 			if($this->deleteRight()){
@@ -116,27 +120,25 @@ trait MdlObjectMenus
 				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObject("readLimitInfos").$affectAutor;}
 				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $this->tradObject("writeInfosContainer").$affectAutor  :  Txt::trad("writeInfos");}
 			}
-			////	AUTEUR ET DATE
-			//Auteur + date création (optionnelle)
-			$vDatas["infosCrea"]["autor"]=$this->displayAutor();
-			$vDatas["infosCrea"]["date"]=(!empty($this->dateCrea)) ? "<br>".$this->displayDate(true,"full") : null;
-			//Auteur + date Modif
-			if(!empty($this->_idUserModif)){
-				$vDatas["infosModif"]["autor"]=$this->displayAutor(false);
-				$vDatas["infosModif"]["date"]="<br>".$this->displayDate(false,"full");
-			}
-			//Nouvel objet (créé depuis la dernière connexion)
-			$dateCreaTime=strtotime($this->dateCrea);
-			$vDatas["newObjectSinceConnection"]=(Ctrl::$curUser->isUser() && ($dateCreaTime>Ctrl::$curUser->previousConnection || $dateCreaTime>(time()-86400)))  ?  true  :  false;
-			$vDatas["hideMiscMenu"]=true;
+			////	AUTEUR ET DATE (optionnelle)
+			//Init
+			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
+			$vDatas["isNewObject"]=(strtotime($this->dateCrea)>(time()-86400) || (Ctrl::$curUser->isUser() && strtotime($this->dateCrea)>Ctrl::$curUser->previousConnection));
+			//Auteur + Date création + Nouvel objet (créé dans les 24 heures ou depuis la dernière connexion)
+			if($this->_idUser)					{$vDatas["autorDateCrea"].="<div class='sLink' onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->displayAutor()."</div>";}
+			if($this->dateCrea)					{$vDatas["autorDateCrea"].=$this->displayDate(true,"full");}
+			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div><img src='app/img/newObj.png'> <abbr title=\"".Txt::trad("objNewInfos")."\">".Txt::trad("objNew")."</abbr></div>";}
+			//Auteur + Date Modif (optionnelle)
+			if(!empty($this->_idUserModif))  {$vDatas["autorDateModif"]="<div class='sLink' onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->displayAutor(false)."</div>".$this->displayDate(false,"full");}
 			////	USERS LIKES
+			$vDatas["showMiscMenuClass"]=null;
 			if($this->hasUsersLike() && Ctrl::$curUser->isUser())
 			{
 				$likeOptions=(Ctrl::$agora->usersLike=="likeOrNot")  ?  ["like","dontlike"]  :  ["like"];
 				foreach($likeOptions as $likeOption){
 					$likeMenuId="likeMenu_".$this->_targetObjId."_".$likeOption;//ID du menu. Exple: "likeMenu_news-55_dontlike". Cf. "usersLikeValidate()" dans le "common.js"
 					$likeMenuNb=count($this->getUsersLike($likeOption));
-					if(!empty($likeMenuNb) || static::dontHideMiscMenu==true)	{$vDatas["hideMiscMenu"]=false;}
+					if(!empty($likeMenuNb))  {$vDatas["showMiscMenuClass"]="showMiscMenu";}
 					$vDatas["likeMenu"][$likeOption]=["menuId"=>$likeMenuId, "likeDontLikeNb"=>$likeMenuNb];
 				}
 			}
@@ -146,12 +148,29 @@ trait MdlObjectMenus
 				$commentNb=count($this->getUsersComment());
 				$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." :<br>".Txt::trad("commentAdd");
 				$commentsUrl="?ctrl=object&action=Comments&targetObjId=".$this->_targetObjId;
-				if(!empty($commentNb) || static::dontHideMiscMenu==true)	{$vDatas["hideMiscMenu"]=false;}
+				if(!empty($commentNb))  {$vDatas["showMiscMenuClass"]="showMiscMenu";}
 				$vDatas["commentMenu"]=["menuId"=>"commentMenu_".$this->_targetObjId, "commentNb"=>$commentNb, "commentTooltip"=>$commentTooltip, "commentsUrl"=>$commentsUrl];
 			}
 		}
 		////	Affichage
 		return Ctrl::getVue(Req::commonPath."VueObjMenuContext.php",$vDatas);
+	}
+
+	/*
+	 * VUE DES OBJETS : AFFICHE LE MENU CONTEXTUEL  OU LE BOUTON D'EDITION
+	 */
+	public function menuContextEdit()
+	{
+		if(Req::isMobile())			{return $this->contextMenu(["iconBurger"=>"big"]);}
+		elseif($this->editRight())  {return "<img src='app/img/edit.png' onclick=\"lightboxOpen('".$this->getUrl("edit")."')\" class='sLink lightboxMenuEdit' title=\"".Txt::trad("modify")."\">";}
+	}
+
+	/*
+	 * VUE DES OBJETS & RESPONSIVE : TITRE "NOUVEL OBJET" ("nouveau fichier", "nouveau dossier", etc)
+	 */
+	public function editRespTitle($keyTrad)
+	{
+		if(Req::isMobile() && $this->isNew())  {echo "<div class='lightboxTitle'>".Txt::trad($keyTrad)."</div>";}
 	}
 
 	/*
@@ -255,9 +274,11 @@ trait MdlObjectMenus
 	 */
 	public static function menuSelectObjects()
 	{
-		$vDatas["curFolderIsWritable"]=(is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ?  true  :  false;
-		$vDatas["rootFolderHasTree"]=($vDatas["curFolderIsWritable"]==true && count(Ctrl::getObj(get_class(Ctrl::$curContainer),1)->folderTree())>1)  ?  true  :  false;
-		return Ctrl::getVue(Req::commonPath."VueObjMenuSelection.php",$vDatas);
+		if(Req::isMobile()==false){
+			$vDatas["curFolderIsWritable"]=(is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ?  true  :  false;
+			$vDatas["rootFolderHasTree"]=($vDatas["curFolderIsWritable"]==true && count(Ctrl::getObj(get_class(Ctrl::$curContainer),1)->folderTree())>1)  ?  true  :  false;
+			return Ctrl::getVue(Req::commonPath."VueObjMenuSelection.php",$vDatas);
+		}
 	}
 
 	/*
@@ -307,11 +328,11 @@ trait MdlObjectMenus
 	 */
 	public static function getDisplayMode($containerObj=null)
 	{
-		if(static::$_displayMode===null){
-			static::$_displayMode=Ctrl::prefUser("displayMode_".static::getPrefDbKey($containerObj), "displayMode");
-			if(empty(static::$_displayMode))  {static::$_displayMode=static::$displayModeOptions[0];}//Affichage par défaut
+		if(static::$displayModeCurrent===null){
+			static::$displayModeCurrent=Ctrl::prefUser("displayMode_".static::getPrefDbKey($containerObj), "displayMode");
+			if(empty(static::$displayModeCurrent))  {static::$displayModeCurrent=static::$displayModeOptions[0];}//Affichage par défaut
 		}
-		return static::$_displayMode;
+		return static::$displayModeCurrent;
 	}
 
 	/*
@@ -330,8 +351,8 @@ trait MdlObjectMenus
 	 */
 	public static function sqlPagination()
 	{
-		$offset=(Req::isParam("pageNb"))  ?  ((Req::getParam("pageNb")-1)*static::nbObjectsByPage)  :  "0";
-		return "LIMIT ".static::nbObjectsByPage." OFFSET ".$offset;
+		$offset=(Req::isParam("pageNb"))  ?  ((Req::getParam("pageNb")-1)*static::$pageNbObjects)  :  "0";
+		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
 	}
 
 	/*
@@ -339,7 +360,7 @@ trait MdlObjectMenus
 	 */
 	public static function menuPagination($displayedObjNb, $getParamKey=null)
 	{
-		$pageNbTotal=ceil($displayedObjNb/static::nbObjectsByPage);
+		$pageNbTotal=ceil($displayedObjNb/static::$pageNbObjects);
 		if($pageNbTotal>1)
 		{
 			//Nb de page et numéro de page courant

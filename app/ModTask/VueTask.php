@@ -7,14 +7,10 @@ lightboxSetWidth(550);//Resize
 .percentBar			{margin:10px 15px 0px 0px;}/*Surcharge common.css*/
 </style>
 
-
 <div class="lightboxContent">
 	<?php
-	////	ICONE EDIT / PRIORITE / TITRE
-	echo "<div class='lightboxTitle'>";
-		if($curObj->editRight())  {echo "<a href=\"javascript:lightboxOpen('".$curObj->getUrl("edit")."')\" class='lightboxTitleEdit' title=\"".Txt::trad("modify")."\"><img src='app/img/edit.png'></a>";}
-		echo $curObj->priority()." ".$curObj->title;
-	echo "</div>";
+	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
+	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->priority()." ".$curObj->title."</div>";
 
 	////	DESCRIPTION / PERSONNES RESPONSABLES / AVANCEMENT / DATES DEBUT & FIN / FICHIERS JOINTS
 	if(!empty($curObj->description))	{echo $curObj->description."<hr>";}

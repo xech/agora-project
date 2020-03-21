@@ -1,4 +1,13 @@
 <script>
+////	INIT : Switch la sélection des objets
+$(function(){
+	$("#objSelectMenu").click(function(){
+		$("[name='targetObjects[]']").each(function(){
+			objSelect(this.id.replace("_selectBox",""));
+		});
+	});
+});
+	
 ////	Switch la sélection d'un objet
 function objSelect(objectBlockId)
 {
@@ -18,14 +27,6 @@ function objSelect(objectBlockId)
 	}
 }
 
-////	Switch la sélection de tous les objets
-function objSelectToggleAll()
-{
-	$("[name='targetObjects[]']").each(function(){
-		objSelect(this.id.replace("_selectBox",""));
-	});
-}
-
 ////	Action sur les objets sélectionnés
 function targetObjectsAction(urlRedir, openPage)
 {
@@ -39,7 +40,7 @@ function targetObjectsAction(urlRedir, openPage)
 	});
 	//Confirme une désaffectation d'espace?
 	if(find("DeleteFromCurSpace",urlRedir)){
-		if(!confirm("<?= Txt::trad("USER_confirmDeleteFromSpace") ?> ("+$(objectSelector).length+" elements)"))	{return false;}
+		if(!confirm("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?> ("+$(objectSelector).length+" elements)"))	{return false;}
 	}
 	//Confirme une suppression?
 	else if(find("delete",urlRedir)){
@@ -55,42 +56,40 @@ function targetObjectsAction(urlRedir, openPage)
 </script>
 
 <style>
-#objSelectSubMenu					{display:none;}
-#objSelectSubMenu .menuIcon		{width:40px; text-align:right;}
+#objSelectSubMenu				{display:none;}
+#objSelectSubMenu .menuIcon		{width:45px; text-align:right!important;}/*45px a lieu de 35px. srcharge "text-align"*/
 #objSelectSubMenu .menuIcon img	{max-height:22px;}
 
 /*RESPONSIVE*/
-@media screen and (max-width:1023px)
-{
-	#objSelectMenu	{display:none !important;}
+@media screen and (max-width:1023px){
+	#objSelectMenu	{display:none!important;}
 }
 </style>
 
 
-<div id="objSelectMenu" class="menuLine sLink" onclick="objSelectToggleAll();"><div class="menuIcon"><img src="app/img/check.png"></div><div id="objSelectLabel"><?= Txt::trad("selectAll") ?></div></div>
+<div id="objSelectMenu" class="menuLine sLink">
+	<div class='menuIcon'><img src="app/img/check.png"></div><div id="objSelectLabel"><?= Txt::trad("selectAll") ?></div>
+</div>
 
 <span id="objSelectSubMenu">
-	<!--TELECHARGER FICHIERS-->
-	<?php if(Req::$curCtrl=="file"){ ?>
-	<div class="menuLine sLink" onclick="targetObjectsAction('?ctrl=file&action=downloadArchive','newPage');"><div class="menuIcon"><img src="app/img/download.png"></div><div><?= Txt::trad("FILE_downloadSelection") ?></div></div>
-	<?php } ?>
-	<!--VOIR DES CONTACTS SUR UNE CARTE-->
-	<?php if(Req::$curCtrl=="contact" || Req::$curCtrl=="user"){ ?>
-		<div class="menuLine sLink" onclick="targetObjectsAction('?ctrl=misc&action=PersonsMap','lightbox');"><div class='menuIcon'><img src="app/img/map.png"></div><div><?= Txt::trad("showOnMap") ?></div></div>
-	<?php } ?>
-	<!--DEPLACER/SUPPRIMER LES OBJETS D'UN CONTENEUR DOSSIER-->
-	<?php if($curFolderIsWritable==true){ ?>
-		<?php if($rootFolderHasTree==true){ ?><div class="menuLine sLink" onclick="targetObjectsAction('?ctrl=object&action=FolderMove&targetObjId=<?= Ctrl::$curContainer->_targetObjId ?>','lightbox');"><div class="menuIcon"><img src="app/img/folder/folderMove.png"></div><div><?= Txt::trad("changeFolder") ?></div></div><?php } ?>
-		<div class="menuLine sLink" onclick="targetObjectsAction('?ctrl=object&action=Delete');"><div class="menuIcon"><img src="app/img/delete.png"></div><div><?= Txt::trad("deleteElems") ?></div></div>
-	<?php } ?>
-	<!--SUPPRIMER/DESAFFECTER DES USERS-->
-	<?php if(Req::$curCtrl=="user"){ ?>
-		<?php if($_SESSION["displayUsers"]=="space" && Ctrl::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false){ ?>
-		<div class="menuLine sLink" onclick="targetObjectsAction('?ctrl=user&action=DeleteFromCurSpace');"><div class='menuIcon'><img src="app/img/delete.png"></div><div><?= Txt::trad("USER_deleteFromSpace") ?></div></div>
-		<?php } ?>
-		<?php if(Ctrl::$curUser->isAdminGeneral()){ ?>
-		<div class="menuLine sLink" onclick="targetObjectsAction('?ctrl=object&action=delete');"><div class='menuIcon'><img src="app/img/delete.png"></div><div><?= Txt::trad("USER_deleteDefinitely") ?></div></div>
-		<?php } ?>
-	<?php } ?>
+	<?php
+	////	FICHIERS : TELECHARGER FICHIERS
+	if(Req::$curCtrl=="file")  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=file&action=downloadArchive','newPage');\"><div class='menuIcon'><img src='app/img/download.png'></div><div>".Txt::trad("FILE_downloadSelection")."</div></div>";}
+
+	////	USER/CONTACT : VOIR SUR UNE CARTE
+	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=misc&action=PersonsMap','lightbox');\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
+
+	////	USER : DESAFFECTER D'UN ESPACE
+	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=user&action=DeleteFromCurSpace');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteFromCurSpace")."</div></div>";}
+
+	////	USER : SUPPRIMER DEFINITIVEMENT
+	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=object&action=delete');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteDefinitely")."</div></div>";}
+
+	////	DOSSIER : DEPLACER DES OBJETS
+	if($curFolderIsWritable==true && $rootFolderHasTree==true)  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=object&action=FolderMove&targetObjId=".Ctrl::$curContainer->_targetObjId."','lightbox');\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
+
+	////	DOSSIER : SUPPRIMER DES OBJETS
+	if($curFolderIsWritable==true)  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=object&action=Delete');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("deleteElems")."</div></div>";}
+	?>
 	<hr>
 </span>

@@ -73,9 +73,9 @@ class CtrlMisc extends Ctrl
 			////	INIT LE MESSENGER EN DEBUT DE SESSION
 			if(!isset($_SESSION["livercounterUsers"]))
 			{
-				//Supprime les vieux messages du messenger (24h maxi) & livecounters des users déconnectés
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE date < ".intval(time()-MESSENGER_TIMEOUT));
-				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-MESSENGER_TIMEOUT));//24h aussi car on conserve le "editorDraft" du tinyMce, même si le "LIVECOUNTER_TIMEOUT" ne dure que quelques secondes..
+				//Supprime les vieux messages du messenger & livecounters des users déconnectés
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE date < ".intval(time()-86400));//Messages du messenger conservés 24h
+				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-172800));//Brouillon de l'éditeur TinyMce conservé 48h
 				//Garde en session les users que l'on peut voir et n'ayant pas bloqué leur messenger
 				$idsUsers=[0];//pseudo user
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsers[]=$tmpUser->_id;}
@@ -90,7 +90,8 @@ class CtrlMisc extends Ctrl
 			////	LIVECOUNTERS : LISTE DES USERS
 			//Verif si ya un changement du livecounter (connection/deconnection)
 			$livercounterUsersOld=$_SESSION["livercounterUsers"];
-			$_SESSION["livercounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".intval(time()-LIVECOUNTER_TIMEOUT));
+			$livecounterDateTimeout=time()-30;//On considère les autres users comme "déconnectés" du livecounter au bout de 30 secondes d'inactivité
+			$_SESSION["livercounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".$livecounterDateTimeout);
 			$result["livercounterChanged"]=(count($livercounterUsersOld)!=count($_SESSION["livercounterUsers"]));//ne pas comparer directement les tableaux d'objet.. mais leur taille (uliliser plutot "mb_strlen(serialize($array))" ?)
 			//Affichage des users connectés
 			if($result["livercounterChanged"]==true)
@@ -292,7 +293,7 @@ class CtrlMisc extends Ctrl
 		$vDatas["wallpaperList"]=array();
 		$filesList=array_merge(scandir(PATH_WALLPAPER_DEFAULT),scandir(PATH_WALLPAPER_CUSTOM));
 		foreach($filesList as $tmpFile){
-			if(!in_array($tmpFile,['.','..']) && File::controlType("imageBrowser",$tmpFile)){
+			if(!in_array($tmpFile,['.','..']) && File::isType("imageBrowser",$tmpFile)){
 				$path=(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))  ?  PATH_WALLPAPER_DEFAULT.$tmpFile  :  PATH_WALLPAPER_CUSTOM.$tmpFile;
 				$value=(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))  ?  WALLPAPER_DEFAULT_PREFIX.$tmpFile  :  $tmpFile;
 				$nameRacine=str_replace(File::extension($tmpFile),null,$tmpFile);
@@ -320,30 +321,31 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*
-	 * ACTION : Download de fichier depuis mobileApp
-	 */
-	public static function actionGetFile()
-	{
-		if(Req::getParam("fileType")=="attached")	{CtrlObject::actionGetFile();}//AttachedFile
-		else										{CtrlFile::actionGetFile();}//File object
-	}
-
-	/*
-	 * URL : Download un fichier depuis mobileApp ("AttachedFile" ou "modFile")
-	 */
-	public static function appGetFileUrl($downloadUrl, $fileName)
-	{
-		$downloadUrl=str_ireplace(["ctrl=object","ctrl=file"],"ctrl=misc",$downloadUrl);						//Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
-		$downloadUrl.=(stristr($downloadUrl,"ctrl=object"))  ?  "&fileType=attached"  :  "&fileType=modFile";	//Fichier joint d'un objet lambda OU Fichier du gestionnaire de fichier
-		return $downloadUrl.="&nameMd5=".md5($fileName);														//Ajoute le "nameMd5" pour le controle d'accès (cf. "CtrlObject::actionGetFile()" && "CtrlFile::actionGetFile()")
-	}
-	
-	/*
 	 * ACTION : affiche un fichier Ical
 	 */
 	public static function actionDisplayIcal()
 	{
 		$objCalendar=self::getTargetObj();
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
+	}
+
+	/*
+	 * Modif l'URL de download/Affichage d'un fichier depuis une mobileApp => modif du controleur, ajout du "nameMd5" et du type de fichier à télécharger
+	 */
+	public static function appGetFileUrl($downloadUrl, $fileName)
+	{
+		$downloadUrl.=(stristr($downloadUrl,"ctrl=object"))  ?  "&fileType=attached"  :  "&fileType=modFile";	//Fichier joint d'un objet  OU  Fichier du module "File"  => Toujours modifier en premier !
+		$downloadUrl=str_ireplace(["ctrl=object","ctrl=file"],"ctrl=misc",$downloadUrl);						//Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
+		return $downloadUrl."&nameMd5=".md5($fileName);															//Ajoute le "nameMd5" du controle d'accès (cf. "CtrlObject::actionGetFile()" && "CtrlFile::actionGetFile()")
+	}
+
+	/*
+	 * ACTION : Download/Affichage d'un fichier depuis une mobileApp (avec controle du "nameMd5" & co)
+	 */
+	public static function actionGetFile()
+	{
+		if(Req::isParam(["fileName","filePath"]))		{File::download(Req::getParam("fileName"),Req::getParam("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"
+		elseif(Req::getParam("fileType")=="attached")	{CtrlObject::actionGetFile();}											//Download d'un fichier "AttachedFile"
+		else											{CtrlFile::actionGetFile();}											//Download d'un fichier du module "File"
 	}
 }

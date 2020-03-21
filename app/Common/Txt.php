@@ -167,7 +167,7 @@ class Txt
 	/*
 	 * Affichage d'une date
 	 * $timeBegin & $timeEnd : Timestamp unix ou format DateTime
-	 * $format => normal / full / mini / date
+	 * $format => normal / full / mini / date / dateFull / dateMini
 	 */
 	public static function displayDate($timeBegin, $format="normal", $timeEnd=null)
 	{

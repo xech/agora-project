@@ -10,9 +10,9 @@ $(function(){
 	////	Affiche le nombre de comment en page principale
 	<?php if(!empty($updateCircleNb)){ ?>
 	var commentMenuId="#commentMenu_<?= $curObj->_targetObjId ?>";
-	parent.$(commentMenuId+" .objMiscMenuCircle").html("<?= count($commentList) ?>").removeClass("objMiscMenuCircleHide");//Affiche le nb de commentaires (circle)
-	parent.$(commentMenuId).tooltipster("destroy").attr("title","<?= $commentsTitle ?>").tooltipster(tooltipsterOptions);//Maj le "title" du menu des commentaires
-	parent.$(commentMenuId).parent().removeClass("hideMiscMenu");//Enlève l'opacité du menu (affichage Block, cf. css)
+	parent.$(commentMenuId).parent(".objMiscMenus").find(".objMenuLikeComment").addClass("showMiscMenu");//Affichage permanent du "objMiscMenus"
+	parent.$(commentMenuId+" .menuCircle").html("<?= count($commentList) ?>").removeClass("menuCircleHide");//Affiche le nb de commentaires (circle)
+	parent.$(commentMenuId).attr("title","<?= $commentsTitle ?>").tooltipster("destroy").tooltipster(tooltipsterOptions);//Maj le "title" du menu des commentaires
 	<?php } ?>
 });
 

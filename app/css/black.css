@@ -6,15 +6,16 @@ a:hover, .sLink:hover						{color:#f77;}
 a:active, .sLinkSelect, input:checked+label	{color:#f77;}
 
 /*Blocks d'objet (ou pas) & menus contextuels*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{box-shadow:1px 1px 6px rgba(130,130,130,0.8); background:linear-gradient(135deg,#222,#000 100px); background-color:#000; background-repeat:no-repeat;}/*"box-shadow" : tester avec wallpapers full white/black*/
+.objContainer, .miscContainer, .emptyContainer, .menuContext	{box-shadow:1px 1px 6px rgba(50,50,50,0.8); background:linear-gradient(135deg,#444,#222 100px); background-color:#222; background-repeat:no-repeat;}/*"box-shadow" : tester avec wallpapers full white/black*/
 .objContainer:hover							{box-shadow:1px 1px 6px rgba(255,255,255,0.8);}
-.objContainerSelect							{background:#222!important;}/*plus "important" que le ":hover"*/
+.objContainerSelect							{background:#444!important;}/*plus "important" que le ":hover"*/
 .objBlocks .objContainerSelect				{box-shadow:0px 0px 1px 1px rgb(250,0,0)!important;}
 .objLines .objContainer						{border-bottom:solid 1px #333;}
-.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#111; background-image:none;}/*ligne survolée / ligne en affichage alterné (paire/impaire)*/
+.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#333; background-image:none;}/*lignes survolées et lignes impaires*/
+.objLines .alternateLines:nth-child(even)	{background:#222;}/*ligne paire*/
 .objBlocks .hasThumb .objLabel				{background:rgba(0,0,0,0.95);}
 .emptyContainer								{background:rgba(0,0,0,0.7);}
-.menuContext .menuLine:hover, .sTableRow:hover, .sTableRowSelect	{background:#333;}/*survol une ligne du menu / sélectionne une ligne de menu (affectation)*/
+.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#333;}/*survol une ligne de menu (affectation ou autre)*/
 @media screen and (max-width:1023px){
 	.objContainer, .miscContainer, .emptyContainer	{box-shadow:1px 1px 2px rgba(144,144,144,0.4);}/*hover=touch*/
 }
@@ -26,8 +27,7 @@ a:active, .sLinkSelect, input:checked+label	{color:#f77;}
 
 /*Divers*/
 .lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#444 solid 1px;}
-.objMenuLabel						{background:linear-gradient(180deg,#222,#000);}
+.objMenuLabel						{background:linear-gradient(180deg,#444,#111);}
 .lightboxBlockTitle					{border-bottom:#222 solid 1px; background:#222;}
-.headerBar							{background:linear-gradient(to bottom,#111,#222,#111);}
-#respMenuMain						{background:linear-gradient(135deg,#333,#000 200px); border-left:solid #555 1px;}
+#headerBar							{background:linear-gradient(to bottom,#222,#333,#222);}
 #sortableModules .ui-state-default	{background:linear-gradient(#111,#000);}

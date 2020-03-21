@@ -24,8 +24,8 @@ class CtrlDashboard extends Ctrl
 		//Init
 		static::$isMainPage=true;
 		////	Objets Actualités/News
-		$vDatas["offlineNewsCount"]=MdlDashboardNews::getNews("count",true);
-		$vDatasNews["newsList"]=MdlDashboardNews::getNews("list",Req::getParam("offlineNews"),0);//Commence par le block "0"
+		$vDatas["offlineNewsCount"]=MdlDashboardNews::getNews("count","all",true);
+		$vDatasNews["newsList"]=MdlDashboardNews::getNews("list",0,Req::getParam("offlineNews"));//Commence par le block "0"
 		$vDatas["vueNewsListInitial"]=self::getVue(Req::getCurModPath()."VueNewsList.php", $vDatasNews);
 		////	Objets Sondages/Polls (sauf guest)
 		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isUser()==false) ?  false  :  true;
@@ -41,11 +41,12 @@ class CtrlDashboard extends Ctrl
 		{
 			//Période en préférence / par défaut
 			$vDatas["pluginPeriod"]=self::prefUser("pluginPeriod");
-			if(in_array($vDatas["pluginPeriod"],["day","week","month"])==false)  {$vDatas["pluginPeriod"]="week";}
-			//Periode "jour"/"semaine"/"month"
-			$vDatas["pluginPeriodOptions"]["day"]=	["timeBegin"=>strtotime(date("Y-m-d 00:00:00")),				"timeEnd"=>strtotime(date("Y-m-d 23:59:59"))];
-			$vDatas["pluginPeriodOptions"]["week"]=	["timeBegin"=>strtotime("Monday this week 00:00:00"),			"timeEnd"=>strtotime("Sunday this week 23:59:59")];
+			if(in_array($vDatas["pluginPeriod"],["day","week","month","previousConnection"])==false)  {$vDatas["pluginPeriod"]="week";}
+			//Periode "jour"/"semaine"/"month"/"previousConnection"
+			$vDatas["pluginPeriodOptions"]["day"]  =["timeBegin"=>strtotime(date("Y-m-d 00:00:00")),				"timeEnd"=>strtotime(date("Y-m-d 23:59:59"))];
+			$vDatas["pluginPeriodOptions"]["week"] =["timeBegin"=>strtotime("Monday this week 00:00:00"),			"timeEnd"=>strtotime("Sunday this week 23:59:59")];
 			$vDatas["pluginPeriodOptions"]["month"]=["timeBegin"=>strtotime("First day of this month 00:00:00"),	"timeEnd"=>strtotime("Last day of this month 23:59:59")];
+			if(!empty(Ctrl::$curUser->previousConnection))  {$vDatas["pluginPeriodOptions"]["previousConnection"]=["timeBegin"=>Ctrl::$curUser->previousConnection,"timeEnd"=>time()];}
 			//Récupère les nouveaux éléments de chaque module (si la methode "plugin()" existe)
 			$periodTimes=$vDatas["pluginPeriodOptions"][$vDatas["pluginPeriod"]];//début/fin de la période sélectionnée
 			$pluginParams=array("type"=>"dashboard", "dateTimeBegin"=>date("Y-m-d H:i",$periodTimes["timeBegin"]), "dateTimeEnd"=>date("Y-m-d H:i",$periodTimes["timeEnd"]));
@@ -56,21 +57,21 @@ class CtrlDashboard extends Ctrl
 				{
 					foreach($tmpModule["ctrl"]::plugin($pluginParams) as $tmpObj)
 					{
-						//Ajoute un "pluginSpecificMenu"
+						//Ajoute un "pluginSpecificMenu" (exple: proposition d'événement du module Calendar)
 						if(isset($tmpObj->pluginSpecificMenu))	{$vDatas["pluginsList"]["pluginSpecificMenu"]=$tmpObj;}
-						//Sinon on passe l'objet s'il possède un conteneur qui est déjà dans la "pluginsList" (exple: nouveau dossier et ses fichiers)
+						//Si l'objet se trouve dans un conteneur qui a déjà été affiché (dans la "pluginsList") : on continue et ne l'affiche pas (exple: fichiers d'un nouveau dossier)
 						elseif(is_object($tmpObj->containerObj()) && array_key_exists($tmpObj->containerObj()->_targetObjId,$vDatas["pluginsList"]))  {continue;}
-						//Sinon on prépare l'affichage de l'objet
+						//Sinon on formate l'affichage de l'objet
 						else
 						{
 							//Label : suppr les balises html (cf. TinyMce) et réduit la taille du texte
 							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel),100);
 							//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
 							$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
-							//Tooltip : ajoute si besoin l'icone "Elements courants" (evts et taches)
+							//Tooltip : ajoute si besoin l'icone des "Elements courants" (evts et taches)
 							if($tmpObj->pluginIsCurrent){
-								$tmpObj->pluginTooltip=" <img src='app/img/newObj2.png'> ".Txt::trad("DASHBOARD_pluginsCurrent")."<hr>".$tmpObj->pluginTooltip;
-								$tmpObj->pluginLabel.=" <img src='app/img/newObj2.png'>";
+								$tmpObj->pluginTooltip=" <img src='app/img/newObjCurrent.png'> ".Txt::trad("DASHBOARD_pluginsCurrent")."<hr>".$tmpObj->pluginTooltip;
+								$tmpObj->pluginLabel.=" <img src='app/img/newObjCurrent.png'>";
 							}
 							//Ajoute l'auteur et la date de création
 							if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("creation")." : ".Txt::displayDate($tmpObj->dateCrea,"full")."<hr>".$tmpObj->displayAutor(true,true);}
@@ -91,7 +92,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionGetMoreNews()
 	{
 		$vDatas["infiniteSroll"]=true;
-		$vDatas["newsList"]=MdlDashboardNews::getNews("list",Req::getParam("offlineNews"),Req::getParam("newsOffsetCpt"));
+		$vDatas["newsList"]=MdlDashboardNews::getNews("list",Req::getParam("newsOffsetCpt"),Req::getParam("offlineNews"));
 		if(!empty($vDatas["newsList"]))  {echo self::getVue(Req::getCurModPath()."VueNewsList.php", $vDatas);}
 	}
 
@@ -118,7 +119,7 @@ class CtrlDashboard extends Ctrl
 				$objNews->pluginModule=self::moduleName;
 				$objNews->pluginIcon=self::moduleName."/icon.png";
 				$objNews->pluginLabel="<span onclick=\"$('.pluginNews".$objNews->_id."').fadeIn();$(this).hide();\">".Txt::reduce(strip_tags($objNews->description,"<span><img><br>"))."</span>
-									   <div class='pluginNews".$objNews->_id."' style='display:none;max-height:800px;overflow:auto;'>".$objNews->contextMenu(["inlineLauncher"=>true])." ".$objNews->description."</div>";//Affiche l'actualité complete avec le menu contextuel!
+									   <div class='pluginNews".$objNews->_id."' style='display:none;max-height:800px;overflow:auto;'>".$objNews->contextMenu(["iconBurger"=>"small"])." ".$objNews->description."</div>";//Affiche l'actualité complete avec le menu contextuel!
 				$objNews->pluginTooltip=$objNews->displayAutor(true,true);
 				$objNews->pluginJsIcon=null;
 				$objNews->pluginJsLabel=null;
@@ -146,7 +147,7 @@ class CtrlDashboard extends Ctrl
 			static::lightboxClose();
 		}
 		////	Affiche la vue
-		$vDatas["objNews"]=$curObj;
+		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueDashboardNewsEdit.php",$vDatas);
 	}
 
@@ -192,7 +193,7 @@ class CtrlDashboard extends Ctrl
 							if(File::controleUpload($tmpFile["name"],$tmpFile["size"])){
 								$responseFilePath=$curObj->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
 								move_uploaded_file($tmpFile["tmp_name"],$responseFilePath);
-								if(File::controlType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1024);}//1024px max
+								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1024);}//1024px max
 								Db::query("UPDATE ap_dashboardPollResponse SET fileName=".Db::format($tmpFile["name"])." WHERE _id=".Db::format($_idResponse));
 							}
 						}

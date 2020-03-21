@@ -15,7 +15,6 @@ class MdlForumTheme extends MdlObject
 	const moduleName="forum";
 	const objectType="forumTheme";
 	const dbTable="ap_forumTheme";
-	//Champs obligatoires et de tri des résultats
 	public static $requiredFields=array("title");
 	public static $sortFields=array("title@asc","title@desc");
 
@@ -39,7 +38,7 @@ class MdlForumTheme extends MdlObject
 	public function display()
 	{
 		if(!empty($this->title))			{return "<div class='themeColor' style=\"background:".$this->color."\">&nbsp;</div> ".$this->title;}
-		elseif($this->undefinedTheme==true)	{return "<div class='themeColor' style='background:#444'>&nbsp;</div> ".Txt::trad("FORUM_noTheme");}
+		elseif($this->undefinedTheme==true)	{return "<div class='themeColor' style='background:#444'>&nbsp;</div> <i>".Txt::trad("FORUM_noTheme")."</i>";}
 	}
 
 	/*

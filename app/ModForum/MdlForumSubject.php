@@ -18,12 +18,11 @@ class MdlForumSubject extends MdlObject
 	const hasAccessRight=true;
 	const MdlObjectContent="MdlForumMessage";
 	const htmlEditorField="description";
-	const nbObjectsByPage=30;
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
-	const dontHideMiscMenu=true;
+	public static $pageNbObjects=30;
 	public static $requiredFields=array("description");
 	public static $searchFields=array("title","description");
 	public static $sortFields=array("dateLastMessage@@desc","dateLastMessage@@asc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");

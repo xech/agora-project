@@ -50,7 +50,7 @@ class CtrlUser extends Ctrl
 			foreach(MdlUser::getPluginObjects($pluginParams) as $tmpObj)
 			{
 				$tmpObj->pluginModule=self::moduleName;
-				$tmpObj->pluginIcon=self::moduleName."/accesUser.png";
+				$tmpObj->pluginIcon="user/accesUser.png";
 				$tmpObj->pluginLabel=$tmpObj->getLabel("all");
 				$tmpObj->pluginTooltip=$tmpObj->pluginLabel;
 				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";//Affiche l'user
@@ -62,9 +62,9 @@ class CtrlUser extends Ctrl
 	}
 
 	/*
-	 * ACTION : utilisateur détaillé
+	 * ACTION : Vue détaillée d'un utilisateur
 	 */
-	public static function actionUserVue()
+	public static function actionVueUser()
 	{
 		$curObj=Ctrl::getTargetObj();
 		$curObj->controlRead();
@@ -117,28 +117,24 @@ class CtrlUser extends Ctrl
 			//Ferme la page
 			static::lightboxClose();
 		}
-		////	Affiche leformulaire
+		////	Affiche le formulaire
 		else
 		{
 			$vDatas["curObj"]=$curObj;
-			//Liste des espaces
-			foreach(Db::getObjTab("space","select * from ap_space") as $tmpSpace){
-				$tmpSpace->accessRightAffected=Db::getVal("SELECT accessRight FROM ap_joinSpaceUser WHERE _idSpace=".$tmpSpace->_id." AND _idUser=".$curObj->_id);
-				$vDatas["spaces"][]=$tmpSpace;
-			}
+			$vDatas["spaceList"]=Db::getObjTab("space","select * from ap_space");//Espaces disponilbes
 			static::displayPage("VueUserEdit.php",$vDatas);
 		}
 	}
 
 	/*
-	 * ACTION : désaffectation de l'user à un espace
+	 * ACTION : désaffectation d'un user à un espace (ou de plusieurs users : cf. "VueObjMenuSelection" et "targetObjectsAction()")
 	 */
 	public static function actionDeleteFromCurSpace()
 	{
 		$urlRedir=null;
 		foreach(self::getTargetObjects() as $tmpObj){
-			if(empty($urlRedir))	{$urlRedir=$tmpObj->getUrl();}
-			{$tmpObj->deleteFromCurSpace(Ctrl::$curSpace->_id);}
+			if(empty($urlRedir))  {$urlRedir=$tmpObj->getUrl();}
+			$tmpObj->deleteFromCurSpace(Ctrl::$curSpace->_id);
 		}
 		self::redir($urlRedir);
 	}
@@ -278,7 +274,7 @@ class CtrlUser extends Ctrl
 		if(Ctrl::$curUser->isAdminGeneral()==false)  {static::lightboxClose();}
 		////	Validation de formulaire
 		if(Req::isParam("formValidate") && Req::isParam("usersList")){
-			foreach(Req::getParam("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail(false);}
+			foreach(Req::getParam("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
 			if($isSendmail==true)  {Ctrl::addNotif(Txt::trad("MAIL_sendOk"),"success");}
 			static::lightboxClose();
 		}

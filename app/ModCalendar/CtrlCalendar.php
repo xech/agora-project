@@ -25,9 +25,9 @@ class CtrlCalendar extends Ctrl
 		if(empty($_SESSION["displayAllCals"]) || Req::isParam("displayAllCals"))	{$_SESSION["displayAllCals"]=(Req::getParam("displayAllCals")==1 && Ctrl::$curUser->isAdminGeneral())  ?  true  :  false;}
 		$vDatas["visibleCalendars"]=($_SESSION["displayAllCals"]==true)  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::visibleCalendars();
 		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["visibleCalendars"]);
-		////	MODE D'AFFICHAGE (day / 3Days / workweek / week / month)  &  TEMPS DE RÉFÉRENCE (semaine/mois selectionné)  &  JOURS FÉRIÉS
+		////	MODE D'AFFICHAGE (month, week, workWeek, 4Days, day)  &  TEMPS DE RÉFÉRENCE ("curTime")  &  JOURS FÉRIÉS ("celebrationDays")
 		$displayMode=self::prefUser("calendarDisplayMode","displayMode");
-		if(empty($displayMode))  {$displayMode=(Req::isMobile()) ? "3Days":"month";}
+		if(empty($displayMode))  {$displayMode=(Req::isMobile()) ? "4Days":"month";}//affichage par défaut
 		$vDatas["displayMode"]=$displayMode;
 		$vDatas["curTime"]=$curTime=(Req::isParam("curTime")) ? Req::getParam("curTime") : time();
 		$vDatas["celebrationDays"]=Trad::celebrationDays(date("Y",$curTime));
@@ -50,12 +50,12 @@ class CtrlCalendar extends Ctrl
 			$vDatas["urlTimePrev"]	=strtotime("-1 week",$curTime);
 			$vDatas["urlTimeNext"]	=strtotime("+1 week",$curTime);
 		}
-		//AFFICHAGE 3 PROCHAINS JOURS
-		elseif($displayMode=="3Days"){
+		//AFFICHAGE 4 PROCHAINS JOURS
+		elseif($displayMode=="4Days"){
 			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$curTime)." 00:00");
-			$vDatas["timeEnd"]		=$vDatas["timeBegin"]+259199;//259199 = 3 jours - 1sec
-			$vDatas["urlTimePrev"]	=strtotime("-3 day",$curTime);
-			$vDatas["urlTimeNext"]	=strtotime("+3 day",$curTime);
+			$vDatas["timeEnd"]		=$vDatas["timeBegin"]+345599;//345599 = 4 jours moins une seconde
+			$vDatas["urlTimePrev"]	=strtotime("-4 day",$curTime);
+			$vDatas["urlTimeNext"]	=strtotime("+4 day",$curTime);
 		}
 		//AFFICHAGE JOUR
 		elseif($displayMode=="day"){
@@ -64,37 +64,22 @@ class CtrlCalendar extends Ctrl
 			$vDatas["urlTimePrev"]	=strtotime("-1 day",$curTime);
 			$vDatas["urlTimeNext"]	=strtotime("+1 day",$curTime);
 		}
-		//CONSERVE LES FILTRE DES CATEGORIES DANS LES LIENS "urlTimePrev" et "urlTimeNext" ?
-		$vDatas["urlCatFilter"]=(Req::isParam("_idCatFilter"))  ?  "&_idCatFilter=".Req::isParam("_idCatFilter")  :  null;
-		////	LIBELLES ET MENU DE LA PERIODE DE L'AGENDA
-		//"month"
-		if($displayMode=="month")
-		{
-			//Exple "mars 2016"
-			$vDatas["labelPeriod"]=(Req::isMobile())  ?  Txt::formatime("%b %y",$curTime)  :  ucfirst(Txt::formatime("%B %Y",$curTime));
-			//Menu pour changer d'année et de mois
-			$vDatas["calMonthPeriodMenu"]=null;
-			for($tmpMonth=1; $tmpMonth<=12; $tmpMonth++){
-				$tmpMonthTime=strtotime(date("Y",$curTime)."-".($tmpMonth>9?$tmpMonth:"0".$tmpMonth)."-01");
-				$vDatas["calMonthPeriodMenu"].="<a onClick=\"redir('?ctrl=calendar&curTime=".$tmpMonthTime."')\" ".(date("Y-m",$curTime)==date("Y-m",$tmpMonthTime)?"class='sLinkSelect'":null).">".Txt::formatime("%B",$tmpMonthTime)."</a>";
-			}
-			$vDatas["calMonthPeriodMenu"].="<hr>";
-			for($tmpYear=date("Y")-3; $tmpYear<=date("Y")+5; $tmpYear++){
-				$tmpYearTime=strtotime($tmpYear."-".date("m",$curTime)."-01");
-				$vDatas["calMonthPeriodMenu"].="<a onClick=\"redir('?ctrl=calendar&curTime=".$tmpYearTime."')\" ".(date("Y",$curTime)==$tmpYear?"class='sLinkSelect'":null).">".$tmpYear."</a>";
-			}
+		////	FILTRE DES CATEGORIES DANS LES LIENS "urlTimePrev" et "urlTimeNext" ?
+		$vDatas["urlCatFilter"]=(Req::isParam("_idCatFilter"))  ?  "&_idCatFilter=".Req::getParam("_idCatFilter")  :  null;
+		////	LABEL DU MOIS AFFICHÉ : AFFICHAGE MOBILE OU  NORMAL
+		$monthTime=$vDatas["timeBegin"];//Début de période comme référence
+		if(Req::isMobile())	{$vDatas["labelMonth"]=(date("Y")==date("Y",$monthTime))  ?  Txt::formatime("%B",$monthTime)  :  Txt::formatime("%b %Y",$monthTime);}//"Janvier" OU "Janvier 2018" (si affiche une autre année)
+		else				{$vDatas["labelMonth"]=(date("Ym",$vDatas["timeBegin"])==date("Ym",$vDatas["timeEnd"]))  ?  Txt::formatime("%B %Y",$monthTime)  :  Txt::formatime("%b %Y",$vDatas["timeBegin"])." / ".Txt::formatime("%b %Y",$vDatas["timeEnd"]);}//"Janvier 2020" OU "Janv. 2020 / fev. 2020" (si on affiche une semaine sur 2 mois)
+		////	MENU POUR CHANGER D'ANNÉE ET DE MOIS
+		$vDatas["calMonthPeriodMenu"]=null;
+		for($tmpMonth=1; $tmpMonth<=12; $tmpMonth++){
+			$tmpMonthTime=strtotime(date("Y",$curTime)."-".($tmpMonth>9?$tmpMonth:"0".$tmpMonth)."-01");
+			$vDatas["calMonthPeriodMenu"].="<a onClick=\"redir('?ctrl=calendar&curTime=".$tmpMonthTime."')\" ".(date("Y-m",$curTime)==date("Y-m",$tmpMonthTime)?"class='sLinkSelect'":null).">".Txt::formatime("%B",$tmpMonthTime)."</a>";
 		}
-		//Jour/Semaine
-		else
-		{
-			//exple "semaine 44"
-			$titleLabelPeriod=Txt::trad("CALENDAR_displayWeek")." ".date("W",$vDatas["timeBegin"]);
-			if($displayMode=="day"){//exple "26 oct. 2015"
-				$vDatas["labelPeriod"]="<span title=\"".$titleLabelPeriod."\">".Txt::formatime("%e %b %Y",$curTime)."</span>";
-			}else{//exple "20/27 nov. 2015"	
-				$beginMonthLabel=(date("m",$vDatas["timeBegin"])!=date("m",$vDatas["timeEnd"]))  ?  Txt::formatime("%b",$vDatas["timeBegin"])  :  null;//Si besoin, affiche le mois du début ET le mois de la fin de période
-				$vDatas["labelPeriod"]="<span title=\"".$titleLabelPeriod."\">".strftime("%e",$vDatas["timeBegin"])." ".$beginMonthLabel."/".Txt::formatime("%e %b %Y",$vDatas["timeEnd"])."</span>";
-			}
+		$vDatas["calMonthPeriodMenu"].="<hr>";
+		for($tmpYear=date("Y")-3; $tmpYear<=date("Y")+5; $tmpYear++){
+			$tmpYearTime=strtotime($tmpYear."-".date("m",$curTime)."-01");
+			$vDatas["calMonthPeriodMenu"].="<a onClick=\"redir('?ctrl=calendar&curTime=".$tmpYearTime."')\" ".(date("Y",$curTime)==$tmpYear?"class='sLinkSelect'":null).">".$tmpYear."</a>";
 		}
 		////	LISTE LES JOURS À AFFICHER
 		$vDatas["periodDays"]=[];
@@ -113,26 +98,22 @@ class CtrlCalendar extends Ctrl
 		////	RECUPERE LA VUE "MONTH"/"WEEK" DE CHAQUE AGENDA
 		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal)
 		{
-			//init
-			$vCalDatas=$vDatas;
-			$vCalDatas["tmpCal"]=$tmpCal;
-			$vCalDatas["cptCal"]=$cptCal;
-			$vCalDatas["addProposeEvtRight"]=$tmpCal->addProposeEvtRight();
-			if($tmpCal->editContentRight())					{$vCalDatas["addEvtTxt"]=Txt::trad("CALENDAR_addEvtTooltip");}//Ajouter un événement
-			elseif($vCalDatas["addProposeEvtRight"]==true)	{$vCalDatas["addEvtTxt"]=Txt::trad("CALENDAR_proposeEvtTooltip");}//Proposer un événement
-			else											{$vCalDatas["addEvtTxt"]=null;}//Pas d'ajout possible
+			//Label d'ajout/proposition d'événement
+			if($tmpCal->editContentRight())			{$tmpCal->addEventLabel=Txt::trad("CALENDAR_addEvtTooltip");}
+			elseif($tmpCal->addProposeEvtRight())	{$tmpCal->addEventLabel=Txt::trad("CALENDAR_proposeEvtTooltip");}
+			else									{$tmpCal->addEventLabel=null;}
 			//EVENEMENTS POUR CHAQUE JOUR
-			$vCalDatas["eventList"]=[];
-			$tmpCal->displayedPeriodEvtList=$tmpCal->evtList($vDatas["timeDisplayedBegin"],$vDatas["timeDisplayedEnd"]);//Evts sur la période affichée
+			$tmpCal->eventList=[];
+			$tmpCal->displayedPeriodEvtList=$tmpCal->evtList($vDatas["timeDisplayedBegin"],$vDatas["timeDisplayedEnd"]);//Récupère les evts de toute la période affichée
 			foreach($vDatas["periodDays"] as $dayCpt=>$tmpDay)
 			{
 				//EVENEMENTS DU JOUR COURANT
-				$vCalDatas["eventList"][$tmpDay["date"]]=[];
-				$tmpCalDisplayedDayEvtList=MdlCalendar::periodEvts($tmpCal->displayedPeriodEvtList,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);//Sélectionne uniquement les evenements sur la journée
-				foreach($tmpCalDisplayedDayEvtList as $tmpEvt)
+				$tmpCal->eventList[$tmpDay["date"]]=[];
+				$tmpCalDayEvtList=MdlCalendar::periodEvts($tmpCal->displayedPeriodEvtList,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);//Récupère uniquement les evts de la journée
+				foreach($tmpCalDayEvtList as $tmpEvt)
 				{
 					//Evt hors catégorie?
-					if(Req::isParam("_idCatFilter") && $tmpEvt->_idCat!=Req::getParam("_idCatFilter"))	{continue;}
+					if(Req::isParam("_idCatFilter") && $tmpEvt->_idCat!=Req::getParam("_idCatFilter"))  {continue;}
 					//Element pour l'affichage "semaine"/"jour"
 					if($displayMode!="month")
 					{
@@ -149,10 +130,14 @@ class CtrlCalendar extends Ctrl
 						//Heure/Minutes de début d'affichage ("evtBeforeDayBegin" si l'evt a commencé avant le jour affiché)
 						$tmpEvt->minutesFromDayBegin=($evtTimeBegin>$tmpDay["timeBegin"])  ?  (($evtTimeBegin-$tmpDay["timeBegin"])/60)  :  "evtBeforeDayBegin";
 					}
-					//AJOUTE L'EVT!
-					$vCalDatas["eventList"][$tmpDay["date"]][]=$tmpEvt;
+					//Ajoute l'evt à la liste
+					$tmpCal->eventList[$tmpDay["date"]][]=$tmpEvt;
 				}
 			}
+			//Récupère la vue
+			$tmpCal->isFirstCal=($cptCal==0);
+			$vCalDatas=$vDatas;
+			$vCalDatas["tmpCal"]=$tmpCal;
 			$calendarVue=($displayMode=="month")?"VueCalendarMonth.php":"VueCalendarWeek.php";
 			$tmpCal->calendarVue=self::getVue(Req::getCurModPath().$calendarVue, $vCalDatas);
 		}
@@ -169,7 +154,7 @@ class CtrlCalendar extends Ctrl
 				$nbCalsOccuppied=0;
 				$tmpDay["calsEvts"]=[];
 				foreach($vDatas["displayedCalendars"] as $tmpCal){
-					$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::periodEvts($tmpCal->displayedPeriodEvtList,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);
+					$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::periodEvts($tmpCal->displayedPeriodEvtList,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);//Récupère uniquement les evts de la journée
 					if(!empty($tmpDay["calsEvts"][$tmpCal->_id]))	{$nbCalsOccuppied++;}
 				}
 				//Tooltip de synthese si au moins un agenda possède un événement à cette date
@@ -365,10 +350,10 @@ class CtrlCalendar extends Ctrl
 				$tmpCal->isDisabled=($tmpCal->editContentRight()==false && $curObj->fullRight()==false)  ?  "disabled"  :  null;							//Input principal : désactive l'agenda s'il n'est pas accessible en écriture && user courant pas auteur de l'evt
 				$tmpCal->reinitCalendarInput=($curObj->isNew()==false && $tmpCal->isDisabled==null)  ?  true  :  false;										//Ajoute l'input "hidden" de réinitialisation de l'affectation : modif d'evt et input pas "disabled"
 				//Tooltip du label principal
-				if($tmpCal->isDisabled!=null)				{$tmpCal->tooltip=Txt::trad("CALENDAR_noModifInfo");}				//"Modification non autorisé..." (tjs mettre en premier)
-				elseif($tmpCal->inputType=="affectation")	{$tmpCal->tooltip=Txt::trad("CALENDAR_addEvtTooltipBis");}			//"Ajouter l'événement.."
+				if($tmpCal->isDisabled!=null)				{$tmpCal->tooltip=Txt::trad("CALENDAR_noModifInfo");}			//"Modification non autorisé..." (tjs mettre en premier)
+				elseif($tmpCal->inputType=="affectation")	{$tmpCal->tooltip=Txt::trad("CALENDAR_addEvtTooltipBis");}		//"Ajouter l'événement.."
 				else										{$tmpCal->tooltip=Txt::trad("CALENDAR_proposeEvtTooltipBis2");}	//"Proposer l'événement.. agenda en lecture seule"
-				if(!empty($tmpCal->description))  {$tmpCal->tooltip.="<br><i>".$tmpCal->description."<i>";}//Description de l'agenda
+				if(!empty($tmpCal->description))  {$tmpCal->tooltip.=" (".$tmpCal->description.")";}//Ajoute la description de l'agenda
 			}
 			//Nouvel evt : dates par défaut
 			if($curObj->isNew()){
@@ -467,9 +452,9 @@ class CtrlCalendar extends Ctrl
 	}
 
 	/*
-	 * ACTION : Détails d'un événement
+	 * ACTION : Vue détaillée d'un événement
 	 */
-	public static function actionCalendarEventVue()
+	public static function actionVueCalendarEvent()
 	{
 		$curObj=Ctrl::getTargetObj();
 		$curObj->controlRead();
@@ -691,6 +676,7 @@ class CtrlCalendar extends Ctrl
 		//Charge et controle
 		$objCalendar=Ctrl::getTargetObj();
 		$objCalendar->controlEdit();
+		$vDatas=[];
 		////	Validation de formulaire : sélection du fichier / des evt à importer
 		if(Req::isParam("formValidate"))
 		{

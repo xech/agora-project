@@ -2,13 +2,14 @@
 ////	Resize
 lightboxSetWidth(450);
 
+////	INIT
 $(function(){
 	////	Contrôle du formulaire
 	$("#usersInscriptionForm").submit(function(event){
 		//Pas de validation par défaut du formulaire
 		event.preventDefault();
 		//Verif les champs obligatoires et l'email/login
-		if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty() || $("textarea[name='message']").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
+		if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
 		if($("input[name='mail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
 		//Vérif le password et sa confirmation
 		if(isValidPassword($("input[name='password']").val())==false)						{notify("<?= Txt::trad("passwordInvalid") ?>","warning");		return false;}

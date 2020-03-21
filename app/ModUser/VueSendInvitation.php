@@ -4,6 +4,7 @@
 ////	Resize
 lightboxSetWidth(450);
 
+////	INIT
 $(function(){
 	<?php if(Ctrl::$agora->gPeopleEnabled()){ ?>
 	////	Charge l'import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js  &&  https://developers.google.com/people/api/rest/v1/people.connections/list

@@ -68,11 +68,8 @@ class CtrlSpace extends Ctrl
 			//Ferme la page
 			static::lightboxClose();
 		}
-		////	Liste des users et modules
-		foreach(Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort) as $tmpUser){
-			$tmpUser->accessRightAffected=Db::getVal("SELECT accessRight FROM ap_joinSpaceUser WHERE _idSpace=".$curSpace->_id." AND _idUser=".$tmpUser->_id);
-			$vDatas["userList"][]=$tmpUser;
-		}
+		////	Liste de tous les users du site  &&  Liste de tous les modules disponibles
+		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);
 		$vDatas["moduleList"]=$curSpace->moduleList(false);
 		//Ajoute les modules désactivés
 		foreach(MdlSpace::availableModuleList() as $moduleName=>$tmpModule){

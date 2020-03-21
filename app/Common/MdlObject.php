@@ -14,31 +14,29 @@ class MdlObject
 {
 	//Utilise les menus et attributs
 	use MdlObjectMenus, MdlObjectAttributes;
-	
-	//Propriétés principales
+
+	//Propriétés de base
 	const moduleName=null;
 	const objectType=null;
 	const dbTable=null;
-	const hasAccessRight=false;
 	//Propriétés de dépendance
+	const hasAccessRight=false;
 	const isFolder=false;
 	const isFolderContent=false;
 	const MdlObjectContent=null;
 	const MdlObjectContainer=null;
-	//Propriétés d'affichage et d'édition
+	//Propriétés d'affichage et d'édition (d'IHM)
 	const isSelectable=false;
 	const hasShortcut=false;
 	const hasNotifMail=false;
 	const hasAttachedFiles=false;
 	const hasUsersLike=false;
 	const hasUsersComment=false;
-	const dontHideMiscMenu=false;//Masque par défaut le menu "MiscMenu"
-	const nbObjectsByPage=null;//Nb d'éléments affichés au premier chargement de page
-	const htmlEditorField=null;//"description" (ou autre) si besoin
-	public static $displayModeOptions=array();//Type d'affichage (ligne/block)
-	public static $requiredFields=array();//Champs obligatoires
-	public static $searchFields=array();//Champs de recherche
-	public static $sortFields=array();//Champs de tri
+	const htmlEditorField=null;					//Champ "description" le plus souvent
+	public static $displayModeOptions=array();	//Type d'affichage : ligne/block le plus souvent
+	public static $requiredFields=array();		//Champs obligatoires pour valider l'édition d'un objet
+	public static $searchFields=array();		//Champs de recherche
+	public static $sortFields=array();			//Champs/Options de tri des résulats
 	//Valeurs mises en cache
 	private $_accessRight=null;
 	private $_containerObj=null;
@@ -82,17 +80,10 @@ class MdlObject
 	}
 
 	/*
-	 * VERIF si l'objet se trouve dans un conteneur (file/contact/task/link/forumMessage/calendarEvent ...mais pas les Folders)
+	 * VERIF si l'objet se trouve dans un conteneur.. mais n'est pas un conteneur (file/contact/task/link/forumMessage/calendarEvent ...mais pas les Folders)
 	 */
 	public static function isContainerContent(){
 		return (static::MdlObjectContainer!==null);
-	}
-
-	/*
-	 * VERIF si l'objet a ses propres droits d'accès : ne dépend pas d'un conteneur OU l'objet est dans le dossier racine
-	 */
-	public function isIndependant(){
-		return (static::MdlObjectContainer==null || (static::isFolderContent==true && $this->_idContainer==1));
 	}
 
 	/*
@@ -100,6 +91,13 @@ class MdlObject
 	 */
 	public static function isInArbo(){
 		return (static::isFolderContent==true || static::isFolder==true);
+	}
+
+	/*
+	 * VERIF si l'objet a ses propres droits d'accès : n'est pas dans un conteneur (news, polls, etc) OU se trouve dans le dossier racine
+	 */
+	public function isIndependant(){
+		return (static::MdlObjectContainer==null || (static::isFolderContent==true && $this->_idContainer==1));
 	}
 
 	/*
@@ -117,14 +115,14 @@ class MdlObject
 	}
 
 	/*
-	 * VERIF si c'est un object en cour de création
+	 * VERIF si c'est un object en cour de création (_id=0)
 	 */
 	public function isNew(){
 		return (empty($this->_id));
 	}
 
 	/*
-	 * VERIF si c'est un objet nouvellement créé (créé à l'instant : pour les mails de notif and co)
+	 * VERIF si c'est un objet nouvellement créé (créé à l'instant : utilisé pour les mails de notif and co)
 	 */
 	public function isNewlyCreated(){
 		return ($this->isNew()==false && time()-strtotime($this->dateCrea)<2);
@@ -161,8 +159,8 @@ class MdlObject
 		elseif(!empty($this->description))	{$tmpLabel=$this->description;}	//exple: sujet/message du forum (sans titre)
 		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//exple: link
 		else								{$tmpLabel=null;}
-		//Renvoi le résultat "nettoyé"
-		return Txt::reduce(strip_tags($tmpLabel),50);
+		//Renvoi un résultat "clean" & sans tags
+		return Txt::reduce(strip_tags($tmpLabel),40);
 	}
 
 	/*
@@ -174,7 +172,7 @@ class MdlObject
 		else
 		{
 			$urlBase="?ctrl=".static::moduleName."&targetObjId=";
-			if($display=="vue")									{return $urlBase.$this->_targetObjId."&action=".static::objectType."Vue";}						//Affiche un objet dans une lightbox (user/contact/task/calendarEvent)
+			if($display=="vue")									{return $urlBase.$this->_targetObjId."&action=Vue".static::objectType;}							//Affiche un objet dans une lightbox (user/contact/task/calendarEvent)
 			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=FolderEdit&targetObjId=".$this->_targetObjId;}						//Edite un dossier dans la lightbox (Folders)
 			elseif($display=="edit")							{return $urlBase.$this->_targetObjId."&action=".static::objectType."Edit";}						//Edite un objet dans la lightbox (tout types d'objets)
 			elseif($display=="delete")							{return "?ctrl=object&action=delete&targetObjects[".static::objectType."]=".$this->_id;}		//Suppression d'un objet via "?ctrl=object&action=delete" (tout types d'objets)
@@ -229,7 +227,7 @@ class MdlObject
 			$this->_affectations=$tmpAffectations=array();
 			////	Objet existant : récupère les affectations en Bdd ("ORDER BY" pour le libellé des affectations dans le "contextMenu()")
 			if($this->isNew()==false)	{$tmpAffectations=Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." ORDER BY _idSpace, target");}
-			////	Nouvel objet : initialise les affectations par défaut
+			////	Nouvel objet : initialise les affectations par défaut en type "string" !
 			else{
 				$tmpAffectations[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"spaceUsers",			 "accessRight"=>(static::isContainer()?"1.5":"1")];	//Espace courant : Lecture || Ecriture limité pour les conteneurs. Attention : "accessRight" est de type "string"!
 				$tmpAffectations[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"U".Ctrl::$curUser->_id, "accessRight"=>"2"];								//Accès écriture pour l'user courant ..qui est aussi l'auteur
@@ -289,13 +287,14 @@ class MdlObject
 	 */
 	public function accessRight()
 	{
+		//Init la mise en cache
 		if($this->_accessRight===null)
 		{
 			//Init
 			$this->_accessRight=0;
 			////	DROIT D'ACCES TOTAL  =>  Admin général  ||  Auteur de l'objet  ||  Nouvel objet
 			if(Ctrl::$curUser->isAdminGeneral() || $this->isAutor() || $this->createRight())  {$this->_accessRight=3;}
-			////	DROIT D'ACCES EN LECTURE SI ACCES EXTERNE
+			////	DROIT D'ACCES EN LECTURE POUR UN ACCES EXTERNE
 			elseif($this->md5IdControl())  {$this->_accessRight=1;}
 			////	DROIT D'ACCES EN FONCTION DU CONTENEUR PARENT
 			elseif($this->accessRightFromContainer())  {$this->_accessRight=$this->containerObj()->accessRight();}
@@ -313,7 +312,8 @@ class MdlObject
 				}
 			}
 		}
-		return $this->_accessRight;
+		//Retourne le droit d'accès en valeur flottante (cf. droit "1.5" en "ecriture limité")
+		return (float)$this->_accessRight;
 	}
 
 	/*
@@ -344,7 +344,7 @@ class MdlObject
 	}
 
 	/*
-	 * Conteneur : Droit d'éditer tout le contenu (accessRight >= 2)
+	 * Conteneur : Droit d'éditer un conteneur et son contenu (accessRight >= 2)
 	 */
 	public function editFullContentRight()
 	{
@@ -352,11 +352,11 @@ class MdlObject
 	}
 
 	/*
-	 * Droit d'édition d'un objet :  accessRight==3  OU  objet indépendant et accessRight==2
+	 * Droit d'édition d'un objet :  accessRight==3  OU  accessRight==2 pour les objets qui ne sont pas des conteneurs (pas de "isIndependant()" car un conteneur est toujours "Independant"!)
 	 */
 	public function editRight()
 	{
-		return ($this->accessRight()==3 || ($this->isIndependant() && $this->accessRight()==2));
+		return ($this->accessRight()==3 || (static::isContainer()==false && $this->accessRight()==2));
 	}
 
 	/*
@@ -364,7 +364,7 @@ class MdlObject
 	 */
 	public function deleteRight()
 	{
-		return ($this->editRight() && $this->isNew()==false);
+		return ($this->editRight());
 	}
 
 	/*
@@ -376,11 +376,11 @@ class MdlObject
 	}
 
 	/*
-	 * Controle si on peut lire l'objet
+	 * Controle si on peut lire l'objet : sinon renvoie une erreur
 	 */
 	public function controlRead()
 	{
-		if((int)$this->accessRight()==0)  {Ctrl::noAccessExit();}
+		if($this->accessRight()==0)  {Ctrl::noAccessExit();}
 	}
 
 	/*
@@ -411,8 +411,7 @@ class MdlObject
 			//Supprime les éventuels "usersComment" & "usersLike"
 			if(static::hasUsersComment)	{Db::query("DELETE FROM ap_objectComment ".$sqlSelectObject);}
 			if(static::hasUsersLike)	{Db::query("DELETE FROM ap_objectLike ".$sqlSelectObject);}
-			//Supprime les anciens logs de l'objet & Ajoute le log de suppression
-			Db::query("DELETE FROM ap_log ".$sqlSelectObject);
+			//Ajoute le log de suppression (ne pas mettre en dernier)
 			Ctrl::addLog("delete",$this);
 			//Supprime les droits d'accès & Supprime l'objet lui-même!
 			Db::query("DELETE FROM ap_objectTarget ".$sqlSelectObject);
@@ -538,8 +537,8 @@ class MdlObject
 		//Notification demandé par l'auteur de l'objet  OU  Destinataires ajoutés automatiquement (Exple: notif automatique d'un nouveau message du forum)
 		if(Req::isParam("notifMail") || !empty($addUserIds))
 		{
-			////	Sujet et Message : "Fichier créé par boby SMITH, sur l'espace Espace XJ220"
-			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//créé/modifié
+			////	Sujet et Message : "Fichier créé par boby SMITH"
+			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//"-OBJLABEL- créé par" / "-OBJLABEL- modifié par"
 			$subject=ucfirst($this->tradObject($tradCreaModif))." ".Ctrl::$curUser->getLabel();
 			////	Message
 			//Label principal de l'objet : spécifique
@@ -569,10 +568,10 @@ class MdlObject
 				foreach(self::getAttachedFileList() as $tmpFile)
 				{
 					//Vérifie s'il s'agit d'une image et si son url est présente dans le message (exple: "?ctrl=object&action=displayAttachedFile...")
-					if(File::controlType("imageBrowser",$tmpFile["name"]) && stristr($message,$tmpFile["url"])){
+					if(File::isType("imageBrowser",$tmpFile["name"]) && stristr($message,$tmpFile["url"])){
 						$tmpFileCid="attachedFile".$tmpFile["_id"];								//"cid" de l'image dans l'email
 						$message=str_replace($tmpFile["url"], "cid:".$tmpFileCid, $message);	//Remplace l'url de l'image par le "cid" de l'image ajouté en pièce jointe
-						$addFiles[]=["path"=>$tmpFile["path"], "cid"=>$tmpFileCid];			//Ajoute la pièce jointe du mail avec le "cid" correspondant
+						$addFiles[]=["path"=>$tmpFile["path"], "cid"=>$tmpFileCid];				//Ajoute la pièce jointe du mail avec le "cid" correspondant
 					}
 				}
 			}
@@ -732,23 +731,23 @@ class MdlObject
 	 */
 	public function displayAutorDate($withAutorIcon=false)
 	{
-		$autorIcon=($withAutorIcon==true)  ?  Ctrl::getObj("user",$this->_idUser)->getImg(true,true)  :  null;
-		return $autorIcon." ".$this->displayAutor()."<div class='objDate'>".$this->displayDate(true,"full")."</div>";
+		$autorIcon=($withAutorIcon==true)  ?  Ctrl::getObj("user",$this->_idUser)->getImg(true,true)  :  null;//$smallImg==true : ".personImgSmall"
+		return $autorIcon." ".$this->displayAutor()."<div class='objAutorDateCrea'>".$this->displayDate(true,"full")."</div>";
 	}
 
 	/*
-	 * Traduction avec changement des libelles -LABELTHIS- et -LABELCONTENT- par ceux des objets concernés
+	 * Traduction avec changement des libelles -OBJLABEL- et --OBJCONTENT-- par ceux des objets concernés
 	 */
 	public function tradObject($tradKey)
 	{
-		//Traduction de base
+		//Libellé de base
 		$tradBase=Txt::trad($tradKey);
-		//Remplace -LABELTHIS- par le type de l'objet courant  ("News", "Fichier", "dossier", etc)
-		if(Txt::isTrad("OBJECT".static::objectType))  {$tradBase=str_replace("-LABELTHIS-", Txt::trad("OBJECT".static::objectType), $tradBase);}
-		//Remplace -LABELCONTENT- par le type d'objet contenu ("Fichier" si l'objet courant est un dossier)
+		//Remplace -OBJLABEL- par le type de l'objet courant  ("News", "Fichier", "dossier", etc)
+		if(Txt::isTrad("OBJECT".static::objectType))  {$tradBase=str_replace("-OBJLABEL-", Txt::trad("OBJECT".static::objectType), $tradBase);}
+		//Remplace --OBJCONTENT-- par le type d'objet contenu ("Fichier" si l'objet courant est un dossier)
 		if(static::isContainer()){
 			$MdlObjectContent=static::MdlObjectContent;
-			if(Txt::isTrad("OBJECT".$MdlObjectContent::objectType))  {$tradBase=str_replace("-LABELCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $tradBase);}
+			if(Txt::isTrad("OBJECT".$MdlObjectContent::objectType))  {$tradBase=str_replace("--OBJCONTENT--", Txt::trad("OBJECT".$MdlObjectContent::objectType), $tradBase);}
 		}
 		// Retour
 		return $tradBase;

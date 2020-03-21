@@ -15,7 +15,6 @@ class MdlSpace extends MdlObject
 	const moduleName="space";
 	const objectType="space";
 	const dbTable="ap_space";
-	//Champs obligatoires et de tri des résultats
 	public static $requiredFields=array("name");
 	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc");
 	//Liste des modules
@@ -62,7 +61,7 @@ class MdlSpace extends MdlObject
 	 */
 	public function moduleList($addPersoCalendar=true)
 	{
-		////	MODULES AFFECTES A L'ESPACE
+		//// INIT LA MISE EN CACHE : MODULES AFFECTES A L'ESPACE
 		if(empty($this->_moduleList))
 		{
 			//Modules disponibles
@@ -132,21 +131,17 @@ class MdlSpace extends MdlObject
 	}
 
 	/*
-	 * Droit d'accès à l'espace d'un utilisateur
-	 * retour : tableau "user=>accessRight"
-	 * accessRight :  2=admin / 1=user lambda / 0=aucun accès
+	 * Droit d'accès d'un utilisateur à l'espace courant :  2 = admin  /  1 = user lambda ou guest  /  0 = aucun accès
 	 */
 	public function userAccessRight($objUser)
 	{
-		//Récupère et met en cache le droit d'accès de l'user demandé
+		//Init la mise en cache du droit d'accès de l'user demandé :  Droit d'admin général  ||  Droit maxi affecté à un user  ||  Droit d'accès à l'espace public (guests)
 		if(empty($this->_usersAccessRight[$objUser->_id]))
 		{
-			if($objUser->isAdminGeneral())	{$this->_usersAccessRight[$objUser->_id]=2;}
-			else{
-				if($objUser->isUser())	{$curRight=Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");}
-				if(empty($curRight))	{$curRight=Db::getVal("SELECT public FROM ap_space WHERE _id=".$this->_id);}
-				$this->_usersAccessRight[$objUser->_id]=(int)$curRight;
-			}
+			if($objUser->isAdminGeneral())	{$curRight=2;}
+			elseif($objUser->isUser())		{$curRight=Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");}
+			else							{$curRight=$this->public;}
+			$this->_usersAccessRight[$objUser->_id]=(int)$curRight;
 		}
 		return $this->_usersAccessRight[$objUser->_id];
 	}

@@ -12,13 +12,12 @@
  */
 class MdlPerson extends MdlObject
 {
-	//Valeurs mises en cache
-	private $_hasImg=null;
-	private $_personLabel=null;
-	//Champs obligatoires, de recherche et de tri des résultats
 	public static $displayModeOptions=array("block","line");
 	public static $requiredFields=array("name","firstName","login");
 	public static $searchFields=array("name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment");
+	//Valeurs en cache
+	private $_hasImg=null;
+	private $_personLabel=null;
 	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
 	public static $csvFormats=array(
 		//AGORA
@@ -291,7 +290,7 @@ class MdlPerson extends MdlObject
 			// Supprime
 			if(Req::getParam("personImgAction")=="delete")	{unlink($this->pathImgThumb());}
 			// Ajoute / change
-			if(Req::getParam("personImgAction")=="change" && !empty($_FILES["personImgFile"]) && File::controlType("imageResize",$_FILES["personImgFile"]["name"])){
+			if(Req::getParam("personImgAction")=="change" && !empty($_FILES["personImgFile"]) && File::isType("imageResize",$_FILES["personImgFile"]["name"])){
 				move_uploaded_file($_FILES["personImgFile"]["tmp_name"], $this->pathImgThumb());
 				File::imageResize($this->pathImgThumb(),$this->pathImgThumb(),200);
 			}

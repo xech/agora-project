@@ -2,7 +2,7 @@
 ////	Resize
 lightboxSetWidth(600);
 
-////	Init la page
+////	INIT
 $(function(){
 	////	Controle du formulaire
 	$("form").submit(function(){
@@ -24,7 +24,6 @@ $(function(){
 <style>
 /*Titre du lightbox*/
 #labelSpaceName					{font-style:italic;}
-#lightboxTitleDetail			{margin-top:8px;}
 /*formulaires*/
 .miscContainer					{margin-top:40px; padding:10px; border:#999 1px solid;}
 .miscContainer:last-of-type		{display:none; border:#999 2px solid;}/*masque le dernier formulaire : ajout d'element*/
@@ -32,26 +31,26 @@ input[name='title']				{width:50%;}
 .vUserListMenu					{margin-top:20px; overflow:auto; max-height:150px;}
 .userListUser					{display:inline-block; width:33%; padding:2px;}
 .userListUser input				{display:none;}
-.vAutorButtons					{display:table; width:100%; margin-top:20px;}
-.vAutorButtons>div				{display:table-cell; vertical-align:middle;}
-.vAutorButtons>div:first-child	{font-style:italic; font-weight:normal;}
-.vAutorButtons>div:last-child	{text-align:right;}
-.vAutorButtons button			{width:120px; margin-right:10px;}
+.vAutorSubmit					{display:table; width:100%; margin-top:20px;}
+.vAutorSubmit>div				{display:table-cell; vertical-align:middle;}
+.vAutorSubmit>div:first-child	{font-style:italic; font-weight:normal;}
+.vAutorSubmit>div:last-child	{text-align:right;}
+.vAutorSubmit button			{width:120px; margin-right:10px;}
 /*Ajout d'element*/
 #addElem						{margin-top:50px; text-align:center;}
 #addElem button					{width:200px; height:50px;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
+	.vAutorSubmit, .vAutorSubmit>div  {display:block; margin-top:20px;}
 	.userListUser	{width:48%; padding:5px;}
 }
 </style>
 
 <div class="lightboxContent">
-	<div class="lightboxTitle">
-		<img src="app/img/user/userGroup.png"> <?= Txt::trad("USER_spaceGroups") ?> : <span id="labelSpaceName"><?= Ctrl::$curSpace->name ?></span>
-		<div id="lightboxTitleDetail"><?= Txt::trad("USER_groupEditInfo") ?></div>
-	</div>
+	<div class="lightboxTitle"><img src="app/img/user/userGroup.png"> <?= Txt::trad("USER_spaceGroups") ?> : <div id="labelSpaceName"><?= Ctrl::$curSpace->name ?></div></div>
+
+	<div class="infos"><?= Txt::trad("USER_groupEditInfo") ?></div>
 
 	<?php
 	////	LISTE LES GROUPES D'UTILISATEURS
@@ -73,7 +72,7 @@ input[name='title']				{width:50%;}
 		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>
-				<div class='vAutorButtons'>
+				<div class='vAutorSubmit'>
 					<div>".$tmpGroup->createdBy."</div>
 					<div>".$buttonsSubmitDelete."<input type='hidden' name='targetObjId' value='".$tmpGroup->tmpId."'></div>
 				</div>

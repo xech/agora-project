@@ -24,7 +24,6 @@ class MdlContact extends MdlPerson
 	const hasUsersLike=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
-	//Champs obligatoires et de tri des résultats
 	public static $requiredFields=array("name");
 	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","_idUser@@asc","_idUser@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc");
 

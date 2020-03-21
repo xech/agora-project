@@ -2,7 +2,7 @@
 <script type="text/javascript" src="app/js/datatables/jquery.dataTables.min.js"></script>
 
 <script>
-////	PARAMETRAGE DE DataTables
+////	INIT : Parametrage de DataTables
 $(function(){
 	//Construction du tableau de donnees
 	oTable=$("#tableLogs").dataTable({
@@ -32,7 +32,7 @@ $(function(){
 </script>
 
 <style>
-.pageCenterContent	{padding:10px;}
+#pageCenterContent	{padding:10px;}
 thead th			{text-align:left;}
 #tableLogs			{font-size:0.9em;}
 #tableLogs td		{text-align:left; padding:3px;}
@@ -45,8 +45,8 @@ tfoot select, tfoot input	{width:100px;}
 .dataTables_filter img		{max-height:18px;}/*champ "recherche"*/
 </style>
 
-<div class="pageCenter">
-	<div class="pageCenterContent miscContainer">
+<div id="pageCenter">
+	<div id="pageCenterContent" class="miscContainer">
 		<!--TABLEAU DES LOGS-->
 		<table id="tableLogs" class="display">
 			<!--HEADER-->

@@ -3,5 +3,7 @@ Mise à jour PLUPLOAD v3.1.2
 - Telecharger la dernière version sur le site officiel (v3.x)
 - placer les elements du dossier "js/" de l'archive (pas d'exemple and co) directement dans le dossier "app/js/plupload"
 - dans le dossier "i18n/" conserver uniquement les traductions "fr" + "en" + "es"
+	-> Remplacer  "Ajouter des fichiers"  par  "Choisir les fichiers"
+	-> Remplacer  "Déposer les fichiers ici"  par  "Glisser les fichiers ici"
 - supprimer les fichiers ".swf et ".xap"  "dev.js" "moxie.xxx"
 - supprimer le dossier "jquery.plupload.queue"

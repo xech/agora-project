@@ -18,8 +18,6 @@ class MdlCalendarEvent extends MdlObject
 	const MdlObjectContainer="MdlCalendar";
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
-	const hasUsersComment=true;
-	const hasUsersLike=true;
 	const htmlEditorField="description";
 	public static $requiredFields=array("title","dateBegin","timeBegin","dateEnd","timeEnd");
 	public static $searchFields=array("title","description");
@@ -50,6 +48,7 @@ class MdlCalendarEvent extends MdlObject
 	 */
 	public function accessRight()
 	{
+		//Init la mise en cache
 		if($this->_accessRight===null)
 		{
 			//Droit par défaut
@@ -164,22 +163,21 @@ class MdlCalendarEvent extends MdlObject
 	 */
 	public function contextMenu($options=null)
 	{
-		//Evt dans plusieurs agendas
+		//// Evt dans plusieurs agendas
 		if(count($this->affectedCalendars())>1){
-			$options["deleteLabel"]=Txt::trad("CALENDAR_deleteEvtCals");//"supprimer" devient "Supprimer dans tous les agendas"
-			if(!empty($options["_idCal"]) && Ctrl::getObj("calendar",$options["_idCal"])->editRight())//si on a le droit : "Supprimer dans cet agenda"
-				{$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&_idCalDeleteOn=".$options["_idCal"]."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtCal")];}
+			//Remplace "supprimer" par "Supprimer dans tous les agendas"
+			$options["deleteLabel"]=Txt::trad("CALENDAR_deleteEvtCals");
+			//Si l'agenda "courant" peut être édité : ajoute "Supprimer uniquement dans cet agenda"
+			if(!empty($options["_idCal"]) && Ctrl::getObj("calendar",$options["_idCal"])->editRight())  {$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&_idCalDeleteOn=".$options["_idCal"]."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtCal")];}
 		}
-		//Evt périodique : "Supprimer uniquement à cette date"
-		if(!empty($options["curDateTime"]) && !empty($this->periodType) && $this->fullRight())
-			{$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date("Y-m-d",$options["curDateTime"])."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtDate")];}
-		//Liste des agendas ou est affecté l'evenement
-		if(!empty($options["specificOptions"]))  {$options["specificOptions"][]=["label"=>"<hr>"];}//sépare des autres "specificOptions"..
-		$options["specificOptions"][]=["label"=>$this->affectedCalendarsLabel()];
-		//Renvoie le menu surchargé
+		//// Evt périodique et date spécifiée : ajoute "Supprimer uniquement à cette date"
+		if(!empty($options["curDateTime"]) && !empty($this->periodType) && $this->fullRight())  {$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date("Y-m-d",$options["curDateTime"])."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtDate")];}
+		//// Liste des agendas où est affecté l'evenement
+		$options["specificLabels"][]=["label"=>$this->affectedCalendarsLabel()];
+		//// Renvoie le menu surchargé
 		return parent::contextMenu($options);
 	}
-	
+
 	/*
 	 * SURCHARGE : Liste des users affectés à l'objet (users de chaque agenda ou l'evt est affeté)
 	 */

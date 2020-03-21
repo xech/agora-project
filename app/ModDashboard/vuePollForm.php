@@ -1,5 +1,5 @@
 
-<form id="pollForm<?= $objPoll->_id ?>" class="noConfirmClose">
+<form id="pollForm<?= $newsDisplay.$objPoll->_id ?>" class="noConfirmClose">
 	<ul>
 	<?php
 	//Inputs de chaque réponses

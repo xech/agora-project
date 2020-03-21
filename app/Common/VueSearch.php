@@ -1,11 +1,12 @@
 <script>
-////	Resize et sé"lection par défaut du champ de recherche
+////	Resize
 lightboxSetWidth(650);
+
+////	INIT
 $(function(){
 	//Focus du champ (pas en responsive pour ne pas afficher le clavier virtuel)
 	if(!isMobile())  {$("[name='searchText']").focus();}
 });
-
 
 ////	Contrôle du formulaire
 function formControl()

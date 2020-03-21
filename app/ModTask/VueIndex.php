@@ -1,43 +1,46 @@
 <script>
-////	LARGEUR DE LA TIMELINE (GANTT)
+////	INIT : LARGEUR DE LA TIMELINE (GANTT)
 $(function(){
-	$(".vTimelineBlock").width($(".pageFullContent").width()).show();/*masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"*/
+	$(".vTimelineBlock").width($("#pageFullContent").width()).show();/*masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"*/
 });
 </script>
 
 <style>
-.objLabelBg							{background-image:url(app/img/task/iconBg.png);}
-.objBlocks .vObjTask .objDetails	{position:absolute; display:block; bottom:3px; left:40px;}
-.objBlocks .vObjTask .objDetails img{max-height:20px; margin-left:8px;}
-.objLines .percentBar				{margin-left:10px;}
-.vObjTask .objLabel a				{padding:5px;}
+/*LABEL ET DETAILS DES TACHES*/
+.objLabelBg							{background-image:url(app/img/task/iconBg.png);}/*surcharge : Background des taches*/
+.vObjTask .objLabel a				{padding:15px 0px 15px 0px;}/*Label des taches*/
+.objBlocks .vObjTask .objDetails	{position:absolute; display:block; bottom:3px; right:25px;}/*Icones flottante avec "title"*/
+.objLines .percentBar				{margin-left:10px;}/*"PercentBar" (Folder/Task)*/
+.objBlocks .objDetails img			{max-height:20px; margin-right:10px;}/*Icones avec "title"*/
+.objLines .objDetails img			{max-height:16px; margin-right:5px;}/*Icone des "PercentBar" (Folder/Task)*/
 
 /*TIMELINE*/
 .vTimelineHr						{visibility:hidden; width:100%;}
-.objBlocks .vTimelineHr				{ margin-top:120px!important; clear:both;}/*"clear" les "objBlocks" flottants au dessus : évite l'affichage de scroll "fantome" sous firefox*/
+.objBlocks .vTimelineHr				{margin-top:120px!important; clear:both;}/*"clear" les "objBlocks" flottants au dessus : évite l'affichage de scroll "fantome" sous firefox*/
 .vTimelineBlock						{display:none; overflow-x:auto;}/*masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"*/
 .vTimelineBlock>table				{border-collapse:collapse;}
-.vTimelineMonths, .vTimelineDays, .vTimelineTaskDays	{vertical-align:middle; width:18px; min-width:18px;}
-.vTimelineMonths {min-width:100px!important;}
-.vTimelineTitle, .vTimelineDays, .vTimelineTaskDays	{padding:3px; white-space:nowrap; vertical-align:middle;}
-.vTimelineTitle img[src*='edit']	{max-height:15px}
+.vTimelineMonths, .vTimelineDays, .vTimelineTaskDays	{vertical-align:middle; width:22px; min-width:22px;}
+.vTimelineMonths					{min-width:100px!important;}
+.vTimelineTitle, .vTimelineDays, .vTimelineTaskDays	{padding:0px; white-space:nowrap; vertical-align:middle;}
+.vTimelineTitle						{padding:0px 10px 0px 10px;}
 .vTimelineDays						{font-size:0.9em;}
 .vTimelineDays:hover				{background-color:#eee;}
 .vTimelineLeftBorder				{border-left:#ddd solid 1px;}
+.vTimelineToday						{color:#c00; font-size:1.1em}
 .vTimelineBlock .percentBar			{margin:0px;}/*surcharge*/
 .vTimelineBlock .percentBarContent	{text-align:left; cursor:pointer;}
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	input[type=text], input[type=password], input[type=file], textarea, select, button	{height:30px; padding:3px;}
 	.ui-datepicker-calendar .ui-state-default	{height:24px!important;}/*surcharge du datepicker*/
-	.vTimelineMonths, .vTimelineDays, .vTimelineTaskDays	{width:14px; min-width:14px;}
+	.vTimelineMonths, .vTimelineDays, .vTimelineTaskDays	{width:18px; min-width:18px;}
 	.vTimelineBlock .percentBar img		{display:none;}/*surcharge*/
 }
 </style>
 
-<div class="pageFull">
+<div id="pageFull">
 
-	<div class="pageModMenuContainer">
+	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
@@ -69,7 +72,7 @@ $(function(){
 		</div>
 	</div>
 
-	<div class="pageFullContent <?= (MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks") ?>">
+	<div id="pageFullContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
@@ -99,15 +102,15 @@ $(function(){
 		{
 			echo "<hr class='vTimelineHr'>
 				  <div class='vTimelineBlock miscContainer'><table>";
-			////HEADER MOIS & JOURS
+			//// HEADER MOIS & JOURS
 			$timelineHeaderMonths=$timelineHeaderDays=null;
 			foreach($timelineDays as $tmpDay){
 				if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.="<td colspan='".$tmpDay["newMonthColspan"]."' class='vTimelineMonths vTimelineLeftBorder'>".$tmpDay["newMonthLabel"]."</td>";}
-				$timelineHeaderDays.="<td class='vTimelineDays ".$tmpDay["classBorderLeft"]." cursorHelp' title=\"".$tmpDay["dayLabelTitle"]."\">".$tmpDay["dayLabel"]."</td>";
+				$timelineHeaderDays.="<td class='vTimelineDays ".$tmpDay["vTimelineToday"]." ".$tmpDay["vTimelineLeftBorder"]." cursorHelp' title=\"".$tmpDay["dayLabelTitle"]."\">".$tmpDay["dayLabel"]."</td>";
 			}
 			echo "<tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderMonths."</tr>
 				  <tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderDays."</tr>";
-			////TIMELINE DE CHAQUE TACHE
+			//// TIMELINE DE CHAQUE TACHE
 			foreach($timelineTasks as $tmpTask)
 			{
 				$taskDateBegin=date("Y-m-d",$tmpTask->timeBegin);
@@ -115,10 +118,10 @@ $(function(){
 				foreach($timelineDays as $tmpDay){//Affiche les jours de la timeline (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
 					$isTaskDateBegin=($taskDateBegin==$tmpDay["curDate"]) ? true : false;
 					if($isTaskDateBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"])
-						{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["classBorderLeft"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
+						{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
 				}
 				echo "<tr class='sTableRow'>
-						<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".$tmpTask->title."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?25:35))."</a></td>".
+						<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".$tmpTask->title."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?35:50))."</a></td>".
 						$tmpTaskCells.
 					 "</tr>";
 			}
