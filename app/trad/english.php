@@ -48,7 +48,6 @@ class Trad extends Txt
 		self::$trad["folder"]="folder";
 		self::$trad["folders"]="folders";
 		self::$trad["close"]="Close";
-		self::$trad["visibleSpaces"]="Spaces where it will be visible";
 		self::$trad["visibleAllSpaces"]="Visible on all spaces";
 		self::$trad["confirmCloseForm"]="Would you want to close the form?";
 		self::$trad["modifRecorded"]="The changes were recorded";
@@ -56,11 +55,11 @@ class Trad extends Txt
 		self::$trad["comment"]="Comment";
 		self::$trad["commentAdd"]="Add a comment";
 		self::$trad["optional"]="(optional)";
-		
-		////	Menu/Menu contextuel
 		self::$trad["objNew"]="new item";
 		self::$trad["objNewInfos"]="Created since my previous connection or created within 24 hours";
 		self::$trad["personalAccess"]="Personal access";
+		self::$trad["copyUrl"]="Copy the access address";
+		self::$trad["copyUrlConfirmed"]="The address has been copied : it can be integrated into a news, an event, a task, etc. <br><br> It can also be used outside the space (in email, blog, etc.), but only users of this space can use it.";
 
 		////	images
 		self::$trad["picture"]="Picture";
@@ -160,7 +159,7 @@ class Trad extends Txt
 		self::$trad["description"]="Description";
 		self::$trad["specifyName"]="Thank you to specify a name";
 		self::$trad["editorDraft"]="Retrieve my text";
-		self::$trad["editorDraftConfirm"]="Retrieve the last specified text (kept 48h)";
+		self::$trad["editorDraftConfirm"]="Retrieve the last specified text";
 		
 		////	Validation des formulaires
 		self::$trad["add"]=" Add";
@@ -196,7 +195,8 @@ class Trad extends Txt
 		////	Options de suppression
 		self::$trad["confirmDelete"]="Confirm the delete ?";
 		self::$trad["confirmDeleteDbl"]="Are you sure ?!";
-		self::$trad["confirmDeleteFolder"]="Caution ! certain sub-folders are not accessible for you : they will be deleted !";
+		self::$trad["confirmDeleteFolderAccess"]="Caution ! certain sub-folders are not accessible for you : they will be deleted !";
+		self::$trad["notifyBigFolderDelete"]="Deleting --NB_FOLDERS-- sub-folders can be a little long, please wait a few moments before the end of the process";
 		self::$trad["delete"]="Delete";
 		self::$trad["notDeletedElements"]="Some items have not been deleted because you do not have the necessary access rights";
 		
@@ -267,8 +267,7 @@ class Trad extends Txt
 		self::$trad["downloadFolder"]="Download the folder";
 		self::$trad["diskSpaceUsed"]="Disk space used";
 		self::$trad["diskSpaceUsedModFile"]="Disk space used for the File manager";
-		self::$trad["downloadAlert"]="Downloading large files not available during the day";//..(9h=>19h)
-		self::$trad["downloadAlert2"]="Maximum file  size during these hours";//..200Mo
+		self::$trad["downloadAlert"]="Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download after";//"19h"
 		
 		////	Infos sur une personne
 		self::$trad["civility"]="Civility";
@@ -320,9 +319,9 @@ class Trad extends Txt
 		self::$trad["userInscriptionRecorded"]="Your registration was recorded : it will be validated as soon as possible by the administrator of the space";
 		self::$trad["userInscriptionOptionSpace"]="Allow visitors to register on the space";
 		self::$trad["userInscriptionOptionSpaceInfo"]="The registration is on the homepage of the site. Registration must then be validated by the administrator of the space.";
-		self::$trad["userInscriptionValidate"]="User registrations";
-		self::$trad["userInscriptionValidateInfo"]="Validate user registrations on the site";
-		self::$trad["userInscriptionInvalidate"]="invalidate";
+		self::$trad["userInscriptionValidate"]="Validate user registration";
+		self::$trad["userInscriptionValidateInfo"]="Validate user registration on the site";
+		self::$trad["userInscriptionInvalidateButton"]="Invalidate registrations";
 		self::$trad["userInscriptionInvalidateMail"]="Your account has not been validated on";
 
 		////	Importer ou Exporter : Contact OU Utilisateurs
@@ -366,11 +365,17 @@ class Trad extends Txt
 		self::$trad["MESSENGER_messengerInfo"]="chat with several persons at the same time";
 		self::$trad["MESSENGER_connected"]="Online";
 		self::$trad["MESSENGER_connectedSince"]="connected at";//connecté depuis 12:45
-		self::$trad["MESSENGER_connectedNobody"]="No one is currently logged in : see old messages";
+		self::$trad["MESSENGER_connectedNobody"]="No one is connected";
+		self::$trad["MESSENGER_connectedNobodyInfo"]="No one is currently connected : see old messages";
 		self::$trad["MESSENGER_sendAt"]="Sent to";
 		self::$trad["MESSENGER_addMessageToSelection"]="My message (selected persons)";
 		self::$trad["MESSENGER_addMessageTo"]="My message to";
 		self::$trad["MESSENGER_addMessageNotif"]="Thank you to specify a message";
+		self::$trad["MESSENGER_visioProposeTo"]="Propose a video call to";//..boby
+		self::$trad["MESSENGER_visioProposeToSelection"]="Propose a video call to the selected people";
+		self::$trad["MESSENGER_userProposeVisioCall"]="propose you a video call. Click here to start the call";//boby.. "propose un appel visio"
+		self::$trad["MESSENGER_visioProposalPending"]="The video proposal has been sent. A new video window will be launched: please allow access to your webcam and microphone !";
+		self::$trad["MESSENGER_visioProposalLanch"]="Start the video call ?";
 		self::$trad["FOOTER_pageGenerated"]="page generated in";
 		
 		////	vueObjMenuEdit
@@ -435,7 +440,7 @@ class Trad extends Txt
 		////
 		self::$trad["AGORA_headerModuleName"]="General settings";
 		self::$trad["AGORA_generalSettings"]="General Settings";
-		self::$trad["AGORA_backupFull"]="Backup the database and the files";
+		self::$trad["AGORA_backupFull"]="Backup all the files";
 		self::$trad["AGORA_backupNotif"]="The creation of the backup file may take a few minute ... and download a few dozen minutes.";
 		self::$trad["AGORA_backupDb"]="Backup the database";
 		self::$trad["AGORA_diskSpaceInvalid"]="The limiting disk space must be an entirety";
@@ -448,6 +453,8 @@ class Trad extends Txt
 		self::$trad["AGORA_diskSpaceLimit"]="Space available for the storage of the files";
 		self::$trad["AGORA_logsTimeOut"]="Duration of event history (logs)";
 		self::$trad["AGORA_logsTimeOutInfo"]="The retention period of the events history concerns the addition or modification of the elements. The deletion logs are kept for at least 1 year.";
+		self::$trad["AGORA_visioHost"]="Jitsi videocall server";
+		self::$trad["AGORA_visioHostInfo"]="Jitsi videocall server address";
 		self::$trad["AGORA_skin"]="Color of the interface";
 		self::$trad["AGORA_black"]="Black";
 		self::$trad["AGORA_white"]="White";

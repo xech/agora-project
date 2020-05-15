@@ -52,7 +52,8 @@ class Tool
 			$mail->isSMTP();
 			$mail->Host=Ctrl::$agora->smtpHost;
 			$mail->Port=(int)Ctrl::$agora->smtpPort;
-			if(!empty(Ctrl::$agora->smtpSecure))  {$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}//Sécurise via SSL/TLS
+			if(!empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}//Sécurise via SSL/TLS
+			else									{$mail->SMTPAutoTLS=false;}//Désactive le SSL/TLS par défaut
 			if(!empty(Ctrl::$agora->smtpUsername) && !empty(Ctrl::$agora->smtpPass))   {$mail->Username=Ctrl::$agora->smtpUsername;  $mail->Password=Ctrl::$agora->smtpPass;  $mail->SMTPAuth=true;}//Connection authentifié
 		}
 

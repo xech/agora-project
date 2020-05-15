@@ -164,7 +164,6 @@ class CtrlCalendar extends Ctrl
 			}
 		}
 		////	LANCE L'AFFICHAGE
-		static::$isMainPage=true;
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
@@ -325,7 +324,7 @@ class CtrlCalendar extends Ctrl
 			{
 				$objLabel=Txt::displayDate($curObj->dateBegin,"full",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
-				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title,"maxi").".ics"]];
+				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title,"max").".ics"]];
 				$curObj->sendMailNotif($objLabel, null, $icsFile);
 				File::rm($icalPath);
 			}
@@ -536,7 +535,7 @@ class CtrlCalendar extends Ctrl
 				$subject=$mainMessage=ucfirst(Txt::trad("OBJECTcalendar"))." ''".$objCalendar->title."'' : ".Txt::trad("CALENDAR_exportEvtMailList");
 				$mainMessage.="<br>".Txt::trad("CALENDAR_exportEvtMailInfo");
 				$icalPath=self::getIcal($objCalendar,true);
-				$fileName=Txt::clean($objCalendar->title,"maxi")."_".date("d-m-Y").".ics";
+				$fileName=Txt::clean($objCalendar->title,"max")."_".date("d-m-Y").".ics";
 				//Envoie le mail, Supprime le fichier temp, Puis redirige en page principale du module
 				Tool::sendMail(Ctrl::$curUser->mail, $subject, $mainMessage, null, [["path"=>$icalPath, "name"=>$fileName]]);
 				File::rm($icalPath);
@@ -645,7 +644,7 @@ class CtrlCalendar extends Ctrl
 		////	Affiche directement le fichier .Ical
 		else{
 			header("Content-type: text/calendar; charset=utf-8");
-			header("Content-Disposition: inline; filename=".Txt::clean($objCalendar->title,"maxi")."_".date("d-m-Y").".ics");
+			header("Content-Disposition: inline; filename=".Txt::clean($objCalendar->title,"max")."_".date("d-m-Y").".ics");
 			echo $ical;
 		}
 	}

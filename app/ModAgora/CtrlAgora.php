@@ -19,8 +19,7 @@ class CtrlAgora extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		//Init
-		static::$isMainPage=true;
+		////	Controle d'accès
 		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
@@ -46,6 +45,7 @@ class CtrlAgora extends Ctrl
 				moduleLabelDisplay=".Db::formatParam("moduleLabelDisplay").",
 				personsSort=".Db::formatParam("personsSort").",
 				logsTimeOut=".Db::formatParam("logsTimeOut").",
+				visioHost=".Db::formatParam("visioHost").",
 				sendmailFrom=".Db::formatParam("sendmailFrom").",
 				smtpHost=".Db::formatParam("smtpHost").",
 				smtpPort=".Db::formatParam("smtpPort").",
@@ -112,7 +112,7 @@ class CtrlAgora extends Ctrl
 		}
 		//Affiche la page
 		$vDatas["logsTimeOut"]=array(0,30,120,360,720);
-		$vDatas["alertMessageBigSav"]=(File::datasFolderSize()>(File::sizeMo*200))  ?  true : false;
+		$vDatas["alertMessageBigSav"]=(File::datasFolderSize()>(File::sizeMo*500))  ?  "onclick=\"notify('".Txt::trad("AGORA_backupNotif",true)."','warning')\""  :  null;
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
@@ -128,7 +128,7 @@ class CtrlAgora extends Ctrl
 		if(Req::getParam("typeBackup")=="all")
 		{
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille
-			ini_set("max_execution_time","600");//10mn max
+			ini_set("max_execution_time","1200");//20mn max
 			$archiveName="BackupAgora_".strftime("%Y-%m-%d");
 			////	Sauvegarde via le shell
 			if(Tool::linuxEnv() && Ctrl::isHost())

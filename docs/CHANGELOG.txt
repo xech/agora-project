@@ -1,3 +1,33 @@
+VERSION 3.7.2 (05-2020)
+#######################
+Nouvelle option pour l'ajout d'un serveur de visioconférences Jitsi, accessible depuis la messagerie intantanée (cf. paramétrage général)
+Amélioration de l'affichage des modules Liens et Forum
+Diverses corrections en affichage responsive
+Corrections et optimisations diverses
+------
+New option for adding a Jitsi server to launch videoconferencing from the messenger (general configuration option)
+Improved display of the Link and Forum modules
+Various fixes for the responsive display
+Various corrections and optimizations
+
+
+VERSION 3.7.1 (04-2020)
+########################
+Ajout d'une option "copier l'adresse d'accès" dans le menu contextuel d'un élément
+Amélioration de l'affichage du menu principal (sur mobile et petites résolutions)
+Amélioration du messenger et des livecounters (Optimisation, prise en charge des emojis sur mobile, etc)
+Les plugins des dossiers (Nouveautés/Raccourcis/recherche) sont désormais redirigés vers leur contenu
+Correction de l'affichage des sujets du forum dans les nouveautés
+Corrections et optimisations diverses
+------
+Add option "copy access address" in the context menu of an element
+Improvement of the main menu display (on mobile and small resolutions)
+Improved messenger and livecounters (Optimization, emojis support on mobile, etc.)
+The plugins of the folders (News / Shortcuts / search) are now redirected to their content
+Correction of the display of forum topics in news
+Various corrections and optimizations
+
+
 VERSION 3.7.0 (03-2020)
 ########################
 Ajout de l'éditeur TinyMce dans la description des Sondages

@@ -19,7 +19,6 @@ class CtrlSpace extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
 		$vDatas["spaceList"]=Db::getObjTab("space", "SELECT * FROM ap_space ".MdlSpace::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);

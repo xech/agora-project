@@ -56,7 +56,7 @@ input[name="searchText"]	{width:220px; margin-right:5px;}
 	<div id="searchMainField">
 		<?= Txt::trad("keywords") ?>
 		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>">
-		<?= Txt::submit("search",false) ?>
+		<?= Txt::submitButton("search",false) ?>
 		<label id="advancedSearchLabel" onclick="displayAdvancedSearch();" class="sLink"><?= Txt::trad("advancedSearch") ?> <img src="app/img/plusSmall.png"></label>
 		<input type="hidden" name="advancedSearch" value="<?= Req::getParam("advancedSearch") ?>">
 	</div>
@@ -119,21 +119,22 @@ if(Req::isParam("searchText"))
 {
 	//Résultats à afficher
 	$searchTexts=explode(" ",Req::getParam("searchText"));
-	foreach($pluginsList as $tmpPlugin)
+	foreach($pluginsList as $tmpObj)
 	{
+		//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte (l'affichage des news est spécifique: affichage complet avec menu context)
+		if($tmpObj::objectType!="dashboardNews")  {$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel,"<hr><br>"),300);}
+		$tmpObj->pluginTooltip=Txt::reduce(strip_tags($tmpObj->pluginTooltip,"<hr><br>"),500);
 		//Affiche le libellé du module?
-		if(empty($tmpModuleName) || $tmpModuleName!=$tmpPlugin->pluginModule){
-			echo "<div class='vModuleLabel'><img src='app/img/".$tmpPlugin->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpPlugin->pluginModule)."_headerModuleName")."<hr></div>";
-			$tmpModuleName=$tmpPlugin->pluginModule;
+		if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj->pluginModule){
+			echo "<div class='vModuleLabel'><img src='app/img/".$tmpObj->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpObj->pluginModule)."_headerModuleName")."<hr></div>";
+			$tmpModuleName=$tmpObj->pluginModule;
 		}
-		//Réduit le label & suppr toutes les balises html (sauf pour les "news" qui s'affichent intégralement, avec un "contextMenu")
-		if($tmpPlugin->pluginModule!="dashboard")  {$tmpPlugin->pluginLabel=Txt::reduce(strip_tags($tmpPlugin->pluginLabel),100);}
 		//Surligne les mots recherchés dans le label des résultats
-		foreach($searchTexts as $searchText)  {$tmpPlugin->pluginLabel=preg_replace("/".$searchText."/i", "<span class='vSearchResultWord'>".$searchText."</span>", $tmpPlugin->pluginLabel);}
+		foreach($searchTexts as $searchText)  {$tmpObj->pluginLabel=preg_replace("/".$searchText."/i", "<span class='vSearchResultWord'>".$searchText."</span>", $tmpObj->pluginLabel);}
 		//Affiche les plugins "search"
 		echo "<div class='menuLine sLink objHover'>
-					<div class='menuIcon' onclick=\"".$tmpPlugin->pluginJsIcon."\"><img src='app/img/".$tmpPlugin->pluginIcon."'></div>
-					<div title=\"".$tmpPlugin->pluginTooltip."\" onclick=\"".$tmpPlugin->pluginJsLabel."\">".$tmpPlugin->pluginLabel."</div>
+					<div class='menuIcon' onclick=\"".$tmpObj->pluginJsIcon."\"><img src='app/img/".$tmpObj->pluginIcon."'></div>
+					<div title=\"".$tmpObj->pluginTooltip."\" onclick=\"".$tmpObj->pluginJsLabel."\">".$tmpObj->pluginLabel."</div>
 			  </div>";
 	}
 	//Aucun résultat à afficher

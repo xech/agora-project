@@ -427,7 +427,7 @@ class DbUpdate extends Db
 				}
 
 				////	"DATAS/" : RENOMME LES SOUS-DOSSIERS DE "DATAS" && SUPPRIME LE DOSSIER "tmp" && CHMOD RECURSIF
-				clearstatcache();//Réinit avant de faire un "rename()"
+				clearstatcache();//Réinit avant de faire un "rename()"!!
 				$dirsToRename=array("gestionnaire_fichiers"=>PATH_MOD_FILE, "photos_utilisateurs"=>PATH_MOD_USER, "photos_contact"=>PATH_MOD_CONTACT, "fichiers_objet"=>PATH_OBJECT_ATTACHMENT, "fond_ecran"=>PATH_WALLPAPER_CUSTOM);
 				foreach($dirsToRename as $oldDirName=>$newDirPath){
 					$oldDirPath=PATH_DATAS.$oldDirName."/";
@@ -779,6 +779,22 @@ class DbUpdate extends Db
 				Db::query("UPDATE ap_agora SET logsTimeOut=120 WHERE logsTimeOut=30");
 				//Modifie la préférence d'affichage de l'agenda : "3days" devient "4days"
 				Db::query("UPDATE ap_userPreference SET value='4days' WHERE keyVal='calendarDisplayMode' AND value='3days'");
+				//Augmente la taille max des commentaires des logs à 1000 caractères
+				Db::query("ALTER TABLE ap_log CHANGE `comment` `comment` VARCHAR(1000) DEFAULT NULL");
+			}
+			////	MAJ V3.7.1
+			if(self::updateVersion("3.7.1"))
+			{
+				//Supprime les votes sur les anciens sondages "fantome"
+				Db::query("DELETE FROM ap_dashboardPollResponseVote WHERE _idPoll=0");
+				//Ajoute le support des 'emoji' dans les messages du messenger : cf. 'utf8mb4'
+				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_userMessengerMessage CHANGE `message` `message` TEXT CHARACTER SET utf8mb4");}
+			}
+			////	MAJ V3.7.2
+			if(self::updateVersion("3.7.2"))
+			{
+				//Ajoute le paramétrage du serveur Jitsi
+				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost varchar(255) DEFAULT NULL AFTER logsTimeOut");
 			}
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			////!!!!	MODIFIER SI BESOIN LA BDD "ModOffline/db.sql"	!!!!!!!!!!!!

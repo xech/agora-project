@@ -2,8 +2,8 @@
 ////	Resize
 <?php if($context=="move"){ ?>lightboxSetWidth(500);<?php } ?>
 
-////	Init l'affichage de l'arborescence (dès que l'arbo est "ready")
-$(".vTreeFolder").ready(function(){
+////	Init l'affichage de l'arborescence (une fois la page chargée, pas avant!)
+$(function(){
 	//Ids des dossiers du "path" courant
 	curPathFolderIds=[<?= implode(",",Ctrl::$curContainer->folderPath("id")) ?>];
 	//Affiche chaque dossier de l'arborescence
@@ -103,7 +103,7 @@ function formControl(){
 	////	DEPLACEMENT DE DOSSIER : SUBMIT ET FIN DU FORMULAIRE
 	if($context=="move"){
 		foreach(Req::getParam("targetObjects") as $objType=>$objIds)  {echo "<input type='hidden' name=\"targetObjects[".$objType."]\" value=\"".$objIds."\">";}
-		echo Txt::submit()."</form>";
+		echo Txt::submitButton()."</form>";
 	}
 	////	NAVIGATION DE DOSSIERS : SEPARATION "HR"
 	else  {echo "<hr>";}

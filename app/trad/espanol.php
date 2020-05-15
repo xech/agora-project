@@ -48,7 +48,6 @@ class Trad extends Txt
 		self::$trad["folder"]="carpeta";
 		self::$trad["folders"]="carpetas";
 		self::$trad["close"]="Cerrar";
-		self::$trad["visibleSpaces"]="Espacios en los que será visible";
 		self::$trad["visibleAllSpaces"]="Visible en todos los espacios";
 		self::$trad["confirmCloseForm"]="¿Quieres cerrar el formulario?";
 		self::$trad["modifRecorded"]="Los cambios fueron registrados";
@@ -56,12 +55,12 @@ class Trad extends Txt
 		self::$trad["comment"]="Comentario";
 		self::$trad["commentAdd"]="Añadir un comentario";
 		self::$trad["optional"]="(opcional)";
-
-		////	Menu/Menu contextuel
 		self::$trad["objNew"]="nuevo elemento";
 		self::$trad["objNewInfos"]="Creado desde mi anterior conexión o creado dentro de las 24 horas";
 		self::$trad["personalAccess"]="Acceso personal";
-		
+		self::$trad["copyUrl"]="Copie la dirección de acceso";
+		self::$trad["copyUrlConfirmed"]="La dirección se ha copiado : se puede integrar en una noticia, un evento, una tarea, etc. <br><br> También se puede utilizar fuera del espacio (en correo electrónico, blog, etc.), pero solo las personas con acceso al espacio pueden usarlo.";
+
 		////	images
 		self::$trad["picture"]="foto";
 		self::$trad["wallpaper"]="papel tapiz";
@@ -160,7 +159,7 @@ class Trad extends Txt
 		self::$trad["description"]="Descripción";
 		self::$trad["specifyName"]="Gracias por especificar un nombre";
 		self::$trad["editorDraft"]="Recuperar mi texto";
-		self::$trad["editorDraftConfirm"]="Recuperar el último texto especificado (mantenido 48h)";
+		self::$trad["editorDraftConfirm"]="Recuperar el último texto especificado";
 
 		////	Validation des formulaires
 		self::$trad["add"]="Añadir";
@@ -196,7 +195,8 @@ class Trad extends Txt
 		////	Options de suppression
 		self::$trad["confirmDelete"]="Confirmar eliminación ?";
 		self::$trad["confirmDeleteDbl"]="Está seguro ?!";
-		self::$trad["confirmDeleteFolder"]="Advertencia : algunos sub-carpetas no son accessible : serán tambien eliminados !";
+		self::$trad["confirmDeleteFolderAccess"]="Advertencia : algunos sub-carpetas no son accessible : serán tambien eliminados !";
+		self::$trad["notifyBigFolderDelete"]="Eliminar --NB_FOLDERS-- archivos puede ser un poco largo, espere unos momentos antes del final del proceso";
 		self::$trad["delete"]="Eliminar";
 		self::$trad["notDeletedElements"]="Algunos elementos no se han eliminado porque no tienes los derechos de acceso necesarios";
 		
@@ -267,8 +267,7 @@ class Trad extends Txt
 		self::$trad["downloadFolder"]="Descargar la carpeta";
 		self::$trad["diskSpaceUsed"]="Espacio utilizado";
 		self::$trad["diskSpaceUsedModFile"]="Espacio utilizado para los Archivos";
-		self::$trad["downloadAlert"]="La descarga de archivos de gran tamaño no están disponibles durante el día";//..(9h=>19h)
-		self::$trad["downloadAlert2"]="Tamaño máximo del archivo durante estas horas";//..200Mo
+		self::$trad["downloadAlert"]="Su archivo es demasiado grande para descargarlo durante el día (--ARCHIVE_SIZE--). Reinicie la descarga después de las";//"19h"
 		
 		////	Infos sur une personne
 		self::$trad["civility"]="Civilidad";
@@ -322,7 +321,7 @@ class Trad extends Txt
 		self::$trad["userInscriptionOptionSpaceInfo"]="El registro se encuentra en la página de inicio. Debe ser validado por el administrador del espacio.";
 		self::$trad["userInscriptionValidate"]="Registros de usuarios";
 		self::$trad["userInscriptionValidateInfo"]="Validar registros de usuarios al espacio";
-		self::$trad["userInscriptionInvalidate"]="invalidar";
+		self::$trad["userInscriptionInvalidateButton"]="Invalidar registros";
 		self::$trad["userInscriptionInvalidateMail"]="Su cuenta no ha sido validado en";
 		
 		////	Importer ou Exporter : Contact OU Utilisateurs
@@ -365,12 +364,18 @@ class Trad extends Txt
 		self::$trad["MESSENGER_messenger"]="Mensajería instantánea";
 		self::$trad["MESSENGER_messengerInfo"]="chatear con varias personas al mismo tiempo";
 		self::$trad["MESSENGER_connected"]="Conectado";
-		self::$trad["MESSENGER_connectedNobody"]="Nadie ha iniciado sesión actualmente: ver mensajes antiguos";
+		self::$trad["MESSENGER_connectedNobody"]="Nadie esta conectado";
+		self::$trad["MESSENGER_connectedNobodyInfo"]="Nadie esta conectado actualmente : ver los mensajes antiguos";
 		self::$trad["MESSENGER_connectedSince"]="conectado a";//connecté depuis 12:45
 		self::$trad["MESSENGER_sendAt"]="Enviado a";
 		self::$trad["MESSENGER_addMessageToSelection"]="Mi mensaje (personas seleccionadas)";
 		self::$trad["MESSENGER_addMessageTo"]="Mi mensaje a";
 		self::$trad["MESSENGER_addMessageNotif"]="Por favor, especifique un mensaje";
+		self::$trad["MESSENGER_visioProposeTo"]="Enviar  una videollamada a";//..boby
+		self::$trad["MESSENGER_visioProposeToSelection"]="Enviar una videollamada a las personas seleccionadas";
+		self::$trad["MESSENGER_userProposeVisioCall"]="propone una videollamada. Haga clic aquí para iniciarla.";//boby.. "vous propose un appel visio"
+		self::$trad["MESSENGER_visioProposalPending"]="La propuesta de video ha sido enviada. Se abrirá una nueva ventana de video: permita el acceso a su cámara web y micrófono";
+		self::$trad["MESSENGER_visioProposalLanch"]="¿Iniciar la videollamada?";
 		self::$trad["FOOTER_pageGenerated"]="página generada en";
 		
 		////	vueObjMenuEdit
@@ -435,7 +440,7 @@ class Trad extends Txt
 		////
 		self::$trad["AGORA_headerModuleName"]="Administración general";
 		self::$trad["AGORA_generalSettings"]="Administración general";
-		self::$trad["AGORA_backupFull"]="Copia de seguridad de la base de datos y los archivos";
+		self::$trad["AGORA_backupFull"]="Copia de seguridad de todos los archivos";
 		self::$trad["AGORA_backupNotif"]="La creación de la copia de seguridad puede tardar unos minutos ... y descargar una docena de minutos.";
 		self::$trad["AGORA_backupDb"]="Copia de seguridad de la base de datos";
 		self::$trad["AGORA_diskSpaceInvalid"]="El límite de espacio de disco debe ser un número entero";
@@ -448,6 +453,8 @@ class Trad extends Txt
 		self::$trad["AGORA_diskSpaceLimit"]="Espacio de disco disponible para los archivos";
 		self::$trad["AGORA_logsTimeOut"]="Duración del historial de eventos (registros)";
 		self::$trad["AGORA_logsTimeOutInfo"]="El período de retención del historial de eventos se refiere a la adición o modificación de los elementos. Los registros de eliminación se mantienen durante al menos 1 año.";
+		self::$trad["AGORA_visioHost"]="Servidor de videoconferencia Jitsi";
+		self::$trad["AGORA_visioHostInfo"]="Dirección del servidor de videoconferencia Jitsi";
 		self::$trad["AGORA_skin"]="Color de la interfaz";
 		self::$trad["AGORA_black"]="Negro";
 		self::$trad["AGORA_white"]="Blanco";

@@ -20,7 +20,6 @@ class CtrlLog extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		if(Ctrl::$curUser->isAdminSpace()==false)  {self::noAccessExit();}
 		static::displayPage("VueIndex.php");
 	}

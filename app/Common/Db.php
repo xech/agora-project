@@ -25,9 +25,11 @@ class Db
 		if(self::$_objPDO===null){
 			//Connection PDO
 			try{
-				//Aucune bdd n'est spécifiée : dbInstall!  /  Sinon tente d'établir une connexion
+				//Utilise l'encodage "utf8mb4" pour les emojis sur mobile ("utf8" pour les versions inférieures à PHP 7 : cf. hosting Free.fr)
+				$dbCharset=(version_compare(PHP_VERSION,7,">="))  ?  "utf8mb4"  :  "utf8";
+				//Aucune bdd n'est spécifiée : dbInstall!  /  Sinon on établit une connexion
 				if(!defined("db_name") || !db_name)	{throw new Exception("dbInstall_dbNameUndefined");}
-				else								{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=utf8", db_login, db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));}
+				else								{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=".$dbCharset, db_login, db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));}
 				//Pas de connexion, ni d'exception : dbInstall!
 				if(!is_object(self::$_objPDO))	{throw new Exception("dbInstall_pdoIsNull");}
 			}
@@ -99,11 +101,12 @@ class Db
 	}
 	
 	/*
-	 * Version de MySQL
+	 * Numéro de version de MySQL
 	 */
 	public static function dbVersion()
 	{
-		return self::objPDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
+		$dbVersion=self::objPDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
+		return str_replace(strstr($dbVersion,"-"),null,$dbVersion);//Enlève les détails après "-" (ex: "5.5.5-10.1.26-MariaDB-0+deb9u1")
 	}
 
 	/*
@@ -112,12 +115,12 @@ class Db
 	public static function format($text, $options=null)
 	{
 		$text=trim($text);
-		if(empty($text))	{return "NULL";}
+		if(empty($text))  {return "NULL";}
 		else{
 			//Filtre le résultat
-			if(!stristr($options,"editor"))							{$text=htmlspecialchars(strip_tags($text));}//Enleve les balises (html/xml/etc)  &  Convertit les caractères spéciaux en HTML ("<" devient "&lt;") => complementaire au "strip_tags" precedent
-			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}			//Remplace les virgules par des points (valeur flottante)
-			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}					//Ajoute "http://" dans l'url
+			if(!stristr($options,"editor"))							{$text=htmlspecialchars(strip_tags($text));}//Input basic : enlève les balises html et convertit les caractères spéciaux ('€'->'&#128;')
+			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}			//Valeur flottante : remplace les virgules par des points
+			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}					//Url : ajoute "http://"
 			if(stristr($options,"likeSearch"))						{$text="%".$text."%";}						//Search : délimite par des "%"
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}

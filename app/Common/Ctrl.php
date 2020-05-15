@@ -44,6 +44,9 @@ abstract class Ctrl
 			setcookie("AGORAP_PASS", null, (time()+315360000));
 		}
 
+		////	Controle du cache du navigateur (Complété avec un .htaccess "mod_expires" pour les images & co)
+		header("Etag: W/\"".md5(VERSION_AGORA)."\"");//"Etag" via VERSION_AGORA
+
 		////	Controle la mise à jour PUIS Récup le parametrage de l'espace (apres "session_start")
 		DbUpdate::lauchUpdate();
 		self::$agora=self::getObj("agora");
@@ -68,6 +71,10 @@ abstract class Ctrl
 			self::curSpaceSelection();
 			////	Chargement des trads et des "locales"
 			Txt::loadTrads();
+			////	Affiche une page principale (Controles d'accès au module, Menu principal, Footer, etc)
+			if(Req::$curAction=="default")  {static::$isMainPage=true;}
+			////	Controle d'accès au module de l'espace (Si l'user souhaite afficher un module "standard", autre que les "logs" &co, mais que le module n'est pas affecté à l'espace courant : redirige vers le premier module de l'espace)
+			if(static::$isMainPage==true && self::$curUser->isUser() && in_array(Req::$curCtrl,MdlSpace::$moduleList) && array_key_exists(Req::$curCtrl,self::$curSpace->moduleList())==false)  {self::redir("?ctrl=".key(self::$curSpace->moduleList()));}
 			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::getParam("displayAdmin")=="true");
@@ -144,13 +151,13 @@ abstract class Ctrl
 			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			$vDatas["pathLogoTitle"]=OMNISPACE_URL_LABEL."<br>".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." sec.";
+			$vDatas["pathLogoTitle"]="<div style='text-align:center;line-height:25px;'>".OMNISPACE_URL_LABEL."</div>".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." seconde";
 			//HeaderMenu & MessengerLivecounter
 			if(static::moduleName!="offline")
 			{
 				//Mise à jour récente : notification dans le "pageFooterHtml" pour l'admin de l'espace
 				if(self::$curUser->isAdminSpace() && self::$curUser->previousConnection<strtotime(self::$agora->dateUpdateDb))
-					{self::$agora->footerHtml="<span id='footerHtmlUpdate'>".Txt::trad("NOTIF_update")." ".Txt::displayDate(self::$agora->dateUpdateDb,"dateMini")." : v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').effect('pulsate',{times:5},5000);</script>";}
+					{self::$agora->footerHtml="<span id='footerHtmlUpdate'>".Txt::trad("NOTIF_update")." ".Txt::displayDate(self::$agora->dateUpdateDb,"dateMini")." : v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').effect('pulsate',{times:3},3000);</script>";}
 				//Espace Disk
 				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
 				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70) ? true : false;
@@ -165,9 +172,10 @@ abstract class Ctrl
 				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1) ? true : false;
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
 				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName)  ?  true  : false;}
-				//retourne les vues du Header & du livecounter
+				//Récupère le menu principal : "HeaderMenu"
 				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
-				if(self::$curUser->messengerEnabled())	{$vDatas["messengerLivecounter"]=self::getVue(Req::commonPath."VueMessengerLivecounter.php");}
+				//Récupère le livecounter (cf. "CtrlMisc::actionLivecounterUpdate()")
+				if(self::$curUser->messengerEnabled())  {$vDatas["messengerLivecounter"]=self::getVue(Req::commonPath."VueMessengerLivecounter.php");}
 			}
 		}
 		////	Notifications passées en Get/Post
@@ -437,7 +445,7 @@ abstract class Ctrl
 			////	Init la requête Sql
 			$moduleName=Req::$curCtrl;
 			$sqlObjectType=$sqlObjectId=null;
-			$sqlValues="date=".Db::dateNow().", _idUser=".Db::format(self::$curUser->_id).", _idSpace=".Db::format(self::$curSpace->_id).", ip=".Db::format($_SERVER["REMOTE_ADDR"]);
+			$sqlLogValues=", date=".Db::dateNow().", _idUser=".Db::format(self::$curUser->_id).", _idSpace=".Db::format(self::$curSpace->_id).", ip=".Db::format($_SERVER["REMOTE_ADDR"]);
 			////	Element : ajoute les détails (nom, titre, chemin, etc)
 			if(is_object($curObj) && $curObj->isNew()==false)
 			{
@@ -445,23 +453,26 @@ abstract class Ctrl
 				$moduleName=$curObj::moduleName;
 				$sqlObjectType=$curObj::objectType;
 				$sqlObjectId=$curObj->_id;
-				if(!empty($comment))	{$comment.=" : ";}
-				//Commentaire de base : nom / titre / description / adresse 
-				if(!empty($curObj->name))			{$comment.=$curObj->name;}
-				elseif(!empty($curObj->title))		{$comment.=Txt::reduce($curObj->title);}
-				elseif(!empty($curObj->description)){$comment.=Txt::reduce($curObj->description);}
-				elseif(!empty($curObj->adress))		{$comment.=Txt::reduce($curObj->adress);}
-				//Ajoute si besoin le chemin de l'objet (format zip : minimaliste)
+				if(!empty($comment))  {$comment.=" : ";}
+				//Commentaire de base : nom / titre / description / adresse
+				if(!empty($curObj->name))				{$comment.=$curObj->name;}
+				elseif(!empty($curObj->title))			{$comment.=Txt::reduce($curObj->title);}
+				elseif(!empty($curObj->description))	{$comment.=Txt::reduce($curObj->description);}
+				elseif(!empty($curObj->adress))			{$comment.=Txt::reduce($curObj->adress);}
+				//Ajoute si besoin le 'path' au format "zip" (minimaliste)
 				if($curObj::isInArbo() && $curObj->isRootFolder()==false)  {$comment.=" (".Txt::trad("LOG_path")." : ".$curObj->containerObj()->folderPath("zip").")";}
-				//On ne dépasse pas les 300 carac en bdd (sinon renvoie une erreur)
-				$comment=Txt::reduce($comment,290);
+				//Moins de 500 caractères en bdd
+				$comment=Txt::reduce(strip_tags($comment),500);
 			}
 			////	Ajoute le log
-			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", comment=".Db::format($comment).", ".$sqlValues);
-			////	Supprime les anciens logs
-			Db::query("DELETE FROM ap_log WHERE action='connexion'	AND UNIX_TIMESTAMP(date) <= ".intval(time()-(14*86400)));											//Logs de connexion		: conservés 2 semaines
-			Db::query("DELETE FROM ap_log WHERE action='delete'		AND UNIX_TIMESTAMP(date) <= ".intval(time()-(360*86400)));											//logs de suppression	: conservés un an
-			Db::query("DELETE FROM ap_log WHERE action NOT IN ('connexion','delete') AND UNIX_TIMESTAMP(date) <= ".intval(time()-(self::$agora->logsTimeOut*86400)));	//Logs Add/Modif/Etc	: en fonction du "logsTimeOut" (120j par défaut)
+			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", comment=".Db::format($comment)." ".$sqlLogValues);
+			////	Supprime les anciens logs (lancé qu'une fois par session)
+			if(empty($_SESSION["logsCleared"])){
+				Db::query("DELETE FROM ap_log WHERE action='connexion'	AND UNIX_TIMESTAMP(date) <= ".intval(time()-(14*86400)));										 //Logs de connexion			: conservés 2 semaines
+				Db::query("DELETE FROM ap_log WHERE action='delete'		AND UNIX_TIMESTAMP(date) <= ".intval(time()-(360*86400)));										 //logs de suppression			: conservés un an
+				Db::query("DELETE FROM ap_log WHERE action NOT IN ('connexion','delete') AND UNIX_TIMESTAMP(date) <= ".intval(time()-(self::$agora->logsTimeOut*86400)));//Autres logs (add,modif,etc)	: en fonction du "logsTimeOut" (120j par défaut)
+				$_SESSION["logsCleared"]=true;
+			}
 		}
 	}
 
@@ -478,7 +489,7 @@ abstract class Ctrl
 			$objFolder->pluginLabel=$objFolder->name;
 			$objFolder->pluginTooltip=$objFolder->folderPath("text");
 			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
-			$objFolder->pluginJsIcon="windowParent.redir('".$objFolder->getUrl("container")."');";//Redir vers le dossier conteneur
+			$objFolder->pluginJsIcon="windowParent.redir('".$objFolder->getUrl()."');";//Redir vers le dossier
 			$objFolder->pluginJsLabel=$objFolder->pluginJsIcon;
 			$objFolder->pluginIsFolder=true;
 			$pluginsList[]=$objFolder;

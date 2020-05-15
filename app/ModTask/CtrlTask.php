@@ -22,7 +22,6 @@ class CtrlTask extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		$vDatas["foldersList"]=self::$curContainer->folders();
 		$filterPriority=Req::getParam("filterPriority")>=1 ? "AND priority=".Db::formatParam("filterPriority") : null;
 		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplayedObjects(self::$curContainer)." ".$filterPriority." ".MdlTask::sqlSort());
@@ -89,7 +88,7 @@ class CtrlTask extends Ctrl
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
-			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<hr>".Txt::reduce($tmpObj->description);
+			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<hr>".$tmpObj->description;
 			if(!empty($tmpObj->dateBegin) || !empty($tmpObj->dateEnd)){
 				if(!empty($tmpObj->dateBegin))		{$displayTime=Txt::displayDate($tmpObj->dateBegin,"full",$tmpObj->dateEnd);}
 				elseif(!empty($tmpObj->dateEnd))	{$displayTime=Txt::trad("end")." : ".Txt::displayDate($tmpObj->dateEnd,"normal");}

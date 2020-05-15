@@ -73,6 +73,6 @@ form						{text-align:center; padding:0px; margin:0px;}
 	}
 	
 	////	VALIDATION DU FORM
-	echo Txt::submit();
+	echo Txt::submitButton();
 	?>
 </form>

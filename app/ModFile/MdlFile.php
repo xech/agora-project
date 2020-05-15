@@ -33,6 +33,25 @@ class MdlFile extends MdlObject
 	public static $sortFields=array("name@@asc","name@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","extension@@asc","extension@@desc","octetSize@@asc","octetSize@@desc","downloadsNb@@desc","downloadsNb@@asc");
 
 	/*
+	 * Récupère toutes les versions du fichier
+	 */
+	public function getVersions($forceUpdate=false)
+	{
+		if($this->_versions===null || $forceUpdate==true)  {$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea desc");}//Le "ORDER BY" place la dernière version en premier!
+		return $this->_versions;
+	}
+
+	/*
+	 * Récupère la dernière version du fichier / une version à une date donnée
+	 */
+	public function getVersion($dateCrea=null)
+	{
+		foreach($this->getVersions() as $tmpVersion){
+			if($tmpVersion["dateCrea"]==$dateCrea || empty($dateCrea))    {return $tmpVersion;  break;}
+		}
+	}
+
+	/*
 	 * Chemin du fichier sur le disque (dernière version / version précisé avec "date_drea")
 	 */
 	public function filePath($dateCrea=null)
@@ -78,8 +97,8 @@ class MdlFile extends MdlObject
 	public function getThumbPath()
 	{
 		if($this->_tumbPath===null){
-			if(File::isType("imageResize",$this->name) || (File::isType("pdf",$this->name) && extension_loaded("imagick")))		{$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();}
-			else																												{$this->_tumbPath="";}
+			if(File::isType("imageResize",$this->name) || (File::isType("pdf",$this->name) && extension_loaded("imagick")))	{$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();}
+			else																											{$this->_tumbPath="";}
 		}
 		return $this->_tumbPath;
 	}
@@ -112,25 +131,6 @@ class MdlFile extends MdlObject
 				$tmpThumb->destroy();
 				return File::imageResize($this->getThumbPath(),$this->getThumbPath(),300);
 			}
-		}
-	}
-
-	/*
-	 * Récupère toutes les versions du fichier
-	 */
-	public function getVersions($forceUpdate=false)
-	{
-		if($this->_versions===null || $forceUpdate==true)    {$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea desc");}//"ORDER BY" pour mettre la dernière version en premier!
-		return $this->_versions;
-	}
-
-	/*
-	 * Récupère la dernière version du fichier / une version à une date donnée
-	 */
-	public function getVersion($dateCrea=null)
-	{
-		foreach($this->getVersions() as $tmpVersion){
-			if($tmpVersion["dateCrea"]==$dateCrea || empty($dateCrea))    {return $tmpVersion;  break;}
 		}
 	}
 
@@ -210,33 +210,43 @@ class MdlFile extends MdlObject
 	}
 
 	/*
-	 * SURCHARGE : Supprime un fichier (toutes ses versions OU une version spécifique)
+	 * SURCHARGE : Supprime un fichier (toutes ses versions OU une version spécifique)	
+	 * $deleteVersion : "deleteFolder" / "all" / version précise via "dateCrea"
 	 */
-	public function delete($versionDateCrea="all")
+	public function delete($deleteVersion="all")
 	{
 		if($this->deleteRight())
 		{
-			////	Si on supprime la dernière version d'un fichier : update les propriétés principale du fichier (nom/taille/etc) avec celles l'avant dernière version
-			$fileVersions=$this->getVersions();
-			if($versionDateCrea==$fileVersions[0]["dateCrea"] && count($fileVersions)>1)
-				{Db::query("UPDATE ap_file SET name=".Db::format($fileVersions[1]["name"]).", octetSize=".Db::format($fileVersions[1]["octetSize"]).", dateModif=".Db::format($fileVersions[1]["dateCrea"]).", _idUserModif=".$fileVersions[1]["_idUser"]." WHERE _id=".$this->_id);}
-			////	Supprime chaque version du fichier => du disque puis en BDD
-			$sqlFilterVersion=($versionDateCrea!="all")  ?  "AND dateCrea=".Db::format($versionDateCrea)  :  null;
-			$fileVersionsToDelete=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." AND length(realName)>0 ".$sqlFilterVersion);
-			foreach($fileVersionsToDelete as $tmpVersion){
-				$tmpFilePath=$this->filePath($tmpVersion["dateCrea"]);
-				if(is_file($tmpFilePath))  {File::rm($tmpFilePath);}//fichier tjs accessible?
-				Db::query("DELETE FROM ap_fileVersion WHERE _idFile=".$this->_id." AND realName=".Db::format($tmpVersion["realName"]));
-			}
-			////	Supprime le fichier s'il ne reste plus aucune version
-			if(Db::getVal("SELECT count(*) FROM ap_fileVersion WHERE _idFile=".$this->_id)==0){
-				if($this->hasThumb())  {File::rm($this->getThumbPath());}
+			//// Supprime tout le dossier conteneur : on supprime le fichier uniquement en Bdd car sa suppression sur le disque se fait avec celle du dossier parent (beaucoup plus rapide quand on a des milliers de fichiers!)
+			if($deleteVersion=="deleteFolder"){
+				Db::query("DELETE FROM ap_fileVersion WHERE _idFile=".$this->_id);
 				parent::delete();
 			}
-			////	si besoin, recharge la liste des versions puis recréé la vignette
-			else{
-				$this->getVersions(true);
-				$this->createThumb();
+			//// Supprime une ou toutes les versions du fichier
+			else
+			{
+				////	Récupère toutes les versions du fichier
+				$versionList=$this->getVersions();
+				////	Si on supprime la dernière version d'un fichier : update les propriétés principales du fichier (nom/taille/etc) avec celles l'avant dernière version
+				if($deleteVersion==$versionList[0]["dateCrea"] && isset($versionList[1]))  {Db::query("UPDATE ap_file SET name=".Db::format($versionList[1]["name"]).", octetSize=".Db::format($versionList[1]["octetSize"]).", dateModif=".Db::format($versionList[1]["dateCrea"]).", _idUserModif=".$versionList[1]["_idUser"]." WHERE _id=".$this->_id);}
+				////	Supprime les versions demandées du fichier : sur le disque puis dans la table "ap_fileVersion"
+				foreach($versionList as $tmpVersion){
+					if($deleteVersion=="all" || $deleteVersion==$tmpVersion["dateCrea"]){
+						$tmpFilePath=$this->filePath($tmpVersion["dateCrea"]);
+						if(is_file($tmpFilePath))  {File::rm($tmpFilePath);}//Toujours controler via "is_file()"!!
+						Db::query("DELETE FROM ap_fileVersion WHERE _idFile=".$this->_id." AND realName=".Db::format($tmpVersion["realName"]));
+					}
+				}
+				////	Supprime toutes les versions OU la dernière version du fichier : efface auquel cas la vignette, puis efface définitivement le fichier
+				if($deleteVersion=="all" || count($versionList)==1){
+					if($this->hasThumb())  {File::rm($this->getThumbPath());}
+					parent::delete();
+				}
+				////	Sinon si ya une vignette du fichier : on recharge la liste des versions et update la vignette
+				elseif($this->hasThumb()){
+					$this->getVersions(true);
+					$this->createThumb();
+				}
 			}
 		}
 	}

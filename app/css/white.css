@@ -1,23 +1,27 @@
 /**SKIN BLANC**/
 
 /*Basic*/
-body, a, .sLink								{color:#555;}
+html										{background:#fff;}
+body, a, button, .sLink						{color:#555;}
 a:hover, .sLink:hover						{color:#800;}
 a:active, .sLinkSelect, input:checked+label	{color:#a00;}
+/*Pages principales Responsives (cf. 'VueStructure.php')*/
+@media screen and (max-width:1023px){
+	#htmlMainPage	{background:#f8f8f8 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+}
 
 /*Blocks d'objet (ou pas) & menus contextuels*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{box-shadow:2px 2px 6px rgba(50,50,50,0.7); background:linear-gradient(333deg,#eee,#fff 100px); background-color:#fff; background-repeat:no-repeat;}/*"box-shadow" : tester avec wallpapers full white/black*/
-.objContainer:hover							{box-shadow:2px 2px 6px rgba(255,255,255,0.8);}
-.objContainerSelect							{background:#ddd!important;}/*plus "important" que le ":hover"*/
-.objBlocks .objContainerSelect				{box-shadow:0px 0px 1px 1px rgb(250,0,0)!important;}
-.objLines .objContainer						{border-bottom:solid 1px #eee;}
-.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#f9f9f9; background-image:none;}/*lignes survolées et lignes impaires*/
-.objLines .alternateLines:nth-child(even)	{background:#fff;}/*ligne paire*/
-.objBlocks .hasThumb .objLabel				{background:rgba(250,250,250,0.9);}
-.emptyContainer								{background:rgba(255,255,255,0.7);}
 .menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#eee;}/*survol une ligne de menu (affectation ou autre)*/
+.objContainer, .miscContainer, .emptyContainer, .menuContext	{box-shadow:2px 2px 6px rgba(50,50,50,0.7); background:linear-gradient(333deg,#eee,#fff 100px); background-color:#fff; background-repeat:no-repeat;}/*"box-shadow" : tester avec wallpapers full white/black*/
+.objContainer:hover												{box-shadow:2px 2px 6px rgba(255,255,255,0.8);}
+.objContainerSelect												{background:#ddd!important;}/*plus "important" que le ":hover"*/
+.objLines .objContainer											{border-bottom:solid 1px #eee;}
+.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#f9f9f9; background-image:none;}/*lignes survolées et lignes impaires*/
+.objLines .alternateLines:nth-child(even)						{background:#fff;}/*ligne paire*/
+.objBlocks .hasThumb .objLabel									{background:rgba(250,250,250,0.9);}
+.emptyContainer													{background:rgba(255,255,255,0.7);}
 @media screen and (max-width:1023px){
-	.objContainer, .miscContainer, .emptyContainer	{box-shadow:1px 1px 2px rgba(0,0,0,0.3);}/*hover=touch*/
+	.objContainer, .miscContainer, .emptyContainer	{box-shadow:1px 1px 2px rgba(0,0,0,0.2);}/*hover=touch*/
 }
 
 /*Droits d'accès d'utilisateurs*/
@@ -27,7 +31,10 @@ a:active, .sLinkSelect, input:checked+label	{color:#a00;}
 
 /*Divers*/
 .lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}
-.objMenuLabel						{background:linear-gradient(180deg,#f5f5f5,#fff);}
-.lightboxBlockTitle					{border-bottom:#ddd solid 1px; background:#fafafa;}
-#headerBar							{background:linear-gradient(to bottom,#f5f5f5,#fafafa,#eee);}
-#sortableModules .ui-state-default	{background:linear-gradient(#f9f9f9,#fff);} 
+.objMenuLabel										{background:linear-gradient(180deg,#f5f5f5,#fff);}
+.lightboxBlockTitle									{border-bottom:#ddd solid 1px; background:#fafafa;}
+#headerBar											{background:linear-gradient(to bottom,#f5f5f5,#fafafa,#eee);}
+#sortableModules .ui-state-default					{background:linear-gradient(#f9f9f9,#fff);}
+hr													{background:linear-gradient(to right,#eee,#ccc,#eee);}
+div::-webkit-scrollbar								{background:#eee; width:12px;}/*scrollbar: background et width*/
+div::-webkit-scrollbar-thumb						{background:#ccc;}/*scrollbar: couleur de la barre*/

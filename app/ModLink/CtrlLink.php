@@ -22,7 +22,6 @@ class CtrlLink extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplayedObjects(self::$curContainer)." ".MdlLink::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);

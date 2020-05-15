@@ -7,7 +7,6 @@ $(function(){
 </script>
 
 <style>
-.objBlocks .objContainer	{height:140px; width:250px; min-width:250px; max-width:450px;}/*surcharge. height de 140 minimum!*/
 .vDisplayUsers				{text-align:center; margin-top:10px; margin-bottom:15px;}
 .vInputSelectAllUsers		{color:#b00; font-weight:bold;}
 .vGroupLabel				{margin-top:5px; cursor:help;}
@@ -44,7 +43,7 @@ $(function(){
 			if(self::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" title=\"".Txt::trad("USER_addExistUserTitle")."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
 			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendInvitationInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 			if(self::$curUser->isAdminSpace())			{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_user")."</div></div>";}
-			if(self::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendCoordsInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendCoordinates');\"><div class='menuIcon'><img src='app/img/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
+			if(self::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendCoordsInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendCoordinates');\"><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
 			////	SELECTION D'UTILISATEURS / TYPE D'AFFICHAGE / TRI D'AFFICHAGE
 			echo "<hr>".MdlUser::menuSelectObjects().MdlUser::menuDisplayMode().MdlUser::menuSort();
 			////	FILTRAGE ALPHABET
@@ -73,9 +72,9 @@ $(function(){
 			if($tmpUser->isAdminGeneral())		{$contextMenu.="<img src='app/img/user/adminGeneral.png' title=\"".Txt::trad("USER_adminGeneral")."\" class='vAdminRightIcon'>";}
 			elseif($tmpUser->isAdminSpace())	{$contextMenu.="<img src='app/img/user/adminSpace.png' title=\"".Txt::trad("USER_adminSpace")."\" class='vAdminRightIcon'>";}
 			//Affiche le block
-			echo $tmpUser->divContainer().$contextMenu.
+			echo $tmpUser->divContainer("objPerson").$contextMenu.
 				"<div class='objContentScroll'>
-					<div class='objContent objPerson'>
+					<div class='objContent'>
 						<div class='objIcon'>".$tmpUser->getImg(true,false,true)."</div>
 						<div class='objLabel'>
 							<a href=\"javascript:lightboxOpen('".$tmpUser->getUrl("vue")."');\">".$tmpUser->getLabel("all")."</a>

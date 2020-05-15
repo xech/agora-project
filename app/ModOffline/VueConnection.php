@@ -150,7 +150,7 @@ $(function(){
 			<?= Txt::trad("resetPassword2") ?><hr>
 			<input type="text" name="resetPasswordMail" placeholder="<?= Txt::trad("mail") ?>">
 			<input type="hidden" name="resetPasswordSendMail" value="1">
-			<?= Txt::submit("send",false) ?>
+			<?= Txt::submitButton("send",false) ?>
 		</form>
 
 		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD (2ème etape)-->
@@ -163,7 +163,7 @@ $(function(){
 				<input type="hidden" name="resetPasswordMail" value="<?= Req::getParam("resetPasswordMail") ?>"><!--vérif du reset-->
 				<input type="hidden" name="resetPasswordId" value="<?= Req::getParam("resetPasswordId") ?>"><!--idem-->
 				<input type="hidden" name="login" value="<?= Req::getParam("resetPasswordMail") ?>"><!--pré-remplissage du champ après reset-->
-				<br><?= Txt::submit("validate",false) ?>
+				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
 			<script>
 			//Lance le fancybox dès l'affichage de la page
@@ -180,7 +180,7 @@ $(function(){
 				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">
 				<input type="hidden" name="_idInvitation" value="<?= Req::getParam("_idInvitation") ?>"><!--pour récupérer l'invit-->
 				<input type="hidden" name="mail" value="<?= Req::getParam("mail") ?>">
-				<br><?= Txt::submit("validate",false) ?>
+				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
 			<script>
 			//Lance le fancybox dès l'affichage de la page

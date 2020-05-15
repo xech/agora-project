@@ -7,10 +7,6 @@ function contactAddUser(targetObjId)
 }
 </script>
 
-<style>
-.objBlocks .objContainer	{height:140px; width:250px; min-width:250px; max-width:450px;}/*surcharge. height de 140 minimum!*/
-</style>
-
 <div id="pageFull">
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
@@ -36,9 +32,9 @@ function contactAddUser(targetObjId)
 		////	LISTE DES CONTACTS
 		foreach($contactList as $tmpContact)
 		{
-			echo $tmpContact->divContainer().$tmpContact->contextMenu().
+			echo $tmpContact->divContainer("objPerson").$tmpContact->contextMenu().
 				"<div class='objContentScroll'>
-					<div class='objContent objPerson'>
+					<div class='objContent'>
 						<div class='objIcon'>".$tmpContact->getImg(true,false,true)."</div>
 						<div class='objLabel'>
 							<a href=\"javascript:lightboxOpen('".$tmpContact->getUrl("vue")."');\">".$tmpContact->getLabel("all")."</a>

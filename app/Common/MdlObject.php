@@ -376,11 +376,11 @@ class MdlObject
 	}
 
 	/*
-	 * Controle si on peut lire l'objet : sinon renvoie une erreur
+	 * Controle si on peut lire l'objet (et s'il existe encore) : sinon renvoie une erreur
 	 */
 	public function controlRead()
 	{
-		if($this->accessRight()==0)  {Ctrl::noAccessExit();}
+		if($this->accessRight()==0 || empty($this->_id))  {Ctrl::noAccessExit();}
 	}
 
 	/*
@@ -411,9 +411,9 @@ class MdlObject
 			//Supprime les éventuels "usersComment" & "usersLike"
 			if(static::hasUsersComment)	{Db::query("DELETE FROM ap_objectComment ".$sqlSelectObject);}
 			if(static::hasUsersLike)	{Db::query("DELETE FROM ap_objectLike ".$sqlSelectObject);}
-			//Ajoute le log de suppression (ne pas mettre en dernier)
+			//Ajoute le log de suppression, mais pas en dernier!
 			Ctrl::addLog("delete",$this);
-			//Supprime les droits d'accès & Supprime l'objet lui-même!
+			//Supprime les droits d'accès, puis enfin l'objet lui-même!
 			Db::query("DELETE FROM ap_objectTarget ".$sqlSelectObject);
 			Db::query("DELETE FROM ".static::dbTable." WHERE _id=".$this->_id);
 		}
@@ -549,7 +549,7 @@ class MdlObject
 			//Ajoute si besoin la description
 			if(!empty($this->description))	{$objContent.="<br>".$this->description;}
 			if(!empty($addDescription))		{$objContent.="<br>".$addDescription;}
-			$objContent=Txt::reduce($objContent,5000);//limite la taille de la description (cf. Actualité and co, avec "strip tag" pour éviter que le spam)
+			$objContent=Txt::reduce($objContent,3000);//limite la taille de la description (cf. Actualité and co, avec "strip tag" pour éviter d'arriver en spam)
 			$objContent=str_replace(PATH_DATAS, Req::getSpaceUrl()."/".PATH_DATAS, $objContent);//Remplace si besoin les chemins relatifs dans le label de l'objet
 			$objContentStyle="display:inline-block; background-color:#fafafa; color:#333; border:1px solid #bbb; border-radius:2px; padding:15px;";//Style du corps du message
 			$message="<br>".$subject." :<br><br><div style=\"".$objContentStyle."\">".$objContent."</div><br><br><a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";//Finalise le message (sur une seule ligne!!)

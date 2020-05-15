@@ -117,7 +117,7 @@ $(function(){
 #invitationListHr			{margin-top:30px;}
 #invitationListDiv			{display:none;}
 #invitationListDiv li		{margin:10px;}
-.formMainButton				{margin-top:10px;}/*surcharge*/
+.submitButtonMain			{padding:0px; padding-top:10px;}/*surcharge*/
 </style>
 
 
@@ -129,7 +129,7 @@ $(function(){
 		<!--ENVOI D'UNE INVITATION-->
 		<?php foreach($userFields as $tmpField){ ?><input type="text" name="<?= $tmpField ?>" placeholder="<?= Txt::trad($tmpField) ?>"><?php } ?>
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::getParam("comment") ?></textarea>
-		<?= Txt::submit("send") ?>
+		<?= Txt::submitButton("send") ?>
 	</form>
 
 	<!--INVITATION AVEC IMPORT DES CONTACTS GMAIL-->
@@ -140,7 +140,7 @@ $(function(){
 	</div>
 	<form id="gPeopleForm">
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::getParam("comment") ?></textarea>
-		<?= Txt::submit("send") ?>
+		<?= Txt::submitButton("send") ?>
 	</form>
 	<?php } ?>
 

@@ -62,7 +62,7 @@ class MdlDashboardPoll extends MdlObject
 		//Réponses du sondage (trié par "rank"), avec pour chaque réponse : le nb de votes ("GROUP BY") et auquel cas le chemin du fichier
 		if($this->_responseList===null)
 		{
-			$this->_responseList=Db::getTab("SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPollResponse T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idResponse  WHERE T1._idPoll=".$this->_id."  GROUP BY _id, _idPoll, label, rank, fileName  ORDER BY rank");//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
+			$this->_responseList=Db::getTab("SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPollResponse T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idResponse  WHERE T1._idPoll=".$this->_id."  GROUP BY _id, _idPoll, label, rank, fileName  ORDER BY rank ASC");//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
 			foreach($this->_responseList as $tmpKey=>$tmpResponse){
 				if(!empty($tmpResponse["fileName"])){
 					$this->_responseList[$tmpKey]["filePath"]=$this->responseFilePath($tmpResponse);

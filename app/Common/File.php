@@ -128,9 +128,7 @@ class File
 			////	Headers
 			header("Content-Type: application/octet-stream");
 			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName,"download")."\"");
-			header("Cache-Control: no-cache, no-store, must-revalidate");//HTTP 1.1
-			header("Pragma: no-cache");//HTTP 1.0
-			header("Cache-Control: public, must-revalidate, post-check=0, pre-check=0");
+			header("Cache-Control: no-store");
 			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}//fichier dans DATAS
 			////	Download d'un fichier généré à la volée
 			if(!empty($fileContent)){
@@ -173,7 +171,7 @@ class File
 			//Envoie le "Header"
 			header('Content-Type: '.$contentType);
 			header('Content-Length: '.filesize($filePath));
-			header('Cache-Control: no-cache');
+			header('Cache-Control: no-store');
 			header('Content-Transfer-Encoding: binary');
 			header('Accept-Ranges: bytes');//Pour ne pas bloquer la lecture des balises audio/video
 			readfile($filePath);
@@ -256,7 +254,7 @@ class File
 	}
 
 	/*
-	 * Suppression d'un fichier/dossier sur le disque (avec controle d'accès && fonction recursive pour les dossiers)
+	 * Suppression d'un fichier/dossier sur le disque
 	 */
 	public static function rm($targetPath, $errorMessage=true)
 	{
@@ -265,11 +263,15 @@ class File
 		//Verifie l'accès en écriture (avec message d'erreur au besoin?)
 		if(self::isWritable($targetPath,$errorMessage))
 		{
+			//Supprime un fichier OU Supprime récursivement un dossier
 			if(is_file($targetPath))	{return unlink($targetPath);}
-			elseif(is_dir($targetPath) && $targetPath!=PATH_MOD_FILE){
+			elseif(is_dir($targetPath) && $targetPath!=PATH_MOD_FILE)
+			{
+				//Supprime le contenu du dossier (récursivité)
 				foreach(scandir($targetPath) as $tmpFileName){
 					if(in_array($tmpFileName,['.','..'])==false)  {self::rm($targetPath."/".$tmpFileName,$errorMessage);}
 				}
+				//Supprime enfin le dossier
 				return rmdir($targetPath);
 			}
 		}
@@ -313,11 +315,11 @@ class File
 					$imgImagick=new Imagick($imgPathSrc);
 					//Vérifie s'il faut réorienter l'image
 					$imgOrientation=$imgImagick->getImageOrientation();
-					if($imgOrientation==6)		{$imgRotate=90;}
-					elseif($imgOrientation==8)	{$imgRotate=-90;}
-					if(isset($imgRotate)){
+					if($imgOrientation==6)		{$imgRotation=90;}
+					elseif($imgOrientation==8)	{$imgRotation=-90;}
+					if(isset($imgRotation)){
 						list($newWidth,$newHeight)=[$newHeight,$newWidth];//Switch le width et height?
-						$imgImagick->rotateImage(new ImagickPixel('#000'),$imgRotate);
+						$imgImagick->rotateImage("#000",$imgRotation);
 					}
 					//Compresse && Resize && enregistre l'image
 					$imgImagick->setImageCompressionQuality($compressionQuality); 
@@ -393,16 +395,17 @@ class File
 	public static function archiveSizeControl($archiveSize)
 	{
 		$archiveSizeControl=true;
-		$limitSize=(self::sizeMo*500);//500Mo max
-		$disabledBegin=9;//debut plage horaire interdite
-		$disabledEnd=18;//fin plage horaire interdite
+		$limitSize=(self::sizeGo*2);//2Go max (tester avec un 'top' du systeme)
+		$disabledBegin=9;//debut plage horaire de limitation
+		$disabledEnd=19;//fin plage horaire de limitation
 		if($archiveSizeControl==true && date("G") > $disabledBegin && date("G") < $disabledEnd && (int)$archiveSize > $limitSize){
-			Ctrl::addNotif(Txt::trad("downloadAlert")." ".$disabledBegin."h ".Txt::trad("and")." ".$disabledEnd."h. ".Txt::trad("downloadAlert2")." : ".self::displaySize($limitSize));
+			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::displaySize($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
+			Ctrl::addNotif($alertLabel, "warning");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
 		}
 	}
-	
-	
+
+
 	/***************************************************************************************************************************/
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/

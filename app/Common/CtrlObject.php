@@ -175,14 +175,21 @@ class CtrlObject extends Ctrl
 	}
 
 	/*
-	 * AJAX : Controle si tous les sous-dossiers peuvent être supprimés
+	 * AJAX : Controle d'accès avant suppression d'un dossier
 	 */
-	public static function actionSubFoldersDeleteControl()
+	public static function actionFolderDeleteControl()
 	{
+		//// Init les notifications
+		$result=[];
+		//// Controle si tous les sous-dossiers sont bien accessibles en écriture ("Certains sous-dossiers ne vous sont pas accessibles... confirmer?")
 		$curFolder=Ctrl::getTargetObj();
-		$folderTreeAll=$curFolder->folderTree("all");//Tous les dossiers (lecture ou écriture)
-		$folderTreeWriteAccess=$curFolder->folderTree(2);//Dossier accessible en écriture (pas besoin d'accès total)
-		echo (count($folderTreeAll)==count($folderTreeWriteAccess)) ? "true" : "false";
+		$folderTreeAll=$curFolder->folderTree("all");//Liste tous les dossiers (pas forcément en lecture)
+		$folderTreeWrite=$curFolder->folderTree(2);//Liste les dossiers accessibles en écriture (pas forcément en accès total)
+		if(count($folderTreeAll)!=count($folderTreeWrite))  {$result["confirmDeleteFolderAccess"]=Txt::trad("confirmDeleteFolderAccess");}
+		//// Arborescence de plus de 100 dossiers : notif "merci de patienter quelques instants avant la fin du processus"
+		if(count($folderTreeAll)>100 )  {$result["notifyBigFolderDelete"]=str_replace("--NB_FOLDERS--",count($folderTreeAll),Txt::trad("notifyBigFolderDelete"));}
+		//// Retourne le résultat au format JSON
+		echo json_encode($result);
 	}
 
 	/*

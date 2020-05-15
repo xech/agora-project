@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(750);
+lightboxSetWidth(800);
 
 ////	INIT
 $(function(){
@@ -20,9 +20,9 @@ $(function(){
 
 <style>
 #newsOptions			{margin-top:22px; text-align:center;}
-#newsOptions>div		{display:inline-block; height:25px; margin:5px; margin-top:15px;}
+#newsOptions>div		{display:inline-block; margin-right:20px; margin-top:15px;}
 #newsOptions img		{vertical-align:bottom;}
-.dateBegin, .dateEnd	{width:140px!important;}/*surcharge*/
+.dateBegin, .dateEnd	{width:160px!important;}/*surcharge*/
 .dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.9em;}/*pour afficher le "placeholder"*/
 input[name='une'],input[name='offline']	{display:none;}
 </style>

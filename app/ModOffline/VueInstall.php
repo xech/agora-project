@@ -95,7 +95,7 @@ h3								{margin-top:20px; font-style:italic;}
 			</select>
 		</div>
 		<!--VALIDATION-->
-		<?= Txt::submit() ?>
+		<?= Txt::submitButton() ?>
 		<img src="app/img/loading.gif" id="imgLoading">
 	</form>
 	<?php } ?>

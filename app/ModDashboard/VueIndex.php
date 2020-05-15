@@ -23,7 +23,7 @@ $(function(){
 						else{
 							$("#contentNews").append(vueNewsList);	//Affiche les news
 							$(".vNewsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .vNewsHidden
-							mainPageDisplay(false);					//Maj l'affichage (tooltips & fancybox)
+							mainPageDisplay(false);					//Update les tooltips/lightbox
 							initMenuContext();						//Maj les menus contextuels des news
 							newsOffsetCpt++;						//Update le compteur
 						}
@@ -38,7 +38,7 @@ $(function(){
 						{
 							$("#contentPolls").append(vuePollsList);//Affiche les sondages
 							$(".vPollsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .vNewsHidden
-							mainPageDisplay(false);					//Maj l'affichage (tooltips & fancybox)
+							mainPageDisplay(false);					//Update les tooltips/lightbox
 							initMenuContext();						//Maj les menus contextuels des sondages
 							dashboardPollVote();					//Update le "trigger" de vote des sondages
 							pollsOffsetCpt++;						//Update le compteur
@@ -90,7 +90,7 @@ function dashboardPollVote()
 				//Affiche le résultat du sondage (remplace le formulaire principal, et si besoin le formulaire "newsDisplay")
 				if(result.vuePollResult.length>0){
 					$(".vPollContent"+result._idPoll).html(result.vuePollResult);
-					mainPageDisplay(false);//Maj l'affichage (tooltips & fancybox)
+					mainPageDisplay(false);//Update les tooltips/lightbox
 				}
 			});
 		}
@@ -112,12 +112,12 @@ function dashboardPollVote()
 #contentNews>div, #contentPolls>div, #contentElems>div		{width:100%;}
 
 /*Affichage des News*/
-.vNewsContainer					{padding-top:5px; padding-bottom:10px;}/*pas de "padding-right"*/
+.vNewsContainer.objContainer	{height:auto!important; padding-top:5px; padding-bottom:10px;}/*surcharge .objContainer : "height" auto pour être adapté au contenu, "padding", etc*/
 .vNewsHidden					{display:none;}/*cf. infinite scroll*/
-.vNewsDescription				{font-weight:normal; padding:10px;}
+.vNewsDescription				{font-weight:normal; padding:10px; padding-bottom:40px;}/*'margin-bottom' : cf. "vNewsDetail" sur 2 lignes*/
 .vNewsDescription a				{text-decoration:underline;}/*on garde le style des liens de l'editeur*/
-.vNewsDetail					{text-align:center;}
-.vNewsDetail>span				{margin-left:15px;}
+.vNewsDetail					{position:absolute; bottom:0px; width:100%; padding:5px; text-align:center;}/*affichage plus précis avec "position:absolute"*/
+.vNewsDetail span, .vNewsDetail .menuAttachedFile	{display:inline-block; margin-left:20px;}
 .vNewsTopNews					{color:#c40;}
 #modMenuNews .vPollsTitle		{margin-top:0px; margin-bottom:20px;}/*surcharge*/
 #modMenuNews ul					{padding-left:10px!important;}/*surcharge*/
@@ -125,7 +125,7 @@ function dashboardPollVote()
 #vNewsPollsHr:last-of-type		{display:none;}
 
 /*Affichage des sondages*/
-.vPollsContainer				{padding-top:15px; padding-bottom:15px;}/*pas de "padding-right"*/
+.vPollsContainer.objContainer	{height:auto!important; padding-top:15px; padding-bottom:15px;}/*surcharge .objContainer : "height" pour être adapté au contenu, "padding", etc*/
 .vPollsContainer ul li			{list-style:none; margin-bottom:20px;}
 .vPollsTitle					{text-align:center; font-style:italic; margin-bottom:30px;}
 .vPollsDescription				{text-align:center; font-weight:normal; margin:0px 20px 30px 20px;}
@@ -134,7 +134,7 @@ function dashboardPollVote()
 .vPollsResponseFile				{margin-top:8px;}/*cf. MdlDashboardPoll*/
 .vPollsResponseFile img			{max-width:100px; max-height:50px; vertical-align:middle;}/*idem*/
 .vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
-.vPollsContainer .formMainButton		{margin:10px;}/*surcharge*/
+.vPollsContainer .submitButtonMain		{padding-top:10px;}/*surcharge*/
 .vPollsContainer button			{width:200px!important;}/*surcharge*/
 .vPollsResultBarContainer		{width:90%; margin-top:8px; padding:2px; border-radius:5px; background-color:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
 .vPollsResultBar				{display:inline-block; min-width:35px; height:28px; line-height:28px; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
@@ -151,7 +151,7 @@ function dashboardPollVote()
 .vContentElemsModuleLabel img		{max-height:28px; margin-right:8px;}
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.vNewsContainer	{padding-top:10px; padding-bottom:10px;}
+	.vNewsContainer.objContainer	{padding-top:10px; padding-bottom:10px;}
 }
 </style>
 

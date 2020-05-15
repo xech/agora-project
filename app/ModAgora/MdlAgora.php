@@ -42,45 +42,70 @@ class MdlAgora extends MdlObject
 	}
 
 	/*
-	 * Si "gSignin" est activé et "ClientId" est renseigné : renvoi le "ClientId"
+	 * VISIO JITSI : VERIF S'IL EST ACTIVÉ
+	 */
+	public function jitsiEnabled()
+	{
+		return ($this->visioHost() && Req::isMobileApp()==false);
+	}
+
+	/*
+	 * VISIO JITSI : RENVOIE "visioHost"  S'IL EST RENSEIGNÉ
+	 */
+	public function visioHost()
+	{
+		if(Ctrl::isHost())					{return Host::visioHost();}
+		elseif(!empty($this->visioHost))	{return $this->visioHost;}
+	}
+
+	/*
+	 * GOOGLE SIGNIN/OAUTH : VERIF S'IL EST ACTIVÉ
+	 */
+	public function gSigninEnabled()
+	{
+		return (!empty($this->gSignin) && $this->gSigninClientId() && Req::isMobileApp()==false);
+	}
+
+	/*
+	 * GOOGLE SIGNIN/OAUTH : RENVOI "gSigninClientId" S'IL EST RENSEIGNÉ 
 	 */
 	public function gSigninClientId()
 	{
-		if(!empty($this->gSignin) && Ctrl::isHost())						{return Host::gSigninClientId();}
-		elseif(!empty($this->gSignin) && !empty($this->gSigninClientId))	{return $this->gSigninClientId;}
-		else																{return false;}
-	}
-	//"gSignin" Activé?
-	public function gSigninEnabled()
-	{
-		return ($this->gSigninClientId() && Req::isMobileApp()==false);
+		if(Ctrl::isHost())						{return Host::gSigninClientId();}
+		elseif(!empty($this->gSigninClientId))	{return $this->gSigninClientId;}
 	}
 
 	/*
-	 * Si "gSigninClientId" et "gPeopleApiKey" sont renseignés : renvoi le "gPeopleApiKey"
+	 * GOOGLE CONTACTS/INVITATIONS : VERIF S'IL EST ACTIVÉ
+	 */
+	public function gPeopleEnabled()
+	{
+		return ($this->gSigninClientId() && $this->gPeopleApiKey() && Req::isMobileApp()==false);
+	}
+
+	/*
+	 * GOOGLE CONTACTS/INVITATIONS : RENVOI "gPeopleApiKey" S'IL EST RENSEIGNÉ 
 	 */
 	public function gPeopleApiKey()
 	{
-		if(Ctrl::isHost())														{return Host::gPeopleApiKey();}
-		elseif(!empty($this->gSigninClientId) && !empty($this->gPeopleApiKey))	{return $this->gPeopleApiKey;}
-		else																	{return false;}
-	}
-	public function gPeopleEnabled()//API People Activé?
-	{
-		return ($this->gPeopleApiKey() && Req::isMobileApp()==false);
+		if(Ctrl::isHost())						{return Host::gPeopleApiKey();}
+		elseif(!empty($this->gPeopleApiKey))	{return $this->gPeopleApiKey;}
 	}
 
 	/*
-	 * Si "mapApiKey" est renseigné : renvoi le "mapApiKey"
+	 * GOOGLE MAP : VERIF S'IL EST ACTIVÉ
+	 */
+	public function gMapsEnabled()
+	{
+		return ($this->gMapsApiKey() && $this->mapTool=="gmap");
+	}
+
+	/*
+	 *  GOOGLE MAP : RENVOI "mapApiKey" S'IL EST RENSEIGNÉ 
 	 */
 	public function gMapsApiKey()
 	{
 		if(Ctrl::isHost())					{return Host::gMapsApiKey();}
 		elseif(!empty($this->mapApiKey))	{return $this->mapApiKey;}
-		else								{return false;}
-	}
-	public function gMapsEnabled()//API Maps Activé?
-	{
-		return ($this->gMapsApiKey() && $this->mapTool=="gmap");
 	}
 }

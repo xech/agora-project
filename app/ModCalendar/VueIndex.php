@@ -46,9 +46,12 @@ $(function(){
 			if(typeof swipeBeginX!="undefined"  &&  Math.abs(swipeBeginY - event.touches[0].clientY) < 40){
 				//Vérifie que le swipe part du centre de la page (25% à 75% de la largeur de page) et que le menu responsive n'est pas déjà affiché ("respMenuMain")
 				if(swipeBeginX > ($(window).width()*0.25)  &&  swipeBeginX < ($(window).width()*0.75) && $("#respMenuMain").is(":visible")==false){
-					//Swipe vers la droite/gauche d'au moins 100px : redirige vers la période précédente/suivante
-					if((event.touches[0].clientX - swipeBeginX) > 50)		{eval($("#calendarNext").attr("onclick"));}
-					else if((swipeBeginX - event.touches[0].clientX) > 50)	{eval($("#calendarPrev").attr("onclick"));}
+					//Swipe vers la droite/gauche d'au moins 50px : redirige vers la période précédente/suivante
+					if((event.touches[0].clientX - swipeBeginX) > 50)		{var buttonSwipePeriod="#calendarPrev";}
+					else if((swipeBeginX - event.touches[0].clientX) > 50)	{var buttonSwipePeriod="#calendarNext";}
+					//Fait clignoter le bouton de changement de période puis simule le click avec un timeOut
+					$(buttonSwipePeriod).effect("pulsate",{times:1},400);
+					setTimeout(function(){ $(buttonSwipePeriod).trigger("click"); },500);
 				}
 			}
 		});
@@ -106,7 +109,7 @@ $(function(){
 #calMonthPeriodMenuContainer a		{display:inline-block; width:75px; padding:3px; text-align:left;}
 
 /*Evenements*/
-.vCalEvtBlock						{padding:4px!important; margin:0px; margin-bottom:1px; box-shadow:1px 1px 2px #555; cursor:pointer;}/*"padding!important" car surcharge .objContainer*/
+.vCalEvtBlock.objContainer			{height:20px; min-height:20px; padding:4px!important; margin:0px; margin-bottom:1px; box-shadow:1px 1px 2px #555; cursor:pointer;}/*surcharge .objContainer : "height", "padding", etc*/
 .vCalEvtBlock .objMenuBurgerInline	{float:right; margin-left:4px; margin-bottom:4px;}/*Surchage du menu "burger" de chaque événement (que l'on affiche pas en responsive)*/
 .vCalEvtBlock .vCalEvtLabel			{height:98%; overflow:hidden; font-size:0.9em; font-weight:normal; color:#fff;}/*overflow pour ne pas dépasser du block parent*/
 .vCalEvtBlock .vCalEvtLabel img		{max-height:13px;}
@@ -156,10 +159,9 @@ $(function(){
 								<label for=\"displayedCal".$tmpCal->_targetObjId."\" title=\"".$tmpCal->description."\" class='noTooltip'>".$tmpCal->title."</label> ".(Req::isMobile()==false?$tmpCal->contextMenu(["iconBurger"=>"small"]):null)."
 							 </div>";
 					}
-					//Afficher tous les agendas (Admin général uniquement)
+					//"Afficher tous les agendas" (Admin général uniquement) && Bouton "Afficher" la sélection
 					if(Ctrl::$curUser->isAdminGeneral())  {echo ($_SESSION["displayAllCals"]==false)  ?  "<a id='adminDisplayAllCals' onclick=\"redir('?ctrl=calendar&displayAllCals=1')\" title=\"".Txt::trad("CALENDAR_displayAllCals")."\"><img src='app/img/plusSmall.png'></a>"  :  null;}
-					//Bonton "Afficher (".formMainButton")
-					echo Txt::submit("show",false);
+					echo Txt::submitButton("show",false);
 				echo "</form><hr>";
 			}
 
@@ -277,8 +279,8 @@ $(function(){
 				</div>
 				<!--PERIODE AFFICHEE-->
 				<div class="vCalendarPeriod">
-					<img src="app/img/navPrevious.png" id="calendarPrev" class="sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimePrev.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
-					<span for="calMonthPeriodMenu<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><?= ucfirst($labelMonth) ?></span>
+					<img src="app/img/navPrev.png" id="calendarPrev" class="sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimePrev.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
+					<span id="calendarLabelMonth" for="calMonthPeriodMenu<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><?= ucfirst($labelMonth) ?></span>
 					<?php if(!empty($calMonthPeriodMenu))  {echo "<div class='menuContext' id='calMonthPeriodMenu".$tmpCal->_targetObjId."'><div id='calMonthPeriodMenuContainer'>".$calMonthPeriodMenu."</div></div>";} ?>
 					<img src="app/img/navNext.png"  id="calendarNext" class="sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimeNext.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
 				</div>

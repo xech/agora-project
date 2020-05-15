@@ -77,28 +77,32 @@
 	}
 
 	/*
-	 * SURCHARGE : Suppression d'un objet Dossier.. et son arborescence
+	 * SURCHARGE : Suppression d'un dossier
 	 */
-	public function delete()
+	public function delete($initDelete=true)
 	{
 		if($this->deleteRight())
 		{
-			////	Supprime l'arborescence du dossier ("0"=>Récupère tout!)
-			foreach($this->folderTree("all") as $tmpFolder)
+			//Initialise la suppression
+			if($initDelete==true)
 			{
-				//Supprime les fichiers du dossier courant
+				////	Pour chaque dossier de l'arborescence : supprime son contenu (fichiers, contacts, etc.) PUIS Supprime récursivement le dossier
 				$MdlObjectContent=static::MdlObjectContent;
-				$filesList=Db::getObjTab($MdlObjectContent::objectType, "SELECT * FROM ".$MdlObjectContent::dbTable." WHERE _idContainer=".$tmpFolder->_id);
-				foreach($filesList as $tmpFile)  {$tmpFile->delete();}
-				//Supprime le dossier.. sauf le dossier courant : supprimé à la fin
-				if($tmpFolder->_id!=$this->_id)  {$tmpFolder->delete();}
+				foreach($this->folderTree("all") as $tmpFolder){
+					$contentList=Db::getObjTab($MdlObjectContent::objectType, "SELECT * FROM ".$MdlObjectContent::dbTable." WHERE _idContainer=".$tmpFolder->_id);
+					foreach($contentList as $tmpContent){
+						$MdlObjectContent::objectType=="file"  ?  $tmpContent->delete("deleteFolder")  :  $tmpContent->delete();//Supprime un fichier : utilise le shortcut "deleteFolder"
+					}
+					$tmpFolder->delete(false);//Suppression récursive du dossier (cf. $initDelete==true & "parent::delete();")
+				}
+				////	Dossier de fichiers : supprime enfin tout le dossier sur le disque
+				if(static::objectType=="fileFolder"){
+					$tmpFolderPath=$this->folderPath("real");
+					if($tmpFolderPath!=PATH_MOD_FILE && is_dir($tmpFolderPath))  {File::rm($tmpFolderPath);}//Toujours controler via "is_dir()"!
+				}
 			}
-			////	Supprime le dossier courant
-			if(static::objectType=="fileFolder"){
-				$tmpFolderPath=$this->folderPath("real");
-				if($tmpFolderPath!=PATH_MOD_FILE && is_dir($tmpFolderPath))  {File::rm($tmpFolderPath);}
-			}
-			parent::delete();
+			//Suppression récursive d'un dossier (cf. "$tmpFolder->delete(false);")
+			else {parent::delete();}
 		}
 	}
 
@@ -144,33 +148,44 @@
 
 	/*
 	 * Chemin d'un dossier (fonction récursive)
-	 * $typeReturn= object | id | text | zip | real
+	 * $typeReturn= object | id | real | text | zip
 	 */
-	public function folderPath($typeReturn, $objCurFolder=null, $foldersList=array())
+	public function folderPath($typeReturn, $curFolder=null, $foldersList=array())
 	{
 		////	Dossier de départ & Ajoute le dossier courant
-		if($objCurFolder==null)  {$objCurFolder=$this;}
-		$foldersList[]=$objCurFolder;
-		////	Recupère le dossier conteneur si on est pas encore à la racine (vérif que le parent existe!)
-		if($objCurFolder->isRootFolder()==false && !empty($objCurFolder->containerObj()->_id))	{return $this->folderPath($typeReturn, $objCurFolder->containerObj(), $foldersList);}
-		////	renvoie le résultat final si on est à la racine
+		if($curFolder==null)  {$curFolder=$this;}
+		$foldersList[]=$curFolder;
+		////	Si on est pas à la racine (vérif que le parent existe) : on recupère le dossier conteneur de manière récursive
+		if($curFolder->isRootFolder()==false && is_object($curFolder->containerObj()))  {return $this->folderPath($typeReturn, $curFolder->containerObj(), $foldersList);}
+		////	Si on est à la racine : on renvoie le résultat final
 		else
 		{
-			$foldersList=array_reverse($foldersList);//on commence par la racine..
+			//// on inverse le tableau pour commencer à la racine
+			$foldersList=array_reverse($foldersList);
+			//// Retourne une liste d'objets
 			if($typeReturn=="object") 	{return $foldersList;}
+			//Retourne une liste d'identifiants de dossiers
 			if($typeReturn=="id"){
 				$foldersIds=array();
-				foreach($foldersList as $tmpFolder)	{$foldersIds[]=$tmpFolder->_id;}
+				foreach($foldersList as $tmpFolder)  {$foldersIds[]=$tmpFolder->_id;}
 				return $foldersIds;
-			}else{
-				$textReturn=($typeReturn=="real") ? PATH_MOD_FILE : "";
-				$imgSeparate="&nbsp;<img src='app/img/arrowRight.png'>&nbsp;";
+			}
+			//// Retourne le chemin réel du dossier "DATAS/modFile/22/555/"
+			elseif($typeReturn=="real"){
+				$return=PATH_MOD_FILE;
 				foreach($foldersList as $cpt=>$objFolder){
-					if($typeReturn=="text")												{$textReturn.=($cpt>0?$imgSeparate:"").$objFolder->name; }	//"Dossier racine > sous-dossier testé"
-					elseif($typeReturn=="zip")											{$textReturn.=Txt::clean($objFolder->name,"download")."/";}	//"Dossier_racine/sous-dossier_teste/"
-					elseif($typeReturn=="real" && $objFolder->isRootFolder()==false)	{$textReturn.=$objFolder->_id."/";}							//"DATAS/gestionnaire_fichiers/2/5/" (sans dossier racine!)
+					if($objFolder->isRootFolder()==false)  {$return.=$objFolder->_id."/";}
 				}
-				return $textReturn;
+				return $return;
+			}
+			//// Retourne le chemin au format "text" ou "zip"
+			else{
+				$return=null;
+				foreach($foldersList as $cpt=>$objFolder){
+					if($typeReturn=="text")		{$return.=($cpt>0?" <img src='app/img/arrowRight.png'> ":null).$objFolder->name; }	//format "text" : Dossier racine > Mon sous-dossier
+					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name,"download")."/";}								//format "zip" : Dossier_racine/mon_sous-dossier/
+				}
+				return $return;
 			}
 		}
 	}
@@ -178,21 +193,21 @@
 	/*
 	 * Arborescence d'objets dossiers (fonction récursive)
 	 */
-	public function folderTree($accessRightMini=1, $objCurFolder=null, $treeLevel=0)
+	public function folderTree($accessRightMini=1, $curFolder=null, $treeLevel=0)
 	{
 		//Arborescence "visible" déjà en cache : renvoie le résultat
 		if($treeLevel==0 && $accessRightMini==1 && !empty($this->_visibleFolderTree))  {return $this->_visibleFolderTree;}
 		//Init la liste des sous-dossiers && le dossier de départ de toute l'arborescence
 		$folderList=[];
-		if($objCurFolder==null)  {$objCurFolder=$this;}
+		if($curFolder==null)  {$curFolder=$this;}
 		//Ajoute le dossier courant ?
-		if($accessRightMini=="all" || $objCurFolder->accessRight()>=$accessRightMini)
+		if($accessRightMini=="all" || $curFolder->accessRight()>=$accessRightMini)
 		{
 			//Ajoute le dossier courant à la liste, avec son niveau
-			$objCurFolder->treeLevel=$treeLevel;
-			$folderList[]=$objCurFolder;
+			$curFolder->treeLevel=$treeLevel;
+			$folderList[]=$curFolder;
 			//Récupère récursivement les sous-dossiers du dossier courant (tjs triés par nom)  =>  tous les sous-dossiers ("all")  OU  les sous-dossiers en fonction de leur droit d'accès ("sqlDisplayedObjects()") 
-			$sqlDisplayedObjects=($accessRightMini=="all")  ?  "_idContainer=".$objCurFolder->_id  :  static::sqlDisplayedObjects($objCurFolder);
+			$sqlDisplayedObjects=($accessRightMini=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplayedObjects($curFolder);
 			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlDisplayedObjects." ORDER BY name ASC")  as $subFolder){
 				$subFolders=$this->folderTree($accessRightMini, $subFolder, $treeLevel+1);
 				$folderList=array_merge($folderList,$subFolders);
@@ -217,11 +232,13 @@
 	/*
 	 * VUE : Liste de dossiers à afficher
 	 */
-	public function folders($centerContent=false)
+	public function folders()
 	{
 		$vDatas["foldersList"]=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplayedObjects($this)." ".static::sqlSort());
 		if(!empty($vDatas["foldersList"])){
-			$vDatas["objContentCenterClass"]=($centerContent==true) ? "objContentCenter" : null;//Affichage centré du contenu? (cf. ModFile)
+			$vDatas["objContainerClass"]=null;
+			if(static::moduleName=="file")			{$vDatas["objContainerClass"]="objContentCenter";}//Dossier de fichiers : affichage centré de l'icone et du contenu
+			elseif(static::moduleName=="contact")  {$vDatas["objContainerClass"]="objPerson";}//Affichage plus grand du conteneur 
 			return Ctrl::getVue(Req::commonPath."VueObjFolders.php",$vDatas);
 		}
 	}

@@ -21,8 +21,6 @@ class CtrlDashboard extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		//Init
-		static::$isMainPage=true;
 		////	Objets Actualités/News
 		$vDatas["offlineNewsCount"]=MdlDashboardNews::getNews("count","all",true);
 		$vDatasNews["newsList"]=MdlDashboardNews::getNews("list",0,Req::getParam("offlineNews"));//Commence par le block "0"
@@ -64,8 +62,9 @@ class CtrlDashboard extends Ctrl
 						//Sinon on formate l'affichage de l'objet
 						else
 						{
-							//Label : suppr les balises html (cf. TinyMce) et réduit la taille du texte
-							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel),100);
+							//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte
+							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel,"<hr><br>"),200);
+							$tmpObj->pluginTooltip=Txt::reduce(strip_tags($tmpObj->pluginTooltip,"<hr><br>"),500);
 							//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
 							$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
 							//Tooltip : ajoute si besoin l'icone des "Elements courants" (evts et taches)
@@ -118,7 +117,7 @@ class CtrlDashboard extends Ctrl
 			{
 				$objNews->pluginModule=self::moduleName;
 				$objNews->pluginIcon=self::moduleName."/icon.png";
-				$objNews->pluginLabel="<span onclick=\"$('.pluginNews".$objNews->_id."').fadeIn();$(this).hide();\">".Txt::reduce(strip_tags($objNews->description,"<span><img><br>"))."</span>
+				$objNews->pluginLabel="<span onclick=\"$('.pluginNews".$objNews->_id."').fadeIn();$(this).hide();\">".Txt::reduce(strip_tags($objNews->description,"<span><img><br>"))." <img src='app/img/arrowBottom.png'></span>
 									   <div class='pluginNews".$objNews->_id."' style='display:none;max-height:800px;overflow:auto;'>".$objNews->contextMenu(["iconBurger"=>"small"])." ".$objNews->description."</div>";//Affiche l'actualité complete avec le menu contextuel!
 				$objNews->pluginTooltip=$objNews->displayAutor(true,true);
 				$objNews->pluginJsIcon=null;

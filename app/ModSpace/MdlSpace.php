@@ -17,7 +17,7 @@ class MdlSpace extends MdlObject
 	const dbTable="ap_space";
 	public static $requiredFields=array("name");
 	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc");
-	//Liste des modules
+	//Liste des modules pouvant être affectés à un espace
 	public static $moduleList=["dashboard","user","calendar","file","forum","task","link","contact","mail"];
 	//Valeurs mises en cache
 	private $_allUsersAffected=null;
@@ -67,7 +67,7 @@ class MdlSpace extends MdlObject
 			//Modules disponibles
 			$availableModules=self::availableModuleList();
 			//Modules affectés à l'espace en Bdd
-			foreach(Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY rank") as $tmpModule){
+			foreach(Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY rank ASC") as $tmpModule){
 				$moduleName=$tmpModule["moduleName"];
 				if(Ctrl::$curUser->isUser()==false && ($moduleName=="mail" || ($moduleName=="user" && empty($this->password))))  {continue;}//Guests/invités : pas de module "mail" et "user" (sauf si password)
 				$this->_moduleList[$moduleName]=array_merge($availableModules[$moduleName], $tmpModule);//Ajoute le module et ses propriétés

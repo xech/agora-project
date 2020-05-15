@@ -8,8 +8,7 @@ $(function(){
 <style>
 /*LABEL ET DETAILS DES TACHES*/
 .objLabelBg							{background-image:url(app/img/task/iconBg.png);}/*surcharge : Background des taches*/
-.vObjTask .objLabel a				{padding:15px 0px 15px 0px;}/*Label des taches*/
-.objBlocks .vObjTask .objDetails	{position:absolute; display:block; bottom:3px; right:25px;}/*Icones flottante avec "title"*/
+.objBlocks .vObjTaskDetails			{position:absolute; display:block; bottom:3px; right:20px;}/*Détails des taches en affichage "block" : Icones flottantes avec "title"*/
 .objLines .percentBar				{margin-left:10px;}/*"PercentBar" (Folder/Task)*/
 .objBlocks .objDetails img			{max-height:20px; margin-right:10px;}/*Icones avec "title"*/
 .objLines .objDetails img			{max-height:16px; margin-right:5px;}/*Icone des "PercentBar" (Folder/Task)*/
@@ -83,9 +82,9 @@ $(function(){
 		{
 			echo $tmpTask->divContainer().$tmpTask->contextMenu().
 					"<div class='objContentScroll'>
-						<div class='objContent vObjTask'>
+						<div class='objContent'>
 							<div class='objLabel objLabelBg'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\">".$tmpTask->priority()." ".$tmpTask->title."</a></div>
-							<div class='objDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
+							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
 							<div class='objAutorDate'>".$tmpTask->displayAutorDate()."</div>
 						</div>
 					</div>
@@ -100,31 +99,32 @@ $(function(){
 		////	TIMELINE (GANTT)
 		if(!empty($timelineBegin))
 		{
+			//// INIT LA TIMELINE
 			echo "<hr class='vTimelineHr'>
 				  <div class='vTimelineBlock miscContainer'><table>";
-			//// HEADER MOIS & JOURS
-			$timelineHeaderMonths=$timelineHeaderDays=null;
-			foreach($timelineDays as $tmpDay){
-				if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.="<td colspan='".$tmpDay["newMonthColspan"]."' class='vTimelineMonths vTimelineLeftBorder'>".$tmpDay["newMonthLabel"]."</td>";}
-				$timelineHeaderDays.="<td class='vTimelineDays ".$tmpDay["vTimelineToday"]." ".$tmpDay["vTimelineLeftBorder"]." cursorHelp' title=\"".$tmpDay["dayLabelTitle"]."\">".$tmpDay["dayLabel"]."</td>";
-			}
-			echo "<tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderMonths."</tr>
-				  <tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderDays."</tr>";
-			//// TIMELINE DE CHAQUE TACHE
-			foreach($timelineTasks as $tmpTask)
-			{
-				$taskDateBegin=date("Y-m-d",$tmpTask->timeBegin);
-				$tmpTaskCells="";
-				foreach($timelineDays as $tmpDay){//Affiche les jours de la timeline (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
-					$isTaskDateBegin=($taskDateBegin==$tmpDay["curDate"]) ? true : false;
-					if($isTaskDateBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"])
-						{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
+				//// HEADER MOIS & JOURS
+				$timelineHeaderMonths=$timelineHeaderDays=null;
+				foreach($timelineDays as $tmpDay){
+					if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.="<td colspan='".$tmpDay["newMonthColspan"]."' class='vTimelineMonths vTimelineLeftBorder'>".$tmpDay["newMonthLabel"]."</td>";}
+					$timelineHeaderDays.="<td class='vTimelineDays ".$tmpDay["vTimelineToday"]." ".$tmpDay["vTimelineLeftBorder"]." cursorHelp' title=\"".$tmpDay["dayLabelTitle"]."\">".$tmpDay["dayLabel"]."</td>";
 				}
-				echo "<tr class='sTableRow'>
-						<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".$tmpTask->title."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?35:50))."</a></td>".
-						$tmpTaskCells.
-					 "</tr>";
-			}
+				echo "<tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderMonths."</tr>
+					  <tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderDays."</tr>";
+				//// TIMELINE DE CHAQUE TACHE
+				foreach($timelineTasks as $tmpTask)
+				{
+					$taskDateBegin=date("Y-m-d",$tmpTask->timeBegin);
+					$tmpTaskCells="";
+					foreach($timelineDays as $tmpDay){//Affiche les jours de la timeline (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
+						$isTaskDateBegin=($taskDateBegin==$tmpDay["curDate"]) ? true : false;
+						if($isTaskDateBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"])
+							{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
+					}
+					echo "<tr class='sTableRow'>
+							<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".$tmpTask->title."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?35:50))."</a></td>".
+							$tmpTaskCells.
+						 "</tr>";
+				}
 			echo "</table></div>";
 		}
 		?>

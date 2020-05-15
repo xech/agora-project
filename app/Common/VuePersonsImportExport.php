@@ -214,6 +214,6 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 
 	////	VALIDATION DU FORMULAIRE (AJOUTE LE DOSSIER CONTENEUR?)
 	if(Req::isParam("targetObjId"))   {echo "<input type='hidden' name='_idContainer' value='".Ctrl::getTargetObj()->_id."'>";}
-	echo Txt::submit();
+	echo Txt::submitButton();
 	?>
 </form>

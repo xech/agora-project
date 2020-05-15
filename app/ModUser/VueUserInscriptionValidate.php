@@ -1,14 +1,15 @@
 <script>
 ////	Resize
-lightboxSetWidth(450);
+lightboxSetWidth(500);
 </script>
 
 <style>
-button[type='submit']				{width:60%; display:inline;}/*surcharge*/
-button[type='submit']:last-child	{width:30%;}/*surcharge*/
-.userInscription					{padding:10px;}
-.userInscription label				{margin-right:10px;}
-div[id^='tmpMessage']				{display:none; padding:10px; margin-top:5px; background-color:rgba(200,200,200,0.5); border-radius:3px;}
+.vUserInscription					{padding:10px;}
+.vUserInscription label				{margin-right:10px;}
+.vTmpMessage						{display:none;}
+.submitButtonMain					{padding-top:20px; padding-bottom:0px;}/*surcharge*/
+.submitButtonMain button			{width:280px;}/*surcharge*/
+.submitButtonMain button img		{margin-right:10px;}
 </style>
 
 
@@ -19,15 +20,16 @@ div[id^='tmpMessage']				{display:none; padding:10px; margin-top:5px; background
 	// SELECTION DES INSCRIPTIONS
 	foreach($inscriptionList as $tmpInsc)
 	{
-		$tmpMessage=(!empty($tmpInsc["message"]))  ?  "<img src='app/img/arrowBottom.png' class='sLink' onclick=\"$('#tmpMessage".$tmpInsc["_id"]."').toggle();\" title=\"".Txt::trad('description')."\"><div id='tmpMessage".$tmpInsc["_id"]."'>".$tmpInsc["message"]."</div>"  :  null;
-		echo "<div class='userInscription'>"
+		$tmpMessage=(!empty($tmpInsc["message"]))  ?  "<img src='app/img/arrowBottom.png' class='sLink' onclick=\"$('#tmpMessage".$tmpInsc["_id"]."').toggle();\" title=\"".Txt::trad('description')."\"><div class='infos vTmpMessage' id='tmpMessage".$tmpInsc["_id"]."'>".$tmpInsc["message"]."</div>"  :  null;
+		echo "<div class='vUserInscription'>"
 				."<input type='checkbox' name=\"inscriptionValidate[]\" value=\"".$tmpInsc["_id"]."\" id=\"inscriptionLabel".$tmpInsc["_id"]."\">"
 				."<label for=\"inscriptionLabel".$tmpInsc["_id"]."\" title=\"".Txt::displayDate($tmpInsc["date"])."\">".$tmpInsc["name"]." ".$tmpInsc["firstName"]." (".$tmpInsc["mail"].")</label>"
-				.$tmpMessage
-			."</div>";
+				.$tmpMessage.
+			 "</div>";
 	}
 
 	// BOUTONS DE VALIDATION/INVALIDATION
-	echo Txt::submit("validate", true, Txt::trad("userInscriptionInvalidate"));
+	echo Txt::submitButton("<img src='app/img/check.png'>".Txt::trad("userInscriptionValidate")).
+		 "<div class='submitButtonMain' id='buttonInvalidate'><button type='submit' name='submitInvalidate' value='true'><img src='app/img/delete.png'>".Txt::trad("userInscriptionInvalidateButton")."</button></div>";
 	?>
 </form>

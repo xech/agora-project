@@ -76,7 +76,7 @@ select[name="connectionSpace"]	{width:100%}
 	<!--ESPACE DE CONNEXION-->
 	<?php if(count($curObj->getSpaces())>0){ ?>
 	<div class="objField">
-		<div class="fieldLabel"><img src="app/img/person/connection.png"><?= Txt::trad("USER_connectionSpace") ?></div>
+		<div class="fieldLabel"><img src="app/img/user/connection.png"><?= Txt::trad("USER_connectionSpace") ?></div>
 		<div><select name="connectionSpace"><?php foreach($curObj->getSpaces() as $tmpSpace)  {echo "<option value='".$tmpSpace->_id."' ".($tmpSpace->_id==$curObj->connectionSpace?'selected':null).">".$tmpSpace->name."</option>";} ?></select></div>
 	</div>
 	<?php } ?>

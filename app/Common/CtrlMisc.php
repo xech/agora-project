@@ -58,70 +58,75 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*
-	 * AJAX : Livecounters (principal/messenger) et Messages du messenger
+	 * AJAX : Update du Livecounter et du Messenger
 	 */
 	public static function actionLivecounterUpdate()
 	{
 		//Messenger activé?
 		if(self::$curUser->messengerEnabled())
 		{
-			////	UPDATE EN BDD LE LIVECOUNTER DE L'USER COURANT, AVEC "editObjId" SI MODIF EN COURS D'UN OBJET. ON AJOUTE "editorDraft" UNIQUEMENT S'IL EST PRECISE
+			////	UPDATE EN BDD LE LIVECOUNTER DE L'USER COURANT  && AJOUTE "editObjId" SI MODIF EN COURS D'UN OBJET  && AJOUTE "editorDraft" UNIQUEMENT S'IL EST PRECISE
 			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editObjId=".Db::formatParam("editObjId").", date=".Db::format(time());
 			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::formatParam("editorDraft","editor").", draftTargetObjId=".Db::formatParam("editObjId");}//Ajouter uniquement si "editorDraft" est présent, sinon le "livecounterUpdate" efface le 'draft' et n'a donc plus d'intérêt..
 			Db::query("INSERT INTO ap_userLivecouter SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 
 			////	INIT LE MESSENGER EN DEBUT DE SESSION
-			if(!isset($_SESSION["livercounterUsers"]))
+			if(!isset($_SESSION["livecounterUsersList"]))
 			{
-				//Supprime les vieux messages du messenger & livecounters des users déconnectés
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE date < ".intval(time()-86400));//Messages du messenger conservés 24h
-				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-172800));//Brouillon de l'éditeur TinyMce conservé 48h
+				//Init les users connectés  &  La date d'affichage de chaque user  &  La liste des messages  &  L'affichage des users et des messages
+				$_SESSION["livecounterUsersList"]=$_SESSION["messengerUserDisplayTime"]=$_SESSION["messengerMessagesList"]=[];
+				$_SESSION["livecounterUsersHtml"]=$_SESSION["messengerUsersHtml"]=$_SESSION["messengerMessagesHtml"]="";
+				//Supprime les livecounters des users déconnectés & Les vieux messages du messenger & Les vieilles proposition de visio
+				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-604800));//Users du Livecounter (avec draft/brouillon du TinyMce) : conservés 7jours max
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE date < ".intval(time()-604800));//Messages du messenger : idem
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisioMessage%' AND date < ".intval(time()-7200));//Messages avec proposition de visio : conservés 2h max
 				//Garde en session les users que l'on peut voir et n'ayant pas bloqué leur messenger
 				$idsUsers=[0];//pseudo user
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsers[]=$tmpUser->_id;}
 				$messengerUsersSql=Db::getCol("SELECT _id FROM ap_user WHERE _id!=".self::$curUser->_id." AND _id IN (".implode(",",$idsUsers).") AND _id IN (select _idUserMessenger from ap_userMessenger where allUsers=1 or _idUser=".self::$curUser->_id.")");
 				$_SESSION["messengerUsersSql"]=implode(",", array_merge($messengerUsersSql,[0]));//ajoute le pseudo user "0"
-				//Init les users connectés  &  La date de dernier affichage de chaque users  &  Les livecounters  &  La liste des messages
-				$_SESSION["livercounterUsers"]=$_SESSION["messengerUpdateDisplayedUser"]=$_SESSION["messengerMessagesList"]=[];
-				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterMessengerHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				$initLivecounterSession=true;
 			}
 
-			////	LIVECOUNTERS : LISTE DES USERS
+			////	RECUPERE LES LIVECOUNTERS (LISTE DES USERS)
 			//Verif si ya un changement du livecounter (connection/deconnection)
-			$livercounterUsersOld=$_SESSION["livercounterUsers"];
-			$livecounterDateTimeout=time()-30;//On considère les autres users comme "déconnectés" du livecounter au bout de 30 secondes d'inactivité
-			$_SESSION["livercounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".$livecounterDateTimeout);
-			$result["livercounterChanged"]=(count($livercounterUsersOld)!=count($_SESSION["livercounterUsers"]));//ne pas comparer directement les tableaux d'objet.. mais leur taille (uliliser plutot "mb_strlen(serialize($array))" ?)
-			//Affichage des users connectés
-			if($result["livercounterChanged"]==true)
+			$livercounterUsersOld=$_SESSION["livecounterUsersList"];
+			$livecounterDateTimeout=time()-40;//On considère les autres users comme "déconnectés" du livecounter au bout de 40 secondes d'inactivité
+			$_SESSION["livecounterUsersList"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".$livecounterDateTimeout);
+			$result["livercounterUpdate"]=(count($livercounterUsersOld)!=count($_SESSION["livecounterUsersList"]));//Note : ne pas comparer directement les tableaux d'objet, mais uniquement leur taille
+
+			////	AFFICHAGE DES USERS CONNECTÉS
+			if($result["livercounterUpdate"]==true)
 			{
-				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterMessengerHtml"]="";
-				foreach($_SESSION["livercounterUsers"] as $tmpUser)
+				//Init les users du livecounter et du messenger
+				$_SESSION["livecounterUsersHtml"]=$_SESSION["messengerUsersHtml"]="";
+				//Affiche chaque user connecté
+				foreach($_SESSION["livecounterUsersList"] as $tmpUser)
 				{
-					//Affichage des livecounters
-					$userImg=$tmpUser->hasImg()  ?  $tmpUser->getImg(false,true)."&nbsp;"  :  null;
+					//Label && Image des users du livecounter principal
 					$userTitle=$tmpUser->getLabel()."<br>".Txt::trad("MESSENGER_connectedSince")." ".date("H:i",$tmpUser->lastConnection);
-					$_SESSION["livecounterMainHtml"].="<label onclick='messengerDisplay(".$tmpUser->_id.");' title=\"".$userTitle."\" data-idUser=".$tmpUser->_id.">".$userImg.$tmpUser->getLabel("firstName")."</label>";
-					$_SESSION["livecounterMessengerHtml"].="<div class='vMessengerUser'>
-																<input type='checkbox' name='messengerPostUsers' value='".$tmpUser->_id."' id='messengerUserBox".$tmpUser->_id."'>
-																<label for='messengerUserBox".$tmpUser->_id."' title=\"".Txt::trad("select")." ".$userTitle."\">".$userImg.$tmpUser->getLabel("firstName")."</label>
+					$messengerUserImg=(Req::isMobile()==false && $tmpUser->hasImg())  ?  $tmpUser->getImg(false,true)."&nbsp;"  :  null;
+					$livecounterUserImg=(Req::isMobile()==false && count($_SESSION["livecounterUsersList"])<10)  ?  $messengerUserImg  :  null;//Pas d'img sur mobile ou si ya + de 10 users
+					//Affichage des livecounters
+					$_SESSION["livecounterUsersHtml"].="<label class='vLivecounterUser' onclick='messengerDisplay(".$tmpUser->_id.");' title=\"".$userTitle."\" data-idUser=".$tmpUser->_id.">".$livecounterUserImg.$tmpUser->getLabel("firstName")."</label>";
+					$_SESSION["messengerUsersHtml"].="<div class='vMessengerUser'>
+																<input type='checkbox' name='messengerUsers' value='".$tmpUser->_id."' id='messengerUsers".$tmpUser->_id."'>
+																<label for='messengerUsers".$tmpUser->_id."' title=\"".Txt::trad("select")." ".$userTitle."\">".$messengerUserImg.$tmpUser->getLabel("firstName")."</label>
 															</div>";
-					//On vient de se connecter : ajoute au "messengerUpdateDisplayedUser" pour pas avoir de pulsate si ya des messages d'une ancienne session..
-					if(!in_array($tmpUser->_id,$_SESSION["messengerUpdateDisplayedUser"]) && isset($initLivecounterSession))   {$_SESSION["messengerUpdateDisplayedUser"][$tmpUser->_id]=time();}
 				}
+				//Ajoute "inverser la sélection" si ya 5 users ou+
+				if(count($_SESSION["livecounterUsersList"])>=5)  {$_SESSION["messengerUsersHtml"].="<div class='vMessengerUser' id='checkUserAll'><label onclick=\"$('label[for^=messengerUsers]').trigger('click');\"><img src='app/img/checkSelect.png'> &nbsp; ".Txt::trad("invertSelection")."</label></div>";}
 			}
 
-			////	MESSAGES DU MESSENGER
+			////	AFFICHAGE DES MESSAGES DU MESSENGER
 			$result["messengerPulsateUsers"]=[];
-			if(!empty($_SESSION["livercounterUsers"]))
+			if(!empty($_SESSION["livecounterUsersList"]))
 			{
-				//Verif si ya de nouveaux messages
+				//// Verif si ya de nouveaux messages
 				$messengerMessagesListOld=$_SESSION["messengerMessagesList"];
 				$_SESSION["messengerMessagesList"]=Db::getTab("SELECT * FROM ap_userMessengerMessage WHERE _idUsers LIKE '%@".self::$curUser->_id."@%' ORDER BY date asc");
-				$result["messengerChanged"]=(count($messengerMessagesListOld)!=count($_SESSION["messengerMessagesList"]));
-				//Affichage des messages (Init OU nouveaux messages)
-				if($result["messengerChanged"]==true)
+				$result["messengerUpdate"]=(count($messengerMessagesListOld)!=count($_SESSION["messengerMessagesList"]));
+				//// Affichage des messages (Init OU nouveaux messages)
+				if($result["messengerUpdate"]==true)
 				{
 					$_SESSION["messengerMessagesHtml"]="";
 					foreach($_SESSION["messengerMessagesList"] as $message)
@@ -133,50 +138,63 @@ class CtrlMisc extends Ctrl
 						$destList=Txt::txt2tab($message["_idUsers"]);
 						$destMultiple=(count($destList)>2)  ?  "**"  :  null;
 						$destLabel=Txt::trad("MESSENGER_sendAt")." ";
-						foreach($destList as $userId)    {if($userId!=$objAutor->_id)  {$destLabel.=self::getObj("user",$userId)->getLabel().", ";}}
+						foreach($destList as $userId)  {if($userId!=$objAutor->_id) {$destLabel.=self::getObj("user",$userId)->getLabel().", ";}}
 						//Affichage du message
-						$_SESSION["messengerMessagesHtml"].="<div class='vMessengerMessage' title=\"".trim($destLabel,", ")."\" data-idUsers=\"".$message["_idUsers"]."\">
-																<div>".date("H:i",$message["date"]).$autorLabelImg.$destMultiple."</div>
-																<div data-idAutor=\"".$message["_idUser"]."\">".$message["message"]."</div>
-															 </div>";
+						$_SESSION["messengerMessagesHtml"].="<table class='vMessengerMessage' title=\"".trim($destLabel,", ")."\" data-idUsers=\"".$message["_idUsers"]."\"><tr>
+																<td>".date("H:i",$message["date"]).$autorLabelImg.$destMultiple."</td>
+																<td data-idAutor=\"".$message["_idUser"]."\">".$message["message"]."</td>
+															 </tr></table>";
 					}
 				}
-				//On "pulsate" les autres users qui viennent de poster un nouveau message qui n'a pas encore été vu par l'user courant
+				//// Fait clignoter les users qui viennent de poster un nouveau message (via "pulsate")
 				foreach($_SESSION["messengerMessagesList"] as $message){
-					$idUserTmp=$message["_idUser"];
-					//User pas encore ajouté à "messengerPulsateUsers"  &&  User toujours présent dans le livecounter  &&  (User pas encore affiché || affiché avant l'envoi de son message)
-					if(!isset($result["messengerPulsateUsers"][$idUserTmp])  &&  isset($_SESSION["livercounterUsers"][$idUserTmp])  && (!isset($_SESSION["messengerUpdateDisplayedUser"][$idUserTmp]) || $message["date"]>$_SESSION["messengerUpdateDisplayedUser"][$idUserTmp]))   {$result["messengerPulsateUsers"][]=$idUserTmp;}
+					if((time()-$message["date"])>1200)  {continue;}//on zappe les messages qui datent de plus de 20mn (évite le "pulstate" d'anciens messages si on vient de se connecter)
+					$idUserTmp=$message["_idUser"];//Auteur du message
+					$userInLivecounter=(isset($_SESSION["livecounterUsersList"][$idUserTmp]) && !isset($result["messengerPulsateUsers"][$idUserTmp]));//User connecté (affiché dans le livecounter) mais pas encore ajouté au "messengerPulsateUsers" (évite les doublons de pulsate)
+					$userMessagesNotDisplayed=(!isset($_SESSION["messengerUserDisplayTime"][$idUserTmp]) || $message["date"]>$_SESSION["messengerUserDisplayTime"][$idUserTmp]);//User pas encore affiché OU affiché avant que ne soit posté le message
+					if($userInLivecounter==true && $userMessagesNotDisplayed==true)  {$result["messengerPulsateUsers"][]=$idUserTmp;}//Ajoute alors l'user au "messengerPulsateUsers"
 				}
 			}
 
-			////	RETOURNE LE RÉSULTAT (format JSON)
-			$result["livecounterMainHtml"]=$_SESSION["livecounterMainHtml"];
-			$result["livecounterMessengerHtml"]=$_SESSION["livecounterMessengerHtml"];
+			////	RETOURNE LE RÉSULTAT AU FORMAT JSON
+			$result["livecounterUsersHtml"]=$_SESSION["livecounterUsersHtml"];
+			$result["messengerUsersHtml"]=$_SESSION["messengerUsersHtml"];
 			$result["messengerMessagesHtml"]=$_SESSION["messengerMessagesHtml"];
 			echo json_encode($result);
 		}
 	}
 
 	/*
-	 * AJAX : Update la date d'affichage du messenger d'un user (gardé en session)
+	 * AJAX : Update le "time" d'affichage d'un user du messenger
 	 */
-	public static function actionMessengerUpdateDisplayedUser()
+	public static function actionMessengerUserDisplayTime()
 	{
-		$_SESSION["messengerUpdateDisplayedUser"][Req::getParam("_idUser")]=time();
+		$_SESSION["messengerUserDisplayTime"][Req::getParam("_idUser")]=time();
 	}
 
 	/*
-	 * AJAX : Post d'un message sur le messenger
+	 * AJAX : Post d'un message sur le messenger (note : les messages sont encodés en "utf8mb4" pour le support des "emoji" sur mobile)
 	 */
 	public static function actionMessengerPostMessage()
 	{
 		if(self::$curUser->messengerEnabled())
 		{
-			$usersIds=Req::getParam("messengerPostUsers");
+			$usersIds=Req::getParam("messengerUsers");
 			$usersIds[]=self::$curUser->_id;
-			Db::query("INSERT INTO ap_userMessengerMessage SET _idUser=".self::$curUser->_id.", _idUsers=".Db::formatTab2txt($usersIds).", message=".Db::formatParam("message").", date=".Db::format(time()));
-			$_SESSION["messengerPostUsers"]=$usersIds;
+			$message=Db::formatParam("message");
+			if(stristr(Req::getParam("message"),"launchVisioMessage"))  {$message=Db::formatParam("message","editor");}//Appel visio : on ne filtre pas tous les "tags"
+			Db::query("INSERT INTO ap_userMessengerMessage SET _idUser=".self::$curUser->_id.", _idUsers=".Db::formatTab2txt($usersIds).", message=".$message.", date=".Db::format(time()));
+			$_SESSION["messengerUsers"]=$usersIds;
 		}
+	}
+
+	/*
+	 * VISIO JITSI : URL de la "Room" de l'user courant (Exple : "visioconf.mondomaine.com/5BV3X-omnispace-boby")
+	 */
+	public static function myVideoRoomURL()
+	{
+		if(!isset($_SESSION["myVideoRoomURL"]))  {$_SESSION["myVideoRoomURL"]=Ctrl::$agora->visioHost()."/Omnispace-".Txt::uniqId(5)."-".substr(Txt::clean(Ctrl::$curUser->getLabel(),"max"),0,5);}
+		return $_SESSION["myVideoRoomURL"];
 	}
 
 	/*

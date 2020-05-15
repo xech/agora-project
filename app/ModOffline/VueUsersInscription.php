@@ -45,5 +45,5 @@ input, textarea			{width:100%!important;}
 	<input type="password" name="passwordVerif" class="editInputPassword" placeholder="<?= Txt::trad("passwordVerif"); ?>"><br>
 	<textarea name="message" placeholder="<?= Txt::trad("comment"); ?>"><?= Req::getParam("message") ?></textarea><br>
 	<?= CtrlMisc::menuCaptcha() ?>
-	<?= Txt::submit() ?>
+	<?= Txt::submitButton() ?>
 </form>

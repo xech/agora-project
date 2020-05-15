@@ -41,12 +41,14 @@ Please try to be as detailed as possible in your report.
   <b>File manager</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/file.jpg"><br><br><br>
  
+  <b>Video calls</b><br><br>
+  <img src="https://www.agora-project.net/app/img/printScreen/visio.jpg"><br><br><br>
+ 
   <b>Shared calendars</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/calendar.jpg"><br><br><br>
 
   <b>News and Polls</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/dashboard.jpg"><br><br><br>
-
 
   <b>Polls</b><br><br>
   <img src="https://www.agora-project.net/app/img/printScreen/dashboardPoll.jpg"><br><br><br>

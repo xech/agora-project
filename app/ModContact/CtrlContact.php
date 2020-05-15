@@ -22,7 +22,6 @@ class CtrlContact extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["contactList"]=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplayedObjects(self::$curContainer)." ".MdlContact::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);

@@ -24,6 +24,6 @@ function formControl(){
 			  </div>";
 	}
 	//Validation du formulaire
-	echo Txt::submit("send");
+	echo Txt::submitButton("send");
 	?>
 </form>

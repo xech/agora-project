@@ -83,7 +83,6 @@ class CtrlForum extends Ctrl
 			elseif(Req::getParam("_idTheme"))																			{$vDatas["curTheme"]=self::getObj("forumTheme",Req::getParam("_idTheme"));}
 		}
 		////	AFFICHAGE
-		static::$isMainPage=true;
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 

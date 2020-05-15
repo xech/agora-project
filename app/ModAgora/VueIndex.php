@@ -49,8 +49,9 @@ function formControl()
 </script>
 
 <style>
-.miscContainer				{padding:10px; margin-bottom:25px;}/*surcharge*/
+.miscContainer				{padding:20px; margin-bottom:40px;}/*surcharge*/
 .objField>div				{padding:4px 0px 4px 0px;}/*surcharge*/
+.objField .fieldLabel		{width:350px;}/*surcharge*/
 #logoFile, #logoConnectFile	{display:none;}
 #logoUrl					{margin-top:10px; <?= (empty(Ctrl::$agora->logo)) ? "display:none;":null ?>}
 #imgLogo, #imgLogoConnect	{max-height:45px;}
@@ -62,8 +63,8 @@ function formControl()
 #ldapConfig .fieldLabel		{padding-left:20px;}
 .vVersions					{padding:20px; padding-left:50px;}
 .vBackupForm				{text-align:center;}
-.vBackupForm img			{max-height:20px;}
-.vBackupForm button			{min-width:60%; height:50px; margin:10px;}
+.vBackupForm button			{min-width:60%; height:50px; margin:12px;}
+.vBackupForm button img		{max-height:25px; margin-left:10px;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
@@ -183,6 +184,13 @@ function formControl()
 				</div>
 			</div>
 		<hr>
+			<!--SERVER JITSI (AGORA-PROJECT)-->
+			<?php if(Ctrl::isHost()==false){ ?>
+			<div class="objField">
+				<div class="fieldLabel"><img src="app/img/visio.png"><abbr title="<?= Txt::trad("AGORA_visioHostInfo") ?>"><?= Txt::trad("AGORA_visioHost") ?></abbr></div>
+				<div><input type="text" name="visioHost" value="<?= Ctrl::$agora->visioHost ?>"></div>
+			</div>
+			<?php } ?>
 			<!--LIKES-->
 			<div class="objField">
 				<div class="fieldLabel"><img src="app/img/usersLike_like.png"><?= Txt::trad("AGORA_usersLikeLabel") ?></div>
@@ -345,15 +353,15 @@ function formControl()
 			<?php } ?>
 
 			<!--VALIDATION DU FORMULAIRE-->
-			<?= Txt::submit("modify") ?>
+			<?= Txt::submitButton("modify") ?>
 		</form>
 
 		<!--INFOS & VERSIONS-->
 		<div class="miscContainer vVersions">
 				Agora-Project version <?= Ctrl::$agora->version_agora ?> &nbsp; (<?= Txt::trad("AGORA_dateUpdate")." ".Txt::displayDate(Ctrl::$agora->dateUpdateDb,"dateMini") ?>) &nbsp; &nbsp;
 				<a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a> <br><br>
-				PHP <?= str_replace(strstr(phpversion(),"+deb"),null,phpversion()); ?> <img src="app/img/separator.png"> 
-				MySQL <?= str_replace(strstr(Db::dbVersion(),"+deb"),null,Db::dbVersion()); ?>
+				PHP <?= str_replace(strstr(phpversion(),"-"),null,phpversion()) ?> <img src="app/img/separator.png"> 
+				MySQL <?= Db::dbVersion() ?>
 				<?php if(!function_exists("mail")){ ?><div title="<?= Txt::trad("AGORA_funcMailInfo") ?>"><img src="app/img/delete.png"> &nbsp; <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
 				<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> &nbsp; <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
 		</div>
@@ -363,7 +371,7 @@ function formControl()
 		<form class="miscContainer vBackupForm" action="index.php" method="post">
 			<input type="hidden" name="ctrl" value="agora">
 			<input type="hidden" name="action" value="getBackup">
-			<button type="submit" name="typeBackup" value="all" <?= $alertMessageBigSav==true?"onClick=\"alert('".addslashes(Txt::trad("AGORA_backupNotif"))."')\"":null ?>><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?> <img src="app/img/diskSpace.png"><img src="app/img/folder/folderSmall.png"></button>
+			<button type="submit" name="typeBackup" value="all" <?= $alertMessageBigSav ?>><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?> <img src="app/img/folder/folderSmall.png"><img src="app/img/diskSpace.png"></button>
 			<button type="submit" name="typeBackup" value="db"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?> <img src="app/img/diskSpace.png"></button>
 		</form>
 		<?php } ?>

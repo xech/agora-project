@@ -64,7 +64,7 @@ trait MdlObjectMenus
 			}
 			////	SUPPRESSION DEFINITIVE
 			if($this->deleteRight()){
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."', '".Txt::trad("confirmDeleteDbl",true)."')";
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."','".Txt::trad("confirmDeleteDbl",true)."')";
 				$vDatas["deleteLabel"]=Txt::trad("USER_deleteDefinitely");
 			}
 			////	ESPACE DE L'UTILISATEUR
@@ -90,14 +90,14 @@ trait MdlObjectMenus
 			////	SUPPRIMER
 			if($this->deleteRight())
 			{
-				$confirmDeleteParams=null;
-				if(static::objectType=="space"){
-					$confirmDeleteParams=", '".Txt::trad("SPACE_confirmDeleteDbl",true)."'";//Double confirmation
-				}elseif(static::isContainer()){
-					$confirmDeleteParams=", '".Txt::trad("confirmDeleteDbl",true)."'";//Double confirmation
-					if(static::isFolder==true)  {$confirmDeleteParams.=", '?ctrl=object&action=SubFoldersDeleteControl&targetObjId=".$this->_targetObjId."', '".Txt::trad("confirmDeleteFolder",true)."'";}//Controle AJAX des droits d'accès
-				}
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$confirmDeleteParams.")";
+				$labelConfirmDeleteDbl=$ajaxControlUrl=null;
+				//Suppression d'espace ou de conteneur : Double confirmation
+				if(static::objectType=="space")	{$labelConfirmDeleteDbl=",'".Txt::trad("SPACE_confirmDeleteDbl",true)."'";}	
+				elseif(static::isContainer())	{$labelConfirmDeleteDbl=",'".Txt::trad("confirmDeleteDbl",true)."'";}
+				//Suppression de dossier : controle Ajax (droit  d'accès and co)
+				if(static::isFolder==true)  {$ajaxControlUrl=",'?ctrl=object&action=folderDeleteControl&targetObjId=".$this->_targetObjId."'";}
+				//Ajoute l'option
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$labelConfirmDeleteDbl.$ajaxControlUrl.")";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC
@@ -328,11 +328,23 @@ trait MdlObjectMenus
 	 */
 	public static function getDisplayMode($containerObj=null)
 	{
-		if(static::$displayModeCurrent===null){
-			static::$displayModeCurrent=Ctrl::prefUser("displayMode_".static::getPrefDbKey($containerObj), "displayMode");
-			if(empty(static::$displayModeCurrent))  {static::$displayModeCurrent=static::$displayModeOptions[0];}//Affichage par défaut
+		if(static::$displayModeCurrent===null)
+		{
+			//Affichage "block" privilégié (responsive)  OU  Récupère le mode d'affichage dans les préférences
+			if(static::onlyBlockDisplayMode())	{static::$displayModeCurrent="block";}
+			else								{static::$displayModeCurrent=Ctrl::prefUser("displayMode_".static::getPrefDbKey($containerObj),"displayMode");}
+			//..Sinon on prend l'affichage par défaut
+			if(empty(static::$displayModeCurrent))  {static::$displayModeCurrent=static::$displayModeOptions[0];}
 		}
 		return static::$displayModeCurrent;
+	}
+
+	/*
+	 * STATIC : Sur mobile, on affiche toujours en mode "block" (si dispo)
+	 */
+	public static function onlyBlockDisplayMode()
+	{
+		return (Req::isMobile() && in_array("block",static::$displayModeOptions));
 	}
 
 	/*
@@ -340,10 +352,13 @@ trait MdlObjectMenus
 	 */
 	public static function menuDisplayMode($containerObj=null)
 	{
-		$vDatas["displayModeOptions"]=static::$displayModeOptions;
-		$vDatas["displayMode"]=static::getDisplayMode($containerObj);
-		$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
-		return Ctrl::getVue(Req::commonPath."VueObjMenuDisplayMode.php",$vDatas);
+		if(static::onlyBlockDisplayMode()==false)
+		{
+			$vDatas["displayModeOptions"]=static::$displayModeOptions;
+			$vDatas["displayMode"]=static::getDisplayMode($containerObj);
+			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
+			return Ctrl::getVue(Req::commonPath."VueObjMenuDisplayMode.php",$vDatas);
+		}
 	}
 
 	/*

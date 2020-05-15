@@ -1,43 +1,37 @@
 <style>
 /*MENU PRINCIPAL*/
-.vHeaderMainLogo								{margin-right:15px; position:absolute; top:2px; left:2px;}
-#headerMainMenuLaucher							{padding-left:75px; line-height:45px;}/*cf. "logo.png" et "height" du "#headerBar"*/
-#headerMainMenuLaucher .vHeaderUserInscription	{margin-left:10px; margin-right:10px;}
-.vHeaderSeparator								{margin-left:8px; margin-right:8px; height:16px;}
+.vHeaderMainLogo								{position:absolute; top:2px; left:2px;}
+#headerMainMenuLabels							{padding-left:75px; padding-right:30px; line-height:45px; white-space:nowrap;}/*"padding-left" en fonction du width du "logo.png". "line-height" en fonction de "#headerBar". "nowrap" pour laisser les labels sur une seule ligne (ne pas éclater l'affichage!)*/
+#headerUserLabel, #headerSpaceLabel				{display:inline-block; max-width:250px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
+.vHeaderArrowRight								{margin:0px 4px 0px 8px; height:15px;}
 #headerMainMenuTab								{display:table; margin:0px;}
 #headerMainMenuTab>div							{display:table-cell; padding:0px; padding-right:10px!important;}
 #headerMainMenuRight							{border-left:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
 #headerMainMenuRight .menuIconArrow				{text-align:right!important;}
 #headerMainMenuOmnispace						{text-align:center; margin-top:15px;}
 #curSpaceEdit									{margin-left:10px; height:20px; transform:scaleX(-1);}/*"scaleX" : inverse l'image*/
-#headerMenuIcon									{margin-left:10px;}
-
+#headerMenuBurger								{margin-left:10px;}
 /*MENU DES MODULES*/
 #headerModuleTab								{display:inline-table; height:100%;}
-.vHeaderModule									{display:table-cell; vertical-align:middle; padding:0px 8px 0px 8px; border:solid 1px transparent; cursor:pointer;}/*par défaut : border transparent*/
-.vHeaderModule label							{<?= (Ctrl::$agora->moduleLabelDisplay=="hide" && Req::isMobile()==false)?"display:none;":null; ?>}/*Toujours afficher en responsive!*/
-.vHeaderModule:hover, .vHeaderCurModule			{<?= Ctrl::$agora->skin=="black" ? "background:#333;border-color:transparent #555 transparent #555;" : "background:#fff;border-color:transparent #ddd transparent #ddd;" ?>}
+.vHeaderModule									{display:table-cell; <?= (Ctrl::$agora->moduleLabelDisplay=="hide") ? "padding:0px 10px 0px 10px;" : "padding:0px 5px 0px 5px;" ?> text-align:center; vertical-align:middle; border:solid 1px transparent; cursor:pointer;}/*Par défaut, le border est transparent*/
+.vHeaderModule:hover, .vHeaderCurModule			{<?= Ctrl::$agora->skin=="black" ? "background:#333;border-color:transparent #555 transparent #555;" : "background:#fff;border-color:transparent #ddd transparent #ddd;" ?>}/*Sélectionne le module courant*/
+.vHeaderModuleLabel								{<?= (Ctrl::$agora->moduleLabelDisplay=="hide" && Req::isMobile()==false) ? "display:none" : "display:inline-block;min-width:50px;" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
 #headerModuleResp								{display:none;}
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	/*MENU PRINCIPAL*/
-	.vHeaderMainLogo							{margin-right:7px;}
-	#headerMainMenuLaucher						{padding-left:60px;}/*cf. "logoMobile.png"*/
-	#headerMainMenuLaucher, #headerModuleResp	{display:block; font-size:1.1em!important;}/*Affiche le label du module courant*/
+	.vHeaderMainLogo							{top:5px; left:0px;}
+	#headerSpaceLabel							{max-width:180px;}
+	#headerMainMenuLabels						{padding-left:58px; padding-right:10px;}/*"padding-left" en fonction du width du "logoMobile.png"*/
+	#headerMainMenuLabels, #headerModuleResp	{display:block; font-size:1.08em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne (ne pas éclater l'affichage!)*/
 	#headerMainMenuTab, #headerMainMenuTab>div	{display:block; padding-right:0px!important; border:0px;}
 	#headerMainMenuRight						{border:0px;}
-	#headerMainMenuOmnispace, #headerMenuIcon	{display:none;}
+	#headerMainMenuOmnispace					{display:none;}
 	/*MENU DES MODULES (intégré dans le menu responsive "#respMenuOne" de VueStructure.php)*/
 	#headerModuleTab							{display:none!important;}/*liste des modules masqués dans le menu principal...*/
-	.vHeaderModule								{display:inline-block; width:145px; padding:8px; margin:0px 0px 4px 4px;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
+	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 4px 4px; width:145px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
 	.vHeaderModule:hover, .vHeaderCurModule		{<?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f9f9f9;border:solid 1px #ddd;" ?> border-radius:5px;}/*mod. courant: background grisé*/
-	.vHeaderModule img							{max-width:30px;}/*Modules du menu contextuel*/
-}
-
-/*RESPONSIVE : TABLETTE EN MODE PAYSAGE*/
-@media screen and (min-width:1023px) and (max-width:1200px){
-	.vHeaderModule img	{max-width:20px;}
 }
 </style>
 
@@ -46,18 +40,17 @@
 
 	<!--LOGO + LABELS + MENU PRINCIPAL-->
 	<div>
-		<label id="headerMainMenuLaucher" class="menuLaunch" for="headerMainMenu">
+		<label id="headerMainMenuLabels" class="menuLaunch" for="headerMainMenu">
 			<?php
 			////	LOGO PRINCIPAL  &&  ICONE "SEARCH"
 			echo "<img src=\"app/img/".(Req::isMobile()?'logoMobile.png':'logo.png')."\" class='vHeaderMainLogo'>";
-			if(Req::isMobile()==false)  {echo "<img src='app/img/search.png'><img src='app/img/arrowRightBig.png' class='vHeaderSeparator'>";}
+			if(Req::isMobile()==false)  {echo "<img src='app/img/search.png'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			////	ICONE DE "VALIDATION D'INSCRIPTION D'UTILISATEUR"
-			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<img src='app/img/check.png' class='vHeaderUserInscription'>";}
-			////	LABEL DE L'UTILISATEUR COURANT
-			if(Ctrl::$curUser->isUser() && Req::isMobile()==false)  {echo Ctrl::$curUser->getLabel()."<img src='app/img/arrowRightBig.png' class='vHeaderSeparator'>";}
-			////	LABEL DE L'ESPACE COURANT
-			echo (Req::isMobile())  ? ucfirst(strtolower(Txt::reduce(Ctrl::$curSpace->name,25)))." <img src='app/img/arrowBottom.png'>"  :  Ctrl::$curSpace->name;
-			echo "<img src='app/img/menuSmall.png' id='headerMenuIcon'>";
+			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<img src='app/img/check.png' class='vHeaderUserInscription'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
+			////	LABEL DE L'UTILISATEUR COURANT  &&  LABEL DE L'ESPACE COURANT  &&  ICONE BURGER/ARROW
+			if(Ctrl::$curUser->isUser() && Req::isMobile()==false)  {echo "<div id='headerUserLabel'>".Ctrl::$curUser->getLabel()."</div><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
+			echo "<div id='headerSpaceLabel'>".ucfirst(strtolower(Ctrl::$curSpace->name))."</div>";
+			echo Req::isMobile()  ?  "<img src='app/img/arrowBottom.png'>"  :  "<img src='app/img/menuSmall.png' id='headerMenuBurger'>";
 			?>
 		</label>
 		<div class="menuContext" id="headerMainMenu">
@@ -88,7 +81,7 @@
 						////	PARAMETRAGE GENERAL
 						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=agora')\"><div class='menuIcon'><img src='app/img/paramsGeneral.png'></div><div>".Txt::trad("AGORA_generalSettings")."</div></div>";}
 						////	PARAMETRAGE DE L'ESPACE COURANT
-						if(Ctrl::$curUser->isAdminSpace())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/params.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,40)."</i></div></div>";}
+						if(Ctrl::$curUser->isAdminSpace())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/params.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,35,false)."</i></div></div>";}
 						////	 EDITION DE TOUS LES ESPACES
 						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=space')\" title=\"".Txt::trad("SPACE_moduleInfo")."\"><div class='menuIcon'><img src='app/img/space.png'></div><div>".Txt::trad("SPACE_manageSpaces")."</div></div>";}
 						////	PARAMETRAGE DES UTILISATEURS
@@ -123,7 +116,12 @@
 					if(!empty($pluginsShortcut)){
 						if($showSpaceList==true)  {echo "<hr>";}
 						echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/shortcut.png'></div><div>".Txt::trad("HEADER_shortcuts")." :</div></div>";
-						foreach($pluginsShortcut as $tmpPlugin)  {echo "<div class='menuLine sLink' onclick=\"".$tmpPlugin->pluginJsLabel."\" title=\"".$tmpPlugin->pluginTooltip."\"><div class='menuIcon'><img src='app/img/".$tmpPlugin->pluginIcon."'></div><div>".Txt::reduce(strip_tags($tmpPlugin->pluginLabel),40)."</div></div>";}
+						foreach($pluginsShortcut as $tmpObj){
+							//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte
+							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel),40);
+							$tmpObj->pluginTooltip=Txt::reduce(strip_tags($tmpObj->pluginTooltip,"<hr><br>"),300);
+							echo "<div class='menuLine sLink' onclick=\"".$tmpObj->pluginJsLabel."\" title=\"".$tmpObj->pluginTooltip."\"><div class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div><div>".$tmpObj->pluginLabel."</div></div>";
+						}
 					}
 					echo "</div>";
 				}
@@ -139,9 +137,9 @@
 		//Pour chaque module : init l'icone+label, retient si besoin pour l'affichage responsive ..puis affiche le module
 		foreach($moduleList as $tmpMod){
 			echo "<div onclick=\"redir('".$tmpMod["url"]."')\" title=\"".$tmpMod["description"]."\" class=\"vHeaderModule ".($tmpMod["isCurModule"]==true?'vHeaderCurModule':null)."\">
-					<img src='app/img/".$tmpMod["moduleName"]."/".(Ctrl::$agora->moduleLabelDisplay=='hide'?'icon':'iconSmall').".png'> <label>".$tmpMod["label"]."</label>
+					<img src='app/img/".$tmpMod["moduleName"]."/".((Ctrl::$agora->moduleLabelDisplay=='hide' && Req::isMobile()==false)?'icon':'iconSmall').".png'> <span class='vHeaderModuleLabel'>".$tmpMod["label"]."</span>
 				  </div>";
-			if($tmpMod["isCurModule"]==true)  {$respModLabel="<img src='app/img/".$tmpMod["moduleName"]."/iconSmall.png'>&nbsp; <label>".$tmpMod["label"]."</label>";}
+			if($tmpMod["isCurModule"]==true)  {$respModLabel="<img src='app/img/".$tmpMod["moduleName"]."/iconSmall.png'> <label>".$tmpMod["label"]."</label>";}
 		}
 		?>
 		</div>

@@ -80,17 +80,17 @@ class Txt
 	}
 
 	/*
-	 * Reduction d'un texte
+	 * Reduction d'un texte (conserve certains balises html)
 	 */
-	public static function reduce($text, $maxCaracNb=200)
+	public static function reduce($text, $maxCaracNb=200, $removeLastWord=true)
 	{
 		$textLength=strlen(strip_tags($text));
 		if($textLength>$maxCaracNb)
 		{
-			$textDisplayed=strip_tags($text,"<p><div><span><a><button><img><br>");	//Conserve certaines balises, notamment pour les mails
-			$maxCaracNb+=round(strlen($textDisplayed)-$textLength);					//Ajoute la taille des balises html dans la compabilisation du nb de caractères
-			$text=substr($textDisplayed, 0, $maxCaracNb);							//Réduit la taile du texte
-			if(strrpos($text," ")>1)	{$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot tronqué (auquel cas)
+			$textDisplayed=strip_tags($text,"<p><div><span><a><button><img><br><hr>");							//Conserve certaines balises (cf. descriptions via tinyMce affichées dans "pluginTooltip" ou "MdlObject::sendMailNotif()")
+			$maxCaracNb+=round(strlen($textDisplayed)-$textLength);												//Ajoute la taille des balises html dans la compabilisation du nb de caractères
+			$text=substr($textDisplayed, 0, $maxCaracNb);														//Réduit la taile du texte
+			if(strrpos($text," ")>1 && $removeLastWord==true)	{$text=substr($text,0,strrpos($text," "));}		//Enlève le dernier mot qui dépasse (auquel cas)
 			$text=rtrim($text,",")."...";
 		}
 		return $text;
@@ -118,7 +118,7 @@ class Txt
 			$text=str_replace("ç", "c", $text);
 			$text=str_replace("ñ", "n", $text);
 			//Remplace les caracteres spéciaux
-			if($scope=="normal" || $scope=="maxi")
+			if($scope=="normal" || $scope=="max")
 			{
 				$carac_ok=($scope=="normal")  ?  array(" ","-",".","_","'","(",")","[","]")  :  array("-",".","_");
 				for($i=0; $i<strlen($text); $i++){
@@ -267,19 +267,17 @@ class Txt
 	}
 
 	/*
-	 * Inputs et bouton de validation de Formulaire
-	 * Inputs "hidden" de base (Ctrl, Action, etc) et bouton "submit" (& bouton "submitAlternative" pour validation/invalidation d'invitation)
+	 * Inputs "hidden" de base (Ctrl, Action, etc)  &&  Bouton "submit" du Formulaire
 	 */
-	public static function submit($tradSubmit="validate", $isMainButton=true, $submitAltTrad=null)
+	public static function submitButton($tradSubmit="validate", $isMainButton=true)
 	{
-		return "<span class='".($isMainButton==true?'formMainButton':'formInlineButton')."'>
-					".(Req::isParam("targetObjId") ? "<input type='hidden' name='targetObjId' value=\"".Req::getParam("targetObjId")."\">" : null)."
-					<input type='hidden' name='ctrl' value=\"".Req::$curCtrl."\">
-					<input type='hidden' name='action' value=\"".Req::$curAction."\">
-					<input type='hidden' name='formValidate' value='1'>
-					<button type='submit'>".self::trad($tradSubmit)."</button>".
-					(!empty($submitAltTrad) ? " &nbsp; <button type='submit' name='submitAlternative' value='true'>".$submitAltTrad."</button>" : null).
-				"</span>";
+		return "<input type='hidden' name='ctrl' value=\"".Req::$curCtrl."\">
+				<input type='hidden' name='action' value=\"".Req::$curAction."\">
+				<input type='hidden' name='formValidate' value='1'>
+				".(Req::isParam("targetObjId")  ?  "<input type='hidden' name='targetObjId' value=\"".Req::getParam("targetObjId")."\">"  :  null)."
+				<div class='".($isMainButton==true?'submitButtonMain':'submitButtonInline')."'>
+					<button type='submit'>".( self::isTrad($tradSubmit) ? self::trad($tradSubmit) : $tradSubmit)."</button>
+				</div>";
 	}
 
 	/*

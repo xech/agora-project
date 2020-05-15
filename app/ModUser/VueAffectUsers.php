@@ -37,7 +37,7 @@ function formControl()
 				  </div>";
 		}
 		//Bouton de validation
-		echo Txt::submit("search");
+		echo Txt::submitButton("search");
 	}
 	//// Affectation
 	else
@@ -55,7 +55,7 @@ function formControl()
 					  </div>";
 			}
 			//Bouton de validation
-			echo Txt::submit();
+			echo Txt::submitButton();
 		}
 	}
 	?>

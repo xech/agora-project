@@ -105,8 +105,8 @@ class Req
 			//Enlève le javascript
 			$value=preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $value);
 			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Ctrl::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
-			//Enleve les balises html (sauf <br> et <a>) pour les parametres qui ne proviennent pas de l'éditeur ("description"/"editorDraft" du tinyMce ou "footerHtml")
-			if(preg_match("/^(description|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<br><a>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&msgNotif[]=<svg/onload=alert(/myXss/)>"
+			//Enleve les balises html (sauf <br><hr><a><img>) pour les parametres qui ne proviennent pas de l'éditeur ("description"/"editorDraft" du tinyMce ou "footerHtml")
+			if(preg_match("/^(description|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<br><hr><a><img>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&msgNotif[]=<svg/onload=alert(/myXss/)>"
 		}
 		return $value;
 	}
@@ -137,11 +137,11 @@ class Req
 	}
 
 	/*
-	 * Navigation en mode "mobile" si le width est inférieur à 1023px  (cf. Req.php && Common.js && Common.css)
+	 * Navigation en mode "mobile" si le width est inférieur à 1024px  (IDEM Common.js && Common.css)
 	 */
 	public static function isMobile()
 	{
-		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1023);}
+		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<1024);}
 		return self::$_isMobile;
 	}
 

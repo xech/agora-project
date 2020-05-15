@@ -7,7 +7,7 @@ $(function(){
 		});
 	});
 });
-	
+
 ////	Switch la sélection d'un objet
 function objSelect(objectBlockId)
 {
@@ -40,11 +40,11 @@ function targetObjectsAction(urlRedir, openPage)
 	});
 	//Confirme une désaffectation d'espace?
 	if(find("DeleteFromCurSpace",urlRedir)){
-		if(!confirm("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?> ("+$(objectSelector).length+" elements)"))	{return false;}
+		if(!confirm("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?> [selection : "+$(objectSelector).length+" elements]"))	{return false;}
 	}
 	//Confirme une suppression?
 	else if(find("delete",urlRedir)){
-		var confirmDelete="<?= Txt::trad("confirmDelete") ?> ("+$(objectSelector).length+" elements)";
+		var confirmDelete="<?= Txt::trad("confirmDelete") ?> [selection : "+$(objectSelector).length+" elements]";
 		var confirmDeleteDbl="<?= Txt::trad("confirmDeleteDbl") ?>";
 		if(!confirm(confirmDelete) || !confirm(confirmDeleteDbl))	{return false;}
 	}

@@ -21,6 +21,9 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 	////	CHANGER L'OBJET DE DOSSIER
 	if(!empty($moveObjectUrl))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$moveObjectUrl."')\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
 
+	////	COPIER L'ADRESSE/URL D'ACCES DE L'OBJET (affiche puis masque l'input pour être copié)
+	if(Ctrl::$curUser->isUser())  {echo "<div class='menuLine sLink' onclick=\"$(this).find('input').show().select();document.execCommand('copy');$(this).find('input').hide();notify('".Txt::trad("copyUrlConfirmed",true)."');\"><div class='menuIcon'><img src='app/img/link.png'></div><div>".Txt::trad("copyUrl")."<input type='text' value=\"".$curObj->getUrlExternal()."\" style='display:none'></div></div>";}
+
 	////	HISTORIQUE/LOGS DE L'OBJET
 	if(!empty($logUrl))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$logUrl."')\"><div class='menuIcon'><img src='app/img/log.png'></div><div>".Txt::trad("objHistory")."</div></div>";}
 

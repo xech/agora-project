@@ -28,7 +28,7 @@ function formControl()
 <style>
 form					{text-align:right;}
 form button				{width:120px;}
-.vCommentsTable			{display:table; width:100%; margin-bottom:15px;}
+.vCommentsTable			{display:table; width:100%; margin-bottom:20px;}
 .vCommentsRow			{display:table-row;}
 .vCommentsRow>div		{display:table-cell; padding:5px;}
 .vCommentDateUser		{width:130px;}
@@ -36,7 +36,7 @@ form button				{width:120px;}
 .vCommentText>form		{display:none;}
 .vCommentOptions		{width:50px;}
 .vCommentOptions img	{max-height:18px;}
-.formMainButton			{margin-top:10px;}
+.submitButtonInline		{padding-top:10px;}
 
 /*RESPONSIVE*/
 @media screen and (max-width:440px){
@@ -60,7 +60,7 @@ form button				{width:120px;}
 					<div class='vCommentDateUser'>".Ctrl::getObj("user",$tmpComment["_idUser"])->getLabel()." <div>".Txt::displayDate($tmpComment["dateCrea"],"full")."</div></div>
 					<div class='vCommentText' id='commentText".$tmpComment["_id"]."'>
 						<div>".$tmpComment["comment"]."</div>
-						<form action='index.php' method='post'><textarea name='comment' maxlength='200'>".$tmpComment["comment"]."</textarea><input type='hidden' name='idComment' value='".$tmpComment["_id"]."'><input type='hidden' name='actionComment' value='modif'>".Txt::submit("modify",false)."</form>
+						<form action='index.php' method='post'><textarea name='comment' maxlength='200'>".$tmpComment["comment"]."</textarea><input type='hidden' name='idComment' value='".$tmpComment["_id"]."'><input type='hidden' name='actionComment' value='modif'>".Txt::submitButton("modify",false)."</form>
 					</div>
 					<div class='vCommentOptions' ".(MdlObjectAttributes::userCommentEditRight($tmpComment["_id"])?null:"style='visibility:hidden'").">
 						<img src='app/img/edit.png' class='sLink' onclick=\"$('#commentText".$tmpComment["_id"].">*').toggle()\">
@@ -75,6 +75,6 @@ form button				{width:120px;}
 	<form class="vCommentAdd" action="index.php" method="post" onsubmit="return formControl()">
 		<textarea name="comment" maxlength="200" placeholder="<?= Txt::trad("commentAdd") ?>"></textarea>
 		<input type='hidden' name='actionComment' value='add'>
-		<?= Txt::submit("add",false); ?>
+		<?= Txt::submitButton("add",false); ?>
 	</form>
 </div>

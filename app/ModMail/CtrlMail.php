@@ -19,11 +19,10 @@ class CtrlMail extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		//Init
-		if(Ctrl::$curUser->isUser()==false)  {Ctrl::noAccessExit();}
-		static::$isMainPage=true;
+		////	Init et Controle d'accès
 		$vDatas["containerList"]=array();
-		//Envoi de mail!
+		if(Ctrl::$curUser->isUser()==false)  {Ctrl::noAccessExit();}
+		////	Envoi de mail!
 		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList")))
 		{
 			////	liste des destinataires : personList & groupes d'users

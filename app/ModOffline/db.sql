@@ -273,7 +273,7 @@ CREATE TABLE `ap_log` (
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
   `_idSpace` smallint(5) unsigned DEFAULT NULL,
   `ip` varchar(255) DEFAULT NULL,
-  `comment` varchar(300) DEFAULT NULL
+  `comment` varchar(1000) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_mailHistory` (
@@ -433,7 +433,7 @@ CREATE TABLE `ap_userMessenger` (
 CREATE TABLE `ap_userMessengerMessage` (
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
   `_idUsers` text,
-  `message` text,
+  `message` text CHARACTER SET utf8mb4,
   `color` varchar(255) DEFAULT NULL,
   `date` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

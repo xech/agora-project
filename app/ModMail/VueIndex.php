@@ -145,7 +145,7 @@ function formControl()
 			</div>
 
 			<!--BOUTON "SUBMIT"-->
-			<?= Txt::submit("send",true) ?>
+			<?= Txt::submitButton("send",true) ?>
 		</div>
 	</div>
 </div>

@@ -6,7 +6,7 @@ p							{margin:0px; padding:2px;}/*Style des balises <p> créées via l'éditeu
 img							{border:0px; vertical-align:middle;}
 a, .sLink, .sLinkSelect		{cursor:pointer; text-decoration:none;}
 abbr, .abbr					{border-bottom: 1px dotted #777; cursor:help;}/*remplace balise "acronym" et classe ".acronym"*/
-hr							{border:0; height:1px; background:linear-gradient(to right,#eee,#ccc,#eee); margin-top:10px; margin-bottom:10px;}
+hr							{border:0; height:1px; margin-top:10px; margin-bottom:10px;}
 audio						{min-width:350px;}
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
@@ -22,14 +22,15 @@ audio						{min-width:350px;}
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /*CONTENEURS PRINCIPAUX DE LA PAGE*/
-#pageFull, #pageCenter		{display:table; margin:0px; margin-top:65px; padding:0px;}	/*"margin-top" en fonction du "height" du "#headerBar"*/
-#pageFull					{width:100%;}												/*Sur toute la largeur : modules avec arbo, etc*/
-#pageCenter					{margin-left:auto; margin-right:auto;}						/*Centrée : Dashboard, Mail, etc*/
-#pageFullContent, #pageCenterContent, #pageModuleMenu	{display:table-cell; margin:0px; padding:0px;}
-#pageCenterContent			{width:770px; min-width:770px;}								/*Attention: tester l'affichage et l'ergonomie en 1024x768*/
-#pageModuleMenu				{width:280px; padding-right:5px;}							/*Menu du module à gauche de la page, flottant au besoin. Effet de transition : " transition:padding-top 0.2s;" */
+#pageFull, #pageCenter								{display:table; margin:0px; margin-top:75px; padding:0px;}		/*"margin-top" en fonction du "height" du "#headerBar"*/
+#pageFull											{width:100%;}													/*Affichage sur toute la largeur (Modules Files, Contacts, Tasks, Links, Users, etc)*/
+#pageCenter											{max-width:100%; margin-left:auto; margin-right:auto;}			/*Affichage Centrée (Modules Dashboard, Forum, Mail, Paramétrage, Logs, etc)*/
+#pageFullContent,#pageCenterContent,#pageModuleMenu	{display:table-cell; margin:0px; padding:0px;}
+#pageCenterContent									{width:850px;}													/*POas + de 850px : cf. affichage des News. tester l'affichage entre 1024px et 1366px*/
+#pageModuleMenu										{width:320px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu du module à gauche de la page, flottant au besoin*/
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
+	#pageFull, #pageCenter					{margin-top:65px;}
 	#pageCenter								{width:100%;}
 	#pageFullContent, #pageCenterContent	{width:100%; min-width:100%; padding:0px;}
 	#pageFullContent.objBlocks				{padding-right:0px;}
@@ -42,29 +43,29 @@ audio						{min-width:350px;}
 
 /*** BLOCKS D'OBJET : INIT*/
 .objContainer, .miscContainer, .emptyContainer	{border-radius:2px; margin:0px 4px 4px 0px; box-sizing:border-box;}/*"miscContainer" : menu de gauche, folderPath, etc. Calcul du width avec prise en compte de la bordure : "border-box"*/
-.objContainer				{position:relative; padding:0px; padding-right:35px;}/*"padding-right" pour l'affichage vertical des "objMiscMenus"*/
+.objContainer				{position:relative; padding:0px; padding-right:35px; height:90px; min-height:90px;}/*"height" ET! "min-height" pour l'overflow" du "objContentScroll" et l'affichage vertical des "objMiscMenus"*/
 .objContainer.isSelectable	{cursor:url("../img/checkSelect.png"),default;}
 .emptyContainer				{padding:30px; text-align:center;}/*Aucun contenu sur la page*/
 .emptyContainer .sLink		{margin-top:20px;}/*Aucun contenu sur la page*/
-.objContentScroll			{height:inherit; padding:3px; overflow-y:auto; overflow-x:hidden;}/*contient "objContent" avec scroll auto*/
-.objContent					{display:table; width:100%; height:100%;}
+.objContentScroll			{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}/*"height" ET! "min-height" pour correspondre au "objContainer". Note: ".objContentScroll" permet l'overflow "scroll" du "objContent" ci-dessous*/
+.objContent					{height:inherit; min-height:inherit; display:table; width:100%;}/*"height" ET! "min-height" : idem*/
 .objContent>div				{display:table-cell; vertical-align:middle;}
 .objLabel					{overflow-wrap:break-word; text-overflow:ellipsis;}
-.objLabelBg					{padding-left:40px!important; background-position:left bottom; background-repeat:no-repeat;}
-.objLabel>a					{padding:8px 8px 8px 0px;}/*plus facile à cliquer*/
+.objLabelBg					{padding-left:60px!important; background-position:5px center; background-repeat:no-repeat;}/**/
+.objLabel>a					{padding:8px 8px 8px 0px;}/*plus facile à cliquer, surtout en responsive*/
 .objVueBg					{background-position:right bottom; background-repeat:no-repeat;}
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	.miscContainer, .emptyContainer	{margin:0px;}
-	.objContainer					{width:100%;}/*idem pour un affichage "objBlocks" ou "objLines" !*/
+	.objContainer					{margin-bottom:10px; width:100%;}/*Idem pour un affichage "objBlocks" ou "objLines" !*/
 	.objContainer *					{max-width:100%!important; word-break:break-word!important;}/*!important : permet de ne pas afficher de scroller horizontal. "break-word" pour éviter qu'une URL ne fasse éclater l'affichage*/
 	.objDetails,.objAutorDate		{display:none!important;}/*!important car prioritaire sur tout*/
 	.objContentScroll				{overflow-y:hidden;}/*pas d'ascenseur en responsive !*/
 }
-
-/*** BLOCK D'OBJETS : AFFICHAGE BLOC*/
+/*** BLOCK D'OBJETS : 'BLOCK' DIPLAY*/
 .objBlocks											{visibility:hidden;}/*Ré-affiché après calcul du width des ".objContainer" (cf. "common.js")*/
-.objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px; height:100px; min-height:100px;}/*width final calculé par "mainPageDisplay()". "min-height" de 105px minimum pour pouvoir afficher les menuContext +Likes +Comments +Files +persoAccess*/
+.objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px;}/*width final calculé par "mainPageDisplay()"*/
+.objBlocks .objContainerSelect						{box-shadow:0px 0px 3px 2px rgb(170,0,0)!important;}
 .objBlocks .objIcon									{width:90px; text-align:center;}
 .objBlocks .objIcon img								{max-width:100%; max-height:100%;}
 .objBlocks .objDetails, .objBlocks .objAutorDate	{display:none;}
@@ -77,43 +78,39 @@ audio						{min-width:350px;}
 @media screen and (max-width:1023px){
 	.objBlocks .objContainer	{margin:1px;}/*tester avec tasks & users*/
 }
-
-/*** BLOCK D'OBJETS : AFFICHAGE LIGNE*/
-.objLines .objContainer								{height:60px; min-height:60px; margin-bottom:0px; padding-right:65px;}/*"padding-right" pour l'affichage horizontal des "objMiscMenus"*/
+/*** BLOCK D'OBJETS : 'LINE' DIPLAY*/
+.objLines .objContainer								{height:60px; min-height:60px; padding-right:55px; margin-bottom:0px;}/*"padding-right" : affichage horizontal des "objMiscMenus"*/
 .objLines .objIcon									{width:70px; padding-right:10px; text-align:center; vertical-align:middle!important;}
-.objLines .objIcon img								{max-height:54px!important; max-width:100%!important;}/*max-height en fonction de .objContainer. Attention au "overflow:scroll" (cf. modContact)*/
-.objLines .objDetails, .objLines .objAutorDate		{text-align:right; vertical-align:top; padding:10px;}
-.objLines .objAutorDate								{width:180px!important;}/*Auteur et date*/
-.objLines .objAutorDateCrea							{font-weight:normal!important;}/*Date de création (div)*/
+.objLines .objIcon img								{max-height:55px!important; max-width:100%!important;}/*max-height en fonction de .objContainer. Attention au "overflow:scroll" (cf. modContact)*/
+.objLines .objDetails, .objLines .objAutorDate		{text-align:right; padding:10px;}
+.objLines .objAutorDate								{width:200px!important; max-width:200px!important;}/*Auteur et date : tester avec 'sam. 31 septembre 2050'*/
+.objLines .objAutorDateCrea							{font-weight:normal!important; margin-top:3px;}/*Date de création (div)*/
 .objLines .objPersonDetail							{display:inline-block;}/*Contact/user*/
-/*RESPONSIVE*/
-@media screen and (max-width:1023px){
-	.objLines .objContainer	{height:80px; min-height:80px;}/*tester avec tasks & users*/
-}
 
-/*** CONTACT/USER*/
-.objPerson .objIcon							{padding-left:0px!important; padding-right:8px;}
+/* CONTACT/USER*/
+.objBlocks .objContainer.objPerson			{height:140px; min-height:140px; width:250px; min-width:250px; max-width:450px;}/*surcharge du height du ".objContainer"*/
+.objPerson .objIcon							{padding-left:0px!important; padding-right:10px;}
 .objPersonDetail							{line-height:16px; font-weight:normal;}
 .objPersonDetail a							{display:inline-block;}
 .objPersonDetail img						{max-height:18px;}
 .objBlocks .objPersonDetails				{margin-top:5px;}/*Contact/User: espace entre le label principal et les détails*/
 .objLines .objIcon img[src*='personDefault']{height:35px;}/*img d'user lambda*/
 
-/*** MENUS CENTRÉS ("Ajouter un element" ou Menu de pagination)*/
+/* MENUS CENTRÉS ("Ajouter un element" ou Menu de pagination)*/
 .objBottomMenu								{clear:both; text-align:center; margin-top:20px; margin-bottom:20px;}/*clear pour les "objBlocks" avec "float"*/
 .objBottomMenu>div							{display:inline-block; padding:8px 20px 8px 20px;}
 .objBottomMenu .sLinkSelect					{font-size:1.1em;}
 .objBottomMenu a							{margin-left:5px; margin-right:5px;}
 
-/*** MENUS CONTEXTUELS/MISC DES OBJETS*/
+/* MENUS CONTEXTUELS/MISC DES OBJETS*/
 .objMenuBurger								{position:absolute; z-index:10; top:8px; right:5px;}								/*Icone "burger" principal (pas le "inline")*/
 .objContainer:not(:hover) .objMenuBurger	{opacity:0.75;}																		/*Icone "burger" opaque par défaut (pas moins de 0.75 : cf. images du gestionnaire de fichier)*/
 .objContainer:not(:hover) .objMenuLikeComment:not(.showMiscMenu)  {display:none;}												/*Masque par défaut les .objMenuLikeComment, sauf au survol du ".objContainer" ou si ya un ".showMiscMenu"*/
 .targetObjectsInput							{display:none;}																		/*input hidden de sélection/désélection d'objet*/
-.objMiscMenus								{position:absolute; z-index:10; top:25px; right:5px; text-align:right; width:35px;}	/*Affichage vertical des "objMiscMenus" -> width:35px (cf. "padding-right" de ".objContainer")*/
-.objLines .objMiscMenus						{width:70px;}																		/*Affichage horizontal des "objMiscMenus" -> width:70px (cf. "padding-right" de ".objLines .objContainer")*/
+.objMiscMenus								{position:absolute; z-index:10; top:25px; right:5px; text-align:right; width:35px;}	/*Affichage vertical des MenuContext + Likes + Comments + Files + persoAccess (cf. "padding-right" des ".objContainer")*/
+.objLines .objMiscMenus						{width:90px;}																		/*Affichage horizontal (cf. "padding-right" de ".objLines .objContainer")*/
 .objMiscMenuDiv								{display:inline-block; margin-top:8px; margin-left:8px;}							/*'margin-left' si on affiche de plusieurs icones sur la même ligne (.objLines)*/
-.menuCircle									{display:inline-block; position:relative; margin:4px -10px 0px 0px; padding:0px; background-color:#800; border-radius:50%; text-align:center; width:14px; height:14px; line-height:14px; font-size:9px!important; color:white;}/*Nb de likes, comments, etc*/
+.menuCircle									{display:inline-block; position:relative; margin:4px -10px 0px 0px; padding:0px; background-color:#800; color:white; border-radius:50%; text-align:center; width:14px; height:14px; line-height:14px; font-size:9px!important;}/*Nb de likes, comments, etc*/
 .menuCircleHide								{display:none;}
 /*Fichiers joints*/
 .menuContext .menuAttachedFile				{white-space:nowrap;}/*nom du fichier sur une seule ligne*/
@@ -121,7 +118,7 @@ audio						{min-width:350px;}
 .menuAttachedFile img						{height:18px; margin-right:3px;}/*idem*/
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.objMenuBurger			{opacity:1!important;}/*Icones tjs affichées ..et sans opacité!*/
+	.objMenuBurger			{opacity:1!important; width:25px; height:20px;}/*Icones tjs affichées (sans opacité)*/
 	.objMenuLikeComment		{display:inline-block!important;}/*Affiche toujours*/
 	.objMiscMenuDiv			{margin-top:14px;}/*plus facile pour les gros doigts..*/
 }
@@ -167,30 +164,32 @@ input[type=file]				{height:auto;}
 textarea						{width:100%; height:70px;}
 input:disabled					{opacity:0.6;}
 input:read-only					{background:#ddd;}
-button							{background:linear-gradient(#fff,#eee); background-color:#fff; margin-bottom:1px; padding-left:8px; padding-right:8px; font-weight:bold; cursor:pointer; vertical-align:middle;}
+button							{background:linear-gradient(#fff,#eee); background-color:#fff; padding-left:8px; padding-right:8px; font-weight:bold; cursor:pointer; vertical-align:middle;}
 button:hover					{background:linear-gradient(#eee,#fff); color:#900;}
 label							{cursor:pointer;}
 .textBig						{width:400px!important; max-width:80%!important;}/*80% max car souvent affiché avec le bouton "description"*/
 .dateInput,.dateBegin,.dateEnd	{width:80px!important;}
 .timeBegin, .timeEnd			{width:45px!important;}
 .divPromptInputText				{text-align:center;}
-.formMainButton					{display:block; text-align:center; margin-top:30px;}
-.formMainButton [type='submit']	{width:180px; min-height:35px;}
-.formInlineButton				{display:inline;}
+.submitButtonMain				{text-align:center; padding:10px; padding-top:30px;}
+.submitButtonMain button		{width:180px; min-height:40px;}
+.submitButtonInline				{display:inline-block;}
+.submitButtonInline	button		{min-width:100px; min-height:30px;}/*height: cf. input[type=text]*/
 ::-ms-input-placeholder			{font-weight:normal; padding-left:5px;}
 ::-moz-placeholder				{font-weight:normal; padding-left:5px;}
 ::-webkit-input-placeholder		{font-weight:normal; padding-left:5px; color:#999;}
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	input[type=text], input[type=password], input[type=file], textarea, select, button	{min-height:35px; padding:3px;}
-	textarea	{height:40px;}
+	input[type=text], input[type=password], input[type=file], textarea, select, button	{min-height:33px;}
+	.submitButtonInline	button					{min-height:33px;}/*height: cf. input[type=text]*/
+	textarea									{height:40px;}
 	.ui-datepicker-calendar .ui-state-default	{height:24px!important;}/*surcharge du datepicker*/
 }
 
 /*INPUTS D'OBJET*/
 .objField							{display:table; width:100%; margin-top:8px; margin-bottom:8px;}
 .objField>div						{display:table-cell;}
-.objField .fieldLabel				{width:50%; font-weight:normal; vertical-align:top;}
+.objField .fieldLabel				{width:230px; font-weight:normal; vertical-align:top;}/*tester la vue et l'édition d'un user, et le parametrage general*/
 form .objField .fieldLabel			{padding-top:5px;}/*"padding-top" pour être aligné avec les "input" (height plus grand..)*/
 .objField .fieldLabel img			{margin-right:5px; max-width:18px;}
 .objField input[type=text]			{width:100%;}
@@ -198,7 +197,7 @@ form .objField						{margin-top:8px; margin-bottom:8px;}/*surcharge*/
 .objField .fieldLabel .personImg	{max-width:90%; max-height:140px;}/*img des personnes*/
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	.objField .fieldLabel			{width:40%;}
+	.objField .fieldLabel			{width:40%!important;}/*pour les surcharges*/
 	.objField .fieldLabel img		{max-height:100px!important;}/*img des personnes*/
 	.objField .fieldLabel img:not(.personImg)	{display:none;}
 }
@@ -249,10 +248,10 @@ form .objField						{margin-top:8px; margin-bottom:8px;}/*surcharge*/
 /*DIVERS*/
 .infos							{border:dotted 1px #aaa; margin:7px; padding:10px; border-radius:5px; text-align:center; line-height:22px;}
 .loadingImg						{display:none; position:fixed; bottom:10px; right:10px;}
-.percentBar						{display:inline-table; height:25px; background:linear-gradient(#fff,#ddd); background-color:#f00; border:solid 1px #ccc; border-radius:2px;}
+.percentBar						{display:inline-table; height:25px; background:linear-gradient(#fff,#d5d5d5); color:#555; border:solid 1px #ccc; border-radius:2px;}
 .percentBarContent				{display:table-cell; height:25px; padding:0px 3px 0px 3px; text-align:center; vertical-align:middle; font-size:0.85em; cursor:help; background-repeat:repeat-y; overflow-y:hidden;}
 .percentBarContent img			{max-height:20px;}
-#headerBar						{display:table; position:fixed; z-index:20; top:0px; left:0px; width:100%; height:50px; background-repeat:repeat-x; box-shadow:0px 3px 5px rgba(0,0,0,0.4);}/*height du logo principal à 50px*/
+#headerBar						{display:table; position:fixed; z-index:20; top:0px; left:0px; width:100%; height:50px; background-repeat:repeat-x; box-shadow:0px 3px 5px rgba(0,0,0,0.4);}
 #headerBar>div					{display:table-cell; vertical-align:middle!important;}
 #headerBar>div:last-child		{text-align:right;}
 .colorPicker					{padding:0px; border-radius:2px; min-width:100px;}
@@ -260,7 +259,7 @@ form .objField						{margin-top:8px; margin-bottom:8px;}/*surcharge*/
 .colorPickerRow					{display:table-row!important;}
 .colorPickerCell				{display:table-cell; width:15px; height:15px; cursor:pointer;}
 .proposedEventLabel				{padding:5px;}
-.proposedEventList				{margin:5px; padding:5px; background-color:#eee; border-radius:5px;}
+.proposedEventList				{margin:5px; padding:5px; background-color:#eee; color:#555; border-radius:5px;}
 .proposedEventList li			{cursor:pointer; margin:0px; margin-left:35px; padding:5px; list-style-type:circle;}
 .proposedEventList li:hover		{background-color:#f5f5f5;}
 .proposedEventList img			{max-height:16px; margin-right:5px;}

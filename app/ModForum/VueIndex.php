@@ -34,7 +34,7 @@ $(function(){
 /*Sujet & Message*/
 .vSubjectMessages			{padding-left:25px; user-select:text!important;}/*sélection du text possible*/
 .vSubjMessDescription		{font-weight:normal;}
-.vSubjNew					{color:#933;}/*plus discret que le sLinkSelect*/
+.vSubjNew					{color:<?= Ctrl::$agora->skin=="black"?"#f77":"#933" ?>;}/*plus discret que le sLinkSelect*/
 .objContent hr				{background:linear-gradient(to right,<?= Ctrl::$agora->skin=="black"?"#888":"#eee" ?>,transparent)!important; margin-top:6px; margin-bottom:6px;}
 .vSubjMessQuote				{position:absolute; top:5px; left:3px; cursor:pointer;}
 .vMessageQuoted				{position:relative; display:inline-block; overflow:auto; max-height:100px; margin-top:5px; margin-bottom:10px; padding:8px 35px 8px 35px; background-color:<?= Ctrl::$agora->skin=="black"?"#555":"#f1f1f1" ?>; border-radius:5px; font-style:italic; font-weight:normal;}
@@ -51,7 +51,7 @@ $(function(){
 }
 </style>
 
-<div id="<?= $displayForum=="themes"?"pageCenter":"pageFull" ?>">
+<div id="pageCenter">
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 		<?php
@@ -73,7 +73,7 @@ $(function(){
 		</div>
 	</div>
 
-	<div id="<?= $displayForum=="themes"?"pageCenterContent":"pageFullContent" ?>" class="objLines <?= $displayForum=="themes"?"vThemes":null ?>">
+	<div id="pageCenterContent" class="<?= $displayForum=="themes"?"vThemes":null ?>">
 		<?php
 		////	PATH DU FORUM (ACCUEIL FORUM > THEME COURANT > SUBJET COURANT > AJOUTER SUJET/MESSAGE)
 		//Début du menu
@@ -91,8 +91,8 @@ $(function(){
 			//Label du sujet courant (sauf en mode "mobile", pour laisser la place au thème courant)
 			if(!empty($curSubject) && Req::isMobile()==false)  {echo "<div><img src='app/img/arrowRightBig.png'> ".Txt::reduce(strip_tags($curSubject->title?$curSubject->title:$curSubject->description), $pathLabelMaxLength)."</div>";}
 			//Bouton "plus" d'ajout de sujet ou message
-			if($displayForum=="subjects" && MdlForumSubject::addRight())				{echo "<div class='pathIcon' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightAdd.png'><img src='app/img/plus.png'></div>";}
-			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{echo "<div class='pathIcon' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightAdd.png'><img src='app/img/plus.png'></div>";}
+			if($displayForum=="subjects" && MdlForumSubject::addRight())				{echo "<div class='pathIcon' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
+			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{echo "<div class='pathIcon' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
 		//Fin du menu
 		echo "</div>";
 

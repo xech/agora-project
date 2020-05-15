@@ -21,7 +21,6 @@ class CtrlUser extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		//Affichage des utilisateurs : "space" / "all"
 		if(Req::isParam("displayUsers"))	{$_SESSION["displayUsers"]=(Req::getParam("displayUsers")=="all" && self::$curUser->isAdminGeneral()) ? "all" : "space";}
 		//Filtre Alphabet : avec la première lettre du nom
@@ -202,7 +201,7 @@ class CtrlUser extends Ctrl
 					if(empty($tmpUser["password"]))  {$tmpUser["password"]=Txt::uniqId(8);}
 					//Login par défaut?
 					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))	{$tmpUser["login"]=$tmpUser["mail"];}//mail
-					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower(substr(Txt::clean($tmpUser["firstName"],"maxi",""),0,1)).strtolower(substr(Txt::clean($tmpUser["name"],"maxi",""),0,5));}//"Gérard D'AGOBERT"=>"gdagob"
+					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower(substr(Txt::clean($tmpUser["firstName"],"max",""),0,3)).strtolower(substr(Txt::clean($tmpUser["name"],"max",""),0,8));}//"Gérard D'AGOBERT"=>"gerdagobert"
 					//Enregistre l'user
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpUser["login"], $tmpUser["password"]);//Ajoute login/password pour les controles standards
 					//Options de création
@@ -402,7 +401,7 @@ class CtrlUser extends Ctrl
 			{
 				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".$idInscription);
 				//Invalidation/Validation de l'user
-				if(Req::isParam("submitAlternative")){
+				if(Req::isParam("submitInvalidate")){
 					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getSpaceUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
 					$mainMessage="<b>".$mainMessage."</b>";
 					Tool::sendMail($tmpInscription["mail"], $subject, $mainMessage);

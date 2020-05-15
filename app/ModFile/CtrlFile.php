@@ -22,7 +22,6 @@ class CtrlFile extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
 		////	Verif l'accès en écriture & Occupation d'espace disque
 		if(Ctrl::$curUser->isAdminGeneral())
 		{
@@ -38,7 +37,7 @@ class CtrlFile extends Ctrl
 			$vDatas["fillRateBar"]=Tool::percentBar($diskSpacePercent, $txtBar, $txtTooltip, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
-		$vDatas["foldersList"]=self::$curContainer->folders(true);
+		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplayedObjects(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{

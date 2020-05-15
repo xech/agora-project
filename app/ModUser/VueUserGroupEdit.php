@@ -67,7 +67,7 @@ input[name='title']				{width:50%;}
 							  </div>";
 		}
 		//Affichage du formulaire
-		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submit("add",false)  :  Txt::submit("modify",false);
+		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
 		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"if(confirm('".Txt::trad("confirmDelete",true)."')){lightboxClose('".$tmpGroup->getUrl("delete")."');}\">";}
 		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">

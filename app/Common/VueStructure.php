@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="<?= Txt::trad("HEADER_HTTP") ?>">
+<html lang="<?= Txt::trad("HEADER_HTTP") ?>" id="<?= Ctrl::$isMainPage==true?'htmlMainPage':'htmlLightbox' ?>">
 	<head>
 		<!-- AGORA-PROJECT :: UNDER THE GENERAL PUBLIC LICENSE V2 :: http://www.gnu.org -->
 		<meta charset="UTF-8">
@@ -29,8 +29,8 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JS & CSS DE L'AGORA -->
-		<script src="app/js/common-3.7.0.js"></script><!--toujours après Jquery & plugins Jquery !!-->
-		<link href="app/css/common-3.7.0.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-3.7.2.js"></script><!--toujours après Jquery & plugins Jquery !!-->
+		<link href="app/css/common-3.7.2.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 	
 		<script>
@@ -53,29 +53,28 @@
 		$(function(){
 			<?php
 			////	Fermeture de lightbox ($msgNotif en parametre?)
-			if(Ctrl::$lightboxClose==true)  {echo "lightboxClose(null,\"".Ctrl::$lightboxCloseParams."\");";}
+			if(Ctrl::$lightboxClose==true)  {echo 'lightboxClose(null,"'.Ctrl::$lightboxCloseParams.'");';}
 			////	Affiche si besoin des notifications (messages à traduire?)
 			foreach(Ctrl::$msgNotif as $tmpNotif){
 				if(Txt::isTrad($tmpNotif["message"]))  {$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}
-				echo "notify(\"".$tmpNotif["message"]."\", \"".$tmpNotif["type"]."\");";
+				echo 'notify("'.$tmpNotif["message"].'","'.$tmpNotif["type"].'");';
 			}
 			?>
+			//// Responsive : Affiche le bouton en bas de page pour ajouter un nouvel element
+			if(isMobile()){
+				var addElemButton=$("#pageModMenu img[src*='plus.png']").first().parents(".menuLine");//Sélectionne le div ".menuLine" du premier bouton "Ajouter"
+				if(addElemButton.exist())  {$("#respAddButton").attr("onclick",addElemButton.attr("onclick")).show();}//Ajoute l'attribut "onclick" au bouton responsive, puis affiche ce bouton
+			}
 		});
 		</script>
 
 		<style>
-		<?php
-		////	Wallpaper
-		if(Ctrl::$isMainPage==true){
-			if(Req::isMobile())		{echo "html  {background:url(app/img/logoMobileBg.png) no-repeat center 95%; height:100%; }";}//Logo centré sur l'appli mobile
-			else					{echo "html  {background:url(".$pathWallpaper.") no-repeat center fixed; background-size:cover;}";}//Sinon Wallpaper "fullsize" (cf. "cover")
+		/*WALLPAPER EN PAGE PRINCIPALE*/
+		@media screen and (min-width:1024px){
+			html  {<?= isset($pathWallpaper) ? "background:url(".$pathWallpaper.") no-repeat center fixed;" : null ?> background-size:cover;}/*fullsize via "cover"*/
 		}
-		////	Background-color
-		if(is_object(Ctrl::$agora) && Ctrl::$agora->skin=="black")	{echo "html  {background-color:#111;}";}//"dark mode"
-		elseif(Req::isMobile() &&Ctrl::$isMainPage==true)			{echo "html  {background-color:#f2f2f2;}";}//mobile
-		?>
 
-		/*Footer*/
+		/*FOOTER*/
 		#pageFooterHtml, #pageFooterIcon	{position:fixed; bottom:0px; z-index:20; display:inline-block; font-weight:normal;}/*pas de margin*/
 		#pageFooterHtml						{left:0px; padding:5px; padding-right:10px; color:#eee; text-shadow:0px 0px 9px #000;}
 		#pageFooterIcon						{right:2px; bottom:3px;}
@@ -85,18 +84,19 @@
 
 		/*RESPONSIVE*/
 		@media screen and (max-width:1023px){
-			#pageFooterHtml, #pageFooterIcon	{display:none!important;}
+			#pageFooterHtml, #pageFooterIcon		{visibility:hidden;}/*pas de "display:none" pour laisser la marge au "respAddButton" et au Livecounter*/
 			/*Menu responsive : cf. "common.js"*/
-			#respAddButton					{z-index:40; position:fixed; bottom:8px; right:8px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
-			#respMenuMain, #respMenuBg		{position:fixed; top:0px; right:0px; height:100%;}
-			#respMenuBg						{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}
-			#respMenuMain					{z-index:101; max-width:90%!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.1em!important; background:linear-gradient(135deg,<?= Ctrl::$agora->skin=='black'?'#555,#333':'#eee,#fff' ?> 100px);}/*max-width: cf. "#pageModuleMenu"*/
-			#respMenuMain #respMenuClose	{position:absolute; top:2px; right:2px; filter:invert(100%);}/*tester avec Ionic*/
-			#respMenuMain .menuLine			{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
+			#respAddButton							{z-index:40; position:fixed; bottom:8px; right:8px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
+			#respMenuMain, #respMenuBg				{position:fixed; top:0px; right:0px; height:100%;}
+			#respMenuBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}
+			#respMenuMain							{z-index:101; max-width:330px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.1em!important; background:linear-gradient(135deg,<?= Ctrl::$agora->skin=='black'?'#555,#333':'#eee,#fff' ?> 100px);}/*max-width: cf. "#pageModuleMenu"*/
+			#respMenuMain #respMenuClose			{position:absolute; top:2px; right:2px; filter:invert(100%);}/*tester avec Ionic*/
+			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
-			#respMenuMain hr				{background:#ddd; margin-top:15px; margin-bottom:15px;}/*surcharge*/
-			#respMenuTwo					{display:none; margin-top:10px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?> border-radius:5px;}/*cf. style de ".vHeaderModule" en responsive*/
+			#respMenuMain hr						{background:#ddd; margin-top:15px; margin-bottom:15px;}/*surcharge*/
+			#respMenuTwo							{display:none; margin-top:10px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?> border-radius:5px;}/*cf. style de ".vHeaderModule" en responsive*/
 		}
+
 		/*IMPRESSION*/
 		@media print{
 			[id^='pageFooter']	{display:none!important;}

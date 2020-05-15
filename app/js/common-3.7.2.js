@@ -8,20 +8,38 @@
 
 
 /*
- * INIT LA PAGE : LANCE CERTAINES FONCTIONS DE BASE
+ * WINDOW LOAD/RESIZE : "windowWidth" & CO (Tester sur Android/Ipad/Firefox. Ne pas placer dans "$(function(){..")
+ */
+window.onload=function(){
+	if(isMainPage==true)
+	{
+		////	CHARGEMENT DE LA PAGE : ENREGISTRE "windowWidth"
+		var reloadWidth=(isTouchDevice() && /windowWidth/i.test(document.cookie)==false);		//Verif si "windowWidth" est déjà enregistré pour "Req::isMobile()" (Toujours en premier!)
+		document.cookie="windowWidth="+$(window).width();										//Enregistre ensuite "windowWidth"
+		if(reloadWidth===true)  {setTimeout(function(){document.location.reload(true);},500);}	//Reload la page si besoin (Timeout le tps d'enregistrer "windowWidth". Toujours en dernier!)
+		////	RESIZE DE FENETRE : ENREGISTRE "windowWidth" & RELANCE "mainPageDisplay()"
+		window.onresize=function(){
+			document.cookie="windowWidth="+$(window).width();
+			if(typeof mainPageDisplayTimeout!="undefined")  {clearTimeout(mainPageDisplayTimeout);}//Pas de cumul de Timeout
+			mainPageDisplayTimeout=setTimeout(function(){ mainPageDisplay(true); },100);
+		};
+		////	CHANGE D'ORIENTATION : RELOAD LA PAGE  (Timeout le tps de finir le "resize" et enregistrer "windowWidth")
+		window.onorientationchange=function(){ setTimeout(function(){document.location.reload(true);},500); };
+	}
+};
+
+/*
+ * DOCUMENT READY : LANCE LES FONCTIONS DE BASE
  */
 $(function(){
-	extendJquery();			//Toujours en premier : Ajoute de nouvelles fonctions à Jquery
-	mainPageDisplay(true);	//Title via Tooltipster / Gallerie d'image via LightBox/ largeur des blocks d'objet / clic sur les blocks d'objet / etc.
-	mainPageTriggers();		//Clic sur les blocks d'objet / Menu flottant du module / Resize de page / Position de swipe / etc
+	mainPageDisplay(true);	//Title via Tooltipster / Gallerie d'image via LightBox / largeur des blocks d'objet / etc.
 	initMenuContext();		//Initialise les menus contextuels
-	inputControls();		//Initialise les controles de certains champs (Datepickers, FileSize, etc.)
 });
 
 /*
- * PAGE INIT : Ajoute de nouvelles fonctions à Jquery
+ * DOCUMENT READY : AJOUTE DE NOUVELLES FONCTIONS À JQUERY
  */
-function extendJquery(){
+$(function(){
 	////	Vitesse par défaut des effets "fadeIn()", "toggle()", etc
 	$.fx.speeds._default=100;
 	////	Verifie l'existance d'un element
@@ -37,8 +55,8 @@ function extendJquery(){
 		var mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return mailRegex.test(this.val());
 	};
-	////	Fait clignoter un element avec l'effet "pulsate" (5 fois par défaut. Toujours lancé après chargement de la page!)
-	$.fn.blink=function(times){
+	////	Fait clignoter un element avec l'effet "pulsate"/"blink" (5 fois par défaut. Toujours lancé après chargement de la page!)
+	$.fn.pulsate=function(times){
 		if(typeof times=="undefined")  {var times=5;}
 		this.effect("pulsate",{times:parseInt(times)},parseInt(times*1000));
 	};
@@ -62,68 +80,14 @@ function extendJquery(){
 		$.fn.slideDown=function(){		lightboxResize();	return slideDownBASIC.apply(this,arguments); };
 		$.fn.fadeToggle=function(){		lightboxResize();	return fadeToggleBASIC.apply(this,arguments); };
 	}
-}
+});
+
 
 /*
- * PAGE INIT : Initialise l'affichage des pages principales
- * => Menu flottant / Largeur des blocks d'objet / Clic sur les blocks d'objet / Etc.
+ * DOCUMENT READY : INITIALISE LES PRINCIPAUX TRIGGERS
+ * => Click/DblClick sur ".objContainer", Menu flottant, etc.
  */
-function mainPageDisplay(fullMode)
-{
-	////	Affiche les "Title" avec Tooltipster
-	tooltipsterOptions={contentAsHTML:true,delay:400,maxWidth:500,theme:"tooltipster-shadow"};//variable globale
-	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);
-	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
-
-	////	Fancybox des images & inline (contenu html)
-	var fancyboxImagesButtons=(isMobile()) ? ['close'] : ['fullScreen','thumbs','close'];
-	$("[data-fancybox='images']").fancybox({buttons:fancyboxImagesButtons});
-	$("[data-fancybox='inline']").fancybox({touch:false,arrows:false,infobar:false,smallBtn:false,buttons:['close']});//Pas de navigation entre les elements "inline" ("touch","arrow","infobar"). Pas de "smallBtn" close, mais plutôt celui en haut à droite.
-
-	////	Initialise toute la page
-	if(fullMode===true)
-	{
-		////	Calcule la largeur des objets ".objContainer" (Affichage "block" uniquement. Calculé en fonction de la largeur de la page : après loading ou resize de la page)
-		if($(".objBlocks .objContainer").length>0)
-		{
-			//Marge & Largeur min/max des objets
-			var objMargin=parseInt($(".objContainer").css("margin-right"))+1;
-			var objMinWidth=parseInt($(".objContainer").css("min-width"));
-			var objMaxWidth=parseInt($(".objContainer").css("max-width")) + objMargin;//ajoute la marge pour l'application du "width()"
-			//Largeur disponible
-			var containerWidth=$("#pageFullContent").width();//pas de "innerWidth()" car cela ajoute le "padding"
-			if(isMobile()==false && $(document).height()==$(window).height())	{containerWidth=containerWidth-18;}//pas encore d'ascenseur : anticipe son apparition (sauf en responsive ou l'ascenseur est masqué)
-			//Calcul la largeur des objets
-			var objWidth=null;
-			var lineNbObjects=Math.ceil(containerWidth / objMaxWidth);//Nb maxi d'objets par ligne
-			if(containerWidth < (objMinWidth*2))				{objWidth=containerWidth;  $(".objContainer").css("max-width",containerWidth);}	//On peut afficher qu'un objet par ligne : il prendra la largeur du conteneur
-			else if($(".objContainer").length<lineNbObjects)	{objWidth=objMaxWidth;}															//Nb d'objets insuffisant pour remplir la 1ère ligne : il prendra sa largeur maxi
-			else												{objWidth=Math.floor(containerWidth/lineNbObjects);}							//Sinon on calcul : fonction du conteneur et du nb d'objets par ligne
-			//Applique la largeur des blocks (enlève le margin: pas pris en compte par le "outerWidth")  &&  Rend visible si ce n'est pas le cas !!
-			$(".objContainer").outerWidth(Math.round(objWidth-objMargin)+"px");
-		}
-		//...affiche à nouveau après l'éventuel calcul ci-dessus : ".objBlocks" masqués par défaut via "common.css"!
-		$(".objBlocks").css("visibility","visible");
-
-		////	Affichage du footer
-		$("#pageFooterHtml").css("max-width", parseInt($(window).width()-$("#pageFooterIcon").width()-20));//Pour que "pageFooterHtml" ne se superpose pas à "pageFooterIcon"
-		setTimeout(function(){  $("#pageFull,#pageCenter").css("margin-bottom",footerHeight());  },300);//"margin-bottom" sous le contenu principal : pour pas être masqué par le Footer. Timeout car "footerHeight()" est fonction du "#livecounterMain" chargé en Ajax..
-
-		////	Enregistre la résolution de la fenêtre (cf. "Req::isMobile()")
-		if(isMainPage==true){
-			$(window).on("load resize",function(){
-				document.cookie="windowWidth="+$(window).width();
-				document.cookie="windowHeight="+$(window).height();
-			});
-		}
-	}
-}
-
-/*
- * PAGE INIT : Initialise les principaux triggers (ne lancer qu'une fois..)
- */
-function mainPageTriggers()
-{
+$(function(){
 	////	Triggers sur Mobile
 	if(isMobile()){
 		//Récupère la position du "touch" pour les swipes de menu ou autre (cf. "responsiveSwipe()")
@@ -152,8 +116,9 @@ function mainPageTriggers()
 				timeLastClick=Date.now();
 				containerIdLastClick=this.id;
 			});
+			//Pas de sélection si on clique un lien d'un bloc
+			$(".objContainer a").click(function(event){ event.stopPropagation(); });
 		}
-
 		////	Menu flottant du module (à gauche)
 		if($("#pageModuleMenu").exist())
 		{
@@ -164,158 +129,14 @@ function mainPageTriggers()
 				if(pageMenuHeight < $(window).height())  {$("#pageModuleMenu").css("padding-top",$(window).scrollTop()+"px");}
 			});
 		}
-
-		////	Resize la page : relance "mainPageDisplay()"
-		$(window).resize(function(){
-			if(typeof mainPageDisplayTimeout!="undefined")  {clearTimeout(mainPageDisplayTimeout);}//Pas de cumul de Timeout
-			mainPageDisplayTimeout=setTimeout(function(){ mainPageDisplay(true); },200);
-		});
 	}
-}
+});
 
 /*
- * PAGE INIT : INITIALISE LES MENUS CONTEXTUELS
- * chaque launcher (icone/texte/block d'objet) doit avoir la propriété "for" correspondant à l'ID du menu  &&  une class "menuLaunch" (sauf pour les launcher de block d'objet) 
+ * DOCUMENT READY : INITIALISE LES CONTROLES DES CHAMPS
+ * => Datepickers, Timepicker, FileSize controls, Integer, etc.
  */
-function initMenuContext()
-{
-	////	MENU RESPONSIVE (PAS DEPUIS LIGHTBOX)
-	if(isMobile()){
-		//// Click d'un "launcher" (icone/texte) : affiche le menu
-		$(".menuLaunch").click(function(){
-			if($("#respMenuContent").is(":visible")==false)	{showRespMenu(this.getAttribute("for"), this.getAttribute("forBis"));}			//Affiche le menu responsive
-			else											{$("#"+this.getAttribute("for")).addClass("menuContextSubMenu").slideToggle();}	//Sinon s'il est déjà ouvert : affiche à la suite du menu responsive
-		});
-		//// Click sur le "close" : masque le menu
-		$("#respMenuClose,#respMenuBg").click(function(){ hideRespMenu(); });
-		//// Init le Swipe sur la page pour afficher/masquer le menu
-		responsiveSwipe();
-		//// Affiche le bouton en bas de page pour ajouter un nouvel element (cf. "plusResp.png" dans "VueStructure.php")
-		var addElemButtonLine=$("#pageModMenu img[src*='plus.png']").first().parents(".menuLine");//Sélectionne le div ".menuLine" du premier bouton "Ajouter" : il contient le "onclick"
-		if(addElemButtonLine.exist())  {$("#respAddButton").attr("onclick",addElemButtonLine.attr("onclick")).show();}//Ajoute ensuite l'attribut "onclick" au bouton responsive, puis affiche ce bouton
-	}
-	////	MENU NORMAL
-	else{
-		//// Mouseover/Click d'un "launcher" (icone/texte) : Affiche le menu contextuel correspondant  && Stop la propagation
-		$(".menuLaunch").on("mouseover click",function(event){  showMenuContext(this,event);  event.stopPropagation();  });
-		//// Survol un nouveau block d'objet || Click un div qui n'est pas un block d'objet ou un menu context : Masque les menus contextuels
-		$(".objContainer[for^='objMenu_']").on("mouseenter",function(){  $(".menuContext").hide();  });
-		$("div").not(".objContainer,.menuContext").click(function(){  $(".menuContext").hide();  });
-		//// On sort du menu contextuel : on le masque (pas d'animation genre "slideUp")
-		$(".menuContext").on("mouseleave",function(){  $(this).hide();  });
-		//// Arrête de survoler le launcher d'un menu contextuel (il peut être plus grand que le menu) : on masque le menu (sauf pour IExplorer)
-		$(".menuLaunch").on("mouseleave",function(){
-			if($("#"+this.getAttribute("for")).is(':hover')==false && /trident/i.test(navigator.userAgent)==false)  {$("#"+this.getAttribute("for")).hide();}
-		});
-		//// Click Droit d'un block d'objet : affiche le menu context ("Return false" pour pas afficher le menu du browser)
-		$(".objContainer[for^='objMenu_']").on("contextmenu",function(event){ showMenuContext(this,event);  return false; });
-	}
-	////	Click sur les menus d'un objet : pas de propagation sur le block ".objContainer" (pour pas lancer "objSelect()" ou ouvrir un evt)
-	$(".menuContext,.objMiscMenus").click(function(event){ event.stopPropagation(); });
-}
-/*MENU NORMAL : AFFICHE LE MENU CONTEXT*/
-function showMenuContext(thisLauncher, event)
-{
-	////	Récup l'Id du menu &  Spécifie la hauteur max du menu (fonction de la hauteur de page)
-	var menuId="#"+$(thisLauncher).attr("for");
-	$(menuId).css("max-height", Math.round($(window).height()-30)+"px");
-
-	////	Position en fonction : de la position de la souris (click droit sur ".objContainer")  OU  de la position du launcher survolé
-	if(event.type=="contextmenu")																					{var menuPosX=event.pageX - $(thisLauncher).offset().left;	var menuPosY=event.pageY - $(thisLauncher).offset().top;}//".objContainer" tjs en position relative/absolute : ajuste donc la position du menu car il doit être calculé en fonction du ".objContainer" et non de la page (cf. event.pageX et event.pageY)
-	else if(/(trident|edge)/i.test(navigator.userAgent) && $(thisLauncher).parent().css("position")!="relative")	{var menuPosX=$(thisLauncher).offset().left;				var menuPosY=$(thisLauncher).offset().top;}/*Utiliser "offset()" pour un affichage normal des menus sous IExplorer/Edge*/
-	else																											{var menuPosX=$(thisLauncher).position().left;				var menuPosY=$(thisLauncher).position().top;}
-
-	////	Repositionne le menu s'il est au bord droit/bas de la page
-	//Positions du menu + largeur/hauteur : bordure droite et bas du menu
-	var menuRightPos =menuPosX + $(menuId).outerWidth(true);
-	var menuBottomPos=menuPosY + $(menuId).outerHeight(true);
-	//Parent ".objContainer" en position "relative"/"absolute" : ajoute sa position sur la page via "offset()"
-	if(/(relative|absolute)/i.test($(menuId).parent().css("position"))){
-		menuRightPos+=$(menuId).parent().offset().left;
-		menuBottomPos+=$(menuId).parent().offset().top;
-	}
-	//Vérifie et ajuste si besoin la position si on est en bordure de page
-	var posPageRight=$(window).width();
-	var posPageBottom=$(window).height()+$(window).scrollTop();
-	if(posPageRight < menuRightPos)		{menuPosX=menuPosX-(menuRightPos-posPageRight);}
-	if(posPageBottom < menuBottomPos)	{menuPosY=menuPosY-(menuBottomPos-posPageBottom);}
-
-	////	Repositionne le menu (recentre)
-	if(menuPosX>5)	{menuPosX-=10;	menuPosY-=10;}//Recentre le menu sur le curseur (sauf s'il est en bordure de page)
-	$(menuId).css("left",parseInt(menuPosX)+"px").css("top",parseInt(menuPosY)+"px").slideDown(20);//20ms max. Pas "show()" car pose probleme si le menu est tt à droite de la page
-	$(".menuContext").not(menuId).hide();
-}
-/*MENU RESPONSIVE : AFFICHE LE MENU CONTEXT (cf. VueStructure.php)*/
-function showRespMenu(menuOneSourceId, menuTwoSourceId)
-{
-	//Id des menus d'origine qui seront intégrés au menu responsive
-	respMenuOneSourceId="#"+menuOneSourceId;
-	respMenuTwoSourceId=(typeof menuTwoSourceId=="string") ? "#"+menuTwoSourceId : null;
-	//Vérifie que le menu demandé existe bien
-	if($(respMenuOneSourceId).exist())
-	{
-		//Déplace les menus demandés dans "#respMenuOne" et "#respMenuTwo"  ("appendTo()" conserve les listeners, contrairement à "html()")
-		$(respMenuOneSourceId+">*").appendTo("#respMenuOne");
-		if($(respMenuTwoSourceId).exist())  {$(respMenuTwoSourceId+">*").appendTo("#respMenuTwo");  $("#respMenuTwo").show();}
-		//Affiche le menu et son contenu
-		$("#respMenuOne,#respMenuBg").fadeIn(50);
-		$("#respMenuMain").css("right","0px").show("slide",{direction:"right"});//Réinit si besoin la position "right" (cf. "hideRespMenu()"), Puis affiche le menu
-		//Désactive le scroll de page en arriere plan
-		$("body").css("overflow","hidden");
-	}
-}
-/*MENU RESPONSIVE : MASQUE LE MENU RESPONSIVE*/
-function hideRespMenu(swipeCurrentX)
-{
-	//Vérif que le menu est bien affiché
-	if($("#respMenuMain").is(":visible"))
-	{
-		//Masque progressivement le menu sur les 120 premiers pixels de "swipe" (déplace le menu vers la droite en même temps que le swipe)
-		if(typeof swipeCurrentX!="undefined" && parseInt($("#respMenuMain").css("right")) > -120)	{$("#respMenuMain").css("right", "-"+(swipeCurrentX-swipeBeginX)+"px");}
-		//Sinon on masque totalement le menu
-		else
-		{
-			//Masque les menus (action inverse de "showRespMenu()")
-			$("#respMenuOne,#respMenuTwo,#respMenuBg").fadeOut(50);
-			$("#respMenuMain").hide("slide",{direction: "right"});
-			//Remet le contenu de "#respMenuOne" et "#respMenuTwo" dans leur div d'origine ("respMenuOneSourceId" et "respMenuTwoSourceId")
-			$("#respMenuOne>*").appendTo(respMenuOneSourceId);
-			if(respMenuTwoSourceId!=null)  {$("#respMenuTwo>*").appendTo(respMenuTwoSourceId);}
-			//Réactive le scroll de page en arriere plan
-			$("body").css("overflow","visible");
-		}
-	}
-}
-/*MENU RESPONSIVE : SWIPE SUR LA PAGE POUR AFFICHER/MASQUER LE MENU*/
-function responsiveSwipe()
-{
-	document.addEventListener("touchmove",function(event){
-		//Détecte un swipe horizontal (amplitude verticale < 40px)
-		if(typeof swipeBeginX!="undefined"  &&  Math.abs(swipeBeginY - event.touches[0].clientY) < 40)
-		{
-			//Swipe right (mouvement de 10px minimum) => Masque progressivement/totalement le menu
-			if((event.touches[0].clientX - swipeBeginX) > 10){
-				hideRespMenu(event.touches[0].clientX);
-			}
-			//Swipe left (mouvement de 60px minimum), à moins de 80px du bord droit de la page => Affiche le menu
-			else if((swipeBeginX - event.touches[0].clientX) > 60  &&  parseInt($(window).width()-swipeBeginX)<80){
-				//Affiche la liste des modules ("headerModuleTab")  OU  le menu principal de la page ("headerMainMenu")
-				if($("#headerModuleTab").exist())		{showRespMenu("headerModuleTab","pageModMenu");}
-				else if($("#headerMainMenu").exist())	{showRespMenu("headerMainMenu","pageModMenu");}
-			}
-		}
-	});
-	//Fin du "touch" et menu en partie masqué => on le raffiche totalement (cf. position "right" du "hideRespMenu()")
-	document.addEventListener("touchend",function(){
-		if($("#respMenuMain").is(":visible") && parseInt($("#respMenuMain").css("right"))<0)  {$("#respMenuMain").css("right","0px");}
-	});
-}
-
-/*
- * Initialise les controles de champs -> Datepickers, FileSize controls, Integer, etc
- */
-function inputControls()
-{
+$(function(){
 	////	Formulaire modifié : passe "confirmCloseForm" à "true" pour la confirmation de fermeture (".noConfirmClose" : sauf les forms de connexion and co. Ajoute "parent" pour cibler les "form" de lightbox)
 	setTimeout(function(){
 		$("form:not(.noConfirmClose)").find("input,select,textarea").on("change keyup",function(){ windowParent.confirmCloseForm=true; });
@@ -411,6 +232,165 @@ function inputControls()
 	
 	////	Pas d'autocomplétion sur TOUS les inputs des formulaires (password, dateBegin, etc) !
 	$("form input").attr("autocomplete","off");
+});
+
+/*
+ * DOCUMENT READY : INITIALISE L'AFFICHAGE DES PAGES PRINCIPALES
+ * => Menu flottant / Largeur des blocks d'objet / Clic sur les blocks d'objet / Etc.
+ */
+function mainPageDisplay(firstLoad)
+{
+	////	Affiche les "Title" avec Tooltipster
+	tooltipsterOptions={contentAsHTML:true,delay:400,maxWidth:500,theme:"tooltipster-shadow"};//variable globale
+	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);
+	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
+
+	////	Fancybox des images (dans les news, etc) & inline (contenu html)
+	var fancyboxImagesButtons=(isMobile()) ? ['close'] : ['fullScreen','thumbs','close'];
+	$("[data-fancybox='images']").fancybox({buttons:fancyboxImagesButtons});
+	$("[data-fancybox='inline']").fancybox({touch:false,arrows:false,infobar:false,smallBtn:false,buttons:['close']});//Pas de navigation entre les elements "inline" ("touch","arrow","infobar"). Pas de "smallBtn" close, mais plutôt celui en haut à droite.
+
+	////	Initialise toute la page : largeur des blocks d'objet, Footer, etc.
+	if(firstLoad===true)
+	{
+		////	Calcule la largeur des objets ".objContainer" (Affichage "block" uniquement. Calculé en fonction de la largeur de la page : après loading ou resize de la page)
+		if($(".objBlocks .objContainer").length>0)
+		{
+			//Marge & Largeur min/max des objets
+			var objMargin=parseInt($(".objContainer").css("margin-right"))+1;
+			var objMinWidth=parseInt($(".objContainer").css("min-width"));
+			var objMaxWidth=parseInt($(".objContainer").css("max-width")) + objMargin;//ajoute la marge pour l'application du "width()"
+			//Largeur disponible
+			var containerWidth=$("#pageFullContent").width();//pas de "innerWidth()" car cela ajoute le "padding"
+			if(isMobile()==false && $(document).height()==$(window).height())	{containerWidth=containerWidth-18;}//pas encore d'ascenseur : anticipe son apparition (sauf en responsive ou l'ascenseur est masqué)
+			//Calcul la largeur des objets
+			var objWidth=null;
+			var lineNbObjects=Math.ceil(containerWidth / objMaxWidth);//Nb maxi d'objets par ligne
+			if(containerWidth < (objMinWidth*2))				{objWidth=containerWidth;  $(".objContainer").css("max-width",containerWidth);}	//On peut afficher qu'un objet par ligne : il prendra la largeur du conteneur
+			else if($(".objContainer").length<lineNbObjects)	{objWidth=objMaxWidth;}															//Nb d'objets insuffisant pour remplir la 1ère ligne : il prendra sa largeur maxi
+			else												{objWidth=Math.floor(containerWidth/lineNbObjects);}							//Sinon on calcul : fonction du conteneur et du nb d'objets par ligne
+			//Applique la largeur des blocks (enlève le margin: pas pris en compte par le "outerWidth")  &&  Rend visible si ce n'est pas le cas !!
+			$(".objContainer").outerWidth(Math.round(objWidth-objMargin)+"px");
+		}
+		//...affiche à nouveau après l'éventuel calcul ci-dessus : ".objBlocks" masqués par défaut via "common.css"!
+		$(".objBlocks").css("visibility","visible");
+
+		////	Affichage du footer
+		$("#pageFooterHtml").css("max-width", parseInt($(window).width()-$("#pageFooterIcon").width()-20));//Pour que "pageFooterHtml" ne se superpose pas à "pageFooterIcon"
+		setTimeout(function(){  $("#pageFull,#pageCenter").css("margin-bottom",footerHeight());  },300);//"margin-bottom" sous le contenu principal : pour pas être masqué par le Footer. Timeout car "footerHeight()" est fonction du "#livecounterMain" chargé en Ajax..
+	}
+}
+
+/*
+ * DOCUMENT READY : INITIALISE LES MENUS CONTEXTUELS
+ * chaque launcher (icone/texte/block d'objet) doit avoir la propriété "for" correspondant à l'ID du menu  &&  une class "menuLaunch" (sauf pour les launcher de block d'objet) 
+ */
+function initMenuContext()
+{
+	////	MENU RESPONSIVE (width<=1024)
+	if(isMobile()){
+		//// Click d'un "launcher" (icone/texte) : affiche le menu responsive
+		$(".menuLaunch").click(function(){
+			if($("#respMenuContent").is(":visible")==false)	{showRespMenu(this.getAttribute("for"),this.getAttribute("forBis"));}			//Menu masqué : on l'affiche
+			else											{$("#"+this.getAttribute("for")).addClass("menuContextSubMenu").slideToggle();}	//Menu déjà affiché : on affiche le sous-menu
+		});
+		//// Swipe sur la page pour afficher/masquer le menu
+		document.addEventListener("touchmove",function(event){
+			if(typeof swipeBeginX!="undefined"  &&  Math.abs(swipeBeginY - event.touches[0].clientY) < 40){					//Swipe horizontal de 40px maxi d'amplitude verticale
+				if((event.touches[0].clientX - swipeBeginX) > 10)  {hideRespMenu(event.touches[0].clientX);}				//Swipe right : masque progressivement le menu  (swipe d'au moins 10px)
+				else if((swipeBeginX - event.touches[0].clientX) > 50  &&  parseInt($(window).width()-swipeBeginX)<100){	//Swipe left : affiche le menu  (swipe d'au moins 50px, à moins de 100px du bord droit de la page)
+					if($("#headerModuleTab").exist())		{showRespMenu("headerModuleTab","pageModMenu");}				//Affiche la liste des modules ("headerModuleTab")
+					else if($("#headerMainMenu").exist())	{showRespMenu("headerMainMenu","pageModMenu");}					//Affiche sinon le menu principal de la page ("headerMainMenu")
+				}
+			}
+		});
+		//// Swipe terminé ("touchend") && menu en partie masqué => on le raffiche totalement (cf. position "right" du "hideRespMenu()")
+		document.addEventListener("touchend",function(){
+			if($("#respMenuMain").is(":visible") && parseInt($("#respMenuMain").css("right"))<0)  {$("#respMenuMain").css("right","0px");}
+		});
+		//// Click sur l'icone "close" ou le background du menu responsive : masque le menu
+		$("#respMenuClose,#respMenuBg").click(function(){ hideRespMenu(); });
+	}
+	////	MENU NORMAL (tester sur tablette)
+	else{
+		//// Mouseover/Click d'un "launcher" (icone/texte) : affiche le menu classique
+		$(".menuLaunch").on("mouseover click",function(){ showMenuContext(this); });
+		//// Click Droit d'un block d'objet : affiche le menu context ("Return false" pour pas afficher le menu du browser)
+		$(".objContainer[for^='objMenu_']").on("contextmenu",function(event){ showMenuContext(this,event);  return false; });
+		//// Masque le menu dès qu'on le quitte
+		$(".menuContext").on("mouseleave",function(){ $(".menuContext").hide(); });
+	}
+	////	Click/Survol le corps de la page : masque le menu contextuel
+	$("#pageFull,#pageCenter").on("click mouseenter", function(){ $(".menuContext").hide(); });
+	////	Click sur un menu context ou son launcher : pas de propagation au block ".objContainer" (exple: pour pas sélectionner un block d'objet via "objSelect()")
+	$(".menuLaunch,.menuContext").click(function(event){ event.stopPropagation(); });
+}
+/*MENU NORMAL : AFFICHE LE MENU CONTEXT*/
+function showMenuContext(thisLauncher, event)
+{
+	////	Récup l'Id du menu  &&  Hauteur max du menu en fonction de la hauteur de page (cf. "overflow:scroll")
+	var menuId="#"+$(thisLauncher).attr("for");
+	$(menuId).css("max-height", Math.round($(window).height()-30)+"px");
+	////	Vérif si un des parents est en position "relative|absolute|fixed"
+	var parentRelativeAbsolute=false;
+	$(menuId).parents().each(function(){  if(/(relative|absolute|fixed)/i.test($(this).css("position"))) {parentRelativeAbsolute=true; return false;}  });
+	////	Position du menu
+	if(event && event.type=="contextmenu")	{var menuPosX=event.pageX-$(thisLauncher).offset().left;	var menuPosY=event.pageY - $(thisLauncher).offset().top;}//En fonction click droit sur ".objContainer". Ajuste la position en fonction de ".objContainer" (toujours en position relative/absolute)
+	else if(parentRelativeAbsolute==true)	{var menuPosX=$(thisLauncher).position().left;				var menuPosY=$(thisLauncher).position().top;}			 //En fonction de sa position absolute/relative
+	else									{var menuPosX=$(thisLauncher).offset().left;				var menuPosY=$(thisLauncher).offset().top;}				 //En fonction de sa position sur la page
+	////	Repositionne le menu s'il est au bord droit/bas de la page
+	//Positions du menu + largeur/hauteur : bordure droite et bas du menu
+	var menuRightPos =menuPosX + $(menuId).outerWidth(true);
+	var menuBottomPos=menuPosY + $(menuId).outerHeight(true);
+	//"Parent" en position relative/absolute : ajoute sa position sur la page
+	if(/(relative|absolute|fixed)/i.test($(menuId).parent().css("position")))  {menuRightPos+=$(menuId).parent().offset().left;  menuBottomPos+=$(menuId).parent().offset().top;}
+	//Ajuste si besoin la position si on est en bordure de page
+	var pageBottomPosition=$(window).height()+$(window).scrollTop();
+	if($(window).width() < menuRightPos)	{menuPosX=menuPosX-(menuRightPos-$(window).width());}
+	if(pageBottomPosition < menuBottomPos)	{menuPosY=menuPosY-(menuBottomPos-pageBottomPosition);}
+	////	Positionne et affiche le menu
+	if(menuPosY>15)  {menuPosX-=15;  menuPosY-=15;}//recentre le menu de 20px
+	$(menuId).css("left",menuPosX+"px").css("top",menuPosY+"px").slideDown(20);//Positionne le menu. Affiche avec un rapide slide (pas de "show()"!)
+	$(".menuContext").not(menuId).hide();//Masque les autres menus
+}
+/*MENU RESPONSIVE : AFFICHE LE MENU CONTEXT (cf. VueStructure.php)*/
+function showRespMenu(menuOneSourceId, menuTwoSourceId)
+{
+	//// Id des menus d'origine qui seront intégrés au menu responsive
+	respMenuOneSourceId="#"+menuOneSourceId;
+	respMenuTwoSourceId=(typeof menuTwoSourceId=="string") ? "#"+menuTwoSourceId : null;
+	//// Vérifie que le menu demandé existe bien
+	if($(respMenuOneSourceId).exist())
+	{
+		//Déplace les menus demandés dans "#respMenuOne" et "#respMenuTwo"  ("appendTo()" conserve les listeners, contrairement à "html()")
+		$(respMenuOneSourceId+">*").appendTo("#respMenuOne");
+		if($(respMenuTwoSourceId).exist())  {$(respMenuTwoSourceId+">*").appendTo("#respMenuTwo");  $("#respMenuTwo").show();}
+		//Affiche le menu et son contenu
+		$("#respMenuOne,#respMenuBg").fadeIn(50);
+		$("#respMenuMain").css("right","0px").show("slide",{direction:"right"});//Réinit si besoin la position "right" (cf. "hideRespMenu()"), Puis affiche le menu
+		//Désactive le scroll de page en arriere plan
+		$("body").css("overflow","hidden");
+	}
+}
+/*MENU RESPONSIVE : MASQUE LE MENU RESPONSIVE*/
+function hideRespMenu(swipeCurrentX)
+{
+	if($("#respMenuMain").is(":visible"))
+	{
+		//// Masque progressivement le menu sur les 80 premiers pixels de "swipe" (déplace le menu vers la droite en même temps que le swipe)
+		if(typeof swipeCurrentX!="undefined" && parseInt($("#respMenuMain").css("right")) > -80)  {$("#respMenuMain").css("right", "-"+(swipeCurrentX-swipeBeginX)+"px");}
+		//// Sinon on masque totalement le menu
+		else{
+			//Masque les menus
+			$("#respMenuOne,#respMenuTwo,#respMenuBg").fadeOut(50);
+			$("#respMenuMain").hide("slide",{direction: "right"});
+			//Remet le contenu de "#respMenuOne" et "#respMenuTwo" dans leur div d'origine ("respMenuOneSourceId" et "respMenuTwoSourceId")
+			$("#respMenuOne>*").appendTo(respMenuOneSourceId);
+			if(respMenuTwoSourceId!=null)  {$("#respMenuTwo>*").appendTo(respMenuTwoSourceId);}
+			//Réactive le scroll de page en arriere plan
+			$("body").css("overflow","visible");
+		}
+	}
 }
 
 /*
@@ -435,27 +415,30 @@ function isValidPassword(password)
  */
 function find(needle, haystack)
 {
-	//Convertir en texte puis en minuscule : recherche la position de needle dans haystack
-	if(typeof haystack!="undefined")	{return (haystack.toString().toLowerCase().indexOf( needle.toString().toLowerCase() ) >= 0) ? true : false;}
+	//Converti tout en minuscule & recherche la position de needle dans haystack
+	if(typeof haystack!="undefined")  {return (haystack.toString().toLowerCase().indexOf(needle.toString().toLowerCase()) >= 0);}
 }
 
 /*
  * Affiche un message de notification (via le plugin Jquery "toastmessage")
  */
-function notify(message, typeNotif)
+function notify(curMessage, typeNotif)
 {
-	//Type de notification :  "success" vert  /  "warning" jaune  /  "notice" bleu (par défaut)
-	var typeNotif=(typeof typeNotif!="undefined")  ?  typeNotif  :  "notice";
-	//Temps d'affichage de la notification  (1 seconde pour 10 caracteres & 5 secondes minimum)
-	var stayTime=parseInt(message.length/10);
-	if(stayTime<5)  {stayTime=5;}
-	//Affiche la notification
-	windowParent.$().toastmessage("showToast",{
-		text		: message,
-		type		: typeNotif,
-		position	: "top-center",
-		stayTime	: (stayTime*1000)//stayTime en microsecondes
-	});
+	if(typeof curMessage!="undefined")
+	{
+		//Type de notification :  "success" vert  /  "warning" jaune  /  "notice" bleu (par défaut)
+		var type=(typeof typeNotif!="undefined")  ?  typeNotif  :  "notice";
+		//Temps d'affichage de la notification  (1 seconde pour 10 caracteres & 5 secondes minimum)
+		var stayTime=parseInt(curMessage.length/10);
+		if(stayTime<5)  {stayTime=5;}
+		//Affiche la notification
+		windowParent.$().toastmessage("showToast",{
+			text		: curMessage,
+			type		: type,
+			position	: "top-center",
+			stayTime	: (stayTime*1000)//stayTime en microsecondes
+		});
+	}
 }
 
 /*
@@ -584,37 +567,48 @@ function lightboxClose(urlSpecific, urlMoreParms)
 }
 
 /*
- * Navigation en mode "mobile" si le width est inférieur à 1023px  (cf. Req.php && Common.js && Common.css)
+ * Navigation en mode "mobile" si le width est inférieur à 1024px  (IDEM Req.php && && Common.css)
  */
 function isMobile()
 {
-	return (windowParent.document.body.clientWidth<=1023);
+	return (windowParent.document.body.clientWidth<1024);
+}
+
+/*
+ * Navigation sur un appareil tactile (Android/Ipad/Iphone)
+ */
+function isTouchDevice()
+{
+	return (/android|iphone|ipad|BlackBerry/i.test(navigator.userAgent));
 }
 
 /*
  * Confirmer une suppression puis rediriger pour effectuer la suppresion
  */
-function confirmDelete(redirUrl, labelConfirmDeleteDbl, ajaxControlUrl, ajaxConfirmLabel)
+function confirmDelete(redirUrl, labelConfirmDeleteDbl, ajaxControlUrl)
 {
-	////	Demande de confirmation  & Si besoin, 2ème confirmation
+	////	"Confirmer la suppression ?"
 	if(confirm(labelConfirmDelete)==false)  {return false;}
+	////	"Cette action est définitive : confirmer tout de même ?" (ou un autre label)
 	if(isEmptyValue(labelConfirmDeleteDbl)==false && confirm(labelConfirmDeleteDbl)==false)  {return false;}
-	////	Suppression directe ..ou suppression après controle Ajax
+	////	Suppression directe
 	if(isEmptyValue(ajaxControlUrl))  {redir(redirUrl);}
+	////	OU suppression après controle Ajax (dossier)
 	else{
-		$.ajax(ajaxControlUrl).done(function(result){
-			if(result=="true" || confirm(ajaxConfirmLabel))  {redir(redirUrl);}//exple: "Attention! certains sous-dossiers ne vous sont pas accessibles..."
+		$.ajax({url:ajaxControlUrl,dataType:"json"}).done(function(result){
+			if(result.confirmDeleteFolderAccess && confirm(result.confirmDeleteFolderAccess)==false)  {return false;}	//Confirm "Certains sous-dossiers ne vous sont pas accessibles... confirmer?"
+			if(result.notifyBigFolderDelete)  {notify(result.notifyBigFolderDelete,"warning");}							//Notify "merci de patienter un instant avant la fin du processus"
+			redir(redirUrl);																							//Lance la suppression
 		});
 	}
 }
 
 /*
- * Scroll vers un element OU en bas de page
+ * Scroll vers un element
  */
 function toScroll(thisSelector)
 {
-	var heightReference=(thisSelector && $(thisSelector).exist())  ?  $(thisSelector).position().top  :  $(document).height();
-	$("html,body").animate({scrollTop:heightReference},100);
+	$("html,body").animate({scrollTop:Math.round($(thisSelector).offset().top-110)},200);//Enlève 110px du header menu fixe
 }
 
 /*
@@ -669,7 +663,7 @@ function footerHeight()
 	//Icone du footer / Text html du footer  /  LivecounterMain (recup la hauteur préétablie via CSS, le contenu du livecounter est chargé après via Ajax)
 	var footerHeightTmp=0;
 	$("#pageFooterHtml:visible,#pageFooterIcon:visible,#livecounterMain:visible").each(function(){
-		if($(this).html().length>0 && footerHeightTmp<$(this).outerHeight(true))  {footerHeightTmp=$(this).outerHeight(true);}//controle la length, car le "pageFooterHtml" peut être vide mais affiché..
+		if($(this).html().length>0 && footerHeightTmp<$(this).outerHeight(true))  {footerHeightTmp=$(this).outerHeight(true);}//Controle du ".length" car le contenu peut être vide mais quant même affiché ("&nbsp;" & co)
 	});
 	return footerHeightTmp+2;//+ 2px de marge (cf. "blox-shadow" des blocs)
 }

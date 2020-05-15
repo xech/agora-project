@@ -19,7 +19,7 @@ class CtrlOffline extends Ctrl
 	 */
 	public static function actionDefault()
 	{
-		static::$isMainPage=true;
+		//Init
 		$vDatas=[];
 		////	Reset du password
 		if(Req::isParam("resetPasswordMail"))

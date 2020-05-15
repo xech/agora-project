@@ -201,7 +201,7 @@ function mainFormControl()
 /*OPTIONS D'EDITION (ex 'fieldset')*/
 #objMenuBlocks							{text-align:left; margin-top:33px;}
 #objMenuLabels							{display:table; width:100%; margin:33px 0px -33px 0px;}
-.objMenuLabel							{display:table-cell; padding:3px; padding-top:8px; padding-bottom:8px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
+.objMenuLabel							{display:table-cell; padding:10px 5px 5px 5px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
 .objMenuLabel[for='objMenuMain']		{min-width:150px!important;}/*droits d'accès*/
 .objMenuLabel>span						{display:inline-block; margin-left:15px;}
 .objMenuLabel:not(.objMenuLabelUnselect){border-bottom:none!important;}
@@ -210,7 +210,7 @@ function mainFormControl()
 /*DROITS D'ACCÈS*/
 #objMenuMain							{text-align:center;}
 [id^=spaceTable]						{text-align:center; margin-top:20px; margin-bottom:40px;}
-.vSpaceTable							{display:inline-table; min-width:450px; max-width:100%; background-color:#f8f8f8;}/*idem responsive!*/
+.vSpaceTable							{display:inline-table; min-width:450px; max-width:100%; background-color:<?= Ctrl::$agora->skin=="black"?"#333":"#f8f8f8;"?>}/*idem responsive!*/
 .vSpaceTable>div						{display:table-row;}
 .vSpaceTable>div>div					{display:table-cell; padding:5px 3px 5px 3px;}
 .vSpaceTable img						{max-height:15px;}
@@ -408,6 +408,6 @@ elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions
 }
 
 ////	BOUTON DE VALIDATION ET INPUTS HIDDEN ("ctrl"/"action"/etc)  &&  "_idContainer"  &&  ICONE "LOADING"
-echo Txt::submit();
+echo Txt::submitButton();
 if(!empty($curObj->_idContainer))  {echo "<input type='hidden' name='_idContainer' value=\"".$curObj->_idContainer ."\">";}
 echo "<div class='loadingImg'><img src='app/img/loading.gif'></div>";

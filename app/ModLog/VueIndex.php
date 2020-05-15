@@ -17,7 +17,7 @@ $(function(){
             "sInfoFiltered": "(<?= Txt::trad("LOG_filterSince") ?> _MAX_ logs)",// Ajouté si on filtre les infos dans une table (pour donner une idée de la force du filtrage)
             "sSearch":"<img src='app/img/search.png'>",							//champs "search"
 			"oPaginate":{
-				"sPrevious": "<img src='app/img/navPrevious.png'>",
+				"sPrevious": "<img src='app/img/navPrev.png'>",
 				"sNext": "<img src='app/img/navNext.png'>"
 			}
         }

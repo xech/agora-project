@@ -14,7 +14,7 @@
 	////	Ajout d'élément
 	if(!empty($addElemLabel) && $curFolder->editContentRight()){
 		echo "<div class='pathIcon'>
-				<img src='app/img/arrowRightAdd.png'><img src='app/img/plus.png' class='menuLaunch' for='folderPathAddMenu'>
+				<img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png' class='menuLaunch' for='folderPathAddMenu'>
 				<div id='folderPathAddMenu' class='menuContext'>
 					<div class='menuLine sLink' onclick=\"lightboxOpen('".$addElemUrl."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".$addElemLabel."</div></div>
 					<div class='menuLine sLink' onclick=\"lightboxOpen('".$curFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
