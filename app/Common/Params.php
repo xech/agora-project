@@ -10,8 +10,8 @@
 //Version et Url du soft
 define("VERSION_AGORA","3.7.2");//sur 3 niveaux (4 max.)
 define("VERSION_AGORA_PHP_MINIMUM","5.5");
-define("OMNISPACE_URL_PUBLIC","https://www.omnispace.fr");
-define("OMNISPACE_URL_LABEL","www.omnispace.fr");
+define("OMNISPACE_URL_PUBLIC","https://www.we-do-change.org");
+define("OMNISPACE_URL_LABEL","Global Leadership Academy");
 
 //Init le "PATH_DATAS" & Chemins spécifiques
 if(is_file("Host.php"))	{require_once "Host.php";  Host::initHost();}

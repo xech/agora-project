@@ -38,12 +38,15 @@ input, textarea			{width:100%!important;}
 		<option value="<?= $tmpSpace->_id ?>" title="<?= $tmpSpace->description ?>"><?= $tmpSpace->name ?></option>
 		<?php } ?>
 	</select><br>
-	<input type="text" name="name" placeholder="<?= Txt::trad("name"); ?>"><br>
 	<input type="text" name="firstName" placeholder="<?= Txt::trad("firstName"); ?>"><br>
+	<input type="text" name="name" placeholder="<?= Txt::trad("name"); ?>"><br>
 	<input type="text" name="mail" placeholder="<?= Txt::trad("mail"); ?>"><br>
 	<input type="password" name="password" class="editInputPassword" placeholder="<?= Txt::trad("password"); ?>"><br>
 	<input type="password" name="passwordVerif" class="editInputPassword" placeholder="<?= Txt::trad("passwordVerif"); ?>"><br>
-	<textarea name="message" placeholder="<?= Txt::trad("comment"); ?>"><?= Req::getParam("message") ?></textarea><br>
+	<textarea name="message" placeholder="In which Lab did you participate? 
+Are you part of a partner community?
+(For example: GDL, Bosch Alumni, etc.)"><?= Req::getParam("message") ?></textarea><br>
+	<!-- <textarea name="message" placeholder="<?= Txt::trad("comment"); ?>"><?= Req::getParam("message") ?></textarea><br> -->
 	<?= CtrlMisc::menuCaptcha() ?>
 	<?= Txt::submitButton() ?>
 </form>

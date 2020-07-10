@@ -132,6 +132,7 @@ $(function(){
 
 		<!--FORMULAIRE PRINCIPAL DE CONNEXION-->
 		<form action="index.php" method="post" id="formConnect" class="noConfirmClose" OnSubmit="return controlConnect()">
+		<div style="padding-bottom: 25px;"><img src="/app/img/logoLabel.png"></div>
 			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("loginPlaceholder") ?>" title="<?= Txt::trad("loginPlaceholder") ?>">
 			<input type="password" name="connectPassword" value="<?= Req::getParam("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>">
 			<?php if(Req::isParam(["targetObjUrl","_idSpaceAccess"])){ ?>
