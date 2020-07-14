@@ -74,16 +74,24 @@ class File
 				"videoPlayer"=>array("mp4","webm"),			//lightbox video
 				"mediaPlayer"=>array("mp4","webm","mp3"),	//lightbox mp3
 				"pdfTxt"=>array("pdf","txt","text"),		//lightbox pdf/txt
-				"attachedFileInsert"=>array("jpg","jpeg","png","gif","mp4","webm","mp3"),										//Fichiers joints pouvant être intégrés dans une description (imageBrowser + mediaPlayer)
+				"attachedFileInsert"=>array("jpg","jpeg","png","gif","mp4","webm","mp3"),	//Fichiers joints pouvant être intégrés dans une description (imageBrowser + mediaPlayer)
+				"youtube"=>array("youtube", "yt"),		//lightbox video
+				"vimeo"=>array("vimeo", "vm"),			//lightbox video
+				// "onlinePlayer"=>array("youtube", "vimeo", "yt", "vm"),			// lightbox player
+				"google"=>array("google", "ggl"),		// new window
+				"sharepoint"=>array("sharepoint", "spnt"),	// new window
+				"onedrive"=>array("onedrive", "odrv"),	// new window
+				// "remoteFile"=>array("google", "ggl", "sharepoint", "spnt", "onedrive", "odrv"),	// new window
+				"url"=>array("url"),			// new window
 				"forbidden"=>array("htaccess","sh","so","bin","cgi","rpm","deb","bat","php","phtml","php3","php4","php5","js")	//Fichiers script interdits
 			);
 		}
-		//renvoie les fichiers correspondant aux types
+		//returns the files corresponding to the types
 		return (array_key_exists($typeKey,static::$_fileTypes))  ?  static::$_fileTypes[$typeKey]  :  array();
 	}
 
 	/*
-	 * Controle le type de fichier en fonction de son extension
+	 * Controls the type of file according to its extension
 	 */
 	public static function isType($typeKey, $fileName)
 	{
@@ -91,10 +99,9 @@ class File
 	}
 	
 	/*
-	 * Controle l'upload d'un nouveau fichier : type de fichier autorisé & espace disque suffisant ?
+	 * Controls the upload of a new file: allowed file type & sufficient disk space?
 	 */
-	public static function controleUpload($fileName, $fileSize, $datasFolderSize=null)
-	{
+	public static function controleUpload($fileName, $fileSize, $datasFolderSize=null)	{
 		//Init le $datasFolderSize
 		$datasFolderSize=(!empty($datasFolderSize))  ?  $datasFolderSize  :  self::datasFolderSize();
 		////	Controle du type de fichier  &  L'espace disque disponible
@@ -106,11 +113,13 @@ class File
 	/*
 	 * Afficher un player Audio/Video/Flash
 	 */
-	public static function getMediaPlayer($filePath)
-	{
-		if(self::isType("videoPlayer",$filePath))	{return "<br><br><video controls controlsList='nodownload' onclick='this.play()'><source src='".$filePath."' type='video/".self::extension($filePath)."'>HTML5 browser is required</video>";}
-		elseif(self::isType("mp3",$filePath))		{return "<br><br><audio controls controlsList='nodownload'><source src='".$filePath."' type='audio/mp3'>HTML5 browser is required</audio>";}
-		elseif(self::isType("flash",$filePath))		{return "<br><br><object type='application/x-shockwave-flash' data='".$filePath."'><param name='movie' value='".$filePath."'></object>";}
+	public static function getMediaPlayer($filePath)	{
+		if(self::isType("videoPlayer",$filePath)) {
+			return "<br><br><video controls controlsList='nodownload' onclick='this.play()'><source src='".$filePath."' type='video/".self::extension($filePath)."'>HTML5 browser is required</video>";
+		} elseif(self::isType("mp3",$filePath))	{
+			return "<br><br><audio controls controlsList='nodownload'><source src='".$filePath."' type='audio/mp3'>HTML5 browser is required</audio>";
+		} elseif(self::isType("flash",$filePath)) {
+			return "<br><br><object type='application/x-shockwave-flash' data='".$filePath."'><param name='movie' value='".$filePath."'></object>";}
 	}
 
 	/*
@@ -121,8 +130,7 @@ class File
 		////	Annule le download depuis l'appli, pour ne pas bloquer InAppBrowser. Download ensuite le fichier via le browser system, avec en paramètre "fromMobileApp". Note: InAppBrowser et le browser system utilisent les mêmes cookies : "Tool::isMobileApp()" renvoie donc toujours "true"..
 		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
-		elseif(!empty($fileContent) || is_file($filePath))
-		{
+		elseif(!empty($fileContent) || is_file($filePath))		{
 			////	Augmente la duree du script (pas en safemode)
 			@set_time_limit(120);
 			////	Headers
@@ -157,7 +165,7 @@ class File
 	}
 
 	/*
-	 * Readfile du fichier pour un affichage direct par le browser ..sans mettre le chemin réel dans le html
+	 * Readfile of the file for a direct display by the browser without putting the real path in the html
 	 */
 	public static function display($filePath)
 	{
@@ -182,8 +190,7 @@ class File
 	/*
 	 * Taille d'un dossier, en octets  (fonction récursive. Alternative: "du -sb")
 	 */
-	public static function folderSize($folderPath)
-	{
+	public static function folderSize($folderPath)	{
 		$folderSize=0;
 		$folderPath=rtrim($folderPath,"/");//"trimer" uniquement la fin du chemin
 		// Récupère la taille d'un dossier
@@ -233,8 +240,7 @@ class File
 	/*
 	 * Affiche une taille (fichier/dossier) à partir d'une valeur en octets ..ou d'un texte (exple : 10Mo)
 	 */
-	public static function displaySize($size, $displayLabel=true)
-	{
+	public static function displaySize($size, $displayLabel=true)	{
 		$bytesSize=self::getBytesSize($size);
 		if($bytesSize>=self::sizeGo)		{$size=round(($bytesSize/self::sizeGo),2);	$tradLabel="gigaOctet";}
 		elseif($bytesSize>=self::sizeMo)	{$size=round(($bytesSize/self::sizeMo),1);	$tradLabel="megaOctet";}
@@ -245,8 +251,7 @@ class File
 	/*
 	 * Retourne la taille max des fichiers uploadés : en Octets
 	 */
-	public static function uploadMaxFilesize($message=false)
-	{
+	public static function uploadMaxFilesize($message=false)	{
 		$upload_max_filesize=(int)self::getBytesSize(ini_get("upload_max_filesize"));
 		if($message=="error")	{return Txt::trad("FILE_fileSizeError")." :<br>".Txt::trad("FILE_fileSizeLimit")." ".self::displaySize($upload_max_filesize);}
 		if($message=="info")	{return Txt::trad("FILE_fileSizeLimit")." ".self::displaySize($upload_max_filesize);}
@@ -292,8 +297,7 @@ class File
 	/*
 	 * Redimensionne une image ("imgSrc.png"= "imgDest.jpg")
 	 */
-	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)
-	{
+	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)	{
 		// Verifs de base
 		if(self::isType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth))
 		{

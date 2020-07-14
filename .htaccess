@@ -1,0 +1,20 @@
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://community.we-do-change.org/$1 [R,L]
+
+Redirect /glac-inputs https://teams.microsoft.com/l/meetup-join/19%3ameeting_MGU3OTU3NTQtNzRmNy00NTIzLTkxN2ItYWE5OTY0YTQ5Zjli%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%22fdd50a07-fe85-41cf-9048-1192558bf01a%22%7d
+
+Redirect /glac-dialogue-forum https://teams.microsoft.com/l/meetup-join/19%3ameeting_N2U2ZWU2M2QtZWQzMi00NTYyLTg2OTEtZTJhYTlmNjEzOWVi%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%2222421a80-9726-41f1-b044-b4c6fd80758f%22%7d
+
+# Redirect /glac-dialogue-forum https://us02web.zoom.us/j/88172450353?pwd=RVBiZmJ1V2tRRU9nYUdjaC9oMmlxdz09
+
+Redirect /europe-mena-zoom https://zoom.us/j/762680319?pwd=bWxtODRZb1BPOFdYalRDdVN1dXRpQT09
+Redirect /europe-mena-teams https://teams.microsoft.com/l/meetup-join/19%3ameeting_MWRmMjcxZjctZTZkYy00MWJjLWI5OTMtZDEwMjA0YmIxNGYy%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%2286b58f07-f8b9-441b-a312-0d3a89cac19c%22%7d
+
+Redirect /team1 https://teams.microsoft.com/l/meetup-join/19%3ameeting_YWY1MGIzZjMtM2U2MS00N2EyLTg5YjctMjRlZmE3ODY1MWU2%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%22fdd50a07-fe85-41cf-9048-1192558bf01a%22%7d
+
+Redirect /team2 https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZGI0MDcyMTQtOGFmZi00MjBmLTg3NDMtMDIxYzBkODQ3N2Zm%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%22fdd50a07-fe85-41cf-9048-1192558bf01a%22%7d
+
+Redirect /team3 https://teams.microsoft.com/l/meetup-join/19%3ameeting_NDgyYmU2N2EtOTUwZS00NDY5LWFiMTctNDU0NjU0YzYwMmQ0%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%22fdd50a07-fe85-41cf-9048-1192558bf01a%22%7d
+
+Redirect /team4 https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjA4ZTNlMzMtYWU1OC00YTk3LWI0MDItODY3NWI4ZjE0ZGJj%40thread.v2/0?context=%7b%22Tid%22%3a%225bbab28c-def3-4604-8822-5e707da8dba8%22%2c%22Oid%22%3a%22fdd50a07-fe85-41cf-9048-1192558bf01a%22%7d

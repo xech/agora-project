@@ -1,11 +1,11 @@
 <?php
 //CONNEXION À LA BDD : CONSTANTES VIDES PAR DEFAUT!
-define("db_host", "localhost");
-define("db_login", "test");
-define("db_password", "test");
-define("db_name", "test");
+define("db_host", "mysql5.4wdmedia.de");
+define("db_login", "db77916_290");
+define("db_password", "eE8a.grdwkRj");
+define("db_name", "db77916_290");
 
 //ESPACE DISQUE / NB USERS / SALT
-define("limite_espace_disque", "5368709120");
-define("limite_nb_users", "50");
-define("AGORA_SALT", "");
+define("limite_espace_disque", "10737418240");
+define("limite_nb_users", "10000");
+define("AGORA_SALT", "f487719b");

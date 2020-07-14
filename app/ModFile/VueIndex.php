@@ -47,22 +47,29 @@ $(function(){
 	</div>
 	<div id="pageFullContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
-		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
+		////	CURRENT FOLDER PATH & FOLDER LIST
 		echo CtrlObject::folderPathMenu(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles());
 		echo $foldersList;
-		////	LISTE DES FICHIERS
+		////	FILE LIST
 		foreach($filesList as $tmpFile)
 		{
+			$icon = $tmpFile->typeIcon();
 			echo $tmpFile->divContainer("objContentCenter ".$tmpFile->hasThumbClass).$tmpFile->contextMenu().
 				"<div class=\"objContent ".$tmpFile->thumbClass."\">
-					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$tmpFile->typeIcon()."\"></span></div>
-					<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='objIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
-					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
+					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$icon."\"></span></div>";
+			switch(str_replace("app/img/file/fileType/", "", $icon)) {
+				case "youtube.png":	case "vimeo.png":	case "google.png":	case "sharepoint.png":	case "onedrive.png":
+					echo "<div class='objLabel'><span style='cursor: pointer!important;' ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\">".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>";
+					break;
+				default:
+					echo "<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='objIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>";
+			}
+			echo "<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->displayAutorDate()."</div>
 				</div>
 			</div>";
 		}
-		////	AUCUN CONTENU & AJOUTER
+		////	NO CONTENT & ADD
 		if(empty($foldersList) && empty($filesList)){
 			$addElement=(Ctrl::$curContainer->editContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><img src='app/img/plus.png'> ".Txt::trad("FILE_addFile")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("FILE_noFile").$addElement."</div>";

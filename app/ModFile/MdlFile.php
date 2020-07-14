@@ -205,7 +205,15 @@ class MdlFile extends MdlObject
 		elseif(File::isType("video",$this->name))			{return $pathFileTypes."video.png";}
 		elseif(File::isType("executable",$this->name))		{return $pathFileTypes."executable.png";}
 		elseif(File::isType("web",$this->name))				{return $pathFileTypes."web.png";}
-		elseif(File::isType("autocad",$this->name))			{return $pathFileTypes."autocad.png";}
+		elseif(File::isType("autocad",$this->name))			{return $pathFileTypes."autocad.png";}		
+		elseif(File::isType("url",$this->name))			{
+			if(strpos($this->description, "youtube")) 				{return $pathFileTypes."youtube.png";}
+			elseif(strpos($this->description, "vimeo")) 			{return $pathFileTypes."vimeo.png";}
+			elseif(strpos($this->description, "google")) 			{return $pathFileTypes."google.png";}
+			elseif(strpos($this->description, "sharepoint")) 		{return $pathFileTypes."sharepoint.png";}
+			elseif(strpos($this->description, "onedrive")) 		{return $pathFileTypes."onedrive.png";}
+			else 											{ return $pathFileTypes."url.png"; }
+		}
 		else												{return $pathFileTypes."misc.png";}
 	}
 
