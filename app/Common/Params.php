@@ -8,7 +8,7 @@
 
 
 //Version et Url du soft
-define("VERSION_AGORA","3.7.2");//sur 3 niveaux (4 max.)
+define("VERSION_AGORA","3.7.2.1");//sur 3 niveaux (4 max.)
 define("VERSION_AGORA_PHP_MINIMUM","5.5");
 define("OMNISPACE_URL_PUBLIC","https://www.omnispace.fr");
 define("OMNISPACE_URL_LABEL","www.omnispace.fr");

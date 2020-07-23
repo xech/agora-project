@@ -790,8 +790,8 @@ class DbUpdate extends Db
 				//Ajoute le support des 'emoji' dans les messages du messenger : cf. 'utf8mb4'
 				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_userMessengerMessage CHANGE `message` `message` TEXT CHARACTER SET utf8mb4");}
 			}
-			////	MAJ V3.7.2
-			if(self::updateVersion("3.7.2"))
+			////	MAJ V3.7.2.1
+			if(self::updateVersion("3.7.2.1"))
 			{
 				//Ajoute le paramétrage du serveur Jitsi
 				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost varchar(255) DEFAULT NULL AFTER logsTimeOut");

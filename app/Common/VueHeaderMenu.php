@@ -118,8 +118,8 @@
 						echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/shortcut.png'></div><div>".Txt::trad("HEADER_shortcuts")." :</div></div>";
 						foreach($pluginsShortcut as $tmpObj){
 							//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte
-							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel),40);
-							$tmpObj->pluginTooltip=Txt::reduce(strip_tags($tmpObj->pluginTooltip,"<hr><br>"),300);
+							$tmpObj->pluginLabel=Txt::cleanPlugin($tmpObj->pluginLabel,40,null);
+							$tmpObj->pluginTooltip=Txt::cleanPlugin($tmpObj->pluginTooltip,300);
 							echo "<div class='menuLine sLink' onclick=\"".$tmpObj->pluginJsLabel."\" title=\"".$tmpObj->pluginTooltip."\"><div class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div><div>".$tmpObj->pluginLabel."</div></div>";
 						}
 					}

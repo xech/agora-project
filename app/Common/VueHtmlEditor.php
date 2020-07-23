@@ -24,8 +24,8 @@ tinymce.init({
 	autoresize_min_height:(isMainPage==true?350:180),//Hauteur par défaut de l'iframe/textarea de l'éditeur (à préciser pour que le "lightboxResize()" au chargement de la page ne le réduise pas à "130px")
 	selector: "textarea[name='<?= $fieldName ?>']",//selecteur du textarea
 	content_style: "body {font-size:13px;font-family:Arial,Helvetica,Tahoma,Sans-Serif;padding-top:5px;}  p {margin:0px;padding:2px;}",//Style de l'iframe/textarea de l'éditeur (cf. <body> et <p> de "app/css/common.css")
-	//forced_root_block: "div",//Désactivé car l'option "content_style" des balises <p> (ci-dessus) est + souple à gérer
-	entity_encoding: "raw",//Les caracteres spéciaux ne seront pas enregistrées en html, exceptés certains : &amp; &lt; &gt; &quot;
+	//forced_root_block: "div",//Désactivé car l'option "content_style" des balises <p> est plus souple à gérer (ci-dessus)
+	//entity_encoding: "raw",//Les caracteres spéciaux ne seront pas enregistrées en html, exceptés certains : &amp; &lt; &gt; &quot; (ne fonctionne plus depuis la V4)
 	menubar: false,//Pas de "menubar" en haut de l'éditeur
 	statusbar: false,//Pas de "statusbar" en bas de l'éditeur
 	allow_script_urls: true,//Permet l'ajout de js dans les hrefs (exple: "lightboxOpen()")

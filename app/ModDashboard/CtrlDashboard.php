@@ -63,8 +63,8 @@ class CtrlDashboard extends Ctrl
 						else
 						{
 							//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte
-							$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel,"<hr><br>"),200);
-							$tmpObj->pluginTooltip=Txt::reduce(strip_tags($tmpObj->pluginTooltip,"<hr><br>"),500);
+							$tmpObj->pluginLabel=Txt::cleanPlugin($tmpObj->pluginLabel,200);
+							$tmpObj->pluginTooltip=Txt::cleanPlugin($tmpObj->pluginTooltip,500);
 							//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
 							$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
 							//Tooltip : ajoute si besoin l'icone des "Elements courants" (evts et taches)

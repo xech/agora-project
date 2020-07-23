@@ -122,8 +122,8 @@ if(Req::isParam("searchText"))
 	foreach($pluginsList as $tmpObj)
 	{
 		//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte (l'affichage des news est spécifique: affichage complet avec menu context)
-		if($tmpObj::objectType!="dashboardNews")  {$tmpObj->pluginLabel=Txt::reduce(strip_tags($tmpObj->pluginLabel,"<hr><br>"),300);}
-		$tmpObj->pluginTooltip=Txt::reduce(strip_tags($tmpObj->pluginTooltip,"<hr><br>"),500);
+		if($tmpObj::objectType!="dashboardNews")  {$tmpObj->pluginLabel=Txt::cleanPlugin($tmpObj->pluginLabel,300);}
+		$tmpObj->pluginTooltip=Txt::cleanPlugin($tmpObj->pluginTooltip,500);
 		//Affiche le libellé du module?
 		if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj->pluginModule){
 			echo "<div class='vModuleLabel'><img src='app/img/".$tmpObj->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpObj->pluginModule)."_headerModuleName")."<hr></div>";

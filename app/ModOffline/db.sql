@@ -22,6 +22,7 @@ CREATE TABLE `ap_agora` (
   `moduleLabelDisplay` varchar(255) DEFAULT NULL,
   `personsSort` varchar(255) DEFAULT NULL,
   `logsTimeOut` smallint(6) DEFAULT NULL,
+  `visioHost` varchar(255) DEFAULT NULL,
   `sendmailFrom` varchar(255) DEFAULT NULL,
   `smtpHost` varchar(255) DEFAULT NULL,
   `smtpPort` smallint(6) DEFAULT NULL,

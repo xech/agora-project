@@ -131,6 +131,14 @@ class Txt
 	}
 
 	/*
+	 * Reduction et nettoyage d'un texte pour un affichage "plugin" (cf. double "quotes" and co)
+	 */
+	public static function cleanPlugin($text, $maxCaracNb=200, $allowable_tags="<hr><br>")
+	{
+		return htmlspecialchars(self::reduce(strip_tags($text,$allowable_tags),$maxCaracNb));
+	}
+
+	/*
 	 * Texte en majuscule
 	 */
 	public static function maj($text)

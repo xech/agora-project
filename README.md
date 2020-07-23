@@ -39,29 +39,27 @@ Please try to be as detailed as possible in your report.
 <p align="center">
 
   <b>File manager</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/file.jpg"><br><br><br>
- 
-  <b>Video calls</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/visio.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/file.jpg"><br><br><br>
  
   <b>Shared calendars</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/calendar.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/calendar.jpg"><br><br><br>
 
   <b>News and Polls</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/dashboard.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/dashboard.jpg"><br><br><br>
+
 
   <b>Polls</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/dashboardPoll.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/dashboardPoll.jpg"><br><br><br>
 
   <b>Forum</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/forum.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/forum.jpg"><br><br><br>
 
   <b>Shared Tasks/Notes</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/task.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/task.jpg"><br><br><br>
 
   <b>Newsletters</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/mail.jpg"><br><br><br>
+  <img src="https://www.agora-project.net/app/img/screenshots/mail.jpg"><br><br><br>
 
   <b>Contacts directory</b><br><br>
-  <img src="https://www.agora-project.net/app/img/printScreen/contact.jpg">
+  <img src="https://www.agora-project.net/app/img/screenshots/contact.jpg">
 </p>

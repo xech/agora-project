@@ -73,8 +73,8 @@ abstract class Ctrl
 			Txt::loadTrads();
 			////	Affiche une page principale (Controles d'accès au module, Menu principal, Footer, etc)
 			if(Req::$curAction=="default")  {static::$isMainPage=true;}
-			////	Controle d'accès au module de l'espace (Si l'user souhaite afficher un module "standard", autre que les "logs" &co, mais que le module n'est pas affecté à l'espace courant : redirige vers le premier module de l'espace)
-			if(static::$isMainPage==true && self::$curUser->isUser() && in_array(Req::$curCtrl,MdlSpace::$moduleList) && array_key_exists(Req::$curCtrl,self::$curSpace->moduleList())==false)  {self::redir("?ctrl=".key(self::$curSpace->moduleList()));}
+			////	Controle d'accès au module de l'espace (l'user souhaite afficher un module "standard" qui n'est pas affecté à l'espace courant : redirige vers le premier module de l'espace)
+			if(static::$isMainPage==true && !in_array(Req::$curCtrl,["agora","log","offline","space","user"]) && !array_key_exists(Req::$curCtrl,self::$curSpace->moduleList()))  {self::redir("?ctrl=".key(self::$curSpace->moduleList()));}
 			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::getParam("displayAdmin")=="true");
