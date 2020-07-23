@@ -74,9 +74,9 @@ class Trad extends Txt
 		self::$trad["specifyLoginMail"]="It is recommended to use an email as login";
 		self::$trad["login"]="Email / Login";
 		self::$trad["loginPlaceholder"]="Email / Login";
-		self::$trad["connect"]="Connection";
+		self::$trad["connect"]="Log in";
 		self::$trad["connectAuto"]="Remember me";
-		self::$trad["connectAutoInfo"]="Retain my login and password for an automatic connection";
+		self::$trad["connectAutoInfo"]="Remember my login and password to connect automatically";
 		self::$trad["gSigninButton"]="Login with Google";
 		self::$trad["gSigninButtonInfo"]="Sign in with your Gmail account : to do this, you must already have an account on this space, with an email address <i>@gmail.com</i>";
 		self::$trad["gSigninUserNotRegistered"]="is not registered on the space with the email";
@@ -93,8 +93,8 @@ class Trad extends Txt
 		self::$trad["passwordInfo"]="Leave blank if you want to keep your password";
 		self::$trad["passwordInvalid"]="Your password must have at least 6 characters with at least 1 digit and at least 1 letter";
 		self::$trad["passwordConfirmError"]="Your confirmation password is not valid";
-		self::$trad["specifyPassword"]="Thank you to specify a password";
-		self::$trad["resetPassword"]="Forgotten login info ?";
+		self::$trad["specifyPassword"]="Thank you for specifying a password";
+		self::$trad["resetPassword"]="Forgot your password?";
 		self::$trad["resetPassword2"]="Enter your email address to receive your login and password";
 		self::$trad["resetPasswordNotif"]="An email has just been sent to your address to reset your password. If you have not received an email, please verify that the address specified is correct, or that the email is not in your spams.";
 		self::$trad["resetPasswordMailTitle"]="Reset your password";
@@ -180,15 +180,15 @@ class Trad extends Txt
 		self::$trad["SORT_extension"]="type of file";
 		self::$trad["SORT_octetSize"]="size";
 		self::$trad["SORT_downloadsNb"]="downloads";
-		self::$trad["SORT_civility"]="civility";
-		self::$trad["SORT_name"]="name";
+		self::$trad["SORT_civility"]="civil status";
+		self::$trad["SORT_name"]="last name";
 		self::$trad["SORT_firstName"]="first name";
 		self::$trad["SORT_adress"]="adress";
 		self::$trad["SORT_postalCode"]="zip code";
 		self::$trad["SORT_city"]="city";
 		self::$trad["SORT_country"]="country";
 		self::$trad["SORT_function"]="function";
-		self::$trad["SORT_companyOrganization"]="company / organization";
+		self::$trad["SORT_companyOrganization"]="organization";
 		self::$trad["tri_ascendant"]="Ascend";
 		self::$trad["tri_descendant"]="Descend";
 		
@@ -270,8 +270,8 @@ class Trad extends Txt
 		self::$trad["downloadAlert"]="Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download after";//"19h"
 		
 		////	Infos sur une personne
-		self::$trad["civility"]="Civility";
-		self::$trad["name"]="Name";
+		self::$trad["civility"]="Civil Status";
+		self::$trad["name"]="Last name";
 		self::$trad["firstName"]="First name";
 		self::$trad["adress"]="Address";
 		self::$trad["postalCode"]="Zip code";
@@ -281,7 +281,7 @@ class Trad extends Txt
 		self::$trad["telmobile"]="Mobile Phone";
 		self::$trad["mail"]="Email";
 		self::$trad["function"]="Function";
-		self::$trad["companyOrganization"]="Company /Organization";
+		self::$trad["companyOrganization"]="Organization";
 		self::$trad["lastConnection"]="Last connection";
 		self::$trad["lastConnection2"]="Connected on";
 		self::$trad["lastConnectionEmpty"]="Not connected yet";
@@ -313,7 +313,7 @@ class Trad extends Txt
 		self::$trad["noResults"]="No result";
 		
 		////	Gestion des inscriptions d'utilisateur
-		self::$trad["userInscription"]="register on the space";
+		self::$trad["userInscription"]="register on the platform";
 		self::$trad["userInscriptionInfo"]="create a new user account (validated by an administrator)";
 		self::$trad["userInscriptionSpace"]="register on the space";
 		self::$trad["userInscriptionRecorded"]="Your registration was recorded : it will be validated as soon as possible by the administrator of the space";
@@ -722,8 +722,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_hideAllCals"]="Hide all calendars";
 		self::$trad["CALENDAR_printCalendars"]="Print calendar(s)";
 		self::$trad["CALENDAR_printCalendarsInfos"]="print in landscape mode";
-		self::$trad["CALENDAR_addSharedCalendar"]="Add a chared calendar";
-		self::$trad["CALENDAR_addSharedCalendarInfo"]="Add a chared calendar :<br>for the reservations of a room, vehicle, videoprojector, etc";
+		self::$trad["CALENDAR_addSharedCalendar"]="Add a shared calendar";
+		self::$trad["CALENDAR_addSharedCalendarInfo"]="Add a shared calendar :<br>for the reservations of a room, vehicle, videoprojector, etc";
 		self::$trad["CALENDAR_exportIcal"]="Export the events (iCal)";
 		self::$trad["CALENDAR_exportEvtMail"]="Export the events by email (iCal)";
 		self::$trad["CALENDAR_exportEvtMailInfo"]="To integrate in an calendar IPHONE, ANDROID, OUTLOOK, GOOGLE CALENDAR...";
