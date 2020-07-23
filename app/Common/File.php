@@ -48,11 +48,9 @@ class File
 	/*
 	 * Tableau des types de fichiers
 	 */
-	public static function fileTypes($typeKey)
-	{
+	public static function fileTypes($typeKey, $url=NULL)	{
 		//Init les types de fichiers en fonction de leur extension
-		if(static::$_fileTypes===null)
-		{
+		if(static::$_fileTypes===null)		{
 			static::$_fileTypes=array(
 				"image"=>array("jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"),
 				"imageBrowser"=>array("jpg","jpeg","png","gif"),
@@ -93,9 +91,19 @@ class File
 	/*
 	 * Controls the type of file according to its extension
 	 */
-	public static function isType($typeKey, $fileName)
-	{
+	public static function isType($typeKey, $fileName)	{
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
+	}
+
+	public static function urlType($url)	{
+		$type = "url";
+		if($url !== NULL) {
+			$keywords = array("youtube", "vimeo", "google", "sharepoint", "onedrive");
+			foreach($keywords as $search)	{
+				if(strpos($url, $search)) { $type = $search; }
+			}
+		}
+		return $type;
 	}
 	
 	/*
@@ -285,8 +293,7 @@ class File
 	/*
 	 * Verifie si un dossier ou un fichier est accessible en écriture
 	 */
-	public static function isWritable($targetPath, $errorMessage=true)
-	{
+	public static function isWritable($targetPath, $errorMessage=true)	{
 		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE)	{return true;}
 		else{
 			if($errorMessage==true)  {Ctrl::addNotif(Txt::trad("NOTIF_fileOrFolderAccess")." : ".str_replace(PATH_MOD_FILE,"",$targetPath));}
@@ -299,9 +306,8 @@ class File
 	 */
 	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)	{
 		// Verifs de base
-		if(self::isType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth))
-		{
-			////	Récupère la taile de l'image et vérifie l'intégrité du fichier
+		if(self::isType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth))		{
+			////	Recovers the size of the image and checks the integrity of the file
 			$getimagesize=@getimagesize($imgPathSrc);
 			if(is_array($getimagesize) && in_array($getimagesize[2],[IMAGETYPE_JPEG,IMAGETYPE_GIF,IMAGETYPE_PNG]))
 			{
@@ -366,8 +372,7 @@ class File
 	/*
 	 * Generer archive zip
 	 */
-	public static function downloadArchive($filesList, $archiveName)
-	{
+	public static function downloadArchive($filesList, $archiveName)	{
 		if(!empty($filesList))
 		{
 			//temps d'execution
@@ -396,8 +401,7 @@ class File
 	/*
 	 * Controle le download d'une grosse archive (sav & co) : controle de l'horaire pour ne pas saturer le serveur en heure de pointe
 	 */
-	public static function archiveSizeControl($archiveSize)
-	{
+	public static function archiveSizeControl($archiveSize)	{
 		$archiveSizeControl=true;
 		$limitSize=(self::sizeGo*2);//2Go max (tester avec un 'top' du systeme)
 		$disabledBegin=9;//debut plage horaire de limitation
@@ -417,8 +421,7 @@ class File
 	/*
 	 * Modif du "config.inc.php"
 	 */
-	public static function updateConfigFile($tabAddModifConst=null, $tabDeleteConst=null)
-	{
+	public static function updateConfigFile($tabAddModifConst=null, $tabDeleteConst=null)	{
 		// FICHIER ACCESSIBLE EN ÉCRITURE?
 		$configFilePath=PATH_DATAS."config.inc.php";
 		if(!is_writable($configFilePath))	{throw new Exception("config.inc.php : the file doesn't exist or is not writable");}

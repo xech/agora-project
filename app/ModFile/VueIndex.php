@@ -57,13 +57,14 @@ $(function(){
 			echo $tmpFile->divContainer("objContentCenter ".$tmpFile->hasThumbClass).$tmpFile->contextMenu().
 				"<div class=\"objContent ".$tmpFile->thumbClass."\">
 					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$icon."\"></span></div>";
-			switch(str_replace("app/img/file/fileType/", "", $icon)) {
-				case "youtube.png":	case "vimeo.png":	case "google.png":	case "sharepoint.png":	case "onedrive.png":
-					echo "<div class='objLabel'><span style='cursor: pointer!important;' ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\">".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>";
-					break;
-				default:
-					echo "<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='objIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>";
-			}
+			// switch(str_replace("app/img/file/fileType/", "", $icon)) {
+			// 	case "youtube.png":	case "vimeo.png":	case "google.png":	case "sharepoint.png":	case "onedrive.png":
+			// 		echo "<div class='objLabel'><span style='cursor: pointer!important;' ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\">".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>";
+			// 		break;
+			// 	default:
+			// 		break;
+			// }
+			echo "<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\">".$tmpFile->downloadButton.Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>";
 			echo "<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->displayAutorDate()."</div>
 				</div>

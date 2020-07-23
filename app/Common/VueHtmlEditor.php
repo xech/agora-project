@@ -8,13 +8,18 @@
 </style>
 
 <script>
+/* VARDUMP
+<?php 
+print '<pre>' . htmlspecialchars(print_r($_REQUEST, true)) . '</pre>';
+ ?>
+*/
 ////	Options de la "toolbar" de l'éditeur (Vérifier l'affichage avec une largeur réduide : cf. modTask)
 if(isMobile()){
 	optionsToolbar1="undo redo bullist emoticons videoCall editorDraft";
 	optionsToolbar2="bold italic underline fontsizeselect forecolor alignleft aligncenter ";
 }else{
 	optionsToolbar1="undo redo | copy paste removeformat | table charmap emoticons media";//Pour modifier le code HTML il faut l'option "code" (attention aux injections xss!)
-	optionsToolbar2="bold italic underline | fontsizeselect | forecolor link | alignleft aligncenter alignjustify | bullist numlist | videoCall | editorDraft";
+	optionsToolbar2="bold italic underline | fontsizeselect | forecolor link | alignleft aligncenter alignjustify | bullist numlist | videoCall editorDraft";
 }
 ////	Initialise l'editeur TinyMce
 tinymce.init({
@@ -54,8 +59,10 @@ tinymce.init({
 			lightboxResize();//Resize le lightbox (auquel cas) en fonction du contenu de l'éditeur (cf. "autoresize")
 			windowParent.confirmCloseForm=true;//Marqueur pour demander confirmation de sortie de formulaire (précise "parent" si l'éditeur se trouve dans une lightbox)
 		});
-		//Schedule a Video Call
-		editor.addButton("videoCall", {
+		
+		<?php if($_GET["ctrl"] = "calendar")  { ?>
+		// Schedule a Video Call
+			editor.addButton("videoCall", {
 				icon: "preview",
 				text: "Video Call",
 				tooltip: "Schedule a video call",
@@ -64,7 +71,8 @@ tinymce.init({
 					editor.insertContent("<a href='" + URL + "' target='_blank'>Join video call with Jitsi</a>");
 				}
 			});
-	
+		<?php } ?>
+
 		//Ajoute si besoin un bouton pour récupérer le brouillon/draft (cf. enregistrements dans "ap_userLivecounter")
 		var editorDraftHtml=`<?= $editorDraft ?>`;//Utiliser des `backquotes` pour éviter les erreurs d'affichage avec les simples ou doubles quotes présents dans le texte du brouillon/draft
 		if(editorDraftHtml.length>0)	{

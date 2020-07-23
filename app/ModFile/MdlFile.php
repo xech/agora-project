@@ -86,19 +86,21 @@ class MdlFile extends MdlObject
 	/*
 	 * Nom d'un vignette
 	 */
-	public function getThumbName()
-	{
+	public function getThumbName()	{
 		return $this->_id."_thumb.jpg";
 	}
 
 	/*
 	 * Chemin de la vignette JPG d'une image ou d'un Pdf (créé ou à créer)
 	 */
-	public function getThumbPath()
-	{
+	public function getThumbPath()	{
 		if($this->_tumbPath===null){
-			if(File::isType("imageResize",$this->name) || (File::isType("pdf",$this->name) && extension_loaded("imagick")))	{$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();}
-			else																											{$this->_tumbPath="";}
+			if(File::isType("imageResize",$this->name) || (File::isType("pdf",$this->name) && extension_loaded("imagick")))	{
+				$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();
+			} elseif(File::isType("url",$this->name) && File::urlType($this->description) == "youtube") {
+				// $this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();
+				$this->_tumbPath = "https://img.youtube.com/vi/" . substr($this->description, strrpos($this->description, '/') + 1) . "/0.jpg";
+			} else { $this->_tumbPath=""; }
 		}
 		return $this->_tumbPath;
 	}
@@ -106,24 +108,31 @@ class MdlFile extends MdlObject
 	/*
 	 * Verifie s'il existe une vignette
 	 */
-	public function hasThumb()
-	{
-		if($this->_hasTumb===null)
-			{$this->_hasTumb=(strlen($this->getThumbPath()) && is_file($this->getThumbPath()));}
+	public function hasThumb()	{
+		if($this->_hasTumb===null) {
+			if(File::isType("url",$this->name)) {
+				$this->_hasTumb=(File::urlType($this->description) == "youtube" ? true : false);
+			} else {
+				$this->_hasTumb=(strlen($this->getThumbPath()) && is_file($this->getThumbPath()));
+			}
+		}
 		return $this->_hasTumb;
 	}
 
 	/*
 	 * Création/Maj la vignette du fichier (Image / Pdf)
 	 */
-	public function createThumb()
-	{
+	public function createThumb()	{
 		//Fichier de moins de 8Mo?
-		if(filesize($this->filePath()) < (File::sizeMo*8))
-		{
-			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
-			elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))
-			{
+		if(filesize($this->filePath()) < (File::sizeMo*8))		{
+			if(File::isType("imageResize",$this->name))  { return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90); 
+			} elseif(File::isType("url",$this->name))  { 
+				if(File::urlType($this->description) == "youtube")		{
+					$ytThumbnail = "https://img.youtube.com/vi/" . substr($this->description, strrpos($this->description, '/') + 1) . "/0.jpg";
+					file_put_contents($this->getThumbPath(), file_get_contents($ytThumbnail));
+					return true;
+				} 
+			} elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))		{
 				$tmpThumb=new Imagick($this->filePath()."[0]");
 				$tmpThumb=$tmpThumb->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);//Pour pas avoir de background noir
 				$tmpThumb->writeImage($this->getThumbPath());
@@ -190,8 +199,7 @@ class MdlFile extends MdlObject
 	/*
 	 * Image du fichier
 	 */
-	public function typeIcon()
-	{
+	public function typeIcon()	{
 		$pathFileTypes="app/img/file/fileType/";
 		if($this->hasThumb())								{return $this->getThumbPath();}
 		elseif(File::isType("pdf",$this->name))				{return $pathFileTypes."pdf.png";}
@@ -207,12 +215,7 @@ class MdlFile extends MdlObject
 		elseif(File::isType("web",$this->name))				{return $pathFileTypes."web.png";}
 		elseif(File::isType("autocad",$this->name))			{return $pathFileTypes."autocad.png";}		
 		elseif(File::isType("url",$this->name))			{
-			if(strpos($this->description, "youtube")) 				{return $pathFileTypes."youtube.png";}
-			elseif(strpos($this->description, "vimeo")) 			{return $pathFileTypes."vimeo.png";}
-			elseif(strpos($this->description, "google")) 			{return $pathFileTypes."google.png";}
-			elseif(strpos($this->description, "sharepoint")) 		{return $pathFileTypes."sharepoint.png";}
-			elseif(strpos($this->description, "onedrive")) 		{return $pathFileTypes."onedrive.png";}
-			else 											{ return $pathFileTypes."url.png"; }
+				return  $pathFileTypes.File::urlType($this->description).".png";
 		}
 		else												{return $pathFileTypes."misc.png";}
 	}

@@ -20,8 +20,7 @@ class CtrlFile extends Ctrl
 	/*
 	 * DEFAULT ACTION
 	 */
-	public static function actionDefault()
-	{
+	public static function actionDefault()	{
 		////	Verify write access & Disk Space Usage
 		if(Ctrl::$curUser->isAdminGeneral())
 		{
@@ -39,10 +38,10 @@ class CtrlFile extends Ctrl
 		///	Folders & Files
 		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplayedObjects(self::$curContainer)." ".MdlFile::sqlSort());
-		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
-		{
+		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)		{
 			//Link of the file label: Upload the file (in a new window because it can block the page if it's a big file)
 			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) window.open('".$tmpFile->urlDownloadDisplay()."','_blank');\"";
+			$tmpFile->downloadButton = "<img src='app/img/download.png' class='objIconDownload'>";
 			
 			//Link of the icon of the :
 			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDownloadDisplay("display")."\" data-fancybox='images'";}	//Lightbox d'image ("href" et "data-fancybox" obligatoires)
@@ -55,14 +54,28 @@ class CtrlFile extends Ctrl
 			$tmpFile->iconTooltip=$tmpFile->name." - ".File::displaySize($tmpFile->octetSize);
 			
 			if(File::isType("url",$tmpFile->name))	{ 
-				$tmpFile->tooltip = $tmpFile->description;
-				$tmpFile->labelLink = $tmpFile->iconLink = "onclick=\"lightboxOpen('".$tmpFile->description."');\""; //Lightbox iFrame
+				// $tmpFile->tooltip = $tmpFile->description;
+				if(File::urlType($tmpFile->description) == "youtube" || strpos($tmpFile->description,"docs.google") || File::urlType($tmpFile->description) == "url") {
+					$tmpFile->iconLink = "onclick=\"lightboxOpen('".$tmpFile->description."');\""; //Lightbox iFrame
+					$tmpFile->labelLink = "style=\"cursor: pointer!important;\" onclick=\"lightboxOpen('".$tmpFile->description."');\""; //Lightbox iFrame 
+				} else {
+					$tmpFile->iconLink = " onclick=\"window.open('".$tmpFile->description."', '_blank')\"";
+					$tmpFile->labelLink = " style=\"cursor: pointer!important;\" onclick=\"window.open('".$tmpFile->description."', '_blank')\"";
+				}
+				
+				$tmpFile->tooltip = "";
+				$tmpFile->downloadButton = "";
 			}						
 			
-			if(!empty($tmpFile->description))	{$tmpFile->iconTooltip.="<hr>".Txt::formatTooltip($tmpFile->description);}
+			if(!empty($tmpFile->description))	{
+				if(File::isType("url",$tmpFile->name) && File::urlType($tmpFile->description) != "url") {
+					$tmpFile->iconTooltip.="<hr>".Txt::formatTooltip("Click on the icon to open the linked URL");
+				} else {
+					$tmpFile->iconTooltip.="<hr>".Txt::formatTooltip($tmpFile->description);
+				}
+			}
 			//image thumbnail/pdf
-			if($tmpFile->hasThumb())
-			{
+			if($tmpFile->hasThumb())	{
 				// Thumbnail class : "thumb"
 				$tmpFile->hasThumbClass="hasThumb";
 				//Image (not pdf): add image resolution && the "thumbLandscape" or "thumbPortrait" class
@@ -70,6 +83,8 @@ class CtrlFile extends Ctrl
 					list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
 					$tmpFile->iconTooltip.=" - ".$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
 					$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
+				} elseif(File::isType("url",$tmpFile->name) && strpos($tmpFile->description, "youtube")) {
+					$tmpFile->thumbClass="thumbLandscape";
 				}
 			}
 			//Add the file
@@ -316,8 +331,7 @@ class CtrlFile extends Ctrl
 	/*
 	 * ACTION : Upload d'un fichier temporaire via Plupload
 	 */
-	public static function actionUploadTmpFile()
-	{
+	public static function actionUploadTmpFile()	{
 		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::getParam("tmpFolderName")) && !empty($_FILES))
 		{
 			//Init/Crée le dossier temporaire
@@ -335,8 +349,7 @@ class CtrlFile extends Ctrl
 	/*
 	 * VUE : Versions d'un fichier
 	 */
-	public static function actionFileVersions()
-	{
+	public static function actionFileVersions()	{
 		$curObj=self::getTargetObj();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueFileVersions.php",$vDatas);
@@ -345,8 +358,7 @@ class CtrlFile extends Ctrl
 	/*
 	 * ACTION : Suppresion d'un version de fichier
 	 */
-	public static function actionDeleteFileVersion()
-	{
+	public static function actionDeleteFileVersion()	{
 		$curObj=self::getTargetObj();
 		$curObj->delete(Req::getParam("dateCrea"));
 		static::lightboxClose();
