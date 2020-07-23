@@ -14,7 +14,7 @@ foreach($newsList as $tmpNews)
 
 	////	Affiche l'actu
 	echo $tmpNews->divContainer($newsClass).$tmpNews->contextMenu()."
-			<div class='vNewsDescription'>".$tmpNews->description."</div>
+			<div class='vNewsDescription' style='user-select: text; -webkit-user-select: text;'>".$tmpNews->description."</div>
 			<div class='vNewsDetail'>".$newsDetails.$tmpNews->menuAttachedFiles(null)."</div>
 		 </div>";
 }
