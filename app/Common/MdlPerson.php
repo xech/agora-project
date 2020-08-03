@@ -150,7 +150,7 @@ class MdlPerson extends MdlObject
 		//Renvoie le label par défaut ou un label spécifique
 		if($labelType==null)										{return $this->_personLabel;}									//$labelType par défaut (Exple: Bobby SMITH)
 		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType "firstName", pour le messenger ou autre (Exple: Bobby)
-		else														{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType "full", pour le profil utilisateur ou autre (Exple: Mr Bobby SMITH)
+		else														{return /* $this->civility." ". */ $this->firstName." ".$this->name;}	//$labelType "full", pour le profil utilisateur ou autre (Exple: Mr Bobby SMITH)
 	}
 
 	/*
