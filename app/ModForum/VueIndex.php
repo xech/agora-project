@@ -32,8 +32,8 @@ $(function(){
 .vThemeDescription			{margin-top:7px; font-weight:normal;}
 
 /*Sujet & Message*/
-.vSubjectMessages			{padding-left:25px; user-select:text!important;}/*sélection du text possible*/
-.vSubjMessDescription		{font-weight:normal;}
+.vSubjectMessages			{padding-left:25px;}/*sélection du text possible*/
+.vSubjMessDescription		{font-weight:normal; user-select:text;}
 .vSubjNew					{color:<?= Ctrl::$agora->skin=="black"?"#f77":"#933" ?>;}/*plus discret que le sLinkSelect*/
 .objContent hr				{background:linear-gradient(to right,<?= Ctrl::$agora->skin=="black"?"#888":"#eee" ?>,transparent)!important; margin-top:6px; margin-bottom:6px;}
 .vSubjMessQuote				{position:absolute; top:5px; left:3px; cursor:pointer;}
@@ -79,23 +79,21 @@ $(function(){
 		//Début du menu
 		echo "<div class='pathMenu miscContainer'>";
 			//Label "Accueil du forum"
-			$forumRootLink=(!empty($curTheme) || !empty($curSubject))  ?  "class='sLink' onclick=\"redir('?ctrl=forum')\""  :  null;//Lien pour retourner à la racine du forum (sauf si on y est déjà..)
-			$forumRootLabel=(Req::isMobile() && !empty($curTheme))  ?  txt::trad("FORUM_forumRootResp")  :  txt::trad("FORUM_forumRoot");//Masque le label "Accueil du forum" si on est sur mobile et qu'on affiche un thème (on laisse + de place à ce dernier)
-			echo "<div ".$forumRootLink."><img src='app/img/forum/iconSmall.png'> &nbsp;".$forumRootLabel."</div>";
+			$forumRootLink=(!empty($curTheme) || !empty($curSubject))  ?  "onclick=\"redir('?ctrl=forum')\""  :  null;//Lien vers l'accueil (sauf si on y est déjà)
+			$forumRootLabel=(Req::isMobile() && !empty($curTheme))  ?  txt::trad("FORUM_forumRootResp")  :  "<img src='app/img/forum/iconSmall.png'>&nbsp; ".txt::trad("FORUM_forumRoot");//Libellé "Accueil du forum"
+			echo "<div class='pathIconMenu' ".$forumRootLink.">".$forumRootLabel."</div>";
 			//Label du Theme courant
-			$pathLabelMaxLength=(Req::isMobile())  ?  40  :  80;
 			if(!empty($curTheme)){
-				$curThemeLink=(!empty($curSubject))  ?  "class='sLink' onclick=\"redir('?ctrl=forum&_idTheme=".$curTheme->idThemeUrl."')\""  :  null;//Lien pour retourner au theme (sauf si on y est déjà..)
-				echo "<div ".$curThemeLink."><img src='app/img/arrowRightBig.png'> ".Txt::reduce($curTheme->display(),$pathLabelMaxLength)."</div>";
+				$curThemeLink=(!empty($curSubject))  ?  "class='sLink' onclick=\"redir('?ctrl=forum&_idTheme=".$curTheme->idThemeUrl."')\""  :  null;//Lien vers l'accueil (sauf si on y est déjà)
+				echo "<div><img src='app/img/arrowRightBig.png'></div><div ".$curThemeLink.">".Txt::reduce($curTheme->display(),45)."</div>";
 			}
-			//Label du sujet courant (sauf en mode "mobile", pour laisser la place au thème courant)
-			if(!empty($curSubject) && Req::isMobile()==false)  {echo "<div><img src='app/img/arrowRightBig.png'> ".Txt::reduce(strip_tags($curSubject->title?$curSubject->title:$curSubject->description), $pathLabelMaxLength)."</div>";}
+			//Label du sujet courant (pas en "mobile" car laisse la place au thème courant)
+			if(!empty($curSubject) && Req::isMobile()==false)  {echo "<div><img src='app/img/arrowRightBig.png'></div><div>".Txt::reduce(strip_tags($curSubject->title?$curSubject->title:$curSubject->description),45)."</div>";}
 			//Bouton "plus" d'ajout de sujet ou message
-			if($displayForum=="subjects" && MdlForumSubject::addRight())				{echo "<div class='pathIcon' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
-			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{echo "<div class='pathIcon' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
+			if($displayForum=="subjects" && MdlForumSubject::addRight())				{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
+			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
 		//Fin du menu
 		echo "</div>";
-
 
 		////	LISTE DES THEMES
 		if($displayForum=="themes")

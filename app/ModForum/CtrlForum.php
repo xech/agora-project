@@ -39,7 +39,7 @@ class CtrlForum extends Ctrl
 			//Init
 			$vDatas["displayForum"]="themes";
 			if(MdlForumTheme::addRight())  {$vDatas["editThemeMenu"]=true;}
-			$vDatas["themeList"][]=new MdlForumTheme(["undefinedTheme"=>true]);//Pseudo theme "sans theme"
+			$vDatas["themeList"][]=new MdlForumTheme(["noTheme"=>true]);//Pseudo theme "sans theme"
 			//Liste des themes
 			foreach($vDatas["themeList"] as $tmpKey=>$tmpTheme)
 			{
@@ -47,8 +47,8 @@ class CtrlForum extends Ctrl
 				$sqlThemeFilter=(!empty($tmpTheme->_id)) ? "_idTheme=".$tmpTheme->_id : "_idTheme is NULL";//Theme normal / "sans theme"
 				$tmpTheme->subjectList=Db::getObjTab("forumSubject", "SELECT * FROM ap_forumSubject WHERE ".MdlForumSubject::sqlDisplayedObjects()." AND ".$sqlThemeFilter." ORDER BY dateCrea desc");
 				$tmpTheme->subjectsNb=count($tmpTheme->subjectList);
-				if($tmpTheme->undefinedTheme==true && empty($tmpTheme->subjectsNb))	{unset($vDatas["themeList"][$tmpKey]);}//Enleve le theme "sans theme" s'il n'y a aucun sujet correspondant..
-				elseif($tmpTheme->subjectsNb>0)										{$tmpTheme->subjectLast=reset($tmpTheme->subjectList);}//reset: premier sujet de la liste (le + récent)
+				if($tmpTheme->noTheme==true && empty($tmpTheme->subjectsNb))	{unset($vDatas["themeList"][$tmpKey]);}//Enleve le theme "sans theme" s'il n'y a aucun sujet correspondant..
+				elseif($tmpTheme->subjectsNb>0)									{$tmpTheme->subjectLast=reset($tmpTheme->subjectList);}//reset: premier sujet de la liste (le + récent)
 				//Nombre de messages & Date du dernier message : tous sujets confondus!
 				foreach($tmpTheme->subjectList as $tmpSubject)
 				{
@@ -67,9 +67,9 @@ class CtrlForum extends Ctrl
 			$vDatas["displayForum"]="subjects";
 			if(MdlForumTheme::addRight() && empty($vDatas["themeList"]))  {$vDatas["editThemeMenu"]=true;}
 			//Liste les sujets
-			if(Req::getParam("_idTheme")=="undefinedTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
-			elseif(Req::isParam("_idTheme"))				{$sqlThemeFilter="AND _idTheme=".Db::formatParam("_idTheme");}	//sujets d'un theme précis
-			else											{$sqlThemeFilter=null;}											//tout les sujets
+			if(Req::getParam("_idTheme")=="noTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
+			elseif(Req::isParam("_idTheme"))			{$sqlThemeFilter="AND _idTheme=".Db::formatParam("_idTheme");}	//sujets d'un theme précis
+			else										{$sqlThemeFilter=null;}											//tout les sujets
 			$sqlDisplayedSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplayedObjects()." ".$sqlThemeFilter." ".MdlForumSubject::sqlSort();
 			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlDisplayedSubjects." ".MdlForumSubject::sqlPagination());
 			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlDisplayedSubjects));
@@ -78,9 +78,9 @@ class CtrlForum extends Ctrl
 		}
 		////	THEME COURANT POUR LE MENU PATH
 		if($vDatas["displayForum"]!="themes" && !empty($vDatas["themeList"])){
-			if(Req::getParam("_idTheme")=="undefinedTheme" || (is_object($curSubject) && empty($curSubject->_idTheme)))	{$vDatas["curTheme"]=new MdlForumTheme(["undefinedTheme"=>true]);}
-			elseif(is_object($curSubject) && !empty($curSubject->_idTheme))												{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}
-			elseif(Req::getParam("_idTheme"))																			{$vDatas["curTheme"]=self::getObj("forumTheme",Req::getParam("_idTheme"));}
+			if(Req::getParam("_idTheme")=="noTheme" || (is_object($curSubject) && empty($curSubject->_idTheme)))	{$vDatas["curTheme"]=new MdlForumTheme(["noTheme"=>true]);}
+			elseif(is_object($curSubject) && !empty($curSubject->_idTheme))											{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}
+			elseif(Req::getParam("_idTheme"))																		{$vDatas["curTheme"]=self::getObj("forumTheme",Req::getParam("_idTheme"));}
 		}
 		////	AFFICHAGE
 		static::displayPage("VueIndex.php",$vDatas);
@@ -112,7 +112,7 @@ class CtrlForum extends Ctrl
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  $objMessage->description;
 				$objMessage->pluginTooltip=$objMessage->pluginLabel;
-				$objMessage->pluginJsIcon="windowParent.redir('".$objMessage->getUrl("container")."');";//Redir vers le sujet (conteneur)
+				$objMessage->pluginJsIcon="windowParent.redir('".$objMessage->getUrl()."');";//Affiche le message dans son sujet conteneur
 				$objMessage->pluginJsLabel=$objMessage->pluginJsIcon;
 				$pluginsList[]=$objMessage;
 			}

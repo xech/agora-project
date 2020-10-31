@@ -22,7 +22,7 @@ class CtrlCalendar extends Ctrl
 	public static function actionDefault()
 	{
 		////	AGENDAS VISIBLE POUR L'USER (OU TOUS LES AGENDAS : "affectationCalendars()" SI ADMIN GENERAL)  &&  AGENDAS AFFICHES  &&  EVT PROPOSÉS
-		if(empty($_SESSION["displayAllCals"]) || Req::isParam("displayAllCals"))	{$_SESSION["displayAllCals"]=(Req::getParam("displayAllCals")==1 && Ctrl::$curUser->isAdminGeneral())  ?  true  :  false;}
+		if(empty($_SESSION["displayAllCals"]) || Req::isParam("displayAllCals"))   {$_SESSION["displayAllCals"]=(Req::getParam("displayAllCals")==1 && Ctrl::$curUser->isAdminGeneral())  ?  true  :  false;}
 		$vDatas["visibleCalendars"]=($_SESSION["displayAllCals"]==true)  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::visibleCalendars();
 		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["visibleCalendars"]);
 		////	MODE D'AFFICHAGE (month, week, workWeek, 4Days, day)  &  TEMPS DE RÉFÉRENCE ("curTime")  &  JOURS FÉRIÉS ("celebrationDays")
@@ -185,9 +185,8 @@ class CtrlCalendar extends Ctrl
 		$pluginsList=$eventList=[];
 		if(preg_match("/search|dashboard/i",$pluginParams["type"]))
 		{
-			//"Mes agendas" si on est sur le dashboard / "Agendas visibles" si c'est la recherche
-			$visibleCalendars=($pluginParams["type"]=="dashboard") ? MdlCalendar::myCalendars() : MdlCalendar::visibleCalendars();
-			if(!empty($visibleCalendars))
+			//"Agendas visibles"
+			if(count(MdlCalendar::visibleCalendars())>0)
 			{
 				////	Affichage "dashboard"
 				if($pluginParams["type"]=="dashboard")
@@ -201,7 +200,7 @@ class CtrlCalendar extends Ctrl
 						$pluginsList[]=$objMenuConfirm;
 					}
 					//Evénements courants
-					foreach($visibleCalendars as $tmpCal)
+					foreach(MdlCalendar::visibleCalendars() as $tmpCal)
 					{
 						//Tous les Evt avec accessRight>=1, trié par date (et non par H:M)
 						$tmpCalEvtList=$tmpCal->evtList(null,null,1,false);
@@ -220,7 +219,7 @@ class CtrlCalendar extends Ctrl
 					}
 				}
 				////	Evenements de chaque agenda : sélection normale du plugin (date de création OU recherche)
-				foreach($visibleCalendars as $tmpCal){
+				foreach(MdlCalendar::visibleCalendars() as $tmpCal){
 					$eventList=array_merge($eventList, $tmpCal->evtList(null,null,1,false,$pluginParams));//Tous les Evt avec accessRight>=1, pas triés par H:M et filtrés avec $pluginParams
 				}
 				$eventList=array_unique($eventList,SORT_REGULAR);
@@ -233,7 +232,7 @@ class CtrlCalendar extends Ctrl
 						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
 						$tmpEvt->pluginLabel=Txt::displayDate($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
 						$tmpEvt->pluginTooltip=Txt::displayDate($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
-						$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl("container")."');";//Redir vers l'agenda principal "datetime" & "displayType" (month/week/day)
+						$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl()."');";//Affiche l'événement dans son agenda principal, avec le bon "datetime" (fonction "getUrl()" surchargée)
 						$tmpEvt->pluginJsLabel="lightboxOpen('".$tmpEvt->getUrl("vue")."');";
 						$pluginsList[]=$tmpEvt;
 					}
@@ -427,7 +426,7 @@ class CtrlCalendar extends Ctrl
 					$calProposedEvents.="<li id=\"proposedEvent".$tmpEvt->_id."-".$tmpCal->_id."\" onclick=\"proposedEventConfirm(".$tmpCal->_id.",".$tmpEvt->_id.",this.id);\" title=\"".$evtTooltip."\">".$tmpEvt->title."</li>";
 				}
 				//Libellé des evts proposés
-				$tmpCalLabel=($tmpCal->isMyPerso())  ?  Txt::trad("CALENDAR_evtProposedForMe")  :  Txt::trad("CALENDAR_evtProposedFor")."<div style='margin-left:25px;font-style:italic;'>".$tmpCal->title."</div>";
+				$tmpCalLabel=($tmpCal->curUserCalendar())  ?  Txt::trad("CALENDAR_evtProposedForMe")  :  Txt::trad("CALENDAR_evtProposedFor")." :<div style='margin-left:25px;font-style:italic;'>".$tmpCal->title."</div>";
 				$menuProposedEvents.="<ul class='proposedEventList'><img src='app/img/important.png'>".$tmpCalLabel.$calProposedEvents."</ul>";
 			}
 		}
@@ -458,7 +457,9 @@ class CtrlCalendar extends Ctrl
 		$curObj=Ctrl::getTargetObj();
 		$curObj->controlRead();
 		// visibilite / Catégorie
-		$vDatas["contentVisible"]=(preg_match("/(public_cache|prive)/i",$curObj->contentVisible))  ?  ($curObj->contentVisible=="public_cache"?Txt::trad("CALENDAR_visibilityPublicHide"):Txt::trad("CALENDAR_visibilityPrivate"))  :  null;
+		if($curObj->contentVisible=="public_cache")	{$vDatas["contentVisibility"]=Txt::trad("CALENDAR_visibilityPublicHide");}
+		elseif($curObj->contentVisible=="prive")	{$vDatas["contentVisibility"]=Txt::trad("CALENDAR_visibilityPrivate");}
+		else										{$vDatas["contentVisibility"]=null;}
 		$vDatas["labelCategory"]=(!empty($curObj->objCategory))  ?  $curObj->objCategory->display()  :  null;
 		//Périodicité
 		$vDatas["labelPeriod"]=$periodValues=null;
@@ -635,7 +636,7 @@ class CtrlCalendar extends Ctrl
 
 		////	Enregistre un fichier Ical temporaire et on renvoie son "Path"
 		if($tmpFile==true){
-			$tmpFilePath=tempnam(sys_get_temp_dir(),"exportIcal".uniqid());
+			$tmpFilePath=tempnam(File::getTempDir(),"exportIcal".uniqid());
 			$fp=fopen($tmpFilePath, "w");
 			fwrite($fp,$ical);
 			fclose($fp);

@@ -16,12 +16,12 @@ lightboxSetWidth(550);
 	if(!empty($labelPeriod))	{echo "<hr><div class='vEventDetails'>".$labelPeriod."</div>";}
 	
 	////	IMPORTANT / CATEGORIE
-	if($curObj->important)	{echo "<hr><div class='vEventDetails'><img src='app/img/important.png'> ".Txt::trad("important")."</div>";}
+	if($curObj->important)	{echo "<hr><div class='vEventDetails'><img src='app/img/important.png'> ".Txt::trad("CALENDAR_importanceHight")."</div>";}
 	if($labelCategory)		{echo "<hr><div class='vEventDetails'>".$labelCategory."</div>";}
 
 	////	AFFECTATIONS AUX AGENDAS / VISIBILITE SPECIALE / DESCRIPTION / VISIBILITE SPECIALE / FICHIERS JOINTS
 	if(Ctrl::$curUser->isUser())		{echo "<hr><div class='vEventDetails'><img src='app/img/calendar/iconSmall.png'>&nbsp; ".$curObj->affectedCalendarsLabel()."</div>";}
-	if(!empty($contentVisible))			{echo "<hr><div class='vEventDetails'>".$contentVisible."</div>";}
+	if(!empty($contentVisibility))		{echo "<hr><div class='vEventDetails'>".$contentVisibility."</div>";}
 	if(!empty($curObj->description))	{echo "<hr>".$curObj->description;}
 	echo $curObj->menuAttachedFiles();
 	?>

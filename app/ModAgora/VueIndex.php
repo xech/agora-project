@@ -361,7 +361,7 @@ function formControl()
 				Agora-Project version <?= Ctrl::$agora->version_agora ?> &nbsp; (<?= Txt::trad("AGORA_dateUpdate")." ".Txt::displayDate(Ctrl::$agora->dateUpdateDb,"dateMini") ?>) &nbsp; &nbsp;
 				<a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a> <br><br>
 				PHP <?= str_replace(strstr(phpversion(),"-"),null,phpversion()) ?> <img src="app/img/separator.png"> 
-				MySQL <?= Db::dbVersion() ?>
+				MariaDB / MySql <?= Db::dbVersion() ?>
 				<?php if(!function_exists("mail")){ ?><div title="<?= Txt::trad("AGORA_funcMailInfo") ?>"><img src="app/img/delete.png"> &nbsp; <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
 				<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> &nbsp; <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
 		</div>

@@ -15,9 +15,9 @@ class CtrlMisc extends Ctrl
 	//Pas d'initialisation complete du controleur
 	protected static $initCtrlFull=false;
 
-	/*
-	 * ACTION : Recherche d'objets sur tous l'espace
-	 */
+	/*******************************************************************************************
+	 * ACTION : RECHERCHE D'OBJETS SUR TOUS L'ESPACE
+	 *******************************************************************************************/
 	public static function actionSearch()
 	{
 		//Init
@@ -57,16 +57,16 @@ class CtrlMisc extends Ctrl
 		static::displayPage(Req::commonPath."/VueSearch.php",$vDatas);
 	}
 
-	/*
-	 * AJAX : Update du Livecounter et du Messenger
-	 */
+	/*******************************************************************************************
+	 * AJAX : UPDATE DU LIVECOUNTER ET DU MESSENGER
+	 *******************************************************************************************/
 	public static function actionLivecounterUpdate()
 	{
 		//Messenger activé?
 		if(self::$curUser->messengerEnabled())
 		{
 			////	UPDATE EN BDD LE LIVECOUNTER DE L'USER COURANT  && AJOUTE "editObjId" SI MODIF EN COURS D'UN OBJET  && AJOUTE "editorDraft" UNIQUEMENT S'IL EST PRECISE
-			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editObjId=".Db::formatParam("editObjId").", date=".Db::format(time());
+			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editObjId=".Db::formatParam("editObjId").", `date`=".Db::format(time());
 			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::formatParam("editorDraft","editor").", draftTargetObjId=".Db::formatParam("editObjId");}//Ajouter uniquement si "editorDraft" est présent, sinon le "livecounterUpdate" efface le 'draft' et n'a donc plus d'intérêt..
 			Db::query("INSERT INTO ap_userLivecouter SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 
@@ -77,9 +77,9 @@ class CtrlMisc extends Ctrl
 				$_SESSION["livecounterUsersList"]=$_SESSION["messengerUserDisplayTime"]=$_SESSION["messengerMessagesList"]=[];
 				$_SESSION["livecounterUsersHtml"]=$_SESSION["messengerUsersHtml"]=$_SESSION["messengerMessagesHtml"]="";
 				//Supprime les livecounters des users déconnectés & Les vieux messages du messenger & Les vieilles proposition de visio
-				Db::query("DELETE FROM ap_userLivecouter WHERE date < ".intval(time()-604800));//Users du Livecounter (avec draft/brouillon du TinyMce) : conservés 7jours max
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE date < ".intval(time()-604800));//Messages du messenger : idem
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisioMessage%' AND date < ".intval(time()-7200));//Messages avec proposition de visio : conservés 2h max
+				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-604800));//Users du Livecounter (avec draft/brouillon du TinyMce) : conservés 7jours max
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-604800));//Messages du messenger : idem
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisioMessage%' AND `date` < ".intval(time()-7200));//Messages avec proposition de visio : conservés 2h max
 				//Garde en session les users que l'on peut voir et n'ayant pas bloqué leur messenger
 				$idsUsers=[0];//pseudo user
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsers[]=$tmpUser->_id;}
@@ -124,7 +124,7 @@ class CtrlMisc extends Ctrl
 				//// Verif si ya de nouveaux messages
 				$messengerMessagesListOld=$_SESSION["messengerMessagesList"];
 				$_SESSION["messengerMessagesList"]=Db::getTab("SELECT * FROM ap_userMessengerMessage WHERE _idUsers LIKE '%@".self::$curUser->_id."@%' ORDER BY date asc");
-				$result["messengerUpdate"]=(count($messengerMessagesListOld)!=count($_SESSION["messengerMessagesList"]));
+				$result["messengerUpdate"]=(serialize($messengerMessagesListOld)!=serialize($_SESSION["messengerMessagesList"]));
 				//// Affichage des messages (Init OU nouveaux messages)
 				if($result["messengerUpdate"]==true)
 				{
@@ -164,50 +164,56 @@ class CtrlMisc extends Ctrl
 		}
 	}
 
-	/*
-	 * AJAX : Update le "time" d'affichage d'un user du messenger
-	 */
+	/*******************************************************************************************
+	 * AJAX : UPDATE LE "TIME" D'AFFICHAGE D'UN USER DU MESSENGER
+	 *******************************************************************************************/
 	public static function actionMessengerUserDisplayTime()
 	{
 		$_SESSION["messengerUserDisplayTime"][Req::getParam("_idUser")]=time();
 	}
 
-	/*
-	 * AJAX : Post d'un message sur le messenger (note : les messages sont encodés en "utf8mb4" pour le support des "emoji" sur mobile)
-	 */
+	/*******************************************************************************************
+	 * AJAX : POST D'UN MESSAGE SUR LE MESSENGER (note : les messages sont encodés en "utf8mb4" pour le support des "emoji" sur mobile)
+	 *******************************************************************************************/
 	public static function actionMessengerPostMessage()
 	{
 		if(self::$curUser->messengerEnabled())
 		{
+			//Init
 			$usersIds=Req::getParam("messengerUsers");
 			$usersIds[]=self::$curUser->_id;
 			$message=Db::formatParam("message");
-			if(stristr(Req::getParam("message"),"launchVisioMessage"))  {$message=Db::formatParam("message","editor");}//Appel visio : on ne filtre pas tous les "tags"
-			Db::query("INSERT INTO ap_userMessengerMessage SET _idUser=".self::$curUser->_id.", _idUsers=".Db::formatTab2txt($usersIds).", message=".$message.", date=".Db::format(time()));
+			//Proposition de visio?
+			if(stristr(Req::getParam("message"),"launchVisio")){
+				$message=Db::formatParam("message","editor");//on ne filtre pas tous les tags html
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE _idUser=".self::$curUser->_id." AND _idUsers=".Db::formatTab2txt($usersIds)." AND message=".$message);//Supprime les précédentes demandes de visio?
+			}
+			//Ajoute le message et garde les users sélectionnés en session
+			Db::query("INSERT INTO ap_userMessengerMessage SET _idUser=".self::$curUser->_id.", _idUsers=".Db::formatTab2txt($usersIds).", message=".$message.", `date`=".Db::format(time()));
 			$_SESSION["messengerUsers"]=$usersIds;
 		}
 	}
 
-	/*
-	 * VISIO JITSI : URL de la "Room" de l'user courant (Exple : "visioconf.mondomaine.com/5BV3X-omnispace-boby")
-	 */
+	/*******************************************************************************************
+	 * VISIO JITSI : URL DE LA "ROOM" DE L'USER COURANT (Exple : "visioconf.mondomaine.com/5BV3X-omnispace-boby")
+	 *******************************************************************************************/
 	public static function myVideoRoomURL()
 	{
 		if(!isset($_SESSION["myVideoRoomURL"]))  {$_SESSION["myVideoRoomURL"]=Ctrl::$agora->visioHost()."/Omnispace-".Txt::uniqId(5)."-".substr(Txt::clean(Ctrl::$curUser->getLabel(),"max"),0,5);}
 		return $_SESSION["myVideoRoomURL"];
 	}
 
-	/*
-	 * VUE : Menu "captcha"
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU "CAPTCHA"
+	 *******************************************************************************************/
 	public static function menuCaptcha()
 	{
 		return self::getVue(Req::commonPath."VueCaptcha.php");
 	}
 
-	/*
-	 *  ACTION : Affiche l'image d'un menu "captcha"
-	 */
+	/*******************************************************************************************
+	 *  ACTION : AFFICHE L'IMAGE D'UN MENU "CAPTCHA"
+	 *******************************************************************************************/
 	public static function actionCaptchaImg()
 	{
 		//Init
@@ -245,17 +251,17 @@ class CtrlMisc extends Ctrl
 		imagejpeg($image);
 	}
 
-	/*
-	 * Couleur au format hexadecimal pour un Captcha
-	 */
+	/*******************************************************************************************
+	 * COULEUR AU FORMAT HEXADECIMAL POUR UN CAPTCHA
+	 *******************************************************************************************/
 	protected static function captchaColor($colors)
 	{
 		return preg_match("/^#?([\dA-F]{6})$/i",$colors,$rgb) ? hexdec($rgb[1]) : false;
 	}
 
-	/*
-	 * Controle du Captcha (Ajax ou Direct)
-	 */
+	/*******************************************************************************************
+	 * CONTROLE DU CAPTCHA (AJAX OU DIRECT)
+	 *******************************************************************************************/
 	public static function actionCaptchaControl()
 	{
 		if($_SESSION["captcha"]==Req::getParam("captcha")){
@@ -264,9 +270,9 @@ class CtrlMisc extends Ctrl
 		}
 	}
 
-	/*
-	 * VUE : Initialisation de l'editeur TinyMCE (doit déjà y avoir un champ "textarea")
-	 */
+	/*******************************************************************************************
+	 * VUE : INITIALISATION DE L'EDITEUR TINYMCE (doit déjà y avoir un champ "textarea")
+	 *******************************************************************************************/
 	public static function initHtmlEditor($fieldName)
 	{
 		//Nom du champ "textarea"
@@ -278,9 +284,9 @@ class CtrlMisc extends Ctrl
 		return self::getVue(Req::commonPath."VueHtmlEditor.php",$vDatas);
 	}
 
-	/*
-	 * VUE : Affiche des personnes sur une carte (contacts/utilisateurs)
-	 */
+	/*******************************************************************************************
+	 * VUE : AFFICHE DES PERSONNES SUR UNE CARTE (contacts/utilisateurs)
+	 *******************************************************************************************/
 	public static function actionPersonsMap()
 	{
 		//Liste les personnes/adresses à afficher
@@ -302,9 +308,9 @@ class CtrlMisc extends Ctrl
 		static::displayPage(Req::commonPath."VuePersonsMap.php",$vDatas);
 	}
 
-	/*
-	 * VUE : menuWallpaper
-	 */
+	/*******************************************************************************************
+	 * VUE : MENUWALLPAPER
+	 *******************************************************************************************/
 	public static function menuWallpaper($curWallpaper)
 	{
 		//Wallpapers disponibles
@@ -324,9 +330,9 @@ class CtrlMisc extends Ctrl
 		return self::getVue(Req::commonPath."VueMenuWallpaper.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PATH D'UN WALLPAPER  (cf. Ctrl::$curSpace->wallpaper && Ctrl::$agora->wallpaper)
-	 */
+	 *******************************************************************************************/
 	public static function pathWallpaper($fileName=null)
 	{
 		//Récup le chemin et vérifie la présence du fichier
@@ -338,18 +344,18 @@ class CtrlMisc extends Ctrl
 		return PATH_WALLPAPER_DEFAULT."1.jpg";
 	}
 
-	/*
-	 * ACTION : affiche un fichier Ical
-	 */
+	/*******************************************************************************************
+	 * ACTION : AFFICHE UN FICHIER ICAL
+	 *******************************************************************************************/
 	public static function actionDisplayIcal()
 	{
 		$objCalendar=self::getTargetObj();
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 
-	/*
-	 * Modif l'URL de download/Affichage d'un fichier depuis une mobileApp => modif du controleur, ajout du "nameMd5" et du type de fichier à télécharger
-	 */
+	/*******************************************************************************************
+	 * MODIF L'URL DE DOWNLOAD/AFFICHAGE D'UN FICHIER DEPUIS UNE MOBILEAPP => modif du controleur, ajout du "nameMd5" et du type de fichier à télécharger
+	 *******************************************************************************************/
 	public static function appGetFileUrl($downloadUrl, $fileName)
 	{
 		$downloadUrl.=(stristr($downloadUrl,"ctrl=object"))  ?  "&fileType=attached"  :  "&fileType=modFile";	//Fichier joint d'un objet  OU  Fichier du module "File"  => Toujours modifier en premier !
@@ -357,9 +363,9 @@ class CtrlMisc extends Ctrl
 		return $downloadUrl."&nameMd5=".md5($fileName);															//Ajoute le "nameMd5" du controle d'accès (cf. "CtrlObject::actionGetFile()" && "CtrlFile::actionGetFile()")
 	}
 
-	/*
-	 * ACTION : Download/Affichage d'un fichier depuis une mobileApp (avec controle du "nameMd5" & co)
-	 */
+	/*******************************************************************************************
+	 * ACTION : DOWNLOAD/AFFICHAGE D'UN FICHIER DEPUIS UNE MOBILEAPP (avec controle du "nameMd5" & co)
+	 *******************************************************************************************/
 	public static function actionGetFile()
 	{
 		if(Req::isParam(["fileName","filePath"]))		{File::download(Req::getParam("fileName"),Req::getParam("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"

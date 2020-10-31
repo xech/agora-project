@@ -324,7 +324,7 @@ class DbUpdate extends Db
 				////	TACHES
 				//"PAS" DE 10%
 				self::query("UPDATE ap_task SET advancement=ROUND(FLOOR(advancement/10)*10)");
-				//Créé le champs "responsiblePersons"
+				//Créé le champ "responsiblePersons"
 				self::fieldExist("ap_task", "responsiblePersons", "ALTER TABLE ap_task ADD responsiblePersons TEXT DEFAULT NULL");
 				//Récupère les données pour "responsiblePersons"
 				if(self::tableExist("gt_tache_responsable"))
@@ -433,7 +433,6 @@ class DbUpdate extends Db
 					$oldDirPath=PATH_DATAS.$oldDirName."/";
 					if(is_dir($oldDirPath) && !is_dir($newDirPath))    {rename($oldDirPath,$newDirPath);}
 				}
-				if(is_dir(PATH_DATAS."tmp/"))	{File::rm(PATH_DATAS."tmp/");}
 				File::setChmod(PATH_DATAS);
 
 				////	"DATAS/" : DEPLACE/RECREE LES VIGNETTES D'IMAGE & SUPPRIME L'ANCIEN DOSSIER DE VIGNETTES (APRES MAJ!)
@@ -597,8 +596,8 @@ class DbUpdate extends Db
 				//Users/Contacts : Transfert de 'fax', 'website', 'skills', 'hobbies' dans le champ 'comment'
 				foreach(["ap_user","ap_contact"] as $tmpTable){
 					foreach(["fax","website","skills","hobbies"] as $tmpField){
-						Db::query("UPDATE ".$tmpTable." SET comment=CONCAT(comment, '\r\n-".$tmpField." : ', ".$tmpField.") WHERE comment IS NOT NULL");//'comment' n'est pas null : ajoute à la suite avec retour à la ligne
-						Db::query("UPDATE ".$tmpTable." SET comment=CONCAT('-".$tmpField." : ', ".$tmpField.") WHERE comment IS NULL");					//'comment' est null : ajoute directement les données
+						Db::query("UPDATE ".$tmpTable." SET `comment`=CONCAT(comment, '\r\n-".$tmpField." : ', ".$tmpField.") WHERE comment IS NOT NULL");//'comment' n'est pas null : ajoute à la suite avec retour à la ligne
+						Db::query("UPDATE ".$tmpTable." SET `comment`=CONCAT('-".$tmpField." : ', ".$tmpField.") WHERE comment IS NULL");					//'comment' est null : ajoute directement les données
 					}
 				}
 				//Simplifie la durée des logs : 15j devient 30j et 60j devient 120j
@@ -746,7 +745,7 @@ class DbUpdate extends Db
 			////	MAJ V3.6.3
 			if(self::updateVersion("3.6.3"))
 			{
-				//Supprime les tables "guest" dans les table ou il est présent (avec "_idUser"), sauf dans la table "ap_calendarEvent"
+				//Supprime les tables "guest" dans les table ou il est présent (avec "_idUser"), sauf dans la table "ap_calendarEvent" !
 				foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tmpTable){
 					if(self::fieldExist($tmpTable,"guest") && self::fieldExist($tmpTable,"_idUser") && $tmpTable!="ap_calendarEvent")  {self::query("ALTER TABLE ".$tmpTable." DROP guest");}
 				}
@@ -790,8 +789,8 @@ class DbUpdate extends Db
 				//Ajoute le support des 'emoji' dans les messages du messenger : cf. 'utf8mb4'
 				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_userMessengerMessage CHANGE `message` `message` TEXT CHARACTER SET utf8mb4");}
 			}
-			////	MAJ V3.7.2.1
-			if(self::updateVersion("3.7.2.1"))
+			////	MAJ V3.7.3.1
+			if(self::updateVersion("3.7.3.1"))
 			{
 				//Ajoute le paramétrage du serveur Jitsi
 				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost varchar(255) DEFAULT NULL AFTER logsTimeOut");

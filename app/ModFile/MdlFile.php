@@ -18,7 +18,6 @@ class MdlFile extends MdlObject
 	const moduleName="file";
 	const objectType="file";
 	const dbTable="ap_file";
-	const hasAccessRight=true;//Elems à la racine
 	const MdlObjectContainer="MdlFileFolder";
 	const isFolderContent=true;
 	//Propriétés d'IHM
@@ -118,8 +117,8 @@ class MdlFile extends MdlObject
 	 */
 	public function createThumb()
 	{
-		//Fichier de moins de 8Mo?
-		if(filesize($this->filePath()) < (File::sizeMo*8))
+		//Fichier de moins de 15Mo?
+		if(filesize($this->filePath()) < (File::sizeMo*15))
 		{
 			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
 			elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))

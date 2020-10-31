@@ -130,10 +130,10 @@ class CtrlAgora extends Ctrl
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille
 			ini_set("max_execution_time","1200");//20mn max
 			$archiveName="BackupAgora_".strftime("%Y-%m-%d");
-			////	Sauvegarde via le shell
-			if(Tool::linuxEnv() && Ctrl::isHost())
+			////	Sauvegarde via "shell_exec()"
+			if(Ctrl::isHost())
 			{
-				$archiveTmpPath=tempnam(sys_get_temp_dir(),"backupAgora".uniqid());
+				$archiveTmpPath=tempnam(File::getTempDir(),"backupAgora".uniqid());
 				shell_exec("cd ".PATH_DATAS."; tar -cf ".$archiveTmpPath." *");//-c=creation -f=nom du dossier source
 				if(is_file($archiveTmpPath)){
 					File::download($archiveName.".tar", $archiveTmpPath, null, false);
@@ -141,8 +141,8 @@ class CtrlAgora extends Ctrl
 					$isArchive=true;
 				}
 			}
-			////	Sauvegarde en php?
-			if(empty($isArchive))	{File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");}
+			////	Sinon sauvegarde via "downloadArchive()"
+			if(empty($isArchive))  {File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");}
 		}
 		////	Sauvegarde uniquement la Bdd
 		else{

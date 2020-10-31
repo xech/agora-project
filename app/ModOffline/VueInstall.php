@@ -16,9 +16,11 @@ $(function(){
 		//Pas de validation par défaut du formulaire
 		event.preventDefault();
 		//Vérifie que tous les champs sont remplis (sauf password, qui peut être vide)
+		var installEmptyField=false;
 		$("input,select,textarea").not("[name='db_password']").each(function(){
-			if($(this).isEmpty())   {$(this).focusRed();  notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
+			if($(this).isEmpty())   {$(this).focusRed();  installEmptyField=true;}
 		});
+		if(installEmptyField==true)   {notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
 		//Vérif que le nom de la base de données est bien formaté
 		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   {$("[name='db_name']").focusRed();  notify("<?= Txt::trad("INSTALL_dbErrorDbName") ?>","warning");  return false;}
 		//Controle le mail &  password

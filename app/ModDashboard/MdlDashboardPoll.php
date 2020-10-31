@@ -15,11 +15,11 @@ class MdlDashboardPoll extends MdlObject
 	const moduleName="dashboard";
 	const objectType="dashboardPoll";
 	const dbTable="ap_dashboardPoll";
-	const hasAccessRight=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	const hasUsersComment=true;
 	const htmlEditorField="description";
+	protected static $_hasAccessRight=true;
 	public static $requiredFields=array("title");
 	public static $searchFields=array("title","description");
 	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");

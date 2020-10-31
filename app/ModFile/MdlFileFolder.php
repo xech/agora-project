@@ -15,7 +15,6 @@ class MdlFileFolder extends MdlObjectFolder
 	const moduleName="file";
 	const objectType="fileFolder";
 	const dbTable="ap_fileFolder";
-	const hasAccessRight=true;
 	const MdlObjectContent="MdlFile";
 
 	/*

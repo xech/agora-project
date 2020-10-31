@@ -15,13 +15,12 @@ class MdlCalendar extends MdlObject
 	const moduleName="calendar";
 	const objectType="calendar";
 	const dbTable="ap_calendar";
-	const hasAccessRight=true;
 	const MdlObjectContent="MdlCalendarEvent";
 	const hasAttachedFiles=true;
+	protected static $_hasAccessRight=true;
 	public static $requiredFields=array("title");
 	public static $searchFields=array("title","description");
-	//Droit de supprimer l'agenda personel : "true" si on supprime l'user en question
-	public static $persoCalendarDeleteRight=false;
+	public static $persoCalendarDeleteRight=false;//Droit de supprimer un agenda perso
 	//Valeurs mises en cache
 	private static $_visibleCalendars=null;
 	private static $_myCalendars=null;
@@ -39,8 +38,8 @@ class MdlCalendar extends MdlObject
 		//Libellé de l'agenda perso
 		if($this->type=="user"){
 			$this->title=$this->displayAutor();//Pour l'affichage
-			$this->userName=Ctrl::getObj("user",$this->_idUser)->name;//Pour le tri
-			$this->userFirstName=Ctrl::getObj("user",$this->_idUser)->firstName;//idem
+			$this->userName=Ctrl::getObj("user",$this->_idUser)->name;//Champ utilisé pour le tri des agendas (cf. "sortCalendars()")
+			$this->userFirstName=Ctrl::getObj("user",$this->_idUser)->firstName;//Idem
 		}
 		//Plage horaire de l'agenda
 		if(empty($this->timeSlot)){
@@ -56,7 +55,7 @@ class MdlCalendar extends MdlObject
 	/*
 	 * Verifie si c'est l'agenda perso de l'user courant
 	 */
-	function isMyPerso()
+	function curUserCalendar()
 	{
 		return ($this->type=="user" && $this->isAutor());
 	}
@@ -197,18 +196,17 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Agendas visibles pour l'user courant
+	 * LISTE D'AGENDAS : Agendas visibles pour l'user courant
 	 * => Agendas de ressource & Agenda de l'user courant & Agenda personnels affectés à l'user courant
 	 */
 	public static function visibleCalendars()
 	{
 		if(self::$_visibleCalendars===null)
 		{
-			//Init la sélection
-			$sqlDisplayedObjects=self::sqlDisplayedObjects();
 			//Récupère les agendas de ressource
+			$sqlDisplayedObjects=self::sqlDisplayedObjects();
 			self::$_visibleCalendars=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplayedObjects);
-			//Ajoute notre agenda perso && les agendas persos auquels on est affecté et qui sont "activés" (pas pour les guests)
+			//Ajoute l'agenda perso de l'user courant et les agendas persos "activés" auquels on est affecté
 			if(Ctrl::$curUser->isUser()){
 				$personnalCals=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (_idUser=".Ctrl::$curUser->_id." OR ".$sqlDisplayedObjects.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
 				self::$_visibleCalendars=array_merge(self::$_visibleCalendars,$personnalCals);
@@ -220,7 +218,7 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Agendas gérés par l'user courant
+	 * LISTE D'AGENDAS : Agendas gérés par l'user courant
 	 * => Agenda de l'user courant & Agendas de ressource en accès total ("fullRight()")
 	 */
 	public static function myCalendars()
@@ -228,14 +226,14 @@ class MdlCalendar extends MdlObject
 		if(self::$_myCalendars===null){
 			self::$_myCalendars=[];
 			foreach(self::visibleCalendars() as $tmpCal){
-				if($tmpCal->isMyPerso() || ($tmpCal->type=="ressource" && $tmpCal->fullRight()))  {self::$_myCalendars[]=$tmpCal;}
+				if($tmpCal->curUserCalendar() || ($tmpCal->type=="ressource" && $tmpCal->fullRight()))  {self::$_myCalendars[]=$tmpCal;}
 			}
 		}
 		return self::$_myCalendars;
 	}
 
 	/*
-	 * Agendas sur lesquels l'user courant peut affecter ou proposer des événements
+	 * LISTE D'AGENDAS : Agendas sur lesquels l'user courant peut affecter ou proposer des événements
 	 */
 	public static function affectationCalendars()
 	{
@@ -258,7 +256,7 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Agendas Affichés actuellement
+	 * LISTE D'AGENDAS : Agendas Affichés actuellement
 	 */
 	public static function displayedCalendars($visibleCalendars)
 	{
@@ -292,23 +290,23 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Tri d'une liste d'objets calendriers : en fonction du type, puis du titre ET met l'agenda de l'user courant en 1er
+	 * Tri une liste d'agendas
+	 * Affiche en premier l'agenda perso de l'user courant >> Puis les agendas de ressource >> Enfin les agendas des autres users
 	 */
 	public static function sortCalendars($calendarsTab)
 	{
-		//Init le tri des agendas d'users : cf. "__construct()" ci-dessus
-		$userCalendarSortField=(Ctrl::$agora->personsSort=="name")  ?  "userName"  :  "userFirstName";
-		//Spécifie le champ de tri : affiche en premier les calendriers de Ressource, puis le perso, puis ceux des autres users
+		//Prépare le tri en fonction du champs spécifique "sortField"
+		$userSortField=(Ctrl::$agora->personsSort=="name")  ?  "userName"  :  "userFirstName";//Tri des agendas persos en fonction du nom ou du prénom (cf. "__construct()" ci-dessus)
 		foreach($calendarsTab as $tmpCal){
-			if($tmpCal->type=="ressource")	{$tmpCal->sortField="A__".$tmpCal->title;}
-			elseif($tmpCal->isMyPerso())	{$tmpCal->sortField="B__".$tmpCal->$userCalendarSortField;}
-			else							{$tmpCal->sortField="C__".$tmpCal->$userCalendarSortField;}
+			if($tmpCal->curUserCalendar())		{$tmpCal->sortField="A__".$tmpCal->$userSortField;}
+			elseif($tmpCal->type=="ressource")	{$tmpCal->sortField="B__".$tmpCal->title;}
+			else								{$tmpCal->sortField="C__".$tmpCal->$userSortField;}
 		}
-		//Tri des agendas : puis les agendas partagés -> mon agenda -> puis les autres agendas perso
+		//Tri les agendas via "self::sortCompareCalendars()"
 		usort($calendarsTab,["self","sortCompareCalendars"]);
 		return $calendarsTab;
 	}
-	//Comparaison binaire de caractere, mais insensible à la casse
+	////	Comparaison binaire de caractere, mais insensible à la casse
 	public static function sortCompareCalendars($obj1, $obj2){
 		return strcasecmp($obj1->sortField, $obj2->sortField);
 	}

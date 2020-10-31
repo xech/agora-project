@@ -1,6 +1,6 @@
 <style>
 /* BLOCKS DE CONTENU */
-.objBlocks .objContainer{height:200px; width:300px; min-width:300px; max-width:600px; padding:10px;}/*surcharge*/
+.objBlocks .objContainer{height:200px; width:300px; min-width:300px; max-width:700px; padding:10px;}/*surcharge*/
 .vSpaceDescription		{font-weight:normal;}
 .vModules				{margin-top:10px;}
 .vModules img			{max-height:30px; margin-right:5px;}

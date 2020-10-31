@@ -27,7 +27,7 @@ class CtrlOffline extends Ctrl
 			// Affiche la notif d'envoie de l'email (que l'email soit bon ou pas, par mesure de sécurité) : "Un email vient de vous être envoyé [...] Si vous ne l'avez pas reçu, vérifiez que l’adresse saisie est bien la bonne"
 			if(Req::isParam("resetPasswordSendMail"))  {Ctrl::addNotif("resetPasswordNotif");}
 			// Vérif si l'user existe
-			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::formatParam("resetPasswordMail")." OR login=".Db::formatParam("resetPasswordMail"));
+			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::formatParam("resetPasswordMail")." OR `login`=".Db::formatParam("resetPasswordMail"));
 			if(!empty($tmpUser))
 			{
 				// Récupère l'user
@@ -42,7 +42,7 @@ class CtrlOffline extends Ctrl
 					//"resetPasswordId" OK : enregistre le nouveau password!					
 					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
 						$sqlNewPassword=MdlUser::passwordSha1(Req::getParam("newPassword"));
-						Db::query("UPDATE ".MdlUser::dbTable." SET password=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
+						Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
 						Ctrl::addNotif("modifRecorded","success");
 					}
 					//"resetPasswordId" pas OK : affiche "Le lien de renouvellement de password a expiré"
@@ -93,7 +93,7 @@ class CtrlOffline extends Ctrl
 			if(MdlUser::loginAlreadyExist(Req::getParam("mail")))	{$result["notifError"]=Txt::trad("USER_loginAlreadyExist");}
 			elseif(CtrlMisc::actionCaptchaControl()==false)			{$result["notifError"]=Txt::trad("captchaError");}
 			else{
-				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", password=".Db::formatParam("password").", message=".Db::formatParam("message").", date=".Db::dateNow());
+				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", `password`=".Db::formatParam("password").", message=".Db::formatParam("message").", `date`=".Db::dateNow());
 				$result["redirSuccess"]="index.php?msgNotif[]=userInscriptionRecorded";
 			}
 			//Renvoie le résultat
@@ -162,29 +162,29 @@ class CtrlOffline extends Ctrl
 								  <p style='font-weight:bold;'><a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">".Txt::trad("INSTALL_dataDashboardNews2")."</a></p><br>
 								  <p style='font-weight:bold;'>".Txt::trad("INSTALL_dataDashboardNews3")."</p><br>";
 
-	/***************************************************************************************************************************/
+/***************************************************************************************************************************/
 				//Paramétrage général
-				$objPDO->query("UPDATE ap_agora SET name=".$objPDO->quote($spaceName).", description=".$objPDO->quote($spaceDescription).", timezone=".$objPDO->quote($spaceTimeZone).", lang=".$objPDO->quote($spaceLang).", dateUpdateDb=NOW(), version_agora='".VERSION_AGORA."'");
+				$objPDO->query("UPDATE ap_agora SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescription).", timezone=".$objPDO->quote($spaceTimeZone).", lang=".$objPDO->quote($spaceLang).", dateUpdateDb=NOW(), version_agora='".VERSION_AGORA."'");
 				//Paramétrage du premier espace
-				$objPDO->query("UPDATE ap_space SET name=".$objPDO->quote($spaceName).", description=".$objPDO->quote($spaceDescriptionBis).", public=".$spacePublic." WHERE _id=1");
+				$objPDO->query("UPDATE ap_space SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescriptionBis).", public=".$spacePublic." WHERE _id=1");
 				//User principal (admin général)
-				$objPDO->query("UPDATE ap_user SET login=".$objPDO->quote($adminLogin).", password=".$objPDO->quote($adminPassword).", name=".$objPDO->quote($adminName).", firstName=".$objPDO->quote($adminFirstName).", mail=".$objPDO->quote($adminMail)." WHERE _id=1");
+				$objPDO->query("UPDATE ap_user SET `login`=".$objPDO->quote($adminLogin).", `password`=".$objPDO->quote($adminPassword).", `name`=".$objPDO->quote($adminName).", firstName=".$objPDO->quote($adminFirstName).", mail=".$objPDO->quote($adminMail)." WHERE _id=1");
 				//Renomme l'agenda de l'espace
-				$objPDO->query("UPDATE ap_calendar SET title=".$objPDO->quote($spaceName)." WHERE _id=1 AND type='ressource'");
+				$objPDO->query("UPDATE ap_calendar SET `title`=".$objPDO->quote($spaceName)." WHERE _id=1 AND type='ressource'");
 				//INSERT LA PREMIÈRE ACTUALITÉ
 				$objPDO->query("INSERT INTO ap_dashboardNews SET description=".$objPDO->quote($newsDescription).", _idUser=1, dateCrea=NOW()");
 				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='dashboardNews', _idObject=".(int)$objPDO->lastInsertId().", _idSpace=1, target='spaceUsers', accessRight=1");
 				//INSERT LE PREMIER SONDAGE
 				$objPDO->query("INSERT INTO ap_dashboardPoll SET _id=1, title=".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
 				$objPDO->query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, rank) VALUES ('5bd1903d3df9u8t',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
-				$objPDO->query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, target, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
+				$objPDO->query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, `target`, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
 				//INSERT LE PREMIER EVT SUR L'AGENDA COMMUN
 				$objPDO->query("INSERT INTO ap_calendarEvent SET title=".$objPDO->quote(Txt::trad("INSTALL_dataCalendarEvt")).", dateBegin=NOW(), dateEnd=NOW(), contentVisible='public', dateCrea=NOW(), _idUser=1");
 				$objPDO->query("INSERT INTO ap_calendarEventAffectation SET _idEvt=1, _idCal=1, confirmed=1");
 				//INSERT LE PREMIER SUJET DU FORUM
 				$objPDO->query("INSERT INTO ap_forumSubject SET title=".$objPDO->quote(Txt::trad("INSTALL_dataForumSubject1")).", description=".$objPDO->quote(Txt::trad("INSTALL_dataForumSubject2")).", dateCrea=NOW(), _idUser=1");
-				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='forumSubject', _idObject=1, _idSpace=1, target='spaceUsers', accessRight='1.5'");
-	/***************************************************************************************************************************/
+				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='forumSubject', _idObject=1, _idSpace=1, `target`='spaceUsers', accessRight='1.5'");
+/***************************************************************************************************************************/
 
 				//REDIRECTION AVEC NOTIFICATION
 				$result["redirSuccess"]="index.php?disconnect=1&msgNotif[]=INSTALL_installOk";
@@ -213,10 +213,10 @@ class CtrlOffline extends Ctrl
 			$result=$objPDO->query("SHOW TABLES FROM `".$db_name."` WHERE `Tables_in_".$db_name."` LIKE 'gt_%' OR `Tables_in_".$db_name."` LIKE 'ap_%'");
 			if(count($result->fetchAll(PDO::FETCH_COLUMN,0))>0)  {return "dbErrorAppInstalled";}//Erreur: L'application est déjà installée
 		}
-		//Erreur de connexion à Mysql/bdd
+		//Erreur de connexion à la bdd
 		catch(PDOException $exception){
 			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbToCreate";}				//Erreur: Database non créé => on créé automatiquement la DB !
-			elseif(preg_match("/(denied|interdit)/i",$exception->getMessage()))	{return "dbErrorIdentification";}	//Erreur: User Mysql non identifié
+			elseif(preg_match("/(denied|interdit)/i",$exception->getMessage()))	{return "dbErrorIdentification";}	//Erreur: User de la Db non identifié
 			else																{return "dbErrorUnknown";}			//Erreur: Probleme d'accès inconnu
 		}
 		//Pas d'erreur : Db disponible
@@ -228,7 +228,7 @@ class CtrlOffline extends Ctrl
 	 */
 	public static function actionPublicSpaceAccess()
 	{
-		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::formatParam("_idSpace")." AND BINARY password=".Db::formatParam("password"));//"BINARY"=>case sensitive
+		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::formatParam("_idSpace")." AND BINARY `password`=".Db::formatParam("password"));//"BINARY"=>case sensitive
 		echo (empty($password)) ? "false" : "true";
 	}
 
@@ -245,7 +245,7 @@ class CtrlOffline extends Ctrl
 		if(!empty($gClientUser))
 		{
 			//Verif si un compte utilisateur avec le même email existe sur l'espace
-			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE login=".Db::format($gClientUser["email"]));
+			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($gClientUser["email"]));
 			if(!empty($tmpUser))
 			{
 				//Récup l'user (obj) && Enregistre login & password pour une connexion auto
@@ -254,7 +254,7 @@ class CtrlOffline extends Ctrl
 				setcookie("AGORAP_PASS", $objUser->password, (time()+315360000));
 				//Enregistre l'image de l'user?
 				if($objUser->hasImg()==false && !empty($gClientUser["picture"])){
-					$tmpImagePath=sys_get_temp_dir()."/".uniqid().".".File::extension($gClientUser["picture"]);
+					$tmpImagePath=File::getTempDir()."/".uniqid().".".File::extension($gClientUser["picture"]);
 					file_put_contents($tmpImagePath, file_get_contents($gClientUser["picture"]));
 					if(is_file($tmpImagePath) && filesize($tmpImagePath)>0)  {File::imageResize($tmpImagePath,$objUser->pathImgThumb(),200);}
 				}

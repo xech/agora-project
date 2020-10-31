@@ -11,48 +11,49 @@
  */
  class MdlObjectFolder extends MdlObject
 {
-	private $_contentDescription=null;
 	const isFolder=true;
 	const isSelectable=true;
 	const hasShortcut=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;
+	protected static $_hasAccessRight=true;
 	public static $displayModeOptions=array("block","line");
 	public static $requiredFields=array("name");
 	public static $searchFields=array("name","description");
 	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc");
 	//Valeurs en cache
+	private $_contentDescription=null;
 	private $_visibleFolderTree=null;
 
-	/*
-	 * SURCHARGE : Constructeur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		if($this->_id==1)    {$this->name=Txt::trad("rootFolder");}//dossier racine
 	}
 
-	/*
-	 * SURCHARGE : dossier racine accessible en écriture par défaut, mais ajout de contenu géré via "editContentRight()" (cf. option "adminRootAddContent" des modules)
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DOSSIER RACINE ACCESSIBLE EN ÉCRITURE PAR DÉFAUT, MAIS AJOUT DE CONTENU GÉRÉ VIA "editContentRight()" (cf. option "adminRootAddContent" des modules)
+	 *******************************************************************************************/
 	public function accessRight()
 	{
 		return ($this->isRootFolder()) ? 2 : parent::accessRight();
 	}
 
-	/*
-	 * SURCHARGE : Droit d'ajouter du contenu dans le dossier racine OU dans un dossier lambda
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'AJOUTER DU CONTENU DANS LE DOSSIER RACINE OU DANS UN DOSSIER LAMBDA
+	 *******************************************************************************************/
 	public function editContentRight()
 	{
 		if($this->isRootFolder())	{return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}//"true" si "isAdminSpace()" ou aucune limite pour les users lambda
 		else						{return parent::editContentRight();}
 	}
 
-	/*
-	 * SURCHARGE : Affectations de l'objet
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : AFFECTATIONS DE L'OBJET
+	 *******************************************************************************************/
 	public function getAffectations()
 	{
 		//Nouveau dossier, mais pas à la racine : récupère les droits d'accès du dossier conteneur pour faire une "pré-affectation"
@@ -60,25 +61,25 @@
 		else																{return parent::getAffectations();}
 	}
 
-	/*
-	 * SURCHARGE : Droit d'édition
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ÉDITION
+	 *******************************************************************************************/
 	public function editRight()
 	{
 		return (parent::editRight() && $this->isRootFolder()==false);
 	}
 
-	/*
-	 * SURCHARGE : Droit de suppression
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT DE SUPPRESSION
+	 *******************************************************************************************/
 	public function deleteRight()
 	{
 		return (parent::deleteRight() && $this->isRootFolder()==false);
 	}
 
-	/*
-	 * SURCHARGE : Suppression d'un dossier
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRESSION D'UN DOSSIER
+	 *******************************************************************************************/
 	public function delete($initDelete=true)
 	{
 		if($this->deleteRight())
@@ -106,17 +107,17 @@
 		}
 	}
 
-	/*
-	 * Icone du dossier
-	 */
+	/*******************************************************************************************
+	 * ICONE DU DOSSIER
+	 *******************************************************************************************/
 	public function iconPath()
 	{
 		return (!empty($this->icon))  ?  PATH_ICON_FOLDER.$this->icon  :  PATH_ICON_FOLDER."folder.png";
 	}
 
-	/*
-	 * Contenu d'un dossier  :  nombre d'elements + taille du dossier (module fichiers)
-	 */
+	/*******************************************************************************************
+	 * CONTENU D'UN DOSSIER  :  NOMBRE D'ELEMENTS + TAILLE DU DOSSIER (MODULE FICHIERS)
+	 *******************************************************************************************/
 	public function folderContentDescription()
 	{
 		//Init la mise en cache
@@ -141,15 +142,15 @@
 		return $this->_contentDescription;
 	}
 
-	/*
-	 * Détails complémentaires sur le dossier => à surcharger!
-	 */
+	/*******************************************************************************************
+	 * DÉTAILS COMPLÉMENTAIRES SUR LE DOSSIER => À SURCHARGER!
+	 *******************************************************************************************/
 	public function folderOtherDetails(){}
 
-	/*
-	 * Chemin d'un dossier (fonction récursive)
+	/*******************************************************************************************
+	 * CHEMIN D'UN DOSSIER (FONCTION RÉCURSIVE)
 	 * $typeReturn= object | id | real | text | zip
-	 */
+	 *******************************************************************************************/
 	public function folderPath($typeReturn, $curFolder=null, $foldersList=array())
 	{
 		////	Dossier de départ & Ajoute le dossier courant
@@ -190,9 +191,9 @@
 		}
 	}
 
-	/*
-	 * Arborescence d'objets dossiers (fonction récursive)
-	 */
+	/*******************************************************************************************
+	 * ARBORESCENCE D'OBJETS DOSSIERS (FONCTION RÉCURSIVE)
+	 *******************************************************************************************/
 	public function folderTree($accessRightMini=1, $curFolder=null, $treeLevel=0)
 	{
 		//Arborescence "visible" déjà en cache : renvoie le résultat
@@ -219,9 +220,9 @@
 		return $folderList;
 	}
 
-	/*
-	 * Controle si un dossier se trouve dans l'arborecence du dossier courant
-	 */
+	/*******************************************************************************************
+	 * CONTROLE SI UN DOSSIER SE TROUVE DANS L'ARBORECENCE DU DOSSIER COURANT
+	 *******************************************************************************************/
 	public function isInFolderTree($folderId)
 	{
 		foreach($this->folderTree("all") as $tmpFolder){
@@ -229,9 +230,9 @@
 		}
 	}
 
-	/*
-	 * VUE : Liste de dossiers à afficher
-	 */
+	/*******************************************************************************************
+	 * VUE : LISTE DE DOSSIERS À AFFICHER
+	 *******************************************************************************************/
 	public function folders()
 	{
 		$vDatas["foldersList"]=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplayedObjects($this)." ".static::sqlSort());

@@ -12,9 +12,9 @@
  */
 class CtrlObject extends Ctrl
 {
-	/*
-	 * ACTION : Affiche les logs d'un objet
-	 */
+	/*******************************************************************************************
+	 * ACTION : AFFICHE LES LOGS D'UN OBJET
+	 *******************************************************************************************/
 	public static function actionLogs()
 	{
 		if(Req::isParam("targetObjId")){
@@ -26,9 +26,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : Telecharge un "AttachedFile"
-	 */
+	/*******************************************************************************************
+	 * ACTION : TELECHARGE UN "ATTACHEDFILE"
+	 *******************************************************************************************/
 	public static function actionGetFile()
 	{
 		$curFile=MdlObject::getAttachedFile(Req::getParam("_id"));
@@ -36,18 +36,18 @@ class CtrlObject extends Ctrl
 			{File::download($curFile["name"],$curFile["path"]);}
 	}
 
-	/*
-	 * ACTION : Affiche un fichier joint dans le browser
-	 */
+	/*******************************************************************************************
+	 * ACTION : AFFICHE UN FICHIER JOINT DANS LE BROWSER
+	 *******************************************************************************************/
 	 public static function actionDisplayAttachedFile()
 	{
 		$curFile=MdlObject::getAttachedFile(Req::getParam("_id"));
 		if(is_file($curFile["path"]) && $curFile["containerObj"]->readRight())   {File::display($curFile["path"]);}
 	 }
 
-	/*
-	 * AJAX : Supprime un fichier joint
-	 */
+	/*******************************************************************************************
+	 * AJAX : SUPPRIME UN FICHIER JOINT
+	 *******************************************************************************************/
 	public static function actionDeleteAttachedFile()
 	{
 		$curFile=MdlObject::getAttachedFile(Req::getParam("_id"));
@@ -57,39 +57,44 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : Supprime le/les objets sélectionnés
-	 */
+	/*******************************************************************************************
+	 * ACTION : SUPPRIME LE/LES OBJETS SÉLECTIONNÉS
+	 *******************************************************************************************/
 	public static function actionDelete()
 	{
-		//// Init
-		$redirUrl=$newDatasFolderSize=null;
+		// Init
+		$redirUrl=$updateDatasFolderSize=null;
 		$notDeletedObjects=[];
-		//// Supprime le/les objets
+		////	Supprime le/les objets
 		foreach(self::getTargetObjects() as $tmpObj)
 		{
-			//Url du conteneur / du module
-			if(empty($redirUrl))  {$redirUrl=$tmpObj->getUrl("container");}
-			//Vérifie si on doit mettre à jour le "datasFolderSize()"
-			if($tmpObj::moduleName=="file")  {$newDatasFolderSize=true;}
-			//Delete si on a les droits, sinon on prepare un message d'erreur
-			if($tmpObj->deleteRight())	{$tmpObj->delete();}
-			else						{$notDeletedObjects[]=$tmpObj->getLabel();}
+			//Enregistre l'Url de redirection après le delete
+			if(empty($redirUrl)){																										
+				if($tmpObj::isFolder==true)					{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Affiche le dossier parent du dossier supprimé
+				elseif($tmpObj::isContainerContent())		{$redirUrl=$tmpObj->getUrl();}					//Affiche le "container" de l'objet "content" supprimé (on prends l'affichage par défaut)
+				elseif($tmpObj::objectType=="forumSubject")	{$redirUrl=$tmpObj->getUrl("theme");}			//Theme du sujet ("getUrl()" surchargé)
+				else										{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Redirection dans le module (News/sondage/etc)
+			}
+			//Enregistre si on doit mettre à jour le "datasFolderSize()"
+			if($tmpObj::moduleName=="file")  {$updateDatasFolderSize=true;}
+			//Delete si on a les droits ..ou prepare un message d'erreur
+			if($tmpObj->deleteRight())	{$tmpObj->delete();}																		
+			else						{$notDeletedObjects[]=$tmpObj->getLabel();}	
 		}
-		//// Met à jour le "datasFolderSize()" en session 
-		if($newDatasFolderSize==true)  {File::datasFolderSize(true);}
-		//// Objets non supprimés : affiche les labels des objets concernés (10 objets maxi)
+		////	Update le "datasFolderSize()" en session 
+		if($updateDatasFolderSize==true)  {File::datasFolderSize(true);}
+		////	Objets non supprimés : affiche les labels des objets concernés (10 objets maxi)
 		if(!empty($notDeletedObjects)){
 			if(count($notDeletedObjects)>10)  {$notDeletedObjects=array_slice($notDeletedObjects,0,10);  $notDeletedObjects[]="..."; }
 			Ctrl::addNotif(Txt::trad("notDeletedElements")." :<br><br>".implode(", ",$notDeletedObjects));
 		}
-		//// Redirection sur la page du conteneur
+		////	Redirection sur la page du conteneur
 		self::redir($redirUrl);
 	}
 
-	/*
-	 * ACTION : Menu pour déplacer des éléments dans un autre dossier
-	 */
+	/*******************************************************************************************
+	 * ACTION : MENU POUR DÉPLACER DES ÉLÉMENTS DANS UN AUTRE DOSSIER
+	 *******************************************************************************************/
 	public static function actionFolderMove()
 	{
 		//Validation du formulaire
@@ -101,9 +106,9 @@ class CtrlObject extends Ctrl
 		self::folderTreeMenu("move");
 	}
 
-	/*
-	 * VUE : Menu d'arborescence de dossiers ($context: "nav" / "move")
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU D'ARBORESCENCE DE DOSSIERS ($context: "nav" / "move")
+	 *******************************************************************************************/
 	public static function folderTreeMenu($context="nav")
 	{
 		//Arborescence du dossier racine
@@ -117,9 +122,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * VUE : Menu du chemin du dossier courant
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU DU CHEMIN DU DOSSIER COURANT
+	 *******************************************************************************************/
 	public static function folderPathMenu($addElemLabel=null, $addElemUrl=null)
 	{
 		//Affiche le chemin d'un dossier  ET/OU  L'option d'ajout d'élement
@@ -130,9 +135,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION VUE : Edition d'un dossier
-	 */
+	/*******************************************************************************************
+	 * ACTION VUE : EDITION D'UN DOSSIER
+	 *******************************************************************************************/
 	public static function actionFolderEdit()
 	{
 		////	Charge le dossier et Controle d'accès: dossier existant / nouveau dossier
@@ -158,9 +163,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * AJAX : Controle si un autre objet fichier/dossier porte le même nom
-	 */
+	/*******************************************************************************************
+	 * AJAX : CONTROLE SI UN AUTRE OBJET FICHIER/DOSSIER PORTE LE MÊME NOM
+	 *******************************************************************************************/
 	public static function actionControlDuplicateName()
 	{
 		//Précise "targetObjIdContainer" pour les nouveaux dossiers/fichiers
@@ -174,9 +179,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * AJAX : Controle d'accès avant suppression d'un dossier
-	 */
+	/*******************************************************************************************
+	 * AJAX : CONTROLE D'ACCÈS AVANT SUPPRESSION D'UN DOSSIER
+	 *******************************************************************************************/
 	public static function actionFolderDeleteControl()
 	{
 		//// Init les notifications
@@ -192,9 +197,9 @@ class CtrlObject extends Ctrl
 		echo json_encode($result);
 	}
 
-	/*
-	 * AJAX : Edition d'un dossier => Control le droit d'accès d'un user/espace au dossier parent
-	 */
+	/*******************************************************************************************
+	 * AJAX : EDITION D'UN DOSSIER => CONTROL LE DROIT D'ACCÈS D'UN USER/ESPACE AU DOSSIER PARENT
+	 *******************************************************************************************/
 	public static function actionAccessRightParentFolder()
 	{
 		//Init
@@ -217,9 +222,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * AJAX : Valide une évaluation Like
-	 */
+	/*******************************************************************************************
+	 * AJAX : VALIDE UNE ÉVALUATION LIKE
+	 *******************************************************************************************/
 	public static function actionUsersLikeValidate()
 	{
 		//Vérifs de base
@@ -242,9 +247,9 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : Affiche les commentaires d'un objet
-	 */
+	/*******************************************************************************************
+	 * ACTION : AFFICHE LES COMMENTAIRES D'UN OBJET
+	 *******************************************************************************************/
 	public static function actionComments()
 	{
 		////	Charge l'element
@@ -252,11 +257,11 @@ class CtrlObject extends Ctrl
 		$curObj->controlRead();
 		////	Ajoute / Modif / Supprime un commentaire
 		if(Req::isParam(["formValidate","comment"]) && Req::getParam("actionComment")=="add")
-			{Db::query("INSERT INTO ap_objectComment SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".self::$curUser->_id.", dateCrea=".Db::dateNow().", comment=".Db::formatParam("comment"));}
+			{Db::query("INSERT INTO ap_objectComment SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".self::$curUser->_id.", dateCrea=".Db::dateNow().", `comment`=".Db::formatParam("comment"));}
 		elseif(Req::isParam("idComment") && MdlObjectAttributes::userCommentEditRight(Req::getParam("idComment"))){
 			$sqlSelectComment="_id=".Db::formatParam("idComment")." AND objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id;
 			if(Req::getParam("actionComment")=="delete")	{Db::query("DELETE FROM ap_objectComment WHERE ".$sqlSelectComment);}
-			elseif(Req::getParam("actionComment")=="modif")	{Db::query("UPDATE ap_objectComment SET comment=".Db::formatParam("comment")." WHERE ".$sqlSelectComment);}
+			elseif(Req::getParam("actionComment")=="modif")	{Db::query("UPDATE ap_objectComment SET `comment`=".Db::formatParam("comment")." WHERE ".$sqlSelectComment);}
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;

@@ -15,7 +15,6 @@ class MdlContact extends MdlPerson
 	const moduleName="contact";
 	const objectType="contact";
 	const dbTable="ap_contact";
-	const hasAccessRight=true;//Elems à la racine
 	const MdlObjectContainer="MdlContactFolder";
 	const isFolderContent=true;
 	const isSelectable=true;

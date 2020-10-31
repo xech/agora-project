@@ -183,7 +183,7 @@ class CtrlDashboard extends Ctrl
 					{
 						//Enregistre en Bdd
 						$reponseRank=(empty($reponseRank)) ? 1 : ($reponseRank+1);
-						$sqlValues="_id=".Db::format($_idResponse).", _idPoll=".(int)$curObj->_id.", label=".Db::format($reponseLabel).", rank=".(int)$reponseRank;
+						$sqlValues="_id=".Db::format($_idResponse).", _idPoll=".(int)$curObj->_id.", label=".Db::format($reponseLabel).", `rank`=".(int)$reponseRank;
 						Db::query("INSERT INTO ap_dashboardPollResponse SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 						//Enregistre si besoin le fichier de la réponse
 						if(!empty($_FILES["responsesFile".$_idResponse]))

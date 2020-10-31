@@ -21,8 +21,8 @@
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	/*MENU PRINCIPAL*/
-	.vHeaderMainLogo							{top:5px; left:0px;}
-	#headerSpaceLabel							{max-width:180px;}
+	.vHeaderMainLogo							{top:0px; left:0px;}
+	#headerSpaceLabel							{max-width:160px;}
 	#headerMainMenuLabels						{padding-left:58px; padding-right:10px;}/*"padding-left" en fonction du width du "logoMobile.png"*/
 	#headerMainMenuLabels, #headerModuleResp	{display:block; font-size:1.08em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne (ne pas éclater l'affichage!)*/
 	#headerMainMenuTab, #headerMainMenuTab>div	{display:block; padding-right:0px!important; border:0px;}
@@ -31,7 +31,7 @@
 	/*MENU DES MODULES (intégré dans le menu responsive "#respMenuOne" de VueStructure.php)*/
 	#headerModuleTab							{display:none!important;}/*liste des modules masqués dans le menu principal...*/
 	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 4px 4px; width:145px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
-	.vHeaderModule:hover, .vHeaderCurModule		{<?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f9f9f9;border:solid 1px #ddd;" ?> border-radius:5px;}/*mod. courant: background grisé*/
+	.vHeaderModule:hover, .vHeaderCurModule		{border-radius:5px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f9f9f9;border:solid 1px #ddd;" ?>}/*mod. courant: background grisé*/
 }
 </style>
 
@@ -49,7 +49,7 @@
 			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<img src='app/img/check.png' class='vHeaderUserInscription'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			////	LABEL DE L'UTILISATEUR COURANT  &&  LABEL DE L'ESPACE COURANT  &&  ICONE BURGER/ARROW
 			if(Ctrl::$curUser->isUser() && Req::isMobile()==false)  {echo "<div id='headerUserLabel'>".Ctrl::$curUser->getLabel()."</div><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
-			echo "<div id='headerSpaceLabel'>".ucfirst(strtolower(Ctrl::$curSpace->name))."</div>";
+			echo "<div id='headerSpaceLabel'>".(Req::isMobile()?strtolower(Ctrl::$curSpace->name):Ctrl::$curSpace->name)."</div>";
 			echo Req::isMobile()  ?  "<img src='app/img/arrowBottom.png'>"  :  "<img src='app/img/menuSmall.png' id='headerMenuBurger'>";
 			?>
 		</label>
@@ -74,7 +74,7 @@
 						echo "<div class='menuLine sLink' onclick=\"".$docLink."\"><div class='menuIcon'><img src='app/img/info.png'></div><div>".Txt::trad("HEADER_documentation")."</div></div>";
 						////	EDITION DU PROFIL USER  &&  EDITION DU MESSENGER  &&  DECONNEXION
 						echo "<hr><div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curUser->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".Txt::trad("USER_myProfilEdit")." &nbsp;".Ctrl::$curUser->getImg(false,true)."</div></div>";
-						if(Ctrl::$curUser->messengerEdit())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&targetObjId=".Ctrl::$curUser->_targetObjId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messenger.png'></div><div>".Txt::trad("USER_myMessengerEdit")."</div></div>";}
+						if(Ctrl::$curUser->messengerEdit())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&targetObjId=".Ctrl::$curUser->_targetObjId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messenger.png'></div><div>".Txt::trad("USER_messengerEdit")."</div></div>";}
 						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
 						////	SEPARATEUR D'ADMINISTRATION
 						if(Ctrl::$curUser->isAdminSpace())  {echo "<hr>";}

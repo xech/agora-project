@@ -7,7 +7,7 @@ $(function(){
     $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();
 	//Fait clignoter le "labelResetPassword" si une mauvaise authentification vient d'être faite
 	<?php if(Req::isParam("msgNotif") && in_array("NOTIF_identification",Req::getParam("msgNotif"))){ ?>
-		$("#labelResetPassword").addClass("sLinkSelect").effect("pulsate",{times:10},10000);
+		$("#labelResetPassword").addClass("sLinkSelect").pulsate(10);
 	<?php } ?>
 });
 

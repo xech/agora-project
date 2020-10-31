@@ -12,17 +12,13 @@ a:active, .sLinkSelect, input:checked+label	{color:#a00;}
 
 /*Blocks d'objet (ou pas) & menus contextuels*/
 .menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#eee;}/*survol une ligne de menu (affectation ou autre)*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{box-shadow:2px 2px 6px rgba(50,50,50,0.7); background:linear-gradient(333deg,#eee,#fff 100px); background-color:#fff; background-repeat:no-repeat;}/*"box-shadow" : tester avec wallpapers full white/black*/
-.objContainer:hover												{box-shadow:2px 2px 6px rgba(255,255,255,0.8);}
+.objContainer, .miscContainer, .emptyContainer, .menuContext	{background:linear-gradient(333deg,#eee,#fff 100px); background-color:#fff;}
 .objContainerSelect												{background:#ddd!important;}/*plus "important" que le ":hover"*/
 .objLines .objContainer											{border-bottom:solid 1px #eee;}
 .objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#f9f9f9; background-image:none;}/*lignes survolées et lignes impaires*/
 .objLines .alternateLines:nth-child(even)						{background:#fff;}/*ligne paire*/
 .objBlocks .hasThumb .objLabel									{background:rgba(250,250,250,0.9);}
 .emptyContainer													{background:rgba(255,255,255,0.7);}
-@media screen and (max-width:1023px){
-	.objContainer, .miscContainer, .emptyContainer	{box-shadow:1px 1px 2px rgba(0,0,0,0.2);}/*hover=touch*/
-}
 
 /*Droits d'accès d'utilisateurs*/
 .sAccessRead		{color:#008;}

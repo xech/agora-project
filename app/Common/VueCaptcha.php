@@ -8,7 +8,7 @@ $(function(){
 </script>
 
 <style>
-#captchaDiv		{margin-top:20px; display:inline-block;}
+#captchaDiv		{margin-top:20px;}
 #captchaImg		{vertical-align:middle;}
 #captchaArrow	{margin:0px 5px 0px 5px;}
 #captchaText	{width:170px!important; font-size:0.95em;}

@@ -18,17 +18,17 @@ trait MdlObjectAttributes
 	private $_usersComment=null;
 	private $_usersLike=null;
 
-	/*
+	/*******************************************************************************************
 	 * INPUT "HIDDEN" DE SÉLECTION (cf. "VueObjMenuContext.php" & Co)
-	 */
+	 *******************************************************************************************/
 	public function targetObjectsInput()
 	{
 		return "<input type='checkbox' name='targetObjects[]' class='targetObjectsInput' value=\"".$this->_targetObjId."\" id=\"".$this->menuId("objBlock")."_selectBox\">";
 	}
 
-	/*
-	 * FICHIER JOINT : Infos sur un fichier joint
-	 */
+	/*******************************************************************************************
+	 * FICHIER JOINT : INFOS SUR UN FICHIER JOINT
+	 *******************************************************************************************/
 	public static function getAttachedFile($tmpFile)
 	{
 		if(!empty($tmpFile))
@@ -43,9 +43,9 @@ trait MdlObjectAttributes
 		}
 	}
 
-	/*
-	 * FICHIER JOINT : Liste des fichiers joints de l'objet
-	 */
+	/*******************************************************************************************
+	 * FICHIER JOINT : LISTE DES FICHIERS JOINTS DE L'OBJET
+	 *******************************************************************************************/
 	public function getAttachedFileList()
 	{
 		//Mise en cache des fichiers joints de l'objet & Ajoute le "path"
@@ -57,9 +57,9 @@ trait MdlObjectAttributes
 		return $this->_attachedFiles;
 	}
 
-	/*
-	 * FICHIER JOINT : Menus des fichiers joints de l'objet (menu contextuel ou description) : affiche et propose le téléchargement
-	 */
+	/*******************************************************************************************
+	 * FICHIER JOINT : MENUS DES FICHIERS JOINTS DE L'OBJET (Menu contextuel ou vue description. Affiche et propose le téléchargement)
+	 *******************************************************************************************/
 	public function menuAttachedFiles($separator="<hr>")
 	{
 		if(static::hasAttachedFiles==true)
@@ -83,9 +83,9 @@ trait MdlObjectAttributes
 		}
 	}
 
-	/*
-	 * FICHIER JOINT : Insert un fichier joint dans la description (image/video/audio/flash) : via une requete Sql OU l'editeur html
-	 */
+	/*******************************************************************************************
+	 * FICHIER JOINT : INSERT UN FICHIER JOINT DANS LA DESCRIPTION (image/video/audio/flash : insertion via une requete Sql OU l'editeur html)
+	 *******************************************************************************************/
 	public static function attachedFileInsert($_idFile, $editorInsert=true)
 	{
 		//Init
@@ -104,9 +104,9 @@ trait MdlObjectAttributes
 		}
 	}
 
-	/*
-	 * FICHIER JOINT : Ajoute les fichiers joints du "menuEdit()"
-	 */
+	/*******************************************************************************************
+	 * FICHIER JOINT : AJOUTE LES FICHIERS JOINTS DU "menuEdit()"
+	 *******************************************************************************************/
 	public function addAttachedFiles()
 	{
 		if(static::hasAttachedFiles==true)
@@ -140,9 +140,9 @@ trait MdlObjectAttributes
 		}
 	}
 
-	/*
-	 * FICHIER JOINT : Supprime un fichier joint
-	 */
+	/*******************************************************************************************
+	 * FICHIER JOINT : SUPPRIME UN FICHIER JOINT
+	 *******************************************************************************************/
 	public function deleteAttachedFile($curFile)
 	{
 		if($this->editRight() && is_array($curFile)){
@@ -154,17 +154,17 @@ trait MdlObjectAttributes
 		}
 	}
 
-	/*
-	 * COMMENTAIRES : l'objet peut avoir des commentaires?
-	 */
+	/*******************************************************************************************
+	 * COMMENTAIRES : L'OBJET PEUT AVOIR DES COMMENTAIRES?
+	 *******************************************************************************************/
 	public function hasUsersComment()
 	{
 		return (static::hasUsersComment && !empty(Ctrl::$agora->usersComment));
 	}
 
-	/*
-	 * COMMENTAIRES : Liste les commentaires
-	 */
+	/*******************************************************************************************
+	 * COMMENTAIRES : LISTE LES COMMENTAIRES
+	 *******************************************************************************************/
 	public function getUsersComment()
 	{
 		//Mise en cache des commentaires de l'objet
@@ -174,9 +174,9 @@ trait MdlObjectAttributes
 		return $this->_usersComment;
 	}
 
-	/*
-	 * COMMENTAIRE : droit d'édition/suppression d'un commentaire
-	 */
+	/*******************************************************************************************
+	 * COMMENTAIRE : DROIT D'ÉDITION/SUPPRESSION D'UN COMMENTAIRE
+	 *******************************************************************************************/
 	public static function userCommentEditRight($_idComment)
 	{
 		if(!empty($_idComment)){
@@ -185,38 +185,40 @@ trait MdlObjectAttributes
 		}
 	}
 
-	/*
-	 * LIKES : l'objet peut avoir des "likes"?
-	 */
+	/*******************************************************************************************
+	 * LIKES : L'OBJET PEUT AVOIR DES "LIKES"?
+	 *******************************************************************************************/
 	public function hasUsersLike()
 	{
 		return (static::hasUsersLike && !empty(Ctrl::$agora->usersLike));
 	}
 
-	/*
-	 * LIKES : Liste des "like"/"dontlike" (passer en parametre)
-	 */
+	/*******************************************************************************************
+	 * LIKES : LISTE DES "LIKE"/"DONTLIKE" (passer en parametre)
+	 *******************************************************************************************/
 	public function getUsersLike($like_dontlike)
 	{
-		//Mise en cache des likes de l'objet
+		//Mise en cache
 		if($this->_usersLike===null){
+			//Init les "like" et "dontike"
 			$this->_usersLike=["like"=>[],"dontlike"=>[]];
-			foreach(Db::getTab("SELECT * FROM ap_objectLike WHERE objectType='".static::objectType."' AND _idObject=".$this->_id)  as  $tmpLike){
+			//Récupère les users (non supprimés) qui ont posté un "like" ou "dontlike"
+			foreach(Db::getTab("SELECT * FROM ap_objectLike WHERE objectType='".static::objectType."' AND _idObject=".$this->_id." AND _idUser IN (select _id from ap_user)")  as  $tmpLike){
 				if($tmpLike["value"]==1)	{$this->_usersLike["like"][]=$tmpLike;}
 				else						{$this->_usersLike["dontlike"][]=$tmpLike;}
 			}
 		}
-		//Renvoie le résultat
+		//Renvoie le tableau de résultats
 		return $this->_usersLike[$like_dontlike];
 	}
 
-	/*
-	 * LIKES : Récupère le tooltip ($like_dontlike => "like" ou "donlike")
-	 */
+	/*******************************************************************************************
+	 * LIKES : RÉCUPÈRE LE TOOLTIP ($like_dontlike => "like" ou "donlike")
+	 *******************************************************************************************/
 	public function getUsersLikeTooltip($like_dontlike)
 	{
 		$tooltip=Txt::trad("AGORA_usersLike_".$like_dontlike)."<br>";
-		foreach($this->getUsersLike($like_dontlike) as $tmpLike)	{$tooltip.=Ctrl::getObj("user",$tmpLike["_idUser"])->getLabel().", ";}
+		foreach($this->getUsersLike($like_dontlike) as $tmpLike)  {$tooltip.=Ctrl::getObj("user",$tmpLike["_idUser"])->getLabel().", ";}
 		return trim($tooltip,", ");
 	}
 }

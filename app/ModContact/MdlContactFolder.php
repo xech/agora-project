@@ -15,6 +15,5 @@ class MdlContactFolder extends MdlObjectFolder
 	const moduleName="contact";
 	const objectType="contactFolder";
 	const dbTable="ap_contactFolder";
-	const hasAccessRight=true;
 	const MdlObjectContent="MdlContact";
 }

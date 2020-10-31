@@ -81,10 +81,10 @@ class DbUpdateOld extends DbUpdate
 			}
 		}
 
-		////	AJOUTE LE CHAMPS "date_crea" DANS LA TABLE "gt_utilisateur"
+		////	AJOUTE LE CHAMP "date_crea" DANS LA TABLE "gt_utilisateur"
 		self::fieldExistOld("2.8.0", "gt_utilisateur", "date_crea", "ALTER TABLE gt_utilisateur ADD date_crea DATETIME DEFAULT NULL AFTER commentaire");
 
-		////	ON DEPLACE LE CHAMPS "fond_ecran" VERS "gt_agora_info"  &  CHANGE LE NOM DU DOSSIER DES FONDS D'ECRAN  &  AJOUTE LE DOSSIER STOCK_FICHIERS/TMP
+		////	ON DEPLACE LE CHAMP "fond_ecran" VERS "gt_agora_info"  &  CHANGE LE NOM DU DOSSIER DES FONDS D'ECRAN  &  AJOUTE LE DOSSIER STOCK_FICHIERS/TMP
 		self::fieldExistOld("2.8.0", "gt_agora_info", "fond_ecran", "ALTER TABLE gt_agora_info ADD fond_ecran TEXT AFTER langue");
 		if(self::updateVersion("2.8.0")){
 			if(is_dir(PATH_DATAS."fond_ecran_espace/"))	{rename(PATH_DATAS."fond_ecran_espace/", PATH_DATAS."fond_ecran/");}
@@ -237,7 +237,7 @@ class DbUpdateOld extends DbUpdate
 		////	CREATION DU CHAMP "evt_affichage_couleur"
 		self::fieldExistOld("2.8.0", "gt_agenda", "evt_affichage_couleur", "ALTER TABLE gt_agenda ADD evt_affichage_couleur ENUM('background','border') NOT NULL");
 
-		////	MODIFIE LE CHAMPS "priorité" de "gt_tache"
+		////	MODIFIE LE CHAMP "priorité" de "gt_tache"
 		self::updateQueryOld("2.8.0", "UPDATE gt_tache SET priorite='1' WHERE priorite='basse'");
 		self::updateQueryOld("2.8.0", "UPDATE gt_tache SET priorite='2' WHERE priorite='moyenne'");
 		self::updateQueryOld("2.8.0", "UPDATE gt_tache SET priorite='3' WHERE priorite='haute'");
@@ -436,7 +436,7 @@ class DbUpdateOld extends DbUpdate
 		////	V2.13.0 : RENOMME "DATE_CREATION" EN "DATE_CREA" DANS "GT_UTILISATEUR"
 		if(self::fieldExistOld("2.13.0","gt_utilisateur","date_crea")==false)	{self::fieldRenameOld("2.13.0", "gt_utilisateur", "date_creation", "ALTER TABLE gt_utilisateur CHANGE `date_creation` `date_crea` DATETIME DEFAULT NULL");}
 		elseif(self::fieldExistOld("2.13.0","gt_utilisateur","date_creation"))	{self::query("ALTER TABLE gt_utilisateur DROP date_creation");}
-		////	V2.13.0 : AJOUTE LE CHAMPS "INSCRIPTION_USERS" DANS LA TABLE "GT_ESPACE"
+		////	V2.13.0 : AJOUTE LE CHAMP "INSCRIPTION_USERS" DANS LA TABLE "GT_ESPACE"
 		self::fieldExistOld("2.13.0", "gt_espace", "inscription_users", "ALTER TABLE gt_espace ADD inscription_users TINYINT UNSIGNED DEFAULT NULL AFTER password");
 		////	V2.13.0 : AJOUTE LA TABLE D'INSCRIPTION DES USERS
 		self::tableExistOld("2.13.0", "gt_utilisateur_inscription", "CREATE TABLE gt_utilisateur_inscription (id_inscription INT UNSIGNED AUTO_INCREMENT, id_espace INT UNSIGNED, nom TINYTEXT, prenom TINYTEXT, mail TINYTEXT, identifiant TINYTEXT, pass TINYTEXT, message TEXT DEFAULT NULL, date DATETIME, PRIMARY KEY (id_inscription))");
@@ -505,7 +505,7 @@ class DbUpdateOld extends DbUpdate
 		$fieldExist=self::fieldExistOld("2.16.0", "gt_agora_info", "ldap_crea_auto_users", "ALTER TABLE gt_agora_info ADD ldap_crea_auto_users TINYINT DEFAULT NULL");
 		$fieldExist=self::fieldExistOld("2.16.0", "gt_agora_info", "ldap_pass_cryptage", "ALTER TABLE gt_agora_info ADD ldap_pass_cryptage ENUM('aucun','md5','sha') NOT NULL");
 
-		////	V2.16.3 : AJOUTE LE CHAMPS "agenda_perso_desactive" DE LA TABLE "gt_agora_info"
+		////	V2.16.3 : AJOUTE LE CHAMP "agenda_perso_desactive" DE LA TABLE "gt_agora_info"
 		self::fieldExistOld("2.16.3", "gt_agora_info", "agenda_perso_desactive", "ALTER TABLE gt_agora_info ADD agenda_perso_desactive TINYINT AFTER messenger_desactive");
 	}
 }

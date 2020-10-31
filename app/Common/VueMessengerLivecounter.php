@@ -22,7 +22,7 @@ function livecounterUpdate(initLivecounter)
 	//// Url du "LivecounterUpdate"
 	var livecounterUpdateUrl="?ctrl=misc&action=LivecounterUpdate";
 	// Vérif si un autre user edite en meme temps le meme element (édition lightbox) : params "editObjId"
-	if($(".fancybox-iframe").exist() && find("edit",$(".fancybox-iframe").attr("src")))  {livecounterUpdateUrl+="&editObjId="+getUrlParam("targetObjId",$(".fancybox-iframe").attr("src"));}
+	if($(".fancybox-iframe").exist() && find("edit",$(".fancybox-iframe").attr("src")))  {livecounterUpdateUrl+="&editObjId="+urlGetParam("targetObjId",$(".fancybox-iframe").attr("src"));}
 	// On édite un texte via Tinymce ("confirmCloseForm" && editeur en page principale || editeur d'une lightbox) : on enregistre le texte en tant que brouillon
 	if(confirmCloseForm==true  && (typeof tinymce!="undefined"  ||  ($(".fancybox-iframe").exist() && typeof $(".fancybox-iframe")[0].contentWindow.tinymce!="undefined"))){
 		var editorDraft=(typeof tinymce!=="undefined")  ?  tinymce.activeEditor.getContent()  :  $(".fancybox-iframe")[0].contentWindow.tinymce.activeEditor.getContent();
@@ -187,7 +187,7 @@ function initiateVisio()
 		messengerPost();
 		// Envoi d'une notification ("la proposition a bien été envoyée...") PUIS Lance la visio (avec timeout, le temps de lire le message)
 		notify("<?= Txt::trad("MESSENGER_visioProposalPending") ?>","success");
-		setTimeout(function(){ launchVisio(roomUrl,true); },12000);
+		////setTimeout(function(){ launchVisio(roomUrl,true); },12000);
 	}
 }
 
@@ -216,7 +216,7 @@ function messengerUsersChecked(){
 /*Livecounter principal et Messenger*/
 #livecounterMain, #messengerMain			{display:none; bottom:0px; position:fixed; max-width:100%!important; color:#ddd!important; box-shadow:0px 0px 3px 2px rgba(0,0,0,0.3);}
 #livecounterMain							{z-index:51; background:#333; min-height:50px; padding:10px 20px 10px 20px; border-radius:5px 5px 0px 0px;}
-#messengerMain								{z-index:50; background:#111; min-height:300px; min-width:300px; height:550px; width:650px; padding:20px; padding-top:10px; vertical-align:top; border-radius:5px; border:0px;}
+#messengerMain								{z-index:50; background:#111; min-height:300px; min-width:300px; height:550px; width:700px; padding:20px; padding-top:10px; vertical-align:top; border-radius:5px; border:0px;}
 
 /*Contenu du Livecounter*/
 .vLivecounterUser							{padding:7px; margin-left:10px; border:solid 1px transparent;}/*Label de chaque user (cf. "CtrlMisc::actionLivecounterUpdate")*/

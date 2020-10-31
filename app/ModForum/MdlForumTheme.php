@@ -29,7 +29,7 @@ class MdlForumTheme extends MdlObject
 		//Couleur par défaut : nouveau theme / Theme "undefined"
 		if(empty($this->color))  {$this->color="#900";}
 		//Id du theme pour les Urls
-		$this->idThemeUrl=($this->undefinedTheme==true) ? "undefinedTheme" : $this->_id;
+		$this->idThemeUrl=($this->noTheme==true) ? "noTheme" : $this->_id;
 	}
 
 	/*
@@ -37,8 +37,8 @@ class MdlForumTheme extends MdlObject
 	 */
 	public function display()
 	{
-		if(!empty($this->title))			{return "<div class='themeColor' style=\"background:".$this->color."\">&nbsp;</div> ".$this->title;}
-		elseif($this->undefinedTheme==true)	{return "<div class='themeColor' style='background:#444'>&nbsp;</div> <i>".Txt::trad("FORUM_noTheme")."</i>";}
+		if(!empty($this->title))		{return "<div class='themeColor' style=\"background:".$this->color."\">&nbsp;</div> ".$this->title;}
+		elseif($this->noTheme==true)	{return "<div class='themeColor' style='background:#444'>&nbsp;</div> <i>".Txt::trad("FORUM_noTheme")."</i>";}
 	}
 
 	/*

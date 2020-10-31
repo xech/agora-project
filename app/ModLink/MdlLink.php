@@ -15,7 +15,6 @@ class MdlLink extends MdlObject
 	const moduleName="link";
 	const objectType="link";
 	const dbTable="ap_link";
-	const hasAccessRight=true;//Elems à la racine
 	const MdlObjectContainer="MdlLinkFolder";
 	const isFolderContent=true;
 	const isSelectable=true;

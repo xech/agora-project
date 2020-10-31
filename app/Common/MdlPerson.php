@@ -123,9 +123,9 @@ class MdlPerson extends MdlObject
 		)
 	);
 
-	/*
-	 * SURCHARGE : Constructeur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -137,34 +137,33 @@ class MdlPerson extends MdlObject
 		self::$sortFields=array("firstName@@asc","firstName@@desc","civility@@asc","civility@@desc");
 	}
 
-	/*
-	 * SURCHARGE : Affiche le "Prénom NOM" de l'utilisateur ou contact
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : AFFICHE LE "PRÉNOM NOM" DE L'UTILISATEUR OU CONTACT
+	 *******************************************************************************************/
 	public function getLabel($labelType=null)
 	{
-		//Label par défaut en cache
+		//Label par défaut/en cache
 		if($this->_personLabel===null){
-			if(empty($this->firstName) && empty($this->name))	{$this->_personLabel="<i>".Txt::trad("unknown")."</i>";}//"Personne inconnue"
-			else												{$this->_personLabel=$this->firstName." ".$this->name;} //Exple : Bobby SMITH
+			if(empty($this->firstName) && empty($this->name))	{$this->_personLabel="<i>".Txt::trad("deletedUser")."</i>";}//"compte utilisateur supprimé"
+			else												{$this->_personLabel=$this->firstName." ".$this->name;}//Exple : Boby SMITH
 		}
 		//Renvoie le label par défaut ou un label spécifique
-		if($labelType==null)										{return $this->_personLabel;}									//$labelType par défaut (Exple: Bobby SMITH)
+		if($labelType==null)										{return $this->_personLabel;}									//$labelType par défaut/en cache (Exple: Boby SMITH)
 		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType "firstName", pour le messenger ou autre (Exple: Bobby)
 		else														{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType "full", pour le profil utilisateur ou autre (Exple: Mr Bobby SMITH)
 	}
 
-	/*
-	 * Possède une adresse : city + (adress / postalCode)
-	 */
+	/*******************************************************************************************
+	 * POSSÈDE UNE ADRESSE ? city + (adress / postalCode)
+	 *******************************************************************************************/
 	public function hasAdress()
 	{
 		return (!empty($this->city) && (!empty($this->adress) || !empty($this->postalCode)));
 	}
 
-	/*
-	 * Affiche les infos sur la personne
-	 * $displayMode : block / line / profile / edit
-	 */
+	/*******************************************************************************************
+	 * AFFICHE LES INFOS SUR LA PERSONNE  ($displayMode : block / line / profile / edit)
+	 *******************************************************************************************/
 	public function getFieldsValues($displayMode)
 	{
 		$labels=null;
@@ -203,10 +202,9 @@ class MdlPerson extends MdlObject
 		return $labels;
 	}
 
-	/*
-	 * Affiche une info sur la personne
-	 * $displayMode : "block", "line", "profile", "edit"
-	 */
+	/*******************************************************************************************
+	 * AFFICHE UNE INFO SUR LA PERSONNE  ($displayMode : "block", "line", "profile", "edit")
+	 *******************************************************************************************/
 	public function getFieldValue($fieldName, $displayMode)
 	{
 		//Valeur du champ
@@ -232,27 +230,27 @@ class MdlPerson extends MdlObject
 		}
 	}
 
-	/*
-	 * La personne possède une image ?
-	 */
+	/*******************************************************************************************
+	 * LA PERSONNE POSSÈDE UNE IMAGE DE PROFIL ?
+	 *******************************************************************************************/
 	public function hasImg()
 	{
 		if($this->_hasImg===null)  {$this->_hasImg=is_file($this->pathImgThumb());}
 		return $this->_hasImg;
 	}
 
-	/*
-	 * Path de l'image
-	 */
+	/*******************************************************************************************
+	 * PATH DE L'IMAGE DE PROFIL
+	 *******************************************************************************************/
 	public function getImgPath($getDefaultImg=false)
 	{
 		if($this->hasImg())				{return $this->pathImgThumb()."?version=".md5($this->dateModif);}//"version" pour toujours afficher la derniere image mise en cache
 		elseif($getDefaultImg==true)	{return "app/img/".static::moduleName."/personDefault.png";}//image par défaut : si demandé
 	}
 
-	/*
-	 * Balise <img> de l'image du profil user || du contact
-	 */
+	/*******************************************************************************************
+	 * BALISE <IMG> DE L'IMAGE DU PROFIL
+	 *******************************************************************************************/
 	public function getImg($openProfile=false, $smallImg=false, $getDefaultImg=false)
 	{
 		$imgPath=$this->getImgPath($getDefaultImg);
@@ -263,9 +261,9 @@ class MdlPerson extends MdlObject
 		}
 	}
 
-	/*
-	 * Affiche le menu de gestion de l'image
-	 */
+	/*******************************************************************************************
+	 * AFFICHE LE MENU DE GESTION DE L'IMAGE DU PROFIL
+	 *******************************************************************************************/
 	public function displayImgMenu()
 	{
 		////	Ajouter un fichier  OU  Fichier à conserver/modifier/supprimer
@@ -280,9 +278,9 @@ class MdlPerson extends MdlObject
 		}
 	}
 
-	/*
-	 * Enregistre/Supprime l'image
-	 */
+	/*******************************************************************************************
+	 * ENREGISTRE/SUPPRIME L'IMAGE DU PROFIL
+	 *******************************************************************************************/
 	public function editImg()
 	{
 		if(Req::isParam("personImgAction"))
@@ -297,9 +295,9 @@ class MdlPerson extends MdlObject
 		}
 	}
 
-	/*
-	 * Exporte des personnes au format spécifié
-	 */
+	/*******************************************************************************************
+	 * EXPORTE DES PERSONNES AU FORMAT SPÉCIFIÉ
+	 *******************************************************************************************/
 	public static function exportPersons($personObjList, $exportType)
 	{
 		//Init
@@ -366,9 +364,9 @@ class MdlPerson extends MdlObject
 		File::download($fileName, null, $fileContent);
 	}
 
-	/*
-	 * Connexion a ldap
-	 */
+	/*******************************************************************************************
+	 * CONNEXION A UN SERVEUR LDAP
+	 *******************************************************************************************/
 	public static function ldapConnect($ldapServer=null, $ldapServerPort=null, $ldapUserLogin=null, $ldapUserPassword=null, $displayNotif=true)
 	{
 		// la fonction de connexion LDAP est activée ?
@@ -388,9 +386,9 @@ class MdlPerson extends MdlObject
 		return ($ldapIdentification==false) ? false : $ldapConnection;
 	}
 
-	/*
+	/*******************************************************************************************
 	 * RECUPERES DES PERSONNES DE L'ANNUAIRE LDAP  (exple de $searchFilter -> "(&(samaccountname=MONLOGIN)(cn=*))" )
-	 */
+	 *******************************************************************************************/
 	public static function ldapSearch($getLoginPassword=false, $searchMode="importArray", $searchFilter="(cn=*)")
 	{
 		$ldapConnection=self::ldapConnect();

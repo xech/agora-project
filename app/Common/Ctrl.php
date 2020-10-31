@@ -27,13 +27,13 @@ abstract class Ctrl
 	protected static $folderObjectType=null;	//Module avec une arborescence
 	protected static $cachedObjects=array();	//Objets mis en cache !
 
-	/*
-	 * Initialise le controleur principal : session, parametrages, connexion de l'user, selection de l'espace, etc
-	 */
+	/*******************************************************************************************
+	 * INITIALISE LE CONTROLEUR PRINCIPAL (session, parametrages, connexion de l'user, etc)
+	 *******************************************************************************************/
 	public static function initCtrl()
 	{
 		////	Init la session
-		if(defined("db_name"))  {session_name("Agora_".db_name);}//Une session pour chaque espace et DB du serveur
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Une session pour chaque espace et DB du serveur
 		session_cache_limiter("nocache");
 		session_start();
 
@@ -65,10 +65,8 @@ abstract class Ctrl
 		////	Init complète du controleur : connexion de l'user/invité, selection d'espace, etc
 		if(static::$initCtrlFull==true)
 		{
-			////	Connection d'un user? Selection d'un espace? Init les stats?
-			self::userConnection();
-			if(self::isHost())  {Host::connectStats();}//Tjs après "userConnection()"!
-			self::curSpaceSelection();
+			////	Connection d'un user et selection d'un espace ?
+			self::userConnectionSpaceSelection();
 			////	Chargement des trads et des "locales"
 			Txt::loadTrads();
 			////	Affiche une page principale (Controles d'accès au module, Menu principal, Footer, etc)
@@ -83,7 +81,7 @@ abstract class Ctrl
 			////	Affichage des utilisateurs : space/all
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
 			////	Objet à charger et à controler (tjs après chargement des trads!)
-			if(Req::isParam("targetObjId"))				{$targetObj=self::getTargetObj();}//Dossier/conteneur courant ou autre objet
+			if(Req::isParam("targetObjId"))				{$targetObj=self::getTargetObj();}//Dossier (ou autre element) passé en GET
 			elseif(static::$folderObjectType!==null)	{$targetObj=self::getTargetObj(static::$folderObjectType."-1");}//Dossier racine par défaut
 			////	Charge le dossier/conteneur courant & controle son accès
 			if(isset($targetObj) && is_object($targetObj) && !empty($targetObj->_id)){
@@ -96,9 +94,9 @@ abstract class Ctrl
 		}
 	}
 
-	/*
-	 * Recupère un objet, déjà en cache?
-	 */
+	/*******************************************************************************************
+	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
+	 *******************************************************************************************/
 	public static function getObj($MdlObjectClass, $objIdOrValues=null, $updateCachedObj=false)
 	{
 		//Si on précise uniquement le "objectType", on ajoute "Mdl" pour récupérer la classe du modèle objet (exple : "fileFolder" devient "MdlFileFolder")
@@ -110,16 +108,16 @@ abstract class Ctrl
 			//Init
 			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;
 			$objCachedKey=$MdlObjectClass::objectType."-".$objId;
-			//Ajoute ou Update l'objet en cache?
+			//Ajoute/Update l'objet en cache?
 			if(!isset(self::$cachedObjects[$objCachedKey]) || $updateCachedObj==true)  {self::$cachedObjects[$objCachedKey]=new $MdlObjectClass($objIdOrValues);}
 			//Retourne l'objet en cache
 			return self::$cachedObjects[$objCachedKey];
 		}
 	}
 
-	/*
-     * Génère une vue à partir d'un fichier et des parametres $datas
-     */
+	/*******************************************************************************************
+     * GÉNÈRE UNE VUE  (cf. paramètres $datas)
+     *******************************************************************************************/
 	public static function getVue($filePath, $datas=array())
 	{
 		if(file_exists($filePath)){
@@ -131,9 +129,9 @@ abstract class Ctrl
 		else{throw new Exception("File '".$filePath."' unreachable");}
 	}
 
-	/*
-	 * Affiche une page complete (ensemble de vues)
-	 */
+	/*******************************************************************************************
+	 * AFFICHE UNE PAGE COMPLETE (ENSEMBLE DE VUES)
+	 *******************************************************************************************/
 	protected static function displayPage($fileMainVue=null, $vDatasMainVue=array())
 	{
 		//Init
@@ -187,20 +185,20 @@ abstract class Ctrl
 		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
 	}
 
-	/*
-	 * Ajoute une notification à afficher via "VueStructure.php"
+	/*******************************************************************************************
+	 * AJOUTE UNE NOTIFICATION À AFFICHER VIA "VUESTRUCTURE.PHP"
 	 * $message : message spécifique OU clé de traduction
 	 * $type : "info" / "success" / "warning"
-	 */
+	 *******************************************************************************************/
 	public static function addNotif($messageTrad, $type="notice")
 	{
 		//Ajoute la notification si elle n'est pas déjà présente
 		if(Tool::arraySearch(self::$msgNotif,$messageTrad)==false)  {self::$msgNotif[]=["message"=>$messageTrad,"type"=>$type];}
 	}
 
-	/*
-	 * Ajoute les "Ctrl::$msgNotif" à une url avant une redirection
-	 */
+	/*******************************************************************************************
+	 * AJOUTE LES "CTRL::$MSGNOTIF" À UNE URL AVANT UNE REDIRECTION
+	 *******************************************************************************************/
 	public static function urlMsgNotif()
 	{
 		$urlMsgNotif=null;
@@ -208,9 +206,9 @@ abstract class Ctrl
 		return $urlMsgNotif;
 	}
 
-	/*
-	 * Redirige une page
-	 */
+	/*******************************************************************************************
+	 * REDIRIGE UNE PAGE
+	 *******************************************************************************************/
 	public static function redir($url)
 	{
 		//Url de redirection, si besoin avec des notifications
@@ -222,9 +220,9 @@ abstract class Ctrl
 		exit;
 	}
 
-	/*
-	 * Ferme le lightbox (exple : après édition d'un element)
-	 */
+	/*******************************************************************************************
+	 * FERME LE LIGHTBOX (exple : après édition d'un element)
+	 *******************************************************************************************/
 	public static function lightboxClose($urlMoreParms=null)
 	{
 		//Initialise les params de reload de la page principale, puis affiche une page vide pour lancer le JS "lightboxClose()"
@@ -235,9 +233,9 @@ abstract class Ctrl
 		exit;
 	}
 
-	/*
-	 * Affiche "element inaccessible" (ou autre) & Fin de script..
-	 */
+	/*******************************************************************************************
+	 * AFFICHE "ELEMENT INACCESSIBLE" (OU AUTRE) & FIN DE SCRIPT
+	 *******************************************************************************************/
 	public static function noAccessExit($message=null)
 	{
 		if($message===null)  {$message=Txt::trad("inaccessibleElem");}
@@ -245,9 +243,9 @@ abstract class Ctrl
 		exit;
 	}
 
-	/*
-	 * Vérif si on est sur un Host
-	 */
+	/*******************************************************************************************
+	 * VÉRIF SI ON EST SUR UN HOST
+	 *******************************************************************************************/
 	public static function isHost()
 	{
 		return defined("HOST_DOMAINE");
@@ -258,40 +256,41 @@ abstract class Ctrl
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/
 
-	/*
-	 * Valide au besoin la connexion d'un utilisateur
-	 */
-	public static function userConnection()
+	/*******************************************************************************************
+	 * CONNECTION D'UN USER ET SELECTION D'UN ESPACE ?
+	 *******************************************************************************************/
+	public static function userConnectionSpaceSelection()
 	{
+		////	CONNEXION D'UN USER (demandée ou auto)
 		$connectViaForm=(Req::isParam(["connectLogin","connectPassword"])) ? true : false;
 		$connectViaCookie=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]) && Req::isParam("disconnect")==false) ? true : false;
-		if(self::$curUser->isUser()==false && ($connectViaForm==true || $connectViaCookie==true))
+		if(self::$curUser->isUser()==false  &&  ($connectViaForm==true || $connectViaCookie==true))
 		{
-			////	CONTROLES DE CONNEXION
-			//Connexion demandé ou auto ?
+			//// IDENTIFICATION ET CONTROLES D'ACCES
+			//Connexion demandé ou auto
 			if($connectViaForm==true)		{$login=Req::getParam("connectLogin");  $passwordSha1=MdlUser::passwordSha1(Req::getParam("connectPassword"));}
 			elseif($connectViaCookie==true)	{$login=$_COOKIE["AGORAP_LOG"];			$passwordSha1=$_COOKIE["AGORAP_PASS"];}
 			//Identification + recup des infos sur l'user
-			$sqlPasswordSha1="AND password=".Db::format($passwordSha1);
+			$sqlPasswordSha1="AND `password`=".Db::format($passwordSha1);
 			if(self::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::getParam("connectPassword"),$sqlPasswordSha1);}
-			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE login=".Db::format($login)." ".$sqlPasswordSha1);
+			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($login)." ".$sqlPasswordSha1);
 			//User pas connecté : tente une identification LDAP (avec creation d'user à la volee)
 			if(empty($tmpUser) && $connectViaForm==true)  {$tmpUser=MdlUser::ldapConnectCreateUser(Req::getParam("connectLogin"),Req::getParam("connectPassword"));}
 			//...User toujours pas connecté : message d'erreur et déconnexion
 			if(empty($tmpUser))   {self::addNotif("NOTIF_identification");  self::redir("?disconnect=1");}
 			//User déjà connecté sur un autre poste & avec une autre ip (pas de controle sur l'appli)
 			if(Req::isMobileApp()==false){
-				$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND date > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
+				$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND `date` > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
 				if($autreIpConnected>0)   {self::addNotif("NOTIF_presentIp");  self::redir("?disconnect=1");}
 			}
 
-			////	VALIDATION DE L'UTILISATEUR
+			//// INIT L'USER
 			//Init la session
 			$_SESSION=["_idUser"=>(int)$tmpUser["_id"]];//Id du client
 			//Maj les dates de "lastConnection" && "previousConnection"
 			$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
 			Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".(int)$tmpUser["_id"]);
-			//Charge l'utilisateur courant !!
+			//Charge l'user courant!
 			self::$curUser=self::getObj("user",$_SESSION["_idUser"]);
 			self::$userHasConnected=true;
 			self::addLog("connexion");
@@ -303,85 +302,85 @@ abstract class Ctrl
 				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000));
 			}
 		}
-	}
 
-	/*
-	 * Selection de l'espace courant
-	 */
-	public static function curSpaceSelection()
-	{
-		//User venant d'être identifié via Post/Cookie  OU  Redir. depuis la page de connexion : Redir auto d'user déjà connecté || Espace demandé (Switch d'espace par un user - Accès à un espace par un "guest")
+		////	STATS DE CONNEXION DU HOST (Tjs après la connexion et avant la sélection d'un espace)
+		if(self::isHost())  {Host::connectStatsHostInfos();}
+
+		////	SELECTION d'UN ESPACE (user vient de se connecter ||  page de connexion && (user déjà connecté || Espace demandé))
 		if(self::$userHasConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess"))))
 		{
-			////	Liste des espaces de l'user.. et redirection si aucun espace dispo
+			//// Liste des espaces de l'user courant
 			$idSpaceSelected=null;
 			$spacesOfCurUser=self::$curUser->getSpaces();
-			////	Aucun espace dispo (pas en page de connexion, sinon affiche une erreur avec les notifs mail de créa d'objet qui contiennent un "_idSpaceAccess"..)
-			if(empty($spacesOfCurUser) && static::moduleName!="offline"){
+			//// Aucun espace disponible : message d'erreur
+			if(empty($spacesOfCurUser)){
 				self::addNotif("NOTIF_noSpaceAccess");
 				self::redir("?disconnect=1");
 			}
-			////	Espace demandé (switch d'user / accès de Guest)
+			//// Espace spécifique demandé :  Switch d'espace de l'user  ||  Accès d'un Guest  ||  Accès depuis une notif mail (TEST: ?ctrl=offline&_idSpaceAccess=1&targetObjUrl=%3Fctrl%3Dfile%26targetObjId%3DfileFolder-1%26targetObjIdChild%3Dfile-1)
 			elseif(Req::isParam("_idSpaceAccess")){
 				foreach($spacesOfCurUser as $objSpace){
 					if($objSpace->_id==Req::getParam("_idSpaceAccess") && (self::$curUser->isUser() || empty($objSpace->password) || $objSpace->password==Req::getParam("password")))   {$idSpaceSelected=$objSpace->_id;  break;}
 				}
 			}
-			////	Espace de connexion de l'utilisateur OU espace par defaut
+			//// Espace de l'user
 			elseif(self::$curUser->isUser())
 			{
+				//Espace de connexion de l'user (préférence utilisateur)
 				if(!empty(self::$curUser->connectionSpace)){
 					foreach($spacesOfCurUser as $objSpace){
-						if($objSpace->_id==self::$curUser->connectionSpace)    {$idSpaceSelected=$objSpace->_id;  break;}
+						if($objSpace->_id==self::$curUser->connectionSpace)   {$idSpaceSelected=$objSpace->_id;  break;}
 					}
 				}
+				//Espace par défaut : prend le premier disponible
 				if(empty($idSpaceSelected)){
 					$firstSpace=reset($spacesOfCurUser);
 					$idSpaceSelected=$firstSpace->_id;
 				}
 			}
-			////	Chargement de l'espace & Redirection
+			//// Chargement de l'espace & Redirection
 			if(!empty($idSpaceSelected)){
 				$_SESSION["_idSpace"]=$idSpaceSelected;
 				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();
-				if(Req::isParam("targetObjUrl") && self::$curUser->isUser())	{self::redir(Req::getParam("targetObjUrl"));}//Redir vers le controleur/objet demandé (notif)
-				if(!empty($spaceModules))										{self::redir("?ctrl=".key($spaceModules));}//Redir vers le premier module de l'espace
-				else															{self::addNotif("NOTIF_noSpaceAccess");   self::redir("?disconnect=1");}//Aucun module dans l'espace..
+				if(Req::isParam("targetObjUrl") && self::$curUser->isUser())	{self::redir(Req::getParam("targetObjUrl"));}								//Redir vers le controleur et l'objet demandé (cf. notif mail)
+				if(!empty($spaceModules))										{self::redir("?ctrl=".key($spaceModules));}									//Redir vers le premier module de l'espace
+				else															{self::addNotif("NOTIF_noSpaceAccess");   self::redir("?disconnect=1");}	//Aucun module dans l'espace : message d'erreur
 			}
-			////	User identifié : Aucun espace dispo..
-			elseif(self::$curUser->isUser()){
-				self::addNotif("NOTIF_noSpaceAccess");
-				self::redir("?disconnect=1");
-			}
+			//// User connecté mais aucun espace disponible : déconnexion
+			elseif(self::$curUser->isUser())   {self::addNotif("NOTIF_noSpaceAccess");  self::redir("?disconnect=1");}
 		}
-		//Sortie de l'espace si aucun espace sélectionné & controleur interne sélectionné..
-		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")    {self::redir("?disconnect=1");}
+		////	AUCUN ESPACE/MODULE SÉLECTIONNÉ : DÉCONNEXION
+		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::redir("?disconnect=1");}
 	}
 
-	/*
-	 * Recupère un objet avec "self::getObj()" et le "targetObjId" en GET/POST.  Exple: $_GET['targetObjId']="fileFolder-19"  (ou "fileFolder" pour un nouvel objet)
-	 * Les "targetObjId" ont un controle d'accès automatique via "initCtrl()" !
-	 */
+	/*******************************************************************************************
+	 * RECUPÈRE L'OBJET DEMANDÉ
+	 * "targetObjId" passé en paramètre OU passé en GET/POST et récupérés via "initCtrl()"
+	 * Exple:  $targetObjId="fileFolder-19"  OU  $targetObjId="fileFolder" pour un nouvel objet
+	 ******************************************************************************************/
 	public static function getTargetObj($targetObjId=null)
 	{
-		//Aucun $targetObjId en paramètre et "targetObjId" spécifié par Get/Post
+		//$targetObjId passé en Get/Post ?
 		if($targetObjId==null && Req::isParam("targetObjId"))	{$targetObjId=Req::getParam("targetObjId");}
-		//renvoie l'objet ciblé
+		//Renvoie l'objet ciblé
 		if(!empty($targetObjId))
 		{
-			//Nouvel objet / Objet existant
+			//Charge un nouvel objet || Charge un objet existant
 			$targetObjId=explode("-",$targetObjId);
 			$targetObj=(empty($targetObjId[1]))  ?  self::getObj($targetObjId[0])  :  self::getObj($targetObjId[0],$targetObjId[1]);
-			//Ajoute "_idContainer" pour le controle d'accès d'un nouvel objet (cf "actionBiduleEdit()")
+			//Objet inexistant ou supprimé (_id passé en parametre mais _id reste à zero car l'objet est absent en BDD) : renvoie une erreur
+			if(!empty($targetObjId[1]) && $targetObj->_id==0)  {self::addNotif("inaccessibleElem");  self::redir("?ctrl=".static::moduleName);}
+			//Ajoute un "_idContainer" pour le controle d'accès lors de la création d'un objet (cf. "createUpdate()" puis "createRight()")
 			if(Req::isParam("_idContainer") && empty($targetObj->_id) && empty($targetObj->_idContainer))  {$targetObj->_idContainer=Req::getParam("_idContainer");}
 			//renvoie l'objet
 			return $targetObj;
 		}
 	}
 
-	/*
-	 * Recupère les objets selectionnés et envoyés via GET/POST. Exple: $_GET['targetObjects[fileFolder]']="2-4-7"
-	 */
+	/*******************************************************************************************
+	 * RECUPÈRE LES OBJETS SELECTIONNÉS ET ENVOYÉS VIA GET/POST
+	 * Exple: $_GET['targetObjects[fileFolder]']="2-4-7"
+	 *******************************************************************************************/
 	public static function getTargetObjects($objectType=null)
 	{
 		$returnObjects=array();
@@ -405,10 +404,10 @@ abstract class Ctrl
 		return $returnObjects;
 	}
 
-	/*
-	 * Récupère une préférence  (tri des résultats/type d'affichage/etc)
+	/*******************************************************************************************
+	 * RÉCUPÈRE UNE PRÉFÉRENCE  (tri des résultats/type d'affichage/etc)
 	 * Passé en parametre GET/POST ? Enregistre en BDD ?
-	 */
+	 *******************************************************************************************/
 	public static function prefUser($prefDbKey, $prefParamKey=null, $emptyValueEnabled=false)
 	{
 		//Clé identique en BDD et en GET-POST ?
@@ -433,10 +432,10 @@ abstract class Ctrl
 		if(isset($_SESSION["pref"][$prefDbKey]))	{return $_SESSION["pref"][$prefDbKey];}
 	}
 
-	/*
-	 * Ajout d'un log
+	/*******************************************************************************************
+	 * AJOUTE UN LOG
 	 * Action : "connexion", "add", "modif", "delete"
-	 */
+	 *******************************************************************************************/
 	public static function addLog($action, $curObj=null, $comment=null)
 	{
 		//S'il s'agit d'une action d'un user ou d'un invité qui ajoute un élément
@@ -445,7 +444,7 @@ abstract class Ctrl
 			////	Init la requête Sql
 			$moduleName=Req::$curCtrl;
 			$sqlObjectType=$sqlObjectId=null;
-			$sqlLogValues=", date=".Db::dateNow().", _idUser=".Db::format(self::$curUser->_id).", _idSpace=".Db::format(self::$curSpace->_id).", ip=".Db::format($_SERVER["REMOTE_ADDR"]);
+			$sqlLogValues=", `date`=".Db::dateNow().", _idUser=".Db::format(self::$curUser->_id).", _idSpace=".Db::format(self::$curSpace->_id).", ip=".Db::format($_SERVER["REMOTE_ADDR"]);
 			////	Element : ajoute les détails (nom, titre, chemin, etc)
 			if(is_object($curObj) && $curObj->isNew()==false)
 			{
@@ -465,7 +464,7 @@ abstract class Ctrl
 				$comment=Txt::reduce(strip_tags($comment),500);
 			}
 			////	Ajoute le log
-			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", comment=".Db::format($comment)." ".$sqlLogValues);
+			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", `comment`=".Db::format($comment)." ".$sqlLogValues);
 			////	Supprime les anciens logs (lancé qu'une fois par session)
 			if(empty($_SESSION["logsCleared"])){
 				Db::query("DELETE FROM ap_log WHERE action='connexion'	AND UNIX_TIMESTAMP(date) <= ".intval(time()-(14*86400)));										 //Logs de connexion			: conservés 2 semaines
@@ -476,9 +475,9 @@ abstract class Ctrl
 		}
 	}
 
-	/*
-	 * Recupere les plugins de type "Folder" d'un module
-	 */
+	/*******************************************************************************************
+	 * RECUPERE LES PLUGINS DE TYPE "FOLDER" D'UN MODULE
+	 *******************************************************************************************/
 	public static function getPluginsFolders($pluginParams, $MdlObjectFolder)
 	{
 		$pluginsList=[];

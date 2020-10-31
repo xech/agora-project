@@ -8,25 +8,26 @@
 
 
 /*
- * WINDOW LOAD/RESIZE : "windowWidth" & CO (Tester sur Android/Ipad/Firefox. Ne pas placer dans "$(function(){..")
+ * DOCUMENT READY : ENREGISTRE LE "windowWidth" DE LA PAGE (RECUPERE COTE SERVEUR)
  */
-window.onload=function(){
-	if(isMainPage==true)
-	{
-		////	CHARGEMENT DE LA PAGE : ENREGISTRE "windowWidth"
-		var reloadWidth=(isTouchDevice() && /windowWidth/i.test(document.cookie)==false);		//Verif si "windowWidth" est déjà enregistré pour "Req::isMobile()" (Toujours en premier!)
-		document.cookie="windowWidth="+$(window).width();										//Enregistre ensuite "windowWidth"
-		if(reloadWidth===true)  {setTimeout(function(){document.location.reload(true);},500);}	//Reload la page si besoin (Timeout le tps d'enregistrer "windowWidth". Toujours en dernier!)
-		////	RESIZE DE FENETRE : ENREGISTRE "windowWidth" & RELANCE "mainPageDisplay()"
-		window.onresize=function(){
-			document.cookie="windowWidth="+$(window).width();
-			if(typeof mainPageDisplayTimeout!="undefined")  {clearTimeout(mainPageDisplayTimeout);}//Pas de cumul de Timeout
-			mainPageDisplayTimeout=setTimeout(function(){ mainPageDisplay(true); },100);
-		};
-		////	CHANGE D'ORIENTATION : RELOAD LA PAGE  (Timeout le tps de finir le "resize" et enregistrer "windowWidth")
-		window.onorientationchange=function(){ setTimeout(function(){document.location.reload(true);},500); };
+$(function(){
+	if(isMainPage==true){
+		var forceReload=(isTouchDevice() && /windowWidth/i.test(document.cookie)==false);	//Cookie "windowWidth" absent sur un appareil tactile : force un premier reload (cf. affichage des "respMenu")
+		windowWidthCookie(forceReload);														//Init le cookie "windowWidth"
+		window.onresize=function(){	windowWidthCookie(false); };							//Redimensionne la page (width/Height)
+		window.onorientationchange=function(){ windowWidthCookie(false); };					//Change l'orientation de la page
 	}
-};
+});
+////	Enregistre le "windowWidth" dans un cookie. Timeout le temps d'avoir le width final (cf. "onresize"/"onorientationchange")
+function windowWidthCookie(forceReload){
+	if(typeof onresizeTimeout!="undefined")  {clearTimeout(onresizeTimeout);}//Pas de cumul de Timeout (cf. "onresize"/"onorientationchange")
+	onresizeTimeout=setTimeout(function(){
+		var pageReload=(forceReload==true || (typeof pageWidthLast!="undefined" && Math.abs($(window).width()-pageWidthLast)>30));	//Reload uniquement si le width a été modifé d'au moins 30px (pas de reload avec l'apparition/disparition de l'ascenseur)
+		pageWidthLast=$(window).width();																							//Enregistre/Update le width courant pour le controle ci-dessus
+		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";							//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
+		if(pageReload==true && windowParent.confirmCloseForm==false)  {location.reload();}											//Reload la page (sauf si on affiche un formulaire principal)
+	},500);
+}
 
 /*
  * DOCUMENT READY : LANCE LES FONCTIONS DE BASE
@@ -55,12 +56,12 @@ $(function(){
 		var mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return mailRegex.test(this.val());
 	};
-	////	Fait clignoter un element avec l'effet "pulsate"/"blink" (5 fois par défaut. Toujours lancé après chargement de la page!)
+	////	Fait clignoter un element avec l'effet "pulsate"/"blink" (5 fois par défaut. Toujours lancé après le chargement de la page!)
 	$.fn.pulsate=function(times){
 		if(typeof times=="undefined")  {var times=5;}
-		this.effect("pulsate",{times:parseInt(times)},parseInt(times*1000));
+		this.effect("pulsate",{times:parseInt(times-1)},parseInt(times*1000));
 	};
-	////	Focus sur un champs surligné en rouge
+	////	Focus sur un champ surligné en rouge
 	$.fn.focusRed=function(){
 		this.addClass("focusRed").focus();
 	};
@@ -231,7 +232,7 @@ $(function(){
 	});
 	
 	////	Pas d'autocomplétion sur TOUS les inputs des formulaires (password, dateBegin, etc) !
-	$("form input").attr("autocomplete","off");
+	$("form input:not([name*='connectLogin'])").attr("autocomplete","off");
 });
 
 /*
@@ -241,7 +242,7 @@ $(function(){
 function mainPageDisplay(firstLoad)
 {
 	////	Affiche les "Title" avec Tooltipster
-	tooltipsterOptions={contentAsHTML:true,delay:400,maxWidth:500,theme:"tooltipster-shadow"};//variable globale
+	tooltipsterOptions={contentAsHTML:true,delay:500,maxWidth:600,theme:"tooltipster-shadow"};//variable globale
 	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);
 	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
 
@@ -522,7 +523,8 @@ function lightboxOpen(urlSrc)
  */
 function lightboxSetWidth(iframeBodyWidth)
 {
-	$(function(){
+	//Page entièrement chargé (pas de "$(function(){})" sinon peut poser problème sur Firefox & co)
+	window.onload=function(){
 		//Width définie en pixel/pourcentage : convertie en entier pixel
 		if(find("px",iframeBodyWidth))		{iframeBodyWidth=iframeBodyWidth.replace("px","");}									
 		else if(find("%",iframeBodyWidth))	{iframeBodyWidth=($(windowParent).width()/100) * iframeBodyWidth.replace("%","");}
@@ -530,7 +532,7 @@ function lightboxSetWidth(iframeBodyWidth)
 		if(iframeBodyWidth>$(windowParent).width())  {iframeBodyWidth=$(windowParent).width();}
 		//Définie le "max-width" de l'iframe (pas de "width", car cela peut afficher un scroll horizontal à l'agrandissement de la lightbox : cf. "lightboxResize()")
 		if(isEmptyValue(iframeBodyWidth)==false)  {$("body").css("max-width",parseInt(iframeBodyWidth));}
-	});
+	};
 }
 
 /*
@@ -543,7 +545,7 @@ function lightboxResize()
 	{
 		//Pas de cumul de Timeout
 		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}
-		//Ajoute un timeout de 350ms minimum (temps minimum pour laisser les "fadeIn" ou autre se faire : cf. "$.fx.speeds._default" à 100ms)
+		//Timeout de 350ms minimum (temps minimum pour laisser les "fadeIn" ou autre se faire : cf. "$.fx.speeds._default" à 100ms)
 		lightboxResizeTimeout=setTimeout(function(){
 			//Resize uniquement s'il y a augmentation de la hauteur (pas si ya diminution: évite ainsi les resizes trop fréquents)
 			var lightboxHeightNew=windowParent.$(".fancybox-iframe").contents().height();
@@ -608,7 +610,8 @@ function confirmDelete(redirUrl, labelConfirmDeleteDbl, ajaxControlUrl)
  */
 function toScroll(thisSelector)
 {
-	$("html,body").animate({scrollTop:Math.round($(thisSelector).offset().top-110)},200);//Enlève 110px du header menu fixe
+	var toScrollTop=Math.round($(thisSelector).offset().top - $("#headerBar,#headerMain").outerHeight(true) - 20);//Enlève la hauteur de la barre de menu de menu principale (fixe)
+	$("html,body").animate({scrollTop:toScrollTop},200);
 }
 
 /*
@@ -617,19 +620,6 @@ function toScroll(thisSelector)
 function extension(fileName)
 {
 	if(isEmptyValue(fileName)==false)	{return fileName.split('.').pop().toLowerCase();}
-}
-
-/*
- * Vérifie si une chaine est au format Json (cf. Omnispace)
- */
-function isJsonString(string)
-{
-	try{
-		JSON.parse(string);
-	}catch(e){
-		return false;
-	}
-	return true;
 }
 
 /*
@@ -683,7 +673,7 @@ function proposedEventConfirm(_idCal, _idEvt, proposedEventDivId)
 	if(confirmed==true){
 		$.ajax(ajaxUrl).done(function(){
 			//Recharge la page et le calendrier
-			if(getUrlParam("ctrl",window.location.href)=="calendar")  {redir("?ctrl=calendar");}
+			if(urlGetParam("ctrl")=="calendar")  {redir("?ctrl=calendar");}
 			//Masque la proposition d'evt et masque tout le menu si ya plus aucune proposition
 			else{
 				$("#"+proposedEventDivId).hide();
@@ -752,16 +742,16 @@ function spaceAffectLabelStyle()
 }
 
 /*
- * Récupère dans une Url la valeur d'un parametre
+ * Récupère la valeur d'un parametre dans une Url
  */
-function getUrlParam(paramName, url)
+function urlGetParam(paramName, curUrl)
 {
-	paramName=paramName.replace(/[\[\]]/g, "\\$&");
-	var regex=new RegExp("[?&]"+paramName+"(=([^&#]*)|&|#|$)");
-	var results=regex.exec(url);
-	if(!results)			{return null;}
-	else if(!results[2])	{return '';}
-	else					{return decodeURIComponent(results[2].replace(/\+/g," "));}
+	//Url de la page courante || Url passée en paramètre (iframe ou autre)
+	if(typeof curUrl=="undefined")  {curUrl=window.location.href;}
+	//Créé un objet Javascript 'URLSearchParams'
+	const urlParams=new URLSearchParams(curUrl);
+	//Renvoi le paramètre s'il existe
+	if(urlParams.has(paramName))  {return urlParams.get(paramName);}
 }
 
 /*
@@ -787,7 +777,7 @@ function usersLikeValidate(targetObjId, likeValue)
 			$(menuIdDontLike).attr("title",result.usersDontlikeList).tooltipster("destroy").tooltipster(tooltipsterOptions);
 			//Fait clignoter le like/dontlike  &&  affiche le tooltip (trigger mouseover)
 			var menuId=(likeValue=="like") ? menuIdLike : menuIdDontLike;
-			$(menuId).effect("pulsate",{times:1},300).trigger("mouseover");
+			$(menuId).effect("pulsate",{times:1},300).trigger("mouseover");//pulsate rapide : pas de "pulsate()"
 			//Affichage permanent du "objMiscMenus"
 			if(result.nbLikes>0 || result.nbDontlikes>0)  {$(menuId).parent(".objMiscMenus").find(".objMenuLikeComment").addClass("showMiscMenu");}
 		});

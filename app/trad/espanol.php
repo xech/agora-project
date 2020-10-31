@@ -27,14 +27,13 @@ class Trad extends Txt
 		self::$trad["yes"]="sí";
 		self::$trad["no"]="no";
 		self::$trad["none"]="no";
+		self::$trad["noneFem"]="no";
 		self::$trad["or"]="o";
 		self::$trad["and"]="y";
-		self::$trad["by"]="by";
 		self::$trad["goToPage"]="Ir a la página";
 		self::$trad["alphabetFilter"]="Filtro alfabético";
 		self::$trad["displayAll"]="Mostrar todo";
 		self::$trad["allCategory"]="Cualquier categoría";
-		self::$trad["important"]="importante";
 		self::$trad["show"]="mostrar";
 		self::$trad["hide"]="ocultar";
 		self::$trad["byDefault"]="Por defecto";
@@ -55,12 +54,12 @@ class Trad extends Txt
 		self::$trad["comment"]="Comentario";
 		self::$trad["commentAdd"]="Añadir un comentario";
 		self::$trad["optional"]="(opcional)";
-		self::$trad["objNew"]="nuevo elemento";
+		self::$trad["objNew"]="Elemento creado recientemente";
 		self::$trad["objNewInfos"]="Creado desde mi anterior conexión o creado dentro de las 24 horas";
 		self::$trad["personalAccess"]="Acceso personal";
-		self::$trad["copyUrl"]="Copie la dirección de acceso";
-		self::$trad["copyUrlConfirmed"]="La dirección se ha copiado : se puede integrar en una noticia, un evento, una tarea, etc. <br><br> También se puede utilizar fuera del espacio (en correo electrónico, blog, etc.), pero solo las personas con acceso al espacio pueden usarlo.";
-
+		self::$trad["copyUrl"]="Copiar dirección web de acceso directo";
+		self::$trad["copyUrlInfo"]="La dirección se puede integrar en una noticia, foro, evento, etc : para acceder directamente al elemento. La dirección también se puede utilizar en un correo electrónico, blog, etc.";
+		self::$trad["copyUrlConfirmed"]="La dirección web se ha copiado correctamente.";
 		////	images
 		self::$trad["picture"]="foto";
 		self::$trad["wallpaper"]="papel tapiz";
@@ -194,6 +193,7 @@ class Trad extends Txt
 		
 		////	Options de suppression
 		self::$trad["confirmDelete"]="Confirmar eliminación ?";
+		self::$trad["confirmDeleteNbElems"]="elementos seleccionados";//"55 éléments sélectionnés"
 		self::$trad["confirmDeleteDbl"]="Está seguro ?!";
 		self::$trad["confirmDeleteFolderAccess"]="Advertencia : algunos sub-carpetas no son accessible : serán tambien eliminados !";
 		self::$trad["notifyBigFolderDelete"]="Eliminar --NB_FOLDERS-- archivos puede ser un poco largo, espere unos momentos antes del final del proceso";
@@ -205,18 +205,21 @@ class Trad extends Txt
 		self::$trad["postBy"]="publicado por";
 		self::$trad["guest"]="invitado";
 		self::$trad["creation"]="Creación";
-		self::$trad["modification"]="Modif";
+		self::$trad["modification"]="Modificación";
+		self::$trad["createBy"]="Creado por";
+		self::$trad["modifBy"]="Modificado por";
 		self::$trad["objHistory"]="histórico del elemento";
 		self::$trad["all"]="todos";
-		self::$trad["unknown"]="desconocido";
+		self::$trad["deletedUser"]="cuenta de usuario eliminada";
 		self::$trad["accessRead"]="lectura";
 		self::$trad["readInfos"]="Acceso de lectura";
 		self::$trad["accessWriteLimit"]="escritura limitada";
-		self::$trad["readLimitInfos"]="Acceso en escritura limitada : possibilidad de añadir --OBJCONTENT--s, sin modificar o suprimir los creados por otros usuarios";
+		self::$trad["readLimitInfos"]="Acceso en escritura limitada : possibilidad de añadir -OBJCONTENT-s, sin modificar o suprimir los creados por otros usuarios";
 		self::$trad["accessWrite"]="escritura";
 		self::$trad["writeInfos"]="Acceso en escritura";
-		self::$trad["writeInfosContainer"]="Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los --OBJCONTENT-- del -OBJLABEL-";
+		self::$trad["writeInfosContainer"]="Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los -OBJCONTENT- del -OBJLABEL-";
 		self::$trad["autorPrivilege"]="Solo el autor y los administradores pueden cambiar los permisos de acceso o eliminar el -OBJLABEL-";
+		self::$trad["accessRightsInherited"]="Derechos de acceso heredados del -OBJLABEL-";
 		self::$trad["folderContent"]="contenido";
 		
 		////	Libellé des objets
@@ -340,7 +343,7 @@ class Trad extends Txt
 		////	Messages d'alert ou d'erreur
 		self::$trad["NOTIF_identification"]="Nombre de usuario o contraseña no válida";
 		self::$trad["NOTIF_presentIp"]="Esta cuenta de usuario se está utilizando actualmente desde otra computadora, con otra dirección IP. Una cuenta solo se puede usar en un computadora al mismo tiempo.";
-		self::$trad["NOTIF_noSpaceAccess"]="El acceso no esta actualmente permitido con este cuente : probablemente no asignado a un espacio.";
+		self::$trad["NOTIF_noSpaceAccess"]="El acceso no está autorizado: su cuenta de usuario existe, pero actualmente no está asignada a ningún espacio.";
 		self::$trad["NOTIF_fileOrFolderAccess"]="El archivo o la carpeta no está disponible";
 		self::$trad["NOTIF_diskSpace"]="El espacio para almacenar sus archivos no es suficiente, no se puede añadir archivos";
 		self::$trad["NOTIF_fileVersionForbidden"]="Tipo de archivo no permitido";
@@ -374,7 +377,7 @@ class Trad extends Txt
 		self::$trad["MESSENGER_visioProposeTo"]="Enviar  una videollamada a";//..boby
 		self::$trad["MESSENGER_visioProposeToSelection"]="Enviar una videollamada a las personas seleccionadas";
 		self::$trad["MESSENGER_userProposeVisioCall"]="propone una videollamada. Haga clic aquí para iniciarla.";//boby.. "vous propose un appel visio"
-		self::$trad["MESSENGER_visioProposalPending"]="La propuesta de video ha sido enviada. Se abrirá una nueva ventana de video: permita el acceso a su cámara web y micrófono";
+		self::$trad["MESSENGER_visioProposalPending"]="La propuesta de video ha sido enviada : haga clic en el enlace de mensajería instantánea para comenzar el video.<br><br> Recuerde permitir el acceso a su cámara web y micrófono seleccionando ''Permitir'' en solicitudes del navegador";
 		self::$trad["MESSENGER_visioProposalLanch"]="¿Iniciar la videollamada?";
 		self::$trad["FOOTER_pageGenerated"]="página generada en";
 		
@@ -417,9 +420,9 @@ class Trad extends Txt
 		self::$trad["INSTALL_dbName"]="Nombre de la base de datos";
 		self::$trad["INSTALL_dbLogin"]="Nombre de Usuario";
 		self::$trad["INSTALL_adminAgora"]="Administrador del Ágora";
-		self::$trad["INSTALL_dbErrorDbName"]="Advertencia: el nombre de la base de datos MySQL debe contener solo caracteres alfanuméricos y guiones o guiones bajos";
-		self::$trad["INSTALL_dbErrorUnknown"]="No hay conexión con la base de datos MySQL";
-		self::$trad["INSTALL_dbErrorIdentification"]="No identificación con la base de datos MySQL";
+		self::$trad["INSTALL_dbErrorDbName"]="Advertencia: el nombre de la base de datos debe contener solo caracteres alfanuméricos y guiones o guiones bajos";
+		self::$trad["INSTALL_dbErrorUnknown"]="No hay conexión con la base de datos MariaDB/MySQL";
+		self::$trad["INSTALL_dbErrorIdentification"]="No identificación con la base de datos MariaDB/MySQL";
 		self::$trad["INSTALL_dbErrorAppInstalled"]="La instalación ya se ha realizado en esta base de datos. Gracias simplemente eliminar la base de datos si se debe reiniciar la instalación.";
 		self::$trad["INSTALL_PhpOldVersion"]="Agora-Project requiere una versión más reciente de PHP";
 		self::$trad["INSTALL_confirmInstall"]="Confirmar instalación ?";
@@ -641,13 +644,13 @@ class Trad extends Txt
 		self::$trad["USER_mailNotifContent"]="Su cuenta de usuario ha sido creada en";  // idem
 		self::$trad["USER_mailNotifContent2"]="Conectar con el login y la contraseña siguientes";
 		self::$trad["USER_mailNotifContent3"]="Gracias a mantener este correo electrónico para sus archivos.";
-		// Utilisateur_Messenger
-		self::$trad["USER_messengerEdit"]="Editar la mensajería instantánea";
-		self::$trad["USER_myMessengerEdit"]="Editar mi mensajería instantánea";
-		self::$trad["USER_livecounterVisibility"]="Usuarios que podran verme en línea y hablar en la mensajería instantánea";
-		self::$trad["USER_livecounterDisabled"]="Mensajería desactivado (todos los usuarios no pueden verme)";
-		self::$trad["USER_livecounterAllUsers"]="Todos los usuarios pueden verme";
-		self::$trad["USER_livecounterSomeUsers"]="Algunos usuarios pueden verme";
+		// Livecounter & Messenger & Visio
+		self::$trad["USER_messengerEdit"]="Configurar mi mensajería instantánea";
+		self::$trad["USER_messengerEdit2"]="Configurar mensajería instantánea";
+		self::$trad["USER_livecounterVisibility"]="Visibilidad en mensajería instantánea y videoconferencia";
+		self::$trad["USER_livecounterAllUsers"]="Mostrar mi presencia cuando estoy conectado: mensajería / video habilitado";
+		self::$trad["USER_livecounterDisabled"]="Ocultar mi presencia cuando estoy conectado: mensajería / video desactivado";
+		self::$trad["USER_livecounterSomeUsers"]="Solo ciertos usuarios pueden verme cuando estoy conectado";
 
 		////	MODULE_TABLEAU BORD
 		////
@@ -680,7 +683,6 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_plugins_week"]="de esta semana";
 		self::$trad["DASHBOARD_plugins_month"]="del mes";
 		self::$trad["DASHBOARD_plugins_previousConnection"]="desde la última conexión";
-		self::$trad["DASHBOARD_pluginsNew"]="Elemento nuevo";
 		self::$trad["DASHBOARD_pluginsCurrent"]="Elemento actual";
 		self::$trad["DASHBOARD_pluginsTooltipRedir"]="Ver el elemento en la carpeta";
 		self::$trad["DASHBOARD_pluginEmpty"]="No hay nuevos elementos sobre este periodo";
@@ -761,14 +763,16 @@ class Trad extends Txt
 		self::$trad["CALENDAR_noCalendarDisplayed"]="No calendario";
 		// Evenement
 		self::$trad["CALENDAR_category"]="Categoría";
+		self::$trad["CALENDAR_importanceNormal"]="Importancia normal";
+		self::$trad["CALENDAR_importanceHight"]="Alta importancia";
 		self::$trad["CALENDAR_visibilityPublic"]="Visibilidad normal";
-		self::$trad["CALENDAR_visibilityPublicHide"]="Visibilidad semi-privada";
 		self::$trad["CALENDAR_visibilityPrivate"]="Visibilidad privada";
-		self::$trad["CALENDAR_visibilityInfo"]="<u>Visibilidad semi-privada</u> : solo muestrar el período del evento (sin los detailles) si el evento es accesible de lectura.<br><br><u>Visibilidad privada</u> : visible sólo si el evento es accesible en escritura.";
+		self::$trad["CALENDAR_visibilityPublicHide"]="Visibilidad semi-privada";
+		self::$trad["CALENDAR_visibilityInfo"]="<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento (sin los detailles) si el evento es accesible de lectura";
 		//  Agenda : edit
 		self::$trad["CALENDAR_timeSlot"]="Rango de tiempo de la pantalla ''semana''";
 		// Evenement : edit
-		self::$trad["CALENDAR_noPeriodicity"]="Evento puntual";
+		self::$trad["CALENDAR_noPeriodicity"]="Una vez";
 		self::$trad["CALENDAR_period_weekDay"]="Cada semana";
 		self::$trad["CALENDAR_period_month"]="Cada mes";
 		self::$trad["CALENDAR_period_dayOfMonth"]="del mes"; // Le 21 du mois
@@ -915,7 +919,8 @@ class Trad extends Txt
 		self::$trad["MAIL_moduleDescription"]="Enviar mensajes de correo electrónico con un solo clic !";
 		//Index
 		self::$trad["MAIL_specifyMail"]="Gracias especificar al menos un destinatario";
-		self::$trad["MAIL_title"]="Título del correo electrónico";
+		self::$trad["MAIL_subject"]="Asunto del email";
+		self::$trad["MAIL_message"]="Mensaje del email";
 		self::$trad["MAIL_attachedFile"]="Archivo adjunto";
 		// Historique Email
 		self::$trad["MAIL_mailHistory"]="Historia de los correos electrónicos enviados";

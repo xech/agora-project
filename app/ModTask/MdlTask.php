@@ -16,7 +16,6 @@ class MdlTask extends MdlObject
 	const moduleName="task";
 	const objectType="task";
 	const dbTable="ap_task";
-	const hasAccessRight=true;//Elems à la racine
 	const MdlObjectContainer="MdlTaskFolder";
 	const isFolderContent=true;
 	const isSelectable=true;

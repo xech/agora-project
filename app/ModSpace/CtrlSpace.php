@@ -36,7 +36,7 @@ class CtrlSpace extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			////	Enregistre & recharge l'objet
-			$curSpace=$curSpace->createUpdate("name=".Db::formatParam("name").", description=".Db::formatParam("description").", public=".Db::formatParam("public").", password=".Db::formatParam("password").", usersInscription=".Db::formatParam("usersInscription").", usersInvitation=".Db::formatParam("usersInvitation").", wallpaper=".Db::formatParam("wallpaper"));
+			$curSpace=$curSpace->createUpdate("name=".Db::formatParam("name").", description=".Db::formatParam("description").", public=".Db::formatParam("public").", `password`=".Db::formatParam("password").", usersInscription=".Db::formatParam("usersInscription").", usersInvitation=".Db::formatParam("usersInvitation").", wallpaper=".Db::formatParam("wallpaper"));
 			////	Affectations des users
 			if(Ctrl::$curUser->isAdminGeneral())
 			{
@@ -56,7 +56,7 @@ class CtrlSpace extends Ctrl
 			Db::query("DELETE FROM ap_joinSpaceModule WHERE _idSpace=".$curSpace->_id);
 			foreach(Req::getParam("moduleList") as $rank=>$moduleName){
 				$options=Txt::tab2txt(Req::getParam($moduleName."Options"));
-				Db::query("INSERT INTO ap_joinSpaceModule SET _idSpace=".$curSpace->_id.", moduleName=".Db::format($moduleName).", rank=".$rank.", options=".Db::format($options));
+				Db::query("INSERT INTO ap_joinSpaceModule SET _idSpace=".$curSpace->_id.", moduleName=".Db::format($moduleName).", `rank`=".$rank.", options=".Db::format($options));
 			}
 			////	Creation de l'agenda d'espace (avec affectation par défaut : lecture pour les users de l'espace)
 			if($curSpace->isNewlyCreated() && in_array("calendar",Req::getParam("moduleList")) && in_array("createSpaceCalendar",Req::getParam("calendarOptions"))){

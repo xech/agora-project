@@ -15,9 +15,9 @@ class Txt
 	protected static $trad=array();
 	protected static $detectEncoding=null;
 
-	/*
-	 * Charge les traductions
-	 */
+	/*******************************************************************************************
+	 * CHARGE LES TRADUCTIONS
+	 *******************************************************************************************/
 	public static function loadTrads()
 	{
 		//Charge les trads si besoin (et garde en session)
@@ -36,9 +36,9 @@ class Txt
 		}
 	}
 
-	/*
-	 * Affiche un text traduit (exple: Txt::trad('rootFolder')")
-	 */
+	/*******************************************************************************************
+	 * AFFICHE UN TEXT TRADUIT (exple: Txt::trad('rootFolder')")
+	 *******************************************************************************************/
 	public static function trad($keyTrad, $addSlashes=false)
 	{
 		//charge les traductions?
@@ -49,9 +49,9 @@ class Txt
 		else												{return $keyTrad."*";}
 	}
 
-	/*
-	 * Verifie si une traduction existe
-	 */
+	/*******************************************************************************************
+	 * VERIFIE SI UNE TRADUCTION EXISTE
+	 *******************************************************************************************/
 	public static function isTrad($keyLang)
 	{
 		//charge les traductions?
@@ -60,17 +60,17 @@ class Txt
 		return (isset(self::$trad[$keyLang]));
 	}
 
-	/*
-	 * Texte vers tableau : @@1@@2@@3@@ => array("1","2","3")
-	 */
+	/*******************************************************************************************
+	 * TEXTE VERS TABLEAU : @@1@@2@@3@@ => array("1","2","3")
+	 *******************************************************************************************/
 	public static function txt2tab($text)
 	{
 		return (!empty($text) && !is_array($text)) ? explode("@@",trim($text,"@@")) : array();
 	}
 	
-	/*
-	 * Tableau vers texte : array("1","2","3") => @@1@@2@@3@@
-	 */
+	/*******************************************************************************************
+	 * TABLEAU VERS TEXTE : array("1","2","3") => @@1@@2@@3@@
+	 *******************************************************************************************/
 	public static function tab2txt($array)
 	{
 		if(is_array($array)){
@@ -79,9 +79,9 @@ class Txt
 		}
 	}
 
-	/*
-	 * Reduction d'un texte (conserve certains balises html)
-	 */
+	/*******************************************************************************************
+	 * REDUCTION D'UN TEXTE (conserve certaines balises html)
+	 *******************************************************************************************/
 	public static function reduce($text, $maxCaracNb=200, $removeLastWord=true)
 	{
 		$textLength=strlen(strip_tags($text));
@@ -96,10 +96,10 @@ class Txt
 		return $text;
 	}
 
-	/*
-	 * Supprime les caracteres speciaux d'une chaine de caracteres
+	/*******************************************************************************************
+	 * SUPPRIME LES CARACTERES SPECIAUX D'UNE CHAINE DE CARACTERES
 	 * exemple de $scope avec "L'été!":  download=>"L_été!"  mini=>"L'ete!"  normal=>"L'ete"  maxi=>"L_ete"
-	 */
+	 *******************************************************************************************/
 	public static function clean($text, $scope="normal", $replaceBy="_")
 	{
 		//Enleve les balide éventuelle..
@@ -130,53 +130,53 @@ class Txt
 		return trim($text);
 	}
 
-	/*
-	 * Reduction et nettoyage d'un texte pour un affichage "plugin" (cf. double "quotes" and co)
-	 */
+	/*******************************************************************************************
+	 * REDUCTION ET NETTOYAGE D'UN TEXTE POUR UN AFFICHAGE "PLUGIN" (cf. double "quotes" and co)
+	 *******************************************************************************************/
 	public static function cleanPlugin($text, $maxCaracNb=200, $allowable_tags="<hr><br>")
 	{
 		return htmlspecialchars(self::reduce(strip_tags($text,$allowable_tags),$maxCaracNb));
 	}
 
-	/*
-	 * Texte en majuscule
-	 */
+	/*******************************************************************************************
+	 * TEXTE EN MAJUSCULE
+	 *******************************************************************************************/
 	public static function maj($text)
 	{
 		return strtoupper(self::clean($text,"mini"));
 	}
 
-	/*
-	 * Encode une chaine en UTF-8 ?
-	 */
+	/*******************************************************************************************
+	 * ENCODE UNE CHAINE EN UTF-8 ?
+	 *******************************************************************************************/
 	public static function utf8Encode($text)
 	{
 		if(static::$detectEncoding===null)	{static::$detectEncoding=function_exists("mb_detect_encoding");}
 		return (static::$detectEncoding==false || mb_detect_encoding($text,"UTF-8",true))  ?  $text  :  utf8_encode($text);
 	}
 
-	/*
-	 * Format les tooltips : ajoute si besoin des hyperliens et fait les retours à la ligne
-	 */
+	/*******************************************************************************************
+	 * FORMAT LES TOOLTIPS : AJOUTE SI BESOIN DES HYPERLIENS ET FAIT LES RETOURS À LA LIGNE
+	 *******************************************************************************************/
 	public static function formatTooltip($text)
 	{
 		$patternHyperlink="/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
 		return nl2br(preg_replace($patternHyperlink, "<a href='$0' target='_blank'><u>$0</u></a>", $text));
 	}
 
-	/*
-	 * Formate une date puis encode si besoin en UTF-8
-	 */
+	/*******************************************************************************************
+	 * FORMATE UNE DATE PUIS ENCODE SI BESOIN EN UTF-8
+	 *******************************************************************************************/
 	public static function formatime($format, $timestamp)
 	{
 		return self::utf8Encode(strftime($format,$timestamp));
 	}
 
-	/*
-	 * Affichage d'une date
+	/*******************************************************************************************
+	 * AFFICHAGE D'UNE DATE
 	 * $timeBegin & $timeEnd : Timestamp unix ou format DateTime
 	 * $format => normal / full / mini / date / dateFull / dateMini
-	 */
+	 *******************************************************************************************/
 	public static function displayDate($timeBegin, $format="normal", $timeEnd=null)
 	{
 		// Vérif de base. $dateBegin peut être vide, mais $dateEnd spécifié (task)
@@ -194,7 +194,7 @@ class Txt
 			if((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$fMonthYear.=" %Y";}
 			//Format du jour et de l'heure
 			$fDayMonthYear="%e ".$fMonthYear;
-			$fHM=(Tool::winEnv()?"%H":"%k").$hourSeparation."%M";//exple "9h30" ("%k" affichera "9h" alors que "%H" affichera "09h" mais reste comptatible windows)
+			$fHM="%k".$hourSeparation."%M";//exple "9h30"
 			$dayBeginEnd=$hourBeginEnd=false;
 			if(!empty($timeEnd)){
 				if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))	{$dayBeginEnd=true;}//JourDebut!=jourFin
@@ -251,10 +251,9 @@ class Txt
 		}
 	}
 
-	/*
-	 * Formatage d'une date
-	 * Exple : "2050-12-31 12:50:00" => "31/12/2050"
-	 */
+	/*******************************************************************************************
+	 * FORMATAGE D'UNE DATE  (Exple : "2050-12-31 12:50:00" => "31/12/2050")
+	 *******************************************************************************************/
 	public static function formatDate($dateValue, $inFormat, $outFormat, $emptyHourNull=false)
 	{
 		$dateValue=trim($dateValue);
@@ -274,9 +273,9 @@ class Txt
 		}
 	}
 
-	/*
-	 * Inputs "hidden" de base (Ctrl, Action, etc)  &&  Bouton "submit" du Formulaire
-	 */
+	/*******************************************************************************************
+	 * INPUTS "HIDDEN" DE BASE (Ctrl, Action, etc)  &&  BOUTON "SUBMIT" DU FORMULAIRE
+	 *******************************************************************************************/
 	public static function submitButton($tradSubmit="validate", $isMainButton=true)
 	{
 		return "<input type='hidden' name='ctrl' value=\"".Req::$curCtrl."\">
@@ -288,9 +287,9 @@ class Txt
 				</div>";
 	}
 
-	/*
-	 * Menu de sélection de la langue
-	 */
+	/*******************************************************************************************
+	 * MENU DE SÉLECTION DE LA LANGUE
+	 *******************************************************************************************/
 	public static function menuTrad($typeConfig, $selectedLang=null)
 	{
 		// Langue "francais" par défaut
@@ -309,18 +308,18 @@ class Txt
 		return "<select name='lang' onchange=\"".$onchange."\">".$menuLangOptions."</select> &nbsp; <img src='app/trad/".$selectedLang.".png' class='menuTradIcon'>";
 	}
 
-	/*
-	 * Créé un identifiant unique
-	 */
+	/*******************************************************************************************
+	 * CRÉÉ UN IDENTIFIANT UNIQUE
+	 *******************************************************************************************/
 	public static function uniqId($length=15)
 	{
 		//"md5" car deux "uniqid()" à intervalles proches auront le même début. "rand()" pour pas prendre en compte que le microtime du "uniqid()"
 		return substr(md5(uniqid(rand())), 0, $length);
 	}
 
-	/*
-	 * Vérifie la validité d'un email
-	 */
+	/*******************************************************************************************
+	 * VÉRIFIE LA VALIDITÉ D'UN EMAIL
+	 *******************************************************************************************/
 	public static function isMail($email){ 
 		return (!empty($email) && filter_var($email,FILTER_VALIDATE_EMAIL));
 	}

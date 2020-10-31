@@ -257,12 +257,11 @@ function mainFormControl()
 ////	INITIALISE L'EDITEUR HTML D'UN CHAMP (description ou autre) ?
 if($curObj::htmlEditorField!==null)  {echo CtrlMisc::initHtmlEditor($curObj::htmlEditorField);}
 
-////	MENU D'IDENTIFICATION : GUESTS
-if(Ctrl::$curUser->isUser()==false){
-	echo "<div class='lightboxBlock' id='guestMenu'><input type='text' name='guest' onkeyup=\"this.value=this.value.slice(0,150)\" placeholder=\"".Txt::trad("EDIT_guestName")."\"><hr>".CtrlMisc::menuCaptcha()."</div>";
-}
-////	MENU PRINCIPAL
-elseif(!empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
+////	MENU D'IDENTIFICATION DES GUESTS (cf. "ap_calendarEvent")
+if(Ctrl::$curUser->isUser()==false)  {echo "<div class='lightboxBlock' id='guestMenu'><input type='text' name='guest' onkeyup=\"this.value=this.value.slice(0,150)\" placeholder=\"".Txt::trad("EDIT_guestName")."\"><hr>".CtrlMisc::menuCaptcha()."</div>";}
+
+////	MENU DES DROITS D'ACCES ET DES OPTIONS
+if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 {
 	////	ONGLETS DES MENUS
 	echo "<div id='objMenuLabels' class='noSelect'>";

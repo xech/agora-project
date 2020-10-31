@@ -24,10 +24,11 @@ class CtrlUser extends Ctrl
 		//Affichage des utilisateurs : "space" / "all"
 		if(Req::isParam("displayUsers"))	{$_SESSION["displayUsers"]=(Req::getParam("displayUsers")=="all" && self::$curUser->isAdminGeneral()) ? "all" : "space";}
 		//Filtre Alphabet : avec la première lettre du nom
-		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(name,1)) as initiale FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplayedObjects()." ORDER BY initiale");
+		$sqlDisplayedObjects=MdlUser::sqlDisplayedObjects();
+		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(name,1)) as initiale FROM ".MdlUser::dbTable." WHERE ".$sqlDisplayedObjects." ORDER BY initiale");
 		$sqlAlphabetFilter=(Req::isParam("alphabet")) ? "AND name LIKE '".Req::getParam("alphabet")."%'" : null;
 		//Utilisateurs et menus
-		$sqlDisplayedUsers="SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplayedObjects()." ".$sqlAlphabetFilter." ".MdlUser::sqlSort();
+		$sqlDisplayedUsers="SELECT * FROM ".MdlUser::dbTable." WHERE ".$sqlDisplayedObjects." ".$sqlAlphabetFilter." ".MdlUser::sqlSort();
 		$vDatas["displayedUsers"]=Db::getObjTab("user", $sqlDisplayedUsers." ".MdlUser::sqlPagination());
 		$vDatas["usersTotalNb"]=count(Db::getTab($sqlDisplayedUsers));
 		$vDatas["usersTotalNbLabel"]=$vDatas["usersTotalNb"]." ".Txt::trad("USER_users");
@@ -85,7 +86,7 @@ class CtrlUser extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$sqlProperties="civility=".Db::formatParam("civility").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", telephone=".Db::formatParam("telephone").", telmobile=".Db::formatParam("telmobile").", adress=".Db::formatParam("adress").", postalCode=".Db::formatParam("postalCode").", city=".Db::formatParam("city").", country=".Db::formatParam("country").", function=".Db::formatParam("function").", companyOrganization=".Db::formatParam("companyOrganization").", comment=".Db::formatParam("comment").", connectionSpace=".Db::formatParam("connectionSpace").", lang=".Db::formatParam("lang");
+			$sqlProperties="civility=".Db::formatParam("civility").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", telephone=".Db::formatParam("telephone").", telmobile=".Db::formatParam("telmobile").", adress=".Db::formatParam("adress").", postalCode=".Db::formatParam("postalCode").", city=".Db::formatParam("city").", country=".Db::formatParam("country").", `function`=".Db::formatParam("function").", companyOrganization=".Db::formatParam("companyOrganization").", `comment`=".Db::formatParam("comment").", connectionSpace=".Db::formatParam("connectionSpace").", lang=".Db::formatParam("lang");
 			if($curObj->editAdminGeneralRight())	{$sqlProperties.=", generalAdmin=".Db::formatParam("generalAdmin");}
 			if(Ctrl::$curUser->isAdminGeneral())	{$sqlProperties.=", calendarDisabled=".Db::formatParam("calendarDisabled");}
 			$curObj=$curObj->createUpdate($sqlProperties, Req::getParam("login"), Req::getParam("password"));//Ajoute login/password pour les controles standards
@@ -319,7 +320,7 @@ class CtrlUser extends Ctrl
 					if(Req::isParam("comment"))  {$mainMessage.="<br><br>".Txt::trad("comment").":<br>".Req::getParam("comment");}
 					$isSendMail=Tool::sendMail($invitationTmp["mail"], $subject, $mainMessage);
 					//On ajoute l'invitation temporaire
-					if($isSendMail==true)  {Db::query("INSERT INTO ap_invitation SET _idInvitation=".Db::format($_idInvitation).", _idSpace=".(int)Ctrl::$curSpace->_id.", name=".Db::format($invitationTmp["name"]).", firstName=".Db::format($invitationTmp["firstName"]).", mail=".Db::format($invitationTmp["mail"]).", password=".Db::format($password).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);}
+					if($isSendMail==true)  {Db::query("INSERT INTO ap_invitation SET _idInvitation=".Db::format($_idInvitation).", _idSpace=".(int)Ctrl::$curSpace->_id.", name=".Db::format($invitationTmp["name"]).", firstName=".Db::format($invitationTmp["firstName"]).", mail=".Db::format($invitationTmp["mail"]).", `password`=".Db::format($password).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);}
 				}
 			}
 			//Ferme la page
@@ -409,7 +410,7 @@ class CtrlUser extends Ctrl
 					$curObj=new MdlUser();
 					$sqlProperties="name=".Db::format($tmpInscription["name"]).", firstName=".Db::format($tmpInscription["firstName"]).", mail=".Db::format($tmpInscription["mail"]);
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpInscription["mail"], $tmpInscription["password"], $tmpInscription["_idSpace"]);//Ajoute login/password pour les controles standards
-					$curObj->newUserCoordsSendMail($tmpInscription["password"]);
+					if(is_object($curObj))  {$curObj->newUserCoordsSendMail($tmpInscription["password"]);}//Notif uniquement si l'user a bien été créé
 				}
 				//Supprime l'inscription
 				Db::query("DELETE FROM ap_userInscription WHERE _id=".(int)$idInscription);

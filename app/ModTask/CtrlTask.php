@@ -94,7 +94,7 @@ class CtrlTask extends Ctrl
 				elseif(!empty($tmpObj->dateEnd))	{$displayTime=Txt::trad("end")." : ".Txt::displayDate($tmpObj->dateEnd,"normal");}
 				$tmpObj->pluginTooltip.="<br>".$displayTime;
 			}			
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl("container")."');";//Redir vers le dossier conteneur
+			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche la tâche dans son dossier conteneur
 			$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";
 			$pluginsList[]=$tmpObj;
 		}

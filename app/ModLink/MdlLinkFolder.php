@@ -15,6 +15,5 @@ class MdlLinkFolder extends MdlObjectFolder
 	const moduleName="link";
 	const objectType="linkFolder";
 	const dbTable="ap_linkFolder";
-	const hasAccessRight=true;
 	const MdlObjectContent="MdlLink";
 }

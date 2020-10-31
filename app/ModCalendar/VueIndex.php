@@ -24,7 +24,7 @@ $(function(){
 		calendarDimensions();
 		//Ré-affiche les agendas après calcul
 		$(".vCalendarBlock").css("visibility","visible");
-	},100);
+	},350);//Timeout de 350ms (cf. "mainPageDisplay()" et le "margin-bottom" du "#pageFull" en fonction du livecounter)
 
 	////	INIT LE DATEPICKER JQUERY-UI DANS LE MENU DU MODULE
 	$("#datepickerCalendar").datepicker({
@@ -49,7 +49,7 @@ $(function(){
 					//Swipe vers la droite/gauche d'au moins 50px : redirige vers la période précédente/suivante
 					if((event.touches[0].clientX - swipeBeginX) > 50)		{var buttonSwipePeriod="#calendarPrev";}
 					else if((swipeBeginX - event.touches[0].clientX) > 50)	{var buttonSwipePeriod="#calendarNext";}
-					//Fait clignoter le bouton de changement de période puis simule le click avec un timeOut
+					//Fait clignoter rapidement le bouton de changement de période puis simule le click avec un timeOut
 					$(buttonSwipePeriod).effect("pulsate",{times:1},400);
 					setTimeout(function(){ $(buttonSwipePeriod).trigger("click"); },500);
 				}
@@ -109,7 +109,7 @@ $(function(){
 #calMonthPeriodMenuContainer a		{display:inline-block; width:75px; padding:3px; text-align:left;}
 
 /*Evenements*/
-.vCalEvtBlock.objContainer			{height:20px; min-height:20px; padding:4px!important; margin:0px; margin-bottom:1px; box-shadow:1px 1px 2px #555; cursor:pointer;}/*surcharge .objContainer : "height", "padding", etc*/
+.vCalEvtBlock.objContainer			{height:22px; min-height:22px; padding:4px; margin:0px; margin-bottom:1px; box-shadow:1px 1px 2px #555; cursor:pointer;}/*surcharge .objContainer : "height", "padding", etc*/
 .vCalEvtBlock .objMenuBurgerInline	{float:right; margin-left:4px; margin-bottom:4px;}/*Surchage du menu "burger" de chaque événement (que l'on affiche pas en responsive)*/
 .vCalEvtBlock .vCalEvtLabel			{height:98%; overflow:hidden; font-size:0.9em; font-weight:normal; color:#fff;}/*overflow pour ne pas dépasser du block parent*/
 .vCalEvtBlock .vCalEvtLabel img		{max-height:13px;}

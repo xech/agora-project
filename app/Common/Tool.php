@@ -7,9 +7,9 @@
 */
 
 
-//Namespace de PHPMailer v6.0.5
-//use PHPMailer\PHPMailer\PHPMailer;
-
+//Namespace de PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 /*
  * Classe "boite à outils"
@@ -19,9 +19,9 @@ class Tool
 	private static $_winEnv=null;
 	private static $_linuxEnv=null;
 
-	/*
-	 * Envoi d'un mail
-	 */
+	/*******************************************************************************************
+	 * ENVOI D'UN MAIL
+	 *******************************************************************************************/
 	public static function sendMail($mailsTo, $subject, $message, $options=null, $attachedFiles=null)
 	{
 		////	Vérification de base
@@ -38,49 +38,49 @@ class Tool
 
 		////	Charge et crée l'instance PHPMailer
 		if(!defined("phpmailerLoaded")){
-			require("app/misc/PHPMailer/PHPMailerAutoload.php");
+			require 'app/misc/PHPMailer/src/PHPMailer.php';
+			require 'app/misc/PHPMailer/src/SMTP.php';
+			require 'app/misc/PHPMailer/src/Exception.php';
 			define("phpmailerLoaded",true);
 		}
 		$mail=new PHPMailer();
 		$mail->CharSet="UTF-8";
-		$mail->Priority=1;//haute
 
 		////	Parametrage DKIM / SMTP
 		if(defined("DKIM_domain") && defined("DKIM_private") && defined("DKIM_selector"))   {$mail->DKIM_domain=DKIM_domain;   $mail->DKIM_private=DKIM_private;   $mail->DKIM_selector=DKIM_selector;}
-		if(defined("SMTP_CONFIG") && is_file(SMTP_CONFIG))  {require_once SMTP_CONFIG;}//Parametrage smtp spécifique (cf "config.inc.php" & "params.php")
+		if(Req::isDevServer() && is_file("../PARAMS/smtp.inc.php"))  {require_once "../PARAMS/smtp.inc.php";}//Config spécifique (Ctrl::$agora->sendmailFrom & co)
 		if(!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)){
 			$mail->isSMTP();
 			$mail->Host=Ctrl::$agora->smtpHost;
 			$mail->Port=(int)Ctrl::$agora->smtpPort;
-			if(!empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}//Sécurise via SSL/TLS
-			else									{$mail->SMTPAutoTLS=false;}//Désactive le SSL/TLS par défaut
+			if(!empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}	//Sécurise via SSL/TLS
+			else									{$mail->SMTPAutoTLS=false;}						//Désactive le SSL/TLS par défaut
 			if(!empty(Ctrl::$agora->smtpUsername) && !empty(Ctrl::$agora->smtpPass))   {$mail->Username=Ctrl::$agora->smtpUsername;  $mail->Password=Ctrl::$agora->smtpPass;  $mail->SMTPAuth=true;}//Connection authentifié
 		}
 
 		////	Expediteur
+		$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
 		$fromDomain=str_replace("www.","",$_SERVER["HTTP_HOST"]);
-		$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;
-		$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;
+		$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//"sendmailFrom" du paramétrage smtp OU Nom de domaine (exple: "noreply@mondomaine.net")
+		$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Nom de domaine
 		$mail->SetFrom($fromMail, $fromLabel);
-		//Expediteur "user"
-		if($opt["senderNoReply"]==false && isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->mail)){
-			$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());
-			$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());
-			if($opt["receptionNotif"]==true)  {$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}
+		//Ajoute le libellé de l'user connecté (le + fréquent)
+		if($opt["senderNoReply"]==false && $fromConnectedUser==true){
+			$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());												//Modif le libellé : "Mon espace - boby SMITH"
+			if(!empty(Ctrl::$curUser->mail))  {$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}			//Ajoute un email de réponse
+			if($opt["receptionNotif"]==true && !empty(Ctrl::$curUser->mail))  {$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}	//Demande confirmation de lecture
 		}
 
 		////	Destinataires (format text / array d'idUser)
-		//Ajoute l'user courant en "AddAddress()" si "hideRecipients" (pour eviter le Spam)
-		if($opt["hideRecipients"]==true && method_exists(Ctrl::$curUser,"isUser") && !empty(Ctrl::$curUser->mail))   {$mail->AddAddress(Ctrl::$curUser->mail);}
-		//Ajoute chaque destinataire
-		$mailsToNotif=null;
-		if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}
-		foreach($mailsTo as $tmpDest)
-		{
+		$mailsToNotif=null;																														//Prépare la notification finale
+		if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}//Destinataires masqués: ajoute l'user en email principal (evite la spambox)
+		if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																	//Prépare la liste des destinataires
+		//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
+		foreach($mailsTo as $tmpDest){
 			if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}
 			if(!empty($tmpDest)){
 				$mailsToNotif.=", ".$tmpDest;
-				if($opt["hideRecipients"]==true)	{$mail->AddBCC($tmpDest);}//Copie cachée (sauf wamp)
+				if($opt["hideRecipients"]==true)	{$mail->AddBCC($tmpDest);}
 				else								{$mail->AddAddress($tmpDest);}
 			}
 		}
@@ -128,9 +128,9 @@ class Tool
 		return $isSendMail;
 	}
 
-	/*
-	 * Url filtré des parametres passés en Get
-	 */
+	/*******************************************************************************************
+	 * URL FILTRÉ DES PARAMETRES PASSÉS EN GET
+	 *******************************************************************************************/
 	public static function getParamsUrl($paramsExclude=null)
 	{
 		//Init
@@ -145,9 +145,9 @@ class Tool
 		return "?".http_build_query($getParamsUrl);
 	}
 
-	/*
-	 * Tri un tableau multidimentionnel
-	 */
+	/*******************************************************************************************
+	 * TRI UN TABLEAU MULTIDIMENTIONNEL
+	 *******************************************************************************************/
 	public static function sortArray($sortedArray, $sortedField, $ascDesc="asc", $fixFirstLine=false)
 	{
 		// Créé un tableau temporaire avec juste la cle du tableau principal et le champ à trier
@@ -167,9 +167,9 @@ class Tool
 		return $returnArray;
 	}
 
-	/*
-	 * Recherche une valeur dans un tableau multidimentionnel
-	 */
+	/*******************************************************************************************
+	 * RECHERCHE UNE VALEUR DANS UN TABLEAU MULTIDIMENTIONNEL
+	 *******************************************************************************************/
 	public static function arraySearch($curTable, $searchValue)
 	{
 		if(is_array($curTable)){
@@ -182,24 +182,6 @@ class Tool
 			//Sinon Recherche infructueuse
 			return false;
 		}
-	}
-
-	/*
-	 * Verifie si on est sur un environnement Windows
-	 */
-	public static function winEnv()
-	{
-		if(self::$_winEnv===null)  {self::$_winEnv=(strtoupper(substr(PHP_OS,0,3))=="WIN");}
-		return self::$_winEnv;
-	}
-
-	/*
-	 * Verifie si on est sur un environnement Linux
-	 */
-	public static function linuxEnv()
-	{
-		if(self::$_linuxEnv===null)  {self::$_linuxEnv=preg_match("/linux/i",PHP_OS);}
-		return self::$_linuxEnv;
 	}
 
 	/***************************************************************************************************************************/
@@ -237,10 +219,9 @@ class Tool
 		"Pacific/Tongatapu"=>"13:00");
 	
 	
-	/*
-	 * ColorPicker / Selecteur de couleurs.
-	 * $bgTxtColor="background-color"/"color"
-	 */
+	/*******************************************************************************************
+	 * COLORPICKER / SELECTEUR DE COULEURS ($bgTxtColor : "background-color"/"color")
+	 *******************************************************************************************/
 	public static function colorPicker($inputText, $inputColor, $bgTxtColor="background-color")
 	{
 		$colorMap=null;
@@ -256,9 +237,9 @@ class Tool
 				<img src='app/img/colorPicker.png' class='menuLaunch' for='".$menuContextId."'>";
 	}
 
-	/*
-	 * Barre de pourcentage
-	 */
+	/*******************************************************************************************
+	 * BARRE DE POURCENTAGE
+	 *******************************************************************************************/
 	public static function percentBar($fillPercent, $txtBar, $txtTooltip, $orangeBarAlert=false, $barWidth=null)
 	{
 		//Width de "100%" par défaut && Remplissage à 100% maximum

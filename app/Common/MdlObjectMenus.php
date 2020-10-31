@@ -15,9 +15,9 @@ trait MdlObjectMenus
 	public static $pageNbObjects=50;		//Nb d'éléments affichés par page : 50 par défaut
 	public static $displayModeCurrent=null;	//Type d'affichage en préference (ligne/block)
 
-	/*
-	 * Balise ouvrante du block de l'objet : contient l'Url d'édition (pour le DblClick)  et l'id du menu contextuel (Click droit)
-	 */
+	/*******************************************************************************************
+	 * BALISE OUVRANTE DU BLOCK DE L'OBJET : CONTIENT L'URL D'ÉDITION (pour le DblClick)  ET L'ID DU MENU CONTEXTUEL (Click droit)
+	 *******************************************************************************************/
 	public function divContainer($specificClass=null, $specificAttributes=null)
 	{
 		$isSelectableclass=(static::isSelectable==true)  ?  "isSelectable"  :  null;
@@ -25,22 +25,22 @@ trait MdlObjectMenus
 		return  "<div class=\"objContainer ".$isSelectableclass." ".$specificClass."\" ".$specificAttributes." id=\"".$this->menuId("objBlock")."\" for=\"".$this->menuId("objMenu")."\" ".$urlEdit.">";
 	}
 
-	/*
-	 * Identifiant du menu contextuel : "objBlock"/"objBlock"/"objAttachment" (Cf. "initMenuContext()"!)
-	 */
+	/*******************************************************************************************
+	 * IDENTIFIANT DU MENU CONTEXTUEL : "objBlock"/"objBlock"/"objAttachment" (Cf. "initMenuContext()"!)
+	 *******************************************************************************************/
 	public function menuId($prefix)
 	{
 		if(empty($this->contextMenuId))  {$this->contextMenuId=Txt::uniqId();}//Un menu par instance de l'objet (Tester avec les evts récurrents ou les menus d'agendas)
 		return $prefix."_".$this->contextMenuId;
 	}
 
-	/*
-	 * VUE : Menu contextuel (édition, droit d'accès, etc)
+	/*******************************************************************************************
+	 * VUE : MENU CONTEXTUEL (édition, droit d'accès, etc)
 	 * $options["iconBurger"] (text)		: icone "burger" du launcher ("small", "big" ou "float" par défaut)
 	 * $options["deleteLabel"] (Bool)		: label spécifique de suppression
 	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu. Exemple avec  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
 	 * $options["specificLabels"] (Array)	: Texte à afficher. Exemple avec les "affectedCalendarsLabel()" pour afficher la liste des agendas ou est affecté un evenement
-	 */
+	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		////	INIT  &  DIVERSES OPTIONS
@@ -80,7 +80,7 @@ trait MdlObjectMenus
 			////	MODIFIER ELEMENT  &  LOGS/HISTORIQUE  &  CHANGER DE DOSSIER (SI Y EN A..)
 			if($this->editRight())
 			{
-				$vDatas["editLabel"]=(static::hasAccessRight==true && $this->isIndependant())  ?  Txt::trad("modifyAndAccesRight")  :  Txt::trad("modify");
+				$vDatas["editLabel"]=($this->hasAccessRight())  ?  Txt::trad("modifyAndAccesRight")  :  Txt::trad("modify");
 				$vDatas["logUrl"]="?ctrl=object&action=logs&targetObjId=".$this->_targetObjId;
 				if($this::isInArbo() && !empty(Ctrl::$curContainer)){
 					$curRootFolder=Ctrl::getObj(get_class(Ctrl::$curContainer),1);//Récupère le dossier racine et compte le nb de sous-dossiers
@@ -100,34 +100,34 @@ trait MdlObjectMenus
 				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$labelConfirmDeleteDbl.$ajaxControlUrl.")";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
-			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC
-			if(static::hasAccessRight==true && Ctrl::$curUser->isUser() && $this->isIndependant())
+			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
+			if(Ctrl::$curUser->isUser() && ($this->hasAccessRight() || $this->accessRightFromContainer()))
 			{
-				//Init le tableau des libellés
-				$objAffects=$this->getAffectations();
+				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
+				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
 				$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
-				//Ajoute le label de chaque affectation : pour chaque type de droit d'accès (lecture/ecriture limité/ecriture). Ajoute ausi le nom de l'espace, si ça ne concerne pas l'espace courant
-				foreach($objAffects as $tmpAffect){
-					if($tmpAffect["targetType"]!="spaceUsers" && $tmpAffect["_idSpace"]!=Ctrl::$curSpace->_id)  {$tmpAffect["label"].=" (".Ctrl::getObj("space",$tmpAffect["_idSpace"])->name.")";}
-					$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";
-				}
+				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
 				//Affiche si l'objet est personnel ("isPersoAccess")
 				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
 				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["target_id"]==Ctrl::$curUser->_id);
-				//Tooltip pour chaque type de droit d'accès
-				$affectAutor=(static::isContainer())  ?  "<hr>".$this->tradObject("autorPrivilege")  :  null;//Ex: "Seul l'auteur ou l'admin peuvent modifier/supprimer le dossier"
-				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=Txt::trad("readInfos").$affectAutor;}
-				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObject("readLimitInfos").$affectAutor;}
-				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $this->tradObject("writeInfosContainer").$affectAutor  :  Txt::trad("writeInfos");}
+				//Tooltip spécifique
+				if(static::isContainer())  					{$tooltipDetail=$this->tradObject("autorPrivilege")."<hr>";}						//"Seul l'auteur ou l'admin peuvent modifier/supprimer le -dossier-"
+				elseif($this->accessRightFromContainer())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
+				else										{$tooltipDetail=null;}
+				//Tooltip : description de chaque droit d'accès
+				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("readInfos");}
+				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("readLimitInfos");}
+				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("writeInfosContainer")  :  $tooltipDetail.Txt::trad("writeInfos");}
 			}
 			////	AUTEUR ET DATE (optionnelle)
 			//Init
 			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
 			$vDatas["isNewObject"]=(strtotime($this->dateCrea)>(time()-86400) || (Ctrl::$curUser->isUser() && strtotime($this->dateCrea)>Ctrl::$curUser->previousConnection));
-			//Auteur + Date création + Nouvel objet (créé dans les 24 heures ou depuis la dernière connexion)
+			//Auteur + Date création + Nouvel objet (si créé dans les 24 heures ou depuis la dernière connexion)
 			if($this->_idUser)					{$vDatas["autorDateCrea"].="<div class='sLink' onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->displayAutor()."</div>";}
+			if($this->guest)					{$vDatas["autorDateCrea"].="<div>".$this->displayAutor()."</div>";}
 			if($this->dateCrea)					{$vDatas["autorDateCrea"].=$this->displayDate(true,"full");}
-			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div><img src='app/img/newObj.png'> <abbr title=\"".Txt::trad("objNewInfos")."\">".Txt::trad("objNew")."</abbr></div>";}
+			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div><abbr title=\"".Txt::trad("objNewInfos")."\">".Txt::trad("objNew")."</abbr> <img src='app/img/menuNewSmall.png'></div>";}
 			//Auteur + Date Modif (optionnelle)
 			if(!empty($this->_idUserModif))  {$vDatas["autorDateModif"]="<div class='sLink' onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->displayAutor(false)."</div>".$this->displayDate(false,"full");}
 			////	USERS LIKES
@@ -156,30 +156,30 @@ trait MdlObjectMenus
 		return Ctrl::getVue(Req::commonPath."VueObjMenuContext.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * VUE DES OBJETS : AFFICHE LE MENU CONTEXTUEL  OU LE BOUTON D'EDITION
-	 */
+	 *******************************************************************************************/
 	public function menuContextEdit()
 	{
 		if(Req::isMobile())			{return $this->contextMenu(["iconBurger"=>"big"]);}
 		elseif($this->editRight())  {return "<img src='app/img/edit.png' onclick=\"lightboxOpen('".$this->getUrl("edit")."')\" class='sLink lightboxMenuEdit' title=\"".Txt::trad("modify")."\">";}
 	}
 
-	/*
+	/*******************************************************************************************
 	 * VUE DES OBJETS & RESPONSIVE : TITRE "NOUVEL OBJET" ("nouveau fichier", "nouveau dossier", etc)
-	 */
+	 *******************************************************************************************/
 	public function editRespTitle($keyTrad)
 	{
 		if(Req::isMobile() && $this->isNew())  {echo "<div class='lightboxTitle'>".Txt::trad($keyTrad)."</div>";}
 	}
 
-	/*
-	 * VUE : Menu d'édition (droits d'accès, fichiers joints, etc)
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU D'ÉDITION (droits d'accès, fichiers joints, etc)
+	 *******************************************************************************************/
 	public function menuEdit()
 	{
 		////	Menu des droits d'accès
-		if(static::hasAccessRight==true && $this->isIndependant())
+		if($this->hasAccessRight())
 		{
 			////	Init & Label
 			$vDatas["accessRightMenu"]=true;
@@ -259,9 +259,9 @@ trait MdlObjectMenus
 		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
 
-	/*
-	 * STATIC : Clé de préférence en Bdd ($prefDbKey) : objet passé en parametre / conteneur ou dossier courant / module courant
-	 */
+	/*******************************************************************************************
+	 * STATIC : CLÉ DE PRÉFÉRENCE EN BDD ($prefDbKey) : OBJET PASSÉ EN PARAMETRE / CONTENEUR OU DOSSIER COURANT / MODULE COURANT
+	 *******************************************************************************************/
 	public static function getPrefDbKey($containerObj)
 	{
 		if(is_object($containerObj))		{return $containerObj->_targetObjId;}
@@ -269,22 +269,21 @@ trait MdlObjectMenus
 		else								{return static::moduleName;}
 	}
 
-	/*
-	 * VUE : Menu de sélection d'objets (menu contextuel flottant)
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU DE SÉLECTION D'OBJETS (menu contextuel flottant)
+	 *******************************************************************************************/
 	public static function menuSelectObjects()
 	{
 		if(Req::isMobile()==false){
-			$vDatas["curFolderIsWritable"]=(is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ?  true  :  false;
-			$vDatas["rootFolderHasTree"]=($vDatas["curFolderIsWritable"]==true && count(Ctrl::getObj(get_class(Ctrl::$curContainer),1)->folderTree())>1)  ?  true  :  false;
+			$vDatas["curFolderIsWritable"]=(is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight());
+			$vDatas["rootFolderHasTree"]=($vDatas["curFolderIsWritable"]==true && count(Ctrl::getObj(get_class(Ctrl::$curContainer),1)->folderTree())>1);
 			return Ctrl::getVue(Req::commonPath."VueObjMenuSelection.php",$vDatas);
 		}
 	}
 
-	/*
-	 * STATIC : Tri d'objets : Preference en Bdd / paramètre passé en Get
-	 * exple: "firstName@@asc"
-	 */
+	/*******************************************************************************************
+	 * STATIC : TRI D'OBJETS : PREFERENCE EN BDD / PARAMÈTRE PASSÉ EN GET (exple: "firstName@@asc")
+	 *******************************************************************************************/
 	private static function getSort($containerObj=null)
 	{
 		//Récupère la préférence en Bdd ou params GET/POST
@@ -295,10 +294,9 @@ trait MdlObjectMenus
 		return $objectsSort;
 	}
 
-	/*
-	 * STATIC SQL : Tri Sql des objets (avec premier tri si besoin : news, subject, etc)
-	 * exple: "ORDER BY firstName asc"
-	 */
+	/*******************************************************************************************
+	 * STATIC SQL : TRI SQL DES OBJETS (avec premier tri si besoin : news, subject, etc. Exple: "ORDER BY firstName asc")
+	 *******************************************************************************************/
 	public static function sqlSort($firstSort=null)
 	{
 		//Init
@@ -309,9 +307,9 @@ trait MdlObjectMenus
 		return "ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1];
 	}
 
-	/*
-	 * VUE : Menu de tri d'un type d'objet
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU DE TRI D'UN TYPE D'OBJET
+	 *******************************************************************************************/
 	public static function menuSort($containerObj=null, $addUrlParams=null)
 	{
 		$vDatas["sortFields"]=static::$sortFields;
@@ -323,9 +321,9 @@ trait MdlObjectMenus
 		return Ctrl::getVue(Req::commonPath."VueObjMenuSort.php",$vDatas);
 	}
 
-	/*
-	 * STATIC : Récupère le type d'affichage de la page
-	 */
+	/*******************************************************************************************
+	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DE LA PAGE
+	 *******************************************************************************************/
 	public static function getDisplayMode($containerObj=null)
 	{
 		if(static::$displayModeCurrent===null)
@@ -339,17 +337,17 @@ trait MdlObjectMenus
 		return static::$displayModeCurrent;
 	}
 
-	/*
-	 * STATIC : Sur mobile, on affiche toujours en mode "block" (si dispo)
-	 */
+	/*******************************************************************************************
+	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
+	 *******************************************************************************************/
 	public static function onlyBlockDisplayMode()
 	{
 		return (Req::isMobile() && in_array("block",static::$displayModeOptions));
 	}
 
-	/*
-	 * VUE : Menu d'affichage des objets dans une page : Blocks / Lignes (cf. $displayModeOptions)
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModeOptions)
+	 *******************************************************************************************/
 	public static function menuDisplayMode($containerObj=null)
 	{
 		if(static::onlyBlockDisplayMode()==false)
@@ -361,18 +359,18 @@ trait MdlObjectMenus
 		}
 	}
 
-	/*
-	 * STATIC SQL : Filtrage de pagination
-	 */
+	/*******************************************************************************************
+	 * STATIC SQL : FILTRAGE DE PAGINATION
+	 *******************************************************************************************/
 	public static function sqlPagination()
 	{
 		$offset=(Req::isParam("pageNb"))  ?  ((Req::getParam("pageNb")-1)*static::$pageNbObjects)  :  "0";
 		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
 	}
 
-	/*
-	 * VUE : Menu de filtre alphabétique (passe en parametre la requete sql pour récupérer les
-	 */
+	/*******************************************************************************************
+	 * VUE : MENU DE FILTRE ALPHABÉTIQUE
+	 *******************************************************************************************/
 	public static function menuPagination($displayedObjNb, $getParamKey=null)
 	{
 		$pageNbTotal=ceil($displayedObjNb/static::$pageNbObjects);
@@ -393,9 +391,9 @@ trait MdlObjectMenus
 		}
 	}
 
-	/*
-	 * Menu spécifique d'affectation aux espaces : Thèmes de forum / Categories d'evenement
-	 */
+	/*******************************************************************************************
+	 * MENU SPÉCIFIQUE D'AFFECTATION AUX ESPACES : THÈMES DE FORUM / CATEGORIES D'EVENEMENT
+	 *******************************************************************************************/
 	public function menuSpaceAffectation()
 	{
 		$vDatas["curObj"]=$this;

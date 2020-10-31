@@ -14,7 +14,7 @@ $(function(){
 	});
 
 	////	Fixe la hauteur de l'éditeur et Préselectionne le titre du mail
-	$("[name='title']").focus();
+	$("[name='subject']").focus();
 	
 	////	Déplace si besoin le menu des destinataires à coté du menu des "options" (ne pas utiliser "isMobile()" car ne doit pas etre activé sur tablettes en mode paysage)
 	if(document.body.clientWidth<=1023){
@@ -28,8 +28,8 @@ function formControl()
 {
 	//Sélection d'une personne, d'un titre et d'un message
 	if($("[name='personList[]']:checked").length==0 && $("[name='groupList[]']:checked").length==0)	{notify("<?= Txt::trad("MAIL_specifyMail") ?>");	return false;}
-	else if($("[name='title']").isEmpty())															{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("title") ?>");	 return false;}
-	else if(isEmptyEditor("description"))															{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("description") ?>");	 return false;}
+	else if($("[name='subject']").isEmpty())														{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_subject") ?>");	return false;}
+	else if(isEmptyEditor("message"))																{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_message") ?>");	return false;}
 }
 </script>
 
@@ -47,7 +47,7 @@ function formControl()
 .vMailsMenu img					{max-width:18px;}
 /*formulaire principal*/
 #mailContainer					{padding:10px;}
-#mailContainer [name='title']	{width:100%; margin-bottom:20px;}
+#mailContainer [name='subject']	{width:100%; margin-bottom:20px;}
 #mailOptions					{display:table; width:100%; margin-top:20px;}
 #mailOptions>div				{display:table-cell;}
 #mailOptions>div:last-child		{text-align:right;}
@@ -119,9 +119,9 @@ function formControl()
 		<div id="mailContainer" class="miscContainer">
 
 			<!--TITRE ET EDITEUR DU MAIL-->
-			<input type="text" name="title" placeholder="<?= txt::trad("MAIL_title") ?>">
-			<textarea name="description"></textarea>
-			<?= CtrlMisc::initHtmlEditor("description") ?>
+			<input type="text" name="subject" placeholder="<?= txt::trad("MAIL_subject") ?>">
+			<textarea name="message"></textarea>
+			<?= CtrlMisc::initHtmlEditor("message") ?>
 
 			<!--RESPONSIVE : LISTE DES DESTINATAIRES-->
 			<div id="mobileRecipients"></div>
@@ -132,7 +132,7 @@ function formControl()
 					<?php
 					//Accusé de réception && Masquer les desctinataires && Ne pas signer le message
 					if(!empty(Ctrl::$curUser->mail))  {echo "<div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>";}
-					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients' ".$checkhideRecipients."> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>";
+					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients'> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>";
 					echo "<div title=\"".Txt::trad("MAIL_noFooterInfo")."\"><input type='checkbox' name='noFooter' value='1' id='noFooter'> <label for='noFooter'>".Txt::trad("MAIL_noFooter")."</label></div>";
 					?>
 				</div>

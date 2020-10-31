@@ -16,9 +16,9 @@ class Db
 	//public static $readsNb=null;
 	//public static $writesNb=null;
 
-	/*
-	 * renvoie l'objet PDO initialisé qu'une seule fois
-	 */
+	/*******************************************************************************************
+	 * RENVOIE L'OBJET PDO INITIALISÉ QU'UNE SEULE FOIS
+	 *******************************************************************************************/
 	private static function objPDO()
 	{
 		//Instancie PDO
@@ -41,9 +41,9 @@ class Db
 		return self::$_objPDO;
 	}
 
-	/*
-	 * Exécute une requête SQL (insert/update/delete/etc)
-	 */
+	/*******************************************************************************************
+	 * EXÉCUTE UNE REQUÊTE SQL (INSERT/UPDATE/DELETE/ETC)
+	 *******************************************************************************************/
 	public static function query($sqlQuery, $returnLastInsertId=false)
 	{
 		$queryResult=self::objPDO()->query($sqlQuery);//(preg_match("/(update|insert|delete)/i",$sqlQuery)) ? self::$writesNb++ : self::$readsNb++;
@@ -51,18 +51,18 @@ class Db
 		else							{return $queryResult;}
 	}
 
-	/*
-	 * Retourne un tableau de résultat
-	 */
+	/*******************************************************************************************
+	 * RETOURNE UN TABLEAU DE RÉSULTAT
+	 *******************************************************************************************/
 	public static function getTab($sqlQuery)
 	{
 		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
 		return $result->fetchAll(PDO::FETCH_ASSOC);//faster than "fetch()"
 	}
 
-	/*
-	 * Retourne un tableau d'objets (avec Id de l'objet en key)
-	 */
+	/*******************************************************************************************
+	 * RETOURNE UN TABLEAU D'OBJETS : AVEC ID DE L'OBJET EN KEY
+	 *******************************************************************************************/
 	public static function getObjTab($objectType, $sqlQuery)
 	{
 		//"getObj" pour récupérer l'objet en cache s'il a déjà été chargé (donc pas de "FETCH_CLASS").
@@ -72,27 +72,27 @@ class Db
 		return $returnTab;
 	}
 
-	/*
-	 * Retourne une ligne de resultat : premier enregistrement retourné avec ses champs
-	 */
+	/*******************************************************************************************
+	 * RETOURNE UNE LIGNE DE RESULTAT : PREMIER ENREGISTREMENT RETOURNÉ AVEC SES CHAMPS
+	 *******************************************************************************************/
 	public static function getLine($sqlQuery)
 	{
 		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
 		return $result->fetch(PDO::FETCH_ASSOC);
 	}
 
-	/*
-	 * Retourne une colonne d'enregistrements : premier champ d'une liste d'enregistrements (liste d'identifiants par exemple)
-	 */
+	/*******************************************************************************************
+	 * RETOURNE UNE COLONNE D'ENREGISTREMENTS : PREMIER CHAMP D'UNE LISTE D'ENREGISTREMENTS (liste d'identifiants par exemple)
+	 *******************************************************************************************/
 	public static function getCol($sqlQuery)
 	{
 		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
 		return $result->fetchAll(PDO::FETCH_COLUMN,0);//que le premier champs
 	}
 
-	/*
-	 * Retourne la valeur d'un champ : premier champs du premier résultat d'une requete
-	 */
+	/*******************************************************************************************
+	 * RETOURNE LA VALEUR D'UN CHAMP : PREMIER CHAMPS DU PREMIER RÉSULTAT D'UNE REQUETE
+	 *******************************************************************************************/
 	public static function getVal($sqlQuery)
 	{
 		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
@@ -100,18 +100,18 @@ class Db
 		return $record[0];
 	}
 	
-	/*
-	 * Numéro de version de MySQL
-	 */
+	/*******************************************************************************************
+	 * NUMÉRO DE VERSION DE MariaDB
+	 *******************************************************************************************/
 	public static function dbVersion()
 	{
 		$dbVersion=self::objPDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
 		return str_replace(strstr($dbVersion,"-"),null,$dbVersion);//Enlève les détails après "-" (ex: "5.5.5-10.1.26-MariaDB-0+deb9u1")
 	}
 
-	/*
-	 * Formate une valeur dans une requete (insert,update,etc)
-	 */
+	/*******************************************************************************************
+	 * FORMATE UNE VALEUR DANS UNE REQUETE (insert,update,etc)
+	 *******************************************************************************************/
 	public static function format($text, $options=null)
 	{
 		$text=trim($text);
@@ -130,25 +130,25 @@ class Db
 		}
 	}
 
-	/*
-	 * Formate une valeur GET/POST dans une requete (insert,update,etc)
-	 */
+	/*******************************************************************************************
+	 * FORMATE UNE VALEUR GET/POST DANS UNE REQUETE (insert,update,etc)
+	 *******************************************************************************************/
 	public static function formatParam($keyParam, $options=null)
 	{
 		return self::format(Req::getParam($keyParam),$options);
 	}
 	
-	/*
-	 * Format un tableau dans une requette
-	 */
+	/*******************************************************************************************
+	 * FORMAT UN TABLEAU DANS UNE REQUETTE
+	 *******************************************************************************************/
 	public static function formatTab2txt($text)
 	{
 		return Db::format(Txt::tab2txt($text));
 	}
 
-	/*
-	 * Formate la date actuelle d'un champ "datetime" ou "date", avec le timezone spécifié (équivalent à "now()" mais assure le formatage via "date_default_timezone_set()")
-	 */
+	/*******************************************************************************************
+	 * FORMATE LA DATE ACTUELLE D'UN CHAMP "DATETIME" OU "DATE", AVEC LE TIMEZONE SPÉCIFIÉ (équivalent à "now()" mais assure le formatage via "date_default_timezone_set()")
+	 *******************************************************************************************/
 	public static function dateNow()
 	{
 		return "'".strftime("%Y-%m-%d %H:%M:%S")."'";
@@ -159,15 +159,15 @@ class Db
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/
 
-	/*
-	 * Sauvegarde la Bdd
-	 */
+	/*******************************************************************************************
+	 * SAUVEGARDE LA BDD
+	 *******************************************************************************************/
 	public static function getDump()
 	{
 		//Path
-		$dumpPath=PATH_DATAS."BackupMysql_".db_name.".sql";
-		//Linux & exec activé
-		if(Tool::linuxEnv() && Ctrl::isHost())  {exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);}
+		$dumpPath=PATH_DATAS."BackupDatabase_".db_name.".sql";
+		//Via "exec()" OU Via un script
+		if(Ctrl::isHost())  {exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);}
 		else
 		{
 			// Recupere chaque table

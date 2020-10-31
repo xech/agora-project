@@ -83,7 +83,7 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl("container")."');";//Redir vers le dossier conteneur
+			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche le fichier dans son dossier conteneur
 			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownloadDisplay()."');}";
 			$pluginsList[]=$tmpObj;
 		}
@@ -223,7 +223,7 @@ class CtrlFile extends Ctrl
 			////	RECUPERE LES FICHIERS DEJA ENVOYÉS AVEC "PLUPLOAD"
 			if(Req::getParam("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::getParam("tmpFolderName")))
 			{
-				$tmpDirPath=sys_get_temp_dir()."/".Req::getParam("tmpFolderName")."/";
+				$tmpDirPath=File::getTempDir()."/".Req::getParam("tmpFolderName")."/";
 				if(is_dir($tmpDirPath)){
 					foreach(scandir($tmpDirPath) as $tmpFileName){
 						$tmpFilePath=$tmpDirPath.$tmpFileName;
@@ -262,7 +262,7 @@ class CtrlFile extends Ctrl
 					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($fileSize).", description=".Db::formatParam("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 					copy($tmpFile["tmpPath"], $tmpObj->filePath());//copie dans le dossier final (après avoir enregistré la version en Bdd!!)
 					File::setChmod($tmpObj->filePath());
-					////	Creation de vignette && ImageResize à 1600px maxi?
+					////	Creation de vignette && Optimise si besoin l'image (1600px max)
 					$tmpObj->createThumb();
 					if(File::isType("imageResize",$tmpFile["name"]) && Req::isParam("imageResize")){
 						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1600);
@@ -301,7 +301,7 @@ class CtrlFile extends Ctrl
 		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::getParam("tmpFolderName")) && !empty($_FILES))
 		{
 			//Init/Crée le dossier temporaire
-			$tmpDirPath=sys_get_temp_dir()."/".Req::getParam("tmpFolderName")."/";
+			$tmpDirPath=File::getTempDir()."/".Req::getParam("tmpFolderName")."/";
 			if(!is_dir($tmpDirPath))  {mkdir($tmpDirPath);}
 			//Vérifie l'accès au dossier temporaire && y place chaque fichier correctement uploadé
 			if(is_writable($tmpDirPath)){

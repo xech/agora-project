@@ -14,7 +14,7 @@
 		<meta name="application-url" content="https://www.agora-project.net">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge"><!--mode compatibilité IE-->
 		<!-- JQUERY & JQUERY-UI -->
-		<script src="app/js/jquery-3.4.1.min.js"></script>
+		<script src="app/js/jquery-3.5.1.min.js"></script>
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
 		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">
 		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("DATEPICKER") ?>.js"></script><!--langue du jquery-ui datepicker-->
@@ -29,8 +29,8 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JS & CSS DE L'AGORA -->
-		<script src="app/js/common-3.7.2.js"></script><!--toujours après Jquery & plugins Jquery !!-->
-		<link href="app/css/common-3.7.2.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-3.7.3.1.js"></script><!--toujours après Jquery & plugins Jquery !!-->
+		<link href="app/css/common-3.7.3.1.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 	
 		<script>
@@ -39,7 +39,7 @@
 		////	Divers params
 		isMainPage=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
 		windowParent=(isMainPage==true) ? window : window.parent;//Si l'espace est intégré dans un Iframe (cf. redirection "invisible" de domaine)
-		confirmCloseForm=false;//Confirmation de fermeture de page (exple: lightbox d'édition)
+		confirmCloseForm=false;//Init la confirmation de fermeture de page (exple: lightbox d'édition)
 		////	Divers labels de "common.js"
 		labelConfirmCloseForm="<?= Txt::trad("confirmCloseForm") ?>";
 		labelSpecifyLoginPassword="<?= Txt::trad("specifyLoginPassword") ?>";
@@ -71,7 +71,7 @@
 		<style>
 		/*WALLPAPER EN PAGE PRINCIPALE*/
 		@media screen and (min-width:1024px){
-			html  {<?= isset($pathWallpaper) ? "background:url(".$pathWallpaper.") no-repeat center fixed;" : null ?> background-size:cover;}/*fullsize via "cover"*/
+			html  {background-size:cover; <?= isset($pathWallpaper) ? "background:url(".$pathWallpaper.") no-repeat center fixed;" : null ?>}/*fullsize via "cover"*/
 		}
 
 		/*FOOTER*/
@@ -94,7 +94,7 @@
 			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
 			#respMenuMain hr						{background:#ddd; margin-top:15px; margin-bottom:15px;}/*surcharge*/
-			#respMenuTwo							{display:none; margin-top:10px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?> border-radius:5px;}/*cf. style de ".vHeaderModule" en responsive*/
+			#respMenuTwo							{display:none; margin-top:10px; border-radius:5px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?>}/*cf. style de ".vHeaderModule" en responsive*/
 		}
 
 		/*IMPRESSION*/
@@ -105,7 +105,7 @@
 
 		<?php
 		////	Footer javascript du Host ?
-		if(Ctrl::isHost())  {Host::footerJs();}
+		if(Ctrl::isHost())  {Host::footerJsNotify();}
 		?>
 	</head>
 

@@ -89,19 +89,15 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/*
-	 * SURCHARGE : Recupère l'agenda principal de l'événement
-	 * Priorité des agendas :  Agenda personnel >> Agenda en "fullRight()" >> Agenda en "editContentRight()" >> Agenda en "readRight()"
+	 * SURCHARGE : Recupère l'agenda principal de l'événement (priorité au droit d'accès le plus élevé)
 	 */
 	public function containerObj()
 	{
-		if($this->_containerObj===null)
-		{
-			$tmpPriority=0;
+		if($this->_containerObj===null){
+			$tmpAccessRight=0;
 			foreach($this->affectedCalendars() as $tmpCal){
-				if($tmpCal->isMyPerso())								{$this->_containerObj=$tmpCal;	break;}
-				elseif($tmpPriority<3 && $tmpCal->accessRight()==3)		{$this->_containerObj=$tmpCal;	$tmpPriority=3;}
-				elseif($tmpPriority<2 && $tmpCal->accessRight()==2)		{$this->_containerObj=$tmpCal;	$tmpPriority=2;}
-				elseif($tmpPriority==0 && $tmpCal->accessRight()>0)		{$this->_containerObj=$tmpCal;	$tmpPriority=1;}
+				if($tmpCal->curUserCalendar())						{$this->_containerObj=$tmpCal;	break;}
+				elseif($tmpAccessRight < $tmpCal->accessRight())	{$this->_containerObj=$tmpCal;	$tmpAccessRight=$tmpCal->accessRight();}
 			}
 		}
 		return $this->_containerObj;
@@ -112,10 +108,13 @@ class MdlCalendarEvent extends MdlObject
 	 */
 	public function getUrl($display=null)
 	{
-		//Url de l'evt (edit/vue/etc) : "getUrl()" parent   || Delete d'evt : page principale à la date de l'evt   ||  Conteneur de l'evt : page principale à la date de l'evt et avec les agendas concernés
-		if($display!="container")					{return parent::getUrl($display);}
-		elseif(Req::$curAction=="delete")			{return "?ctrl=".static::moduleName."&curTime=".strtotime($this->dateBegin);}
-		elseif(is_object($this->containerObj()))	{return "?ctrl=".static::moduleName."&curTime=".strtotime($this->dateBegin)."&displayedCalendars[]=".$this->containerObj()->_id;}
+		//Affichage "parent" en fonction de $display  ||  Surcharge de l'affichage par défaut : en fonction du "time" de l'evt et de l'agenda principal (verif s'il existe)
+		if(!empty($display))  {return parent::getUrl($display);}
+		else{
+			$url="?ctrl=".static::moduleName."&curTime=".strtotime($this->dateBegin);
+			if($this->containerObj())  {$url.="&displayedCalendars[]=".$this->containerObj()->_id;}
+			return $url;
+		}
 	}
 
 	/*

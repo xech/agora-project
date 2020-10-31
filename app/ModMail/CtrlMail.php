@@ -23,29 +23,27 @@ class CtrlMail extends Ctrl
 		$vDatas["containerList"]=array();
 		if(Ctrl::$curUser->isUser()==false)  {Ctrl::noAccessExit();}
 		////	Envoi de mail!
-		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList")))
+		if(Req::isParam("formValidate","subject","message") && (Req::isParam("personList") || Req::isParam("groupList")))
 		{
 			////	liste des destinataires : personList & groupes d'users
-			$txtMailTo=null;
+			$mailTo=null;
 			//liste de personnes
 			if(Req::isParam("personList"))
 			{
 				foreach(Req::getParam("personList") as $tmpPerson){
 					$tmpPersonObj=Ctrl::getTargetObj($tmpPerson);
-					if(!empty($tmpPersonObj->mail))  {$txtMailTo.=$tmpPersonObj->mail.",";}
+					if(!empty($tmpPersonObj->mail))  {$mailTo.=$tmpPersonObj->mail.",";}
 				}
 			}
 			//Liste des users de groupe
 			if(Req::isParam("groupList"))
 			{
-				foreach(Req::getParam("groupList") as $tmpGroup)
-				{
+				foreach(Req::getParam("groupList") as $tmpGroup){
 					$tmpGroupObj=Ctrl::getTargetObj($tmpGroup);
-					if(is_object($tmpGroupObj))
-					{
+					if(is_object($tmpGroupObj)){
 						foreach($tmpGroupObj->userIds as $tmpUserId){
 							$tmpUser=Ctrl::getObj("user",$tmpUserId);
-							if(!empty($tmpUser->mail))	{$txtMailTo.=$tmpUser->mail.",";}
+							if(!empty($tmpUser->mail))	{$mailTo.=$tmpUser->mail.",";}
 						}
 					}
 				}
@@ -63,9 +61,9 @@ class CtrlMail extends Ctrl
 				}
 			}
 			////	Envoi du mail
-			$isSendMail=Tool::sendMail($txtMailTo, Req::getParam("title"), Req::getParam("description"), $options, $attachedFiles);
+			$isSendMail=Tool::sendMail($mailTo, Req::getParam("subject"), Req::getParam("message"), $options, $attachedFiles);
 			if($isSendMail==true){
-				Db::query("INSERT INTO ap_mailHistory SET recipients=".Db::format(trim($txtMailTo,",")).", title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
+				Db::query("INSERT INTO ap_mailHistory SET recipients=".Db::format(trim($mailTo,",")).", title=".Db::formatParam("subject").", description=".Db::formatParam("message","editor").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 			}
 		}
 		////	Supprime les anciens mails de plus d'1 an
@@ -80,7 +78,6 @@ class CtrlMail extends Ctrl
 			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplayedObjects($tmpContainer)." ".MdlContact::sqlSort());
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
-		$vDatas["checkhideRecipients"]=(strlen(Ctrl::prefUser("hideRecipients",null,true))>0) ? "checked" : null;
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 

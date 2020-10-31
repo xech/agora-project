@@ -15,7 +15,6 @@ class MdlTaskFolder extends MdlObjectFolder
 	const moduleName="task";
 	const objectType="taskFolder";
 	const dbTable="ap_taskFolder";
-	const hasAccessRight=true;
 	const MdlObjectContent="MdlTask";
 	
 	/*

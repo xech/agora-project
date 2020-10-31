@@ -21,9 +21,9 @@ class File
 	//init les types de fichiers
 	private static $_fileTypes=null;
 
-	/*
-	 * Chmod sur un fichier || Chmod récursif sur un dossier
-	 */
+	/*******************************************************************************************
+	 * CHMOD SUR UN FICHIER || CHMOD RÉCURSIF SUR UN DOSSIER
+	 *******************************************************************************************/
 	public static function setChmod($path)
 	{
 		$path=trim($path,"/");
@@ -37,17 +37,17 @@ class File
 		}
 	}
 	
-	/*
-	 * Extension du fichier (sans le point!)
-	 */
+	/*******************************************************************************************
+	 * EXTENSION DU FICHIER (SANS LE POINT!)
+	 *******************************************************************************************/
 	public static function extension($fileName)
 	{
 		return strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
 	}
 
-	/*
-	 * Tableau des types de fichiers
-	 */
+	/*******************************************************************************************
+	 * TABLEAU DES TYPES DE FICHIERS
+	 *******************************************************************************************/
 	public static function fileTypes($typeKey)
 	{
 		//Init les types de fichiers en fonction de leur extension
@@ -82,30 +82,30 @@ class File
 		return (array_key_exists($typeKey,static::$_fileTypes))  ?  static::$_fileTypes[$typeKey]  :  array();
 	}
 
-	/*
-	 * Controle le type de fichier en fonction de son extension
-	 */
+	/*******************************************************************************************
+	 * CONTROLE LE TYPE DE FICHIER EN FONCTION DE SON EXTENSION
+	 *******************************************************************************************/
 	public static function isType($typeKey, $fileName)
 	{
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
 	}
 	
-	/*
-	 * Controle l'upload d'un nouveau fichier : type de fichier autorisé & espace disque suffisant ?
-	 */
+	/*******************************************************************************************
+	 * CONTROLE L'UPLOAD D'UN NOUVEAU FICHIER : TYPE DE FICHIER AUTORISÉ & ESPACE DISQUE SUFFISANT ?
+	 *******************************************************************************************/
 	public static function controleUpload($fileName, $fileSize, $datasFolderSize=null)
 	{
 		//Init le $datasFolderSize
 		$datasFolderSize=(!empty($datasFolderSize))  ?  $datasFolderSize  :  self::datasFolderSize();
 		////	Controle du type de fichier  &  L'espace disque disponible
-		if(File::isType("forbidden",$fileName))						{Ctrl::addNotif(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
+		if(self::isType("forbidden",$fileName))						{Ctrl::addNotif(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
 		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)	{Ctrl::addNotif("NOTIF_diskSpace");  return false;}
 		else														{return true;}
 	}
 
-	/*
-	 * Afficher un player Audio/Video/Flash
-	 */
+	/*******************************************************************************************
+	 * AFFICHER UN PLAYER AUDIO/VIDEO/FLASH
+	 *******************************************************************************************/
 	public static function getMediaPlayer($filePath)
 	{
 		if(self::isType("videoPlayer",$filePath))	{return "<br><br><video controls controlsList='nodownload' onclick='this.play()'><source src='".$filePath."' type='video/".self::extension($filePath)."'>HTML5 browser is required</video>";}
@@ -113,9 +113,9 @@ class File
 		elseif(self::isType("flash",$filePath))		{return "<br><br><object type='application/x-shockwave-flash' data='".$filePath."'><param name='movie' value='".$filePath."'></object>";}
 	}
 
-	/*
-	 * Telecharge un fichier
-	 */
+	/*******************************************************************************************
+	 * TELECHARGE UN FICHIER
+	 *******************************************************************************************/
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
 		////	Annule le download depuis l'appli, pour ne pas bloquer InAppBrowser. Download ensuite le fichier via le browser system, avec en paramètre "fromMobileApp". Note: InAppBrowser et le browser system utilisent les mêmes cookies : "Tool::isMobileApp()" renvoie donc toujours "true"..
@@ -156,9 +156,9 @@ class File
 		}
 	}
 
-	/*
-	 * Readfile du fichier pour un affichage direct par le browser ..sans mettre le chemin réel dans le html
-	 */
+	/*******************************************************************************************
+	 * READFILE DU FICHIER POUR UN AFFICHAGE DIRECT PAR LE BROWSER ..SANS METTRE LE CHEMIN RÉEL DANS LE HTML
+	 *******************************************************************************************/
 	public static function display($filePath)
 	{
 		if(is_file($filePath))
@@ -179,9 +179,9 @@ class File
 		}
 	}
 
-	/*
-	 * Taille d'un dossier, en octets  (fonction récursive. Alternative: "du -sb")
-	 */
+	/*******************************************************************************************
+	 * TAILLE D'UN DOSSIER, EN OCTETS  (fonction récursive. Alternative: "du -sb")
+	 *******************************************************************************************/
 	public static function folderSize($folderPath)
 	{
 		$folderSize=0;
@@ -203,9 +203,9 @@ class File
 		return $folderSize;
 	}
 
-	/*
-	 * Taille du PATH_DATAS
-	 */
+	/*******************************************************************************************
+	 * TAILLE DU PATH_DATAS
+	 *******************************************************************************************/
 	public static function datasFolderSize($refresh=false)
 	{
 		//Durée de la valeur gardée en cache : 10mn
@@ -219,9 +219,9 @@ class File
 		return $_SESSION["datasFolderSize"];
 	}
 
-	/*
-	 * Retourne une valeur en octets, à partir d'une valeur en Go/Mo/Ko	(exple : 10Mo)
-	 */
+	/*******************************************************************************************
+	 * RETOURNE UNE VALEUR EN OCTETS, À PARTIR D'UNE VALEUR EN Go/Mo/Ko	(exple : 10Mo)
+	 *******************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
 		if(preg_match("/(g|go)$/i",$sizeText))		{return str_ireplace(["go","g"],null,$sizeText) * self::sizeGo;}
@@ -230,9 +230,9 @@ class File
 		else										{return $sizeText;}
 	}
 
-	/*
-	 * Affiche une taille (fichier/dossier) à partir d'une valeur en octets ..ou d'un texte (exple : 10Mo)
-	 */
+	/*******************************************************************************************
+	 * RETOURNE LA TAILLE D'UN FICHIER/DOSSIER À PARTIR D'UNE VALEUR EN OCTETS ..OU D'UN TEXTE (exple : 10Mo)
+	 *******************************************************************************************/
 	public static function displaySize($size, $displayLabel=true)
 	{
 		$bytesSize=self::getBytesSize($size);
@@ -242,9 +242,9 @@ class File
 		return ($displayLabel==true)  ?  $size." ".Txt::trad($tradLabel)  :  $size;
 	}
 
-	/*
-	 * Retourne la taille max des fichiers uploadés : en Octets
-	 */
+	/*******************************************************************************************
+	 * RETOURNE LA TAILLE MAX DES FICHIERS UPLOADÉS : EN OCTETS
+	 *******************************************************************************************/
 	public static function uploadMaxFilesize($message=false)
 	{
 		$upload_max_filesize=(int)self::getBytesSize(ini_get("upload_max_filesize"));
@@ -253,9 +253,9 @@ class File
 		else					{return $upload_max_filesize;}
 	}
 
-	/*
-	 * Suppression d'un fichier/dossier sur le disque
-	 */
+	/*******************************************************************************************
+	 * SUPPRESSION D'UN FICHIER/DOSSIER SUR LE DISQUE
+	 *******************************************************************************************/
 	public static function rm($targetPath, $errorMessage=true)
 	{
 		//suppr le dernier "/"
@@ -277,9 +277,9 @@ class File
 		}
 	}
 
-	/*
-	 * Verifie si un dossier ou un fichier est accessible en écriture
-	 */
+	/*******************************************************************************************
+	 * VERIFIE SI UN DOSSIER OU UN FICHIER EST ACCESSIBLE EN ÉCRITURE
+	 *******************************************************************************************/
 	public static function isWritable($targetPath, $errorMessage=true)
 	{
 		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE)	{return true;}
@@ -289,9 +289,9 @@ class File
 		}
 	}
 
-	/*
-	 * Redimensionne une image ("imgSrc.png"= "imgDest.jpg")
-	 */
+	/*******************************************************************************************
+	 * REDIMENSIONNE UNE IMAGE ("imgSrc.png"= "imgDest.jpg")
+	 *******************************************************************************************/
 	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)
 	{
 		// Verifs de base
@@ -359,9 +359,9 @@ class File
 		}
 	}
 
-	/*
-	 * Generer archive zip
-	 */
+	/*******************************************************************************************
+	 * GENÈRE UNE ARCHIVE ZIP
+	 *******************************************************************************************/
 	public static function downloadArchive($filesList, $archiveName)
 	{
 		if(!empty($filesList))
@@ -369,7 +369,7 @@ class File
 			//temps d'execution
 			@set_time_limit(240);//disabled en safemode
 			//Création de l'archive
-			$archiveTmpPath=tempnam(sys_get_temp_dir(),"archive".uniqid());
+			$archiveTmpPath=tempnam(self::getTempDir(),"archive".uniqid());
 			$zip=new ZipArchive();
 			$zip->open($archiveTmpPath, ZipArchive::CREATE);
 			//Ajout de chaque fichier à l'archive (avec "realPath" & un "zipPath") ou un dossier vide (avec "emptyFolderZipPath")
@@ -377,21 +377,16 @@ class File
 				if(isset($tmpFile["emptyFolderZipPath"]))	{$zip->addEmptyDir($tmpFile["emptyFolderZipPath"]);}
 				elseif(is_file($tmpFile["realPath"]))		{$zip->addFile($tmpFile["realPath"],$tmpFile["zipPath"]);}
 			}
-			//Ferme l'archive, envoi le zip, puis le supprime
+			//Ferme l'archive, Download le zip, puis le supprime
 			$zip->close();
 			self::download($archiveName, $archiveTmpPath, null, false);
 			self::rm($archiveTmpPath);
-			//Supprime les fichiers de plus de 48h dans "/tmp" (fichiers non supprimés si le script est abandonné avant la fin..)
-			foreach(scandir(sys_get_temp_dir()) as $tmpFileName){
-				$tmpFilePath=sys_get_temp_dir()."/".$tmpFileName;
-				if(in_array($tmpFileName,['.','..'])==false && is_file($tmpFilePath) && (time()-filemtime($tmpFilePath))>172800)  {self::rm($tmpFilePath);}
-			}
 		}
 	}
 
-	/*
-	 * Controle le download d'une grosse archive (sav & co) : controle de l'horaire pour ne pas saturer le serveur en heure de pointe
-	 */
+	/*******************************************************************************************
+	 * CONTROLE LE DOWNLOAD D'UNE GROSSE ARCHIVE (SAV & CO) : CONTROLE DE L'HORAIRE POUR NE PAS SATURER LE SERVEUR EN HEURE DE POINTE
+	 *******************************************************************************************/
 	public static function archiveSizeControl($archiveSize)
 	{
 		$archiveSizeControl=true;
@@ -407,12 +402,33 @@ class File
 
 
 	/***************************************************************************************************************************/
-	/*******************************************	SPECIFIC METHODS	********************************************************/
+	/**************************************************	    SPECIFIC METHODS	************************************************/
 	/***************************************************************************************************************************/
-	
-	/*
-	 * Modif du "config.inc.php"
-	 */
+
+
+	/*******************************************************************************************
+	 * RENVOIE LE DOSSIER TEMPORAIRE DU SYSTÈME "/tmp"  OU  RENVOIE LE DOSSIER TEMPORAIRE "./DATAS/tmp"
+	 *******************************************************************************************/
+	public static function getTempDir()
+	{
+		//Dossier temporaire du systeme  ||  Dossier temporaire des hosts indépendants
+		if(Ctrl::isHost())	{$tmpDir=sys_get_temp_dir();}
+		else{
+			$tmpDir=rtrim(PATH_TMP,"/");//Path sans le dernier "/"
+			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé le dossier?
+		}
+		//Supprime les fichiers temporaires de plus de 48h (fichiers tjs présents si le script est interrompu)
+		foreach(scandir($tmpDir) as $tmpFileName){
+			$tmpFile=$tmpDir."/".$tmpFileName;
+			if(in_array($tmpFileName,['.','..'])==false && is_file($tmpFile) && (time()-filemtime($tmpFile))>172800)  {self::rm($tmpFile);}
+		}
+		//Renvoie le path
+		return $tmpDir;
+	}
+
+	/*******************************************************************************************
+	 * MODIF DU FICHIER DE CONFIG "config.inc.php"
+	 *******************************************************************************************/
 	public static function updateConfigFile($tabAddModifConst=null, $tabDeleteConst=null)
 	{
 		// FICHIER ACCESSIBLE EN ÉCRITURE?

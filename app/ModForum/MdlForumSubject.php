@@ -15,13 +15,13 @@ class MdlForumSubject extends MdlObject
 	const moduleName="forum";
 	const objectType="forumSubject";
 	const dbTable="ap_forumSubject";
-	const hasAccessRight=true;
 	const MdlObjectContent="MdlForumMessage";
 	const htmlEditorField="description";
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
+	protected static $_hasAccessRight=true;
 	public static $pageNbObjects=30;
 	public static $requiredFields=array("description");
 	public static $searchFields=array("title","description");
@@ -84,20 +84,20 @@ class MdlForumSubject extends MdlObject
 	}
 
 	/*
-	 * SURCHARGE : Url d'accès (sujet d'un thème particulier ?)
+	 * SURCHARGE : Url d'accès
 	 */
 	public function getUrl($display=null)
 	{
-		//Url "container" : theme
-		if($display=="container"){
+		//Url du theme : cf. "CtrlObject::actionDelete()"
+		if($display=="theme"){
 			if(!empty($this->_idTheme))					{return "?ctrl=".static::moduleName."&_idTheme=".$this->_idTheme;}	//theme spécifique
-			elseif(count(MdlForumTheme::getThemes())>0)	{return "?ctrl=".static::moduleName."&_idTheme=undefinedTheme";}	//"sans theme"
+			elseif(count(MdlForumTheme::getThemes())>0)	{return "?ctrl=".static::moduleName."&_idTheme=noTheme";}			//"sans theme"
 			else										{return "?ctrl=".static::moduleName;}								//accueil du forum
 		}
-		//Url "parent" : normal
+		//Url "parent"
 		return parent::getUrl($display);
 	}
-	
+
 	/*
 	 * SURCHARGE : Url d'ajoute d'un nouveau sujet (en fonction du thème?)
 	 */

@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(500);
+lightboxSetWidth(600);
 
 ////	Init l'affichage
 $(function(){
@@ -31,7 +31,7 @@ form button				{width:120px;}
 .vCommentsTable			{display:table; width:100%; margin-bottom:20px;}
 .vCommentsRow			{display:table-row;}
 .vCommentsRow>div		{display:table-cell; padding:5px;}
-.vCommentDateUser		{width:130px;}
+.vCommentDateUser		{width:180px;}
 .vCommentDateUser>div	{font-weight:normal}
 .vCommentText>form		{display:none;}
 .vCommentOptions		{width:50px;}

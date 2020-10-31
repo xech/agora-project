@@ -24,49 +24,49 @@ class MdlUser extends MdlPerson
 	private $_usersVisibles=null;
 	private $_messengerEnabled=null;
 
-	/*
-	 * Photo d'un utilisateur
-	 */
+	/*******************************************************************************************
+	 * PHOTO D'UN UTILISATEUR
+	 *******************************************************************************************/
 	public function pathImgThumb()
 	{
 		return PATH_MOD_USER.$this->_id."_thumb.jpg";
 	}
 
-	/*
-	 * Verifie si l'user est bien identifié (..sinon c'est un invité/guest)
-	 */
+	/*******************************************************************************************
+	 * VERIFIE SI L'USER EST BIEN IDENTIFIÉ (..SINON C'EST UN INVITÉ/GUEST)
+	 *******************************************************************************************/
 	public function isUser()
 	{
 		return (!empty($this->_id));
 	}
 
-	/*
-	 * Verifie s'il s'agit d'un administrateur général
-	 */
+	/*******************************************************************************************
+	 * VERIFIE S'IL S'AGIT D'UN ADMINISTRATEUR GÉNÉRAL
+	 *******************************************************************************************/
 	public function isAdminGeneral()
 	{
 		return (!empty($this->generalAdmin));
 	}
 
-	/*
-	 * Administrateur de l'espace courant?
-	 */
+	/*******************************************************************************************
+	 * ADMINISTRATEUR DE L'ESPACE COURANT?
+	 *******************************************************************************************/
 	public function isAdminSpace()
 	{
 		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->userAccessRight($this)==2);}
 		return $this->_isAdminCurSpace;
 	}
-	
-	/*
-	 * SURCHARGE : VERIF si l'auteur de l'objet == l'user connecté
-	 */
+
+	/*******************************************************************************************
+	 * SURCHARGE : VERIF SI L'AUTEUR DE L'OBJET == L'USER CONNECTÉ
+	 *******************************************************************************************/
 	public function isAutor(){
 		return (Ctrl::$curUser->isUser() && ($this->_id==Ctrl::$curUser->_id || $this->_idUser==Ctrl::$curUser->_id));
 	}
 
-	/*
-	 * SURCHARGE : Droit d'accès à l'objet (cf. ex "controle_affichage_utilisateur()")
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ACCÈS À L'OBJET
+	 *******************************************************************************************/
 	public function accessRight()
 	{
 		//Init la mise en cache
@@ -84,17 +84,17 @@ class MdlUser extends MdlPerson
 		return $this->_accessRight;
 	}
 
-	/*
-	 * SURCHARGE : Droit d'édition (accès total uniquement)
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ÉDITION (ACCÈS TOTAL UNIQUEMENT)
+	 *******************************************************************************************/
 	public function editRight()
 	{
 		return ($this->accessRight()==3);
 	}
 
-	/*
-	 * SURCHARGE : Droit de suppression
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT DE SUPPRESSION
+	 *******************************************************************************************/
 	public function deleteRight()
 	{
 		//Accès total  &&  Autre user que celui en cours  &&  Pas dernier adminGeneral
@@ -103,59 +103,59 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*
+	/*******************************************************************************************
 	 * DROIT DE DESAFFECTATION DE L'ESPACE
-	 */
+	 *******************************************************************************************/
 	public function deleteFromCurSpaceRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() && Ctrl::$curSpace->allUsersAffected()==false);
 	}
 
-	/*
-	 * Le droit "admin general" peut être édité par l'user courant?
-	 */
+	/*******************************************************************************************
+	 * LE DROIT "ADMIN GENERAL" PEUT ÊTRE ÉDITÉ PAR L'USER COURANT?
+	 *******************************************************************************************/
 	public function editAdminGeneralRight()
 	{
 		return (Ctrl::$curUser->isAdminGeneral() && Ctrl::$curUser->_id!=$this->_id);
 	}
 
-	/*
-	 * L'user courant peut envoyer des invitations (sur un espace donné) ?
-	 */
+	/*******************************************************************************************
+	 * L'USER COURANT PEUT ENVOYER DES INVITATIONS (SUR UN ESPACE DONNÉ) ?
+	****************************************************************************************** */
 	public function sendInvitationRight($objSpace=null)
 	{
 		if($objSpace==null)	{$objSpace=Ctrl::$curSpace;}
 		return (function_exists("mail") && ($this->isAdminSpace() || (!empty($objSpace->usersInvitation) && $this->isUser())));
 	}
 
-	/*
-	 * Livecounter et messenger actif pour l'user ?
-	 */
+	/*******************************************************************************************
+	 * LIVECOUNTER ET MESSENGER ACTIF POUR L'USER ?
+	 *******************************************************************************************/
 	public function messengerEnabled()
 	{
 		if($this->_messengerEnabled===null)  {$this->_messengerEnabled=($this->messengerEdit() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
 		return $this->_messengerEnabled;
 	}
 
-	/*
-	 * L'user courant peut parametrer son messenger ?
-	 */
+	/*******************************************************************************************
+	 * L'USER COURANT PEUT PARAMETRER SON MESSENGER ?
+	 *******************************************************************************************/
 	public function messengerEdit()
 	{
 		return ($this->isUser() && empty(Ctrl::$agora->messengerDisabled));
 	}
 
-	/*
-	 * SURCHARGE : selectionne les users de tout le site OU les users de l'espace courant
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SELECTIONNE LES USERS DE TOUT LE SITE OU LES USERS DE L'ESPACE COURANT
+	 *******************************************************************************************/
 	public static function sqlDisplayedObjects($containerObj=null, $keyId=null)
 	{
 		return ($_SESSION["displayUsers"]=="all")  ?  "1"  :  "_id IN (".Ctrl::$curSpace->getUsers("idsSql").")";
 	}
 
-	/*
-	 * Espaces auxquels est affecté l'utilisateur
-	 */
+	/*******************************************************************************************
+	 * ESPACES AUXQUELS EST AFFECTÉ L'UTILISATEUR
+	 *******************************************************************************************/
 	public function getSpaces($return="objects")
 	{
 		//Initialise la liste des objets "space"
@@ -174,9 +174,9 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*
-	 * SURCHARGE : Supprime un user définitivement (Admin général uniquement!)
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRIME UN USER DÉFINITIVEMENT (ADMIN GÉNÉRAL UNIQUEMENT!)
+	 *******************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight())
@@ -184,11 +184,12 @@ class MdlUser extends MdlPerson
 			if($this->hasImg())  {unlink($this->pathImgThumb());}
 			// Suppression des tables de jointures et tables annexes
 			Db::query("DELETE FROM ap_joinSpaceUser			WHERE _idUser=".$this->_id);
-			Db::query("DELETE FROM ap_userMessenger			WHERE _idUserMessenger=".$this->_id." OR _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_objectTarget			WHERE target=".Db::format("U".$this->_id));
 			Db::query("DELETE FROM ap_userLivecouter		WHERE _idUser=".$this->_id);
+			Db::query("DELETE FROM ap_userMessenger			WHERE _idUserMessenger=".$this->_id." OR _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_userMessengerMessage	WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_userPreference		WHERE _idUser=".$this->_id);
+			Db::query("DELETE FROM ap_objectLike			WHERE _idUser=".$this->_id);
 			//Suppr l'agenda
 			$objCalendar=new MdlCalendar(Db::getVal("SELECT _id FROM ap_calendar WHERE _idUser=".$this->_id." AND type='user'"));
 			$objCalendar::$persoCalendarDeleteRight=true;//cf. "deleteRight()" du "MdlCalendar"
@@ -198,9 +199,9 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*
-	 * SURCHARGE : désaffecte/Supprime un user d'un espace (Admin d'espace uniquement!)
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DÉSAFFECTE/SUPPRIME UN USER D'UN ESPACE (ADMIN D'ESPACE UNIQUEMENT!)
+	 *******************************************************************************************/
 	public function deleteFromCurSpace($_idSpace)
 	{
 		if(Ctrl::$curUser->isAdminSpace()){
@@ -209,9 +210,9 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*
-	 *  Autres users que l'user courant peut voir, sur l'ensemble de ses espaces
-	 */
+	/*******************************************************************************************
+	 *  AUTRES USERS QUE L'USER COURANT PEUT VOIR, SUR L'ENSEMBLE DE SES ESPACES
+	 *******************************************************************************************/
 	public function usersVisibles($mailFilter=false)
 	{
 		//Init
@@ -231,18 +232,18 @@ class MdlUser extends MdlPerson
 		return $usersVisibles;
 	}
 
-	/*
-	 * Verifie si le login existe déjà chez un autre user
-	 */
+	/*******************************************************************************************
+	 * VERIFIE SI LE LOGIN EXISTE DÉJÀ CHEZ UN AUTRE USER
+	 *******************************************************************************************/
 	public static function loginAlreadyExist($login, $_idUserIgnore=null)
 	{
 		$sql_idUserIgnore=(!empty($_idUserIgnore))  ?  " AND _id!=".(int)$_idUserIgnore  :  null;
 		return (!empty($login) && Db::getVal("SELECT count(*) FROM ap_user WHERE (login=".Db::format($login)." OR mail=".Db::format($login).") ".$sql_idUserIgnore)>0);
 	}
 
-	/*
-	 * Nombre d'utilisateurs maxi déjà atteint?
-	 */
+	/*******************************************************************************************
+	 * NOMBRE D'UTILISATEURS MAXI DÉJÀ ATTEINT?
+	 *******************************************************************************************/
 	public static function usersQuotaOk($addNotif=true)
 	{
 		//Quota Ok ...sinon on ajoute une notif?
@@ -256,62 +257,61 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*
-	 * Nombre d'utilisateurs restant
-	 */
+	/*******************************************************************************************
+	 * NOMBRE D'UTILISATEURS RESTANT
+	 *******************************************************************************************/
 	public static function usersQuotaRemaining()
 	{
 		if(defined("limite_nb_users"))  {return (int)(limite_nb_users - Db::getVal("SELECT count(*) FROM ap_user"));}
 	}
 
-	/*
-	 * SURCHARGE : Ajout/Modif d'utilisateur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : AJOUT/MODIF D'UTILISATEUR
+	 *******************************************************************************************/
 	public function createUpdate($sqlProperties, $login=null, $password=null, $spaceId=null)
 	{
 		////	Controles : quota atteint ? Login existe déjà ?
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
-		if(self::loginAlreadyExist($login,$this->_id))  {Ctrl::addNotif("USER_loginAlreadyExist"); return false;}
+		if(self::loginAlreadyExist($login,$this->_id))   {Ctrl::addNotif(Txt::trad("USER_loginAlreadyExist")." (".$login.")");  return false;}
 		////	Ajoute le login, le password? si l'agenda perso est désactivé?
 		$sqlProperties=trim(trim($sqlProperties),",");
-		$sqlProperties.=", login=".Db::format($login);
-		if(!empty($password))  {$sqlProperties.=", password=".Db::format(self::passwordSha1($password));}
-		////	Create/Update et index!
-		$reloadedObj=parent::createUpdate($sqlProperties);
-		if(Ctrl::isHost())  {Host::indexUsers($login);}
+		$sqlProperties.=", `login`=".Db::format($login);
+		if(!empty($password))  {$sqlProperties.=", `password`=".Db::format(self::passwordSha1($password));}
 		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
-		if($reloadedObj->isNewlyCreated()){
+		$reloadedObj=parent::createUpdate($sqlProperties);
+		if($reloadedObj->isNewlyCreated())
+		{
 			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");
 			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");//créé l'agenda, même si l'agenda est désactivé par défaut
 			if(!empty($spaceId)){
 				$tmpSpace=Ctrl::getObj("space",$spaceId);
-				if($tmpSpace->allUsersAffected()==false)	{Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$spaceId.", _idUser=".$reloadedObj->_id.", accessRight=1");}
+				if($tmpSpace->allUsersAffected()==false)  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$spaceId.", _idUser=".$reloadedObj->_id.", accessRight=1");}
 			}
 		}
 		////	Retourne l'objet rechargé
 		return $reloadedObj;
 	}
 
-	/*
-	 * Crypte le password en sha1() + SALT
-	 */
+	/*******************************************************************************************
+	 * CRYPTE LE PASSWORD EN SHA1() + SALT
+	 *******************************************************************************************/
 	public static function passwordSha1($password, $specificSalt=null)
 	{
 		$SALT=(!empty($specificSalt))  ?  $specificSalt  :  self::getSalt();
 		return sha1($SALT.sha1($password));
 	}
 
-	/*
-	 * Identifiant temporaire pour la réinitialisation du password
-	 */
+	/*******************************************************************************************
+	 * IDENTIFIANT TEMPORAIRE POUR LA RÉINITIALISATION DU PASSWORD
+	 *******************************************************************************************/
 	public function resetPasswordId()
 	{
 		return sha1($this->login.$this->password);
 	}
 
-	/*
-	 * Envoi du mail de reset de password
-	 */
+	/*******************************************************************************************
+	 * ENVOI DU MAIL DE RESET DE PASSWORD
+	 *******************************************************************************************/
 	public function resetPasswordSendMail()
 	{
 		//Récupère l'email (login en priorité)
@@ -329,9 +329,9 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*
-	 * Envoi du mail des coordonnées de connexion pour un nouvel utilisateur
-	 */
+	/*******************************************************************************************
+	 * ENVOI DU MAIL DES COORDONNÉES DE CONNEXION POUR UN NOUVEL UTILISATEUR
+	 *******************************************************************************************/
 	public function newUserCoordsSendMail($clearPassword)
 	{
 		//Récupère l'email (login en priorité)
@@ -346,21 +346,21 @@ class MdlUser extends MdlPerson
 					 Txt::trad("login")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
 					 Txt::trad("passwordToModify")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
 					 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
-			return Tool::sendMail($mailTo, $subject, $message);
+///			return Tool::sendMail($mailTo, $subject, $message);
 		}
 	}
 
-	/*
-	 * Récupère le Salt
-	 */
+	/*******************************************************************************************
+	 * RÉCUPÈRE LE SALT
+	 *******************************************************************************************/
 	public static function getSalt()
 	{
 		return (!defined("AGORA_SALT") || !AGORA_SALT)  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
 	}
 
-	/*
-	 * Connexion d'un user pas present sur l'agora : tente une connexion ldap pour une creation a la volee
-	 */
+	/*******************************************************************************************
+	 * CONNEXION D'UN USER PAS PRESENT SUR L'AGORA : TENTE UNE CONNEXION LDAP POUR UNE CREATION A LA VOLEE
+	 *******************************************************************************************/
 	public static function ldapConnectCreateUser($login, $password)
 	{
 		$userInfos=array();
@@ -390,7 +390,7 @@ class MdlUser extends MdlPerson
 							//  Vérifie si l'id/password du serveur LDAP est identique à celui spécifié
 							$idPassOk=($tmpUser["login"]==$login && $tmpUser["password"]==$ldapPassword)  ?  true  :  false;
 							// Vérifie si l'user n'a pas déjà été importé :  la connexion peut être faite par erreur avec les login/password LDAP, différent de ceux de l'agora...
-							$userAgoraExist=Db::getVal("SELECT count(*) FROM ap_user WHERE login=".Db::format($tmpUser["login"])." OR mail=".Db::format($tmpUser["mail"]));
+							$userAgoraExist=Db::getVal("SELECT count(*) FROM ap_user WHERE `login`=".Db::format($tmpUser["login"])." OR mail=".Db::format($tmpUser["mail"]));
 							// Créé le compte sur l'agora
 							if(($ldapConnection!=false || $idPassOk==true) && empty($userAgoraExist)){
 								$newUser=new MdlUser();
