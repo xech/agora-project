@@ -1,3 +1,26 @@
+VERSION 3.7.3 (10-2020)
+#######################
+Optimisations de l'affichage responsive
+Amélioration de l'affichage des droits d'accès des menus contextuels
+Amélioration des menus d'édition des événements des Agendas
+Amélioration des menus "fil d'Ariane" dans les arborescences de dossiers
+Correction de l'affichage de la recherche sur Firefox
+Corrections de traduction
+Mise à jour de la documentation
+Mise à jour de Jquery en v3.5.1
+Corrections et optimisations diverses
+------
+Responsive display optimizations
+Improved display of access rights for contextual menus
+Improvement of the edition menus of Calendar events
+Improvement of "breadcrumb" menus in folder trees
+Fixed the search display on Firefox
+Translation corrections
+Documentation update
+Update of Jquery in v3.5.1
+Various corrections and optimizations
+
+
 VERSION 3.7.2 (05-2020)
 #######################
 Nouvelle option pour l'ajout d'un serveur de visioconférences Jitsi, accessible depuis la messagerie intantanée (cf. paramétrage général)
