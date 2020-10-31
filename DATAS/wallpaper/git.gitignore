@@ -1,0 +1,4 @@
+# Conserver le folder lors des commits GIT
+*
+# Sauf ce fichier
+!.gitignore
