@@ -21,6 +21,7 @@ class Tool
 
 	/*******************************************************************************************
 	 * ENVOI D'UN MAIL
+	 * Note : toujours mettre en place un reverse DNS, SPF et/ou DKIM (évite la spambox)
 	 *******************************************************************************************/
 	public static function sendMail($mailsTo, $subject, $message, $options=null, $attachedFiles=null)
 	{
@@ -61,9 +62,9 @@ class Tool
 		////	Expediteur
 		$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
 		$fromDomain=str_replace("www.","",$_SERVER["HTTP_HOST"]);
-		$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//"sendmailFrom" du paramétrage smtp OU Nom de domaine (exple: "noreply@mondomaine.net")
-		$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Nom de domaine
-		$mail->SetFrom($fromMail, $fromLabel);
+		$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//"sendmailFrom" du paramétrage SMTP OU Nom du domaine courant (exple: "noreply@mondomaine.net")
+		$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Nom du domaine courant
+		$mail->SetFrom($fromMail, $fromLabel);																		//Toujours utiliser un email correspondant au serveur SMTP ou au domaine courant (évite la spambox)
 		//Ajoute le libellé de l'user connecté (le + fréquent)
 		if($opt["senderNoReply"]==false && $fromConnectedUser==true){
 			$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());												//Modif le libellé : "Mon espace - boby SMITH"
@@ -72,9 +73,9 @@ class Tool
 		}
 
 		////	Destinataires (format text / array d'idUser)
-		$mailsToNotif=null;																														//Prépare la notification finale
-		if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}//Destinataires masqués: ajoute l'user en email principal (evite la spambox)
-		if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																	//Prépare la liste des destinataires
+		$mailsToNotif=null;																															//Prépare la notification finale
+		if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}	//Destinataires masqués: ajoute l'expéditeur en email principal (evite la spambox)
+		if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																		//Prépare la liste des destinataires
 		//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
 		foreach($mailsTo as $tmpDest){
 			if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}

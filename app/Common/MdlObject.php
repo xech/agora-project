@@ -265,8 +265,8 @@ class MdlObject
 	public function createRight()
 	{
 		if($this->_id==0){
-			if($this->hasAccessRight())					{return true;}										//"true" si l'objet a ses propres droits d'accès
-			elseif($this->accessRightFromContainer())	{return $this->containerObj()->editContentRight();}	//Sinon en fonction du conteneur parent (pas pour les "calendarEvent" car affectés à plusieurs agendas)
+			if($this->hasAccessRight() || static::MdlObjectContainer==null)	{return true;}										//Objet avec ses propres droits d'accès OU Objet indépendant (user & co)
+			elseif($this->accessRightFromContainer())						{return $this->containerObj()->editContentRight();}	//Objet dépendant d'un conteneur parent (sauf pour les "calendarEvent" car affectés à plusieurs agendas)
 		}
 	}
 
