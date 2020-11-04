@@ -29,8 +29,8 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JS & CSS DE L'AGORA -->
-		<script src="app/js/common-3.7.3.2.js"></script><!--toujours après Jquery & plugins Jquery !!-->
-		<link href="app/css/common-3.7.3.2.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-3.7.3.1.js"></script><!--toujours après Jquery & plugins Jquery !!-->
+		<link href="app/css/common-3.7.3.1.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 	
 		<script>

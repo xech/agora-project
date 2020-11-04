@@ -74,7 +74,7 @@ class MdlUser extends MdlPerson
 		{
 			//Droit par défaut
 			$this->_accessRight=parent::accessRight();
-			//Pas d'accès : Ajoute l'accès en lecture si l'objet user fait partie des "usersVisibles" de l'user connecté (cf. messenger)
+			//Pas d'accès : Ajoute l'accès en lecture si l'user en question fait partie des "usersVisibles" de l'user courant
 			if(empty($this->_accessRight)){
 				foreach(Ctrl::$curUser->usersVisibles() as $tmpUser){
 					if($this->_id==$tmpUser->_id)  {$this->_accessRight=1;}

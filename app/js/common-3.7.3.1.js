@@ -22,10 +22,10 @@ $(function(){
 function windowWidthCookie(forceReload){
 	if(typeof onresizeTimeout!="undefined")  {clearTimeout(onresizeTimeout);}//Pas de cumul de Timeout (cf. "onresize"/"onorientationchange")
 	onresizeTimeout=setTimeout(function(){
-		var pageReload=(forceReload==true || (typeof pageWidthLast!="undefined" && Math.abs($(window).width()-pageWidthLast)>30));	//Reload uniquement si le width a été modifé d'au moins 30px (pas de reload avec l'apparition/disparition de l'ascenseur)
-		pageWidthLast=$(window).width();																							//Enregistre/Update le width courant pour le controle ci-dessus
-		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";							//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
-		if(pageReload==true && windowParent.confirmCloseForm==false)  {location.reload();}											//Reload la page (sauf si on affiche un formulaire principal)
+		var pageReload=((typeof windowWidthLast!="undefined" && windowWidthLast!=$(window).width()) || forceReload==true);	//Reload le width s'il a été modifé (pas pour un "resize" du height)
+		windowWidthLast=$(window).width();																					//Enregistre/Update le width courant pour le controle ci-dessus
+		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";					//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
+		if(pageReload==true && $("form:visible").exist()==false)  {location.reload();}										//Reload la page (sauf si on affiche un formulaire. Pas de "confirmCloseForm" car trop restrictif)
 	},500);
 }
 
