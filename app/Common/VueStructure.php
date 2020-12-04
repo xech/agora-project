@@ -18,7 +18,7 @@
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
 		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">
 		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("DATEPICKER") ?>.js"></script><!--langue du jquery-ui datepicker-->
-		<!-- JQUERY PLUGINS -->
+		<!-- JQUERY PLUGINS & CO -->
 		<link  href="app/js/fancybox/dist/jquery.fancybox.css" rel="stylesheet">
 		<script src="app/js/fancybox/dist/jquery.fancybox.min.js"></script>
 		<script type="text/javascript" src="app/js/tooltipster/tooltipster.bundle.min.js"></script>
@@ -28,9 +28,10 @@
 		<link rel="stylesheet" type="text/css" href="app/js/toastmessage/toastmessage.css">
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
+		<script src="app/js/md5.js"></script><!--MD5 des rooms de Visio-->
 		<!-- JS & CSS DE L'AGORA -->
-		<script src="app/js/common-3.7.3.1.js"></script><!--toujours après Jquery & plugins Jquery !!-->
-		<link href="app/css/common-3.7.3.1.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-3.7.4.1.js"></script><!--toujours après Jquery & plugins Jquery !!-->
+		<link href="app/css/common-3.7.4.1.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 	
 		<script>
@@ -71,7 +72,7 @@
 		<style>
 		/*WALLPAPER EN PAGE PRINCIPALE*/
 		@media screen and (min-width:1024px){
-			html  {background-size:cover; <?= isset($pathWallpaper) ? "background:url(".$pathWallpaper.") no-repeat center fixed;" : null ?>}/*fullsize via "cover"*/
+			<?= isset($pathWallpaper) ? "html  {background:url(".$pathWallpaper.") no-repeat center fixed;background-size:cover;}" : null ?>/*"cover": background fullsize*/
 		}
 
 		/*FOOTER*/

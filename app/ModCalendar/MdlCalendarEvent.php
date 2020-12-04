@@ -108,11 +108,14 @@ class MdlCalendarEvent extends MdlObject
 	 */
 	public function getUrl($display=null)
 	{
-		//Affichage "parent" en fonction de $display  ||  Surcharge de l'affichage par défaut : en fonction du "time" de l'evt et de l'agenda principal (verif s'il existe)
+		//Url par défaut (en fonction de $display)
 		if(!empty($display))  {return parent::getUrl($display);}
+		//Surcharge : Affiche l'evt à la bonne date et si besoin dans l'agenda principal
 		else{
+			//Url du module à la bonne date 
 			$url="?ctrl=".static::moduleName."&curTime=".strtotime($this->dateBegin);
-			if($this->containerObj())  {$url.="&displayedCalendars[]=".$this->containerObj()->_id;}
+			//Spécifie si besoin l'agenda principal (affichage "plugin", url accès direct.. mais inutile après un delete d'evt, sinon on perd la liste des agendas en cours d'affichage)
+			if(Req::$curAction!="delete" && $this->containerObj())  {$url.="&displayedCalendars[]=".$this->containerObj()->_id;}
 			return $url;
 		}
 	}

@@ -34,7 +34,7 @@ function livecounterUpdate(initLivecounter)
 		//// Init/Update les livecounters
 		if(initLivecounter==true || result.livercounterUpdate==true)
 		{
-			//Liste des users connectées  ||  Plus personne de connecté  ||  Rien à afficher
+			//Liste des users connectées  ||  Plus personne n'est connecté  ||  Rien à afficher
 			if(result.livecounterUsersHtml.length>0)		{$("#livecounterMain").fadeIn();  $("#livecounterUsers").html(result.livecounterUsersHtml);}
 			else if(result.messengerMessagesHtml.length>0)	{$("#livecounterMain").fadeIn();  $("#livecounterUsers").html("<span onclick=\"messengerDisplay('all')\" class='sLink' title=\"<?= Txt::trad("MESSENGER_connectedNobodyInfo") ?>\">&nbsp; ....</span>");}
 			else											{$("#livecounterMain").hide();}
@@ -73,7 +73,7 @@ function livecounterUpdate(initLivecounter)
 
 		//// Relance "livecounterUpdate()" avec Timeout
 		if(document.visibilityState!="hidden" || (Date.now()-livecounterLoadTime)<1200000){	//La page n'est pas affichée depuis au moins 20mn : stop le "livecounterUpdate()" et évite les requetes Ajax inutiles
-			if(typeof livecounterTimeout!="undefined")  {clearTimeout(livecounterTimeout);}	//Pas de cumul de Timeout (important!)
+			if(typeof livecounterTimeout!="undefined")  {clearTimeout(livecounterTimeout);}	//Pas de cumul de Timeout ..et de requête ajax!
 			livecounterTimeout=setTimeout(function(){ livecounterUpdate(); },10000);		//Relance le "livecounterUpdate()" après 10 secondes
 		}
 	});
@@ -110,21 +110,22 @@ function messengerDisplay(idUserDisplayedRequest)
 		}
 
 		//// Affiche le messenger !
-		$("#messengerMain").css("padding-bottom",($("#livecounterMain").outerHeight(true)+15));//Padding bottom du "#messengerMain" en fonction de "#livecounterMain" (lorsqu'il est affiché, le messenger "enveloppe" le livecounter principal)
-		messengerResizeScrollers();//Init ensuite les ".vMessengerAjax" scrollables
+		$("#messengerMain").css("padding-bottom",($("#livecounterMain").outerHeight(true)+15));	//Padding bottom du "#messengerMain" en fonction de "#livecounterMain" (lorsqu'il est affiché, le messenger "enveloppe" le livecounter principal)
+		messengerResizeScrollers();																//Init ensuite les ".vMessengerAjax" scrollables
 		$("#messengerMain").fadeIn(200);
 
 		//// Désélectionne tous les users, puis sélectionne au besoin l'user à afficher
 		$("input[name='messengerUsers']").prop("checked",false);
 		if($.isNumeric(idUserDisplayed))  {$("#messengerUsers"+idUserDisplayed).prop("checked",true);}
 
-		//// Affiche le formulaire, l'input Text, l'appel visio
+		//// Affiche l'input Texte et le bouton de visio
 		labelUserDisplayed=($.isNumeric(idUserDisplayed))  ?  $(".vLivecounterUser[data-idUser='"+idUserDisplayed+"']").text()  :  null;
-		var placeholderLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_addMessageToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_addMessageTo") ?> "+labelUserDisplayed;
-		visioButtonLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_visioProposeToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_visioProposeTo") ?> "+labelUserDisplayed;
-		$("#messengerPostMessage").attr("placeholder",placeholderLabel);//Placeholer : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
-		if(isTouchDevice()==false)  {$("#messengerPostMessage").focus();}//Affichage normal : focus sur l'input
-		$("#visioLauncherButton").attr("title",visioButtonLabel).tooltipster(tooltipsterOptions);//Title du bouton de visio : "Proposer une visio à Boby" OU "Proposer une visio aux personnes sélectionnées"
+		var placeholderLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_addMessageToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_addMessageTo") ?>"+labelUserDisplayed;
+		visioButtonLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_visioProposeToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_visioProposeTo") ?>"+labelUserDisplayed;
+		$("#messengerPostMessage").attr("placeholder",placeholderLabel);											//Placeholer : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
+		if(isTouchDevice()==false)  {$("#messengerPostMessage").focus();}											//Affichage normal : focus sur l'input
+		if($("#visioLauncherButton.tooltipstered").exist())  {$("#visioLauncherButton").tooltipster("destroy");}	//Bouton de visio : Réinitialise si besoin le "tooltipster"
+		$("#visioLauncherButton").attr("title",visioButtonLabel).tooltipster(tooltipsterOptions);					//Bouton de visio : update le "tooltipster" : "Proposer une visio à Bob" / "Proposer une visio aux personnes sélectionnées"
 
 		//// Divers
 		messengerAlert.pause();									//Fin de son d'alerte
@@ -156,14 +157,14 @@ function messengerDisplayUser()
 		if($("input[name='messengerUsers']").isEmpty())	{$("#messengerPostForm,#messengerUsersCell").hide();}
 		else											{$("#messengerPostForm").show();}
 		//Pulsate si ya des proposition de visio
-		$(".launchVisioMessage").last().pulsate(5);
+		$(".launchVisioMessage").last().pulsate(7);
 	}
 }
 
 ////	Controle & post du message du messenger (note: pb de scroll sous chrome apres lancement de "messengerPost()")
 function messengerPost()
 {
-	//Vérif du message et user spécifié
+	//Vérif qu'un message est bien précisé et qu'au moins un user est sélectionné
 	if($("#messengerPostMessage").isEmpty())  {notify("<?= Txt::trad("MESSENGER_addMessageNotif") ?>");  return false;}
 	var checkedUsers=messengerUsersChecked();
 	if(checkedUsers.length==0)  {notify("<?= Txt::trad("selectUser") ?>");  return false;}
@@ -175,26 +176,29 @@ function messengerPost()
 	});
 }
 
-
 ////	Click sur le bouton de proposition de visio
 function initiateVisio()
 {
-	//Confirme la proposition de visio (récupère le "title")
-	if(confirm(visioButtonLabel+" ?")){
+	//Confirme la proposition de visioconférence (récupère le tooltip du bouton de visio)
+	if(confirm(visioButtonLabel+" ?"))
+	{
+		//Url de la "room" de visio, avec un identifiant en fonction de l'user courant et des users sélectionnés (génère un identificant Md5 via la librairie ad'hoc)
+		var visioUsers="<?= Ctrl::$curUser->_id ?>-" + $("input[name='messengerUsers']:checked").map(function(){ return this.value; }).get().join("-");//concatenation des '_idUser'
+		var visioURL="<?= Ctrl::$agora->visioUrl() ?>"+MD5(visioUsers).substr(0,10);
 		//Envoie un message au destinataire ("Boby propose un appel visio")
-		var roomUrl="<?= CtrlMisc::myVideoRoomURL() ?>";
-		$("#messengerPostMessage").val("<a href=\"javascript:launchVisio('"+roomUrl+"')\" class='launchVisioMessage'><?= Ctrl::$curUser->getLabel()." ".Txt::trad("MESSENGER_userProposeVisioCall") ?> <img src='app/img/visio.png'></a>");
+		$("#messengerPostMessage").val("<a href=\"javascript:launchVisio('"+visioURL+"')\" class='launchVisioMessage'><?= Ctrl::$curUser->getLabel()." ".Txt::trad("MESSENGER_userProposeVisio") ?> <img src='app/img/visio.png'></a>");
 		messengerPost();
-		// Envoi d'une notification ("la proposition a bien été envoyée...") PUIS Lance la visio (avec timeout, le temps de lire le message)
+		// Envoi d'une notification ("la proposition a bien été envoyée...")
 		notify("<?= Txt::trad("MESSENGER_visioProposalPending") ?>","success");
-		////setTimeout(function(){ launchVisio(roomUrl,true); },12000);
+		//Lance la visio avec timeout, le temps de lire le message (iframe?)
+		////setTimeout(function(){ launchVisio(visioURL,true); },12000);
 	}
 }
 
 ////	Lance une visio dans un nouvel onglet/iframe
-function launchVisio(roomUrl,initiate)
+function launchVisio(roomUrl,launchAuto)
 {
-	if(initiate===true || confirm("<?= Txt::trad("MESSENGER_visioProposalLanch") ?>"))
+	if(launchAuto===true || confirm("<?= Txt::trad("MESSENGER_visioProposalLanch") ?>"))
 		{window.open(roomUrl);}
 }
 
@@ -211,6 +215,7 @@ function messengerUsersChecked(){
 	return $("input[name='messengerUsers']:checked").map(function(){ return $(this).val(); }).get();
 }
 </script>
+
 
 <style>
 /*Livecounter principal et Messenger*/

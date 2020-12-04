@@ -560,16 +560,16 @@ class MdlObject
 			//Ajoute si besoin la description
 			if(!empty($this->description))	{$objContent.="<br>".$this->description;}
 			if(!empty($addDescription))		{$objContent.="<br>".$addDescription;}
-			$objContent=Txt::reduce($objContent,3000);//limite la taille de la description (cf. Actualité and co, avec "strip tag" pour éviter d'arriver en spam)
+			$objContent=Txt::reduce($objContent,8000);//Limite la taille du texte pour éviter la spambox (Tester avec 10000 carc. et une mise en page, car "reduce()" lance aussi un "strip_tag()")
 			$objContent=str_replace(PATH_DATAS, Req::getSpaceUrl()."/".PATH_DATAS, $objContent);//Remplace si besoin les chemins relatifs dans le label de l'objet
-			$objContentStyle="display:inline-block; background-color:#fafafa; color:#333; border:1px solid #bbb; border-radius:2px; padding:15px;";//Style du corps du message
+			$objContentStyle="display:inline-block;background-color:#f5f5f5;color:#333;border:1px solid #bbb;border-radius:3px;padding:15px;";//Style du corps du message
 			$message="<br>".$subject." :<br><br><div style=\"".$objContentStyle."\">".$objContent."</div><br><br><a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";//Finalise le message (sur une seule ligne!!)
 			////	Users à destination de la notif : destinataires spécifiques OU users affectées à l'objet
 			$notifUsersIds=[];
 			if(Req::isParam("notifMail"))	{$notifUsersIds=(Req::isParam("notifMailUsers"))  ?  Req::getParam("notifMailUsers")  :  $this->affectedUserIds();}
 			////	Ajoute si besoin des destinataires
 			if(!empty($addUserIds)){
-				if(Req::isParam("notifMail")==false)  {$addedOptions="noSendNotif";}//Pas de demande explicite de l'user courant : on affiche pas de rapport d'envoi
+				if(Req::isParam("notifMail")==false)  {$addedOptions="noNotify";}//Par défaut, on n'affiche pas si le mail a bien été envoyé ou pas (cf. "notify()")
 				$notifUsersIds=array_unique(array_merge($notifUsersIds,$addUserIds));
 			}
 			////	Ajoute si besoin les images jointes à l'objet et intégré dans sa description (exple: images intégrées à une actualité)
@@ -589,7 +589,7 @@ class MdlObject
 			////	Envoi du message
 			if(!empty($notifUsersIds))
 			{
-				$options="objectEditNotif,addLogoFooter";
+				$options="objectNotif";
 				if(Req::isParam("hideRecipients"))	{$options.=",hideRecipients";}
 				if(Req::isParam("receptionNotif"))	{$options.=",receptionNotif";}
 				if(!empty($addedOptions))			{$options.=",".$addedOptions;}

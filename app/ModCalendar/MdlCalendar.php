@@ -61,7 +61,7 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*
-	 * Droit d'ajouter un agenda de ressource
+	 * Droit d'ajouter un agenda de ressource (type 'user' non concernés)
 	 */
 	public static function addRight()
 	{
@@ -326,7 +326,7 @@ class MdlCalendar extends MdlObject
 			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&targetObjId=".$this->_targetObjId."')",  "iconSrc"=>"calendar/icalImport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
 			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('".$urlExportIcs."')",  "iconSrc"=>"calendar/icalExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
 			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('".$urlExportIcs."&sendMail=true')",  "iconSrc"=>"mail.png",  "label"=>Txt::trad("CALENDAR_exportEvtMail"), "tooltip"=>Txt::trad("CALENDAR_exportEvtMailInfo")."<br>".Txt::trad("sendTo")." ".Ctrl::$curUser->mail];
-			$options["specificOptions"][]=["actionJs"=>"$('#urlIcal".$this->_targetObjId."').select(); if(confirm('".Txt::trad("CALENDAR_icalUrlCopy",true)."')){document.execCommand('copy');}",  "iconSrc"=>"public.png",  "label"=>$icalUrlInput];
+			$options["specificOptions"][]=["actionJs"=>"$('#urlIcal".$this->_targetObjId."').select(); if(confirm('".Txt::trad("CALENDAR_icalUrlCopy",true)."')){document.execCommand('copy');}",  "iconSrc"=>"public.png",  "label"=>$icalUrlInput,"tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
 		}
 		//Renvoie le menu surchargé
 		return parent::contextMenu($options);

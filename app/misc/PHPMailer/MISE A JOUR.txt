@@ -1,0 +1,4 @@
+METTRE A JOUR PHPMAILER :
+*************************
+- Récupérer la dernière version de PHPMailer sur https://github.com/PHPMailer/PHPMailer
+- Remplacer tous les fichiers par ceux de l'archive, mais sans le dossier "language/"

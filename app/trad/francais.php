@@ -59,7 +59,7 @@ class Trad extends Txt
 		self::$trad["personalAccess"]="Accès personnel";
 		self::$trad["copyUrl"]="Copier l'adresse web d'accès direct";
 		self::$trad["copyUrlInfo"]="L'adresse pourra être intégrée à une actualité, forum, événement, etc : pour pouvoir accéder directement à l'élément. L'adresse peut aussi être utilisée dans un email, blog, etc.";
-		self::$trad["copyUrlConfirmed"]="L'adresse web vers l'élément a bien été copiée.";
+		self::$trad["copyUrlConfirmed"]="L'adresse web a bien été copiée.";
 
 		////	images
 		self::$trad["picture"]="Photo";
@@ -76,12 +76,12 @@ class Trad extends Txt
 		self::$trad["loginPlaceholder"]="Email / Identifiant";
 		self::$trad["connect"]="Connexion";
 		self::$trad["connectAuto"]="Se souvenir de moi";
-		self::$trad["connectAutoInfo"]="Retenir mes identifiants pour une connexion automatique";
+		self::$trad["connectAutoInfo"]="Retenir mon identifiant / mot de passe pour une connexion automatique";
 		self::$trad["gSigninButton"]="Connexion avec Gmail";
 		self::$trad["gSigninButtonInfo"]="Connectez-vous avec votre compte Gmail : vous devez déjà posséder sur cet espace un compte avec une adresse <i>@gmail.com</i> comme identifiant";
 		self::$trad["gSigninUserNotRegistered"]="n'est pas enregistré sur l'espace avec l'email";//"Boby Smith" n'est pas enregistré sur l'espace avec l'email "boby.smith@gmail.com"
 		self::$trad["switchOmnispace"]="Se connecter à un autre espace Omnispace";
-		self::$trad["guestAccess"]="Se connecter à un espace public (en invité)";
+		self::$trad["guestAccess"]="Connexion à un espace en tant qu'invité";
 		self::$trad["spacePassError"]="Mot de passe erroné";
 		self::$trad["ieObsolete"]="Votre navigateur Internet Explorer n'est plus mis à jour par Microsoft depuis plusieurs années : ll est fortement conseillé d'utiliser un autre navigateur tel que Firefox, Chrome, Edge ou Safari.";
 
@@ -96,7 +96,7 @@ class Trad extends Txt
 		self::$trad["specifyPassword"]="Merci de spécifier un mot de passe";//user edit/inscription
 		self::$trad["resetPassword"]="Mot de passe oublié ?";
 		self::$trad["resetPassword2"]="Indiquez votre adresse email pour réinitialiser votre mot de passe de connection";
-		self::$trad["resetPasswordNotif"]="Un email vient de vous être envoyé pour réinitialiser votre mot de passe. Si vous ne l'avez pas reçu, vérifiez que l'adresse saisie est bien la bonne ou que l'email n'est pas arrivé dans vos indésirables.";
+		self::$trad["resetPasswordNotif"]="Un email vient de vous être envoyé pour réinitialiser votre mot de passe. Si vous ne l'avez pas reçu, vérifiez que votre email a correctement été saisi.";
 		self::$trad["resetPasswordMailTitle"]="Réinitialiser votre mot de passe";
 		self::$trad["resetPasswordMailPassword"]="Pour vous connecter à votre espace et réinitialiser votre mot de passe";
 		self::$trad["resetPasswordMailPassword2"]="merci de cliquer ici";
@@ -245,19 +245,22 @@ class Trad extends Txt
 	
 		////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
 		self::$trad["MAIL_hello"]="Bonjour";
-		self::$trad["MAIL_noFooter"]="Ne pas signer le message";
-		self::$trad["MAIL_noFooterInfo"]="Ne pas signer la fin du message <br>avec le nom de l'expéditeur et un lien vers l'espace";
-		self::$trad["MAIL_hideRecipients"]="Masquer les destinataires";
-		self::$trad["MAIL_hideRecipientsInfo"]="Par défaut, les destinataires sont visibles dans le message.<br>Attention car si l'option est coché et qu'il y a trop de destinataires, l'email peut arriver en Spam";
 		self::$trad["MAIL_receptionNotif"]="Accusé de reception";
 		self::$trad["MAIL_receptionNotifInfo"]="Demander un accusé de réception à l'ouverture de l'email. Notez que certaines messageries ne prennent pas en charge cette fonctionnalité.";
+		self::$trad["MAIL_addReplyTo"]="Ajouter &quot;Répondre à&quot;";
+		self::$trad["MAIL_addReplyToInfo"]="Ajouter mon adresse email dans le champs &quot;Répondre à&quot;. Attention car s'il y a trop de destinataires, l'email peut être considéré comme Spam";
+		self::$trad["MAIL_hideRecipients"]="Masquer les destinataires";
+		self::$trad["MAIL_hideRecipientsInfo"]="Mettre tous les destinataires en copie caché. Attention car s'il y a trop de destinataires, l'email peut être considéré comme Spam";
+		self::$trad["MAIL_noFooter"]="Ne pas signer le message";
+		self::$trad["MAIL_noFooterInfo"]="Ne pas signer la fin du message avec le nom de l'expéditeur et un lien vers l'espace";
+		self::$trad["MAIL_fielMaxSize"]="Taille des fichiers limité à 15Mo, car certaines messageries n'acceptent pas les fichiers au delà de cette limite et peuvent refuser l'email";
 		self::$trad["MAIL_sendBy"]="Envoyé par";  // "Envoyé par" M. Trucmuche
 		self::$trad["MAIL_sendOk"]="L'email a bien été envoyé";
 		self::$trad["MAIL_sendNotif"]="L'email de notification a bien été envoyé";
 		self::$trad["MAIL_notSend"]="L'email n'a pas pu être envoyé...";
-		self::$trad["MAIL_fromTheSpace"]="depuis l'espace";//'depuis l'espace' Mon espace
+		self::$trad["MAIL_fromTheSpace"]="depuis l'espace";//Depuis l'espace 'Mon espace'
 		self::$trad["MAIL_elemCreatedBy"]="-OBJLABEL- créé par";//Dossier 'créé par' boby
-		self::$trad["MAIL_elemModifiedBy"]="-OBJLABEL- modifié par";//Dossier 'modifié par' boby
+		self::$trad["MAIL_elemModifiedBy"]="-OBJLABEL- modifié par";//Dossier modifié par 'Boby'
 		self::$trad["MAIL_elemAccessLink"]="Cliquez ici pour y accéder sur votre espace";
 		
 		////	Dossier & fichier
@@ -375,11 +378,11 @@ class Trad extends Txt
 		self::$trad["MESSENGER_addMessageToSelection"]="Mon message aux personnes selectionnées";
 		self::$trad["MESSENGER_addMessageTo"]="Mon message à";
 		self::$trad["MESSENGER_addMessageNotif"]="Merci de spécifier un message";
-		self::$trad["MESSENGER_visioProposeTo"]="Proposer un appel visio à";//..boby
-		self::$trad["MESSENGER_visioProposeToSelection"]="Proposer un appel visio aux personnes sélectionnées";
-		self::$trad["MESSENGER_visioProposalPending"]="La proposition de visio a bien été envoyée : cliquez sur le lien dans la messagerie instantanée pour lancer la visio.<br><br> Pensez à autoriser l'accès à votre webcam et microphone en sélectionnant ''Autoriser'' dans les demandes du navigateur !";
-		self::$trad["MESSENGER_visioProposalLanch"]="Lancer l'appel visio ?";
-		self::$trad["MESSENGER_userProposeVisioCall"]="propose un appel visio : cliquer ici pour lancer la visio";//Boby.. "propose un appel visio"
+		self::$trad["MESSENGER_visioProposeTo"]="Proposer une visioconférence à";//..boby
+		self::$trad["MESSENGER_visioProposeToSelection"]="Proposer une visioconférence aux personnes sélectionnées";
+		self::$trad["MESSENGER_visioProposalPending"]="La proposition a bien été envoyée : cliquez sur le lien pour lancer la visioconférence et pensez ensuite à autoriser l'accès à votre webcam et microphone.";
+		self::$trad["MESSENGER_visioProposalLanch"]="Lancer une visioconférence ?";
+		self::$trad["MESSENGER_userProposeVisio"]="propose une visioconférence : cliquer ici pour lancer la visio";//Boby.. "propose un appel visio"
 		self::$trad["FOOTER_pageGenerated"]="page générée en";
 
 		////	vueObjMenuEdit
@@ -462,8 +465,8 @@ class Trad extends Txt
 		self::$trad["AGORA_skin"]="Couleur de l'affichage général";
 		self::$trad["AGORA_black"]="Mode sombre";
 		self::$trad["AGORA_white"]="Mode clair";
-		self::$trad["AGORA_wallpaperLogoError"]="L'image de fond d'écran et le logo doivent être au format .jpg ou .png";
-		self::$trad["AGORA_deleteWallpaper"]="Supprimer le fond d'écran ?";
+		self::$trad["AGORA_wallpaperLogoError"]="Le fond d'écran et le logo doivent être au format .jpg ou .png";
+		self::$trad["AGORA_deleteWallpaper"]="Supprimer le fond d'écran";
 		self::$trad["AGORA_logo"]="Logo en bas de page";
 		self::$trad["AGORA_logoUrl"]="URL";
 		self::$trad["AGORA_logoConnect"]="Logo en page de connexion";
@@ -478,14 +481,14 @@ class Trad extends Txt
 		self::$trad["AGORA_usersLike_dontlike"]="Je n'aime pas";
 		self::$trad["AGORA_mapTool"]="Outil de cartographie";
 		self::$trad["AGORA_mapToolInfo"]="Outil de cartographie pour voir les utilisateurs et contacts sur une carte";
-		self::$trad["AGORA_mapApiKey"]="API Key pour la catographie";
-		self::$trad["AGORA_mapApiKeyInfo"]="API Key utilisé pour l'outil de cartographie Google Map. Plus d'infos sur https://developers.google.com/maps/documentation/javascript/get-api-key";
+		self::$trad["AGORA_mapApiKey"]="API Key pour la catographie Google Map";
+		self::$trad["AGORA_mapApiKeyInfo"]="Parametrage obligatoire pour l'outil de cartographie Google Map. Plus d'infos sur https://developers.google.com/maps/documentation/javascript/get-api-key";
 		self::$trad["AGORA_gSignin"]="Connexion optionnelle via Gmail (Sign-In)";
 		self::$trad["AGORA_gSigninInfo"]="Les utilisateurs peuvent se connecter plus facilement à leur espace via leur compte Gmail (Sign-In) : Pour cela, le compte de l'utilisateur doit avoir comme identifiant une adresse <i>@gmail.com</i>";
-		self::$trad["AGORA_gSigninClientId"]="Parametrage Google Sign-In : Client ID";
-		self::$trad["AGORA_gSigninClientIdInfo"]="Paramètrage obligatoire pour la connexion via Gmail. Plus d'infos sur <a href='https://developers.google.com/identity/sign-in/' target='_blank'>https://developers.google.com/identity/sign-in/</a>";
-		self::$trad["AGORA_gPeopleApiKey"]="Parametrage Google People : API KEY";
-		self::$trad["AGORA_gPeopleApiKeyInfo"]="Parametrage obligatoire pour la récupération des contacts Gmail. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
+		self::$trad["AGORA_gSigninClientId"]="API Key pour Google Sign-In";
+		self::$trad["AGORA_gSigninClientIdInfo"]="Paramètrage obligatoire pour la connexion via Gmail / Google Sign-In. Plus d'infos sur <a href='https://developers.google.com/identity/sign-in/' target='_blank'>https://developers.google.com/identity/sign-in/</a>";
+		self::$trad["AGORA_gPeopleApiKey"]="API KEY pour Google People";
+		self::$trad["AGORA_gPeopleApiKeyInfo"]="Parametrage obligatoire pour la récupération des contacts Gmail / Google People. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
 		self::$trad["AGORA_messengerDisabled"]="Messagerie instantanée activée";
 		self::$trad["AGORA_moduleLabelDisplay"]="Nom des modules dans la barre de menu principal";
 		self::$trad["AGORA_personsSort"]="Trier les utilisateurs et contacts par";
@@ -732,12 +735,12 @@ class Trad extends Txt
 		self::$trad["CALENDAR_exportEvtMailInfo"]="Pour les intégrer dans un calendrier IPHONE, ANDROID, OUTLOOK, GOOGLE CALENDAR...";
 		self::$trad["CALENDAR_exportEvtMailList"]="liste des événements au format .Ical";
 		self::$trad["CALENDAR_icalUrl"]="Adresse d'accès externe à l'agenda (Ical)";
-		self::$trad["CALENDAR_icalUrlCopy"]="Copier cette adresse pour un accès en lecture à l'agenda à partir d'une autre application tel que Mozilla Thunderbird, Google Calendar, MacOS Calendar, etc";
+		self::$trad["CALENDAR_icalUrlCopy"]="Copier ce lien pour lire ou exporter l'agenda sur une application externe tel que Mozilla Thunderbird, Google Calendar, etc";
 		self::$trad["CALENDAR_importIcal"]="Importer des événements (iCal)";
 		self::$trad["CALENDAR_importIcalState"]="Etat";
 		self::$trad["CALENDAR_importIcalStatePresent"]="Déjà présent";
 		self::$trad["CALENDAR_importIcalStateImport"]="A importer";
-		self::$trad["CALENDAR_inputProposed"]="L'événement sera proposé au propriétaire de l'agenda";
+		self::$trad["CALENDAR_inputProposed"]="L'événement sera proposé au gérant de l'agenda";
 		self::$trad["CALENDAR_displayDay"]="Jour";
 		self::$trad["CALENDAR_display4Days"]="4 jours";
 		self::$trad["CALENDAR_displayWorkWeek"]="Semaine ouvrée";
@@ -748,8 +751,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_periodPrevious"]="Période précédente";
 		self::$trad["CALENDAR_evtAffects"]="Dans l'agenda de";
 		self::$trad["CALENDAR_evtAffectToConfirm"]="Attente de confirmation pour les agendas : ";
-		self::$trad["CALENDAR_evtProposedFor"]="Evenements proposés pour";//"Videoprojecteur" / "salle de réunion" / etc.
-		self::$trad["CALENDAR_evtProposedForMe"]="Evenements proposés pour mon agenda";
+		self::$trad["CALENDAR_evtProposedFor"]="Evenements proposés et à confirmer pour";//"Videoprojecteur" / "salle de réunion" / etc.
+		self::$trad["CALENDAR_evtProposedForMe"]="Evenements proposés et à confirmer pour mon agenda";
 		self::$trad["CALENDAR_evtProposedBy"]="Proposé par";// "Proposé par" M. Bidule (guest?)
 		self::$trad["CALENDAR_evtIntegrate"]="Intégrer l'événement à l'agenda ?";
 		self::$trad["CALENDAR_evtNotIntegrate"]="Supprimer la proposition d'événement ?";
@@ -770,9 +773,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_visibilityPrivate"]="Visibilité privée";
 		self::$trad["CALENDAR_visibilityPublicHide"]="Visibilité semi-privée";
 		self::$trad["CALENDAR_visibilityInfo"]="<u>visibilité privée</u> : événement uniquement affiché pour l'auteur de l'événement <br><br> <u>visibilité semi-privée</u> : si l'évènement n'est accessible qu'en lecture, seule la plage horaire sera affichée (sans titre ni description)";
-		// Agenda : edit
+		// Agenda/Evenement : edit
 		self::$trad["CALENDAR_timeSlot"]="Plage horaire de l'affichage ''semaine''";
-		// Evenement : edit
 		self::$trad["CALENDAR_noPeriodicity"]="Une seule fois";
 		self::$trad["CALENDAR_period_weekDay"]="Toutes les semaines";
 		self::$trad["CALENDAR_period_month"]="Tous les mois";
@@ -784,13 +786,17 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addEvt"]="Nouvel événement";
 		self::$trad["CALENDAR_addEvtTooltip"]="Ajouter un événement à l'agenda";
 		self::$trad["CALENDAR_addEvtTooltipBis"]="Ajouter l'événement à l'agenda";
-		self::$trad["CALENDAR_proposeEvtTooltip"]="Proposer un événement au propriétaire de l'agenda";
-		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proposer l'événement au propriétaire de cet agenda";
-		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Proposer l'événement au propriétaire de l'agenda <br>(vous n'avez pas accès en écriture à cet agenda)";
+		self::$trad["CALENDAR_proposeEvtTooltip"]="Proposer un événement au gérant de l'agenda";
+		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proposer l'événement au gérant de cet agenda";
+		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Proposer l'événement au gérant de l'agenda <br>(vous n'avez pas accès en écriture à cet agenda)";
 		self::$trad["CALENDAR_verifCalNb"]="Merci de sélectionner au moins un agenda";
 		self::$trad["CALENDAR_noModifInfo"]="Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)";
 		self::$trad["CALENDAR_editLimit"]="Vous n'êtes pas l'auteur de l'événement :<br> Vous ne pouvez donc gérer que les affectations à vos agendas";
 		self::$trad["CALENDAR_busyTimeslot"]="Créneau est déjà occupé sur l'agenda suivant :";
+		self::$trad["CALENDAR_visioUrlAdd"]="Ajouter une visioconférence";
+		self::$trad["CALENDAR_visioUrlCopy"]="Copier le lien de la visioconférence";
+		self::$trad["CALENDAR_visioUrlDelete"]="Supprimer le lien de la visioconférence";
+		self::$trad["CALENDAR_visioUrlLaunch"]="Lancer la visioconférence de l'événement";
 		// Categories
 		self::$trad["CALENDAR_editCategories"]="Editer les catégories d'événements";
 		self::$trad["CALENDAR_editCategoriesRight"]="Chaque categorie peut être modifiée par son auteur ou par l'admin général";

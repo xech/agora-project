@@ -2,9 +2,9 @@
 ////	Init la page
 $(function(){
 	//Change dans la liste : "par défaut" / "ajouter" / Affiche le wallpaper
-	$("select[name='wallpaper']").change(function(){
+	$("select[name='wallpaper']").on("change click",function(){
 		$("#wallpaperImg,#wallpaperAdd,#wallpaperDelete").hide();
-		if(this.value=="add")	{$("#wallpaperAdd").show();}
+		if(this.value=="add")  {$("#wallpaperAdd").show();}
 		else{
 			$("#wallpaperImg").show();
 			var filePath=(this.value=="")  ?  "<?= CtrlMisc::pathWallpaper(null) ?>"  :  $("option[value='"+this.value+"']").attr("data-filePath");
@@ -22,10 +22,11 @@ function wallpaperDelete()
 
 <style>
 #wallpaperMain					{display:table;}
-#wallpaperSelect, #wallpaperImg, #wallpaperAdd	{display:table-cell; padding-right:10px;}
-select[name='wallpaper']		{height:90px; max-width:150px;}
-#wallpaperImg img				{height:90px;}
+#wallpaperSelect, #wallpaperImg, #wallpaperAdd	{display:table-cell; padding-right:8px;}
+select[name='wallpaper']		{height:80px; max-width:130px;}
+#wallpaperImg img				{height:80px;}
 #wallpaperAdd, #wallpaperDelete	{display:none;}
+#wallpaperDelete				{font-size:0.9em;}
 option[value='add']				{background-color:#800;color:#fff;}
 </style>
 

@@ -241,15 +241,18 @@ class Trad extends Txt
 		self::$trad["OBJECTtask"]="tarea";
 		self::$trad["OBJECTtaskFolder"]="carpeta";
 		self::$trad["OBJECTuser"]="usuario";
-		
+
 		////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
 		self::$trad["MAIL_hello"]="Hola";
-		self::$trad["MAIL_noFooter"]="No firme el mensaje";
-		self::$trad["MAIL_noFooterInfo"]="No firme el final del mensaje con el nombre del remitentey un enlace al espacio";
-		self::$trad["MAIL_hideRecipients"]="Ocultar los destinatarios";
-		self::$trad["MAIL_hideRecipientsInfo"]="Por defecto, los destinatarios de correo electrónico aparecen en el mensaje.";
 		self::$trad["MAIL_receptionNotif"]="Confirmación de entrega";
 		self::$trad["MAIL_receptionNotifInfo"]="Advertencia! algunos clientes de correo electrónico no soportan el recibo de entrega";
+		self::$trad["MAIL_addReplyTo"]="Agregar 'Responder a'";
+		self::$trad["MAIL_addReplyToInfo"]="Agregue mi dirección de correo electrónico en el campo 'Responder a'. Tenga cuidado porque si hay demasiados destinatarios, el correo electrónico puede considerarse Spam.";
+		self::$trad["MAIL_hideRecipients"]="Ocultar los destinatarios";
+		self::$trad["MAIL_hideRecipientsInfo"]="Por defecto, los destinatarios de correo electrónico aparecen en el mensaje.";
+		self::$trad["MAIL_noFooter"]="No firme el mensaje";
+		self::$trad["MAIL_noFooterInfo"]="No firme el final del mensaje con el nombre del remitentey un enlace al espacio";
+		self::$trad["MAIL_fielMaxSize"]="Tamaño de archivo limitado a 15 MB, porque algunos buzones de correo no aceptan archivos más allá de este límite y pueden rechazar el correo electrónico";
 		self::$trad["MAIL_sendBy"]="Enviado por";  // "Envoyé par" M. Trucmuche
 		self::$trad["MAIL_sendOk"]="El correo electrónico ha sido enviado !";
 		self::$trad["MAIL_sendNotif"]="El correo electrónico de notificación ha sido enviado !";
@@ -376,7 +379,7 @@ class Trad extends Txt
 		self::$trad["MESSENGER_addMessageNotif"]="Por favor, especifique un mensaje";
 		self::$trad["MESSENGER_visioProposeTo"]="Enviar  una videollamada a";//..boby
 		self::$trad["MESSENGER_visioProposeToSelection"]="Enviar una videollamada a las personas seleccionadas";
-		self::$trad["MESSENGER_userProposeVisioCall"]="propone una videollamada. Haga clic aquí para iniciarla.";//boby.. "vous propose un appel visio"
+		self::$trad["MESSENGER_userProposeVisio"]="propone una videollamada. Haga clic aquí para iniciarla.";//boby.. "vous propose un appel visio"
 		self::$trad["MESSENGER_visioProposalPending"]="La propuesta de video ha sido enviada : haga clic en el enlace de mensajería instantánea para comenzar el video.<br><br> Recuerde permitir el acceso a su cámara web y micrófono seleccionando ''Permitir'' en solicitudes del navegador";
 		self::$trad["MESSENGER_visioProposalLanch"]="¿Iniciar la videollamada?";
 		self::$trad["FOOTER_pageGenerated"]="página generada en";
@@ -462,7 +465,7 @@ class Trad extends Txt
 		self::$trad["AGORA_black"]="Negro";
 		self::$trad["AGORA_white"]="Blanco";
 		self::$trad["AGORA_wallpaperLogoError"]="La imagen de fondo y el logotipo debe tener el formato .jpg ou .png";
-		self::$trad["AGORA_deleteWallpaper"]="Eliminar la imagen de fondo ?";
+		self::$trad["AGORA_deleteWallpaper"]="Eliminar la imagen de fondo";
 		self::$trad["AGORA_logo"]="Logotipo en pie de página";
 		self::$trad["AGORA_logoUrl"]="URL";
 		self::$trad["AGORA_logoConnect"]="logo / Imagen de la página de conexión";
@@ -769,9 +772,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_visibilityPrivate"]="Visibilidad privada";
 		self::$trad["CALENDAR_visibilityPublicHide"]="Visibilidad semi-privada";
 		self::$trad["CALENDAR_visibilityInfo"]="<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento (sin los detailles) si el evento es accesible de lectura";
-		//  Agenda : edit
+		// Agenda/Evenement : edit
 		self::$trad["CALENDAR_timeSlot"]="Rango de tiempo de la pantalla ''semana''";
-		// Evenement : edit
 		self::$trad["CALENDAR_noPeriodicity"]="Una vez";
 		self::$trad["CALENDAR_period_weekDay"]="Cada semana";
 		self::$trad["CALENDAR_period_month"]="Cada mes";
@@ -790,6 +792,10 @@ class Trad extends Txt
 		self::$trad["CALENDAR_noModifInfo"]="Edición prohibida porque no tiene acceso de escritura al calendario";
 		self::$trad["CALENDAR_editLimit"]="Usted no es el autor de el evento : sólo puedes editar las asignaciones a sus calendarios";
 		self::$trad["CALENDAR_busyTimeslot"]="La ranura ya está ocupado en este calendario :";
+		self::$trad["CALENDAR_visioUrlAdd"]="Agregar una videoconferencia";
+		self::$trad["CALENDAR_visioUrlCopy"]="Copia el enlace de la videoconferencia";
+		self::$trad["CALENDAR_visioUrlDelete"]="Eliminar el enlace de la videoconferencia";
+		self::$trad["CALENDAR_visioUrlLaunch"]="Iniciar la videoconferencia de este evento";
 		// Categories
 		self::$trad["CALENDAR_editCategories"]="Administrar las categorías de eventos";
 		self::$trad["CALENDAR_editCategoriesRight"]="Cada categoría puede ser modificado por su autor o por el administrador general";

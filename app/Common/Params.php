@@ -13,7 +13,7 @@ define("OMNISPACE_URL_PUBLIC", $OMNISPACE_URL_PUBLIC);
 define("OMNISPACE_URL_LABEL","www.omnispace.fr");
 
 ////    VERSION D'AP
-define("VERSION_AGORA","3.7.3.1");//Version courant d'AP (sur 3 ou 4 niveaux)
+define("VERSION_AGORA","3.7.4.1");//Version courant d'AP (sur 3 ou 4 niveaux)
 define("VERSION_AGORA_PHP_MINIMUM","5.5");//Version PHP minimum
 
 ////    INIT LE "PATH_DATAS" & CHEMINS SPÉCIFIQUES

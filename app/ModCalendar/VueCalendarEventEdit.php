@@ -23,20 +23,55 @@ $(function(){
 		$(this).parents(".vCalAffectBlock").addClass("sLineSelect");
 	});
 
-	////	Change de date/heure/périodicité (sauf pour les guests) :  Controle si les créneaux horaires sont déjà occupés  &  Affiche si besoin les details de périodicité
+	////	CHANGE DE DATE/HEURE/PÉRIODICITÉ (sauf pour les guests) :  Controle si les créneaux horaires sont déjà occupés  &  Affiche si besoin les details de périodicité
 	<?php if(Ctrl::$curUser->isUser()){ ?>
 	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").change(function(){ timeSlotBusy(); });
 	$("[name='periodType'],[name='dateBegin']").change(function(){ displayPeriodType(); });
 	<?php } ?>
 
-	////	Switch la sélection des agendas
+	////	VISIO : CRÉÉ UNE NOUVELLE UNE URL
+	$("#visioUrlAdd").click(function(){
+		if(confirm("<?= Txt::trad("CALENDAR_visioUrlAdd") ?> ?")){
+			var visioRoomId=MD5( Date.now().toString() ).substr(0,10);
+			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>"+visioRoomId);//Url de la visio
+			$("#visioUrlInput,#visioUrlCopy,#visioUrlDelete").show();//Affiche l'input/copy/delete
+			$(this).hide();//Masque le label
+		}
+	});
+
+	////	VISIO : LANCE LA VISIO DEPUIS L'UNPUT
+	$("#visioUrlInput").click(function(){
+		if(confirm("<?= Txt::trad("CALENDAR_visioUrlLaunch") ?> ?")){
+			window.open(this.value)
+		}
+	});
+
+	////	VISIO : COPIE L'URL DANS LE PRESSE PAPIER
+	$("#visioUrlCopy").click(function(){
+		if(confirm("<?= Txt::trad("CALENDAR_visioUrlCopy") ?> ?")){
+			$("#visioUrlInput").select();
+			document.execCommand('copy');
+			notify("<?= Txt::trad("copyUrlConfirmed") ?>");
+		}
+	});
+
+	////	VISIO : SUPPRIME L'URL
+	$("#visioUrlDelete").click(function(){
+		if(confirm("<?= Txt::trad("CALENDAR_visioUrlDelete") ?> ?")){
+			$("#visioUrlInput").val("");//Réinit l'url de la visio
+			$("#visioUrlInput,#visioUrlCopy,#visioUrlDelete").hide();//Masque l'input/copy/delete
+			$("#visioUrlAdd").show();//Affiche le label d'ajout
+		}
+	});
+
+	////	SELECTION D'AGENDA : SWITCH LA SÉLECTION
 	$("#calsAffectSwitch").click(function(){
 		var calsSelector=".vCalendarInput:enabled";
 		if($(calsSelector).length==$(calsSelector+":checked").length)	{$(calsSelector+":checked").trigger("click");}/*désélectionne tous les agendas*/
 		else															{$(calsSelector+":not(:checked)").trigger("click");}/*sélectionne les agendas pas encore sélectionnés*/
 	});
 
-	////	Check/Unckeck l'input principal d'un agenda (via son "label")
+	////	SELECTION D'AGENDA : CHECK/UNCKECK L'INPUT PRINCIPAL D'UN AGENDA VIA SON LABEL
 	$(".vCalendarInput").change(function(){
 		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
 		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout
@@ -52,7 +87,7 @@ $(function(){
 		timeSlotBusy();
 	});
 
-	////	Check/Uncheck l'option de proposition pour un agenda
+	////	CHECK/UNCHECK L'OPTION DE PROPOSITION POUR UN AGENDA
 	$(".vCalendarInputProposition").change(function(){
 		//"checked" : décoche l'affectation principale et affiche la notif "l'événement sera proposé..."   ||   "unchecked" : masque l'option de proposition et enlève le surlignage de la ligne (retour à l'état initial)
 		if(this.checked)	{$(this).parents(".vCalAffectBlock").find(".vCalendarInput").prop("checked",false);  notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
@@ -60,7 +95,7 @@ $(function(){
 	});
 });
 
-////	Gère l'affichage de la périodicité
+////	GÈRE L'AFFICHAGE DE LA PÉRIODICITÉ
 function displayPeriodType()
 {
 	//Réinitialise les options de périodicité & Affiche au besoin l'options sélectionnée
@@ -79,7 +114,7 @@ function displayPeriodType()
 	});
 }
 
-////	Supprime une "PeriodDateExceptions"
+////	SUPPRIME UNE "PERIODDATEEXCEPTIONS"
 function deletePeriodDateExceptions(exceptionCpt)
 {
 	var inputSelector="#periodExceptionInput"+exceptionCpt;
@@ -89,11 +124,11 @@ function deletePeriodDateExceptions(exceptionCpt)
 	}
 }
 
-////	Controle occupation créneaux horaires des agendas sélectionnés : en AJAX
+////	CONTROLE OCCUPATION CRÉNEAUX HORAIRES DES AGENDAS SÉLECTIONNÉS : EN AJAX
 function timeSlotBusy()
 {
 	//Lance la requête ajax, avec un "timeout"
-	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout
+	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout ..et de requête ajax!
 	timeoutTimeSlotBusy=setTimeout(function(){
 		//Prépare la requete de controle Ajax, avec la liste des Agendas sélectionnés : affectations accessibles en écriture
 		if($("[name='dateBegin']").isEmpty()==false && $("[name='dateEnd']").isEmpty()==false)
@@ -113,7 +148,7 @@ function timeSlotBusy()
 	}, 1000);
 }
 
-////	Contrôle du formulaire
+////	CONTRÔLE DU FORMULAIRE
 function formControl()
 {
 	//Controle le nombre d'affectations aux agendas
@@ -123,8 +158,9 @@ function formControl()
 }
 </script>
 
+
 <style>
-#blockDescription						{margin-top:20px; <?= empty($curObj->description)?"display:none;":null ?>}
+#blockDescription						{margin:20px 0px; <?= empty($curObj->description)?"display:none;":null ?>}
 #eventDetails							{text-align:center;}
 .vEventDetails							{display:inline-block; margin-top:20px; margin-right:20px;}
 
@@ -133,6 +169,12 @@ function formControl()
 #periodOption_weekDay, #periodOption_month					{display:none; margin-top:20px; text-align:left; vertical-align:middle;}/*liste des checkboxes de jours ou de mois*/
 #periodOption_weekDay>div, #periodOption_month>div			{display:none; display:inline-block; width:25%; padding:5px;}
 #periodDateEnd, #periodDateExceptions, .periodExceptionDiv	{display:none; display:inline-block; line-height:40px; margin-top:10px; margin-right:10px;}
+
+/*VISIOCONFERENCE*/
+#visioUrlAdd, #visioUrlInput, #visioUrlCopy, #visioUrlDelete	{cursor:pointer;}
+#visioUrlAdd													{<?= !empty($curObj->visioUrl)?"display:none;":null ?>}
+#visioUrlInput, #visioUrlCopy, #visioUrlDelete					{<?= empty($curObj->visioUrl)?"display:none;":null ?>}
+#visioUrlInput													{width:260px; font-size:0.95em;}
 
 /*AFFECTATION AUX AGENDAS*/
 .lightboxBlock.vCalAffectOptions		{padding:4px 0px 4px 6px;}/*surcharge*/
@@ -166,6 +208,7 @@ input[name='calUsersGroup[]']			{display:none;}
 }
 </style>
 
+
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
 	<?php echo $curObj->editRespTitle("CALENDAR_addEvt"); ?>
@@ -176,7 +219,7 @@ input[name='calUsersGroup[]']			{display:none;}
 	<div id="eventDetails">
 
 		<!--TITRE & DESCRIPTION (EDITOR)-->
-		<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title") ?>">
+		<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title") ?>"> &nbsp;
 		<img src="app/img/description.png" class="sLink" title="<?= Txt::trad("description") ?>" onclick="$('#blockDescription').slideToggle()">
 		<div id="blockDescription">
 			<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea>
@@ -274,6 +317,15 @@ input[name='calUsersGroup[]']			{display:none;}
 				<option value="prive"><?= Txt::trad("CALENDAR_visibilityPrivate") ?></option>
 				<option value="public_cache"><?= Txt::trad("CALENDAR_visibilityPublicHide") ?></option>
 			</select>
+		</span>
+
+		<!--VISIOCONFERENCE-->
+		<span class="vEventDetails vEventDetailsAdvanced">
+			<img src="app/img/visioSmall.png">&nbsp; 
+			<span id="visioUrlAdd"><?= Txt::trad("CALENDAR_visioUrlAdd") ?></span>
+			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" title="<?= Txt::trad("CALENDAR_visioUrlLaunch") ?>" readonly>
+			<img src="app/img/copy.png" id="visioUrlCopy" title="<?= Txt::trad("CALENDAR_visioUrlCopy") ?>">
+			<img src="app/img/delete.png" id="visioUrlDelete" title="<?= Txt::trad("CALENDAR_visioUrlDelete") ?>">
 		</span>
 	</div>
 

@@ -130,16 +130,19 @@ function formControl()
 			<div id="mailOptions">
 				<div>
 					<?php
-					//Accusé de réception && Masquer les desctinataires && Ne pas signer le message
-					if(!empty(Ctrl::$curUser->mail))  {echo "<div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>";}
-					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients'> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>";
-					echo "<div title=\"".Txt::trad("MAIL_noFooterInfo")."\"><input type='checkbox' name='noFooter' value='1' id='noFooter'> <label for='noFooter'>".Txt::trad("MAIL_noFooter")."</label></div>";
+					//Accusé de réception  &&  Ajouter "ReplyTo"  &&  Masquer les desctinataires  &&  Ne pas signer le message
+					if(!empty(Ctrl::$curUser->mail)){
+						echo "<div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>
+							  <div title=\"".Txt::trad("MAIL_addReplyToInfo")."\"><input type='checkbox' name='addReplyTo' value='1' id='addReplyTo'> <label for='addReplyTo'>".Txt::trad("MAIL_addReplyTo")."</label></div>";
+					}
+					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients'> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>
+						  <div title=\"".Txt::trad("MAIL_noFooterInfo")."\"><input type='checkbox' name='noFooter' value='1' id='noFooter'> <label for='noFooter'>".Txt::trad("MAIL_noFooter")."</label></div>";
 					?>
 				</div>
 				<div>
 					<?php
 					//Ajout de fichiers joints
-					for($cpt=1; $cpt<=10; $cpt++)  {echo "<div id=\"files".$cpt."\">".Txt::trad("MAIL_attachedFile")."  <input type='file' name=\"files".$cpt."\" onChange=\"$('#files".($cpt+1)."').fadeIn();\"></div>";}
+					for($cpt=1; $cpt<=10; $cpt++)  {echo "<div id=\"files".$cpt."\">".Txt::trad("MAIL_attachedFile")."  <input type='file' name=\"files".$cpt."\" onChange=\"$('#files".($cpt+1)."').fadeIn();\" title=\"".Txt::trad("MAIL_fielMaxSize")."\"></div>";}
 					?>
 				</div>
 			</div>

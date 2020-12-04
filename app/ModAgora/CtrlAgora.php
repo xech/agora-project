@@ -60,9 +60,10 @@ class CtrlAgora extends Ctrl
 				ldap_crea_auto_users=".Db::formatParam("ldap_crea_auto_users").",
 				ldap_pass_cryptage=".Db::formatParam("ldap_pass_cryptage"));
 			////	Ajoute un Wallpaper
-			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"])){
+			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"]))
+			{
 				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"]);
-				$wallpaperName=str_replace(".".File::extension($wallpaperName), ".thumb.jpg", $wallpaperName);
+				$wallpaperName=str_replace(".".File::extension($wallpaperName), ".jpg", $wallpaperName);
 				$wallpaperPath=PATH_WALLPAPER_CUSTOM.$wallpaperName;
 				move_uploaded_file($_FILES["wallpaperFile"]["tmp_name"], $wallpaperPath);
 				if($_FILES["wallpaperFile"]["size"]>409600)  {File::imageResize($wallpaperPath,$wallpaperPath,2000);}//optimise si + de 400ko

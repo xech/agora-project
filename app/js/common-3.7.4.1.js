@@ -22,10 +22,10 @@ $(function(){
 function windowWidthCookie(forceReload){
 	if(typeof onresizeTimeout!="undefined")  {clearTimeout(onresizeTimeout);}//Pas de cumul de Timeout (cf. "onresize"/"onorientationchange")
 	onresizeTimeout=setTimeout(function(){
-		var pageReload=((typeof windowWidthLast!="undefined" && windowWidthLast!=$(window).width()) || forceReload==true);	//Reload le width s'il a été modifé (pas pour un "resize" du height)
-		windowWidthLast=$(window).width();																					//Enregistre/Update le width courant pour le controle ci-dessus
-		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";					//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
-		if(pageReload==true && $("form:visible").exist()==false)  {location.reload();}										//Reload la page (sauf si on affiche un formulaire. Pas de "confirmCloseForm" car trop restrictif)
+		var pageReload=(forceReload==true || (typeof pageWidthLast!="undefined" && Math.abs($(window).width()-pageWidthLast)>30));	//Reload uniquement si le width a été modifé d'au moins 30px (pas de reload avec l'apparition/disparition de l'ascenseur)
+		pageWidthLast=$(window).width();																							//Enregistre/Update le width courant pour le controle ci-dessus
+		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";							//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
+		if(pageReload==true && windowParent.confirmCloseForm==false)  {location.reload();}											//Reload la page (sauf si on affiche un formulaire principal)
 	},500);
 }
 
@@ -543,8 +543,7 @@ function lightboxResize()
 	//Resize si le lightbox est visible
 	if(isMainPage!=true && windowParent.$(".fancybox-iframe").is(":visible"))
 	{
-		//Pas de cumul de Timeout
-		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}
+		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}//Pas de cumul de Timeout
 		//Timeout de 350ms minimum (temps minimum pour laisser les "fadeIn" ou autre se faire : cf. "$.fx.speeds._default" à 100ms)
 		lightboxResizeTimeout=setTimeout(function(){
 			//Resize uniquement s'il y a augmentation de la hauteur (pas si ya diminution: évite ainsi les resizes trop fréquents)
@@ -748,10 +747,11 @@ function urlGetParam(paramName, curUrl)
 {
 	//Url de la page courante || Url passée en paramètre (iframe ou autre)
 	if(typeof curUrl=="undefined")  {curUrl=window.location.href;}
-	//Créé un objet Javascript 'URLSearchParams'
-	const urlParams=new URLSearchParams(curUrl);
-	//Renvoi le paramètre s'il existe
-	if(urlParams.has(paramName))  {return urlParams.get(paramName);}
+	//Créé un objet 'URLSearchParams' et envoi le paramètre s'il existe (sauf pour IE)
+	if(/(msie|trident)/i.test(window.navigator.userAgent)==false){
+		const urlParams=new URLSearchParams(curUrl);
+		if(urlParams.has(paramName))  {return urlParams.get(paramName);}
+	}
 }
 
 /*

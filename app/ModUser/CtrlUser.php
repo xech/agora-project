@@ -363,7 +363,7 @@ class CtrlUser extends Ctrl
 	 */
 	public static function actionUserGroupEdit()
 	{
-		//Droit d'ajouter un groupe?
+		//Droit d'editer/ajouter un groupe?
 		if(MdlUserGroup::addRight()==false)  {static::lightboxClose();}
 		////	Validation de formulaire : edit un groupe
 		if(Req::isParam("formValidate")){
@@ -401,12 +401,14 @@ class CtrlUser extends Ctrl
 			foreach(Req::getParam("inscriptionValidate") as $idInscription)
 			{
 				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".$idInscription);
-				//Invalidation/Validation de l'user
+				//Users invalidés
 				if(Req::isParam("submitInvalidate")){
 					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getSpaceUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
 					$mainMessage="<b>".$mainMessage."</b>";
 					Tool::sendMail($tmpInscription["mail"], $subject, $mainMessage);
-				}else{
+				}
+				//Users validés
+				else{
 					$curObj=new MdlUser();
 					$sqlProperties="name=".Db::format($tmpInscription["name"]).", firstName=".Db::format($tmpInscription["firstName"]).", mail=".Db::format($tmpInscription["mail"]);
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpInscription["mail"], $tmpInscription["password"], $tmpInscription["_idSpace"]);//Ajoute login/password pour les controles standards

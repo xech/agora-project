@@ -97,7 +97,7 @@ class Db
 	{
 		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
 		$record=$result->fetch(PDO::FETCH_NUM);
-		return $record[0];
+		if(!empty($record))  {return $record[0];}
 	}
 	
 	/*******************************************************************************************

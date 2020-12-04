@@ -172,8 +172,8 @@ class CtrlForum extends Ctrl
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
-		if(MdlForumSubject::addRight()==false)   {self::noAccessExit();}
+		if($curObj->isNew() && MdlForumSubject::addRight()==false)	{self::noAccessExit();}
+		else														{$curObj->controlEdit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{

@@ -157,8 +157,8 @@ class CtrlDashboard extends Ctrl
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
-		if(MdlDashboardPoll::addRight()==false)  {self::noAccessExit();}
+		if($curObj->isNew() && MdlDashboardPoll::addRight()==false)	{self::noAccessExit();}
+		else														{$curObj->controlEdit();}
 		$pollIsVoted=($curObj->votesNbTotal()>0);
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))

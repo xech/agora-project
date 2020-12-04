@@ -262,10 +262,10 @@ class CtrlFile extends Ctrl
 					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($fileSize).", description=".Db::formatParam("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 					copy($tmpFile["tmpPath"], $tmpObj->filePath());//copie dans le dossier final (après avoir enregistré la version en Bdd!!)
 					File::setChmod($tmpObj->filePath());
-					////	Creation de vignette && Optimise si besoin l'image (1600px max)
+					////	Creation de vignette && Optimise si besoin l'image (1920px max)
 					$tmpObj->createThumb();
 					if(File::isType("imageResize",$tmpFile["name"]) && Req::isParam("imageResize")){
-						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1600);
+						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1920);
 						clearstatcache();//Pour mettre à jour le "filesize()"
 						$fileSize=(int)filesize($tmpObj->filePath());
 						Db::query("UPDATE ap_file SET octetSize=".Db::format($fileSize)." WHERE _id=".$tmpObj->_id);

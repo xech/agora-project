@@ -87,7 +87,7 @@ class Txt
 		$textLength=strlen(strip_tags($text));
 		if($textLength>$maxCaracNb)
 		{
-			$textDisplayed=strip_tags($text,"<p><div><span><a><button><img><br><hr>");							//Conserve certaines balises (cf. descriptions via tinyMce affichées dans "pluginTooltip" ou "MdlObject::sendMailNotif()")
+			$textDisplayed=strip_tags($text,"<p><div><span><a><button><img><br><hr>");							//Conserve certaines balises, idem "Req::filterParam()" (cf. descriptions tinyMce affichées dans "pluginTooltip" ou "MdlObject::sendMailNotif()")
 			$maxCaracNb+=round(strlen($textDisplayed)-$textLength);												//Ajoute la taille des balises html dans la compabilisation du nb de caractères
 			$text=substr($textDisplayed, 0, $maxCaracNb);														//Réduit la taile du texte
 			if(strrpos($text," ")>1 && $removeLastWord==true)	{$text=substr($text,0,strrpos($text," "));}		//Enlève le dernier mot qui dépasse (auquel cas)

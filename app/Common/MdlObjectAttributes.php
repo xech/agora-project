@@ -124,7 +124,7 @@ trait MdlObjectAttributes
 					if($isMoved!=false)
 					{
 						//Optimise le fichier
-						if(File::isType("imageResize",$fileDestPath))  {File::imageResize($fileDestPath,$fileDestPath,1400);}
+						if(File::isType("imageResize",$fileDestPath))  {File::imageResize($fileDestPath,$fileDestPath,1600);}
 						File::setChmod($fileDestPath);
 						//Ajoute l'image/vidéo/Mp3 dans la description
 						$insertCheckboxId=str_replace("addAttachedFile","addAttachedFileInsert",$inputId);

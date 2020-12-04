@@ -172,7 +172,7 @@ class CtrlOffline extends Ctrl
 				//Renomme l'agenda de l'espace
 				$objPDO->query("UPDATE ap_calendar SET `title`=".$objPDO->quote($spaceName)." WHERE _id=1 AND type='ressource'");
 				//INSERT LA PREMIÈRE ACTUALITÉ
-				$objPDO->query("INSERT INTO ap_dashboardNews SET description=".$objPDO->quote($newsDescription).", _idUser=1, dateCrea=NOW()");
+				$objPDO->query("INSERT INTO ap_dashboardNews SET `description`=".$objPDO->quote($newsDescription).", _idUser=1, dateCrea=NOW()");
 				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='dashboardNews', _idObject=".(int)$objPDO->lastInsertId().", _idSpace=1, target='spaceUsers', accessRight=1");
 				//INSERT LE PREMIER SONDAGE
 				$objPDO->query("INSERT INTO ap_dashboardPoll SET _id=1, title=".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");

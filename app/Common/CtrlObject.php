@@ -71,7 +71,7 @@ class CtrlObject extends Ctrl
 			//Enregistre l'Url de redirection après le delete
 			if(empty($redirUrl)){																										
 				if($tmpObj::isFolder==true)					{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Affiche le dossier parent du dossier supprimé
-				elseif($tmpObj::isContainerContent())		{$redirUrl=$tmpObj->getUrl();}					//Affiche le "container" de l'objet "content" supprimé (on prends l'affichage par défaut)
+				elseif($tmpObj::isContainerContent())		{$redirUrl=$tmpObj->getUrl();}					//Affiche le "container" du "content" supprimé (affichage par défaut)
 				elseif($tmpObj::objectType=="forumSubject")	{$redirUrl=$tmpObj->getUrl("theme");}			//Theme du sujet ("getUrl()" surchargé)
 				else										{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Redirection dans le module (News/sondage/etc)
 			}

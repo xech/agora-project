@@ -42,20 +42,24 @@ class MdlAgora extends MdlObject
 	}
 
 	/*
-	 * VISIO JITSI : VERIF S'IL EST ACTIVÉ
+	 * VISIO JITSI : VERIF S'IL EST ACTIVÉ (URL DISPONIBLE)
 	 */
 	public function jitsiEnabled()
 	{
-		return ($this->visioHost() && Req::isMobileApp()==false);
+		return ($this->visioUrl() && Req::isMobileApp()==false);
 	}
 
 	/*
-	 * VISIO JITSI : RENVOIE "visioHost"  S'IL EST RENSEIGNÉ
+	 * VISIO JITSI : RENVOIE L'URL DU SERVEUR DE VISIO
 	 */
-	public function visioHost()
+	public function visioUrl()
 	{
-		if(Ctrl::isHost())					{return Host::visioHost();}
-		elseif(!empty($this->visioHost))	{return $this->visioHost;}
+		//Récupère l'url du serveur de visio
+		if(Ctrl::isHost())					{$visioUrl=Host::visioHost();}
+		elseif(!empty($this->visioHost))	{$visioUrl=$this->visioHost;}
+		//Renvoi si besoin l'url avec le nom de la "room" (à compléter avec un identifiant MD5 ou autre)
+		$urlPrefix=Ctrl::isHost() ? "room-" : "omnispace-room-";
+		if(isset($visioUrl))  {return $visioUrl."/".$urlPrefix;}
 	}
 
 	/*

@@ -195,15 +195,6 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * VISIO JITSI : URL DE LA "ROOM" DE L'USER COURANT (Exple : "visioconf.mondomaine.com/5BV3X-omnispace-boby")
-	 *******************************************************************************************/
-	public static function myVideoRoomURL()
-	{
-		if(!isset($_SESSION["myVideoRoomURL"]))  {$_SESSION["myVideoRoomURL"]=Ctrl::$agora->visioHost()."/Omnispace-".Txt::uniqId(5)."-".substr(Txt::clean(Ctrl::$curUser->getLabel(),"max"),0,5);}
-		return $_SESSION["myVideoRoomURL"];
-	}
-
-	/*******************************************************************************************
 	 * VUE : MENU "CAPTCHA"
 	 *******************************************************************************************/
 	public static function menuCaptcha()
@@ -309,7 +300,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENUWALLPAPER
+	 * VUE : MENU DE SELECTION DU WALLPAPER
 	 *******************************************************************************************/
 	public static function menuWallpaper($curWallpaper)
 	{

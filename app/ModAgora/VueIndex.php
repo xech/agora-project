@@ -18,7 +18,7 @@ $(function(){
 
 	////	Vérif le type du fichier
 	$("#wallpaperFile,#logoFile,#logoConnectFile").change(function(){
-		if(!find(".jpg",this.value) && !find(".jpeg",this.value) && !find(".png",this.value))
+		if(/(jpg|jpeg|png)/.test(this.value)==false)
 			{notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
@@ -237,8 +237,8 @@ function formControl()
 				<div class="fieldLabel"><img src="app/img/map.png"><abbr title="<?= Txt::trad("AGORA_mapToolInfo") ?>"><?= Txt::trad("AGORA_mapTool") ?></abbr></div>
 				<div>
 					<select name="mapTool">
-						<option value="gmap" <?= Ctrl::$agora->mapTool!="leaflet"?"selected":null ?>>Google Map</option>
-						<option value="leaflet" <?= Ctrl::$agora->mapTool=="leaflet"?"selected":null ?>>Leaflet / OpenStreetMap</option>
+						<option value="leaflet">OpenStreetMap / Leaflet</option>
+						<option value="gmap" <?= Ctrl::$agora->mapTool=="gmap"?"selected":null ?>>Google Map</option>
 					</select>
 				</div>
 			</div>
@@ -254,8 +254,8 @@ function formControl()
 				<div class="fieldLabel"><img src="app/img/gSignin.png"><abbr title="<?= Txt::trad("AGORA_gSigninInfo") ?>"><?= Txt::trad("AGORA_gSignin") ?></abbr></div>
 				<div>
 					<select name="gSignin">
-						<option value="1"><?= Txt::trad("yes") ?></option>
-						<option value="0" <?= empty(Ctrl::$agora->gSignin)?"selected":null ?>><?= Txt::trad("no") ?></option>
+						<option value="0"><?= Txt::trad("no") ?></option>
+						<option value="1" <?= !empty(Ctrl::$agora->gSignin)?"selected":null ?>><?= Txt::trad("yes") ?></option>
 					</select>
 				</div>
 			</div>

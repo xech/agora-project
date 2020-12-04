@@ -74,7 +74,7 @@ class MdlUser extends MdlPerson
 		{
 			//Droit par défaut
 			$this->_accessRight=parent::accessRight();
-			//Pas d'accès : Ajoute l'accès en lecture si l'user en question fait partie des "usersVisibles" de l'user courant
+			//Pas d'accès : Ajoute l'accès en lecture si l'objet user fait partie des "usersVisibles" de l'user connecté (cf. messenger)
 			if(empty($this->_accessRight)){
 				foreach(Ctrl::$curUser->usersVisibles() as $tmpUser){
 					if($this->_id==$tmpUser->_id)  {$this->_accessRight=1;}
@@ -279,9 +279,8 @@ class MdlUser extends MdlPerson
 		if(!empty($password))  {$sqlProperties.=", `password`=".Db::format(self::passwordSha1($password));}
 		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
 		$reloadedObj=parent::createUpdate($sqlProperties);
-		if($reloadedObj->isNewlyCreated())
-		{
-			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");
+		if($reloadedObj->isNewlyCreated()){
+			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");//Affecte l'user à tout le monde sur le messenger
 			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");//créé l'agenda, même si l'agenda est désactivé par défaut
 			if(!empty($spaceId)){
 				$tmpSpace=Ctrl::getObj("space",$spaceId);
@@ -325,7 +324,7 @@ class MdlUser extends MdlPerson
 			$message=Txt::trad("MAIL_hello").",<br><br>".
 					 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
 					 "<br><br>".Txt::trad("resetPasswordMailLoginRemind")." : <i>".$this->login."</i>";
-			return Tool::sendMail($mailTo, $subject, $message, "noSendNotif");
+			return Tool::sendMail($mailTo, $subject, $message, "noNotify");
 		}
 	}
 
@@ -346,7 +345,7 @@ class MdlUser extends MdlPerson
 					 Txt::trad("login")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
 					 Txt::trad("passwordToModify")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
 					 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
-///			return Tool::sendMail($mailTo, $subject, $message);
+			return Tool::sendMail($mailTo, $subject, $message);
 		}
 	}
 

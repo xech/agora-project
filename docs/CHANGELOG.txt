@@ -1,3 +1,22 @@
+VERSION 3.7.4 (12-2020)
+#######################
+Nouvelle option pour ajouter une visioconférence dans les événements du module agenda
+Nouvelle option "Ajouter 'Répondre à'" dans le module des Newsletters
+Optimisation et correction de l'envoi des mails
+Optimisation de l'export de contacts/users .csv vers Gmail
+Correction de la sélection du fond d'écran dans le paramétrage général
+Corrections et optimisations diverses
+Mise à jour de PHPMailer en version 6.2
+------
+New option to add a videoconference in the events of the calendar module
+New option "Add 'Reply to'" in the "Email" module
+Optimization and correction of email sending
+Optimization of the export of contacts/users .csv to Gmail
+Correction of wallpapers in the general settings
+Various corrections and optimizations
+PHPMailer update to 6.2 version
+
+
 VERSION 3.7.3 (10-2020)
 #######################
 Optimisations de l'affichage responsive
@@ -7,7 +26,8 @@ Amélioration des menus "fil d'Ariane" dans les arborescences de dossiers
 Correction de l'affichage de la recherche sur Firefox
 Corrections de traduction
 Mise à jour de la documentation
-Mise à jour de Jquery en v3.5.1
+Mise à jour de PHPMailer en version 6.1.8
+Mise à jour de Jquery en version 3.5.1
 Corrections et optimisations diverses
 ------
 Responsive display optimizations
@@ -17,7 +37,8 @@ Improvement of "breadcrumb" menus in folder trees
 Fixed the search display on Firefox
 Translation corrections
 Documentation update
-Update of Jquery in v3.5.1
+PHPMailer update to 6.1.8 version
+Jquery update to 3.5.1 version
 Various corrections and optimizations
 
 

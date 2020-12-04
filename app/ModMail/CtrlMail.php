@@ -52,6 +52,7 @@ class CtrlMail extends Ctrl
 			$options=null;
 			if(Req::getParam("receptionNotif"))	{$options.="receptionNotif,";}
 			if(Req::getParam("hideRecipients"))	{$options.="hideRecipients,";}
+			if(Req::getParam("addReplyTo"))		{$options.="addReplyTo,";}
 			if(Req::getParam("noFooter"))		{$options.="noFooter,";}
 			////	Fichiers joints
 			$attachedFiles=[];

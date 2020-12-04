@@ -258,8 +258,8 @@ class CtrlCalendar extends Ctrl
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
-		if(MdlCalendar::addRight()==false)  {self::noAccessExit();}
+		if($curObj->isNew() && MdlCalendar::addRight()==false)	{self::noAccessExit();}
+		else													{$curObj->controlEdit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
@@ -301,7 +301,7 @@ class CtrlCalendar extends Ctrl
 					}
 				}
 				//Enregistre & recharge l'objet
-				$curObj=$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", _idCat=".Db::formatParam("_idCat").", important=".Db::formatParam("important").", contentVisible=".Db::formatParam("contentVisible").", periodType=".Db::formatParam("periodType").", periodValues=".Db::format($periodValues).", periodDateEnd=".Db::format($periodDateEnd).", periodDateExceptions=".Db::formatTab2txt($periodDateExceptions));
+				$curObj=$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", _idCat=".Db::formatParam("_idCat").", important=".Db::formatParam("important").", contentVisible=".Db::formatParam("contentVisible").", visioUrl=".Db::formatParam("visioUrl").", periodType=".Db::formatParam("periodType").", periodValues=".Db::format($periodValues).", periodDateEnd=".Db::format($periodDateEnd).", periodDateExceptions=".Db::formatTab2txt($periodDateExceptions));
 			}
 			//Réinitialise si besoin les affectations/propositions aux agendas (modif d'evt : pas de controle si l'agenda n'a plus d'affectations)
 			if(Req::isParam("reinitCalendars")){
@@ -684,7 +684,7 @@ class CtrlCalendar extends Ctrl
 			if(isset($_FILES["importFile"]) && is_file($_FILES["importFile"]["tmp_name"]))
 			{
 				//Récupère les événements
-				require("class.iCalReader.php");
+				require 'class.iCalReader.php';
 				$ical=new ical($_FILES["importFile"]["tmp_name"]);
 				$vDatas["eventList"]=$ical->events();
 				//Formate les evenements à importer

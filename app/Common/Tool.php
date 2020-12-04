@@ -11,16 +11,16 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+
 /*
  * Classe "boite à outils"
  */
 class Tool
 {
-	private static $_winEnv=null;
-	private static $_linuxEnv=null;
-
 	/*******************************************************************************************
 	 * ENVOI D'UN MAIL
+	 * Note : toujours mettre en place un SPF, DKIM et REVERS DNS (évite la spambox)
+	 * Note : tester l'envoi des emails via https://www.mail-tester.com/
 	 *******************************************************************************************/
 	public static function sendMail($mailsTo, $subject, $message, $options=null, $attachedFiles=null)
 	{
@@ -28,104 +28,112 @@ class Tool
 		if(empty($mailsTo) || empty($message))	{return false;}
 
 		////	Options par defaut à "False" !
-		$opt["senderNoReply"]=(stristr($options,"senderNoReply")) ? true : false;		//Défaut : affiche le nom/prénom de l'expéditeur du mail (sinon "noreply")
-		$opt["receptionNotif"]=(stristr($options,"receptionNotif")) ? true : false;		//Défaut : pas de notification de réception du message (à l'expéditeur)
-		$opt["hideRecipients"]=(stristr($options,"hideRecipients")) ? true : false;		//Défaut : affiche les destinataires du mail à tous le monde
-		$opt["noFooter"]=(stristr($options,"noFooter")) ? true : false;					//Défaut : affiche un footer dans le message
-		$opt["addLogoFooter"]=(stristr($options,"addLogoFooter")) ? true : false;		//Défaut : pas de logo du footer en fin de mail
-		$opt["noSendNotif"]=(stristr($options,"noSendNotif")) ? true : false;			//Défaut : affiche un message de retour pour savoir si le mail a bien été envoyé (..ou pas)
-		$opt["objectEditNotif"]=(stristr($options,"objectEditNotif")) ? true : false;	//Défaut : idem mais avec un message adapté aux mails de notification
+		$opt["hideRecipients"]=(stristr($options,"hideRecipients")) ? true : false;		//Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
+		$opt["hideUserLabel"]=(stristr($options,"hideUserLabel")) ? true : false;		//Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
+		$opt["receptionNotif"]=(stristr($options,"receptionNotif")) ? true : false;		//Demande un accusé de réception pour l'user/expéditeur
+		$opt["addReplyTo"]=(stristr($options,"addReplyTo")) ? true : false;				//Ajoute le mail de l'user/expéditeur en "replyTo" (déconseillé pas défaut : cf. Spamassassin)
+		$opt["noFooter"]=(stristr($options,"noFooter")) ? true : false;					//Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
+		$opt["noNotify"]=(stristr($options,"noNotify")) ? true : false;					//Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
+		$opt["objectNotif"]=(stristr($options,"objectNotif")) ? true : false;			//Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
 
-		////	Charge et crée l'instance PHPMailer
+		////	Charge une première fois PHPMailer et crée une nouvelle instance
 		if(!defined("phpmailerLoaded")){
+			require 'app/misc/PHPMailer/src/Exception.php';
 			require 'app/misc/PHPMailer/src/PHPMailer.php';
 			require 'app/misc/PHPMailer/src/SMTP.php';
-			require 'app/misc/PHPMailer/src/Exception.php';
 			define("phpmailerLoaded",true);
 		}
 		$mail=new PHPMailer();
-		$mail->CharSet="UTF-8";
 
-		////	Parametrage DKIM / SMTP
-		if(defined("DKIM_domain") && defined("DKIM_private") && defined("DKIM_selector"))   {$mail->DKIM_domain=DKIM_domain;   $mail->DKIM_private=DKIM_private;   $mail->DKIM_selector=DKIM_selector;}
-		if(Req::isDevServer() && is_file("../PARAMS/smtp.inc.php"))  {require_once "../PARAMS/smtp.inc.php";}//Config spécifique (Ctrl::$agora->sendmailFrom & co)
-		if(!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)){
-			$mail->isSMTP();
-			$mail->Host=Ctrl::$agora->smtpHost;
-			$mail->Port=(int)Ctrl::$agora->smtpPort;
-			if(!empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}	//Sécurise via SSL/TLS
-			else									{$mail->SMTPAutoTLS=false;}						//Désactive le SSL/TLS par défaut
-			if(!empty(Ctrl::$agora->smtpUsername) && !empty(Ctrl::$agora->smtpPass))   {$mail->Username=Ctrl::$agora->smtpUsername;  $mail->Password=Ctrl::$agora->smtpPass;  $mail->SMTPAuth=true;}//Connection authentifié
-		}
+		////	Envoi l'email via PHPMailer
+		try {
+			$mail->CharSet="UTF-8";
 
-		////	Expediteur
-		$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
-		$fromDomain=str_replace("www.","",$_SERVER["HTTP_HOST"]);
-		$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//"sendmailFrom" du paramétrage smtp OU Nom de domaine (exple: "noreply@mondomaine.net")
-		$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Nom de domaine
-		$mail->SetFrom($fromMail, $fromLabel);
-		//Ajoute le libellé de l'user connecté (le + fréquent)
-		if($opt["senderNoReply"]==false && $fromConnectedUser==true){
-			$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());												//Modif le libellé : "Mon espace - boby SMITH"
-			if(!empty(Ctrl::$curUser->mail))  {$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}			//Ajoute un email de réponse
-			if($opt["receptionNotif"]==true && !empty(Ctrl::$curUser->mail))  {$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}	//Demande confirmation de lecture
-		}
-
-		////	Destinataires (format text / array d'idUser)
-		$mailsToNotif=null;																														//Prépare la notification finale
-		if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}//Destinataires masqués: ajoute l'user en email principal (evite la spambox)
-		if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																	//Prépare la liste des destinataires
-		//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
-		foreach($mailsTo as $tmpDest){
-			if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}
-			if(!empty($tmpDest)){
-				$mailsToNotif.=", ".$tmpDest;
-				if($opt["hideRecipients"]==true)	{$mail->AddBCC($tmpDest);}
-				else								{$mail->AddAddress($tmpDest);}
+			////	Parametrage DKIM / SMTP
+			if(defined("DKIM_domain") && defined("DKIM_private") && defined("DKIM_selector"))   {$mail->DKIM_domain=DKIM_domain;   $mail->DKIM_private=DKIM_private;   $mail->DKIM_selector=DKIM_selector;}
+			if(Req::isDevServer() && is_file("../PARAMS/smtp.inc.php"))  {require_once "../PARAMS/smtp.inc.php";}//Config spécifique (Ctrl::$agora->sendmailFrom & co)
+			if(!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)){
+				$mail->isSMTP();
+				$mail->Host=Ctrl::$agora->smtpHost;
+				$mail->Port=(int)Ctrl::$agora->smtpPort;
+				if(!empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}	//Sécurise via SSL/TLS
+				else									{$mail->SMTPAutoTLS=false;}						//Désactive le SSL/TLS par défaut
+				if(!empty(Ctrl::$agora->smtpUsername) && !empty(Ctrl::$agora->smtpPass))   {$mail->Username=Ctrl::$agora->smtpUsername;  $mail->Password=Ctrl::$agora->smtpPass;  $mail->SMTPAuth=true;}//Connection authentifié
 			}
-		}
 
-		////	Sujet & message
-		$mail->Subject=htmlspecialchars($subject);
-		if($opt["noFooter"]==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
-			$fromTheSpace=ucfirst(Ctrl::$agora->name);
-			if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" / ".Ctrl::$curSpace->name;}
-			$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;
-			$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getSpaceUrl()."\" target='_blank'>".$fromTheSpace."</a>";
-		}
-		$mail->MsgHTML($message);
+			////	Expediteur
+			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);
+			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//Exple: "noreply@mondomaine.net" -> email "FROM" du domaine courant ou d'un SMTP spécifique
+			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Nom du domaine courant
+			$mail->SetFrom($fromMail, $fromLabel);																		//"SetFrom" : Tjs utiliser un email correspondant au domaine courant ou d'un SMTP spécifique (évite la spambox)
+			//Ajoute si besoin le libellé de l'user connecté
+			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
+			if($opt["hideUserLabel"]==false && $fromConnectedUser){
+				$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());//Ajoute le nom de l'user dans le $fromLabel (exple: "Mon espace - BOBY SMITH <noreply@mondomaine.tld>")
+				if(!empty(Ctrl::$curUser->mail) && $opt["addReplyTo"]==true)		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute un email "ReplyTo" ? à éviter car un email "ReplyTo" différent du $fromMail peut arriver en spambox (cf. Spamassassin)
+				if(!empty(Ctrl::$curUser->mail) && $opt["receptionNotif"]==true)	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}							//Demande une confirmation de lecture?
+			}
 
-		////	Logo du footer en fin de mail (signature)
-		$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoLabel.png";//logo spécifique OU logo par défaut
-		if($opt["addLogoFooter"]==true && is_file($logoFooterPath)){
-			$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
-			$mail->MsgHTML($message."<br><br><img src='cid:logoFooterId' style='max-height:100px'>");
-		}
-
-		////	Fichiers joints à ajouter
-		if(!empty($attachedFiles))
-		{
-			$fileSizeCpt=0;
-			foreach($attachedFiles as $tmpFile)
-			{
-				//Limite à 20Mo la taille de tous les fichiers, pour pas être rejeté par les serveurs de messagerie
-				$tmpFileSize=filesize($tmpFile["path"]);
-				if(is_file($tmpFile["path"]) && ($fileSizeCpt+$tmpFileSize)<File::mailMaxFilesSize){
-					$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
-					if(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute le fichier joint
-					if(!empty($tmpFile["cid"]))		{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre l'image dans le message (si "cid"="XYZ", l'image est placée dans "<img src='cid:XYZ'>")
+			////	Destinataires (format text / array d'idUser)
+			$mailsToNotif=null;																															//Prépare la notification finale
+			if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}	//Destinataires masqués: ajoute l'expéditeur en email principal (evite la spambox)
+			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																		//Prépare la liste des destinataires
+			//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
+			foreach($mailsTo as $tmpDest){
+				if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}
+				if(!empty($tmpDest)){
+					$mailsToNotif.=", ".$tmpDest;
+					if($opt["hideRecipients"]==true)	{$mail->AddBCC($tmpDest);}
+					else								{$mail->AddAddress($tmpDest);}
 				}
 			}
-		}
 
-		////	Envoi du mail + rapport d'envoi si demande
-		$isSendMail=$mail->Send();
-		if($opt["noSendNotif"]==false){
-			$notifMail=($opt["objectEditNotif"]==true) ? Txt::trad("MAIL_sendNotif") : Txt::trad("MAIL_sendOk");
-			if($isSendMail==true)	{Ctrl::addNotif($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}
-			else					{Ctrl::addNotif("MAIL_notSend");}
+			////	Sujet & message
+			$mail->Subject=htmlspecialchars($subject);
+			if($opt["noFooter"]==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
+				$fromTheSpace=ucfirst(Ctrl::$agora->name);																										//Nom de l'espace principal
+				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" / ".Ctrl::$curSpace->name;}					//Ajoute si besoin le nom du sous-espace
+				$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//Envoyé par "boby SMITH"
+				$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getSpaceUrl()."\" target='_blank'>".$fromTheSpace."</a>";	//..depuis l'espace "Mon espace"
+			}
+			$mail->MsgHTML($message);
+
+			////	Logo du footer en fin de mail (signe avec un logo spécifique ou le logo par défaut)
+			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoLabel.png";
+			if($opt["noFooter"]==false && is_file($logoFooterPath)){
+				$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
+				$mail->MsgHTML($message."<br><br><img src='cid:logoFooterId' style='max-height:100px'>");
+			}
+
+			////	Fichiers joints à ajouter
+			if(!empty($attachedFiles))
+			{
+				$fileSizeCpt=0;
+				foreach($attachedFiles as $tmpFile)
+				{
+					//Limite à 20Mo la taille de tous les fichiers, pour pas être rejeté par les serveurs de messagerie
+					$tmpFileSize=filesize($tmpFile["path"]);
+					if(is_file($tmpFile["path"]) && ($fileSizeCpt+$tmpFileSize)<File::mailMaxFilesSize){
+						$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
+						if(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute le fichier joint
+						if(!empty($tmpFile["cid"]))		{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre l'image dans le message (si "cid"="XYZ", l'image est placée dans "<img src='cid:XYZ'>")
+					}
+				}
+			}
+
+			////	Envoi du mail + rapport d'envoi si demande ("notify()")
+			$isSendMail=$mail->Send();
+			if($opt["noNotify"]==false){
+				$notifMail=($opt["objectNotif"]==true) ? Txt::trad("MAIL_sendNotif") : Txt::trad("MAIL_sendOk");
+				if($isSendMail==true)	{Ctrl::addNotif($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}
+				else					{Ctrl::addNotif("MAIL_notSend");}
+			}
+			return $isSendMail;
 		}
-		return $isSendMail;
+		////	Sinon envoi une exception PHPMailer
+		catch (Exception $e) {
+			echo Txt::trad("MAIL_notSend").". PHPMailer Error : ".$mail->ErrorInfo;
+		}
 	}
 
 	/*******************************************************************************************

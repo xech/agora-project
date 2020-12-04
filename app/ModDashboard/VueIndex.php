@@ -4,7 +4,7 @@ $(function(){
 	////	"Infinite scroll" : Affichage progressif des news et sondages
 	$(window).scroll(function(){
 		//Timeout pour ne pas charger durant le scroll
-		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout
+		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout ..et de requête ajax!
 		scrollTimeout=setTimeout(function(){
 			//Lance l'infinite scroll quand on arrive en fin de page  (hauteur de page < (scrollTop + hauteur de fenêtre + 20px))
 			if($(document).height() < ($(window).scrollTop() + $(window).height() + 20))

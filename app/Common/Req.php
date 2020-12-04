@@ -105,8 +105,8 @@ class Req
 			//Enlève le javascript
 			$value=preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $value);
 			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Ctrl::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
-			//Enleve les balises html (sauf <br><hr><a><img>) pour les parametres qui ne proviennent pas de l'éditeur ("description"/"editorDraft" du tinyMce ou "footerHtml")
-			if(preg_match("/^(description|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<br><hr><a><img>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&msgNotif[]=<svg/onload=alert(/myXss/)>"
+			//Enleve les balises html (sauf <br><hr><a><img>) pour les parametres qui ne proviennent pas d'un éditeur tinyMce ("description", "message" des mails, "editorDraft", "footerHtml")
+			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&msgNotif[]=<svg/onload=alert(/myXss/)>"
 		}
 		return $value;
 	}
@@ -161,7 +161,7 @@ class Req
 		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
 		if(preg_match("/dbInstall/i",$exception) && self::isInstalling()==false && Ctrl::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		//Affiche le message
-        echo "<h3 style='text-align:center;margin-top:50px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage()."<br><br><a href='?ctrl=offline'>Retour</a></h3>";
+        echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage()."<br><br><a href='?ctrl=offline'>Retour</a></h3>";
 		exit;
     }
 	

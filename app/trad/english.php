@@ -244,12 +244,15 @@ class Trad extends Txt
 		
 		////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
 		self::$trad["MAIL_hello"]="Hello";
-		self::$trad["MAIL_noFooter"]="Do not sign the message";
-		self::$trad["MAIL_noFooterInfo"]="Do not sign the end of the message with the sender's name and a weblink to the space";
-		self::$trad["MAIL_hideRecipients"]="Hide recipients";
-		self::$trad["MAIL_hideRecipientsInfo"]="By default, email recipients are displayed in the message.";
 		self::$trad["MAIL_receptionNotif"]="Delivery receipt";
 		self::$trad["MAIL_receptionNotifInfo"]="Warning! some email clients don't support delivery receipts";
+		self::$trad["MAIL_addReplyTo"]="Add 'Reply to'";
+		self::$trad["MAIL_addReplyToInfo"]="Add my email address in the 'Reply to' field. Be careful because if there are too many recipients, the email can be considered as Spam";
+		self::$trad["MAIL_hideRecipients"]="Hide recipients";
+		self::$trad["MAIL_hideRecipientsInfo"]="By default, email recipients are displayed in the message.";
+		self::$trad["MAIL_noFooter"]="Do not sign the message";
+		self::$trad["MAIL_noFooterInfo"]="Do not sign the end of the message with the sender's name and a weblink to the space";
+		self::$trad["MAIL_fielMaxSize"]="File size limited to 15 MB, because some mailboxes do not accept files beyond this limit and may refuse the email";
 		self::$trad["MAIL_sendBy"]="Sent by";  // "Envoyé par" Mr trucmuche
 		self::$trad["MAIL_sendOk"]="The email was sent !";
 		self::$trad["MAIL_sendNotif"]="The notification email was sent !";
@@ -376,7 +379,7 @@ class Trad extends Txt
 		self::$trad["MESSENGER_addMessageNotif"]="Thank you to specify a message";
 		self::$trad["MESSENGER_visioProposeTo"]="Propose a video call to";//..boby
 		self::$trad["MESSENGER_visioProposeToSelection"]="Propose a video call to the selected people";
-		self::$trad["MESSENGER_userProposeVisioCall"]="Propose you a video call. Click here to start the call";//boby.. "propose un appel visio"
+		self::$trad["MESSENGER_userProposeVisio"]="Propose you a video call. Click here to start the call";//boby.. "propose un appel visio"
 		self::$trad["MESSENGER_visioProposalPending"]="The video proposal has been sent : Click on the instant messaging link to start the video.<br><br> Remember to allow access to your webcam and microphone by selecting ''Allow'' in browser requests !";
 		self::$trad["MESSENGER_visioProposalLanch"]="Start the video call ?";
 		self::$trad["FOOTER_pageGenerated"]="page generated in";
@@ -462,7 +465,7 @@ class Trad extends Txt
 		self::$trad["AGORA_black"]="Black";
 		self::$trad["AGORA_white"]="White";
 		self::$trad["AGORA_wallpaperLogoError"]="The wallpaper and the logo must have a .jpg or .png extension";
-		self::$trad["AGORA_deleteWallpaper"]="Delete the wallpaper ?";
+		self::$trad["AGORA_deleteWallpaper"]="Delete the wallpaper";
 		self::$trad["AGORA_logo"]="Logo at the bottom of each page";
 		self::$trad["AGORA_logoUrl"]="URL";
 		self::$trad["AGORA_logoConnect"]="Logo / Image on login page";
@@ -769,9 +772,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_visibilityPrivate"]="Private visibility";
 		self::$trad["CALENDAR_visibilityPublicHide"]="Semi-private visibility";
 		self::$trad["CALENDAR_visibilityInfo"]="<u>private visibility</ u>: visible only to those whose event is accessible in writing <br><br> <u>semi-private visibility</u> : Only the time slot is displayed (without title and details) if the event is read-only";
-		// Agenda : edit
+		// Agenda/Evenement : edit
 		self::$trad["CALENDAR_timeSlot"]="Time range of the ''week'' display";
-		// Evenement : edit
 		self::$trad["CALENDAR_noPeriodicity"]="Only once";
 		self::$trad["CALENDAR_period_weekDay"]="Every week";
 		self::$trad["CALENDAR_period_month"]="Every month";
@@ -790,6 +792,10 @@ class Trad extends Txt
 		self::$trad["CALENDAR_noModifInfo"]="Modification forbidden because you don't have access to write in this calendar";
 		self::$trad["CALENDAR_editLimit"]="You are not the author of the event: you can only manage your calendars assignments";
 		self::$trad["CALENDAR_busyTimeslot"]="The slot is already occupied on this calendar :";
+		self::$trad["CALENDAR_visioUrlAdd"]="Add a videoconference";
+		self::$trad["CALENDAR_visioUrlCopy"]="Copy the videoconference link";
+		self::$trad["CALENDAR_visioUrlDelete"]="Remove the video conference link";
+		self::$trad["CALENDAR_visioUrlLaunch"]="Start the videoconference of this event";
 		// Categories
 		self::$trad["CALENDAR_editCategories"]="Manage event categories";
 		self::$trad["CALENDAR_editCategoriesRight"]="Each category can be modified by its author or the general administrator";

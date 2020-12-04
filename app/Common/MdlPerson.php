@@ -47,18 +47,20 @@ class MdlPerson extends MdlObject
 			"delimiter"=>",",
 			"enclosure"=>"",
 			"fieldKeys"=>array(
+				"civility"=>"Name Prefix",
+				"firstName"=>"Additional Name",
 				"firstName"=>"Given Name",
+				"name"=>"Name",
 				"name"=>"Family Name",
 				"mail"=>"E-mail 1 - Value",
 				"telmobile"=>"Phone 1 - Value",
-				"function"=>"Fonction",
+				"function"=>"Organization 1 - Title",
 				"companyOrganization"=>"Société",
 				"adress"=>"Address 1 - Street",
 				"city"=>"Address 1 - City",
 				"postalCode"=>"Address 1 - Postal Code",
 				"country"=>"Address 1 - Country",
-				"comment"=>"Notes",
-				"comment"=>"Commentaires"
+				"comment"=>"Notes"
 			)
 		),
 		//OUTLOOK

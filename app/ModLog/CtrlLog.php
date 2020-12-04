@@ -30,7 +30,9 @@ class CtrlLog extends Ctrl
 	public static function logList()
 	{
 		$results=[];
-		$sqlCurSpace=(Ctrl::$curUser->isAdminGeneral()==false)  ?  "WHERE _idSpace=".Ctrl::$curSpace->_id  :  null; 
+		//Filtre uniquement les logs de l'espace (simple admin d'espace et plus d'un espace disponible)
+		$sqlCurSpace=(Ctrl::$curUser->isAdminGeneral()==false && Db::getVal("select count(*) from ap_space")>1)  ?  "WHERE _idSpace=".Ctrl::$curSpace->_id  :  null;
+		//Renvoie la liste des logs 
 		foreach(Db::getTab("SELECT * FROM ap_log ".$sqlCurSpace." ORDER BY date desc") as $tmpLog)
 		{
 			//Init
@@ -70,7 +72,7 @@ class CtrlLog extends Ctrl
 	{
 		//Récupère les options du menu
 		$optionsFilter=null;
-		$sqlGetVals=($fieldName=="spaceName")  ?  "SELECT DISTINCT name FROM ap_space ORDER BY name asc"  :  "SELECT DISTINCT ".$fieldName." FROM ap_log ORDER BY ".$fieldName." asc";
+		$sqlGetVals=($fieldName=="spaceName")  ?  "SELECT DISTINCT `name` FROM ap_space ORDER BY `name` asc"  :  "SELECT DISTINCT ".$fieldName." FROM ap_log ORDER BY ".$fieldName." asc";
 		foreach(Db::getCol($sqlGetVals)  as  $tmpVal){
 			if(Txt::isTrad("LOG_".$tmpVal))									{$tmpLabel=Txt::trad("LOG_".$tmpVal);}//"action"
 			elseif(Txt::isTrad(strtoupper($tmpVal)."_headerModuleName"))	{$tmpLabel=Txt::trad(strtoupper($tmpVal)."_headerModuleName");}//"moduleName"
