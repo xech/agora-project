@@ -795,8 +795,8 @@ class DbUpdate extends Db
 				//Ajoute le paramétrage du serveur Jitsi
 				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost varchar(255) DEFAULT NULL AFTER logsTimeOut");
 			}
-			////	MAJ v3.7.4.1
-			if(self::updateVersion("3.7.4.1"))
+			////	MAJ v3.7.4.2
+			if(self::updateVersion("3.7.4.2"))
 			{
 				//Supprime si besoin l'ancien fichier PATH_WALLPAPER_CUSTOM/.htaccess
 				if(is_file(PATH_WALLPAPER_CUSTOM.".htaccess"))  {File::rm(PATH_WALLPAPER_CUSTOM.".htaccess");}

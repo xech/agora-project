@@ -59,6 +59,7 @@ CREATE TABLE `ap_calendarEvent` (
   `_idCat` smallint(5) unsigned DEFAULT NULL,
   `important` tinyint(1) unsigned DEFAULT NULL,
   `contentVisible` varchar(255) DEFAULT NULL,
+  `visioUrl` varchar(255) DEFAULT NULL,
   `periodType` varchar(255) DEFAULT NULL,
   `periodValues` varchar(1000) DEFAULT NULL,
   `periodDateEnd` date DEFAULT NULL,

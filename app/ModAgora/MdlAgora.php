@@ -44,7 +44,7 @@ class MdlAgora extends MdlObject
 	/*
 	 * VISIO JITSI : VERIF S'IL EST ACTIVÉ (URL DISPONIBLE)
 	 */
-	public function jitsiEnabled()
+	public function visioEnabled()
 	{
 		return ($this->visioUrl() && Req::isMobileApp()==false);
 	}

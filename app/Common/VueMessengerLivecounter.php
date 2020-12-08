@@ -288,7 +288,7 @@ function messengerUsersChecked(){
 		<td id="messengerPostForm" colspan="2">
 			<input type="text" name="message" id="messengerPostMessage" maxlength="1000" onkeyup="if(event.keyCode==13){messengerPost();}">
 			<button id="messengerPostButton" onclick="messengerPost();"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
-			<?php if(Ctrl::$agora->jitsiEnabled()){ ?>
+			<?php if(Ctrl::$agora->visioEnabled()){ ?>
 			<img src="app/img/visio.png" id="visioLauncherButton" onclick="initiateVisio()">
 			<?php } ?>
 		</td>

@@ -17,7 +17,7 @@
 	const hasUsersComment=true;
 	const hasUsersLike=true;
 	protected static $_hasAccessRight=true;
-	public static $displayModeOptions=array("block","line");
+	public static $displayModeOptions=array("line","block");
 	public static $requiredFields=array("name");
 	public static $searchFields=array("name","description");
 	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc");

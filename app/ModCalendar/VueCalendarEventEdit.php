@@ -320,6 +320,7 @@ input[name='calUsersGroup[]']			{display:none;}
 		</span>
 
 		<!--VISIOCONFERENCE-->
+		<?php if(Ctrl::$agora->visioEnabled()){ ?>
 		<span class="vEventDetails vEventDetailsAdvanced">
 			<img src="app/img/visioSmall.png">&nbsp; 
 			<span id="visioUrlAdd"><?= Txt::trad("CALENDAR_visioUrlAdd") ?></span>
@@ -327,6 +328,7 @@ input[name='calUsersGroup[]']			{display:none;}
 			<img src="app/img/copy.png" id="visioUrlCopy" title="<?= Txt::trad("CALENDAR_visioUrlCopy") ?>">
 			<img src="app/img/delete.png" id="visioUrlDelete" title="<?= Txt::trad("CALENDAR_visioUrlDelete") ?>">
 		</span>
+		<?php } ?>
 	</div>
 
 	<!--AFFECTATIONS AUX AGENDAS-->
