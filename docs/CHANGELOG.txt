@@ -1,6 +1,6 @@
 VERSION 3.7.4 (12-2020)
 #######################
-Nouvelle option pour ajouter une visioconférence dans les événements du module agenda
+Nouvelle option pour ajouter une visioconférence dans les événements du module agenda 
 Nouvelle option "Ajouter 'Répondre à'" dans le module des Newsletters
 Optimisation et correction de l'envoi des mails
 Optimisation de l'export de contacts/users .csv vers Gmail
