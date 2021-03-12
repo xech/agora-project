@@ -1,6 +1,51 @@
-VERSION 3.7.4 (12-2020)
+VERSION 3.8.0 (2021-03)
 #######################
-Nouvelle option pour ajouter une visioconférence dans les événements du module agenda 
+Nouvelle option pour ajouter une visio aux newsletters
+Nouvelle option pour récupérer/renvoyer d'anciennes newsletters (depuis l'historique)
+Nouvelle option de notification par e-mail pour les demandes d'inscription à un espace
+Nouvelle option de notification par e-mail pour les propositions d'événements des agendas (utilisateurs/invités)
+Nouvelle option de notification par e-mail pour les dossiers
+Nouvelle option "Répondre à" dans les notifications par mail
+Nouvelle option de tri des utilisateurs en fonction de la dernière connexion ou la date de création
+Nouvelle option d'export de contacts/utilisateurs au format Vcard
+Amélioration du menu de validation/invalidation des proposition d'événements
+Amélioration du menu contextuel des éléments
+Amélioration de l'affichage du messenger et de l'accès aux anciennes discussions
+Amélioration du lancement des visioconférence depuis le messenger
+Correction des visioconférences sur mobile/appli
+Correction de la cartographie via OpenStreeMap
+Correction de l'import des contacts CSV dans le dossier racine
+Corrections et optimisations diverses
+Mise à jour du Jquery en version 3.6.0
+Mise à jour de TinyMce en version 4.9.11
+Mise à jour du TimePicker Jquery en version 1.13.16
+Mise à jour du Tooltipster Jquery en version 4.2.8
+------
+New option to add a videoconferencing to newsletters
+New option to retrieve/resend old newsletters (from history)
+New email notification option for space registration requests
+New email notification option for event proposals on calendars (users/guests)
+New email notification option on folders
+New "Reply to" option in email notifications
+New option to sort users based on last login or creation date
+New option to export contacts/users in Vcard format
+Improvement of the validation / invalidation menu for event proposals
+Improved context menu of items
+Improved messenger display and access to old messages
+Improved launch of videoconferencing
+Correction of videoconferences on mobile/app
+Correction of cartography on OpenStreetMap
+Correction of import of CSV contacts in root folder
+Various corrections and optimizations
+Jquery update to 3.6.0 version
+TinyMce update to 4.9.11 version
+TimePicker Jquery update to 1.13.16 version
+Tooltipster Jquery update to 4.2.8 version
+
+
+VERSION 3.7.4 (2020-12)
+#######################
+Nouvelle option pour ajouter une visioconférence dans les événements du module agenda
 Nouvelle option "Ajouter 'Répondre à'" dans le module des Newsletters
 Optimisation et correction de l'envoi des mails
 Optimisation de l'export de contacts/users .csv vers Gmail
@@ -17,7 +62,7 @@ Various corrections and optimizations
 PHPMailer update to 6.2 version
 
 
-VERSION 3.7.3 (10-2020)
+VERSION 3.7.3 (2020-10)
 #######################
 Optimisations de l'affichage responsive
 Amélioration de l'affichage des droits d'accès des menus contextuels
@@ -42,7 +87,7 @@ Jquery update to 3.5.1 version
 Various corrections and optimizations
 
 
-VERSION 3.7.2 (05-2020)
+VERSION 3.7.2 (2020-05)
 #######################
 Nouvelle option pour l'ajout d'un serveur de visioconférences Jitsi, accessible depuis la messagerie intantanée (cf. paramétrage général)
 Amélioration de l'affichage des modules Liens et Forum
@@ -55,7 +100,7 @@ Various fixes for the responsive display
 Various corrections and optimizations
 
 
-VERSION 3.7.1 (04-2020)
+VERSION 3.7.1 (2020-04)
 ########################
 Ajout d'une option "copier l'adresse d'accès" dans le menu contextuel d'un élément
 Amélioration de l'affichage du menu principal (sur mobile et petites résolutions)
@@ -72,7 +117,7 @@ Correction of the display of forum topics in news
 Various corrections and optimizations
 
 
-VERSION 3.7.0 (03-2020)
+VERSION 3.7.0 (2020-03)
 ########################
 Ajout de l'éditeur TinyMce dans la description des Sondages
 Amélioration du menu principal
