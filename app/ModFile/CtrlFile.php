@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur du module "File"
+ * CONTROLEUR DU MODULE "FILE"
  */
 class CtrlFile extends Ctrl
 {
@@ -17,9 +17,9 @@ class CtrlFile extends Ctrl
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=array("MdlFile","MdlFileFolder");
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		////	Verif l'accès en écriture & Occupation d'espace disque
@@ -27,13 +27,13 @@ class CtrlFile extends Ctrl
 		{
 			//Verif l'accès en écriture
 			if(!is_writable(Ctrl::$curContainer->folderPath("real")))
-				{Ctrl::addNotif(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "warning");}
+				{Ctrl::notify(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "warning");}
 			//Occupation d'espace disque
 			$folderSize=File::folderSize(PATH_MOD_FILE);
 			$diskSpacePercent=ceil(($folderSize/limite_espace_disque)*100);
 			$txtBar=Txt::trad("diskSpaceUsed")." : ".$diskSpacePercent."%";
 			$txtTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::displaySize($folderSize)." ".Txt::trad("from")." ".File::displaySize(limite_espace_disque);
-			$vDatas["diskSpaceAlert"]=($diskSpacePercent>70) ? true : false;
+			$vDatas["diskSpaceAlert"]=($diskSpacePercent>70);
 			$vDatas["fillRateBar"]=Tool::percentBar($diskSpacePercent, $txtBar, $txtTooltip, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
@@ -71,9 +71,9 @@ class CtrlFile extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PLUGINS
-	 */
+	 *******************************************************************************************/
 	public static function plugin($pluginParams)
 	{
 		$pluginsList=self::getPluginsFolders($pluginParams,"MdlFileFolder");
@@ -90,9 +90,9 @@ class CtrlFile extends Ctrl
 		return $pluginsList;
 	}
 
-	/*
-	 * ACTION : Affichage/Download d'un fichier dans le DATAS
-	 */
+	/*******************************************************************************************
+	 * AFFICHAGE/DOWNLOAD D'UN FICHIER DANS LE DATAS
+	 *******************************************************************************************/
 	public static function actionGetFile()
 	{
 		if(Req::isParam("targetObjId"))
@@ -122,9 +122,9 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : Download d'une archive zip (dossier / elements sélectionnés)
-	 */
+	/*******************************************************************************************
+	 * DOWNLOAD D'UNE ARCHIVE ZIP (DOSSIER / ELEMENTS SÉLECTIONNÉS)
+	 *******************************************************************************************/
 	public static function actionDownloadArchive()
 	{
 		$archiveSize=0;
@@ -162,14 +162,14 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*
-	 * VUE : Modif d'un fichier
-	 */
+	/*******************************************************************************************
+	 * VUE : MODIF D'UN FICHIER
+	 *******************************************************************************************/
 	public static function actionFileEdit()
 	{
 		////	Charge le fichier
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -204,14 +204,14 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*
-	 * VUE : Ajout de fichiers
-	 */
+	/*******************************************************************************************
+	 * VUE : AJOUT DE FICHIERS
+	 *******************************************************************************************/
 	public static function actionAddEditFiles()
 	{
 		////	Charge l'objet & Controles d'accès
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		$folderPath=$curObj->containerObj()->folderPath("real");
 		if(!is_dir($folderPath) || !is_writable($folderPath))  {Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess")." : ".$curObj->containerObj()->name);}
 		////	Valide le formulaire
@@ -238,7 +238,7 @@ class CtrlFile extends Ctrl
 					if($tmpFile["error"]==0){
 						$newFiles[]=["tmpPath"=>$tmpFile["tmp_name"], "name"=>$tmpFile["name"]];//Ajoute le fichier
 						if(Req::isParam("addVersion") && File::extension($curObj->name)!=File::extension($tmpFile["name"]))
-							{Ctrl::addNotif(Txt::trad("NOTIF_fileVersion")." : ".File::extension($tmpFile["name"])." -> ".File::extension($tmpFile["name"]));}//Notifie si besoin du changement d'extension du fichier
+							{Ctrl::notify(Txt::trad("NOTIF_fileVersion")." : ".File::extension($tmpFile["name"])." -> ".File::extension($tmpFile["name"]));}//Notifie si besoin du changement d'extension du fichier
 					}
 				}
 			}
@@ -253,9 +253,9 @@ class CtrlFile extends Ctrl
 				{
 					////	Vérifie si un autre fichier existe déjà avec le meme nom
 					if(Db::getVal("SELECT count(*) FROM ap_file WHERE _idContainer=".(int)$curObj->_idContainer." AND _id!=".$curObj->_id." AND name=".Db::format($tmpFile["name"]))>0)
-						{Ctrl::addNotif(Txt::trad("NOTIF_fileName")." :<br><br>".$tmpFile["name"]);}
-					////	Charge le fichier, enregistre ses propriétés et recharge l'objet
-					$tmpObj=Ctrl::getTargetObj();//nouveau fichier (create) OU nouvelle version du fichier (update)
+						{Ctrl::notify(Txt::trad("NOTIF_fileName")." :<br><br>".$tmpFile["name"]);}
+					////	Charge le fichier (nouveau fichier : create OU nouvelle version du fichier : update) && Enregistre ses propriétés && Recharge l'objet
+					$tmpObj=Ctrl::getTargetObj();
 					$tmpObj=$lastObjFile=$tmpObj->createUpdate("name=".Db::format($tmpFile["name"]).", description=".Db::formatParam("description").", octetSize=".Db::format($fileSize));
 					////	Ajoute la version du fichier
 					$sqlVersionFileName=$tmpObj->_id."_".time().".".File::extension($tmpFile["name"]);
@@ -293,9 +293,9 @@ class CtrlFile extends Ctrl
 		static::displayPage("VueAddEditFiles.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Upload d'un fichier temporaire via Plupload
-	 */
+	/*******************************************************************************************
+	 * AJAX : UPLOAD D'UN FICHIER TEMPORAIRE VIA PLUPLOAD
+	 *******************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
 		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::getParam("tmpFolderName")) && !empty($_FILES))
@@ -312,9 +312,9 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*
-	 * VUE : Versions d'un fichier
-	 */
+	/*******************************************************************************************
+	 * VUE : VERSIONS D'UN FICHIER
+	 *******************************************************************************************/
 	public static function actionFileVersions()
 	{
 		$curObj=self::getTargetObj();
@@ -322,9 +322,9 @@ class CtrlFile extends Ctrl
 		static::displayPage("VueFileVersions.php",$vDatas);
 	}
 	
-	/*
-	 * ACTION : Suppresion d'un version de fichier
-	 */
+	/*******************************************************************************************
+	 * SUPPRESION D'UNE VERSION D'UN FICHIER
+	 *******************************************************************************************/
 	public static function actionDeleteFileVersion()
 	{
 		$curObj=self::getTargetObj();

@@ -5,7 +5,7 @@ lightboxSetWidth(450);
 ////	INIT
 $(function(){
 	////	Contrôle du formulaire
-	$("#usersInscriptionForm").submit(function(event){
+	$("#userInscriptionForm").submit(function(event){
 		//Pas de validation par défaut du formulaire
 		event.preventDefault();
 		//Verif les champs obligatoires et l'email/login
@@ -30,9 +30,8 @@ input, textarea			{width:100%!important;}
 </style>
 
 
-<form id="usersInscriptionForm" class="lightboxContent noConfirmClose">
+<form id="userInscriptionForm" class="lightboxContent noConfirmClose">
 	<div class="lightboxTitle"><?= ucfirst(Txt::trad("userInscriptionSpace")) ?></div>
-	
 	<select name="_idSpace">
 		<?php foreach($objSpacesInscription as $tmpSpace){ ?>
 		<option value="<?= $tmpSpace->_id ?>" title="<?= $tmpSpace->description ?>"><?= $tmpSpace->name ?></option>

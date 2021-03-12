@@ -8,13 +8,13 @@
 
 
 /*
- * Mises à jour
+ * MISES A JOUR 
  */
 class DbUpdate extends Db
 {
-	/*
-	 * Récupère et controle la version de l'appli (+ rapide en session) : renvoi "true" si l'appli doit être mise à jour
-	 */
+	/********************************************************************************************
+	 * RÉCUPÈRE ET CONTROLE LA VERSION DE L'APPLI (+ RAPIDE EN SESSION) : RENVOI "TRUE" SI L'APPLI DOIT ÊTRE MISE À JOUR
+	 ********************************************************************************************/
 	private static function versionAgoraUpdate($confirmVersion=false)
 	{
 		//"versionAgora" : Init OU Confirme la version
@@ -27,17 +27,17 @@ class DbUpdate extends Db
 		return version_compare($_SESSION["dbVersionAgora"],VERSION_AGORA,"<");
 	}
 
-	/*
-	 * Mise à jour demandé plus récente que la "dbVersionAgora" : UPDATE!
-	 */
+	/********************************************************************************************
+	 * MISE À JOUR DEMANDÉ PLUS RÉCENTE QUE LA "DBVERSIONAGORA" : UPDATE!
+	 ********************************************************************************************/
 	protected static function updateVersion($versionUpdate)
 	{
 		return (version_compare($_SESSION["dbVersionAgora"],$versionUpdate,"<") || $versionUpdate==null);
 	}
 
-	/*
-	 * Teste si une table existe & la crée au besoin
-	 */
+	/********************************************************************************************
+	 * TESTE SI UNE TABLE EXISTE & LA CRÉE AU BESOIN
+	 ********************************************************************************************/
 	private static function tableExist($tableName, $createQuery=null)
 	{
 		$result=self::getCol("show tables like '".$tableName."'");
@@ -45,9 +45,9 @@ class DbUpdate extends Db
 		return (!empty($result));
 	}
 
-	/*
-	 * Teste si un champ existe & le cree au besoin
-	 */
+	/********************************************************************************************
+	 * TESTE SI UN CHAMP EXISTE & LE CREE AU BESOIN
+	 ********************************************************************************************/
 	private static function fieldExist($tableName, $fieldName, $createQuery=null)
 	{
 		$result=self::getCol("show columns from `".$tableName."` like '".$fieldName."'");
@@ -55,9 +55,9 @@ class DbUpdate extends Db
 		return (!empty($result));
 	}
 
-	/*
+	/********************************************************************************************
 	 * LANCE LA MISE À JOUR DE LA BDD
-	 */
+	 ********************************************************************************************/
 	public static function lauchUpdate()
 	{
 		////	RÉCUP LA VERSION DE L'APPLI && LANCE LA MISE A JOUR?
@@ -72,8 +72,8 @@ class DbUpdate extends Db
 			$updateLOCK=PATH_DATAS."updateLOCK.log";
 			if(!is_file($updateLOCK))	{file_put_contents($updateLOCK,"LOCKING UPDATE - VERROUILAGE DE MISE A JOUR");}
 			else{
-				if((time()-filemtime($updateLOCK))<60)	{echo "<br>Update in progress : please wait a few seconds<br><br>Mise à jour en cours : merci d'attendre quelques secondes";}
-				else									{echo "<br>The update generates errors : check the logs of Apache for details.<br>If the issue is resolved : come back to the previous version, delete the 'DATAS/updateLOCK.log' file, and try again the update procedure.<br><br>La mise a jour a généré des erreurs : consultez les logs d'Apache pour plus de détails.<br>Si le problème est résolu : revenez sur la version précédente, supprimez le fichier 'DATAS/updateLOCK.log', puis relancez la mise à jour.";}
+				if((time()-filemtime($updateLOCK))<30)	{echo "<br>Update in progress : please wait a few seconds<br><br>Mise à jour en cours : merci d'attendre quelques secondes";}
+				else									{echo "<br>Update generates errors : check Apache logs for details.<br>If the issue is resolved : delete the '/DATAS/updateLOCK.log' file and try the update procedure again.<br><br>La mise a jour a généré des erreurs : consultez les logs d'Apache pour plus de détails.<br>Si le problème est résolu : supprimez le fichier '/DATAS/updateLOCK.log' puis relancez la mise à jour.";}
 				exit;
 			}
 			////	PAS D'INTERRUPTION DE SCRIPT
@@ -238,7 +238,7 @@ class DbUpdate extends Db
 					{
 						//Nom et Propriétés du nouveau champ
 						$fieldOldName=$fieldNewName=$tmpField["Field"];
-						$isIdContainer=($fieldOldName=="id_dossier_parent" || preg_grep("/".$tableName."-".$fieldOldName."/i",$tabIdParentContainer)) ? true : false;//"preg_grep()" car "in_array()" est sensible à la casse, et sous windows les tables sont envoyées en minucules..
+						$isIdContainer=($fieldOldName=="id_dossier_parent" || preg_grep("/".$tableName."-".$fieldOldName."/i",$tabIdParentContainer));//"preg_grep()" car "in_array()" est sensible à la casse, et sous windows les tables sont envoyées en minucules..
 						if(strtolower($tmpField["Extra"])=="auto_increment")		{$fieldNewName=$primaryKey="_id";}					//Champs principal "_id" : cle primaire
 						elseif($isIdContainer)										{$fieldNewName=$primaryKey="_idContainer";}			//Champs de l'objet parent : "id_dossier"=>"_idContainer"
 						elseif(array_key_exists($fieldOldName,$tabFieldsRenamed))	{$fieldNewName=$tabFieldsRenamed[$fieldOldName];}	//Champ à renommer : "id_utilisateur"=>"_idUser"
@@ -412,7 +412,7 @@ class DbUpdate extends Db
 					foreach($groupSpaceIds as $tmpIdSpace)
 					{
 						//Recréé le groupe pour l'espace
-						$allUsersInSpace=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace." AND allUsers=1")>0)  ?  true  :  false;//Tous les users du site sont affectés à l'espace?
+						$allUsersInSpace=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace." AND allUsers=1")>0);//Tous les users du site sont affectés à l'espace?
 						$groupUserIdsNew=($allUsersInSpace==true)  ?  $groupUserIds  :  array_intersect($groupUserIds, Db::getCol("SELECT _idUser FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace));//On prends tous les users du groupe d'origine  OU  les users affectés au groupe d'origine ET à l'espace courant
 						$newGroupId=Db::query("INSERT INTO ap_userGroup SET _idUser=".Db::format($tmpGroup["_idUser"]).", title=".Db::format($tmpGroup["title"]).", _idSpace=".Db::format($tmpIdSpace).", _idUsers=".Db::format(Txt::tab2txt($groupUserIdsNew)).", dateCrea=".Db::format($tmpGroup["dateCrea"]), true);
 						//Recréé les jointures des objets affectés à l'ancien espace->groupe (avec l'id du nouveau groupe)
@@ -803,12 +803,24 @@ class DbUpdate extends Db
 				//Ajoute l'url de visio dans les evenements d'agenda
 				self::fieldExist("ap_calendarEvent", "visioUrl", "ALTER TABLE ap_calendarEvent ADD visioUrl varchar(255) DEFAULT NULL AFTER contentVisible");
 			}
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			////!!!!	MODIFIER SI BESOIN LA BDD "ModOffline/db.sql"	!!!!!!!!!!!!
+			////	MAJ v3.8.0
+			if(self::updateVersion("3.8.0"))
+			{
+				//Espace :  Renomme le champ 'usersInscription' en 'userInscription'  &&  Ajoute l'option de notif mail à l'admin après chaque inscription d'un user
+				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` tinyint(1) DEFAULT NULL");}
+				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify tinyint(1) DEFAULT NULL AFTER userInscription");
+				//Agenda :  Ajoute l'option de notification par email à chaque proposition d'événement  &&  Ajoute l'option de proposition d'événement pour les guests
+				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` varchar(1) DEFAULT NULL AFTER timeslot");
+				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` varchar(1) DEFAULT NULL AFTER propositionNotify");
+				//Agenda et proposition d'evenement d'un guest :  Ajoute un champ "guestMail" pour les notifications par mail de validation/invalidation d'evt
+				self::fieldExist("ap_calendarEvent", "guestMail", "ALTER TABLE ap_calendarEvent ADD `guestMail` varchar(255) DEFAULT NULL AFTER guest");
+				//Agendas affectés à un espace public et avec "tous les users" en écriture : Précoche l'option "propositionGuest" 
+				foreach(self::getCol("SELECT _idObject FROM ap_objectTarget WHERE objectType='calendar' AND `target`='spaceUsers' AND accessRight=2 AND _idSpace IN (select _id as _idSpace from ap_space where public=1)") as $idCalendar)
+					{self::query("UPDATE ap_calendar SET propositionGuest=1 WHERE _id=".(int)$idCalendar);}
+			}
+			////!!!!	MODIFIER "/ModOffline/db.sql" !
 			////!!!!	MODIFIER LE NUMERO DE VERSION DANS  "app/Common/Params.php" + "app/Common/VueStructure.php" + "app/js/common-3.x.x.js"  +  "app/css/common-3.x.x.js" + "RELEASES.txt"
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 			////	MAJ "dateUpdateDb" && "version_agora"

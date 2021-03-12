@@ -4,18 +4,19 @@
 #headerMainMenuLabels							{padding-left:75px; padding-right:30px; line-height:45px; white-space:nowrap;}/*"padding-left" en fonction du width du "logo.png". "line-height" en fonction de "#headerBar". "nowrap" pour laisser les labels sur une seule ligne (ne pas éclater l'affichage!)*/
 #headerUserLabel, #headerSpaceLabel				{display:inline-block; max-width:250px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
 .vHeaderArrowRight								{margin:0px 4px 0px 8px; height:15px;}
+#headerMenuBurger								{margin-left:10px;}
 #headerMainMenuTab								{display:table; margin:0px;}
 #headerMainMenuTab>div							{display:table-cell; padding:0px; padding-right:10px!important;}
+#headerMainMenuOmnispace						{text-align:center; margin-top:15px;}/*Logo Omnispace*/
 #headerMainMenuRight							{border-left:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
-#headerMainMenuRight .menuIconArrow				{text-align:right!important;}
-#headerMainMenuOmnispace						{text-align:center; margin-top:15px;}
-#curSpaceEdit									{margin-left:10px; height:20px; transform:scaleX(-1);}/*"scaleX" : inverse l'image*/
-#headerMenuBurger								{margin-left:10px;}
+.vSwitchSpace>div:first-child					{text-align:right!important;}/*icone "arrow*/
+.vSwitchSpace img[src*=edit]					{visibility:hidden; float:right; cursor:pointer; margin-left:15px; height:20px; transform:scaleX(-1);}/*"scaleX" : inverse l'image*/
+.vSwitchSpace:hover img[src*=edit]				{visibility:visible;}/*"scaleX" : inverse l'image*/
 /*MENU DES MODULES*/
 #headerModuleTab								{display:inline-table; height:100%;}
 .vHeaderModule									{display:table-cell; <?= (Ctrl::$agora->moduleLabelDisplay=="hide") ? "padding:0px 10px 0px 10px;" : "padding:0px 5px 0px 5px;" ?> text-align:center; vertical-align:middle; border:solid 1px transparent; cursor:pointer;}/*Par défaut, le border est transparent*/
 .vHeaderModule:hover, .vHeaderCurModule			{<?= Ctrl::$agora->skin=="black" ? "background:#333;border-color:transparent #555 transparent #555;" : "background:#fff;border-color:transparent #ddd transparent #ddd;" ?>}/*Sélectionne le module courant*/
-.vHeaderModuleLabel								{<?= (Ctrl::$agora->moduleLabelDisplay=="hide" && Req::isMobile()==false) ? "display:none" : "display:inline-block;min-width:50px;" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
+.vHeaderModuleLabel								{<?= (Ctrl::$agora->moduleLabelDisplay=="hide" && Req::isMobile()==false) ? "display:none" : "display:inline-block;min-width:45px;" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
 #headerModuleResp								{display:none;}
 
 /*RESPONSIVE*/
@@ -23,14 +24,14 @@
 	/*MENU PRINCIPAL*/
 	.vHeaderMainLogo							{top:0px; left:0px;}
 	#headerSpaceLabel							{max-width:160px;}
-	#headerMainMenuLabels						{padding-left:58px; padding-right:10px;}/*"padding-left" en fonction du width du "logoMobile.png"*/
+	#headerMainMenuLabels						{padding-left:58px; padding-right:10px;}/*"padding-left" en fonction du width du "logoSmall.png"*/
 	#headerMainMenuLabels, #headerModuleResp	{display:block; font-size:1.08em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne (ne pas éclater l'affichage!)*/
 	#headerMainMenuTab, #headerMainMenuTab>div	{display:block; padding-right:0px!important; border:0px;}
 	#headerMainMenuRight						{border:0px;}
 	#headerMainMenuOmnispace					{display:none;}
 	/*MENU DES MODULES (intégré dans le menu responsive "#respMenuOne" de VueStructure.php)*/
 	#headerModuleTab							{display:none!important;}/*liste des modules masqués dans le menu principal...*/
-	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 4px 4px; width:145px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
+	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 2px 2px; width:140px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
 	.vHeaderModule:hover, .vHeaderCurModule		{border-radius:5px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f9f9f9;border:solid 1px #ddd;" ?>}/*mod. courant: background grisé*/
 }
 </style>
@@ -43,10 +44,10 @@
 		<label id="headerMainMenuLabels" class="menuLaunch" for="headerMainMenu">
 			<?php
 			////	LOGO PRINCIPAL  &&  ICONE "SEARCH"
-			echo "<img src=\"app/img/".(Req::isMobile()?'logoMobile.png':'logo.png')."\" class='vHeaderMainLogo'>";
+			echo "<img src=\"app/img/".(Req::isMobile()?'logoSmall.png':'logo.png')."\" class='vHeaderMainLogo'>";
 			if(Req::isMobile()==false)  {echo "<img src='app/img/search.png'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			////	ICONE DE "VALIDATION D'INSCRIPTION D'UTILISATEUR"
-			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<img src='app/img/check.png' class='vHeaderUserInscription'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
+			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<img src='app/img/check.png' class='vHeaderUserInscription pulsate'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			////	LABEL DE L'UTILISATEUR COURANT  &&  LABEL DE L'ESPACE COURANT  &&  ICONE BURGER/ARROW
 			if(Ctrl::$curUser->isUser() && Req::isMobile()==false)  {echo "<div id='headerUserLabel'>".Ctrl::$curUser->getLabel()."</div><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			echo "<div id='headerSpaceLabel'>".(Req::isMobile()?strtolower(Ctrl::$curSpace->name):Ctrl::$curSpace->name)."</div>";
@@ -65,7 +66,7 @@
 					else
 					{
 						////	VALIDE L'INSCRIPTION D'UTILISATEURS
-						if($userInscriptionValidate==true)  {echo "<div class='menuLine sLink vHeaderUserInscription' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div> <script> $('.vHeaderUserInscription').effect('pulsate',{times:30},30000); </script>";}
+						if($userInscriptionValidate==true)  {echo "<div class='menuLine sLink vHeaderUserInscription pulsate' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div>";}
 						////	ENVOI D'INVITATION
 						if(Ctrl::$curUser->sendInvitationRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\" title=\"".Txt::trad("USER_sendInvitationInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 						////	DOCUMENTATION
@@ -74,14 +75,14 @@
 						echo "<div class='menuLine sLink' onclick=\"".$docLink."\"><div class='menuIcon'><img src='app/img/info.png'></div><div>".Txt::trad("HEADER_documentation")."</div></div>";
 						////	EDITION DU PROFIL USER  &&  EDITION DU MESSENGER  &&  DECONNEXION
 						echo "<hr><div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curUser->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".Txt::trad("USER_myProfilEdit")." &nbsp;".Ctrl::$curUser->getImg(false,true)."</div></div>";
-						if(Ctrl::$curUser->messengerEdit())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&targetObjId=".Ctrl::$curUser->_targetObjId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messenger.png'></div><div>".Txt::trad("USER_messengerEdit")."</div></div>";}
+						if(Ctrl::$curUser->messengerAvailable())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&targetObjId=".Ctrl::$curUser->_targetObjId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messengerSmall.png'></div><div>".Txt::trad("USER_messengerEdit")."</div></div>";}
 						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
 						////	SEPARATEUR D'ADMINISTRATION
 						if(Ctrl::$curUser->isAdminSpace())  {echo "<hr>";}
 						////	PARAMETRAGE GENERAL
-						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=agora')\"><div class='menuIcon'><img src='app/img/paramsGeneral.png'></div><div>".Txt::trad("AGORA_generalSettings")."</div></div>";}
+						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=agora')\"><div class='menuIcon'><img src='app/img/settingsGeneral.png'></div><div>".Txt::trad("AGORA_generalSettings")."</div></div>";}
 						////	PARAMETRAGE DE L'ESPACE COURANT
-						if(Ctrl::$curUser->isAdminSpace())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/params.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,35,false)."</i></div></div>";}
+						if(Ctrl::$curUser->isAdminSpace())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/settings.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,35,false)."</i></div></div>";}
 						////	 EDITION DE TOUS LES ESPACES
 						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=space')\" title=\"".Txt::trad("SPACE_moduleInfo")."\"><div class='menuIcon'><img src='app/img/space.png'></div><div>".Txt::trad("SPACE_manageSpaces")."</div></div>";}
 						////	PARAMETRAGE DES UTILISATEURS
@@ -108,8 +109,8 @@
 					if($showSpaceList==true){
 						echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/space.png'></div><div>".Txt::trad("HEADER_displaySpace")." :</div></div>";
 						foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
-							$curSpaceEdit=($tmpSpace->isCurSpace() && Ctrl::$curUser->isAdminSpace())  ?  "<img src='app/img/edit.png' class='sLink' id='curSpaceEdit' onclick=\"lightboxOpen('".$tmpSpace->getUrl("edit")."');\" title=\"".Txt::trad("SPACE_config")."\">"  :  null;
-							echo "<div class='menuLine'><div class='menuIcon menuIconArrow'><img src='app/img/arrowRightBig.png'></div><div><span class='".($tmpSpace->isCurSpace()?'sLinkSelect':'sLink')."' onclick=\"redir('?_idSpaceAccess=".$tmpSpace->_id."')\" title=\"".$tmpSpace->description."\">".$tmpSpace->name."</span>".$curSpaceEdit."</div></div>";
+							$iconSpaceEdit=($tmpSpace->editRight())  ?  "<img src='app/img/edit.png' onclick=\"lightboxOpen('".$tmpSpace->getUrl("edit")."');\" title=\"".Txt::trad("SPACE_config")."\">"  :  null;
+							echo "<div class='menuLine vSwitchSpace'><div class='menuIcon'><img src='app/img/arrowRightBig.png'></div><div><span class='".($tmpSpace->isCurSpace()?'sLinkSelect':'sLink')."' onclick=\"redir('?_idSpaceAccess=".$tmpSpace->_id."')\" title=\"".$tmpSpace->description."\">".$tmpSpace->name."</span>".$iconSpaceEdit."</div></div>";
 						}
 					}
 					////	Affiche les plugins "shortcut" ("pluginLabel" : Réduit le label & suppr toutes les balises html)

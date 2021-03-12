@@ -12,7 +12,7 @@ lightboxSetWidth(550);
 <div class="lightboxContent objVueBg">
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->getLabel("all")."</div>";
+	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->getLabel("full")."</div>";
 
 	////	IMAGE & DETAILS DE l'USER
 	echo "<div class='personLabelImg'>".$curObj->getImg()."</div>";

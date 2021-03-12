@@ -80,8 +80,8 @@ function calendarDimensions()
 
 		////	AFFICHE LE JOUR
 		$styleDayCell=$addEvtLink=null;
-		//Lien pour ajouter un evt (agenda accessible en lecture seule : on propose l'événement)
-		if($tmpCal->addProposeEvtRight())  {$styleDayCell.="vCalMonthDayAddEvt";  $addEvtLink="onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$tmpCal->_id."&newEvtTimeBegin=".strtotime(date("Y-m-d",$tmpDay["timeBegin"])." ".date("H:00"))."')\"";}
+		//Lien pour ajouter ou proposer un evt
+		if($tmpCal->addOrProposeEvt())  {$styleDayCell.="vCalMonthDayAddEvt";  $addEvtLink="onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$tmpCal->_id."&newEvtTimeBegin=".strtotime(date("Y-m-d",$tmpDay["timeBegin"])." ".date("H:00"))."')\"";}
 		//Styles de la cellule du jour
 		if(date("m",$tmpDay["timeBegin"])!=date("m",$curTime))		{$styleDayCell.=" vCalMonthDayOtherMonth";}	//Jour d'un mois précédent/futur à celui affiché ?
 		if($tmpDay["timeEnd"]<time())								{$styleDayCell.=" vCalMonthDayPast";}		//Jour déjà passé?
@@ -96,10 +96,10 @@ function calendarDimensions()
 				//EVENEMENTS DU JOUR
 				foreach($tmpCal->eventList[$tmpDay["date"]] as $tmpEvt)
 				{
-					//Init l'evt (pas de menu context ni de "displayDate()" en responsive)
+					//Init l'evt (pas de menu context ni de "dateLabel()" en responsive)
 					$divContainerAttr="data-catColor='".$tmpEvt->catColor."' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."');event.stopPropagation();\"";
 					$evtContextMenu=(Req::isMobile()==false)  ?  $tmpEvt->contextMenu(["iconBurger"=>"small","_idCal"=>$tmpCal->_id,"curDateTime"=>strtotime($tmpEvt->dateBegin)])  :  null;
-					$evtDisplayDate=(Req::isMobile()==false)  ?  Txt::displayDate($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)."&nbsp; "  :  null;
+					$evtDisplayDate=(Req::isMobile()==false)  ?  Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)."&nbsp; "  :  null;
 					$evtImportant=(!empty($tmpEvt->important))  ?  " <img src='app/img/important.png'>"  :  null;
 					//Affiche l'evt
 					echo $tmpEvt->divContainer("vCalEvtBlock",$divContainerAttr).$evtContextMenu.

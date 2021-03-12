@@ -6,10 +6,13 @@ lightboxSetWidth(600);
 $(function(){
 	////	Option "espace public"
 	$("input[name='public']").change(function(){
-		//Affiche le password si l'espace est public
-		(this.checked) ? $("#divPassword").fadeIn() : $("#divPassword").fadeOut();
-		//Affiche la notification "Si votre espace public contient des données sensibles[...]"
-		if(this.checked && $("#divPassword input[name=password]").isEmpty())  {notify("<?= Txt::trad("SPACE_publicSpaceNotif") ?>","warning");}
+		(this.checked) ? $("#divPassword").fadeIn() : $("#divPassword").fadeOut();																//Affiche l'option du password ?
+		if(this.checked && $("#divPassword input[name=password]").isEmpty())  {notify("<?= Txt::trad("SPACE_publicSpaceNotif") ?>","warning");}	//Affiche la notif  "Si votre espace public contient des coordonnées perso.."
+	}).trigger("change");//Trigger: init l'affichage
+
+	////	Option "Formulaire d'inscription en page de connexion"
+	$("input[name='userInscription']").change(function(){
+		(this.checked) ? $("#divUserInscriptionNotify").fadeIn() : $("#divUserInscriptionNotify").fadeOut();//Affiche l'option de notif par email ?
 	}).trigger("change");//Trigger: init l'affichage
 
 	////	Sélectionne un module (ou pas) : affiche/masque les options de chaque module
@@ -45,30 +48,30 @@ function formControl()
 </script>
 
 <style>
-textarea[name='description']		{margin-top:20px; <?= empty($curSpace->description)?"display:none;":null ?>}
-.vSpaceOption						{margin-bottom:20px;}
-.vSpaceOption>img					{max-width:18px;}
-#divPassword						{padding-left:30px; margin-top:0px!important; font-style:italic;}
-.vWallpaper							{display:table; width:100%; margin-top:10px;}
-.vWallpaper>div						{display:table-cell;}
-.vWallpaper>div:first-of-type		{width:90px;}
-.vWallpaper img						{max-height:90px;}
-label[for='allUsers']				{font-size:1.1em; font-style:italic;}
-.usersFieldset						{max-height:700px; overflow:auto;}/*fieldset des users*/
+textarea[name='description']			{margin-top:20px; <?= empty($curSpace->description)?"display:none;":null ?>}
+.vSpaceOption							{margin-bottom:20px;}
+.vSpaceOption>img						{max-width:18px;}
+#divPassword, #divUserInscriptionNotify	{margin:5px 0px 0px 30px;}
+.vWallpaper								{display:table; width:100%; margin-top:10px;}
+.vWallpaper>div							{display:table-cell;}
+.vWallpaper>div:first-of-type			{width:90px;}
+.vWallpaper img							{max-height:90px;}
+label[for='allUsers']					{font-size:1.1em; font-style:italic;}
+.usersFieldset							{max-height:700px; overflow:auto;}/*fieldset des users*/
 
 /*modules*/
-#modulesFieldset					{padding:0px;}/*surcharge*/
-#modulesList						{list-style-type:none; margin:0px; padding:0px; width:100%;}
-#modulesList .ui-state-default		{border-top:none;}
-#modulesList li						{padding:8px 0px 8px 0px; background:linear-gradient(to bottom, #fff, #fcfcfc, #f5f5f5); border-bottom:#ddd 1px solid;}
-#modulesList li.highlight			{border:1px dashed #aaa; height:80px; }/*module "fantome" durant le déplacement*/
-.vModuleLine						{display:table; width:100%;}
-.vModuleLine>div					{display:table-cell; font-weight:bold; padding:4px;}
-.vModuleLine img					{max-height:20px;}
-.vModuleLine img[src*='dependency']	{margin-left:8px;}
-.vModuleLineIcon					{vertical-align:middle; margin-left:5px;}
-.vModuleLineSort					{width:18px; cursor:move; background-image:url(app/img/dragDrop.png);}/*icone de tri*/
-div[class^='moduleOptions']			{display:none; padding:3px;}/*masque par défaut les options*/
+#modulesFieldset						{padding:0px;}/*surcharge*/
+#modulesList							{list-style-type:none; margin:0px; padding:0px; width:100%;}
+#modulesList .ui-state-default			{border-top:none;}
+#modulesList li							{padding:8px 0px 8px 0px; background:linear-gradient(to bottom, #fff, #fcfcfc, #f5f5f5); border-bottom:#ddd 1px solid;}
+#modulesList li.highlight				{border:1px dashed #aaa; height:80px; }/*module "fantome" durant le déplacement*/
+.vModuleLine							{display:table; width:100%;}
+.vModuleLine>div						{display:table-cell; font-weight:bold; padding:4px;}
+.vModuleLine img						{max-height:20px;}
+.vModuleLine img[src*='dependency']		{margin-left:8px;}
+.vModuleLineIcon						{vertical-align:middle; margin-left:5px;}
+.vModuleLineSort						{width:24px; cursor:move; background-image:url(app/img/reOrder.png); background-position:top 8px; background-repeat: no-repeat;}/*icone de tri*/
+div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut les options*/
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
@@ -87,20 +90,23 @@ div[class^='moduleOptions']			{display:none; padding:3px;}/*masque par défaut l
 	</div>
 
 	<!--ESPACE PUBLIC (avec password?)-->
-	<div class="vSpaceOption" title="<?= Txt::trad("SPACE_publicSpaceInfo") ?>">
+	<div class="vSpaceOption">
 		<img src="app/img/public.png"> <input type="checkbox" name="public" id="public" value="1" <?= (!empty($curSpace->public))?'checked':null ?>>
-		<label for="public"><?= Txt::trad("SPACE_publicSpace") ?></label>
+		<label for="public" title="<?= Txt::trad("SPACE_publicSpaceInfo") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
 		<div id="divPassword">
-			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; 
-			<input type="text" name="password" value="<?= $curSpace->password ?>">
+			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; <input type="text" name="password" value="<?= $curSpace->password ?>">
 		</div>
 	</div>
 
-
 	<!--INSCRIPTION A L'ESPACE-->
-	<div class="vSpaceOption" title="<?= Txt::trad("userInscriptionOptionSpaceInfo") ?>">
-		<img src="app/img/edit.png"> <input type="checkbox" name="usersInscription" id="usersInscription" value="1" <?= (!empty($curSpace->usersInscription))?'checked':null ?>>
-		<label for="usersInscription"><?= Txt::trad("userInscriptionOptionSpace") ?></label>
+	<div class="vSpaceOption">
+		<img src="app/img/edit.png"> <input type="checkbox" name="userInscription" id="userInscription" value="1" <?= (!empty($curSpace->userInscription))?'checked':null ?>>
+		<label for="userInscription" title="<?= Txt::trad("userInscriptionEditInfo") ?>"><?= Txt::trad("userInscriptionEdit") ?></label>
+		<div id="divUserInscriptionNotify" title="<?= Txt::trad("userInscriptionNotifyEditInfo") ?>">
+			<img src="app/img/dependency.png">
+			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curSpace->userInscriptionNotify))?'checked':null ?>>
+			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotifyEdit") ?></label>
+		</div>
 	</div>
 
 	<!--INVITATIONS PAR MAIL-->

@@ -4,21 +4,21 @@ lightboxSetWidth(600);
 
 ////	INIT
 $(function(){
-	////	INIT LA PAGE
-	<?php if($curObj->fullRight()==false){ ?>
-		//L'user courant n'est pas l'auteur de l'evt : masque tous les champs, sauf les affectations aux agendas
-		$("#eventDetails,#objMenuLabels,#objMenuBlocks").hide();
-	<?php }else{ ?>
-		//Prérempli les champs
-		$("select[name='periodType']").val("<?= $curObj->periodType ?>");
-		$("select[name='contentVisible']").val("<?= $curObj->contentVisible ?>");
-		$("select[name='_idCat']").val("<?= $curObj->_idCat ?>").trigger("change");//"trigger" pour changer la couleur de l'input
-		$("select[name='important']").val("<?= (int)$curObj->important ?>").trigger("change");//"trigger" pour changer la couleur de l'input. Valeur au format "integer"
-		//Affiche les options de "périodicité" & Infos de créneaux horaires occupés
-		displayPeriodType();
-		timeSlotBusy();
-	<?php } ?>
-	//Surligne les agendas déjà sélectionnés
+	////	INIT L'AFFICHAGE DU FORMULAIRE
+	$("select[name='periodType']").val("<?= $curObj->periodType ?>");						//Prérempli la périodicité
+	$("select[name='contentVisible']").val("<?= $curObj->contentVisible ?>");				//Prérempli le "contentVisible"
+	$("select[name='_idCat']").val("<?= $curObj->_idCat ?>").trigger("change");				//"trigger" sur la catégorie pour changer la couleur de l'input
+	$("select[name='important']").val("<?= (int)$curObj->important ?>").trigger("change");	//"trigger" sur "important" pour changer la couleur de l'input
+	displayPeriodType();																	//Init les options de "périodicité"
+	timeSlotBusy();																			//Init les créneaux horaires occupés
+	<?php
+	//Guest ou User pas auteur de l'evt
+	if(Ctrl::$curUser->isUser()==false)	{echo "$('.vEventDetailsAdvanced,.vCalAffectOptions').hide();";}//Guest : Masque les options avancées et le menu d'affectation, mais garde l'agenda présélectionné en "background"
+	elseif($curObj->fullRight()==false)	{echo "$('#eventDetails').hide();";}							//User pas auteur de l'evt : masque les options principales, et garde les affectations aux agendas
+	if(Ctrl::$curUser->isUser()==false || $curObj->fullRight()==false)	{echo "$('#objMenuLabels,#objMenuBlocks').hide();";}//Masque les options de base ("VueObjMenuEdit")
+	?>
+
+	////	INIT LE SURLIGNAGE DES AGENDAS PRÉSÉLECTIONNÉS
 	$(".vCalendarInput:checked").each(function(){
 		$(this).parents(".vCalAffectBlock").addClass("sLineSelect");
 	});
@@ -29,26 +29,23 @@ $(function(){
 	$("[name='periodType'],[name='dateBegin']").change(function(){ displayPeriodType(); });
 	<?php } ?>
 
-	////	VISIO : CRÉÉ UNE NOUVELLE UNE URL
+	////	VISIO : AJOUTE UNE NOUVELLE UNE URL
 	$("#visioUrlAdd").click(function(){
-		if(confirm("<?= Txt::trad("CALENDAR_visioUrlAdd") ?> ?")){
-			var visioRoomId=MD5( Date.now().toString() ).substr(0,10);
-			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>"+visioRoomId);//Url de la visio
-			$("#visioUrlInput,#visioUrlCopy,#visioUrlDelete").show();//Affiche l'input/copy/delete
-			$(this).hide();//Masque le label
+		if(confirm("<?= Txt::trad("VISIO_urlAdd") ?> ?")){
+			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>");	//Url de la visio avec un identifiant aléatoire
+			$("#visioUrlInput,#visioUrlCopy,#visioUrlDelete").show();	//Affiche l'input/copy/delete
+			$(this).hide();												//Masque le label "Ajouter une visio"
 		}
 	});
 
 	////	VISIO : LANCE LA VISIO DEPUIS L'UNPUT
 	$("#visioUrlInput").click(function(){
-		if(confirm("<?= Txt::trad("CALENDAR_visioUrlLaunch") ?> ?")){
-			window.open(this.value)
-		}
+		launchVisio(this.value);
 	});
 
 	////	VISIO : COPIE L'URL DANS LE PRESSE PAPIER
 	$("#visioUrlCopy").click(function(){
-		if(confirm("<?= Txt::trad("CALENDAR_visioUrlCopy") ?> ?")){
+		if(confirm("<?= Txt::trad("VISIO_urlCopy") ?> ?")){
 			$("#visioUrlInput").select();
 			document.execCommand('copy');
 			notify("<?= Txt::trad("copyUrlConfirmed") ?>");
@@ -57,10 +54,10 @@ $(function(){
 
 	////	VISIO : SUPPRIME L'URL
 	$("#visioUrlDelete").click(function(){
-		if(confirm("<?= Txt::trad("CALENDAR_visioUrlDelete") ?> ?")){
-			$("#visioUrlInput").val("");//Réinit l'url de la visio
-			$("#visioUrlInput,#visioUrlCopy,#visioUrlDelete").hide();//Masque l'input/copy/delete
-			$("#visioUrlAdd").show();//Affiche le label d'ajout
+		if(confirm("<?= Txt::trad("VISIO_urlDelete") ?> ?")){
+			$("#visioUrlInput").val("");								//Réinit l'url de la visio
+			$("#visioUrlInput,#visioUrlCopy,#visioUrlDelete").hide();	//Masque l'input/copy/delete
+			$("#visioUrlAdd").show();									//Affiche le label "Ajouter une visio"
 		}
 	});
 
@@ -153,6 +150,13 @@ function formControl()
 {
 	//Controle le nombre d'affectations aux agendas
 	if($(".vCalendarInput:checked,.vCalendarInputProposition:checked").isEmpty())  {notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>"); return false;}
+	//Controle si besoin des "guests"
+	if($("input[name='guest']").exist()){
+		if($("input[name='guest']").val().length<3)  {notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");  return false;}										//Controle du champ "guest"
+		if($("input[name='guestMail']").isEmpty() || $("input[name='guestMail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>");  return false;}	//Controle du champ "guestMail"
+		var ajaxResult=$.ajax({url:"?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val()),async:false}).responseText;			//Controle du Captcha : attend la réponse Ajax pour passer à la suite (async:false)
+		if(ajaxResult!="true")  {notify("<?=Txt::trad("captchaError") ?>");  return false;}
+	}
 	//Controle final (champs obligatoires, etc)
 	return mainFormControl();
 }
@@ -188,9 +192,10 @@ function formControl()
 .vCalAffectProposition input			{margin-right:2px;}
 input[name='calUsersGroup[]']			{display:none;}
 
-/*GUESTS : MASQUE LES OPTIONS AVANCEES & LE MENU D'AFFECTATION AUX AGENDAS (conserve en "background" l'agenda présélectionné pour l'enregistrement du formulaire)*/
+/*GUESTS*/
 <?php if(Ctrl::$curUser->isUser()==false){ ?>
-.vEventDetailsAdvanced, .vCalAffectOptions	{display:none;}
+#guestMenu								{border:1px solid #ccc!important; text-align:center;}
+input[name='guestMail']					{margin-left:20px;}
 <?php } ?>
 
 /*DÉTAILS SUR L'AFFECTATION*/
@@ -322,11 +327,10 @@ input[name='calUsersGroup[]']			{display:none;}
 		<!--VISIOCONFERENCE-->
 		<?php if(Ctrl::$agora->visioEnabled()){ ?>
 		<span class="vEventDetails vEventDetailsAdvanced">
-			<img src="app/img/visioSmall.png">&nbsp; 
-			<span id="visioUrlAdd"><?= Txt::trad("CALENDAR_visioUrlAdd") ?></span>
-			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" title="<?= Txt::trad("CALENDAR_visioUrlLaunch") ?>" readonly>
-			<img src="app/img/copy.png" id="visioUrlCopy" title="<?= Txt::trad("CALENDAR_visioUrlCopy") ?>">
-			<img src="app/img/delete.png" id="visioUrlDelete" title="<?= Txt::trad("CALENDAR_visioUrlDelete") ?>">
+			<img src="app/img/visioSmall.png">&nbsp; <span id="visioUrlAdd"><?= Txt::trad("VISIO_urlAdd") ?></span>
+			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" title="<?= Txt::trad("VISIO_launchFromEvent") ?>" readonly>
+			<img src="app/img/copy.png" id="visioUrlCopy" title="<?= Txt::trad("VISIO_urlCopy") ?>">
+			<img src="app/img/delete.png" id="visioUrlDelete" title="<?= Txt::trad("VISIO_urlDelete") ?>">
 		</span>
 		<?php } ?>
 	</div>
@@ -349,10 +353,10 @@ input[name='calUsersGroup[]']			{display:none;}
 			//Astérisque "*" sur les agendas non-modifiables || proposition
 			if($tmpCal->isDisabled!=null)				{$tmpCal->title.=" &#42;&#42;";}
 			elseif($tmpCal->inputType=="proposition")	{$tmpCal->title.=" &#42;";}
-			//Affiche l'option de proposition d'événement (en plus du champ principal avec le label)
-			if($tmpCal->inputType=="affectation" && $tmpCal->curUserCalendar()==false){
-				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'"; $propositionChecked="checked"; $tmpCal->isChecked=null;}//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
-				else																				{$propositionShow=$propositionChecked=null;}														//Sinon on masque par défaut l'option de proposition
+			//Ajoute l'option de proposition d'événement (sauf pour l'agenda perso)
+			if($tmpCal->inputType=="affectation" && $tmpCal->curUserPerso()==false){
+				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'";  $propositionChecked="checked";  $tmpCal->isChecked=null;}	//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
+				else																				{$propositionShow=$propositionChecked=null;}															//Sinon on masque par défaut l'option de proposition
 				$moreInputs.="<div class='vCalAffectProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
 			}
 			//Affiche l'input d'affectation/proposition
@@ -382,6 +386,17 @@ input[name='calUsersGroup[]']			{display:none;}
 		</div>
 	</div>
 
-	<!--MENU COMMUN-->
-	<?= $curObj->menuEdit() ?>
+	<?php
+	////	MENU D'IDENTIFICATION DES GUESTS & CAPTCHA
+	if(Ctrl::$curUser->isUser()==false){
+		echo "<div class='lightboxBlock' id='guestMenu'>
+				<input type='text' name='guest' placeholder=\"".Txt::trad("EDIT_guestName")."\">
+				<input type='text' name='guestMail' placeholder=\"".Txt::trad("EDIT_guestMail")."\" title=\"".Txt::trad("EDIT_guestMailInfo")."\">
+				<hr>".CtrlMisc::menuCaptcha()."
+			</div>";
+	}
+
+	////	MENU COMMUN	(VALIDATION DU FORM UNIQUEMENT)
+	echo $curObj->menuEdit();
+	?>
 </form>

@@ -58,7 +58,7 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION : SUPPRIME LE/LES OBJETS SÉLECTIONNÉS
+	 * ACTION : SUPPRIME LE OU LES OBJETS SÉLECTIONNÉS
 	 *******************************************************************************************/
 	public static function actionDelete()
 	{
@@ -81,12 +81,12 @@ class CtrlObject extends Ctrl
 			if($tmpObj->deleteRight())	{$tmpObj->delete();}																		
 			else						{$notDeletedObjects[]=$tmpObj->getLabel();}	
 		}
-		////	Update le "datasFolderSize()" en session 
+		////	Update le "datasFolderSize()" en session
 		if($updateDatasFolderSize==true)  {File::datasFolderSize(true);}
 		////	Objets non supprimés : affiche les labels des objets concernés (10 objets maxi)
 		if(!empty($notDeletedObjects)){
 			if(count($notDeletedObjects)>10)  {$notDeletedObjects=array_slice($notDeletedObjects,0,10);  $notDeletedObjects[]="..."; }
-			Ctrl::addNotif(Txt::trad("notDeletedElements")." :<br><br>".implode(", ",$notDeletedObjects));
+			Ctrl::notify(Txt::trad("notDeletedElements")." :<br><br>".implode(", ",$notDeletedObjects));
 		}
 		////	Redirection sur la page du conteneur
 		self::redir($redirUrl);
@@ -142,7 +142,7 @@ class CtrlObject extends Ctrl
 	{
 		////	Charge le dossier et Controle d'accès: dossier existant / nouveau dossier
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -152,7 +152,8 @@ class CtrlObject extends Ctrl
 			if(Req::isParam("extendToSubfolders")){
 				foreach($curObj->folderTree("all") as $tmpObj)	{$tmpObj->setAffectations();}
 			}
-			//Ferme la page
+			//Notifie par mail & Ferme la page
+			$curObj->sendMailNotif();
 			static::lightboxClose();
 		}
 		////	Affiche la vue
@@ -254,7 +255,7 @@ class CtrlObject extends Ctrl
 	{
 		////	Charge l'element
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlRead();
+		$curObj->readControl();
 		////	Ajoute / Modif / Supprime un commentaire
 		if(Req::isParam(["formValidate","comment"]) && Req::getParam("actionComment")=="add")
 			{Db::query("INSERT INTO ap_objectComment SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".self::$curUser->_id.", dateCrea=".Db::dateNow().", `comment`=".Db::formatParam("comment"));}

@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des themes de sujets
+ * MODELE DES THEMES DE SUJETS
  */
 class MdlForumTheme extends MdlObject
 {
@@ -18,9 +18,9 @@ class MdlForumTheme extends MdlObject
 	public static $requiredFields=array("title");
 	public static $sortFields=array("title@asc","title@desc");
 
-	/*
-	 * SURCHARGE : Constructeur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -32,18 +32,18 @@ class MdlForumTheme extends MdlObject
 		$this->idThemeUrl=($this->noTheme==true) ? "noTheme" : $this->_id;
 	}
 
-	/*
-	 * Retourne le titre du theme avec une pastille de couleur
-	 */
+	/*******************************************************************************************
+	 * RETOURNE LE TITRE DU THEME AVEC UNE PASTILLE DE COULEUR
+	 *******************************************************************************************/
 	public function display()
 	{
 		if(!empty($this->title))		{return "<div class='themeColor' style=\"background:".$this->color."\">&nbsp;</div> ".$this->title;}
 		elseif($this->noTheme==true)	{return "<div class='themeColor' style='background:#444'>&nbsp;</div> <i>".Txt::trad("FORUM_noTheme")."</i>";}
 	}
 
-	/*
-	 * Retourne les libellés des espaces affectés au thème
-	 */
+	/*******************************************************************************************
+	 * RETOURNE LES LIBELLÉS DES ESPACES AFFECTÉS AU THÈME
+	 *******************************************************************************************/
 	public function spaceLabels()
 	{
 		if(!empty($this->spaceIds)){
@@ -53,26 +53,26 @@ class MdlForumTheme extends MdlObject
 		}
 	}
 
-	/*
-	 * Themes des sujets (Filtre par espace?)
-	 */
+	/*******************************************************************************************
+	 * LISTE DES THEMES DES SUJETS (FILTRE PAR ESPACE?)
+	 *******************************************************************************************/
 	public static function getThemes($editMode=false)
 	{
 		$sqlFilter=($editMode==true && Ctrl::$curUser->isAdminGeneral())  ?  null  :  " AND (_idSpaces is null OR _idSpaces LIKE '%@".Ctrl::$curSpace->_id."@%')";
 		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
 	}
 
-	/*
-	 * Droit d'ajouter un nouveau theme
-	 */
+	/*******************************************************************************************
+	 * DROIT D'AJOUTER UN NOUVEAU THEME
+	 *******************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddTheme")));
 	}
 
-	/*
-	 * SURCHARGE : suppression de theme
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRESSION DE THEME
+	 *******************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){

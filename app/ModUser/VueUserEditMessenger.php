@@ -1,21 +1,25 @@
 <script>
 ////	Resize
-lightboxSetWidth(580);
+lightboxSetWidth(600);
 
 ////	INIT
 $(function(){
 	//Affiche/masque la liste des utilisateurs
 	$("[name='messengerDisplay']").on("click",function(){
-		if($(this).val()=="some")	{$(".vDivSomeUsers").fadeIn();}
-		else						{$(".vDivSomeUsers").fadeOut();}
+		if($(this).val()=="some")	{$("#divSomeUsers").slideDown();}
+		else						{$("#divSomeUsers").slideUp();}
+	});
+	//Validation du formulaire : vérif
+	$("form").submit(function(){
+		if($("#messengerDisplaySome").prop("checked") && $("input[id^=someUser]:checked").length==0)   {notify("<?= Txt::trad("selectUser") ?>");  return false;}
 	});
 });
 </script>
 
 <style>
 .vDivRadio		{margin-bottom:10px;}
-.vDivSomeUsers	{display:<?= empty($someUsers)?"none":"inline-block" ?>;}
-.vDivSomeUser	{margin:5px 0px 5px 30px;}
+#divSomeUsers	{display:<?= empty($someUsers)?"none":"inline-block" ?>; padding-top:10px; padding-left:25px;}
+.vDivSomeUser	{display:inline-block; width:50%; padding:5px;}
 </style>
 
 <form action="index.php" method="post" class="lightboxContent">
@@ -32,7 +36,7 @@ $(function(){
 	<div class="vDivRadio">
 		<input type="radio" name="messengerDisplay" value="some" id="messengerDisplaySome" <?= !empty($someUsers)?"checked":null ?>>
 		<label for="messengerDisplaySome"><?= Txt::trad("USER_livecounterSomeUsers") ?></label>
-		<div class="vDivSomeUsers">
+		<div id="divSomeUsers">
 			<?php
 			if(count($curObj->usersVisibles())==0)  {echo "<div class='vDivSomeUser'>".Txt::trad("USER_noUser")."</div>";}
 			foreach($curObj->usersVisibles() as $tmpUser){

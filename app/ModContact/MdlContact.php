@@ -7,9 +7,9 @@
 */
 
 
-/*
- * Modele des Contact
- */
+/*******************************************************************************************
+ * MODELE DES CONTACT
+ *******************************************************************************************/
 class MdlContact extends MdlPerson
 {
 	const moduleName="contact";
@@ -26,17 +26,17 @@ class MdlContact extends MdlPerson
 	public static $requiredFields=array("name");
 	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","_idUser@@asc","_idUser@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc");
 
-	/*
-	 * Photo d'un contact
-	 */
+	/*******************************************************************************************
+	 * PHOTO D'UN CONTACT
+	 *******************************************************************************************/
 	public function pathImgThumb()
 	{
 		return PATH_MOD_CONTACT.$this->_id."_thumb.jpg";
 	}
 
-	/*
-	 * SURCHARGE : Supprime un contact
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRIME UN CONTACT
+	 *******************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){
@@ -45,9 +45,9 @@ class MdlContact extends MdlPerson
 		}
 	}
 
-	/*
-	 * VUE : Surcharge du menu contextuel
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		//"Créer un utilisateur sur cet espace" : admin général uniquement!

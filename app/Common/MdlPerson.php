@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des personnes : utilisateurs & contacts
+ * MODELE DES PERSONNES : UTILISATEURS / CONTACTS
  */
 class MdlPerson extends MdlObject
 {
@@ -17,7 +17,6 @@ class MdlPerson extends MdlObject
 	public static $searchFields=array("name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment");
 	//Valeurs en cache
 	private $_hasImg=null;
-	private $_personLabel=null;
 	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
 	public static $csvFormats=array(
 		//AGORA
@@ -131,28 +130,20 @@ class MdlPerson extends MdlObject
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Tri en fonction du parametrage general (inverse le tri par défaut?)
-		if(Ctrl::$agora->personsSort=="firstName" && strstr(static::$sortFields[0],"firstName")==false){
-			foreach(static::$sortFields as $fieldKey=>$fieldVal)
-				{static::$sortFields[$fieldKey]=(strstr($fieldVal,"firstName"))  ?  str_replace("firstName","name",$fieldVal)  :  str_replace("name","firstName",$fieldVal);}
+		//Tri par défaut en fonction du prénom (cf. parametrage general) : switch "name" et "firstName"
+		if(Ctrl::$agora->personsSort=="firstName")   {static::$sortFields[0]="firstName@@asc";  static::$sortFields[1]="firstName@@desc";  static::$sortFields[2]="name@@asc"; static::$sortFields[3]="name@@desc";
 		}
-		self::$sortFields=array("firstName@@asc","firstName@@desc","civility@@asc","civility@@desc");
 	}
 
 	/*******************************************************************************************
-	 * SURCHARGE : AFFICHE LE "PRÉNOM NOM" DE L'UTILISATEUR OU CONTACT
+	 * SURCHARGE : AFFICHE LE LABEL DE L'UTILISATEUR / CONTACT
 	 *******************************************************************************************/
-	public function getLabel($labelType=null)
+	public function getLabel($labelType=null):string
 	{
-		//Label par défaut/en cache
-		if($this->_personLabel===null){
-			if(empty($this->firstName) && empty($this->name))	{$this->_personLabel="<i>".Txt::trad("deletedUser")."</i>";}//"compte utilisateur supprimé"
-			else												{$this->_personLabel=$this->firstName." ".$this->name;}//Exple : Boby SMITH
-		}
-		//Renvoie le label par défaut ou un label spécifique
-		if($labelType==null)										{return $this->_personLabel;}									//$labelType par défaut/en cache (Exple: Boby SMITH)
-		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType "firstName", pour le messenger ou autre (Exple: Bobby)
-		else														{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType "full", pour le profil utilisateur ou autre (Exple: Mr Bobby SMITH)
+		if(empty($this->firstName) && empty($this->name))			{return "<i>".Txt::trad("deletedUser")."</i>";}					//Renvoie "Compte utilisateur supprimé"
+		elseif($labelType=="full")									{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType=="full" -> "Dr Boby SMITH"  (cf. profil utilisateur ou contact)
+		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType=="firstName" -> "Boby"  (cf. Messenger ou "MdlTask->responsiblePersons()")
+		else														{return $this->firstName." ".$this->name;}						//Par défaut -> "Boby SMITH"
 	}
 
 	/*******************************************************************************************
@@ -222,7 +213,7 @@ class MdlPerson extends MdlObject
 			$fieldValue="<a href=\"".$mailtoUrl."\" title=\"".Txt::trad("sendMail")."\">".$this->$fieldName." <img src='app/img/person/mail.png'></a>";
 		}
 		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a href=\"javascript:lightboxOpen('?ctrl=misc&action=PersonsMap&targetObjects[".static::objectType."]=".$this->_id."');\" title=\"".Txt::trad("mapLocalize")."\">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
-		elseif($fieldName=="lastConnection")					{$fieldValue=(!empty($fieldValue))  ?  Txt::trad("lastConnection2")." ".Txt::displayDate($fieldValue,"dateMini")  :  Txt::trad("lastConnectionEmpty");}//"Connecté le 20 mars" / "Pas encore connecté"
+		elseif($fieldName=="lastConnection")					{$fieldValue=(!empty($fieldValue))  ?  Txt::trad("lastConnection2")." ".Txt::dateLabel($fieldValue,"dateMini")  :  Txt::trad("lastConnectionEmpty");}//"Connecté le 20 mars" / "Pas encore connecté"
 		elseif($fieldName=="comment")							{$fieldValue=nl2br($fieldValue);}
 		//Retourne le champ dans son conteneur
 		if(!empty($fieldValue)){
@@ -362,6 +353,28 @@ class MdlPerson extends MdlObject
 				$fileContent.="\n";
 			}
 		}
+		////	EXPORT VCARD (.vcf)
+		elseif($exportType=="vcard")
+		{
+			//Init
+			$fileName="contacts_agora.vcf";
+			//Ajout de chaque personne au fichier Vcard
+			foreach($personObjList as $tmpPerson)
+			{
+				$fileContent .="BEGIN:VCARD\n";
+				$fileContent .="VERSION:2.1\n";//V2.1 pour une complatibilité Android
+				$fileContent.="FN:".$tmpPerson->firstName." ".$tmpPerson->name."\n";
+				$fileContent.="N:".$tmpPerson->name.";".$tmpPerson->firstName."\n";
+				if(!empty($tmpPerson->telmobile))			{$fileContent.="TEL;CELL:".$tmpPerson->telmobile."\n";}
+				if(!empty($tmpPerson->telephone))			{$fileContent.="TEL;HOME:".$tmpPerson->telephone."\n";}
+				if(!empty($tmpPerson->mail))				{$fileContent.="EMAIL: ".$tmpPerson->mail."\n";}
+				if(!empty($tmpPerson->adress))				{$fileContent.="ADR;TYPE=home:;;".$tmpPerson->adress.";".$tmpPerson->city.";;".$tmpPerson->postalCode.";".$tmpPerson->country."\n";}
+				if(!empty($tmpPerson->companyOrganization))	{$fileContent.="ORG:".$tmpPerson->companyOrganization."\n";}
+				if(!empty($tmpPerson->function))			{$fileContent.="TITLE:".$tmpPerson->function."\n";}
+				if(!empty($tmpPerson->comment))				{$fileContent.="NOTE:".$tmpPerson->comment."\n";}
+				$fileContent.="END:VCARD\n";
+			}
+		}
 		/////   LANCEMENT DU TELECHARGEMENT
 		File::download($fileName, null, $fileContent);
 	}
@@ -384,7 +397,7 @@ class MdlPerson extends MdlObject
 		ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);		//Pour Active Directory
 		// Identification au serveur LDAP en tant qu'admin + retourne la connexion ldap si c'est ok
 		$ldapIdentification=@ldap_bind($ldapConnection, $ldapUserLogin, $ldapUserPassword);
-		if($ldapIdentification==false && $displayNotif==true)	{Ctrl::addNotif("AGORA_ldapConnectError");}
+		if($ldapIdentification==false && $displayNotif==true)	{Ctrl::notify("AGORA_ldapConnectError");}
 		return ($ldapIdentification==false) ? false : $ldapConnection;
 	}
 

@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des groupes d'utilisateurs
+ * MODELE DES GROUPES D'UTILISATEURS
  */
 class MdlUserGroup extends MdlObject
 {
@@ -18,9 +18,9 @@ class MdlUserGroup extends MdlObject
 	public static $requiredFields=array("title");
 	public static $sortFields=array("title@asc","title@desc");
 
-	/*
-	 * SURCHARGE : Constructeur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -32,10 +32,10 @@ class MdlUserGroup extends MdlObject
 		$this->usersLabel=trim($this->usersLabel,", ");
 	}
 
-	/*
-	 * SURCHARGE : Droit d'accès au groupe
-	 */
-	public function accessRight()
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ACCÈS AU GROUPE
+	 *******************************************************************************************/
+	public function accessRight():float
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null){
@@ -46,17 +46,17 @@ class MdlUserGroup extends MdlObject
 		return $this->_accessRight;
 	}
 
-	/*
-	 * SURCHARGE : Droit d'édition du groupe (accès total ou admin d'espace)
-	 */
-	public function editRight()
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ÉDITION DU GROUPE (ACCÈS TOTAL OU ADMIN D'ESPACE)
+	 *******************************************************************************************/
+	public function editRight():bool
 	{
 		return (parent::editRight() || Ctrl::$curUser->isAdminSpace());
 	}
 
-	/*
-	 * SURCHARGE : Supprime un groupe
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRIME UN GROUPE
+	 *******************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){
@@ -65,9 +65,9 @@ class MdlUserGroup extends MdlObject
 		}
 	}
 
-	/*
-	 * Groupes d'utilisateurs (Affectés à un espace ET/OU Affectés à un utilisateur?)
-	 */
+	/*******************************************************************************************
+	 * GROUPES D'UTILISATEURS (AFFECTÉS À UN ESPACE ET/OU AFFECTÉS À UN UTILISATEUR?)
+	 *******************************************************************************************/
 	public static function getGroups($objSpace=null, $objUser=null)
 	{
 		$sqlFilter=null;
@@ -76,9 +76,9 @@ class MdlUserGroup extends MdlObject
 		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
 	}
 
-	/*
-	 * Droit d'ajouter un nouveau groupe pour l'user courant
-	 */
+	/*******************************************************************************************
+	 * DROIT D'AJOUTER UN NOUVEAU GROUPE POUR L'USER COURANT
+	 *******************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddGroup")));

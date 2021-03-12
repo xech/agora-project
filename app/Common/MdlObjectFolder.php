@@ -14,6 +14,7 @@
 	const isFolder=true;
 	const isSelectable=true;
 	const hasShortcut=true;
+	const hasNotifMail=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;
 	protected static $_hasAccessRight=true;
@@ -35,9 +36,9 @@
 	}
 
 	/*******************************************************************************************
-	 * SURCHARGE : DOSSIER RACINE ACCESSIBLE EN ÉCRITURE PAR DÉFAUT, MAIS AJOUT DE CONTENU GÉRÉ VIA "editContentRight()" (cf. option "adminRootAddContent" des modules)
+	 * SURCHARGE : DOSSIER RACINE ACCESSIBLE EN ÉCRITURE PAR DÉFAUT, MAIS AJOUT DE CONTENU GÉRÉ VIA "addContentRight()" (cf. option "adminRootAddContent" des modules)
 	 *******************************************************************************************/
-	public function accessRight()
+	public function accessRight():float
 	{
 		return ($this->isRootFolder()) ? 2 : parent::accessRight();
 	}
@@ -45,16 +46,16 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'AJOUTER DU CONTENU DANS LE DOSSIER RACINE OU DANS UN DOSSIER LAMBDA
 	 *******************************************************************************************/
-	public function editContentRight()
+	public function addContentRight():bool
 	{
 		if($this->isRootFolder())	{return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}//"true" si "isAdminSpace()" ou aucune limite pour les users lambda
-		else						{return parent::editContentRight();}
+		else						{return parent::addContentRight();}
 	}
 
 	/*******************************************************************************************
 	 * SURCHARGE : AFFECTATIONS DE L'OBJET
 	 *******************************************************************************************/
-	public function getAffectations()
+	public function getAffectations():array
 	{
 		//Nouveau dossier, mais pas à la racine : récupère les droits d'accès du dossier conteneur pour faire une "pré-affectation"
 		if($this->isNew() && $this->containerObj()->isRootFolder()==false)	{return $this->containerObj()->getAffectations();}
@@ -64,7 +65,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION
 	 *******************************************************************************************/
-	public function editRight()
+	public function editRight():bool
 	{
 		return (parent::editRight() && $this->isRootFolder()==false);
 	}
@@ -72,7 +73,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRESSION
 	 *******************************************************************************************/
-	public function deleteRight()
+	public function deleteRight():bool
 	{
 		return (parent::deleteRight() && $this->isRootFolder()==false);
 	}

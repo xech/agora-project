@@ -35,7 +35,7 @@ input[name="searchText"]	{width:220px; margin-right:5px;}
 .vAdvancedSearchTab			{display:table; margin-top:15px;}
 .vAdvancedSearchTab>div		{display:table-cell;}
 .vAdvancedSearchTab>div:first-child	{width:110px;}
-.vAdvancedSearchOption		{display:inline-block; width:32%; float:left; padding:3px;}
+.vAdvancedSearchOption		{display:inline-block; width:32%; padding:3px;}
 .vModuleLabel				{text-align:center; padding-top:20px;}
 .vModuleLabel img			{max-height:28px; margin-right:8px;}
 .menuLine					{padding:5px;}

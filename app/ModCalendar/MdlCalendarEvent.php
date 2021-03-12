@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des evenements
+ * MODELE DES EVENEMENTS
  */
 class MdlCalendarEvent extends MdlObject
 {
@@ -24,9 +24,9 @@ class MdlCalendarEvent extends MdlObject
 	private $_confirmedCalendars=null;
 	private $_propositionCalendars=null;
 
-	/*
-	 * SURCHARGE : Constructeur
-	*/
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	*******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -42,71 +42,102 @@ class MdlCalendarEvent extends MdlObject
 		}
 	}
 
-	/*
-	 * SURCHARGE : Droit d'accès à un événement
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ACCÈS À UN ÉVÉNEMENT
 	 * Ajoute le accessRight "0.5" qui permet juste de voir la plage horaire de l'evenement
-	 */
-	public function accessRight()
+	 *******************************************************************************************/
+	public function accessRight():float
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null)
 		{
-			//Droit par défaut
+			////	DROIT D'ACCES TOTAL
 			$this->_accessRight=parent::accessRight();
+			////	SINON DROIT EN FONCTION DES AGENDAS AUQUELS L'ÉVÉNEMENT EST AFFECTÉ
 			if($this->_accessRight<3)
 			{
-				//Droit en fonction des agendas auquels l'événement est affecté : supérieur?
-				$tmpAccessRight=$tmpMaxRight=0;
+				//Récupère le droit maximum en fonction des affectations aux agendas
+				$tmpMaxRight=0;
 				$allCalendarsFullAccess=true;
 				foreach($this->affectedCalendars() as $objCalendar){
-					if($objCalendar->accessRight()>$tmpMaxRight)	{$tmpMaxRight=$objCalendar->accessRight();}//Droit de l'agenda > droit max temporaire
-					if($objCalendar->editFullContentRight()==false)	{$allCalendarsFullAccess=false;}//L'agenda pas accessible en écriture
+					if($objCalendar->accessRight()>$tmpMaxRight)	{$tmpMaxRight=$objCalendar->accessRight();}	//Droit de l'agenda > droit max temporaire
+					if($objCalendar->editContentRight()==false)		{$allCalendarsFullAccess=false;}			//L'agenda n'est pas accessible en écriture
 				}
+				//Attribut le droit d'accès final
+				$tmpAccessRight=0;
 				if($allCalendarsFullAccess==true)								{$tmpAccessRight=3;}	//Que des agendas accessibles en écriture
-				elseif($tmpMaxRight>=2)											{$tmpAccessRight=2;}	//Au moins 1 agenda accessible en écriture
-				elseif($tmpMaxRight>=1 && $this->contentVisible=="public")		{$tmpAccessRight=1;}	//Au moins 1 agenda accessible en lecture/ecriture limité
-				elseif($tmpMaxRight>=1 && $this->contentVisible=="public_cache"){$tmpAccessRight=0.5;}	//Au moins 1 agenda accessible en lecture/ecriture limité  :  lecture plage horaire uniquement!
+				elseif($tmpMaxRight>=2)											{$tmpAccessRight=2;}	//Un agenda (ou+) accessible en écriture
+				elseif($tmpMaxRight>=1 && $this->contentVisible=="public")		{$tmpAccessRight=1;}	//Un agenda (ou+) accessible en lecture ou ecriture limité
+				elseif($tmpMaxRight>=1 && $this->contentVisible=="public_cache"){$tmpAccessRight=0.5;}	//Idem mais "public_cache" : lecture plage horaire uniquement!
 				//Surcharge le droit d'accès?
 				if($tmpAccessRight > $this->_accessRight)	{$this->_accessRight=$tmpAccessRight;}
 			}
 		}
-		return $this->_accessRight;
- 	}
+		//Retourne le résultat en float et "cast" aussi les integer (cf. droit "0.5" de l'option "public_cache")
+		return (float)$this->_accessRight;
+	 }
 
-	/*
-	 * SURCHARGE : suppression d'evenement
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT DE SUPPRIMER UN EVT ("fullRight" UNIQUEMENT)  OU  DÉSAFFECTER UN EVT D'UN AGENDA (cf. "CtrlObject::actionDelete()")
+	 *******************************************************************************************/
+	public function deleteRight():bool
+	{
+		return ($this->fullRight()  ||  (Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::getParam("_idCalDeleteOn"))));
+	}
+
+	/*******************************************************************************************
+	 * DROIT DE DÉSAFFECTER L'ÉVÉNEMENT D'UN AGENDA SPÉCIFIQUE ("fullRight" POUR LES RÉINIT D'AFFECTATION LORS D'UNE MODIF D'EVT)
+	 *******************************************************************************************/
+	public function deleteAffectationRight($_idCal):bool
+	{
+		return ($this->fullRight()  ||  Ctrl::getObj("calendar",$_idCal)->editContentRight());
+	}
+
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRESSION D'EVENEMENT
+	 *******************************************************************************************/
 	public function delete()
 	{
-		//Id de l'agenda à désaffecter de l'evt
-		$calDeleteOn=(Req::isParam("_idCalDeleteOn"))  ?  Ctrl::getObj("calendar",Req::getParam("_idCalDeleteOn"))  :  null;
-		//Supprime sur un agenda spécifique ("deleteAffectation()")  ||  Supprime un evt périodique à une date précise ("periodDateExceptions")  ||  Suppression de l'evt sur tous les agendas ("DELETE FROM ap_calendarEventAffectation")
-		if(!empty($calDeleteOn) && ($this->fullRight() || $calDeleteOn->editRight()))	{$this->deleteAffectation($calDeleteOn->_id);}
-		elseif(Req::isParam("periodDateExceptionsAdd") && $this->fullRight())			{Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format($this->periodDateExceptions."@@".Req::getParam("periodDateExceptionsAdd")."@@")." WHERE _id=".$this->_id);}
-		elseif($this->fullRight())														{Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id);}
+		//Supprime sur un agenda spécifique  ||  Supprime un evt périodique à une date précise  ||  Suppression de l'evt sur tous les agendas
+		if(Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::getParam("_idCalDeleteOn")))	{$this->deleteAffectation(Req::getParam("_idCalDeleteOn"));}
+		elseif(Req::isParam("periodDateExceptionsAdd") && $this->fullRight())									{Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format($this->periodDateExceptions."@@".Req::getParam("periodDateExceptionsAdd")."@@")." WHERE _id=".$this->_id);}
+		elseif($this->fullRight())																				{Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id);}
 		//On supprime l'événement s'il est affecté à aucun agenda
 		if(Db::getVal("SELECT count(*) FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id)==0)  {parent::delete();}
 	}
 
-	/*
-	 * SURCHARGE : Recupère l'agenda principal de l'événement (priorité au droit d'accès le plus élevé)
-	 */
+	/*******************************************************************************************
+	 * SUPPRIME UNE AFFECTATION À UN AGENDA
+	 *******************************************************************************************/
+	public function deleteAffectation($_idCal, $reinitAffectations=false)
+	{
+		//Vérif le droit de supprimer l'affectation
+		if($this->deleteAffectationRight($_idCal)){
+			//Supprime l'affectation  &&  Supprime l'evt s'il n'est affecté à aucun agenda et qu'on ne modifie pas l'evt (cf. $reinitAffectations via "actionCalendarEventEdit()"). Ne pas utiliser de "$this->delete()" (sinon ça boucle)
+			Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id." AND _idCal=".(int)$_idCal);
+			if($reinitAffectations==false && Db::getVal("SELECT count(*) FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id)==0)  {parent::delete();}
+		}
+	}
+
+	/*******************************************************************************************
+	 * SURCHARGE : RECUPÈRE L'AGENDA PRINCIPAL DE L'ÉVÉNEMENT (AGENDA PERSO OU AGENDA AVEC LE DROIT D'ACCÈS LE PLUS ÉLEVÉ)
+	 *******************************************************************************************/
 	public function containerObj()
 	{
 		if($this->_containerObj===null){
 			$tmpAccessRight=0;
 			foreach($this->affectedCalendars() as $tmpCal){
-				if($tmpCal->curUserCalendar())						{$this->_containerObj=$tmpCal;	break;}
+				if($tmpCal->curUserPerso())							{$this->_containerObj=$tmpCal;	break;}
 				elseif($tmpAccessRight < $tmpCal->accessRight())	{$this->_containerObj=$tmpCal;	$tmpAccessRight=$tmpCal->accessRight();}
 			}
 		}
 		return $this->_containerObj;
 	}
 
-	/*
-	 * SURCHARGE : Url d'accès
-	 */
-	public function getUrl($display=null)
+	/*******************************************************************************************
+	 * SURCHARGE : URL D'ACCÈS
+	 *******************************************************************************************/
+	public function getUrl($display=null):string
 	{
 		//Url par défaut (en fonction de $display)
 		if(!empty($display))  {return parent::getUrl($display);}
@@ -120,10 +151,10 @@ class MdlCalendarEvent extends MdlObject
 		}
 	}
 
-	/*
-	 * Agendas (objets) où l'evenement est affecté
+	/*******************************************************************************************
+	 * AGENDAS (OBJETS) OÙ L'EVENEMENT EST AFFECTÉ
 	 * $confirmed = true / false / "all" pour récupérer toutes les affectations
-	 */
+	 *******************************************************************************************/
 	public function affectedCalendars($confirmed=true)
 	{
 		if($this->_confirmedCalendars===null){
@@ -136,33 +167,25 @@ class MdlCalendarEvent extends MdlObject
 		elseif($confirmed=="all")	{return array_merge($this->_confirmedCalendars,$this->_propositionCalendars);}
 	}
 
-	/*
-	 * Texte des agendas où l'evenement est affecté + ceux ou il est en attente de confirmation
-	 */
+	/*******************************************************************************************
+	 * TEXTE DES AGENDAS OÙ L'EVENEMENT EST AFFECTÉ + CEUX OU IL EST EN ATTENTE DE CONFIRMATION
+	 *******************************************************************************************/
 	public function affectedCalendarsLabel()
 	{
 		if(Ctrl::$curUser->isUser())
 		{
-			$calendarsConfirmed=$calendarsUnconfirmed=null;
-			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", ".$objCalendar->title;}
-			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsUnconfirmed.=", ".$objCalendar->title;}
-			if(!empty($calendarsConfirmed))		{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." ".trim($calendarsConfirmed,",")."<br>";}
-			if(!empty($calendarsUnconfirmed))	{$calendarsUnconfirmed=Txt::trad("CALENDAR_evtAffectToConfirm")." ".trim($calendarsUnconfirmed,",");}
-			return $calendarsConfirmed.$calendarsUnconfirmed;
+			$calendarsConfirmed=$calendarsProposed=null;
+			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", <i>".$objCalendar->title."</i>";}
+			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsProposed.=", <i>".$objCalendar->title."</i>";}
+			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." ".trim($calendarsConfirmed,",")."<br>";}
+			if(!empty($calendarsProposed))	{$calendarsProposed=Txt::trad("CALENDAR_evtAffectToConfirm")." ".trim($calendarsProposed,",");}
+			return $calendarsConfirmed.$calendarsProposed;
 		}
 	}
 
-	/*
-	 * SURCHARGE : droit de suppression => fullRight
-	 */
-	public function deleteRight()
-	{
-		return ($this->fullRight() && $this->isNew()==false);
-	}
-
-	/*
-	 * SURCHARGE : Menu contextuel
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		//// Evt dans plusieurs agendas
@@ -180,36 +203,21 @@ class MdlCalendarEvent extends MdlObject
 		return parent::contextMenu($options);
 	}
 
-	/*
-	 * SURCHARGE : Liste des users affectés à l'objet (users de chaque agenda ou l'evt est affeté)
-	 */
-	public function affectedUserIds()
+	/*******************************************************************************************
+	 * SURCHARGE : LISTE DES USERS AFFECTÉS À L'OBJET (USERS DE CHAQUE AGENDA OU L'EVT EST AFFETÉ)
+	 *******************************************************************************************/
+	public function affectedUserIds():array
 	{
 		$affectedUserIds=[];
 		foreach($this->affectedCalendars("all") as $tmpCal)  {$affectedUserIds=array_merge($tmpCal->affectedUserIds(),$affectedUserIds);}
 		return array_unique($affectedUserIds);
 	}
 
-	/*
-	 * Vérifie s'il s'agit d'un evenement passé. Prend éventuellement en compte la périodicité !
-	 */
+	/*******************************************************************************************
+	 * VÉRIFIE S'IL S'AGIT D'UN EVENEMENT PASSÉ (PREND EN COMPTE LA PÉRIODICITÉ)
+	 *******************************************************************************************/
 	public function isOldEvt($referenceTime)
 	{
 		return ((int)$referenceTime>0 && strtotime($this->dateEnd)<$referenceTime  &&  (empty($this->periodType) || (!empty($this->periodDateEnd) && strtotime($this->periodDateEnd)<$referenceTime)));
-	}
-
-	/*
-	 * Supprime une affectation à un agenda
-	 */
-	public function deleteAffectation($_idCal, $editEvtReinitAffectations=false)
-	{
-		//Vérif l'accès total à l'evt OU l'accès en écriture au contenu de l'agenda
-		if($this->fullRight() || Ctrl::getObj("calendar",$_idCal)->editContentRight())
-		{
-			//Supprime l'affectation à l'agenda en question
-			Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id." AND _idCal=".(int)$_idCal);
-			//Supprime l'evt s'il n'est affecté à aucun agenda (sauf en cas de modif d'evt et de réinitialisation des affectations, via "actionCalendarEventEdit()")
-			if($editEvtReinitAffectations==false && count(Db::getTab("SELECT * FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id))==0)  {parent::delete();}//Pas de "$this->delete();" (sinon boucle infinie!)
-		}
 	}
 }

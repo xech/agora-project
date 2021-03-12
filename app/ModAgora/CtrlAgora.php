@@ -14,9 +14,9 @@ class CtrlAgora extends Ctrl
 {
 	const moduleName="agora";
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		////	Controle d'accès
@@ -103,7 +103,7 @@ class CtrlAgora extends Ctrl
 				File::updateConfigFile(array("limite_espace_disque"=>$limite_espace_disque));
 			}
 			//Notif & Relance la page
-			Ctrl::addNotif(Txt::trad("modifRecorded"));
+			Ctrl::notify(Txt::trad("modifRecorded"));
 			self::redir("?ctrl=".Req::$curCtrl);
 		}
 		//Supprime un wallpaper?
@@ -112,14 +112,12 @@ class CtrlAgora extends Ctrl
 			File::rm($wallpaperPath);
 		}
 		//Affiche la page
-		$vDatas["logsTimeOut"]=array(0,30,120,360,720);
-		$vDatas["alertMessageBigSav"]=(File::datasFolderSize()>(File::sizeMo*500))  ?  "onclick=\"notify('".Txt::trad("AGORA_backupNotif",true)."','warning')\""  :  null;
-		static::displayPage("VueIndex.php",$vDatas);
+		static::displayPage("VueIndex.php");
 	}
 
-	/*
+	/*******************************************************************************************
 	 * RECUPERE UNE SAUVEGARDE
-	 */
+	 *******************************************************************************************/
 	public static function actionGetBackup()
 	{
 		//Init
@@ -152,9 +150,9 @@ class CtrlAgora extends Ctrl
 		}
 	}
 
-	/*
+	/*******************************************************************************************
 	 * ARBORESCENCE DU PATH_DATAS (avec "realPath" / "zipPath" / "emptyFolderZipPath". Fonction recursive!)
-	 */
+	 *******************************************************************************************/
 	public static function pathDatasFilesList($tmpPath=null)
 	{
 		//Init

@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur du module "Forum"
+ * CONTROLEUR DU MODULE "FORUM"
  */
 class CtrlForum extends Ctrl
 {
@@ -16,9 +16,9 @@ class CtrlForum extends Ctrl
 	public static $moduleOptions=["adminAddSubject","allUsersAddTheme"];
 	public static $MdlObjects=array("MdlForumSubject","MdlForumMessage");
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		//Init
@@ -86,9 +86,9 @@ class CtrlForum extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PLUGINS
-	 */
+	 *******************************************************************************************/
 	public static function plugin($pluginParams)
 	{
 		$pluginsList=array();
@@ -120,9 +120,9 @@ class CtrlForum extends Ctrl
 		return $pluginsList;
 	}
 
-	/*
-	 * AJAX : Active/désactive les notifications des messages par mail
-	 */
+	/*******************************************************************************************
+	 * AJAX : ACTIVE/DÉSACTIVE LES NOTIFICATIONS DES MESSAGES PAR MAIL
+	 *******************************************************************************************/
 	public static function actionNotifyLastMessage()
 	{
 		$curSubject=Ctrl::getTargetObj();
@@ -134,9 +134,9 @@ class CtrlForum extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : Edition des themes de sujet
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION DES THEMES DE SUJET
+	 *******************************************************************************************/
 	public static function actionForumThemeEdit()
 	{
 		////	Droit d'ajouter un theme?
@@ -144,7 +144,7 @@ class CtrlForum extends Ctrl
 		////	Validation de formulaire
 		if(Req::isParam("formValidate")){
 			$curObj=Ctrl::getTargetObj();
-			$curObj->controlEdit();
+			$curObj->editControl();
 			//Modif d'un theme
 			$_idSpaces=(!in_array("all",Req::getParam("spaceList")))  ?  Txt::tab2txt(Req::getParam("spaceList"))  :  null;
 			$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description").", color=".Db::formatParam("color").", _idSpaces=".Db::format($_idSpaces));
@@ -158,22 +158,22 @@ class CtrlForum extends Ctrl
 			if($tmpTheme->editRight()==false)	{unset($vDatas["themesList"][$tmpKey]);}
 			else{
 				$tmpTheme->tmpId=$tmpTheme->_targetObjId;
-				$tmpTheme->createdBy=($tmpTheme->isNew()==false)  ?  Txt::trad("creation")." : ".$tmpTheme->displayAutor()  :  null;
+				$tmpTheme->createdBy=($tmpTheme->isNew()==false)  ?  Txt::trad("creation")." : ".$tmpTheme->autorLabel()  :  null;
 			}
 		}
 		////	Affiche la vue
 		static::displayPage("VueForumThemeEdit.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Edition d'un sujet
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION D'UN SUJET
+	 *******************************************************************************************/
 	public static function actionForumSubjectEdit()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
 		if($curObj->isNew() && MdlForumSubject::addRight()==false)	{self::noAccessExit();}
-		else														{$curObj->controlEdit();}
+		else														{$curObj->editControl();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -191,14 +191,14 @@ class CtrlForum extends Ctrl
 		static::displayPage("VueForumSubjectEdit.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Edition d'un message
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION D'UN MESSAGE
+	 *******************************************************************************************/
 	public static function actionForumMessageEdit()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet

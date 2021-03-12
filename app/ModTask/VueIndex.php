@@ -43,7 +43,7 @@ $(function(){
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
-			if(Ctrl::$curContainer->editContentRight()){
+			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("TASK_addTask")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlTaskFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
@@ -85,14 +85,14 @@ $(function(){
 						<div class='objContent'>
 							<div class='objLabel objLabelBg'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\">".$tmpTask->priority()." ".$tmpTask->title."</a></div>
 							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
-							<div class='objAutorDate'>".$tmpTask->displayAutorDate()."</div>
+							<div class='objAutorDate'>".$tmpTask->autorDateLabel()."</div>
 						</div>
 					</div>
 				</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty($foldersList) && empty($tasksList)){
-			$addElement=(Ctrl::$curContainer->editContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("TASK_addTask")."</div>"  :  null;
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("TASK_addTask")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("TASK_noTask").$addElement."</div>";
 		}
 
@@ -116,7 +116,7 @@ $(function(){
 					$taskDateBegin=date("Y-m-d",$tmpTask->timeBegin);
 					$tmpTaskCells="";
 					foreach($timelineDays as $tmpDay){//Affiche les jours de la timeline (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
-						$isTaskDateBegin=($taskDateBegin==$tmpDay["curDate"]) ? true : false;
+						$isTaskDateBegin=($taskDateBegin==$tmpDay["curDate"]);
 						if($isTaskDateBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"])
 							{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
 					}

@@ -33,7 +33,7 @@ $(function(){
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
-			if(Ctrl::$curContainer->editContentRight()){
+			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FILE_addFile")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlFileFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
@@ -58,13 +58,13 @@ $(function(){
 					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$tmpFile->typeIcon()."\"></span></div>
 					<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='objIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
 					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
-					<div class='objAutorDate'>".$tmpFile->displayAutorDate()."</div>
+					<div class='objAutorDate'>".$tmpFile->autorDateLabel()."</div>
 				</div>
 			</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty($foldersList) && empty($filesList)){
-			$addElement=(Ctrl::$curContainer->editContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><img src='app/img/plus.png'> ".Txt::trad("FILE_addFile")."</div>"  :  null;
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><img src='app/img/plus.png'> ".Txt::trad("FILE_addFile")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("FILE_noFile").$addElement."</div>";
 		}
 		?>

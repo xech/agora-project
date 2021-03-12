@@ -13,6 +13,10 @@ audio						{min-width:350px;}
 	*		{-webkit-tap-highlight-color:rgba(0,0,0,0); -webkit-tap-highlight-color:transparent;}/*Pas de changement de couleur au "tap" d'une image ou autre*/
 	abbr	{border-bottom:none;}/*remplace balise "acronym" et classe ".acronym"*/
 }
+/*RESPONSIVE MOBILE*/
+@media screen and (max-width:400px){
+	body	{font-size:14px;}
+}
 /*PRINT*/
 @media print{
 	@page	{size:landscape;}
@@ -57,11 +61,11 @@ audio						{min-width:350px;}
 /*BLOCK D'OBJETS : 'BLOCK' DIPLAY*/
 .objBlocks											{visibility:hidden;}/*Ré-affiché après calcul du width des ".objContainer" (cf. "common.js")*/
 .objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px;}/*width final calculé par "mainPageDisplay()"*/
-.objBlocks .objContainerSelect						{box-shadow:0px 0px 2px 2px rgb(255, 39, 1)!important;}
+.objBlocks .objContainerSelect						{box-shadow:0px 0px 2px 2px rgb(255, 47, 0)!important;}
 .objBlocks .objIcon									{width:90px; text-align:center;}
 .objBlocks .objIcon img								{max-width:100%; max-height:100%;}
 .objBlocks .objDetails, .objBlocks .objAutorDate	{display:none;}
-.objBlocks .objFolders .objIcon img					{max-width:80%; max-height:80%;}/*affichage des dossiers (fichier/contact/lien/tache)*/
+.objBlocks .objFolders .objIcon img					{max-width:90%!important; max-height:90%!important;}/*affichage des dossiers (fichier/contact/lien/tache)*/
 .objBlocks .objContentCenter .objIcon				{position:absolute; width:100%!important; height:100%!important; overflow:hidden;}/*icone centrée (dossier ou type de fichier) OU image "fullsize"*/
 .objBlocks .objContentCenter .objIcon img			{margin-top:20px;}/*icone de dossier ou type de fichier (..mais pas les "thumbnails")*/
 .objBlocks .objContentCenter .objLabel				{position:absolute; bottom:0px; width:100%; border-radius:0px 0px 2px 2px; padding:5px 2px 5px 2px; text-align:center;}/*label "bandeau" d'un dossier/fichier (modFile)*/
@@ -82,6 +86,7 @@ audio						{min-width:350px;}
 	.objDetails,.objAutorDate						{display:none!important;}/*!important car prioritaire sur tout*/
 	.objContentScroll								{overflow-y:hidden;}/*pas d'ascenseur en responsive !*/
 	.objBlocks .objContainer						{margin:1px;}/*tester avec tasks & users*/
+	.objBlocks .objFolders .objIcon img				{max-width:75%!important; max-height:75%!important;}/*affichage des dossiers (fichier/contact/lien/tache)*/
 }
 
 /*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
@@ -110,7 +115,7 @@ audio						{min-width:350px;}
 #pageFull #pageModMenu					{border-radius:0px 2px 2px 0px;}/*Menus des modules (flottant si besoin)*/
 #pageModuleMenu .miscContainer			{padding:5px;}
 .menuLaunch								{display:inline-block; cursor:pointer;}/*launcher du menu contextuel*/
-.menuContext							{display:none; position:absolute; z-index:40; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:2px; box-shadow:0px 0px 3px 2px rgba(0,0,0,0.3);}/*cursor 'default' pour pas prendre celui du block conteneur (de l'objet ou autre))*/
+.menuContext							{display:none; position:absolute; z-index:100; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:2px; box-shadow:0px 0px 3px 2px rgba(0,0,0,0.3);}/*cursor 'default' pour pas prendre celui du block conteneur (de l'objet ou autre))*/
 .menuContext .menuLine>div				{line-height:18px;}
 .menuContext .menuLine>div:last-child	{white-space:nowrap;}/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
 .menuContext hr							{margin:3px 0px!important;}
@@ -129,10 +134,10 @@ audio						{min-width:350px;}
 .objBottomMenu a						{margin-left:5px; margin-right:5px;}
 
 /*** INPUTS*/
-input[type=text], input[type=password], input[type=file], textarea, select, button	{box-shadow:0px 0px 6px rgba(0,0,0,0.3); transition:box-shadow 0.4s ease-in-out; box-sizing:border-box; min-height:28px; margin:0px; padding:2px; border:#aaa 1px solid; border-radius:2px; outline:none; font-family:inherit; font-size:inherit; font-weight:normal;}/*Attention: sans "box-sizing" le padding/border sera pas pris en compte dans le height des "input", contrairement aux "button" and co*/
-input[type=text]:hover, input[type=password]:hover, textarea:hover					{box-shadow:0px 0px 6px rgba(0,0,0,0.7);}
-input[type=text]:focus, input[type=password]:focus, textarea:focus					{box-shadow:0px 0px 6px rgba(0,100,200,0.8); border:#aad 1px solid;}
-.focusRed																			{border:#b33 solid 1px!important;}
+input[type=text], input[type=password], input[type=file], input[type=url], textarea, select, button	{box-shadow:0px 0px 6px rgba(0,0,0,0.3); transition:box-shadow 0.4s ease-in-out; box-sizing:border-box; min-height:28px; margin:0px; padding:2px; border:#aaa 1px solid; border-radius:2px; outline:none; font-family:inherit; font-size:inherit; font-weight:normal;}/*Attention: sans "box-sizing" le padding/border sera pas pris en compte dans le height des "input", contrairement aux "button" and co*/
+input[type=text]:hover, input[type=password]:hover, input[type=url]:hover, textarea:hover			{box-shadow:0px 0px 6px rgba(0,0,0,0.7);}
+input[type=text]:focus, input[type=password]:focus, input[type=url]:hover, textarea:focus			{box-shadow:0px 0px 6px rgba(0,100,200,0.8); border:#aad 1px solid;}
+.focusRed																							{border:#b33 solid 1px!important;}
 input[type=radio], input[type=checkbox]	{vertical-align:middle;}
 input[type=text], input[type=password]	{max-width:100%;}
 input[type=file]						{height:auto;}
@@ -157,7 +162,6 @@ label									{cursor:pointer;}
 	input[type=text], input[type=password], input[type=file], textarea, select, button	{min-height:33px;}
 	.submitButtonInline	button					{min-height:33px;}/*height: cf. input[type=text]*/
 	textarea									{height:40px;}
-	.ui-datepicker-calendar .ui-state-default	{height:24px!important;}/*surcharge du datepicker*/
 }
 
 /*** INPUTS D'EDITION D'OBJET*/
@@ -179,7 +183,7 @@ form .objField								{margin-top:8px; margin-bottom:8px;}/*surcharge*/
 /*** CONTACTS & USERS (PERSONS)*/
 .personLabelImg								{margin-bottom:15px; text-align:center;}
 .personLabelImg img							{max-width:100%; max-height:200px;}
-.personImgSmall								{border-radius:50%; height:25px; width:25px;}
+.personImgSmall								{border-radius:50%; height:30px; width:30px;}
 .objBlocks .objContainer.objPerson			{height:140px; min-height:140px; width:250px; min-width:250px; max-width:450px;}/*surcharge du height du ".objContainer"*/
 .objPerson .objIcon							{padding-left:0px!important; padding-right:10px;}
 .objPersonDetail							{line-height:16px; font-weight:normal;}
@@ -219,6 +223,21 @@ form .objField								{margin-top:8px; margin-bottom:8px;}/*surcharge*/
 	.lightboxContent .objMenuBurgerInline		{float:left; margin-left:5px; margin-right:10px;}/*Menu context d'un objet dans une fancybox (evt, task, contact, user)*/
 }
 
+/*** SURCHARGES JQUERY & PLUGINS*/
+.tooltipster-box				{box-shadow:0px 0px 5px 3px rgba(50,50,50,0.5)!important;}	/*Tooltipster : infobulles "title"*/
+.tooltipster-content			{color:#555!important; padding:15px!important;}				/*idem*/
+.toast-container a, .toast-container a:hover	{text-decoration:underline; color:#fff;}	/*Toastmessage : "notify()"*/
+.ui-state-default				{height:18px;}												  /*Datepicker Jquery : cellules des jours*/
+.ui-state-active				{font-weight:bold!important;}								  /*idem : jour sélectionné*/
+.jconfirm-title					{line-height:25px;}											  /*JqueryConfirm : titre*/
+.jconfirm-buttons button		{margin:10px!important;}									  /*idem : bouton plus espacés*/
+.jconfirm-buttons .btn-green	{background-color:#25a55b!important;}						/*idem : bouton vert surchargé*/
+@media screen and (max-width:440px){
+	.jconfirm-box				{min-width:350px;}							/*JqueryConfirm : taille minimum de la box*/
+	.jconfirm-title				{font-size:20px;}							/*idem : titre*/
+	.jconfirm-buttons button	{width:100%; white-space:normal!important;}	/*idem : retour auto à la ligne*/
+}
+
 /*** DIVERS*/
 .infos							{border:dotted 1px #aaa; margin:7px; padding:10px; border-radius:5px; text-align:center; line-height:22px;}
 .loadingImg						{display:none; position:fixed; bottom:10px; right:10px;}
@@ -232,33 +251,26 @@ form .objField								{margin-top:8px; margin-bottom:8px;}/*surcharge*/
 .colorPickerTable				{display:table!important; padding:0px;}/*"!important" car interfère avec "#respMenuContent>div>div" ci-dessus*/
 .colorPickerRow					{display:table-row!important;}
 .colorPickerCell				{display:table-cell; width:15px; height:15px; cursor:pointer;}
-.proposedEventLabel				{padding:5px;}
-.proposedEventList				{margin:5px; padding:5px; background-color:#eee; color:#555; border-radius:5px;}
-.proposedEventList li			{cursor:pointer; margin:0px; margin-left:35px; padding:5px; list-style-type:circle;}
-.proposedEventList li:hover		{background-color:#f5f5f5;}
-.proposedEventList img			{max-height:16px; margin-right:5px;}
 .pluginModule					{margin-top:15px;}
 .pluginModule img				{float:right; margin-top:-5px; max-height:24px;}
 .cursorHelp						{cursor:help;}
 .cursorDefault					{cursor:default;}
 [id^='tagAttachedFile'] img, [id^='tagAttachedFile'] video	{max-width:100%; margin-top:5px;}
 .pathMenu						{display:table; padding:5px 10px; margin-bottom:10px;}
-.pathMenu img					{max-height:25px;}
+.pathMenu img					{max-height:26px;}
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
 .pathMenu>div.pathIconMenu		{cursor:pointer;}
 .pathMenu>div.pathContextMenu	{padding-bottom:5px;}/*recentre l'icone du menu contextuel*/
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle; height:20px;}
 .categoryColor,.themeColor		{display:inline-block; width:15px; height:15px; margin-right:3px; margin-bottom:3px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement ou d'un theme du forum*/
-.tooltipster-content			{color:#555!important; padding:15px!important;}/*tooltip*/
-.tooltipster-box				{box-shadow:0px 0px 5px 3px rgba(50,50,50,0.5)!important;}/*tooltip*/
-.toast-container a, .toast-container a:hover	{text-decoration:underline; color:#fff;}/*notifications*/
-.ui-state-active				{font-weight:bold!important;}/*date sélectionné du datepicker "jqueryUI"*/
 .orLabel						{display:table; width:100%; margin:20px 0px 20px 0px;}
 .orLabel div					{display:table-cell; width:45%; text-align:center;}
 .orLabel div:nth-child(2)		{width:10%; min-width:70px; opacity:0.7; font-size:1.1em;}
 .orLabel hr						{background:#ddd;}
 .noSelect, #headerBar, .objContainer, .miscContainer, label	{user-select:none;}/*pas de sélection sur les principaux blocs d'elements (préfixe "-webkit" pour Microsoft Edge)*/
+.blink, .pulsate				{animation: blinker 1s linear infinite;}/*equivalent css du jQuery du "pulsate"*/
+@keyframes blinker				{ 50% {opacity:0;} }
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	#headerBar		{border-top:1px solid #ddd;}/*"border-top" pour séparer le menu des statusbars des mobiles*/

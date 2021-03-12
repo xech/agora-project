@@ -7,9 +7,48 @@
 */
 
 
-/*
+/**************************************************************************************************
+ * SURCHARGE JQUERY POUR AJOUTER DE NOUVELLES FONCTIONS
+ **************************************************************************************************/
+////	Vitesse par défaut des effets "fadeIn()", "toggle()", etc
+$.fx.speeds._default=100;
+////	Verifie l'existance d'un element
+$.fn.exist=function(){
+	return (this.length>0);
+};
+////	Verifie si l'element n'a pas de valeur et s'il existe (idem PHP)
+$.fn.isEmpty=function(){
+	return (this.length==0 || this.val().length==0);
+};
+////	Vérifie si l'element est un email (cf. "isMail()")
+$.fn.isMail=function(){
+	var mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return mailRegex.test(this.val());
+};
+////	Clignotement / "Blink" d'un element (toute les secondes et 5 fois par défaut : cf. "times")
+$.fn.pulsate=function(times){
+	if(typeof times=="undefined")  {var times=5;}
+	this.effect("pulsate",{times:parseInt(times-1)},parseInt(times*1000));
+};
+////	Focus sur un champ surligné en rouge
+$.fn.focusRed=function(){
+	this.addClass("focusRed").focus();
+};
+////	Renvoie la hauteur totale des élements sélectionnées (marge comprise)
+$.fn.totalHeight=function(){
+	var tmpHeight=0;
+	this.each(function(){ tmpHeight+=$(this).outerHeight(true); });
+	return Math.floor(tmpHeight);
+};
+////	Scroll vers un element de la page
+$.fn.scrollTo=function(){
+	var scrollTopPos=$(this).offset().top - $("#headerBar,#headerBarCenter").height() - 10;//Soustrait la barre de menu principale fixe (#headerBar ou #headerBarCenter en fonction de la page)
+	$("html,body").animate({scrollTop:scrollTopPos},300);
+};
+
+/**************************************************************************************************
  * DOCUMENT READY : ENREGISTRE LE "windowWidth" DE LA PAGE (RECUPERE COTE SERVEUR)
- */
+ **************************************************************************************************/
 $(function(){
 	if(isMainPage==true){
 		var forceReload=(isTouchDevice() && /windowWidth/i.test(document.cookie)==false);	//Cookie "windowWidth" absent sur un appareil tactile : force un premier reload (cf. affichage des "respMenu")
@@ -29,43 +68,18 @@ function windowWidthCookie(forceReload){
 	},500);
 }
 
-/*
+/**************************************************************************************************
  * DOCUMENT READY : LANCE LES FONCTIONS DE BASE
- */
+ **************************************************************************************************/
 $(function(){
 	mainPageDisplay(true);	//Title via Tooltipster / Gallerie d'image via LightBox / largeur des blocks d'objet / etc.
 	initMenuContext();		//Initialise les menus contextuels
 });
 
-/*
- * DOCUMENT READY : AJOUTE DE NOUVELLES FONCTIONS À JQUERY
- */
+/**************************************************************************************************
+ * DOCUMENT READY : SURCHARGE CERTAINES FONCTION JQUERY => "lightboxResize()"
+**************************************************************************************************/
 $(function(){
-	////	Vitesse par défaut des effets "fadeIn()", "toggle()", etc
-	$.fx.speeds._default=100;
-	////	Verifie l'existance d'un element
-	$.fn.exist=function(){
-		return (this.length>0) ? true : false;
-	};
-	////	Verifie si l'element n'a pas de valeur ("empty") ...et aussi s'il existe
-	$.fn.isEmpty=function(){
-		return (this.length==0 || this.val().length==0) ? true : false;
-	};
-	////	Vérifie si l'element est un email (cf. "isMail()")
-	$.fn.isMail=function(){
-		var mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-		return mailRegex.test(this.val());
-	};
-	////	Fait clignoter un element avec l'effet "pulsate"/"blink" (5 fois par défaut. Toujours lancé après le chargement de la page!)
-	$.fn.pulsate=function(times){
-		if(typeof times=="undefined")  {var times=5;}
-		this.effect("pulsate",{times:parseInt(times-1)},parseInt(times*1000));
-	};
-	////	Focus sur un champ surligné en rouge
-	$.fn.focusRed=function(){
-		this.addClass("focusRed").focus();
-	};
-	////	Affichage/Toggle d'element : "surcharge" des fonctions de Jquery pour appliquer le "lightboxResize()"
 	if(isMainPage!==true)
 	{
 		var fadeInBASIC=$.fn.fadeIn;
@@ -83,11 +97,10 @@ $(function(){
 	}
 });
 
-
-/*
+/**************************************************************************************************
  * DOCUMENT READY : INITIALISE LES PRINCIPAUX TRIGGERS
  * => Click/DblClick sur ".objContainer", Menu flottant, etc.
- */
+ **************************************************************************************************/
 $(function(){
 	////	Triggers sur Mobile
 	if(isMobile()){
@@ -133,10 +146,10 @@ $(function(){
 	}
 });
 
-/*
+/**************************************************************************************************
  * DOCUMENT READY : INITIALISE LES CONTROLES DES CHAMPS
  * => Datepickers, Timepicker, FileSize controls, Integer, etc.
- */
+ **************************************************************************************************/
 $(function(){
 	////	Formulaire modifié : passe "confirmCloseForm" à "true" pour la confirmation de fermeture (".noConfirmClose" : sauf les forms de connexion and co. Ajoute "parent" pour cibler les "form" de lightbox)
 	setTimeout(function(){
@@ -202,7 +215,7 @@ $(function(){
 				if(timestampBegin > timestampEnd)
 				{
 					//Date/heure de fin reculé : message d'erreur
-					if($(this).hasClass("dateEnd") || $(this).hasClass("timeEnd"))	{notify(labelDateBeginEndControl);}
+					if($(this).hasClass("dateEnd") || $(this).hasClass("timeEnd"))  {notify(labelDateBeginEndControl);}
 					//Modif la date/heure de fin ("setTimeout" pour éviter une re-modif du timePicker)
 					setTimeout(function(){
 						$(".dateEnd").val($(".dateBegin").val());
@@ -235,16 +248,16 @@ $(function(){
 	$("form input:not([name*='connectLogin'])").attr("autocomplete","off");
 });
 
-/*
+/**************************************************************************************************
  * DOCUMENT READY : INITIALISE L'AFFICHAGE DES PAGES PRINCIPALES
  * => Menu flottant / Largeur des blocks d'objet / Clic sur les blocks d'objet / Etc.
- */
+ **************************************************************************************************/
 function mainPageDisplay(firstLoad)
 {
 	////	Affiche les "Title" avec Tooltipster
-	tooltipsterOptions={contentAsHTML:true,delay:500,maxWidth:600,theme:"tooltipster-shadow"};//variable globale
-	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);
-	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
+	tooltipsterOptions={theme:"tooltipster-shadow",delay:500,maxWidth:1000,animation:"grow",contentAsHTML:true};//Variable globale
+	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);					//Applique le tooltipster (sauf si "noTooltip" est spécifié, ou le tooltip contient une URL, ou le title est vide)
+	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));							//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
 
 	////	Fancybox des images (dans les news, etc) & inline (contenu html)
 	var fancyboxImagesButtons=(isMobile()) ? ['close'] : ['fullScreen','thumbs','close'];
@@ -278,14 +291,14 @@ function mainPageDisplay(firstLoad)
 
 		////	Affichage du footer
 		$("#pageFooterHtml").css("max-width", parseInt($(window).width()-$("#pageFooterIcon").width()-20));//Pour que "pageFooterHtml" ne se superpose pas à "pageFooterIcon"
-		setTimeout(function(){  $("#pageFull,#pageCenter").css("margin-bottom",footerHeight());  },300);//"margin-bottom" sous le contenu principal : pour pas être masqué par le Footer. Timeout car "footerHeight()" est fonction du "#livecounterMain" chargé en Ajax..
+		setTimeout(function(){ $("#pageFull,#pageCenter").css("padding-bottom",footerHeight()); },300);//Padding (pas margin) sous le contenu principal, pour pas être masqué par le Footer. Timeout car "footerHeight()" est fonction du "#livecounterMain" chargé en Ajax..
 	}
 }
 
-/*
+/**************************************************************************************************
  * DOCUMENT READY : INITIALISE LES MENUS CONTEXTUELS
  * chaque launcher (icone/texte/block d'objet) doit avoir la propriété "for" correspondant à l'ID du menu  &&  une class "menuLaunch" (sauf pour les launcher de block d'objet) 
- */
+ **************************************************************************************************/
 function initMenuContext()
 {
 	////	MENU RESPONSIVE (width<=1024)
@@ -394,35 +407,35 @@ function hideRespMenu(swipeCurrentX)
 	}
 }
 
-/*
- * Controle s'il s'agit d'un mail
- */
+/**************************************************************************************************
+ * CONTROLE S'IL S'AGIT D'UN MAIL
+ **************************************************************************************************/
 function isMail(mail)
 {
 	var mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return mailRegex.test(mail);
 }
 
-/*
- * Controle la validité d'un password : au moins 6 caractères && au moins un chiffre && au moins une lettre
- */
+/**************************************************************************************************
+ * CONTROLE LA VALIDITÉ D'UN PASSWORD (au moins 6 caractères, un chiffre et une lettre)
+ **************************************************************************************************/
 function isValidPassword(password)
 {
 	return (password.length>=6 && /[0-9]/.test(password) && /[a-z]/i.test(password));
 }
 
-/*
- * Cherche une expression dans une chaine de caracteres
- */
+/**************************************************************************************************
+ * CHERCHE UNE EXPRESSION DANS UNE CHAINE DE CARACTERES
+ **************************************************************************************************/
 function find(needle, haystack)
 {
 	//Converti tout en minuscule & recherche la position de needle dans haystack
 	if(typeof haystack!="undefined")  {return (haystack.toString().toLowerCase().indexOf(needle.toString().toLowerCase()) >= 0);}
 }
 
-/*
- * Affiche un message de notification (via le plugin Jquery "toastmessage")
- */
+/**************************************************************************************************
+ * AFFICHE UNE NOTIFICATION (via le Jquery "toastmessage")
+ **************************************************************************************************/
 function notify(curMessage, typeNotif)
 {
 	if(typeof curMessage!="undefined")
@@ -442,85 +455,73 @@ function notify(curMessage, typeNotif)
 	}
 }
 
-/*
- * Controle les redirections de page
- */
+/**************************************************************************************************
+ * CONTROLE LES REDIRECTIONS DE PAGE : CONFIRME SI BESOIN LA FERMETURE D'UN FORMULAIRE
+ **************************************************************************************************/
 function redir(adress)
 {
-	//On annule la fermeture d'un formulaire en cours  ?
-	if(closeFormCanceled())  {return false;}
-	//Redirection : depuis une page principale ou une lightbox
-	location.href=adress;
+	if(closeFormConfirmed()==false)  {return false;}
+	location.href=adress;//Redirection depuis une page principale ou lightbox
 }
 /*Idem avec "<a href>"*/
 $(function(){
 	$("a").click(function(event){
-		//On annule la fermeture d'un formulaire en cours  ?
-		if(closeFormCanceled())  {event.preventDefault();  return false;}
+		if(closeFormConfirmed()==false)  {event.preventDefault(); return false;}
 	});
 });
 
-/*
- * Annule la fermeture du formulaire en cours d'édition (lightbox OU page principale)
- */
-function closeFormCanceled()
+/**************************************************************************************************
+ * CONFIRME SI BESOIN LA FERMETURE D'UN FORMULAIRE EN COURS D'EDITION  (page principale ou lightbox)
+ **************************************************************************************************/
+function closeFormConfirmed()
 {
-	if(windowParent.confirmCloseForm==true && confirm(windowParent.labelConfirmCloseForm)==false)	{return true;}//Annule la fermeture du formulaire
-	else																							{windowParent.confirmCloseForm=false;}//Réinit le "confirmCloseForm" pour éviter un nouveau "confirm()" via un "redir()"
+	if(windowParent.confirmCloseForm==false || confirm(windowParent.labelConfirmCloseForm))	{windowParent.confirmCloseForm=false;  return true;}	//Réinit "confirmCloseForm" pour éviter un autre "confirm()" via un "redir()"
+	else																					{return false;}											//Annule la fermeture du formulaire
 }
 
-/*
- * Ouvre une lightbox via une fonction (et non des "href" : plus souple + n'interfère pas avec "stopPropagation()" des "menuContext")
- * tests : edit object, open pdf/mp3, open mp4/webm, open userMap, open inline html
- */
+/**************************************************************************************************
+ * OUVRE UNE LIGHTBOX
+ * Ne pas lancer via via "href" : plus souple et n'interfère pas avec "stopPropagation()" des "menuContext"
+ * tester via : edit object, open pdf/mp3/mp4, userMap, inline html
+ **************************************************************************************************/
 function lightboxOpen(urlSrc)
 {
-	////	OUVRE UNE LIGHTBOX DEPUIS UNE LIGHTBOX (MODE RECURSIF)
+	//// APPEL DEPUIS UNE LIGHTBOX : RELANCE DEPUIS LA PAGE "PARENT"
 	if(isMainPage!==true)						{parent.lightboxOpen(urlSrc);}
-	/////	OUVRE UN PDF DANS UNE NOUVELLE PAGE (EN RESPONSIVE)
+	///// PDF EN RESPONSIVE : OUVRE UNE NOUVELLE PAGE
 	else if(/pdf$/i.test(urlSrc) && isMobile())	{window.open(urlSrc);}
-	////	OUVRE UN LIGHTBOX "INLINE" AVEC LECTEUR MP3/VIDEO
+	//// LIGHTBOX "INLINE" : LECTEUR MP3/VIDEO
 	else if(/(mp3|mp4|webm)$/i.test(urlSrc))
 	{
-		//MP3 OU VIDEO (tester aussi en responsive)
-		if(/mp3$/i.test(urlSrc))	{var urlSrcBis='<div style="padding:45px;"><audio id="lightboxMedia" controls><source src="'+urlSrc+'" type="audio/mpeg">HTML5 is required</audio></div>';}
-		else						{var urlSrcBis='<video id="lightboxMedia" controls><source src="'+urlSrc+'" type="video/'+extension(urlSrc)+'">HTML5 is required</video>';}
-		//Ouverture du player Audio/Video
+		//Ouverture du player Audio/Video (tester en responsive)
+		if(/mp3$/i.test(urlSrc))	{var mediaUrlSrc='<div><audio id="lightboxMedia" controls autoplay><source src="'+urlSrc+'" type="audio/mpeg">HTML5 required</audio></div>';}
+		else						{var mediaUrlSrc='<video id="lightboxMedia" controls autoplay><source src="'+urlSrc+'" type="video/'+extension(urlSrc)+'">HTML5 required</video>';}
 		$.fancybox.open({
 			type:"inline",
-			src:urlSrcBis,
+			src:mediaUrlSrc,
 			opts:{
-				buttons:[],//mini bouton 'close' déjà affiché par défaut..
-				afterShow:function(){
-					$.fancybox.getInstance().update();//Dimentionne le lightbox en fonction du contenu
-					$("#lightboxMedia").get(0).play();//Lance la lecture auto (pas dans la balise <video> car sinon la lecture continue à la fermeture du lightbox)
-				}
+				buttons:['close'],											//Affiche uniquement le bouton "close"
+				afterShow:function(){ $(".fancybox-close-small").hide(); }	//Masque la petite icone "close" affichée pour les mp3/video
 			}
 		});
 	}
-	////	OUVRE UNE LIGHTBOX "IFRAME" : AFFICHAGE PAR DEFAUT
-	else
-	{
+	//// LIGHTBOX "IFRAME" : AFFICHAGE PAR DEFAUT
+	else{
 		$.fancybox.open({
 			type:"iframe",
 			src:urlSrc,
 			opts:{
-				buttons:['close'],//Affiche uniquement le bouton "close"
-				autoFocus:false,//Pas de focus automatique sur le 1er element du formulaire!
-				afterShow:function(){
-					$.fancybox.getInstance().update();//Dimentionne le lightbox en fonction du contenu
-				},
-				beforeClose:function(){
-					if(closeFormCanceled())  {return false;}//Annule la fermeture du formulaire?
-				}
+				buttons:['close'],										//Affiche uniquement le bouton "close"
+				autoFocus:false,										//Pas de focus automatique sur le 1er element du formulaire!
+				beforeClose:function(){ return closeFormConfirmed(); }	//Confirme si besoin la fermeture d'un formulaire
 			}
 		});
 	}
 }
 
-/*
- * Width d'une Lightbox : appelé depuis une lightbox (530px minimum pour l'édition d'un objet : cf. menu des droits d'accès)
- */
+/**************************************************************************************************
+ * RESIZE LE WIDTH D'UNE LIGHTBOX  : APPELÉ DEPUIS UNE LIGHTBOX
+ **************************************************************************************************/
 function lightboxSetWidth(iframeBodyWidth)
 {
 	//Page entièrement chargé (pas de "$(function(){})" sinon peut poser problème sur Firefox & co)
@@ -535,9 +536,9 @@ function lightboxSetWidth(iframeBodyWidth)
 	};
 }
 
-/*
- * Agrandit si besoin la hauteur d'une Lightbox Iframe :  Suite à un fadeIn(), FadeOut(), etc  OU  au chargement du TinyMce
- */
+/**************************************************************************************************
+ * AGRANDIT SI BESOIN LA HAUTEUR D'UNE LIGHTBOX IFRAME  (Suite à un fadeIn(), FadeOut().. ou chargement du TinyMce)
+ **************************************************************************************************/
 function lightboxResize()
 {
 	//Resize si le lightbox est visible
@@ -556,36 +557,36 @@ function lightboxResize()
 	}
 }
 
-/*
- * Ferme le lightbox & reload la page principale (appelé depuis le lightbox)
- */
+/**************************************************************************************************
+ * FERME LE LIGHTBOX & RELOAD LA PAGE PRINCIPALE (appelé depuis le lightbox)
+ **************************************************************************************************/
 function lightboxClose(urlSpecific, urlMoreParms)
 {
 	var reloadUrl=(!isEmptyValue(urlSpecific))  ?  urlSpecific  :  parent.location.href;				//Url passée en parametre OU Url de la page "parent"
-	if(find("msgNotif",reloadUrl))	{reloadUrl=reloadUrl.substring(0,reloadUrl.indexOf('&msgNotif'));}	//Enlève si besoin les anciens parametres "msgNotif"
-	if(!isEmptyValue(urlMoreParms))	{reloadUrl+=urlMoreParms;}											//Ajoute si besoin de nouveaux parametres "msgNotif" ou autre
+	if(find("notify",reloadUrl))	{reloadUrl=reloadUrl.substring(0,reloadUrl.indexOf('&notify'));}	//Enlève si besoin les anciens parametres "notify" déjà présents dans l'url
+	if(!isEmptyValue(urlMoreParms))	{reloadUrl+=urlMoreParms;}											//Ajoute si besoin de nouveaux parametres "notify"
 	parent.location.replace(reloadUrl);																	//Reload la page principale
 }
 
-/*
- * Navigation en mode "mobile" si le width est inférieur à 1024px  (IDEM Req.php && && Common.css)
- */
+/**************************************************************************************************
+ * NAVIGATION EN MODE "MOBILE" SI LE WIDTH EST INFÉRIEUR À 1024PX  (IDEM Req.php && && Common.css)
+ **************************************************************************************************/
 function isMobile()
 {
 	return (windowParent.document.body.clientWidth<1024);
 }
 
-/*
- * Navigation sur un appareil tactile (Android/Ipad/Iphone)
- */
+/**************************************************************************************************
+ * NAVIGATION SUR UN APPAREIL TACTILE (Android/Ipad/Iphone ..ou Ipad OS qui imite la version MacOS)
+ **************************************************************************************************/
 function isTouchDevice()
 {
-	return (/android|iphone|ipad|BlackBerry/i.test(navigator.userAgent));
+	return (navigator.maxTouchPoints>2 && /android|iphone|ipad|Macintosh/i.test(navigator.userAgent));
 }
 
-/*
- * Confirmer une suppression puis rediriger pour effectuer la suppresion
- */
+/**************************************************************************************************
+ * CONFIRME UNE SUPPRESSION PUIS REDIRIGE POUR EFFECTUER LA SUPPRESION
+ **************************************************************************************************/
 function confirmDelete(redirUrl, labelConfirmDeleteDbl, ajaxControlUrl)
 {
 	////	"Confirmer la suppression ?"
@@ -604,39 +605,30 @@ function confirmDelete(redirUrl, labelConfirmDeleteDbl, ajaxControlUrl)
 	}
 }
 
-/*
- * Scroll vers un element
- */
-function toScroll(thisSelector)
-{
-	var toScrollTop=Math.round($(thisSelector).offset().top - $("#headerBar,#headerMain").outerHeight(true) - 20);//Enlève la hauteur de la barre de menu de menu principale (fixe)
-	$("html,body").animate({scrollTop:toScrollTop},200);
-}
-
-/*
- * Extension d'un fichier (sans le point!)
- */
+/**************************************************************************************************
+ * EXTENSION D'UN FICHIER (SANS LE POINT)
+ **************************************************************************************************/
 function extension(fileName)
 {
 	if(isEmptyValue(fileName)==false)	{return fileName.split('.').pop().toLowerCase();}
 }
 
-/*
- * Vérifie si une valeure est "empty" (équivalent à php)
- */
+/**************************************************************************************************
+ * VÉRIFIE SI UNE VALEURE EST "EMPTY" (idem PHP)
+ **************************************************************************************************/
 function isEmptyValue(value)
 {
 	return (value==null || typeof value=="undefined" || value=="" || value==0);
 }
 
 
-/***************************************************************************************************************************/
+/******************************************************************************************************************************************/
 /*******************************************	SPECIFIC FUNCTIONS	********************************************************/
-/***************************************************************************************************************************/
+/******************************************************************************************************************************************/
 
-/*
- * Calcul la hauteur disponible pour le contenu principal de la page
- */
+/**************************************************************************************************
+ * CALCUL LA HAUTEUR DISPONIBLE POUR LE CONTENU PRINCIPAL DE LA PAGE
+ **************************************************************************************************/
 function availableContentHeight()
 {
 	//Height de la fenêtre (mais pas la page), moins la Position "top" du conteneur, moins le paddingTop du conteneur, moins le paddingBottom du conteneur, moins le Height du footer
@@ -644,9 +636,9 @@ function availableContentHeight()
 	return Math.round($(window).height() - $(containerSelectors).offset().top - parseInt($(containerSelectors).css("padding-top")) - parseInt($(containerSelectors).css("padding-bottom")) - footerHeight());
 }
 
-/*
- * Calcul la hauteur du footer
- */
+/**************************************************************************************************
+ * CALCUL LA HAUTEUR DU FOOTER
+ **************************************************************************************************/
 function footerHeight()
 {
 	//Icone du footer / Text html du footer  /  LivecounterMain (recup la hauteur préétablie via CSS, le contenu du livecounter est chargé après via Ajax)
@@ -654,37 +646,12 @@ function footerHeight()
 	$("#pageFooterHtml:visible,#pageFooterIcon:visible,#livecounterMain:visible").each(function(){
 		if($(this).html().length>0 && footerHeightTmp<$(this).outerHeight(true))  {footerHeightTmp=$(this).outerHeight(true);}//Controle du ".length" car le contenu peut être vide mais quant même affiché ("&nbsp;" & co)
 	});
-	return footerHeightTmp+2;//+ 2px de marge (cf. "blox-shadow" des blocs)
+	return footerHeightTmp+3;//+ 3px (cf. "blox-shadow" des blocs)
 }
 
-/*
- * Confirmation (..ou pas) d'ajout d'un événement (modules Dashboard et Calendar)
- */
-function proposedEventConfirm(_idCal, _idEvt, proposedEventDivId)
-{
-	//Init
-	var confirmed=false;
-	var ajaxUrl="?ctrl=calendar&action=proposedEventConfirm&targetObjId=calendar-"+_idCal+"&_idEvt="+_idEvt;
-	//Demande de confirmation
-	if(confirm(labelEvtConfirm))			{ajaxUrl+="&confirmed=1";  confirmed=true;}//Evt ajouté
-	else if(confirm(labelEvtConfirmNot))	{ajaxUrl+="&confirmed=0";  confirmed=true;}//Evt rejeté (propostion refusée)
-	//Lance la requête en Ajax
-	if(confirmed==true){
-		$.ajax(ajaxUrl).done(function(){
-			//Recharge la page et le calendrier
-			if(urlGetParam("ctrl")=="calendar")  {redir("?ctrl=calendar");}
-			//Masque la proposition d'evt et masque tout le menu si ya plus aucune proposition
-			else{
-				$("#"+proposedEventDivId).hide();
-				if($(".proposedEventList li:visible").length==0)  {$(".proposedEventLabel,.proposedEventList").hide();}
-			}
-		});
-	}
-}
-
-/*
- * Affectations des Spaces<->Users : userEdit OU spaceEdit (Click de Label/Checkbox)
- */
+/**************************************************************************************************
+ * AFFECTATIONS DES SPACES<->USERS : USEREDIT OU SPACEEDIT (Click de Label/Checkbox)
+ **************************************************************************************************/
 function initSpaceAffectations()
 {
 	////	Sélectionne "allUsers" : toutes les checkboxes avec droit "user" sont passées en "disabled"+"checked" (sinon on les réactive et uncheck)
@@ -722,9 +689,9 @@ function initSpaceAffectations()
 	spaceAffectLabelStyle();
 };
 
-/*
- * Applique un style à chaque label, en fonction de la checkbox cochée
- */
+/**************************************************************************************************
+ * APPLIQUE UN STYLE À CHAQUE LABEL, EN FONCTION DE LA CHECKBOX COCHÉE
+ **************************************************************************************************/
 function spaceAffectLabelStyle()
 {
 	//Réinit le style des affectations
@@ -740,23 +707,21 @@ function spaceAffectLabelStyle()
 	});
 }
 
-/*
- * Récupère la valeur d'un parametre dans une Url
- */
-function urlGetParam(paramName, curUrl)
+/**************************************************************************************************
+ * RÉCUPÈRE LA VALEUR D'UN PARAMETRE DANS UNE URL
+ **************************************************************************************************/
+function urlGetParam(paramName, url)
 {
-	//Url de la page courante || Url passée en paramètre (iframe ou autre)
-	if(typeof curUrl=="undefined")  {curUrl=window.location.href;}
-	//Créé un objet 'URLSearchParams' et envoi le paramètre s'il existe (sauf pour IE)
-	if(/(msie|trident)/i.test(window.navigator.userAgent)==false){
-		const urlParams=new URLSearchParams(curUrl);
-		if(urlParams.has(paramName))  {return urlParams.get(paramName);}
+	if(/(msie|trident)/i.test(window.navigator.userAgent)==false){			//Verif si le browser prend en charge "URL.SearchParams" (Safari aussi?)
+		if(typeof url=="undefined")  {url=window.location.href;}			//Pas d'Url en paramètre : récupère l'Url de la page courante
+		const urlParams=new URLSearchParams(url);							//Créé un objet 'URLSearchParams'
+		if(urlParams.has(paramName))  {return urlParams.get(paramName);}	//Renvoi le paramètre s'il existe	
 	}
 }
 
-/*
- * Valide le "like"/"dontlike" d'un objet
- */
+/**************************************************************************************************
+ * VALIDE LE "LIKE"/"DONTLIKE" D'UN OBJET
+ **************************************************************************************************/
 function usersLikeValidate(targetObjId, likeValue)
 {
 	if(isEmptyValue(targetObjId)==false && isEmptyValue(likeValue)==false)
@@ -784,11 +749,12 @@ function usersLikeValidate(targetObjId, likeValue)
 	}
 }
 
-/*
- * Check/uncheck un groupe d'users (tester l'edition d'evt avec les groupes pour affectation aux agendas ET les groupes pour notification par email)
+/**************************************************************************************************
+ * CHECK/UNCHECK UN GROUPE D'USERS
+ * Tester : edition d'evt avec les groupes pour affectation aux agendas ET les groupes pour notification par email
  * Note : les inputs des groupes doivent avoir un "name" spécifique ET les inputs d'user doivent avoir une propriété "data-idUser"
  * On passe en paramètre le "this" de l'input du groupe ET l'id du conteneur des inputs d'users ("idContainerUsers") pour définir le périmère des inputs d'users
- */
+ **************************************************************************************************/
 function userGroupSelect(thisGroup, idContainerUsers)
 {
 	//Check/uncheck chaque users du groupe
@@ -807,4 +773,16 @@ function userGroupSelect(thisGroup, idContainerUsers)
 		//Check l'user courant
 		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//"trigger" pour le style du label
 	}
+}
+
+/**************************************************************************************************
+ * LANCE UNE VISIO AVEC LE NOM DE L'USER COURANT
+ **************************************************************************************************/
+function launchVisio(visioURL)
+{
+	////	Responsive : lance via le browser (cf. Appli)  ||  Mode normal : ajoute le nom de l'user dans l'Url (note: pas pour IOS, sinon cela bloque l'affichage)
+	visioURL+=(isTouchDevice())	 ?  "?omnispaceApp=getFile-nameMd5"  :  "#userInfo.displayName=%22"+labelVisioUser+"%22";
+	////	Ouvre la visio dans un nouvel onglet après confirmation
+	if(confirm(labelVisioLaunchConfirm))  {window.open(visioURL);}
+	//Ouverture de l'appli Jitsi Android:  var visioURLObj=new URL(visioURL);  window.open("intent://"+visioURLObj.hostname+"/"+visioURLObj.pathname+"#Intent;scheme=org.jitsi.meet;package=org.jitsi.meet;end");
 }

@@ -123,6 +123,7 @@ function dashboardPollVote()
 #modMenuNews ul					{padding-left:10px!important;}/*surcharge*/
 #vNewsPollsHr					{background:#ddd;}
 #vNewsPollsHr:last-of-type		{display:none;}
+.calEventProposition			{margin:10px;}/*propositions d'événements*/
 
 /*Affichage des sondages*/
 .vPollsContainer.objContainer	{height:auto!important; padding-top:15px; padding-bottom:15px;}/*surcharge .objContainer : "height" pour être adapté au contenu, "padding", etc*/
@@ -137,7 +138,7 @@ function dashboardPollVote()
 .vPollsContainer .submitButtonMain		{padding-top:10px;}/*surcharge*/
 .vPollsContainer button			{width:200px!important;}/*surcharge*/
 .vPollsResultBarContainer		{width:90%; margin-top:8px; padding:2px; border-radius:5px; background-color:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
-.vPollsResultBar				{display:inline-block; min-width:35px; height:28px; line-height:28px; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
+.vPollsResultBar				{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
 .vPollsResultBar0				{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
 .vPollsResultBar50				{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
 .vPollsResultBar100				{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}

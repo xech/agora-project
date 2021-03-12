@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des actualites
+ * MODELE DES ACTUALITES
  */
 class MdlDashboardNews extends MdlObject
 {
@@ -25,9 +25,9 @@ class MdlDashboardNews extends MdlObject
 	public static $searchFields=array("description");
 	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc");
 
-	/*
-	 * STATIC : Récupère les news ($mode: "count"/"list". $newsOffsetCpt pour l'infinite scroll)
-	 */
+	/*******************************************************************************************
+	 * STATIC : RÉCUPÈRE LES NEWS POUR L'INFINITE SCROLL ($mode: "count"/"list". $newsOffsetCpt est le compteur d'affichage de l'infinite scroll)
+	 *******************************************************************************************/
 	public static function getNews($mode, $newsOffsetCpt=0, $offlineNews=false)
 	{
 		//// Archiver/désarchiver automatiquement des news
@@ -42,9 +42,9 @@ class MdlDashboardNews extends MdlObject
 		else				{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplayedObjects()." ".$sqlOffline." ".static::sqlSort("une desc")."  LIMIT 10 OFFSET ".((int)$newsOffsetCpt * 10));}//Affiche les news par blocks de 10
 	}
 
-	/*
-	 * Droit d'ajouter une nouvelle news
-	 */
+	/*******************************************************************************************
+	 * DROIT D'AJOUTER UNE NOUVELLE NEWS
+	 *******************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddNews")==false));

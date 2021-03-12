@@ -1,35 +1,35 @@
 <script>
 ////	Resize
-lightboxSetWidth("90%");
+lightboxSetWidth("95%");
 
 ////	INIT
 $(function(){
-	//Affiche le formulaire d'import ou d'export
+	////	Affiche le formulaire d'import ou d'export
 	var actionImportExport="<?= Req::getParam("actionImportExport")=="import"?"import":"export" ?>";
 	$("select[name='actionImportExport']").val(actionImportExport);
-	$("#"+actionImportExport+"Form").css("display","block");
+	$("#"+actionImportExport+"Form").show();
 	$("[name=actionImportExport]").change(function(){
 		$("#exportForm").toggle();
 		$("#importForm").toggle();
 	});
-	//Formulaire d'import : Affiche le champ "importFile" ou "ldapBaseDn"
+	////	Formulaire d'import : Affiche le champ "importFile" ou "ldapBaseDn"
 	$("[name=importType]").change(function(){
 		$("input[name=importFile]").toggle();
 		$("input[name=ldapBaseDn]").toggle();
 	});
-	//Tableau d'import: masque le menu principal
+	////	Tableau d'import: masque le menu principal
 	if($("[name^='personsImport']").exist()){
-		$("#actionImportExport").css("display","none");
-		$("#importForm").css("display","none");
+		$("#actionImportExport").hide();
+		$("#importForm").hide();
 	}
 
-	//Tableau d'import: init le background des lignes sélectionnées
+	////	Tableau d'import: init le background des lignes sélectionnées
 	$("[id^=rowPerson]:has(input[name^='personsImport']:checked)").addClass("sLineSelect");
 	//Tableau d'import: Change le background des ligne sélectionnées
 	$("input[name^='personsImport']").change(function(){
 		(this.checked)  ?  $("#rowPerson"+$(this).val()).addClass("sLineSelect")  :  $("#rowPerson"+$(this).val()).removeClass("sLineSelect");
 	});
-	//Tableau d'import: vérifie que le champ agora (<select>) n'est pas déjà sélectionné sur une autre colonne
+	////	Tableau d'import: vérifie que le champ agora (<select>) n'est pas déjà sélectionné sur une autre colonne
 	$("select[name^='agoraFields']").change(function(){
 		curField=$(this).val();
 		curFieldCpt=$(this).attr("data-fieldCpt");
@@ -59,10 +59,10 @@ function formControl()
 			if($(this).val()=="name")	{fieldNameSelected=true;}
 		});
 		if(fieldNameSelected==false){
-			notify("<?= Txt::trad("importNotif") ?>");
+			notify("<?= Txt::trad("importNotif1") ?>");
 			return false;
 		}
-		// Au moins une personne doit être sélectionné
+		//Au moins une personne doit être sélectionnée
 		if($("input[name^='personsImport']:checked").length==0){
 			notify("<?= Txt::trad("importNotif2") ?>");
 			return false;
@@ -77,9 +77,8 @@ form						{text-align:center;}
 .vTableImport				{font-size:0.8em; font-weight:normal;}
 img[src*='switch']			{cursor:pointer;}
 .vTableImport select		{width:120px;}
-#divImportTable				{width:100%; overflow-x:scroll; margin-top:10px;}
+#divImportTable				{width:100%; margin-top:20px;}
 input[name='ldapBaseDn']	{display:none; width:300px;}
-/*affectation des espaces*/
 .vImportUserOptions			{display:inline-block; text-align:left; margin-top:20px;}
 .vSpaceAffect				{margin-left:20px; margin-top:5px;}
 </style>
@@ -95,8 +94,9 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 	<div id="exportForm">
 		<?= Txt::trad("exportFormat") ?>
 		<select name="exportType">
-			<?php foreach(MdlPerson::$csvFormats as $csvFormatKey=>$csvFormat)   {echo "<option value='".$csvFormatKey."'>".strtoupper(str_replace('_',' ',$csvFormatKey))."</option>";} ?>
+			<option value="vcard">VCARD (.vcf)</option>
 			<option value="ldif">LDIF</option>
+			<?php foreach(MdlPerson::$csvFormats as $csvFormatKey=>$csvFormat)   {echo "<option value='".$csvFormatKey."'>".strtoupper(str_replace('_',' ',$csvFormatKey))."</option>";} ?>
 		</select>
 	</div>
 	<div id="importForm">
@@ -113,29 +113,28 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 	if(Req::getParam("importType")=="ldap" || (Req::getParam("importType")=="csv" && is_file($_FILES["importFile"]["tmp_name"])))
 	{
 		//Init
-		$getLoginPassword=($curObjClass::objectType=="user") ? true : false;
-		$importPersons=array();
+		$getLoginPassword=($curObjClass::objectType=="user");
+		$importPersons=[];
 
-		//IMPORT CSV
+		////	RECUPERE LES VALEURS DE L'IMPORT CSV / LDAP
 		if(Req::getParam("importType")=="csv")
 		{
-			//Liste des champs (en fonction de la premiere ligne) + delimiteur des champs + nb de champs
+			//Liste des champs (en fonction de la premiere ligne) + définie le delimiteur de champ + nb de champs
 			$tmpCpt=0;
 			$csvHeader=file($_FILES["importFile"]["tmp_name"]);
-			$csvHeader=str_replace(array("\r","\n"),null,$csvHeader[0]);
+			$csvHeader=str_replace(["\r","\n"],null,$csvHeader[0]);
 			if(substr_count($csvHeader,";") > $tmpCpt)		{$delimiter=";";	$tmpCpt=substr_count($csvHeader,";");}
 			if(substr_count($csvHeader,",") > $tmpCpt)		{$delimiter=",";	$tmpCpt=substr_count($csvHeader,",");}
 			if(substr_count($csvHeader,"	") > $tmpCpt)	{$delimiter="	";	$tmpCpt=substr_count($csvHeader,"	");}
-			$headerFields=array();
+			$headerFields=[];
 			foreach(explode($delimiter,$csvHeader) as $tmpVal){
 				if(!empty($tmpVal))	 {$headerFields[]=trim($tmpVal,"'\"");}
 			}
 			$nbFields=count($headerFields);
 			//Place le contenu du csv dans un tableau
 			$handle=fopen($_FILES["importFile"]["tmp_name"],"r");
-			while(($data=fgetcsv($handle,10000,$delimiter))!==false)	{$importPersons[]=$data;}
+			while(($data=fgetcsv($handle,10000,$delimiter))!==false)  {$importPersons[]=$data;}
 		}
-		//IMPORT LDAP
 		elseif(Req::getParam("importType")=="ldap")
 		{
 			$ldapSearch=MdlPerson::ldapSearch($getLoginPassword);
@@ -145,11 +144,12 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 		}
 
 		////	TABLEAU D'IMPORT
-		if(empty($importPersons))	{echo "<div class='emptyContainer'>".Txt::trad("noResults")."</div>";}
+		if(empty($importPersons))  {echo "<div class='emptyContainer'>".Txt::trad("noResults")."</div>";}
 		else
 		{
 			////	INFOS
 			echo Txt::trad("importInfo")."<hr>";
+
 			////	TABLEAU DES PERSONNES A IMPORTER
 			echo "<div id='divImportTable'><table class='vTableImport'>";
 				//HEADER
@@ -191,7 +191,8 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 					echo "</tr>";
 				}
 			echo "</table></div>";
-			////	OPTIONS D'IMPORT D'USER
+
+			////	IMPORT D'USER : OPTION DE NOTIF PAR MAIL && ESPACES D'AFFECTATION
 			if($curObjClass::objectType=="user")
 			{
 				echo "<div class='vImportUserOptions'>";
@@ -199,21 +200,23 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 					echo "<input type='checkbox' name='notifCreaUser' value='1' id='notifCreaUser'><label for='notifCreaUser' title=\"".Txt::trad("USER_sendCoordsInfo2")."\">".Txt::trad("USER_sendCoords")."</label><hr>";
 					//ESPACES D'AFFECTATION (SI ADMIN)
 					echo "<div>".Txt::trad("USER_spaceList")." :</div>";
-					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace)
-					{
+					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
 						if($tmpSpace->userAccessRight(Ctrl::$curUser)==2){
-							$tmpChecked=($tmpSpace->isCurSpace() || $tmpSpace->allUsersAffected()) ? "checked" : null;//Affecté à tous les users / espace courant
-							$tmpDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;//Affecté à tous les users
+							$tmpChecked=($tmpSpace->isCurSpace() || $tmpSpace->allUsersAffected()) ? "checked" : null;	//Affecté à tous les users / espace courant
+							$tmpDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;							//Affecté à tous les users
 							echo "<div class='vSpaceAffect'><input type=\"checkbox\" name=\"spaceAffectList[]\" value=\"".$tmpSpace->_id."\" id='spaceAffect".$tmpSpace->_id."' ".$tmpChecked." ".$tmpDisabled."><label for='spaceAffect".$tmpSpace->_id."'>".$tmpSpace->name."</label></div>";
 						}
 					}
 				echo "</div>";
 			}
+
+			////	IMPORT DE CONTACTS DANS UN DOSSIER RACINE : AFFECTATION PAR DEFAUT A "TOUS LES UTILISATEURS DE L'ESPACE"
+			if($curObjClass::objectType=="contact" && $curFolder->isRootFolder())  {echo "<div class='vImportUserOptions'><img src='app/img/accessRight.png'>".Txt::trad("importContactRootFolder")." <i>".Ctrl::$curSpace->name."</i></div>";}
 		}
 	}
 
-	////	VALIDATION DU FORMULAIRE (AJOUTE LE DOSSIER CONTENEUR?)
-	if(Req::isParam("targetObjId"))   {echo "<input type='hidden' name='_idContainer' value='".Ctrl::getTargetObj()->_id."'>";}
+	////	AJOUTE SI BESOIN LE DOSSIER CONTENEUR  &&  VALIDATION DU FORMULAIRE
+	if(Req::isParam("targetObjId"))  {echo "<input type='hidden' name='_idContainer' value='".Ctrl::getTargetObj()->_id."'>";}
 	echo Txt::submitButton();
 	?>
 </form>

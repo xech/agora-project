@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur du module "User"
+ * CONTROLEUR DU MODULE "USER"
  */
 class CtrlUser extends Ctrl
 {
@@ -16,9 +16,9 @@ class CtrlUser extends Ctrl
 	public static $moduleOptions=["allUsersAddGroup"];
 	public static $MdlObjects=array("MdlUser");
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		//Affichage des utilisateurs : "space" / "all"
@@ -33,15 +33,15 @@ class CtrlUser extends Ctrl
 		$vDatas["usersTotalNb"]=count(Db::getTab($sqlDisplayedUsers));
 		$vDatas["usersTotalNbLabel"]=$vDatas["usersTotalNb"]." ".Txt::trad("USER_users");
 		if(Ctrl::$curUser->isAdminSpace() && Ctrl::$curSpace->allUsersAffected())	{$vDatas["usersTotalNbLabel"]="<span class='abbr' title=\"".Txt::trad("USER_allUsersOnSpace")."\">".$vDatas["usersTotalNbLabel"]."</span>";}
-		$vDatas["menuDisplayUsers"]=(Ctrl::$curUser->isAdminGeneral() && ($_SESSION["displayUsers"]=="all" || count(Ctrl::$curUser->getSpaces())>1)) ? true : false;
+		$vDatas["menuDisplayUsers"]=(Ctrl::$curUser->isAdminGeneral() && ($_SESSION["displayUsers"]=="all" || count(Ctrl::$curUser->getSpaces())>1));
 		$vDatas["userGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 		//Affiche la page
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PLUGINS
-	 */
+	 *******************************************************************************************/
 	public static function plugin($pluginParams)
 	{
 		$pluginsList=array();
@@ -51,7 +51,7 @@ class CtrlUser extends Ctrl
 			{
 				$tmpObj->pluginModule=self::moduleName;
 				$tmpObj->pluginIcon="user/accesUser.png";
-				$tmpObj->pluginLabel=$tmpObj->getLabel("all");
+				$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 				$tmpObj->pluginTooltip=$tmpObj->pluginLabel;
 				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";//Affiche l'user
 				$pluginsList[]=$tmpObj;
@@ -61,25 +61,25 @@ class CtrlUser extends Ctrl
 		return $pluginsList;
 	}
 
-	/*
-	 * ACTION : Vue détaillée d'un utilisateur
-	 */
+	/*******************************************************************************************
+	 * VUE : DÉTAILS D'UN UTILISATEUR
+	 *******************************************************************************************/
 	public static function actionVueUser()
 	{
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlRead();
+		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueUser.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Edition d'un user
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION D'UN USER
+	 *******************************************************************************************/
 	public static function actionUserEdit()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		//Nb max d'utilisateurs dépassé?
 		if($curObj->isNew() && MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
 		////	Valide le formulaire
@@ -126,9 +126,9 @@ class CtrlUser extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : désaffectation d'un user à un espace (ou de plusieurs users : cf. "VueObjMenuSelection" et "targetObjectsAction()")
-	 */
+	/*******************************************************************************************
+	 * DÉSAFFECTATION D'UN USER À UN ESPACE (ou de plusieurs users : cf. "VueObjMenuSelection" et "targetObjectsAction()")
+	 *******************************************************************************************/
 	public static function actionDeleteFromCurSpace()
 	{
 		$urlRedir=null;
@@ -139,14 +139,14 @@ class CtrlUser extends Ctrl
 		self::redir($urlRedir);
 	}
 
-	/*
-	 * ACTION : Parametrage du messenger d'un utilisateur
-	 */
+	/*******************************************************************************************
+	 * VUE : PARAMETRAGE DU MESSENGER D'UN UTILISATEUR
+	 *******************************************************************************************/
 	public static function actionUserEditMessenger()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate") && Req::isParam("messengerDisplay"))
 		{
@@ -157,19 +157,21 @@ class CtrlUser extends Ctrl
 			elseif(Req::getParam("messengerDisplay")=="some" && Req::isParam("messengerSomeUsers")){
 				foreach(Req::getParam("messengerSomeUsers") as $_idUser)	{Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$curObj->_id.", _idUser=".(int)$_idUser);}
 			}
+			//Réinitialise si besoin le "curUserMessengerEnabled" (cf. "messengerEnabled()")
+			if($curObj->_id==Ctrl::$curUser->_id)  {$_SESSION["curUserMessengerEnabled"]=null;}
 			//Ferme la page
 			static::lightboxClose();
 		}
 		////	Affiche la vue
-		$vDatas["allUsers"]=(Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$curObj->_id." AND allUsers=1")>0) ? true : false;
+		$vDatas["allUsers"]=(Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$curObj->_id." AND allUsers=1")>0);
 		$vDatas["someUsers"]=Db::getCol("SELECT _idUser FROM ap_userMessenger WHERE _idUserMessenger=".$curObj->_id." AND _idUser IS NOT NULL");
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueUserEditMessenger.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Persons Import-Export
-	 */
+	/*******************************************************************************************
+	 * IMPORT-EXPORT D'UTILISATEUR
+	 *******************************************************************************************/
 	public static function actionEditPersonsImportExport()
 	{
 		////	Controle du droit d'accès et du nombre max d'utilisateurs
@@ -177,40 +179,39 @@ class CtrlUser extends Ctrl
 		////	Validation de formulaire
 		if(Req::isParam("formValidate"))
 		{
-			//Export de users
+			//// Export de users
 			if(Req::getParam("actionImportExport")=="export"){
 				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplayedObjects()." ".MdlUser::sqlSort());
 				MdlUser::exportPersons($userList, Req::getParam("exportType"));
 			}
-			//Import de users
+			//// Import de users
 			elseif(Req::getParam("actionImportExport")=="import" && Req::getParam("personFields"))
 			{
 				$personFields=Req::getParam("personFields");
-				//Créé chaque user
 				foreach(Req::getParam("personsImport") as $personCpt)
 				{
+					//Créé l'user
 					$curObj=new MdlUser();
-					$sqlProperties=null;
 					$tmpUser=[];
-					//Ajoute chaque champ du user
+					$sqlProperties=null;
+					//Récupère la valeur de chaque champ du user
 					foreach(Req::getParam("agoraFields") as $fieldCpt=>$curFieldName){
 						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
+						if(!empty($curFieldVal) && !empty($curFieldName) && !preg_match("/^(login|pass)/i",$curFieldName))  {$sqlProperties.=$curFieldName."=".Db::format($curFieldVal).", ";}
 						$tmpUser[$curFieldName]=$curFieldVal;
-						if(!empty($curFieldVal) && !empty($curFieldName) && !preg_match("/^(login|pass)/i",$curFieldName))   {$sqlProperties.=$curFieldName."=".Db::format($curFieldVal).", ";}
 					}
-					//Password par défaut?
+					//Password par défaut via "uniqId()"
 					if(empty($tmpUser["password"]))  {$tmpUser["password"]=Txt::uniqId(8);}
-					//Login par défaut?
-					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))	{$tmpUser["login"]=$tmpUser["mail"];}//mail
-					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower(substr(Txt::clean($tmpUser["firstName"],"max",""),0,3)).strtolower(substr(Txt::clean($tmpUser["name"],"max",""),0,8));}//"Gérard D'AGOBERT"=>"gerdagobert"
-					//Enregistre l'user
-					$curObj=$curObj->createUpdate($sqlProperties, $tmpUser["login"], $tmpUser["password"]);//Ajoute login/password pour les controles standards
+					//Login par défaut : email || login standard ("Gérard D'AGOBERT"=>"gerdagobert")
+					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))	{$tmpUser["login"]=$tmpUser["mail"];}
+					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower(substr(Txt::clean($tmpUser["firstName"],"max",""),0,3)).strtolower(substr(Txt::clean($tmpUser["name"],"max",""),0,8));}
+					//Créé l'user (Ajoute login/password pour les controles)
+					$curObj=$curObj->createUpdate($sqlProperties, $tmpUser["login"], $tmpUser["password"]);
 					//Options de création
-					if(is_object($curObj))
-					{
-						//Envoi une notification mail
+					if(is_object($curObj)){
+						//Envoi si besoin une notification mail
 						if(Req::isParam("notifCreaUser"))  {$curObj->newUserCoordsSendMail($tmpUser["password"]);}
-						//Affecte aux espaces si besoin
+						//Affecte si besoin l'utilisateur aux espaces spécifiés
 						if(Req::isParam("spaceAffectList")){
 							foreach(Req::getParam("spaceAffectList") as $_idSpace)	{Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$_idSpace.", _idUser=".$curObj->_id.", accessRight=1");}
 						}
@@ -225,9 +226,9 @@ class CtrlUser extends Ctrl
 		static::displayPage(Req::commonPath."VuePersonsImportExport.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Affectation d'un user existant à l'espace courant
-	 */
+	/*******************************************************************************************
+	 * VUE : AFFECTATION À L'ESPACE COURANT D'AUTRES USERS PRESENTS SUR LE SITE
+	 *******************************************************************************************/
 	public static function actionAffectUsers()
 	{
 		//Administrateur de l'espace courant?
@@ -265,9 +266,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueAffectUsers.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Envoie les coordonnées de connexion à des utilisateurs
-	 */
+	/*******************************************************************************************
+	 * VUE : ENVOIE LES COORDONNÉES DE CONNEXION À DES UTILISATEURS
+	 *******************************************************************************************/
 	public static function actionSendCoordinates()
 	{
 		////	Admin general uniquement
@@ -275,7 +276,7 @@ class CtrlUser extends Ctrl
 		////	Validation de formulaire
 		if(Req::isParam("formValidate") && Req::isParam("usersList")){
 			foreach(Req::getParam("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
-			if($isSendmail==true)  {Ctrl::addNotif(Txt::trad("MAIL_sendOk"),"success");}
+			if($isSendmail==true)  {Ctrl::notify(Txt::trad("MAIL_sendOk"),"success");}
 			static::lightboxClose();
 		}
 		////	Affichage du formulaire
@@ -283,9 +284,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueSendCoordinates.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Envoi d'invitation
-	 */
+	/*******************************************************************************************
+	 * VUE : ENVOI D'INVITATION
+	 *******************************************************************************************/
 	public static function actionSendInvitation()
 	{
 		////	Droit d'envoyer des invitations?  Nb max d'utilisateurs dépassé?
@@ -310,7 +311,7 @@ class CtrlUser extends Ctrl
 				{
 					$_idInvitation=Txt::uniqId();
 					$password=Txt::uniqId(8);
-					$confirmUrl=Req::getSpaceUrl()."/?ctrl=offline&disconnect=1&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
+					$confirmUrl=Req::getCurUrl()."/?ctrl=offline&disconnect=1&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
 					//Envoi du mail d'invitation.  "Invitation de Jean DUPOND"  =>  "Jean DUPOND vous invite à rejoindre l'espace Mon Espace..."
 					$subject=Txt::trad("USER_mailInvitationObject")." ".Ctrl::$curUser->getLabel();
 					$mainMessage="<b>".Ctrl::$curUser->getLabel()." ".Txt::trad("USER_mailInvitationFromSpace")." ".Ctrl::$curSpace->name." :</b>
@@ -339,9 +340,9 @@ class CtrlUser extends Ctrl
 		}
 	}
 
-	/*
-	 * AJAX : Vérifie la présence d'un compte user OU de plusieurs comptes users (cf "vueSendInvitation.php">"gPeopleGetContacts()")
-	 */
+	/*******************************************************************************************
+	 * AJAX : VÉRIFIE LA PRÉSENCE D'UN COMPTE USER OU DE PLUSIEURS COMPTES USERS (cf "vueSendInvitation.php">"gPeopleGetContacts()")
+	 *******************************************************************************************/
 	public static function actionLoginAlreadyExist()
 	{
 		//Vérif un seul compte user
@@ -358,9 +359,9 @@ class CtrlUser extends Ctrl
 		}
 	}
 
-	/*
-	 * ACTION : Edition des groupes d'utilisateurs
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION DES GROUPES D'UTILISATEURS
+	 *******************************************************************************************/
 	public static function actionUserGroupEdit()
 	{
 		//Droit d'editer/ajouter un groupe?
@@ -368,7 +369,7 @@ class CtrlUser extends Ctrl
 		////	Validation de formulaire : edit un groupe
 		if(Req::isParam("formValidate")){
 			$curObj=Ctrl::getTargetObj();
-			$curObj->controlEdit();
+			$curObj->editControl();
 			$curObj->createUpdate("title=".Db::formatParam("title").", _idSpace=".Ctrl::$curSpace->_id.", _idUsers=".Db::formatTab2txt(Req::getParam("userList")));
 			static::lightboxClose();
 		}
@@ -380,31 +381,30 @@ class CtrlUser extends Ctrl
 			if($tmpGroup->editRight()==false)	{unset($vDatas["groupList"][$tmpKey]);}
 			else{
 				$tmpGroup->tmpId=$tmpGroup->_targetObjId;
-				$tmpGroup->createdBy=($tmpGroup->isNew()==false)  ?  Txt::trad("creation")." : ".$tmpGroup->displayAutor()  :  null;
+				$tmpGroup->createdBy=($tmpGroup->isNew()==false)  ?  Txt::trad("creation")." : ".$tmpGroup->autorLabel()  :  null;
 			}
 		}
 		//Affiche la page
 		static::displayPage("VueUserGroupEdit.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Inscription des utilisateurs au site
-	 */
+	/*******************************************************************************************
+	 * ACTION : VALIDATION DES INSCRIPTIONS A L'ESPACE
+	 *******************************************************************************************/
 	public static function actionUserInscriptionValidate()
 	{
 		//Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
 		if(Ctrl::$curUser->isAdminSpace()==false || MdlUser::usersQuotaOk()==false)	{static::lightboxClose();}
-		//Validation du form
+		//Validation du formulaire
 		if(Req::isParam("formValidate") && Req::isParam("inscriptionValidate"))
 		{
 			//Créé chaque utilisateur validé
 			foreach(Req::getParam("inscriptionValidate") as $idInscription)
 			{
-				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".$idInscription);
+				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".Db::format($idInscription));
 				//Users invalidés
 				if(Req::isParam("submitInvalidate")){
-					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getSpaceUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
-					$mainMessage="<b>".$mainMessage."</b>";
+					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getCurUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
 					Tool::sendMail($tmpInscription["mail"], $subject, $mainMessage);
 				}
 				//Users validés

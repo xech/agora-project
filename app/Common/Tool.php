@@ -28,13 +28,13 @@ class Tool
 		if(empty($mailsTo) || empty($message))	{return false;}
 
 		////	Options par defaut à "False" !
-		$opt["hideRecipients"]=(stristr($options,"hideRecipients")) ? true : false;		//Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
-		$opt["hideUserLabel"]=(stristr($options,"hideUserLabel")) ? true : false;		//Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
-		$opt["receptionNotif"]=(stristr($options,"receptionNotif")) ? true : false;		//Demande un accusé de réception pour l'user/expéditeur
-		$opt["addReplyTo"]=(stristr($options,"addReplyTo")) ? true : false;				//Ajoute le mail de l'user/expéditeur en "replyTo" (déconseillé pas défaut : cf. Spamassassin)
-		$opt["noFooter"]=(stristr($options,"noFooter")) ? true : false;					//Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
-		$opt["noNotify"]=(stristr($options,"noNotify")) ? true : false;					//Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
-		$opt["objectNotif"]=(stristr($options,"objectNotif")) ? true : false;			//Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
+		$opt["hideRecipients"]=(stristr($options,"hideRecipients"));	//Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
+		$opt["hideUserLabel"]=(stristr($options,"hideUserLabel"));		//Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
+		$opt["receptionNotif"]=(stristr($options,"receptionNotif"));	//Demande un accusé de réception pour l'user/expéditeur
+		$opt["addReplyTo"]=(stristr($options,"addReplyTo"));			//Ajoute le mail de l'user/expéditeur en "replyTo" (déconseillé pas défaut : cf. Spamassassin)
+		$opt["noFooter"]=(stristr($options,"noFooter"));				//Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
+		$opt["noNotify"]=(stristr($options,"noNotify"));				//Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
+		$opt["objectNotif"]=(stristr($options,"objectNotif"));			//Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
 
 		////	Charge une première fois PHPMailer et crée une nouvelle instance
 		if(!defined("phpmailerLoaded")){
@@ -77,7 +77,8 @@ class Tool
 			////	Destinataires (format text / array d'idUser)
 			$mailsToNotif=null;																															//Prépare la notification finale
 			if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}	//Destinataires masqués: ajoute l'expéditeur en email principal (evite la spambox)
-			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																		//Prépare la liste des destinataires
+			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																		//Liste des destinataires au format "array"
+			$mailsTo=array_unique($mailsTo);																											//Elimine les éventuels doublons
 			//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
 			foreach($mailsTo as $tmpDest){
 				if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}
@@ -89,12 +90,12 @@ class Tool
 			}
 
 			////	Sujet & message
-			$mail->Subject=htmlspecialchars($subject);
+			$mail->Subject=$subject;
 			if($opt["noFooter"]==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
 				$fromTheSpace=ucfirst(Ctrl::$agora->name);																										//Nom de l'espace principal
-				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" / ".Ctrl::$curSpace->name;}					//Ajoute si besoin le nom du sous-espace
+				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" &raquo; ".Ctrl::$curSpace->name;}				//Ajoute si besoin le nom du sous-espace ("&raquo;" : ">>")
 				$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//Envoyé par "boby SMITH"
-				$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getSpaceUrl()."\" target='_blank'>".$fromTheSpace."</a>";	//..depuis l'espace "Mon espace"
+				$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getCurUrl()."\" target='_blank'>".$fromTheSpace."</a>";	//..depuis l'espace "Mon espace"
 			}
 			$mail->MsgHTML($message);
 
@@ -125,8 +126,8 @@ class Tool
 			$isSendMail=$mail->Send();
 			if($opt["noNotify"]==false){
 				$notifMail=($opt["objectNotif"]==true) ? Txt::trad("MAIL_sendNotif") : Txt::trad("MAIL_sendOk");
-				if($isSendMail==true)	{Ctrl::addNotif($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}
-				else					{Ctrl::addNotif("MAIL_notSend");}
+				if($isSendMail==true)	{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}
+				else					{Ctrl::notify("MAIL_notSend");}
 			}
 			return $isSendMail;
 		}

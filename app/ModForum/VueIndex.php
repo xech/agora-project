@@ -62,7 +62,7 @@ $(function(){
 		}
 		////	MENU D'UN SUJET ET SES MESSAGES
 		if($displayForum=="messages"){
-			if(Ctrl::$curContainer->editContentRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FORUM_addMessage")."</div></div><hr>";}
+			if(Ctrl::$curContainer->addContentRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FORUM_addMessage")."</div></div><hr>";}
 			if(!empty(Ctrl::$curUser->mail))  {echo "<div class='menuLine sLink' id='notifyLastMessage' title=\"".Txt::trad("FORUM_notifyLastPostInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("FORUM_notifyLastPost")."</div></div>";}
 			echo "<hr>".MdlForumMessage::menuSort()."<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$curSubject->messagesNb." ".Txt::trad($curSubject->messagesNb>1?"FORUM_messages":"FORUM_message")."</div></div>";
 		}
@@ -90,8 +90,8 @@ $(function(){
 			//Label du sujet courant (pas en "mobile" car laisse la place au thème courant)
 			if(!empty($curSubject) && Req::isMobile()==false)  {echo "<div><img src='app/img/arrowRightBig.png'></div><div>".Txt::reduce(strip_tags($curSubject->title?$curSubject->title:$curSubject->description),45)."</div>";}
 			//Bouton "plus" d'ajout de sujet ou message
-			if($displayForum=="subjects" && MdlForumSubject::addRight())				{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
-			if($displayForum=="messages" && Ctrl::$curContainer->editContentRight())	{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
+			if($displayForum=="subjects" && MdlForumSubject::addRight())			{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
+			if($displayForum=="messages" && Ctrl::$curContainer->addContentRight())	{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
 		//Fin du menu
 		echo "</div>";
 
@@ -104,8 +104,8 @@ $(function(){
 				$tmpDescription=(!empty($tmpTheme->description))  ?  "<div class='vThemeDescription'>".$tmpTheme->description."</div>"  :  null;
 				//Derniers posts
 				$lastPost=null;
-				if(!empty($tmpTheme->messageLast))  {$lastPost.=Txt::trad("FORUM_lastMessage")." ".$tmpTheme->messageLast->displayAutor()." : ".$tmpTheme->messageLast->displayDate()."<br>";}//note: s'il y a un message ..ya forcément un sujet
-				if(!empty($tmpTheme->subjectLast))  {$lastPost.=Txt::trad("FORUM_lastSubject")." ".$tmpTheme->subjectLast->displayAutor()." : ".$tmpTheme->subjectLast->displayDate();}
+				if(!empty($tmpTheme->messageLast))  {$lastPost.=Txt::trad("FORUM_lastMessage")." ".$tmpTheme->messageLast->autorLabel()." : ".$tmpTheme->messageLast->dateLabel()."<br>";}//note: s'il y a un message ..ya forcément un sujet
+				if(!empty($tmpTheme->subjectLast))  {$lastPost.=Txt::trad("FORUM_lastSubject")." ".$tmpTheme->subjectLast->autorLabel()." : ".$tmpTheme->subjectLast->dateLabel();}
 				if(empty($lastPost))				{$lastPost.=Txt::trad("FORUM_noSubject");}
 				//Affichage
 				echo "<div class='objContainer alternateLines' onClick=\"redir('?ctrl=forum&_idTheme=".$tmpTheme->idThemeUrl."')\">
@@ -127,8 +127,8 @@ $(function(){
 				$displayedTitle=(!empty($tmpSubject->title))  ?  $tmpSubject->title."<hr>"  :  null;
 				if(empty($tmpSubject->messagesNb))  {$lastPost=Txt::trad("FORUM_noMessage");}
 				else{
-					$lastPost=Txt::trad("FORUM_lastMessage")." ".$tmpSubject->messageLast->displayAutor();
-					if(Req::isMobile()==false)  {$lastPost.=" : ".$tmpSubject->messageLast->displayDate();}
+					$lastPost=Txt::trad("FORUM_lastMessage")." ".$tmpSubject->messageLast->autorLabel();
+					if(Req::isMobile()==false)  {$lastPost.=" : ".$tmpSubject->messageLast->dateLabel();}
 				}
 				//Affichage
 				echo $tmpSubject->divContainer("alternateLines").$tmpSubject->contextMenu().
@@ -137,7 +137,7 @@ $(function(){
 						</div>
 						<div class='vObjDetails'>
 							<hr>
-							<div>".$tmpSubject->displayAutorDate(true)."</div>
+							<div>".$tmpSubject->autorDateLabel(true)."</div>
 							<div>".$lastPost."</div>
 						</div>
 					</div>
@@ -158,7 +158,7 @@ $(function(){
 			echo $curSubject->divContainer("alternateLines").$curSubject->contextMenu().
 					"<div class='objContent vSubjectMessages'>
 						<div>".$displayedTitle."<div class='vSubjMessDescription'>".$curSubject->description.$curSubject->menuAttachedFiles()."</div></div>
-						<div class='vObjDetails'><hr>".$curSubject->displayAutorDate(true)."</div>
+						<div class='vObjDetails'><hr>".$curSubject->autorDateLabel(true)."</div>
 					</div>
 				</div>";
 			//MESSAGES DU SUJET
@@ -166,7 +166,7 @@ $(function(){
 			{
 				//Titre du message  &&  bouton pour citer le message ("quote")  &&  Citation d'un message "parent"
 				$subjMessQuote=$displayedTitle=$quotedMessage=null;
-				if($curSubject->editContentRight())	{$subjMessQuote="<span class='vSubjMessQuote' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."&_idMessageParent=".$tmpMessage->_id."')\" title=\"".Txt::trad("FORUM_quoteMessage")."\"><img src='app/img/forum/quoteReponse.png'></span>";}
+				if($curSubject->addContentRight())	{$subjMessQuote="<span class='vSubjMessQuote' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."&_idMessageParent=".$tmpMessage->_id."')\" title=\"".Txt::trad("FORUM_quoteMessage")."\"><img src='app/img/forum/quoteReponse.png'></span>";}
 				if(!empty($tmpMessage->title))		{$displayedTitle=$tmpMessage->title."<hr>";}
 				if(!empty($tmpMessage->_idMessageParent)){
 					$quotedMessageObj=Ctrl::getObj(get_class($tmpMessage),$tmpMessage->_idMessageParent);
@@ -176,12 +176,12 @@ $(function(){
 				echo $tmpMessage->divContainer("alternateLines").$tmpMessage->contextMenu().
 						"<div class='objContent vSubjectMessages'>
 							<div>".$subjMessQuote.$quotedMessage.$displayedTitle."<div class='vSubjMessDescription'>".$tmpMessage->description.$tmpMessage->menuAttachedFiles()."</div></div>
-							<div class='vObjDetails'><hr>".$tmpMessage->displayAutorDate(true)."</div>
+							<div class='vObjDetails'><hr>".$tmpMessage->autorDateLabel(true)."</div>
 						</div>
 					</div>";
 			}
 			//REPONDRE AU SUJET (en responsive on affiche le bouton du bas : "respAddButton")
-			if(Ctrl::$curContainer->editContentRight())  {echo "<div class='objBottomMenu'><div class='miscContainer sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."');\"><img src='app/img/forum/addMessage.png'> &nbsp; ".Txt::trad("FORUM_addMessage")."</div></div>";}
+			if(Ctrl::$curContainer->addContentRight())  {echo "<div class='objBottomMenu'><div class='miscContainer sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."');\"><img src='app/img/forum/addMessage.png'> &nbsp; ".Txt::trad("FORUM_addMessage")."</div></div>";}
 		}
 		?>
 	</div>

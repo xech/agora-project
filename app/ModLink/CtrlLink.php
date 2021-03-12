@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur du module "Link"
+ * CONTROLEUR DU MODULE "LINK"
  */
 class CtrlLink extends Ctrl
 {
@@ -17,9 +17,9 @@ class CtrlLink extends Ctrl
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=array("MdlLink","MdlLinkFolder");
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		$vDatas["foldersList"]=self::$curContainer->folders();
@@ -27,9 +27,9 @@ class CtrlLink extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PLUGINS
-	 */
+	 *******************************************************************************************/
 	public static function plugin($pluginParams)
 	{
 		$pluginsList=self::getPluginsFolders($pluginParams,"MdlLinkFolder");
@@ -46,14 +46,14 @@ class CtrlLink extends Ctrl
 		return $pluginsList;
 	}
 
-	/*
-	 * ACTION : Ajout d'un lien
-	 */
+	/*******************************************************************************************
+	 * VUE : AJOUT D'UN LIEN
+	 *******************************************************************************************/
 	public static function actionLinkEdit()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet

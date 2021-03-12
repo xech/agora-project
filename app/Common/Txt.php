@@ -177,14 +177,13 @@ class Txt
 	 * $timeBegin & $timeEnd : Timestamp unix ou format DateTime
 	 * $format => normal / full / mini / date / dateFull / dateMini
 	 *******************************************************************************************/
-	public static function displayDate($timeBegin, $format="normal", $timeEnd=null)
+	public static function dateLabel($timeBegin, $format="normal", $timeEnd=null)
 	{
 		// Vérif de base. $dateBegin peut être vide, mais $dateEnd spécifié (task)
 		if(!empty($timeBegin) || !empty($timeEnd))
 		{
-			//init
-			$fEnd="";
-			$hourSeparation=self::trad("hourSeparator");
+			//Formatage de la date && Séparateur de début/fin
+			$fEnd=null;
 			$imgSeparator=" <img src='app/img/arrowRight.png'> ";
 			//Formate en timestamp si besoin
 			if(!is_numeric($timeBegin))						{$timeBegin=strtotime($timeBegin);}
@@ -194,46 +193,46 @@ class Txt
 			if((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$fMonthYear.=" %Y";}
 			//Format du jour et de l'heure
 			$fDayMonthYear="%e ".$fMonthYear;
-			$fHM="%k".$hourSeparation."%M";//exple "9h30"
+			$fHM="%k:%M";//exple "9:30"
 			$dayBeginEnd=$hourBeginEnd=false;
 			if(!empty($timeEnd)){
-				if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))	{$dayBeginEnd=true;}//JourDebut!=jourFin
-				if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))	{$hourBeginEnd=true;}//heureDebut!=heureFin
+				if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))	{$dayBeginEnd=true;}	//JourDebut!=jourFin
+				if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))	{$hourBeginEnd=true;}	//heureDebut!=heureFin
 			}
 
 			//NORMAL
 			if($format=="normal"){
-				$fBegin=$fDayMonthYear." ".$fHM;							//8 fév. (15) 11h30
-				if($dayBeginEnd==true)		{$fEnd=$imgSeparator.$fBegin;}	//8 fév. (15) 11h30 > 15 mars (15) 17h30
-				elseif($hourBeginEnd==true)	{$fEnd="-".$fHM;}				//8 fév. (15) 11h30-12h30
+				$fBegin=$fDayMonthYear." ".$fHM;														//8 fév. 2025 11h30
+				if($dayBeginEnd==true)		{$fEnd=$imgSeparator.$fBegin;}								//8 fév. 2025 11h30 > 15 mars 2025 17h30
+				elseif($hourBeginEnd==true)	{$fEnd="-".$fHM;}											//8 fév. 2025 11h30-12h30
 			}
-			//FULL
+			//FULL (cf. menu context d'un objet)
 			if($format=="full"){
-				$fDayMonthYear="%a ".$fDayMonthYear;						//lundi 8 février (2015)
-				$fBegin=$fDayMonthYear." ".$fHM;							//lundi 8 février (2015) 11h30
-				if($dayBeginEnd==true)		{$fEnd=$imgSeparator.$fBegin;}	//lundi 8 février (2015) 11h30 > mercredi 15 mars (2015) 17h30
-				elseif($hourBeginEnd==true)	{$fEnd="-".$fHM;}				//lundi 8 février (2015) 11h30-12h30
+				$fDayMonthYear="%A ".$fDayMonthYear;													//lundi 8 février 2025
+				$fBegin=$fDayMonthYear." ".$fHM;														//lundi 8 février 2025 11h30
+				if($dayBeginEnd==true)		{$fEnd=$imgSeparator.$fBegin;}								//lundi 8 février 2025 11h30 > mercredi 15 mars 2025 17h30
+				elseif($hourBeginEnd==true)	{$fEnd="-".$fHM;}											//lundi 8 février 2025 11h30-12h30
 			}
-			//MINI (evenement dans agenda)
+			//MINI (cf. evt d'un agenda)
 			elseif($format=="mini"){
-				if($dayBeginEnd==true)		{$fBegin=$fDayMonthYear;	$fEnd=$imgSeparator.$fBegin;}	//8 fev. (15) > 15 mars
+				if($dayBeginEnd==true)		{$fBegin=$fDayMonthYear;	$fEnd=$imgSeparator.$fBegin;}	//8 fev. 2025 > 15 mars
 				elseif($hourBeginEnd==true)	{$fBegin=$fHM;				$fEnd="-".$fBegin;}				//11h30-12h30
 				else						{$fBegin=$fHM;}												//11h30
 			}
-			//DATE (element affiché en mode liste)
+			//DATE (cf. "displayMode" des objets à "line")
 			elseif($format=="date"){
-				$fBegin=$fDayMonthYear;										//8 fév. (2015)
-				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}		//8 fév. (2015) > 15 mars (2015)
+				$fBegin=$fDayMonthYear;																	//8 fév. 2025
+				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}									//8 fév. 2025 > 15 mars 2025
 			}
 			//DATE FULL
 			elseif($format=="dateFull"){
-				$fBegin=$fDayMonthYear="%A ".$fDayMonthYear;				//lundi 8 fév. (2015)
-				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}		//lundi 8 fév. (2015) > mercredi 15 mars (2015)
+				$fBegin=$fDayMonthYear="%A ".$fDayMonthYear;											//lundi 8 fév. 2025
+				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}									//lundi 8 fév. 2025 > mercredi 15 mars 2025
 			}
 			//DATE MINI
 			elseif($format=="dateMini"){
-				$fBegin=$fDayMonthYear="%d/%m/%Y";							// 8/02/2015
-				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}		// 8/02/2015 > 15/03/2015
+				$fBegin=$fDayMonthYear="%d/%m/%Y";														// 8/02/2015
+				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}									// 8/02/2015 > 15/03/2015
 			}
 
 			//Applique le formatage demandé avec la configuration locale (timezone)
@@ -242,9 +241,9 @@ class Txt
 			elseif(!empty($timeEnd))					{$timeTxt=Txt::trad("end")." : ".trim(strftime($fEnd,$timeEnd),$imgSeparator);}//Fin : date fin
 
 			//Formate les minutes "00" et les "Aujourd'hui"
-			$timeTxt=str_replace(" 0".$hourSeparation."00", null, $timeTxt);//Efface D'ABORD les " 0h00" (les tasks peuvent avoir juste une date, sans heure précise)
-			$timeTxt=str_replace($hourSeparation."00", $hourSeparation, $timeTxt);//Enleves les minutes "00" aux heures pleines (exple: "12h00" -> "12h")
-			if(preg_match("/(normal|full)/i",$format) && date("Ymd")==date("Ymd",$timeBegin))  {$timeTxt=str_replace(strftime($fDayMonthYear), self::trad("today"), $timeTxt);}//Affiche "Aujourd'hui" (ne pas afficher uniquement l'heure..)
+			$timeTxt=str_replace(" 0:00", null, $timeTxt);//Efface les "0:00" (A faire en premier! les tasks peuvent avoir juste une date, sans heure précise)
+			$timeTxt=str_replace(":00", "h", $timeTxt);//Enleves les minutes ":00" aux heures pleines (ex: "12:00" -> "12h")
+			if(preg_match("/(normal|full)/i",$format) && date("Ymd")==date("Ymd",$timeBegin))  {$timeTxt=str_replace(strftime($fDayMonthYear), self::trad("today"), $timeTxt);}//Affiche "Aujourd'hui" (..en plus de l'heure)
 
 			//On renvoie le résultat (encodé en UTF-8 ?)
 			return static::utf8Encode($timeTxt);

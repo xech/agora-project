@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur du module "Contact"
+ * CONTROLEUR DU MODULE "CONTACT"
  */
 class CtrlContact extends Ctrl
 {
@@ -17,9 +17,9 @@ class CtrlContact extends Ctrl
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=array("MdlContact","MdlContactFolder");
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		$vDatas["foldersList"]=self::$curContainer->folders();
@@ -27,9 +27,9 @@ class CtrlContact extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PLUGINS
-	 */
+	 *******************************************************************************************/
 	public static function plugin($pluginParams)
 	{
 		$pluginsList=self::getPluginsFolders($pluginParams,"MdlContactFolder");
@@ -37,7 +37,7 @@ class CtrlContact extends Ctrl
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
-			$tmpObj->pluginLabel=$tmpObj->getLabel("all");
+			$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche le contact dans son dossier conteneur
 			$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";
@@ -46,25 +46,25 @@ class CtrlContact extends Ctrl
 		return $pluginsList;
 	}
 
-	/*
-	 * ACTION : Vue détaillée d'un contact
-	 */
+	/*******************************************************************************************
+	 * VUE : DÉTAILS D'UN CONTACT
+	 *******************************************************************************************/
 	public static function actionVueContact()
 	{
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlRead();
+		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueContact.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Edition d'un contact
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION D'UN CONTACT
+	 *******************************************************************************************/
 	public static function actionContactEdit()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
@@ -79,40 +79,42 @@ class CtrlContact extends Ctrl
 		static::displayPage("VueContactEdit.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Import/Export de contacts
-	 */
+	/*******************************************************************************************
+	 * VUE : IMPORT/EXPORT DE CONTACTS
+	 *******************************************************************************************/
 	public static function actionEditPersonsImportExport()
 	{
+		////	Folder courant
+		$curFolder=self::getObj("contactFolder",Req::getParam("_idContainer"));
 		////	Controle d'accès
 		if(Ctrl::$curUser->isAdminSpace()==false)  {static::lightboxClose();}
 		////	Validation de formulaire
 		if(Req::isParam("formValidate"))
 		{
-			//Export de contacts
+			//// Export de contacts
 			if(Req::getParam("actionImportExport")=="export"){
 				$contactList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplayedObjects(self::$curContainer));
 				MdlContact::exportPersons($contactList, Req::getParam("exportType"));
 			}
-			//Import de contacts
+			//// Import de contacts
 			elseif(Req::getParam("actionImportExport")=="import" && Req::getParam("personFields"))
 			{
 				$personFields=Req::getParam("personFields");
-				//Créé chaque contact
 				foreach(Req::getParam("personsImport") as $personCpt)
 				{
-					//Créé l'objet
+					//Créé le contact (avec le "_idContainer" pour le controle d'accès : cf. "createUpdate()" + "createRight()")
 					$curObj=new MdlContact();
+					$curObj->_idContainer=$curFolder->_id;
 					$sqlProperties=null;
-					//Ajoute "_idContainer" pour le controle d'accès (cf. "createUpdate()" puis "createRight()")
-					if(Req::isParam("_idContainer"))  {$curObj->_idContainer=Req::getParam("_idContainer");}
-					//Ajoute chaque champ du contact
+					//Récupère la valeur de chaque champ du contact
 					foreach(Req::getParam("agoraFields") as $fieldCpt=>$curFieldName){
 						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
-						if(!empty($curFieldVal) && !empty($curFieldName))	{$sqlProperties.=$curFieldName."=".Db::format($curFieldVal).", ";}
+						if(!empty($curFieldVal) && !empty($curFieldName))  {$sqlProperties.=$curFieldName."=".Db::format($curFieldVal).", ";}
 					}
 					//Enregistre le contact
 					$curObj=$curObj->createUpdate($sqlProperties);
+					//Ajoute si besoin l'affectation du contact : 'tous les users' de l'espace courant, avec un accès en 'lecture'
+					if($curFolder->isRootFolder())  {Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
 				}
 				//Ferme la page
 				static::lightboxClose();
@@ -120,19 +122,20 @@ class CtrlContact extends Ctrl
 		}
 		////	Affiche le menu d'Import/Export
 		$vDatas["curObjClass"]="MdlContact";
+		$vDatas["curFolder"]=$curFolder;
 		static::displayPage(Req::commonPath."VuePersonsImportExport.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Creation d'un utilisateur a partir d'un contact
-	 */
+	/*******************************************************************************************
+	 * ACTION : CREATION D'UN UTILISATEUR A PARTIR D'UN CONTACT
+	 *******************************************************************************************/
 	public static function actionContactAddUser()
 	{
 		if(Ctrl::$curUser->isAdminGeneral())
 		{
 			//Init
 			$contactRef=Ctrl::getTargetObj();
-			$contactRef->controlEdit();
+			$contactRef->editControl();
 			//Création du nouveau User
 			$newUser=new MdlUser();
 			$login=(!empty($contactRef->mail))  ?  $contactRef->mail  :  substr($contactRef->firstName,0,1).substr($contactRef->name,0,5);
@@ -140,7 +143,7 @@ class CtrlContact extends Ctrl
 			$sqlProperties="civility=".Db::format($contactRef->civility).", name=".Db::format($contactRef->name).", firstName=".Db::format($contactRef->firstName).", mail=".Db::format($contactRef->mail).", telephone=".Db::format($contactRef->telephone).", telmobile=".Db::format($contactRef->telmobile).", adress=".Db::format($contactRef->adress).", postalCode=".Db::format($contactRef->postalCode).", city=".Db::format($contactRef->city).", country=".Db::format($contactRef->country).", `function`=".Db::format($contactRef->function).", companyOrganization=".Db::format($contactRef->companyOrganization).", `comment`=".Db::format($contactRef->comment);
 			$newUser=$newUser->createUpdate($sqlProperties, $login, $password, Ctrl::$curSpace->_id);
 			if(is_object($newUser)){
-				Ctrl::addNotif("CONTACT_createUserConfirm");
+				Ctrl::notify("CONTACT_createUserConfirm");
 				if(is_file($contactRef->pathImgThumb()))  {copy($contactRef->pathImgThumb(),$newUser->pathImgThumb());}//Récupère l'image?
 			}
 			//Redirige

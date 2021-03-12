@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des Liens
+ * MODELE DES LIENS/FAVORIS
  */
 class MdlLink extends MdlObject
 {

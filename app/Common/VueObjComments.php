@@ -57,7 +57,7 @@ form button				{width:120px;}
 	{
 		echo "<div class='vCommentsTable'>
 				<div class='vCommentsRow sTableRow'>
-					<div class='vCommentDateUser'>".Ctrl::getObj("user",$tmpComment["_idUser"])->getLabel()." <div>".Txt::displayDate($tmpComment["dateCrea"],"full")."</div></div>
+					<div class='vCommentDateUser'>".Ctrl::getObj("user",$tmpComment["_idUser"])->getLabel()." <div>".Txt::dateLabel($tmpComment["dateCrea"],"full")."</div></div>
 					<div class='vCommentText' id='commentText".$tmpComment["_id"]."'>
 						<div>".$tmpComment["comment"]."</div>
 						<form action='index.php' method='post'><textarea name='comment' maxlength='200'>".$tmpComment["comment"]."</textarea><input type='hidden' name='idComment' value='".$tmpComment["_id"]."'><input type='hidden' name='actionComment' value='modif'>".Txt::submitButton("modify",false)."</form>

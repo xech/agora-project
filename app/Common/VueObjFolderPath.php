@@ -16,7 +16,7 @@
 		echo "<div><img src='app/img/".$leftIcon.".png'></div>".$ContextMenu."<div ".$folderLink." title=\"".$tmpFolder->description."\">".Txt::reduce($tmpFolder->name,45)."</div>";/*plusieurs <div> : cf. responsive avec un "name" très long*/
 	}
 	////	Menu d'ajout d'élément
-	if(!empty($addElemLabel) && $curFolder->editContentRight()){
+	if(!empty($addElemLabel) && $curFolder->addContentRight()){
 		echo "<div class='pathIconMenu'>
 			  	<img src='app/img/arrowRightBig2.png'> <img src='app/img/plus.png' class='menuLaunch' for='folderPathAddMenu'>
 				<div id='folderPathAddMenu' class='menuContext'>

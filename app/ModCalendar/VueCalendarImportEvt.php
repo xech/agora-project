@@ -63,7 +63,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 							<input type='hidden' name='eventList[".$cptEvt."][dbPeriodDateEnd]' value=\"".$tmpEvt["dbPeriodDateEnd"]."\">
 						</td>
 						<td>".$dotIsPresent."</td>
-						<td>".Txt::displayDate($tmpEvt["dbDateBegin"],"full",$tmpEvt["dbDateEnd"])."</td>
+						<td>".Txt::dateLabel($tmpEvt["dbDateBegin"],"full",$tmpEvt["dbDateEnd"])."</td>
 						<td><label for='".$evtBoxId."'>".$tmpEvt["dbTitle"]."</label></td>
 						<td>".Txt::reduce($tmpEvt["dbDescription"],120)."</td>
 					</tr>";

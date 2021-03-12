@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des fichiers
+ * MODELE DES FICHIERS
  */
 class MdlFile extends MdlObject
 {
@@ -31,18 +31,18 @@ class MdlFile extends MdlObject
 	public static $searchFields=array("name","description");
 	public static $sortFields=array("name@@asc","name@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","extension@@asc","extension@@desc","octetSize@@asc","octetSize@@desc","downloadsNb@@desc","downloadsNb@@asc");
 
-	/*
-	 * Récupère toutes les versions du fichier
-	 */
+	/*******************************************************************************************
+	 * LISTE DES VERSIONS DU FICHIER
+	 *******************************************************************************************/
 	public function getVersions($forceUpdate=false)
 	{
 		if($this->_versions===null || $forceUpdate==true)  {$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea desc");}//Le "ORDER BY" place la dernière version en premier!
 		return $this->_versions;
 	}
 
-	/*
-	 * Récupère la dernière version du fichier / une version à une date donnée
-	 */
+	/*******************************************************************************************
+	 * DERNIÈRE VERSION DU FICHIER /  VERSION À UNE DATE DONNÉE
+	 *******************************************************************************************/
 	public function getVersion($dateCrea=null)
 	{
 		foreach($this->getVersions() as $tmpVersion){
@@ -50,19 +50,19 @@ class MdlFile extends MdlObject
 		}
 	}
 
-	/*
-	 * Chemin du fichier sur le disque (dernière version / version précisé avec "date_drea")
-	 */
+	/*******************************************************************************************
+	 * CHEMIN DU FICHIER SUR LE DISQUE (DERNIÈRE VERSION / VERSION PRÉCISÉ AVEC "$dateCrea")
+	 *******************************************************************************************/
 	public function filePath($dateCrea=null)
 	{
 		$curVersion=$this->getVersion($dateCrea);
 		return $this->containerObj()->folderPath("real").$curVersion["realName"];
 	}
 
-	/*
-	 * Lien pour ajouter des fichiers
+	/*******************************************************************************************
+	 * LIEN POUR AJOUTER DES FICHIERS
 	 * $urlParams spécifié pour une nouvelle version de fichier
-	 */
+	 *******************************************************************************************/
 	public static function urlAddFiles($urlParams=null)
 	{
 		//Par défaut on spécifie le dossier courant
@@ -70,9 +70,9 @@ class MdlFile extends MdlObject
 		return "?ctrl=".static::moduleName."&action=AddEditFiles&".$urlParams;
 	}
 
-	/*
-	 * Url de Download/Display du fichier ($action : "download" ou "display")
-	 */
+	/*******************************************************************************************
+	 * URL DE DOWNLOAD/DISPLAY DU FICHIER ($action : "download" ou "display")
+	 *******************************************************************************************/
 	public function urlDownloadDisplay($action="download", $dateCrea=null)
 	{
 		$returndUrl="?ctrl=file&action=getFile&targetObjId=".$this->_targetObjId;					//Url de base
@@ -82,17 +82,17 @@ class MdlFile extends MdlObject
 		return $returndUrl."&extension=.".File::extension($this->name);								//Ajoute l'extension du fichier (cf. controles d'action depuis mobileApp)
 	}
 
-	/*
-	 * Nom d'un vignette
-	 */
+	/*******************************************************************************************
+	 * NOM DE LA VIGNETTE DU FICHIER
+	 *******************************************************************************************/
 	public function getThumbName()
 	{
 		return $this->_id."_thumb.jpg";
 	}
 
-	/*
-	 * Chemin de la vignette JPG d'une image ou d'un Pdf (créé ou à créer)
-	 */
+	/*******************************************************************************************
+	 * CHEMIN DE LA VIGNETTE JPG D'UNE IMAGE OU D'UN PDF (créé ou à créer)
+	 *******************************************************************************************/
 	public function getThumbPath()
 	{
 		if($this->_tumbPath===null){
@@ -102,9 +102,9 @@ class MdlFile extends MdlObject
 		return $this->_tumbPath;
 	}
 
-	/*
-	 * Verifie s'il existe une vignette
-	 */
+	/*******************************************************************************************
+	 * VERIFIE S'IL EXISTE UNE VIGNETTE POUR LE FICHIER
+	 *******************************************************************************************/
 	public function hasThumb()
 	{
 		if($this->_hasTumb===null)
@@ -112,9 +112,9 @@ class MdlFile extends MdlObject
 		return $this->_hasTumb;
 	}
 
-	/*
-	 * Création/Maj la vignette du fichier (Image / Pdf)
-	 */
+	/*******************************************************************************************
+	 * CRÉATION/MAJ LA VIGNETTE DU FICHIER (Image / Pdf)
+	 *******************************************************************************************/
 	public function createThumb()
 	{
 		//Fichier de moins de 15Mo?
@@ -123,7 +123,8 @@ class MdlFile extends MdlObject
 			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
 			elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))
 			{
-				$tmpThumb=new Imagick($this->filePath()."[0]");
+				$tmpThumb=new Imagick();
+				$tmpThumb->readimage($this->filePath()."[0]"); 
 				$tmpThumb=$tmpThumb->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);//Pour pas avoir de background noir
 				$tmpThumb->writeImage($this->getThumbPath());
 				$tmpThumb->clear();
@@ -133,9 +134,9 @@ class MdlFile extends MdlObject
 		}
 	}
 
-	/*
-	 * Menu des versions du fichier
-	 */
+	/*******************************************************************************************
+	 * MENU DES VERSIONS DU FICHIER
+	 *******************************************************************************************/
 	public function versionsMenu($displayType)
 	{
 		$nbVersions=count($this->getVersions());
@@ -146,49 +147,32 @@ class MdlFile extends MdlObject
 		}
 	}
 
-	/*
-	 * VUE : Surcharge du menu contextuel
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//"Télécharger le fichier"
-		$options["specificOptions"][]=array(
-			"actionJs"=>"window.open('".$this->urlDownloadDisplay()."')",
-			"iconSrc"=>"download.png",
-			"label"=>Txt::trad("download")
-		);
-		//Admin d'espace : "téléchargé par"
+		//// ADMIN D'ESPACE : "TÉLÉCHARGÉ PAR"
 		$tooltipDownloadedBy=null;
 		if(Ctrl::$curUser->isAdminSpace() && !empty($this->downloadedBy)){
 			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
-			$tooltipDownloadedBy="title=\"".Txt::trad("FILE_downloadedBy")." :<br>".trim($tooltipDownloadedBy, ", ")."\"";
+			$tooltipDownloadedBy="title=\"".Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy, ", ")."\"";
 		}
-		//"Fichier téléchargé XX fois"
+		//// "TÉLÉCHARGER LE FICHIER"  &&  "FICHIER TÉLÉCHARGÉ X FOIS"
 		$options["specificOptions"][]=array(
-			"iconSrc"=>"info.png",
-			"label"=>"<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"
+			"actionJs"=>"window.open('".$this->urlDownloadDisplay()."')",
+			"iconSrc"=>"download.png",
+			"label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"
 		);
-		//"X versions du fichier" ("versionsMenu()" contient le lien vers les versions : donc pas de "actionJs")
-		if(count($this->getVersions())>1){
-			$options["specificOptions"][]=array(
-				"iconSrc"=>"file/versions.png",
-				"label"=>$this->versionsMenu("label")
-			);
-		}
-		//"Ajouter une nouvelle version"
-		if($this->editRight()){
-			$options["specificOptions"][]=array(
-				"actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&targetObjId=".$this->_targetObjId)."')",
-				"iconSrc"=>"plus.png",
-				"label"=>Txt::trad("FILE_addFileVersion")
-			);
-		}
+		//// "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
+		if(count($this->getVersions()) > 1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
+		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&targetObjId=".$this->_targetObjId)."')"];}
 		return parent::contextMenu($options);
 	}
 
-	/*
-	 * Image du fichier
-	 */
+	/*******************************************************************************************
+	 * IMAGE DU FICHIER
+	 *******************************************************************************************/
 	public function typeIcon()
 	{
 		$pathFileTypes="app/img/file/fileType/";
@@ -208,10 +192,10 @@ class MdlFile extends MdlObject
 		else												{return $pathFileTypes."misc.png";}
 	}
 
-	/*
-	 * SURCHARGE : Supprime un fichier (toutes ses versions OU une version spécifique)	
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRIME UN FICHIER (toutes ses versions OU une version spécifique)	
 	 * $deleteVersion : "deleteFolder" / "all" / version précise via "dateCrea"
-	 */
+	 *******************************************************************************************/
 	public function delete($deleteVersion="all")
 	{
 		if($this->deleteRight())

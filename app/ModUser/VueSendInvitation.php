@@ -155,7 +155,7 @@ $(function(){
 			foreach($invitationList as $tmpInvitation){
 				$objSpace=Ctrl::getObj("space",$tmpInvitation["_idSpace"]);
 				$deleteInvitationImg="<img src='app/img/delete.png' class='sLink' style='height:20px' title=\"".txt::trad("delete")."\" onclick=\"confirmDelete('?ctrl=user&action=sendInvitation&deleteInvitation=true&_idInvitation=".$tmpInvitation["_idInvitation"]."')\" >";
-				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::displayDate($tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowRight.png' style='height:8px'> ".$objSpace->name."</li>";
+				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::dateLabel($tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowRight.png' style='height:8px'> ".$objSpace->name."</li>";
 			}
 			?>
 		</ul>

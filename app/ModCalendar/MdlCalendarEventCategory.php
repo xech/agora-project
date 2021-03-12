@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des categories d'evenements
+ * MODELE DES CATEGORIES D'EVENEMENTS
  */
 class MdlCalendarEventCategory extends MdlObject
 {
@@ -18,9 +18,9 @@ class MdlCalendarEventCategory extends MdlObject
 	public static $requiredFields=array("title");
 	public static $sortFields=array("title@asc","title@desc");
 
-	/*
-	 * SURCHARGE : Constructeur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -30,34 +30,34 @@ class MdlCalendarEventCategory extends MdlObject
 		if(empty($this->color))  {$this->color="#900";}
 	}
 	
-	/*
-	 * Affiche la categorie avec une pastille de couleur
-	 */
+	/*******************************************************************************************
+	 * AFFICHE LA CATEGORIE AVEC UNE PASTILLE DE COULEUR
+	 *******************************************************************************************/
 	public function display()
 	{
 		if(!empty($this->title))	{return "<div class='categoryColor' style=\"background:".$this->color."\">&nbsp;</div> ".$this->title;}
 	}
 
-	/*
-	 * Categories d'evenements (Filtre par espace?)
-	 */
+	/*******************************************************************************************
+	 * CATEGORIES D'EVENEMENTS (FILTRE PAR ESPACE?)
+	 *******************************************************************************************/
 	public static function getCategories($editMode=false)
 	{
 		$sqlFilter=($editMode==true && Ctrl::$curUser->isAdminGeneral())  ?  null  :  " AND (_idSpaces is null OR _idSpaces LIKE '%@".Ctrl::$curSpace->_id."@%')";
 		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
 	}
 
-	/*
-	 * Droit d'ajouter une nouvelle categorie
-	 */
+	/*******************************************************************************************
+	 * DROIT D'AJOUTER UNE NOUVELLE CATEGORIE
+	 *******************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddCategory")==false));
 	}
 	
-	/*
-	 * SURCHARGE : suppression de categorie
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRESSION DE CATEGORIE
+	 *******************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){

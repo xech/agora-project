@@ -1,5 +1,5 @@
 <script>
-////	Resize
+////	RESIZE
 lightboxSetWidth(600);
 
 ////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
@@ -19,7 +19,7 @@ function deleteResponseFile(_idReponse)
 	}
 }
 
-////	Contrôle du formulaire
+////	CONTRÔLE DU FORMULAIRE
 function formControl()
 {
 	//Au moins 2 réponses au sondage

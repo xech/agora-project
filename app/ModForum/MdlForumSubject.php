@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des sujets du forum
+ * MODELE DES SUJETS DU FORUM
  */
 class MdlForumSubject extends MdlObject
 {
@@ -27,9 +27,9 @@ class MdlForumSubject extends MdlObject
 	public static $searchFields=array("title","description");
 	public static $sortFields=array("dateLastMessage@@desc","dateLastMessage@@asc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");
 
-	/*
-	 * Liste des messages d'un sujet & Récupère le dernier message & le nombre de messages 
-	 */
+	/*******************************************************************************************
+	 * LISTE LES MESSAGES D'UN SUJET & RÉCUPÈRE LE DERNIER MESSAGE & LE NOMBRE DE MESSAGES 
+	 *******************************************************************************************/
 	public function getMessages($orderByDate=false)
 	{
 		//Récup la liste des messages et leur nombre
@@ -48,25 +48,25 @@ class MdlForumSubject extends MdlObject
 		return $messageList;
 	}
 
-	/*
-	 * L'user courant recoit-il des notifications d'ajout de nouveau message sur le sujet courant?
-	 */
+	/*******************************************************************************************
+	 * VERIF : L'USER COURANT RECOIT-IL DES NOTIFICATIONS D'AJOUT DE NOUVEAU MESSAGE SUR LE SUJET COURANT?
+	 *******************************************************************************************/
 	public function curUserNotifyLastMessage()
 	{
 		return in_array(Ctrl::$curUser->_id,Txt::txt2tab($this->usersNotifyLastMessage));
 	}
 
-	/*
-	 * L'user courant a-t-il consulté le dernier message?
-	 */
+	/*******************************************************************************************
+	 * VERIF : L'USER COURANT A-T-IL CONSULTÉ LE DERNIER MESSAGE?
+	 *******************************************************************************************/
 	public function curUserLastMessageIsNew()
 	{
 		return (Ctrl::$curUser->isUser() && !in_array(Ctrl::$curUser->_id,Txt::txt2tab($this->usersConsultLastMessage)));
 	}
 	
-	/*
-	 * L'User courant a consulté le dernier message : MAJ DB
-	 */
+	/*******************************************************************************************
+	 * L'USER COURANT A CONSULTÉ LE DERNIER MESSAGE : MAJ DB
+	 *******************************************************************************************/
 	public function curUserConsultLastMessageMaj()
 	{
 		if($this->curUserLastMessageIsNew()){
@@ -75,18 +75,18 @@ class MdlForumSubject extends MdlObject
 		}
 	}
 
-	/*
-	 * Droit d'ajouter un nouveau sujet
-	 */
+	/*******************************************************************************************
+	 * DROIT D'AJOUTER UN NOUVEAU SUJET
+	 *******************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddSubject")==false));
 	}
 
-	/*
-	 * SURCHARGE : Url d'accès
-	 */
-	public function getUrl($display=null)
+	/*******************************************************************************************
+	 * SURCHARGE : URL D'ACCÈS
+	 *******************************************************************************************/
+	public function getUrl($display=null):string
 	{
 		//Url du theme : cf. "CtrlObject::actionDelete()"
 		if($display=="theme"){
@@ -98,9 +98,9 @@ class MdlForumSubject extends MdlObject
 		return parent::getUrl($display);
 	}
 
-	/*
-	 * SURCHARGE : Url d'ajoute d'un nouveau sujet (en fonction du thème?)
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : URL D'AJOUT D'UN NOUVEAU SUJET (EN FONCTION DU THÈME?)
+	 *******************************************************************************************/
 	public static function getUrlNew()
 	{
 		return parent::getUrlNew().(Req::isParam("_idTheme")?"&_idTheme=".Req::getParam("_idTheme"):null);

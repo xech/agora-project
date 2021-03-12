@@ -27,7 +27,7 @@ class DbUpdateOld extends DbUpdate
 	{
 		$tabResult=self::getCol("show tables like '".$table."'");
 		if(self::updateVersion($versionUpdate) && !empty($sqlQuery) && empty($tabResult))	{self::query($sqlQuery);}
-		return (!empty($tabResult)) ? true : false;
+		return (!empty($tabResult));
 	}
 
 	/*
@@ -37,7 +37,7 @@ class DbUpdateOld extends DbUpdate
 	{
 		$tabResult=self::getCol("show columns from `".$table."` like '".$field."'");
 		if(self::updateVersion($versionUpdate) && !empty($sqlQuery) && empty($tabResult))	{self::query($sqlQuery);}
-		return (!empty($tabResult)) ? true : false;
+		return (!empty($tabResult));
 	}
 
 	/*

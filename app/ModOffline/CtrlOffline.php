@@ -8,15 +8,15 @@
 
 
 /*
- * Controleur des pages "Offline"
+ * CONTROLEUR DES PAGES "OFFLINE" & DE CONNEXION A L'ESPACE
  */
 class CtrlOffline extends Ctrl
 {
 	const moduleName="offline";
 
-	/*
-	 * ACTION PAR DEFAUT : connexion à l'espace
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE => CONNEXION A L'ESPACE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		//Init
@@ -25,7 +25,7 @@ class CtrlOffline extends Ctrl
 		if(Req::isParam("resetPasswordMail"))
 		{
 			// Affiche la notif d'envoie de l'email (que l'email soit bon ou pas, par mesure de sécurité) : "Un email vient de vous être envoyé [...] Si vous ne l'avez pas reçu, vérifiez que l’adresse saisie est bien la bonne"
-			if(Req::isParam("resetPasswordSendMail"))  {Ctrl::addNotif("resetPasswordNotif");}
+			if(Req::isParam("resetPasswordSendMail"))  {Ctrl::notify("resetPasswordNotif");}
 			// Vérif si l'user existe
 			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::formatParam("resetPasswordMail")." OR `login`=".Db::formatParam("resetPasswordMail"));
 			if(!empty($tmpUser))
@@ -43,10 +43,10 @@ class CtrlOffline extends Ctrl
 					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
 						$sqlNewPassword=MdlUser::passwordSha1(Req::getParam("newPassword"));
 						Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
-						Ctrl::addNotif("modifRecorded","success");
+						Ctrl::notify("modifRecorded","success");
 					}
 					//"resetPasswordId" pas OK : affiche "Le lien de renouvellement de password a expiré"
-					elseif($vDatas["resetPasswordIdOk"]!=true)  {self::addNotif("resetPasswordIdExpired");}
+					elseif($vDatas["resetPasswordIdOk"]!=true)  {self::notify("resetPasswordIdExpired");}
 				}
 			}
 		}
@@ -56,7 +56,7 @@ class CtrlOffline extends Ctrl
 			//Infos de l'invitation
 			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::formatParam("_idInvitation")." AND mail=".Db::formatParam("mail"));
 			//Invitation expiré ?
-			if(empty($tmpInvit))	{Ctrl::addNotif("USER_exired_idInvitation");}
+			if(empty($tmpInvit))	{Ctrl::notify("USER_exired_idInvitation");}
 			//Valide l'invitation avec le "newPassword" et créé le nouvel utilisateur
 			elseif(Req::isParam("newPassword") && MdlUser::usersQuotaOk())
 			{
@@ -67,12 +67,12 @@ class CtrlOffline extends Ctrl
 					Db::query("DELETE FROM ap_invitation WHERE _idInvitation=".Db::format($tmpInvit["_idInvitation"]));
 					$_COOKIE["AGORAP_LOG"]=$tmpInvit["mail"];//Préremplis le 'login'
 					$newUser->newUserCoordsSendMail(Req::getParam("newPassword"));
-					Ctrl::addNotif("USER_invitationValidated","success");
+					Ctrl::notify("USER_invitationValidated","success");
 				}
 			}
 		}
 		////	Affiche la page
-		$vDatas["usersInscription"]=(Db::getVal("select count(*) from ap_space where usersInscription=1")>0  &&  Req::isMobileApp()==false);
+		$vDatas["userInscription"]=(Db::getVal("select count(*) from ap_space where userInscription=1")>0  &&  Req::isMobileApp()==false);
 		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "select * from ap_space where public=1 order by name");
 		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::getParam("login");}//Login par défaut : passé en parametre
 		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}//Login par défaut : en cookie
@@ -81,20 +81,34 @@ class CtrlOffline extends Ctrl
 		static::displayPage("VueConnection.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Inscription d'utilisateur
-	 */
-	public static function actionUsersInscription()
+	/*******************************************************************************************
+	 * ACTION : INSCRIPTION D'UTILISATEUR
+	 *******************************************************************************************/
+	public static function actionUserInscription()
 	{
 		////	Valide le formulaire (Ajax)
 		if(Req::isParam("formValidate"))
 		{
-			//Verifie si le login existe déjà  &&  Vérif le Captcha  &&  Si tout est ok, on enregistre l'user et renvoi l'url avec le message de succès
+			//Verifie si le login existe déjà  ||  Vérif le Captcha  ||  Enregistre l'user
 			if(MdlUser::loginAlreadyExist(Req::getParam("mail")))	{$result["notifError"]=Txt::trad("USER_loginAlreadyExist");}
 			elseif(CtrlMisc::actionCaptchaControl()==false)			{$result["notifError"]=Txt::trad("captchaError");}
 			else{
+				//Enregistre l'user et renvoi l'url avec le message de succès
 				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", `password`=".Db::formatParam("password").", message=".Db::formatParam("message").", `date`=".Db::dateNow());
-				$result["redirSuccess"]="index.php?msgNotif[]=userInscriptionRecorded";
+				$result["redirSuccess"]="index.php?notify=userInscriptionRecorded";
+				//Envoi une notif à l'admin de l'espace?
+				$curSpace=Ctrl::getObj("space",Req::getParam("_idSpace"));
+				if(!empty($curSpace->userInscriptionNotify))
+				{
+					$adminMails=[];
+					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->userAccessRight($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
+					if(!empty($adminMails)){
+						$newUserLabel=Req::getParam("name")." ".Req::getParam("firstName");
+						$subject=Txt::trad("userInscriptionNotifSubject")." ".$curSpace->name;
+						$mainMessage="<br>".str_replace(["--SPACE_NAME--","--NEW_USER_LABEL--","--NEW_USER_MESSAGE--"], [$curSpace->name,$newUserLabel,Req::getParam("message")], Txt::trad("userInscriptionNotifMessage"));
+						Tool::sendMail($adminMails, $subject, $mainMessage, "noNotify");
+					}
+				}
 			}
 			//Renvoie le résultat
 			echo json_encode($result);
@@ -102,14 +116,14 @@ class CtrlOffline extends Ctrl
 		////	Affiche le formulaire
 		else
 		{
-			$vDatas["objSpacesInscription"]=Db::getObjTab("space", "SELECT * FROM ap_space WHERE usersInscription=1");
-			static::displayPage("VueUsersInscription.php",$vDatas);
+			$vDatas["objSpacesInscription"]=Db::getObjTab("space", "SELECT * FROM ap_space WHERE userInscription=1");
+			static::displayPage("VueUserInscription.php",$vDatas);
 		}
 	}
 
-	/*
-	 * ACTION : Install de l'Agora
-	 */
+	/*******************************************************************************************
+	 * ACTION : INSTALL DE L'AGORA
+	 *******************************************************************************************/
 	public static function actionInstall()
 	{
 		////	Init  & Controle de version PHP  & Verif si l'application est déjà installée
@@ -187,7 +201,7 @@ class CtrlOffline extends Ctrl
 /***************************************************************************************************************************/
 
 				//REDIRECTION AVEC NOTIFICATION
-				$result["redirSuccess"]="index.php?disconnect=1&msgNotif[]=INSTALL_installOk";
+				$result["redirSuccess"]="index.php?disconnect=1&notify=INSTALL_installOk";
 			}
 			//RENVOI LE RESULTAT
 			echo json_encode($result);
@@ -200,9 +214,9 @@ class CtrlOffline extends Ctrl
 		}
 	}
 
-	/*
-	 * Verifie la connexion à la DataBase
-	 */
+	/*******************************************************************************************
+	 * VERIFIE LA CONNEXION À LA DATABASE
+	 *******************************************************************************************/
 	public static function installDbControl($db_host, $db_login, $db_password, $db_name)
 	{
 		//Connection PDO
@@ -223,18 +237,18 @@ class CtrlOffline extends Ctrl
 		return "dbAvailable";
 	}
 
-	/*
-	 * AJAX : Test le password de connexion à un espace public
-	 */
+	/*******************************************************************************************
+	 * AJAX : TEST LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC
+	 *******************************************************************************************/
 	public static function actionPublicSpaceAccess()
 	{
 		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::formatParam("_idSpace")." AND BINARY `password`=".Db::formatParam("password"));//"BINARY"=>case sensitive
 		echo (empty($password)) ? "false" : "true";
 	}
 
-	/*
-	 * AJAX : Authentification via gSignIn
-	 */
+	/*******************************************************************************************
+	 * AJAX : AUTHENTIFICATION VIA GSIGNIN
+	 *******************************************************************************************/
 	public static function actionGSigninAuth()
 	{
 		//Récup l'API Google Sign-In pour vérif de l'user

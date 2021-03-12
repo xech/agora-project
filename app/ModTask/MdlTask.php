@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des taches
+ * MODELE DES TACHES
  */
 class MdlTask extends MdlObject
 {
@@ -31,30 +31,30 @@ class MdlTask extends MdlObject
 	public static $searchFields=array("title","description");
 	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc","priority@@asc","priority@@desc","advancement@@asc","advancement@@desc","dateBegin@@asc","dateBegin@@desc","dateEnd@@asc","dateEnd@@desc");
 
-	/*
-	 * icone & label "Priority"
-	 */
+	/*******************************************************************************************
+	 * ICONE & LABEL "PRIORITY"
+	 *******************************************************************************************/
 	public function priority()
 	{
 		if(!empty($this->priority))
 			{return "<img src=\"app/img/task/priority".$this->priority.".png\" class='cursorHelp' title=\"".Txt::trad("TASK_priority")." ".Txt::trad("TASK_priority".$this->priority)."\">";}
 	}
 
-	/*
-	 * Tache en retard : date de fin passée et tache inachevée (advancement < 100%)
-	 */
+	/*******************************************************************************************
+	 * TACHE EN RETARD : DATE DE FIN PASSÉE ET TACHE INACHEVÉE (ADVANCEMENT < 100%)
+	 *******************************************************************************************/
 	public function isDelayed($displayLabel=false)
 	{
 		if($this->_isDelayed===null){
-			$this->_isDelayed=(!empty($this->advancement) && !empty($this->dateEnd) && strtotime($this->dateEnd)<time() && (int)$this->advancement<100) ? true : false;
+			$this->_isDelayed=(!empty($this->advancement) && !empty($this->dateEnd) && strtotime($this->dateEnd)<time() && (int)$this->advancement<100);
 		}
 		if($displayLabel==true && $this->_isDelayed==true)	{return Txt::trad("TASK_advancementLate")." <img src='app/img/important.png' style='height:20px'>";}
 		else												{return $this->_isDelayed;}
 	}
 
-	/*
-	 * Pourcentage d'avencement en %
-	 */
+	/*******************************************************************************************
+	 * POURCENTAGE D'AVENCEMENT EN %
+	 *******************************************************************************************/
 	public function fillPercent()
 	{
 		if(!empty($this->dateEnd) && $this->dateBegin!=$this->dateEnd){
@@ -64,26 +64,26 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*
-	 * "percentBar()" : Icone & label "dateBegin" & "dateEnd"
-	 */
+	/*******************************************************************************************
+	 * "PERCENTBAR()" : ICONE & LABEL "DATEBEGIN" & "DATEEND"
+	 *******************************************************************************************/
 	public function dateBeginEnd($percentBar=null)
 	{
 		if(!empty($this->dateBegin) || !empty($this->dateEnd))
 		{
 			//Affichage : Icone + tooltip / Barre détaillée
-			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<img src='app/img/task/date.png' class='cursorHelp' title=\"".Txt::displayDate($this->dateBegin,"full",$this->dateEnd)."\">";}
+			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<img src='app/img/task/date.png' class='cursorHelp' title=\"".Txt::dateLabel($this->dateBegin,"full",$this->dateEnd)."\">";}
 			else{
-				$txtBar="<img src='app/img/task/date.png'> ".Txt::displayDate($this->dateBegin,"normal",$this->dateEnd);
-				$txtTooltip=Txt::displayDate($this->dateBegin,"full",$this->dateEnd)." <br>".$this->isDelayed(true);
+				$txtBar="<img src='app/img/task/date.png'> ".Txt::dateLabel($this->dateBegin,"normal",$this->dateEnd);
+				$txtTooltip=Txt::dateLabel($this->dateBegin,"full",$this->dateEnd)." <br>".$this->isDelayed(true);
 				return Tool::percentBar($this->fillPercent(), $txtBar, $txtTooltip, $this->isDelayed(), static::barWidth);
 			}
 		}
 	}
 
-	/*
-	 * "percentBar()" : Icone & label "Advancement" (Icones / Barre)
-	 */
+	/*******************************************************************************************
+	 * "PERCENTBAR()" : ICONE & LABEL "ADVANCEMENT" (ICONES / BARRE)
+	 *******************************************************************************************/
 	public function advancement($percentBar=null)
 	{
 		if(!empty($this->advancement)){
@@ -94,9 +94,9 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*
-	 * "percentBar()" : Icone & label "responsiblePersons"
-	 */
+	/*******************************************************************************************
+	 * "PERCENTBAR()" : ICONE & LABEL "RESPONSIBLEPERSONS"
+	 *******************************************************************************************/
 	public function responsiblePersons($percentBar=null)
 	{
 		if(!empty($this->responsiblePersons))
@@ -118,14 +118,14 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*
-	 * "percentBar()" de la "timeline"
-	 */
+	/*******************************************************************************************
+	 * "PERCENTBAR()" DE LA "TIMELINE"
+	 *******************************************************************************************/
 	public function timelineBeginEnd()
 	{
 		if(!empty($this->dateBegin) || !empty($this->dateEnd)){
 			$txtBar=null;
-			$txtTooltip=$this->title."<br>".Txt::displayDate($this->dateBegin,"full",$this->dateEnd);
+			$txtTooltip=$this->title."<br>".Txt::dateLabel($this->dateBegin,"full",$this->dateEnd);
 			if(!empty($this->advancement)){
 				$txtBar.="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".$this->advancement."%";
 				$txtTooltip.="<br><img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".Txt::trad("TASK_advancement")." : ".$this->advancement." % <br>".$this->isDelayed(true);

@@ -1,26 +1,33 @@
 <script>
 ////	INIT
 $(function(){
-	////	Init l'affichage de l'arborescence de contacts
+	////	PRÉSELECTIONNE LE TITRE DU MAIL
+	$("[name='subject']").focus();
+
+	////	INIT L'AFFICHAGE DE L'ARBORESCENCE DE CONTACTS
 	$(".vMailsBlock").each(function(){
 		var folderTreeLevel=$(this).attr("data-treeLevel");
 		if(typeof folderTreeLevel!=="undefined" && folderTreeLevel>0)
 			{$(this).css("padding-left",(folderTreeLevel*22)+"px");}
 	});
 
-	////	Affiche/masque les users d'un espace (sauf espace courant)
+	////	AFFICHE/MASQUE LES USERS D'UN ESPACE (SAUF ESPACE COURANT)
 	$(".vMailsLabel").click(function(){
 		$("#mailsContainer"+$(this).attr("data-targetObjId")).slideToggle();
 	});
-
-	////	Fixe la hauteur de l'éditeur et Préselectionne le titre du mail
-	$("[name='subject']").focus();
 	
-	////	Déplace si besoin le menu des destinataires à coté du menu des "options" (ne pas utiliser "isMobile()" car ne doit pas etre activé sur tablettes en mode paysage)
-	if(document.body.clientWidth<=1023){
+	////	RESPONSIVE : DÉPLACE LE MENU DES DESTINATAIRES À COTÉ DU MENU DES "OPTIONS"
+	if(isMobile()){
 		$("#recipientMainMenu>*").appendTo("#mobileRecipients");
 		$("#mobileRecipients").show();
 	}
+
+	////	VISIO : AJOUTE UNE NOUVELLE UNE URL
+	$("#visioUrlAdd").click(function(){
+		if(confirm("<?= Txt::trad("VISIO_urlMail") ?> ?")){
+			tinymce.activeEditor.insertContent("<br><h4><?= Txt::trad("VISIO_launch") ?> : <a href='<?= Ctrl::$agora->visioUrl() ?>' target='_blank'><?= Ctrl::$agora->visioUrl() ?></a></h4>");
+		}
+	});
 });
 
 ////    On contrôle le formulaire
@@ -35,24 +42,26 @@ function formControl()
 
 <style>
 /*Menu de gauche*/
-#pageModuleMenu			{width:300px;}/*surcharge*/
-#recipientLabel					{text-align:center; margin-top:5px;}
-#recipientLabel hr				{margin:5px;}/*surcharge*/
-#recipientLabel img				{height:20px;}
-.vMailsBlock					{margin:20px 0px 0px 10px;}
-.vMailsBlock img				{max-width:22px;}
-.vMailsMenu						{padding-left:18px!important; display:none;}
-.vMailsMenu.vMailsMenuDisplay	{display:block;}
-.vMailsMenu>div					{padding:3px;}
-.vMailsMenu img					{max-width:18px;}
+#pageModuleMenu						{width:300px;}/*surcharge*/
+#recipientLabel						{text-align:center; margin-top:5px;}
+#recipientLabel hr					{margin:5px;}/*surcharge*/
+#recipientLabel img					{height:20px;}
+.vMailsBlock						{margin:20px 0px 0px 10px;}
+.vMailsLabel 						{display:table;}
+.vMailsLabel>div 					{display:table-cell; vertical-align:middle;}
+.vMailsLabel img					{max-width:24px; margin-right:10px;}
+.vMailsMenu							{padding-left:18px!important; display:none;}
+.vMailsMenu.vMailsMenuDisplay		{display:block;}
+.vMailsMenu>div						{padding:3px;}
 /*formulaire principal*/
-#mailContainer					{padding:10px;}
-#mailContainer [name='subject']	{width:100%; margin-bottom:20px;}
-#mailOptions					{display:table; width:100%; margin-top:20px;}
-#mailOptions>div				{display:table-cell;}
-#mailOptions>div:last-child		{text-align:right;}
-#mailOptions>div>div			{margin:7px;}
-#mailOptions [id^='files']:not([id='files1'])	{display:none;}
+#mailContainer						{padding:10px;}
+#mailContainer [name='subject']		{width:100%; margin-bottom:20px;}
+#mailOptions						{display:table; width:100%; margin-top:20px;}
+#mailOptions>div					{display:table-cell;}
+#mailOptions>div:last-child			{text-align:right;}
+#mailOptions>div>div				{margin:7px;}
+div[id^='files']:not([id='files1'])	{display:none;}
+#visioUrlAdd						{cursor:pointer;}
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
@@ -101,7 +110,10 @@ function formControl()
 					}
 					////	AFFICHE CHAQUE BLOCK D'USERS / CONTACTS
 					echo "<div class='vMailsBlock' ".($tmpContainer::objectType=="contactFolder"?"data-treeLevel='".$tmpContainer->treeLevel."'":null).">
-							<div class='vMailsLabel sLink' data-targetObjId=\"".$tmpContainer->_targetObjId."\"><img src=\"app/img/".($tmpContainer::objectType=="space"?"user":"contact")."/iconSmall.png\"> ".$tmpContainer->name." <img src='app/img/arrowBottom.png'></div>
+							<div class='vMailsLabel sLink' data-targetObjId=\"".$tmpContainer->_targetObjId."\">
+								<div><img src=\"app/img/mail/".($tmpContainer::objectType=="space"?"user":"contact").".png\"></div>
+								<div>".$tmpContainer->name." <img src='app/img/arrowBottom.png'></div>
+							</div>
 							<div class='vMailsMenu ".$mailsMenuClass."' id=\"mailsContainer".$tmpContainer->_targetObjId."\">".$tmpGroupsFields.$tmpPersonsFields.$tmpSwitchOption."</div>
 						</div>";
 				}
@@ -110,7 +122,7 @@ function formControl()
 			</div>
 			<div class="menuLine sLink" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');">
 				<div class="menuIcon"><img src="app/img/log.png"></div>
-				<div><?= Txt::trad("MAIL_mailHistory") ?></div>
+				<div><?= Txt::trad("MAIL_historyTitle") ?></div>
 			</div>
 		</div>
 	</div>
@@ -130,19 +142,22 @@ function formControl()
 			<div id="mailOptions">
 				<div>
 					<?php
-					//Accusé de réception  &&  Ajouter "ReplyTo"  &&  Masquer les desctinataires  &&  Ne pas signer le message
+					//Options "Ajouter 'ReplyTo'" & "Accusé de réception" si l'user a spécifié son email
 					if(!empty(Ctrl::$curUser->mail)){
-						echo "<div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>
-							  <div title=\"".Txt::trad("MAIL_addReplyToInfo")."\"><input type='checkbox' name='addReplyTo' value='1' id='addReplyTo'> <label for='addReplyTo'>".Txt::trad("MAIL_addReplyTo")."</label></div>";
+						echo "<div title=\"".Txt::trad("MAIL_addReplyToInfo")."\"><input type='checkbox' name='addReplyTo' value='1' id='addReplyTo'> <label for='addReplyTo'>".Txt::trad("MAIL_addReplyTo")."</label></div>
+							  <div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>";
 					}
+					//Options "Masquer les destinataires" & "Ne pas signer le message"
 					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients'> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>
 						  <div title=\"".Txt::trad("MAIL_noFooterInfo")."\"><input type='checkbox' name='noFooter' value='1' id='noFooter'> <label for='noFooter'>".Txt::trad("MAIL_noFooter")."</label></div>";
+					//Option : "Ajouter une visioconférence"
+					if(Ctrl::$agora->visioEnabled())  {echo "<div id='visioUrlAdd' title=\"".Txt::trad("VISIO_urlMail")."\"><img src='app/img/visioSmall.png'>&nbsp;".Txt::trad("VISIO_urlAdd")."</div>";}
 					?>
 				</div>
 				<div>
 					<?php
 					//Ajout de fichiers joints
-					for($cpt=1; $cpt<=10; $cpt++)  {echo "<div id=\"files".$cpt."\">".Txt::trad("MAIL_attachedFile")."  <input type='file' name=\"files".$cpt."\" onChange=\"$('#files".($cpt+1)."').fadeIn();\" title=\"".Txt::trad("MAIL_fielMaxSize")."\"></div>";}
+					for($cpt=1; $cpt<=10; $cpt++)  {echo "<div id=\"files".$cpt."\">".Txt::trad("MAIL_attachedFile")."  <input type='file' name=\"files".$cpt."\" onChange=\"$('#files".($cpt+1)."').fadeIn();\" title=\"".Txt::trad("MAIL_fileMaxSize")."\"></div>";}
 					?>
 				</div>
 			</div>

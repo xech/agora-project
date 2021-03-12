@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur du module "Task"
+ * CONTROLEUR DU MODULE "TASK"
  */
 class CtrlTask extends Ctrl
 {
@@ -17,9 +17,9 @@ class CtrlTask extends Ctrl
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=array("MdlTask","MdlTaskFolder");
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		$vDatas["foldersList"]=self::$curContainer->folders();
@@ -66,7 +66,7 @@ class CtrlTask extends Ctrl
 					"vTimelineLeftBorder"=>(($dayTimeBegin==$timelineBegin || date("N",$dayTimeBegin)==1 || date("j",$dayTimeBegin)==1)  ?  "vTimelineLeftBorder"  :  null),//début de timeline/de mois/de semaine : affiche les pointillés
 					"vTimelineToday"=>(date("Y-m-d",$dayTimeBegin)==date("Y-m-d")  ?  "vTimelineToday"  :  null),//Label d'aujourd'hui
 					"dayLabel"=>date("j",$dayTimeBegin),
-					"dayLabelTitle"=>Txt::displayDate($dayTimeBegin,"dateFull")
+					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin,"dateFull")
 				);
 				$tmpMonth=date("m",$dayTimeBegin);
 			}
@@ -77,9 +77,9 @@ class CtrlTask extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PLUGINS
-	 */
+	 *******************************************************************************************/
 	public static function plugin($pluginParams)
 	{
 		$pluginsList=self::getPluginsFolders($pluginParams,"MdlTaskFolder");
@@ -90,8 +90,8 @@ class CtrlTask extends Ctrl
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text")."<hr>".$tmpObj->description;
 			if(!empty($tmpObj->dateBegin) || !empty($tmpObj->dateEnd)){
-				if(!empty($tmpObj->dateBegin))		{$displayTime=Txt::displayDate($tmpObj->dateBegin,"full",$tmpObj->dateEnd);}
-				elseif(!empty($tmpObj->dateEnd))	{$displayTime=Txt::trad("end")." : ".Txt::displayDate($tmpObj->dateEnd,"normal");}
+				if(!empty($tmpObj->dateBegin))		{$displayTime=Txt::dateLabel($tmpObj->dateBegin,"full",$tmpObj->dateEnd);}
+				elseif(!empty($tmpObj->dateEnd))	{$displayTime=Txt::trad("end")." : ".Txt::dateLabel($tmpObj->dateEnd,"normal");}
 				$tmpObj->pluginTooltip.="<br>".$displayTime;
 			}			
 			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche la tâche dans son dossier conteneur
@@ -101,25 +101,25 @@ class CtrlTask extends Ctrl
 		return $pluginsList;
 	}
 
-	/*
-	 * ACTION : Vue détaillée d'une tache
-	 */
+	/*******************************************************************************************
+	 * VUE : DÉTAILS D'UNE TACHE
+	 *******************************************************************************************/
 	public static function actionVueTask()
 	{
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlRead();
+		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueTask.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : Edition d'une tache
-	 */
+	/*******************************************************************************************
+	 * VUE : EDITION D'UNE TACHE
+	 *******************************************************************************************/
 	public static function actionTaskEdit()
 	{
 		//Init
 		$curObj=Ctrl::getTargetObj();
-		$curObj->controlEdit();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet

@@ -8,7 +8,7 @@ lightboxSetWidth(500);
 .vUserInscription label				{margin-right:10px;}
 .vTmpMessage						{display:none;}
 .submitButtonMain					{padding-top:20px; padding-bottom:0px;}/*surcharge*/
-.submitButtonMain button			{width:280px;}/*surcharge*/
+.submitButtonMain button			{width:320px;}/*surcharge*/
 .submitButtonMain button img		{margin-right:10px;}
 </style>
 
@@ -23,13 +23,13 @@ lightboxSetWidth(500);
 		$tmpMessage=(!empty($tmpInsc["message"]))  ?  "<img src='app/img/arrowBottom.png' class='sLink' onclick=\"$('#tmpMessage".$tmpInsc["_id"]."').toggle();\" title=\"".Txt::trad('description')."\"><div class='infos vTmpMessage' id='tmpMessage".$tmpInsc["_id"]."'>".$tmpInsc["message"]."</div>"  :  null;
 		echo "<div class='vUserInscription'>"
 				."<input type='checkbox' name=\"inscriptionValidate[]\" value=\"".$tmpInsc["_id"]."\" id=\"inscriptionLabel".$tmpInsc["_id"]."\">"
-				."<label for=\"inscriptionLabel".$tmpInsc["_id"]."\" title=\"".Txt::displayDate($tmpInsc["date"])."\">".$tmpInsc["name"]." ".$tmpInsc["firstName"]." (".$tmpInsc["mail"].")</label>"
+				."<label for=\"inscriptionLabel".$tmpInsc["_id"]."\" title=\"".Txt::dateLabel($tmpInsc["date"])."\">".$tmpInsc["name"]." ".$tmpInsc["firstName"]." (".$tmpInsc["mail"].")</label>"
 				.$tmpMessage.
 			 "</div>";
 	}
 
 	// BOUTONS DE VALIDATION/INVALIDATION
-	echo Txt::submitButton("<img src='app/img/check.png'>".Txt::trad("userInscriptionValidate")).
-		 "<div class='submitButtonMain' id='buttonInvalidate'><button type='submit' name='submitInvalidate' value='true'><img src='app/img/delete.png'>".Txt::trad("userInscriptionInvalidateButton")."</button></div>";
+	echo Txt::submitButton("<img src='app/img/check.png'>".Txt::trad("userInscriptionSelectValidate")).
+		 "<div class='submitButtonMain' id='buttonInvalidate'><button type='submit' name='submitInvalidate' value='true'><img src='app/img/delete.png'>".Txt::trad("userInscriptionSelectInvalidate")."</button></div>";
 	?>
 </form>

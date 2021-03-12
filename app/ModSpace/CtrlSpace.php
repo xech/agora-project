@@ -8,15 +8,15 @@
 
 
 /*
- * Controleur du module "Space" (gestion des espaces!)
+ * CONTROLEUR DU MODULE "SPACE"
  */
 class CtrlSpace extends Ctrl
 {
 	const moduleName="space";
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
@@ -24,19 +24,19 @@ class CtrlSpace extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
-	 * ACTION : parametrage de l'espace
-	 */
+	/*******************************************************************************************
+	 * VUE : PARAMETRAGE D'UN ESPACE
+	 *******************************************************************************************/
 	public static function actionSpaceEdit()
 	{
 		//Init
 		$curSpace=Ctrl::getTargetObj();
-		$curSpace->controlEdit();
+		$curSpace->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			////	Enregistre & recharge l'objet
-			$curSpace=$curSpace->createUpdate("name=".Db::formatParam("name").", description=".Db::formatParam("description").", public=".Db::formatParam("public").", `password`=".Db::formatParam("password").", usersInscription=".Db::formatParam("usersInscription").", usersInvitation=".Db::formatParam("usersInvitation").", wallpaper=".Db::formatParam("wallpaper"));
+			$curSpace=$curSpace->createUpdate("name=".Db::formatParam("name").", description=".Db::formatParam("description").", public=".Db::formatParam("public").", `password`=".Db::formatParam("password").", userInscription=".Db::formatParam("userInscription").", userInscriptionNotify=".Db::formatParam("userInscriptionNotify").", usersInvitation=".Db::formatParam("usersInvitation").", wallpaper=".Db::formatParam("wallpaper"));
 			////	Affectations des users
 			if(Ctrl::$curUser->isAdminGeneral())
 			{
@@ -59,7 +59,7 @@ class CtrlSpace extends Ctrl
 				Db::query("INSERT INTO ap_joinSpaceModule SET _idSpace=".$curSpace->_id.", moduleName=".Db::format($moduleName).", `rank`=".$rank.", options=".Db::format($options));
 			}
 			////	Creation de l'agenda d'espace (avec affectation par défaut : lecture pour les users de l'espace)
-			if($curSpace->isNewlyCreated() && in_array("calendar",Req::getParam("moduleList")) && in_array("createSpaceCalendar",Req::getParam("calendarOptions"))){
+			if($curSpace->isNewlyCreated() && in_array("calendar",Req::getParam("moduleList")) && Req::isParam("calendarOptions") && in_array("createSpaceCalendar",Req::getParam("calendarOptions"))){
 				$newCalendar=new MdlCalendar(0);
 				$newCalendar=$newCalendar->createUpdate("title=".Db::format($curSpace->name).", type='ressource'");
 				Db::query("INSERT INTO ap_objectTarget SET objectType='calendar', _idObject=".$newCalendar->_id.", _idSpace=".$curSpace->_id.", target='spaceUsers', accessRight='1.5'");

@@ -55,7 +55,7 @@ class File
 		{
 			static::$_fileTypes=array(
 				"image"=>array("jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"),
-				"imageBrowser"=>array("jpg","jpeg","png","gif"),
+				"imageBrowser"=>array("jpg","jpeg","png","gif","svg"),
 				"imageResize"=>array("jpg","jpeg","png"),
 				"textEditor"=>array("doc","docx","odt","sxw"),
 				"text"=>array("txt","text","rtf"),
@@ -98,8 +98,8 @@ class File
 		//Init le $datasFolderSize
 		$datasFolderSize=(!empty($datasFolderSize))  ?  $datasFolderSize  :  self::datasFolderSize();
 		////	Controle du type de fichier  &  L'espace disque disponible
-		if(self::isType("forbidden",$fileName))						{Ctrl::addNotif(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
-		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)	{Ctrl::addNotif("NOTIF_diskSpace");  return false;}
+		if(self::isType("forbidden",$fileName))						{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
+		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)	{Ctrl::notify("NOTIF_diskSpace");  return false;}
 		else														{return true;}
 	}
 
@@ -284,7 +284,7 @@ class File
 	{
 		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE)	{return true;}
 		else{
-			if($errorMessage==true)  {Ctrl::addNotif(Txt::trad("NOTIF_fileOrFolderAccess")." : ".str_replace(PATH_MOD_FILE,"",$targetPath));}
+			if($errorMessage==true)  {Ctrl::notify(Txt::trad("NOTIF_fileOrFolderAccess")." : ".str_replace(PATH_MOD_FILE,"",$targetPath));}
 			return false;
 		}
 	}
@@ -395,7 +395,7 @@ class File
 		$disabledEnd=19;//fin plage horaire de limitation
 		if($archiveSizeControl==true && date("G") > $disabledBegin && date("G") < $disabledEnd && (int)$archiveSize > $limitSize){
 			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::displaySize($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
-			Ctrl::addNotif($alertLabel, "warning");
+			Ctrl::notify($alertLabel, "warning");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
 		}
 	}

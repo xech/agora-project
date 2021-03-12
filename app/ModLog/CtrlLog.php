@@ -8,25 +8,25 @@
 
 
 /*
- * Controleur du module des "Log"
+ * CONTROLEUR DU MODULE DES "LOG"
  */
 class CtrlLog extends Ctrl
 {
 	public static $fieldsList=array("date","userName","spaceName","moduleName","action","objectType","comment");
 	const moduleName="log";
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		if(Ctrl::$curUser->isAdminSpace()==false)  {self::noAccessExit();}
 		static::displayPage("VueIndex.php");
 	}
 
-	/*
-	 * renvoie la liste des Logs de tout le site / de l'espace
-	 */
+	/*******************************************************************************************
+	 * LISTE DES LOGS DE TOUT LE SITE / DE L'ESPACE
+	 *******************************************************************************************/
 	public static function logList()
 	{
 		$results=[];
@@ -65,9 +65,9 @@ class CtrlLog extends Ctrl
 		return $results;
 	}
 
-	/*
-	 * Revoie un "select" pour filter les logs en fonction d'un champ
-	 */
+	/*******************************************************************************************
+	 * INPUT "SELECT" POUR FILTER LES LOGS EN FONCTION D'UN CHAMP DES LOGS
+	 *******************************************************************************************/
 	public static function fieldFilterSelect($fieldName)
 	{
 		//Récupère les options du menu
@@ -83,9 +83,9 @@ class CtrlLog extends Ctrl
 		return "<select name=\"search_".Txt::trad("LOG_".$fieldName)."\" class='searchInit'><option value=''>".Txt::trad("LOG_filter")." ".Txt::trad("LOG_".$fieldName)."</option>".$optionsFilter."</select>";
 	}
 
-	/*
+	/*******************************************************************************************
 	 * ACTION : TELECHARGE LES LOGS AU FORMAT CSV
-	 */
+	 *******************************************************************************************/
 	public static function actionLogsDownload()
 	{
 		if(Ctrl::$curUser->isAdminSpace()==false)  {self::noAccessExit();}

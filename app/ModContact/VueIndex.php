@@ -12,7 +12,7 @@ function contactAddUser(targetObjId)
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
-			if(Ctrl::$curContainer->editContentRight()){
+			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
 				if(Ctrl::$curUser->isAdminSpace())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&targetObjId=".Ctrl::$curContainer->_targetObjId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_contact")."</div></div>";}
@@ -37,17 +37,17 @@ function contactAddUser(targetObjId)
 					<div class='objContent'>
 						<div class='objIcon'>".$tmpContact->getImg(true,false,true)."</div>
 						<div class='objLabel'>
-							<a href=\"javascript:lightboxOpen('".$tmpContact->getUrl("vue")."');\">".$tmpContact->getLabel("all")."</a>
+							<a href=\"javascript:lightboxOpen('".$tmpContact->getUrl("vue")."');\">".$tmpContact->getLabel("full")."</a>
 							<div class='objPersonDetails'>".$tmpContact->getFieldsValues(MdlContact::getDisplayMode())."</div>
 						</div>
-						<div class='objAutorDate'>".$tmpContact->displayAutorDate()."</div>
+						<div class='objAutorDate'>".$tmpContact->autorDateLabel()."</div>
 					</div>
 				</div>
 			</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty($foldersList) && empty($contactList)){
-			$addElement=(Ctrl::$curContainer->editContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("CONTACT_addContact")."</div>"  :  null;
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("CONTACT_addContact")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("CONTACT_noContact").$addElement."</div>";
 		}
 		?>

@@ -4,10 +4,10 @@ lightboxSetWidth(550);
 
 ////	INIT
 $(function(){
-	////	Ajoute/modif un login de type "mail"
-	$("input[name='login']").on("blur",function(){
-		if($(this).isMail())				{$("[name='mail']").val(this.value);}				//C'est un login de type "mail" : on préremplit le champ "mail" du dessous s'il est vide
-		else if($(this).isEmpty()==false)	{notify("<?= Txt::trad("specifyLoginMail") ?>");}	//Ce n'est pas un login de type "mail" : on conseille d'en mettre un!
+	////	Controle du login
+	$("input[name='login']").focusout(function(){
+		if($(this).isMail())	{$("input[name='mail']").val(this.value);}											//Login "mail" : on préremplit alors le champ "mail" du dessous
+		else					{notify("<?= Txt::trad("specifyLoginMail") ?>");  $(this).addClass("focusRed");}	//Sinon "notify()" : "Merci de mettre de préférence un email" (pas de "focusRed()" car champ pas obligatoire)
 	});
 
 	////	Contrôle du formulaire

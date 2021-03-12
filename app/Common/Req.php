@@ -7,21 +7,20 @@
 */
 
 
-/*
- * Autoloader des classes de base et des controleurs (pas des classes des modèles : chargées par le controleur!)
- */
+/********************************************************************************************
+ * AUTOLOADER DES CLASSES DE BASE ET DES CONTROLEURS (pas des classes des modèles : chargées par le controleur!)
+ ********************************************************************************************/
 function agoraAutoloader($className)
 {
-	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}//exple: "app/common/Txt.php"
-	elseif(is_file(Req::modClassPath($className)))	{require_once Req::modClassPath($className);}//exple: "app/modFile/MdlFile.php"
-	elseif(Req::isDevServer())						{throw new Exception("Page introuvable : class '".$className."'");}//Dev: message d'erreur
-	else											{header("HTTP/1.0 404 Not Found");  exit;}//Prod: erreur 404
+	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}								//exple: "app/common/Txt.php"
+	elseif(is_file(Req::modClassPath($className)))	{require_once Req::modClassPath($className);}									//exple: "app/modFile/MdlFile.php"
+	else											{throw new Exception("Désolé, cette page est introuvable. (".$className.")");}	//Dev: message d'erreur
 }
 spl_autoload_register("agoraAutoloader");
 
 
 /*
- * traite les requetes entrantes
+ * TRAITE LES REQUETES ENTRANTES
  */
 class Req
 {
@@ -31,9 +30,9 @@ class Req
 	public static $curCtrl;		//exple : "offline"
 	public static $curAction;	//exple : "default"
 
-	/*
-	 * Init
-	 */
+	/********************************************************************************************
+	 * INIT
+	 ********************************************************************************************/
 	function __construct()
 	{
 		//Fusionne GET+POST & filtre les XSS
@@ -69,9 +68,9 @@ class Req
 		}
 	}
 
-	/*
-	 * Verifie si tous les parametres GET/POST ont été spécifiés et ne sont pas vides
-	 */
+	/********************************************************************************************
+	 * VERIFIE SI TOUS LES PARAMETRES GET/POST ONT ÉTÉ SPÉCIFIÉS ET NE SONT PAS VIDES
+	 ********************************************************************************************/
 	public static function isParam($keys)
 	{
 		//Keys au format "array"
@@ -84,19 +83,21 @@ class Req
 		return true;
 	}
 
-	/*
-	 * Recupere un parametre GET/POST
-	 */
+	/********************************************************************************************
+	 * RECUPERE UN PARAMETRE GET/POST
+	 ********************************************************************************************/
 	public static function getParam($key)
 	{
 		if(self::isParam($key)){
-			return (is_string(self::$_getPostParams[$key]))  ?  trim(self::$_getPostParams[$key])  :  self::$_getPostParams[$key];
+			if($key=="notify")								{return (array)self::$_getPostParams[$key];}	//"notify" tjs en array, même s'il n'y en a qu'une passée en GET
+			elseif(is_string(self::$_getPostParams[$key]))	{return trim(self::$_getPostParams[$key]);}		//trim sur le texte
+			else											{return self::$_getPostParams[$key];}
 		}
 	}
 
-	/*
-	 * Filtre un parametre (préserve des insertion XSS)
-	 */
+	/********************************************************************************************
+	 * FILTRE UN PARAMETRE (PRÉSERVE DES INSERTION XSS)
+	 ********************************************************************************************/
 	public static function filterParam($tmpKey, $value)
 	{
 		//Verif qu'il s'agit d'une string et non pas un tableau ou autre
@@ -106,56 +107,69 @@ class Req
 			$value=preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $value);
 			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Ctrl::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
 			//Enleve les balises html (sauf <br><hr><a><img>) pour les parametres qui ne proviennent pas d'un éditeur tinyMce ("description", "message" des mails, "editorDraft", "footerHtml")
-			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&msgNotif[]=<svg/onload=alert(/myXss/)>"
+			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&notify=<svg/onload=alert(/myXss/)>"
 		}
 		return $value;
 	}
 
-	/*
-	 * Path d'une class dans module  (La 2ème partie du nom de classe contient le nom du module. exple: "MdlFileFolder" => "File")
-	 */
+	/********************************************************************************************
+	 * PATH D'UNE CLASS DANS MODULE  (La 2ème partie du nom de classe contient le nom du module. exple: "MdlFileFolder" => "File")
+	 ********************************************************************************************/
 	public static function modClassPath($className)
 	{
 		$majWords=preg_split("/(?=[A-Z])/",trim($className));//'MdlFileFolder' => array('','Mdl','File','Folder') => 'app/ModFile'
 		if(!empty($majWords[2]))	{return "app/Mod".ucfirst($majWords[2])."/".$className.".php";}
 	}
 
-	/*
-	 * Recupère le chemin du module courant
-	 */
-	public static function getCurModPath()
+	/********************************************************************************************
+	 * RECUPÈRE LE CHEMIN DU MODULE COURANT
+	 ********************************************************************************************/
+	public static function curModPath()
 	{
 		return "app/Mod".ucfirst(self::$curCtrl)."/";
 	}
-
-	/*
-	 * Vérifie si on est en mode 'DEV'
-	 */
-	public static function isDevServer()
+	
+	/**************************************************************************************************************************************************************
+	 * RECUPÈRE L'URL COURANTE DE BASE (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&targetObjId=file-55"  =>  "https://www.mon-espace.net/agora")
+	 **************************************************************************************************************************************************************/
+	public static function getCurUrl($urlProtocol=true)
 	{
-		return stristr($_SERVER["HTTP_HOST"],"debian");
+		//Spécifie le protocole dans l'url (vide si affichage simplifié de l'url)
+		if($urlProtocol==false)				{$urlProtocol=null;}
+		elseif(!empty($_SERVER['HTTPS']))	{$urlProtocol="https://";}
+		else								{$urlProtocol="http://";}
+		//Renvoie l'url sans les paramètres ni le dernier "/". Note : Toutes les requêtes passent par "index.php"
+		return $urlProtocol.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']);
 	}
 
-	/*
-	 * Navigation en mode "mobile" si le width est inférieur à 1024px  (IDEM Common.js && Common.css)
-	 */
+	/********************************************************************************************
+	 * VÉRIFIE SI ON EST EN MODE 'DEV' ('DEBIAN' OU IP LOCALE POUR IONIC DEVAPP)
+	 ********************************************************************************************/
+	public static function isDevServer()
+	{
+		return (stristr($_SERVER["HTTP_HOST"],"debian") || stristr($_SERVER["HTTP_HOST"],"192.168"));
+	}
+
+	/********************************************************************************************
+	 * NAVIGATION EN MODE "MOBILE" SI LE WIDTH EST INFÉRIEUR À 1024PX  (IDEM Common.js && Common.css)
+	 ********************************************************************************************/
 	public static function isMobile()
 	{
 		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<1024);}
 		return self::$_isMobile;
 	}
 
-	/*
-	 * Navigation tactile sur App
-	 */
+	/********************************************************************************************
+	 * NAVIGATION TACTILE SUR APP
+	 ********************************************************************************************/
 	public static function isMobileApp()
 	{
 		return (!empty($_COOKIE["mobileAppliTrue"]));
 	}
 
-	/*
-	 * Affiche une erreur d'execution
-	 */
+	/********************************************************************************************
+	 * AFFICHE UNE ERREUR D'EXECUTION
+	 ********************************************************************************************/
     private function displayExeption(Exception $exception)
 	{
 		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
@@ -164,37 +178,23 @@ class Req
         echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage()."<br><br><a href='?ctrl=offline'>Retour</a></h3>";
 		exit;
     }
-	
-	
+
+
 	/***************************************************************************************************************************/
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/
 
-	/*
-	 * Recupère l'URL de l'espace (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&targetObjId=file-55"  devient  "https://www.mon-espace.net/agora")
-	 */
-	public static function getSpaceUrl($httpPrefix=true)
-	{
-		//Note : Toutes les requêtes passent par l'"index.php" à la racine de l'app
-		if($httpPrefix==true)	{$httpPrefix=(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS']!="off") ? "https://" : "http://";}
-		else					{$httpPrefix=null;}
-		$path=$_SERVER["REQUEST_URI"];
-		if(strstr($path,"?"))  {$path=substr($path,0,strrpos($path,"?"));}//enlève les paramètres?
-		$path=str_replace("index.php","",$path);//enlève "index.php"?
-		return $httpPrefix.$_SERVER["HTTP_HOST"].rtrim($path,"/");
-	}
-
-	/*
-	 * Vérif si l'appli est en cour d'install
-	 */
+	/********************************************************************************************
+	 * VÉRIF SI L'APPLI EST EN COUR D'INSTALL
+	 ********************************************************************************************/
 	public static function isInstalling()
 	{
 		return (self::$curCtrl=="offline" && stristr(self::$curAction,"install"));
 	}
 
-	/*
-	 * Vérif la version de PHP
-	 */
+	/********************************************************************************************
+	 * VÉRIF LA VERSION DE PHP
+	 ********************************************************************************************/
 	public static function verifPhpVersion()
 	{
 		if(version_compare(PHP_VERSION,VERSION_AGORA_PHP_MINIMUM,"<")){

@@ -31,8 +31,8 @@ $(function(){
 		if(confirm("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
 			$("#imgLoading").show();
 			$.ajax({url:"index.php",data:$(this).serialize(),dataType:"json"}).done(function(result){
-				if(result.notifError)			{notify(result.notifError,"warning");  $("#imgLoading").hide();}//Affiche un message d'erreur (de Db?) et masque le "loading"
-				else if(result.redirSuccess)	{setTimeout(function(){ redir(result.redirSuccess); },2000);}	//Sinon l'install s'est bien déroulé : redirection avec timeout (le temps que le "config.inc.php" soit bien enregistré)
+				if(result.notifError)			{notify(result.notifError,"warning");  $("#imgLoading").hide();}	//Affiche un message d'erreur (de Db?) et masque le "loading"
+				else if(result.redirSuccess)	{setTimeout(function(){ redir(result.redirSuccess); },2000);}		//Sinon l'install s'est bien déroulé : redirection avec timeout (le temps que le "config.inc.php" soit bien enregistré)
 			});
 		}
 	});
@@ -40,14 +40,14 @@ $(function(){
 </script>
 
 <style>
-#pageCenter						{padding-top:20px; padding-bottom:30px;}
-#pageCenterContent				{width:600px; padding:10px; margin-top:50px;}
+#pageCenter						{padding-top:20px; padding-bottom:30px;}/*surcharge*/
+#pageCenterContent				{width:700px; padding:10px; margin-top:50px;}/*surcharge*/
 form							{margin-top:40px;}
 .vHeader						{margin-bottom:40px;}
 .vHeader img[src*='logo']		{float:right;}
 h3								{margin-top:20px; font-style:italic;}
+.objField .fieldLabel			{width:300px;}/*surcharge*/
 #spaceDiskLimit					{width:40px;}
-.vSubmitButton					{text-align:center; margin-top:30px;}
 #imgLoading						{display:none; float:right;}
 </style>
 

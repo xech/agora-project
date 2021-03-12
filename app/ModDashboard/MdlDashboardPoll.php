@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des actualites
+ * MODELE DES SONDAGES
  */
 class MdlDashboardPoll extends MdlObject
 {
@@ -27,13 +27,13 @@ class MdlDashboardPoll extends MdlObject
 	private $_responseList=null;
 	private $_votesNbTotal=null;
 
-	/*
-	 * STATIC : Liste des sondages à afficher
+	/*******************************************************************************************
+	 * STATIC : LISTE DES SONDAGES À AFFICHER
 	 * $mode : "list" / "count"
 	 * $pollsOffsetCpt : compteur de début de liste
 	 * $notVoted : non voté (true/false)
 	 * $newsDisplay : affiché avec les news (true/false)
-	 */
+	 *******************************************************************************************/
 	public static function getPolls($mode, $pollsOffsetCpt=0, $notVoted=false, $newsDisplay=false)
 	{
 		//Selection SQL : Sondages que l'on peut voir  && Uniquement ceux non votés ?  && Uniquement ceux affichés avec les news ?
@@ -46,17 +46,17 @@ class MdlDashboardPoll extends MdlObject
 		else						{return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelection."  GROUP BY _id, title, description, dateEnd, multipleResponses, newsDisplay, publicVote, dateCrea, _idUser, dateModif, _idUserModif  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");}//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
 	}
 
-	/*
-	 * STATIC : Droit de créer un sondage
-	 */
+	/*******************************************************************************************
+	 * STATIC : DROIT DE CRÉER UN SONDAGE
+	 *******************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddPoll")==false));
 	}
 
-	/*
-	 * Liste des réponses d'un sondage
-	 */
+	/*******************************************************************************************
+	 * LISTE DES RÉPONSES D'UN SONDAGE
+	 *******************************************************************************************/
 	public function getResponses($orderByNbVotes=false)
 	{
 		//Réponses du sondage (trié par "rank"), avec pour chaque réponse : le nb de votes ("GROUP BY") et auquel cas le chemin du fichier
@@ -80,9 +80,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*
-	 * Infos sur une réponse
-	 */
+	/*******************************************************************************************
+	 * INFOS SUR UNE RÉPONSE
+	 *******************************************************************************************/
 	public function getResponse($_idResponse)
 	{
 		//Parcourt la liste des réponses et renvoi la réponse demandée
@@ -91,9 +91,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*
-	 * Nombre de votes pour le sondage (pour une réponse précise, pour l'user courant, ou pour tout le sondage)
-	 */
+	/*******************************************************************************************
+	 * NOMBRE DE VOTES POUR LE SONDAGE (POUR UNE RÉPONSE PRÉCISE, POUR L'USER COURANT, OU POUR TOUT LE SONDAGE)
+	 *******************************************************************************************/
 	public function votesNb($_idResponse=false, $curUser=false)
 	{
 		if(!empty($_idResponse))	{$sqlSelect="AND _idResponse=".Db::format($_idResponse);}
@@ -102,54 +102,54 @@ class MdlDashboardPoll extends MdlObject
 		return Db::getVal("SELECT count(*) FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." ".$sqlSelect);
 	}
 
-	/*
-	 * Nombre total de votes pour le sondage (garde en cache)
-	 */
+	/*******************************************************************************************
+	 * NOMBRE TOTAL DE VOTES POUR LE SONDAGE (GARDE EN CACHE)
+	 *******************************************************************************************/
 	public function votesNbTotal()
 	{
 		if($this->_votesNbTotal===null)  {$this->_votesNbTotal=$this->votesNb();}
 		return $this->_votesNbTotal;
 	}
 
-	/*
-	 * Vérifie si le sondage est terminé
-	 */
+	/*******************************************************************************************
+	 * VÉRIFIE SI LE SONDAGE EST TERMINÉ
+	 *******************************************************************************************/
 	public function isFinished()
 	{
 		return (!empty($this->dateEnd) && Txt::formatDate($this->dateEnd,"dbDate","time")<time());
 	}
 
-	/*
-	 * L'user courant a déjà voté le sondage ?
-	 */
+	/*******************************************************************************************
+	 * L'USER COURANT A DÉJÀ VOTÉ LE SONDAGE ?
+	 *******************************************************************************************/
 	public function curUserHasVoted()
 	{
 		return ($this->votesNb(false,true)>0);
 	}
 
-	/*
-	 * Récupère les résultats d'un sondage
-	 */
+	/*******************************************************************************************
+	 * RÉCUPÈRE LES RÉSULTATS D'UN SONDAGE
+	 *******************************************************************************************/
 	public function vuePollResult()
 	{
 		$vDatas["objPoll"]=$this;
-		return Ctrl::getVue(Req::getCurModPath()."vuePollResult.php", $vDatas);
+		return Ctrl::getVue(Req::curModPath()."vuePollResult.php", $vDatas);
 	}
 
-	/*
-	 * Récupère le formulaire de vote d'un sondage
-	 */
+	/*******************************************************************************************
+	 * RÉCUPÈRE LE FORMULAIRE DE VOTE D'UN SONDAGE
+	 *******************************************************************************************/
 	public function vuePollForm($newsDisplay=false)
 	{
 		$vDatas["objPoll"]=$this;
 		$vDatas["newsDisplay"]=($newsDisplay==true)  ?  "newsDisplay"  :  null;
 		$vDatas["submitButtonTooltip"]=(!empty($this->publicVote))  ?  Txt::trad("DASHBOARD_publicVote")  :  Txt::trad("DASHBOARD_voteTooltip");
-		return Ctrl::getVue(Req::getCurModPath()."vuePollForm.php", $vDatas);
+		return Ctrl::getVue(Req::curModPath()."vuePollForm.php", $vDatas);
 	}
 
-	/*
-	 * SURCHARGE : Suppression d'un sondage
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRESSION D'UN SONDAGE
+	 *******************************************************************************************/
 	public function delete()
 	{
 		//Supprime chaque reponses du sondage
@@ -158,10 +158,10 @@ class MdlDashboardPoll extends MdlObject
 		parent::delete();
 	}
 
-	/*
-	 * Supprime une réponse du sondage
+	/*******************************************************************************************
+	 * SUPPRIME UNE RÉPONSE DU SONDAGE
 	 * $forceDelete à false (édition du sondage) : ne supprime pas la réponse s'il y a deja des votes
-	 */
+	 *******************************************************************************************/
 	public function deleteResponse($_idResponse, $forceDelete=false)
 	{
 		//On supprime les votes de la réponse, Puis supprime la réponse elle-même
@@ -175,17 +175,17 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*
-	 * Path du fichier d'une réponse ($tmpResponse : "_id" + "fileName" nécessaires)
-	 */
+	/*******************************************************************************************
+	 * PATH DU FICHIER D'UNE RÉPONSE ($tmpResponse : "_id" + "fileName" nécessaires)
+	 *******************************************************************************************/
 	public function responseFilePath($tmpResponse)
 	{
 		return PATH_MOD_DASHBOARD.$tmpResponse["_id"].".".File::extension($tmpResponse["fileName"]);
 	}
 
-	/*
-	 * Affichage du fichier d'une réponse ($tmpResponse : "_id" + "fileName" + "fileUrlDownload" nécessaires)
-	 */
+	/*******************************************************************************************
+	 * AFFICHAGE DU FICHIER D'UNE RÉPONSE ($tmpResponse : "_id" + "fileName" + "fileUrlDownload" nécessaires)
+	 *******************************************************************************************/
 	public function responseFileDiv($tmpResponse)
 	{
 		//Il y a un fichier ?
@@ -197,9 +197,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*
-	 * Supprime le fichier d'une réponse
-	 */
+	/*******************************************************************************************
+	 * SUPPRIME LE FICHIER D'UNE RÉPONSE
+	 *******************************************************************************************/
 	public function deleteReponseFile($_idResponse)
 	{
 		$tmpResponse=$this->getResponse($_idResponse);
@@ -210,9 +210,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*
-	 * VUE : Surcharge du menu contextuel
-	 */
+	/*******************************************************************************************
+	 * VUE : SURCHARGE DU MENU CONTEXTUEL
+	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		//Prépare le Tooltip de la liste des votants
@@ -233,7 +233,7 @@ class MdlDashboardPoll extends MdlObject
 		if(!empty($this->dateEnd)){
 			$options["specificOptions"][]=array(
 				"iconSrc"=>"dashboard/pollDateEnd.png",
-				"label"=>"<span class='cursorHelp'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::displayDate($this->dateEnd,"dateFull")."</span>"
+				"label"=>"<span class='cursorHelp'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"
 			);
 		}
 		//Info si le vote est public

@@ -1,5 +1,6 @@
 <style>
-.menuSortAscDesc	{text-align:right!important;}
+.menuSortAscDesc		{text-align:right!important;}
+.menuSortAscDesc img	{cursor:pointer;}
 </style>
 
 <div class="menuLine sLink">

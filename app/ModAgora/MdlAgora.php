@@ -30,7 +30,7 @@ class MdlAgora extends MdlObject
 	 */
 	public function pathLogoFooter()
 	{
-		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logo.png";
+		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logoSmall.png";
 	}
 
 	/*
@@ -46,20 +46,22 @@ class MdlAgora extends MdlObject
 	 */
 	public function visioEnabled()
 	{
-		return ($this->visioUrl() && Req::isMobileApp()==false);
+		return ($this->visioUrl());
 	}
 
 	/*
 	 * VISIO JITSI : RENVOIE L'URL DU SERVEUR DE VISIO
 	 */
-	public function visioUrl()
+	public function visioUrl($roomIdLength=10)
 	{
-		//Récupère l'url du serveur de visio
+		//Serveur de visio principal || Serveur de visio spécifique
 		if(Ctrl::isHost())					{$visioUrl=Host::visioHost();}
 		elseif(!empty($this->visioHost))	{$visioUrl=$this->visioHost;}
-		//Renvoi si besoin l'url avec le nom de la "room" (à compléter avec un identifiant MD5 ou autre)
-		$urlPrefix=Ctrl::isHost() ? "room-" : "omnispace-room-";
-		if(isset($visioUrl))  {return $visioUrl."/".$urlPrefix;}
+		//Renvoi si besoin l'url avec le nom de la "room"
+		if(isset($visioUrl)){
+			if(!isset($_SESSION["visioRoomId"]))  {$_SESSION["visioRoomId"]=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");}				//Prefixe aléatoire le temps de la session (évite de céer une nouvelle Url à chaque proposition de visio)
+			return $visioUrl."/".(Ctrl::isHost()?"visio":"omnispace-visio")."-".substr($_SESSION["visioRoomId"],0,$roomIdLength);	//Url avec le préfixe et le "visioRoomId" de la longeur souhaitée
+		}
 	}
 
 	/*

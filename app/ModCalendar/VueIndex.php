@@ -9,7 +9,8 @@ $(function(){
 		var syntheseDayWidth=Math.round(($("#syntheseLineHeader").width()-$("#syntheseLineHeader .vSyntheseLabel").width()) / $("#syntheseLineHeader .vSyntheseDay").length);
 		$(".vSyntheseDay").css("width",syntheseDayWidth);
 	}
-	//Affiche chaque agenda (avec un Timeout : "availableContentHeight()" utilise le "#livecounterMain" qui est chargé via Ajax)
+
+	////	PUIS AFFICHE CHAQUE AGENDA (Timeout car "availableContentHeight()" prend en compte le "#livecounterMain" chargé via Ajax)
 	setTimeout(function(){
 		//Les agendas prennent toute la hauteur et largeur disponible
 		var calendarHeight=(availableContentHeight() - parseInt($(".vCalendarBlock").css("margin-bottom")));
@@ -28,13 +29,13 @@ $(function(){
 
 	////	INIT LE DATEPICKER JQUERY-UI DANS LE MENU DU MODULE
 	$("#datepickerCalendar").datepicker({
-		firstDay:1,
-		showOtherMonths: true,
-		selectOtherMonths: true,
-		dateFormat:"yy-mm-dd",//utile pour le "onSelect"
-		onSelect:function(curDate){
-			var dateDate=new Date(curDate);
-			redir("?ctrl=calendar&curTime="+Math.round(dateDate.valueOf()/1000));
+		defaultDate:"<?= date("Y-m-d",$curTime) ?>",	//cf. "dateFormat" ci-après
+		dateFormat:"yy-mm-dd",							//Utilisé par le "dateYmd" suivant (ex: "2050-01-01")
+		firstDay:1,										//Commence chaque semaine par lundi
+		showOtherMonths:true,							//Affiche les jours des mois précédents/suivants
+		onSelect:function(dateYmd){						//Clique sur une date : redirection
+			var dateObject=new Date(dateYmd);
+			redir("?ctrl=calendar&curTime="+Math.round(dateObject.valueOf()/1000));
 		}
 	});
 
@@ -68,7 +69,7 @@ $(function(){
 #calsList>div:first-child			{margin-bottom:10px;}
 #calsList .menuLaunch				{display:none;}/*menu context des agendas*/
 #calsList>div:hover .menuLaunch		{display:inline; margin-left:5px;}/*idem*/
-#calsList button					{display:none; width:120px; margin:5px 0px 0px 30px;}
+#calsList button					{display:none; width:120px; margin-left:20px; margin-top:10px;}
 #adminDisplayAllCals				{float:right;}
 .ui-datepicker						{width:97%; border:0px;}
 #menuCategory>div					{margin-bottom:10px;}
@@ -121,7 +122,7 @@ $(function(){
 	.vCalendarTitle .personImgSmall		{display:none;}/*cf. "getImg()"*/
 	#calendarPrev,#calendarNext			{margin:0px 5px 0px 5px;}
 	.vCalendarDisplayMode>span			{margin-left:5px;}
-	#adminDisplayAllCals, .vCalendarDisplayModeLabel, .vCalendarDisplayToday  {display:none!important;}
+	#adminDisplayAllCals, .vCalendarDisplayModeLabel  {display:none!important;}
 	.vCalendarHeader>div				{width:auto; padding:12px 3px 12px 3px; white-space:nowrap!important; text-transform:lowercase;}
 	.vCalEvtBlock						{padding:2px!important;}
 }
@@ -144,8 +145,8 @@ $(function(){
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
-			////	PROPOSITIONS D'EVENEMENT?
-			echo CtrlCalendar::menuProposedEvents();
+			////	PROPOSITIONS D'EVENEMENT A CONFIRMER ?
+			if(!empty($eventProposition))  {echo $eventProposition;}
 
 			////	AGENDAS VISIBLES
 			if(!empty($visibleCalendars))
@@ -165,8 +166,8 @@ $(function(){
 				echo "</form><hr>";
 			}
 
-			////	AJOUTER UN EVT (uniquement si ya qu'un agenda affiché)
-			if(count($displayedCalendars)==1 && $displayedCalendars[0]->addProposeEvtRight())
+			////	BOUTON POUR AJOUTER OU PROPOSER UN EVT : SI QU'UN SEUL AGENDA N'EST AFFICHÉ
+			if(count($displayedCalendars)==1 && $displayedCalendars[0]->addOrProposeEvt())
 				{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$displayedCalendars[0]->_id."')\" title=\"".$displayedCalendars[0]->title." : ".$displayedCalendars[0]->addEventLabel."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CALENDAR_addEvt")."</div></div>";}
 
 			////	CATEGORIES D'EVT (FILTRE)
@@ -186,7 +187,7 @@ $(function(){
 				</div>";
 			?>
 
-			<!--AJOUTER AGENDA PARTAGE-->
+			<!--CREER AGENDA PARTAGE-->
 			<?php if(MdlCalendar::addRight()){ ?>
 			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlCalendar::getUrlNew() ?>');" title="<?= Txt::trad("CALENDAR_addSharedCalendarInfo") ?>">
 				<div class="menuIcon"><img src="app/img/calendar/calendarAdd.png"></div>
@@ -197,7 +198,7 @@ $(function(){
 			<!--EVT PROPRIO-->
 			<?php if(Ctrl::$curUser->isUser()){ ?>
 			<div class="menuLine sLink" onclick="lightboxOpen('?ctrl=calendar&action=MyEvents')">
-				<div class="menuIcon"><img src="app/img/calendar/myEvents.png"></div>
+				<div class="menuIcon"><img src="app/img/edit.png"></div>
 				<div><?= Txt::trad("CALENDAR_evtAutor") ?></div>
 			</div>
 			<?php } ?>
@@ -210,7 +211,7 @@ $(function(){
 			</div>
 			<?php } ?>
 
-			<!--CALENDRIER MOIS?-->
+			<!--CALENDRIER MOIS VIA LE DATEPICKER DE JQUERY-UI-->
 			<?php if($displayMode!="month")  {echo "<div id='datepickerCalendar'></div>";} ?>
 		</div>
 	</div>
@@ -228,14 +229,14 @@ $(function(){
 					<!--AFFICHE CHAQUE AGENDA-->
 					<?php foreach($displayedCalendars as $tmpCal){ ?>
 					<div class="vSyntheseLine">
-						<div class="vSyntheseLabel sLink" onclick="toScroll('#blockCal<?= $tmpCal->_targetObjId ?>')"><?= $tmpCal->title ?></div>
+						<div class="vSyntheseLabel sLink" onclick="$('#blockCal<?= $tmpCal->_targetObjId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<!--CELLULES DE CHAQUE JOUR DE L'AGENDA-->
 						<?php
 						foreach($periodDaysSynthese as $tmpDay)
 						{
 							//Tooltip des evts du jour
-							$tmpEvtTooltip="<div class='vSyntheseDayEvtTooltip'>".$tmpCal->title." : ".Txt::displayDate($tmpDay["timeBegin"],"dateFull")."<ul>";
-							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.="<li>".Txt::displayDate($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)." : ".Txt::reduce($tmpEvt->title,60)."</li>";}
+							$tmpEvtTooltip="<div class='vSyntheseDayEvtTooltip'>".$tmpCal->title." : ".Txt::dateLabel($tmpDay["timeBegin"],"dateFull")."<ul>";
+							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.="<li>".Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)." : ".Txt::reduce($tmpEvt->title,60)."</li>";}
 							$tmpEvtTooltip.="</ul></div>";
 							//Cellule des evts du jour
 							$syntheseDayCalWE=$syntheseDayEvts=null;
@@ -284,12 +285,17 @@ $(function(){
 					<?php if(!empty($calMonthPeriodMenu))  {echo "<div class='menuContext' id='calMonthPeriodMenu".$tmpCal->_targetObjId."'><div id='calMonthPeriodMenuContainer'>".$calMonthPeriodMenu."</div></div>";} ?>
 					<img src="app/img/navNext.png"  id="calendarNext" class="sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimeNext.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
 				</div>
-				<!--MODE D'AFFICHAGE (mois, semaine, etc)-->
+				<!--OPTION "AUJOURD'HUI"  &&  MENU DES MODES D'AFFICHAGE (month, week, workWeek, 4Days, day)-->
 				<div class="vCalendarDisplayMode">
 					<span class="vCalendarDisplayToday sLink" onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')"><img src="app/img/calendar/displayToday.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("displayToday") ?></span></span>
-					<span for="menuDisplayMode<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("CALENDAR_display".ucfirst($displayMode)) ?></span>&nbsp;<img src="app/img/arrowBottom.png"></span>
+					<span for="menuDisplayMode<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("CALENDAR_displayMode")." ".Txt::trad("CALENDAR_display_".$displayMode) ?></span>&nbsp;<img src="app/img/arrowBottom.png"></span>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->_targetObjId ?>">
-						<?php foreach(["month","week","workWeek","4Days","day"] as $displayModeTmp)  {echo "<div class='menuLine ".($displayModeTmp==$displayMode?"sLinkSelect":"sLink")."' onclick=\"redir('?ctrl=calendar&displayMode=".$displayModeTmp."')\"><div class='menuIcon'><img src='app/img/calendar/display".ucfirst($displayModeTmp).".gif'></div><div>".Txt::trad("CALENDAR_display".ucfirst($displayModeTmp))."</div></div>";} ?>
+					<?php
+					//Affiche les $displayModeOptions
+					if(Req::isMobile())  {echo "<label>".Txt::trad("CALENDAR_displayMode")."</label><hr>";}
+					foreach(MdlCalendar::$displayModeOptions as $displayModeTmp)
+						{echo "<div class='menuLine ".($displayModeTmp==$displayMode?"sLinkSelect":"sLink")."' onclick=\"redir('?ctrl=calendar&displayMode=".$displayModeTmp."')\"><div class='menuIcon'><img src='app/img/calendar/display".ucfirst($displayModeTmp).".gif'></div><div>".ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp))."</div></div>";}
+					?>
 					</div>
 				</div>
 			</div>

@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des dossiers de contacts
+ * MODELE DES DOSSIERS DE CONTACTS
  */
 class MdlContactFolder extends MdlObjectFolder
 {

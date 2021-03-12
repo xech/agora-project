@@ -59,7 +59,7 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 		//Init
 		$colorPickerTextId="title-".$tmpTheme->tmpId;
 		$colorPickerHiddenId="color-".$tmpTheme->tmpId;
-		$buttonsSubmitDelete=($tmpTheme->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
+		$buttonsSubmitDelete=($tmpTheme->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("record",false);
 		if($tmpTheme->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"if(confirm('".Txt::trad("confirmDelete",true)."')){lightboxClose('".$tmpTheme->getUrl("delete")."');}\">";}
 		//Affichage du formulaire
 		echo "<form action='index.php' method='post' class='miscContainer'>

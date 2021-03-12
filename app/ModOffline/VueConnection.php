@@ -6,7 +6,7 @@ $(function(){
 	// On met le focus sur l'input du login (ou le password)
     $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();
 	//Fait clignoter le "labelResetPassword" si une mauvaise authentification vient d'être faite
-	<?php if(Req::isParam("msgNotif") && in_array("NOTIF_identification",Req::getParam("msgNotif"))){ ?>
+	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::getParam("notify"))){ ?>
 		$("#labelResetPassword").addClass("sLinkSelect").pulsate(10);
 	<?php } ?>
 });
@@ -190,10 +190,10 @@ $(function(){
 
 		<?php
 		////	CONNEXION AVEC GSIGNIN  /  INSCRIPTION D'USER
-		if(Ctrl::$agora->gSigninEnabled() || !empty($usersInscription)){
+		if(Ctrl::$agora->gSigninEnabled() || !empty($userInscription)){
 			echo $separateHrOr."<div id='connectOptionsMain' class='vConnectOptions'>";
 				if(Ctrl::$agora->gSigninEnabled())	{echo "<div><button id='gSignInButton' title=\"".Txt::trad("gSigninButtonInfo")."\"><img src='app/img/gSignin.png'> ".Txt::trad("gSigninButton")."</button></div>";}
-				if(!empty($usersInscription))		{echo "<div><button onclick=\"lightboxOpen('?action=usersInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>";}
+				if(!empty($userInscription))		{echo "<div><button onclick=\"lightboxOpen('?action=userInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>";}
 			echo "</div>";
 		}
 

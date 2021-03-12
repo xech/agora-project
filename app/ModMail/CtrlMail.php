@@ -8,15 +8,15 @@
 
 
 /*
- * Controleur du module "Mail"
+ * CONTROLEUR DU MODULE "MAIL"
  */
 class CtrlMail extends Ctrl
 {
 	const moduleName="mail";
 
-	/*
-	 * ACTION PAR DEFAUT
-	 */
+	/*******************************************************************************************
+	 * VUE : PAGE PRINCIPALE
+	 *******************************************************************************************/
 	public static function actionDefault()
 	{
 		////	Init et Controle d'accès
@@ -51,8 +51,8 @@ class CtrlMail extends Ctrl
 			////	Options
 			$options=null;
 			if(Req::getParam("receptionNotif"))	{$options.="receptionNotif,";}
-			if(Req::getParam("hideRecipients"))	{$options.="hideRecipients,";}
 			if(Req::getParam("addReplyTo"))		{$options.="addReplyTo,";}
+			if(Req::getParam("hideRecipients"))	{$options.="hideRecipients,";}
 			if(Req::getParam("noFooter"))		{$options.="noFooter,";}
 			////	Fichiers joints
 			$attachedFiles=[];
@@ -82,9 +82,9 @@ class CtrlMail extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*
+	/*******************************************************************************************
 	 * VUE : HITORIQUE DES MAILS QUE L'USER COURANT A ENVOYE
-	 */
+	 *******************************************************************************************/
 	public static function actionMailHistory()
 	{
 		//Suppression de mail

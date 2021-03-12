@@ -2,12 +2,14 @@
 
 /*Basic*/
 html										{background:#222;}
-body, a, button, .sLink						{color:#d5d5d5;}
-a:hover, .sLink:hover						{color:#f77;}
-a:active, .sLinkSelect, input:checked+label	{color:#f77;}
+body, a, .sLink								{color:#d5d5d5;}
+button										{color:#555;}/*tjs sur fonc blanc*/
+a:hover, .sLink:hover						{color:#f88;}
+a:active, .sLinkSelect, input:checked+label	{color:#f88;}
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
-	#htmlMainPage	{background:#222 url(../img/logoMobileBg.png) no-repeat center 90%; height:100%;}
+	#htmlMainPage	{background:#222 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#htmlLightbox	{background:#292929;}
 }
 
 /*Blocks d'objet (ou pas) & menus contextuels*/
@@ -22,8 +24,8 @@ a:active, .sLinkSelect, input:checked+label	{color:#f77;}
 
 /*Droits d'accès d'utilisateurs*/
 .sAccessRead		{color:#9bf;}
-.sAccessWriteLimit	{color:#e55;}
-.sAccessWrite		{color:#d55;}
+.sAccessWriteLimit	{color:#f88;}
+.sAccessWrite		{color:#f88;}
 
 /*Divers*/
 .lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#444 solid 1px;}
@@ -32,5 +34,5 @@ a:active, .sLinkSelect, input:checked+label	{color:#f77;}
 #headerBar											{background:linear-gradient(to bottom,#222,#333,#222);}
 #sortableModules .ui-state-default					{background:linear-gradient(#111,#000);}
 hr													{background:linear-gradient(to right,#555,#999,#555);}
-div::-webkit-scrollbar								{background:#333; width:12px;}/*scrollbar: background et width*/
+div::-webkit-scrollbar								{background:#333; width:15px;}/*scrollbar: background et width*/
 div::-webkit-scrollbar-thumb						{background:#888;}/*scrollbar: couleur de la barre*/

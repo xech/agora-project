@@ -20,9 +20,9 @@ abstract class Ctrl
 	public static $userHasConnected=false;		//idem : l'user vient de s'identifier / connecter
 	public static $curContainer=null;			//idem : objet conteneur courant (dossier, sujet, etc)
 	public static $curTimezone=null;			//Timezone courante
-	public static $msgNotif=array();			//Messages de Notifications (cf. Vues)
+	public static $notify=array();				//Messages de Notifications (cf. Vues)
 	public static $lightboxClose=false;			//Fermeture de lightbox (cf. Vues)
-	public static $lightboxCloseParams=null;	//Parametre de fermeture de lightbox : $msgNotif ou autre
+	public static $lightboxCloseParams=null;	//Parametre de fermeture de lightbox : $notify ou autre
 	protected static $initCtrlFull=true;		//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
 	protected static $folderObjectType=null;	//Module avec une arborescence
 	protected static $cachedObjects=array();	//Objets mis en cache !
@@ -76,7 +76,7 @@ abstract class Ctrl
 			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::getParam("displayAdmin")=="true");
-				if($_SESSION["displayAdmin"]==true)  {Ctrl::addNotif(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
 			}
 			////	Affichage des utilisateurs : space/all
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
@@ -134,31 +134,29 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	protected static function displayPage($fileMainVue=null, $vDatasMainVue=array())
 	{
-		//Init
-		$vDatas["mainContent"]=$vDatas["headerMenu"]=$vDatas["messengerLivecounter"]=null;
 		////	CORPS DE LA PAGE (sauf si validation de formulaire : "lightboxClose")
-		if($fileMainVue!=null){
-			$pathVue=(strstr($fileMainVue,Req::commonPath)==false) ? Req::getCurModPath() : null;//"app/Common/" déjà précisé?
+		if(!empty($fileMainVue)){
+			$pathVue=(strstr($fileMainVue,Req::commonPath)==false)  ?  Req::curModPath()  :  null;//"app/Common/" déjà précisé?
 			$vDatas["mainContent"]=self::getVue($pathVue.$fileMainVue, $vDatasMainVue);
 		}
-		////	Page principale
+		////	PAGE PRINCIPALE
 		if(static::$isMainPage==true)
 		{
-			//Wallpaper & Logo footer
+			//// WALLPAPER & LOGO FOOTER
 			if(!empty(self::$curSpace->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$curSpace->wallpaper);}
 			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
 			$vDatas["pathLogoTitle"]="<div style='text-align:center;line-height:25px;'>".OMNISPACE_URL_LABEL."</div>".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." seconde";
-			//HeaderMenu & MessengerLivecounter
+			//// HEADERMENU & MESSENGER
 			if(static::moduleName!="offline")
 			{
 				//Mise à jour récente : notification dans le "pageFooterHtml" pour l'admin de l'espace
 				if(self::$curUser->isAdminSpace() && self::$curUser->previousConnection<strtotime(self::$agora->dateUpdateDb))
-					{self::$agora->footerHtml="<span id='footerHtmlUpdate'>".Txt::trad("NOTIF_update")." ".Txt::displayDate(self::$agora->dateUpdateDb,"dateMini")." : v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').effect('pulsate',{times:3},3000);</script>";}
+					{self::$agora->footerHtml="<span id='footerHtmlUpdate' style='cursor:pointer' onclick=\"javascript:lightboxOpen('docs/CHANGELOG.txt')\">".Txt::trad("NOTIF_update")." ".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
 				//Espace Disk
 				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
-				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70) ? true : false;
+				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70);
 				//Plugin "shortcuts" de chaque module
 				$vDatasHeader["pluginsShortcut"]=array();
 				$pluginParams=array("type"=>"shortcut");
@@ -167,20 +165,20 @@ abstract class Ctrl
 				}
 				//Validation d'inscription d'utilisateurs  && Affiche la liste des espaces  && Liste des modules (Url, Description, Libellé, Class de l'icone)
 				$vDatasHeader["userInscriptionValidate"]=(self::$curUser->isAdminSpace() && Db::getVal("SELECT count(*) FROM ap_userInscription WHERE _idSpace=".(int)self::$curSpace->_id)>0);
-				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1) ? true : false;
+				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1);
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
-				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName)  ?  true  : false;}
+				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName);}
 				//Récupère le menu principal : "HeaderMenu"
 				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
-				//Récupère le livecounter (cf. "CtrlMisc::actionLivecounterUpdate()")
-				if(self::$curUser->messengerEnabled())  {$vDatas["messengerLivecounter"]=self::getVue(Req::commonPath."VueMessengerLivecounter.php");}
+				//Récupère le Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
+				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}
 			}
 		}
-		////	Notifications passées en Get/Post
-		if(Req::isParam("msgNotif")){
-			foreach(Req::getParam("msgNotif") as $tmpNotif)  {self::addNotif($tmpNotif);}
+		////	NOTIFICATIONS PASSÉES EN GET/POST
+		if(Req::isParam("notify")){
+			foreach(Req::getParam("notify") as $tmpNotif)  {self::notify($tmpNotif);}
 		}
-		////	Affiche le résultat
+		////	AFFICHE LE RÉSULTAT
 		$vDatas["skinCss"]=(!empty(self::$agora->skin) && self::$agora->skin=="black")  ?  "black"  :  "white";
 		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
 	}
@@ -190,20 +188,20 @@ abstract class Ctrl
 	 * $message : message spécifique OU clé de traduction
 	 * $type : "info" / "success" / "warning"
 	 *******************************************************************************************/
-	public static function addNotif($messageTrad, $type="notice")
+	public static function notify($messageTrad, $type="notice")
 	{
-		//Ajoute la notification si elle n'est pas déjà présente
-		if(Tool::arraySearch(self::$msgNotif,$messageTrad)==false)  {self::$msgNotif[]=["message"=>$messageTrad,"type"=>$type];}
+		//Ajoute la notification au tableau "self::$notify" si elle n'est pas déjà présente
+		if(Tool::arraySearch(self::$notify,$messageTrad)==false)  {self::$notify[]=["message"=>$messageTrad,"type"=>$type];}
 	}
 
-	/*******************************************************************************************
-	 * AJOUTE LES "CTRL::$MSGNOTIF" À UNE URL AVANT UNE REDIRECTION
-	 *******************************************************************************************/
-	public static function urlMsgNotif()
+	/********************************************************************************************
+	 * AJOUTE LA LISTE DES NOTIFICATIONS À UNE URL AVANT UNE REDIRECTION (cf.  "Ctrl::$notify")
+	 ********************************************************************************************/
+	public static function urlNotify()
 	{
-		$urlMsgNotif=null;
-		foreach(self::$msgNotif as $message)  {$urlMsgNotif.="&msgNotif[]=".urlencode($message["message"]);}
-		return $urlMsgNotif;
+		$urlNotify=null;
+		foreach(self::$notify as $message)  {$urlNotify.="&notify[]=".urlencode($message["message"]);}
+		return $urlNotify;
 	}
 
 	/*******************************************************************************************
@@ -212,7 +210,7 @@ abstract class Ctrl
 	public static function redir($url)
 	{
 		//Url de redirection, si besoin avec des notifications
-		$redirUrl=$url.self::urlMsgNotif();
+		$redirUrl=$url.self::urlNotify();
 		//Redirection depuis une iframe ou une page principale
 		if(static::$isMainPage==false)	{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}
 		else							{header("Location: ".$redirUrl);}
@@ -227,7 +225,7 @@ abstract class Ctrl
 	{
 		//Initialise les params de reload de la page principale, puis affiche une page vide pour lancer le JS "lightboxClose()"
 		self::$lightboxClose=true;
-		self::$lightboxCloseParams=self::urlMsgNotif().$urlMoreParms;
+		self::$lightboxCloseParams=self::urlNotify().$urlMoreParms;
 		static::displayPage();
 		//Fin de script..
 		exit;
@@ -263,8 +261,8 @@ abstract class Ctrl
 	public static function userConnectionSpaceSelection()
 	{
 		////	CONNEXION D'UN USER (demandée ou auto)
-		$connectViaForm=(Req::isParam(["connectLogin","connectPassword"])) ? true : false;
-		$connectViaCookie=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]) && Req::isParam("disconnect")==false) ? true : false;
+		$connectViaForm=(Req::isParam(["connectLogin","connectPassword"]));
+		$connectViaCookie=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]) && Req::isParam("disconnect")==false);
 		if(self::$curUser->isUser()==false  &&  ($connectViaForm==true || $connectViaCookie==true))
 		{
 			//// IDENTIFICATION ET CONTROLES D'ACCES
@@ -278,11 +276,11 @@ abstract class Ctrl
 			//User pas connecté : tente une identification LDAP (avec creation d'user à la volee)
 			if(empty($tmpUser) && $connectViaForm==true)  {$tmpUser=MdlUser::ldapConnectCreateUser(Req::getParam("connectLogin"),Req::getParam("connectPassword"));}
 			//...User toujours pas connecté : message d'erreur et déconnexion
-			if(empty($tmpUser))   {self::addNotif("NOTIF_identification");  self::redir("?disconnect=1");}
+			if(empty($tmpUser))   {self::notify("NOTIF_identification");  self::redir("?disconnect=1");}
 			//User déjà connecté sur un autre poste & avec une autre ip (pas de controle sur l'appli)
 			if(Req::isMobileApp()==false){
 				$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND `date` > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
-				if($autreIpConnected>0)   {self::addNotif("NOTIF_presentIp");  self::redir("?disconnect=1");}
+				if($autreIpConnected>0)   {self::notify("NOTIF_presentIp");  self::redir("?disconnect=1");}
 			}
 
 			//// INIT L'USER
@@ -297,7 +295,7 @@ abstract class Ctrl
 			self::addLog("connexion");
 			//Récupère les préférences
 			foreach(Db::getTab("select * from ap_userPreference where _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
-			//Enregistre login & password pour une connexion auto
+			//Enregistre login & password pour une connexion auto (10ans)
 			if(Req::isParam("rememberMe")){
 				setcookie("AGORAP_LOG", $login, (time()+315360000));
 				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000));
@@ -310,15 +308,15 @@ abstract class Ctrl
 		////	SELECTION d'UN ESPACE (user vient de se connecter ||  page de connexion && (user déjà connecté || Espace demandé))
 		if(self::$userHasConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess"))))
 		{
-			//// Liste des espaces de l'user courant
+			//// Liste des espaces de l'user courant ou du guest
 			$idSpaceSelected=null;
 			$spacesOfCurUser=self::$curUser->getSpaces();
-			//// Aucun espace disponible : message d'erreur
-			if(empty($spacesOfCurUser)){
-				self::addNotif("NOTIF_noSpaceAccess");
+			//// Aucun espace disponible : message d'erreur  (Pas de controle en page de connexion : cf. accès depuis une notif mail d'édition d'objet)
+			if(empty($spacesOfCurUser) && static::moduleName!="offline"){
+				self::notify("NOTIF_noSpaceAccess");
 				self::redir("?disconnect=1");
 			}
-			//// Espace spécifique demandé :  Switch d'espace de l'user  ||  Accès d'un Guest  ||  Accès depuis une notif mail (TEST: ?ctrl=offline&_idSpaceAccess=1&targetObjUrl=%3Fctrl%3Dfile%26targetObjId%3DfileFolder-1%26targetObjIdChild%3Dfile-1)
+			//// Espace spécifique demandé :  Switch d'espace de l'user  ||  Accès d'un Guest  ||  Accès depuis une notif mail d'édition d'objet & user identifié (TEST: ?ctrl=offline&_idSpaceAccess=1&targetObjUrl=%3Fctrl%3Dfile%26targetObjId%3DfileFolder-1%26targetObjIdChild%3Dfile-1)
 			elseif(Req::isParam("_idSpaceAccess")){
 				foreach($spacesOfCurUser as $objSpace){
 					if($objSpace->_id==Req::getParam("_idSpaceAccess") && (self::$curUser->isUser() || empty($objSpace->password) || $objSpace->password==Req::getParam("password")))   {$idSpaceSelected=$objSpace->_id;  break;}
@@ -343,12 +341,12 @@ abstract class Ctrl
 			if(!empty($idSpaceSelected)){
 				$_SESSION["_idSpace"]=$idSpaceSelected;
 				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();
-				if(Req::isParam("targetObjUrl") && self::$curUser->isUser())	{self::redir(Req::getParam("targetObjUrl"));}								//Redir vers le controleur et l'objet demandé (cf. notif mail)
-				if(!empty($spaceModules))										{self::redir("?ctrl=".key($spaceModules));}									//Redir vers le premier module de l'espace
-				else															{self::addNotif("NOTIF_noSpaceAccess");   self::redir("?disconnect=1");}	//Aucun module dans l'espace : message d'erreur
+				if(Req::isParam("targetObjUrl") && self::$curUser->isUser())	{self::redir(Req::getParam("targetObjUrl"));}							//Redir vers le controleur et l'objet demandé (cf. notif mail)
+				if(!empty($spaceModules))										{self::redir("?ctrl=".key($spaceModules));}								//Redir vers le premier module de l'espace
+				else															{self::notify("NOTIF_noSpaceAccess");   self::redir("?disconnect=1");}	//Aucun module dans l'espace : message d'erreur
 			}
 			//// User connecté mais aucun espace disponible : déconnexion
-			elseif(self::$curUser->isUser())   {self::addNotif("NOTIF_noSpaceAccess");  self::redir("?disconnect=1");}
+			elseif(self::$curUser->isUser())   {self::notify("NOTIF_noSpaceAccess");  self::redir("?disconnect=1");}
 		}
 		////	AUCUN ESPACE/MODULE SÉLECTIONNÉ : DÉCONNEXION
 		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::redir("?disconnect=1");}
@@ -361,8 +359,8 @@ abstract class Ctrl
 	 ******************************************************************************************/
 	public static function getTargetObj($targetObjId=null)
 	{
-		//$targetObjId passé en Get/Post ?
-		if($targetObjId==null && Req::isParam("targetObjId"))	{$targetObjId=Req::getParam("targetObjId");}
+		//$targetObjId passé en argument
+		if(Req::isParam("targetObjId") && $targetObjId==null)  {$targetObjId=Req::getParam("targetObjId");}
 		//Renvoie l'objet ciblé
 		if(!empty($targetObjId))
 		{
@@ -370,7 +368,7 @@ abstract class Ctrl
 			$targetObjId=explode("-",$targetObjId);
 			$targetObj=(empty($targetObjId[1]))  ?  self::getObj($targetObjId[0])  :  self::getObj($targetObjId[0],$targetObjId[1]);
 			//Objet inexistant ou supprimé (_id passé en parametre mais _id reste à zero car l'objet est absent en BDD) : renvoie une erreur
-			if(!empty($targetObjId[1]) && $targetObj->_id==0)  {self::addNotif("inaccessibleElem");  self::redir("?ctrl=".static::moduleName);}
+			if(!empty($targetObjId[1]) && $targetObj->_id==0)  {self::notify("inaccessibleElem");  self::redir("?ctrl=".static::moduleName);}
 			//Ajoute un "_idContainer" pour le controle d'accès lors de la création d'un objet (cf. "createUpdate()" puis "createRight()")
 			if(Req::isParam("_idContainer") && empty($targetObj->_id) && empty($targetObj->_idContainer))  {$targetObj->_idContainer=Req::getParam("_idContainer");}
 			//renvoie l'objet

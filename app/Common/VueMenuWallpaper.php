@@ -9,7 +9,7 @@ $(function(){
 			$("#wallpaperImg").show();
 			var filePath=(this.value=="")  ?  "<?= CtrlMisc::pathWallpaper(null) ?>"  :  $("option[value='"+this.value+"']").attr("data-filePath");
 			$("#wallpaperImg img").attr("src",filePath);
-			if(!find("<?= WALLPAPER_DEFAULT_PREFIX ?>",this.value) && this.value!="")	{$("#wallpaperDelete").show();}
+			if(!find("<?= WALLPAPER_DEFAULT_DB_PREFIX ?>",this.value) && this.value!="")	{$("#wallpaperDelete").show();}
 		}
 	});
 });

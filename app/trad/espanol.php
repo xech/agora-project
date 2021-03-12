@@ -60,6 +60,8 @@ class Trad extends Txt
 		self::$trad["copyUrl"]="Copiar dirección web de acceso directo";
 		self::$trad["copyUrlInfo"]="La dirección se puede integrar en una noticia, foro, evento, etc : para acceder directamente al elemento. La dirección también se puede utilizar en un correo electrónico, blog, etc.";
 		self::$trad["copyUrlConfirmed"]="La dirección web se ha copiado correctamente.";
+		self::$trad["cancel"]="Cancelar";
+
 		////	images
 		self::$trad["picture"]="foto";
 		self::$trad["wallpaper"]="papel tapiz";
@@ -126,7 +128,6 @@ class Trad extends Txt
 		self::$trad["the"]="el";
 		self::$trad["begin"]="inicio";
 		self::$trad["end"]="Fin";
-		self::$trad["hourSeparator"]="h";
 		self::$trad["days"]="dias";
 		self::$trad["day_1"]="lunes";
 		self::$trad["day_2"]="Martes";
@@ -163,8 +164,9 @@ class Trad extends Txt
 		////	Validation des formulaires
 		self::$trad["add"]="Añadir";
 		self::$trad["modify"]="Editar";
+		self::$trad["record"]="Guardar cambios";
 		self::$trad["modifyAndAccesRight"]="Editar + derechos de acceso";
-		self::$trad["validate"]=" Validar";
+		self::$trad["validate"]="Validar";
 		self::$trad["send"]="Enviar";
 		self::$trad["sendTo"]="Enviar a";
 
@@ -173,21 +175,22 @@ class Trad extends Txt
 		self::$trad["sortBy2"]="Ordenar por";
 		self::$trad["SORT_dateCrea"]="fecha de creación";
 		self::$trad["SORT_dateModif"]="fecha de modification";
-		self::$trad["SORT_title"]="Título";
-		self::$trad["SORT_description"]="Descripción";
+		self::$trad["SORT_title"]="título";
+		self::$trad["SORT_description"]="descripción";
 		self::$trad["SORT__idUser"]="autor";
-		self::$trad["SORT_extension"]="Tipo de archivo";
+		self::$trad["SORT_extension"]="tipo de archivo";
 		self::$trad["SORT_octetSize"]="tamaño";
 		self::$trad["SORT_downloadsNb"]="downloads";
 		self::$trad["SORT_civility"]="civilidad";
 		self::$trad["SORT_name"]="appelido";
 		self::$trad["SORT_firstName"]="nombre";
 		self::$trad["SORT_adress"]="dirección";
-		self::$trad["SORT_postalCode"]="Código postal";
+		self::$trad["SORT_postalCode"]="código postal";
 		self::$trad["SORT_city"]="ciudad";
 		self::$trad["SORT_country"]="país";
 		self::$trad["SORT_function"]="función";
 		self::$trad["SORT_companyOrganization"]="compañía / organización";
+		self::$trad["SORT_lastConnection"]="último acceso";
 		self::$trad["tri_ascendant"]="Ascendente";
 		self::$trad["tri_descendant"]="Descendente";
 		
@@ -252,15 +255,15 @@ class Trad extends Txt
 		self::$trad["MAIL_hideRecipientsInfo"]="Por defecto, los destinatarios de correo electrónico aparecen en el mensaje.";
 		self::$trad["MAIL_noFooter"]="No firme el mensaje";
 		self::$trad["MAIL_noFooterInfo"]="No firme el final del mensaje con el nombre del remitentey un enlace al espacio";
-		self::$trad["MAIL_fielMaxSize"]="Tamaño de archivo limitado a 15 MB, porque algunos buzones de correo no aceptan archivos más allá de este límite y pueden rechazar el correo electrónico";
-		self::$trad["MAIL_sendBy"]="Enviado por";  // "Envoyé par" M. Trucmuche
+		self::$trad["MAIL_fileMaxSize"]="Todos sus archivos adjuntos no deben exceder los 15 MB: <br> Algunos buzones de correo pueden rechazar correos electrónicos más allá de este límite";
+		self::$trad["MAIL_sendBy"]="Enviado por";//"Envoyé par" M. Trucmuche
 		self::$trad["MAIL_sendOk"]="El correo electrónico ha sido enviado !";
 		self::$trad["MAIL_sendNotif"]="El correo electrónico de notificación ha sido enviado !";
 		self::$trad["MAIL_notSend"]="El correo electrónico no se pudo enviar...";
-		self::$trad["MAIL_fromTheSpace"]="en el espacio";//truc
+		self::$trad["MAIL_fromTheSpace"]="desde el espacio";//Exple: "Envoyé par Boby, depuis l'espace Bidule"
 		self::$trad["MAIL_elemCreatedBy"]="-OBJLABEL- creado por";//boby
 		self::$trad["MAIL_elemModifiedBy"]="-OBJLABEL- modificado por";//boby
-		self::$trad["MAIL_elemAccessLink"]="Haga clic aquí para acceder al elemento en su espacio";
+		self::$trad["MAIL_elemAccessLink"]="Haga clic aquí para acceder al elemento en el espacio";
 
 		////	Dossier & fichier
 		self::$trad["gigaOctet"]="GB";
@@ -294,9 +297,8 @@ class Trad extends Txt
 		self::$trad["displayProfil"]="Ver perfil";
 		
 		////	Captcha
-		self::$trad["captcha"]="Copiar los 4 caracteres";
-		self::$trad["captchaInfo"]="Por favor, escriba los 4 caracteres para su identificación";
-		self::$trad["captchaSpecify"]="Por favor, especifique la identificación visual";
+		self::$trad["captcha"]="Copiar los 5 caracteres";
+		self::$trad["captchaInfo"]="Por favor, escriba los 5 caracteres para su identificación";
 		self::$trad["captchaError"]="La identificación visual no es valida";
 		
 		////	Rechercher
@@ -318,16 +320,21 @@ class Trad extends Txt
 		self::$trad["listFieldsElems"]="Elementos involucrados";
 		self::$trad["noResults"]="No hay resultados";
 		
-		////	Gestion des inscriptions d'utilisateur
+		////	Inscription d'utilisateur
 		self::$trad["userInscription"]="registrarme al espacio";
 		self::$trad["userInscriptionInfo"]="crear una nueva cuenta de usuario (validado por un administrador)";
 		self::$trad["userInscriptionSpace"]="registrarme al espacio";
 		self::$trad["userInscriptionRecorded"]="Su registro será validado tan pronto como sea posible por el administrador del espacio";
-		self::$trad["userInscriptionOptionSpace"]="Permitir a los visitantes que se registren en el espacio";
-		self::$trad["userInscriptionOptionSpaceInfo"]="El registro se encuentra en la página de inicio. Debe ser validado por el administrador del espacio.";
+		self::$trad["userInscriptionNotifSubject"]="Nuevo registro en el espacio";//"Mon espace"
+		self::$trad["userInscriptionNotifMessage"]="<i>--NEW_USER_LABEL--</i> ha solicitado un nuevo registro para el espacio <i>--SPACE_NAME--</i> : <br><br><i>--NEW_USER_MESSAGE--<i> <br><br>Recuerde validar o invalidar este registro durante su próxima conexión.";
+		self::$trad["userInscriptionEdit"]="Permitir a los visitantes que se registren en el espacio";
+		self::$trad["userInscriptionEditInfo"]="El registro se encuentra en la página de inicio. Debe ser validado por el administrador del espacio.";
+		self::$trad["userInscriptionNotifyEdit"]="Notificar por correo electrónico en cada registro";
+		self::$trad["userInscriptionNotifyEditInfo"]="Envíe una notificación por correo electrónico a los administradores del espacio, después de cada registro";
 		self::$trad["userInscriptionValidate"]="Registros de usuarios";
 		self::$trad["userInscriptionValidateInfo"]="Validar registros de usuarios al espacio";
-		self::$trad["userInscriptionInvalidateButton"]="Invalidar registros";
+		self::$trad["userInscriptionSelectValidate"]="Validar registros";
+		self::$trad["userInscriptionSelectInvalidate"]="Invalidar registros";
 		self::$trad["userInscriptionInvalidateMail"]="Su cuenta no ha sido validado en";
 		
 		////	Importer ou Exporter : Contact OU Utilisateurs
@@ -338,8 +345,9 @@ class Trad extends Txt
 		self::$trad["exportFormat"]="formato";
 		self::$trad["specifyFile"]="or favor, especifique un archivo";
 		self::$trad["fileExtension"]="El tipo del archivo no es válido. Debe ser de tipo";
+		self::$trad["importContactRootFolder"]="Los contactos se asignarán por defecto a &quot;todos los usuarios del espacio&quot;";//"Mon espace"
 		self::$trad["importInfo"]="Seleccione los campos (Agora) de destino con las listas desplegables de cada columna.";
-		self::$trad["importNotif"]="Por favor, seleccione la columna de nombre en las listas desplegables";
+		self::$trad["importNotif1"]="Por favor, seleccione la columna de nombre en las listas desplegables";
 		self::$trad["importNotif2"]="Por favor, seleccione al menos un contacto para importar";
 		self::$trad["importNotif3"]="El campo Agora ya ha sido seleccionado en otra columna (cada campo Agora se puede seleccionar sólo una vez)";
 		
@@ -356,9 +364,9 @@ class Trad extends Txt
 		self::$trad["NOTIF_fileName"]="Un archivo con el mismo nombre ya existe (no ha sido reemplazado)";
 		self::$trad["NOTIF_chmodDATAS"]="El directorio ''DATAS'' no es accesible por escrito. Usted necesita dar un acceso de lectura y escritura para el propietario y el grupo (''chmod 775'').";
 		self::$trad["NOTIF_usersNb"]="No se puede añadir un nuevo usuario : se limita a "; // "...limité à" 10
-		self::$trad["NOTIF_update"]="Actualizado el";
+		self::$trad["NOTIF_update"]="Nueva versión";
 		
-		////	header menu / Footer
+		////	Header / Footer
 		self::$trad["HEADER_displaySpace"]="Espacios disponibles";
 		self::$trad["HEADER_displayAdmin"]="Visualización de Administrador";
 		self::$trad["HEADER_displayAdminEnabled"]="Visualización de Administrador activada";
@@ -367,23 +375,33 @@ class Trad extends Txt
 		self::$trad["HEADER_documentation"]="Documentación";
 		self::$trad["HEADER_disconnect"]="Cerrar sesión del Ágora";
 		self::$trad["HEADER_shortcuts"]="Acceso directo";
-		self::$trad["MESSENGER_messenger"]="Mensajería instantánea";
-		self::$trad["MESSENGER_messengerInfo"]="chatear con varias personas al mismo tiempo";
+		self::$trad["FOOTER_pageGenerated"]="página generada en";
+
+		////	Messenger / Visio
+		self::$trad["MESSENGER_messengerTitle"]="Mensajería instantánea : haga clic en el nombre de una persona para chatear o iniciar una videoconferencia";
+		self::$trad["MESSENGER_messengerMultipleUsers"]="Ver todos los mensajes enviados a mí | Chatear con otros seleccionando mis interlocutores en el panel derecho";
 		self::$trad["MESSENGER_connected"]="Conectado";
-		self::$trad["MESSENGER_connectedNobody"]="Nadie esta conectado";
-		self::$trad["MESSENGER_connectedNobodyInfo"]="Nadie esta conectado actualmente : ver los mensajes antiguos";
-		self::$trad["MESSENGER_connectedSince"]="conectado a";//connecté depuis 12:45
-		self::$trad["MESSENGER_sendAt"]="Enviado a";
+		self::$trad["MESSENGER_nobody"]="Actualmente eres el único usuario que inició sesión en el espacio";
+		self::$trad["MESSENGER_nobodyTitle"]="Haga clic aquí para ver sus antiguas discusiones (guardados durante 15 días)";
+		self::$trad["MESSENGER_messageFrom"]="Mensaje de";
+		self::$trad["MESSENGER_messageTo"]="enviado a";
+		self::$trad["MESSENGER_chatWith"]="Chatear con";
 		self::$trad["MESSENGER_addMessageToSelection"]="Mi mensaje (personas seleccionadas)";
 		self::$trad["MESSENGER_addMessageTo"]="Mi mensaje a";
 		self::$trad["MESSENGER_addMessageNotif"]="Por favor, especifique un mensaje";
 		self::$trad["MESSENGER_visioProposeTo"]="Enviar  una videollamada a";//..boby
 		self::$trad["MESSENGER_visioProposeToSelection"]="Enviar una videollamada a las personas seleccionadas";
-		self::$trad["MESSENGER_userProposeVisio"]="propone una videollamada. Haga clic aquí para iniciarla.";//boby.. "vous propose un appel visio"
-		self::$trad["MESSENGER_visioProposalPending"]="La propuesta de video ha sido enviada : haga clic en el enlace de mensajería instantánea para comenzar el video.<br><br> Recuerde permitir el acceso a su cámara web y micrófono seleccionando ''Permitir'' en solicitudes del navegador";
-		self::$trad["MESSENGER_visioProposalLanch"]="¿Iniciar la videollamada?";
-		self::$trad["FOOTER_pageGenerated"]="página generada en";
+		self::$trad["MESSENGER_visioProposeToUsers"]="Haga clic aquí para iniciar la videollamada con";//"..Will & Boby"
 		
+		////	Lancer une Visio
+		self::$trad["VISIO_urlAdd"]="Agregar una videoconferencia";
+		self::$trad["VISIO_urlCopy"]="Copia el enlace de la videoconferencia";
+		self::$trad["VISIO_urlDelete"]="Eliminar el enlace de la videoconferencia";
+		self::$trad["VISIO_launch"]="Iniciar la videollamada";
+		self::$trad["VISIO_launchFromEvent"]="Iniciar la videoconferencia de este evento";
+		self::$trad["VISIO_urlMail"]="Agregue un enlace al final del texto para comenzar una nueva videoconferencia";
+		self::$trad["VISIO_launchConfirm"]="¿Iniciar la videollamada? \\nRecuerde permitir el acceso a su cámara web y micrófono";
+
 		////	vueObjMenuEdit
 		self::$trad["EDIT_notifNoSelection"]="Debe seleccionar al menos una persona o un espacio";
 		self::$trad["EDIT_notifNoPersoAccess"]="Usted no se ha asignado al elemento. validar todos lo mismo ?";
@@ -397,14 +415,13 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsersInfo"]="Todos los usuarios del espacio <i>--SPACENAME--</i>";
 		self::$trad["EDIT_allUsersAndGuestsInfo"]="Todos los usuarios del espacio <i>--SPACENAME--</i>, y los invitados pero con acceso solo de lectura (invitados: personas que no tienen una cuenta de usuario)";
 		self::$trad["EDIT_adminSpace"]="Administrador del espacio:<br>acceso de escritura a todos los elementos del espacio";
-		self::$trad["EDIT_showAllSpaceUsers"]="Mostrar todos los usuarios";
+		self::$trad["EDIT_displayMoreUsers"]="Mostrar mas usuarios";
 		self::$trad["EDIT_mySpaces"]="Mostrar todos mis espacios";
 		self::$trad["EDIT_notifMail"]="Notificar";
 		self::$trad["EDIT_notifMail2"]="Enviar una notificación de creación/cambio por email";
 		self::$trad["EDIT_notifMailInfo"]="Si no selecciona los destinatarios, de forma predeterminada, se enviará a las personas afectadas al elemento";
 		self::$trad["EDIT_notifMailAddFiles"]="Adjuntar archivos a la notificación";
 		self::$trad["EDIT_notifMailSelect"]="Seleccionar los destinatarios de las notificaciones";
-		self::$trad["EDIT_notifMailMoreUsers"]="Mostrar mas usuarios";
 		self::$trad["EDIT_accessRightSubFolders"]="Dar igualdad de derechos a todos los sub-carpetas";
 		self::$trad["EDIT_accessRightSubFolders_info"]="Extender los derechos de acceso, a los sub-carpetas que se pueden editar";
 		self::$trad["EDIT_shortcut"]="Acceso directo";
@@ -415,6 +432,8 @@ class Trad extends Txt
 		self::$trad["EDIT_attachedFileInsertInfo"]="Mostrar la imagen / video / mp3... en la descripción anterior. La inserción se realiza después de la validación del formulario.";
 		self::$trad["EDIT_guestName"]="Su nombre / apodo";
 		self::$trad["EDIT_guestNameNotif"]="Por favor, especifique un nombre / apodo";
+		self::$trad["EDIT_guestMail"]="Su email";
+		self::$trad["EDIT_guestMailInfo"]="Por favor especifique su correo electrónico para la validación de su propuesta";
 		self::$trad["EDIT_guestElementRegistered"]="Gracias por su propuesta : será examinada lo antes posible antes de la validación";
 		
 		////	Formulaire d'installation
@@ -446,10 +465,20 @@ class Trad extends Txt
 		////
 		self::$trad["AGORA_headerModuleName"]="Administración general";
 		self::$trad["AGORA_generalSettings"]="Administración general";
-		self::$trad["AGORA_backupFull"]="Copia de seguridad de todos los archivos";
-		self::$trad["AGORA_backupNotif"]="La creación de la copia de seguridad puede tardar unos minutos ... y descargar una docena de minutos.";
-		self::$trad["AGORA_backupDb"]="Copia de seguridad de la base de datos";
-		self::$trad["AGORA_diskSpaceInvalid"]="El límite de espacio de disco debe ser un número entero";
+		self::$trad["AGORA_versions"]="Versiones";
+		self::$trad["AGORA_dateUpdate"]="actualización el";
+		self::$trad["AGORA_Changelog"]="Ver el registro de versión";
+		self::$trad["AGORA_funcMailDisabled"]="La función PHP para enviar correos electrónicos está deshabilitada.";
+		self::$trad["AGORA_funcImgDisabled"]="La biblioteca PHP GD2 para la manipulación de imágenes está deshabilitada";
+		self::$trad["AGORA_backupFull"]="Copia de seguridad completa";
+		self::$trad["AGORA_backupFullInfo"]="Recupere la copia de seguridad completa del espacio: todos los archivos y la base de datos";
+		self::$trad["AGORA_backupDb"]="Hacer una copia de seguridad de la base de datos";
+		self::$trad["AGORA_backupDbInfo"]="Recupere solo la copia de seguridad de la base de datos espacial";
+		self::$trad["AGORA_backupConfirm"]="Esta operación puede tardar varios minutos: ¿confirmar la descarga?";
+		self::$trad["AGORA_diskSpaceInvalid"]="El espacio en disco para los archivos debe ser un número entero";
+		self::$trad["AGORA_visioHostInvalid"]="La dirección web de su servidor de videoconferencia no es válida: debe comenzar con 'https'";
+		self::$trad["AGORA_mapApiKeyInvalid"]="Si elige Google Map como herramienta de mapeo, debe especificar una 'API Key'";
+		self::$trad["AGORA_gSigninKeyInvalid"]="Si elige la conexión opcional a través de Gmail, debe especificar una 'API Key' para Google SignIn";
 		self::$trad["AGORA_confirmModif"]="Confirmar los cambios ?";
 		self::$trad["AGORA_name"]="Nombre del sitio";
 		self::$trad["AGORA_footerHtml"]="Footer / Pie de página texto/html";
@@ -464,7 +493,7 @@ class Trad extends Txt
 		self::$trad["AGORA_skin"]="Color de la interfaz";
 		self::$trad["AGORA_black"]="Negro";
 		self::$trad["AGORA_white"]="Blanco";
-		self::$trad["AGORA_wallpaperLogoError"]="La imagen de fondo y el logotipo debe tener el formato .jpg ou .png";
+		self::$trad["AGORA_wallpaperLogoError"]="La imagen de fondo y el logotipo debe tener el formato jpg o png";
 		self::$trad["AGORA_deleteWallpaper"]="Eliminar la imagen de fondo";
 		self::$trad["AGORA_logo"]="Logotipo en pie de página";
 		self::$trad["AGORA_logoUrl"]="URL";
@@ -491,12 +520,6 @@ class Trad extends Txt
 		self::$trad["AGORA_messengerDisabled"]="Mensajería instantánea activada";
 		self::$trad["AGORA_moduleLabelDisplay"]="Nombre de los módulos en la barra de menú";
 		self::$trad["AGORA_personsSort"]="Ordenar los usuarios y contactos";
-		self::$trad["AGORA_versions"]="Versiones";
-		self::$trad["AGORA_dateUpdate"]="actualización el";
-		self::$trad["AGORA_Changelog"]="Ver el registro de versión";
-		self::$trad["AGORA_funcMailDisabled"]="Función de PHP para enviar correos electrónicos : desactivada !";
-		self::$trad["AGORA_funcMailInfo"]="Algunos ''Host'' desactivan la función PHP para enviar correos electrónicos, por razones de seguridad ou saturación de los servidores (SPAM)";
-		self::$trad["AGORA_funcImgDisabled"]="Función de la manipulación de imágenes y miniaturas (PHP GD2) : desactivada !";
 		//SMTP
 		self::$trad["AGORA_smtpLabel"]="Conexión SMTP & sendMail";
 		self::$trad["AGORA_sendmailFrom"]="Email en el campo 'From'";
@@ -644,7 +667,7 @@ class Trad extends Txt
 		self::$trad["USER_mailPresentInAccount"]="ya existe una cuenta de usuario con esta dirección de correo electrónico";
 		self::$trad["USER_loginAndMailDifferent"]="Ambas direcciones de correo electrónico deben ser idénticas";
 		self::$trad["USER_mailNotifObject"]="Nueva cuenta en ";  // "...sur" l'Agora machintruc
-		self::$trad["USER_mailNotifContent"]="Su cuenta de usuario ha sido creada en";  // idem
+		self::$trad["USER_mailNotifContent"]="Tu cuenta de usuario ha sido creada en";  // idem
 		self::$trad["USER_mailNotifContent2"]="Conectar con el login y la contraseña siguientes";
 		self::$trad["USER_mailNotifContent3"]="Gracias a mantener este correo electrónico para sus archivos.";
 		// Livecounter & Messenger & Visio
@@ -730,9 +753,6 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addSharedCalendar"]="Añadir un calendario compartido";
 		self::$trad["CALENDAR_addSharedCalendarInfo"]="Añadir un calendario compartido : para reservar une habitación, vehiculo, vídeo, etc.";
 		self::$trad["CALENDAR_exportIcal"]="Exportar los eventos (iCal)";
-		self::$trad["CALENDAR_exportEvtMail"]="Exportar los eventos por e-mail (iCal)";
-		self::$trad["CALENDAR_exportEvtMailInfo"]="Para integrar en un calendario IPHONE, ANDROID, OUTLOOK, GOOGLE CALENDAR...";
-		self::$trad["CALENDAR_exportEvtMailList"]="lista de los eventos .ical";
 		self::$trad["CALENDAR_icalUrl"]="Url para acceso de lectura a la agenda (Ical)";
 		self::$trad["CALENDAR_icalUrlCopy"]="Copiar esta dirección? permitirá leer este calendario desde otra aplicación.";
 		self::$trad["CALENDAR_importIcal"]="Importar los eventos (iCal)";
@@ -740,21 +760,25 @@ class Trad extends Txt
 		self::$trad["CALENDAR_importIcalStatePresent"]="Ya está presente";
 		self::$trad["CALENDAR_importIcalStateImport"]="a importar";
 		self::$trad["CALENDAR_inputProposed"]="El evento será propuesto al propietario del calendario";
-		self::$trad["CALENDAR_displayDay"]="Día";
-		self::$trad["CALENDAR_display4Days"]="4 días";
-		self::$trad["CALENDAR_displayWorkWeek"]="Semana de trabajo";
-		self::$trad["CALENDAR_displayWeek"]="Semana";
-		self::$trad["CALENDAR_displayMonth"]="Mes";
+		self::$trad["CALENDAR_displayMode"]="Visualización";
+		self::$trad["CALENDAR_display_day"]="Día";
+		self::$trad["CALENDAR_display_4Days"]="4 días";
+		self::$trad["CALENDAR_display_workWeek"]="Semana de trabajo";
+		self::$trad["CALENDAR_display_week"]="Semana";
+		self::$trad["CALENDAR_display_month"]="Mes";
 		self::$trad["CALENDAR_weekNb"]="Ver la semana n°"; //...5
 		self::$trad["CALENDAR_periodNext"]="Período siguiente";
 		self::$trad["CALENDAR_periodPrevious"]="Período anterior";
 		self::$trad["CALENDAR_evtAffects"]="En el calendario de";
-		self::$trad["CALENDAR_evtAffectToConfirm"]="Pendiente de confirmación : ";
-		self::$trad["CALENDAR_evtProposedFor"]="Eventos propuestos para"; // "Videoprojecteur" / "salle de réunion" / etc.
-		self::$trad["CALENDAR_evtProposedForMe"]="Eventos propuestos para mi calendario";
-		self::$trad["CALENDAR_evtProposedBy"]="Propuestos por";  // "Proposé par" M. Bidule
-		self::$trad["CALENDAR_evtIntegrate"]="Integrar el evento al calendario ?";
-		self::$trad["CALENDAR_evtNotIntegrate"]="Eliminar el evento propuesto ?";
+		self::$trad["CALENDAR_evtAffectToConfirm"]="Pendiente en el calendario de";
+		self::$trad["CALENDAR_evtProposed"]="Propuesto de eventos a confirmar";
+		self::$trad["CALENDAR_evtProposedBy"]="Propuestos por";//..Mr SMITH
+		self::$trad["CALENDAR_evtProposedConfirm"]="Confirma la propuesta";
+		self::$trad["CALENDAR_evtProposedConfirmBis"]="La propuesta del evento se ha integrado en la agenda";
+		self::$trad["CALENDAR_evtProposedConfirmMail"]="Tu propuesta de evento ha sido confirmada";
+		self::$trad["CALENDAR_evtProposedDecline"]="Rechazar la propuesta";
+		self::$trad["CALENDAR_evtProposedDeclineBis"]="La propuesta ha sido rechazada";
+		self::$trad["CALENDAR_evtProposedDeclineMail"]="Tu propuesta de evento ha sido rechazada";
 		self::$trad["CALENDAR_deleteEvtCal"]="Eliminar sólo en ese calendario ?";
 		self::$trad["CALENDAR_deleteEvtCals"]="Eliminar en todos los calendarios ?";
 		self::$trad["CALENDAR_deleteEvtDate"]="Eliminar sólo en esta fecha ?";
@@ -773,7 +797,6 @@ class Trad extends Txt
 		self::$trad["CALENDAR_visibilityPublicHide"]="Visibilidad semi-privada";
 		self::$trad["CALENDAR_visibilityInfo"]="<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento (sin los detailles) si el evento es accesible de lectura";
 		// Agenda/Evenement : edit
-		self::$trad["CALENDAR_timeSlot"]="Rango de tiempo de la pantalla ''semana''";
 		self::$trad["CALENDAR_noPeriodicity"]="Una vez";
 		self::$trad["CALENDAR_period_weekDay"]="Cada semana";
 		self::$trad["CALENDAR_period_month"]="Cada mes";
@@ -792,10 +815,13 @@ class Trad extends Txt
 		self::$trad["CALENDAR_noModifInfo"]="Edición prohibida porque no tiene acceso de escritura al calendario";
 		self::$trad["CALENDAR_editLimit"]="Usted no es el autor de el evento : sólo puedes editar las asignaciones a sus calendarios";
 		self::$trad["CALENDAR_busyTimeslot"]="La ranura ya está ocupado en este calendario :";
-		self::$trad["CALENDAR_visioUrlAdd"]="Agregar una videoconferencia";
-		self::$trad["CALENDAR_visioUrlCopy"]="Copia el enlace de la videoconferencia";
-		self::$trad["CALENDAR_visioUrlDelete"]="Eliminar el enlace de la videoconferencia";
-		self::$trad["CALENDAR_visioUrlLaunch"]="Iniciar la videoconferencia de este evento";
+		self::$trad["CALENDAR_timeSlot"]="Rango de tiempo de la pantalla ''semana''";
+		self::$trad["CALENDAR_propositionNotify"]="Notificar por correo electrónico de cada propuesta de evento";
+		self::$trad["CALENDAR_propositionNotifyInfo"]="Nota: Cada propuesta de evento es validada o invalidada por el propietario del calendario.";
+		self::$trad["CALENDAR_propositionGuest"]="Los invitados pueden proponer eventos";
+		self::$trad["CALENDAR_propositionGuestInfo"]="Nota: Recuerde seleccionar 'todos los usuarios e invitados' en los derechos de acceso.";
+		self::$trad["CALENDAR_propositionNotifTitle"]="Nuevo evento propuesto por";//.."boby SMITH"
+		self::$trad["CALENDAR_propositionNotifMessage"]="Nuevo evento propuesto por --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accede a tu espacio para confirmar o cancelar esta propuesta";
 		// Categories
 		self::$trad["CALENDAR_editCategories"]="Administrar las categorías de eventos";
 		self::$trad["CALENDAR_editCategoriesRight"]="Cada categoría puede ser modificado por su autor o por el administrador general";
@@ -813,8 +839,8 @@ class Trad extends Txt
 		self::$trad["FILE_addFileAlert"]="Los directorios del servidor no son accesible en escritura !  gracias de contactar el administrador";
 		self::$trad["FILE_downloadSelection"]="Descargar selección";
 		self::$trad["FILE_nbFileVersions"]="Archivo versiones";//"55 versions du fichier"
-		self::$trad["FILE_downloadsNb"]="Archivo descargado --NB_DOWNLOAD-- veces";
-		self::$trad["FILE_downloadedBy"]="Archivo subido por";//"..boby, will"
+		self::$trad["FILE_downloadsNb"]="(descargado --NB_DOWNLOAD-- veces)";
+		self::$trad["FILE_downloadedBy"]="archivo subido por";//"..boby, will"
 		self::$trad["FILE_addFileVersion"]="Añadir nueva versión del archivo";
 		self::$trad["FILE_noFile"]="No hay archivo en este momento";
 		// fichier_edit_ajouter  &  Fichier_edit
@@ -929,8 +955,11 @@ class Trad extends Txt
 		self::$trad["MAIL_message"]="Mensaje del email";
 		self::$trad["MAIL_attachedFile"]="Archivo adjunto";
 		// Historique Email
-		self::$trad["MAIL_mailHistory"]="Historia de los correos electrónicos enviados";
-		self::$trad["MAIL_mailHistoryEmpty"]="No correo electrónico";
+		self::$trad["MAIL_historyTitle"]="Historia de los correos electrónicos enviados";
+		self::$trad["MAIL_delete"]="Eliminar este correo electrónico";
+		self::$trad["MAIL_resend"]="Reenviar este correo electrónico";
+		self::$trad["MAIL_resendInfo"]="Recupere el contenido de este correo electrónico e intégrelo directamente en el editor para un nuevo envío";
+		self::$trad["MAIL_historyEmpty"]="No correo electrónico";
 		self::$trad["MAIL_recipients"]="Destinatarios";
 	}
 

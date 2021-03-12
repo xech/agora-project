@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des dossiers de taches
+ * MODELE DES DOSSIERS DE TACHES
  */
 class MdlTaskFolder extends MdlObjectFolder
 {
@@ -17,9 +17,9 @@ class MdlTaskFolder extends MdlObjectFolder
 	const dbTable="ap_taskFolder";
 	const MdlObjectContent="MdlTask";
 	
-	/*
-	 * SURCHARGE : Details complementaires du dossier -> synthese des "advancement" et "dateBeginEnd()" des taches du dossier
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : DETAILS COMPLEMENTAIRES DU DOSSIER -> SYNTHESE DES "ADVANCEMENT" ET "DATEBEGINEND()" DES TACHES DU DOSSIER
+	 *******************************************************************************************/
 	public function folderOtherDetails()
 	{
 		$textReturn=null;
@@ -34,8 +34,8 @@ class MdlTaskFolder extends MdlObjectFolder
 		//Synthese des "dateBeginEnd()" des tâches
 		if(!empty($folderDetails["dateBegin"]) && !empty($folderDetails["dateEnd"])){
 			$fillPercent=((time()-strtotime($folderDetails["dateBegin"])) / (strtotime($folderDetails["dateEnd"])-strtotime($folderDetails["dateBegin"]))) * 100;
-			$txtBar="<img src='app/img/task/date.png'> ".Txt::displayDate($folderDetails["dateBegin"],"mini",$folderDetails["dateEnd"]);
-			$txtTooltip=Txt::displayDate($folderDetails["dateBegin"],"full",$folderDetails["dateEnd"]);
+			$txtBar="<img src='app/img/task/date.png'> ".Txt::dateLabel($folderDetails["dateBegin"],"mini",$folderDetails["dateEnd"]);
+			$txtTooltip=Txt::dateLabel($folderDetails["dateBegin"],"full",$folderDetails["dateEnd"]);
 			$textReturn.=Tool::percentBar($fillPercent, $txtBar, $txtTooltip, false, MdlTask::barWidth);
 		}
 		return $textReturn." &nbsp; &nbsp; ";

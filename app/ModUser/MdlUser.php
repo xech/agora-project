@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des utilisateurs
+ * MODELE DES UTILISATEURS
  */
 class MdlUser extends MdlPerson
 {
@@ -17,12 +17,11 @@ class MdlUser extends MdlPerson
 	const dbTable="ap_user";
 	const isSelectable=true;
 	public static $requiredFields=array("login","name");//password facultatif si modification de l'user
-	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc");
+	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","dateCrea@@desc","dateCrea@@asc","lastConnection@@asc","lastConnection@@desc");
 	//Valeurs en cache
 	private $_userSpaces=null;
 	private $_isAdminCurSpace=null;
 	private $_usersVisibles=null;
-	private $_messengerEnabled=null;
 
 	/*******************************************************************************************
 	 * PHOTO D'UN UTILISATEUR
@@ -67,7 +66,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ACCÈS À L'OBJET
 	 *******************************************************************************************/
-	public function accessRight()
+	public function accessRight():float
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null)
@@ -87,7 +86,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION (ACCÈS TOTAL UNIQUEMENT)
 	 *******************************************************************************************/
-	public function editRight()
+	public function editRight():bool
 	{
 		return ($this->accessRight()==3);
 	}
@@ -95,12 +94,15 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRESSION
 	 *******************************************************************************************/
-	public function deleteRight()
+	public function deleteRight():bool
 	{
 		//Accès total  &&  Autre user que celui en cours  &&  Pas dernier adminGeneral
+		$deleteRight=false;
 		if(parent::fullRight() && $this->_id!=Ctrl::$curUser->_id){
-			if($this->isAdminGeneral()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>1)  {return true;}
+			if($this->isAdminGeneral()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>1)  {$deleteRight=true;}
 		}
+		//Retourne le droit d'Accès
+		return $deleteRight;
 	}
 
 	/*******************************************************************************************
@@ -129,18 +131,18 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * LIVECOUNTER ET MESSENGER ACTIF POUR L'USER ?
+	 * MESSENGER ACTIVÉ POUR L'USER COURANT (CF. PARAMETRAGE "actionUserEditMessenger()") ?
 	 *******************************************************************************************/
 	public function messengerEnabled()
 	{
-		if($this->_messengerEnabled===null)  {$this->_messengerEnabled=($this->messengerEdit() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
-		return $this->_messengerEnabled;
+		if(empty($_SESSION["curUserMessengerEnabled"]))  {$_SESSION["curUserMessengerEnabled"]=($this->messengerAvailable() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
+		return $_SESSION["curUserMessengerEnabled"];
 	}
 
 	/*******************************************************************************************
-	 * L'USER COURANT PEUT PARAMETRER SON MESSENGER ?
+	 * MESSENGER DISPONIBLE POUR L'USER COURANT (ET PARAMETRABLE) ?
 	 *******************************************************************************************/
-	public function messengerEdit()
+	public function messengerAvailable()
 	{
 		return ($this->isUser() && empty(Ctrl::$agora->messengerDisabled));
 	}
@@ -206,12 +208,12 @@ class MdlUser extends MdlPerson
 	{
 		if(Ctrl::$curUser->isAdminSpace()){
 			Db::query("DELETE FROM ap_joinSpaceUser WHERE _idUser=".$this->_id." AND _idSpace=".(int)$_idSpace);
-			if(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".(int)$_idSpace." AND allUsers=1")>0)  {Ctrl::addNotif("USER_allUsersOnSpaceNotif");}
+			if(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".(int)$_idSpace." AND allUsers=1")>0)  {Ctrl::notify("USER_allUsersOnSpaceNotif");}
 		}
 	}
 
 	/*******************************************************************************************
-	 *  AUTRES USERS QUE L'USER COURANT PEUT VOIR, SUR L'ENSEMBLE DE SES ESPACES
+	 *  AUTRES USERS QUE L'USER COURANT PEUT VOIR : SUR L'ENSEMBLE DE SES ESPACES
 	 *******************************************************************************************/
 	public function usersVisibles($mailFilter=false)
 	{
@@ -244,14 +246,14 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * NOMBRE D'UTILISATEURS MAXI DÉJÀ ATTEINT?
 	 *******************************************************************************************/
-	public static function usersQuotaOk($addNotif=true)
+	public static function usersQuotaOk($notify=true)
 	{
 		//Quota Ok ...sinon on ajoute une notif?
 		if(self::usersQuotaRemaining()>0)  {return true;}
 		else{
-			if($addNotif==true){
+			if($notify==true){
 				$msgUgrade=(Ctrl::isHost()) ? Host::notifUpgradeUsers() : null;//Propose l'upgrade?
-				Ctrl::addNotif(Txt::trad("NOTIF_usersNb")." ".limite_nb_users.$msgUgrade);
+				Ctrl::notify(Txt::trad("NOTIF_usersNb")." ".limite_nb_users.$msgUgrade);
 			}
 			return false;
 		}
@@ -272,7 +274,7 @@ class MdlUser extends MdlPerson
 	{
 		////	Controles : quota atteint ? Login existe déjà ?
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
-		if(self::loginAlreadyExist($login,$this->_id))   {Ctrl::addNotif(Txt::trad("USER_loginAlreadyExist")." (".$login.")");  return false;}
+		if(self::loginAlreadyExist($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginAlreadyExist")." (".$login.")");  return false;}
 		////	Ajoute le login, le password? si l'agenda perso est désactivé?
 		$sqlProperties=trim(trim($sqlProperties),",");
 		$sqlProperties.=", `login`=".Db::format($login);
@@ -316,10 +318,10 @@ class MdlUser extends MdlPerson
 		//Récupère l'email (login en priorité)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
 		//Email non spécifié / Envoi du mail de reset de password
-		if(Txt::isMail($mailTo)==false)  {Ctrl::addNotif("email not specified");}
+		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else
 		{
-			$resetPasswordUrl=Req::getSpaceUrl()."/?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
+			$resetPasswordUrl=Req::getCurUrl()."/?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
 			$subject=Txt::trad("resetPasswordMailTitle");
 			$message=Txt::trad("MAIL_hello").",<br><br>".
 					 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
@@ -336,12 +338,12 @@ class MdlUser extends MdlPerson
 		//Récupère l'email (login en priorité)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
 		//Email non spécifié / Envoi du mail de reset de password
-		if(Txt::isMail($mailTo)==false)  {Ctrl::addNotif("email not specified");}
+		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else
 		{
 			$subject=Txt::trad("USER_mailNotifObject")." ".ucfirst(Ctrl::$agora->name);//"Bienvenue sur Mon-espace"
-			$message=Txt::trad("USER_mailNotifContent")." <i>".Ctrl::$agora->name."</i> (".Req::getSpaceUrl(false).")<br><br>".//"Votre compte utilisateur vient d'être créé sur <i>Mon-espace</i>"
-					 "<a href=\"".Req::getSpaceUrl()."/?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
+			$message=Txt::trad("USER_mailNotifContent")." <i>".Ctrl::$agora->name."</i> (".Req::getCurUrl(false).")<br><br>".//"Votre compte utilisateur vient d'être créé sur <i>Mon-espace</i>"
+					 "<a href=\"".Req::getCurUrl()."/?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
 					 Txt::trad("login")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
 					 Txt::trad("passwordToModify")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
 					 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
@@ -387,7 +389,7 @@ class MdlUser extends MdlPerson
 							$ldapConnection=self::ldapConnect(null, null, $userLogin, $password, false);
 							if($ldapConnection==false)	{$ldapConnection=self::ldapConnect(null, null, $userLoginAD, $password, false);}
 							//  Vérifie si l'id/password du serveur LDAP est identique à celui spécifié
-							$idPassOk=($tmpUser["login"]==$login && $tmpUser["password"]==$ldapPassword)  ?  true  :  false;
+							$idPassOk=($tmpUser["login"]==$login && $tmpUser["password"]==$ldapPassword);
 							// Vérifie si l'user n'a pas déjà été importé :  la connexion peut être faite par erreur avec les login/password LDAP, différent de ceux de l'agora...
 							$userAgoraExist=Db::getVal("SELECT count(*) FROM ap_user WHERE `login`=".Db::format($tmpUser["login"])." OR mail=".Db::format($tmpUser["mail"]));
 							// Créé le compte sur l'agora

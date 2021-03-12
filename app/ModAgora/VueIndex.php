@@ -22,10 +22,6 @@ $(function(){
 			{notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
-	////	logsTimeOut par défaut après mise à jour
-	if(Math.round("<?= Ctrl::$agora->logsTimeOut ?>")>0 && $("select[name='logsTimeOut'] option[value='<?= Ctrl::$agora->logsTimeOut ?>']").exist()==false)
-		{$("select[name='logsTimeOut']").val("30");}
-	
 	////	Affiche du "mapApiKeyDiv" si "mapTool"=="gmap"
 	$("select[name='mapTool']").on("change",function(){   this.value=="gmap" ? $("#mapApiKeyDiv").fadeIn() : $("#mapApiKeyDiv").fadeOut();   }).trigger("change");//"trigger()" initie l'affichage
 
@@ -36,35 +32,40 @@ $(function(){
 ////    On contrôle le formulaire
 function formControl()
 {
-	//Contrôle du nom
-	if($("[name='name']").isEmpty())   {notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
-	//Contrôle de l'espace disque / et de gSignin
+	//Contrôle le nom de l'espace
+	if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
+	//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gSigninClientId
 	<?php if(Ctrl::isHost()==false){ ?>
-	if(isNaN($("[name='limite_espace_disque']").val()))   {notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>"); return false;}
-	if($("[name='mapTool']").val()=="gmap" && $("[name='mapApiKey']").isEmpty())		{notify("<?= Txt::trad("AGORA_mapApiKey")." : ".Txt::trad("requiredFields") ?>"); return false;}
-	if($("[name='gSignin']").val()=="1" && $("[name='gSigninClientId']").isEmpty())		{notify("<?= Txt::trad("AGORA_gPeopleApiKey")." : ".Txt::trad("requiredFields") ?>"); return false;}
+	if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
+	if($("input[name='visioHost']").isEmpty()==false && /^https/.test($("input[name='visioHost']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
+	if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
+	if($("select[name='gSignin']").val()=="1" && $("input[name='gSigninClientId']").isEmpty())						{notify("<?= Txt::trad("AGORA_gSigninKeyInvalid") ?>");  return false;}	//Idem
 	<?php } ?>
 	return confirm("<?= Txt::trad("AGORA_confirmModif") ?>");
 }
 </script>
 
 <style>
-.miscContainer				{padding:20px; margin-bottom:40px;}/*surcharge*/
-.objField>div				{padding:4px 0px 4px 0px;}/*surcharge*/
-.objField .fieldLabel		{width:350px;}/*surcharge*/
-#logoFile, #logoConnectFile	{display:none;}
-#logoUrl					{margin-top:10px; <?= (empty(Ctrl::$agora->logo)) ? "display:none;":null ?>}
-#imgLogo, #imgLogoConnect	{max-height:45px;}
-#limite_espace_disque		{width:40px;}
-.smtpLdapLabel				{cursor:pointer; margin-top:20px;}
-#smtpConfig					{margin-top:10px; <?= (empty(Ctrl::$agora->sendmailFrom) && empty(Ctrl::$agora->smtpHost)) ? "display:none;":null ?>}
-#smtpConfig .fieldLabel		{padding-left:20px;}
-#ldapConfig					{margin-top:10px; <?= (empty(Ctrl::$agora->ldap_server)) ? "display:none;":null ?>}
-#ldapConfig .fieldLabel		{padding-left:20px;}
-.vVersions					{padding:20px; padding-left:50px;}
-.vBackupForm				{text-align:center;}
-.vBackupForm button			{min-width:60%; height:50px; margin:12px;}
-.vBackupForm button img		{max-height:25px; margin-left:10px;}
+/*Menu context de gauche*/
+#pageModuleMenu .miscContainer		{padding:10px; text-align:center;}/*surcharge*/
+#pageModuleMenu button				{width:90%;}
+#pageModuleMenu button img			{max-height:25px; margin-left:10px;}
+#agoraInfos div						{line-height:35px;}
+.vBackupForm button					{min-width:60%; height:50px; margin:12px;}
+
+/*Formulaire principal*/
+#pageCenterContent  .miscContainer	{padding:20px;}/*surcharge*/
+.objField>div						{padding:4px 0px 4px 0px;}/*surcharge*/
+.objField .fieldLabel				{width:350px;}/*surcharge*/
+#logoFile, #logoConnectFile			{display:none;}
+#logoUrl							{margin-top:10px; <?= (empty(Ctrl::$agora->logo)) ? "display:none;":null ?>}
+#imgLogo, #imgLogoConnect			{max-height:45px;}
+#limite_espace_disque				{width:40px;}
+.smtpLdapLabel						{cursor:pointer; margin-top:20px;}
+#smtpConfig							{margin-top:10px; <?= (empty(Ctrl::$agora->sendmailFrom) && empty(Ctrl::$agora->smtpHost)) ? "display:none;":null ?>}
+#smtpConfig .fieldLabel				{padding-left:20px;}
+#ldapConfig							{margin-top:10px; <?= (empty(Ctrl::$agora->ldap_server)) ? "display:none;":null ?>}
+#ldapConfig .fieldLabel				{padding-left:20px;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
@@ -74,7 +75,30 @@ function formControl()
 
 
 <div id="pageCenter">
+	<div id="pageModuleMenu">
+		<!--INFOS & VERSIONS-->
+		<div class="miscContainer" id="agoraInfos">
+			<div>Agora-Project / Omnispace version <?= Ctrl::$agora->version_agora ?></div>
+			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"dateMini") ?></div>
+			<div><a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a></div>
+			<div>PHP <?= str_replace(strstr(phpversion(),"-"),null,phpversion()) ?> &nbsp;&nbsp; MariaDB / MySql <?= Db::dbVersion() ?></div>
+			<?php if(!function_exists("mail")){ ?><div ><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
+			<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
+		</div>
+		
+		<!--SAUVEGARDER LA BDD ET LE FICHIERS-->
+		<?php if(Req::isMobile()==false){ ?>
+		<form class="miscContainer vBackupForm" action="index.php" method="post" onsubmit="return confirm('<?= Txt::trad('AGORA_backupConfirm',true) ?>')">
+			<button type="submit" name="typeBackup" value="all" title="<?= Txt::trad("AGORA_backupFullInfo") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
+			<button type="submit" name="typeBackup" value="db" title="<?= Txt::trad("AGORA_backupDbInfo") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
+			<input type="hidden" name="ctrl" value="agora">
+			<input type="hidden" name="action" value="getBackup">
+		</form>
+		<?php } ?>
+	</div>
+
 	<div id="pageCenterContent">
+		<!--FORMULAIRE DU PRAMETRAGE GENERAL-->
 		<form action="index.php" method="post" onsubmit="return formControl()" class="miscContainer" enctype="multipart/form-data">
 			<!--NAME-->
 			<div class="objField">
@@ -166,7 +190,7 @@ function formControl()
 					</select>
 				</div>
 			</div>
-			<!--DISK SPACE (AGORA-PROJECT)-->
+			<!--DISK SPACE (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
 			<div class="objField">
 				<div class="fieldLabel"><img src="app/img/diskSpace.png"><?= Txt::trad("AGORA_diskSpaceLimit") ?></div>
@@ -178,13 +202,13 @@ function formControl()
 				<div class="fieldLabel"><img src="app/img/log.png"> <abbr title="<?= Txt::trad("AGORA_logsTimeOutInfo") ?>"><?= Txt::trad("AGORA_logsTimeOut") ?></abbr></div>
 				<div>
 					<select name="logsTimeOut">
-						<?php foreach($logsTimeOut as $tmpTime)  {echo "<option value='".$tmpTime."' ".($tmpTime==Ctrl::$agora->logsTimeOut?"selected":null).">".$tmpTime."</option>";} ?>
+						<?php foreach([0,30,120,360,720] as $tmpTimeOut)  {echo "<option value='".$tmpTimeOut."' ".($tmpTimeOut==Ctrl::$agora->logsTimeOut?"selected":null).">".$tmpTimeOut."</option>";} ?>
 					</select>
 					<?= Txt::trad("days") ?>
 				</div>
 			</div>
 		<hr>
-			<!--SERVER JITSI (AGORA-PROJECT)-->
+			<!--SERVER JITSI (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
 			<div class="objField">
 				<div class="fieldLabel"><img src="app/img/visio.png"><abbr title="<?= Txt::trad("AGORA_visioHostInfo") ?>"><?= Txt::trad("AGORA_visioHost") ?></abbr></div>
@@ -242,7 +266,7 @@ function formControl()
 					</select>
 				</div>
 			</div>
-			<!--MAP TOOL APIKEY (AGORA-PROJECT)-->
+			<!--MAP TOOL APIKEY (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
 			<div class="objField" id="mapApiKeyDiv">
 				<div class="fieldLabel"><img src="app/img/map.png"><abbr title="<?= Txt::trad("AGORA_mapApiKeyInfo") ?>"><?= Txt::trad("AGORA_mapApiKey") ?></abbr></div>
@@ -259,7 +283,7 @@ function formControl()
 					</select>
 				</div>
 			</div>
-			<!--SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AGORA-PROJECT)-->
+			<!--SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
 			<div class="objField" id="gSigninClientIdDiv">
 				<div class="fieldLabel"><img src="app/img/gSignin.png"><abbr title="<?= Txt::trad("AGORA_gSigninClientIdInfo") ?>"><?= Txt::trad("AGORA_gSigninClientId") ?></abbr></div>
@@ -321,7 +345,7 @@ function formControl()
 			</div>
 			<?php } ?>
 
-			<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AGORA-PROJECT)-->
+			<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
 			<div class="smtpLdapLabel" onclick="$('#smtpConfig').fadeToggle()"><?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/plusSmall.png"></div>
 			<div id="smtpConfig">
@@ -355,25 +379,5 @@ function formControl()
 			<!--VALIDATION DU FORMULAIRE-->
 			<?= Txt::submitButton("modify") ?>
 		</form>
-
-		<!--INFOS & VERSIONS-->
-		<div class="miscContainer vVersions">
-				Agora-Project version <?= Ctrl::$agora->version_agora ?> &nbsp; (<?= Txt::trad("AGORA_dateUpdate")." ".Txt::displayDate(Ctrl::$agora->dateUpdateDb,"dateMini") ?>) &nbsp; &nbsp;
-				<a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a> <br><br>
-				PHP <?= str_replace(strstr(phpversion(),"-"),null,phpversion()) ?> <img src="app/img/separator.png"> 
-				MariaDB / MySql <?= Db::dbVersion() ?>
-				<?php if(!function_exists("mail")){ ?><div title="<?= Txt::trad("AGORA_funcMailInfo") ?>"><img src="app/img/delete.png"> &nbsp; <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
-				<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> &nbsp; <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
-		</div>
-		
-		<!--SAUVEGARDER LA BDD ET LE FICHIERS-->
-		<?php if(Req::isMobile()==false){ ?>
-		<form class="miscContainer vBackupForm" action="index.php" method="post">
-			<input type="hidden" name="ctrl" value="agora">
-			<input type="hidden" name="action" value="getBackup">
-			<button type="submit" name="typeBackup" value="all" <?= $alertMessageBigSav ?>><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?> <img src="app/img/folder/folderSmall.png"><img src="app/img/diskSpace.png"></button>
-			<button type="submit" name="typeBackup" value="db"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?> <img src="app/img/diskSpace.png"></button>
-		</form>
-		<?php } ?>
 	</div>
 </div>

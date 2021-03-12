@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des dossiers de fichiers
+ * MODELE DES DOSSIERS DE FICHIERS
  */
 class MdlFileFolder extends MdlObjectFolder
 {
@@ -17,9 +17,9 @@ class MdlFileFolder extends MdlObjectFolder
 	const dbTable="ap_fileFolder";
 	const MdlObjectContent="MdlFile";
 
-	/*
-	 * VUE : Surcharge du menu contextuel
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		//Ajoute l'option "Telecharger le dossier"
@@ -33,9 +33,9 @@ class MdlFileFolder extends MdlObjectFolder
 		return parent::contextMenu($options);
 	}
 
-	/*
-	 * SURCHARGE : Ajout/Modif de dossier
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : AJOUT/MODIF DE DOSSIER
+	 *******************************************************************************************/
 	public function createUpdate($sqlProperties)
 	{
 		$reloadedObj=parent::createUpdate($sqlProperties);

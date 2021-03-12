@@ -44,6 +44,8 @@ CREATE TABLE `ap_calendar` (
   `title` varchar(255) DEFAULT NULL,
   `description` text,
   `timeSlot` varchar(255) DEFAULT NULL,
+  `propositionNotify` varchar(1) DEFAULT NULL,
+  `propositionGuest` varchar(1) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
@@ -67,6 +69,7 @@ CREATE TABLE `ap_calendarEvent` (
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
   `guest` varchar(255) DEFAULT NULL,
+  `guestMail` varchar(255) DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` mediumint(8) unsigned DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -325,7 +328,8 @@ CREATE TABLE `ap_space` (
   `description` text,
   `public` tinyint(1) unsigned DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `usersInscription` tinyint(1) unsigned DEFAULT NULL,
+  `userInscription` tinyint(1) unsigned DEFAULT NULL,
+  `userInscriptionNotify` tinyint(1) unsigned DEFAULT NULL,
   `usersInvitation` tinyint(1) unsigned DEFAULT NULL,
   `wallpaper` varchar(255) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,

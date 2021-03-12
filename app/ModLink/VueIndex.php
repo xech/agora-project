@@ -11,7 +11,7 @@
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	AJOUT D'ELEMENTS
-			if(Ctrl::$curContainer->editContentRight()){
+			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
@@ -35,14 +35,14 @@
 				"<div class='objContentScroll'>
 					<div class='objContent'>
 						<div class='objLabel objLabelBg'><a href=\"".$tmpLink->adress."\" target='_blank'><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</a></div>
-						<div class='objAutorDate'>".$tmpLink->displayAutorDate()."</div>
+						<div class='objAutorDate'>".$tmpLink->autorDateLabel()."</div>
 					</div>
 				</div>
 			</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty($foldersList) && empty($linkList)){
-			$addElement=(Ctrl::$curContainer->editContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("LINK_noLink").$addElement."</div>";
 		}
 		?>

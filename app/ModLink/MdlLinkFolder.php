@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des dossiers de liens
+ * MODELE DES DOSSIERS DE LIENS/FAVORIS
  */
 class MdlLinkFolder extends MdlObjectFolder
 {

@@ -2,12 +2,14 @@
 
 /*Basic*/
 html										{background:#fff;}
-body, a, button, .sLink						{color:#555;}
+body, a, .sLink								{color:#555;}
+button										{color:#555;}/*tjs sur fonc blanc*/
 a:hover, .sLink:hover						{color:#800;}
 a:active, .sLinkSelect, input:checked+label	{color:#a00;}
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
 	#htmlMainPage	{background:#f8f8f8 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	/*#htmlLightbox	{}cf. black.css*/
 }
 
 /*Blocks d'objet (ou pas) & menus contextuels*/
@@ -32,5 +34,5 @@ a:active, .sLinkSelect, input:checked+label	{color:#a00;}
 #headerBar											{background:linear-gradient(to bottom,#f5f5f5,#fafafa,#eee);}
 #sortableModules .ui-state-default					{background:linear-gradient(#f9f9f9,#fff);}
 hr													{background:linear-gradient(to right,#eee,#ccc,#eee);}
-div::-webkit-scrollbar								{background:#eee; width:12px;}/*scrollbar: background et width*/
+div::-webkit-scrollbar								{background:#eee; width:15px;}/*scrollbar: background et width*/
 div::-webkit-scrollbar-thumb						{background:#ccc;}/*scrollbar: couleur de la barre*/

@@ -43,6 +43,9 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
+		////	PAS DE MENU CONTEXT POUR LES GUESTS
+		if(Ctrl::$curUser->isUser()==false)  {return false;}
+
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
 		$vDatas["iconBurger"]=(!empty($options["iconBurger"]))  ?  $options["iconBurger"]  :  "float";//Icone "burger" du launcher : "small" inline / "big" inline / "float" en position absolute (par défaut)
@@ -73,6 +76,8 @@ trait MdlObjectMenus
 				if(count($this->getSpaces())==0)	{$vDatas["userSpaceList"].=Txt::trad("USER_spaceNoAffectation");}
 				else								{ foreach($this->getSpaces() as $tmpSpace)  {$vDatas["userSpaceList"].="<br>".$tmpSpace->name;} }
 			}
+			////	AUTEUR/DATE DE CREATION
+			$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a> - ".$this->dateLabel(true,"full");
 		}
 		////	OBJET LAMBDA
 		else
@@ -101,7 +106,7 @@ trait MdlObjectMenus
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
-			if(Ctrl::$curUser->isUser() && ($this->hasAccessRight() || $this->accessRightFromContainer()))
+			if($this->hasAccessRight() || $this->accessRightFromContainer())
 			{
 				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
 				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
@@ -119,20 +124,20 @@ trait MdlObjectMenus
 				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("readLimitInfos");}
 				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("writeInfosContainer")  :  $tooltipDetail.Txt::trad("writeInfos");}
 			}
-			////	AUTEUR ET DATE (optionnelle)
-			//Init
+			////	AUTEUR/DATE DE CREATION/MODIF
+			//Init les labels  &&  vérif si c'est un nouvel objet (créé dans les 24 heures ou depuis la précédente connexion)
 			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
-			$vDatas["isNewObject"]=(strtotime($this->dateCrea)>(time()-86400) || (Ctrl::$curUser->isUser() && strtotime($this->dateCrea)>Ctrl::$curUser->previousConnection));
-			//Auteur + Date création + Nouvel objet (si créé dans les 24 heures ou depuis la dernière connexion)
-			if($this->_idUser)					{$vDatas["autorDateCrea"].="<div class='sLink' onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->displayAutor()."</div>";}
-			if($this->guest)					{$vDatas["autorDateCrea"].="<div>".$this->displayAutor()."</div>";}
-			if($this->dateCrea)					{$vDatas["autorDateCrea"].=$this->displayDate(true,"full");}
-			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div><abbr title=\"".Txt::trad("objNewInfos")."\">".Txt::trad("objNew")."</abbr> <img src='app/img/menuNewSmall.png'></div>";}
-			//Auteur + Date Modif (optionnelle)
-			if(!empty($this->_idUserModif))  {$vDatas["autorDateModif"]="<div class='sLink' onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->displayAutor(false)."</div>".$this->displayDate(false,"full");}
+			$vDatas["isNewObject"]=(strtotime($this->dateCrea) > (time()-86400) || strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection);
+			//Auteur de l'objet (Guest?)
+			if($this->_idUser)		{$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a>";}
+			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}
+			//Date de création de l'objet  &&  Précise si c'est un nouvel objet  &&  Précise l'auteur/date de modif
+			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel(true,"full");}
+			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<br><abbr title=\"".Txt::trad("objNewInfos")."\">".Txt::trad("objNew")."</abbr>&nbsp; <img src='app/img/menuNewSmall.png'>";}
+			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(false,"full");}
 			////	USERS LIKES
 			$vDatas["showMiscMenuClass"]=null;
-			if($this->hasUsersLike() && Ctrl::$curUser->isUser())
+			if($this->hasUsersLike())
 			{
 				$likeOptions=(Ctrl::$agora->usersLike=="likeOrNot")  ?  ["like","dontlike"]  :  ["like"];
 				foreach($likeOptions as $likeOption){
@@ -143,7 +148,7 @@ trait MdlObjectMenus
 				}
 			}
 			////	COMMENTAIRES
-			if($this->hasUsersComment() && Ctrl::$curUser->isUser())
+			if($this->hasUsersComment())
 			{
 				$commentNb=count($this->getUsersComment());
 				$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." :<br>".Txt::trad("commentAdd");
@@ -255,7 +260,7 @@ trait MdlObjectMenus
 		////	AFFICHE LA VUE
 		$vDatas["curObj"]=$this;
 		$vDatas["writeReadLimitInfos"]=$this->tradObject("readLimitInfos");
-		$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0)  ?  true  :  false;//dossier avec des sous-dossiers
+		$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
 		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
 
@@ -412,7 +417,7 @@ trait MdlObjectMenus
 			array_unshift($vDatas["spaceList"],$spaceAllSpaces);
 		}
 		//Affiche le menu
-		$vDatas["displayMenu"]=(Ctrl::$curUser->isAdminGeneral() && count($vDatas["spaceList"])>1) ? true : false;
+		$vDatas["displayMenu"]=(Ctrl::$curUser->isAdminGeneral() && count($vDatas["spaceList"])>1);
 		return Ctrl::getVue(Req::commonPath."VueObjMenuSpaceAffectation.php",$vDatas);
 	}
 }

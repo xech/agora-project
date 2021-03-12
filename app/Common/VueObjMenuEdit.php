@@ -1,4 +1,7 @@
 <script>
+////////////////////////////////////////////////////////////
+////	LOAD LA PAGE
+////////////////////////////////////////////////////////////
 $(function(){
 	////	ONGLETS / OPTIONS (chaque onglet ".objMenuLabel" doit avoir un "for" correspondant à l'Id de son div)
 	if($("#objMenuLabels").exist())
@@ -97,7 +100,9 @@ $(function(){
 	<?php } ?>
 });
 
+////////////////////////////////////////////////////////////
 ////	STYLISE LES LABELS ET CONTROLE LES DROITS D'ACCÈS
+////////////////////////////////////////////////////////////
 function labelStyleRightControl(boxId)
 {
 	//Réinitialise les class des lignes et labels
@@ -128,7 +133,9 @@ function labelStyleRightControl(boxId)
 	<?php } ?>
 }
 
+////////////////////////////////////////////////////////////
 ////	SUPPRESSION D'UN FICHIER JOINT
+////////////////////////////////////////////////////////////
 function deleteAttachedFile(_id)
 {
 	//Demande confirmation
@@ -142,7 +149,9 @@ function deleteAttachedFile(_id)
 	});
 }
 
+////////////////////////////////////////////////////////////
 ////	CONTROLE FINAL DU FORMULAIRE
+////////////////////////////////////////////////////////////
 function mainFormControl()
 {
 	//Init
@@ -182,15 +191,6 @@ function mainFormControl()
 		if(nbCurUserAccess==0 && confirm("<?= Txt::trad("EDIT_notifNoPersoAccess") ?>")==false)  {validForm=false;}
 	}
 
-	////	Controle des GUEST
-	if($("input[name='guest']").exist()){
-		//Controle du champ "guest
-		if($("input[name='guest']").val().length<3)  {validForm=false;  notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");}
-		//Controle du Captcha
-		var ajaxResult=$.ajax({url:"?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val()),async:false}).responseText;//Attend la réponse Ajax pour passer à la suite (async:false)
-		if(ajaxResult!="true")  {validForm=false;  notify("<?=Txt::trad("captchaError") ?>");}
-	}
-
 	////	Controle OK
 	if(validForm==true)  {$(".loadingImg").css("display","block");}
 	return validForm;
@@ -203,13 +203,13 @@ function mainFormControl()
 #objMenuLabels							{display:table; width:100%; margin:33px 0px -33px 0px;}
 .objMenuLabel							{display:table-cell; padding:10px 5px 5px 5px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
 .objMenuLabel[for='objMenuMain']		{min-width:150px!important;}/*droits d'accès*/
-.objMenuLabel>span						{display:inline-block; margin-left:15px;}
+.objMenuLabel>span						{display:inline-block; margin:0px 5px 0px 5px;}
 .objMenuLabel:not(.objMenuLabelUnselect){border-bottom:none!important;}
 .objMenuLabelUnselect					{opacity:0.8;}
 
 /*DROITS D'ACCÈS*/
 #objMenuMain							{text-align:center;}
-[id^=spaceTable]						{text-align:center; margin-top:20px; margin-bottom:40px;}
+[id^=spaceTable]						{text-align:center; margin-top:15px; margin-bottom:30px;}
 .vSpaceTable							{display:inline-table; min-width:450px; max-width:100%; background-color:<?= Ctrl::$agora->skin=="black"?"#333":"#f8f8f8;"?>}/*idem responsive!*/
 .vSpaceTable>div						{display:table-row;}
 .vSpaceTable>div>div					{display:table-cell; padding:5px 3px 5px 3px;}
@@ -221,9 +221,9 @@ function mainFormControl()
 .vSpaceTitle>div:not(:first-child)		{width:65px; text-align:center;}/*colonne des checkboxes*/
 .vSpaceTargetIcon						{margin-right:10px;}/*icone de target/de user*/
 .vSpaceTargetIconAdmin					{filter:brightness(0.9);}/*icone d'admin : plus foncé*/
-.vShowAllUsers .vSpaceLabel				{padding-top:10px;}/*"Voir tous les users"*/
+.vShowAllUsers .vSpaceLabel				{padding-top:10px; padding-left:30px;}/*"Afficher plus d'utilisateurs"*/
 .vSpaceHideTarget						{display:none!important;}/*Users de l'espace courant non sélectionnés: masqués par défaut*/
-#ShowAllSpaces, #ExtendToSubfolders		{text-align:center; cursor:pointer; margin-top:10px; margin-bottom:5px;}
+#ShowAllSpaces, #ExtendToSubfolders		{text-align:center; cursor:pointer;}
 
 /*FICHIERS JOINTS*/
 #addAttachedFileLabel					{margin-top:10px; margin-bottom:20px;}
@@ -237,9 +237,6 @@ function mainFormControl()
 #notifMailSelectList>div				{display:inline-block; width:190px; padding:3px;}
 #notifMailSelectList>hr					{margin:3px;}
 #notifMailOptions>div					{margin-left:10px; margin-top:8px;}
-
-/*MENU GUEST*/
-#guestMenu								{border:1px solid #ccc!important; text-align:center;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
@@ -257,9 +254,6 @@ function mainFormControl()
 ////	INITIALISE L'EDITEUR HTML D'UN CHAMP (description ou autre) ?
 if($curObj::htmlEditorField!==null)  {echo CtrlMisc::initHtmlEditor($curObj::htmlEditorField);}
 
-////	MENU D'IDENTIFICATION DES GUESTS (cf. "ap_calendarEvent")
-if(Ctrl::$curUser->isUser()==false)  {echo "<div class='lightboxBlock' id='guestMenu'><input type='text' name='guest' onkeyup=\"this.value=this.value.slice(0,150)\" placeholder=\"".Txt::trad("EDIT_guestName")."\"><hr>".CtrlMisc::menuCaptcha()."</div>";}
-
 ////	MENU DES DROITS D'ACCES ET DES OPTIONS
 if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles) || !empty($moreOptions))
 {
@@ -270,6 +264,7 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 		if(!empty($moreOptions)){
 			echo "<div class='objMenuLabel' for='objMenuMoreOptions'>";
 				if(!empty($notifMail))	{echo "<span><img src='app/img/editNotif.png'> ".Txt::trad("EDIT_notifMail")." &nbsp;</span>";}
+				if(!empty($notifMail) && !empty($shortcut))  {echo "<img src='app/img/separator.png'>";}
 				if(!empty($shortcut))	{echo "<span title=\"".Txt::trad("EDIT_shortcutInfo")."\" ".(!empty($shortcutChecked)?"class='sLinkSelect'":null)."><img src='app/img/shortcut.png'> ".Txt::trad("EDIT_shortcut")."</span>";}
 			echo "</div>";
 		}
@@ -312,12 +307,8 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 										<div class='vSpaceWrite noTooltip' title=\"".Txt::trad("writeInfos")."\"><input type='checkbox' name='objectRight[]' ".$targetLine["boxProp"]["2"]."></div>
 									  </div>";
 							}
-							//"AFFICHER TOUS LES UTILISATEURS"
-							if($tmpSpace->hiddenSelection==true){
-								echo "<div class='vShowAllUsers' for='#spaceTable".$tmpSpace->_id."'>
-										<div class='vSpaceLabel'>".Txt::trad("EDIT_showAllSpaceUsers")." <img src='app/img/arrowBottom.png'></div>
-									  </div>";
-							}
+							//"AFFICHER PLUS D'UTILISATEURS"
+							if($tmpSpace->hiddenSelection==true)  {echo "<div class='vShowAllUsers' for='#spaceTable".$tmpSpace->_id."'><div class='vSpaceLabel'>".Txt::trad("EDIT_displayMoreUsers")." <img src='app/img/arrowBottom.png'></div></div>";}
 						echo "</div>";
 					//BLOCK DE L'ESPACE
 					echo "</div>";
@@ -371,11 +362,15 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 				echo "<div id='notifMailOptions'>";
 					//JOINDRE L'OBJET FICHIER A LA NOTIFICATION ?
 					if($curObj::objectType=="file" && $curObj->_id==0)  {echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailAddFiles' id='boxNotifMailAddFiles' value='1'><label for='boxNotifMailAddFiles' title=\"".Txt::trad("FILE_fileSizeLimit")." ".File::displaySize(File::mailMaxFilesSize)."\">".Txt::trad("EDIT_notifMailAddFiles")."</label></div>";}
-					//MONTRER LES DESTINATAIRES DANS LE MESSAGE  /  ACCUSE DE RECEPTION  /  SPECIFIER LES DESTINATAIRES
-					echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='hideRecipients' id='boxhideRecipients' value='1'><label for='boxhideRecipients' title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\">".Txt::trad("MAIL_hideRecipients")."</label></div>
-						  <div><img src='app/img/dependency.png'><input type='checkbox' name='receptionNotif' id='boxReceptionNotif' value='1'><label for='boxReceptionNotif' title=\"".Txt::trad("MAIL_receptionNotifInfo")."\">".Txt::trad("MAIL_receptionNotif")."</label></div>
-						  <div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailSelect' id='boxNotifMailSelect' value='1' onclick=\"$('#notifMailSelectList').slideToggle();\"><label for='boxNotifMailSelect'>".Txt::trad("EDIT_notifMailSelect")."</label></div>";
-					//LISTE DETAILLE DES UTILISATEURS
+					//AJOUTER "ReplyTo"  &&  ACCUSÉ DE RÉCEPTION
+					if(!empty(Ctrl::$curUser->mail)){
+						echo "<div title=\"".Txt::trad("MAIL_addReplyToInfo")."\"><img src='app/img/dependency.png'><input type='checkbox' name='addReplyTo' value='1' id='addReplyTo'> <label for='addReplyTo'>".Txt::trad("MAIL_addReplyTo")."</label></div>
+							  <div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><img src='app/img/dependency.png'><input type='checkbox' name='receptionNotif' value='1' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>";
+					}
+					//MASQUER LES DESTINATAIRES
+					echo "<div title=\"".Txt::trad("MAIL_hideRecipientsInfo")."\"><img src='app/img/dependency.png'><input type='checkbox' name='hideRecipients' value='1' id='hideRecipients'> <label for='hideRecipients'>".Txt::trad("MAIL_hideRecipients")."</label></div>";
+					//SPECIFIER LES DESTINATAIRES && LISTE DETAILLE DES UTILISATEURS
+					echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailSelect' id='boxNotifMailSelect' value='1' onclick=\"$('#notifMailSelectList').slideToggle();\"><label for='boxNotifMailSelect'>".Txt::trad("EDIT_notifMailSelect")." <img src='app/img/user/userGroup.png'></label></div>";
 					echo "<div id='notifMailSelectList'>";
 						//Affiche les users de tous mes espaces
 						foreach($notifMailUsers as $tmpUser){
@@ -394,7 +389,7 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 						}
 					echo "</div>";
 					//Masque par défaut les users absent de l'espace courant
-					if(count($notifMailUsers)>count($curSpaceUsersIds))  {echo "<br><div onclick=\"$('[id^=divNotifMailUser]').fadeIn();$(this).fadeOut();\" class='sLink'>".Txt::trad("EDIT_notifMailMoreUsers")."</div>";}
+					if(count($notifMailUsers)>count($curSpaceUsersIds))  {echo "<br><div onclick=\"$('[id^=divNotifMailUser]').fadeIn();$(this).fadeOut();\" class='sLink'>".Txt::trad("EDIT_displayMoreUsers")."</div>";}
 				echo "</div>";
 			}
 			////	MENU "SHORTCUT" (raccourci)

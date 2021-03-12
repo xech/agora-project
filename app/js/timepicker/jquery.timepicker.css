@@ -1,6 +1,7 @@
 .ui-timepicker-wrapper {
 	overflow-y: auto;
-	max-height: 250px;
+	max-height: 220px;
+	scrollbar-width: thin;
 	width: 6.5em;
 	background: #fff;
 	border: 1px solid #ddd;

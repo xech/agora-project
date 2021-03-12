@@ -8,7 +8,7 @@
 
 
 /*
- * Modele des espaces
+ * MODELE DES ESPACES
  */
 class MdlSpace extends MdlObject
 {
@@ -25,10 +25,10 @@ class MdlSpace extends MdlObject
 	private $_moduleList=array();
 	private $_usersAccessRight=array();
 
-	/*
-	 * SURCHARGE : Droit d'accès à un espace
-	 */
-	public function accessRight()
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ACCÈS À UN ESPACE
+	 *******************************************************************************************/
+	public function accessRight():float
 	{
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();//Droit par défaut
@@ -37,9 +37,9 @@ class MdlSpace extends MdlObject
 		return $this->_accessRight;
  	}
 
-	/*
-	 * Tous les modules disponibles pour l'espace
-	 */
+	/*******************************************************************************************
+	 * LISTE COMPLETE DES MODULES DISPONIBLES
+	 *******************************************************************************************/
 	public static function availableModuleList()
 	{
 		$moduleList=[];
@@ -56,9 +56,9 @@ class MdlSpace extends MdlObject
 		return $moduleList;
 	}
 
-	/*
-	 * Modules de l'espace
-	 */
+	/*******************************************************************************************
+	 * LISTE DES MODULES AFFECTÉS A UN ESPACE
+	 *******************************************************************************************/
 	public function moduleList($addPersoCalendar=true)
 	{
 		//// INIT LA MISE EN CACHE : MODULES AFFECTES A L'ESPACE
@@ -82,29 +82,28 @@ class MdlSpace extends MdlObject
 		return $curmoduleList;
 	}
 	
-	/*
-	 * Verif si un module est activé sur l'espace
-	 */
+	/*******************************************************************************************
+	 * VERIF SI UN MODULE EST AFFECTÉ A UN ESPACE
+	 *******************************************************************************************/
 	public function moduleEnabled($moduleName)
 	{
 		$moduleList=$this->moduleList();
 		return !empty($moduleList[$moduleName]);
 	}
 	
-	/*
-	 * Verifie si tous les utilisateurs du site sont affectes à l'espace
-	 */
+	/*******************************************************************************************
+	 * VERIFIE SI TOUS LES UTILISATEURS DU SITE SONT AFFECTES À L'ESPACE
+	 *******************************************************************************************/
 	public function allUsersAffected()
 	{
 		if($this->_allUsersAffected===null)
-			{$this->_allUsersAffected=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND allUsers=1")>0)  ?  true  :  false;}
+			{$this->_allUsersAffected=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND allUsers=1") > 0);}
 		return $this->_allUsersAffected;
 	}
 
-	/*
-	 * Utilisateurs affectés à l'espace
-	 * $return= "objects" ou "idsTab" ou "idsSql"
-	 */
+	/*******************************************************************************************
+	 * UTILISATEURS AFFECTÉS À UN ESPACE  ($return= "objects" OU "idsTab" OU "idsSql")
+	 *******************************************************************************************/
 	public function getUsers($return="objects")
 	{
 		//Initialise la liste des objets "user"
@@ -130,9 +129,9 @@ class MdlSpace extends MdlObject
 		}
 	}
 
-	/*
-	 * Droit d'accès d'un utilisateur à l'espace courant :  2 = admin  /  1 = user lambda ou guest  /  0 = aucun accès
-	 */
+	/*******************************************************************************************
+	 * DROIT D'ACCÈS À L'ESPACE POUR UN USER SPECIFIQUE :  2 = admin  /  1 = user lambda ou guest  /  0 = aucun accès
+	 *******************************************************************************************/
 	public function userAccessRight($objUser)
 	{
 		//Init la mise en cache du droit d'accès de l'user demandé :  Droit d'admin général  ||  Droit maxi affecté à un user  ||  Droit d'accès à l'espace public (guests)
@@ -146,42 +145,42 @@ class MdlSpace extends MdlObject
 		return $this->_usersAccessRight[$objUser->_id];
 	}
 
-	/*
-	 * SURCHARGE : Droit d'édition d'un objet
-	 */
-	public function editRight()
+	/*******************************************************************************************
+	 * SURCHARGE : DROIT D'ÉDITION POUR L'USER COURANT
+	 *******************************************************************************************/
+	public function editRight():bool
 	{
 		return ($this->userAccessRight(Ctrl::$curUser)==2);
 	}
 
-	/*
-	 * Droit de suppression d'un espace (pas l'espace courant)
-	 */
-	public function deleteRight()
+	/*******************************************************************************************
+	 * DROIT DE SUPPRESSION D'UN ESPACE (PAS L'ESPACE COURANT)
+	 *******************************************************************************************/
+	public function deleteRight():bool
 	{
 		return (Ctrl::$curUser->isAdminGeneral() && $this->isCurSpace()==false);
 	}
 
-	/*
-	 * Vérifie si l'espace en question est l'espace courant
-	 */
+	/*******************************************************************************************
+	 * VÉRIFIE SI L'ESPACE EN QUESTION EST L'ESPACE COURANT
+	 *******************************************************************************************/
 	public function isCurSpace()
 	{
 		return ($this->_id==Ctrl::$curSpace->_id);
 	}
 
-	/*
-	 * Option d'un module activé pour l'espace ?
-	 */
+	/*******************************************************************************************
+	 * OPTION D'UN MODULE ACTIVÉ POUR L'ESPACE ?
+	 *******************************************************************************************/
 	public function moduleOptionEnabled($moduleName, $optionName)
 	{
 		$moduleList=$this->moduleList();
 		return (!empty($moduleList[$moduleName]["options"]) && preg_match("/".$optionName."/i",$moduleList[$moduleName]["options"]));
 	}
 
-	/*
-	 * SURCHARGE : Supprime un espace définitivement!
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : SUPPRIME UN ESPACE DÉFINITIVEMENT!
+	 *******************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight())
@@ -201,7 +200,7 @@ class MdlSpace extends MdlObject
 			//Supprime l'espace && Recalcule la taille du 'DATAS/' && affiche une notification
 			parent::delete();
 			File::datasFolderSize(true);
-			Ctrl::addNotif("Suppression OK");
+			Ctrl::notify("Suppression OK");
 		}
 	}
 }
