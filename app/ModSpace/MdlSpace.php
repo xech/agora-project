@@ -28,7 +28,7 @@ class MdlSpace extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ACCÈS À UN ESPACE
 	 *******************************************************************************************/
-	public function accessRight():float
+	public function accessRight()
 	{
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();//Droit par défaut
@@ -148,7 +148,7 @@ class MdlSpace extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION POUR L'USER COURANT
 	 *******************************************************************************************/
-	public function editRight():bool
+	public function editRight()
 	{
 		return ($this->userAccessRight(Ctrl::$curUser)==2);
 	}
@@ -156,7 +156,7 @@ class MdlSpace extends MdlObject
 	/*******************************************************************************************
 	 * DROIT DE SUPPRESSION D'UN ESPACE (PAS L'ESPACE COURANT)
 	 *******************************************************************************************/
-	public function deleteRight():bool
+	public function deleteRight()
 	{
 		return (Ctrl::$curUser->isAdminGeneral() && $this->isCurSpace()==false);
 	}

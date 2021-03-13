@@ -35,7 +35,7 @@ class MdlUserGroup extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ACCÈS AU GROUPE
 	 *******************************************************************************************/
-	public function accessRight():float
+	public function accessRight()
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null){
@@ -49,7 +49,7 @@ class MdlUserGroup extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION DU GROUPE (ACCÈS TOTAL OU ADMIN D'ESPACE)
 	 *******************************************************************************************/
-	public function editRight():bool
+	public function editRight()
 	{
 		return (parent::editRight() || Ctrl::$curUser->isAdminSpace());
 	}

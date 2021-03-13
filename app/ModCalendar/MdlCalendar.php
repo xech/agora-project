@@ -71,7 +71,7 @@ class MdlCalendar extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRESSION D'UN AGENDA (pas pour les agendas d'users)
 	 *******************************************************************************************/
-	public function deleteRight():bool
+	public function deleteRight()
 	{
 		return ($this->type=="user" && $this::$persoCalendarDeleteRight==false)  ?  false  :  parent::deleteRight();
 	}

@@ -66,7 +66,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ACCÈS À L'OBJET
 	 *******************************************************************************************/
-	public function accessRight():float
+	public function accessRight()
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null)
@@ -86,7 +86,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION (ACCÈS TOTAL UNIQUEMENT)
 	 *******************************************************************************************/
-	public function editRight():bool
+	public function editRight()
 	{
 		return ($this->accessRight()==3);
 	}
@@ -94,7 +94,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRESSION
 	 *******************************************************************************************/
-	public function deleteRight():bool
+	public function deleteRight()
 	{
 		//Accès total  &&  Autre user que celui en cours  &&  Pas dernier adminGeneral
 		$deleteRight=false;

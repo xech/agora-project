@@ -138,7 +138,7 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : AFFICHE LE LABEL DE L'UTILISATEUR / CONTACT
 	 *******************************************************************************************/
-	public function getLabel($labelType=null):string
+	public function getLabel($labelType=null)
 	{
 		if(empty($this->firstName) && empty($this->name))			{return "<i>".Txt::trad("deletedUser")."</i>";}					//Renvoie "Compte utilisateur supprimé"
 		elseif($labelType=="full")									{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType=="full" -> "Dr Boby SMITH"  (cf. profil utilisateur ou contact)

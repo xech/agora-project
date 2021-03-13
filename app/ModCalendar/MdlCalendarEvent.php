@@ -46,7 +46,7 @@ class MdlCalendarEvent extends MdlObject
 	 * SURCHARGE : DROIT D'ACCÈS À UN ÉVÉNEMENT
 	 * Ajoute le accessRight "0.5" qui permet juste de voir la plage horaire de l'evenement
 	 *******************************************************************************************/
-	public function accessRight():float
+	public function accessRight()
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null)
@@ -80,7 +80,7 @@ class MdlCalendarEvent extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRIMER UN EVT ("fullRight" UNIQUEMENT)  OU  DÉSAFFECTER UN EVT D'UN AGENDA (cf. "CtrlObject::actionDelete()")
 	 *******************************************************************************************/
-	public function deleteRight():bool
+	public function deleteRight()
 	{
 		return ($this->fullRight()  ||  (Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::getParam("_idCalDeleteOn"))));
 	}
@@ -88,7 +88,7 @@ class MdlCalendarEvent extends MdlObject
 	/*******************************************************************************************
 	 * DROIT DE DÉSAFFECTER L'ÉVÉNEMENT D'UN AGENDA SPÉCIFIQUE ("fullRight" POUR LES RÉINIT D'AFFECTATION LORS D'UNE MODIF D'EVT)
 	 *******************************************************************************************/
-	public function deleteAffectationRight($_idCal):bool
+	public function deleteAffectationRight($_idCal)
 	{
 		return ($this->fullRight()  ||  Ctrl::getObj("calendar",$_idCal)->editContentRight());
 	}
@@ -137,7 +137,7 @@ class MdlCalendarEvent extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : URL D'ACCÈS
 	 *******************************************************************************************/
-	public function getUrl($display=null):string
+	public function getUrl($display=null)
 	{
 		//Url par défaut (en fonction de $display)
 		if(!empty($display))  {return parent::getUrl($display);}
@@ -206,7 +206,7 @@ class MdlCalendarEvent extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : LISTE DES USERS AFFECTÉS À L'OBJET (USERS DE CHAQUE AGENDA OU L'EVT EST AFFETÉ)
 	 *******************************************************************************************/
-	public function affectedUserIds():array
+	public function affectedUserIds()
 	{
 		$affectedUserIds=[];
 		foreach($this->affectedCalendars("all") as $tmpCal)  {$affectedUserIds=array_merge($tmpCal->affectedUserIds(),$affectedUserIds);}

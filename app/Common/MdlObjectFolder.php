@@ -38,7 +38,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DOSSIER RACINE ACCESSIBLE EN ÉCRITURE PAR DÉFAUT, MAIS AJOUT DE CONTENU GÉRÉ VIA "addContentRight()" (cf. option "adminRootAddContent" des modules)
 	 *******************************************************************************************/
-	public function accessRight():float
+	public function accessRight()
 	{
 		return ($this->isRootFolder()) ? 2 : parent::accessRight();
 	}
@@ -46,7 +46,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'AJOUTER DU CONTENU DANS LE DOSSIER RACINE OU DANS UN DOSSIER LAMBDA
 	 *******************************************************************************************/
-	public function addContentRight():bool
+	public function addContentRight()
 	{
 		if($this->isRootFolder())	{return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}//"true" si "isAdminSpace()" ou aucune limite pour les users lambda
 		else						{return parent::addContentRight();}
@@ -55,7 +55,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : AFFECTATIONS DE L'OBJET
 	 *******************************************************************************************/
-	public function getAffectations():array
+	public function getAffectations()
 	{
 		//Nouveau dossier, mais pas à la racine : récupère les droits d'accès du dossier conteneur pour faire une "pré-affectation"
 		if($this->isNew() && $this->containerObj()->isRootFolder()==false)	{return $this->containerObj()->getAffectations();}
@@ -65,7 +65,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION
 	 *******************************************************************************************/
-	public function editRight():bool
+	public function editRight()
 	{
 		return (parent::editRight() && $this->isRootFolder()==false);
 	}
@@ -73,7 +73,7 @@
 	/*******************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRESSION
 	 *******************************************************************************************/
-	public function deleteRight():bool
+	public function deleteRight()
 	{
 		return (parent::deleteRight() && $this->isRootFolder()==false);
 	}

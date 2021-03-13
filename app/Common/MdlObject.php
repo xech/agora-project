@@ -160,7 +160,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * LISTE LES AFFECTATIONS ET DROITS D'ACCES DE L'OBJET (Espaces/groupes/users)
 	 *******************************************************************************************/
-	public function getAffectations():array
+	public function getAffectations()
 	{
 		if($this->_affectations===null)
 		{
@@ -228,7 +228,7 @@ class MdlObject
 	 *									element basique		-> lecture
 	 *		(*) les éléments d'un dossier (fichier, taches, etc) héritent des droits d'accès de leur dossier conteneur
 	****************************************************************************************** */
-	public function accessRight():float
+	public function accessRight()
 	{
 		//Init la mise en cache
 		if($this->_accessRight===null)
@@ -262,7 +262,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * DROIT DE CRÉER LE NOUVEL OBJET POUR L'USER COURANT
 	 *******************************************************************************************/
-	public function createRight():bool
+	public function createRight()
 	{
 		if($this->_id==0){
 			if($this->hasAccessRight() || static::MdlObjectContainer==null)	{return true;}										//Objet avec ses propres droits d'accès OU Objet indépendant (type "user", "space" ou autre)
@@ -274,7 +274,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * DROIT DE LECTURE SUR L'OBJET POUR L'USER COURANT
 	 *******************************************************************************************/
-	public function readRight():bool
+	public function readRight()
 	{
 		return ($this->accessRight()>0);
 	}
@@ -282,7 +282,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * CONTENEUR : DROIT D'AJOUTER DU CONTENU AU CONTENEUR POUR L'USER COURANT  (accessRight >= 1.5)
 	 *******************************************************************************************/
-	public function addContentRight():bool
+	public function addContentRight()
 	{
 		return (static::isContainer() && $this->accessRight()>1);
 	}
@@ -290,7 +290,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * CONTENEUR : DROIT D'ÉDITER TOUT LE CONTENU DU CONTENEUR POUR L'USER COURANT  (accessRight >= 2)
 	 *******************************************************************************************/
-	public function editContentRight():bool
+	public function editContentRight()
 	{
 		return (static::isContainer() && $this->accessRight()>=2);
 	}
@@ -298,7 +298,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * DROIT D'ÉDITER L'OBJET POUR L'USER COURANT  (accessRight==3 pour les conteneurs : proprio ou admins  ||  accessRight==2 pour les autres objets)
 	****************************************************************************************** */
-	public function editRight():bool
+	public function editRight()
 	{
 		return ($this->accessRight()==3  ||  (static::isContainer()==false && $this->accessRight()==2));
 	}
@@ -306,7 +306,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * DROIT DE SUPPRIMER L'OBJET POUR L'USER COURANT
 	 *******************************************************************************************/
-	public function deleteRight():bool
+	public function deleteRight()
 	{
 		return ($this->editRight());
 	}
@@ -314,7 +314,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * DROIT COMPLET SUR L'OBJET POUR L'USER COURANT
 	 *******************************************************************************************/
-	public function fullRight():bool
+	public function fullRight()
 	{
 		return ($this->accessRight()==3);
 	}
@@ -342,7 +342,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * LABEL DE L'OBJET (Nom/Titre/etc : cf. "$requiredFields" des objets)
 	 *******************************************************************************************/
-	public function getLabel():string
+	public function getLabel()
 	{
 		//Label principal
 		if(!empty($this->name))				{$tmpLabel=$this->name;}		//exple: nom de fichier
@@ -357,7 +357,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * URL D'ACCÈS À L'OBJET  ($display: "vue"/"edit"/"delete"/default)
 	****************************************************************************************** */
-	public function getUrl($display=null):string
+	public function getUrl($display=null)
 	{
 		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe pas encore (ou plus)
 		else
@@ -484,7 +484,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * LISTE DES USERS AFFECTÉS À L'OBJET (surchargé)
 	 *******************************************************************************************/
-	public function affectedUserIds():array
+	public function affectedUserIds()
 	{
 		//Objet de référence pour les affectations
 		$userIds=[];
@@ -640,7 +640,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * STATIC SQL : RECUPÈRE LES OBJETS POUR UN AFFICHAGE "PLUGIN" ("dashboard"/"shortcut"/"search")
 	 *******************************************************************************************/
-	public static function getPluginObjects($pluginParams):array
+	public static function getPluginObjects($pluginParams)
 	{
 		$returnObjects=[];
 		if(isset($pluginParams["type"]))
@@ -714,7 +714,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * AFFICHE L'AUTEUR DE L' OBJET
 	 *******************************************************************************************/
-	public function autorLabel($getCreator=true, $tradAutor=false):string
+	public function autorLabel($getCreator=true, $tradAutor=false)
 	{
 		$labelAutor=($tradAutor==true)  ?  Txt::trad("autor")." : "  :  null;
 		if(!empty($this->guest))			{return $labelAutor.$this->guest." (".Txt::trad("guest").")";}				//Invité

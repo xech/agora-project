@@ -86,7 +86,7 @@ class MdlForumSubject extends MdlObject
 	/*******************************************************************************************
 	 * SURCHARGE : URL D'ACCÈS
 	 *******************************************************************************************/
-	public function getUrl($display=null):string
+	public function getUrl($display=null)
 	{
 		//Url du theme : cf. "CtrlObject::actionDelete()"
 		if($display=="theme"){
