@@ -13,7 +13,7 @@ if(isMobile()){
 	optionsToolbar2="bold italic underline fontsizeselect forecolor alignleft aligncenter ";
 }else{
 	optionsToolbar1="undo redo | copy paste removeformat | table charmap emoticons media";//Pour modifier le code HTML il faut l'option "code" (attention aux injections xss!)
-	optionsToolbar2="bold italic underline | fontsizeselect | forecolor link | alignleft aligncenter alignjustify | bullist numlist | editorDraft";
+	optionsToolbar2="bold italic underline strikethrough | fontsizeselect | forecolor link | alignleft aligncenter alignjustify | bullist numlist | editorDraft";
 }
 ////	INITIALISE L'EDITEUR TINYMCE
 tinymce.init({

@@ -623,11 +623,11 @@ class MdlObject
 		$conditions=(is_object($containerObj))  ?  ["_idContainer=".$containerObj->_id]  :  [];
 		////	Selection en fonction des droits d'acces dans "ap_objectTarget" (cf. "hasAccessRight()") :  Objets avec des droits d'accès || Objets d'une arbo (de toute l'arbo si sélection "plugin" || Objets à la racine)
 		if(static::$_hasAccessRight==true  ||  (static::isFolderContent==true && ($containerObj==null || $containerObj->isRootFolder()))){
-			$sqlTargets=(!empty($_SESSION["displayAdmin"]))  ?  null  :  "and target in (".static::sqlTargets().")";//Sélectionne tous les objets de l'espace ("null")  ||  Sélectionne en fonction de "sqlTargets()"
+			$sqlTargets=(!empty($_SESSION["displayAdmin"]))  ?  null  :  "and `target` in (".static::sqlTargets().")";//Sélectionne tous les objets de l'espace ("null")  ||  Sélectionne en fonction de "sqlTargets()"
 			$conditions[]=$keyId." IN (select _idObject as ".$keyId." from ap_objectTarget where objectType='".static::objectType."' and _idSpace=".Ctrl::$curSpace->_id."  ".$sqlTargets.")";
 		}
 		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (retourne aucune erreur ni objet)
-		$sqlReturned=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." is null";
+		$sqlReturned=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." IS NULL";
 		////	Selection "plugin" : selectionne les objets des conteneurs auquel on a acces (dossiers/sujets..)
 		if($containerObj==null && static::isContainerContent()){
 			$MdlObjectContainer=static::MdlObjectContainer;
@@ -668,17 +668,17 @@ class MdlObject
 	 *******************************************************************************************/
 	public static function sqlPluginObjects($pluginParams)
 	{
-		if($pluginParams["type"]=="current")		{return "((dateBegin between ".Db::format($pluginParams["dateTimeBegin"])." and ".Db::format($pluginParams["dateTimeEnd"]).")  OR  (dateEnd between ".Db::format($pluginParams["dateTimeBegin"])." and ".Db::format($pluginParams["dateTimeEnd"]).")  OR  (dateBegin < ".Db::format($pluginParams["dateTimeBegin"])." and dateEnd > ".Db::format($pluginParams["dateTimeEnd"])."))";}
-		elseif($pluginParams["type"]=="dashboard")	{return "dateCrea between '".$pluginParams["dateTimeBegin"]."' AND '".$pluginParams["dateTimeEnd"]."'";}
+		if($pluginParams["type"]=="current")		{return "((dateBegin BETWEEN ".Db::format($pluginParams["dateTimeBegin"])." AND ".Db::format($pluginParams["dateTimeEnd"]).")  OR  (dateEnd BETWEEN ".Db::format($pluginParams["dateTimeBegin"])." AND ".Db::format($pluginParams["dateTimeEnd"]).")  OR  (dateBegin < ".Db::format($pluginParams["dateTimeBegin"])." AND dateEnd > ".Db::format($pluginParams["dateTimeEnd"])."))";}
+		elseif($pluginParams["type"]=="dashboard")	{return "dateCrea BETWEEN '".$pluginParams["dateTimeBegin"]."' AND '".$pluginParams["dateTimeEnd"]."'";}
 		elseif($pluginParams["type"]=="shortcut")	{return "shortcut=1";}
 		elseif($pluginParams["type"]=="search")
 		{
 			$sqlReturned="";
 			//Recherche dans tous les champs de l'objet ou uniquement ceux demandés
-			$objectSearchFields=(!empty($pluginParams["searchFields"])) ? array_intersect(static::$searchFields,$pluginParams["searchFields"]) : static::$searchFields;
+			$objectSearchFields=(!empty($pluginParams["searchFields"]))  ?  array_intersect(static::$searchFields,$pluginParams["searchFields"])  :  static::$searchFields;
 			//Recherche l'expression exacte
 			if($pluginParams["searchMode"]=="exactPhrase"){
-				foreach($objectSearchFields as $tmpField)	{$sqlReturned.=$tmpField." LIKE ".Db::format($pluginParams["searchText"])." OR "; }//Exple: "title LIKE 'mot1 mot2'"
+				foreach($objectSearchFields as $tmpField)	{$sqlReturned.="`".$tmpField."` LIKE ".Db::format($pluginParams["searchText"])." OR "; }//Exple: "title LIKE 'mot1 mot2'"
 			}
 			//Recherche  "un des mots" ("title like '%mot1%' or title like '%mot2%'")  ||  "tous les mots"  ("title like '%mot1%' and title like '%mot2%'")
 			else
@@ -689,12 +689,12 @@ class MdlObject
 					if(strlen($valTmp)>=3)  {$searchWords[]=$valTmp;}
 				}
 				//Opérateur de liaison (garder les espaces) : "Tous les mots" || "un des mots"
-				$linkOperator=($pluginParams["searchMode"]=="allWords")  ?  " and "  :  " or ";
+				$linkOperator=($pluginParams["searchMode"]=="allWords")  ?  " AND "  :  " OR ";
 				//Recherche dans chaque champ du type d'objet
 				foreach($objectSearchFields as $tmpField)
 				{
 					$sqlSubSearch="";
-					foreach($searchWords as $tmpWord)  {$sqlSubSearch.=$tmpField." like ".Db::format($tmpWord,"likeSearch").$linkOperator;}//Recherche chaque mot / tous les mots
+					foreach($searchWords as $tmpWord)  {$sqlSubSearch.="`".$tmpField."` LIKE ".Db::format($tmpWord,"likeSearch").$linkOperator;}//Recherche chaque mot / tous les mots
 					$sqlReturned.="(".rtrim($sqlSubSearch,$linkOperator).") OR ";//"rtrim" plutôt que "trim" (car bouffe la première lettre du $sqlSubSearch..)
 				}
 			}
@@ -704,7 +704,7 @@ class MdlObject
 			if($pluginParams["creationDate"]!="all"){
 				$nbDays=array("day"=>1,"week"=>7,"month"=>31,"year"=>365);
 				$beginDate=time()-(86400*$nbDays[$pluginParams["creationDate"]]);
-				$sqlReturned="(".$sqlReturned." AND dateCrea BETWEEN '".date("Y-m-d 00:00",$beginDate)."' and '".date("Y-m-d 23:59")."')";
+				$sqlReturned="(".$sqlReturned." AND dateCrea BETWEEN '".date("Y-m-d 00:00",$beginDate)."' AND '".date("Y-m-d 23:59")."')";
 			}
 			//retourne le résultat
 			return $sqlReturned;

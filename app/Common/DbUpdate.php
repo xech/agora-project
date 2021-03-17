@@ -711,7 +711,7 @@ class DbUpdate extends Db
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponse"
 				if(self::tableExist("ap_dashboardPollResponse")==false){
-					self::query("CREATE TABLE ap_dashboardPollResponse (_id varchar(255) NOT NULL,  _idPoll mediumint(8) unsigned NOT NULL,  label varchar(500) NOT NULL,  rank tinyint(2) unsigned NOT NULL,  fileName varchar(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPollResponse (_id varchar(255) NOT NULL,  _idPoll mediumint(8) unsigned NOT NULL,  label varchar(500) NOT NULL,  `rank` tinyint(2) unsigned NOT NULL,  fileName varchar(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPollResponse ADD PRIMARY KEY (_id(20))");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponseVote"
@@ -723,7 +723,7 @@ class DbUpdate extends Db
 				//Créé un exemple de sondage
 				if(!empty($createPollTable)){
 					self::query("INSERT INTO ap_dashboardPoll SET _id=1, title=".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
-					self::query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, rank) VALUES ('5bd1903d3df9u8t',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
+					self::query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, `rank`) VALUES ('5bd1903d3df9u8t',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
 					self::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, target, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
 				}
 				//Créé le dossier "DATAS/modDashboard"

@@ -190,7 +190,7 @@ class CtrlOffline extends Ctrl
 				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='dashboardNews', _idObject=".(int)$objPDO->lastInsertId().", _idSpace=1, target='spaceUsers', accessRight=1");
 				//INSERT LE PREMIER SONDAGE
 				$objPDO->query("INSERT INTO ap_dashboardPoll SET _id=1, title=".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
-				$objPDO->query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, rank) VALUES ('5bd1903d3df9u8t',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
+				$objPDO->query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, `rank`) VALUES ('5bd1903d3df9u8t',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
 				$objPDO->query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, `target`, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
 				//INSERT LE PREMIER EVT SUR L'AGENDA COMMUN
 				$objPDO->query("INSERT INTO ap_calendarEvent SET title=".$objPDO->quote(Txt::trad("INSTALL_dataCalendarEvt")).", dateBegin=NOW(), dateEnd=NOW(), contentVisible='public', dateCrea=NOW(), _idUser=1");

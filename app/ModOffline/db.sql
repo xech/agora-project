@@ -581,7 +581,7 @@ INSERT INTO ap_fileVersion (_idFile, name, realName, octetSize, description, dat
 (3, 'Photo 2.jpg', '3_1514764800.jpg', 214053, NULL, NOW(), 1),
 (4, 'Photo 3.jpg', '4_1514764800.jpg', 280614, NULL, NOW(), 1);
 
-INSERT INTO ap_joinSpaceModule (_idSpace,moduleName,rank) VALUES (1,'dashboard',1), (1,'file',2), (1,'calendar',3), (1,'forum',4), (1,'contact',5), (1,'link',6), (1,'task',7), (1,'user',8), (1,'mail',9);
+INSERT INTO ap_joinSpaceModule (_idSpace,moduleName,`rank`) VALUES (1,'dashboard',1), (1,'file',2), (1,'calendar',3), (1,'forum',4), (1,'contact',5), (1,'link',6), (1,'task',7), (1,'user',8), (1,'mail',9);
 
 INSERT INTO ap_joinSpaceUser SET _idSpace=1, allUsers=1, accessRight=1;
 

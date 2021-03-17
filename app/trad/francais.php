@@ -524,7 +524,7 @@ class Trad extends Txt
 		self::$trad["AGORA_smtpLabel"]="Connexion SMTP & sendMail";
 		self::$trad["AGORA_sendmailFrom"]="Email dans le champ 'From'";
 		self::$trad["AGORA_sendmailFromPlaceholder"]="ex: 'noreply@mon-domaine.fr'";
-		self::$trad["AGORA_smtpHost"]="Adresse sur serveur (hostname)";
+		self::$trad["AGORA_smtpHost"]="Adresse du serveur SMTP (hostname)";
 		self::$trad["AGORA_smtpPort"]="Port sur serveur";
 		self::$trad["AGORA_smtpPortInfo"]="'25' par défaut. '587' ou '465' pour une connexion SSL/TLS";
 		self::$trad["AGORA_smtpSecure"]="Type de connexion chiffrée (optionnel)";
@@ -533,7 +533,7 @@ class Trad extends Txt
 		self::$trad["AGORA_smtpPass"]="Mot de passe";
 		//LDAP
 		self::$trad["AGORA_ldapLabel"]="Connexion à un serveur LDAP";
-		self::$trad["AGORA_ldapHost"]="Adresse sur serveur (hostname)";
+		self::$trad["AGORA_ldapHost"]="Adresse du serveur LDAP (hostname)";
 		self::$trad["AGORA_ldapPort"]="Port sur serveur";
 		self::$trad["AGORA_ldapPortInfo"]="''389'' par défaut";
 		self::$trad["AGORA_ldapLogin"]="Chaine de connexion pour l'admin";

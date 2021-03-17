@@ -47,7 +47,7 @@
 		labelConfirmDelete="<?= Txt::trad("confirmDelete") ?>";
 		labelSpecifyLoginPassword="<?= Txt::trad("specifyLoginPassword") ?>";
 		labelDateBeginEndControl="<?= Txt::trad("beginEndError") ?>";
-		labelVisioUser="<?= Ctrl::$curUser->getLabel() ?>";
+		labelVisioUser="<?= is_object(Ctrl::$curUser)  ? Ctrl::$curUser->getLabel() : null ?>";
 		labelVisioLaunchConfirm="<?= Txt::trad("VISIO_launchConfirm") ?>";
 		labelUploadMaxFilesize="<?= File::uploadMaxFilesize("error") ?>";
 		valueUploadMaxFilesize=<?= File::uploadMaxFilesize() ?>;

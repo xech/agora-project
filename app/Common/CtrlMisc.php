@@ -173,18 +173,17 @@ class CtrlMisc extends Ctrl
 	{
 		//Init
 		$vDatas=[];
-		//Pour module, on liste les types d'objets et leurs champs de recherche : modifie le "title" et le "checked"
+		//Pour chaque module, on liste les types d'objets et leurs champs de recherche : modifie le "title" et le "checked"
 		$vDatas["searchFields"]=[];
-		foreach(self::$curSpace->moduleList() as $tmpModule)
-		{
-			if(method_exists($tmpModule["ctrl"],"plugin")){
-				foreach($tmpModule["ctrl"]::$MdlObjects as $tmpMdlObject){
-					foreach($tmpMdlObject::$searchFields as $tmpField){
-						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::getParam("searchFields"))) ? "checked" : "";
-						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}
-						$folderInTitle=preg_match("/".Txt::trad("objectFolder")."/i",$vDatas["searchFields"][$tmpField]["title"]);
-						if($tmpMdlObject::isFolder==true && $folderInTitle==false)	{$vDatas["searchFields"][$tmpField]["title"].="- ".Txt::trad("OBJECTfolder")."<br>";}
-						elseif($tmpMdlObject::isFolder==false)						{$vDatas["searchFields"][$tmpField]["title"].="- ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}
+		foreach(self::$curSpace->moduleList() as $tmpModule){							//Parcour chaque module de l'espace
+			if(method_exists($tmpModule["ctrl"],"plugin")){								//Vérifie s'il existe une class "plugin()" pour le module
+				foreach($tmpModule["ctrl"]::$MdlObjects as $tmpMdlObject){				//Parcour chaque type d'objet du module
+					foreach($tmpMdlObject::$searchFields as $tmpField){					//Parcour chaque chaque de l'objet
+						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::getParam("searchFields")))  ?  "checked"  :  "";//Champ déjà sélectionné dans une précédente recherche ?
+						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}//Init le "title"
+						$folderInTitle=preg_match("/".Txt::trad("objectFolder")."/i",$vDatas["searchFields"][$tmpField]["title"]);	
+						if($tmpMdlObject::isFolder==true && $folderInTitle==false)	{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECTfolder")."<br>";}					  //Précise qu'il s'agit d'un dossier
+						elseif($tmpMdlObject::isFolder==false)						{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}//Précise le type d'objet : "Fichier", "Contact", etc
 					}
 				}
 			}
