@@ -15,14 +15,15 @@ class MdlDashboardPoll extends MdlObject
 	const moduleName="dashboard";
 	const objectType="dashboardPoll";
 	const dbTable="ap_dashboardPoll";
+	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	const hasUsersComment=true;
 	const htmlEditorField="description";
 	protected static $_hasAccessRight=true;
-	public static $requiredFields=array("title");
-	public static $searchFields=array("title","description");
-	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");
+	public static $requiredFields=["title"];
+	public static $searchFields=["title","description"];
+	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
 	//Valeurs mises en cache
 	private $_responseList=null;
 	private $_votesNbTotal=null;
@@ -37,7 +38,7 @@ class MdlDashboardPoll extends MdlObject
 	public static function getPolls($mode, $pollsOffsetCpt=0, $notVoted=false, $newsDisplay=false)
 	{
 		//Selection SQL : Sondages que l'on peut voir  && Uniquement ceux non votés ?  && Uniquement ceux affichés avec les news ?
-		$sqlSelection=static::sqlDisplayedObjects();
+		$sqlSelection=static::sqlDisplay();
 		if($notVoted==true)		{$sqlSelection.=" AND _id NOT IN (select _idPoll as _id from ap_dashboardPollResponseVote where _idUser=".Ctrl::$curUser->_id.")";}
 		if($newsDisplay==true)	{$sqlSelection.=" AND newsDisplay IS NOT NULL";}
 		//Nombre de sondages  ||  Sondages en affichage normal (infinite scroll)  ||  Sondages en affichage "newsDisplay" ("GROUP BY" : affiche les + votés en premier!)
@@ -92,14 +93,34 @@ class MdlDashboardPoll extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * NOMBRE DE VOTES POUR LE SONDAGE (POUR UNE RÉPONSE PRÉCISE, POUR L'USER COURANT, OU POUR TOUT LE SONDAGE)
+	 * NOMBRE DE VOTES POUR LE SONDAGE OU POUR UNE RÉPONSE DU SONDAGE
 	 *******************************************************************************************/
-	public function votesNb($_idResponse=false, $curUser=false)
+	public function votesNb($_idResponse=false)
 	{
-		if(!empty($_idResponse))	{$sqlSelect="AND _idResponse=".Db::format($_idResponse);}
-		elseif(!empty($curUser))	{$sqlSelect="AND _idUser=".Ctrl::$curUser->_id;}
-		else						{$sqlSelect=null;}
-		return Db::getVal("SELECT count(*) FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." ".$sqlSelect);
+		$sqlResponse=(!empty($_idResponse))  ?  "AND _idResponse=".Db::format($_idResponse)  :  null;
+		return Db::getVal("SELECT count(DISTINCT _idUser) FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." ".$sqlResponse);//"DISTINCT _idUser" car un user peut choisir plusieurs réponses
+	}
+
+	/*******************************************************************************************
+	 * PERSONNES AYANT VOTÉ POUR LE SONDAGE OU POUR UNE RÉPONSE DU SONDAGE
+	 *******************************************************************************************/
+	public function votesUsers($_idResponse=false)
+	{
+		$sqlResponse=(!empty($_idResponse))  ?  "AND _idResponse=".Db::format($_idResponse)  :  null;
+		$usersVoters=Db::getCol("SELECT DISTINCT _idUser FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." ".$sqlResponse);
+		if(!empty($usersVoters)){
+			$usersLabel=null;
+			foreach($usersVoters as $tmpIdUser)  {$usersLabel.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
+			return Txt::trad("DASHBOARD_pollVotedBy")." ".trim($usersLabel,", ");
+		}
+	}
+
+	/*******************************************************************************************
+	 * POURCENTAGE DES VOTES POUR UNE RÉPONSE DU SONDAGE
+	 *******************************************************************************************/
+	public function votesPercent($_idResponse)
+	{
+		return ($this->votesNbTotal()>0)  ?  round(($this->votesNb($_idResponse) / $this->votesNbTotal()) * 100)  :  0;
 	}
 
 	/*******************************************************************************************
@@ -112,19 +133,19 @@ class MdlDashboardPoll extends MdlObject
 	}
 
 	/*******************************************************************************************
+	 * L'USER COURANT A DÉJÀ VOTÉ LE SONDAGE ?
+	 *******************************************************************************************/
+	public function curUserHasVoted()
+	{
+		return (Db::getVal("SELECT count(*) FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." AND _idUser=".Ctrl::$curUser->_id) > 0);
+	}
+
+	/*******************************************************************************************
 	 * VÉRIFIE SI LE SONDAGE EST TERMINÉ
 	 *******************************************************************************************/
 	public function isFinished()
 	{
 		return (!empty($this->dateEnd) && Txt::formatDate($this->dateEnd,"dbDate","time")<time());
-	}
-
-	/*******************************************************************************************
-	 * L'USER COURANT A DÉJÀ VOTÉ LE SONDAGE ?
-	 *******************************************************************************************/
-	public function curUserHasVoted()
-	{
-		return ($this->votesNb(false,true)>0);
 	}
 
 	/*******************************************************************************************
@@ -160,7 +181,7 @@ class MdlDashboardPoll extends MdlObject
 
 	/*******************************************************************************************
 	 * SUPPRIME UNE RÉPONSE DU SONDAGE
-	 * $forceDelete à false (édition du sondage) : ne supprime pas la réponse s'il y a deja des votes
+	 * $forceDelete à false (édition du sondage) : ne supprime pas la réponse si le sondage a déjà été voté
 	 *******************************************************************************************/
 	public function deleteResponse($_idResponse, $forceDelete=false)
 	{
@@ -215,35 +236,14 @@ class MdlDashboardPoll extends MdlObject
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//Prépare le Tooltip de la liste des votants
-		$tooltipVotedBy=null;
-		if(Ctrl::$curUser->isAdminSpace()){
-			$usersVoters=Db::getCol("SELECT DISTINCT _idUser FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id);
-			if(!empty($usersVoters)){
-				foreach($usersVoters as $tmpIdUser)  {$tooltipVotedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
-				$tooltipVotedBy="title=\"".Txt::trad("DASHBOARD_pollVotedBy")." :<br>".trim($tooltipVotedBy,", ")."\"";
-			}
-		}
-		//Ajoute le nombre de votes pour le sondage (avec le Tooltip)
-		$options["specificOptions"][]=array(
-			"iconSrc"=>"info.png",
-			"label"=>"<span class='cursorHelp' ".$tooltipVotedBy.">".str_replace("--NB_VOTES--",$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb"))."</span>"
-		);
-		//Ajoute la date de fin de vote
-		if(!empty($this->dateEnd)){
-			$options["specificOptions"][]=array(
-				"iconSrc"=>"dashboard/pollDateEnd.png",
-				"label"=>"<span class='cursorHelp'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"
-			);
-		}
-		//Info si le vote est public
-		if(!empty($this->publicVote)){
-			$options["specificOptions"][]=array(
-				"iconSrc"=>"eye.png",
-				"label"=>"<span class='cursorHelp'>".Txt::trad("DASHBOARD_publicVote")."</span>"
-			);
-		}
-		//Retourne le menu contextuel
+		//// Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
+		$tooltipVotedBy=(Ctrl::$curUser->isAdminSpace())  ?  $this->votesUsers()  :  null;
+		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>"<span class='cursorHelp' title=\"".$tooltipVotedBy."\">".str_replace("--NB_VOTES--",$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb"))."</span>"];
+		//// Date de fin de vote  &&  Vote est public  &&  Export pdf du résultat d'un sondage
+		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dashboard/pollDateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
+		if(!empty($this->publicVote))			{$options["specificOptions"][]=["iconSrc"=>"eye.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"];}
+		if(Ctrl::$curUser->isAdminGeneral())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&targetObjId=".$this->_targetObjId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
+		//// Retourne le menu contextuel
 		return parent::contextMenu($options);
 	}
 }

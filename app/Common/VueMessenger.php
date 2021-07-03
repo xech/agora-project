@@ -190,8 +190,8 @@ function proposeVisio()
 	if($(".messengerUserCheckbox:checked").length==0)  {notify("<?= Txt::trad("selectUser") ?>");  return false;}
 	else if(confirm(visioButtonLabel+" ?"))
 	{
-		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";												//Destinaires de la visio : commence par l'user courant
-		visioURL="<?= Ctrl::$agora->visioUrl(6)."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";//Url de la visio + Label encodé de l'user courant
+		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";														//Destinaires de la visio : commence par l'user courant
+		visioURL="<?= Ctrl::$agora->visioUrl(6)."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max",true) ?>";	//Url de la visio + Label encodé de l'user courant
 		$(".messengerUserCheckbox:checked").each(function(){	//Pour chaque user sélectionné :
 			visioUsers+=" & "+$(this).attr("data-user-label");	//Ajoute le label de l'user dans la liste des destinaires
 			visioURL+="-"+$(this).attr("data-user-label-visio");//Ajoute le label de l'user dans l'url
@@ -255,7 +255,6 @@ function proposeVisio()
 	#livecounterMain						{padding:10px 20px; bottom:-5px!important; font-size:1.1em;}
 	#livecounterConnectedLabel				{display:none;}						/*masque le "Connecté :"*/
 	.vLivecounterUser						{display:inline-flex;}				/*tester l'affichage avec 10 personnes et en responsive (cf. 'display:inline-flex')*/
-	.personImg								{display:none;}						/*On masque l'image des users et n'affiche que le nom/prénom*/
 	#messengerMain							{border-radius:0px; padding:0px;}	
 	#messengerMove							{background-image:none;}			/*masque "dragDrop.png"*/
 	#messengerClose							{top:12px; right:2px;}				/*repositionne le "close"*/
@@ -263,6 +262,7 @@ function proposeVisio()
 	.vMessengerMessageDateAutor				{min-width:60px; max-width:100px;}	/*Width toujours ajusté mais 100px maxi*/
 	#messengerUsersCell						{width:120px;}
 	.vMessengerUser							{margin:5px;}
+	.vMessengerUser:first-child				{margin-top:20px;}					/*"Discuter avec" est décalé pour pouvoir afficher l'icone "close"*/
 	#messengerButtonForm					{width:80px;}
 	#messengerButtonForm img				{display:none;}
 	.vMessengerScroll::-webkit-scrollbar	{width:5px;}
@@ -287,7 +287,7 @@ function proposeVisio()
 <form id="messengerForm" class="noConfirmClose">
 	<table id="messengerMain">
 		<tr>
-			<td id="messengerMove" colspan="2"><img src="app/img/close.png" id="messengerClose" onclick="messengerDisplay('none');" title="<?= Txt::trad("close") ?>"></td>
+			<td id="messengerMove" colspan="2"><img src="app/img/closeMessenger.png" id="messengerClose" onclick="messengerDisplay('none');" title="<?= Txt::trad("close") ?>"></td>
 		</tr>
 		<tr>
 			<td id="messengerMessagesCell" class="vMessengerContent"><div id="messengerMessagesAjax" class="vMessengerScroll">&nbsp;</div></td>	<!--LISTE DES MESSAGES-->

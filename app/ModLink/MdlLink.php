@@ -23,8 +23,8 @@ class MdlLink extends MdlObject
 	const hasNotifMail=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;
-	public static $displayModeOptions=array("block","line");
-	public static $requiredFields=array("adress");
-	public static $searchFields=array("adress","description");
-	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc","adress@@asc","adress@@desc");
+	public static $displayModes=["block","line"];
+	public static $requiredFields=["adress"];
+	public static $searchFields=["adress","description"];
+	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc","adress@@asc","adress@@desc"];
 }

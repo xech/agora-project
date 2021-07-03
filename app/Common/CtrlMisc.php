@@ -69,7 +69,7 @@ class CtrlMisc extends Ctrl
 					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
 					$_SESSION["livecounterMainHtml"].="<label class='vLivecounterUser' id='livecounterUser".$tmpUser->_id."' onclick='messengerDisplay(".$tmpUser->_id.");' title=\"".Txt::trad("MESSENGER_chatWith")." ".$userTitle."\">".$userImg.$userFirstName."</label>";
 					$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'>
-															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean($userFirstName,"max")."\">
+															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean($userFirstName,"max",true)."\">
 															<label for='messengerUserCheckbox".$tmpUser->_id."' title=\"".Txt::trad("select")." ".$userTitle."\">".$userImg.$userFirstName."</label>
 													   </div>";
 				}
@@ -173,17 +173,16 @@ class CtrlMisc extends Ctrl
 	{
 		//Init
 		$vDatas=[];
-		//Pour chaque module, on liste les types d'objets et leurs champs de recherche : modifie le "title" et le "checked"
+		//Liste pour chaque module les champs de recherche et les objet concernés
 		$vDatas["searchFields"]=[];
-		foreach(self::$curSpace->moduleList() as $tmpModule){							//Parcour chaque module de l'espace
-			if(method_exists($tmpModule["ctrl"],"plugin")){								//Vérifie s'il existe une class "plugin()" pour le module
-				foreach($tmpModule["ctrl"]::$MdlObjects as $tmpMdlObject){				//Parcour chaque type d'objet du module
-					foreach($tmpMdlObject::$searchFields as $tmpField){					//Parcour chaque chaque de l'objet
-						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::getParam("searchFields")))  ?  "checked"  :  "";//Champ déjà sélectionné dans une précédente recherche ?
-						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}//Init le "title"
-						$folderInTitle=preg_match("/".Txt::trad("objectFolder")."/i",$vDatas["searchFields"][$tmpField]["title"]);	
-						if($tmpMdlObject::isFolder==true && $folderInTitle==false)	{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECTfolder")."<br>";}					  //Précise qu'il s'agit d'un dossier
-						elseif($tmpMdlObject::isFolder==false)						{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}//Précise le type d'objet : "Fichier", "Contact", etc
+		foreach(self::$curSpace->moduleList() as $tmpModule){				//Parcourt chaque module de l'espace
+			if(method_exists($tmpModule["ctrl"],"getModPlugins")){			//Vérifie l'existence d'une class "getModPlugins()"
+				foreach($tmpModule["ctrl"]::$MdlObjects as $tmpMdlObject){	//Parcourt chaque type d'objet du module
+					foreach($tmpMdlObject::$searchFields as $tmpField){		//Parcourt chaque champ de l'objet
+						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::getParam("searchFields")))  ?  "checked"  :  null;	//Sélectionne si besoin la checkbox du champ
+						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}													//Init le "title" de la checkbox (objets concernés)
+						if($tmpMdlObject::isFolder==true)	{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECTfolder")."<br>";}					  				//Précise qu'il s'agit d'un dossier
+						else								{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}				//Précise le type d'objet : Fichier, Contact..
 					}
 				}
 			}
@@ -191,14 +190,13 @@ class CtrlMisc extends Ctrl
 		//Resultat de recherche
 		if(Req::isParam("formValidate"))
 		{
-			//Prépare la recherche
+			//Récupère les résultats via le "getModPlugins()" de chaque module
 			$vDatas["pluginsList"]=[];
-			$pluginParams=array("type"=>"search", "searchText"=>Txt::clean(Req::getParam("searchText")), "searchMode"=>Req::getParam("searchMode"), "searchFields"=>Req::getParam("searchFields"), "creationDate"=>Req::getParam("creationDate"), "searchModules"=>Req::getParam("searchModules"));
-			//Récupère les résultats
+			$pluginParams=array("type"=>"search", "searchText"=>Req::getParam("searchText"), "searchMode"=>Req::getParam("searchMode"), "creationDate"=>Req::getParam("creationDate"), "searchFields"=>Req::getParam("searchFields"), "searchModules"=>Req::getParam("searchModules"));
 			foreach(self::$curSpace->moduleList() as $tmpModule){
-				if(method_exists($tmpModule["ctrl"],"plugin") && in_array($tmpModule["ctrl"]::moduleName,Req::getParam("searchModules"))){
-					$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::plugin($pluginParams));
-				}
+				//Vérif si la methode existe && si le module se trouve dans la liste des "searchModules"
+				if(method_exists($tmpModule["ctrl"],"getModPlugins") && in_array($tmpModule["ctrl"]::moduleName,Req::getParam("searchModules")))
+					{$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::getModPlugins($pluginParams));}
 			}
 			//Garde les termes de la recherche en session
 			$_SESSION["searchText"]=Req::getParam("searchText");
@@ -318,7 +316,7 @@ class CtrlMisc extends Ctrl
 	public static function menuWallpaper($curWallpaper)
 	{
 		//Wallpapers disponibles
-		$vDatas["wallpaperList"]=array();
+		$vDatas["wallpaperList"]=[];
 		$filesList=array_merge(scandir(PATH_WALLPAPER_DEFAULT),scandir(PATH_WALLPAPER_CUSTOM));
 		foreach($filesList as $tmpFile){
 			if(!in_array($tmpFile,['.','..']) && File::isType("imageBrowser",$tmpFile)){

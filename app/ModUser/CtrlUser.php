@@ -14,7 +14,7 @@ class CtrlUser extends Ctrl
 {
 	const moduleName="user";
 	public static $moduleOptions=["allUsersAddGroup"];
-	public static $MdlObjects=array("MdlUser");
+	public static $MdlObjects=["MdlUser"];
 
 	/*******************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -24,11 +24,11 @@ class CtrlUser extends Ctrl
 		//Affichage des utilisateurs : "space" / "all"
 		if(Req::isParam("displayUsers"))	{$_SESSION["displayUsers"]=(Req::getParam("displayUsers")=="all" && self::$curUser->isAdminGeneral()) ? "all" : "space";}
 		//Filtre Alphabet : avec la première lettre du nom
-		$sqlDisplayedObjects=MdlUser::sqlDisplayedObjects();
-		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(name,1)) as initiale FROM ".MdlUser::dbTable." WHERE ".$sqlDisplayedObjects." ORDER BY initiale");
+		$sqlDisplay=MdlUser::sqlDisplay();
+		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(name,1)) as initiale FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ORDER BY initiale");
 		$sqlAlphabetFilter=(Req::isParam("alphabet")) ? "AND name LIKE '".Req::getParam("alphabet")."%'" : null;
 		//Utilisateurs et menus
-		$sqlDisplayedUsers="SELECT * FROM ".MdlUser::dbTable." WHERE ".$sqlDisplayedObjects." ".$sqlAlphabetFilter." ".MdlUser::sqlSort();
+		$sqlDisplayedUsers="SELECT * FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ".$sqlAlphabetFilter." ".MdlUser::sqlSort();
 		$vDatas["displayedUsers"]=Db::getObjTab("user", $sqlDisplayedUsers." ".MdlUser::sqlPagination());
 		$vDatas["usersTotalNb"]=count(Db::getTab($sqlDisplayedUsers));
 		$vDatas["usersTotalNbLabel"]=$vDatas["usersTotalNb"]." ".Txt::trad("USER_users");
@@ -42,12 +42,12 @@ class CtrlUser extends Ctrl
 	/*******************************************************************************************
 	 * PLUGINS
 	 *******************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=array();
-		if(preg_match("/(search|dashboard)/i",$pluginParams["type"]))
+		$pluginsList=[];
+		if(preg_match("/(search|dashboard)/i",$params["type"]))
 		{
-			foreach(MdlUser::getPluginObjects($pluginParams) as $tmpObj)
+			foreach(MdlUser::getPlugins($params) as $tmpObj)
 			{
 				$tmpObj->pluginModule=self::moduleName;
 				$tmpObj->pluginIcon="user/accesUser.png";
@@ -181,7 +181,7 @@ class CtrlUser extends Ctrl
 		{
 			//// Export de users
 			if(Req::getParam("actionImportExport")=="export"){
-				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplayedObjects()." ".MdlUser::sqlSort());
+				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." ".MdlUser::sqlSort());
 				MdlUser::exportPersons($userList, Req::getParam("exportType"));
 			}
 			//// Import de users
@@ -203,8 +203,8 @@ class CtrlUser extends Ctrl
 					//Password par défaut via "uniqId()"
 					if(empty($tmpUser["password"]))  {$tmpUser["password"]=Txt::uniqId(8);}
 					//Login par défaut : email || login standard ("Gérard D'AGOBERT"=>"gerdagobert")
-					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))	{$tmpUser["login"]=$tmpUser["mail"];}
-					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower(substr(Txt::clean($tmpUser["firstName"],"max",""),0,3)).strtolower(substr(Txt::clean($tmpUser["name"],"max",""),0,8));}
+					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))  {$tmpUser["login"]=$tmpUser["mail"];}
+					if(empty($tmpUser["login"]))  {$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",true,null),0,3) .substr(Txt::clean($tmpUser["name"],"max",true,null),0,8) );}
 					//Créé l'user (Ajoute login/password pour les controles)
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpUser["login"], $tmpUser["password"]);
 					//Options de création
@@ -280,7 +280,7 @@ class CtrlUser extends Ctrl
 			static::lightboxClose();
 		}
 		////	Affichage du formulaire
-		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplayedObjects()." AND LENGTH(mail)>0 AND _id!=".Ctrl::$curUser->_id." ".MdlUser::sqlSort());
+		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." AND LENGTH(mail)>0 AND _id!=".Ctrl::$curUser->_id." ".MdlUser::sqlSort());
 		static::displayPage("VueSendCoordinates.php",$vDatas);
 	}
 
@@ -343,16 +343,16 @@ class CtrlUser extends Ctrl
 	/*******************************************************************************************
 	 * AJAX : VÉRIFIE LA PRÉSENCE D'UN COMPTE USER OU DE PLUSIEURS COMPTES USERS (cf "vueSendInvitation.php">"gPeopleGetContacts()")
 	 *******************************************************************************************/
-	public static function actionLoginAlreadyExist()
+	public static function actionloginExists()
 	{
 		//Vérif un seul compte user
-		if(Req::isParam("mail") && MdlUser::loginAlreadyExist(Req::getParam("mail"),Req::getParam("_idUserIgnore")))  {echo "true";}
+		if(Req::isParam("mail") && MdlUser::loginExists(Req::getParam("mail"),Req::getParam("_idUserIgnore")))  {echo "true";}
 		//Vérif plusieurs comptes user
 		elseif(Req::isParam("mailList"))
 		{
 			$result["mailListPresent"]=[];
 			foreach(Req::getParam("mailList") as $tmpMail){
-				if(MdlUser::loginAlreadyExist($tmpMail))  {$result["mailListPresent"][]=$tmpMail;}
+				if(MdlUser::loginExists($tmpMail))  {$result["mailListPresent"][]=$tmpMail;}
 			}
 			//Renvoi le résultat
 			echo json_encode($result);
@@ -389,39 +389,57 @@ class CtrlUser extends Ctrl
 	}
 
 	/*******************************************************************************************
+	 * INSCRIPTIONS D'USERS SUR LES ESPACES ADMINISTRÉS PAR L'USER COURANT
+	 *******************************************************************************************/
+	public static function userInscriptionValidate()
+	{
+		//Mise en cache dans une variable de session
+		if(empty($_SESSION["userInscriptionValidate"])){
+			$_SESSION["userInscriptionValidate"]=[];
+			$userInscriptions=Db::getTab("SELECT * FROM ap_userInscription WHERE _idSpace IN (".implode(",",Ctrl::$curUser->getSpaces("ids")).") ORDER BY _idSpace");//Inscriptions sur les espaces de l'user courant
+			foreach($userInscriptions as $tmpInscription){
+				if(Ctrl::getObj("space",$tmpInscription["_idSpace"])->editRight())  {$_SESSION["userInscriptionValidate"][]=$tmpInscription;}//Ajoute l'inscription si l'user courant administre l'espace
+			};
+		}
+		//Renvoie le résultat
+		return $_SESSION["userInscriptionValidate"];
+	}
+
+	/*******************************************************************************************
 	 * ACTION : VALIDATION DES INSCRIPTIONS A L'ESPACE
 	 *******************************************************************************************/
 	public static function actionUserInscriptionValidate()
 	{
 		//Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
-		if(Ctrl::$curUser->isAdminSpace()==false || MdlUser::usersQuotaOk()==false)	{static::lightboxClose();}
+		if(Ctrl::$curUser->isAdminSpace()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
 		//Validation du formulaire
 		if(Req::isParam("formValidate") && Req::isParam("inscriptionValidate"))
 		{
-			//Créé chaque utilisateur validé
+			//Traite chaque inscription
 			foreach(Req::getParam("inscriptionValidate") as $idInscription)
 			{
+				//Récupère l'inscription
 				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".Db::format($idInscription));
-				//Users invalidés
+				//Invalide l'inscription et envoie une notif ("Votre compte n'a pas été validé sur ''Mon_Espace''")
 				if(Req::isParam("submitInvalidate")){
-					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getCurUrl(false).")";//"Votre compte n'a pas été validé sur ''Mon_Espace''"
+					$subject=$mainMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getCurUrl(false).")";
 					Tool::sendMail($tmpInscription["mail"], $subject, $mainMessage);
 				}
-				//Users validés
+				//Valide l'inscription
 				else{
 					$curObj=new MdlUser();
 					$sqlProperties="name=".Db::format($tmpInscription["name"]).", firstName=".Db::format($tmpInscription["firstName"]).", mail=".Db::format($tmpInscription["mail"]);
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpInscription["mail"], $tmpInscription["password"], $tmpInscription["_idSpace"]);//Ajoute login/password pour les controles standards
-					if(is_object($curObj))  {$curObj->newUserCoordsSendMail($tmpInscription["password"]);}//Notif uniquement si l'user a bien été créé
+					if(is_object($curObj))  {$curObj->newUserCoordsSendMail($tmpInscription["password"]);}//Notif si l'user a bien été créé
 				}
 				//Supprime l'inscription
 				Db::query("DELETE FROM ap_userInscription WHERE _id=".(int)$idInscription);
 			}
-			//Ferme la page
+			//Réinitialise la liste des inscriptions (cf. "userInscriptionValidate()")  &&  Ferme la page
+			unset($_SESSION["userInscriptionValidate"]);
 			static::lightboxClose();
 		}
 		//Affiche le formulaire
-		$vDatas["inscriptionList"]=Db::getTab("SELECT * FROM ap_userInscription WHERE _idSpace=".Ctrl::$curSpace->_id);
-		static::displayPage("VueUserInscriptionValidate.php",$vDatas);
+		static::displayPage("VueUserInscriptionValidate.php");
 	}
 }

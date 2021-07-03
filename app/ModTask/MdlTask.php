@@ -26,10 +26,10 @@ class MdlTask extends MdlObject
 	const hasUsersLike=true;
 	const htmlEditorField="description";
 	const barWidth="150px";
-	public static $displayModeOptions=array("line","block");
-	public static $requiredFields=array("title");
-	public static $searchFields=array("title","description");
-	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc","priority@@asc","priority@@desc","advancement@@asc","advancement@@desc","dateBegin@@asc","dateBegin@@desc","dateEnd@@asc","dateEnd@@desc");
+	public static $displayModes=["block","line"];
+	public static $requiredFields=["title"];
+	public static $searchFields=["title","description"];
+	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc","priority@@asc","priority@@desc","advancement@@asc","advancement@@desc","dateBegin@@asc","dateBegin@@desc","dateEnd@@asc","dateEnd@@desc"];
 
 	/*******************************************************************************************
 	 * ICONE & LABEL "PRIORITY"

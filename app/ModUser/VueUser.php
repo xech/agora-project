@@ -9,7 +9,7 @@ lightboxSetWidth(550);
 .vAdminLabel span	{font-style:italic; margin-left:5px;}
 </style>
 
-<div class="lightboxContent objVueBg">
+<div class="lightboxContent">
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
 	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->getLabel("full")."</div>";

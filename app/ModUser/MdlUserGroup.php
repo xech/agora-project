@@ -15,8 +15,8 @@ class MdlUserGroup extends MdlObject
 	const moduleName="user";
 	const objectType="userGroup";
 	const dbTable="ap_userGroup";
-	public static $requiredFields=array("title");
-	public static $sortFields=array("title@asc","title@desc");
+	public static $requiredFields=["title"];
+	public static $sortFields=["title@asc","title@desc"];
 
 	/*******************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR

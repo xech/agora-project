@@ -1,7 +1,36 @@
+VERSION 21.6
+#############
+Nouvelle option pour ajouter des pièces jointes aux sondages
+Nouvelle option d'export PDF des résultats d'un sondage
+Nouvelle option de paramétrage général pour l'affichage par défaut des dossiers : Block ou Liste
+Amélioration du mode d'affichage "ligne" des éléments
+Amélioration de l'affichage des résultats du moteur de recherche et des nouveautés
+Amélioration du menu de validation des inscriptions d'utilisateur aux espaces
+Correction d'affichage des caractères accentués dans les "plugins" (nouveauté, recherche, raccourcis)
+Corrections et optimisations diverses : "Txt::clean()", "Txt::reduce()", etc.
+Nouveau droit pour les administrateurs d'espace pour gérer les affectations des utilisateurs
+Changement de mode de numérotation des versions d'AP
+Mise à jour de PHMailer en version 6.5.0
+Mise à jour de Fancybox en version 3.5.7
+------
+New general setting option for the default display of folders (Block / List)
+New option to add attached files to surveys
+New pdf export option of poll results
+Improvement of the display "line" of elements
+Improvement of search engine results and news
+Improvement of the validation menu for user registrations to spaces
+Correction of display of accented characters in "plugins" (new, search, shortcuts)
+Various corrections and optimizations ("Txt::clean()", "Txt::reduce()", etc)
+New right for space administrators to manage user assignments
+Changing the numbering mode of AP versions
+PHMailer updated to 6.5.0 version
+Fancybox updated to 3.5.7 version
+
+
 VERSION 3.8.0 (2021-03)
 #######################
 Nouvelle option pour ajouter une visio aux newsletters
-Nouvelle option pour récupérer/renvoyer d'anciennes newsletters (depuis l'historique)
+Nouvelle option pour récupérer/renvoyer d'anciennes newsletters, depuis l'historique
 Nouvelle option de notification par e-mail pour les demandes d'inscription à un espace
 Nouvelle option de notification par e-mail pour les propositions d'événements des agendas (utilisateurs/invités)
 Nouvelle option de notification par e-mail pour les dossiers

@@ -64,6 +64,7 @@ class Trad extends Txt
 
 		////	images
 		self::$trad["picture"]="Picture";
+		self::$trad["pictureProfil"]="Profile picture";
 		self::$trad["wallpaper"]="wallpaper";
 		self::$trad["keepImg"]="Keep image";
 		self::$trad["changeImg"]="Change image";
@@ -149,7 +150,6 @@ class Trad extends Txt
 		self::$trad["month_11"]="November";
 		self::$trad["month_12"]="December";
 		self::$trad["today"]="Today";
-		self::$trad["displayToday"]="Today";
 		self::$trad["beginEndError"]="The end date can't be before the start date";
 		self::$trad["dateFormatError"]="The date must be in the format dd/mm/YYYY";
 		
@@ -259,7 +259,8 @@ class Trad extends Txt
 		self::$trad["MAIL_sendBy"]="Sent by";//"Envoyé par" Mr trucmuche
 		self::$trad["MAIL_sendOk"]="The email was sent !";
 		self::$trad["MAIL_sendNotif"]="The notification email was sent !";
-		self::$trad["MAIL_notSend"]="The email could not be sent...";
+		self::$trad["MAIL_notSend"]="The email could not be sent";
+		self::$trad["MAIL_notSendEverybody"]="The email was not sent to all recipients: if possible check the validity of the emails";
 		self::$trad["MAIL_fromTheSpace"]="from the space";//Exple: "Envoyé par Boby, depuis l'espace Bidule"
 		self::$trad["MAIL_elemCreatedBy"]="-OBJLABEL- created by";//boby
 		self::$trad["MAIL_elemModifiedBy"]="-OBJLABEL- modified by";//boby
@@ -311,7 +312,7 @@ class Trad extends Txt
 		self::$trad["searchDateCreaYear"]="less than a year";
 		self::$trad["searchOnSpace"]="Search in this space";
 		self::$trad["advancedSearch"]= "Advanced Search";
-		self::$trad["advancedSearchSomeWords"]= "any word";
+		self::$trad["advancedSearchAnyWord"]= "any word";
 		self::$trad["advancedSearchAllWords"]= "all words";
 		self::$trad["advancedSearchExactPhrase"]= "exact phrase";
 		self::$trad["keywords"]="Key words";
@@ -331,6 +332,7 @@ class Trad extends Txt
 		self::$trad["userInscriptionEditInfo"]="The registration is on the homepage of the site. Registration must then be validated by the administrator of the space.";
 		self::$trad["userInscriptionNotifyEdit"]="Notify by email at each registration";
 		self::$trad["userInscriptionNotifyEditInfo"]="Send an email notification to space administrators, after each registration";
+		self::$trad["userInscriptionPulsate"]="Registration";
 		self::$trad["userInscriptionValidate"]="Validate user registration";
 		self::$trad["userInscriptionValidateInfo"]="Validate user registration on the site";
 		self::$trad["userInscriptionSelectValidate"]="Validate registrations";
@@ -351,10 +353,11 @@ class Trad extends Txt
 		self::$trad["importNotif2"]="Thank you for selecting a contact to import";
 		self::$trad["importNotif3"]="this agora's field has already been selected in another column (each agora's fields can be selected only once)";
 
-		////	Messages d'alert ou d'erreur
+		////	Messages d'erreur / Notifications
 		self::$trad["NOTIF_identification"]="Invalid login or password";
 		self::$trad["NOTIF_presentIp"]="This user account is currently being used from another computer, with another ip address. An account can only be used on one computer at the same time.";
-		self::$trad["NOTIF_noSpaceAccess"]="Access is not authorized: your user account exists, but it is not currently assigned to any space.";
+		self::$trad["NOTIF_noSpaceAccess"]="Your user account has been successfully identified, but you are not currently assigned to any space. Please contact the administrator";
+		self::$trad["NOTIF_noAccess"]="Unauthorized access";
 		self::$trad["NOTIF_fileOrFolderAccess"]="File or folder not accessible";
 		self::$trad["NOTIF_diskSpace"]="Space for the storage of your files is insufficient, you cannot add file";
 		self::$trad["NOTIF_fileVersionForbidden"]="File type not allowed";
@@ -427,9 +430,9 @@ class Trad extends Txt
 		self::$trad["EDIT_shortcut"]="Shortcut";
 		self::$trad["EDIT_shortcutInfo"]="Put a shortcut on the main menu";
 		self::$trad["EDIT_attachedFile"]="Add attached files";
-		self::$trad["EDIT_attachedFileInfo"]="Attach pictures, videos, Pdf, Word, etc to the current object.<br>Images and videos can be integrated directly to the text editor.";
-		self::$trad["EDIT_attachedFileInsert"]="Display in the description";
-		self::$trad["EDIT_attachedFileInsertInfo"]="Display the image / video / mp3 player ... in the description above. The insertion is performed after form validation.";
+		self::$trad["EDIT_attachedFileInfo"]="Images can be inserted into the text via the option ''embed into text''";
+		self::$trad["EDIT_attachedFileInsert"]="Embed into text";
+		self::$trad["EDIT_attachedFileInsertInfo"]="Integrate a jpg/png image or mp4 video in the text of the editor: <br> the insertion at the end of the text is made after validation of the form.";
 		self::$trad["EDIT_guestName"]="Your Name / Nickname";
 		self::$trad["EDIT_guestNameNotif"]="Thank you to specify a Name / Nickname";
 		self::$trad["EDIT_guestMail"]="Your email";
@@ -519,11 +522,12 @@ class Trad extends Txt
 		self::$trad["AGORA_gPeopleApiKeyInfo"]="This setting is required to get Gmail contacts (People 'API KEY') : <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
 		self::$trad["AGORA_messengerDisabled"]="Instant messenger enabled";
 		self::$trad["AGORA_moduleLabelDisplay"]="Name of modules in the menu bar";
+		self::$trad["AGORA_folderDisplayMode"]="Default view mode in folders";
 		self::$trad["AGORA_personsSort"]="Sort users and contacts";
 		//SMTP
 		self::$trad["AGORA_smtpLabel"]="Connecting SMTP & sendMail";
-		self::$trad["AGORA_sendmailFrom"]="Email in the 'From' field";
-		self::$trad["AGORA_sendmailFromPlaceholder"]="ex: 'noreply@my-domain.net'";
+		self::$trad["AGORA_sendmailFrom"]="Email 'From'";
+		self::$trad["AGORA_sendmailFromPlaceholder"]="eg: 'noreply@mydomain.com'";
 		self::$trad["AGORA_smtpHost"]="Server address (hostname)";
 		self::$trad["AGORA_smtpPort"]="Port server";
 		self::$trad["AGORA_smtpPortInfo"]="'25' by défault. '587' or '465' for SSL/TLS";
@@ -663,7 +667,7 @@ class Trad extends Txt
 		self::$trad["USER_persoCalendarDisabled"]="Personal calendar disabled";
 		self::$trad["USER_persoCalendarDisabledInfo"]="By default, the personal calendar is always visible by the user, even if the Calendar module is not enabled in the space";
 		self::$trad["USER_connectionSpace"]="Space displayed after connection";
-		self::$trad["USER_loginAlreadyExist"]="The login/email already exists. Please choose another";
+		self::$trad["USER_loginExists"]="The login/email already exists. Please choose another";
 		self::$trad["USER_mailPresentInAccount"]="A user account already exists with this email address";
 		self::$trad["USER_loginAndMailDifferent"]="Both email addresses must be identical";
 		self::$trad["USER_mailNotifObject"]="New account on";  // "...sur" l'Agora machintruc
@@ -700,7 +704,7 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_voteTooltip"]="The votes are anonymous : nobody will know your choice of vote";
 		self::$trad["DASHBOARD_answerVotesNb"]="Voté --NB_VOTES-- times";
 		self::$trad["DASHBOARD_pollVotesNb"]="The poll was voted --NB_VOTES-- times";
-		self::$trad["DASHBOARD_pollVotedBy"]="The poll was voted by";//Bibi, boby, etc
+		self::$trad["DASHBOARD_pollVotedBy"]="Voted by";//Bibi, boby, etc
 		self::$trad["DASHBOARD_noPoll"]="No poll for the moment";
 		self::$trad["DASHBOARD_plugins"]="New Elements";
 		self::$trad["DASHBOARD_pluginsInfo"]="Elements created";
@@ -712,7 +716,7 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_pluginsCurrent"]="Current element";
 		self::$trad["DASHBOARD_pluginsTooltipRedir"]="View the element in is folder";
 		self::$trad["DASHBOARD_pluginEmpty"]="No new elements for this period";
-		// Edition d'Actualite/News
+		// Actualite/News
 		self::$trad["DASHBOARD_topNews"]="Top news";
 		self::$trad["DASHBOARD_topNewsInfo"]="News at the top of the list";
 		self::$trad["DASHBOARD_offline"]="Archived news";
@@ -721,19 +725,21 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_dateOnlineNotif"]="The news is momentarily archived";
 		self::$trad["DASHBOARD_dateOffline"]="Date of archiving";
 		self::$trad["DASHBOARD_dateOfflineInfo"]="Select a date to archive automatically the news";
-		// Edition de Sondage/Polls
+		// Sondage/Polls
 		self::$trad["DASHBOARD_titleQuestion"]="Title / Question";
 		self::$trad["DASHBOARD_multipleResponses"]="Several answers possible for each vote";
 		self::$trad["DASHBOARD_newsDisplay"]="Show with news (left menu)";
 		self::$trad["DASHBOARD_publicVote"]="Public vote: the choice of voters is  public";
 		self::$trad["DASHBOARD_publicVoteInfos"]="Note that a public vote can be a barrier to participation to the survey.";
-		self::$trad["DASHBOARD_dateEnd"]="End date of the poll";
+		self::$trad["DASHBOARD_dateEnd"]="End of votes";
 		self::$trad["DASHBOARD_responseList"]="Possible answers";
 		self::$trad["DASHBOARD_responseNb"]="Answer n°";
 		self::$trad["DASHBOARD_addResponse"]="Add an answer";
 		self::$trad["DASHBOARD_controlResponseNb"]="Please specify at least 2 possible answers";
 		self::$trad["DASHBOARD_votedPollNotif"]="Attention: as soon as the poll is voted, it is no longer possible to change the title or the answers";
 		self::$trad["DASHBOARD_voteNoResponse"]="Please select an answer";
+		self::$trad["DASHBOARD_exportPoll"]="Download the survey results in pdf";
+		self::$trad["DASHBOARD_exportPollDate"]="survey result as of";
 
 		////	MODULE_AGENDA
 		////
@@ -744,6 +750,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_option_adminAddCategory"]="Only the admin can add a category of event";
 		self::$trad["CALENDAR_option_createSpaceCalendar"]="Create a shared agenda";
 		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="The calendar will have the same name than the space. This can be useful if the calendars of the users are disabled.";
+		self::$trad["CALENDAR_moduleFullyDisabled"]="The calendar module will always remain accessible in the menu bar, so that you can access your personal calendar. To no longer display your personal calendar, remember to check ''Personal calendar deactivated'' in your user profile";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Available calendars";
 		self::$trad["CALENDAR_displayAllCals"]="Show all calendars (for administrators)";
@@ -969,7 +976,7 @@ class Trad extends Txt
 	public static function celebrationDays($year)
 	{
 		// Init
-		$dateList=array();
+		$dateList=[];
 
 		//Fêtes mobiles (si la fonction de récup' de paques existe)
 		if(function_exists("easter_date"))

@@ -77,7 +77,7 @@ $(function(){
 					<div class='objContent'>
 						<div class='objIcon'>".$tmpUser->getImg(true,false,true)."</div>
 						<div class='objLabel'>
-							<a href=\"javascript:lightboxOpen('".$tmpUser->getUrl("vue")."');\">".$tmpUser->getLabel("full")."</a>
+							<a class='objLabelLink' href=\"javascript:lightboxOpen('".$tmpUser->getUrl("vue")."');\">".$tmpUser->getLabel("full")."</a>
 							<div class='objPersonDetails'>".$tmpUser->getFieldsValues(MdlUser::getDisplayMode())."</div>
 						</div>
 					</div>

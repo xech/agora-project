@@ -23,9 +23,9 @@ class MdlForumSubject extends MdlObject
 	const hasUsersLike=true;
 	protected static $_hasAccessRight=true;
 	public static $pageNbObjects=30;
-	public static $requiredFields=array("description");
-	public static $searchFields=array("title","description");
-	public static $sortFields=array("dateLastMessage@@desc","dateLastMessage@@asc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");
+	public static $requiredFields=["description"];
+	public static $searchFields=["title","description"];
+	public static $sortFields=["dateLastMessage@@desc","dateLastMessage@@asc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
 
 	/*******************************************************************************************
 	 * LISTE LES MESSAGES D'UN SUJET & RÉCUPÈRE LE DERNIER MESSAGE & LE NOMBRE DE MESSAGES 

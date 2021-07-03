@@ -13,7 +13,7 @@ use PHPMailer\PHPMailer\Exception;
 
 
 /*
- * Classe "boite à outils"
+ * CLASSE "BOITE À OUTILS"
  */
 class Tool
 {
@@ -56,15 +56,16 @@ class Tool
 				$mail->isSMTP();
 				$mail->Host=Ctrl::$agora->smtpHost;
 				$mail->Port=(int)Ctrl::$agora->smtpPort;
-				if(!empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}	//Sécurise via SSL/TLS
-				else									{$mail->SMTPAutoTLS=false;}						//Désactive le SSL/TLS par défaut
+				if(empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPAutoTLS=false;}						//Specifie qu'il n'y a pas de connexion TLS
+				else								{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}	//Précise le type de connexion sécurisé TLS
+				if(preg_match("/WIN/i",PHP_OS) && !empty(Ctrl::$agora->smtpSecure))  {$mail->SMTPOptions=['ssl'=>['verify_peer'=>false,'verify_peer_name'=>false,'allow_self_signed'=>true]];}//TLS bridé sur Wamp
 				if(!empty(Ctrl::$agora->smtpUsername) && !empty(Ctrl::$agora->smtpPass))   {$mail->Username=Ctrl::$agora->smtpUsername;  $mail->Password=Ctrl::$agora->smtpPass;  $mail->SMTPAuth=true;}//Connection authentifié
 			}
 
 			////	Expediteur
-			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);
-			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//Exple: "noreply@mondomaine.net" -> email "FROM" du domaine courant ou d'un SMTP spécifique
-			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Nom du domaine courant
+			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);													//Se base sur le Domaine du serveur (pas sur l'url et le $_SERVER['HTTP_HOST'])
+			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//Exple: "noreply@mondomaine.net" -> email "noreply" du domaine courant OU email du paramétrage général
+			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Domaine courant
 			$mail->SetFrom($fromMail, $fromLabel);																		//"SetFrom" : Tjs utiliser un email correspondant au domaine courant ou d'un SMTP spécifique (évite la spambox)
 			//Ajoute si besoin le libellé de l'user connecté
 			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
@@ -93,9 +94,9 @@ class Tool
 			$mail->Subject=$subject;
 			if($opt["noFooter"]==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
 				$fromTheSpace=ucfirst(Ctrl::$agora->name);																										//Nom de l'espace principal
-				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" &raquo; ".Ctrl::$curSpace->name;}				//Ajoute si besoin le nom du sous-espace ("&raquo;" : ">>")
-				$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//Envoyé par "boby SMITH"
-				$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getCurUrl()."\" target='_blank'>".$fromTheSpace."</a>";	//..depuis l'espace "Mon espace"
+				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" &raquo; ".Ctrl::$curSpace->name;}				//Ajoute si besoin le nom du sous-espace ("&raquo;"=">>")
+				$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//"Envoyé par boby SMITH"
+				$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getCurUrl()."\" target='_blank'>".$fromTheSpace."</a>";	//"depuis l'espace Mon espace"
 			}
 			$mail->MsgHTML($message);
 
@@ -113,7 +114,7 @@ class Tool
 				foreach($attachedFiles as $tmpFile)
 				{
 					//Limite à 20Mo la taille de tous les fichiers, pour pas être rejeté par les serveurs de messagerie
-					$tmpFileSize=filesize($tmpFile["path"]);
+					$tmpFileSize=@filesize($tmpFile["path"]);
 					if(is_file($tmpFile["path"]) && ($fileSizeCpt+$tmpFileSize)<File::mailMaxFilesSize){
 						$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
 						if(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute le fichier joint
@@ -126,8 +127,9 @@ class Tool
 			$isSendMail=$mail->Send();
 			if($opt["noNotify"]==false){
 				$notifMail=($opt["objectNotif"]==true) ? Txt::trad("MAIL_sendNotif") : Txt::trad("MAIL_sendOk");
-				if($isSendMail==true)	{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}
-				else					{Ctrl::notify("MAIL_notSend");}
+				if($isSendMail==true)		{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}	//Mail correctement envoyé
+				elseif(count($mailsTo)>=2)	{Ctrl::notify("MAIL_notSendEverybody");}																		//Mail non envoyé à tous les destinataires
+				else						{Ctrl::notify("MAIL_notSend");}																					//Mail non envoyé
 			}
 			return $isSendMail;
 		}
@@ -143,7 +145,7 @@ class Tool
 	public static function getParamsUrl($paramsExclude=null)
 	{
 		//Init
-		$getParamsUrl=array();
+		$getParamsUrl=[];
 		$paramsExclude=(!empty($paramsExclude)) ? explode(",",$paramsExclude) : array();
 		//Filtre les parametres passés en Get
 		parse_str($_SERVER["QUERY_STRING"],$getParams);//$getParams est retourné par "parse_str()"
@@ -161,7 +163,7 @@ class Tool
 	{
 		// Créé un tableau temporaire avec juste la cle du tableau principal et le champ à trier
 		$keyFirstResult=null;
-		$tmpArray=$returnArray=array();
+		$tmpArray=$returnArray=[];
 		foreach($sortedArray as $key=>$value){
 			if($fixFirstLine==true && empty($keyFirstResult))	{$keyFirstResult=$key;}//Retient le premier resultat
 			else												{$tmpArray[$key]=$value[$sortedField];}
@@ -255,9 +257,9 @@ class Tool
 		if(empty($barWidth))	{$barWidth="100%";}
 		if($fillPercent>100)	{$fillPercent=100;}
 		//Couleur de barre de remplissage
-		if($orangeBarAlert==true)	{$percentBarImg="percentBarAlert";}//avancement retard ou autre (barre orange)
-		elseif($fillPercent==100)	{$percentBarImg="percentBar100";}//terminé à 100% : vert clair
-		else						{$percentBarImg="percentBarCurrent";}//en cours : vert pale
+		if($orangeBarAlert==true)	{$percentBarImg="percentBarAlert";}		//avancement retard ou autre (barre orange)
+		elseif($fillPercent==100)	{$percentBarImg="percentBar100";}		//terminé à 100% : vert
+		else						{$percentBarImg="percentBarCurrent";}	//en cours : vert clair
 		//renvoie la percentbar
 		return "<div class='percentBar' style='width:".$barWidth.";' title=\"".$txtTooltip."\">
 					<div class='percentBarContent' style='background-image:url(app/img/".$percentBarImg.".png);background-size:".(int)$fillPercent."% 100%;'>".$txtBar."</div>

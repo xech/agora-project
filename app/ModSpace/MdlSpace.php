@@ -15,27 +15,49 @@ class MdlSpace extends MdlObject
 	const moduleName="space";
 	const objectType="space";
 	const dbTable="ap_space";
-	public static $requiredFields=array("name");
-	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc");
+	public static $requiredFields=["name"];
+	public static $sortFields=["name@@asc","name@@desc","description@@asc","description@@desc"];
 	//Liste des modules pouvant être affectés à un espace
 	public static $moduleList=["dashboard","user","calendar","file","forum","task","link","contact","mail"];
 	//Valeurs mises en cache
 	private $_allUsersAffected=null;
 	private $_spaceUsers=null;
-	private $_moduleList=array();
-	private $_usersAccessRight=array();
+	private $_moduleList=[];
+	private $_usersAccessRight=[];
 
 	/*******************************************************************************************
-	 * SURCHARGE : DROIT D'ACCÈS À UN ESPACE
+	 * SURCHARGE : RÉCUPÈRE LES DROITS D'ACCÈS A L'ESPACE POUR L'USER COURANT
 	 *******************************************************************************************/
 	public function accessRight()
 	{
-		if($this->_accessRight===null){
-			$this->_accessRight=parent::accessRight();//Droit par défaut
-			if($this->userAccessRight(Ctrl::$curUser) > $this->_accessRight)  {$this->_accessRight=$this->userAccessRight(Ctrl::$curUser);}
-		}
-		return $this->_accessRight;
+		return $this->accessRightUser(Ctrl::$curUser);
  	}
+
+	 /*****************************************************************************************************************
+	  * DROIT D'ACCÈS À L'ESPACE POUR UN USER SPECIFIQUE :
+	  * Droit d'accès : admin=2  ||  1 = user lambda ou guest  ||  0 = aucun accès
+	  *****************************************************************************************************************/
+	 public function accessRightUser($objUser)
+	 {
+		 //Mise en cache du droit d'accès
+		 if(empty($this->_usersAccessRight[$objUser->_id]))
+		 {
+			 if($objUser->isAdminGeneral())	{$curRight=2;}//Droit d'admin général
+			 elseif($objUser->isUser())		{$curRight=Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");}//Droit maxi affecté à un user
+			 else							{$curRight=$this->public;}//Droit d'accès à l'espace public (guests)
+			 $this->_usersAccessRight[$objUser->_id]=(int)$curRight;
+		 }
+		 //Renvoie le droit d'accès
+		 return $this->_usersAccessRight[$objUser->_id];
+	 }
+
+	 /*******************************************************************************************
+	  * SURCHARGE : DROIT D'ÉDITION POUR L'USER COURANT
+	  *******************************************************************************************/
+	 public function editRight()
+	 {
+		 return ($this->accessRight()==2);
+	 }
 
 	/*******************************************************************************************
 	 * LISTE COMPLETE DES MODULES DISPONIBLES
@@ -127,30 +149,6 @@ class MdlSpace extends MdlObject
 				return implode(",",$idsList);
 			}
 		}
-	}
-
-	/*******************************************************************************************
-	 * DROIT D'ACCÈS À L'ESPACE POUR UN USER SPECIFIQUE :  2 = admin  /  1 = user lambda ou guest  /  0 = aucun accès
-	 *******************************************************************************************/
-	public function userAccessRight($objUser)
-	{
-		//Init la mise en cache du droit d'accès de l'user demandé :  Droit d'admin général  ||  Droit maxi affecté à un user  ||  Droit d'accès à l'espace public (guests)
-		if(empty($this->_usersAccessRight[$objUser->_id]))
-		{
-			if($objUser->isAdminGeneral())	{$curRight=2;}
-			elseif($objUser->isUser())		{$curRight=Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");}
-			else							{$curRight=$this->public;}
-			$this->_usersAccessRight[$objUser->_id]=(int)$curRight;
-		}
-		return $this->_usersAccessRight[$objUser->_id];
-	}
-
-	/*******************************************************************************************
-	 * SURCHARGE : DROIT D'ÉDITION POUR L'USER COURANT
-	 *******************************************************************************************/
-	public function editRight()
-	{
-		return ($this->userAccessRight(Ctrl::$curUser)==2);
 	}
 
 	/*******************************************************************************************

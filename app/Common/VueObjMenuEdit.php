@@ -263,7 +263,7 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 		if(!empty($attachedFiles))		{echo "<div class='objMenuLabel ".(!empty($attachedFilesList)?"sLinkSelect":null)."' for='objMenuAttachedFiles'><img src='app/img/editAttachment.png'> ".Txt::trad("EDIT_attachedFile")."</div>";}
 		if(!empty($moreOptions)){
 			echo "<div class='objMenuLabel' for='objMenuMoreOptions'>";
-				if(!empty($notifMail))	{echo "<span><img src='app/img/editNotif.png'> ".Txt::trad("EDIT_notifMail")." &nbsp;</span>";}
+				if(!empty($notifMail))	{echo "<span><img src='app/img/mail.png'> ".Txt::trad("EDIT_notifMail")." &nbsp;</span>";}
 				if(!empty($notifMail) && !empty($shortcut))  {echo "<img src='app/img/separator.png'>";}
 				if(!empty($shortcut))	{echo "<span title=\"".Txt::trad("EDIT_shortcutInfo")."\" ".(!empty($shortcutChecked)?"class='sLinkSelect'":null)."><img src='app/img/shortcut.png'> ".Txt::trad("EDIT_shortcut")."</span>";}
 			echo "</div>";
@@ -286,7 +286,7 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 						echo "<div class='vSpaceTable noSelect'>";
 							//ENTETE DE L'ESPACE (nom de l'espace et droits d'acces)
 							echo "<div class='vSpaceTitle'>
-									<div class='vSpaceLabel ".($tmpSpace->isCurSpace()?'vSpaceLabelHide':null)."' title=\"".$tmpSpace->name."<br>".$tmpSpace->description."\">".Txt::reduce($tmpSpace->name,35)."</div>
+									<div class='vSpaceLabel ".($tmpSpace->isCurSpace()?'vSpaceLabelHide':null)."' title=\"".$tmpSpace->name."<br>".$tmpSpace->description."\">".Txt::reduce($tmpSpace->name,35,false)."</div>
 									<div class='vSpaceRead noTooltip' title=\"".Txt::trad("readInfos")."\">".Txt::trad("accessRead")."</div>
 									<div class='vSpaceWriteLimit noTooltip' title=\"".$writeReadLimitInfos."\">".Txt::trad("accessWriteLimit")."</div>
 									<div class='vSpaceWrite noTooltip' title=\"".Txt::trad("writeInfos")."\">".Txt::trad("accessWrite")."</div>
@@ -324,7 +324,7 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 		{
 			echo "<div id='objMenuAttachedFiles'>";
 					//Infos
-					echo "<div id='addAttachedFileLabel'><img src='app/img/attachment.png'> ".Txt::trad("EDIT_attachedFileInfo")." :</div>";
+					echo "<div id='addAttachedFileLabel' title=\"".Txt::trad("EDIT_attachedFileInsertInfo")."\"><img src='app/img/info.png'> <span class='abbr'>".Txt::trad("EDIT_attachedFileInfo")."</span></div>";
 					//Fichiers à ajouter (10 maxi)
 					for($cptFile=1; $cptFile<=10; $cptFile++)
 					{
@@ -358,7 +358,7 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 			if(!empty($notifMail))
 			{
 				//CHECKBOX PRINCIPAL & OPTIONS
-				echo "<br><img src='app/img/editNotif.png'>&nbsp;<input type='checkbox' name='notifMail' id='boxNotifMail' value='1' onChange=\"$('#notifMailOptions').slideToggle();\">&nbsp;<label for='boxNotifMail' title=\"".Txt::trad("EDIT_notifMailInfo")."\">".Txt::trad("EDIT_notifMail2")."</label>";
+				echo "<br><img src='app/img/mail.png'>&nbsp;<input type='checkbox' name='notifMail' id='boxNotifMail' value='1' onChange=\"$('#notifMailOptions').slideToggle();\">&nbsp;<label for='boxNotifMail' title=\"".Txt::trad("EDIT_notifMailInfo")."\">".Txt::trad("EDIT_notifMail2")."</label>";
 				echo "<div id='notifMailOptions'>";
 					//JOINDRE L'OBJET FICHIER A LA NOTIFICATION ?
 					if($curObj::objectType=="file" && $curObj->_id==0)  {echo "<div><img src='app/img/dependency.png'><input type='checkbox' name='notifMailAddFiles' id='boxNotifMailAddFiles' value='1'><label for='boxNotifMailAddFiles' title=\"".Txt::trad("FILE_fileSizeLimit")." ".File::displaySize(File::mailMaxFilesSize)."\">".Txt::trad("EDIT_notifMailAddFiles")."</label></div>";}
@@ -404,4 +404,4 @@ if(Ctrl::$curUser->isUser() && !empty($accessRightMenu) || !empty($attachedFiles
 ////	BOUTON DE VALIDATION ET INPUTS HIDDEN ("ctrl"/"action"/etc)  &&  "_idContainer"  &&  ICONE "LOADING"
 echo Txt::submitButton();
 if(!empty($curObj->_idContainer))  {echo "<input type='hidden' name='_idContainer' value=\"".$curObj->_idContainer ."\">";}
-echo "<div class='loadingImg'><img src='app/img/loading.gif'></div>";
+echo "<div class='loadingImg'><img src='app/img/loading.png'></div>";

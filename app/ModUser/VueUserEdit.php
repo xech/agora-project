@@ -29,15 +29,15 @@ $(function(){
 				if($("[name='password']").val()!=$("[name='passwordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError") ?>","warning");	return false;}
 			}
 			// Verif si le compte utilisateur existe déjà
-			$.ajax("?ctrl=user&action=loginAlreadyExist&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(resultText){
-				if(find("true",resultText))	{notify("<?= Txt::trad("USER_loginAlreadyExist"); ?>","warning");  return false;}	//L'user existe déjà..
-				else if(mainFormControl())	{mainFormControled=true;  $("#mainForm").submit();}									//Controle principal ok : image "Loading" & confirme le formulaire !
+			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(resultText){
+				if(find("true",resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
+				else if(mainFormControl())	{mainFormControled=true;  $("#mainForm").submit();}							//Controle principal ok : image "Loading" & confirme le formulaire !
 			});
 		}
 	});
 
 	////	Init les affectations des Spaces<->Users (cf. "common.js")
-	initSpaceAffectations();
+	spaceAffectations();
 });
 </script>
 
@@ -57,7 +57,7 @@ select[name="connectionSpace"]	{width:100%}
 
 	<!--IMAGE-->
 	<div class="objField">
-		<div class="fieldLabel"><?= $curObj->hasImg()  ?  "<div class='personLabelImg'>".$curObj->getImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("picture") ?></div>
+		<div class="fieldLabel"><?= $curObj->hasImg()  ?  "<div class='personLabelImg'>".$curObj->getImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
 		<div><?= $curObj->displayImgMenu() ?></div>
 	</div>
 	<hr>
@@ -100,18 +100,19 @@ select[name="connectionSpace"]	{width:100%}
 			<div title="<?= Txt::trad("SPACE_adminInfo") ?>"><img src="app/img/user/adminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
 		<?php
-		foreach($spaceList as $tmpSpace){
-			$disableRead=($tmpSpace->allUsersAffected())  ?  "disabled"  :  null;
-			$titleRead=($tmpSpace->allUsersAffected())  ?  Txt::trad("USER_allUsersOnSpaceNotif")  :  Txt::trad("SPACE_userInfo");
-			$checkRead=($tmpSpace->userAccessRight($curObj)==1 || $tmpSpace->allUsersAffected())  ?  "checked"  :  null;
-			$checkWrite=($tmpSpace->userAccessRight($curObj)==2)  ?  "checked"  :  null;
+		foreach($spaceList as $tmpSpace)
+		{
+			$userTitle=($tmpSpace->allUsersAffected())  ?  Txt::trad("USER_allUsersOnSpaceNotif")  :  Txt::trad("SPACE_userInfo");
+			$userChecked=($tmpSpace->accessRightUser($curObj)==1 || $tmpSpace->allUsersAffected())  ?  "checked"  :  null;	//Sélectionne la box "user"
+			$userDisabled=($tmpSpace->allUsersAffected())  ?  "disabled"  :  null;											//Désactive "user" si "allUsers" est sélectionné
+			$adminChecked=($tmpSpace->accessRightUser($curObj)==2)  ?  "checked"  :  null;									//Sélectionne la box "admin"
+			echo "<div class='spaceAffectLine sTableRow' id=\"targetLine".$tmpSpace->_id."\">
+					<label class='spaceAffectLabel'>".$tmpSpace->name."</label>
+					<div title=\"".$userTitle."\"> <input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_1\" ".$userChecked." ".$userDisabled."></div>
+					<div title=\"".Txt::trad("SPACE_adminInfo")."\"><input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_2\" ".$adminChecked."></div>
+				  </div>";
+		}
 		?>
-		<div class="spaceAffectLine sTableRow" id="targetLine<?= $tmpSpace->_id ?>">
-			<label class="spaceAffectLabel"><?= $tmpSpace->name ?></label>
-			<div title="<?= $titleRead ?>"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="<?= $tmpSpace->_id ?>_1" <?= $checkRead." ".$disableRead ?>></div>
-			<div title="<?= Txt::trad("SPACE_adminInfo") ?>"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="<?= $tmpSpace->_id ?>_2" <?= $checkWrite ?>></div>
-		</div>
-		<?php } ?>
 	</div>
 	<?php } ?>
 

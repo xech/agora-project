@@ -14,18 +14,18 @@ abstract class Ctrl
 {
 	//Propriétés de base
 	const moduleName=null;
-	public static $moduleOptions=array();
+	public static $moduleOptions=[];
 	public static $agora, $curUser, $curSpace;
 	public static $isMainPage=false;			//Page principale avec barre de menu, messenger, etc (false pour les iframe)
 	public static $userHasConnected=false;		//idem : l'user vient de s'identifier / connecter
 	public static $curContainer=null;			//idem : objet conteneur courant (dossier, sujet, etc)
 	public static $curTimezone=null;			//Timezone courante
-	public static $notify=array();				//Messages de Notifications (cf. Vues)
+	public static $notify=[];					//Messages de Notifications (cf. Vues)
 	public static $lightboxClose=false;			//Fermeture de lightbox (cf. Vues)
 	public static $lightboxCloseParams=null;	//Parametre de fermeture de lightbox : $notify ou autre
 	protected static $initCtrlFull=true;		//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
 	protected static $folderObjectType=null;	//Module avec une arborescence
-	protected static $cachedObjects=array();	//Objets mis en cache !
+	protected static $cachedObjects=[];			//Objets mis en cache !
 
 	/*******************************************************************************************
 	 * INITIALISE LE CONTROLEUR PRINCIPAL (session, parametrages, connexion de l'user, etc)
@@ -41,7 +41,7 @@ abstract class Ctrl
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
-			setcookie("AGORAP_PASS", null, (time()+315360000));
+			setcookie("AGORAP_PASS", null, -1);
 		}
 
 		////	Controle du cache du navigateur (Complété avec un .htaccess "mod_expires" pour les images & co)
@@ -157,14 +157,13 @@ abstract class Ctrl
 				//Espace Disk
 				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
 				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70);
-				//Plugin "shortcuts" de chaque module
-				$vDatasHeader["pluginsShortcut"]=array();
-				$pluginParams=array("type"=>"shortcut");
+				//Récupère les plugins "shortcuts" de chaque module
+				$vDatasHeader["pluginsShortcut"]=[];
 				foreach(self::$curSpace->moduleList() as $tmpModule){
-					if(method_exists($tmpModule["ctrl"],"plugin"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"],$tmpModule["ctrl"]::plugin($pluginParams));}
+					if(method_exists($tmpModule["ctrl"],"getModPlugins"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"], $tmpModule["ctrl"]::getModPlugins(["type"=>"shortcut"]));}
 				}
 				//Validation d'inscription d'utilisateurs  && Affiche la liste des espaces  && Liste des modules (Url, Description, Libellé, Class de l'icone)
-				$vDatasHeader["userInscriptionValidate"]=(self::$curUser->isAdminSpace() && Db::getVal("SELECT count(*) FROM ap_userInscription WHERE _idSpace=".(int)self::$curSpace->_id)>0);
+				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
 				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1);
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
 				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName);}
@@ -295,61 +294,63 @@ abstract class Ctrl
 			self::addLog("connexion");
 			//Récupère les préférences
 			foreach(Db::getTab("select * from ap_userPreference where _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
-			//Enregistre login & password pour une connexion auto (10ans)
+			//Enregistre login & password pour une connexion auto (pour 10ans)
 			if(Req::isParam("rememberMe")){
 				setcookie("AGORAP_LOG", $login, (time()+315360000));
 				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000));
 			}
 		}
 
-		////	STATS DE CONNEXION DU HOST (Tjs après la connexion et avant la sélection d'un espace)
+		////	STATS DE CONNEXION DU HOST (après la connexion && avant la sélection d'un espace qui redirige)
 		if(self::isHost())  {Host::connectStatsHostInfos();}
 
-		////	SELECTION d'UN ESPACE (user vient de se connecter ||  page de connexion && (user déjà connecté || Espace demandé))
+		////	SELECTION D'UN ESPACE  (l'user vient de se connecter  ||  (page de connexion && (user déjà connecté || espace demandé par guest/notif mail)))
+		////	=> tester le switch d'espace d'un user + connexion d'un user affecté à aucun espace + connexion d'un guest et switch d'espace + notif mail d'objet en mode connecté et déconnecté
 		if(self::$userHasConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess"))))
 		{
-			//// Liste des espaces de l'user courant ou du guest
-			$idSpaceSelected=null;
-			$spacesOfCurUser=self::$curUser->getSpaces();
-			//// Aucun espace disponible : message d'erreur  (Pas de controle en page de connexion : cf. accès depuis une notif mail d'édition d'objet)
-			if(empty($spacesOfCurUser) && static::moduleName!="offline"){
-				self::notify("NOTIF_noSpaceAccess");
-				self::redir("?disconnect=1");
-			}
-			//// Espace spécifique demandé :  Switch d'espace de l'user  ||  Accès d'un Guest  ||  Accès depuis une notif mail d'édition d'objet & user identifié (TEST: ?ctrl=offline&_idSpaceAccess=1&targetObjUrl=%3Fctrl%3Dfile%26targetObjId%3DfileFolder-1%26targetObjIdChild%3Dfile-1)
-			elseif(Req::isParam("_idSpaceAccess")){
-				foreach($spacesOfCurUser as $objSpace){
-					if($objSpace->_id==Req::getParam("_idSpaceAccess") && (self::$curUser->isUser() || empty($objSpace->password) || $objSpace->password==Req::getParam("password")))   {$idSpaceSelected=$objSpace->_id;  break;}
-				}
-			}
-			//// Espace de l'user
-			elseif(self::$curUser->isUser())
+			//// Init
+			$idSpaceSelected=null;															//Init l'espace sélectionné
+			$userSpaces=self::$curUser->getSpaces();										//Espaces disponibles pour l'user courant ou le guest
+			$isNotifMail=(static::moduleName=="offline" && Req::isParam("targetObjUrl"));	//Accès depuis une notif mail d'objet (cf. "MdlObject::getUrlExternal()")
+			//// Sélectionne un espace
+			if(!empty($userSpaces))
 			{
-				//Espace de connexion de l'user (préférence utilisateur)
-				if(!empty(self::$curUser->connectionSpace)){
-					foreach($spacesOfCurUser as $objSpace){
-						if($objSpace->_id==self::$curUser->connectionSpace)   {$idSpaceSelected=$objSpace->_id;  break;}
+				//// Espace demandé :  L'user switch d'espace  ||  Accès depuis une notif mail d'objet (user identifié)  ||  Accès Guest
+				if(Req::isParam("_idSpaceAccess")){
+					foreach($userSpaces as $objSpace){
+						if($objSpace->_id==Req::getParam("_idSpaceAccess") && (self::$curUser->isUser() || empty($objSpace->password) || $objSpace->password==Req::getParam("password")))
+							{$idSpaceSelected=$objSpace->_id;  break;}
 					}
 				}
-				//Espace par défaut : prend le premier disponible
-				if(empty($idSpaceSelected)){
-					$firstSpace=reset($spacesOfCurUser);
-					$idSpaceSelected=$firstSpace->_id;
+				//// Espace par défaut d'un user
+				elseif(self::$curUser->isUser())
+				{
+					//Espace enregistré dans les préférences des l'user
+					if(!empty(self::$curUser->connectionSpace)){
+						foreach($userSpaces as $objSpace){
+							if($objSpace->_id==self::$curUser->connectionSpace)  {$idSpaceSelected=$objSpace->_id;  break;}
+						}
+					}
+					//Tjs pas d'espace sélectionné : on prend le premier espace disponible
+					if(empty($idSpaceSelected)){
+						$firstSpace=reset($userSpaces);
+						$idSpaceSelected=$firstSpace->_id;
+					}
 				}
 			}
-			//// Chargement de l'espace & Redirection
+			//// Espace sélectionné : charge l'espace + redirection vers le module principal
 			if(!empty($idSpaceSelected)){
-				$_SESSION["_idSpace"]=$idSpaceSelected;
-				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();
-				if(Req::isParam("targetObjUrl") && self::$curUser->isUser())	{self::redir(Req::getParam("targetObjUrl"));}							//Redir vers le controleur et l'objet demandé (cf. notif mail)
-				if(!empty($spaceModules))										{self::redir("?ctrl=".key($spaceModules));}								//Redir vers le premier module de l'espace
-				else															{self::notify("NOTIF_noSpaceAccess");   self::redir("?disconnect=1");}	//Aucun module dans l'espace : message d'erreur
+				$_SESSION["_idSpace"]=$idSpaceSelected;																					//Enregistre l'espace courant
+				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();														//Récup les modules de l'espace courant
+				if($isNotifMail==true && self::$curUser->isUser())	{self::redir(Req::getParam("targetObjUrl"));}						//Redir vers le controleur et l'objet demandé (notif mail d'objet)
+				if(!empty($spaceModules))							{self::redir("?ctrl=".key($spaceModules));}							//Redir vers le premier module de l'espace
+				else												{self::notify("NOTIF_noAccess");  self::redir("?disconnect=1");}	//Aucun module disponible sur l'espace : message d'erreur et déconnexion
 			}
-			//// User connecté mais aucun espace disponible : déconnexion
-			elseif(self::$curUser->isUser())   {self::notify("NOTIF_noSpaceAccess");  self::redir("?disconnect=1");}
+			//// User identifié mais affecté à aucun espace : message d'erreur et déconnexion
+			elseif(self::$userHasConnected==true && $isNotifMail==false)   {self::notify("NOTIF_noSpaceAccess");  self::redir("?disconnect=1");}
 		}
-		////	AUCUN ESPACE/MODULE SÉLECTIONNÉ : DÉCONNEXION
-		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::redir("?disconnect=1");}
+		//// User non identifié + aucun espace public disponible : message d'erreur et déconnexion
+		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::notify("NOTIF_noAccess");  self::redir("?disconnect=1");}
 	}
 
 	/*******************************************************************************************
@@ -382,7 +383,7 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function getTargetObjects($objectType=null)
 	{
-		$returnObjects=array();
+		$returnObjects=[];
 		if(Req::isParam("targetObjects") && is_array(Req::getParam("targetObjects")))
 		{
 			//On parcourt tous les objets ciblés
@@ -428,7 +429,7 @@ abstract class Ctrl
 			$_SESSION["pref"][$prefDbKey]=$prefParamVal;
 		}
 		//retourne la preference
-		if(isset($_SESSION["pref"][$prefDbKey]))	{return $_SESSION["pref"][$prefDbKey];}
+		if(isset($_SESSION["pref"][$prefDbKey]))  {return $_SESSION["pref"][$prefDbKey];}
 	}
 
 	/*******************************************************************************************
@@ -477,10 +478,10 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * RECUPERE LES PLUGINS DE TYPE "FOLDER" D'UN MODULE
 	 *******************************************************************************************/
-	public static function getPluginsFolders($pluginParams, $MdlObjectFolder)
+	public static function getPluginsFolders($params, $MdlObjectFolder)
 	{
 		$pluginsList=[];
-		foreach($MdlObjectFolder::getPluginObjects($pluginParams) as $objFolder)
+		foreach($MdlObjectFolder::getPlugins($params) as $objFolder)
 		{
 			$objFolder->pluginModule=static::moduleName;
 			$objFolder->pluginIcon="folder/folderSmall.png";

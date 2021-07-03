@@ -86,22 +86,22 @@ class CtrlOffline extends Ctrl
 	 *******************************************************************************************/
 	public static function actionUserInscription()
 	{
-		////	Valide le formulaire (Ajax)
+		////	Valide le formulaire via Ajax
 		if(Req::isParam("formValidate"))
 		{
-			//Verifie si le login existe déjà  ||  Vérif le Captcha  ||  Enregistre l'user
-			if(MdlUser::loginAlreadyExist(Req::getParam("mail")))	{$result["notifError"]=Txt::trad("USER_loginAlreadyExist");}
-			elseif(CtrlMisc::actionCaptchaControl()==false)			{$result["notifError"]=Txt::trad("captchaError");}
+			//Verifie si le login/mail existe déjà  &&  Vérifie le Captcha
+			if(MdlUser::loginExists(Req::getParam("mail")))	{$result["notifError"]=Txt::trad("USER_loginExists");}
+			elseif(CtrlMisc::actionCaptchaControl()==false)	{$result["notifError"]=Txt::trad("captchaError");}
+			//Enregistre l'user et renvoi l'url avec le message de succès
 			else{
-				//Enregistre l'user et renvoi l'url avec le message de succès
 				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", `password`=".Db::formatParam("password").", message=".Db::formatParam("message").", `date`=".Db::dateNow());
 				$result["redirSuccess"]="index.php?notify=userInscriptionRecorded";
-				//Envoi une notif à l'admin de l'espace?
+				//Envoie une notif aux admins de l'espace?
 				$curSpace=Ctrl::getObj("space",Req::getParam("_idSpace"));
 				if(!empty($curSpace->userInscriptionNotify))
 				{
 					$adminMails=[];
-					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->userAccessRight($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
+					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->accessRightUser($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
 					if(!empty($adminMails)){
 						$newUserLabel=Req::getParam("name")." ".Req::getParam("firstName");
 						$subject=Txt::trad("userInscriptionNotifSubject")." ".$curSpace->name;

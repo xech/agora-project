@@ -16,8 +16,8 @@ class MdlUser extends MdlPerson
 	const objectType="user";
 	const dbTable="ap_user";
 	const isSelectable=true;
-	public static $requiredFields=array("login","name");//password facultatif si modification de l'user
-	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","dateCrea@@desc","dateCrea@@asc","lastConnection@@asc","lastConnection@@desc");
+	public static $requiredFields=["login","name"];//password facultatif si modification de l'user
+	public static $sortFields=["name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","dateCrea@@desc","dateCrea@@asc","lastConnection@@asc","lastConnection@@desc"];
 	//Valeurs en cache
 	private $_userSpaces=null;
 	private $_isAdminCurSpace=null;
@@ -48,11 +48,11 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * ADMINISTRATEUR DE L'ESPACE COURANT?
+	 * VERIFIE SI L'USER EST UN ADMINISTRATEUR DE L'ESPACE COURANT
 	 *******************************************************************************************/
 	public function isAdminSpace()
 	{
-		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->userAccessRight($this)==2);}
+		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->accessRightUser($this)==2);}
 		return $this->_isAdminCurSpace;
 	}
 
@@ -150,28 +150,29 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : SELECTIONNE LES USERS DE TOUT LE SITE OU LES USERS DE L'ESPACE COURANT
 	 *******************************************************************************************/
-	public static function sqlDisplayedObjects($containerObj=null, $keyId=null)
+	public static function sqlDisplay($containerObj=null, $keyId=null)
 	{
 		return ($_SESSION["displayUsers"]=="all")  ?  "1"  :  "_id IN (".Ctrl::$curSpace->getUsers("idsSql").")";
 	}
 
 	/*******************************************************************************************
 	 * ESPACES AUXQUELS EST AFFECTÉ L'UTILISATEUR
+	 * Retourne un tableau "objects" ou "ids"
 	 *******************************************************************************************/
 	public function getSpaces($return="objects")
 	{
 		//Initialise la liste des objets "space"
 		if($this->_userSpaces===null){
-			if($this->isAdminGeneral())	{$sqlQuery="SELECT * FROM ap_space ORDER BY name ASC";}
-			elseif($this->isUser())		{$sqlQuery="SELECT DISTINCT T1.* FROM ap_space T1 LEFT JOIN ap_joinSpaceUser T2 ON T1._id=T2._idSpace WHERE T2._idUser=".$this->_id." OR T2.allUsers=1 ORDER BY name ASC";}
-			else						{$sqlQuery="SELECT * FROM ap_space WHERE public=1 ORDER BY name ASC";}
+			if($this->isAdminGeneral())	{$sqlQuery="SELECT * FROM ap_space ORDER BY name ASC";}//Admin général : tous les espaces
+			elseif($this->isUser())		{$sqlQuery="SELECT DISTINCT T1.* FROM ap_space T1 LEFT JOIN ap_joinSpaceUser T2 ON T1._id=T2._idSpace WHERE T2._idUser=".$this->_id." OR T2.allUsers=1 ORDER BY name ASC";}//User lambda : espaces affectés
+			else						{$sqlQuery="SELECT * FROM ap_space WHERE public=1 ORDER BY name ASC";}//Guest : espaces publics
 			$this->_userSpaces=Db::getObjTab("space",$sqlQuery);
 		}
-		// Retourne un tableau d'objets  OU  d'identifiants
-		if($return=="objects")	{return $this->_userSpaces;}
+		// Retourne un tableau d'objets OU d'identifiants
+		if($return=="objects")  {return $this->_userSpaces;}
 		else{
-			$tabIds=array();
-			foreach($this->_userSpaces as $objSpace)    {$tabIds[]=$objSpace->_id;}
+			$tabIds=[];
+			foreach($this->_userSpaces as $objSpace)  {$tabIds[]=$objSpace->_id;}
 			return $tabIds;
 		}
 	}
@@ -234,13 +235,13 @@ class MdlUser extends MdlPerson
 		return $usersVisibles;
 	}
 
-	/*******************************************************************************************
-	 * VERIFIE SI LE LOGIN EXISTE DÉJÀ CHEZ UN AUTRE USER
-	 *******************************************************************************************/
-	public static function loginAlreadyExist($login, $_idUserIgnore=null)
+	/*********************************************************************************************************
+	 * VERIFIE SI LE LOGIN EXISTE DÉJÀ CHEZ UN USER (OU CHEZ UN AUTRE USER, SI ON MODIFIE LE LOGIN D'UN USER)
+	 *********************************************************************************************************/
+	public static function loginExists($login, $_idUserIgnore=null)
 	{
-		$sql_idUserIgnore=(!empty($_idUserIgnore))  ?  " AND _id!=".(int)$_idUserIgnore  :  null;
-		return (!empty($login) && Db::getVal("SELECT count(*) FROM ap_user WHERE (login=".Db::format($login)." OR mail=".Db::format($login).") ".$sql_idUserIgnore)>0);
+		$sql_idUserIgnore=(!empty($_idUserIgnore))  ?  "AND _id!=".(int)$_idUserIgnore  :  null;
+		return (!empty($login)  &&  Db::getVal("SELECT count(*) FROM ap_user WHERE (login=".Db::format($login)." OR mail=".Db::format($login).") ".$sql_idUserIgnore)>0);
 	}
 
 	/*******************************************************************************************
@@ -274,7 +275,7 @@ class MdlUser extends MdlPerson
 	{
 		////	Controles : quota atteint ? Login existe déjà ?
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
-		if(self::loginAlreadyExist($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginAlreadyExist")." (".$login.")");  return false;}
+		if(self::loginExists($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginExists")." (".$login.")");  return false;}
 		////	Ajoute le login, le password? si l'agenda perso est désactivé?
 		$sqlProperties=trim(trim($sqlProperties),",");
 		$sqlProperties.=", `login`=".Db::format($login);
@@ -364,7 +365,7 @@ class MdlUser extends MdlPerson
 	 *******************************************************************************************/
 	public static function ldapConnectCreateUser($login, $password)
 	{
-		$userInfos=array();
+		$userInfos=[];
 		// Creation d'user ldap autorisee ?
 		if(Ctrl::$agora->ldap_crea_auto_users==1)
 		{

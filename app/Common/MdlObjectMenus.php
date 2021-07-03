@@ -12,8 +12,8 @@
  */
 trait MdlObjectMenus
 {
-	public static $pageNbObjects=50;		//Nb d'éléments affichés par page : 50 par défaut
-	public static $displayModeCurrent=null;	//Type d'affichage en préference (ligne/block)
+	public static $pageNbObjects=50;	//Nb d'éléments affichés par page : 50 par défaut
+	public static $displayMode=null;	//Type d'affichage en préference (ligne/block)
 
 	/*******************************************************************************************
 	 * BALISE OUVRANTE DU BLOCK DE L'OBJET : CONTIENT L'URL D'ÉDITION (pour le DblClick)  ET L'ID DU MENU CONTEXTUEL (Click droit)
@@ -38,8 +38,8 @@ trait MdlObjectMenus
 	 * VUE : MENU CONTEXTUEL (édition, droit d'accès, etc)
 	 * $options["iconBurger"] (text)		: icone "burger" du launcher ("small", "big" ou "float" par défaut)
 	 * $options["deleteLabel"] (Bool)		: label spécifique de suppression
-	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu. Exemple avec  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
-	 * $options["specificLabels"] (Array)	: Texte à afficher. Exemple avec les "affectedCalendarsLabel()" pour afficher la liste des agendas ou est affecté un evenement
+	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu : chaque bouton est un tableau avec par les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
+	 * $options["specificLabels"] (Array)	: Texte à afficher (Exple avec les "affectedCalendarsLabel()" pour afficher les agendas ou se trouve un evenement)
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
@@ -188,7 +188,7 @@ trait MdlObjectMenus
 		{
 			////	Init & Label
 			$vDatas["accessRightMenu"]=true;
-			$vDatas["accessRightMenuLabel"]=(static::isContainer())  ?  Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png' title=\"".$this->tradObject("autorPrivilege")."<hr>".Txt::trad("accessWriteLimit")." : ".$this->tradObject("readLimitInfos")."\">"  :  Txt::trad("EDIT_accessRight");
+			$vDatas["accessRightMenuLabel"]=(static::isContainer())  ?  "<span title=\"".$this->tradObject("autorPrivilege")."<hr>".$this->tradObject("readLimitInfos")."\">".Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png'></span>"  :  Txt::trad("EDIT_accessRight");
 			////	Droits d'accès pour chaque espace ("targets")
 			$vDatas["spacesAccessRight"]=[];
 			foreach(Ctrl::$curUser->getSpaces() as $tmpSpace)
@@ -208,7 +208,7 @@ trait MdlObjectMenus
 					}
 					////	Chaque user de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
-						if($tmpSpace->userAccessRight($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}//Admin d'espace
+						if($tmpSpace->accessRightUser($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}//Admin d'espace
 						else										{$tmpUserFullAccess=false;	$tmpUserTooltip=null;}//User lambda
 						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>"user/user.png", "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
 					}
@@ -265,13 +265,13 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * STATIC : CLÉ DE PRÉFÉRENCE EN BDD ($prefDbKey) : OBJET PASSÉ EN PARAMETRE / CONTENEUR OU DOSSIER COURANT / MODULE COURANT
+	 * STATIC : CLÉ DE PRÉFÉRENCE EN BDD ($prefDbKey)
 	 *******************************************************************************************/
-	public static function getPrefDbKey($containerObj)
+	public static function prefDbKey($containerObj)
 	{
-		if(is_object($containerObj))		{return $containerObj->_targetObjId;}
-		elseif(!empty(Ctrl::$curContainer))	{return Ctrl::$curContainer->_targetObjId;}
-		else								{return static::moduleName;}
+		if(is_object($containerObj))											{return $containerObj->_targetObjId;}			//"_targetObjId" de l'objet en parametre
+		elseif(!empty(Ctrl::$curContainer) && is_object(Ctrl::$curContainer))	{return Ctrl::$curContainer->_targetObjId;}		//"_targetObjId" du conteneur/dossier courant
+		else																	{return static::moduleName;}					//"moduleName" courant
 	}
 
 	/*******************************************************************************************
@@ -292,7 +292,7 @@ trait MdlObjectMenus
 	private static function getSort($containerObj=null)
 	{
 		//Récupère la préférence en Bdd ou params GET/POST
-		$objectsSort=Ctrl::prefUser("sort_".static::getPrefDbKey($containerObj), "sort");
+		$objectsSort=Ctrl::prefUser("sort_".static::prefDbKey($containerObj), "sort");
 		//Tri par défaut si aucune préférence n'est précisé ou le tri sélectionné n'est pas dispo pour l'objet courant 
 		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))    {$objectsSort=static::$sortFields[0];}
 		//renvoie le tri
@@ -327,38 +327,41 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DE LA PAGE
+	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DES OBJETS DE LA PAGE
 	 *******************************************************************************************/
 	public static function getDisplayMode($containerObj=null)
 	{
-		if(static::$displayModeCurrent===null)
+		if(static::$displayMode===null)
 		{
-			//Affichage "block" privilégié (responsive)  OU  Récupère le mode d'affichage dans les préférences
-			if(static::onlyBlockDisplayMode())	{static::$displayModeCurrent="block";}
-			else								{static::$displayModeCurrent=Ctrl::prefUser("displayMode_".static::getPrefDbKey($containerObj),"displayMode");}
-			//..Sinon on prend l'affichage par défaut
-			if(empty(static::$displayModeCurrent))  {static::$displayModeCurrent=static::$displayModeOptions[0];}
+			//Affichage "block" sur mobile  OU  Récupère la préférence d'affichage
+			if(static::mobileOnlyDisplayBlock())	{static::$displayMode="block";}
+			else									{static::$displayMode=Ctrl::prefUser("displayMode_".static::prefDbKey($containerObj),"displayMode");}
+			//Sinon on prend l'affichage par défaut : du paramétrage général ("folderDisplayMode") OU du premier $displayModes du module
+			if(empty(static::$displayMode)){
+				if(!empty(Ctrl::$agora->folderDisplayMode) && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes))	{static::$displayMode=Ctrl::$agora->folderDisplayMode;}
+				else																											{static::$displayMode=static::$displayModes[0];}
+			}
 		}
-		return static::$displayModeCurrent;
+		return static::$displayMode;
 	}
 
 	/*******************************************************************************************
 	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
 	 *******************************************************************************************/
-	public static function onlyBlockDisplayMode()
+	public static function mobileOnlyDisplayBlock()
 	{
-		return (Req::isMobile() && in_array("block",static::$displayModeOptions));
+		return (Req::isMobile() && in_array("block",static::$displayModes));
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModeOptions)
+	 * VUE : MENU D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModes)
 	 *******************************************************************************************/
 	public static function menuDisplayMode($containerObj=null)
 	{
-		if(static::onlyBlockDisplayMode()==false)
+		if(static::mobileOnlyDisplayBlock()==false)
 		{
-			$vDatas["displayModeOptions"]=static::$displayModeOptions;
-			$vDatas["displayMode"]=static::getDisplayMode($containerObj);
+			$vDatas["displayModes"]=static::$displayModes;
+			$vDatas["curDisplayMode"]=static::getDisplayMode($containerObj);
 			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
 			return Ctrl::getVue(Req::commonPath."VueObjMenuDisplayMode.php",$vDatas);
 		}
@@ -388,7 +391,7 @@ trait MdlObjectMenus
 			$vDatas["hrefBase"]="?ctrl=".Req::$curCtrl;
 			if(!empty($getParamKey) && Req::isParam($getParamKey))  {$vDatas["hrefBase"].="&".$getParamKey."=".Req::getParam($getParamKey);}
 			$vDatas["hrefBase"].="&pageNb=";
-			//Page Précédente / Suivante
+			//Page Précédente / Suivante (desactive si on est déjà en première ou dernière page)
 			$vDatas["prevAttr"]=($pageNb>1)  ?  "href=\"".$vDatas["hrefBase"].((int)$pageNb-1)."\""  :  "class='vNavMenuDisabled'";
 			$vDatas["nextAttr"]=($pageNb<$pageNbTotal)  ?  "href=\"".$vDatas["hrefBase"].((int)$pageNb+1)."\""  :  "class='vNavMenuDisabled'";
 			//Récupère le menu

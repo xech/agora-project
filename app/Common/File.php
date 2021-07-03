@@ -127,7 +127,7 @@ class File
 			@set_time_limit(120);
 			////	Headers
 			header("Content-Type: application/octet-stream");
-			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName,"download")."\"");
+			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName)."\"");
 			header("Cache-Control: no-store");
 			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}//fichier dans DATAS
 			////	Download d'un fichier généré à la volée
@@ -440,7 +440,7 @@ class File
 			$configTab=file($configFilePath);
 			if(count($configTab)>1)
 			{
-				$modifiedConstants=array();
+				$modifiedConstants=[];
 				////	Parcourt chaque ligne/constante du fichier
 				foreach($configTab as $lineKey=>$lineValue)
 				{

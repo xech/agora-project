@@ -175,6 +175,16 @@ function formControl()
 					</select>
 				</div>
 			</div>
+			<!--MODULE LABEL DISPLAY-->
+			<div class="objField">
+				<div class="fieldLabel"><?= Txt::trad("AGORA_folderDisplayMode") ?></div>
+				<div>
+					<select name="folderDisplayMode">
+						<option value="block"><?= Txt::trad("displayMode_block") ?></option>
+						<option value="line" <?= Ctrl::$agora->folderDisplayMode=="line"?"selected":null ?>><?= Txt::trad("displayMode_line") ?></option>
+					</select>
+				</div>
+			</div>
 		<hr>
 			<!--LANG-->
 			<div class="objField">

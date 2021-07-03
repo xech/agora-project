@@ -133,7 +133,7 @@ $(function(){
 				//Affichage
 				echo $tmpSubject->divContainer("alternateLines").$tmpSubject->contextMenu().
 					"<div class='objContent sLink ".$isNewSubject."' onclick=\"redir('?ctrl=forum&targetObjId=".$tmpSubject->_targetObjId."')\" title=\"".Txt::trad("FORUM_displaySubject")."\">
-						<div>".$displayedTitle."<div class='vSubjMessDescription'>".Txt::reduce(strip_tags($tmpSubject->description),200)."</div>
+						<div>".$displayedTitle."<div class='vSubjMessDescription'>".Txt::reduce(strip_tags($tmpSubject->description))."</div>
 						</div>
 						<div class='vObjDetails'>
 							<hr>

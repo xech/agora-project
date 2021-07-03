@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(550);
+lightboxSetWidth(580);
 
 $(function(){
 	////	Change l'icone du dossier

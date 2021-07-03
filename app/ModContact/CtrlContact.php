@@ -15,7 +15,7 @@ class CtrlContact extends Ctrl
 	const moduleName="contact";
 	public static $folderObjectType="contactFolder";
 	public static $moduleOptions=["adminRootAddContent"];
-	public static $MdlObjects=array("MdlContact","MdlContactFolder");
+	public static $MdlObjects=["MdlContact","MdlContactFolder"];
 
 	/*******************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -23,17 +23,17 @@ class CtrlContact extends Ctrl
 	public static function actionDefault()
 	{
 		$vDatas["foldersList"]=self::$curContainer->folders();
-		$vDatas["contactList"]=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplayedObjects(self::$curContainer)." ".MdlContact::sqlSort());
+		$vDatas["contactList"]=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplay(self::$curContainer)." ".MdlContact::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
 	/*******************************************************************************************
 	 * PLUGINS
 	 *******************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=self::getPluginsFolders($pluginParams,"MdlContactFolder");
-		foreach(MdlContact::getPluginObjects($pluginParams) as $tmpObj)
+		$pluginsList=self::getPluginsFolders($params,"MdlContactFolder");
+		foreach(MdlContact::getPlugins($params) as $tmpObj)
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
@@ -93,7 +93,7 @@ class CtrlContact extends Ctrl
 		{
 			//// Export de contacts
 			if(Req::getParam("actionImportExport")=="export"){
-				$contactList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplayedObjects(self::$curContainer));
+				$contactList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplay(self::$curContainer));
 				MdlContact::exportPersons($contactList, Req::getParam("exportType"));
 			}
 			//// Import de contacts

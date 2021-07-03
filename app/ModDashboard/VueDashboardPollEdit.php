@@ -5,7 +5,7 @@ lightboxSetWidth(600);
 ////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
 <?php if($pollIsVoted==true){ ?>
 $(function(){
-	$("input[name='title'],.vPollResponseDiv input,#multipleResponsesInput").prop("disabled",true);
+	$("input[name='title'],.vPollResponseDiv input,#multipleResponsesInput,#publicVoteInput").prop("disabled",true);
 });
 <?php } ?>
 
@@ -26,8 +26,8 @@ function formControl()
 	var responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return $(this).val(); }).length;
 	if(responsesNb<2)  {notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");  return false;}
 	//Controle final (champs obligatoires, affectations/droits d'accès, etc)
-	if(mainFormControl())	{$("input:disabled").prop("disabled",false);  return true;}//réactive au besoin les champs désactivés
-	else					{return false;}//Obligatoire pour pas valider le form
+	if(mainFormControl())	{$("input:disabled").prop("disabled",false);  return true;}	//Réactive au besoin les champs désactivés (cf. sondage déjà votés)
+	else					{return false;}												//Obligatoire pour pas valider le form
 }
 </script>
 

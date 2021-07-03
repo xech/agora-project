@@ -20,7 +20,7 @@ class CtrlMail extends Ctrl
 	public static function actionDefault()
 	{
 		////	Init et Controle d'accès
-		$vDatas["containerList"]=array();
+		$vDatas["containerList"]=[];
 		if(Ctrl::$curUser->isUser()==false)  {Ctrl::noAccessExit();}
 		////	Envoi de mail!
 		if(Req::isParam("formValidate","subject","message") && (Req::isParam("personList") || Req::isParam("groupList")))
@@ -76,7 +76,7 @@ class CtrlMail extends Ctrl
 		}
 		////	Arborescence des dossiers de contacts (du dossier "root")
 		foreach(Ctrl::getObj("MdlContactFolder",1)->folderTree() as $tmpContainer){
-			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplayedObjects($tmpContainer)." ".MdlContact::sqlSort());
+			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplay($tmpContainer)." ".MdlContact::sqlSort());
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
 		static::displayPage("VueIndex.php",$vDatas);

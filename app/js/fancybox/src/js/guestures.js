@@ -4,35 +4,35 @@
 // Adds touch guestures, handles click and tap events
 //
 // ==========================================================================
-(function(window, document, $) {
+(function (window, document, $) {
   "use strict";
 
-  var requestAFrame = (function() {
+  var requestAFrame = (function () {
     return (
       window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame ||
       window.oRequestAnimationFrame ||
       // if all else fails, use setTimeout
-      function(callback) {
+      function (callback) {
         return window.setTimeout(callback, 1000 / 60);
       }
     );
   })();
 
-  var cancelAFrame = (function() {
+  var cancelAFrame = (function () {
     return (
       window.cancelAnimationFrame ||
       window.webkitCancelAnimationFrame ||
       window.mozCancelAnimationFrame ||
       window.oCancelAnimationFrame ||
-      function(id) {
+      function (id) {
         window.clearTimeout(id);
       }
     );
   })();
 
-  var getPointerXY = function(e) {
+  var getPointerXY = function (e) {
     var result = [];
 
     e = e.originalEvent || e || window.e;
@@ -55,7 +55,7 @@
     return result;
   };
 
-  var distance = function(point2, point1, what) {
+  var distance = function (point2, point1, what) {
     if (!point1 || !point2) {
       return 0;
     }
@@ -69,9 +69,9 @@
     return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
   };
 
-  var isClickable = function($el) {
+  var isClickable = function ($el) {
     if (
-      $el.is('a,area,button,[role="button"],input,label,select,summary,textarea,video,audio') ||
+      $el.is('a,area,button,[role="button"],input,label,select,summary,textarea,video,audio,iframe') ||
       $.isFunction($el.get(0).onclick) ||
       $el.data("selectable")
     ) {
@@ -88,7 +88,7 @@
     return false;
   };
 
-  var hasScrollbars = function(el) {
+  var hasScrollbars = function (el) {
     var overflowY = window.getComputedStyle(el)["overflow-y"],
       overflowX = window.getComputedStyle(el)["overflow-x"],
       vertical = (overflowY === "scroll" || overflowY === "auto") && el.scrollHeight > el.clientHeight,
@@ -97,7 +97,7 @@
     return vertical || horizontal;
   };
 
-  var isScrollable = function($el) {
+  var isScrollable = function ($el) {
     var rez = false;
 
     while (true) {
@@ -117,7 +117,7 @@
     return rez;
   };
 
-  var Guestures = function(instance) {
+  var Guestures = function (instance) {
     var self = this;
 
     self.instance = instance;
@@ -131,11 +131,25 @@
     self.$container.on("touchstart.fb.touch mousedown.fb.touch", $.proxy(self, "ontouchstart"));
   };
 
-  Guestures.prototype.destroy = function() {
-    this.$container.off(".fb.touch");
+  Guestures.prototype.destroy = function () {
+    var self = this;
+
+    self.$container.off(".fb.touch");
+
+    $(document).off(".fb.touch");
+
+    if (self.requestId) {
+      cancelAFrame(self.requestId);
+      self.requestId = null;
+    }
+
+    if (self.tapped) {
+      clearTimeout(self.tapped);
+      self.tapped = null;
+    }
   };
 
-  Guestures.prototype.ontouchstart = function(e) {
+  Guestures.prototype.ontouchstart = function (e) {
     var self = this,
       $target = $(e.target),
       instance = self.instance,
@@ -158,14 +172,13 @@
     if (!$slide.length || !$target.length || isClickable($target) || isClickable($target.parent())) {
       return;
     }
-
     // Ignore clicks on the scrollbar
     if (!$target.is("img") && e.originalEvent.clientX > $target[0].clientWidth + $target.offset().left) {
       return;
     }
 
     // Ignore clicks while zooming or closing
-    if (!current || instance.isAnimating || instance.isClosing) {
+    if (!current || instance.isAnimating || current.$slide.hasClass("fancybox-animated")) {
       e.stopPropagation();
       e.preventDefault();
 
@@ -203,8 +216,11 @@
     self.canvasHeight = Math.round($slide[0].clientHeight);
 
     self.contentLastPos = null;
-    self.contentStartPos = $.fancybox.getTranslate(self.$content) || {top: 0, left: 0};
-    self.sliderStartPos = self.sliderLastPos || $.fancybox.getTranslate($slide);
+    self.contentStartPos = $.fancybox.getTranslate(self.$content) || {
+      top: 0,
+      left: 0
+    };
+    self.sliderStartPos = $.fancybox.getTranslate($slide);
 
     // Since position will be absolute, but we need to make it relative to the stage
     self.stagePos = $.fancybox.getTranslate(instance.$refs.stage);
@@ -230,7 +246,9 @@
         e.preventDefault();
       }
 
-      return;
+      if (!($.fancybox.isMobile && $target.parents(".fancybox-caption").length)) {
+        return;
+      }
     }
 
     self.isScrollable = isScrollable($target) || isScrollable($target.parent());
@@ -244,8 +262,6 @@
     if (self.startPoints.length === 1 || current.hasError) {
       if (self.canPan) {
         $.fancybox.stop(self.$content);
-
-        self.$content.css("transition-duration", "");
 
         self.isPanning = true;
       } else {
@@ -265,8 +281,6 @@
 
       $.fancybox.stop(self.$content);
 
-      self.$content.css("transition-duration", "");
-
       self.centerPointStartX = (self.startPoints[0].x + self.startPoints[1].x) * 0.5 - $(window).scrollLeft();
       self.centerPointStartY = (self.startPoints[0].y + self.startPoints[1].y) * 0.5 - $(window).scrollTop();
 
@@ -277,7 +291,7 @@
     }
   };
 
-  Guestures.prototype.onscroll = function(e) {
+  Guestures.prototype.onscroll = function (e) {
     var self = this;
 
     self.isScrolling = true;
@@ -285,7 +299,7 @@
     document.removeEventListener("scroll", self.onscroll, true);
   };
 
-  Guestures.prototype.ontouchmove = function(e) {
+  Guestures.prototype.ontouchmove = function (e) {
     var self = this;
 
     // Make sure user has not released over iframe or disabled element
@@ -326,8 +340,9 @@
     }
   };
 
-  Guestures.prototype.onSwipe = function(e) {
+  Guestures.prototype.onSwipe = function (e) {
     var self = this,
+      instance = self.instance,
       swiping = self.isSwiping,
       left = self.sliderStartPos.left || 0,
       angle;
@@ -338,9 +353,9 @@
       if (Math.abs(self.distance) > 10) {
         self.canTap = false;
 
-        if (self.instance.group.length < 2 && self.opts.vertical) {
+        if (instance.group.length < 2 && self.opts.vertical) {
           self.isSwiping = "y";
-        } else if (self.instance.isDragging || self.opts.vertical === false || (self.opts.vertical === "auto" && $(window).width() > 800)) {
+        } else if (instance.isDragging || self.opts.vertical === false || (self.opts.vertical === "auto" && $(window).width() > 800)) {
           self.isSwiping = "x";
         } else {
           angle = Math.abs((Math.atan2(self.distanceY, self.distanceX) * 180) / Math.PI);
@@ -348,34 +363,50 @@
           self.isSwiping = angle > 45 && angle < 135 ? "y" : "x";
         }
 
-        self.canTap = false;
-
         if (self.isSwiping === "y" && $.fancybox.isMobile && self.isScrollable) {
           self.isScrolling = true;
 
           return;
         }
 
-        self.instance.isDragging = self.isSwiping;
+        instance.isDragging = self.isSwiping;
 
         // Reset points to avoid jumping, because we dropped first swipes to calculate the angle
         self.startPoints = self.newPoints;
 
-        $.each(self.instance.slides, function(index, slide) {
+        $.each(instance.slides, function (index, slide) {
+          var slidePos, stagePos;
+
           $.fancybox.stop(slide.$slide);
 
-          slide.$slide.css("transition-duration", "");
+          slidePos = $.fancybox.getTranslate(slide.$slide);
+          stagePos = $.fancybox.getTranslate(instance.$refs.stage);
 
-          slide.inTransition = false;
+          slide.$slide
+            .css({
+              transform: "",
+              opacity: "",
+              "transition-duration": ""
+            })
+            .removeClass("fancybox-animated")
+            .removeClass(function (index, className) {
+              return (className.match(/(^|\s)fancybox-fx-\S+/g) || []).join(" ");
+            });
 
-          if (slide.pos === self.instance.current.pos) {
-            self.sliderStartPos.left = $.fancybox.getTranslate(slide.$slide).left - $.fancybox.getTranslate(self.instance.$refs.stage).left;
+          if (slide.pos === instance.current.pos) {
+            self.sliderStartPos.top = slidePos.top - stagePos.top;
+            self.sliderStartPos.left = slidePos.left - stagePos.left;
           }
+
+          $.fancybox.setTranslate(slide.$slide, {
+            top: slidePos.top - stagePos.top,
+            left: slidePos.left - stagePos.left
+          });
         });
 
         // Stop slideshow
-        if (self.instance.SlideShow && self.instance.SlideShow.isActive) {
-          self.instance.SlideShow.stop();
+        if (instance.SlideShow && instance.SlideShow.isActive) {
+          instance.SlideShow.stop();
         }
       }
 
@@ -411,9 +442,9 @@
       self.requestId = null;
     }
 
-    self.requestId = requestAFrame(function() {
+    self.requestId = requestAFrame(function () {
       if (self.sliderLastPos) {
-        $.each(self.instance.slides, function(index, slide) {
+        $.each(self.instance.slides, function (index, slide) {
           var pos = slide.pos - self.instance.currPos;
 
           $.fancybox.setTranslate(slide.$slide, {
@@ -427,7 +458,7 @@
     });
   };
 
-  Guestures.prototype.onPan = function() {
+  Guestures.prototype.onPan = function () {
     var self = this;
 
     // Prevent accidental movement (sometimes, when tapping casually, finger can move a bit)
@@ -442,17 +473,15 @@
 
     if (self.requestId) {
       cancelAFrame(self.requestId);
-
-      self.requestId = null;
     }
 
-    self.requestId = requestAFrame(function() {
+    self.requestId = requestAFrame(function () {
       $.fancybox.setTranslate(self.$content, self.contentLastPos);
     });
   };
 
   // Make panning sticky to the edges
-  Guestures.prototype.limitMovement = function() {
+  Guestures.prototype.limitMovement = function () {
     var self = this;
 
     var canvasWidth = self.canvasWidth;
@@ -512,7 +541,7 @@
     };
   };
 
-  Guestures.prototype.limitPosition = function(newOffsetX, newOffsetY, newWidth, newHeight) {
+  Guestures.prototype.limitPosition = function (newOffsetX, newOffsetY, newWidth, newHeight) {
     var self = this;
 
     var canvasWidth = self.canvasWidth;
@@ -540,7 +569,7 @@
     };
   };
 
-  Guestures.prototype.onZoom = function() {
+  Guestures.prototype.onZoom = function () {
     var self = this;
 
     // Calculate current distance between points to get pinch ratio and new width and height
@@ -592,18 +621,15 @@
 
     if (self.requestId) {
       cancelAFrame(self.requestId);
-
-      self.requestId = null;
     }
 
-    self.requestId = requestAFrame(function() {
+    self.requestId = requestAFrame(function () {
       $.fancybox.setTranslate(self.$content, self.contentLastPos);
     });
   };
 
-  Guestures.prototype.ontouchend = function(e) {
+  Guestures.prototype.ontouchend = function (e) {
     var self = this;
-    var dMs = Math.max(new Date().getTime() - self.startTime, 1);
 
     var swiping = self.isSwiping;
     var panning = self.isPanning;
@@ -611,6 +637,7 @@
     var scrolling = self.isScrolling;
 
     self.endPoints = getPointerXY(e);
+    self.dMs = Math.max(new Date().getTime() - self.startTime, 1);
 
     self.$container.removeClass("fancybox-is-grabbing");
 
@@ -635,13 +662,11 @@
       return self.onTap(e);
     }
 
-    self.speed = 366;
+    self.speed = 100;
 
     // Speed in px/ms
-    self.velocityX = (self.distanceX / dMs) * 0.5;
-    self.velocityY = (self.distanceY / dMs) * 0.5;
-
-    self.speedX = Math.max(self.speed * 0.5, Math.min(self.speed * 1.5, (1 / Math.abs(self.velocityX)) * self.speed));
+    self.velocityX = (self.distanceX / self.dMs) * 0.5;
+    self.velocityY = (self.distanceY / self.dMs) * 0.5;
 
     if (panning) {
       self.endPanning();
@@ -654,10 +679,13 @@
     return;
   };
 
-  Guestures.prototype.endSwiping = function(swiping, scrolling) {
+  Guestures.prototype.endSwiping = function (swiping, scrolling) {
     var self = this,
       ret = false,
-      len = self.instance.group.length;
+      len = self.instance.group.length,
+      distanceX = Math.abs(self.distanceX),
+      canAdvance = swiping == "x" && len > 1 && ((self.dMs > 130 && distanceX > 10) || distanceX > 50),
+      speedX = 300;
 
     self.sliderLastPos = null;
 
@@ -665,27 +693,21 @@
     if (swiping == "y" && !scrolling && Math.abs(self.distanceY) > 50) {
       // Continue vertical movement
       $.fancybox.animate(
-        self.instance.current.$slide,
-        {
+        self.instance.current.$slide, {
           top: self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
           opacity: 0
         },
         200
       );
-
-      ret = self.instance.close(true, 200);
-    } else if (swiping == "x" && self.distanceX > 50 && len > 1) {
-      ret = self.instance.previous(self.speedX);
-    } else if (swiping == "x" && self.distanceX < -50 && len > 1) {
-      ret = self.instance.next(self.speedX);
+      ret = self.instance.close(true, 250);
+    } else if (canAdvance && self.distanceX > 0) {
+      ret = self.instance.previous(speedX);
+    } else if (canAdvance && self.distanceX < 0) {
+      ret = self.instance.next(speedX);
     }
 
     if (ret === false && (swiping == "x" || swiping == "y")) {
-      if (scrolling || len < 2) {
-        self.instance.centerSlide(self.instance.current, 150);
-      } else {
-        self.instance.jumpTo(self.instance.current.index);
-      }
+      self.instance.centerSlide(200);
     }
 
     self.$container.removeClass("fancybox-is-sliding");
@@ -693,21 +715,23 @@
 
   // Limit panning from edges
   // ========================
-  Guestures.prototype.endPanning = function() {
-    var self = this;
-    var newOffsetX, newOffsetY, newPos;
+  Guestures.prototype.endPanning = function () {
+    var self = this,
+      newOffsetX,
+      newOffsetY,
+      newPos;
 
     if (!self.contentLastPos) {
       return;
     }
 
-    if (self.opts.momentum === false) {
+    if (self.opts.momentum === false || self.dMs > 350) {
       newOffsetX = self.contentLastPos.left;
       newOffsetY = self.contentLastPos.top;
     } else {
       // Continue movement
-      newOffsetX = self.contentLastPos.left + self.velocityX * self.speed;
-      newOffsetY = self.contentLastPos.top + self.velocityY * self.speed;
+      newOffsetX = self.contentLastPos.left + self.velocityX * 500;
+      newOffsetY = self.contentLastPos.top + self.velocityY * 500;
     }
 
     newPos = self.limitPosition(newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height);
@@ -715,10 +739,10 @@
     newPos.width = self.contentStartPos.width;
     newPos.height = self.contentStartPos.height;
 
-    $.fancybox.animate(self.$content, newPos, 330);
+    $.fancybox.animate(self.$content, newPos, 366);
   };
 
-  Guestures.prototype.endZooming = function() {
+  Guestures.prototype.endZooming = function () {
     var self = this;
 
     var current = self.instance.current;
@@ -754,14 +778,11 @@
     } else {
       newPos = self.limitPosition(newOffsetX, newOffsetY, newWidth, newHeight);
 
-      // Switch from scale() to width/height or animation will not work correctly
-      $.fancybox.setTranslate(self.$content, $.fancybox.getTranslate(self.$content));
-
       $.fancybox.animate(self.$content, newPos, 150);
     }
   };
 
-  Guestures.prototype.onTap = function(e) {
+  Guestures.prototype.onTap = function (e) {
     var self = this;
     var $target = $(e.target);
 
@@ -775,7 +796,7 @@
 
     var where;
 
-    var process = function(prefix) {
+    var process = function (prefix) {
       var action = current.opts[prefix];
 
       if ($.isFunction(action)) {
@@ -793,7 +814,7 @@
           break;
 
         case "toggleControls":
-          instance.toggleControls(true);
+          instance.toggleControls();
 
           break;
 
@@ -844,9 +865,9 @@
     } else if (
       instance.current.$content &&
       instance.current.$content
-        .find($target)
-        .addBack()
-        .filter($target).length
+      .find($target)
+      .addBack()
+      .filter($target).length
     ) {
       where = "Content";
     } else {
@@ -873,10 +894,12 @@
       self.tapY = tapY;
 
       if (current.opts["dblclick" + where] && current.opts["dblclick" + where] !== current.opts["click" + where]) {
-        self.tapped = setTimeout(function() {
+        self.tapped = setTimeout(function () {
           self.tapped = null;
 
-          process("click" + where);
+          if (!instance.isAnimating) {
+            process("click" + where);
+          }
         }, 500);
       } else {
         process("click" + where);
@@ -886,9 +909,15 @@
     return this;
   };
 
-  $(document).on("onActivate.fb", function(e, instance) {
-    if (instance && !instance.Guestures) {
-      instance.Guestures = new Guestures(instance);
-    }
-  });
-})(window, document, window.jQuery || jQuery);
+  $(document)
+    .on("onActivate.fb", function (e, instance) {
+      if (instance && !instance.Guestures) {
+        instance.Guestures = new Guestures(instance);
+      }
+    })
+    .on("beforeClose.fb", function (e, instance) {
+      if (instance && instance.Guestures) {
+        instance.Guestures.destroy();
+      }
+    });
+})(window, document, jQuery);

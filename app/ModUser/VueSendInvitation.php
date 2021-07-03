@@ -2,7 +2,7 @@
 
 <script>
 ////	Resize
-lightboxSetWidth(450);
+lightboxSetWidth(500);
 
 ////	INIT
 $(function(){
@@ -53,7 +53,7 @@ $(function(){
 						$("#gPeopleForm").prepend(contactInputs).show();
 						$("#mainForm,#gPeopleImportButton").hide();
 						//Controle ajax : désactive les mails déjà présents sur l'espace (après affichage des mails importés!)
-						$.ajax({url:"?ctrl=user&action=loginAlreadyExist",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
+						$.ajax({url:"?ctrl=user&action=loginExists",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
 								for(var cpt=0; cpt<resultJson.mailListPresent.length; cpt++){
 									var mailTmp=resultJson.mailListPresent[cpt];
@@ -97,9 +97,9 @@ $(function(){
 			if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
 			if($("input[name='mail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
 			// Verif si le compte utilisateur existe déjà
-			$.ajax("?ctrl=user&action=loginAlreadyExist&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){
-				if(find("true",resultText))	{notify("<?= Txt::trad("USER_loginAlreadyExist"); ?>","warning");  return false;}	//L'user existe déjà..
-				else						{mainFormControled=true;  $("#mainForm").submit();}									//Sinon on confirme le formulaire !
+			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){
+				if(find("true",resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
+				else						{mainFormControled=true;  $("#mainForm").submit();}							//Sinon on confirme le formulaire !
 			});
 		}
 	});

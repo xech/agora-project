@@ -1,6 +1,5 @@
 <style>
 /*LABEL ET DETAILS DES LIENS*/
-.objLabelBg		{background-image:url(app/img/link/iconBg.png);}
 .objLabel		{line-height:20px;}
 .objLabelUrl	{word-break:break-all;}/*"break-all" évite que l'url dépasse du block'*/
 .objLabel img	{margin-right:10px;}
@@ -30,11 +29,12 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{
-			$linkLabel=(!empty($tmpLink->description))  ?  "<span title=\"".$tmpLink->adress."\">".$tmpLink->description."</span>"  :  "<span class='objLabelUrl'>".Txt::reduce($tmpLink->adress,200)."</span>";
+			$linkLabel=(!empty($tmpLink->description))  ?  "<span title=\"".$tmpLink->adress."\">".$tmpLink->description."</span>"  :  "<span class='objLabelUrl'>".Txt::reduce($tmpLink->adress)."</span>";
 			echo $tmpLink->divContainer().$tmpLink->contextMenu().
 				"<div class='objContentScroll'>
 					<div class='objContent'>
-						<div class='objLabel objLabelBg'><a href=\"".$tmpLink->adress."\" target='_blank'><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</a></div>
+						<div class='objIcon objIconOpacity'><img src='app/img/link/iconOpacity.png'></div>
+						<div class='objLabel'><a href=\"".$tmpLink->adress."\" class='objLabelLink' target='_blank'><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</a></div>
 						<div class='objAutorDate'>".$tmpLink->autorDateLabel()."</div>
 					</div>
 				</div>

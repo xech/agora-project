@@ -2,7 +2,7 @@
 lightboxSetWidth(450);//Resize
 </script>
 
-<div class="lightboxContent objVueBg">
+<div class="lightboxContent">
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
 	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->getLabel("full")."</div>";

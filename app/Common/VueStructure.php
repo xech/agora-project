@@ -31,8 +31,8 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JAVASCRIPT & CSS PRINCIPAUX (TOUJOURS À LA FIN!)-->
-		<script src="app/js/common-3.8.0.js"></script>
-		<link href="app/css/common-3.8.0.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-21.6.js"></script>
+		<link href="app/css/common-21.6.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
 	
 		<script>
@@ -92,7 +92,7 @@
 			#respMenuMain, #respMenuBg				{position:fixed; top:0px; right:0px; height:100%;}
 			#respMenuBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
 			#respMenuMain							{z-index:101; max-width:330px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.1em!important; background:linear-gradient(135deg,<?= @Ctrl::$agora->skin=='black'?'#555,#333':'#eee,#fff' ?> 100px);}/*max-width: cf. "#pageModuleMenu"*/
-			#respMenuMain #respMenuClose			{position:absolute; top:2px; right:2px; filter:invert(100%);}/*tester avec Ionic*/
+			#respMenuMain #respMenuClose			{position:absolute; top:7px; right:7px;}/*tester avec Ionic*/
 			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
 			#respMenuMain hr						{background:#ddd; margin-top:15px; margin-bottom:15px;}/*surcharge*/
@@ -122,7 +122,7 @@
 		if(Req::isMobile()){
 			echo "<div id='respMenuBg'></div>
 				  <div id='respMenuMain'>
-					<div id='respMenuClose'><img src='app/img/close.png'></div>
+					<div id='respMenuClose'><img src='app/img/closeResp.png'></div>
 					<div id='respMenuContent'> <div id='respMenuOne'></div> <div id='respMenuTwo'></div> </div>
 				  </div>
 				  <div id='respAddButton'><img src='app/img/plusResp.png'></div>";

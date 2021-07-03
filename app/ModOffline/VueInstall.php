@@ -98,7 +98,7 @@ h3								{margin-top:20px; font-style:italic;}
 		</div>
 		<!--VALIDATION-->
 		<?= Txt::submitButton() ?>
-		<img src="app/img/loading.gif" id="imgLoading">
+		<img src="app/img/loading.png" id="imgLoading">
 	</form>
 	<?php } ?>
 </div>

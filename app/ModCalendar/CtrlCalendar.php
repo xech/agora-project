@@ -14,7 +14,7 @@ class CtrlCalendar extends Ctrl
 {
 	const moduleName="calendar";
 	public static $moduleOptions=["createSpaceCalendar","adminAddRessourceCalendar","adminAddCategory"];
-	public static $MdlObjects=array("MdlCalendar","MdlCalendarEvent");
+	public static $MdlObjects=["MdlCalendar","MdlCalendarEvent"];
 
 	/********************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -27,7 +27,7 @@ class CtrlCalendar extends Ctrl
 		if(empty($_SESSION["displayAllCals"]) || Req::isParam("displayAllCals"))   {$_SESSION["displayAllCals"]=(Req::getParam("displayAllCals")==1 && Ctrl::$curUser->isAdminGeneral());}
 		$vDatas["visibleCalendars"]=($_SESSION["displayAllCals"]==true)  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::visibleCalendars();
 		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["visibleCalendars"]);
-		////	MODE D'AFFICHAGE (cf. MdlCalendar::$displayModeOptions : month, week, workWeek, 4Days, day)
+		////	MODE D'AFFICHAGE (cf. MdlCalendar::$displayModes : month, week, workWeek, 4Days, day)
 		$displayMode=self::prefUser("calendarDisplayMode","displayMode");
 		if(empty($displayMode))  {$displayMode=(Req::isMobile()) ? "4Days" : "month";}//Affichage par défaut
 		$vDatas["displayMode"]=$displayMode;
@@ -187,62 +187,45 @@ class CtrlCalendar extends Ctrl
 	/********************************************************************************************
 	 * PLUGINS
 	 ********************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=$eventList=[];
-		if(preg_match("/search|dashboard/i",$pluginParams["type"]))
+		$pluginsList=$evtList=[];
+		//// Plugins uniquement pour "search" et "dashboard"  ..et s'il y a des agendas disponibles
+		if(preg_match("/search|dashboard/i",$params["type"]) && count(MdlCalendar::visibleCalendars())>0)
 		{
-			////	"AGENDAS VISIBLES"
-			if(count(MdlCalendar::visibleCalendars())>0)
+			//// Affichage "dashboard"
+			if($params["type"]=="dashboard")
 			{
-				////	AFFICHAGE "DASHBOARD"
-				if($pluginParams["type"]=="dashboard")
+				//Ajoute si besoin les propositions d'evts (créé un objet standard)
+				$eventProposition=self::eventProposition();
+				if(!empty($eventProposition))  {$pluginsList["eventProposition"]=(object)["pluginModule"=>self::moduleName, "pluginSpecificMenu"=>$eventProposition];}
+				//Ajoute les evts courants de la période affichée
+				foreach(MdlCalendar::visibleCalendars() as $tmpCal)
 				{
-					//Propositions d'evenements à confirmer
-					$eventProposition=self::eventProposition();
-					if(!empty($eventProposition)){
-						$objMenuConfirm=new stdClass();
-						$objMenuConfirm->pluginModule=self::moduleName;
-						$objMenuConfirm->pluginSpecificMenu=$eventProposition;
-						$pluginsList[]=$objMenuConfirm;
-					}
-					//Evénements courants
-					foreach(MdlCalendar::visibleCalendars() as $tmpCal)
-					{
-						//Tous les Evt avec accessRight>=1, trié par date (et non par H:M)
-						$tmpCalEvtList=$tmpCal->evtList(null,null,1,false);
-						//Filtre des Evts pour une période de plusieurs jours
-						$tmpCalEvtListFull=[];
-						$dateTimeBegin=strtotime($pluginParams["dateTimeBegin"])+43200;//cf. heures d'été/hiver
-						$dateTimeEnd=strtotime($pluginParams["dateTimeEnd"]);
-						//Récupère les evt pour chaque jour de la période
-						for($timeDay=$dateTimeBegin; $timeDay<=$dateTimeEnd; $timeDay+=86400){
-							$subPeriodBegin=strtotime(date("Y-m-d",$timeDay)." 00:00");
-							$subPeriodEnd=strtotime(date("Y-m-d",$timeDay)." 23:59");
-							$tmpCalEvtListFull=array_merge($tmpCalEvtListFull, MdlCalendar::periodEvts($tmpCalEvtList,$subPeriodBegin,$subPeriodEnd));
-						}
-						//Ajoute à la liste des evt
-						foreach($tmpCalEvtListFull as $tmpEvt)  {$tmpEvt->pluginIsCurrent=true;  $eventList[]=$tmpEvt;}
-					}
+					$timeBegin=strtotime($params["dateTimeBegin"]);
+					$timeEnd=strtotime($params["dateTimeEnd"]);
+					$evtListFull=$tmpCal->evtList($timeBegin,$timeEnd,1,false);//Evts de la période + tous les evts périodiques (accessRight>=1 et tri par date)
+					//Pour chaque jour de la période : garde les evts du jour et les evts periodiques sur le jour
+					for($timeTmp=$timeBegin; $timeTmp<=$timeEnd; $timeTmp+=86400)  {$evtList=array_merge($evtList, MdlCalendar::periodEvts($evtListFull,$timeTmp,($timeTmp+86399)));}
+					//Ajoute à la liste des evt avec la propriété "pluginIsCurrent"
+					foreach($evtList as $tmpEvt)  {$tmpEvt->pluginIsCurrent=true;  $eventList[]=$tmpEvt;}
 				}
-				////	EVENEMENTS DE CHAQUE AGENDA : SÉLECTION NORMALE DU PLUGIN (date de création OU recherche)
-				foreach(MdlCalendar::visibleCalendars() as $tmpCal){
-					$eventList=array_merge($eventList, $tmpCal->evtList(null,null,1,false,$pluginParams));//Tous les Evt avec accessRight>=1, pas triés par H:M et filtrés avec $pluginParams
-				}
-				$eventList=array_unique($eventList,SORT_REGULAR);
-				////	AJOUTE CHAQUE ELEMENT DU PLUGIN
-				foreach($eventList as $tmpEvt)
+			}
+			//// Ajoute la sélection normale du plugin (accessRight>=1 et tri par date et filtre avec $params)
+			foreach(MdlCalendar::visibleCalendars() as $tmpCal)  {$evtList=array_merge($evtList, $tmpCal->evtList(null,null,1,false,$params));}
+			//// Ajoute chaque plugin "evt"
+			foreach($evtList as $tmpEvt)
+			{
+				//Vérif que l'evt n'est pas déjà dans la liste && Qu'il soit accessible en lecture && Qu'il ne s'agit pas des "eventProposition()"
+				if(array_key_exists($tmpEvt->_targetObjId,$evtList)==false && $tmpEvt->readRight() && empty($tmpEvt->pluginSpecificMenu))
 				{
-					if($tmpEvt->readRight())
-					{
-						$tmpEvt->pluginModule=self::moduleName;
-						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
-						$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
-						$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
-						$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl()."');";//Affiche l'événement dans son agenda principal, avec le bon "datetime" (fonction "getUrl()" surchargée)
-						$tmpEvt->pluginJsLabel="lightboxOpen('".$tmpEvt->getUrl("vue")."');";
-						$pluginsList[]=$tmpEvt;
-					}
+					$tmpEvt->pluginModule=self::moduleName;
+					$tmpEvt->pluginIcon=self::moduleName."/icon.png";
+					$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
+					$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
+					$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl()."');";//Affiche l'événement dans son agenda principal, avec le bon "datetime" (fonction "getUrl()" surchargée)
+					$tmpEvt->pluginJsLabel="lightboxOpen('".$tmpEvt->getUrl("vue")."');";
+					$pluginsList[$tmpEvt->_targetObjId]=$tmpEvt;//"_targetObjId" pour éviter les doublons d'evt (sur plusieurs agendas)
 				}
 			}
 		}
@@ -334,7 +317,7 @@ class CtrlCalendar extends Ctrl
 			{
 				$objLabel=Txt::dateLabel($curObj->dateBegin,"full",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
-				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title,"max").".ics"]];
+				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title).".ics"]];
 				$curObj->sendMailNotif($objLabel, null, $icsFile);
 				File::rm($icalPath);
 			}
@@ -637,7 +620,7 @@ class CtrlCalendar extends Ctrl
 		////	Affiche directement le fichier .Ical
 		else{
 			header("Content-type: text/calendar; charset=utf-8");
-			header("Content-Disposition: inline; filename=".Txt::clean($objCalendar->title,"max")."_".date("d-m-Y").".ics");
+			header("Content-Disposition: inline; filename=".Txt::clean($objCalendar->title)."_".date("d-m-Y").".ics");
 			echo $ical;
 		}
 	}

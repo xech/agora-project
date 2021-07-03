@@ -157,11 +157,11 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 					echo "<th><img src='app/img/switch.png' class='sLink' onclick=\"$('input[name^=personsImport]').trigger('click');\" title=\"".Txt::trad("invertSelection")."\"></th>";
 					for($colFieldCpt=0; $colFieldCpt < $nbFields; $colFieldCpt++)
 					{
-						$colFieldLabel=Txt::clean($headerFields[$colFieldCpt],"mini");//label du champ du fichier importé
+						$colFieldLabel=Txt::clean($headerFields[$colFieldCpt]);//label du champ du fichier importé
 						echo "<th><select name='agoraFields[".$colFieldCpt."]' data-fieldCpt='".$colFieldCpt."'><option></option>";
 						// Affiche chaque champs de type "csv_agora" & sélectionne celle correspondante à la colonne courante (si besoin)
 						foreach(MdlPerson::$csvFormats["csv_agora"]["fieldKeys"] as $agoraFieldKey){
-							$curOptionLabel=Txt::clean(Txt::trad($agoraFieldKey),"mini");
+							$curOptionLabel=Txt::clean(Txt::trad($agoraFieldKey));
 							$selectField=($colFieldLabel==$curOptionLabel || $colFieldLabel==$agoraFieldKey)  ?  "selected"  :  null;
 							if(!preg_match("/(login|password)/i",$agoraFieldKey) || $getLoginPassword==true)	{echo "<option value='".$agoraFieldKey."' ".$selectField.">".$curOptionLabel."</option>";}
 						}
@@ -201,7 +201,7 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 					//ESPACES D'AFFECTATION (SI ADMIN)
 					echo "<div>".Txt::trad("USER_spaceList")." :</div>";
 					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
-						if($tmpSpace->userAccessRight(Ctrl::$curUser)==2){
+						if($tmpSpace->accessRight()==2){
 							$tmpChecked=($tmpSpace->isCurSpace() || $tmpSpace->allUsersAffected()) ? "checked" : null;	//Affecté à tous les users / espace courant
 							$tmpDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;							//Affecté à tous les users
 							echo "<div class='vSpaceAffect'><input type=\"checkbox\" name=\"spaceAffectList[]\" value=\"".$tmpSpace->_id."\" id='spaceAffect".$tmpSpace->_id."' ".$tmpChecked." ".$tmpDisabled."><label for='spaceAffect".$tmpSpace->_id."'>".$tmpSpace->name."</label></div>";

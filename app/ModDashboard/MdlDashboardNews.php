@@ -21,9 +21,9 @@ class MdlDashboardNews extends MdlObject
 	const hasUsersComment=true;
 	const htmlEditorField="description";
 	protected static $_hasAccessRight=true;
-	public static $requiredFields=array("description");
-	public static $searchFields=array("description");
-	public static $sortFields=array("dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc");
+	public static $requiredFields=["description"];
+	public static $searchFields=["description"];
+	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc"];
 
 	/*******************************************************************************************
 	 * STATIC : RÉCUPÈRE LES NEWS POUR L'INFINITE SCROLL ($mode: "count"/"list". $newsOffsetCpt est le compteur d'affichage de l'infinite scroll)
@@ -38,8 +38,8 @@ class MdlDashboardNews extends MdlObject
 		}
 		//// Nombre ou Liste de news
 		$sqlOffline=(!empty($offlineNews)) ? "AND offline=1" : "AND offline is null";//Archivée (Offline) ?
-		if($mode=="count")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplayedObjects()." ".$sqlOffline);}
-		else				{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplayedObjects()." ".$sqlOffline." ".static::sqlSort("une desc")."  LIMIT 10 OFFSET ".((int)$newsOffsetCpt * 10));}//Affiche les news par blocks de 10
+		if($mode=="count")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline);}
+		else				{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("une desc")."  LIMIT 10 OFFSET ".((int)$newsOffsetCpt * 10));}//Affiche les news par blocks de 10
 	}
 
 	/*******************************************************************************************

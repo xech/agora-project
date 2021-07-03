@@ -67,7 +67,7 @@ class DbUpdate extends Db
 			Req::verifPhpVersion();
 			if(!is_writable(PATH_DATAS."config.inc.php"))	{echo "<h2>Config file not writable (config.inc.php)</h2>";  exit;}
 			////	DOUBLE VERIF (SI l'APPLI A DEJA ETE MAJ PAR UN AUTRE USER.. LE $_SESSION["dbVersionAgora"] DE L'USER COURANT DEVIENT ALORS OBSOLETE!)
-			if(self::versionAgoraUpdate(true)==false)	{$_SESSION=array();  Ctrl::redir("?ctrl=offline");}/*Si ya une connexion auto de l'user, on met à jour de manière transparente : donc pas de "disconnect=true"!*/
+			if(self::versionAgoraUpdate(true)==false)	{$_SESSION=[];  Ctrl::redir("?ctrl=offline");}/*Si ya une connexion auto de l'user, on met à jour de manière transparente : donc pas de "disconnect=true"!*/
 			////	UPDATE EN COURS : NOTIFICATION ET SORTIE DE SCRIPT
 			$updateLOCK=PATH_DATAS."updateLOCK.log";
 			if(!is_file($updateLOCK))	{file_put_contents($updateLOCK,"LOCKING UPDATE - VERROUILAGE DE MISE A JOUR");}
@@ -231,7 +231,7 @@ class DbUpdate extends Db
 				{
 					//réinitialise les Index (cles non primaires)
 					$primaryKey=null;
-					$tableIndexes=array();
+					$tableIndexes=[];
 					foreach(self::getTab("SHOW INDEXES FROM ".$tableName." WHERE Key_name NOT LIKE 'PRIMARY'") as $tmpIndex)    {self::query("ALTER TABLE ".$tableName." DROP INDEX `".$tmpIndex["Key_name"]."`");}
 					//Mise à jour des champs de chaque table
 					foreach(self::getTab("SHOW COLUMNS FROM ".$tableName) as $tmpField)
@@ -297,7 +297,7 @@ class DbUpdate extends Db
 				self::query("UPDATE ap_log SET action='add' WHERE action='ajout'");
 				self::query("UPDATE ap_log SET action='delete' WHERE action='suppr'");
 				self::query("DELETE FROM ap_userPreference WHERE keyVal!='tdb_periode' AND keyVal NOT LIKE 'type_affichage_%'");
-				$prefUpdates=array();
+				$prefUpdates=[];
 				$prefUpdates[]="keyVal=REPLACE(keyVal,'tdb_periode','pluginPeriod')";
 				$prefUpdates[]="value=REPLACE(value,'jour','day')";
 				$prefUpdates[]="value=REPLACE(value,'semaine','week')";
@@ -363,7 +363,7 @@ class DbUpdate extends Db
 						}
 					}
 					//Chemins du dossier de fichiers joints (faire en 2 fois : "path_data" des "HOST"!), des anciens player video/mp3, des plugins tinyMCE, etc
-					$descriptionUpdates=array();
+					$descriptionUpdates=[];
 					$descriptionUpdates[]="description=REPLACE(description,'../commun/dewplayer-mini.swf','app/misc/dewplayer.swf')";//player mp3
 					$descriptionUpdates[]="description=REPLACE(description,'../divers/video','app/misc/jwplayer')";//player video
 					$descriptionUpdates[]="description=REPLACE(description,'../divers/tiny_mce/plugins','app/js/tinymce/plugins')";//plugins tinymce
@@ -818,6 +818,14 @@ class DbUpdate extends Db
 				foreach(self::getCol("SELECT _idObject FROM ap_objectTarget WHERE objectType='calendar' AND `target`='spaceUsers' AND accessRight=2 AND _idSpace IN (select _id as _idSpace from ap_space where public=1)") as $idCalendar)
 					{self::query("UPDATE ap_calendar SET propositionGuest=1 WHERE _id=".(int)$idCalendar);}
 			}
+			////	MAJ 21.6
+			if(self::updateVersion("21.6"))
+			{
+				self::fieldExist("ap_agora", "folderDisplayMode", "ALTER TABLE ap_agora ADD `folderDisplayMode` varchar(255) DEFAULT NULL AFTER moduleLabelDisplay");
+			}
+
+
+			///////////////////////////////////////////////////////			!! ATTENTION !!			///////////////////////////////////////////////////////////////////////////////////////////
 			////!!!!	MODIFIER "/ModOffline/db.sql" !
 			////!!!!	MODIFIER LE NUMERO DE VERSION DANS  "app/Common/Params.php" + "app/Common/VueStructure.php" + "app/js/common-3.x.x.js"  +  "app/css/common-3.x.x.js" + "RELEASES.txt"
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

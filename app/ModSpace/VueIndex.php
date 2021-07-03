@@ -6,7 +6,7 @@
 .vModules img			{max-height:30px; margin-right:5px;}
 .vSpaceAffectations		{overflow-y:auto; height:70px;}
 .vSpaceAffectationLabel	{margin:12px 0px 8px 3px;}
-.vSpaceAffectation		{display:inline-block; width:32%; padding:0px 10px 10px 0px;}
+.vSpaceAffectation		{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.95em;}
 .vSpaceAffectation img	{max-height:18px;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
@@ -45,7 +45,7 @@
 					if(!empty($tmpSpace->public))		{echo "<div class='vSpaceAffectation'><img src='app/img/public.png'> ".Txt::trad("SPACE_publicSpace")."</div>";}
 					//Users affectes
 					foreach($tmpSpace->getUsers() as $tmpUser){
-						$userRightAcces=$tmpSpace->userAccessRight($tmpUser);
+						$userRightAcces=$tmpSpace->accessRightUser($tmpUser);
 						if($tmpSpace->allUsersAffected() && $userRightAcces==1)	{continue;}//Pas d'affichage si simple user et tous les users sont affectés
 						echo "<div class='vSpaceAffectation sLink' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."');\"><img src='app/img/user/".($userRightAcces==2?'adminSpace.png':'accesUser.png')."'> ".$tmpUser->getLabel()."</div>";
 					}

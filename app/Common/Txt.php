@@ -12,7 +12,7 @@
  */
 class Txt
 {
-	protected static $trad=array();
+	protected static $trad=[];
 	protected static $detectEncoding=null;
 
 	/*******************************************************************************************
@@ -74,80 +74,55 @@ class Txt
 	public static function tab2txt($array)
 	{
 		if(is_array($array)){
-			$array=array_filter($array);//suppr les elements vides
+			$array=array_filter($array);//supprime les elements vides
 			if(!empty($array))	{return "@@".implode("@@",$array)."@@";}
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************
 	 * REDUCTION D'UN TEXTE (conserve certaines balises html)
-	 *******************************************************************************************/
+	 ********************************************************************************************/
 	public static function reduce($text, $maxCaracNb=200, $removeLastWord=true)
 	{
-		$textLength=strlen(strip_tags($text));
-		if($textLength>$maxCaracNb)
-		{
-			$textDisplayed=strip_tags($text,"<p><div><span><a><button><img><br><hr>");							//Conserve certaines balises, idem "Req::filterParam()" (cf. descriptions tinyMce affichées dans "pluginTooltip" ou "MdlObject::sendMailNotif()")
-			$maxCaracNb+=round(strlen($textDisplayed)-$textLength);												//Ajoute la taille des balises html dans la compabilisation du nb de caractères
-			$text=substr($textDisplayed, 0, $maxCaracNb);														//Réduit la taile du texte
-			if(strrpos($text," ")>1 && $removeLastWord==true)	{$text=substr($text,0,strrpos($text," "));}		//Enlève le dernier mot qui dépasse (auquel cas)
-			$text=rtrim($text,",")."...";
+		//Vérif si on dépasse la longeur max (texte brut sans tag ni caractère html)
+		$textLength=strlen(htmlspecialchars_decode(strip_tags($text)));
+		if($textLength>$maxCaracNb){
+			$text=htmlspecialchars_decode(strip_tags($text,"<p><div><span><a><button><img><br><hr>"));		//Minimise les tags html de Tinymce pour les "title" et "sendMailNotif()" (idem "Req::filterParam()")
+			$maxCaracNb+=round(strlen($text)-$textLength);													//Ajoute la taille des balises html dans le nb de caractères
+			$text=substr($text, 0, $maxCaracNb);															//Réduit la taile du texte
+			if(strrpos($text," ")>1 && $removeLastWord==true)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot qui dépasse (déconseillé si $maxCaracNb < 100 car peut réduire fortement la taille du texte)
+			$text=rtrim($text,",")."...";																	//Ajoute un "..." à la fin du texte
 		}
-		return $text;
+		//Renvoie le résultat (Converti les doubles quotes pour les "title", car Tinymce ne les converti pas ..contrairement aux accents "&egrave;" & co)
+		return str_replace('"','&quot;',$text);
 	}
 
 	/*******************************************************************************************
-	 * SUPPRIME LES CARACTERES SPECIAUX D'UNE CHAINE DE CARACTERES
-	 * exemple de $scope avec "L'été!":  download=>"L_été!"  mini=>"L'ete!"  normal=>"L'ete"  maxi=>"L_ete"
+	 * SUPPRIME LES CARACTERES SPECIAUX D'UNE CHAINE DE CARACTERES (dowload de fichier & co)
+	 * Exple de $scope avec  "<div>L'ÉTÉ (!)</div>"  :  min -> "l'été (_)"  max -> "l_été__"
 	 *******************************************************************************************/
-	public static function clean($text, $scope="normal", $replaceBy="_")
+	public static function clean($text, $scope="min", $replaceAccents=false, $replaceBy="_")
 	{
-		//Enleve les balide éventuelle..
-		$text=strip_tags($text);
-		// Remplace les caractères pour un téléchargement de fichier/dossier
-		if($scope=="download")    {$text=str_replace(array('/','\\','"','\'',':','*','?','<','>','|'), $replaceBy, htmlspecialchars_decode($text));}
-		// Remplace les caractères accentués et autres caractères spéciaux
-		else
-		{
-			//Remplace les caractères accentués ou assimilés
-			$text=str_replace(["á","à","â","ä"], "a", $text);
-			$text=str_replace(["é","è","ê","ë"], "e", $text);
-			$text=str_replace(["í","ì","î","ï"], "i", $text);
-			$text=str_replace(["ó","ò","ö","ô"], "o", $text);
-			$text=str_replace(["ú","ù","ü","û"], "u", $text);
-			$text=str_replace("ç", "c", $text);
-			$text=str_replace("ñ", "n", $text);
-			//Remplace les caracteres spéciaux
-			if($scope=="normal" || $scope=="max")
-			{
-				$carac_ok=($scope=="normal")  ?  array(" ","-",".","_","'","(",")","[","]")  :  array("-",".","_");
-				for($i=0; $i<strlen($text); $i++){
-					if(!preg_match("/[0-9a-z]/i",$text[$i]) && !in_array($text[$i],$carac_ok))	{$text[$i]=$replaceBy;}
-				}
-				$text=str_replace($replaceBy.$replaceBy, $replaceBy, $text);
-			}
+		//Enleve les éventuelles balises et convertit les caractères spéciaux html
+		$text=htmlspecialchars_decode(strip_tags($text));
+		//Remplace si besoin les caractères accentués
+		if($replaceAccents==true){
+			$searchedCarac=explode(",", "å,á,à,â,ä,è,é,ê,ë,í,î,ï,ì,ò,ó,ô,ö,ø,ú,ù,û,ü,ÿ,ç,ñ,Å,Á,À,Â,Ä,È,É,Ê,Ë,Í,Î,Ï,Ì,Ò,Ó,Ô,Ö,Ø,Ú,Ù,Û,Ü,Ÿ,Ç,Ñ,æ,œ,Æ,Œ");
+			$replacedCarac=explode(",", "a,a,a,a,a,e,e,e,e,i,i,i,i,o,o,o,o,o,u,u,u,u,y,c,n,A,A,A,A,A,E,E,E,E,I,I,I,I,O,O,O,O,O,U,U,U,U,Y,C,N,ae,oe,AE,OE");
+			$text=str_replace($searchedCarac, $replacedCarac, $text);
 		}
+		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
+		$acceptedCarac=($scope=="max")  ?  ['-','.','_']  :  ['-','.','_',' ','\'','(',')','[',']','@'];
+		foreach(preg_split('//u',$text) as $tmpCarac){																								//pas de "str_split()" qui ne reconnait pas les caractères accentués..
+			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpCarac) && !in_array($tmpCarac,$acceptedCarac))  {$text=str_replace($tmpCarac,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
+		}
+		//Minimise le nb de $replaceBy et renvoie le résultat
+		$text=str_replace($replaceBy.$replaceBy, $replaceBy, $text);
 		return trim($text);
 	}
 
 	/*******************************************************************************************
-	 * REDUCTION ET NETTOYAGE D'UN TEXTE POUR UN AFFICHAGE "PLUGIN" (cf. double "quotes" and co)
-	 *******************************************************************************************/
-	public static function cleanPlugin($text, $maxCaracNb=200, $allowable_tags="<hr><br>")
-	{
-		return htmlspecialchars(self::reduce(strip_tags($text,$allowable_tags),$maxCaracNb));
-	}
-
-	/*******************************************************************************************
-	 * TEXTE EN MAJUSCULE
-	 *******************************************************************************************/
-	public static function maj($text)
-	{
-		return strtoupper(self::clean($text,"mini"));
-	}
-
-	/*******************************************************************************************
-	 * ENCODE UNE CHAINE EN UTF-8 ?
+	 * ENCODE SI BESOIN UNE CHAINE EN UTF-8
 	 *******************************************************************************************/
 	public static function utf8Encode($text)
 	{
@@ -172,81 +147,69 @@ class Txt
 		return self::utf8Encode(strftime($format,$timestamp));
 	}
 
-	/*******************************************************************************************
+	/*****************************************************************************************************
 	 * AFFICHAGE D'UNE DATE
 	 * $timeBegin & $timeEnd : Timestamp unix ou format DateTime
-	 * $format => normal / full / mini / date / dateFull / dateMini
-	 *******************************************************************************************/
+	 * $format => normal / full / mini / dateFull / dateMini
+	 * Note : les 'task' peuvent avoir un $dateBegin à null et un $dateEnd non-null (cf. "dateBeginEnd()")
+	 *****************************************************************************************************/
 	public static function dateLabel($timeBegin, $format="normal", $timeEnd=null)
 	{
-		// Vérif de base. $dateBegin peut être vide, mais $dateEnd spécifié (task)
+		// Vérif de base
 		if(!empty($timeBegin) || !empty($timeEnd))
 		{
-			//Formatage de la date && Séparateur de début/fin
-			$fEnd=null;
-			$imgSeparator=" <img src='app/img/arrowRight.png'> ";
-			//Formate en timestamp si besoin
+			//Formate en timestamp si besoin ('dateTime' de bdd en entrée?)
 			if(!is_numeric($timeBegin))						{$timeBegin=strtotime($timeBegin);}
-			if(!is_numeric($timeEnd) && !empty($timeEnd))	{$timeEnd=strtotime($timeEnd);}
-			// Format du mois et de l'année si != de l'année courante
-			$fMonthYear=($format=="full") ? "%B" : "%b";
-			if((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$fMonthYear.=" %Y";}
-			//Format du jour et de l'heure
-			$fDayMonthYear="%e ".$fMonthYear;
-			$fHM="%k:%M";//exple "9:30"
-			$dayBeginEnd=$hourBeginEnd=false;
-			if(!empty($timeEnd)){
-				if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))	{$dayBeginEnd=true;}	//JourDebut!=jourFin
-				if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))	{$hourBeginEnd=true;}	//heureDebut!=heureFin
+			if(!empty($timeEnd) && !is_numeric($timeEnd))	{$timeEnd=strtotime($timeEnd);}
+			//Controle si les jours de debut/fin sont différents et si les heures de debut/fin sont différentes
+			$diffDays=$diffHours=false;
+			if(!empty($timeBegin) && !empty($timeEnd)){
+				if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))  {$diffDays=true;}
+				if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))  {$diffHours=true;}
 			}
+			//Prépare le formatage via "strftime()"
+			$_begin=$_end=null;																							//Init le formatage complet du début/fin
+			$_HM="%k:%M";																								//Format de l'heure (ex: "9:30")
+			$_DMY=($format=="full" || $format=="dateFull")  ?  "%a %e"  :  "%e";										//Format du jour 'full' ou 'normal' (ex: 'lun. 8' ou '8')
+			$_DMY.=" %b";																								//Format du mois abrégé (ex: 'fev.')
+			if(date("y",$timeBegin)!=date("y") || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$_DMY.=" %Y";}	//Format de l'année si différente de l'année en cours (ex: '2050')
+			$separator=" <img src='app/img/arrowRight.png'> ";															//Image de séparation de début/fin
 
-			//NORMAL
-			if($format=="normal"){
-				$fBegin=$fDayMonthYear." ".$fHM;														//8 fév. 2025 11h30
-				if($dayBeginEnd==true)		{$fEnd=$imgSeparator.$fBegin;}								//8 fév. 2025 11h30 > 15 mars 2025 17h30
-				elseif($hourBeginEnd==true)	{$fEnd="-".$fHM;}											//8 fév. 2025 11h30-12h30
+			//NORMAL OU FULL
+			if($format=="normal" || $format=="full"){
+				$_begin=$_DMY." ".$_HM;													//[lun.] 8 fév. 2050 11:30
+				if($diffDays==true)			{$_end=$separator.$_begin;}					//[lun.] 8 fév. 2050 11:30 > [mer.] 15 mars 2050 17:30
+				elseif($diffHours==true)	{$_end="-".$_HM;}							//[lun.] 8 fév. 2050 11:30-12:30
 			}
-			//FULL (cf. menu context d'un objet)
-			if($format=="full"){
-				$fDayMonthYear="%A ".$fDayMonthYear;													//lundi 8 février 2025
-				$fBegin=$fDayMonthYear." ".$fHM;														//lundi 8 février 2025 11h30
-				if($dayBeginEnd==true)		{$fEnd=$imgSeparator.$fBegin;}								//lundi 8 février 2025 11h30 > mercredi 15 mars 2025 17h30
-				elseif($hourBeginEnd==true)	{$fEnd="-".$fHM;}											//lundi 8 février 2025 11h30-12h30
-			}
-			//MINI (cf. evt d'un agenda)
+			//MINI
 			elseif($format=="mini"){
-				if($dayBeginEnd==true)		{$fBegin=$fDayMonthYear;	$fEnd=$imgSeparator.$fBegin;}	//8 fev. 2025 > 15 mars
-				elseif($hourBeginEnd==true)	{$fBegin=$fHM;				$fEnd="-".$fBegin;}				//11h30-12h30
-				else						{$fBegin=$fHM;}												//11h30
-			}
-			//DATE (cf. "displayMode" des objets à "line")
-			elseif($format=="date"){
-				$fBegin=$fDayMonthYear;																	//8 fév. 2025
-				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}									//8 fév. 2025 > 15 mars 2025
+				if($diffDays==true)			{$_begin=$_DMY;	$_end=$separator.$_begin;}	//8 fev. 2050 > 15 mars 2050
+				elseif($diffHours==true)	{$_begin=$_HM;	$_end="-".$_begin;}			//11:30-12:30
+				else						{$_begin=$_HM;}								//11:30
 			}
 			//DATE FULL
 			elseif($format=="dateFull"){
-				$fBegin=$fDayMonthYear="%A ".$fDayMonthYear;											//lundi 8 fév. 2025
-				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}									//lundi 8 fév. 2025 > mercredi 15 mars 2025
+				$_begin=$_DMY;															//lun. 8 fév. 2050
+				if($diffDays==true)	{$_end=$separator.$_begin;}							//lun. 8 fév. 2050 > mercredi 15 mars 2050
 			}
-			//DATE MINI
-			elseif($format=="dateMini"){
-				$fBegin=$fDayMonthYear="%d/%m/%Y";														// 8/02/2015
-				if($dayBeginEnd==true)	{$fEnd=$imgSeparator.$fBegin;}									// 8/02/2015 > 15/03/2015
+			//DATE MINI (..OU SI $FORMAT N'EXISTE PAS)
+			else{
+				$_begin=$_DMY="%d/%m/%Y";												//8/02/2015
+				if($diffDays==true)	{$_end=$separator.$_begin;}							//8/02/2015 > 15/03/2015
 			}
 
 			//Applique le formatage demandé avec la configuration locale (timezone)
-			if(!empty($timeBegin) && !empty($timeEnd))	{$timeTxt=strftime($fBegin,$timeBegin).strftime($fEnd,$timeEnd);}//date début > date fin
-			elseif(!empty($timeBegin))					{$timeTxt=strftime($fBegin,$timeBegin);}//date début
-			elseif(!empty($timeEnd))					{$timeTxt=Txt::trad("end")." : ".trim(strftime($fEnd,$timeEnd),$imgSeparator);}//Fin : date fin
+			if(!empty($timeBegin) && !empty($timeEnd))	{$dateLabel=strftime($_begin,$timeBegin).strftime($_end,$timeEnd);}				//Date de début + fin
+			elseif(!empty($timeBegin))					{$dateLabel=strftime($_begin,$timeBegin);}										//Date de début
+			elseif(!empty($timeEnd))					{$dateLabel=Txt::trad("end")." : ".trim(strftime($_end,$timeEnd),$separator);}	//Date de fin
 
-			//Formate les minutes "00" et les "Aujourd'hui"
-			$timeTxt=str_replace(" 0:00", null, $timeTxt);//Efface les "0:00" (A faire en premier! les tasks peuvent avoir juste une date, sans heure précise)
-			$timeTxt=str_replace(":00", "h", $timeTxt);//Enleves les minutes ":00" aux heures pleines (ex: "12:00" -> "12h")
-			if(preg_match("/(normal|full)/i",$format) && date("Ymd")==date("Ymd",$timeBegin))  {$timeTxt=str_replace(strftime($fDayMonthYear), self::trad("today"), $timeTxt);}//Affiche "Aujourd'hui" (..en plus de l'heure)
+			//Formate les minutes "00" et affiche si besoin "Aujourd'hui"
+			if($diffHours==false && $diffHours==false)  {$dateLabel=str_replace(" 0:00", null, $dateLabel);}//Efface les "0:00" (cf. tasks qui peuvent ne pas avoir d'heure)
+			if($format=="mini")  {$dateLabel=str_replace(":00","h",$dateLabel);}							//Enleve les minutes ":00" aux heures pleines (ex pour les événements : "12:00" -> "12h")
+			elseif(($format=="normal" || $format=="full") && date("Ymd")==date("Ymd",$timeBegin))  {$dateLabel=str_replace(strftime($_DMY),self::trad("today"),$dateLabel);}	//Affiche "Aujourd'hui" au lieu du $_DMY
 
-			//On renvoie le résultat (encodé en UTF-8 ?)
-			return static::utf8Encode($timeTxt);
+			//Renvoie le résultat (encodé si besoin en UTF-8)
+			return static::utf8Encode($dateLabel);
 		}
 	}
 

@@ -23,8 +23,8 @@ class MdlContact extends MdlPerson
 	const hasUsersLike=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
-	public static $requiredFields=array("name");
-	public static $sortFields=array("name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","_idUser@@asc","_idUser@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc");
+	public static $requiredFields=["name"];
+	public static $sortFields=["name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","_idUser@@asc","_idUser@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc"];
 
 	/*******************************************************************************************
 	 * PHOTO D'UN CONTACT
@@ -52,14 +52,7 @@ class MdlContact extends MdlPerson
 	{
 		//"Créer un utilisateur sur cet espace" : admin général uniquement!
 		if(Ctrl::$curUser->isAdminGeneral())
-		{
-			$options["specificOptions"][]=array(
-				"actionJs"=>"contactAddUser('".$this->_targetObjId."')",
-				"iconSrc"=>"plus.png",
-				"label"=>Txt::trad("CONTACT_createUser"),
-				"tooltip"=>Txt::trad("CONTACT_createUserInfo")
-			);
-		}
+			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_targetObjId."')", "iconSrc"=>"plus.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserInfo")];}
 		return parent::contextMenu($options);
 	}
 }

@@ -20,9 +20,9 @@ class MdlForumMessage extends MdlObject
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
-	public static $requiredFields=array("description");
-	public static $searchFields=array("title","description");
-	public static $sortFields=array("dateCrea@@asc","dateCrea@@desc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc");
+	public static $requiredFields=["description"];
+	public static $searchFields=["title","description"];
+	public static $sortFields=["dateCrea@@asc","dateCrea@@desc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
 
 	/*******************************************************************************************
 	 * SURCHARGE : SUPPRIME UN MESSAGE

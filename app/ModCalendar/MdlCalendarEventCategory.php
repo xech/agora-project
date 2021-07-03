@@ -15,8 +15,8 @@ class MdlCalendarEventCategory extends MdlObject
 	const moduleName="calendar";
 	const objectType="calendarEventCategory";
 	const dbTable="ap_calendarEventCategory";
-	public static $requiredFields=array("title");
-	public static $sortFields=array("title@asc","title@desc");
+	public static $requiredFields=["title"];
+	public static $sortFields=["title@asc","title@desc"];
 
 	/*******************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR

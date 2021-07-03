@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <!--CONTENEUR DE LA CARTE-->
-<img src="app/img/loading.gif" style="position:absolute;bottom:50px;right:50px;z-index:50;">
+<img src="app/img/loading.png" style="position:absolute;bottom:50px;right:50px;z-index:50;">
 <div id="mapid"></div>
 
 

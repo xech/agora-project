@@ -15,7 +15,7 @@ class CtrlLink extends Ctrl
 	const moduleName="link";
 	public static $folderObjectType="linkFolder";
 	public static $moduleOptions=["adminRootAddContent"];
-	public static $MdlObjects=array("MdlLink","MdlLinkFolder");
+	public static $MdlObjects=["MdlLink","MdlLinkFolder"];
 
 	/*******************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -23,17 +23,17 @@ class CtrlLink extends Ctrl
 	public static function actionDefault()
 	{
 		$vDatas["foldersList"]=self::$curContainer->folders();
-		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplayedObjects(self::$curContainer)." ".MdlLink::sqlSort());
+		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplay(self::$curContainer)." ".MdlLink::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
 	/*******************************************************************************************
 	 * PLUGINS
 	 *******************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=self::getPluginsFolders($pluginParams,"MdlLinkFolder");
-		foreach(MdlLink::getPluginObjects($pluginParams) as $tmpObj)
+		$pluginsList=self::getPluginsFolders($params,"MdlLinkFolder");
+		foreach(MdlLink::getPlugins($params) as $tmpObj)
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";

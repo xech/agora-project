@@ -15,7 +15,7 @@ class CtrlFile extends Ctrl
 	const moduleName="file";
 	public static $folderObjectType="fileFolder";
 	public static $moduleOptions=["adminRootAddContent"];
-	public static $MdlObjects=array("MdlFile","MdlFileFolder");
+	public static $MdlObjects=["MdlFile","MdlFileFolder"];
 
 	/*******************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -38,7 +38,7 @@ class CtrlFile extends Ctrl
 		}
 		////	Dossiers & Fichiers
 		$vDatas["foldersList"]=self::$curContainer->folders();
-		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplayedObjects(self::$curContainer)." ".MdlFile::sqlSort());
+		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
 			//Lien du label du fichier : Télécharge le fichier (dans une nouvelle fenêtre car cela peut bloquer la page si c'est un gros fichier)
@@ -74,10 +74,10 @@ class CtrlFile extends Ctrl
 	/*******************************************************************************************
 	 * PLUGINS
 	 *******************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=self::getPluginsFolders($pluginParams,"MdlFileFolder");
-		foreach(MdlFile::getPluginObjects($pluginParams) as $tmpObj)
+		$pluginsList=self::getPluginsFolders($params,"MdlFileFolder");
+		foreach(MdlFile::getPlugins($params) as $tmpObj)
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
@@ -128,7 +128,7 @@ class CtrlFile extends Ctrl
 	public static function actionDownloadArchive()
 	{
 		$archiveSize=0;
-		$filesList=array();
+		$filesList=[];
 		////	Ajoute à l'archive les dossiers sélectionnés
 		foreach(self::getTargetObjects("fileFolder") as $curFolder)
 		{
@@ -144,7 +144,7 @@ class CtrlFile extends Ctrl
 					$folderFiles=Db::getObjTab("file","SELECT * FROM ap_file WHERE _idContainer=".$tmpFolder->_id);
 					if(empty($folderFiles))  {$filesList[]=array("emptyFolderZipPath"=>$folderPathZip);}
 					else{
-						foreach($folderFiles as $tmpFile)	{$filesList[]=array("realPath"=>$tmpFile->filePath(),"zipPath"=>$folderPathZip.Txt::clean($tmpFile->name,"download"));}
+						foreach($folderFiles as $tmpFile)  {$filesList[]=array("realPath"=>$tmpFile->filePath(),"zipPath"=>$folderPathZip.Txt::clean($tmpFile->name));}
 					}
 				}
 			}

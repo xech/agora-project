@@ -160,8 +160,11 @@ $(function(){
 								<label for=\"displayedCal".$tmpCal->_targetObjId."\" title=\"".$tmpCal->description."\" class='noTooltip'>".$tmpCal->title."</label> ".(Req::isMobile()==false?$tmpCal->contextMenu(["iconBurger"=>"small"]):null)."
 							 </div>";
 					}
-					//"Afficher tous les agendas" (Admin général uniquement) && Bouton "Afficher" la sélection
-					if(Ctrl::$curUser->isAdminGeneral())  {echo ($_SESSION["displayAllCals"]==false)  ?  "<a id='adminDisplayAllCals' onclick=\"redir('?ctrl=calendar&displayAllCals=1')\" title=\"".Txt::trad("CALENDAR_displayAllCals")."\"><img src='app/img/plusSmall.png'></a>"  :  null;}
+					//"Afficher tous les agendas" (Admin gé.)
+					if(Ctrl::$curUser->isAdminGeneral() && $_SESSION["displayAllCals"]==false)  {echo "<a id='adminDisplayAllCals' onclick=\"redir('?ctrl=calendar&displayAllCals=1')\" title=\"".Txt::trad("CALENDAR_displayAllCals")."\"><img src='app/img/plusSmall.png'></a>";}
+					//Curtime
+					echo "<input type='hidden' name='curTime' value=\"".Req::getParam("curTime")."\"/>";
+					//Bouton "Afficher" la sélection
 					echo Txt::submitButton("show",false);
 				echo "</form><hr>";
 			}
@@ -287,13 +290,13 @@ $(function(){
 				</div>
 				<!--OPTION "AUJOURD'HUI"  &&  MENU DES MODES D'AFFICHAGE (month, week, workWeek, 4Days, day)-->
 				<div class="vCalendarDisplayMode">
-					<span class="vCalendarDisplayToday sLink" onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')"><img src="app/img/calendar/displayToday.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("displayToday") ?></span></span>
+					<span class="vCalendarDisplayToday sLink" onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')"><img src="app/img/calendar/displayToday.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("today") ?></span></span>
 					<span for="menuDisplayMode<?= $tmpCal->_targetObjId ?>" class="menuLaunch"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("CALENDAR_displayMode")." ".Txt::trad("CALENDAR_display_".$displayMode) ?></span>&nbsp;<img src="app/img/arrowBottom.png"></span>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->_targetObjId ?>">
 					<?php
-					//Affiche les $displayModeOptions
+					//Affiche les $displayModes
 					if(Req::isMobile())  {echo "<label>".Txt::trad("CALENDAR_displayMode")."</label><hr>";}
-					foreach(MdlCalendar::$displayModeOptions as $displayModeTmp)
+					foreach(MdlCalendar::$displayModes as $displayModeTmp)
 						{echo "<div class='menuLine ".($displayModeTmp==$displayMode?"sLinkSelect":"sLink")."' onclick=\"redir('?ctrl=calendar&displayMode=".$displayModeTmp."')\"><div class='menuIcon'><img src='app/img/calendar/display".ucfirst($displayModeTmp).".gif'></div><div>".ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp))."</div></div>";}
 					?>
 					</div>

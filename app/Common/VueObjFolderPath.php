@@ -13,7 +13,7 @@
 		$leftIcon=(empty($tmpFolder->_idContainer))  ?  "folder/folderSmall"  :  "arrowRightBig";//Icone "Folder" pour le dossier racine OU Icone "arrowRight"
 		$folderLink=($curFolder->_id!=$tmpFolder->_id)  ?  "class='sLink' onclick=\"redir('".$tmpFolder->getUrl()."')\""  :  null;//Lien vers le dossier (sauf pour le dossier courant)
 		$ContextMenu=(Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id && $curFolder->isRootFolder()==false)  ?  "<div class='pathContextMenu'>".$tmpFolder->contextMenu(["iconBurger"=>"small"])."</div>"  :  null;//Menu contextuel du dossier courant (sauf responsive)
-		echo "<div><img src='app/img/".$leftIcon.".png'></div>".$ContextMenu."<div ".$folderLink." title=\"".$tmpFolder->description."\">".Txt::reduce($tmpFolder->name,45)."</div>";/*plusieurs <div> : cf. responsive avec un "name" très long*/
+		echo "<div><img src='app/img/".$leftIcon.".png'></div>".$ContextMenu."<div ".$folderLink." title=\"".$tmpFolder->description."\">".Txt::reduce($tmpFolder->name,40,false)."</div>";/*plusieurs <div> : cf. responsive avec un "name" très long*/
 	}
 	////	Menu d'ajout d'élément
 	if(!empty($addElemLabel) && $curFolder->addContentRight()){

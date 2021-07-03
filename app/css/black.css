@@ -13,11 +13,11 @@ a:active, .sLinkSelect, input:checked+label	{color:#f88;}
 }
 
 /*Blocks d'objet (ou pas) & menus contextuels*/
-.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#333;}/*survol une ligne de menu (affectation ou autre)*/
+.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#333;}/*survol une ligne de menu*/
 .objContainer, .miscContainer, .emptyContainer, .menuContext	{background:linear-gradient(135deg,#444,#222 100px); background-color:#222;}
-.objContainerSelect												{background:#444!important;}/*plus "important" que le ":hover"*/
-.objLines .objContainer											{border-bottom:solid 1px #333;}
-.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover		{background:#333; background-image:none;}/*lignes survolées et lignes impaires*/
+.objContainerSelect, .objContainerSelect .objLabel				{background:#444!important;}/*".objLabel" pour les vignettes d'image du module "File"*/
+.objLines .objContainer											{border-bottom:solid 1px #777; box-shadow:2px 2px 8px rgb(50,50,50);}
+.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover	{background:#333; background-image:none;}/*lignes survolées et lignes impaires*/
 .objLines .alternateLines:nth-child(even)						{background:#222;}/*ligne paire*/
 .objBlocks .hasThumb .objLabel									{background:rgba(0,0,0,0.95);}
 .emptyContainer													{background:rgba(0,0,0,0.7);}

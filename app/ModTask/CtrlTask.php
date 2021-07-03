@@ -15,7 +15,7 @@ class CtrlTask extends Ctrl
 	const moduleName="task";
 	public static $folderObjectType="taskFolder";
 	public static $moduleOptions=["adminRootAddContent"];
-	public static $MdlObjects=array("MdlTask","MdlTaskFolder");
+	public static $MdlObjects=["MdlTask","MdlTaskFolder"];
 
 	/*******************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -24,7 +24,7 @@ class CtrlTask extends Ctrl
 	{
 		$vDatas["foldersList"]=self::$curContainer->folders();
 		$filterPriority=Req::getParam("filterPriority")>=1 ? "AND priority=".Db::formatParam("filterPriority") : null;
-		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplayedObjects(self::$curContainer)." ".$filterPriority." ".MdlTask::sqlSort());
+		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplay(self::$curContainer)." ".$filterPriority." ".MdlTask::sqlSort());
 		////	TIMELINE/GANTT
 		$timelineBegin=$timelineEnd=null;
 		$vDatas["timelineTasks"]=$vDatas["timelineDays"]=[];
@@ -80,10 +80,10 @@ class CtrlTask extends Ctrl
 	/*******************************************************************************************
 	 * PLUGINS
 	 *******************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=self::getPluginsFolders($pluginParams,"MdlTaskFolder");
-		foreach(MdlTask::getPluginObjects($pluginParams) as $tmpObj)
+		$pluginsList=self::getPluginsFolders($params,"MdlTaskFolder");
+		foreach(MdlTask::getPlugins($params) as $tmpObj)
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";

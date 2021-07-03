@@ -38,16 +38,16 @@ class CtrlSpace extends Ctrl
 			////	Enregistre & recharge l'objet
 			$curSpace=$curSpace->createUpdate("name=".Db::formatParam("name").", description=".Db::formatParam("description").", public=".Db::formatParam("public").", `password`=".Db::formatParam("password").", userInscription=".Db::formatParam("userInscription").", userInscriptionNotify=".Db::formatParam("userInscriptionNotify").", usersInvitation=".Db::formatParam("usersInvitation").", wallpaper=".Db::formatParam("wallpaper"));
 			////	Affectations des users
-			if(Ctrl::$curUser->isAdminGeneral())
+			if(Ctrl::$curUser->isAdminSpace())
 			{
 				//Réinit les droits
 				Db::query("DELETE FROM ap_joinSpaceUser WHERE _idSpace=".$curSpace->_id);
 				//Affectation "allUsers"
-				if(Req::isParam("allUsers"))	{Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curSpace->_id.", allUsers=1, accessRight=1");}
-				//Enregistre les affectations
+				if(Req::isParam("allUsers"))  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curSpace->_id.", allUsers=1, accessRight=1");}
+				//Enregistre les affectations de chaque user
 				if(Req::isParam("spaceAffect")){
 					foreach(Req::getParam("spaceAffect") as $curAffect){
-						$curAffect=explode("_",$curAffect);//user 5 + droit 2 : "5_2" => "[5,2]"
+						$curAffect=explode("_",$curAffect);//"5_2" (user 5 et droit 2 d'admin) => "[5,2]"
 						Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curSpace->_id.", _idUser=".$curAffect[0].", accessRight=".$curAffect[1]);
 					}
 				}

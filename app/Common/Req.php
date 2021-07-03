@@ -106,8 +106,8 @@ class Req
 			//Enlève le javascript
 			$value=preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $value);
 			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Ctrl::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
-			//Enleve les balises html (sauf <br><hr><a><img>) pour les parametres qui ne proviennent pas d'un éditeur tinyMce ("description", "message" des mails, "editorDraft", "footerHtml")
-			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}//Tester avec les News et avec l'url "index.php?ctrl=dashboard&notify=<svg/onload=alert(/myXss/)>"
+			//Enleve les balises html pour les parametres qui ne proviennent pas de l'éditeur tinyMce (sauf <p><div><span>...). Tester avec les News et avec l'url "index.php?ctrl=dashboard&notify=<svg/onload=alert(/myXss/)>"
+			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}
 		}
 		return $value;
 	}

@@ -15,10 +15,13 @@ $(function(){
 		(this.checked) ? $("#divUserInscriptionNotify").fadeIn() : $("#divUserInscriptionNotify").fadeOut();//Affiche l'option de notif par email ?
 	}).trigger("change");//Trigger: init l'affichage
 
-	////	Sélectionne un module (ou pas) : affiche/masque les options de chaque module
+	////	Sélectionne/Désélectionne un module
 	$("input[name='moduleList[]']").change(function(){
+		//Module "Calendar" : affiche "Le module agenda restera toujours accessible dans la barre de menu..."
+		if(this.id=="moduleInputcalendar" && this.checked==false)  {notify("<?= Txt::trad("CALENDAR_moduleFullyDisabled") ?>");}
+		//Affiche/masque les options de chaque module
 		$("[name='moduleList[]']").each(function(){
-			var optionsSelector=".moduleOptions"+this.id.replace("module","");
+			var optionsSelector=".moduleOptions"+this.id.replace("moduleInput","");
 			if(this.checked)	{$(optionsSelector).show();}
 			else				{$(optionsSelector).hide();}
 		});
@@ -33,13 +36,27 @@ $(function(){
 	////	Initialise le tri des modules (".vModuleLineSort" pour déplacer à partir de cette cellule. "hightlight" pour afficher un module "fantome". "y" pour déplacer uniquement en vertical)
 	if(isMobile()==false)  {$("#modulesList").sortable({handle:".vModuleLineSort",placeholder:'highlight',axis:"y"}).disableSelection();}
 
+	////	Sélectionne "allUsers" : toutes les checkboxes "user" sont alors "disabled" & "checked" (sinon on les réactive et uncheck)
+	$("input#allUsers").click(function(){
+		$(".spaceAffectInput[value$='_1']").prop("disabled",this.checked).prop("checked",this.checked);	//Switch le "disabled"+"Checked"
+		spaceAffectationsLabel();																		//Stylise les labels
+	});
+
+	//// L'user courant est admin de l'espace : évite de se désaffecter de son propre espace..
+	$(".adminAlwaysChecked").click(function(event){							//Click de label ou checkbox
+		$(this).find(".spaceAffectInput[value$='_2']").prop("checked",true);//Check toujours la case "admin"
+		spaceAffectationsLabel();											//Stylise les labels
+	});
+
 	////	Init les affectations des Spaces<->Users (cf. "common.js")
-	initSpaceAffectations();
+	spaceAffectations();
 });
 
 ////	Contrôle du formulaire
 function formControl()
 {
+   //Controle la longeur du password
+   if($("#divPassword input[name=password]").isEmpty()==false && $("#divPassword input[name=password]").val().length<6)  {notify("<?= Txt::trad("passwordInvalid") ?>"); return false; }
    //Controle le nb de modules cochés
    if($("input[name='moduleList[]']:checked").length==0)  {notify("<?= Txt::trad("SPACE_selectModule") ?>"); return false; }
 	//Controle final (champs obligatoires, affectations/droits d'accès, etc)
@@ -56,7 +73,7 @@ textarea[name='description']			{margin-top:20px; <?= empty($curSpace->descriptio
 .vWallpaper>div							{display:table-cell;}
 .vWallpaper>div:first-of-type			{width:90px;}
 .vWallpaper img							{max-height:90px;}
-label[for='allUsers']					{font-size:1.1em; font-style:italic;}
+label[for='allUsers']					{font-size:1.15em;}
 .usersFieldset							{max-height:700px; overflow:auto;}/*fieldset des users*/
 
 /*modules*/
@@ -151,8 +168,8 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			echo "<li>
 					<div class='vModuleLine'>
 						<div>
-							<input type='checkbox' name='moduleList[]' value=\"".$moduleName."\" id=\"module".$moduleName."\" ".(empty($tmpModule["disabled"])?"checked":null).">
-							<label for=\"module".$moduleName."\" title=\"".$tmpModule["description"]."\">".$tmpModule["label"]." <img src=\"app/img/".$moduleName."/icon.png\" class='vModuleLineIcon'></label>
+							<input type='checkbox' name='moduleList[]' value=\"".$moduleName."\" id=\"moduleInput".$moduleName."\" ".(empty($tmpModule["disabled"])?"checked":null).">
+							<label for=\"moduleInput".$moduleName."\" title=\"".$tmpModule["description"]."\">".$tmpModule["label"]." <img src=\"app/img/".$moduleName."/icon.png\" class='vModuleLineIcon'></label>
 							".$moduleOptions."
 						</div>
 						<div class='vModuleLineSort' title=\"".Txt::trad("SPACE_moduleRank")."\">&nbsp;</div>
@@ -164,7 +181,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	</div>
 
 	<!--USERS DE L'ESPACE-->
-	<?php if(Ctrl::$curUser->isAdminGeneral()){ ?>
+	<?php if(Ctrl::$curUser->isAdminSpace()){ ?>
 	<div class="lightboxBlockTitle"><?= Txt::trad("SPACE_usersAccess") ?></div>
 	<div class="lightboxBlock usersFieldset">
 		<div class="spaceAffectLine">
@@ -174,20 +191,24 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 		</div>
 		<div class="spaceAffectLine sTableRow">
 			<label for="allUsers"><?= Txt::trad("SPACE_allUsers") ?></label>
-			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><input type="checkbox" name="allUsers" id="allUsers" value="allUsers" <?= ($curSpace->allUsersAffected())?'checked':null ?>></div>
+			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curSpace->allUsersAffected())?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>
-		<?php foreach($userList as $tmpUser){
-			$disableRead=($curSpace->allUsersAffected())  ?  "disabled"  :  null;
-			$checkRead=($curSpace->userAccessRight($tmpUser)==1 || $curSpace->allUsersAffected())  ?  "checked"  :  null;
-			$checkWrite=($curSpace->userAccessRight($tmpUser)==2)  ?  "checked"  :  null;
+		<?php
+		//Affectations des utilisateurs
+		foreach($userList as $tmpUser)
+		{
+			$adminAlwaysChecked=($tmpUser->_id==Ctrl::$curUser->_id && $tmpUser->isAdminSpace())  ?  "adminAlwaysChecked" :  null;	//L'user courant est admin de l'espace : évite de se désaffecter de son propre espace..
+			$userChecked=($curSpace->accessRightUser($tmpUser)==1 || $curSpace->allUsersAffected())  ?  "checked"  :  null;			//Sélectionne la box "user"
+			$userDisabled=($curSpace->allUsersAffected())  ?  "disabled"  :  null;													//Désactive "user" si "allUsers" est sélectionné
+			$adminChecked=($curSpace->accessRightUser($tmpUser)==2)  ?  "checked"  :  null;											//Sélectionne la box "admin"
+			echo "<div class='spaceAffectLine sTableRow ".$adminAlwaysChecked."' id=\"targetLine".$tmpUser->_id."\">
+					<label class='spaceAffectLabel'>".$tmpUser->getLabel()."</label>
+					<div title=\"".Txt::trad("SPACE_userInfo")."\"> <input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpUser->_id."_1\" ".$userChecked." ".$userDisabled."></div>
+					<div title=\"".Txt::trad("SPACE_adminInfo")."\"><input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpUser->_id."_2\" ".$adminChecked."></div>
+				  </div>";
+		}
 		?>
-		<div class="spaceAffectLine sTableRow" id="targetLine<?= $tmpUser->_id ?>">
-			<label class="spaceAffectLabel"><?= $tmpUser->getLabel() ?></label>
-			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="<?= $tmpUser->_id ?>_1" <?= $checkRead." ".$disableRead ?>></div>
-			<div title="<?= Txt::trad("SPACE_adminInfo") ?>"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="<?= $tmpUser->_id ?>_2" <?= $checkWrite ?>></div>
-		</div>
-		<?php } ?>
 	</div>
 	<?php } ?>
 

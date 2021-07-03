@@ -62,7 +62,7 @@ foreach($eventPropositions as $cpt=>$tmpProposition)
 	$evtTooltip=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".
 				Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
 				ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
-	if($tmpEvt->description)  {$evtTooltip.=Txt::reduce(strip_tags($tmpEvt->description),200);}
+	if($tmpEvt->description)  {$evtTooltip.=Txt::reduce(strip_tags($tmpEvt->description));}
 	echo "<li class='sLink' id=\"eventPropositionDiv".$tmpEvt->_id."\" title=\"".$evtTooltip."\" data-confirmDetails=\"".$evtTooltip."\" onclick=\"eventPropositionConfirm(".$tmpCal->_id.",".$tmpEvt->_id.",this.id)\">".$tmpEvt->title."</li>";
 }
 

@@ -12,9 +12,9 @@
  */
 class MdlPerson extends MdlObject
 {
-	public static $displayModeOptions=array("block","line");
-	public static $requiredFields=array("name","firstName","login");
-	public static $searchFields=array("name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment");
+	public static $displayModes=["block","line"];
+	public static $requiredFields=["name","firstName","login"];
+	public static $searchFields=["name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment"];
 	//Valeurs en cache
 	private $_hasImg=null;
 	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
@@ -210,16 +210,16 @@ class MdlPerson extends MdlObject
 		//Mail : redirige vers le module mail (ou à défaut, l'outil de messagerie). "parent" pour rediriger aussi depuis un lightbox..
 		elseif($fieldName=="mail" && !empty($fieldValue)){
 			$mailtoUrl=(Ctrl::$curSpace->moduleEnabled("mail"))  ?  "javascript:windowParent.redir('?ctrl=mail&checkedMailto=".$this->$fieldName."');"  :  "mailto:".$this->$fieldName;
-			$fieldValue="<a href=\"".$mailtoUrl."\" title=\"".Txt::trad("sendMail")."\">".$this->$fieldName." <img src='app/img/person/mail.png'></a>";
+			$fieldValue="<a href=\"".$mailtoUrl."\" title=\"".Txt::trad("sendMail")."\">".$this->$fieldName." &nbsp;<img src='app/img/person/mail.png'></a>";
 		}
 		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a href=\"javascript:lightboxOpen('?ctrl=misc&action=PersonsMap&targetObjects[".static::objectType."]=".$this->_id."');\" title=\"".Txt::trad("mapLocalize")."\">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
 		elseif($fieldName=="lastConnection")					{$fieldValue=(!empty($fieldValue))  ?  Txt::trad("lastConnection2")." ".Txt::dateLabel($fieldValue,"dateMini")  :  Txt::trad("lastConnectionEmpty");}//"Connecté le 20 mars" / "Pas encore connecté"
 		elseif($fieldName=="comment")							{$fieldValue=nl2br($fieldValue);}
 		//Retourne le champ dans son conteneur
 		if(!empty($fieldValue)){
-			if($displayMode=="block")	{return "<div class='objPersonDetail'>".$fieldValue."</div>";}
-			elseif($displayMode=="line"){return "<div class='objPersonDetail'>".$fieldValue."</div> <img src='app/img/separator.png'> ";}
-			else						{return "<div class='objField'><div class='fieldLabel'><img src='app/img/person/".$fieldName.".png'> ".Txt::trad($fieldName)."</div><div>".$fieldValue."</div></div>";}
+			if($displayMode=="block")		{return "<div class='objPersonDetail'>".$fieldValue."</div>";}
+			elseif($displayMode=="line")	{return "<div class='objPersonDetail'>".$fieldValue."</div> &nbsp;<img src='app/img/separator.png'>&nbsp;";}
+			else							{return "<div class='objField'><div class='fieldLabel'><img src='app/img/person/".$fieldName.".png'> ".Txt::trad($fieldName)."</div><div>".$fieldValue."</div></div>";}
 		}
 	}
 
@@ -238,7 +238,7 @@ class MdlPerson extends MdlObject
 	public function getImgPath($getDefaultImg=false)
 	{
 		if($this->hasImg())				{return $this->pathImgThumb()."?version=".md5($this->dateModif);}//"version" pour toujours afficher la derniere image mise en cache
-		elseif($getDefaultImg==true)	{return "app/img/".static::moduleName."/personDefault.png";}//image par défaut : si demandé
+		elseif($getDefaultImg==true)	{return "app/img/".static::moduleName."/iconBg.png";}//image par défaut (si demandé)
 	}
 
 	/*******************************************************************************************
@@ -436,7 +436,7 @@ class MdlPerson extends MdlObject
 				if($searchPersons["count"]>0)
 				{
 					////	Champs Agora à utiliser
-					$importedFields=array();
+					$importedFields=[];
 					foreach($searchPersons as $userAttributes){
 						//Pour chaque champs de l'utilisateur importé : vérif si le champ ldap correspond à un champ Agora
 						foreach($ldapAttributes as $agoraField=>$tmpLdapAttributes){
@@ -446,12 +446,12 @@ class MdlPerson extends MdlObject
 						}
 					}
 					////	Attributs / valeurs de chaque contact
-					$importedPersons=array();
+					$importedPersons=[];
 					foreach($searchPersons as $userKey=>$userAttributes)
 					{
 						if(is_numeric($userKey))
 						{
-							$importedPerson=array();
+							$importedPerson=[];
 							foreach($ldapAttributes as $agoraField=>$tmpLdapAttributes)
 							{
 								//Cle du tableau d'entête correspondant au champ visé (tableau d'import: numéro de colonne du champ agora || import direct : nom du champ agora)

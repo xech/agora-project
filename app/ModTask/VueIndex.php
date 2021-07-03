@@ -7,7 +7,6 @@ $(function(){
 
 <style>
 /*LABEL ET DETAILS DES TACHES*/
-.objLabelBg							{background-image:url(app/img/task/iconBg.png);}/*surcharge : Background des taches*/
 .objBlocks .vObjTaskDetails			{position:absolute; display:block; bottom:3px; right:20px;}/*Détails des taches en affichage "block" : Icones flottantes avec "title"*/
 .objLines .percentBar				{margin-left:10px;}/*"PercentBar" (Folder/Task)*/
 .objBlocks .objDetails img			{max-height:20px; margin-right:10px;}/*Icones avec "title"*/
@@ -83,7 +82,8 @@ $(function(){
 			echo $tmpTask->divContainer().$tmpTask->contextMenu().
 					"<div class='objContentScroll'>
 						<div class='objContent'>
-							<div class='objLabel objLabelBg'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\">".$tmpTask->priority()." ".$tmpTask->title."</a></div>
+							<div class='objIcon objIconOpacity'><img src='app/img/task/iconSmall.png'></div>
+							<div class='objLabel'><a class='objLabelLink' href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\">".$tmpTask->priority()." ".$tmpTask->title."</a></div>
 							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
 							<div class='objAutorDate'>".$tmpTask->autorDateLabel()."</div>
 						</div>

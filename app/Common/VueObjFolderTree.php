@@ -96,7 +96,7 @@ function formControl(){
 					<span class='vTreeFolderDep'><img src='app/img/open.png' class='vIconOpen sLink'><img src='app/img/dependency.png' class='vIconDependency'></span>
 					<img src='app/img/folder/folderSmall.png' class='vIconFolder'>
 				</div>
-				<div onclick=\"".$folderActionJs."\">".Txt::reduce($tmpFolder->name,70).$folderMoveCheckbox."</div>
+				<div onclick=\"".$folderActionJs."\">".Txt::reduce($tmpFolder->name,70,false).$folderMoveCheckbox."</div>
 			  </div>";
 	}
 

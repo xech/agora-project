@@ -12,7 +12,7 @@
  */
 class CtrlLog extends Ctrl
 {
-	public static $fieldsList=array("date","userName","spaceName","moduleName","action","objectType","comment");
+	public static $fieldsList=["date","userName","spaceName","moduleName","action","objectType","comment"];
 	const moduleName="log";
 
 	/*******************************************************************************************

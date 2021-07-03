@@ -26,10 +26,10 @@ class MdlFile extends MdlObject
 	const hasNotifMail=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;
-	public static $displayModeOptions=array("block","line");
-	public static $requiredFields=array("name");
-	public static $searchFields=array("name","description");
-	public static $sortFields=array("name@@asc","name@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","extension@@asc","extension@@desc","octetSize@@asc","octetSize@@desc","downloadsNb@@desc","downloadsNb@@asc");
+	public static $displayModes=["block","line"];
+	public static $requiredFields=["name"];
+	public static $searchFields=["name","description"];
+	public static $sortFields=["name@@asc","name@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","extension@@asc","extension@@desc","octetSize@@asc","octetSize@@desc","downloadsNb@@desc","downloadsNb@@asc"];
 
 	/*******************************************************************************************
 	 * LISTE DES VERSIONS DU FICHIER
@@ -152,20 +152,15 @@ class MdlFile extends MdlObject
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//// ADMIN D'ESPACE : "TÉLÉCHARGÉ PAR"
+		//// ADMIN D'ESPACE : "TÉLÉCHARGÉ PAR" + LISTE DES USERS AYANT TELECHARGE LE FICHIER
 		$tooltipDownloadedBy=null;
 		if(Ctrl::$curUser->isAdminSpace() && !empty($this->downloadedBy)){
 			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
 			$tooltipDownloadedBy="title=\"".Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy, ", ")."\"";
 		}
-		//// "TÉLÉCHARGER LE FICHIER"  &&  "FICHIER TÉLÉCHARGÉ X FOIS"
-		$options["specificOptions"][]=array(
-			"actionJs"=>"window.open('".$this->urlDownloadDisplay()."')",
-			"iconSrc"=>"download.png",
-			"label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"
-		);
-		//// "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
-		if(count($this->getVersions()) > 1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
+		//// "TÉLÉCHARGER LE FICHIER" + TOOLTIP "FICHIER TÉLÉCHARGÉ X FOIS"  &&  "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
+		$options["specificOptions"][]=["actionJs"=>"window.open('".$this->urlDownloadDisplay()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
+		if(count($this->getVersions())>1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
 		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&targetObjId=".$this->_targetObjId)."')"];}
 		return parent::contextMenu($options);
 	}

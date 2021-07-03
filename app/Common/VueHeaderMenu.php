@@ -31,7 +31,7 @@
 	#headerMainMenuOmnispace					{display:none;}
 	/*MENU DES MODULES (intégré dans le menu responsive "#respMenuOne" de VueStructure.php)*/
 	#headerModuleTab							{display:none!important;}/*liste des modules masqués dans le menu principal...*/
-	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 2px 2px; width:140px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
+	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 2px 2px; width:145px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
 	.vHeaderModule:hover, .vHeaderCurModule		{border-radius:5px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f9f9f9;border:solid 1px #ddd;" ?>}/*mod. courant: background grisé*/
 }
 </style>
@@ -47,7 +47,7 @@
 			echo "<img src=\"app/img/".(Req::isMobile()?'logoSmall.png':'logo.png')."\" class='vHeaderMainLogo'>";
 			if(Req::isMobile()==false)  {echo "<img src='app/img/search.png'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			////	ICONE DE "VALIDATION D'INSCRIPTION D'UTILISATEUR"
-			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<img src='app/img/check.png' class='vHeaderUserInscription pulsate'><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
+			if($userInscriptionValidate==true && Req::isMobile()==false)  {echo "<span class='pulsate'><img src='app/img/check.png'> ".Txt::trad("userInscriptionPulsate")."</span><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			////	LABEL DE L'UTILISATEUR COURANT  &&  LABEL DE L'ESPACE COURANT  &&  ICONE BURGER/ARROW
 			if(Ctrl::$curUser->isUser() && Req::isMobile()==false)  {echo "<div id='headerUserLabel'>".Ctrl::$curUser->getLabel()."</div><img src='app/img/arrowRightBig.png' class='vHeaderArrowRight'>";}
 			echo "<div id='headerSpaceLabel'>".(Req::isMobile()?strtolower(Ctrl::$curSpace->name):Ctrl::$curSpace->name)."</div>";
@@ -66,7 +66,7 @@
 					else
 					{
 						////	VALIDE L'INSCRIPTION D'UTILISATEURS
-						if($userInscriptionValidate==true)  {echo "<div class='menuLine sLink vHeaderUserInscription pulsate' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div>";}
+						if($userInscriptionValidate==true)  {echo "<div class='menuLine sLink pulsate' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div>";}
 						////	ENVOI D'INVITATION
 						if(Ctrl::$curUser->sendInvitationRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\" title=\"".Txt::trad("USER_sendInvitationInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 						////	DOCUMENTATION
@@ -83,7 +83,7 @@
 						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=agora')\"><div class='menuIcon'><img src='app/img/settingsGeneral.png'></div><div>".Txt::trad("AGORA_generalSettings")."</div></div>";}
 						////	PARAMETRAGE DE L'ESPACE COURANT
 						if(Ctrl::$curUser->isAdminSpace())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/settings.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,35,false)."</i></div></div>";}
-						////	 EDITION DE TOUS LES ESPACES
+						////	 EDITION DES ESPACES DU SITE
 						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=space')\" title=\"".Txt::trad("SPACE_moduleInfo")."\"><div class='menuIcon'><img src='app/img/space.png'></div><div>".Txt::trad("SPACE_manageSpaces")."</div></div>";}
 						////	PARAMETRAGE DES UTILISATEURS
 						if(Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=user&displayUsers=all')\" title=\"".Txt::trad("USER_allUsersInfo")."\"><div class='menuIcon'><img src='app/img/user/icon.png'></div><div>".Txt::trad("USER_allUsers")."</div></div>";}
@@ -113,15 +113,15 @@
 							echo "<div class='menuLine vSwitchSpace'><div class='menuIcon'><img src='app/img/arrowRightBig.png'></div><div><span class='".($tmpSpace->isCurSpace()?'sLinkSelect':'sLink')."' onclick=\"redir('?_idSpaceAccess=".$tmpSpace->_id."')\" title=\"".$tmpSpace->description."\">".$tmpSpace->name."</span>".$iconSpaceEdit."</div></div>";
 						}
 					}
-					////	Affiche les plugins "shortcut" ("pluginLabel" : Réduit le label & suppr toutes les balises html)
+					////	Affiche les plugins "shortcut" ("reduce()" pour réduire la taille du texte et des tags html, surtout sur le label principal)
 					if(!empty($pluginsShortcut)){
 						if($showSpaceList==true)  {echo "<hr>";}
 						echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/shortcut.png'></div><div>".Txt::trad("HEADER_shortcuts")." :</div></div>";
 						foreach($pluginsShortcut as $tmpObj){
-							//Label & tooltips: suppr les balises html (cf. TinyMce) et réduit la taille du texte
-							$tmpObj->pluginLabel=Txt::cleanPlugin($tmpObj->pluginLabel,40,null);
-							$tmpObj->pluginTooltip=Txt::cleanPlugin($tmpObj->pluginTooltip,300);
-							echo "<div class='menuLine sLink' onclick=\"".$tmpObj->pluginJsLabel."\" title=\"".$tmpObj->pluginTooltip."\"><div class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div><div>".$tmpObj->pluginLabel."</div></div>";
+							echo "<div class='menuLine sLink' title=\"".Txt::reduce($tmpObj->pluginTooltip,400)."\">
+									<div onclick=\"".$tmpObj->pluginJsIcon."\" class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div>
+									<div onclick=\"".$tmpObj->pluginJsLabel."\">".Txt::reduce(strip_tags($tmpObj->pluginLabel),40,false)."</div>
+								  </div>";
 						}
 					}
 					echo "</div>";

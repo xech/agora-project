@@ -4,27 +4,21 @@
 	////	Affiche le résultat de chaque réponse au sondage
 	foreach($objPoll->getResponses(true) as $tmpResponse)
 	{
-		//Init
-		$responseVotesNb=$objPoll->votesNb($tmpResponse["_id"]);
-		$votePercent=($objPoll->votesNbTotal()>0)  ?  round(($responseVotesNb/$objPoll->votesNbTotal())*100)  :  0;//Controler pour les sondages déjà terminés ..mais sans vote (sinon message d'erreur)
-		//Détail des votes si "publicVote" est "true"
-		if(empty($objPoll->publicVote) || $votePercent==0)  {$publicVoteDetails=null;}
-		else{
-			$publicVoteDetails=" : ".Txt::trad("DASHBOARD_pollVotedBy")." ";
-			$usersVoters=Db::getCol("SELECT DISTINCT _idUser FROM ap_dashboardPollResponseVote WHERE _idPoll=".$objPoll->_id." AND _idResponse=".Db::format($tmpResponse["_id"]));
-			foreach($usersVoters as $tmpIdUser)  {$publicVoteDetails.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
-			$publicVoteDetails=trim($publicVoteDetails,", ");
-		}
+		//Nombre de votes et users ayant voté (si le vote est public)
+		$votesNb	 =$objPoll->votesNb($tmpResponse["_id"]);
+		$votesPercent=$objPoll->votesPercent($tmpResponse["_id"]);
+		$responseTitle=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_answerVotesNb"));
+		$responseTitle.=(!empty($votesNb) && !empty($objPoll->publicVote))  ?  " : ".$objPoll->votesUsers($tmpResponse["_id"])  :  null;
 		//Couleur et ID de la pollsResultBar
 		$pollsResultBarId="vPollsResultBar".$tmpResponse["_id"];
-		if($votePercent>50)		{$pollsResultBarColor="vPollsResultBar100";}
-		elseif($votePercent>0)	{$pollsResultBarColor="vPollsResultBar50";}
+		if($votesPercent>50)	{$pollsResultBarColor="vPollsResultBar100";}
+		elseif($votesPercent>0)	{$pollsResultBarColor="vPollsResultBar50";}
 		else					{$pollsResultBarColor="vPollsResultBar0";}
 		//Affiche
-		echo "<li title=\"".str_replace("--NB_VOTES--",$responseVotesNb,Txt::trad("DASHBOARD_answerVotesNb"))." ".$publicVoteDetails."\">
+		echo "<li title=\"".$responseTitle."\">
 				<label>".$tmpResponse["label"].$objPoll->responseFileDiv($tmpResponse)."</label>
-				<div class='vPollsResultBarContainer'><div class='vPollsResultBar ".$pollsResultBarId." ".$pollsResultBarColor."'>".$votePercent."%</div></div>
-				<script> $(\".".$pollsResultBarId."\").animate({width:'".$votePercent."%'},700);</script>
+				<div class='vPollsResultBarContainer'><div class='vPollsResultBar ".$pollsResultBarId." ".$pollsResultBarColor."'>".$votesPercent."%</div></div>
+				<script> $(\".".$pollsResultBarId."\").animate({width:'".$votesPercent."%'},500);</script>
 			  </li>";
 	}
 	?>

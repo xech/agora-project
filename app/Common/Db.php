@@ -118,10 +118,10 @@ class Db
 		if(empty($text))  {return "NULL";}
 		else{
 			//Filtre le résultat
-			if(!stristr($options,"editor"))							{$text=htmlspecialchars(strip_tags($text));}//Input basic : enlève les balises html et convertit les caractères spéciaux ('€'->'&#128;')
-			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}			//Valeur flottante : remplace les virgules par des points
-			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}					//Url : ajoute "http://"
-			if(stristr($options,"likeSearch"))						{$text="%".$text."%";}						//Search : délimite par des "%"
+			if(stristr($options,"editor")==false)					{$text=htmlspecialchars(strip_tags($text));}	//Input "text" : enlève les éventuelles balises html et convertit les caractères spéciaux ('€'->'&#128;')
+			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}				//Valeur flottante : remplace les virgules par des points
+			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}						//Url : ajoute "http://"
+			if(stristr($options,"likeSearch"))						{$text="%".$text."%";}							//Search : délimite par des "%"
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
 			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}

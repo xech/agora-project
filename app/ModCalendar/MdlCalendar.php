@@ -18,10 +18,10 @@ class MdlCalendar extends MdlObject
 	const MdlObjectContent="MdlCalendarEvent";
 	const hasAttachedFiles=true;
 	protected static $_hasAccessRight=true;
-	public static $requiredFields=array("title");
-	public static $searchFields=array("title","description");
-	public static $persoCalendarDeleteRight=false;//Droit de supprimer un agenda perso
-	public static $displayModeOptions=array("month","week","workWeek","4Days","day");//Modes d'affichage des agendas
+	public static $requiredFields=["title"];
+	public static $searchFields=["title","description"];
+	public static $displayModes=["month","week","workWeek","4Days","day"];	//Modes d'affichage des agendas
+	public static $persoCalendarDeleteRight=false;							//Droit de supprimer un agenda perso
 	//Valeurs mises en cache
 	private $_calendarOwnerIdUsers=null;
 	private static $_visibleCalendars=null;
@@ -98,80 +98,75 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * EVENEMENTS DE L'AGENDA EN FONCTION D'UNE PÉRIODE (evt confirmés)
+	 * LISTE DES EVENEMENTS CONFIRMÉS DE L'AGENDA
 	 *******************************************************************************************/
-	public function evtList($curBegin=null, $curEnd=null, $accessRightMini=0.5, $orderByHourMinute=true, $pluginParams=null)
+	public function evtList($periodTimeBegin=null, $periodTimeEnd=null, $accessRightMini=0.5, $orderByHourMinute=true, $pluginParams=null)
 	{
-		////	Evt sur une période/créneau donnée?
-		$sqlTimeSlot=null;
-		if(!empty($curBegin) && !empty($curEnd)){
-			$tmpBegin=Db::format(date("Y-m-d 00:00",$curBegin));
-			$tmpEnd=Db::format(date("Y-m-d 23:59",$curEnd));
-			$sqlTimeSlot="AND (  (dateBegin between ".$tmpBegin." and ".$tmpEnd.")  OR  (dateEnd between ".$tmpBegin." and ".$tmpEnd.")  OR  (DateBegin <= ".$tmpBegin." and DateEnd >= ".$tmpEnd.")  OR  periodType is not null)";
+		//// Evénements sur un période donnée (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)  +  Evénements périodiques 
+		$sqlPeriod=null;
+		if(!empty($periodTimeBegin) && !empty($periodTimeEnd)){
+			$periodBegin=Db::format(date("Y-m-d 00:00",$periodTimeBegin));
+			$periodEnd  =Db::format(date("Y-m-d 23:59",$periodTimeEnd));
+			$sqlPeriod="AND ( (dateBegin between ".$periodBegin." and ".$periodEnd.") OR (dateEnd between ".$periodBegin." and ".$periodEnd.") OR (dateBegin <= ".$periodBegin." and ".$periodEnd." <= dateEnd) OR periodType is not null)";
 		}
-		////	 Liste des evenements, en fonction des droits d'accès. Tri par "Heure:Minute" si affiché sur un jour (cf. evt périodiques) OU Tri par "dateBegin" si affiché une liste complete (cf. plugins)
-		$sqlPlugins=(!empty($pluginParams))  ?  "AND ".MdlCalendarEvent::sqlPluginObjects($pluginParams)  :  null;//Sélection d'un plugin?
-		$sqlOrderBy=($orderByHourMinute==true)  ?  "DATE_FORMAT(dateBegin,'%H:%i') ASC"  :  "dateBegin ASC";//Filtre par "H:m" ou par "dateBegin"
-		$eventsObjList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlTimeSlot." ".$sqlPlugins." ORDER BY ".$sqlOrderBy);
-		////	renvoie les evts en fonction du droit d'accès minimum 
-		$evtListReturned=[];
-		foreach($eventsObjList as $tmpObj){
-			if($tmpObj->accessRight()>=$accessRightMini)  {$evtListReturned[]=$tmpObj;}
+		//// Liste des evenements confirmés et affectés à l'agenda
+		$sqlPlugins=(!empty($pluginParams))  ?  "AND ".MdlCalendarEvent::sqlPlugins($pluginParams)  :  null;//Sélection d'evt "plugins"
+		$sqlOrderBy=($orderByHourMinute==true)  ?  "DATE_FORMAT(dateBegin,'%H:%i') ASC"  :  "dateBegin ASC";//Tri par "H:m" (affiche juste une journée) || Tri par "dateBegin" (affiche une liste complete: "plugins")
+		$eventsList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlPeriod." ".$sqlPlugins." ORDER BY ".$sqlOrderBy);
+		//// renvoie les evts en fonction du droit d'accès minimum 
+		$eventsReturned=[];
+		foreach($eventsList as $evtTmp){
+			if($evtTmp->accessRight()>=$accessRightMini)  {$eventsReturned[]=$evtTmp;}
 		}
-		//renvoie les evenements
-		return $evtListReturned;
+		//// Renvoie les evenements
+		return $eventsReturned;
 	}
 
-	/*******************************************************************************************
-	 * FILTRE DES EVTS POUR UNE JOURNÉE OU UN CRÉNEAU HORAIRE (cf: "actionTimeSlotBusy()")
-	 * Note : les evts périodiques ne sont récupérés qu'une fois. On utilise donc cette fonction qui clone chaque occurence d'un même evenement, répété sur plusieurs jours.
-	 *******************************************************************************************/
-	public static function periodEvts($evtList, $curBegin, $curEnd)
+	/*********************************************************************************************************************************
+	 * FILTRE "$evtList" : RECUPERE LES EVENEMENTS DU JOUR + LES EVENEMENTS PERIODIQUES SUR LE JOUR (cf. $dayBegin/$dayEnd)
+	 * Note : les evts périodiques sont clonés pour chaque occurence de l'evt
+	 *********************************************************************************************************************************/
+	public static function periodEvts($evtList, $dayBegin, $dayEnd)
 	{
-		$evtListReturned=[];
+		$eventsReturned=[];
 		foreach($evtList as $tmpEvt)
 		{
-			//Clone l'evt pour chaque jour (evt sur plusieurs jours ou périodique : une instance d'evt par jour)  &&  Debut/fin de l'evt au format timestamp 
+			//// CLONE L'EVT POUR CHAQUE JOUR (cf. evt sur plusieurs jours ou périodique)  &&  TIME DU DEBUT/FIN DE L'EVT
 			$tmpEvt=clone $tmpEvt;
 			$evtBegin=strtotime($tmpEvt->dateBegin);
 			$evtEnd=strtotime($tmpEvt->dateEnd);
-			//EVT SUR LA JOURNEE/CRENEAU HORAIRE : Début de l'evt dans le créneau || Fin de l'evt dans le créneau || evt avant et après le créneau
-			if(static::evtInTimeSlot($evtBegin,$evtEnd,$curBegin,$curEnd))	{$evtListReturned[]=$tmpEvt;}
-			//EVT PERIODIQUE
+			//// AJOUTE LES EVT DU JOUR  ||  EVT PERIODIQUE/RÉCURRENT SUR LE JOUR
+			if(static::evtInTimeSlot($evtBegin,$evtEnd,$dayBegin,$dayEnd))  {$eventsReturned[]=$tmpEvt;}
 			elseif(!empty($tmpEvt->periodType))
 			{
 				//Evenement sur le jour =>  déjà commencé  &&  (pas de fin de périodicité || fin de périodicité pas encore arrivé)  &&  (pas de date d'exception || "dateBegin" absent des dates d'exception)
-				if($evtBegin<$curBegin  &&  (empty($tmpEvt->periodDateEnd) || $curEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || in_array(date("Y-m-d",$curBegin),Txt::txt2tab($tmpEvt->periodDateExceptions))==false))
+				if($evtBegin<$dayBegin  &&  (empty($tmpEvt->periodDateEnd) || $dayEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$dayBegin)."/",$tmpEvt->periodDateExceptions)==false))
 				{
-					//L'evt périodique est présent sur le jour courant : Reformate le début/fin de l'evt pour qu'il corresponde à la date courante
+					//Récupère les valeurs de la périodicité : fonction du "periodType"
 					$periodValues=Txt::txt2tab($tmpEvt->periodValues);
-					$dateFormatModif=$dateFormatConserved=null;
-					if($tmpEvt->periodType=="weekDay" && in_array(date("N",$curBegin),$periodValues))												{$dateFormatModif="Y-m-d";	$dateFormatConserved=" H:i";}//jour de semaine
-					elseif($tmpEvt->periodType=="month" && in_array(date("m",$curBegin),$periodValues) && date("d",$evtBegin)==date("d",$curBegin))	{$dateFormatModif="Y-m";	$dateFormatConserved="-d H:i";}//jour du mois
-					elseif($tmpEvt->periodType=="year" && date("m-d",$evtBegin)==date("m-d",$curBegin))												{$dateFormatModif="Y";		$dateFormatConserved="-m-d H:i";}//jour de l'année
-					//Reformate pour que le début/fin de l'evt corresponde à la date courante
-					if(!empty($dateFormatModif) && !empty($dateFormatConserved))
-					{
-						$tmpEvt->dateBegin=date($dateFormatModif,$curBegin).date($dateFormatConserved,$evtBegin);
-						$tmpEvt->dateEnd  =date($dateFormatModif,$curEnd).date($dateFormatConserved,$evtEnd);
-						$evtBegin=strtotime($tmpEvt->dateBegin);
-						$evtEnd=strtotime($tmpEvt->dateEnd);
-						//Ajoute l'evt s'il est bien sur le créneau courant (cf. controles de créneaux horaires occupés..)
-						if(static::evtInTimeSlot($evtBegin,$evtEnd,$curBegin,$curEnd))	{$evtListReturned[]=$tmpEvt;}
+					//Vérifie si l'evt périodique est présent sur le jour courant : il oui, on prépare le reformatage de la date
+					$formatModified=$formatKept=null;
+					if($tmpEvt->periodType=="weekDay" && in_array(date("N",$dayBegin),$periodValues))												{$formatModified="Y-m-d";	$formatKept=" H:i";}	//jour de semaine
+					elseif($tmpEvt->periodType=="month" && in_array(date("m",$dayBegin),$periodValues) && date("d",$evtBegin)==date("d",$dayBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
+					elseif($tmpEvt->periodType=="year" && date("m-d",$evtBegin)==date("m-d",$dayBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
+					//Reformate pour que le début/fin de l'evt corresponde à la date courante && Ajoute enfin l'evt à $eventsReturned (vérif qu'il soit sur le créneau : cf. "actionTimeSlotBusy()")
+					if(!empty($formatModified) && !empty($formatKept)){
+						$tmpEvt->dateBegin=date($formatModified,$dayBegin).date($formatKept,$evtBegin);
+						$tmpEvt->dateEnd  =date($formatModified,$dayEnd).date($formatKept,$evtEnd);
+						if(static::evtInTimeSlot(strtotime($tmpEvt->dateBegin),strtotime($tmpEvt->dateEnd),$dayBegin,$dayEnd))  {$eventsReturned[]=$tmpEvt;}
 					}
 				}
 			}
 		}
-		return $evtListReturned;
+		return $eventsReturned;
 	}
 
-	/*******************************************************************************************
-	 * VERIF : EVT SUR UNE PÉRIODE / UN CRÉNEAU DONNÉ ?
-	 *******************************************************************************************/
-	public static function evtInTimeSlot($evtBegin, $evtEnd, $curBegin, $curEnd)
+	/***************************************************************************************************************************************************************
+	 * VERIF SI L'EVENEMENT SE TROUVE SUR LA PÉRIODE SELECTIONNEE (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)
+	 ***************************************************************************************************************************************************************/
+	public static function evtInTimeSlot($evtBegin, $evtEnd, $periodBegin, $periodEnd)
 	{
-		//Retourne true si :  Début de l'evt dans le créneau  ||  Fin de l'evt dans le créneau  ||  evt avant et après le créneau
-		return ($evtBegin>=$curBegin && $evtBegin<=$curEnd) || ($evtEnd>=$curBegin && $evtEnd<=$curEnd) || ($evtBegin<=$curBegin && $evtEnd>=$curEnd);
+		return ( ($periodBegin<=$evtBegin && $evtBegin<=$periodEnd) || ($periodBegin<=$evtEnd && $evtEnd<=$periodEnd) || ($evtBegin<=$periodBegin && $periodEnd<=$evtEnd) );
 	}
 
 	/*******************************************************************************************
@@ -212,11 +207,11 @@ class MdlCalendar extends MdlObject
 		if(self::$_visibleCalendars===null)
 		{
 			//Récupère les agendas de ressource
-			$sqlDisplayedObjects=self::sqlDisplayedObjects();
-			self::$_visibleCalendars=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplayedObjects);
+			$sqlDisplay=self::sqlDisplay();
+			self::$_visibleCalendars=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplay);
 			//Ajoute l'agenda perso de l'user courant et les agendas persos "activés" auquels on est affecté
 			if(Ctrl::$curUser->isUser()){
-				$personnalCals=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (_idUser=".Ctrl::$curUser->_id." OR ".$sqlDisplayedObjects.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
+				$personnalCals=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (_idUser=".Ctrl::$curUser->_id." OR ".$sqlDisplay.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
 				self::$_visibleCalendars=array_merge(self::$_visibleCalendars,$personnalCals);
 			}
 			//Tri les agendas par leur nom

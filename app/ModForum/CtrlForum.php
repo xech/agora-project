@@ -14,7 +14,7 @@ class CtrlForum extends Ctrl
 {
 	const moduleName="forum";
 	public static $moduleOptions=["adminAddSubject","allUsersAddTheme"];
-	public static $MdlObjects=array("MdlForumSubject","MdlForumMessage");
+	public static $MdlObjects=["MdlForumSubject","MdlForumMessage"];
 
 	/*******************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -45,7 +45,7 @@ class CtrlForum extends Ctrl
 			{
 				//Nombre de sujets & Objet du dernier sujet
 				$sqlThemeFilter=(!empty($tmpTheme->_id)) ? "_idTheme=".$tmpTheme->_id : "_idTheme is NULL";//Theme normal / "sans theme"
-				$tmpTheme->subjectList=Db::getObjTab("forumSubject", "SELECT * FROM ap_forumSubject WHERE ".MdlForumSubject::sqlDisplayedObjects()." AND ".$sqlThemeFilter." ORDER BY dateCrea desc");
+				$tmpTheme->subjectList=Db::getObjTab("forumSubject", "SELECT * FROM ap_forumSubject WHERE ".MdlForumSubject::sqlDisplay()." AND ".$sqlThemeFilter." ORDER BY dateCrea desc");
 				$tmpTheme->subjectsNb=count($tmpTheme->subjectList);
 				if($tmpTheme->noTheme==true && empty($tmpTheme->subjectsNb))	{unset($vDatas["themeList"][$tmpKey]);}//Enleve le theme "sans theme" s'il n'y a aucun sujet correspondant..
 				elseif($tmpTheme->subjectsNb>0)									{$tmpTheme->subjectLast=reset($tmpTheme->subjectList);}//reset: premier sujet de la liste (le + récent)
@@ -70,7 +70,7 @@ class CtrlForum extends Ctrl
 			if(Req::getParam("_idTheme")=="noTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
 			elseif(Req::isParam("_idTheme"))			{$sqlThemeFilter="AND _idTheme=".Db::formatParam("_idTheme");}	//sujets d'un theme précis
 			else										{$sqlThemeFilter=null;}											//tout les sujets
-			$sqlDisplayedSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplayedObjects()." ".$sqlThemeFilter." ".MdlForumSubject::sqlSort();
+			$sqlDisplayedSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".$sqlThemeFilter." ".MdlForumSubject::sqlSort();
 			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlDisplayedSubjects." ".MdlForumSubject::sqlPagination());
 			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlDisplayedSubjects));
 			//Pour chaque sujet : Nombre de messages & Dernier message
@@ -89,11 +89,11 @@ class CtrlForum extends Ctrl
 	/*******************************************************************************************
 	 * PLUGINS
 	 *******************************************************************************************/
-	public static function plugin($pluginParams)
+	public static function getModPlugins($params)
 	{
-		$pluginsList=array();
+		$pluginsList=[];
 		//Sujets
-		foreach(MdlForumSubject::getPluginObjects($pluginParams) as $objSubject)
+		foreach(MdlForumSubject::getPlugins($params) as $objSubject)
 		{
 			$objSubject->pluginModule=self::moduleName;
 			$objSubject->pluginIcon=self::moduleName."/icon.png";
@@ -104,9 +104,9 @@ class CtrlForum extends Ctrl
 			$pluginsList[]=$objSubject;
 		}
 		//messages
-		if($pluginParams["type"]!="shortcut")
+		if($params["type"]!="shortcut")
 		{
-			foreach(MdlForumMessage::getPluginObjects($pluginParams) as $objMessage)
+			foreach(MdlForumMessage::getPlugins($params) as $objMessage)
 			{
 				$objMessage->pluginModule=self::moduleName;
 				$objMessage->pluginIcon=self::moduleName."/icon.png";

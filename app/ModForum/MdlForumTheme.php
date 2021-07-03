@@ -15,8 +15,8 @@ class MdlForumTheme extends MdlObject
 	const moduleName="forum";
 	const objectType="forumTheme";
 	const dbTable="ap_forumTheme";
-	public static $requiredFields=array("title");
-	public static $sortFields=array("title@asc","title@desc");
+	public static $requiredFields=["title"];
+	public static $sortFields=["title@asc","title@desc"];
 
 	/*******************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR

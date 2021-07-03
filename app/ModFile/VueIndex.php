@@ -12,12 +12,12 @@ $(function(){
 
 <style>
 /*basic*/
-.objIcon span							{cursor:pointer;}										/*cursor de l'icone/image : pas de "select"*/
-.objLabel span							{cursor:url("app/img/download.png"),pointer!important;}	/*cursor du nom du fichier*/
-.vVersionsMenu							{margin-left:10px;}										/*bouton "versions de fichiers"*/
-.hasThumb [data-fancybox='images']		{cursor:url("app/img/search.png"),pointer!important;}	/*vignettes d'images*/
-.objIconDownload						{height:12px; margin-right:5px; filter:grayscale(0.8);}	/*bouton download*/
-.objBlocks .objIconDownload				{float:right;}											/*idem: blocks*/
+.objIcon span, .objFileLink		{cursor:url("app/img/download.png"),pointer!important;}	/*icone "Download" sur l'icone et le label du fichier*/
+.objBlocks .objLabelLink		{padding:0px 10px;}										/*surchage le "padding" de "labelLink"*/
+.hasThumb .objIcon span			{cursor:url("app/img/search.png"),pointer!important;}	/*icone "display/search" sur les vignettes d'images ou pdf*/
+.vVersionsMenu					{margin-left:10px;}										/*bouton "versions de fichiers" : cf. "versionsMenu()"*/
+.objBlocks .vIconDownload		{float:right; height:14px; filter:grayscale(1);}		/*icone de download*/
+.objLines .vIconDownload		{display:none;}
 
 /*Affichage Block*/
 .objBlocks .objContainer				{height:150px; width:150px; min-width:150px; max-width:250px;}	/*surcharge: taille des "block"*/
@@ -56,7 +56,7 @@ $(function(){
 			echo $tmpFile->divContainer("objContentCenter ".$tmpFile->hasThumbClass).$tmpFile->contextMenu().
 				"<div class=\"objContent ".$tmpFile->thumbClass."\">
 					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$tmpFile->typeIcon()."\"></span></div>
-					<div class='objLabel'><span ".$tmpFile->labelLink." title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='objIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
+					<div class='objLabel'><span ".$tmpFile->labelLink." class='objLabelLink objFileLink' title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='vIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
 					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->autorDateLabel()."</div>
 				</div>

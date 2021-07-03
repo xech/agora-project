@@ -43,6 +43,7 @@ class CtrlAgora extends Ctrl
 				gPeopleApiKey=".Db::formatParam("gPeopleApiKey").",
 				messengerDisabled=".Db::formatParam("messengerDisabled").",
 				moduleLabelDisplay=".Db::formatParam("moduleLabelDisplay").",
+				folderDisplayMode=".Db::formatParam("folderDisplayMode").",
 				personsSort=".Db::formatParam("personsSort").",
 				logsTimeOut=".Db::formatParam("logsTimeOut").",
 				visioHost=".Db::formatParam("visioHost").",
@@ -62,7 +63,7 @@ class CtrlAgora extends Ctrl
 			////	Ajoute un Wallpaper
 			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"]))
 			{
-				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"]);
+				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"],"max",true);
 				$wallpaperName=str_replace(".".File::extension($wallpaperName), ".jpg", $wallpaperName);
 				$wallpaperPath=PATH_WALLPAPER_CUSTOM.$wallpaperName;
 				move_uploaded_file($_FILES["wallpaperFile"]["tmp_name"], $wallpaperPath);

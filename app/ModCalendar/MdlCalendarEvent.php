@@ -19,8 +19,8 @@ class MdlCalendarEvent extends MdlObject
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const htmlEditorField="description";
-	public static $requiredFields=array("title","dateBegin","timeBegin","dateEnd","timeEnd");
-	public static $searchFields=array("title","description");
+	public static $requiredFields=["title","dateBegin","timeBegin","dateEnd","timeEnd"];
+	public static $searchFields=["title","description"];
 	private $_confirmedCalendars=null;
 	private $_propositionCalendars=null;
 
@@ -145,7 +145,7 @@ class MdlCalendarEvent extends MdlObject
 		else{
 			//Url du module à la bonne date 
 			$url="?ctrl=".static::moduleName."&curTime=".strtotime($this->dateBegin);
-			//Spécifie si besoin l'agenda principal (affichage "plugin", url accès direct.. mais inutile après un delete d'evt, sinon on perd la liste des agendas en cours d'affichage)
+			//Spécifie si besoin l'agenda principal (affichage de "plugin", url accès direct.. mais inutile après un delete d'evt, sinon on perd la liste des agendas en cours d'affichage)
 			if(Req::$curAction!="delete" && $this->containerObj())  {$url.="&displayedCalendars[]=".$this->containerObj()->_id;}
 			return $url;
 		}

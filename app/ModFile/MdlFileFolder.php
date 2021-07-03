@@ -18,18 +18,12 @@ class MdlFileFolder extends MdlObjectFolder
 	const MdlObjectContent="MdlFile";
 
 	/*******************************************************************************************
-	 * SURCHARGE : MENU CONTEXTUEL
+	 * SURCHARGE : MENU CONTEXTUEL AVEC L'OPTION "TELECHARGER LE DOSSIER"
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//Ajoute l'option "Telecharger le dossier"
-		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight()){
-			$options["specificOptions"][]=array(
-				"actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&targetObjects[fileFolder]=".$this->_id."')",
-				"iconSrc"=>"download.png",
-				"label"=>Txt::trad("downloadFolder")
-			);
-		}
+		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight())
+			{$options["specificOptions"][]=["actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&targetObjects[fileFolder]=".$this->_id."')", "iconSrc"=>"download.png", "label"=>Txt::trad("downloadFolder")];}
 		return parent::contextMenu($options);
 	}
 

@@ -37,7 +37,7 @@ function contactAddUser(targetObjId)
 					<div class='objContent'>
 						<div class='objIcon'>".$tmpContact->getImg(true,false,true)."</div>
 						<div class='objLabel'>
-							<a href=\"javascript:lightboxOpen('".$tmpContact->getUrl("vue")."');\">".$tmpContact->getLabel("full")."</a>
+							<a class='objLabelLink' href=\"javascript:lightboxOpen('".$tmpContact->getUrl("vue")."');\">".$tmpContact->getLabel("full")."</a>
 							<div class='objPersonDetails'>".$tmpContact->getFieldsValues(MdlContact::getDisplayMode())."</div>
 						</div>
 						<div class='objAutorDate'>".$tmpContact->autorDateLabel()."</div>

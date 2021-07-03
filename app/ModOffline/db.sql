@@ -20,6 +20,7 @@ CREATE TABLE `ap_agora` (
   `gPeopleApiKey` varchar(255) DEFAULT NULL,
   `messengerDisabled` tinyint(1) unsigned DEFAULT NULL,
   `moduleLabelDisplay` varchar(255) DEFAULT NULL,
+  `folderDisplayMode` varchar(255) DEFAULT NULL,
   `personsSort` varchar(255) DEFAULT NULL,
   `logsTimeOut` smallint(6) DEFAULT NULL,
   `visioHost` varchar(255) DEFAULT NULL,

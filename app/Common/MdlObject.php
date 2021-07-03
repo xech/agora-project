@@ -32,11 +32,11 @@ class MdlObject
 	const hasAttachedFiles=false;
 	const hasUsersLike=false;
 	const hasUsersComment=false;
-	const htmlEditorField=null;				//Champ "description" le plus souvent
-	public static $displayModeOptions=[];	//Type d'affichage : ligne/block le plus souvent
-	public static $requiredFields=[];		//Champs obligatoires pour valider l'édition d'un objet
-	public static $searchFields=[];			//Champs de recherche
-	public static $sortFields=[];			//Champs/Options de tri des résulats
+	const htmlEditorField=null;			//Champ "description" le plus souvent
+	public static $displayModes=[];		//Type d'affichage : ligne/block le plus souvent
+	public static $requiredFields=[];	//Champs obligatoires pour valider l'édition d'un objet
+	public static $searchFields=[];		//Champs de recherche
+	public static $sortFields=[];		//Champs/Options de tri des résulats
 	//Valeurs mises en cache
 	private $_accessRight=null;
 	private $_containerObj=null;
@@ -250,7 +250,7 @@ class MdlObject
 				if(Ctrl::$curUser->isAdminSpace() && Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE ".$sqlAccessRight)>0 && static::objectType!="calendar" && $this->type!="user")  {$this->_accessRight=3;}
 				//Acces en fonction des affectations à l'user => recupere le droit le plus important !
 				else{
-					$this->_accessRight=Db::getVal("SELECT max(accessRight) FROM ap_objectTarget WHERE ".$sqlAccessRight." AND target IN (".static::sqlTargets().")");
+					$this->_accessRight=Db::getVal("SELECT max(accessRight) FROM ap_objectTarget WHERE ".$sqlAccessRight." AND target IN (".static::sqlAffectations().")");
 					if(Ctrl::$curUser->isUser()==false && $this->_accessRight>1)  {$this->_accessRight=1;}//Guests : droit de lecture au maximum !
 				}
 			}
@@ -336,7 +336,7 @@ class MdlObject
 		if($this->editRight()==false)  {Ctrl::noAccessExit();}
 		//Controle si l'objet n'est pas en cour d'édition par un autre user (dans la dernières minute)
 		$_idUserEditSameObj=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editObjId=".Db::formatParam("targetObjId")." AND `date` > ".(time()-60));
-		if($this->isNew()==false && !empty($_idUserEditSameObj))  {Ctrl::notify(Txt::trad("warning")." !<br>".Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$_idUserEditSameObj)->getLabel());}
+		if($this->isNew()==false && !empty($_idUserEditSameObj))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$_idUserEditSameObj)->getLabel()." !");}
 	}
 
 	/*******************************************************************************************
@@ -373,7 +373,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * URL EXTERNE D'ACCÈS À L'OBJET (mail and co)
+	 * URL EXTERNE D'ACCÈS À L'OBJET (notif mail and co)
 	 *******************************************************************************************/
 	public function getUrlExternal()
 	{
@@ -596,10 +596,10 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : SELECTION D'OBJETS EN FONCTION DES DROITS D'ACCÈS
+	 * STATIC SQL : PREPARE LA SELECTION D'OBJETS EN FONCTION DE LEUR AFFECTATION
 	 * "targets" (exple) : "spaceUsers" / "U1" / "G1"
 	 *******************************************************************************************/
-	protected static function sqlTargets()
+	protected static function sqlAffectations()
 	{
 		if(static::$_sqlTargets===null)
 		{
@@ -615,99 +615,99 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : SELECTIONNE LES OBJETS À AFFICHER
+	 * STATIC SQL : OBJETS A AFFICHER EN FONCTION DES DROITS D'ACCÈS DE L'USER COURANT
 	 *******************************************************************************************/
-	public static function sqlDisplayedObjects($containerObj=null, $keyId="_id")
+	public static function sqlDisplay($containerObj=null, $keyId="_id")
 	{
 		////	Init les conditions et sélectionne si besoin un conteneur
 		$conditions=(is_object($containerObj))  ?  ["_idContainer=".$containerObj->_id]  :  [];
-		////	Selection en fonction des droits d'acces dans "ap_objectTarget" (cf. "hasAccessRight()") :  Objets avec des droits d'accès || Objets d'une arbo (de toute l'arbo si sélection "plugin" || Objets à la racine)
+		////	Selection en fonction des droits d'acces dans "ap_objectTarget" (cf. "hasAccessRight()") :  Objets avec des droits d'accès || Objets d'une arbo (de toute l'arbo si sélection de "plugin" || Objets à la racine)
 		if(static::$_hasAccessRight==true  ||  (static::isFolderContent==true && ($containerObj==null || $containerObj->isRootFolder()))){
-			$sqlTargets=(!empty($_SESSION["displayAdmin"]))  ?  null  :  "and `target` in (".static::sqlTargets().")";//Sélectionne tous les objets de l'espace ("null")  ||  Sélectionne en fonction de "sqlTargets()"
+			$sqlTargets=(!empty($_SESSION["displayAdmin"]))  ?  null  :  "and `target` in (".static::sqlAffectations().")";//Sélectionne tous les objets de l'espace ("null")  ||  Sélection en fonction des affectations
 			$conditions[]=$keyId." IN (select _idObject as ".$keyId." from ap_objectTarget where objectType='".static::objectType."' and _idSpace=".Ctrl::$curSpace->_id."  ".$sqlTargets.")";
 		}
 		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (retourne aucune erreur ni objet)
-		$sqlReturned=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." IS NULL";
-		////	Selection "plugin" : selectionne les objets des conteneurs auquel on a acces (dossiers/sujets..)
+		$return=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." IS NULL";
+		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a acces (dossiers/sujets..)
 		if($containerObj==null && static::isContainerContent()){
 			$MdlObjectContainer=static::MdlObjectContainer;
-			$sqlReturned="(".$sqlReturned." OR ".$MdlObjectContainer::sqlDisplayedObjects(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $keyId
+			$return="(".$return." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $keyId
 		}
 		////	Renvoie le résultat
-		return $sqlReturned;
+		return $return;
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : RECUPÈRE LES OBJETS POUR UN AFFICHAGE "PLUGIN" ("dashboard"/"shortcut"/"search")
+	 * STATIC SQL : RECUPÈRE LES OBJETS D'UN "PLUGIN" ($params["type"] : "dashboard"/"shortcut"/"search")
 	 *******************************************************************************************/
-	public static function getPluginObjects($pluginParams)
+	public static function getPlugins($params)
 	{
 		$returnObjects=[];
-		if(isset($pluginParams["type"]))
+		if(isset($params["type"]))
 		{
-			//Recupere les elements du plugin!
-			$sqlDisplayedObjects=static::sqlDisplayedObjects();
-			$returnObjects=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPluginObjects($pluginParams)." AND ".$sqlDisplayedObjects." ORDER BY dateCrea desc");
-			//Ajoute si besoin les plugins "current" du Dashboard (ayant lieu entre aujourd'hui et la fin de la periode selectionné)
-			if($pluginParams["type"]=="dashboard" && (static::objectType=="calendarEvent" || static::objectType=="task"))
-			{
-				$pluginParams["type"]="current";
-				$returnObjectsCurrent=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPluginObjects($pluginParams)." AND ".$sqlDisplayedObjects." ORDER BY dateCrea desc");
-				foreach($returnObjectsCurrent as $tmpObj){
-					$tmpObj->pluginIsCurrent=true;
-					$returnObjects[$tmpObj->_id]=$tmpObj;//écrase / ajoute l'objet du tableau
-				}
+			//// Recupere les elements en fonction de leurs droits d'accès
+			$sqlDisplay=static::sqlDisplay();
+			$returnObjects=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPlugins($params)." AND ".$sqlDisplay." ORDER BY dateCrea desc");
+			//// Ajoute si besoin les plugins courant du Dashboard : ayant lieu dans la periode affichée (idem "evtList()")
+			if($params["type"]=="dashboard" && (static::objectType=="calendarEvent" || static::objectType=="task")){
+				$sqlTimeSlot="(  (dateBegin between ".Db::format($params["dateTimeBegin"])." and ".Db::format($params["dateTimeEnd"]).")  OR  (dateEnd between ".Db::format($params["dateTimeBegin"])." and ".Db::format($params["dateTimeEnd"]).")  OR  (dateBegin < ".Db::format($params["dateTimeBegin"])." and dateEnd > ".Db::format($params["dateTimeEnd"]).")  )";
+				$currentObjs=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlTimeSlot." AND ".$sqlDisplay." ORDER BY dateCrea desc");
+				foreach($currentObjs as $tmpObj)   {$tmpObj->pluginIsCurrent=true;  $returnObjects[$tmpObj->_id]=$tmpObj;}//ajoute/remplace l'objet du tableau
 			}
 		}
 		return $returnObjects;
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : FILTRE LES OBJETS EN FONCTION DU TYPE DE PLUGIN
-	 * $pluginParams["type"] => "dashboard": cree dans la periode selectionné / "shortcut": ayant un raccourci / "search": issus d'une recherche
+	 * STATIC SQL : SELECTIONNE LES OBJETS EN FONCTION DU TYPE DE PLUGIN
+	 * $params["type"] => "dashboard": cree dans la periode selectionné / "shortcut": ayant un raccourci / "search": issus d'une recherche
 	 *******************************************************************************************/
-	public static function sqlPluginObjects($pluginParams)
+	public static function sqlPlugins($params)
 	{
-		if($pluginParams["type"]=="current")		{return "((dateBegin BETWEEN ".Db::format($pluginParams["dateTimeBegin"])." AND ".Db::format($pluginParams["dateTimeEnd"]).")  OR  (dateEnd BETWEEN ".Db::format($pluginParams["dateTimeBegin"])." AND ".Db::format($pluginParams["dateTimeEnd"]).")  OR  (dateBegin < ".Db::format($pluginParams["dateTimeBegin"])." AND dateEnd > ".Db::format($pluginParams["dateTimeEnd"])."))";}
-		elseif($pluginParams["type"]=="dashboard")	{return "dateCrea BETWEEN '".$pluginParams["dateTimeBegin"]."' AND '".$pluginParams["dateTimeEnd"]."'";}
-		elseif($pluginParams["type"]=="shortcut")	{return "shortcut=1";}
-		elseif($pluginParams["type"]=="search")
+		if($params["type"]=="dashboard")	{return "dateCrea BETWEEN ".Db::format($params["dateTimeBegin"])." AND ".Db::format($params["dateTimeEnd"]);}
+		elseif($params["type"]=="shortcut")	{return "shortcut=1";}
+		elseif($params["type"]=="search")
 		{
-			$sqlReturned="";
-			//Recherche dans tous les champs de l'objet ou uniquement ceux demandés
-			$objectSearchFields=(!empty($pluginParams["searchFields"]))  ?  array_intersect(static::$searchFields,$pluginParams["searchFields"])  :  static::$searchFields;
-			//Recherche l'expression exacte
-			if($pluginParams["searchMode"]=="exactPhrase"){
-				foreach($objectSearchFields as $tmpField)	{$sqlReturned.="`".$tmpField."` LIKE ".Db::format($pluginParams["searchText"])." OR "; }//Exple: "title LIKE 'mot1 mot2'"
+			$return=null;
+			//// Champs concernés par la recherche : tous les champs de l'objet ou uniquement ceux demandés
+			$objSearchFields=(!empty($params["searchFields"]))  ?  array_intersect(static::$searchFields,$params["searchFields"])  :  static::$searchFields;
+			//// Prépare les termes de la recherche
+			$searchText=Txt::clean($params["searchText"]);
+			//// Recherche l'expression exacte
+			if($params["searchMode"]=="exactPhrase"){
+				//Formate chaque recherche d'expression : "likesearch" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()"
+				foreach($objSearchFields as $tmpField)  {$return.="`".$tmpField."` LIKE ".Db::format($searchText)." OR `".$tmpField."` LIKE ".Db::format(htmlentities($searchText),"likeSearch,editor")." OR ";}
 			}
-			//Recherche  "un des mots" ("title like '%mot1%' or title like '%mot2%'")  ||  "tous les mots"  ("title like '%mot1%' and title like '%mot2%'")
+			//// Recherche n'importe quel mot spécifié OU Recherche tous les mots spécifiés
 			else
 			{
-				//Récupère les mots cles de la recherche (sup. 3 carac)
+				//Récupère les mots cles de la recherche (>=3 carac)
 				$searchWords=[];
-				foreach(explode(" ",$pluginParams["searchText"]) as $valTmp){
-					if(strlen($valTmp)>=3)  {$searchWords[]=$valTmp;}
+				foreach(explode(" ",$searchText) as $tmpWord){
+					if(strlen($tmpWord)>=3){
+						$searchWords[]=$tmpWord;														//Recherche le texte brut
+						if($params["searchMode"]=="anyWord")  {$searchWords[]=htmlentities($tmpWord);}	//Recherche aussi les caractères html accentués (cf. tinyMce avec "&eacute;", "&egrave;"..)
+					}
 				}
-				//Opérateur de liaison (garder les espaces) : "Tous les mots" || "un des mots"
-				$linkOperator=($pluginParams["searchMode"]=="allWords")  ?  " AND "  :  " OR ";
-				//Recherche dans chaque champ du type d'objet
-				foreach($objectSearchFields as $tmpField)
-				{
-					$sqlSubSearch="";
-					foreach($searchWords as $tmpWord)  {$sqlSubSearch.="`".$tmpField."` LIKE ".Db::format($tmpWord,"likeSearch").$linkOperator;}//Recherche chaque mot / tous les mots
-					$sqlReturned.="(".rtrim($sqlSubSearch,$linkOperator).") OR ";//"rtrim" plutôt que "trim" (car bouffe la première lettre du $sqlSubSearch..)
+				//Opérateur de liaison (garder les espaces) : "n'importe quel mot" || "Tous les mots"
+				$operator=($params["searchMode"]=="anyWord")  ?  "OR"  :  "AND";
+				//Pour chaque champ de l'objet, on ajoute une sélection SQL pour chaque mot recherché
+				foreach($objSearchFields as $tmpField){
+					$sqlField=null;
+					foreach($searchWords as $tmpWord)  {$sqlField.="`".$tmpField."` LIKE ".Db::format($tmpWord,"likeSearch,editor")." ".$operator;}	//"likesearch" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()" ci-dessus
+					$return.="(".trim($sqlField,$operator).") OR ";																					//supprime le dernier $operator entre chaque mot recherché && ajoute un "OR" pour la recherche sur un autre champ
 				}
 			}
-			//Sélection de base
-			$sqlReturned="(".rtrim($sqlReturned," OR ").")";
-			//Recherche aussi sur la date de creation
-			if($pluginParams["creationDate"]!="all"){
-				$nbDays=array("day"=>1,"week"=>7,"month"=>31,"year"=>365);
-				$beginDate=time()-(86400*$nbDays[$pluginParams["creationDate"]]);
-				$sqlReturned="(".$sqlReturned." AND dateCrea BETWEEN '".date("Y-m-d 00:00",$beginDate)."' AND '".date("Y-m-d 23:59")."')";
+			//// Sélection de base : supprime le dernier opérateur "OR" entre chaque champ de recherche (cf "rtrim()")
+			$return="(".trim($return,"OR ").")";
+			//// Filtre en fonction de la date de creation
+			if($params["creationDate"]!="all"){
+				$nbDays=["day"=>1,"week"=>7,"month"=>31,"year"=>365];
+				$timeCreationDate=time() - (86400 * $nbDays[$params["creationDate"]]);
+				$return.=" AND dateCrea >= '".date("Y-m-d 00:00",$timeCreationDate)."'";
 			}
-			//retourne le résultat
-			return $sqlReturned;
+			//// Retourne le résultat
+			return $return;
 		}
 	}
 
@@ -723,14 +723,14 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE LA DATE DE CRÉATION OU MODIF
+	 * AFFICHE LA DATE DE CRÉATION OU MODIFICATION
 	 *******************************************************************************************/
 	public function dateLabel($getDateCrea=true, $format="normal")
 	{
 		if($getDateCrea==true)	{return Txt::dateLabel($this->dateCrea,$format);}
 		else					{return Txt::dateLabel($this->dateModif,$format);}
 	}
-	
+
 	/*******************************************************************************************
 	 * AFFICHE L'AUTEUR ET LA DATE AU FORMAT "OBJLINES"
 	 *******************************************************************************************/

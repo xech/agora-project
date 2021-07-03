@@ -18,10 +18,10 @@
 	const hasUsersComment=true;
 	const hasUsersLike=true;
 	protected static $_hasAccessRight=true;
-	public static $displayModeOptions=array("line","block");
-	public static $requiredFields=array("name");
-	public static $searchFields=array("name","description");
-	public static $sortFields=array("name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc");
+	public static $displayModes=["block","line"];
+	public static $requiredFields=["name"];
+	public static $searchFields=["name","description"];
+	public static $sortFields=["name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc"];
 	//Valeurs en cache
 	private $_contentDescription=null;
 	private $_visibleFolderTree=null;
@@ -127,8 +127,8 @@
 			//Init
 			$MdlObjectContent=static::MdlObjectContent;
 			$this->_contentDescription="";
-			$nbSubFolders=Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".self::sqlDisplayedObjects($this));
-			$nbElems=Db::getVal("SELECT count(*) FROM ".$MdlObjectContent::dbTable." WHERE ".$MdlObjectContent::sqlDisplayedObjects($this));
+			$nbSubFolders=Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".self::sqlDisplay($this));
+			$nbElems=Db::getVal("SELECT count(*) FROM ".$MdlObjectContent::dbTable." WHERE ".$MdlObjectContent::sqlDisplay($this));
 			////	Nombre de sous-dossiers
 			if(!empty($nbSubFolders))  {$this->_contentDescription.=$nbSubFolders." ".($nbSubFolders>1?Txt::trad("folders"):Txt::trad("folder"));}
 			////	Nombre d'elements dans le dossier (s'il y en a)  &&  taille des fichiers (si "fileFolder")
@@ -185,7 +185,7 @@
 				$return=null;
 				foreach($foldersList as $cpt=>$objFolder){
 					if($typeReturn=="text")		{$return.=($cpt>0?" <img src='app/img/arrowRight.png'> ":null).$objFolder->name; }	//format "text" : Dossier racine > Mon sous-dossier
-					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name,"download")."/";}								//format "zip" : Dossier_racine/mon_sous-dossier/
+					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name)."/";}										//format "zip" : Dossier_racine/mon_sous-dossier/
 				}
 				return $return;
 			}
@@ -208,9 +208,9 @@
 			//Ajoute le dossier courant à la liste, avec son niveau
 			$curFolder->treeLevel=$treeLevel;
 			$folderList[]=$curFolder;
-			//Récupère récursivement les sous-dossiers du dossier courant (tjs triés par nom)  =>  tous les sous-dossiers ("all")  OU  les sous-dossiers en fonction de leur droit d'accès ("sqlDisplayedObjects()") 
-			$sqlDisplayedObjects=($accessRightMini=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplayedObjects($curFolder);
-			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlDisplayedObjects." ORDER BY name ASC")  as $subFolder){
+			//Récupère récursivement les sous-dossiers du dossier courant (tjs triés par nom)  =>  tous les sous-dossiers ("all")  OU  les sous-dossiers en fonction de leur droit d'accès ("sqlDisplay()") 
+			$sqlDisplay=($accessRightMini=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);
+			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlDisplay." ORDER BY name ASC")  as $subFolder){
 				$subFolders=$this->folderTree($accessRightMini, $subFolder, $treeLevel+1);
 				$folderList=array_merge($folderList,$subFolders);
 			}
@@ -236,11 +236,11 @@
 	 *******************************************************************************************/
 	public function folders()
 	{
-		$vDatas["foldersList"]=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplayedObjects($this)." ".static::sqlSort());
+		$vDatas["foldersList"]=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay($this)." ".static::sqlSort());
 		if(!empty($vDatas["foldersList"])){
 			$vDatas["objContainerClass"]=null;
-			if(static::moduleName=="file")			{$vDatas["objContainerClass"]="objContentCenter";}//Dossier de fichiers : affichage centré de l'icone et du contenu
-			elseif(static::moduleName=="contact")  {$vDatas["objContainerClass"]="objPerson";}//Affichage plus grand du conteneur 
+			if(static::moduleName=="contact")	{$vDatas["objContainerClass"]="objPerson";}			//Conteneur plus grand
+			elseif(static::moduleName=="file")	{$vDatas["objContainerClass"]="objContentCenter";}	//Affichage centré (icone + contenu)
 			return Ctrl::getVue(Req::commonPath."VueObjFolders.php",$vDatas);
 		}
 	}
