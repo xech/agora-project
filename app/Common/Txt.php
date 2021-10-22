@@ -24,7 +24,7 @@ class Txt
 		if(empty(self::$trad))
 		{
 			//Trad demandée (param)  /  Trad du paramétrage de l'user  /  Trad du paramétrage de l'espace  /  Trad en fonction du navigateur (ctrl=install || agora-project.net)
-			if(Req::isParam("curTrad"))																					{$_SESSION["curTrad"]=Req::getParam("curTrad");}
+			if(Req::isParam("curTrad"))																					{$_SESSION["curTrad"]=Req::param("curTrad");}
 			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))												{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}
 			elseif(!empty(Ctrl::$agora->lang))																			{$_SESSION["curTrad"]=Ctrl::$agora->lang;}
 			elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^en-US/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="english";}
@@ -80,21 +80,30 @@ class Txt
 	}
 
 	/********************************************************************************************
-	 * REDUCTION D'UN TEXTE (conserve certaines balises html)
+	 * REDUCTION DE TEXTE POUR LES TOOLTIPS, LOGS, ETC : ENLEVE LES TAGS HTML
 	 ********************************************************************************************/
-	public static function reduce($text, $maxCaracNb=200, $removeLastWord=true)
+	public static function reduce($text, $maxCaracNb=200)
 	{
-		//Vérif si on dépasse la longeur max (texte brut sans tag ni caractère html)
-		$textLength=strlen(htmlspecialchars_decode(strip_tags($text)));
-		if($textLength>$maxCaracNb){
-			$text=htmlspecialchars_decode(strip_tags($text,"<p><div><span><a><button><img><br><hr>"));		//Minimise les tags html de Tinymce pour les "title" et "sendMailNotif()" (idem "Req::filterParam()")
-			$maxCaracNb+=round(strlen($text)-$textLength);													//Ajoute la taille des balises html dans le nb de caractères
-			$text=substr($text, 0, $maxCaracNb);															//Réduit la taile du texte
-			if(strrpos($text," ")>1 && $removeLastWord==true)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot qui dépasse (déconseillé si $maxCaracNb < 100 car peut réduire fortement la taille du texte)
-			$text=rtrim($text,",")."...";																	//Ajoute un "..." à la fin du texte
+		$text=html_entity_decode(strip_tags($text));							//Enlève les tags html (pour pas briser l'affichage d'un tag html..) && Converti les caractères html accentués (&egrave; &eacute; etc)
+		$text=str_replace('&nbsp;', '', $text);									//Enlève les &nbsp; (pas pris en charge par "html_entity_decode()"..)
+		if(strlen($text)>$maxCaracNb){											//Vérif la taille du texte brut
+			$text=substr($text, 0, $maxCaracNb);								//Réduit le texte en fonction de $maxCaracNb
+			if($maxCaracNb>100)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot si $maxCaracNb>100 (sinon on réduit trop le texte)
+			$text=rtrim($text,",")."...";										//Ajoute "..." en fin de texte (enlève éventuellement la dernière virgule)
 		}
-		//Renvoie le résultat (Converti les doubles quotes pour les "title", car Tinymce ne les converti pas ..contrairement aux accents "&egrave;" & co)
-		return str_replace('"','&quot;',$text);
+		//Renvoi le résultat
+		return self::tooltip($text);
+	}
+
+	/********************************************************************************************
+	 * PREPARE L'AFFICHAGE D'UN TEXTE COMPLEXE DANS UN TOOLTIP/TITLE (DESCRIPTION & CO)
+	 ********************************************************************************************/
+	public static function tooltip($text)
+	{
+		$text=nl2br(str_replace('"','&quot;',$text));	//Remplace les quotes et retours à la ligne puis renvoie le résultat !
+		$text=strip_tags($text,"<span><img><br><hr>");	//Enlève les principale balises
+		if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}	//Place les urls dans une balise <a>
+		return $text;
 	}
 
 	/*******************************************************************************************
@@ -131,15 +140,6 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * FORMAT LES TOOLTIPS : AJOUTE SI BESOIN DES HYPERLIENS ET FAIT LES RETOURS À LA LIGNE
-	 *******************************************************************************************/
-	public static function formatTooltip($text)
-	{
-		$patternHyperlink="/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-		return nl2br(preg_replace($patternHyperlink, "<a href='$0' target='_blank'><u>$0</u></a>", $text));
-	}
-
-	/*******************************************************************************************
 	 * FORMATE UNE DATE PUIS ENCODE SI BESOIN EN UTF-8
 	 *******************************************************************************************/
 	public static function formatime($format, $timestamp)
@@ -170,16 +170,16 @@ class Txt
 			//Prépare le formatage via "strftime()"
 			$_begin=$_end=null;																							//Init le formatage complet du début/fin
 			$_HM="%k:%M";																								//Format de l'heure (ex: "9:30")
-			$_DMY=($format=="full" || $format=="dateFull")  ?  "%a %e"  :  "%e";										//Format du jour 'full' ou 'normal' (ex: 'lun. 8' ou '8')
-			$_DMY.=" %b";																								//Format du mois abrégé (ex: 'fev.')
-			if(date("y",$timeBegin)!=date("y") || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$_DMY.=" %Y";}	//Format de l'année si différente de l'année en cours (ex: '2050')
+			$_DMY=($format=="full" || $format=="dateFull")  ?  "%A %e"  :  "%e";										//Format du jour (ex: "lundi 8" ou "8")
+			$_DMY.=" %B";																								//Format du mois (ex: "mars")
+			if(date("y",$timeBegin)!=date("y") || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$_DMY.=" %Y";}	//Format de l'année (ex: "2050") : si différente de l'année courante
 			$separator=" <img src='app/img/arrowRight.png'> ";															//Image de séparation de début/fin
 
 			//NORMAL OU FULL
 			if($format=="normal" || $format=="full"){
-				$_begin=$_DMY." ".$_HM;													//[lun.] 8 fév. 2050 11:30
-				if($diffDays==true)			{$_end=$separator.$_begin;}					//[lun.] 8 fév. 2050 11:30 > [mer.] 15 mars 2050 17:30
-				elseif($diffHours==true)	{$_end="-".$_HM;}							//[lun.] 8 fév. 2050 11:30-12:30
+				$_begin=$_DMY." ".$_HM;													//[lundi] 8 mars 2050 11:30
+				if($diffDays==true)			{$_end=$separator.$_begin;}					//[lundi] 8 mars 2050 11:30 > [mercredi] 15 mars 2050 17:30
+				elseif($diffHours==true)	{$_end="-".$_HM;}							//[lundi] 8 mars 2050 11:30-12:30
 			}
 			//MINI
 			elseif($format=="mini"){
@@ -189,8 +189,8 @@ class Txt
 			}
 			//DATE FULL
 			elseif($format=="dateFull"){
-				$_begin=$_DMY;															//lun. 8 fév. 2050
-				if($diffDays==true)	{$_end=$separator.$_begin;}							//lun. 8 fév. 2050 > mercredi 15 mars 2050
+				$_begin=$_DMY;															//lundi 8 mars 2050
+				if($diffDays==true)	{$_end=$separator.$_begin;}							//lundi 8 mars 2050 > mercredi 15 mars 2050
 			}
 			//DATE MINI (..OU SI $FORMAT N'EXISTE PAS)
 			else{
@@ -240,13 +240,16 @@ class Txt
 	 *******************************************************************************************/
 	public static function submitButton($tradSubmit="validate", $isMainButton=true)
 	{
-		return "<input type='hidden' name='ctrl' value=\"".Req::$curCtrl."\">
-				<input type='hidden' name='action' value=\"".Req::$curAction."\">
-				<input type='hidden' name='formValidate' value='1'>
-				".(Req::isParam("targetObjId")  ?  "<input type='hidden' name='targetObjId' value=\"".Req::getParam("targetObjId")."\">"  :  null)."
-				<div class='".($isMainButton==true?'submitButtonMain':'submitButtonInline')."'>
-					<button type='submit'>".( self::isTrad($tradSubmit) ? self::trad($tradSubmit) : $tradSubmit)."</button>
-				</div>";
+		//Prépare le "button"
+		$inputTypeId=Req::isParam("typeId")  ?  "<input type='hidden' name='typeId' value=\"".Req::param("typeId")."\">"  :  null;
+		$buttonDivClass=($isMainButton==true) ? 'submitButtonMain' : 'submitButtonInline';
+		$buttonLabel=(self::isTrad($tradSubmit)) ? self::trad($tradSubmit) : $tradSubmit;
+		//Renvoie le button et inputs "hidden" : typeId, controleur, etc
+		return  $inputTypeId.
+				"<input type='hidden' name='ctrl' value=\"".Req::$curCtrl."\">
+				 <input type='hidden' name='action' value=\"".Req::$curAction."\">
+				 <input type='hidden' name='formValidate' value='1'>
+				 <div class='".$buttonDivClass."'><button type='submit'>".$buttonLabel." <img src='app/img/loadingSmall.png' class='submitButtonLoading'></button></div>";
 	}
 
 	/*******************************************************************************************

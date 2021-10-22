@@ -103,6 +103,6 @@ class MdlForumSubject extends MdlObject
 	 *******************************************************************************************/
 	public static function getUrlNew()
 	{
-		return parent::getUrlNew().(Req::isParam("_idTheme")?"&_idTheme=".Req::getParam("_idTheme"):null);
+		return parent::getUrlNew().(Req::isParam("_idTheme")?"&_idTheme=".Req::param("_idTheme"):null);
 	}
 }

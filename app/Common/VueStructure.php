@@ -31,9 +31,9 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JAVASCRIPT & CSS PRINCIPAUX (TOUJOURS À LA FIN!)-->
-		<script src="app/js/common-21.6.js"></script>
-		<link href="app/css/common-21.6.css" rel="stylesheet" type="text/css">
-		<link href="app/css/<?= $skinCss ?>.css?v<?= VERSION_AGORA ?>" rel="stylesheet" type="text/css">
+		<script src="app/js/common-<?= VERSION_AGORA?>.js"></script>
+		<link href="app/css/common-<?= VERSION_AGORA?>.css" rel="stylesheet" type="text/css">
+		<link href="app/css/<?= $skinCss ?>.css" rel="stylesheet" type="text/css">
 	
 		<script>
 		////	Alerte pour MSIE (sauf IE-11: encore très utilisé)
@@ -41,24 +41,21 @@
 		////	Divers params
 		isMainPage=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
 		windowParent=(isMainPage==true) ? window : window.parent;//Si l'espace est intégré dans un Iframe (cf. redirection "invisible" de domaine)
-		confirmCloseForm=false;//Init la confirmation de fermeture de page (exple: lightbox d'édition)
-		////	Divers labels de "common.js"
-		labelConfirmCloseForm="<?= Txt::trad("confirmCloseForm") ?>";
-		labelConfirmDelete="<?= Txt::trad("confirmDelete") ?>";
-		labelSpecifyLoginPassword="<?= Txt::trad("specifyLoginPassword") ?>";
-		labelDateBeginEndControl="<?= Txt::trad("beginEndError") ?>";
-		labelVisioUser="<?= is_object(Ctrl::$curUser)  ? Ctrl::$curUser->getLabel() : null ?>";
-		labelVisioLaunchConfirm="<?= Txt::trad("VISIO_launchConfirm") ?>";
-		labelUploadMaxFilesize="<?= File::uploadMaxFilesize("error") ?>";
-		valueUploadMaxFilesize=<?= File::uploadMaxFilesize() ?>;
+		confirmCloseForm=false;//Init la confirmation de fermeture de page (cf. lightbox d'édition)
+		////	Labels de "common.js"
+		labelCancel					="<?= Txt::trad("cancel") ?>";
+		labelConfirmCloseForm		="<?= Txt::trad("confirmCloseForm") ?>";
+		labelConfirmDelete			="<?= Txt::trad("confirmDelete") ?>";
+		labelSpecifyLoginPassword	="<?= Txt::trad("specifyLoginPassword") ?>";
+		labelDateBeginEndControl	="<?= Txt::trad("beginEndError") ?>";
+		labelUploadMaxFilesize		="<?= File::uploadMaxFilesize("error") ?>";
+		valueUploadMaxFilesize		=<?= File::uploadMaxFilesize() ?>;
 		////	Au chargement de la page
 		$(function(){
 			<?php
-			////	Fermeture de lightbox ($notify en parametre?)
-			if(Ctrl::$lightboxClose==true)  {echo 'lightboxClose(null,"'.Ctrl::$lightboxCloseParams.'");';}
-			////	Affiche si besoin des notifications (messages à traduire?)
+			////	Affiche si besoin des notifications
 			foreach(Ctrl::$notify as $tmpNotif){
-				if(Txt::isTrad($tmpNotif["message"]))  {$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}
+				if(Txt::isTrad($tmpNotif["message"]))  {$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}//notif à traduire?
 				echo 'notify("'.$tmpNotif["message"].'", "'.$tmpNotif["type"].'");';
 			}
 			?>
@@ -70,10 +67,15 @@
 		});
 		</script>
 
+		<?php
+		////	FOOTER JAVASCRIPT DU HOST ?
+		if(Ctrl::isHost())  {Host::footerJsNotify();}
+		?>
+
 		<style>
 		/*WALLPAPER EN PAGE PRINCIPALE*/
 		@media screen and (min-width:1024px){
-			<?= isset($pathWallpaper) ? "html  {background:url(".$pathWallpaper.") no-repeat center fixed;background-size:cover;}" : null ?>/*"cover": background fullsize*/
+			<?= isset($pathWallpaper) ? "html  {background:url('".addslashes($pathWallpaper)."') no-repeat center fixed;background-size:cover;}" : null ?>/*"cover": background fullsize*/
 		}
 
 		/*FOOTER*/
@@ -104,11 +106,6 @@
 			[id^='pageFooter']	{display:none!important;}
 		}
 		</style>
-
-		<?php
-		////	Footer javascript du Host ?
-		if(Ctrl::isHost())  {Host::footerJsNotify();}
-		?>
 	</head>
 
 	<body>
@@ -131,7 +128,7 @@
 		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
 			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>
-				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".$pathLogoTitle."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
+				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".Txt::tooltip($pathLogoTitle)."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
 		}
 		?>
 	</body>

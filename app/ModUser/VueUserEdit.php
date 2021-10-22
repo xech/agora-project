@@ -18,7 +18,7 @@ $(function(){
 			//Pas de validation par défaut du formulaire
 			event.preventDefault();
 			//Verif si le login/email est présent et sans espace
-			if($("input[name='login']").isEmpty() || find(" ",$("input[name='login']").val()))  {notify("<?= Txt::trad("specifyLogin"); ?>","warning");  return false;}
+			if($("input[name='login']").isEmpty())  {notify("<?= Txt::trad("specifyLogin"); ?>","warning");  return false;}
 			//Vérif si le login (type email) et l'email sont bien identiques
 			if($("input[name='login']").isMail() && $("input[name='mail']").isEmpty()==false && $("input[name='login']").val()!=$("input[name='mail']").val())   {notify("<?= Txt::trad("USER_loginAndMailDifferent"); ?>","warning");  return false;}
 			//Verif la présence du password : nouvel user uniquement
@@ -30,8 +30,8 @@ $(function(){
 			}
 			// Verif si le compte utilisateur existe déjà
 			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(resultText){
-				if(find("true",resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
-				else if(mainFormControl())	{mainFormControled=true;  $("#mainForm").submit();}							//Controle principal ok : image "Loading" & confirme le formulaire !
+				if(/true/i.test(resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
+				else if(mainFormControl())		{mainFormControled=true;  $("#mainForm").submit();}							//Controle principal ok : image "Loading" & confirme le formulaire !
 			});
 		}
 	});
@@ -108,7 +108,7 @@ select[name="connectionSpace"]	{width:100%}
 			$adminChecked=($tmpSpace->accessRightUser($curObj)==2)  ?  "checked"  :  null;									//Sélectionne la box "admin"
 			echo "<div class='spaceAffectLine sTableRow' id=\"targetLine".$tmpSpace->_id."\">
 					<label class='spaceAffectLabel'>".$tmpSpace->name."</label>
-					<div title=\"".$userTitle."\"> <input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_1\" ".$userChecked." ".$userDisabled."></div>
+					<div title=\"".Txt::tooltip($userTitle)."\"> <input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_1\" ".$userChecked." ".$userDisabled."></div>
 					<div title=\"".Txt::trad("SPACE_adminInfo")."\"><input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_2\" ".$adminChecked."></div>
 				  </div>";
 		}

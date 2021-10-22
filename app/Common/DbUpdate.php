@@ -351,7 +351,7 @@ class DbUpdate extends Db
 							//chemin du fichier joint
 							$fileExtension=".".File::extension($tmpFile["name"]);
 							$oldPath="../".(Ctrl::isHost()?PATH_DATAS:'stock_fichiers/')."fichiers_objet/".$tmpFile["_id"].$fileExtension;//exple : "../stock_fichiers/fichiers_objet/123.jpg"
-							$newPath="index.php?ctrl=object&action=DisplayAttachedFile&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObjectAttributes.php"
+							$newPath="index.php?ctrl=object&action=AttachedFileDisplay&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObject.php"
 							//Mp3 ("url_encode" : lecteur mp3)  ||  Videos 
 							if(File::isType("mp3",$tmpFile["name"]))  {$newPath=urlencode($newPath);}
 							elseif(File::isType("videoPlayer",$tmpFile["name"])){
@@ -368,7 +368,7 @@ class DbUpdate extends Db
 					$descriptionUpdates[]="description=REPLACE(description,'../divers/video','app/misc/jwplayer')";//player video
 					$descriptionUpdates[]="description=REPLACE(description,'../divers/tiny_mce/plugins','app/js/tinymce/plugins')";//plugins tinymce
 					$descriptionUpdates[]="description=REPLACE(description,'plugins/emotions','plugins/emoticons')";//idem
-					$descriptionUpdates[]="description=REPLACE(description,'../module_fichier/index.php?id_dossier=','index.php?ctrl=file&targetObjId=fileFolder-')";//liens vers les dossiers de fichiers
+					$descriptionUpdates[]="description=REPLACE(description,'../module_fichier/index.php?id_dossier=','index.php?ctrl=file&typeId=fileFolder-')";//liens vers les dossiers de fichiers
 					$descriptionUpdates[]="description=REPLACE(description,'../".(Ctrl::isHost()?PATH_DATAS:'stock_fichiers/')."gestionnaire_fichiers/','".PATH_MOD_FILE."')";//liens vers les fichiers
 					$descriptionUpdates[]="description=REPLACE(description,'stock_fichiers/','DATAS/')";
 					self::query("UPDATE ".$tmpTable." SET ".implode(", ",$descriptionUpdates));
@@ -512,8 +512,7 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_task","devise"))							{self::query("ALTER TABLE ap_task DROP devise");}
 				if(self::fieldExist("ap_userGroup","_idSpaces"))					{self::query("ALTER TABLE ap_userGroup DROP _idSpaces");}
 			}
-			
-			////	MAJ v3.0.5
+
 			if(self::updateVersion("3.0.5"))
 			{
 				////	MODIF LES DROITS D'ACCÈS DU DOSSIER RACINE : DÉSORMAIS UNE OPTION DE CHAQUE ESPACE
@@ -529,7 +528,6 @@ class DbUpdate extends Db
 				}
 			}
 
-			////	MAJ v3.1.5
 			if(self::updateVersion("3.1.5"))
 			{
 				////	MAJ DU "DATAS/.htaccess" ET SUPPR "DATAS/wallpaper/.htaccess"
@@ -540,13 +538,11 @@ class DbUpdate extends Db
 				self::query("ALTER TABLE ap_agora CHANGE `dateUpdateDb` `dateUpdateDb` DATETIME DEFAULT NULL");
 			}
 
-			////	MAJ v3.1.9
 			if(self::updateVersion("3.1.9"))
 			{
 				self::query("ALTER TABLE ap_file CHANGE `downloadsNb` `downloadsNb` INT(10) UNSIGNED NOT NULL DEFAULT '0'");
 			}
 
-			////	MAJ v3.1.10
 			if(self::updateVersion("3.1.10"))
 			{
 				//Update 'ap_userLivecouter' : ajoute 'editObjId' pour le controle de double édition
@@ -556,8 +552,7 @@ class DbUpdate extends Db
 				$isPrimaryKey=self::getTab("SHOW INDEXES FROM ap_userLivecouter WHERE Key_name LIKE 'PRIMARY'");
 				if(empty($isPrimaryKey))	{self::query("ALTER TABLE ap_userLivecouter ADD PRIMARY KEY (`_idUser`)");}
 			}
-			
-			////	MAJ v3.2.0
+
 			if(self::updateVersion("3.2.0"))
 			{
 				//Modifie l'affichage du label des modules dans la barre de menu
@@ -571,7 +566,6 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_calendar","evtColorDisplay"))  {self::query("ALTER TABLE ap_calendar DROP evtColorDisplay");}
 			}
 
-			////	MAJ v3.2.2
 			if(self::updateVersion("3.2.2"))
 			{
 				//Ajoute le logo en page d'accueil
@@ -584,8 +578,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_agora", "smtpUsername", "ALTER TABLE ap_agora ADD smtpUsername TINYTEXT DEFAULT NULL AFTER smtpSecure");
 				self::fieldExist("ap_agora", "smtpPass", "ALTER TABLE ap_agora ADD smtpPass TINYTEXT DEFAULT NULL AFTER smtpUsername");
 			}
-			
-			////	MAJ v3.2.3
+
 			if(self::updateVersion("3.2.3"))
 			{
 				//Modifie les anciennes dénominations des objets ('type') dans les Logs
@@ -611,7 +604,6 @@ class DbUpdate extends Db
 				Db::query("DELETE FROM ap_objectTarget WHERE target='allSpaces'");
 			}
 
-			////	MAJ v3.2.4
 			if(self::updateVersion("3.2.4"))
 			{
 				//Delete les champs obsoletes de "ap_task" : "budgetAvailable" "budgetEngaged" "humanDayCharge"
@@ -626,7 +618,6 @@ class DbUpdate extends Db
 				}
 			}
 
-			////	MAJ v3.3.1
 			if(self::updateVersion("3.3.1"))
 			{
 				//Ajoute La table "ap_objectLike"
@@ -655,7 +646,6 @@ class DbUpdate extends Db
 				self::query("DELETE FROM ap_log WHERE action='consult2'");
 			}
 
-			////	MAJ v3.3.5 (et aussi V3.3.4 pour la gestion des "icon")
 			if(self::updateVersion("3.3.5"))
 			{
 				// MAJ DU "DATAS/.htaccess" (flv pour la rétrocompatibilité)
@@ -666,14 +656,13 @@ class DbUpdate extends Db
 					{self::fieldExist($tmpTable, "icon", "ALTER TABLE ".$tmpTable." ADD icon VARCHAR(255) DEFAULT NULL AFTER description");}
 			}
 			
-			////	MAJ v3.4.1
 			if(self::updateVersion("3.4.1"))
 			{
 				// Ajoute le type d'outil de cartographie utilisé (Gmap ou Leaflet) et l'Identifiant utilisé (pour gmap)
 				self::fieldExist("ap_agora", "mapTool",		"ALTER TABLE ap_agora ADD mapTool varchar(255) DEFAULT 'gmap' AFTER usersComment");
 				self::fieldExist("ap_agora", "mapApiKey",	"ALTER TABLE ap_agora ADD mapApiKey varchar(255) DEFAULT NULL AFTER mapTool");
 			}
-			////	MAJ v3.4.2
+
 			if(self::updateVersion("3.4.2"))
 			{
 				//Ajoute le parametrage Google Signin
@@ -682,7 +671,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_agora", "gPeopleApiKey",	"ALTER TABLE ap_agora ADD gPeopleApiKey varchar(255) DEFAULT NULL AFTER gSigninClientId");//idem
 				if(Ctrl::isHost())  {self::query("UPDATE ap_agora SET gSignin=1");}
 			}
-			////	MAJ v3.4.3
+
 			if(self::updateVersion("3.4.3"))
 			{
 				// MAJ DU "DATAS/.htaccess"
@@ -691,14 +680,14 @@ class DbUpdate extends Db
 				// Suppression du champ "ap_user">"ipControlAdresses"
 				if(self::fieldExist("ap_user","ipControlAdresses"))  {self::query("ALTER TABLE ap_user DROP ipControlAdresses");}
 			}
-			////	MAJ v3.4.4
+
 			if(self::updateVersion("3.4.4"))
 			{
 				//Ajoute le brouillon/draft de l'éditeur tinyMce
 				self::fieldExist("ap_userLivecouter", "editorDraft", "ALTER TABLE ap_userLivecouter ADD editorDraft TEXT DEFAULT NULL AFTER editObjId");
 				self::fieldExist("ap_userLivecouter", "draftTargetObjId", "ALTER TABLE ap_userLivecouter ADD draftTargetObjId TINYTEXT DEFAULT NULL AFTER editorDraft");
 			}
-			////	MAJ v3.5.0
+
 			if(self::updateVersion("3.5.0"))
 			{
 				//Supprime l'ancien champ de réinit de password
@@ -742,7 +731,7 @@ class DbUpdate extends Db
 				//Rétablir le chemin des emoticones de tinymce
 				foreach(["ap_dashboardNews","ap_forumMessage","ap_forumSubject"] as $tmpTable)	{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'tinymce_4.8.2','tinymce')");}
 			}
-			////	MAJ v3.6.3
+
 			if(self::updateVersion("3.6.3"))
 			{
 				//Supprime les tables "guest" dans les table ou il est présent (avec "_idUser"), sauf dans la table "ap_calendarEvent" !
@@ -759,7 +748,7 @@ class DbUpdate extends Db
 				//Suppression de l'ancien champ "personalCalendarsDisabled"
 				if(self::fieldExist("ap_agora","personalCalendarsDisabled"))  {self::query("ALTER TABLE ap_agora DROP personalCalendarsDisabled");}
 			}
-			////	MAJ v3.6.5
+
 			if(self::updateVersion("3.6.5"))
 			{
 				//Correction du champ "guest" pour les propositions d'événements
@@ -771,7 +760,7 @@ class DbUpdate extends Db
 				//Suppression des affectations obsoletes aux dossiers racine (résiduelles)
 				self::query("DELETE FROM ap_objectTarget WHERE objectType IN ('fileFolder','contactFolder','taskFolder','linkFolder') AND _idObject='1'");
 			}
-			////	MAJ v3.7.0
+
 			if(self::updateVersion("3.7.0"))
 			{
 				//Durée par défaut des logs : 120 jours
@@ -781,7 +770,7 @@ class DbUpdate extends Db
 				//Augmente la taille max des commentaires des logs à 1000 caractères
 				Db::query("ALTER TABLE ap_log CHANGE `comment` `comment` VARCHAR(1000) DEFAULT NULL");
 			}
-			////	MAJ v3.7.1
+
 			if(self::updateVersion("3.7.1"))
 			{
 				//Supprime les votes sur les anciens sondages "fantome"
@@ -789,13 +778,13 @@ class DbUpdate extends Db
 				//Ajoute le support des 'emoji' dans les messages du messenger : cf. 'utf8mb4'
 				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_userMessengerMessage CHANGE `message` `message` TEXT CHARACTER SET utf8mb4");}
 			}
-			////	MAJ v3.7.3.1
+
 			if(self::updateVersion("3.7.3.1"))
 			{
 				//Ajoute le paramétrage du serveur Jitsi
 				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost varchar(255) DEFAULT NULL AFTER logsTimeOut");
 			}
-			////	MAJ v3.7.4.2
+
 			if(self::updateVersion("3.7.4.2"))
 			{
 				//Supprime si besoin l'ancien fichier PATH_WALLPAPER_CUSTOM/.htaccess
@@ -803,7 +792,7 @@ class DbUpdate extends Db
 				//Ajoute l'url de visio dans les evenements d'agenda
 				self::fieldExist("ap_calendarEvent", "visioUrl", "ALTER TABLE ap_calendarEvent ADD visioUrl varchar(255) DEFAULT NULL AFTER contentVisible");
 			}
-			////	MAJ v3.8.0
+
 			if(self::updateVersion("3.8.0"))
 			{
 				//Espace :  Renomme le champ 'usersInscription' en 'userInscription'  &&  Ajoute l'option de notif mail à l'admin après chaque inscription d'un user
@@ -818,17 +807,32 @@ class DbUpdate extends Db
 				foreach(self::getCol("SELECT _idObject FROM ap_objectTarget WHERE objectType='calendar' AND `target`='spaceUsers' AND accessRight=2 AND _idSpace IN (select _id as _idSpace from ap_space where public=1)") as $idCalendar)
 					{self::query("UPDATE ap_calendar SET propositionGuest=1 WHERE _id=".(int)$idCalendar);}
 			}
-			////	MAJ 21.6
+
 			if(self::updateVersion("21.6"))
 			{
+				//Ajoute le mode d'affichage par défaut des objets (liste/block)
 				self::fieldExist("ap_agora", "folderDisplayMode", "ALTER TABLE ap_agora ADD `folderDisplayMode` varchar(255) DEFAULT NULL AFTER moduleLabelDisplay");
 			}
 
-
-			///////////////////////////////////////////////////////			!! ATTENTION !!			///////////////////////////////////////////////////////////////////////////////////////////
-			////!!!!	MODIFIER "/ModOffline/db.sql" !
-			////!!!!	MODIFIER LE NUMERO DE VERSION DANS  "app/Common/Params.php" + "app/Common/VueStructure.php" + "app/js/common-3.x.x.js"  +  "app/css/common-3.x.x.js" + "RELEASES.txt"
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			if(self::updateVersion("21.10"))
+			{
+				//Ajoute l'url alternative des visios
+				self::fieldExist("ap_agora", "visioHostAlt", "ALTER TABLE ap_agora ADD `visioHostAlt` varchar(255) DEFAULT NULL AFTER visioHost");
+				//Renomme la table des emails envoyés
+				if(self::tableExist("ap_mailHistory"))  {Db::query("RENAME TABLE `ap_mailHistory` TO `ap_mail`");}
+				//Renomme le champ "editObjId" en "editTypeId"
+				if(self::fieldExist("ap_userLivecouter","editObjId"))  {self::query("ALTER TABLE ap_userLivecouter CHANGE `editObjId` `editTypeId` TINYTEXT DEFAULT NULL");}
+				//Renomme le champ "draftTargetObjId" en "draftTypeId"
+				if(self::fieldExist("ap_userLivecouter","draftTargetObjId"))  {self::query("ALTER TABLE ap_userLivecouter CHANGE `draftTargetObjId` `draftTypeId` TINYTEXT DEFAULT NULL");}
+				//Change le type de champ "ap_dashboardPoll.description"
+				self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `description` `description` TEXT DEFAULT NULL");
+				//Remplace l'url d'affichage des images dans les descriptions TinyMce (cf. "actionAttachedFileDisplay()")
+				foreach(["ap_dashboardNews","ap_dashboardPoll","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)
+					{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'action=displayAttachedFile','action=attachedFileDisplay')");}
+			}
+			////	ATTENTION !!!
+			////	MODIFIER FICHIER SQL  "ModOffline/db.sql"   &&   MODIFIER N° DE VERSION : "Common/Params.php" + "js/common-xx.js" + "css/common-xx.css" + "changelog.txt"
+			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 			////	MAJ "dateUpdateDb" && "version_agora"

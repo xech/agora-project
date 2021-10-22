@@ -38,7 +38,7 @@ input[name='title']				{width:50%;}
 .vAutorSubmit button			{width:120px; margin-right:10px;}
 /*Ajout d'element*/
 #addElem						{margin-top:50px; text-align:center;}
-#addElem button					{width:200px; height:50px;}
+#addElem button					{width:300px; height:50px;}
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
@@ -59,7 +59,7 @@ input[name='title']				{width:50%;}
 		//Liste des utilisateurs (inputs)
 		$userListInputs=null;
 		foreach($usersList as $tmpUser){
-			$tmpUserId="box_".$tmpGroup->tmpId."_".$tmpUser->_targetObjId;
+			$tmpUserId="box_".$tmpGroup->tmpId."_".$tmpUser->_typeId;
 			$tmpUserChecked=in_array($tmpUser->_id,$tmpGroup->userIds)  ?  "checked"  :  null;
 			$userListInputs.="<div class='userListUser'>
 								<input type='checkbox' name='userList[]' value='".$tmpUser->_id."' id='".$tmpUserId."' ".$tmpUserChecked.">
@@ -68,13 +68,13 @@ input[name='title']				{width:50%;}
 		}
 		//Affichage du formulaire
 		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("record",false);
-		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"if(confirm('".Txt::trad("confirmDelete",true)."')){lightboxClose('".$tmpGroup->getUrl("delete")."');}\">";}
+		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
 		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>
 				<div class='vAutorSubmit'>
 					<div>".$tmpGroup->createdBy."</div>
-					<div>".$buttonsSubmitDelete."<input type='hidden' name='targetObjId' value='".$tmpGroup->tmpId."'></div>
+					<div>".$buttonsSubmitDelete."<input type='hidden' name='typeId' value='".$tmpGroup->tmpId."'></div>
 				</div>
 			  </form>";
 	}

@@ -8,10 +8,10 @@ if(isMobile()){
 ////	CONFIRMATION / ANNULATION DE PROPOSITION D'ÉVÉNEMENT (via "jquery-confirm")
 function eventPropositionConfirm(_idCal, _idEvt, eventPropositionDivId)
 {
-	var ajaxUrl="?ctrl=calendar&action=eventPropositionConfirm&targetObjId=calendar-"+_idCal+"&_idEvt="+_idEvt;
+	var ajaxUrl="?ctrl=calendar&action=eventPropositionConfirm&typeId=calendar-"+_idCal+"&_idEvt="+_idEvt;
 	$.confirm({
 		title:"<?= Txt::trad("CALENDAR_evtProposed") ?>",					//Titre principal
-		content:$("#"+eventPropositionDivId).attr("data-confirmDetails"),	//Détails de l'événement (on n'utilise pas le "title" car supprimé à la volée par "tooltipster"..)
+		content:$("#"+eventPropositionDivId).attr("data-confirmDetails"),	//Détails de l'événement (on n'utilise pas le "title" car supprimé par "tooltipster" au moment de l'affichage!)
 		useBootstrap:false,													//Pas de dépendence à bootstrap
 		theme:"modern",														//Theme "modern" centré sur la page
 		closeIcon:true,														//Icone "close"
@@ -58,12 +58,12 @@ foreach($eventPropositions as $cpt=>$tmpProposition)
 		echo "<label>".ucfirst(Txt::trad("OBJECTcalendar"))." <i>".$tmpCal->title."</i> :</label>";
 		$curCalTitle=$tmpCal->title;//retient le titre courant
 	}
-	////	Affiche la proposition d'événement
+	////	Affiche la proposition d'événement dans un tooltip
 	$evtTooltip=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".
 				Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
 				ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
-	if($tmpEvt->description)  {$evtTooltip.=Txt::reduce(strip_tags($tmpEvt->description));}
-	echo "<li class='sLink' id=\"eventPropositionDiv".$tmpEvt->_id."\" title=\"".$evtTooltip."\" data-confirmDetails=\"".$evtTooltip."\" onclick=\"eventPropositionConfirm(".$tmpCal->_id.",".$tmpEvt->_id.",this.id)\">".$tmpEvt->title."</li>";
+	if($tmpEvt->description)  {$evtTooltip.=Txt::reduce($tmpEvt->description);}
+	echo "<li class='sLink' id=\"eventPropositionDiv".$tmpEvt->_id."\" title=\"".Txt::tooltip($evtTooltip)."\" data-confirmDetails=\"".Txt::tooltip($evtTooltip)."\" onclick=\"eventPropositionConfirm(".$tmpCal->_id.",".$tmpEvt->_id.",this.id)\">".$tmpEvt->title."</li>";
 }
 
 ////	Fin du block "List"

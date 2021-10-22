@@ -17,6 +17,7 @@ class MdlTask extends MdlObject
 	const objectType="task";
 	const dbTable="ap_task";
 	const MdlObjectContainer="MdlTaskFolder";
+	const htmlEditorField="description";
 	const isFolderContent=true;
 	const isSelectable=true;
 	const hasShortcut=true;
@@ -24,7 +25,6 @@ class MdlTask extends MdlObject
 	const hasNotifMail=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;
-	const htmlEditorField="description";
 	const barWidth="150px";
 	public static $displayModes=["block","line"];
 	public static $requiredFields=["title"];
@@ -89,7 +89,7 @@ class MdlTask extends MdlObject
 		if(!empty($this->advancement)){
 			$advancementIcon="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'>";
 			$txtTooltip=Txt::trad("TASK_advancement")." : ".$this->advancement." %"." <br>".$this->isDelayed(true);
-			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".$txtTooltip."\">".$advancementIcon."</span>";}
+			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".Txt::tooltip($txtTooltip)."\">".$advancementIcon."</span>";}
 			else														{return Tool::percentBar($this->advancement, $advancementIcon." ".$this->advancement."%", $txtTooltip, $this->isDelayed(), static::barWidth);}
 		}
 	}
@@ -102,18 +102,19 @@ class MdlTask extends MdlObject
 		if(!empty($this->responsiblePersons))
 		{
 			//Liste des responsables
-			$responsiblePersons=$responsiblePersonsFirstname=null;
+			$persons=$personsFirstname=null;
 			foreach(Txt::txt2tab($this->responsiblePersons) as $userId){
-				$responsiblePersons.=Ctrl::getObj("user",$userId)->getLabel().", ";
-				$responsiblePersonsFirstname.=Ctrl::getObj("user",$userId)->getLabel("firstName").", ";
+				$persons.=Ctrl::getObj("user",$userId)->getLabel().", ";
+				$personsFirstname.=Ctrl::getObj("user",$userId)->getLabel("firstName").", ";
 			}
 			//Affichage icone / barre
-			$personsIcon="<img src='app/img/user/icon.png'>";
-			$txtTooltip=Txt::trad("TASK_responsiblePersons")." :<br>".trim($responsiblePersons,", ");
-			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".$txtTooltip."\">".$personsIcon."</span>";}
+			$userIcon="<img src='app/img/user/icon.png'>";
+			$txtTooltip=Txt::trad("TASK_responsiblePersons")." :<br>".trim($persons,", ");
+			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".Txt::tooltip($txtTooltip)."\">".$userIcon."</span>";}
 			else{
-				$txtBar=substr(Txt::trad("TASK_responsiblePersons"),0,4)." : ".trim($responsiblePersonsFirstname,", ");
-				return Tool::percentBar(0, $personsIcon." ".Txt::reduce($txtBar,80), $txtTooltip, false, "220px");
+				$txtBar=substr(Txt::trad("TASK_responsiblePersons"),0,4)." : ".trim($personsFirstname,", ");
+				$txtBar=$userIcon." ".Txt::reduce($txtBar,80);
+				return Tool::percentBar(0, $txtBar, $txtTooltip, false, "220px");
 			}
 		}
 	}

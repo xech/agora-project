@@ -1,19 +1,16 @@
 /**SKIN BLANC**/
 
 /*Basic*/
-html										{background:#fff;}
-body, a, .sLink								{color:#555;}
-button										{color:#555;}/*tjs sur fonc blanc*/
-a:hover, .sLink:hover						{color:#800;}
-a:active, .sLinkSelect, input:checked+label	{color:#a00;}
+body, a, .sLink																		{color:#555;}
+a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label		{color:rgb(1, 112, 156);}
+#htmlLightbox																		{background:#fff;}
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
 	#htmlMainPage	{background:#f8f8f8 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
-	/*#htmlLightbox	{}cf. black.css*/
 }
 
-/*Blocks d'objet (ou pas) & menus contextuels*/
-.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#eee;}/*survol une ligne de menu*/
+/*Blocks d'objet & menus contextuels*/
+.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#f8f8f8;}/*survol une ligne de menu*/
 .objContainer, .miscContainer, .emptyContainer, .menuContext	{background:linear-gradient(333deg,#eee,#fff 100px); background-color:#fff;}
 .objContainerSelect, .objContainerSelect .objLabel				{background:#ddd!important;}/*".objLabel" pour les vignettes d'image du module "File"*/
 .objLines .objContainer											{border-bottom:solid 1px #ccc; box-shadow:2px 2px 8px rgb(200,200,200);}
@@ -23,9 +20,8 @@ a:active, .sLinkSelect, input:checked+label	{color:#a00;}
 .emptyContainer													{background:rgba(255,255,255,0.7);}
 
 /*Droits d'accès d'utilisateurs*/
-.sAccessRead		{color:#008;}
-.sAccessWriteLimit	{color:#940;}
-.sAccessWrite		{color:#900;}
+.sAccessRead						{color:#008;}
+.sAccessWrite, .sAccessWriteLimit	{color:#800;}
 
 /*Divers*/
 .lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}

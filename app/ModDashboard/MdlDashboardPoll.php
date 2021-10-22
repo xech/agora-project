@@ -15,11 +15,11 @@ class MdlDashboardPoll extends MdlObject
 	const moduleName="dashboard";
 	const objectType="dashboardPoll";
 	const dbTable="ap_dashboardPoll";
+	const htmlEditorField="description";
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	const hasUsersComment=true;
-	const htmlEditorField="description";
 	protected static $_hasAccessRight=true;
 	public static $requiredFields=["title"];
 	public static $searchFields=["title","description"];
@@ -67,7 +67,7 @@ class MdlDashboardPoll extends MdlObject
 			foreach($this->_responseList as $tmpKey=>$tmpResponse){
 				if(!empty($tmpResponse["fileName"])){
 					$this->_responseList[$tmpKey]["filePath"]=$this->responseFilePath($tmpResponse);
-					$this->_responseList[$tmpKey]["fileUrlDownload"]="?ctrl=dashboard&action=ResponseDownloadFile&targetObjId=".$this->_targetObjId."&_idResponse=".$tmpResponse["_id"];
+					$this->_responseList[$tmpKey]["fileUrlDownload"]="?ctrl=dashboard&action=ResponseDownloadFile&typeId=".$this->_typeId."&_idResponse=".$tmpResponse["_id"];
 				}
 			}
 		}
@@ -212,7 +212,7 @@ class MdlDashboardPoll extends MdlObject
 		//Il y a un fichier ?
 		if(!empty($tmpResponse["fileName"])){
 			//Image avec un lien pour l'afficher OU Nom du fichier avec un lien de téléchargement
-			if(File::isType("imageBrowser",$tmpResponse["fileName"]))	{$responseFileDiv="<a href=\"".$this->responseFilePath($tmpResponse)."\" data-fancybox='images' title=\"".$tmpResponse["fileName"]."\"><img src=\"".$this->responseFilePath($tmpResponse)."\"></a>";}
+			if(File::isType("imageBrowser",$tmpResponse["fileName"]))	{$responseFileDiv="<a href=\"".$this->responseFilePath($tmpResponse)."\" data-fancybox='images' title=\"".Txt::tooltip($tmpResponse["fileName"])."\"><img src=\"".$this->responseFilePath($tmpResponse)."\"></a>";}
 			else														{$responseFileDiv="<a href=\"".$tmpResponse["fileUrlDownload"]."\" title=\"".Txt::trad("download")."\"><img src='app/img/attachment.png'> ".$tmpResponse["fileName"]."</a>";}
 			return "<div class='vPollsResponseFile'>".$responseFileDiv."</div>";
 		}
@@ -238,11 +238,11 @@ class MdlDashboardPoll extends MdlObject
 	{
 		//// Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
 		$tooltipVotedBy=(Ctrl::$curUser->isAdminSpace())  ?  $this->votesUsers()  :  null;
-		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>"<span class='cursorHelp' title=\"".$tooltipVotedBy."\">".str_replace("--NB_VOTES--",$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb"))."</span>"];
+		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>"<span class='cursorHelp' title=\"".Txt::tooltip($tooltipVotedBy)."\">".str_replace("--NB_VOTES--",$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb"))."</span>"];
 		//// Date de fin de vote  &&  Vote est public  &&  Export pdf du résultat d'un sondage
 		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dashboard/pollDateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
 		if(!empty($this->publicVote))			{$options["specificOptions"][]=["iconSrc"=>"eye.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"];}
-		if(Ctrl::$curUser->isAdminGeneral())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&targetObjId=".$this->_targetObjId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
+		if(Ctrl::$curUser->isAdminGeneral())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->_typeId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
 		//// Retourne le menu contextuel
 		return parent::contextMenu($options);
 	}

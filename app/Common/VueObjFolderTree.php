@@ -85,24 +85,24 @@ function formControl(){
 	{
 		//Init
 		if($tmpFolder->isRootFolder() && Ctrl::$curUser->isAdminSpace())		{$folderTooltip=Txt::trad("rootFolderEditInfo");}
-		elseif(strlen($tmpFolder->name)>70 || !empty($tmpFolder->description))	{$folderTooltip=$tmpFolder->name."<br>".$tmpFolder->description;}
+		elseif(strlen($tmpFolder->name)>70 || !empty($tmpFolder->description))	{$folderTooltip=$tmpFolder->name."<hr>".$tmpFolder->description;}
 		else																	{$folderTooltip=null;}
 		$folderSelectClass=($tmpFolder->_id==Ctrl::$curContainer->_id)  ?  "sLinkSelect"  :  "sLink";
 		$folderActionJs=($context=="nav")  ?  "redir('".$tmpFolder->getUrl()."')"  :  "folderMove(".$tmpFolder->_id.")";
 		$folderMoveCheckbox=($context=="move")  ?  "<input type='checkbox' name='newFolderId' value='".$tmpFolder->_id."' ".($tmpFolder->_id==Ctrl::$curContainer->_id?'checked':null)." disabled>"  :  null;
 		//Affiche le dossier
-		echo "<div class='vTreeFolder ".$folderSelectClass."' data-folderId=\"".$tmpFolder->_id."\" data-containerId=\"".$tmpFolder->_idContainer."\" data-treeLevel=\"".$tmpFolder->treeLevel."\" title=\"".$folderTooltip."\">
+		echo "<div class='vTreeFolder ".$folderSelectClass."' data-folderId=\"".$tmpFolder->_id."\" data-containerId=\"".$tmpFolder->_idContainer."\" data-treeLevel=\"".$tmpFolder->treeLevel."\" title=\"".Txt::tooltip($folderTooltip)."\">
 				<div class='vTreeFolderIcon' onclick=\"folderTreeDisplay(".(int)$tmpFolder->_id.",true)\">
 					<span class='vTreeFolderDep'><img src='app/img/open.png' class='vIconOpen sLink'><img src='app/img/dependency.png' class='vIconDependency'></span>
 					<img src='app/img/folder/folderSmall.png' class='vIconFolder'>
 				</div>
-				<div onclick=\"".$folderActionJs."\">".Txt::reduce($tmpFolder->name,70,false).$folderMoveCheckbox."</div>
+				<div onclick=\"".$folderActionJs."\">".Txt::reduce($tmpFolder->name,80).$folderMoveCheckbox."</div>
 			  </div>";
 	}
 
 	////	DEPLACEMENT DE DOSSIER : SUBMIT ET FIN DU FORMULAIRE
 	if($context=="move"){
-		foreach(Req::getParam("targetObjects") as $objType=>$objIds)  {echo "<input type='hidden' name=\"targetObjects[".$objType."]\" value=\"".$objIds."\">";}
+		foreach(Req::param("objectsTypeId") as $objType=>$objIds)  {echo "<input type='hidden' name=\"objectsTypeId[".$objType."]\" value=\"".$objIds."\">";}
 		echo Txt::submitButton()."</form>";
 	}
 	////	NAVIGATION DE DOSSIERS : SEPARATION "HR"

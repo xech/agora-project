@@ -1,7 +1,7 @@
 <script>
-//////////////////////////////////////////////////////////////////////////////////////////
-////	LOAD LA PAGE
-//////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	LOAD LA PAGE
+*******************************************************************************************/
 $(function(){
 	messengerDisplayMode="none";																	//Affichage courant du messenger : "none" / "all" / "idUser"
 	messengerCheckedUsers=[];																		//Users "checked" lors d'une discussion à plusieurs
@@ -13,29 +13,29 @@ $(function(){
 	messengerUpdate();																				//Lance le messenger !
 });
 
-//////////////////////////////////////////////////////////////////////////////////////////
-////	UPDATE LE MESSENGER
-//////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	UPDATE LE MESSENGER
+*******************************************************************************************/
 function messengerUpdate()
 {
-	//// Init le messenger ?  
+	//// Init le messenger ?
 	initMessenger=(typeof initMessenger=="undefined");
 
 	//// Page affichée : update le pageVisibilityTime  ||  Return "false" si la page n'est pas affichée depuis + de 30mn (soit 1800000 ms. Evite ainsi les requetes Ajax inutiles)
 	if(document.visibilityState=="visible")				{pageVisibilityTime=Date.now();}
 	else if((Date.now()-pageVisibilityTime)>1800000)	{return false;}
 
-	//// Url de l'init/Update Ajax
-	var messengerUpdateUrl="?ctrl=misc&action=MessengerUpdate";
-	if(messengerDisplayMode!="none")  {messengerUpdateUrl+="&messengerDisplayMode="+messengerDisplayMode;}																					//Update $_SESSION["messengerDisplayTimes"]
-	if($(".fancybox-iframe").exist() && find("edit",$(".fancybox-iframe").attr("src")))  {messengerUpdateUrl+="&editObjId="+urlGetParam("targetObjId",$(".fancybox-iframe").attr("src"));}	//Ajoute "editObjId" : vérif si quelqu'un d'autre edite aussi l'objet
-	if(confirmCloseForm==true  && (typeof tinymce!="undefined"  ||  ($(".fancybox-iframe").exist() && typeof $(".fancybox-iframe")[0].contentWindow.tinymce!="undefined"))){				//Enregistre le texte Tinymce dans les brouillons (en page principale ou lightbox)
-		var editorDraft=(typeof tinymce!="undefined")  ?  tinymce.activeEditor.getContent()  :  $(".fancybox-iframe")[0].contentWindow.tinymce.activeEditor.getContent();
-		messengerUpdateUrl+="&editorDraft="+encodeURIComponent(editorDraft);
+	//// Url du "MessengerUpdate" (Ajax)
+	var updateUrl="?ctrl=misc&action=MessengerUpdate";
+	if(messengerDisplayMode!="none")  {updateUrl+="&messengerDisplayMode="+messengerDisplayMode;}																			//Mode d'affichage du messenger (cf. $_SESSION["messengerDisplayTimes"])
+	if($(".fancybox-iframe").exist() && /edit/i.test($(".fancybox-iframe").attr("src")))  {updateUrl+="&editTypeId="+urlParam("typeId",$(".fancybox-iframe").attr("src"));}	//Vérifie si quelqu'un edite déjà l'objet
+	if(typeof tinymce!="undefined"  ||  ($(".fancybox-iframe").exist() && typeof $(".fancybox-iframe")[0].contentWindow.tinymce!="undefined")){								//Vérifie si un éditeur Tinymce est affiché (page principale ou lightbox)
+		var editorDraft=(typeof tinymce!="undefined")  ?  editorContent()  :  $(".fancybox-iframe")[0].contentWindow.editorContent();										//Récupère le contenu de l'éditeur
+		if(editorDraft && editorDraft.length>0)  {updateUrl+="&editorDraft="+encodeURIComponent(editorDraft);}																//Enregistre dans les brouillons (si pas "undefined"!)
 	}
 
-	//// Init/Update Ajax du livecounter
-	$.ajax({url:messengerUpdateUrl,dataType:"json"}).done(function(result){
+	//// Lance le "MessengerUpdate" (init/update Ajax du livecounter)
+	$.ajax({url:updateUrl,dataType:"json"}).done(function(result){
 		//// Affiche d'abord les messages du messenger (cf. ".vMessengerOldMessage" suivant)
 		if(initMessenger==true || result.messengerUpdate==true)  {$("#messengerMessagesAjax").html(result.messengerMessagesHtml);}
 
@@ -69,9 +69,9 @@ function messengerUpdate()
 	});
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-////	AFFICHE/MASQUE LE MESSENGER   (messengerDisplayModeNew : "none" / "all" / "idUser")
-//////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	AFFICHE/MASQUE LE MESSENGER   (messengerDisplayModeNew : "none" / "all" / "idUser")
+*******************************************************************************************/
 function messengerDisplay(messengerDisplayModeNew)
 {
 	//// MessengerDisplayMode
@@ -105,10 +105,10 @@ function messengerDisplay(messengerDisplayModeNew)
 		labelUserDisplayed=($.isNumeric(messengerDisplayMode))  ?  $("#livecounterUser"+messengerDisplayMode).text()  :  null;															//Récup le label de l'user du livecounter
 		var placeholderLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_addMessageToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_addMessageTo") ?> "+labelUserDisplayed;	//Placeholer de l'input text
 		visioButtonLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_visioProposeToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_visioProposeTo") ?> "+labelUserDisplayed;	//Title du bouton de visio (variable globale)
-		$("#messengerMessageForm").attr("placeholder",placeholderLabel);							//Placeholer de l'input text : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
-		if(isTouchDevice()==false)  {$("#messengerMessageForm").focus();}							//Affichage normal : focus sur l'input
-		$("#visioLauncherButton.tooltipstered").tooltipster("destroy");								//Bouton de visio : Réinitialise si besoin le "tooltipster" avant update ci-après
-		$("#visioLauncherButton").attr("title",visioButtonLabel).tooltipster(tooltipsterOptions);	//Bouton de visio : title "Proposer une visio à Bob" / "Proposer une visio aux personnes sélectionnées"
+		$("#messengerMessageForm").attr("placeholder",placeholderLabel);						//Placeholer de l'input text : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
+		if(isTouchDevice()==false)  {$("#messengerMessageForm").focus();}						//Affichage normal : focus sur l'input
+		$("#launchVisioButton.tooltipstered").tooltipster("destroy");							//Bouton de visio : Réinitialise si besoin le "tooltipster" avant update ci-après
+		$("#launchVisioButton").attr("title",visioButtonLabel).tooltipster(tooltipsterOptions);	//Bouton de visio : title "Proposer une visio à Bob" / "Proposer une visio aux personnes sélectionnées"
 
 		//// Divers
 		messengerAlert.pause();									//Fin de son d'alerte
@@ -119,9 +119,9 @@ function messengerDisplay(messengerDisplayModeNew)
 	messengerDisplayUser();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-////	AFFICHE UNIQUEMENT LES MESSAGES D'UN USER OU LES MESSAGES DE TOUS LES USERS
-//////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	AFFICHE UNIQUEMENT LES MESSAGES D'UN USER OU LES MESSAGES DE TOUS LES USERS
+*******************************************************************************************/
 function messengerDisplayUser()
 {
 	//Réinit le surlignage d'user dans le livecounter principal
@@ -150,10 +150,10 @@ function messengerDisplayUser()
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////	RESPONSIVE : RESIZE LE MESSENGER POUR QU'IL PRENNE TOUTE LA PAGE
-////	Tester avec de nombreux messages (scrollBar) + 5 users connectés + changements d'orientation + Tablette
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	RESPONSIVE : RESIZE LE MESSENGER POUR QU'IL PRENNE TOUTE LA PAGE
+ *	Tester avec de nombreux messages (scrollBar) + 5 users connectés + changements d'orientation + Tablette
+*******************************************************************************************/
 function messengerFullPage(){
 	//SetTimeout le temps de calculer la hauteur du "#livecounterMain" et éventuellement du clavier virtuel
 	setTimeout(function(){
@@ -163,9 +163,9 @@ function messengerFullPage(){
 	},200);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-////	CONTROLE & POST DU MESSAGE DU MESSENGER
-//////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	CONTROLE & POST DU MESSAGE DU MESSENGER
+*******************************************************************************************/
 function messengerPost(event)
 {
 	//Pas de validation par défaut du formulaire (via bouton submit)
@@ -181,9 +181,9 @@ function messengerPost(event)
 	});
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-////	PROPOSITION DE VISIO : POST UN MESSAGE AVEC LE LIEN DE VISIO
-//////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************
+ *	PROPOSITION DE VISIO : POST UN MESSAGE AVEC LE LIEN DE VISIO
+*******************************************************************************************/
 function proposeVisio()
 {
 	//Vérif qu'au moins un user est sélectionné  &&  Confirme la visio (cf. tooltip "visioButtonLabel")
@@ -246,7 +246,7 @@ function proposeVisio()
 #messengerMessageForm, #messengerButtonForm	{height:40px!important;}
 #messengerMessageForm						{width:60%; font-weight:bold; border-radius:3px;}
 #messengerButtonForm						{width:140px; margin-bottom:3px;}
-#visioLauncherButton						{margin-left:10px; cursor:pointer;}/*bouton de proposition de visio*/
+#launchVisioButton							{margin-left:10px; cursor:pointer;}/*bouton de proposition de visio*/
 .launchVisioMessage img[src*='visioSmall']	{margin-left:10px;}
 #messengerBottomMargin						{height:60px;}/*marge du bas du messenger : pour afficher le livecounter ci-dessus qui s'y superpose (cf. "#livecounterMain td" ci-dessus)*/
 
@@ -298,7 +298,7 @@ function proposeVisio()
 				<div id="messengerPostDiv">
 					<input type="text" name="message" id="messengerMessageForm" maxlength="1000">
 					<button id="messengerButtonForm" onclick="messengerPost(event);"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
-					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="visioLauncherButton" onclick="proposeVisio()"><?php } ?>
+					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="proposeVisio()"><?php } ?>
 				</div>
 				<div id="messengerNobodyDiv"><div class="infos"><?= Txt::trad("MESSENGER_nobody") ?></div></div>
 			</td>

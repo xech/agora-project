@@ -60,7 +60,7 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 		$colorPickerTextId="title-".$tmpTheme->tmpId;
 		$colorPickerHiddenId="color-".$tmpTheme->tmpId;
 		$buttonsSubmitDelete=($tmpTheme->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("record",false);
-		if($tmpTheme->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"if(confirm('".Txt::trad("confirmDelete",true)."')){lightboxClose('".$tmpTheme->getUrl("delete")."');}\">";}
+		if($tmpTheme->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"confirmDelete('".$tmpTheme->getUrl("delete")."')\">";}
 		//Affichage du formulaire
 		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpTheme->title."\" id='".$colorPickerTextId."' placeholder=\"".Txt::trad("title")."\">
@@ -70,7 +70,7 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 				".$tmpTheme->menuSpaceAffectation()."
 				<div class='vAutorSubmit'>
 					<div>".$tmpTheme->createdBy."</div>
-					<div>".$buttonsSubmitDelete."<input type='hidden' name='targetObjId' value='".$tmpTheme->tmpId."'></div>
+					<div>".$buttonsSubmitDelete."<input type='hidden' name='typeId' value='".$tmpTheme->tmpId."'></div>
 				</div>
 			  </form>";
 	}

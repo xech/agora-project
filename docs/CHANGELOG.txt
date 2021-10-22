@@ -1,3 +1,26 @@
+VERSION 21.10
+#############
+Nouvelle fonctionnalité d'ajout et édition d'image/video directement depuis l'éditeur de texte TinyMce
+Nouvelle option du paramétrage général : url de visio alternative (Jitsi)
+Amélioration de la gestion des Newsletters avec intégration d'images dans l'éditeur
+Amélioration de la gestion des fonds d'écran
+Correction le import/export des agendas au format Ical
+Optimisations de "Txt::reduce()" et autres fonctions de base
+Mise à jour de l'éditeur TinyMce en version majeure 5.9.2
+Mise à jour de PHMailer en version 6.5.1
+Mise à jour du Parser Ical en version 2.2.2
+------
+New feature for adding and editing images directly from the TinyMce text teditor
+New general configuration option : alternative visio url (Jitsi)
+Improved management of Newsletters with integration of images in the editor
+Improved wallpaper management
+Correction of the import/export of calendars in Ical format
+Optimizations of "Txt::reduce()" and other basic functions
+TinyMce updated to 5.9.2 major version
+PHMailer updated to 6.5.1 version
+Ical Parser updated to 2.2.2 version
+
+
 VERSION 21.6
 #############
 Nouvelle option pour ajouter des pièces jointes aux sondages

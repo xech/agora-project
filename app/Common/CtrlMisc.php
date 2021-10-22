@@ -24,9 +24,9 @@ class CtrlMisc extends Ctrl
 		//Messenger activé?
 		if(self::$curUser->messengerEnabled())
 		{
-			////	UPDATE LE LIVECOUNTER DE L'USER COURANT EN BDD :  SPECIFIE SI ON EST EN TRAIN DE MODIFIER UN OBJET (via "editObjId")  &&  ENREGISTRE SI BESOIN LE CONTENU DE L'EDITEUR (via "editorDraft")
-			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editObjId=".Db::formatParam("editObjId").", `date`=".Db::format(time());
-			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::formatParam("editorDraft","editor").", draftTargetObjId=".Db::formatParam("editObjId");}//Vérifie si "editorDraft" est spécifié (pour pas l'effacer..)
+			////	UPDATE LE LIVECOUNTER DE L'USER COURANT EN BDD :  SPECIFIE SI ON EST EN TRAIN DE MODIFIER UN OBJET (via "editTypeId")  &&  ENREGISTRE SI BESOIN LE CONTENU DE L'EDITEUR (via "editorDraft")
+			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editTypeId=".Db::param("editTypeId").", `date`=".Db::format(time());
+			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::param("editorDraft","editor").", draftTypeId=".Db::param("editTypeId");}//Vérifie si "editorDraft" est spécifié (pour pas l'effacer..)
 			Db::query("INSERT INTO ap_userLivecouter SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 
 			////	INIT LE MESSENGER EN DEBUT DE SESSION
@@ -100,7 +100,7 @@ class CtrlMisc extends Ctrl
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Le message est bien affecté à un user connnecté : on retire la class "vMessengerOldMessage" 
 					}
 					//Affichage du message
-					$_SESSION["messengerMessagesHtml"].="<table class='vMessengerMessage ".$oldMessageClass."' title=\"".rtrim($messageTitle,", ")."\" data-idUsers=\"".$message["_idUsers"]."\"><tr>
+					$_SESSION["messengerMessagesHtml"].="<table class='vMessengerMessage ".$oldMessageClass."' title=\"".Txt::tooltip(rtrim($messageTitle,", "))."\" data-idUsers=\"".$message["_idUsers"]."\"><tr>
 															<td class='vMessengerMessageDateAutor'>".$dateAutor."</td>
 															<td data-idAutor=\"".$autorObj->_id."\">".$message["message"]."</td>
 														 </tr></table>";
@@ -137,8 +137,8 @@ class CtrlMisc extends Ctrl
 	public static function actionMessengerDisplayTimesUpdate()
 	{
 		//Update l'affichage de l'user affiché || Update l'affichage de tous les users du livecounter ("messengerDisplayMode==all")
-		if(is_numeric(Req::getParam("messengerDisplayMode")))  {$_SESSION["messengerDisplayTimes"][Req::getParam("messengerDisplayMode")]=time();}
-		elseif(Req::getParam("messengerDisplayMode")=="all"){
+		if(is_numeric(Req::param("messengerDisplayMode")))  {$_SESSION["messengerDisplayTimes"][Req::param("messengerDisplayMode")]=time();}
+		elseif(Req::param("messengerDisplayMode")=="all"){
 			foreach($_SESSION["livecounterUsers"] as $tmpUser)  {$_SESSION["messengerDisplayTimes"][$tmpUser->_id]=time();}
 		}
 	}
@@ -151,12 +151,12 @@ class CtrlMisc extends Ctrl
 		if(self::$curUser->messengerEnabled())
 		{
 			//Init les destinataires du message et le message
-			$usersIds=Req::getParam("messengerUsers");
+			$usersIds=Req::param("messengerUsers");
 			$usersIds[]=self::$curUser->_id;
-			$message=Db::formatParam("message");
+			$message=Db::param("message");
 			//Proposition de visio : modifie le message
-			if(stristr(Req::getParam("message"),"launchVisio")){
-				$message=Db::formatParam("message","editor");//Récupère le message sans filtrer les tags html (mode "editor")
+			if(stristr(Req::param("message"),"launchVisio")){
+				$message=Db::param("message","editor");//Récupère le message sans filtrer les tags html (mode "editor")
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE _idUser=".self::$curUser->_id." AND _idUsers=".Db::formatTab2txt($usersIds)." AND message=".$message);//Supprime si besoin les anciens liens de visio identiques
 			}
 			//Enregistre le message
@@ -173,36 +173,47 @@ class CtrlMisc extends Ctrl
 	{
 		//Init
 		$vDatas=[];
-		//Liste pour chaque module les champs de recherche et les objet concernés
+		//// Pour chaque module : liste les champs de recherche et les objet concernés
 		$vDatas["searchFields"]=[];
 		foreach(self::$curSpace->moduleList() as $tmpModule){				//Parcourt chaque module de l'espace
-			if(method_exists($tmpModule["ctrl"],"getModPlugins")){			//Vérifie l'existence d'une class "getModPlugins()"
+			if(method_exists($tmpModule["ctrl"],"getPlugins")){				//Vérifie l'existence d'une class "getPlugins()"
 				foreach($tmpModule["ctrl"]::$MdlObjects as $tmpMdlObject){	//Parcourt chaque type d'objet du module
 					foreach($tmpMdlObject::$searchFields as $tmpField){		//Parcourt chaque champ de l'objet
-						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::getParam("searchFields")))  ?  "checked"  :  null;	//Sélectionne si besoin la checkbox du champ
-						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}													//Init le "title" de la checkbox (objets concernés)
-						if($tmpMdlObject::isFolder==true)	{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECTfolder")."<br>";}					  				//Précise qu'il s'agit d'un dossier
-						else								{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}				//Précise le type d'objet : Fichier, Contact..
+						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::param("searchFields")))  ?  "checked"  :  null;	//Sélectionne si besoin la checkbox du champ
+						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}												//"title" de la checkbox (objets concernés)
+						if($tmpMdlObject::isFolder==true)	{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECTfolder")."<br>";}					  			//Précise qu'il s'agit d'un dossier
+						else								{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}			//Précise le type d'objet : Fichier, Contact..
 					}
 				}
 			}
 		}
-		//Resultat de recherche
+		//// Resultat de recherche
 		if(Req::isParam("formValidate"))
 		{
-			//Récupère les résultats via le "getModPlugins()" de chaque module
+			//Paramétrage de la récupération des plugins
 			$vDatas["pluginsList"]=[];
-			$pluginParams=array("type"=>"search", "searchText"=>Req::getParam("searchText"), "searchMode"=>Req::getParam("searchMode"), "creationDate"=>Req::getParam("creationDate"), "searchFields"=>Req::getParam("searchFields"), "searchModules"=>Req::getParam("searchModules"));
+			$pluginParams=array("type"=>"search", "searchText"=>Req::param("searchText"), "searchMode"=>Req::param("searchMode"), "creationDate"=>Req::param("creationDate"), "searchFields"=>Req::param("searchFields"), "searchModules"=>Req::param("searchModules"));
+			//Récupère les plugins de chaque module
 			foreach(self::$curSpace->moduleList() as $tmpModule){
-				//Vérif si la methode existe && si le module se trouve dans la liste des "searchModules"
-				if(method_exists($tmpModule["ctrl"],"getModPlugins") && in_array($tmpModule["ctrl"]::moduleName,Req::getParam("searchModules")))
-					{$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::getModPlugins($pluginParams));}
+				if(method_exists($tmpModule["ctrl"],"getPlugins") && in_array($tmpModule["ctrl"]::moduleName,Req::param("searchModules")))	//vérif que "getPlugins()" existe et que le module soit dans "searchModules"
+					{$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::getPlugins($pluginParams));}			//Récupère les plugins du module
 			}
 			//Garde les termes de la recherche en session
-			$_SESSION["searchText"]=Req::getParam("searchText");
+			$_SESSION["searchText"]=Req::param("searchText");
 		}
-		//Affiche la vue
-		static::displayPage(Req::commonPath."/VueSearch.php",$vDatas);
+		//// Affiche la vue
+		static::displayPage(Req::commonPath."VueSearch.php",$vDatas);
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU DE LANCEMENT DE VISIOCONFERENCE
+	 *******************************************************************************************/
+	public static function actionLaunchVisio()
+	{
+		////	Url de visio :  Mode Android > lance le browser (cf. "getFile_nameMd5" de Ionic)  ||  Mode normal > ajoute le nom de l'user dans l'Url
+		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));
+		$vDatas["visioURL"].=(Req::isMobileApp())  ?  "#omnispaceApp_action=getFile_nameMd5"  :  "#userInfo.displayName=%22"+(is_object(Ctrl::$curUser)?Ctrl::$curUser->getLabel():null)+"%22";
+		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -266,24 +277,10 @@ class CtrlMisc extends Ctrl
 	 *******************************************************************************************/
 	public static function actionCaptchaControl()
 	{
-		if($_SESSION["captcha"]==Req::getParam("captcha")){
+		if($_SESSION["captcha"]==Req::param("captcha")){
 			if(Req::$curAction=="CaptchaControl")	{echo "true";}//Controle Ajax
 			else									{return true;}//Controle Direct
 		}
-	}
-
-	/*******************************************************************************************
-	 * VUE : INITIALISATION DE L'EDITEUR TINYMCE (doit déjà y avoir un champ "textarea")
-	 *******************************************************************************************/
-	public static function initHtmlEditor($fieldName)
-	{
-		//Nom du champ "textarea"
-		$vDatas["fieldName"]=$fieldName;
-		//Sélectionne au besoin le "draftTargetObjId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editObjId" car il est effacé dès qu'on sort de l'édition de l'objet...)
-		$sqlTargetObjId=(Req::isParam("targetObjId"))  ?  "draftTargetObjId=".Db::formatParam("targetObjId")  :  "draftTargetObjId IS NULL";
-		$vDatas["editorDraft"]=Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTargetObjId);
-		//Affiche la vue de l'éditeur TinyMce
-		return self::getVue(Req::commonPath."VueHtmlEditor.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -293,7 +290,7 @@ class CtrlMisc extends Ctrl
 	{
 		//Liste les personnes/adresses à afficher
 		$adressList=[];
-		foreach(Ctrl::getTargetObjects() as $tmpPerson)
+		foreach(Ctrl::getObjectsTypeId() as $tmpPerson)
 		{
 			//La personne est visible et possède une adresse
 			if($tmpPerson->readRight() && method_exists($tmpPerson,"hasAdress") && $tmpPerson->hasAdress()){
@@ -320,20 +317,19 @@ class CtrlMisc extends Ctrl
 		$filesList=array_merge(scandir(PATH_WALLPAPER_DEFAULT),scandir(PATH_WALLPAPER_CUSTOM));
 		foreach($filesList as $tmpFile){
 			if(!in_array($tmpFile,['.','..']) && File::isType("imageBrowser",$tmpFile)){
-				$path=(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))  ?  PATH_WALLPAPER_DEFAULT.$tmpFile  :  PATH_WALLPAPER_CUSTOM.$tmpFile;
-				$value=(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))  ?  WALLPAPER_DEFAULT_DB_PREFIX.$tmpFile  :  $tmpFile;
-				$nameRacine=str_replace(File::extension($tmpFile),null,$tmpFile);
-				$vDatas["wallpaperList"][]=array("path"=>$path, "value"=>$value, "name"=>$tmpFile, "nameRacine"=>$nameRacine);
+				if(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))	{$path=PATH_WALLPAPER_DEFAULT.$tmpFile;		$value=WALLPAPER_DEFAULT_DB_PREFIX.$tmpFile;	$sortName=str_replace(File::extension($tmpFile),null,$tmpFile);}//Tri en fonction de la valeur numérique
+				else											{$path=PATH_WALLPAPER_CUSTOM.$tmpFile;		$value=$tmpFile;								$sortName="zz".$tmpFile;}//Place les wallpapers customs à la fin
+				$vDatas["wallpaperList"][]=["path"=>$path, "value"=>$value, "name"=>$tmpFile, "sortName"=>$sortName];
 			}
 		}
-		//Affiche le menu
-		$vDatas["wallpaperList"]=Tool::sortArray($vDatas["wallpaperList"],"nameRacine");
+		//Affiche le menu (trie les wallpapers par nom)
+		$vDatas["wallpaperList"]=Tool::sortArray($vDatas["wallpaperList"],"sortName");
 		$vDatas["curWallpaper"]=$curWallpaper;
 		return self::getVue(Req::commonPath."VueMenuWallpaper.php",$vDatas);
 	}
 
 	/*******************************************************************************************
-	 * PATH D'UN WALLPAPER  (cf. Ctrl::$curSpace->wallpaper && Ctrl::$agora->wallpaper)
+	 * PATH D'UN WALLPAPER ENREGISTRE EN BDD (cf. Ctrl::$curSpace->wallpaper && Ctrl::$agora->wallpaper)
 	 *******************************************************************************************/
 	public static function pathWallpaper($fileName=null)
 	{
@@ -347,11 +343,11 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION : AFFICHE UN FICHIER ICAL
+	 * ACTION : AFFICHE UN FICHIER ICAL (cf. "MdlCalendar->contextMenu()")
 	 *******************************************************************************************/
 	public static function actionDisplayIcal()
 	{
-		$objCalendar=self::getTargetObj();
+		$objCalendar=self::getObjTarget();
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 
@@ -370,8 +366,8 @@ class CtrlMisc extends Ctrl
 	 *******************************************************************************************/
 	public static function actionGetFile()
 	{
-		if(Req::isParam(["fileName","filePath"]))		{File::download(Req::getParam("fileName"),Req::getParam("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"
-		elseif(Req::getParam("fileType")=="attached")	{CtrlObject::actionGetFile();}											//Download d'un fichier "AttachedFile"
+		if(Req::isParam(["fileName","filePath"]))		{File::download(Req::param("fileName"),Req::param("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"
+		elseif(Req::param("fileType")=="attached")	{CtrlObject::actionGetFile();}											//Download d'un fichier "AttachedFile"
 		else											{CtrlFile::actionGetFile();}											//Download d'un fichier du module "File"
 	}
 }

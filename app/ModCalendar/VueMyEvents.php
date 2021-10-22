@@ -25,7 +25,7 @@ lightboxSetWidth(650);//Resize
 		<div><?= $tmpEvent->title ?></div>
 		<div class="vEventOptions">
 			<img src="app/img/edit.png" class="sLink" onclick="lightboxOpen('<?= $tmpEvent->getUrl("edit") ?>')">
-			<img src="app/img/delete.png" class="sLink" onclick="if(confirm('<?= Txt::trad("confirmDelete",true) ?>')) {lightboxClose('<?= $tmpEvent->getUrl("delete") ?>');}">
+			<img src="app/img/delete.png" class="sLink" onclick="confirmDelete('<?= $tmpEvent->getUrl("delete") ?>')">
 		</div>
 	</div>
 	<?php } ?>

@@ -10,8 +10,8 @@ $(function(){
 	////	Charge l'import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js  &&  https://developers.google.com/people/api/rest/v1/people.connections/list
 	gapi.load("client:auth2", function(){
 		gapi.client.init({
-			apiKey:"<?= Ctrl::$agora->gPeopleApiKey() ?>",//"gPeopleApiKey" de l'API "People
-			clientId:"<?= Ctrl::$agora->gSigninClientId() ?>",//"gSigninClientId" du Google Projet
+			apiKey:"<?= Ctrl::$agora->gPeopleApiKey ?>",//"gPeopleApiKey" de l'API "People
+			clientId:"<?= Ctrl::$agora->gSigninClientId ?>",//"gSigninClientId" du Google Projet
 			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"],//Spécification obligatoires..
 			scope:"https://www.googleapis.com/auth/contacts.readonly"//Etendue des données à récupérer
 		}).then(function(){
@@ -98,8 +98,8 @@ $(function(){
 			if($("input[name='mail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
 			// Verif si le compte utilisateur existe déjà
 			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){
-				if(find("true",resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
-				else						{mainFormControled=true;  $("#mainForm").submit();}							//Sinon on confirme le formulaire !
+				if(/true/i.test(resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
+				else							{mainFormControled=true;  $("#mainForm").submit();}							//Sinon on confirme le formulaire !
 			});
 		}
 	});
@@ -128,7 +128,7 @@ $(function(){
 	<form id="mainForm">
 		<!--ENVOI D'UNE INVITATION-->
 		<?php foreach($userFields as $tmpField){ ?><input type="text" name="<?= $tmpField ?>" placeholder="<?= Txt::trad($tmpField) ?>"><?php } ?>
-		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::getParam("comment") ?></textarea>
+		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>
 		<?= Txt::submitButton("send") ?>
 	</form>
 
@@ -139,7 +139,7 @@ $(function(){
 		<button><img src="app/img/gSignin.png"> <?= Txt::trad("USER_gPeopleImport") ?></button>
 	</div>
 	<form id="gPeopleForm">
-		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::getParam("comment") ?></textarea>
+		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>
 		<?= Txt::submitButton("send") ?>
 	</form>
 	<?php } ?>

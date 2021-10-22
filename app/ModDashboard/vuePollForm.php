@@ -13,6 +13,6 @@
 	}
 	?>
 	</ul>
-	<input type="hidden" name="targetObjId" value="<?= $objPoll->_targetObjId ?>">
+	<input type="hidden" name="typeId" value="<?= $objPoll->_typeId ?>">
 	<div class="submitButtonMain"><button type="submit" title="<?= $submitButtonTooltip ?>"><?= Txt::trad("DASHBOARD_vote") ?></button></div>
 </form>

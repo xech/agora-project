@@ -6,7 +6,7 @@ lightboxSetWidth(550);
 function confirmDeleteVersion(dateCrea)
 {
 	if(confirm("<?= Txt::trad("FILE_confirmDeleteVersion")?>")){
-		redir("?ctrl=file&action=DeleteFileVersion&targetObjId=<?= $curObj->_targetObjId ?>&dateCrea="+dateCrea);
+		redir("?ctrl=file&action=DeleteFileVersion&typeId=<?= $curObj->_typeId ?>&dateCrea="+dateCrea);
 	}
 }
 </script>

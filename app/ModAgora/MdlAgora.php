@@ -16,102 +16,72 @@ class MdlAgora extends MdlObject
 	const objectType="agora";
 	const dbTable="ap_agora";
 
-	/*
-	 * SURCHARGE : Constructeur
-	 */
+	/*******************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	 *******************************************************************************************/
 	function __construct()
 	{
+		//Récupère les paramètres en Bdd
 		parent::__construct(Db::getLine("select * from ap_agora"));
 		if(empty($this->personsSort))  {$this->personsSort="name";}
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PATH DU LOGO EN BAS DE PAGE
-	 */
+	 *******************************************************************************************/
 	public function pathLogoFooter()
 	{
-		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logoSmall.png";
+		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logoFooter.png";
 	}
 
-	/*
+	/*******************************************************************************************
 	 * PATH DU LOGO DE PAGE DE CONNEXION
-	 */
+	 *******************************************************************************************/
 	public function pathLogoConnect()
 	{
 		return (!empty($this->logoConnect) && is_file(PATH_DATAS.$this->logoConnect))  ?  PATH_DATAS.$this->logoConnect  :  null;
 	}
 
-	/*
-	 * VISIO JITSI : VERIF S'IL EST ACTIVÉ (URL DISPONIBLE)
-	 */
-	public function visioEnabled()
-	{
-		return ($this->visioUrl());
-	}
-
-	/*
-	 * VISIO JITSI : RENVOIE L'URL DU SERVEUR DE VISIO
-	 */
+	/*******************************************************************************************
+	 * VISIO JITSI : URL DU SERVEUR DE VISIO AVEC LE NOM DE LA "ROOM"
+	 *******************************************************************************************/
 	public function visioUrl($roomIdLength=10)
 	{
-		//Serveur de visio principal || Serveur de visio spécifique
-		if(Ctrl::isHost())					{$visioUrl=Host::visioHost();}
-		elseif(!empty($this->visioHost))	{$visioUrl=$this->visioHost;}
-		//Renvoi si besoin l'url avec le nom de la "room"
-		if(isset($visioUrl)){
-			if(!isset($_SESSION["visioRoomId"]))  {$_SESSION["visioRoomId"]=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");}				//Prefixe aléatoire le temps de la session (évite de céer une nouvelle Url à chaque proposition de visio)
-			return $visioUrl."/".(Ctrl::isHost()?"visio":"omnispace-visio")."-".substr($_SESSION["visioRoomId"],0,$roomIdLength);	//Url avec le préfixe et le "visioRoomId" de la longeur souhaitée
+		if(!empty($this->visioHost)){
+			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");												//Prefixe aléatoire à chaque appel de la fonction
+			return $this->visioHost."/".(Ctrl::isHost()?"room":"omnispace-room")."-".substr($roomId,0,$roomIdLength);	//Url avec le préfixe et le $roomId à la longeur souhaitée
 		}
 	}
 
-	/*
+	/*******************************************************************************************
+	 * VISIO JITSI : VERIF S'IL EST ACTIVÉ (URL DISPONIBLE)
+	 *******************************************************************************************/
+	public function visioEnabled()
+	{
+		return (!empty($this->visioHost));
+	}
+
+	/*******************************************************************************************
 	 * GOOGLE SIGNIN/OAUTH : VERIF S'IL EST ACTIVÉ
-	 */
+	 *******************************************************************************************/
 	public function gSigninEnabled()
 	{
-		return (!empty($this->gSignin) && $this->gSigninClientId() && Req::isMobileApp()==false);
+		return (Req::isMobileApp()==false && !empty($this->gSigninClientId) && !empty($this->gSignin));
 	}
 
-	/*
-	 * GOOGLE SIGNIN/OAUTH : RENVOI "gSigninClientId" S'IL EST RENSEIGNÉ 
-	 */
-	public function gSigninClientId()
-	{
-		if(Ctrl::isHost())						{return Host::gSigninClientId();}
-		elseif(!empty($this->gSigninClientId))	{return $this->gSigninClientId;}
-	}
-
-	/*
+	/*******************************************************************************************
 	 * GOOGLE CONTACTS/INVITATIONS : VERIF S'IL EST ACTIVÉ
-	 */
+	 *******************************************************************************************/
 	public function gPeopleEnabled()
 	{
-		return ($this->gSigninClientId() && $this->gPeopleApiKey() && Req::isMobileApp()==false);
+		return (Req::isMobileApp()==false && !empty($this->gSigninClientId) && !empty($this->gPeopleApiKey));
 	}
 
-	/*
-	 * GOOGLE CONTACTS/INVITATIONS : RENVOI "gPeopleApiKey" S'IL EST RENSEIGNÉ 
-	 */
-	public function gPeopleApiKey()
-	{
-		if(Ctrl::isHost())						{return Host::gPeopleApiKey();}
-		elseif(!empty($this->gPeopleApiKey))	{return $this->gPeopleApiKey;}
-	}
-
-	/*
+	/*******************************************************************************************
 	 * GOOGLE MAP : VERIF S'IL EST ACTIVÉ
-	 */
+	 *******************************************************************************************/
 	public function gMapsEnabled()
 	{
-		return ($this->gMapsApiKey() && $this->mapTool=="gmap");
-	}
-
-	/*
-	 *  GOOGLE MAP : RENVOI "mapApiKey" S'IL EST RENSEIGNÉ 
-	 */
-	public function gMapsApiKey()
-	{
-		if(Ctrl::isHost())					{return Host::gMapsApiKey();}
-		elseif(!empty($this->mapApiKey))	{return $this->mapApiKey;}
+		return (!empty($this->mapApiKey) && $this->mapTool=="gmap");
 	}
 }

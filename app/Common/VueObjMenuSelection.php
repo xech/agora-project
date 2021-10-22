@@ -2,7 +2,7 @@
 ////	INIT : Switch la sélection des objets
 $(function(){
 	$("#objSelectMenu").click(function(){
-		$("[name='targetObjects[]']").each(function(){
+		$("[name='objectsTypeId[]']").each(function(){
 			objSelect(this.id.replace("_selectBox",""));
 		});
 	});
@@ -18,7 +18,7 @@ function objSelect(objectBlockId)
 	if($(selectBoxId).prop("checked"))	{$("#"+objectBlockId).addClass("objContainerSelect");}
 	else								{$("#"+objectBlockId).removeClass("objContainerSelect");}
 	//Affiche/Masque le menu de sélection
-	if($(":checked[name='targetObjects[]']").length==0){
+	if($(":checked[name='objectsTypeId[]']").length==0){
 		$("#objSelectSubMenu").slideUp();
 		$("#objSelectLabel").html("<?= Txt::trad("selectAll") ?>");
 	}else{
@@ -28,22 +28,22 @@ function objSelect(objectBlockId)
 }
 
 ////	Action sur les objets sélectionnés
-function targetObjectsAction(urlRedir, openPage)
+function objectsTypeId(urlRedir, openPage)
 {
 	//Ajoute les objets
-	var tmpObjType=null;
-	var objectSelector=":checked[name='targetObjects[]']";
+	var objType=null;
+	var objectSelector=":checked[name='objectsTypeId[]']";
 	$(objectSelector).each(function(){
-		var targetObjId=this.value.split("-");//"fileFolder-22" -> ['fileFolder',22]
-		if(tmpObjType!=targetObjId[0])	{urlRedir+="&targetObjects["+targetObjId[0]+"]="+targetObjId[1];   tmpObjType=targetObjId[0];}
-		else							{urlRedir+="-"+targetObjId[1];}
+		var typeId=this.value.split("-");//"fileFolder-22" -> ['fileFolder',22]
+		if(objType!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];   objType=typeId[0];}
+		else					{urlRedir+="-"+typeId[1];}
 	});
 	//Confirme une désaffectation d'espace?
-	if(find("DeleteFromCurSpace",urlRedir)){
+	if(/deleteFromCurSpace/i.test(urlRedir)){
 		if(!confirm("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?>  ("+$(objectSelector).length+" <?= Txt::trad("confirmDeleteNbElems") ?>)"))	{return false;}
 	}
 	//Confirme une suppression?
-	else if(find("delete",urlRedir)){
+	else if(/delete/i.test(urlRedir)){
 		var confirmDelete="<?= Txt::trad("confirmDelete") ?>  ("+$(objectSelector).length+" <?= Txt::trad("confirmDeleteNbElems") ?>)";
 		var confirmDeleteDbl="<?= Txt::trad("confirmDeleteDbl") ?>";
 		if(!confirm(confirmDelete) || !confirm(confirmDeleteDbl))	{return false;}
@@ -74,22 +74,22 @@ function targetObjectsAction(urlRedir, openPage)
 <span id="objSelectSubMenu">
 	<?php
 	////	FICHIERS : TELECHARGER FICHIERS
-	if(Req::$curCtrl=="file")  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=file&action=downloadArchive','newPage');\"><div class='menuIcon'><img src='app/img/download.png'></div><div>".Txt::trad("FILE_downloadSelection")."</div></div>";}
+	if(Req::$curCtrl=="file")  {echo "<div class='menuLine sLink' onclick=\"objectsTypeId('?ctrl=file&action=downloadArchive','newPage');\"><div class='menuIcon'><img src='app/img/download.png'></div><div>".Txt::trad("FILE_downloadSelection")."</div></div>";}
 
 	////	USER/CONTACT : VOIR SUR UNE CARTE
-	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=misc&action=PersonsMap','lightbox');\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
+	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine sLink' onclick=\"objectsTypeId('?ctrl=misc&action=PersonsMap','lightbox');\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
 
 	////	USER : DESAFFECTER D'UN ESPACE
-	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=user&action=DeleteFromCurSpace');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteFromCurSpace")."</div></div>";}
+	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"objectsTypeId('?ctrl=user&action=DeleteFromCurSpace');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteFromCurSpace")."</div></div>";}
 
 	////	USER : SUPPRIMER DEFINITIVEMENT
-	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=object&action=delete');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteDefinitely")."</div></div>";}
+	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminGeneral())  {echo "<div class='menuLine sLink' onclick=\"objectsTypeId('?ctrl=object&action=delete');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteDefinitely")."</div></div>";}
 
 	////	DOSSIER : DEPLACER DES OBJETS
-	if($curFolderIsWritable==true && $rootFolderHasTree==true)  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=object&action=FolderMove&targetObjId=".Ctrl::$curContainer->_targetObjId."','lightbox');\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
+	if($curFolderIsWritable==true && $rootFolderHasTree==true)  {echo "<div class='menuLine sLink' onclick=\"objectsTypeId('?ctrl=object&action=FolderMove&typeId=".Ctrl::$curContainer->_typeId."','lightbox');\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
 
 	////	DOSSIER : SUPPRIMER DES OBJETS
-	if($curFolderIsWritable==true)  {echo "<div class='menuLine sLink' onclick=\"targetObjectsAction('?ctrl=object&action=Delete');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("deleteElems")."</div></div>";}
+	if($curFolderIsWritable==true)  {echo "<div class='menuLine sLink' onclick=\"objectsTypeId('?ctrl=object&action=Delete');\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("deleteElems")."</div></div>";}
 	?>
 	<hr>
 </span>

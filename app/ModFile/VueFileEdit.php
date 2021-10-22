@@ -9,9 +9,9 @@ $(function(){
 		//Pas de validation par défaut du formulaire
 		event.preventDefault();
 		//Controle si un autre fichier porte le même nom
-		$.ajax("?ctrl=object&action=ControlDuplicateName&targetObjId=<?= $curObj->_targetObjId ?>&targetObjIdContainer=<?= $curObj->containerObj()->_targetObjId ?>&controledName="+encodeURIComponent($("[name='name']").val()+$("[name='dotExtension']").val())).done(function(result){
+		$.ajax("?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>&controledName="+encodeURIComponent($("[name='name']").val()+$("[name='dotExtension']").val())).done(function(result){
 			//Retourne false si ya doublon. Mais si le controle principal est ok, on poste le formulaire et ferme la page
-			if(find("duplicate",result))	{notify("<?= Txt::trad("NOTIF_duplicateName"); ?>","warning");  return false;}
+			if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName"); ?>","warning");  return false;}
 			else if(mainFormControl())		{$.ajax({url:"index.php",data:$("#mainForm").serialize()}).done(function(){ lightboxClose(); });}
 		});
 	});
@@ -39,7 +39,7 @@ $(function(){
 		<div class="fileContentLabel"><?= Txt::trad("FILE_fileContent") ?>:</div>
 		<textarea name="fileContent"><?= $fileContent ?></textarea>
 		<textarea name="fileContentOld"><?= $fileContent ?></textarea>
-		<?php if(isset($initHtmlEditor))	{echo CtrlMisc::initHtmlEditor("fileContent");} ?>
+		<?php if(isset($initHtmlEditor))	{echo CtrlObject::htmlEditor("fileContent");} ?>
 	<?php } ?>
 
 	<!--MENU COMMUN-->

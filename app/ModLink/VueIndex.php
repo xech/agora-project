@@ -29,7 +29,7 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{
-			$linkLabel=(!empty($tmpLink->description))  ?  "<span title=\"".$tmpLink->adress."\">".$tmpLink->description."</span>"  :  "<span class='objLabelUrl'>".Txt::reduce($tmpLink->adress)."</span>";
+			$linkLabel=(!empty($tmpLink->description))  ?  "<span title=\"".Txt::tooltip($tmpLink->adress)."\">".$tmpLink->description."</span>"  :  "<span class='objLabelUrl'>".Txt::reduce($tmpLink->adress)."</span>";
 			echo $tmpLink->divContainer().$tmpLink->contextMenu().
 				"<div class='objContentScroll'>
 					<div class='objContent'>

@@ -23,7 +23,7 @@ class MdlFileFolder extends MdlObjectFolder
 	public function contextMenu($options=null)
 	{
 		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight())
-			{$options["specificOptions"][]=["actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&targetObjects[fileFolder]=".$this->_id."')", "iconSrc"=>"download.png", "label"=>Txt::trad("downloadFolder")];}
+			{$options["specificOptions"][]=["actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&objectsTypeId[fileFolder]=".$this->_id."')", "iconSrc"=>"download.png", "label"=>Txt::trad("downloadFolder")];}
 		return parent::contextMenu($options);
 	}
 

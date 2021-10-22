@@ -58,11 +58,11 @@ trait MdlObjectMenus
 			////	MODIFIER ELEMENT  &  MODIF MESSENGER
 			if($this->editRight()){
 				$vDatas["editLabel"]=Txt::trad("USER_profilEdit");
-				$vDatas["editMessengerObjUrl"]="?ctrl=user&action=UserEditMessenger&targetObjId=".$this->_targetObjId;
+				$vDatas["editMessengerObjUrl"]="?ctrl=user&action=UserEditMessenger&typeId=".$this->_typeId;
 			}
 			////	SUPPRESSION DE L'ESPACE COURANT
 			if($this->deleteFromCurSpaceRight()){
-				$deleteFromCurSpaceUrl="?ctrl=user&action=deleteFromCurSpace&targetObjects[".static::objectType."]=".$this->_id;
+				$deleteFromCurSpaceUrl="?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id;
 				$vDatas["deleteFromCurSpaceConfirm"]="confirmDelete('".$deleteFromCurSpaceUrl."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')";
 			}
 			////	SUPPRESSION DEFINITIVE
@@ -77,7 +77,7 @@ trait MdlObjectMenus
 				else								{ foreach($this->getSpaces() as $tmpSpace)  {$vDatas["userSpaceList"].="<br>".$tmpSpace->name;} }
 			}
 			////	AUTEUR/DATE DE CREATION
-			$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a> - ".$this->dateLabel(true,"full");
+			$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a> - ".$this->dateLabel();
 		}
 		////	OBJET LAMBDA
 		else
@@ -86,23 +86,23 @@ trait MdlObjectMenus
 			if($this->editRight())
 			{
 				$vDatas["editLabel"]=($this->hasAccessRight())  ?  Txt::trad("modifyAndAccesRight")  :  Txt::trad("modify");
-				$vDatas["logUrl"]="?ctrl=object&action=logs&targetObjId=".$this->_targetObjId;
+				$vDatas["logUrl"]="?ctrl=object&action=logs&typeId=".$this->_typeId;
 				if($this::isInArbo() && !empty(Ctrl::$curContainer)){
 					$curRootFolder=Ctrl::getObj(get_class(Ctrl::$curContainer),1);//Récupère le dossier racine et compte le nb de sous-dossiers
-					if(count($curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&targetObjId=".$this->containerObj()->_targetObjId."&targetObjects[".static::objectType."]=".$this->_id;}
+					if(count($curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 				}
 			}
 			////	SUPPRIMER
 			if($this->deleteRight())
 			{
-				$labelConfirmDeleteDbl=$ajaxControlUrl=null;
+				$confirmDeleteOptions=null;
 				//Suppression d'espace ou de conteneur : Double confirmation
-				if(static::objectType=="space")	{$labelConfirmDeleteDbl=",'".Txt::trad("SPACE_confirmDeleteDbl",true)."'";}	
-				elseif(static::isContainer())	{$labelConfirmDeleteDbl=",'".Txt::trad("confirmDeleteDbl",true)."'";}
+				if(static::objectType=="space")	{$confirmDeleteOptions=",'".Txt::trad("SPACE_confirmDeleteDbl",true)."'";}	
+				elseif(static::isContainer())	{$confirmDeleteOptions=",'".Txt::trad("confirmDeleteDbl",true)."'";}
 				//Suppression de dossier : controle Ajax (droit  d'accès and co)
-				if(static::isFolder==true)  {$ajaxControlUrl=",'?ctrl=object&action=folderDeleteControl&targetObjId=".$this->_targetObjId."'";}
+				if(static::isFolder==true)  {$confirmDeleteOptions.=",'?ctrl=object&action=folderDeleteControl&typeId=".$this->_typeId."'";}
 				//Ajoute l'option
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$labelConfirmDeleteDbl.$ajaxControlUrl.")";
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$confirmDeleteOptions.")";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
@@ -132,16 +132,16 @@ trait MdlObjectMenus
 			if($this->_idUser)		{$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a>";}
 			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}
 			//Date de création de l'objet  &&  Précise si c'est un nouvel objet  &&  Précise l'auteur/date de modif
-			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel(true,"full");}
-			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<br><abbr title=\"".Txt::trad("objNewInfos")."\">".Txt::trad("objNew")."</abbr>&nbsp; <img src='app/img/menuNewSmall.png'>";}
-			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(false,"full");}
+			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel();}
+			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div class='sAccessWrite'>".Txt::trad("objNew")." <img src='app/img/menuNewSmall.png'></div>";}
+			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(true);}
 			////	USERS LIKES
 			$vDatas["showMiscMenuClass"]=null;
 			if($this->hasUsersLike())
 			{
 				$likeOptions=(Ctrl::$agora->usersLike=="likeOrNot")  ?  ["like","dontlike"]  :  ["like"];
 				foreach($likeOptions as $likeOption){
-					$likeMenuId="likeMenu_".$this->_targetObjId."_".$likeOption;//ID du menu. Exple: "likeMenu_news-55_dontlike". Cf. "usersLikeValidate()" dans le "common.js"
+					$likeMenuId="likeMenu_".$this->_typeId."_".$likeOption;//ID du menu. Exple: "likeMenu_news-55_dontlike". Cf. "usersLikeValidate()" dans le "common.js"
 					$likeMenuNb=count($this->getUsersLike($likeOption));
 					if(!empty($likeMenuNb))  {$vDatas["showMiscMenuClass"]="showMiscMenu";}
 					$vDatas["likeMenu"][$likeOption]=["menuId"=>$likeMenuId, "likeDontLikeNb"=>$likeMenuNb];
@@ -152,13 +152,21 @@ trait MdlObjectMenus
 			{
 				$commentNb=count($this->getUsersComment());
 				$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." :<br>".Txt::trad("commentAdd");
-				$commentsUrl="?ctrl=object&action=Comments&targetObjId=".$this->_targetObjId;
+				$commentsUrl="?ctrl=object&action=Comments&typeId=".$this->_typeId;
 				if(!empty($commentNb))  {$vDatas["showMiscMenuClass"]="showMiscMenu";}
-				$vDatas["commentMenu"]=["menuId"=>"commentMenu_".$this->_targetObjId, "commentNb"=>$commentNb, "commentTooltip"=>$commentTooltip, "commentsUrl"=>$commentsUrl];
+				$vDatas["commentMenu"]=["menuId"=>"commentMenu_".$this->_typeId, "commentNb"=>$commentNb, "commentTooltip"=>$commentTooltip, "commentsUrl"=>$commentsUrl];
 			}
 		}
 		////	Affichage
 		return Ctrl::getVue(Req::commonPath."VueObjMenuContext.php",$vDatas);
+	}
+
+	/*******************************************************************************************
+	 * INPUT "HIDDEN" DE SÉLECTION (cf. "VueObjMenuContext.php" & Co)
+	 *******************************************************************************************/
+	public function objectsTypeIdInput()
+	{
+		return "<input type='checkbox' name='objectsTypeId[]' class='objectsTypeIdInput' value=\"".$this->_typeId."\" id=\"".$this->menuId("objBlock")."_selectBox\">";
 	}
 
 	/*******************************************************************************************
@@ -243,7 +251,6 @@ trait MdlObjectMenus
 		////	OPTION "FICHIERS JOINTS"
 		if(static::hasAttachedFiles==true){
 			$vDatas["attachedFiles"]=true;
-			$vDatas["attachedFilesList"]=$this->getAttachedFileList();
 		}
 		////	OPTIONS NOTIFICATION PAR MAIL
 		if(static::hasNotifMail==true && function_exists("mail")){
@@ -269,9 +276,9 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public static function prefDbKey($containerObj)
 	{
-		if(is_object($containerObj))											{return $containerObj->_targetObjId;}			//"_targetObjId" de l'objet en parametre
-		elseif(!empty(Ctrl::$curContainer) && is_object(Ctrl::$curContainer))	{return Ctrl::$curContainer->_targetObjId;}		//"_targetObjId" du conteneur/dossier courant
-		else																	{return static::moduleName;}					//"moduleName" courant
+		if(is_object($containerObj))											{return $containerObj->_typeId;}			//"_typeId" de l'objet en parametre
+		elseif(!empty(Ctrl::$curContainer) && is_object(Ctrl::$curContainer))	{return Ctrl::$curContainer->_typeId;}		//"_typeId" du conteneur/dossier courant
+		else																	{return static::moduleName;}				//"moduleName" courant
 	}
 
 	/*******************************************************************************************
@@ -372,7 +379,7 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public static function sqlPagination()
 	{
-		$offset=(Req::isParam("pageNb"))  ?  ((Req::getParam("pageNb")-1)*static::$pageNbObjects)  :  "0";
+		$offset=Req::isParam("pageNb")  ?  ((Req::param("pageNb")-1)*static::$pageNbObjects)  :  "0";
 		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
 	}
 
@@ -386,10 +393,10 @@ trait MdlObjectMenus
 		{
 			//Nb de page et numéro de page courant
 			$vDatas["pageNbTotal"]=$pageNbTotal;
-			$vDatas["pageNb"]=$pageNb=Req::isParam("pageNb") ? Req::getParam("pageNb") : 1;
+			$vDatas["pageNb"]=$pageNb=Req::isParam("pageNb") ? Req::param("pageNb") : 1;
 			//Url de redirection de base
 			$vDatas["hrefBase"]="?ctrl=".Req::$curCtrl;
-			if(!empty($getParamKey) && Req::isParam($getParamKey))  {$vDatas["hrefBase"].="&".$getParamKey."=".Req::getParam($getParamKey);}
+			if(!empty($getParamKey) && Req::isParam($getParamKey))  {$vDatas["hrefBase"].="&".$getParamKey."=".Req::param($getParamKey);}
 			$vDatas["hrefBase"].="&pageNb=";
 			//Page Précédente / Suivante (desactive si on est déjà en première ou dernière page)
 			$vDatas["prevAttr"]=($pageNb>1)  ?  "href=\"".$vDatas["hrefBase"].((int)$pageNb-1)."\""  :  "class='vNavMenuDisabled'";

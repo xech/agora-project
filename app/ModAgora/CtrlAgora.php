@@ -26,40 +26,41 @@ class CtrlAgora extends Ctrl
 		{
 			////	Update le parametrage
 			Db::query("UPDATE ap_agora SET 
-				name=".Db::formatParam("name").",
-				description=".Db::formatParam("description").",
-				lang=".Db::formatParam("lang").",
-				timezone=".Db::formatParam("timezone").",
-				wallpaper=".Db::formatParam("wallpaper").",
-				logoUrl=".Db::formatParam("logoUrl").",
-				skin=".Db::formatParam("skin").",
-				footerHtml=".Db::formatParam("footerHtml","editor").",
-				usersLike=".Db::formatParam("usersLike").",
-				usersComment=".Db::formatParam("usersComment").",
-				mapTool=".Db::formatParam("mapTool").",
-				mapApiKey=".Db::formatParam("mapApiKey").",
-				gSignin=".Db::formatParam("gSignin").",
-				gSigninClientId=".Db::formatParam("gSigninClientId").",
-				gPeopleApiKey=".Db::formatParam("gPeopleApiKey").",
-				messengerDisabled=".Db::formatParam("messengerDisabled").",
-				moduleLabelDisplay=".Db::formatParam("moduleLabelDisplay").",
-				folderDisplayMode=".Db::formatParam("folderDisplayMode").",
-				personsSort=".Db::formatParam("personsSort").",
-				logsTimeOut=".Db::formatParam("logsTimeOut").",
-				visioHost=".Db::formatParam("visioHost").",
-				sendmailFrom=".Db::formatParam("sendmailFrom").",
-				smtpHost=".Db::formatParam("smtpHost").",
-				smtpPort=".Db::formatParam("smtpPort").",
-				smtpSecure=".Db::formatParam("smtpSecure").",
-				smtpUsername=".Db::formatParam("smtpUsername").",
-				smtpPass=".Db::formatParam("smtpPass").",
-				ldap_server=".Db::formatParam("ldap_server").",
-				ldap_server_port=".Db::formatParam("ldap_server_port").",
-				ldap_admin_login=".Db::formatParam("ldap_admin_login").",
-				ldap_admin_pass=".Db::formatParam("ldap_admin_pass").",
-				ldap_base_dn=".Db::formatParam("ldap_base_dn").",
-				ldap_crea_auto_users=".Db::formatParam("ldap_crea_auto_users").",
-				ldap_pass_cryptage=".Db::formatParam("ldap_pass_cryptage"));
+				name=".Db::param("name").",
+				description=".Db::param("description").",
+				lang=".Db::param("lang").",
+				timezone=".Db::param("timezone").",
+				wallpaper=".Db::param("wallpaper").",
+				logoUrl=".Db::param("logoUrl").",
+				skin=".Db::param("skin").",
+				footerHtml=".Db::param("footerHtml","editor").",
+				usersLike=".Db::param("usersLike").",
+				usersComment=".Db::param("usersComment").",
+				mapTool=".Db::param("mapTool").",
+				mapApiKey=".Db::param("mapApiKey").",
+				gSignin=".Db::param("gSignin").",
+				gSigninClientId=".Db::param("gSigninClientId").",
+				gPeopleApiKey=".Db::param("gPeopleApiKey").",
+				messengerDisabled=".Db::param("messengerDisabled").",
+				moduleLabelDisplay=".Db::param("moduleLabelDisplay").",
+				folderDisplayMode=".Db::param("folderDisplayMode").",
+				personsSort=".Db::param("personsSort").",
+				logsTimeOut=".Db::param("logsTimeOut").",
+				visioHost=".Db::param("visioHost").",
+				visioHostAlt=".Db::param("visioHostAlt").",
+				sendmailFrom=".Db::param("sendmailFrom").",
+				smtpHost=".Db::param("smtpHost").",
+				smtpPort=".Db::param("smtpPort").",
+				smtpSecure=".Db::param("smtpSecure").",
+				smtpUsername=".Db::param("smtpUsername").",
+				smtpPass=".Db::param("smtpPass").",
+				ldap_server=".Db::param("ldap_server").",
+				ldap_server_port=".Db::param("ldap_server_port").",
+				ldap_admin_login=".Db::param("ldap_admin_login").",
+				ldap_admin_pass=".Db::param("ldap_admin_pass").",
+				ldap_base_dn=".Db::param("ldap_base_dn").",
+				ldap_crea_auto_users=".Db::param("ldap_crea_auto_users").",
+				ldap_pass_cryptage=".Db::param("ldap_pass_cryptage"));
 			////	Ajoute un Wallpaper
 			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"]))
 			{
@@ -72,7 +73,7 @@ class CtrlAgora extends Ctrl
 			}
 			////	Logo du footer
 			//Logo par défaut / nouveau logo : réinitialise
-			if(Req::isParam("logo")==false || Req::getParam("logo")=="modify"){
+			if(Req::isParam("logo")==false || Req::param("logo")=="modify"){
 				Db::query("UPDATE ap_agora SET logo=NULL");
 				if(is_file(PATH_DATAS.Ctrl::$agora->logo))  {File::rm(PATH_DATAS.Ctrl::$agora->logo);}//pas de "pathLogoFooter()" car il renvoie toujours un logo..
 			}
@@ -85,7 +86,7 @@ class CtrlAgora extends Ctrl
 			}
 			////	Logo de la page de connexion
 			//Logo par défaut / nouveau logo : réinitialise
-			if(Req::isParam("logoConnect")==false || Req::getParam("logoConnect")=="modify"){
+			if(Req::isParam("logoConnect")==false || Req::param("logoConnect")=="modify"){
 				Db::query("UPDATE ap_agora SET logoConnect=NULL");
 				if(is_file(PATH_DATAS.Ctrl::$agora->logoConnect))  {File::rm(PATH_DATAS.Ctrl::$agora->logoConnect);}
 			}
@@ -97,10 +98,10 @@ class CtrlAgora extends Ctrl
 				Db::query("UPDATE ap_agora SET logoConnect=".Db::format($logoConnectFileName));
 			}
 			////	Test de connexion LDAP
-			if(Req::isParam("ldap_server"))  {MdlPerson::ldapConnect(Req::getParam("ldap_server"),Req::getParam("ldap_server_port"),Req::getParam("ldap_admin_login"),Req::getParam("ldap_admin_pass"),true);}
+			if(Req::isParam("ldap_server"))  {MdlPerson::ldapConnect(Req::param("ldap_server"),Req::param("ldap_server_port"),Req::param("ldap_admin_login"),Req::param("ldap_admin_pass"),true);}
 			//Modifie l'espace disque
-			if(Ctrl::isHost()==false && Req::getParam("limite_espace_disque")>0){
-				$limite_espace_disque=File::getBytesSize(Req::getParam("limite_espace_disque")."G");//exprimé en Go
+			if(Ctrl::isHost()==false && Req::param("limite_espace_disque")>0){
+				$limite_espace_disque=File::getBytesSize(Req::param("limite_espace_disque")."G");//exprimé en Go
 				File::updateConfigFile(array("limite_espace_disque"=>$limite_espace_disque));
 			}
 			//Notif & Relance la page
@@ -109,7 +110,7 @@ class CtrlAgora extends Ctrl
 		}
 		//Supprime un wallpaper?
 		if(Req::isParam("deleteCustomWallpaper")){
-			$wallpaperPath=PATH_WALLPAPER_CUSTOM.Req::getParam("deleteCustomWallpaper");
+			$wallpaperPath=PATH_WALLPAPER_CUSTOM.Req::param("deleteCustomWallpaper");
 			File::rm($wallpaperPath);
 		}
 		//Affiche la page
@@ -125,7 +126,7 @@ class CtrlAgora extends Ctrl
 		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
 		$dumpPath=Db::getDump();//Dump de la bdd!
 		////	Sauvegarde de tout
-		if(Req::getParam("typeBackup")=="all")
+		if(Req::param("typeBackup")=="all")
 		{
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille
 			ini_set("max_execution_time","1200");//20mn max

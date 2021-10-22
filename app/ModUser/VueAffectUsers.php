@@ -49,7 +49,7 @@ function formControl()
 		if(empty($usersList))  {echo Txt::trad("USER_usersSearchNoResult");}
 		else{
 			foreach($usersList as $tmpUser){
-				echo "<div class='objField' title=\"".$tmpUser->mail."\">
+				echo "<div class='objField' title=\"".Txt::tooltip($tmpUser->mail)."\">
 						<input type='checkbox' name='usersList[]' value='".$tmpUser->_id."' id='userId".$tmpUser->_id."'>
 						<label for='userId".$tmpUser->_id."'>".$tmpUser->getLabel()."</label>
 					  </div>";

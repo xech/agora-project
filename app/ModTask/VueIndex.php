@@ -50,13 +50,13 @@ $(function(){
 			?>
 			<!--FILTRE PAR PRIORITE-->
 			<div class="menuLine sLink">
-				<div class="menuIcon"><img src="app/img/task/priority<?= Req::getParam("filterPriority") ?>.png"></div>
+				<div class="menuIcon"><img src="app/img/task/priority<?= Req::param("filterPriority") ?>.png"></div>
 				<div>
-					<span class="menuLaunch" for="menuPriority"><?= Txt::trad("TASK_priority")." ".(Req::getParam("filterPriority")>=1?Txt::trad("TASK_priority".Req::getParam("filterPriority")):null) ?></span>
+					<span class="menuLaunch" for="menuPriority"><?= Txt::trad("TASK_priority")." ".(Req::param("filterPriority")>=1?Txt::trad("TASK_priority".Req::param("filterPriority")):null) ?></span>
 					<div id="menuPriority" class="menuContext">
 						<?php for($tmpPriority=0; $tmpPriority<=4; $tmpPriority++){
 							if($tmpPriority==0)  {$tmpPriority=null;}
-							echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/task/priority".$tmpPriority.".png'></div><div><a onclick=\"redir('".Tool::getParamsUrl("filterPriority")."&filterPriority=".$tmpPriority."')\" ".($tmpPriority==Req::getParam("filterPriority")?"class='sLinkSelect'":null).">".(empty($tmpPriority)?Txt::trad("displayAll"):Txt::trad("TASK_priority".$tmpPriority))."</a></div></div>";
+							echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/task/priority".$tmpPriority.".png'></div><div><a onclick=\"redir('".Tool::getParamsUrl("filterPriority")."&filterPriority=".$tmpPriority."')\" ".($tmpPriority==Req::param("filterPriority")?"class='sLinkSelect'":null).">".(empty($tmpPriority)?Txt::trad("displayAll"):Txt::trad("TASK_priority".$tmpPriority))."</a></div></div>";
 						} ?>
 					</div>
 				</div>
@@ -121,7 +121,7 @@ $(function(){
 							{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
 					}
 					echo "<tr class='sTableRow'>
-							<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".$tmpTask->title."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?35:50))."</a></td>".
+							<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".Txt::tooltip($tmpTask->title)."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?35:50))."</a></td>".
 							$tmpTaskCells.
 						 "</tr>";
 				}

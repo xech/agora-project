@@ -5,7 +5,7 @@ lightboxSetWidth("95%");
 ////	INIT
 $(function(){
 	////	Affiche le formulaire d'import ou d'export
-	var actionImportExport="<?= Req::getParam("actionImportExport")=="import"?"import":"export" ?>";
+	var actionImportExport="<?= Req::param("actionImportExport")=="import"?"import":"export" ?>";
 	$("select[name='actionImportExport']").val(actionImportExport);
 	$("#"+actionImportExport+"Form").show();
 	$("[name=actionImportExport]").change(function(){
@@ -110,14 +110,14 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 
 	<?php
 	////	TABLEAU D'IMPORT
-	if(Req::getParam("importType")=="ldap" || (Req::getParam("importType")=="csv" && is_file($_FILES["importFile"]["tmp_name"])))
+	if(Req::param("importType")=="ldap" || (Req::param("importType")=="csv" && is_file($_FILES["importFile"]["tmp_name"])))
 	{
 		//Init
 		$getLoginPassword=($curObjClass::objectType=="user");
 		$importPersons=[];
 
 		////	RECUPERE LES VALEURS DE L'IMPORT CSV / LDAP
-		if(Req::getParam("importType")=="csv")
+		if(Req::param("importType")=="csv")
 		{
 			//Liste des champs (en fonction de la premiere ligne) + définie le delimiteur de champ + nb de champs
 			$tmpCpt=0;
@@ -135,7 +135,7 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 			$handle=fopen($_FILES["importFile"]["tmp_name"],"r");
 			while(($data=fgetcsv($handle,10000,$delimiter))!==false)  {$importPersons[]=$data;}
 		}
-		elseif(Req::getParam("importType")=="ldap")
+		elseif(Req::param("importType")=="ldap")
 		{
 			$ldapSearch=MdlPerson::ldapSearch($getLoginPassword);
 			$importPersons=$ldapSearch["ldapPersons"];
@@ -171,7 +171,7 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 				//PERSONNES IMPORTEES
 				foreach($importPersons as $personCpt=>$personValues)
 				{
-					$checkedPerson=($personCpt>0 || Req::getParam("importType")!="csv") ? "checked" : null;
+					$checkedPerson=($personCpt>0 || Req::param("importType")!="csv") ? "checked" : null;
 					echo "<tr id='rowPerson".$personCpt."'>";
 						echo "<td><input type='checkbox' name='personsImport[]' value='".$personCpt."' ".$checkedPerson."></td>";
 						//Affiche chaque champ de chaque personnes
@@ -186,7 +186,7 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 							//Affiche le champ
 							echo "<td>".$tmpLabel."<input type='hidden' name=\"personFields[".$personCpt."][".$colFieldCpt."]\" value=\"".$tmpValue."\"></td>";
 							//"fgetcsv()" ajoute un champ vide de trop..
-							if(Req::getParam("importType")=="csv" && $colFieldCpt==$nbFields-1)	{break;}
+							if(Req::param("importType")=="csv" && $colFieldCpt==$nbFields-1)	{break;}
 						}
 					echo "</tr>";
 				}
@@ -216,7 +216,7 @@ input[name='ldapBaseDn']	{display:none; width:300px;}
 	}
 
 	////	AJOUTE SI BESOIN LE DOSSIER CONTENEUR  &&  VALIDATION DU FORMULAIRE
-	if(Req::isParam("targetObjId"))  {echo "<input type='hidden' name='_idContainer' value='".Ctrl::getTargetObj()->_id."'>";}
+	if(Req::isParam("typeId"))  {echo "<input type='hidden' name='_idContainer' value='".Ctrl::getObjTarget()->_id."'>";}
 	echo Txt::submitButton();
 	?>
 </form>

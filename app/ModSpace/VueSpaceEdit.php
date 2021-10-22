@@ -6,32 +6,27 @@ lightboxSetWidth(600);
 $(function(){
 	////	Option "espace public"
 	$("input[name='public']").change(function(){
-		(this.checked) ? $("#divPassword").fadeIn() : $("#divPassword").fadeOut();																//Affiche l'option du password ?
+		$("#divPassword").toggle(this.checked);//Affiche l'option du password ?
 		if(this.checked && $("#divPassword input[name=password]").isEmpty())  {notify("<?= Txt::trad("SPACE_publicSpaceNotif") ?>","warning");}	//Affiche la notif  "Si votre espace public contient des coordonnées perso.."
-	}).trigger("change");//Trigger: init l'affichage
+	}).trigger("change");//Init l'affichage
 
 	////	Option "Formulaire d'inscription en page de connexion"
 	$("input[name='userInscription']").change(function(){
-		(this.checked) ? $("#divUserInscriptionNotify").fadeIn() : $("#divUserInscriptionNotify").fadeOut();//Affiche l'option de notif par email ?
-	}).trigger("change");//Trigger: init l'affichage
+		$("#divUserInscriptionNotify").toggle(this.checked);//Affiche l'option de notif par email ?
+	}).trigger("change");//Init l'affichage
 
 	////	Sélectionne/Désélectionne un module
 	$("input[name='moduleList[]']").change(function(){
-		//Module "Calendar" : affiche "Le module agenda restera toujours accessible dans la barre de menu..."
-		if(this.id=="moduleInputcalendar" && this.checked==false)  {notify("<?= Txt::trad("CALENDAR_moduleFullyDisabled") ?>");}
-		//Affiche/masque les options de chaque module
-		$("[name='moduleList[]']").each(function(){
-			var optionsSelector=".moduleOptions"+this.id.replace("moduleInput","");
-			if(this.checked)	{$(optionsSelector).show();}
-			else				{$(optionsSelector).hide();}
-		});
-	}).trigger("change");//Trigger: init l'affichage
+		//Affiche/masque les options du module en cours
+		$("[name='moduleList[]']").each(function(){	 $(".moduleOptions"+$(this).attr("data-moduleName")).toggle(this.checked);  });
+		//Si le module "agenda" est désactivé : on affiche "Le module agenda reste toujours accessible.."
+		if(this.id=="moduleInput-calendar")  {$("#moduleCalendarDisabled").toggle(!this.checked);}
+	}).trigger("change");//Init l'affichage
 
 	////	Option "disablePolls" : active/désactive l'option "adminAddPoll"
 	$("input[value='disablePolls']").change(function(){ 
-		if(this.checked)	{$("input[value='adminAddPoll']").prop("disabled",true).prop("checked",false);}
-		else				{$("input[value='adminAddPoll']").prop("disabled",false);}
-	});
+		$("input[value='adminAddPoll']").prop("disabled",this.checked);
+	}).trigger("change");//Init l'affichage
 
 	////	Initialise le tri des modules (".vModuleLineSort" pour déplacer à partir de cette cellule. "hightlight" pour afficher un module "fantome". "y" pour déplacer uniquement en vertical)
 	if(isMobile()==false)  {$("#modulesList").sortable({handle:".vModuleLineSort",placeholder:'highlight',axis:"y"}).disableSelection();}
@@ -55,14 +50,15 @@ $(function(){
 ////	Contrôle du formulaire
 function formControl()
 {
-   //Controle la longeur du password
-   if($("#divPassword input[name=password]").isEmpty()==false && $("#divPassword input[name=password]").val().length<6)  {notify("<?= Txt::trad("passwordInvalid") ?>"); return false; }
+   //Controle le password (pas de "isValidPassword()")
+   if($("input[name='public']").prop("checked") && $("#divPassword input[name=password]").val().length<6)  {notify("<?= Txt::trad("passwordInvalid") ?>"); return false; }
    //Controle le nb de modules cochés
    if($("input[name='moduleList[]']:checked").length==0)  {notify("<?= Txt::trad("SPACE_selectModule") ?>"); return false; }
 	//Controle final (champs obligatoires, affectations/droits d'accès, etc)
 	return mainFormControl();
 }
 </script>
+
 
 <style>
 textarea[name='description']			{margin-top:20px; <?= empty($curSpace->description)?"display:none;":null ?>}
@@ -143,10 +139,10 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<div class="lightboxBlock" id="modulesFieldset">
 		<ul id="modulesList">
 		<?php
-		////	SELECTION DES MODULES
+		////	AFFICHE CHAQUE MODULE ET SES OPTIONS
 		foreach($moduleList as $moduleName=>$tmpModule)
 		{
-			//Prépare les options du module
+			//Prépare chaque option du module
 			$moduleOptions=null;
 			foreach($tmpModule["ctrl"]::$moduleOptions as $optionName)
 			{
@@ -154,27 +150,29 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 				if($optionName=="createSpaceCalendar" && $curSpace->isNew()==false)  {continue;}
 				//Init l'affichage
 				$checkOption=(!empty($tmpModule["options"]) && stristr($tmpModule["options"],$optionName))  ?  "checked"  :  null;
-				if($optionName=="createSpaceCalendar")  {$checkOption="checked";}//Création d'agenda préselectionné
+				if($optionName=="createSpaceCalendar")  {$checkOption="checked";}//"check" la création d'un agenda s'il s'agit d'un nouvel espace
 				$inputId=$moduleName."Option".$optionName;
-				$tradLabelId=strtoupper($moduleName)."_option_".$optionName;
-				$labelTitle=Txt::isTrad($tradLabelId."Info")  ?  Txt::trad($tradLabelId."Info")  :  null;
+				$labelTradId=strtoupper($moduleName)."_option_".$optionName;
+				$labelTitle=Txt::isTrad($labelTradId."Info")  ?  Txt::trad($labelTradId."Info")  :  null;
 				//Affiche l'option
-				$moduleOptions.="<div class=\"moduleOptions".$moduleName."\">
-									<img src='app/img/dependency.png'><input type='checkbox' name=\"".$moduleName."Options[]\" value=\"".$optionName."\" id=\"".$inputId."\" ".$checkOption.">
-									<label for=\"".$inputId."\" title=\"".$labelTitle."\">".Txt::trad($tradLabelId)."</label>
-								</div>";
+				$moduleOptions.='<div class="moduleOptions'.$moduleName.'">
+									<img src="app/img/dependency.png"><input type="checkbox" name="'.$moduleName.'Options[]" value="'.$optionName.'" id="'.$inputId.'" '.$checkOption.'>
+									<label for="'.$inputId.'" title="'.$labelTitle.'">'.Txt::trad($labelTradId).'</label>
+								</div>';
 			}
+			//Module Agenda : si le module est désactivé, on affiche "Le module agenda reste toujours accessible.."
+			if($moduleName=="calendar")  {$moduleOptions.='<div class="infos" id="moduleCalendarDisabled"><img src="app/img/info.png"> '.Txt::trad("CALENDAR_option_moduleDisabled").'</div>';}
 			//Affiche le module et ses options
-			echo "<li>
-					<div class='vModuleLine'>
+			echo '<li>
+					<div class="vModuleLine">
 						<div>
-							<input type='checkbox' name='moduleList[]' value=\"".$moduleName."\" id=\"moduleInput".$moduleName."\" ".(empty($tmpModule["disabled"])?"checked":null).">
-							<label for=\"moduleInput".$moduleName."\" title=\"".$tmpModule["description"]."\">".$tmpModule["label"]." <img src=\"app/img/".$moduleName."/icon.png\" class='vModuleLineIcon'></label>
-							".$moduleOptions."
+							<input type="checkbox" name="moduleList[]" value="'.$moduleName.'" id="moduleInput-'.$moduleName.'" data-moduleName="'.$moduleName.'" '.(empty($tmpModule["disabled"])?"checked":null).'>
+							<label for="moduleInput-'.$moduleName.'" title="'.$tmpModule["description"].'">'.$tmpModule["label"].' <img src="app/img/'.$moduleName.'/icon.png" class="vModuleLineIcon"></label>
+							'.$moduleOptions.'
 						</div>
-						<div class='vModuleLineSort' title=\"".Txt::trad("SPACE_moduleRank")."\">&nbsp;</div>
+						<div class="vModuleLineSort" title="'.Txt::trad("SPACE_moduleRank").'">&nbsp;</div>
 					</div>
-				</li>";
+				</li>';
 		}
 		?>
 		</ul>
@@ -202,11 +200,11 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			$userChecked=($curSpace->accessRightUser($tmpUser)==1 || $curSpace->allUsersAffected())  ?  "checked"  :  null;			//Sélectionne la box "user"
 			$userDisabled=($curSpace->allUsersAffected())  ?  "disabled"  :  null;													//Désactive "user" si "allUsers" est sélectionné
 			$adminChecked=($curSpace->accessRightUser($tmpUser)==2)  ?  "checked"  :  null;											//Sélectionne la box "admin"
-			echo "<div class='spaceAffectLine sTableRow ".$adminAlwaysChecked."' id=\"targetLine".$tmpUser->_id."\">
-					<label class='spaceAffectLabel'>".$tmpUser->getLabel()."</label>
-					<div title=\"".Txt::trad("SPACE_userInfo")."\"> <input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpUser->_id."_1\" ".$userChecked." ".$userDisabled."></div>
-					<div title=\"".Txt::trad("SPACE_adminInfo")."\"><input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpUser->_id."_2\" ".$adminChecked."></div>
-				  </div>";
+			echo '<div class="spaceAffectLine sTableRow '.$adminAlwaysChecked.'" id="targetLine'.$tmpUser->_id.'">
+					<label class="spaceAffectLabel">'.$tmpUser->getLabel().'</label>
+					<div title="'.Txt::trad("SPACE_userInfo").'"> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
+					<div title="'.Txt::trad("SPACE_adminInfo").'"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>
+				  </div>';
 		}
 		?>
 	</div>

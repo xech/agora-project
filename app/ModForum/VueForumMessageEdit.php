@@ -23,7 +23,7 @@ lightboxSetWidth(800);
 
 	<?php
 	////	"_idMessageParent?
-	if(Req::isParam("_idMessageParent"))  {echo "<input type='hidden' name='_idMessageParent' value=\"".Req::getParam("_idMessageParent")."\">";}
+	if(Req::isParam("_idMessageParent"))  {echo "<input type='hidden' name='_idMessageParent' value=\"".Req::param("_idMessageParent")."\">";}
 	////	MENU COMMUN
 	echo $curObj->menuEdit();
 	?>

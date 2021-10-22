@@ -24,6 +24,7 @@ CREATE TABLE `ap_agora` (
   `personsSort` varchar(255) DEFAULT NULL,
   `logsTimeOut` smallint(6) DEFAULT NULL,
   `visioHost` varchar(255) DEFAULT NULL,
+  `visioHostAlt` varchar(255) DEFAULT NULL,
   `sendmailFrom` varchar(255) DEFAULT NULL,
   `smtpHost` varchar(255) DEFAULT NULL,
   `smtpPort` smallint(6) DEFAULT NULL,
@@ -282,7 +283,7 @@ CREATE TABLE `ap_log` (
   `comment` varchar(1000) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `ap_mailHistory` (
+CREATE TABLE `ap_mail` (
   `_id` mediumint(8) unsigned NOT NULL,
   `recipients` text,
   `title` text,
@@ -425,9 +426,9 @@ CREATE TABLE `ap_userInscription` (
 CREATE TABLE `ap_userLivecouter` (
   `_idUser` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `ipAdress` varchar(255) DEFAULT NULL,
-  `editObjId` varchar(255) DEFAULT NULL,
+  `editTypeId` varchar(255) DEFAULT NULL,
   `editorDraft` TEXT DEFAULT NULL,
-  `draftTargetObjId` varchar(255) DEFAULT NULL,
+  `draftTypeId` varchar(255) DEFAULT NULL,
   `date` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -454,7 +455,7 @@ CREATE TABLE `ap_userPreference` (
 CREATE TABLE `ap_dashboardPoll` (
   `_id` mediumint(8) unsigned NOT NULL,
   `title` varchar(200) NOT NULL,
-  `description` varchar(2000) DEFAULT NULL,
+  `description` TEXT CHARACTER SET utf8mb4 DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
   `multipleResponses` tinyint(1) unsigned DEFAULT NULL,
   `newsDisplay` tinyint(1) unsigned DEFAULT NULL,
@@ -499,7 +500,7 @@ ALTER TABLE `ap_joinSpaceUser`				ADD KEY `indexes` (`_idSpace`);
 ALTER TABLE `ap_link`						ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
 ALTER TABLE `ap_linkFolder`					ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
 ALTER TABLE `ap_log`						ADD KEY `indexes` (`action`,`_idObject`);
-ALTER TABLE `ap_mailHistory`				ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_mail`				ADD PRIMARY KEY (`_id`);
 ALTER TABLE `ap_objectAttachedFile`			ADD PRIMARY KEY (`_id`);
 ALTER TABLE `ap_objectComment`				ADD PRIMARY KEY (`_id`);
 ALTER TABLE `ap_objectLike`					ADD KEY `indexes` (`objectType`(100),`_idObject`);
@@ -532,7 +533,7 @@ ALTER TABLE `ap_forumSubject`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO
 ALTER TABLE `ap_forumTheme`				MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ap_link`					MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ap_linkFolder`				MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_mailHistory`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_mail`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ap_objectAttachedFile`		MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ap_objectComment`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ap_space`					MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;

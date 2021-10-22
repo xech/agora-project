@@ -13,6 +13,6 @@ foreach($pollsList as $tmpPoll)
 			<div class='vPollsTitle'>".$tmpPoll->title."</div>
 			<div class='vPollsDescription'>".$tmpPoll->description."</div>
 			<div class=\"vPollContent".$tmpPoll->_id."\">".$pollContent."</div>
-			<div class='vPollsDetails'>".$spanDateEnd.$tmpPoll->menuAttachedFiles(null)."</div>
+			<div class='vPollsDetails'>".$spanDateEnd.$tmpPoll->attachedFileMenu(null)."</div>
 		 </div>";
 }

@@ -6,7 +6,7 @@ $(function(){
 	// On met le focus sur l'input du login (ou le password)
     $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();
 	//Fait clignoter le "labelResetPassword" si une mauvaise authentification vient d'être faite
-	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::getParam("notify"))){ ?>
+	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::param("notify"))){ ?>
 		$("#labelResetPassword").addClass("sLinkSelect").pulsate(10);
 	<?php } ?>
 });
@@ -25,8 +25,8 @@ function publicSpaceAccess(_idSpace, password)
 	else if(password.length>2){
 		var ajaxUrl="?action=publicSpaceAccess&password="+encodeURIComponent(password)+"&_idSpace="+encodeURIComponent(_idSpace);
 		$.ajax(ajaxUrl).done(function(ajaxResult){
-			if(find("true",ajaxResult))	{redir("?_idSpaceAccess="+_idSpace+"&password="+password);}
-			else						{notify("<?= Txt::trad("spacePassError") ?>");  return false;}
+			if(/true/i.test(ajaxResult))	{redir("?_idSpaceAccess="+_idSpace+"&password="+password);}
+			else							{notify("<?= Txt::trad("spacePassError") ?>");  return false;}
 		});
 	}
 }
@@ -66,7 +66,7 @@ function controlConnect()
 $(function(){
 	////	Init l'authentification "auth2"  (https://developers.google.com/api-client-library/javascript/  && https://developers.google.com/api-client-library/php/)
 	gapi.load("auth2", function(){
-		auth2=gapi.auth2.init({client_id:'<?= Ctrl::$agora->gSigninClientId() ?>'});//Charge l'API avec le "ClientId"
+		auth2=gapi.auth2.init({client_id:'<?= Ctrl::$agora->gSigninClientId ?>'});//Charge l'API avec le "ClientId"
 		auth2.attachClickHandler(document.getElementById("gSignInButton"),{},onAuthSuccess,onAuthFailure);//Init le bouton "gSignInButton"
 	});
 	////	Authentification "auth2" OK : vérif si l'user est bien enregistré
@@ -133,15 +133,15 @@ $(function(){
 		<!--FORMULAIRE PRINCIPAL DE CONNEXION-->
 		<form action="index.php" method="post" id="formConnect" class="noConfirmClose" OnSubmit="return controlConnect()">
 			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("loginPlaceholder") ?>" title="<?= Txt::trad("loginPlaceholder") ?>">
-			<input type="password" name="connectPassword" value="<?= Req::getParam("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>">
-			<?php if(Req::isParam(["targetObjUrl","_idSpaceAccess"])){ ?>
-				<input type="hidden" name="targetObjUrl" value="<?= Req::getParam("targetObjUrl") ?>">
-				<input type="hidden" name="_idSpaceAccess" value="<?= Req::getParam("_idSpaceAccess") ?>">
+			<input type="password" name="connectPassword" value="<?= Req::param("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>">
+			<?php if(Req::isParam(["objUrl","_idSpaceAccess"])){ ?>
+				<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>">
+				<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">
 			<?php } ?>
 			<button type="submit"><?= Txt::trad("connect") ?></button>
 			<div class="vConnectOptions">
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked><label for="boxRememberMe" title="<?= Txt::trad("connectAutoInfo") ?>"><?= Txt::trad("connectAuto") ?></label></div>
-				<div><a href="javascript:;" data-fancybox="inline" data-src="#formResetPassword" id="labelResetPassword"><?= Txt::trad("resetPassword") ?></a></div>
+				<div><a data-fancybox="inline" data-src="#formResetPassword" id="labelResetPassword"><?= Txt::trad("resetPassword") ?></a></div>
 			</div>
 		</form>
 
@@ -153,16 +153,16 @@ $(function(){
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
-		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD (2ème etape)-->
+		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD -> 2 ÈME ETAPE-->
 		<?php if(!empty($resetPasswordIdOk) && Req::isParam("newPassword")==false){ ?>
-			<div><a href="javascript:;" data-fancybox="inline" data-src="#formResetPasswordBis" id="formResetPasswordBisLabel"><?= Txt::trad("passwordModify") ?></a></div>
+			<div><a data-fancybox="inline" data-src="#formResetPasswordBis" id="formResetPasswordBisLabel"><?= Txt::trad("passwordModify") ?></a></div>
 			<form id="formResetPasswordBis" class="vPasswordForms" action="index.php" method="post" onsubmit="return resetPasswordControlNew();">
 				<?= Txt::trad("passwordModify") ?><hr>
 				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br><!--nouveau password-->
 				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">
-				<input type="hidden" name="resetPasswordMail" value="<?= Req::getParam("resetPasswordMail") ?>"><!--vérif du reset-->
-				<input type="hidden" name="resetPasswordId" value="<?= Req::getParam("resetPasswordId") ?>"><!--idem-->
-				<input type="hidden" name="login" value="<?= Req::getParam("resetPasswordMail") ?>"><!--pré-remplissage du champ après reset-->
+				<input type="hidden" name="resetPasswordMail" value="<?= Req::param("resetPasswordMail") ?>"><!--vérif du reset-->
+				<input type="hidden" name="resetPasswordId" value="<?= Req::param("resetPasswordId") ?>"><!--idem-->
+				<input type="hidden" name="login" value="<?= Req::param("resetPasswordMail") ?>"><!--pré-remplissage du champ après reset-->
 				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
 			<script>
@@ -173,13 +173,13 @@ $(function(){
 
 		<!--VALIDATION D'INVITATION : INIT DU PASSWORD-->
 		<?php if(Req::isParam("_idInvitation") && Req::isParam("newPassword")==false){ ?>
-			<div><a href="javascript:;" data-fancybox="inline" data-src="#formInvitPassword" id="formInvitPasswordLabel"><?= Txt::trad("USER_invitPassword") ?></a></div>
+			<div><a data-fancybox="inline" data-src="#formInvitPassword" id="formInvitPasswordLabel"><?= Txt::trad("USER_invitPassword") ?></a></div>
 			<form id="formInvitPassword" class="vPasswordForms" action="index.php" method="post" onsubmit="return resetPasswordControlNew();">
 				<?= Txt::trad("USER_invitPassword2") ?><hr>
 				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br><!--nouveau password-->
 				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">
-				<input type="hidden" name="_idInvitation" value="<?= Req::getParam("_idInvitation") ?>"><!--pour récupérer l'invit-->
-				<input type="hidden" name="mail" value="<?= Req::getParam("mail") ?>">
+				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>"><!--pour récupérer l'invit-->
+				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">
 				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
 			<script>
@@ -207,7 +207,7 @@ $(function(){
 		?>
 
 		<!--ESPACES PUBLICS : ACCES VIA PASSWORD-->
-		<a href="javascript:;" data-fancybox="inline" data-src="#formSpacePassword" id="formSpacePasswordLabel"><?= Txt::trad("password") ?></a>
+		<a data-fancybox="inline" data-src="#formSpacePassword" id="formSpacePasswordLabel"><?= Txt::trad("password") ?></a>
 		<div id="formSpacePassword" class="vPasswordForms">
 			<?= Txt::trad("password") ?><hr>
 			<input type="password" name="spacePassword" id="formSpacePasswordPassword" placeholder="<?= Txt::trad("password") ?>">

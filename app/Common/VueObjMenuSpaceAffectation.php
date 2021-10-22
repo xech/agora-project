@@ -1,7 +1,7 @@
 <script>
 ////	Selectionne un espace
 $(function(){
-	var divSpaces="#spaceListMenu<?= $curObj->_targetObjId ?>";//Selecteur du menu des espaces
+	var divSpaces="#spaceListMenu<?= $curObj->_typeId ?>";//Selecteur du menu des espaces
 	$(divSpaces+" :checkbox").change(function(){
 		if($(this).val()=="all")	{$(divSpaces+" :checkbox").not(this).prop("checked",false);}	//Déselectionne chaque espace si "tous les espaces" est sélectionné
 		else						{$(divSpaces+" :checkbox[value='all']").prop("checked",false);}	//Déselectionne "tous les espaces" si un espace est sélectionné
@@ -20,11 +20,11 @@ label[data-value='all']	{font-style:italic;}
 }
 </style>
 
-<div id="spaceListMenu<?= $curObj->_targetObjId ?>">
+<div id="spaceListMenu<?= $curObj->_typeId ?>">
 	<?php
 	////LISTE DES ESPACES
 	foreach($spaceList as $tmpSpace){
-		$boxId="box".$curObj->_targetObjId.$tmpSpace->_targetObjId;
+		$boxId="box".$curObj->_typeId.$tmpSpace->_typeId;
 		echo "<div class='spaceListAffectation'>
 				<input type='checkbox' name='spaceList[]' value=\"".$tmpSpace->_id."\" id=\"".$boxId."\" ".$tmpSpace->checked.">
 				<label for=\"".$boxId."\" data-value=\"".$tmpSpace->_id."\">".$tmpSpace->name."</label>

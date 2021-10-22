@@ -51,7 +51,7 @@ class CtrlFile extends Ctrl
 			//Tooltips et description
 			$tmpFile->tooltip=Txt::trad("download")." <i>".$tmpFile->name."</i>";
 			$tmpFile->iconTooltip=$tmpFile->name." - ".File::displaySize($tmpFile->octetSize);
-			if(!empty($tmpFile->description))	{$tmpFile->iconTooltip.="<hr>".Txt::formatTooltip($tmpFile->description);}
+			if(!empty($tmpFile->description))	{$tmpFile->iconTooltip.="<hr>".Txt::tooltip($tmpFile->description);}
 			//Vignette d'image/pdf
 			if($tmpFile->hasThumb())
 			{
@@ -72,18 +72,18 @@ class CtrlFile extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * PLUGINS
+	 * PLUGINS DU MODULE
 	 *******************************************************************************************/
-	public static function getModPlugins($params)
+	public static function getPlugins($params)
 	{
-		$pluginsList=self::getPluginsFolders($params,"MdlFileFolder");
-		foreach(MdlFile::getPlugins($params) as $tmpObj)
+		$pluginsList=self::getPluginFolders($params,"MdlFileFolder");
+		foreach(MdlFile::getPluginObjects($params) as $tmpObj)
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche le fichier dans son dossier conteneur
+			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownloadDisplay()."');}";
 			$pluginsList[]=$tmpObj;
 		}
@@ -95,11 +95,11 @@ class CtrlFile extends Ctrl
 	 *******************************************************************************************/
 	public static function actionGetFile()
 	{
-		if(Req::isParam("targetObjId"))
+		if(Req::isParam("typeId"))
 		{
 			//Récupère le fichier et controle le droit d'accès
-			$curFile=self::getTargetObj();
-			if($curFile->readRight()  ||  (Req::isParam("nameMd5") && md5($curFile->name)==Req::getParam("nameMd5")))
+			$curFile=self::getObjTarget();
+			if($curFile->readRight()  ||  (Req::isParam("nameMd5") && md5($curFile->name)==Req::param("nameMd5")))
 			{
 				//Affichage du fichier
 				if(Req::isParam("display"))  {File::display($curFile->filePath());}
@@ -115,8 +115,8 @@ class CtrlFile extends Ctrl
 					//Update la table en incrémentant "downloadsNb" et si possible "downloadedBy"
 					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1) ".$sqlDownloadedBy." WHERE _id=".$curFile->_id);
 					//Télécharge ensuite le fichier
-					$curVersion=$curFile->getVersion(Req::getParam("dateCrea"));
-					File::download($curVersion["name"], $curFile->filePath(Req::getParam("dateCrea")));
+					$curVersion=$curFile->getVersion(Req::param("dateCrea"));
+					File::download($curVersion["name"], $curFile->filePath(Req::param("dateCrea")));
 				}
 			}
 		}
@@ -130,7 +130,7 @@ class CtrlFile extends Ctrl
 		$archiveSize=0;
 		$filesList=[];
 		////	Ajoute à l'archive les dossiers sélectionnés
-		foreach(self::getTargetObjects("fileFolder") as $curFolder)
+		foreach(self::getObjectsTypeId("fileFolder") as $curFolder)
 		{
 			$archiveSize+=File::folderSize($curFolder->folderPath("real"));
 			$archiveName=$curFolder->containerObj()->name;
@@ -150,7 +150,7 @@ class CtrlFile extends Ctrl
 			}
 		}
 		////	Ajoute à l'archive les fichiers sélectionnés
-		foreach(self::getTargetObjects("file") as $curFile){
+		foreach(self::getObjectsTypeId("file") as $curFile){
 			$archiveSize+=$curFile->octetSize;
 			$archiveName=$curFile->containerObj()->name;
 			if($curFile->readRight())  {$filesList[]=array("realPath"=>$curFile->filePath(),"zipPath"=>$curFile->name);}
@@ -168,25 +168,25 @@ class CtrlFile extends Ctrl
 	public static function actionFileEdit()
 	{
 		////	Charge le fichier
-		$curObj=Ctrl::getTargetObj();
+		$curObj=Ctrl::getObjTarget();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge le fichier + update la dernière version
-			$fileName=Req::getParam("name").Req::getParam("dotExtension");
-			$curObj=$curObj->createUpdate("name=".Db::format($fileName).", description=".Db::formatParam("description"));
+			$fileName=Req::param("name").Req::param("dotExtension");
+			$curObj=$curObj->createUpdate("name=".Db::format($fileName).", description=".Db::param("description"));
 			$lastVersion=$curObj->getVersion();
-			Db::Query("UPDATE ap_fileVersion SET name=".Db::format($fileName).", description=".Db::formatParam("description")." WHERE _idFile=".$lastVersion["_idFile"]." AND dateCrea=".Db::format($lastVersion["dateCrea"]));
+			Db::Query("UPDATE ap_fileVersion SET name=".Db::format($fileName).", description=".Db::param("description")." WHERE _idFile=".$lastVersion["_idFile"]." AND dateCrea=".Db::format($lastVersion["dateCrea"]));
 			//Modif contenu du fichier texte/html
-			if(Req::isParam("fileContent") && Req::getParam("fileContent")!=Req::getParam("fileContentOld"))
+			if(Req::isParam("fileContent") && Req::param("fileContent")!=Req::param("fileContentOld"))
 			{
 				$folderPath=$curObj->containerObj()->folderPath("real");
-				$newFileRealName=$curObj->_id."_".time().Req::getParam("dotExtension");
+				$newFileRealName=$curObj->_id."_".time().Req::param("dotExtension");
 				$fp=fopen($folderPath.$newFileRealName, "w");
-				fwrite($fp, stripslashes(Req::getParam("fileContent")));//au cas ou "magic_quote_gpc" est activé..
+				fwrite($fp, stripslashes(Req::param("fileContent")));//au cas ou "magic_quote_gpc" est activé..
 				fclose($fp);
-				Db::query("INSERT INTO ap_fileVersion SET _idFile=".$curObj->_id.", name=".Db::formatParam("name").", realName=".Db::format($newFileRealName).", description=".Db::formatParam("description").", octetSize=".(int)filesize($folderPath.$newFileRealName).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
+				Db::query("INSERT INTO ap_fileVersion SET _idFile=".$curObj->_id.", name=".Db::param("name").", realName=".Db::format($newFileRealName).", description=".Db::param("description").", octetSize=".(int)filesize($folderPath.$newFileRealName).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 			}
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
@@ -210,7 +210,7 @@ class CtrlFile extends Ctrl
 	public static function actionAddEditFiles()
 	{
 		////	Charge l'objet & Controles d'accès
-		$curObj=Ctrl::getTargetObj();
+		$curObj=Ctrl::getObjTarget();
 		$curObj->editControl();
 		$folderPath=$curObj->containerObj()->folderPath("real");
 		if(!is_dir($folderPath) || !is_writable($folderPath))  {Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess")." : ".$curObj->containerObj()->name);}
@@ -221,9 +221,9 @@ class CtrlFile extends Ctrl
 			@set_time_limit(240);//disabled en safemode
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	RECUPERE LES FICHIERS DEJA ENVOYÉS AVEC "PLUPLOAD"
-			if(Req::getParam("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::getParam("tmpFolderName")))
+			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")))
 			{
-				$tmpDirPath=File::getTempDir()."/".Req::getParam("tmpFolderName")."/";
+				$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
 				if(is_dir($tmpDirPath)){
 					foreach(scandir($tmpDirPath) as $tmpFileName){
 						$tmpFilePath=$tmpDirPath.$tmpFileName;
@@ -255,11 +255,11 @@ class CtrlFile extends Ctrl
 					if(Db::getVal("SELECT count(*) FROM ap_file WHERE _idContainer=".(int)$curObj->_idContainer." AND _id!=".$curObj->_id." AND name=".Db::format($tmpFile["name"]))>0)
 						{Ctrl::notify(Txt::trad("NOTIF_fileName")." :<br><br>".$tmpFile["name"]);}
 					////	Charge le fichier (nouveau fichier : create OU nouvelle version du fichier : update) && Enregistre ses propriétés && Recharge l'objet
-					$tmpObj=Ctrl::getTargetObj();
-					$tmpObj=$lastObjFile=$tmpObj->createUpdate("name=".Db::format($tmpFile["name"]).", description=".Db::formatParam("description").", octetSize=".Db::format($fileSize));
+					$tmpObj=Ctrl::getObjTarget();
+					$tmpObj=$lastObjFile=$tmpObj->createUpdate("name=".Db::format($tmpFile["name"]).", description=".Db::param("description").", octetSize=".Db::format($fileSize));
 					////	Ajoute la version du fichier
 					$sqlVersionFileName=$tmpObj->_id."_".time().".".File::extension($tmpFile["name"]);
-					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($fileSize).", description=".Db::formatParam("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
+					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($fileSize).", description=".Db::param("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 					copy($tmpFile["tmpPath"], $tmpObj->filePath());//copie dans le dossier final (après avoir enregistré la version en Bdd!!)
 					File::setChmod($tmpObj->filePath());
 					////	Creation de vignette && Optimise si besoin l'image (1920px max)
@@ -276,14 +276,14 @@ class CtrlFile extends Ctrl
 					////	Prepare la notif mail (Affiche le nom des 10 premiers fichiers ..puis le nombre de fichiers restant)
 					if(count($notifFilesLabel)<10)		{$notifFilesLabel[]=$tmpObj->name.(!empty($tmpObj->description)?"<br>".$tmpObj->description:null);}
 					elseif(count($notifFilesLabel)==10)	{$notifFilesLabel[]="... + ".(count($newFiles)-5)." ".Txt::trad("OBJECTfile");}
-					////	Joint le fichier à la notif?
-					if(Req::isParam("notifMailAddFiles"))  {$notifFiles[]=array("path"=>$tmpObj->filePath(),"name"=>$tmpObj->name);}
+					////	Joint le fichier à la notif? pas plus de 20 fichiers et 20Mo
+					if(Req::isParam("notifMailAddFiles") && count($notifFiles)<=20)  {$notifFiles[]=array("path"=>$tmpObj->filePath(),"name"=>$tmpObj->name);}
 				}
 			}
-			////	Notifie par mail?  Supprime le dossier temporaire?  Ferme la page
+			////	Notifie par mail?  &&  Supprime le dossier temporaire?  &&  Maj du nouveau "datasFolderSize" (force)  &&  Ferme la page
 			if(!empty($lastObjFile))  {$lastObjFile->sendMailNotif(implode("<br><br>",$notifFilesLabel), null, $notifFiles);}
 			if(!empty($tmpDirPath) && is_dir($tmpDirPath))  {File::rm($tmpDirPath);}
-			File::datasFolderSize(true);//Maj du nouveau "datasFolderSize" (force)
+			File::datasFolderSize(true);
 			static::lightboxClose();
 		}
 		////	Affiche la vue
@@ -298,10 +298,10 @@ class CtrlFile extends Ctrl
 	 *******************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
-		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::getParam("tmpFolderName")) && !empty($_FILES))
+		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")) && !empty($_FILES))
 		{
 			//Init/Crée le dossier temporaire
-			$tmpDirPath=File::getTempDir()."/".Req::getParam("tmpFolderName")."/";
+			$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
 			if(!is_dir($tmpDirPath))  {mkdir($tmpDirPath);}
 			//Vérifie l'accès au dossier temporaire && y place chaque fichier correctement uploadé
 			if(is_writable($tmpDirPath)){
@@ -317,7 +317,7 @@ class CtrlFile extends Ctrl
 	 *******************************************************************************************/
 	public static function actionFileVersions()
 	{
-		$curObj=self::getTargetObj();
+		$curObj=self::getObjTarget();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueFileVersions.php",$vDatas);
 	}
@@ -327,8 +327,8 @@ class CtrlFile extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDeleteFileVersion()
 	{
-		$curObj=self::getTargetObj();
-		$curObj->delete(Req::getParam("dateCrea"));
+		$curObj=self::getObjTarget();
+		$curObj->delete(Req::param("dateCrea"));
 		static::lightboxClose();
 	}
 }

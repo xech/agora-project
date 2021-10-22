@@ -28,7 +28,7 @@ $(function(){
 <form action="index.php" method="post" class="lightboxContent">
 	<div class="lightboxTitle"><?= Txt::trad("userInscriptionValidateInfo") ?></div>
 	<?php
-	// LISTE DES INSCRIPTIONS D'USERS
+	//// LISTE DES INSCRIPTIONS D'USERS
 	foreach(CtrlUser::userInscriptionValidate() as $tmpInsc){
 		echo "<div class='vInscription sTableRow'>
 				<input type='checkbox' name='inscriptionValidate[]' value=\"".$tmpInsc["_id"]."\" id='inputInscription".$tmpInsc["_id"]."'>
@@ -38,7 +38,7 @@ $(function(){
 			 </div>";
 	}
 
-	// BOUTONS DE VALIDATION/INVALIDATION
+	//// BOUTON DE VALIDATION & BOUTON D'INVALIDATION
 	echo Txt::submitButton("<img src='app/img/check.png'>".Txt::trad("userInscriptionSelectValidate"));
 	echo "<div class='submitButtonMain' id='buttonInvalidate'><button type='submit' name='submitInvalidate' value='true'><img src='app/img/delete.png'>".Txt::trad("userInscriptionSelectInvalidate")."</button></div>";
 	?>

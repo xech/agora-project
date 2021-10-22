@@ -19,22 +19,24 @@ class Tool
 {
 	/*******************************************************************************************
 	 * ENVOI D'UN MAIL
-	 * Note : toujours mettre en place un SPF, DKIM et REVERS DNS (évite la spambox)
-	 * Note : tester l'envoi des emails via https://www.mail-tester.com/
+	 * ***************
+	 * $options des mails
+	 * -"hideRecipients":	Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
+	 * -"hideUserLabel":	Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
+	 * -"receptionNotif":	Demande un accusé de réception pour l'user/expéditeur
+	 * -"addReplyTo": 		Ajoute le mail de l'user/expéditeur en "replyTo" (déconseillé pas défaut : cf. Spamassassin)
+	 * -"noFooter": 		Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
+	 * -"noNotify": 		Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
+	 * -"objectNotif": 		Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
+	 * Notes :
+	 * - toujours mettre en place un SPF, DKIM et REVERS DNS (évite la spambox)
+	 * - tester l'envoi des emails via https://www.mail-tester.com/
 	 *******************************************************************************************/
 	public static function sendMail($mailsTo, $subject, $message, $options=null, $attachedFiles=null)
 	{
-		////	Vérification de base
+		////	Vérifs de base && Init les options
 		if(empty($mailsTo) || empty($message))	{return false;}
-
-		////	Options par defaut à "False" !
-		$opt["hideRecipients"]=(stristr($options,"hideRecipients"));	//Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
-		$opt["hideUserLabel"]=(stristr($options,"hideUserLabel"));		//Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
-		$opt["receptionNotif"]=(stristr($options,"receptionNotif"));	//Demande un accusé de réception pour l'user/expéditeur
-		$opt["addReplyTo"]=(stristr($options,"addReplyTo"));			//Ajoute le mail de l'user/expéditeur en "replyTo" (déconseillé pas défaut : cf. Spamassassin)
-		$opt["noFooter"]=(stristr($options,"noFooter"));				//Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
-		$opt["noNotify"]=(stristr($options,"noNotify"));				//Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
-		$opt["objectNotif"]=(stristr($options,"objectNotif"));			//Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
+		if(empty($options))  {$options=[];}
 
 		////	Charge une première fois PHPMailer et crée une nouvelle instance
 		if(!defined("phpmailerLoaded")){
@@ -69,30 +71,32 @@ class Tool
 			$mail->SetFrom($fromMail, $fromLabel);																		//"SetFrom" : Tjs utiliser un email correspondant au domaine courant ou d'un SMTP spécifique (évite la spambox)
 			//Ajoute si besoin le libellé de l'user connecté
 			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
-			if($opt["hideUserLabel"]==false && $fromConnectedUser){
-				$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());//Ajoute le nom de l'user dans le $fromLabel (exple: "Mon espace - BOBY SMITH <noreply@mondomaine.tld>")
-				if(!empty(Ctrl::$curUser->mail) && $opt["addReplyTo"]==true)		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute un email "ReplyTo" ? à éviter car un email "ReplyTo" différent du $fromMail peut arriver en spambox (cf. Spamassassin)
-				if(!empty(Ctrl::$curUser->mail) && $opt["receptionNotif"]==true)	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}							//Demande une confirmation de lecture?
+			if(in_array("hideUserLabel",$options)==false && $fromConnectedUser){
+				$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());												//Ajoute le nom de l'user dans le $fromLabel (ex: "Mon espace - BOB SMITH <bob@domaine.tld>")
+				if(!empty(Ctrl::$curUser->mail)){																					//Verif si l'user courant a bien spécifié un email
+					if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute son email à "ReplyTo" ? à éviter car un email "ReplyTo" différent du $fromMail peut arriver en spambox (cf. Spamassassin)
+					if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}							//Demande une confirmation de lecture à l'user courant?
+				}
 			}
 
-			////	Destinataires (format text / array d'idUser)
-			$mailsToNotif=null;																															//Prépare la notification finale
-			if($opt["hideRecipients"]==true && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}	//Destinataires masqués: ajoute l'expéditeur en email principal (evite la spambox)
-			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																		//Liste des destinataires au format "array"
-			$mailsTo=array_unique($mailsTo);																											//Elimine les éventuels doublons
+			////	Destinataires (idUser au format text/array)
+			$mailsToNotif=null;																																//Prépare la notification finale
+			if(in_array("hideRecipients",$options) && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}	//Destinataires masqués: ajoute l'expéditeur en email principal (evite la spambox)
+			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																			//Liste des destinataires au format "array"
+			$mailsTo=array_unique($mailsTo);																												//Elimine les éventuels doublons
 			//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
 			foreach($mailsTo as $tmpDest){
 				if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}
 				if(!empty($tmpDest)){
 					$mailsToNotif.=", ".$tmpDest;
-					if($opt["hideRecipients"]==true)	{$mail->AddBCC($tmpDest);}
-					else								{$mail->AddAddress($tmpDest);}
+					if(in_array("hideRecipients",$options))	{$mail->AddBCC($tmpDest);}
+					else									{$mail->AddAddress($tmpDest);}
 				}
 			}
 
 			////	Sujet & message
 			$mail->Subject=$subject;
-			if($opt["noFooter"]==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
+			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
 				$fromTheSpace=ucfirst(Ctrl::$agora->name);																										//Nom de l'espace principal
 				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" &raquo; ".Ctrl::$curSpace->name;}				//Ajoute si besoin le nom du sous-espace ("&raquo;"=">>")
 				$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//"Envoyé par boby SMITH"
@@ -102,7 +106,7 @@ class Tool
 
 			////	Logo du footer en fin de mail (signe avec un logo spécifique ou le logo par défaut)
 			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoLabel.png";
-			if($opt["noFooter"]==false && is_file($logoFooterPath)){
+			if(in_array("noFooter",$options)==false && is_file($logoFooterPath)){
 				$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
 				$mail->MsgHTML($message."<br><br><img src='cid:logoFooterId' style='max-height:100px'>");
 			}
@@ -117,16 +121,16 @@ class Tool
 					$tmpFileSize=@filesize($tmpFile["path"]);
 					if(is_file($tmpFile["path"]) && ($fileSizeCpt+$tmpFileSize)<File::mailMaxFilesSize){
 						$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
-						if(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute le fichier joint
-						if(!empty($tmpFile["cid"]))		{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre l'image dans le message (si "cid"="XYZ", l'image est placée dans "<img src='cid:XYZ'>")
+						if(!empty($tmpFile["cid"]))			{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre une image dans le message (exple : CID="XYZ" correspond à "<img src='cid:XYZ'>")
+						elseif(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute un fichier joint classique
 					}
 				}
 			}
 
-			////	Envoi du mail + rapport d'envoi si demande ("notify()")
+			////	Envoi du mail + rapport d'envoi si demandé
 			$isSendMail=$mail->Send();
-			if($opt["noNotify"]==false){
-				$notifMail=($opt["objectNotif"]==true) ? Txt::trad("MAIL_sendNotif") : Txt::trad("MAIL_sendOk");
+			if(in_array("noNotify",$options)==false){																										//Affiche une notification si l'email a été envoyé ou pas 
+				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");									//Affiche si besoin "L'email de notification a bien été envoyé"
 				if($isSendMail==true)		{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}	//Mail correctement envoyé
 				elseif(count($mailsTo)>=2)	{Ctrl::notify("MAIL_notSendEverybody");}																		//Mail non envoyé à tous les destinataires
 				else						{Ctrl::notify("MAIL_notSend");}																					//Mail non envoyé
@@ -134,7 +138,7 @@ class Tool
 			return $isSendMail;
 		}
 		////	Sinon envoi une exception PHPMailer
-		catch (Exception $e) {
+		catch (Exception $e){
 			echo Txt::trad("MAIL_notSend").". PHPMailer Error : ".$mail->ErrorInfo;
 		}
 	}
@@ -159,22 +163,14 @@ class Tool
 	/*******************************************************************************************
 	 * TRI UN TABLEAU MULTIDIMENTIONNEL
 	 *******************************************************************************************/
-	public static function sortArray($sortedArray, $sortedField, $ascDesc="asc", $fixFirstLine=false)
+	public static function sortArray($sortedArray, $sortedField)
 	{
-		// Créé un tableau temporaire avec juste la cle du tableau principal et le champ à trier
-		$keyFirstResult=null;
+		// Créé un tableau temporaire avec uniquement le champ à trier, puis trie ce tableau
 		$tmpArray=$returnArray=[];
-		foreach($sortedArray as $key=>$value){
-			if($fixFirstLine==true && empty($keyFirstResult))	{$keyFirstResult=$key;}//Retient le premier resultat
-			else												{$tmpArray[$key]=$value[$sortedField];}
-		}
-		// Tri ascendant ou descendant (avec maintient des index)
-		($ascDesc=="asc")  ?  asort($tmpArray)  :  arsort($tmpArray);
-		// Rajoute si besoin le premier résultat (cf. ci-dessus)
-		if(isset($keyFirstResult))	{$returnArray[$keyFirstResult]=$sortedArray[$keyFirstResult];}
-		// Reconstruit le tableau multidimensionnel à partir du tableau temporaire trié
+		foreach($sortedArray as $key=>$value)  {$tmpArray[$key]=$value[$sortedField];}
+		asort($tmpArray);
+		// Reconstruit le tableau multidimensionnel à partir tableau temporaire trié, puis renvoie le résultat
 		foreach($tmpArray as $key=>$value)	{$returnArray[$key]=$sortedArray[$key];}
-		// Retourne le tableau trié
 		return $returnArray;
 	}
 
@@ -261,7 +257,7 @@ class Tool
 		elseif($fillPercent==100)	{$percentBarImg="percentBar100";}		//terminé à 100% : vert
 		else						{$percentBarImg="percentBarCurrent";}	//en cours : vert clair
 		//renvoie la percentbar
-		return "<div class='percentBar' style='width:".$barWidth.";' title=\"".$txtTooltip."\">
+		return "<div class='percentBar' style='width:".$barWidth.";' title=\"".Txt::tooltip($txtTooltip)."\">
 					<div class='percentBarContent' style='background-image:url(app/img/".$percentBarImg.".png);background-size:".(int)$fillPercent."% 100%;'>".$txtBar."</div>
 				</div>";
 	}

@@ -24,6 +24,6 @@ lightboxSetWidth(550);
 	if(!empty($contentVisibility))		{echo "<hr><div class='vEventDetails'>".$contentVisibility."</div>";}
 	if(!empty($curObj->visioUrl))		{echo "<hr><a href=\"javascript:launchVisio('".$curObj->visioUrl."')\"><img src='app/img/visioSmall.png'>&nbsp; ".Txt::trad("VISIO_launchFromEvent")."</a>";}
 	if(!empty($curObj->description))	{echo "<hr>".$curObj->description;}
-	echo $curObj->menuAttachedFiles();
+	echo $curObj->attachedFileMenu();
 	?>
 </div>

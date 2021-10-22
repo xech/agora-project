@@ -2,14 +2,12 @@
 ////	RESIZE
 lightboxSetWidth(750);
 
-////	OPTION POUR RENVOYER UN EMAIL
-function resendMail(_id)
+/*******************************************************************************************
+ *	OPTION POUR RENVOYER UN ANCIEN EMAIL : RELOAD LA PAGE PRINCIPALE
+*******************************************************************************************/
+function sendOldMail(typeId)
 {
-	if(confirm("<?= Txt::trad("MAIL_resendInfo") ?> ?")){
-		parent.tinymce.activeEditor.insertContent($("#mailDescription"+_id).html());	//Place le contenu de l'ancien mail dans l'éditeur tinyMce 
-		parent.confirmCloseForm=false;													//Pas de confirmation de fermeture de fancybox
-		parent.$.fancybox.close();														//On ferme le fancybox
-	}
+	if(confirm("<?= Txt::trad("MAIL_resendInfo") ?> ?"))  {parent.redir("?ctrl=mail&oldMailTypeId="+typeId);}
 }
 </script>
 
@@ -30,21 +28,21 @@ li									{margin-bottom:20px;}
 
 	<ul>
 	<?php
-	//LISTE DES MAILS
-	foreach($mailList as $mailTmp)
+	////	AFFICHE CHAQUE MAILS ENVOYE
+	foreach($mailList as $tmpMail)
 	{
 		//Date et destinataires du mail
-		$autorRecipents="<div class='vMailDetail'>".Txt::trad("MAIL_sendBy")." ".Ctrl::getObj("user",$mailTmp["_idUser"])->getLabel()." : ".Txt::dateLabel($mailTmp["dateCrea"])."</div>".
-						"<div class='vMailDetail'>".Txt::trad("MAIL_recipients")." : ".str_replace(',',' - ',$mailTmp["recipients"])."</div>";
+		$autorRecipents="<div class='vMailDetail'>".Txt::trad("MAIL_sendBy")." ".Ctrl::getObj("user",$tmpMail->_idUser)->getLabel()." : ".$tmpMail->dateLabel()."</div>".
+						"<div class='vMailDetail'>".Txt::trad("MAIL_recipients")." : ".str_replace(',',' - ',$tmpMail->recipients)."</div>";
 		//Récupération de l'email || Suppression de l'email 
-		$buttonResend="<div class='vMailDetail vMailDetailOption sLink' onclick=\"resendMail(".$mailTmp["_id"].");\" title=\"".Txt::trad("MAIL_resendInfo")."\"><img src='app/img/mail/resend.png'> ".Txt::trad("MAIL_resend")."</div>";
-		$buttonDelete="<div class='vMailDetail vMailDetailOption sLink' onclick=\"confirmDelete('?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&actionDelete=true&_idMail=".$mailTmp["_id"]."');\"><img src='app/img/delete.png'> ".Txt::trad("MAIL_delete")."</div>";
+		$buttonResend="<div class='vMailDetail vMailDetailOption sLink' onclick=\"sendOldMail('".$tmpMail->_typeId."');\" title=\"".Txt::trad("MAIL_resendInfo")."\"><img src='app/img/mail/resend.png'> ".Txt::trad("MAIL_resend")."</div>";
+		$buttonDelete="<div class='vMailDetail vMailDetailOption sLink' onclick=\"confirmDelete('".$tmpMail->getUrl("delete")."');\"><img src='app/img/delete.png'> ".Txt::trad("MAIL_delete")."</div>";
 		//Affiche chaque email envoyé
 		echo "<li>
-				<label onclick=\"$('#mailDetailBlock".$mailTmp["_id"]."').slideToggle()\">".$mailTmp["title"]." <img src='app/img/arrowBottom.png'></label>
-				<div id=\"mailDetailBlock".$mailTmp["_id"]."\" class='vMailDetailBlock'>
-					".$autorRecipents.$buttonResend.$buttonDelete."
-					<div id=\"mailDescription".$mailTmp["_id"]."\" class='vMailDescription'>".$mailTmp["description"]."</div>
+				<label onclick=\"$('#mailDetailBlock".$tmpMail->_id."').slideToggle()\">".$tmpMail->title." <img src='app/img/arrowBottom.png'></label>
+				<div id=\"mailDetailBlock".$tmpMail->_id."\" class='vMailDetailBlock'>
+					".$buttonResend.$buttonDelete.$autorRecipents."
+					<div id=\"mailDescription".$tmpMail->_id."\" class='vMailDescription'>".$tmpMail->description."</div>
 				</div>
 			  </li>";
 	}

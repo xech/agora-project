@@ -1,5 +1,7 @@
 <script>
-////	INIT
+/*******************************************************************************************
+ *	INIT
+ *******************************************************************************************/
 $(function(){
 	////	Logo du footer
 	$("select[name='logo']").change(function(){
@@ -18,7 +20,7 @@ $(function(){
 
 	////	Vérif le type du fichier
 	$("#wallpaperFile,#logoFile,#logoConnectFile").change(function(){
-		if(/(jpg|jpeg|png)/.test(this.value)==false)
+		if(/\.(jpg|jpeg|png)/i.test(this.value)==false)
 			{notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
@@ -29,17 +31,20 @@ $(function(){
 	$("select[name='gSignin']").on("change",function(){   this.value=="1" ? $("#gSigninClientIdDiv").fadeIn() : $("#gSigninClientIdDiv").fadeOut();   }).trigger("change");//"trigger()" initie l'affichage
 });
 
-////    On contrôle le formulaire
+/*******************************************************************************************
+ *	CONTRÔLE LE FORMULAIRE
+ *******************************************************************************************/
 function formControl()
 {
 	//Contrôle le nom de l'espace
 	if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
 	//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gSigninClientId
 	<?php if(Ctrl::isHost()==false){ ?>
-	if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
-	if($("input[name='visioHost']").isEmpty()==false && /^https/.test($("input[name='visioHost']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
-	if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
-	if($("select[name='gSignin']").val()=="1" && $("input[name='gSigninClientId']").isEmpty())						{notify("<?= Txt::trad("AGORA_gSigninKeyInvalid") ?>");  return false;}	//Idem
+	if(isNaN($("#limite_espace_disque").val()))   																		{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
+	if($("input[name='visioHost']").isEmpty()==false && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
+	if($("input[name='visioHostAlt']").isEmpty()==false && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
+	if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())								{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
+	if($("select[name='gSignin']").val()=="1" && $("input[name='gSigninClientId']").isEmpty())							{notify("<?= Txt::trad("AGORA_gSigninKeyInvalid") ?>");  return false;}	//Idem
 	<?php } ?>
 	return confirm("<?= Txt::trad("AGORA_confirmModif") ?>");
 }
@@ -138,8 +143,8 @@ function formControl()
 				</div>
 			</div>
 			<!--LOGO CONNECT-->
-			<div class="objField">
-				<div class="fieldLabel"><abbr title="<?= Txt::trad("AGORA_logoConnectInfo") ?>"><?= Txt::trad("AGORA_logoConnect") ?></abbr></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_logoConnectInfo") ?>">
+				<div class="fieldLabel"><?= Txt::trad("AGORA_logoConnect") ?></div>
 				<div>
 					<img src="<?= Ctrl::$agora->pathLogoConnect() ?>" id="imgLogoConnect">
 					<?php
@@ -208,8 +213,8 @@ function formControl()
 			</div>
 			<?php } ?>
 			<!--LOGS TIMEOUT-->
-			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/log.png"> <abbr title="<?= Txt::trad("AGORA_logsTimeOutInfo") ?>"><?= Txt::trad("AGORA_logsTimeOut") ?></abbr></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_logsTimeOutInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/log.png"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
 				<div>
 					<select name="logsTimeOut">
 						<?php foreach([0,30,120,360,720] as $tmpTimeOut)  {echo "<option value='".$tmpTimeOut."' ".($tmpTimeOut==Ctrl::$agora->logsTimeOut?"selected":null).">".$tmpTimeOut."</option>";} ?>
@@ -218,11 +223,15 @@ function formControl()
 				</div>
 			</div>
 		<hr>
-			<!--SERVER JITSI (AUTO-HEBERGEMENT)-->
+			<!--SERVEURS JITSI (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
-			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/visio.png"><abbr title="<?= Txt::trad("AGORA_visioHostInfo") ?>"><?= Txt::trad("AGORA_visioHost") ?></abbr></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_visioHostInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHost") ?></div>
 				<div><input type="text" name="visioHost" value="<?= Ctrl::$agora->visioHost ?>"></div>
+			</div>
+			<div class="objField" title="<?= Txt::trad("AGORA_visioHostAltInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHostAlt") ?></div>
+				<div><input type="text" name="visioHostAlt" value="<?= Ctrl::$agora->visioHostAlt ?>"></div>
 			</div>
 			<?php } ?>
 			<!--LIKES-->
@@ -267,8 +276,8 @@ function formControl()
 				</div>
 			</div>
 			<!--MAP TOOLS-->
-			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/map.png"><abbr title="<?= Txt::trad("AGORA_mapToolInfo") ?>"><?= Txt::trad("AGORA_mapTool") ?></abbr></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_mapToolInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/map.png"><?= Txt::trad("AGORA_mapTool") ?></div>
 				<div>
 					<select name="mapTool">
 						<option value="leaflet">OpenStreetMap / Leaflet</option>
@@ -278,14 +287,14 @@ function formControl()
 			</div>
 			<!--MAP TOOL APIKEY (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
-			<div class="objField" id="mapApiKeyDiv">
-				<div class="fieldLabel"><img src="app/img/map.png"><abbr title="<?= Txt::trad("AGORA_mapApiKeyInfo") ?>"><?= Txt::trad("AGORA_mapApiKey") ?></abbr></div>
+			<div class="objField" id="mapApiKeyDiv" title="<?= Txt::trad("AGORA_mapApiKeyInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/map.png"><?= Txt::trad("AGORA_mapApiKey") ?></div>
 				<div><input type="text" name="mapApiKey" value="<?= Ctrl::$agora->mapApiKey ?>"></div>
 			</div>
 			<?php } ?>
 			<!--GOOGLE SIGNIN ACTIVE ?-->
-			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/gSignin.png"><abbr title="<?= Txt::trad("AGORA_gSigninInfo") ?>"><?= Txt::trad("AGORA_gSignin") ?></abbr></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_gSigninInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gSignin") ?></div>
 				<div>
 					<select name="gSignin">
 						<option value="0"><?= Txt::trad("no") ?></option>
@@ -295,12 +304,12 @@ function formControl()
 			</div>
 			<!--SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AUTO-HEBERGEMENT)-->
 			<?php if(Ctrl::isHost()==false){ ?>
-			<div class="objField" id="gSigninClientIdDiv">
-				<div class="fieldLabel"><img src="app/img/gSignin.png"><abbr title="<?= Txt::trad("AGORA_gSigninClientIdInfo") ?>"><?= Txt::trad("AGORA_gSigninClientId") ?></abbr></div>
+			<div class="objField" id="gSigninClientIdDiv" title="<?= Txt::trad("AGORA_gSigninClientIdInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gSigninClientId") ?></div>
 				<div><input type="text" name="gSigninClientId" value="<?= Ctrl::$agora->gSigninClientId ?>"></div>
 			</div>
-			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/gSignin.png"><abbr title="<?= Txt::trad("AGORA_gPeopleApiKeyInfo") ?>"><?= Txt::trad("AGORA_gPeopleApiKey") ?></abbr></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_gPeopleApiKeyInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gPeopleApiKey") ?></div>
 				<div><input type="text" name="gPeopleApiKey" value="<?= Ctrl::$agora->gPeopleApiKey ?>"></div>
 			</div>
 			<?php } ?>
@@ -317,24 +326,24 @@ function formControl()
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapHost") ?></div>
 					<div><input type="text" name="ldap_server" value="<?= Ctrl::$agora->ldap_server ?>"></div>
 				</div>
-				<div class="objField">
-					<div class="fieldLabel"><abbr title="<?= Txt::trad("AGORA_ldapPortInfo") ?>"><?= Txt::trad("AGORA_ldapPort") ?></abbr></div>
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapPortInfo") ?>">
+					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapPort") ?></div>
 					<div><input type="text" name="ldap_server_port" value="<?= Ctrl::$agora->ldap_server_port ?>"></div>
 				</div>
-				<div class="objField">
-					<div class="fieldLabel"><abbr title="<?= Txt::trad("AGORA_ldapLoginInfo") ?>"><?= Txt::trad("AGORA_ldapLogin") ?></abbr></div>
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapLoginInfo") ?>">
+					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapLogin") ?></div>
 					<div><input type="text" name="ldap_admin_login" value="<?= Ctrl::$agora->ldap_admin_login ?>"></div>
 				</div>
 				<div class="objField">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapPass") ?></div>
 					<div><input type="password" name="ldap_admin_pass" value="<?= Ctrl::$agora->ldap_admin_pass ?>"></div>
 				</div>
-				<div class="objField">
-					<div class="fieldLabel"><abbr title="<?= Txt::trad("AGORA_ldapDnInfo") ?>"><?= Txt::trad("AGORA_ldapDn") ?></abbr></div>
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapDnInfo") ?>">
+					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapDn") ?></div>
 					<div><input type="text" name="ldap_base_dn" value="<?= Ctrl::$agora->ldap_base_dn ?>"></div>
 				</div>
-				<div class="objField">
-					<div class="fieldLabel"><abbr title="<?= Txt::trad("AGORA_ldapCreaAutoUsersInfo") ?>"><?= Txt::trad("AGORA_ldapCreaAutoUsers") ?></abbr></div>
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapCreaAutoUsersInfo") ?>">
+					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapCreaAutoUsers") ?></div>
 					<div>
 						<select name="ldap_crea_auto_users">
 							<option value="1"><?= Txt::trad("yes") ?></option>

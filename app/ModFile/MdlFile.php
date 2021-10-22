@@ -66,7 +66,7 @@ class MdlFile extends MdlObject
 	public static function urlAddFiles($urlParams=null)
 	{
 		//Par défaut on spécifie le dossier courant
-		if(empty($urlParams))  {$urlParams="targetObjId=file&_idContainer=".Ctrl::$curContainer->_id;}
+		if(empty($urlParams))  {$urlParams="typeId=file&_idContainer=".Ctrl::$curContainer->_id;}
 		return "?ctrl=".static::moduleName."&action=AddEditFiles&".$urlParams;
 	}
 
@@ -75,7 +75,7 @@ class MdlFile extends MdlObject
 	 *******************************************************************************************/
 	public function urlDownloadDisplay($action="download", $dateCrea=null)
 	{
-		$returndUrl="?ctrl=file&action=getFile&targetObjId=".$this->_targetObjId;					//Url de base
+		$returndUrl="?ctrl=file&action=getFile&typeId=".$this->_typeId;								//Url de base
 		if(!empty($dateCrea))	{$returndUrl.="&dateCrea=".urlencode($dateCrea);}					//Sélectionne une version spécifique du fichier
 		if($action=="display")		{$returndUrl.="&display=true";}									//Affiche le fichier dans une lightbox (images/pdf/txt/etc)
 		elseif(Req::isMobileApp())  {$returndUrl=CtrlMisc::appGetFileUrl($returndUrl,$this->name);}	//OU Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
@@ -143,7 +143,7 @@ class MdlFile extends MdlObject
 		if($nbVersions>1){
 			$nbVersionsTitle=$nbVersions." ".Txt::trad("FILE_nbFileVersions");
 			$displayLabelIcon=($displayType=="label") ? $nbVersionsTitle : "<img src='app/img/file/versions.png'>";
-			return "<a onclick=\"lightboxOpen('?ctrl=file&action=FileVersions&targetObjId=".$this->_targetObjId."')\" class=\"vVersionsMenu\" title=\"".$nbVersionsTitle."\">".$displayLabelIcon."</a>";
+			return "<a onclick=\"lightboxOpen('?ctrl=file&action=FileVersions&typeId=".$this->_typeId."')\" class=\"vVersionsMenu\" title=\"".Txt::tooltip($nbVersionsTitle)."\">".$displayLabelIcon."</a>";
 		}
 	}
 
@@ -156,12 +156,12 @@ class MdlFile extends MdlObject
 		$tooltipDownloadedBy=null;
 		if(Ctrl::$curUser->isAdminSpace() && !empty($this->downloadedBy)){
 			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
-			$tooltipDownloadedBy="title=\"".Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy, ", ")."\"";
+			$tooltipDownloadedBy="title=\"".Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "))."\"";
 		}
 		//// "TÉLÉCHARGER LE FICHIER" + TOOLTIP "FICHIER TÉLÉCHARGÉ X FOIS"  &&  "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
 		$options["specificOptions"][]=["actionJs"=>"window.open('".$this->urlDownloadDisplay()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
 		if(count($this->getVersions())>1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
-		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&targetObjId=".$this->_targetObjId)."')"];}
+		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->_typeId)."')"];}
 		return parent::contextMenu($options);
 	}
 

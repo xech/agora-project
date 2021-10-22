@@ -39,15 +39,18 @@ class Req
 		self::$_getPostParams=array_merge($_GET,$_POST);
 		foreach(self::$_getPostParams as $tmpKey=>$tmpVal)
 		{
-			if(is_array($tmpVal)){
-				foreach($tmpVal as $tmpKey2=>$tmpVal2)	{self::$_getPostParams[$tmpKey][$tmpKey2]=self::filterParam($tmpKey2,$tmpVal2);}
-			}else{
-				self::$_getPostParams[$tmpKey]=self::filterParam($tmpKey,$tmpVal);
+			//Filtre la valeur du parametre OU Filtre le tableau de valeurs du parametre
+			if(is_array($tmpVal)==false)  {self::$_getPostParams[$tmpKey]=self::paramFilter($tmpKey,$tmpVal);}
+			else{
+				foreach($tmpVal as $tmpSubKey=>$tmpSubVal)	{self::$_getPostParams[$tmpKey][$tmpSubKey]=self::paramFilter($tmpSubKey,$tmpSubVal);}
 			}
+			//S'il s'agit d'un ancien paramètre (cf. liens des notif mail d'édition d'objet) : on ajoute le nouveau paramètre équivalent pour assurer la continuité
+			if($tmpKey=="targetObjId")			{self::$_getPostParams["typeId"]=self::$_getPostParams["targetObjId"];}
+			elseif($tmpKey=="targetObjUrl")		{self::$_getPostParams["objUrl"]=self::$_getPostParams["targetObjUrl"];}
 		}
 		//Classe du controleur courant & Methode de l'action courante
-		self::$curCtrl=(self::isParam("ctrl")) ? self::getParam("ctrl") : "offline";
-		self::$curAction=(self::isParam("action")) ? self::getParam("action") : "default";
+		self::$curCtrl=(self::isParam("ctrl")) ? self::param("ctrl") : "offline";
+		self::$curAction=(self::isParam("action")) ? self::param("action") : "default";
 		$curCtrlClass="Ctrl".ucfirst(self::$curCtrl);
 		$curActionMethod="action".ucfirst(self::$curAction);
 		//Init le temps d'execution & charge les Params + Config
@@ -86,7 +89,7 @@ class Req
 	/********************************************************************************************
 	 * RECUPERE UN PARAMETRE GET/POST
 	 ********************************************************************************************/
-	public static function getParam($key)
+	public static function param($key)
 	{
 		if(self::isParam($key)){
 			if($key=="notify")								{return (array)self::$_getPostParams[$key];}	//"notify" tjs en array, même s'il n'y en a qu'une passée en GET
@@ -98,7 +101,7 @@ class Req
 	/********************************************************************************************
 	 * FILTRE UN PARAMETRE (PRÉSERVE DES INSERTION XSS)
 	 ********************************************************************************************/
-	public static function filterParam($tmpKey, $value)
+	public static function paramFilter($tmpKey, $value)
 	{
 		//Verif qu'il s'agit d'une string et non pas un tableau ou autre
 		if(is_string($value))
@@ -130,7 +133,7 @@ class Req
 	}
 	
 	/**************************************************************************************************************************************************************
-	 * RECUPÈRE L'URL COURANTE DE BASE (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&targetObjId=file-55"  =>  "https://www.mon-espace.net/agora")
+	 * RECUPÈRE L'URL COURANTE DE BASE (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&typeId=file-55"  =>  "https://www.mon-espace.net/agora")
 	 **************************************************************************************************************************************************************/
 	public static function getCurUrl($urlProtocol=true)
 	{

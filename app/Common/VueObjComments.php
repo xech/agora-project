@@ -9,7 +9,7 @@ $(function(){
 
 	////	Affiche le nombre de comment en page principale
 	<?php if(!empty($updateCircleNb)){ ?>
-	var commentMenuId="#commentMenu_<?= $curObj->_targetObjId ?>";
+	var commentMenuId="#commentMenu_<?= $curObj->_typeId ?>";
 	parent.$(commentMenuId).parent(".objMiscMenus").find(".objMenuLikeComment").addClass("showMiscMenu");//Affichage permanent du "objMiscMenus"
 	parent.$(commentMenuId+" .menuCircle").html("<?= count($commentList) ?>").removeClass("menuCircleHide");//Affiche le nb de commentaires (circle)
 	parent.$(commentMenuId).attr("title","<?= $commentsTitle ?>").tooltipster("destroy").tooltipster(tooltipsterOptions);//Maj le "title" du menu des commentaires
@@ -62,9 +62,9 @@ form button				{width:120px;}
 						<div>".$tmpComment["comment"]."</div>
 						<form action='index.php' method='post'><textarea name='comment' maxlength='200'>".$tmpComment["comment"]."</textarea><input type='hidden' name='idComment' value='".$tmpComment["_id"]."'><input type='hidden' name='actionComment' value='modif'>".Txt::submitButton("modify",false)."</form>
 					</div>
-					<div class='vCommentOptions' ".(MdlObjectAttributes::userCommentEditRight($tmpComment["_id"])?null:"style='visibility:hidden'").">
+					<div class='vCommentOptions' ".(MdlObject::userCommentEditRight($tmpComment["_id"])?null:"style='visibility:hidden'").">
 						<img src='app/img/edit.png' class='sLink' onclick=\"$('#commentText".$tmpComment["_id"].">*').toggle()\">
-						<img src='app/img/delete.png' class='sLink' onclick=\"confirmDelete('?ctrl=object&action=comments&targetObjId=".$curObj->_targetObjId."&idComment=".$tmpComment["_id"]."&actionComment=delete')\">
+						<img src='app/img/delete.png' class='sLink' onclick=\"confirmDelete('?ctrl=object&action=comments&typeId=".$curObj->_typeId."&idComment=".$tmpComment["_id"]."&actionComment=delete')\">
 					</Div>
 				</div>
 			  </div>";

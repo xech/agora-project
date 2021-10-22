@@ -1,9 +1,11 @@
 <script>
-////	Création d'un user à partir d'un contact
-function contactAddUser(targetObjId)
+/*******************************************************************************************
+ *	CRÉATION D'UN USER À PARTIR D'UN CONTACT
+ *******************************************************************************************/
+function contactAddUser(typeId)
 {
 	if(confirm("<?= Txt::trad("CONTACT_createUserInfo") ?>"))
-		{redir("?ctrl=contact&action=contactAddUser&targetObjId="+targetObjId);}
+		{redir("?ctrl=contact&action=contactAddUser&typeId="+typeId);}
 }
 </script>
 
@@ -15,7 +17,7 @@ function contactAddUser(targetObjId)
 			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
-				if(Ctrl::$curUser->isAdminSpace())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&targetObjId=".Ctrl::$curContainer->_targetObjId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_contact")."</div></div>";}
+				if(Ctrl::$curUser->isAdminSpace())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_contact")."</div></div>";}
 				echo "<hr>";
 			}
 			////	ARBORESCENCE  &  MENU DE SELECTION/AFFICHAGE/TRI

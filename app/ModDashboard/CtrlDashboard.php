@@ -23,14 +23,14 @@ class CtrlDashboard extends Ctrl
 	{
 		////	Objets Actualités/News
 		$vDatas["offlineNewsCount"]=MdlDashboardNews::getNews("count","all",true);
-		$vDatasNews["newsList"]=MdlDashboardNews::getNews("list",0,Req::getParam("offlineNews"));//Commence par le block "0"
+		$vDatasNews["newsList"]=MdlDashboardNews::getNews("list",0,Req::param("offlineNews"));//Commence par le block "0"
 		$vDatas["vueNewsListInitial"]=self::getVue(Req::curModPath()."VueNewsList.php", $vDatasNews);
 		////	Objets Sondages/Polls (sauf guest)
 		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isUser()==false) ?  false  :  true;
 		if($vDatas["isPolls"]==true){
 			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("list",0,true,true);//Sondages pas encore votés : affichés à gauche des news
 			$vDatas["pollsNotVotedNb"]=MdlDashboardPoll::getPolls("count",0,true);//Nombre de sondages non votés
-			$vDatasPollsMain["pollsList"]=MdlDashboardPoll::getPolls("list",0,Req::getParam("pollsNotVoted"));//Affichage principal des sondages
+			$vDatasPollsMain["pollsList"]=MdlDashboardPoll::getPolls("list",0,Req::param("pollsNotVoted"));//Affichage principal des sondages
 			$vDatas["vuePollsListInitial"]=self::getVue(Req::curModPath()."VuePollsList.php", $vDatasPollsMain);
 		}
 		////	Plugin des nouveaux éléments (sauf guest)
@@ -45,12 +45,12 @@ class CtrlDashboard extends Ctrl
 			$vDatas["pluginPeriodOptions"]["week"] =["timeBegin"=>strtotime("Monday this week 00:00:00"),			"timeEnd"=>strtotime("Sunday this week 23:59:59")];
 			$vDatas["pluginPeriodOptions"]["month"]=["timeBegin"=>strtotime("First day of this month 00:00:00"),	"timeEnd"=>strtotime("Last day of this month 23:59:59")];
 			if(!empty(Ctrl::$curUser->previousConnection))  {$vDatas["pluginPeriodOptions"]["previousConnection"]=["timeBegin"=>Ctrl::$curUser->previousConnection,"timeEnd"=>time()];}
-			//Récupère les résultats via le "getModPlugins()" de chaque module (vérif si la methode existe)
+			//Récupère les résultats via le "getPlugins()" de chaque module (vérif si la methode existe)
 			$vDatas["pluginsList"]=[];
 			$curPeriod=$vDatas["pluginPeriodOptions"][$vDatas["pluginPeriod"]];//Période affichée
 			$pluginParams=array("type"=>"dashboard", "dateTimeBegin"=>date("Y-m-d H:i",$curPeriod["timeBegin"]), "dateTimeEnd"=>date("Y-m-d H:i",$curPeriod["timeEnd"]));
 			foreach(self::$curSpace->moduleList() as $tmpModule){
-				if(method_exists($tmpModule["ctrl"],"getModPlugins"))  {$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::getModPlugins($pluginParams));}
+				if(method_exists($tmpModule["ctrl"],"getPlugins"))  {$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::getPlugins($pluginParams));}
 			}
 		}
 		////	Affiche la vue
@@ -63,7 +63,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionGetMoreNews()
 	{
 		$vDatas["infiniteSroll"]=true;
-		$vDatas["newsList"]=MdlDashboardNews::getNews("list",Req::getParam("newsOffsetCpt"),Req::getParam("offlineNews"));
+		$vDatas["newsList"]=MdlDashboardNews::getNews("list",Req::param("newsOffsetCpt"),Req::param("offlineNews"));
 		if(!empty($vDatas["newsList"]))  {echo self::getVue(Req::curModPath()."VueNewsList.php", $vDatas);}
 	}
 
@@ -73,19 +73,19 @@ class CtrlDashboard extends Ctrl
 	public static function actionGetMorePolls()
 	{
 		$vDatas["infiniteSroll"]=true;
-		$vDatas["pollsList"]=MdlDashboardPoll::getPolls("list",Req::getParam("pollsOffsetCpt"),Req::getParam("pollsNotVoted"));
+		$vDatas["pollsList"]=MdlDashboardPoll::getPolls("list",Req::param("pollsOffsetCpt"),Req::param("pollsNotVoted"));
 		if(!empty($vDatas["pollsList"]))  {echo self::getVue(Req::curModPath()."VuePollsList.php", $vDatas);}
 	}
 
 	/*******************************************************************************************
-	 * PLUGINS : RECHERCHE DE NEWS
+	 * PLUGINS DU MODULE : RECHERCHE DE NEWS
 	 *******************************************************************************************/
-	public static function getModPlugins($params)
+	public static function getPlugins($params)
 	{
 		$pluginsList=[];
 		if($params["type"]=="search")
 		{
-			foreach(MdlDashboardNews::getPlugins($params) as $objNews)
+			foreach(MdlDashboardNews::getPluginObjects($params) as $objNews)
 			{
 				$objNews->pluginModule=self::moduleName;
 				$objNews->pluginIcon=self::moduleName."/icon.png";
@@ -105,13 +105,13 @@ class CtrlDashboard extends Ctrl
 	public static function actionDashboardNewsEdit()
 	{
 		//Init
-		$objNews=Ctrl::getTargetObj();
+		$objNews=Ctrl::getObjTarget();
 		$objNews->editControl();
 		if(MdlDashboardNews::addRight()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$objNews=$objNews->createUpdate("description=".Db::formatParam("description","editor").", une=".Db::formatParam("une").", offline=".Db::formatParam("offline").", dateOnline=".Db::formatParam("dateOnline","date").", dateOffline=".Db::formatParam("dateOffline","date"));
+			$objNews=$objNews->createUpdate("description=".Db::param("description","editor").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","date").", dateOffline=".Db::param("dateOffline","date"));
 			//Notif par mail & Ferme la page
 			$objNews->sendMailNotif();
 			static::lightboxClose();
@@ -127,7 +127,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionDashboardPollEdit()
 	{
 		//Init
-		$objPoll=Ctrl::getTargetObj();
+		$objPoll=Ctrl::getObjTarget();
 		if($objPoll->isNew() && MdlDashboardPoll::addRight()==false)	{self::noAccessExit();}
 		else															{$objPoll->editControl();}
 		$pollIsVoted=($objPoll->votesNbTotal()>0);
@@ -135,14 +135,14 @@ class CtrlDashboard extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$objPoll=$objPoll->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", multipleResponses=".Db::formatParam("multipleResponses").", publicVote=".Db::formatParam("publicVote").", newsDisplay=".Db::formatParam("newsDisplay").", dateEnd=".Db::formatParam("dateEnd","date"));
+			$objPoll=$objPoll->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","date"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
 			if($pollIsVoted==false)
 			{
 				//Affiche la notif "Attention : dès que le sondage est voté la modif des réponses est impossible"
 				Ctrl::notify("DASHBOARD_votedPollNotif");
 				//Récupère les réponses et éventuellement leur fichier associé ("_idResponse" comme clé)
-				$responses=Req::getParam("responses");
+				$responses=Req::param("responses");
 				//Supprime si besoin les réponses effacées (modif du sondage)
 				foreach($objPoll->getResponses() as $tmpResponse){
 					if(empty($responses[$tmpResponse["_id"]]))  {$objPoll->deleteResponse($tmpResponse["_id"]);}
@@ -175,7 +175,7 @@ class CtrlDashboard extends Ctrl
 			foreach($objPoll->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
 			$pollVote.="</ul><a href='".$objPoll->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
 			$objPoll->sendMailNotif(null,$pollVote);
-			static::lightboxClose("&dashboardPoll=true");
+			static::lightboxClose(null,"&dashboardPoll=true");
 		}
 		////	Affiche la vue
 		$vDatas["objPoll"]=$objPoll;
@@ -190,13 +190,13 @@ class CtrlDashboard extends Ctrl
 	public static function actionPollVote()
 	{
 		//Récupère le sondage et Controle l'accès
-		$objPoll=Ctrl::getTargetObj();
+		$objPoll=Ctrl::getObjTarget();
 		$objPoll->readControl();
 		//Enregistre le vote du sondage (..si aucun vote n'a déjà été fait par l'user courant)
 		if($objPoll->curUserHasVoted()==false && Req::isParam("pollResponse"))
 		{
 			//Enregistre chaque réponse du vote ("pollResponse" est toujours un tableau et il peut y avoir plusieurs réponses)
-			foreach(Req::getParam("pollResponse") as $tmpResponse)
+			foreach(Req::param("pollResponse") as $tmpResponse)
 				{Db::query("INSERT INTO ap_dashboardPollResponseVote SET _idUser=".Ctrl::$curUser->_id.", _idResponse=".Db::format($tmpResponse).", _idPoll=".$objPoll->_id);}
 			//Récupère la vue des résultats et le renvoie en Json
 			$result["vuePollResult"]=$objPoll->vuePollResult();
@@ -211,10 +211,10 @@ class CtrlDashboard extends Ctrl
 	public static function actionResponseDownloadFile()
 	{
 		//Récupère le sondage et Controle l'accès
-		$objPoll=Ctrl::getTargetObj();
+		$objPoll=Ctrl::getObjTarget();
 		$objPoll->readControl();
 		//Download le fichier de la réponse
-		$tmpResponse=$objPoll->getResponse(Req::getParam("_idResponse"));
+		$tmpResponse=$objPoll->getResponse(Req::param("_idResponse"));
 		$responseFilePath=$objPoll->responseFilePath($tmpResponse);
 		if(is_file($responseFilePath))  {File::download($tmpResponse["fileName"],$responseFilePath);}
 	}
@@ -225,10 +225,10 @@ class CtrlDashboard extends Ctrl
 	public static function actionDeleteResponseFile()
 	{
 		//Récupère le sondage et Controle l'accès
-		$objPoll=Ctrl::getTargetObj();
+		$objPoll=Ctrl::getObjTarget();
 		$objPoll->editControl();
 		//Supprime le fichier
-		$isDeleted=$objPoll->deleteReponseFile(Req::getParam("_idResponse"));
+		$isDeleted=$objPoll->deleteReponseFile(Req::param("_idResponse"));
 		if($isDeleted==true)  {echo "true";}
 	}
 
@@ -238,7 +238,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionExportPollResult()
 	{
 		////	RÉCUPÈRE LE SONDAGE ET CONTROLE L'ACCÈS
-		$objPoll=Ctrl::getTargetObj();
+		$objPoll=Ctrl::getObjTarget();
 		$objPoll->editControl();
 
 		////	CREATION DU PDF ET INIT LES CELLULES DES TABLEAUX

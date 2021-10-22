@@ -206,16 +206,12 @@ class MdlCalendar extends MdlObject
 	{
 		if(self::$_visibleCalendars===null)
 		{
-			//Récupère les agendas de ressource
+			//Agendas de ressource + Agendas persos activés (pas "Disabled") + Agenda de l'user courant
 			$sqlDisplay=self::sqlDisplay();
-			self::$_visibleCalendars=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplay);
-			//Ajoute l'agenda perso de l'user courant et les agendas persos "activés" auquels on est affecté
-			if(Ctrl::$curUser->isUser()){
-				$personnalCals=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (_idUser=".Ctrl::$curUser->_id." OR ".$sqlDisplay.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
-				self::$_visibleCalendars=array_merge(self::$_visibleCalendars,$personnalCals);
-			}
+			$ressourceCals	=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplay);
+			$persoCals		=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (".$sqlDisplay." OR _idUser=".Ctrl::$curUser->_id.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
 			//Tri les agendas par leur nom
-			self::$_visibleCalendars=self::sortCalendars(self::$_visibleCalendars);
+			self::$_visibleCalendars=self::sortCalendars( array_merge($ressourceCals,$persoCals) );
 		}
 		return self::$_visibleCalendars;
 	}
@@ -280,8 +276,8 @@ class MdlCalendar extends MdlObject
 			//Sélectionne les agendas avec "editContentRight()"
 			foreach($displayedCalendars as $tmpCal){
 				if($tmpCal->editContentRight()){
-					foreach($tmpCal->evtList($time100YearsAgo,$time5YearsAgo,2) as $tmpEvt){
-						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+					foreach($tmpCal->evtList($time100YearsAgo,$time5YearsAgo,2) as $tmpEvt){	//AccessRight>=2
+						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}				//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
 					}
 				}
 			}
@@ -317,16 +313,19 @@ class MdlCalendar extends MdlObject
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//Accès en édition : Export d'evenements (download/par mail) && Import d'événements
-		if($this->editRight())
+		//Accès en écriture au contenu : Importe des evts au format ICAL (cf. "CtrlCalendar::actionImportEvents()")
+		if($this->editContentRight()){
+			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"calendar/icalImport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
+		}
+		//Accès en lecture : Download les evts au format ICAL (cf. "CtrlCalendar::actionExportEvents()")  &&  Lien externe de download des evts au format ICAL ("CtrlMisc::actionDisplayIcal()")
+		if($this->readRight())
 		{
-			//Import/Export au format ICAL
-			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&targetObjId=".$this->_targetObjId."')",  "iconSrc"=>"calendar/icalImport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
-			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('?ctrl=calendar&action=exportEvents&targetObjId=".$this->_targetObjId."')",  "iconSrc"=>"calendar/icalExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
-			//Copie d'adresse d'accès externe Ical
-			$actionJsTmp="$('#urlIcal".$this->_targetObjId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->_targetObjId."').hide(); notify('".Txt::trad("copyUrlConfirmed",true)."');";
-			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_targetObjId."' value=\"".Req::getCurUrl()."/?ctrl=misc&action=DisplayIcal&targetObjId=".$this->_targetObjId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
-			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"link.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
+			//Download des evts
+			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"calendar/icalExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
+			//Lien externe de download
+			$actionJsTmp="$('#urlIcal".$this->_typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->_typeId."').hide(); notify('".Txt::trad("copyUrlConfirmed",true)."');";
+			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_typeId."' value=\"".Req::getCurUrl()."/?ctrl=misc&action=DisplayIcal&typeId=".$this->_typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
+			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"calendar/icalExportLink.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
 		}
 		//Renvoie le menu surchargé
 		return parent::contextMenu($options);

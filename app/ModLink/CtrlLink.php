@@ -28,18 +28,18 @@ class CtrlLink extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * PLUGINS
+	 * PLUGINS DU MODULE
 	 *******************************************************************************************/
-	public static function getModPlugins($params)
+	public static function getPlugins($params)
 	{
-		$pluginsList=self::getPluginsFolders($params,"MdlLinkFolder");
-		foreach(MdlLink::getPlugins($params) as $tmpObj)
+		$pluginsList=self::getPluginFolders($params,"MdlLinkFolder");
+		foreach(MdlLink::getPluginObjects($params) as $tmpObj)
 		{
 			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->description))  ?  $tmpObj->description  :  $tmpObj->adress;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche le lien dans son dossier conteneur
+			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel="window.open('".addslashes($tmpObj->adress)."');";
 			$pluginsList[]=$tmpObj;
 		}
@@ -52,12 +52,12 @@ class CtrlLink extends Ctrl
 	public static function actionLinkEdit()
 	{
 		//Init
-		$curObj=Ctrl::getTargetObj();
+		$curObj=Ctrl::getObjTarget();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("adress=".Db::formatParam("adress").", description=".Db::formatParam("description"));
+			$curObj=$curObj->createUpdate("adress=".Db::param("adress").", description=".Db::param("description"));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif("<a href=\"".$curObj->adress."\" target='_blank'><b>".$curObj->adress."</b></a>");
 			static::lightboxClose();

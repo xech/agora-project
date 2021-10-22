@@ -25,7 +25,7 @@ class CtrlForum extends Ctrl
 		$vDatas["themeList"]=MdlForumTheme::getThemes();
 		$vDatas["editThemeMenu"]=false;
 		////	AFFICHE D'UN SUJET ET SES MESSAGES
-		$curSubject=Ctrl::getTargetObj();
+		$curSubject=Ctrl::getObjTarget();
 		if(is_object($curSubject) && $curSubject::objectType=="forumSubject")
 		{
 			$vDatas["displayForum"]="messages";
@@ -67,8 +67,8 @@ class CtrlForum extends Ctrl
 			$vDatas["displayForum"]="subjects";
 			if(MdlForumTheme::addRight() && empty($vDatas["themeList"]))  {$vDatas["editThemeMenu"]=true;}
 			//Liste les sujets
-			if(Req::getParam("_idTheme")=="noTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
-			elseif(Req::isParam("_idTheme"))			{$sqlThemeFilter="AND _idTheme=".Db::formatParam("_idTheme");}	//sujets d'un theme précis
+			if(Req::param("_idTheme")=="noTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
+			elseif(Req::isParam("_idTheme"))			{$sqlThemeFilter="AND _idTheme=".Db::param("_idTheme");}	//sujets d'un theme précis
 			else										{$sqlThemeFilter=null;}											//tout les sujets
 			$sqlDisplayedSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".$sqlThemeFilter." ".MdlForumSubject::sqlSort();
 			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlDisplayedSubjects." ".MdlForumSubject::sqlPagination());
@@ -78,26 +78,26 @@ class CtrlForum extends Ctrl
 		}
 		////	THEME COURANT POUR LE MENU PATH
 		if($vDatas["displayForum"]!="themes" && !empty($vDatas["themeList"])){
-			if(Req::getParam("_idTheme")=="noTheme" || (is_object($curSubject) && empty($curSubject->_idTheme)))	{$vDatas["curTheme"]=new MdlForumTheme(["noTheme"=>true]);}
+			if(Req::param("_idTheme")=="noTheme" || (is_object($curSubject) && empty($curSubject->_idTheme)))	{$vDatas["curTheme"]=new MdlForumTheme(["noTheme"=>true]);}
 			elseif(is_object($curSubject) && !empty($curSubject->_idTheme))											{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}
-			elseif(Req::getParam("_idTheme"))																		{$vDatas["curTheme"]=self::getObj("forumTheme",Req::getParam("_idTheme"));}
+			elseif(Req::param("_idTheme"))																		{$vDatas["curTheme"]=self::getObj("forumTheme",Req::param("_idTheme"));}
 		}
 		////	AFFICHAGE
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
 	/*******************************************************************************************
-	 * PLUGINS
+	 * PLUGINS DU MODULE
 	 *******************************************************************************************/
-	public static function getModPlugins($params)
+	public static function getPlugins($params)
 	{
 		$pluginsList=[];
 		//Sujets
-		foreach(MdlForumSubject::getPlugins($params) as $objSubject)
+		foreach(MdlForumSubject::getPluginObjects($params) as $objSubject)
 		{
 			$objSubject->pluginModule=self::moduleName;
 			$objSubject->pluginIcon=self::moduleName."/icon.png";
-			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  $objSubject->description;
+			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  Txt::reduce($objSubject->description);
 			$objSubject->pluginTooltip=$objSubject->pluginLabel;
 			$objSubject->pluginJsIcon="windowParent.redir('".$objSubject->getUrl()."');";//Redir vers le sujet
 			$objSubject->pluginJsLabel=$objSubject->pluginJsIcon;
@@ -106,11 +106,11 @@ class CtrlForum extends Ctrl
 		//messages
 		if($params["type"]!="shortcut")
 		{
-			foreach(MdlForumMessage::getPlugins($params) as $objMessage)
+			foreach(MdlForumMessage::getPluginObjects($params) as $objMessage)
 			{
 				$objMessage->pluginModule=self::moduleName;
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
-				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  $objMessage->description;
+				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  Txt::reduce($objMessage->description);
 				$objMessage->pluginTooltip=$objMessage->pluginLabel;
 				$objMessage->pluginJsIcon="windowParent.redir('".$objMessage->getUrl()."');";//Affiche le message dans son sujet conteneur
 				$objMessage->pluginJsLabel=$objMessage->pluginJsIcon;
@@ -125,7 +125,7 @@ class CtrlForum extends Ctrl
 	 *******************************************************************************************/
 	public static function actionNotifyLastMessage()
 	{
-		$curSubject=Ctrl::getTargetObj();
+		$curSubject=Ctrl::getObjTarget();
 		if($curSubject->readRight()){
 			$usersNotifyLastMessage=Txt::txt2tab($curSubject->usersNotifyLastMessage);
 			if($curSubject->curUserNotifyLastMessage())		{$usersNotifyLastMessage=array_diff($usersNotifyLastMessage,[Ctrl::$curUser->_id]);		echo "removeUser";}
@@ -143,11 +143,11 @@ class CtrlForum extends Ctrl
 		if(MdlForumTheme::addRight()==false)  {static::lightboxClose();}
 		////	Validation de formulaire
 		if(Req::isParam("formValidate")){
-			$curObj=Ctrl::getTargetObj();
+			$curObj=Ctrl::getObjTarget();
 			$curObj->editControl();
 			//Modif d'un theme
-			$_idSpaces=(!in_array("all",Req::getParam("spaceList")))  ?  Txt::tab2txt(Req::getParam("spaceList"))  :  null;
-			$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description").", color=".Db::formatParam("color").", _idSpaces=".Db::format($_idSpaces));
+			$_idSpaces=(!in_array("all",Req::param("spaceList")))  ?  Txt::tab2txt(Req::param("spaceList"))  :  null;
+			$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
 			//Ferme la page
 			static::lightboxClose();
 		}
@@ -157,7 +157,7 @@ class CtrlForum extends Ctrl
 		foreach($vDatas["themesList"] as $tmpKey=>$tmpTheme){
 			if($tmpTheme->editRight()==false)	{unset($vDatas["themesList"][$tmpKey]);}
 			else{
-				$tmpTheme->tmpId=$tmpTheme->_targetObjId;
+				$tmpTheme->tmpId=$tmpTheme->_typeId;
 				$tmpTheme->createdBy=($tmpTheme->isNew()==false)  ?  Txt::trad("creation")." : ".$tmpTheme->autorLabel()  :  null;
 			}
 		}
@@ -171,7 +171,7 @@ class CtrlForum extends Ctrl
 	public static function actionForumSubjectEdit()
 	{
 		//Init
-		$curObj=Ctrl::getTargetObj();
+		$curObj=Ctrl::getObjTarget();
 		if($curObj->isNew() && MdlForumSubject::addRight()==false)	{self::noAccessExit();}
 		else														{$curObj->editControl();}
 		////	Valide le formulaire
@@ -179,14 +179,14 @@ class CtrlForum extends Ctrl
 		{
 			//Enregistre & recharge l'objet
 			$dateLastMessage=($curObj->isNew())  ?  ", dateLastMessage=".Db::dateNow()  :  null;//Init "dateLastMessage" pour un nouveau sujet (classement des sujets)
-			$curObj=$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").", _idTheme=".Db::formatParam("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", _idTheme=".Db::param("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxClose();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		if(Req::isParam("_idTheme"))	{$curObj->_idTheme=Req::getParam("_idTheme");}
+		if(Req::isParam("_idTheme"))	{$curObj->_idTheme=Req::param("_idTheme");}
 		$vDatas["themesList"]=MdlForumTheme::getThemes();
 		static::displayPage("VueForumSubjectEdit.php",$vDatas);
 	}
@@ -197,13 +197,13 @@ class CtrlForum extends Ctrl
 	public static function actionForumMessageEdit()
 	{
 		//Init
-		$curObj=Ctrl::getTargetObj();
+		$curObj=Ctrl::getObjTarget();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$idMessageParent=(Req::isParam("_idMessageParent"))  ?  ", _idMessageParent=".Db::formatParam("_idMessageParent")  :  null;//Rattaché à un message parent?
-			$curObj=$curObj->createUpdate("title=".Db::formatParam("title").", description=".Db::formatParam("description","editor").$idMessageParent);
+			$idMessageParent=Req::isParam("_idMessageParent")  ?  ", _idMessageParent=".Db::param("_idMessageParent")  :  null;//Rattaché à un message parent?
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").$idMessageParent);
 			//MAJ "dateLastMessage" & "usersConsultLastMessage" du sujet conteneur
 			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE _id=".$curObj->_idContainer);
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")
@@ -212,13 +212,13 @@ class CtrlForum extends Ctrl
 				$notifUserIds=array_diff(Txt::txt2tab($curObj->containerObj()->usersNotifyLastMessage), [Ctrl::$curUser->_id]);//Users qui on demandé une notif .. et enlève l'auteur courant
 				$notifUserIds=array_intersect($notifUserIds, $curObj->containerObj()->affectedUserIds());//Enlève les users qui n'ont plus accès au sujet en question
 			}
-			//Notifie par mail & Ferme la page
+			//Notifie par mail aux users spécifiés & Ferme la page
 			$curObj->sendMailNotif(null, null, null, $notifUserIds);
 			static::lightboxClose();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["messageParent"]=(Req::isParam("_idMessageParent"))  ?  self::getObj("forumMessage",Req::getParam("_idMessageParent"))  :  null;
+		$vDatas["messageParent"]=Req::isParam("_idMessageParent")  ?  self::getObj("forumMessage",Req::param("_idMessageParent"))  :  null;
 		static::displayPage("VueForumMessageEdit.php",$vDatas);
 	}
 }

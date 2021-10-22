@@ -27,7 +27,7 @@ class CtrlOffline extends Ctrl
 			// Affiche la notif d'envoie de l'email (que l'email soit bon ou pas, par mesure de sécurité) : "Un email vient de vous être envoyé [...] Si vous ne l'avez pas reçu, vérifiez que l’adresse saisie est bien la bonne"
 			if(Req::isParam("resetPasswordSendMail"))  {Ctrl::notify("resetPasswordNotif");}
 			// Vérif si l'user existe
-			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::formatParam("resetPasswordMail")." OR `login`=".Db::formatParam("resetPasswordMail"));
+			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::param("resetPasswordMail")." OR `login`=".Db::param("resetPasswordMail"));
 			if(!empty($tmpUser))
 			{
 				// Récupère l'user
@@ -38,10 +38,10 @@ class CtrlOffline extends Ctrl
 				elseif(Req::isParam("resetPasswordId"))
 				{
 					//Vérifie le "resetPasswordId()"
-					$vDatas["resetPasswordIdOk"]=($tmpUser->resetPasswordId()==Req::getParam("resetPasswordId"));
+					$vDatas["resetPasswordIdOk"]=($tmpUser->resetPasswordId()==Req::param("resetPasswordId"));
 					//"resetPasswordId" OK : enregistre le nouveau password!					
 					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
-						$sqlNewPassword=MdlUser::passwordSha1(Req::getParam("newPassword"));
+						$sqlNewPassword=MdlUser::passwordSha1(Req::param("newPassword"));
 						Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
 						Ctrl::notify("modifRecorded","success");
 					}
@@ -54,7 +54,7 @@ class CtrlOffline extends Ctrl
 		elseif(Req::isParam(["_idInvitation","mail"]))
 		{
 			//Infos de l'invitation
-			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::formatParam("_idInvitation")." AND mail=".Db::formatParam("mail"));
+			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::param("_idInvitation")." AND mail=".Db::param("mail"));
 			//Invitation expiré ?
 			if(empty($tmpInvit))	{Ctrl::notify("USER_exired_idInvitation");}
 			//Valide l'invitation avec le "newPassword" et créé le nouvel utilisateur
@@ -62,11 +62,11 @@ class CtrlOffline extends Ctrl
 			{
 				$newUser=new MdlUser();
 				$sqlProperties="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
-				$newUser=$newUser->createUpdate($sqlProperties, $tmpInvit["mail"], Req::getParam("newPassword"), $tmpInvit["_idSpace"]);
+				$newUser=$newUser->createUpdate($sqlProperties, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
 				if(is_object($newUser)){
 					Db::query("DELETE FROM ap_invitation WHERE _idInvitation=".Db::format($tmpInvit["_idInvitation"]));
 					$_COOKIE["AGORAP_LOG"]=$tmpInvit["mail"];//Préremplis le 'login'
-					$newUser->newUserCoordsSendMail(Req::getParam("newPassword"));
+					$newUser->newUserCoordsSendMail(Req::param("newPassword"));
 					Ctrl::notify("USER_invitationValidated","success");
 				}
 			}
@@ -74,7 +74,7 @@ class CtrlOffline extends Ctrl
 		////	Affiche la page
 		$vDatas["userInscription"]=(Db::getVal("select count(*) from ap_space where userInscription=1")>0  &&  Req::isMobileApp()==false);
 		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "select * from ap_space where public=1 order by name");
-		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::getParam("login");}//Login par défaut : passé en parametre
+		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}//Login par défaut : passé en parametre
 		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}//Login par défaut : en cookie
 		else									{$vDatas["defaultLogin"]=null;}
 		//Affiche la vue
@@ -90,23 +90,23 @@ class CtrlOffline extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Verifie si le login/mail existe déjà  &&  Vérifie le Captcha
-			if(MdlUser::loginExists(Req::getParam("mail")))	{$result["notifError"]=Txt::trad("USER_loginExists");}
+			if(MdlUser::loginExists(Req::param("mail")))	{$result["notifError"]=Txt::trad("USER_loginExists");}
 			elseif(CtrlMisc::actionCaptchaControl()==false)	{$result["notifError"]=Txt::trad("captchaError");}
 			//Enregistre l'user et renvoi l'url avec le message de succès
 			else{
-				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::formatParam("_idSpace").", name=".Db::formatParam("name").", firstName=".Db::formatParam("firstName").", mail=".Db::formatParam("mail").", `password`=".Db::formatParam("password").", message=".Db::formatParam("message").", `date`=".Db::dateNow());
+				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::param("_idSpace").", name=".Db::param("name").", firstName=".Db::param("firstName").", mail=".Db::param("mail").", `password`=".Db::param("password").", message=".Db::param("message").", `date`=".Db::dateNow());
 				$result["redirSuccess"]="index.php?notify=userInscriptionRecorded";
 				//Envoie une notif aux admins de l'espace?
-				$curSpace=Ctrl::getObj("space",Req::getParam("_idSpace"));
+				$curSpace=Ctrl::getObj("space",Req::param("_idSpace"));
 				if(!empty($curSpace->userInscriptionNotify))
 				{
 					$adminMails=[];
 					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->accessRightUser($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
 					if(!empty($adminMails)){
-						$newUserLabel=Req::getParam("name")." ".Req::getParam("firstName");
+						$newUserLabel=Req::param("name")." ".Req::param("firstName");
 						$subject=Txt::trad("userInscriptionNotifSubject")." ".$curSpace->name;
-						$mainMessage="<br>".str_replace(["--SPACE_NAME--","--NEW_USER_LABEL--","--NEW_USER_MESSAGE--"], [$curSpace->name,$newUserLabel,Req::getParam("message")], Txt::trad("userInscriptionNotifMessage"));
-						Tool::sendMail($adminMails, $subject, $mainMessage, "noNotify");
+						$mainMessage="<br>".str_replace(["--SPACE_NAME--","--NEW_USER_LABEL--","--NEW_USER_MESSAGE--"], [$curSpace->name,$newUserLabel,Req::param("message")], Txt::trad("userInscriptionNotifMessage"));
+						Tool::sendMail($adminMails, $subject, $mainMessage, ["noNotify"]);
 					}
 				}
 			}
@@ -135,7 +135,7 @@ class CtrlOffline extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			////	CONTROLES DE BASE
-			$installDbControl=self::installDbControl(Req::getParam("db_host"),Req::getParam("db_login"), Req::getParam("db_password"), Req::getParam("db_name"));
+			$installDbControl=self::installDbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
 			if($installDbControl!="dbAvailable" && $installDbControl!="dbToCreate")  {$result["notifError"]=Txt::trad("INSTALL_".$installDbControl);}
 			////	CONTROLE OK : INSTALL
 			else
@@ -143,16 +143,16 @@ class CtrlOffline extends Ctrl
 				////	CHMOD DE "PATH_DATAS" & MODIF DU FICHIER DE CONFIG
 				File::setChmod(PATH_DATAS);
 				$AGORA_SALT=Txt::uniqId(8);
-				$spaceDiskLimit=File::getBytesSize(Req::getParam("spaceDiskLimit")."go");
-				File::updateConfigFile(["AGORA_SALT"=>$AGORA_SALT, "db_host"=>Req::getParam("db_host"), "db_login"=>Req::getParam("db_login"), "db_password"=>Req::getParam("db_password"), "db_name"=>Req::getParam("db_name"), "limite_nb_users"=>"10000", "limite_espace_disque"=>$spaceDiskLimit]);
+				$spaceDiskLimit=File::getBytesSize(Req::param("spaceDiskLimit")."go");
+				File::updateConfigFile(["AGORA_SALT"=>$AGORA_SALT, "db_host"=>Req::param("db_host"), "db_login"=>Req::param("db_login"), "db_password"=>Req::param("db_password"), "db_name"=>Req::param("db_name"), "limite_nb_users"=>"10000", "limite_espace_disque"=>$spaceDiskLimit]);
 
 				////	CREE LA BASE DE DONNEES (AVEC CONTROLES D'ACCES)
 				if($installDbControl=="dbToCreate"){
-					$objPDO=new PDO("mysql:host=".Req::getParam("db_host"),Req::getParam("db_login"),Req::getParam("db_password"));
-					$objPDO->query("CREATE DATABASE `".Req::getParam("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
+					$objPDO=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
+					$objPDO->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
 				}
 				//Se connecte au sgbd & Importe la Bdd!
-				$objPDO=new PDO("mysql:host=".Req::getParam("db_host").";dbname=".Req::getParam("db_name").";charset=utf8;", Req::getParam("db_login"), Req::getParam("db_password"));
+				$objPDO=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
 				$dbFile="app/ModOffline/db.sql";
 				$handle=fopen($dbFile,"r");
 				foreach(explode(";",fread($handle,filesize($dbFile))) as $tmpQuery){
@@ -161,17 +161,17 @@ class CtrlOffline extends Ctrl
 
 				////	INITIALISE LES TABLES DE LA BDD  (pas de "Db::format()", car instancie un "new PDO()")
 				//Init les données
-				$spaceName=Req::getParam("spaceName");
+				$spaceName=Req::param("spaceName");
 				$spaceDescription=Txt::trad("INSTALL_spaceDescription");
-				$spaceDescriptionBis=Req::getParam("spaceDescription");
-				$spaceTimeZone=Req::getParam("timezone");
-				$spaceLang=Req::getParam("lang");
-				$spacePublic=(Req::getParam("spacePublic")==1)  ?  1  :  "NULL";
-				$adminLogin=Req::getParam("adminLogin");
-				$adminPassword=MdlUser::passwordSha1(Req::getParam("adminPassword"),$AGORA_SALT);
-				$adminName=Req::getParam("adminName");
-				$adminFirstName=Req::getParam("adminFirstName");
-				$adminMail=Req::getParam("adminMail");
+				$spaceDescriptionBis=Req::param("spaceDescription");
+				$spaceTimeZone=Req::param("timezone");
+				$spaceLang=Req::param("lang");
+				$spacePublic=(Req::param("spacePublic")==1)  ?  1  :  "NULL";
+				$adminLogin=Req::param("adminLogin");
+				$adminPassword=MdlUser::passwordSha1(Req::param("adminPassword"),$AGORA_SALT);
+				$adminName=Req::param("adminName");
+				$adminFirstName=Req::param("adminFirstName");
+				$adminMail=Req::param("adminMail");
 				$newsDescription="<p style='font-weight:bold;font-size:1.2em;'>".Txt::trad("INSTALL_dataDashboardNews1")."</p><br>
 								  <p style='font-weight:bold;'><a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">".Txt::trad("INSTALL_dataDashboardNews2")."</a></p><br>
 								  <p style='font-weight:bold;'>".Txt::trad("INSTALL_dataDashboardNews3")."</p><br>";
@@ -242,7 +242,7 @@ class CtrlOffline extends Ctrl
 	 *******************************************************************************************/
 	public static function actionPublicSpaceAccess()
 	{
-		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::formatParam("_idSpace")." AND BINARY `password`=".Db::formatParam("password"));//"BINARY"=>case sensitive
+		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpace")." AND BINARY `password`=".Db::param("password"));//"BINARY"=>case sensitive
 		echo (empty($password)) ? "false" : "true";
 	}
 
@@ -253,8 +253,8 @@ class CtrlOffline extends Ctrl
 	{
 		//Récup l'API Google Sign-In pour vérif de l'user
 		require_once 'app/misc/google-api-php-client/vendor/autoload.php';
-		$gClient=new Google_Client(["client_id"=>Ctrl::$agora->gSigninClientId()]);//Charge l'API avec le "ClientId"
-		$gClientUser=$gClient->verifyIdToken(Req::getParam("id_token"));//Vérifie le token du client et récupère ses infos
+		$gClient=new Google_Client(["client_id"=>Ctrl::$agora->gSigninClientId]);//Charge l'API avec le "ClientId"
+		$gClientUser=$gClient->verifyIdToken(Req::param("id_token"));//Vérifie le token du client et récupère ses infos
 		//User vérifié par l'API
 		if(!empty($gClientUser))
 		{

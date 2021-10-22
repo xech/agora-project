@@ -10,6 +10,6 @@ lightboxSetWidth(450);//Resize
 	////	IMAGE & DETAILS DU CONTACT
 	echo "<div class='personLabelImg'>".$curObj->getImg()."</div>
 		  <div class='personVueFields'>".$curObj->getFieldsValues("profile")."</div>".
-		  $curObj->menuAttachedFiles();
+		  $curObj->attachedFileMenu();
 	?>
 </div>

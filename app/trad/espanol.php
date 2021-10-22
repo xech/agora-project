@@ -55,10 +55,9 @@ class Trad extends Txt
 		self::$trad["commentAdd"]="Añadir un comentario";
 		self::$trad["optional"]="(opcional)";
 		self::$trad["objNew"]="Elemento creado recientemente";
-		self::$trad["objNewInfos"]="Creado desde mi anterior conexión o creado dentro de las 24 horas";
 		self::$trad["personalAccess"]="Acceso personal";
-		self::$trad["copyUrl"]="Copiar dirección web de acceso directo";
-		self::$trad["copyUrlInfo"]="La dirección se puede integrar en una noticia, foro, evento, etc : para acceder directamente al elemento. La dirección también se puede utilizar en un correo electrónico, blog, etc.";
+		self::$trad["copyUrl"]="Copie el enlace/URL al elemento";
+		self::$trad["copyUrlInfo"]="Este enlace/url permite el acceso directo al elemento: <br> Puede integrarse en una noticia, un tema de foro, un correo electrónico, un blog (acceso externo), etc.";
 		self::$trad["copyUrlConfirmed"]="La dirección web se ha copiado correctamente.";
 		self::$trad["cancel"]="Cancelar";
 
@@ -153,14 +152,16 @@ class Trad extends Txt
 		self::$trad["beginEndError"]="La fecha de fin no puede ser anterior a la fecha de inicio";
 		self::$trad["dateFormatError"]="La fecha debe estar en el formato dd/mm/AAAA";
 
-		////	Nom & Description (pour les menus d'édition principalement)
+		////	Menus d'édition des objets et editeur tinyMce
 		self::$trad["title"]="Título";
 		self::$trad["name"]="Nombre";
 		self::$trad["description"]="Descripción";
 		self::$trad["specifyName"]="Gracias por especificar un nombre";
 		self::$trad["editorDraft"]="Recuperar mi texto";
 		self::$trad["editorDraftConfirm"]="Recuperar el último texto especificado";
-
+		self::$trad["editorFileInsert"]="Añadir imagen o video";
+		self::$trad["editorFileInsertNotif"]="Seleccione una imagen en formato Jpeg, Png, Gif o Svg";
+	
 		////	Validation des formulaires
 		self::$trad["add"]="Añadir";
 		self::$trad["modify"]="Editar";
@@ -256,6 +257,7 @@ class Trad extends Txt
 		self::$trad["MAIL_noFooter"]="No firme el mensaje";
 		self::$trad["MAIL_noFooterInfo"]="No firme el final del mensaje con el nombre del remitentey un enlace al espacio";
 		self::$trad["MAIL_fileMaxSize"]="Todos sus archivos adjuntos no deben exceder los 15 MB: <br> Algunos buzones de correo pueden rechazar correos electrónicos más allá de este límite";
+		self::$trad["MAIL_sendButton"]="Enviar correo electrónico";
 		self::$trad["MAIL_sendBy"]="Enviado por";//"Envoyé par" M. Trucmuche
 		self::$trad["MAIL_sendOk"]="El correo electrónico ha sido enviado !";
 		self::$trad["MAIL_sendNotif"]="El correo electrónico de notificación ha sido enviado !";
@@ -367,7 +369,6 @@ class Trad extends Txt
 		self::$trad["NOTIF_fileName"]="Un archivo con el mismo nombre ya existe (no ha sido reemplazado)";
 		self::$trad["NOTIF_chmodDATAS"]="El directorio ''DATAS'' no es accesible por escrito. Usted necesita dar un acceso de lectura y escritura para el propietario y el grupo (''chmod 775'').";
 		self::$trad["NOTIF_usersNb"]="No se puede añadir un nuevo usuario : se limita a "; // "...limité à" 10
-		self::$trad["NOTIF_update"]="Nueva versión";
 		
 		////	Header / Footer
 		self::$trad["HEADER_displaySpace"]="Espacios disponibles";
@@ -403,7 +404,12 @@ class Trad extends Txt
 		self::$trad["VISIO_launch"]="Iniciar la videollamada";
 		self::$trad["VISIO_launchFromEvent"]="Iniciar la videoconferencia de este evento";
 		self::$trad["VISIO_urlMail"]="Agregue un enlace al final del texto para comenzar una nueva videoconferencia";
-		self::$trad["VISIO_launchConfirm"]="¿Iniciar la videollamada? \\nRecuerde permitir el acceso a su cámara web y micrófono";
+		self::$trad["VISIO_launchInfo"]="Recuerde permitir el acceso a su cámara web y micrófono";
+		self::$trad["VISIO_launchHelp"]="Haga clic aquí si tiene problemas para iniciar la videoconferencia";
+		self::$trad["VISIO_launchServerInfo"]="Elija el servidor secundario si el servidor principal no funciona correctamente.<br>Tus contactos deberán seleccionar el mismo servidor de video.";
+		self::$trad["VISIO_launchServerMain"]="Servidor principal";
+		self::$trad["VISIO_launchServerAlt"]="Servidor secundario";
+		self::$trad["VISIO_launchButton"]="Iniciar la videollamada";
 
 		////	vueObjMenuEdit
 		self::$trad["EDIT_notifNoSelection"]="Debe seleccionar al menos una persona o un espacio";
@@ -429,10 +435,10 @@ class Trad extends Txt
 		self::$trad["EDIT_accessRightSubFolders_info"]="Extender los derechos de acceso, a los sub-carpetas que se pueden editar";
 		self::$trad["EDIT_shortcut"]="Acceso directo";
 		self::$trad["EDIT_shortcutInfo"]="Mostrar un acceso directo en el menú principal";
-		self::$trad["EDIT_attachedFile"]="Añadir archivos";
-		self::$trad["EDIT_attachedFileInfo"]="Las imágenes se pueden insertar en el texto a través de la opción ''incrustar en el texto''";
-		self::$trad["EDIT_attachedFileInsert"]="Incrustar en el texto";
-		self::$trad["EDIT_attachedFileInsertInfo"]="Integrar una imagen jpg/png o video mp4 en el texto del editor: <br> la inserción al final del texto se realiza luego de la validación del formulario.";
+		self::$trad["EDIT_attachedFile"]="Adjuntos archivos";
+		self::$trad["EDIT_attachedFileAdd"]="Añadir archivos";
+		self::$trad["EDIT_attachedFileInsert"]="Insertar en texto";
+		self::$trad["EDIT_attachedFileInsertInfo"]="Insertar imagen/video en el texto del editor (formato jpg, png o mp4)";
 		self::$trad["EDIT_guestName"]="Su nombre / apodo";
 		self::$trad["EDIT_guestNameNotif"]="Por favor, especifique un nombre / apodo";
 		self::$trad["EDIT_guestMail"]="Su email";
@@ -492,7 +498,9 @@ class Trad extends Txt
 		self::$trad["AGORA_logsTimeOut"]="Duración del historial de eventos (registros)";
 		self::$trad["AGORA_logsTimeOutInfo"]="El período de retención del historial de eventos se refiere a la adición o modificación de los elementos. Los registros de eliminación se mantienen durante al menos 1 año.";
 		self::$trad["AGORA_visioHost"]="Servidor de videoconferencia Jitsi";
-		self::$trad["AGORA_visioHostInfo"]="Dirección del servidor de videoconferencia Jitsi";
+		self::$trad["AGORA_visioHostInfo"]="Dirección del servidor de videoconferencia Jitsi. Ejemplo: https://meet.jit.si";
+		self::$trad["AGORA_visioHostAlt"]="Servidor de videoconferencia alternativo";
+		self::$trad["AGORA_visioHostAltInfo"]="Servidor de videoconferencia alternativo : en caso de indisponibilidad del servidor de video principal";
 		self::$trad["AGORA_skin"]="Color de la interfaz";
 		self::$trad["AGORA_black"]="Negro";
 		self::$trad["AGORA_white"]="Blanco";
@@ -713,7 +721,6 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_plugins_week"]="de esta semana";
 		self::$trad["DASHBOARD_plugins_month"]="del mes";
 		self::$trad["DASHBOARD_plugins_previousConnection"]="desde la última conexión";
-		self::$trad["DASHBOARD_pluginsCurrent"]="Elemento actual";
 		self::$trad["DASHBOARD_pluginsTooltipRedir"]="Ver el elemento en la carpeta";
 		self::$trad["DASHBOARD_pluginEmpty"]="No hay nuevos elementos sobre este periodo";
 		// Actualite/News
@@ -750,7 +757,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_option_adminAddCategory"]="Sólo el administrador puede añadir categorías de eventos";
 		self::$trad["CALENDAR_option_createSpaceCalendar"]="Crear un calendario compartido para el espacio";
 		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="El calendario tendrá el mismo nombre que el espacio. Puede ser útil si los calendarios de los usuarios están desactivados.";
-		self::$trad["CALENDAR_moduleFullyDisabled"]="El módulo de calendario siempre permanecerá accesible en la barra de menú, para que pueda acceder a su calendario personal. Para dejar de mostrar su calendario personal, recuerde marcar ''Calendario personal desactivado'' en su perfil de usuario";
+		self::$trad["CALENDAR_option_moduleDisabled"]="El módulo calendario siempre es accesible para los usuarios que dejan su calendario activado. Para desactivarlo, modifique la opción ''Calendario personal desactivado'' en su perfil de usuario";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Calendarios disponibles";
 		self::$trad["CALENDAR_displayAllCals"]="Ver todo los calendarios (administrador)";
@@ -760,9 +767,10 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addSharedCalendar"]="Añadir un calendario compartido";
 		self::$trad["CALENDAR_addSharedCalendarInfo"]="Añadir un calendario compartido : para reservar une habitación, vehiculo, vídeo, etc.";
 		self::$trad["CALENDAR_exportIcal"]="Exportar los eventos (iCal)";
-		self::$trad["CALENDAR_icalUrl"]="Url para acceso de lectura a la agenda (Ical)";
-		self::$trad["CALENDAR_icalUrlCopy"]="Copiar esta dirección? permitirá leer este calendario desde otra aplicación.";
+		self::$trad["CALENDAR_icalUrl"]="Copie el enlace/url de exportación del evento en formato Ical";
+		self::$trad["CALENDAR_icalUrlCopy"]="Permite la lectura de los eventos del calendario en formato Ical, a través de una aplicación externa como Google Calendar, Mozilla Thunderbird, Microsoft Outlook, etc.";
 		self::$trad["CALENDAR_importIcal"]="Importar los eventos (iCal)";
+		self::$trad["CALENDAR_ignoreOldEvt"]="No importe eventos de más de un año";
 		self::$trad["CALENDAR_importIcalState"]="Estado";
 		self::$trad["CALENDAR_importIcalStatePresent"]="Ya está presente";
 		self::$trad["CALENDAR_importIcalStateImport"]="a importar";
@@ -958,9 +966,8 @@ class Trad extends Txt
 		self::$trad["MAIL_moduleDescription"]="Enviar mensajes de correo electrónico con un solo clic !";
 		//Index
 		self::$trad["MAIL_specifyMail"]="Gracias especificar al menos un destinatario";
-		self::$trad["MAIL_subject"]="Asunto del email";
-		self::$trad["MAIL_message"]="Mensaje del email";
-		self::$trad["MAIL_attachedFile"]="Archivo adjunto";
+		self::$trad["MAIL_title"]="Asunto del email";
+		self::$trad["MAIL_description"]="Mensaje del email";
 		// Historique Email
 		self::$trad["MAIL_historyTitle"]="Historia de los correos electrónicos enviados";
 		self::$trad["MAIL_delete"]="Eliminar este correo electrónico";

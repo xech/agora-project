@@ -15,11 +15,11 @@ class MdlDashboardNews extends MdlObject
 	const moduleName="dashboard";
 	const objectType="dashboardNews";
 	const dbTable="ap_dashboardNews";
+	const htmlEditorField="description";
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	const hasUsersComment=true;
-	const htmlEditorField="description";
 	protected static $_hasAccessRight=true;
 	public static $requiredFields=["description"];
 	public static $searchFields=["description"];

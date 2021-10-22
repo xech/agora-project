@@ -23,8 +23,13 @@ $(function(){
 #newsOptions>div		{display:inline-block; margin-right:20px; margin-top:15px;}
 #newsOptions img		{vertical-align:bottom;}
 .dateBegin, .dateEnd	{width:160px!important;}/*surcharge*/
-.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.9em;}/*pour afficher le "placeholder"*/
+.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.95em;}/*Taille du "placeholder"*/
 input[name='une'],input[name='offline']	{display:none;}
+/*RESPONSIVE & FANCYBOX (440px)*/
+@media screen and (max-width:440px){
+	.dateBegin, .dateEnd	{width:125px!important;}/*surcharge*/
+	.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.7em;}/*Taille du "placeholder"*/
+}
 </style>
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">

@@ -73,7 +73,7 @@ function formControl()
 .plupload_wrapper					{min-width:100%!important; max-width:100%!important;}								/*Evite le scroll horizontal*/
 .plupload_header					{display:none;}																		/*Masque le header par défaut*/
 .plupload_content					{top:0px; height:135px}																/*Repositionne et redimentionne la liste des fichiers (cf. ".plupload_header" masqué)*/
-.plupload_droptext					{color:#aaa; font-size:1.1em;}														/*"Glisser les fichiers ici"*/
+.plupload_droptext					{color:#aaa; font-size:1.1em; overflow:hidden;}										/*"Glisser les fichiers ici". "overflow" pour Firefox*/
 .plupload_cell, .plupload_buttons	{width:100%; text-align:center;}													/*conteneur des boutons principaux*/
 .plupload_buttons					{padding-bottom:30px;}																/*idem*/
 .plupload_buttons .plupload_button	{text-transform:uppercase; padding:15px; font-weight:bold!important;}				/*Boutons principaux (Ajouter, Arreter, etc)*/

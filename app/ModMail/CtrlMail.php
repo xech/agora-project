@@ -19,66 +19,67 @@ class CtrlMail extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		////	Init et Controle d'accès
-		$vDatas["containerList"]=[];
+		////	Controle d'accès && Supprime les mails de plus d'un an
 		if(Ctrl::$curUser->isUser()==false)  {Ctrl::noAccessExit();}
-		////	Envoi de mail!
-		if(Req::isParam("formValidate","subject","message") && (Req::isParam("personList") || Req::isParam("groupList")))
+		////	Envoi un mail
+		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList")))
 		{
-			////	liste des destinataires : personList & groupes d'users
+			////	Destinataires : users/contacts (personList)
 			$mailTo=null;
-			//liste de personnes
-			if(Req::isParam("personList"))
-			{
-				foreach(Req::getParam("personList") as $tmpPerson){
-					$tmpPersonObj=Ctrl::getTargetObj($tmpPerson);
-					if(!empty($tmpPersonObj->mail))  {$mailTo.=$tmpPersonObj->mail.",";}
+			if(Req::isParam("personList")){
+				foreach(Req::param("personList") as $personTypeId){
+					$personObj=Ctrl::getObjTarget($personTypeId);
+					if(!empty($personObj->mail))  {$mailTo.=$personObj->mail.",";}
 				}
 			}
-			//Liste des users de groupe
-			if(Req::isParam("groupList"))
-			{
-				foreach(Req::getParam("groupList") as $tmpGroup){
-					$tmpGroupObj=Ctrl::getTargetObj($tmpGroup);
-					if(is_object($tmpGroupObj)){
-						foreach($tmpGroupObj->userIds as $tmpUserId){
-							$tmpUser=Ctrl::getObj("user",$tmpUserId);
+			////	Destinataires : groupes d'users
+			if(Req::isParam("groupList")){
+				foreach(Req::param("groupList") as $groupTypeId){
+					$groupObj=Ctrl::getObjTarget($groupTypeId);
+					if(is_object($groupObj)){
+						foreach($groupObj->userIds as $userId){
+							$tmpUser=Ctrl::getObj("user",$userId);
 							if(!empty($tmpUser->mail))	{$mailTo.=$tmpUser->mail.",";}
 						}
 					}
 				}
 			}
-			////	Options
-			$options=null;
-			if(Req::getParam("receptionNotif"))	{$options.="receptionNotif,";}
-			if(Req::getParam("addReplyTo"))		{$options.="addReplyTo,";}
-			if(Req::getParam("hideRecipients"))	{$options.="hideRecipients,";}
-			if(Req::getParam("noFooter"))		{$options.="noFooter,";}
-			////	Fichiers joints
-			$attachedFiles=[];
-			if(!empty($_FILES)){
-				foreach($_FILES as $tmpFile){
-					if(is_file($tmpFile["tmp_name"]))  {$attachedFiles[]=array("path"=>$tmpFile["tmp_name"],"name"=>$tmpFile["name"]);}
+			////	Enregistre un nouvel email  &&  Recharge le mail pour récupérer les "attachedFileList()" des Inputs
+			$curObj=Ctrl::getObj("mail");
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", recipients=".Db::format(trim($mailTo,",")));
+			////	S'il s'agit d'un email reloadé : on copie chaque pièce jointe
+			if(Req::isParam("oldMailTypeId"))
+			{
+				$oldMail=Ctrl::getObjTarget(Req::param("oldMailTypeId"));																									//Charge l'ancien email 
+				foreach($oldMail->attachedFileList() as $oldFile){																											//Parcourt chaque fichier joint
+					$_idNewFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($oldFile["name"]).", objectType='mail', _idObject=".$curObj->_id, true);	//Copie le fichier en BDD
+					copy($oldFile["path"], PATH_OBJECT_ATTACHMENT.$_idNewFile.".".File::extension($oldFile["name"]));														//Copie dans DATAS  
+					$curObj->description=str_replace($oldFile["url"], MdlObject::attachedFileDisplayUrl($_idNewFile,$oldFile["name"]), $curObj->description);//Remplace le "attachedFileDisplayUrl()" dans le texte de l'éditeur
 				}
+				//Update le texte de l'éditeur  &&  recharge l'email (avec les nouveaux fichiers & co)
+				Db::query("UPDATE ".$curObj::dbTable." SET ".$curObj::htmlEditorField."=".Db::format($curObj->description,"editor")." WHERE _id=".$curObj->_id);
+				$curObj=Ctrl::getObjTarget($curObj->_typeId);
 			}
 			////	Envoi du mail
-			$isSendMail=Tool::sendMail($mailTo, Req::getParam("subject"), Req::getParam("message"), $options, $attachedFiles);
-			if($isSendMail==true){
-				Db::query("INSERT INTO ap_mailHistory SET recipients=".Db::format(trim($mailTo,",")).", title=".Db::formatParam("subject").", description=".Db::formatParam("message","editor").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
-			}
+			$description=$curObj->description;//Description de l'objet rechargé ci-dessus !
+			$description=$curObj->attachedFileImageCid($description);//Affiche si besoin les images en pièce jointe dans le corps du mail
+			Tool::sendMail($mailTo, Req::param("title"), $description, Req::param("mailOptions"), $curObj->attachedFileList());
+			////	Redirige vers la mage principal (évite un re-post du mail..)
+			Ctrl::redir("?ctrl=mail");
 		}
-		////	Supprime les anciens mails de plus d'1 an
-		Db::query("DELETE FROM ap_mailHistory WHERE UNIX_TIMESTAMP(dateCrea) <= ".intval(time()-(360*86400)));
 		////	Liste des espaces et users associés
+		$vDatas["containerList"]=[];
 		foreach(Ctrl::$curUser->getSpaces() as $tmpContainer){
 			$tmpContainer->personList=$tmpContainer->getUsers();
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
 		////	Arborescence des dossiers de contacts (du dossier "root")
-		foreach(Ctrl::getObj("MdlContactFolder",1)->folderTree() as $tmpContainer){
+		foreach(Ctrl::getObj("contactFolder",1)->folderTree() as $tmpContainer){
 			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplay($tmpContainer)." ".MdlContact::sqlSort());
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
+		////	Charge un ancien mail ou un nouveau mail  &&  Affiche la page
+		$vDatas["curMail"]=Req::isParam("oldMailTypeId")  ?  Ctrl::getObjTarget(Req::param("oldMailTypeId"))  :  Ctrl::getObj("mail");
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
@@ -87,12 +88,7 @@ class CtrlMail extends Ctrl
 	 *******************************************************************************************/
 	public static function actionMailHistory()
 	{
-		//Suppression de mail
-		if(Req::getParam("actionDelete")){
-			$sqlIdUser=(Ctrl::$curUser->isAdminGeneral()==false)  ?  "AND _idUser=".Ctrl::$curUser->_id  :  null;
-			Db::query("DELETE FROM ap_mailHistory WHERE _id=".(int)Req::getParam("_idMail")." ".$sqlIdUser);
-		}
-		$vDatas["mailList"]=Db::getTab("SELECT * FROM ap_mailHistory WHERE _idUser=".Ctrl::$curUser->_id." AND _idUser>0 ORDER BY dateCrea desc");
+		$vDatas["mailList"]=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY dateCrea desc");
 		static::displayPage("VueMailHistory.php",$vDatas);
 	}
 }

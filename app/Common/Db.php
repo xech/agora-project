@@ -130,12 +130,12 @@ class Db
 		}
 	}
 
-	/*******************************************************************************************
-	 * FORMATE UNE VALEUR GET/POST DANS UNE REQUETE (insert,update,etc)
-	 *******************************************************************************************/
-	public static function formatParam($keyParam, $options=null)
+	/********************************************************************************************
+	 * RECUPERE UNE VALEUR GET/POST PUIS LA FORMATE DANS UNE REQUETE INSERT/UPDATE/ETC
+	 ********************************************************************************************/
+	public static function param($keyParam, $options=null)
 	{
-		return self::format(Req::getParam($keyParam),$options);
+		return self::format(Req::param($keyParam),$options);
 	}
 	
 	/*******************************************************************************************

@@ -61,7 +61,7 @@ h3								{margin-top:20px; font-style:italic;}
 		<!--HEADER-->
 		<div class="vHeader"><img src="app/img/install.png"><img src="app/img/logoLabel.png"></div>
 		<!--LANGUE-->
-		<div class="objField"><div class="fieldLabel"><?= Txt::trad("USER_langs") ?></div><div><?= Txt::menuTrad("install",Req::getParam("curTrad")) ?></div></div>
+		<div class="objField"><div class="fieldLabel"><?= Txt::trad("USER_langs") ?></div><div><?= Txt::menuTrad("install",Req::param("curTrad")) ?></div></div>
 		<!--CONFIG DB-->
 		<h3><?= Txt::trad("INSTALL_dbConnect") ?></h3>
 		<div class="objField"><div class="fieldLabel"><?= Txt::trad("INSTALL_dbHost") ?></div><div><input type="text" name="db_host"></div></div>

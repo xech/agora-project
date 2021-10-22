@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxSetWidth(700);
 
 ////	INIT
 $(function(){
@@ -134,7 +134,7 @@ function timeSlotBusy()
 			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy"+
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
-						"&_evtId=<?= $curObj->_id ?>&targetObjects[calendar]=";
+						"&_evtId=<?= $curObj->_id ?>&objectsTypeId[calendar]=";
 			$(".vCalendarInput:checked,.vCalendarInputProposition:checked").each(function(){ ajaxUrl+=this.value+"-"; });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
@@ -178,7 +178,7 @@ function formControl()
 #visioUrlAdd, #visioUrlInput, #visioUrlCopy, #visioUrlDelete	{cursor:pointer;}
 #visioUrlAdd													{<?= !empty($curObj->visioUrl)?"display:none;":null ?>}
 #visioUrlInput, #visioUrlCopy, #visioUrlDelete					{<?= empty($curObj->visioUrl)?"display:none;":null ?>}
-#visioUrlInput													{width:260px; font-size:0.95em;}
+#visioUrlInput													{width:280px; font-size:0.95em;}
 
 /*AFFECTATION AUX AGENDAS*/
 .lightboxBlock.vCalAffectOptions		{padding:4px 0px 4px 6px;}/*surcharge*/
@@ -361,8 +361,8 @@ input[name='guestMail']					{margin-left:20px;}
 			}
 			//Affiche l'input d'affectation/proposition
 			echo "<div class='vCalAffectBlock sTableRow'>
-					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"box".$tmpCal->_targetObjId."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." ".$calIdUser.">
-					<label for=\"box".$tmpCal->_targetObjId."\" class='noTooltip' title=\"".$tmpCal->tooltip."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
+					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"box".$tmpCal->_typeId."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." ".$calIdUser.">
+					<label for=\"box".$tmpCal->_typeId."\" class='noTooltip' title=\"".Txt::tooltip($tmpCal->tooltip)."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
 					".$moreInputs."
 				  </div>";
 		}
@@ -372,8 +372,8 @@ input[name='guestMail']					{margin-left:20px;}
 			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis sTableRow' id='calsAffectSwitch'><label><img src='app/img/check.png'> ".Txt::trad("selectUnselectAll")."</label></div>";
 			foreach($curSpaceUserGroups as $tmpGroup){
 				echo "<div class='vCalAffectBlock vCalAffectBlockBis sTableRow' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
-						<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_targetObjId."' onchange=\"userGroupSelect(this,'#calsAffectDiv');\">
-						<label for='calUsersGroup".$tmpGroup->_targetObjId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
+						<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_typeId."' onchange=\"userGroupSelect(this,'#calsAffectDiv');\">
+						<label for='calUsersGroup".$tmpGroup->_typeId."'><img src='app/img/user/userGroup.png'> ".$tmpGroup->title."</label>
 					  </div>";
 			}
 		}

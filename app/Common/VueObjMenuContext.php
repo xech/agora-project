@@ -1,8 +1,8 @@
 <?php
 ////	 ICONE "BURGER" : LAUNCHER DU MENU CONTEXT
-$iconBurgerName=(!empty($isNewObject))  ?  "menuNew"  :  "menu";//nouvel objet?
-if($iconBurger=="small")  {$iconBurgerName.="Small";}//petite icone?
-$iconBurgerClass=($iconBurger=="float")  ?  "objMenuBurger"  :  "objMenuBurgerInline";//affichage "float" (par défaut) ou "inline"
+$iconBurgerName=(!empty($isNewObject))  ?  "menuNew"  :  "menu";						//nouvel objet?
+if($iconBurger=="small")  {$iconBurgerName.="Small";}									//petite icone?
+$iconBurgerClass=($iconBurger=="float")  ?  "objMenuBurger"  :  "objMenuBurgerInline";	//affichage "float" (par défaut) ou "inline"
 echo "<img src='app/img/".$iconBurgerName.".png' for=\"".$curObj->menuId("objMenu")."\" class='menuLaunch ".$iconBurgerClass."'>";
 
 
@@ -13,7 +13,7 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 	if(Req::isMobile())  {echo "<div class='infos'>".$curObj->getLabel()."</div>";}
 
 	////	SELECTIONNER L'OBJET (checkbox "hidden". Pas sur mobile ou pour le dossier courant)
-	if($curObj::isSelectable && Req::isMobile()==false && ($curObj::isFolder==false || Ctrl::$curContainer->_targetObjId!=$curObj->_targetObjId))  {echo "<div class='menuLine sLink' onclick=\"objSelect('".$curObj->menuId("objBlock")."')\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("selectUnselect")."</div></div>".$curObj->targetObjectsInput();}
+	if($curObj::isSelectable && Req::isMobile()==false && ($curObj::isFolder==false || Ctrl::$curContainer->_typeId!=$curObj->_typeId))  {echo "<div class='menuLine sLink' onclick=\"objSelect('".$curObj->menuId("objBlock")."')\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("selectUnselect")."</div></div>".$curObj->objectsTypeIdInput();}
 
 	////	MODIFIER L'OBJET
 	if(!empty($editLabel))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$curObj->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".$editLabel."</div></div>";}
@@ -32,7 +32,7 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 		$actionJsTmp=(!empty($tmpOption["actionJs"])) ?  'onclick="'.$tmpOption["actionJs"].'"'  :  null;
 		$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  'title="'.$tmpOption["tooltip"].'"'  :  null;
 		$menuIconTmp=(!empty($tmpOption["iconSrc"]))  ?  '<div class="menuIcon"><img src="app/img/'.$tmpOption["iconSrc"].'"></div>'  :  null;
-		echo "<div class='menuLine sLink noTooltip' ".$actionJsTmp." ".$tooltipTmp.">".$menuIconTmp."<div>".$tmpOption["label"]."</div></div>";
+		echo "<div class='menuLine sLink' ".$actionJsTmp." ".$tooltipTmp.">".$menuIconTmp."<div>".$tmpOption["label"]."</div></div>";
 	}
 
 	////	SUPPRIMER L'OBJET (afficher en dernier)
@@ -68,7 +68,7 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 	}
 
 	////	LISTE DES FICHIERS JOINTS
-	echo $curObj->menuAttachedFiles();
+	echo $curObj->attachedFileMenu();
 
 echo "</div>";
 
@@ -80,7 +80,7 @@ if($iconBurger=="float")
 		//ICONE DES LIKES (+ "DISLIKES" ?)
 		if(!empty($likeMenu)){
 			foreach($likeMenu as $likeOption=>$likeValues){
-				echo "<div class='objMiscMenuDiv objMenuLikeComment sLink ".$showMiscMenuClass."' id='".$likeValues["menuId"]."' onclick=\"usersLikeValidate('".$curObj->_targetObjId."','".$likeOption."')\" title=\"".$curObj->getUsersLikeTooltip($likeOption)."\">
+				echo "<div class='objMiscMenuDiv objMenuLikeComment sLink ".$showMiscMenuClass."' id='".$likeValues["menuId"]."' onclick=\"usersLikeValidate('".$curObj->_typeId."','".$likeOption."')\" title=\"".Txt::tooltip($curObj->getUsersLikeTooltip($likeOption))."\">
 						<div class='menuCircle ".(empty($likeValues["likeDontLikeNb"])?"menuCircleHide":null)."'>".$likeValues["likeDontLikeNb"]."</div>
 						<img src='app/img/usersLike_".$likeOption.".png'>
 					 </div>";
@@ -88,15 +88,15 @@ if($iconBurger=="float")
 		}
 		//ICONE DES COMMENTAIRES
 		if(!empty($commentMenu)){
-			echo "<div class='objMiscMenuDiv objMenuLikeComment sLink ".$showMiscMenuClass."' id='".$commentMenu["menuId"]."' onclick=\"lightboxOpen('".$commentMenu["commentsUrl"]."')\" title=\"".$commentMenu["commentTooltip"]."\">
+			echo "<div class='objMiscMenuDiv objMenuLikeComment sLink ".$showMiscMenuClass."' id='".$commentMenu["menuId"]."' onclick=\"lightboxOpen('".$commentMenu["commentsUrl"]."')\" title=\"".Txt::tooltip($commentMenu["commentTooltip"])."\">
 					<div class='menuCircle ".(empty($commentMenu["commentNb"])?"menuCircleHide":null)."'>".$commentMenu["commentNb"]."</div>
 					<img src='app/img/usersComment.png'>
 				 </div>";
 		}
 		//ICONE DES FICHIERS JOINTS
-		if($curObj->menuAttachedFiles()){
+		if($curObj->attachedFileMenu()){
 			echo "<div class='objMiscMenuDiv menuLaunch' for=\"".$curObj->menuId("objAttachment")."\"><img src='app/img/attachment.png'></div>
-				  <div class='menuContext' id=\"".$curObj->menuId("objAttachment")."\">".$curObj->menuAttachedFiles(null)."</div>";
+				  <div class='menuContext' id=\"".$curObj->menuId("objAttachment")."\">".$curObj->attachedFileMenu(null)."</div>";
 		}
 		//ICONE D'ACCÈS PERSO
 		if(!empty($isPersoAccess))

@@ -55,10 +55,9 @@ class Trad extends Txt
 		self::$trad["commentAdd"]="Add a comment";
 		self::$trad["optional"]="(optional)";
 		self::$trad["objNew"]="Recently created item";
-		self::$trad["objNewInfos"]="Created since my previous login or created within 24 hours";
 		self::$trad["personalAccess"]="Personal access";
-		self::$trad["copyUrl"]="Copy the web address for direct access";
-		self::$trad["copyUrlInfo"]="This link allows direct access to the element : it can be integrated into an email, a blog or another element of the space (news, forum, event, etc.)";
+		self::$trad["copyUrl"]="Copy the link/url to the element";
+		self::$trad["copyUrlInfo"]="This link/url allows direct access to the element:<br> It can be integrated into a news, a forum topic, an email, a blog (external access), etc.";
 		self::$trad["copyUrlConfirmed"]="The web address has been copied successfully.";
 		self::$trad["cancel"]="Cancel";
 
@@ -153,13 +152,15 @@ class Trad extends Txt
 		self::$trad["beginEndError"]="The end date can't be before the start date";
 		self::$trad["dateFormatError"]="The date must be in the format dd/mm/YYYY";
 		
-		////	Nom & Description (pour les menus d'édition principalement)
+		////	Menus d'édition des objets et editeur tinyMce
 		self::$trad["title"]="Title";
 		self::$trad["name"]="Name";
 		self::$trad["description"]="Description";
 		self::$trad["specifyName"]="Thank you for specifying a name";
 		self::$trad["editorDraft"]="Retrieve my text";
 		self::$trad["editorDraftConfirm"]="Retrieve the last specified text";
+		self::$trad["editorFileInsert"]="Add Image or video";
+		self::$trad["editorFileInsertNotif"]="Please select an image in Jpeg, Png, Gif or Svg format";
 		
 		////	Validation des formulaires
 		self::$trad["add"]="Add";
@@ -256,6 +257,7 @@ class Trad extends Txt
 		self::$trad["MAIL_noFooter"]="Do not sign the message";
 		self::$trad["MAIL_noFooterInfo"]="Do not sign the end of the message with the sender's name and a weblink to the space";
 		self::$trad["MAIL_fileMaxSize"]="All of your attachments must not exceed 15 MB: <br> Some mailboxes may refuse emails beyond this limit";
+		self::$trad["MAIL_sendButton"]="Send email";
 		self::$trad["MAIL_sendBy"]="Sent by";//"Envoyé par" Mr trucmuche
 		self::$trad["MAIL_sendOk"]="The email was sent !";
 		self::$trad["MAIL_sendNotif"]="The notification email was sent !";
@@ -367,7 +369,6 @@ class Trad extends Txt
 		self::$trad["NOTIF_fileName"]="A file with the same name already exists (but not replaced with the current file)";
 		self::$trad["NOTIF_chmodDATAS"]="The ''DATAS'' folder is not accessible in writing. You need to give a read-write access to the owner and the group (''chmod 775'').";
 		self::$trad["NOTIF_usersNb"]="You cannot add new user: limited to "; // "...limité à" 10
-		self::$trad["NOTIF_update"]="New version";
 		
 		////	Header / Footer
 		self::$trad["HEADER_displaySpace"]="Available spaces";
@@ -403,7 +404,12 @@ class Trad extends Txt
 		self::$trad["VISIO_launch"]="Start the videoconference";
 		self::$trad["VISIO_launchFromEvent"]="Start the videoconference of this event";
 		self::$trad["VISIO_urlMail"]="Add a link at the end of the text to start a new videoconference";
-		self::$trad["VISIO_launchConfirm"]="Start the video call ? \\nRemember to allow access to your webcam and microphone";
+		self::$trad["VISIO_launchInfo"]="Remember to allow access to your webcam and microphone";
+		self::$trad["VISIO_launchHelp"]="Click here if you have problems launching the videoconference";
+		self::$trad["VISIO_launchServerInfo"]="Choose the secondary server if the primary server is not functioning properly.<br>Your contacts will have to select the same video server.";
+		self::$trad["VISIO_launchServerMain"]="Main server";
+		self::$trad["VISIO_launchServerAlt"]="Secondary server";
+		self::$trad["VISIO_launchButton"]="Start the videoconference";
 
 		////	vueObjMenuEdit
 		self::$trad["EDIT_notifNoSelection"]="You must select at least a person or a space";
@@ -429,10 +435,10 @@ class Trad extends Txt
 		self::$trad["EDIT_accessRightSubFolders_info"]="Extend rights of access, to subfolders that you can edit";
 		self::$trad["EDIT_shortcut"]="Shortcut";
 		self::$trad["EDIT_shortcutInfo"]="Put a shortcut on the main menu";
-		self::$trad["EDIT_attachedFile"]="Add attached files";
-		self::$trad["EDIT_attachedFileInfo"]="Images can be inserted into the text via the option ''embed into text''";
-		self::$trad["EDIT_attachedFileInsert"]="Embed into text";
-		self::$trad["EDIT_attachedFileInsertInfo"]="Integrate a jpg/png image or mp4 video in the text of the editor: <br> the insertion at the end of the text is made after validation of the form.";
+		self::$trad["EDIT_attachedFile"]="Attached files";
+		self::$trad["EDIT_attachedFileAdd"]="Add attached files";
+		self::$trad["EDIT_attachedFileInsert"]="Insert into text";
+		self::$trad["EDIT_attachedFileInsertInfo"]="Insert image/video into editor text (jpg, png or mp4 format)";
 		self::$trad["EDIT_guestName"]="Your Name / Nickname";
 		self::$trad["EDIT_guestNameNotif"]="Thank you to specify a Name / Nickname";
 		self::$trad["EDIT_guestMail"]="Your email";
@@ -491,8 +497,10 @@ class Trad extends Txt
 		self::$trad["AGORA_diskSpaceLimit"]="Space available for the storage of the files";
 		self::$trad["AGORA_logsTimeOut"]="Duration of event history (logs)";
 		self::$trad["AGORA_logsTimeOutInfo"]="The retention period of the events history concerns the addition or modification of the elements. The deletion logs are kept for at least 1 year.";
-		self::$trad["AGORA_visioHost"]="Jitsi videocall server";
-		self::$trad["AGORA_visioHostInfo"]="Jitsi videocall server address";
+		self::$trad["AGORA_visioHost"]="Videoconferencing server Jitsi";
+		self::$trad["AGORA_visioHostInfo"]="Jitsi videoconferencing server address. Example: https://meet.jit.si";
+		self::$trad["AGORA_visioHostAlt"]="Alternative videoconferencing server";
+		self::$trad["AGORA_visioHostAltInfo"]="Alternative videoconferencing server : in case of unavailability of the main video server";
 		self::$trad["AGORA_skin"]="Color of the interface";
 		self::$trad["AGORA_black"]="Black";
 		self::$trad["AGORA_white"]="White";
@@ -713,7 +721,6 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_plugins_week"]="of this week";
 		self::$trad["DASHBOARD_plugins_month"]="of the month";
 		self::$trad["DASHBOARD_plugins_previousConnection"]="since the last login";
-		self::$trad["DASHBOARD_pluginsCurrent"]="Current element";
 		self::$trad["DASHBOARD_pluginsTooltipRedir"]="View the element in is folder";
 		self::$trad["DASHBOARD_pluginEmpty"]="No new elements for this period";
 		// Actualite/News
@@ -750,7 +757,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_option_adminAddCategory"]="Only the admin can add a category of event";
 		self::$trad["CALENDAR_option_createSpaceCalendar"]="Create a shared agenda";
 		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="The calendar will have the same name than the space. This can be useful if the calendars of the users are disabled.";
-		self::$trad["CALENDAR_moduleFullyDisabled"]="The calendar module will always remain accessible in the menu bar, so that you can access your personal calendar. To no longer display your personal calendar, remember to check ''Personal calendar deactivated'' in your user profile";
+		self::$trad["CALENDAR_option_moduleDisabled"]="The calendar is always accessible to users who leave their calendar activated. To deactivate it, modify the option ''Personal calendar deactivated'' in your user profile";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Available calendars";
 		self::$trad["CALENDAR_displayAllCals"]="Show all calendars (for administrators)";
@@ -760,9 +767,10 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addSharedCalendar"]="Add a chared calendar";
 		self::$trad["CALENDAR_addSharedCalendarInfo"]="Add a chared calendar :<br>for the reservations of a room, vehicle, videoprojector, etc";
 		self::$trad["CALENDAR_exportIcal"]="Export the events (iCal)";
-		self::$trad["CALENDAR_icalUrl"]="Url for reading access to the calendar (Ical)";
-		self::$trad["CALENDAR_icalUrlCopy"]="Copy this address? This will allow you to read this calendar from another application";
+		self::$trad["CALENDAR_icalUrl"]="Copy the event export link/url in Ical format";
+		self::$trad["CALENDAR_icalUrlCopy"]="Allows reading of calendar events in Ical format, via an external application such as Google Calendar, Mozilla Thunderbird, Microsoft Outlook, etc.";
 		self::$trad["CALENDAR_importIcal"]="Import the events (iCal)";
+		self::$trad["CALENDAR_ignoreOldEvt"]="Do not import events older than one year";
 		self::$trad["CALENDAR_importIcalState"]="State";
 		self::$trad["CALENDAR_importIcalStatePresent"]="Already present";
 		self::$trad["CALENDAR_importIcalStateImport"]="To import";
@@ -958,9 +966,8 @@ class Trad extends Txt
 		self::$trad["MAIL_moduleDescription"]="Send emails in a click!";
 		//Index
 		self::$trad["MAIL_specifyMail"]="Thank you for entering an address email";
-		self::$trad["MAIL_subject"]="Email subject";
-		self::$trad["MAIL_message"]="Email message";
-		self::$trad["MAIL_attachedFile"]="Attached file";
+		self::$trad["MAIL_title"]="Email subject";
+		self::$trad["MAIL_description"]="Email message";
 		// Historique Email
 		self::$trad["MAIL_historyTitle"]="History of the emails sent";
 		self::$trad["MAIL_delete"]="Delete this email";

@@ -55,8 +55,8 @@ $(function(){
 		{
 			echo $tmpFile->divContainer("objContentCenter ".$tmpFile->hasThumbClass).$tmpFile->contextMenu().
 				"<div class=\"objContent ".$tmpFile->thumbClass."\">
-					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".$tmpFile->iconTooltip."\"><img src=\"".$tmpFile->typeIcon()."\"></span></div>
-					<div class='objLabel'><span ".$tmpFile->labelLink." class='objLabelLink objFileLink' title=\"".$tmpFile->tooltip."\"><img src='app/img/download.png' class='vIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
+					<div class='objIcon'><span ".$tmpFile->iconLink." title=\"".Txt::tooltip($tmpFile->iconTooltip)."\"><img src=\"".$tmpFile->typeIcon()."\"></span></div>
+					<div class='objLabel'><span ".$tmpFile->labelLink." class='objLabelLink objFileLink' title=\"".Txt::tooltip($tmpFile->tooltip)."\"><img src='app/img/download.png' class='vIconDownload'>".Txt::reduce($tmpFile->name,50)."</span>".$tmpFile->versionsMenu("icon")."</div>
 					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->autorDateLabel()."</div>
 				</div>

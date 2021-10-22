@@ -4,7 +4,7 @@ $(function(){
 	//Active ou désactive l'envoi de notifications email pour les nouveaux messages d'un sujet
 	<?php if($displayForum=="messages"){ ?>
 		$("#notifyLastMessage").click(function(){
-			$.ajax("?ctrl=forum&action=notifyLastMessage&targetObjId=<?= $curSubject->_targetObjId ?>").done(function(ajaxResult){
+			$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= $curSubject->_typeId ?>").done(function(ajaxResult){
 				if(ajaxResult=="addUser")	{$("#notifyLastMessage").addClass("vNotifyLastMessage");}
 				else						{$("#notifyLastMessage").removeClass("vNotifyLastMessage");}
 			});
@@ -85,10 +85,10 @@ $(function(){
 			//Label du Theme courant
 			if(!empty($curTheme)){
 				$curThemeLink=(!empty($curSubject))  ?  "class='sLink' onclick=\"redir('?ctrl=forum&_idTheme=".$curTheme->idThemeUrl."')\""  :  null;//Lien vers l'accueil (sauf si on y est déjà)
-				echo "<div><img src='app/img/arrowRightBig.png'></div><div ".$curThemeLink.">".Txt::reduce($curTheme->display(),45)."</div>";
+				echo "<div><img src='app/img/arrowRightBig.png'></div><div ".$curThemeLink.">".Txt::reduce($curTheme->display(),50)."</div>";
 			}
 			//Label du sujet courant (pas en "mobile" car laisse la place au thème courant)
-			if(!empty($curSubject) && Req::isMobile()==false)  {echo "<div><img src='app/img/arrowRightBig.png'></div><div>".Txt::reduce(strip_tags($curSubject->title?$curSubject->title:$curSubject->description),45)."</div>";}
+			if(!empty($curSubject) && Req::isMobile()==false)  {echo "<div><img src='app/img/arrowRightBig.png'></div><div>".Txt::reduce($curSubject->getLabel(),50)."</div>";}
 			//Bouton "plus" d'ajout de sujet ou message
 			if($displayForum=="subjects" && MdlForumSubject::addRight())			{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addSubject")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
 			if($displayForum=="messages" && Ctrl::$curContainer->addContentRight())	{echo "<div class='pathIconMenu' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\" title=\"".Txt::trad("FORUM_addMessage")."\"><img src='app/img/arrowRightBig2.png'><img src='app/img/plus.png'></div>";}
@@ -132,8 +132,8 @@ $(function(){
 				}
 				//Affichage
 				echo $tmpSubject->divContainer("alternateLines").$tmpSubject->contextMenu().
-					"<div class='objContent sLink ".$isNewSubject."' onclick=\"redir('?ctrl=forum&targetObjId=".$tmpSubject->_targetObjId."')\" title=\"".Txt::trad("FORUM_displaySubject")."\">
-						<div>".$displayedTitle."<div class='vSubjMessDescription'>".Txt::reduce(strip_tags($tmpSubject->description))."</div>
+					"<div class='objContent sLink ".$isNewSubject."' onclick=\"redir('?ctrl=forum&typeId=".$tmpSubject->_typeId."')\" title=\"".Txt::trad("FORUM_displaySubject")."\">
+						<div>".$displayedTitle."<div class='vSubjMessDescription'>".Txt::reduce($tmpSubject->description)."</div>
 						</div>
 						<div class='vObjDetails'>
 							<hr>
@@ -157,7 +157,7 @@ $(function(){
 			$displayedTitle=(!empty($curSubject->title))  ?  $curSubject->title."<hr>"  :  null;
 			echo $curSubject->divContainer("alternateLines").$curSubject->contextMenu().
 					"<div class='objContent vSubjectMessages'>
-						<div>".$displayedTitle."<div class='vSubjMessDescription'>".$curSubject->description.$curSubject->menuAttachedFiles()."</div></div>
+						<div>".$displayedTitle."<div class='vSubjMessDescription'>".$curSubject->description.$curSubject->attachedFileMenu()."</div></div>
 						<div class='vObjDetails'><hr>".$curSubject->autorDateLabel(true)."</div>
 					</div>
 				</div>";
@@ -175,7 +175,7 @@ $(function(){
 				//Affichage
 				echo $tmpMessage->divContainer("alternateLines").$tmpMessage->contextMenu().
 						"<div class='objContent vSubjectMessages'>
-							<div>".$subjMessQuote.$quotedMessage.$displayedTitle."<div class='vSubjMessDescription'>".$tmpMessage->description.$tmpMessage->menuAttachedFiles()."</div></div>
+							<div>".$subjMessQuote.$quotedMessage.$displayedTitle."<div class='vSubjMessDescription'>".$tmpMessage->description.$tmpMessage->attachedFileMenu()."</div></div>
 							<div class='vObjDetails'><hr>".$tmpMessage->autorDateLabel(true)."</div>
 						</div>
 					</div>";

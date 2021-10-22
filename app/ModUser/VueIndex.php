@@ -32,7 +32,7 @@ $(function(){
 			{
 				$linkGroupsEdit=(MdlUserGroup::addRight())  ?  "class='sLink' title=\"<img src='app/img/edit.png'>&nbsp; ".Txt::trad("USER_spaceGroupsEdit")."\" onclick=\"lightboxOpen('?ctrl=user&action=UserGroupEdit');\""  :  null;
 				$menuGroups="<div ".$linkGroupsEdit.">".Txt::trad("USER_spaceGroups")."</div>";
-				foreach($userGroups as $tmpGroup)  {$menuGroups.="<div class='vGroupLabel' title=\"".$tmpGroup->usersLabel."\"><img src='app/img/arrowRight.png'> ".$tmpGroup->title."</div>";}
+				foreach($userGroups as $tmpGroup)  {$menuGroups.="<div class='vGroupLabel' title=\"".Txt::tooltip($tmpGroup->usersLabel)."\"><img src='app/img/arrowRight.png'> ".$tmpGroup->title."</div>";}
 				echo "<div class='menuLine'>
 						<div class='menuIcon'><img src='app/img/user/userGroup.png'></div>
 						<div>".$menuGroups."</div>
@@ -48,11 +48,11 @@ $(function(){
 			echo "<hr>".MdlUser::menuSelectObjects().MdlUser::menuDisplayMode().MdlUser::menuSort();
 			////	FILTRAGE ALPHABET
 			$menuAlphabet=null;
-			foreach($alphabetList as $tmpLetter)  {$menuAlphabet.="<a href=\"?ctrl=user&alphabet=".$tmpLetter."\" ".(Req::getParam("alphabet")==$tmpLetter?"class='sLinkSelect'":null).">".$tmpLetter."</a>";}
+			foreach($alphabetList as $tmpLetter)  {$menuAlphabet.="<a href=\"?ctrl=user&alphabet=".$tmpLetter."\" ".(Req::param("alphabet")==$tmpLetter?"class='sLinkSelect'":null).">".$tmpLetter."</a>";}
 			$menuAlphabet.="&nbsp; <a href='?ctrl=user' ".(Req::isParam("alphabet")==false?"class='sLinkSelect'":null).">".Txt::trad("displayAll")."</a>";
 			echo "<div class='menuLine sLink'>
 					<div class='menuIcon'><img src='app/img/alphabet.png'></div>
-					<div><div class='menuLaunch' for='menuAlphabet'>".Txt::trad("alphabetFilter").(Req::isParam("alphabet")?" : ".Req::getParam("alphabet"):null)."</div><div id='menuAlphabet' class='menuContext'>".$menuAlphabet."</div></div>
+					<div><div class='menuLaunch' for='menuAlphabet'>".Txt::trad("alphabetFilter").(Req::isParam("alphabet")?" : ".Req::param("alphabet"):null)."</div><div id='menuAlphabet' class='menuContext'>".$menuAlphabet."</div></div>
 				 </div>";
 			////	NB D'UTILISATEURS
 			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$usersTotalNbLabel."</div></div>";
@@ -67,7 +67,7 @@ $(function(){
 			//Menu contextuel OU Input de sélection de l'user
 			$contextMenu=null;
 			if($tmpUser->editRight())			{$contextMenu=$tmpUser->contextMenu();}
-			elseif(Ctrl::$curUser->isUser())	{$contextMenu=$tmpUser->targetObjectsInput();}
+			elseif(Ctrl::$curUser->isUser())	{$contextMenu=$tmpUser->objectsTypeIdInput();}
 			//Icone "admin general" OU Icone"admin space"
 			if($tmpUser->isAdminGeneral())		{$contextMenu.="<img src='app/img/user/adminGeneral.png' title=\"".Txt::trad("USER_adminGeneral")."\" class='vAdminRightIcon'>";}
 			elseif($tmpUser->isAdminSpace())	{$contextMenu.="<img src='app/img/user/adminSpace.png' title=\"".Txt::trad("USER_adminSpace")."\" class='vAdminRightIcon'>";}

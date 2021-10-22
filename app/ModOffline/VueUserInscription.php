@@ -9,7 +9,7 @@ $(function(){
 		//Pas de validation par défaut du formulaire
 		event.preventDefault();
 		//Verif les champs obligatoires et l'email/login
-		if($("input[name='_idSpace']").isEmpty() || $("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
+		if($("input[name='_idSpace']:checked").isEmpty() || $("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
 		if($("input[name='mail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
 		//Vérif le password et sa confirmation
 		if(isValidPassword($("input[name='password']").val())==false)						{notify("<?= Txt::trad("passwordInvalid") ?>","warning");		return false;}
@@ -33,8 +33,12 @@ input:not(input[type=radio]), textarea								{width:100%!important;}
 	<div class='vSpaceDiv'><?= ucfirst(Txt::trad("userInscriptionSpace")) ?> :</div>
 	<?php
 	//Inputs radio de sélection de l'espace
-	foreach($objSpacesInscription as $tmpSpace)
-		{echo "<div class='vSpaceDiv'><input type='radio' name='_idSpace' value=\"".$tmpSpace->_id."\" id='spaceSelect".$tmpSpace->_id."'> <label for='spaceSelect".$tmpSpace->_id."'>".$tmpSpace->name."</label></div>";}
+	foreach($objSpacesInscription as $tmpSpace){
+		echo "<div class='vSpaceDiv'>
+				<input type='radio' name='_idSpace' value=\"".$tmpSpace->_id."\" id='spaceSelect".$tmpSpace->_id."' ".(count($objSpacesInscription)==1?'checked':null).">
+				<label for='spaceSelect".$tmpSpace->_id."'>".$tmpSpace->name."</label>
+			  </div>";
+	}
 	?>
 	<hr>
 	<input type="text" name="name" placeholder="<?= Txt::trad("name"); ?>"><br>
@@ -42,6 +46,6 @@ input:not(input[type=radio]), textarea								{width:100%!important;}
 	<input type="text" name="mail" placeholder="<?= Txt::trad("mail"); ?>"><br>
 	<input type="password" name="password" class="editInputPassword" placeholder="<?= Txt::trad("password"); ?>"><br>
 	<input type="password" name="passwordVerif" class="editInputPassword" placeholder="<?= Txt::trad("passwordVerif"); ?>"><br>
-	<textarea name="message" placeholder="<?= Txt::trad("comment"); ?>"><?= Req::getParam("message") ?></textarea><br>
+	<textarea name="message" placeholder="<?= Txt::trad("comment"); ?>"><?= Req::param("message") ?></textarea><br>
 	<?= CtrlMisc::menuCaptcha().Txt::submitButton() ?>
 </form>

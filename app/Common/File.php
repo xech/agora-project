@@ -53,33 +53,33 @@ class File
 		//Init les types de fichiers en fonction de leur extension
 		if(static::$_fileTypes===null)
 		{
-			static::$_fileTypes=array(
-				"image"=>array("jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"),
-				"imageBrowser"=>array("jpg","jpeg","png","gif","svg"),
-				"imageResize"=>array("jpg","jpeg","png"),
-				"textEditor"=>array("doc","docx","odt","sxw"),
-				"text"=>array("txt","text","rtf"),
-				"pdf"=>array("pdf"),
-				"calc"=>array("xls","xlsx","ods","sxc"),
-				"presentation"=>array("ppt","pptx","pps","ppsx","odp","sxi"),
-				"archive"=>array("zip","rar","7z","tar","gz","tgz","iso"),
-				"flash"=>array("swf"),
-				"html"=>array("htm","html"),
-				"web"=>array("htm","html","js","css","php","asp","jsp"),
-				"autocad"=>array("dwg","dxf"),
-				"executable"=>array("exe","bat","dat","dll","msi"),
-				"audio"=>array("mp3","flac","wma","wav","aac","mid"),
-				"mp3"=>array("mp3"),
-				"video"=>array("mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"),
-				"videoPlayer"=>array("mp4","webm"),			//lightbox video
-				"mediaPlayer"=>array("mp4","webm","mp3"),	//lightbox mp3
-				"pdfTxt"=>array("pdf","txt","text"),		//lightbox pdf/txt
-				"attachedFileInsert"=>array("jpg","jpeg","png","gif","mp4","webm","mp3"),										//Fichiers joints pouvant être intégrés dans une description (imageBrowser + mediaPlayer)
-				"forbidden"=>array("htaccess","sh","so","bin","cgi","rpm","deb","bat","php","phtml","php3","php4","php5","js")	//Fichiers script interdits
-			);
+			static::$_fileTypes=[
+				"image"=>["jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"],
+				"imageBrowser"=>["jpg","jpeg","png","gif","svg"],
+				"imageResize"=>["jpg","jpeg","png"],
+				"textEditor"=>["doc","docx","odt","sxw"],
+				"text"=>["txt","text","rtf"],
+				"pdf"=>["pdf"],
+				"calc"=>["xls","xlsx","ods","sxc"],
+				"presentation"=>["ppt","pptx","pps","ppsx","odp","sxi"],
+				"archive"=>["zip","rar","7z","tar","gz","tgz","iso"],
+				"flash"=>["swf"],
+				"html"=>["htm","html"],
+				"web"=>["htm","html","js","css","php","asp","jsp"],
+				"autocad"=>["dwg","dxf"],
+				"executable"=>["exe","bat","dat","dll","msi"],
+				"audio"=>["mp3","flac","wma","wav","aac","mid"],
+				"mp3"=>["mp3"],
+				"video"=>["mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"],
+				"videoPlayer"=>["mp4","webm"],		//video
+				"mediaPlayer"=>["mp4","webm","mp3"],//video + mp3
+				"pdfTxt"=>["pdf","txt","text"],		//pdf + txt
+				"attachedFileInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],										//Fichiers joints pouvant être intégrés dans une description (imageBrowser + mediaPlayer)
+				"forbidden"=>["htaccess","sh","so","bin","cgi","rpm","deb","bat","php","phtml","php3","php4","php5","js"]	//Fichiers script interdits
+			];
 		}
 		//renvoie les fichiers correspondant aux types
-		return (array_key_exists($typeKey,static::$_fileTypes))  ?  static::$_fileTypes[$typeKey]  :  array();
+		return (array_key_exists($typeKey,static::$_fileTypes))  ?  static::$_fileTypes[$typeKey]  :  [];
 	}
 
 	/*******************************************************************************************
@@ -101,16 +101,6 @@ class File
 		if(self::isType("forbidden",$fileName))						{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
 		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)	{Ctrl::notify("NOTIF_diskSpace");  return false;}
 		else														{return true;}
-	}
-
-	/*******************************************************************************************
-	 * AFFICHER UN PLAYER AUDIO/VIDEO/FLASH
-	 *******************************************************************************************/
-	public static function getMediaPlayer($filePath)
-	{
-		if(self::isType("videoPlayer",$filePath))	{return "<br><br><video controls controlsList='nodownload' onclick='this.play()'><source src='".$filePath."' type='video/".self::extension($filePath)."'>HTML5 browser is required</video>";}
-		elseif(self::isType("mp3",$filePath))		{return "<br><br><audio controls controlsList='nodownload'><source src='".$filePath."' type='audio/mp3'>HTML5 browser is required</audio>";}
-		elseif(self::isType("flash",$filePath))		{return "<br><br><object type='application/x-shockwave-flash' data='".$filePath."'><param name='movie' value='".$filePath."'></object>";}
 	}
 
 	/*******************************************************************************************
@@ -157,7 +147,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * READFILE DU FICHIER POUR UN AFFICHAGE DIRECT PAR LE BROWSER ..SANS METTRE LE CHEMIN RÉEL DANS LE HTML
+	 * AFFICHE LE FICHIER DANS LE BROWSER : MASQUE LE PATH REEL DU FICHIER
 	 *******************************************************************************************/
 	public static function display($filePath)
 	{
@@ -289,6 +279,12 @@ class File
 		}
 	}
 
+
+
+	/***************************************************************************************************************************/
+	/**************************************************	    SPECIFIC METHODS	************************************************/
+	/***************************************************************************************************************************/
+
 	/*******************************************************************************************
 	 * REDIMENSIONNE UNE IMAGE ("imgSrc.png"= "imgDest.jpg")
 	 *******************************************************************************************/
@@ -390,21 +386,15 @@ class File
 	public static function archiveSizeControl($archiveSize)
 	{
 		$archiveSizeControl=true;
-		$limitSize=(self::sizeGo*2);//2Go max (tester avec un 'top' du systeme)
-		$disabledBegin=9;//debut plage horaire de limitation
-		$disabledEnd=19;//fin plage horaire de limitation
+		$limitSize=(self::sizeGo*2);	//2Go max (tester avec un 'top' du systeme)
+		$disabledBegin=9;				//debut plage horaire de limitation
+		$disabledEnd=19;				//fin plage horaire de limitation
 		if($archiveSizeControl==true && date("G") > $disabledBegin && date("G") < $disabledEnd && (int)$archiveSize > $limitSize){
 			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::displaySize($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
 			Ctrl::notify($alertLabel, "warning");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
 		}
 	}
-
-
-	/***************************************************************************************************************************/
-	/**************************************************	    SPECIFIC METHODS	************************************************/
-	/***************************************************************************************************************************/
-
 
 	/*******************************************************************************************
 	 * RENVOIE LE DOSSIER TEMPORAIRE DU SYSTÈME "/tmp"  OU  RENVOIE LE DOSSIER TEMPORAIRE "./DATAS/tmp"

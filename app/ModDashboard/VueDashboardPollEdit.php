@@ -1,6 +1,6 @@
 <script>
 ////	RESIZE
-lightboxSetWidth(600);
+lightboxSetWidth(700);
 
 ////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
 <?php if($pollIsVoted==true){ ?>
@@ -13,8 +13,8 @@ $(function(){
 function deleteResponseFile(_idReponse)
 {
 	if(confirm("<?= Txt::trad("confirmDelete") ?>")){
-		$.ajax({url:"?ctrl=dashboard&action=DeleteResponseFile&targetObjId=<?= $objPoll->_targetObjId ?>&_idResponse="+_idReponse}).done(function(result){
-			if(find("true",result))  {$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");}//Remplace le fichier supprimé par un champ "File"
+		$.ajax({url:"?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $objPoll->_typeId ?>&_idResponse="+_idReponse}).done(function(result){
+			if(/true/i.test(result))  {$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");}//Remplace le fichier supprimé par un champ "File"
 		});
 	}
 }
@@ -77,7 +77,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		//Affiche la réponse
 		echo "<div class='vPollResponseDiv ".$respClass."'>
 				<input type='text' name=\"responses[".$respId."]\" value=\"".$respValue."\" placeholder=\"".Txt::trad("DASHBOARD_responseNb").($tmpKey+1)."\">
-				<img src='app/img/attachment.png' class='sLink' onclick=\"$('#responseFile".$respId."').slideToggle();\" title=\"".Txt::trad("EDIT_attachedFile")."\">
+				<img src='app/img/attachment.png' class='sLink' onclick=\"$('#responseFile".$respId."').slideToggle();\" title=\"".Txt::trad("EDIT_attachedFileAdd")."\">
 				<div id='responseFile".$respId."' class='responseFile ".$respFileHide."'>".$respFileContent."</div>
 			  </div>";
 	}

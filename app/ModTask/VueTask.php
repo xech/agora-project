@@ -17,6 +17,6 @@ lightboxSetWidth(550);//Resize
 	echo "<div class='vTaskDetails'>";
 		echo $curObj->responsiblePersons(true).$curObj->advancement(true).$curObj->dateBeginEnd(true);
 	echo "</div>";
-	echo $curObj->menuAttachedFiles();
+	echo $curObj->attachedFileMenu();
 	?>
 </div>

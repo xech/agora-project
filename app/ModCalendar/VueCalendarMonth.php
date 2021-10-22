@@ -91,7 +91,7 @@ function calendarDimensions()
 				//LABEL DU JOUR ET BOUTON "ADD"
 				echo "<div class='vCalMonthDayLabel'>
 						<div>".date("j",$tmpDay["timeBegin"])."</div><div class='vCalMonthDayCelebration'>".$tmpDay["celebrationDay"]."</div>
-						<img src='app/img/plus.png' class='vCalMonthImgAddEvt sLink' ".$addEvtLink." title=\"".$tmpCal->addEventLabel."\">
+						<img src='app/img/plus.png' class='vCalMonthImgAddEvt sLink' ".$addEvtLink." title=\"".Txt::tooltip($tmpCal->addEventLabel)."\">
 					  </div>";
 				//EVENEMENTS DU JOUR
 				foreach($tmpCal->eventList[$tmpDay["date"]] as $tmpEvt)

@@ -16,9 +16,9 @@ class MdlCalendarEvent extends MdlObject
 	const objectType="calendarEvent";
 	const dbTable="ap_calendarEvent";
 	const MdlObjectContainer="MdlCalendar";
+	const htmlEditorField="description";
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
-	const htmlEditorField="description";
 	public static $requiredFields=["title","dateBegin","timeBegin","dateEnd","timeEnd"];
 	public static $searchFields=["title","description"];
 	private $_confirmedCalendars=null;
@@ -82,7 +82,7 @@ class MdlCalendarEvent extends MdlObject
 	 *******************************************************************************************/
 	public function deleteRight()
 	{
-		return ($this->fullRight()  ||  (Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::getParam("_idCalDeleteOn"))));
+		return ($this->fullRight()  ||  (Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::param("_idCalDeleteOn"))));
 	}
 
 	/*******************************************************************************************
@@ -99,8 +99,8 @@ class MdlCalendarEvent extends MdlObject
 	public function delete()
 	{
 		//Supprime sur un agenda spécifique  ||  Supprime un evt périodique à une date précise  ||  Suppression de l'evt sur tous les agendas
-		if(Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::getParam("_idCalDeleteOn")))	{$this->deleteAffectation(Req::getParam("_idCalDeleteOn"));}
-		elseif(Req::isParam("periodDateExceptionsAdd") && $this->fullRight())									{Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format($this->periodDateExceptions."@@".Req::getParam("periodDateExceptionsAdd")."@@")." WHERE _id=".$this->_id);}
+		if(Req::isParam("_idCalDeleteOn") && $this->deleteAffectationRight(Req::param("_idCalDeleteOn")))	{$this->deleteAffectation(Req::param("_idCalDeleteOn"));}
+		elseif(Req::isParam("periodDateExceptionsAdd") && $this->fullRight())									{Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format($this->periodDateExceptions."@@".Req::param("periodDateExceptionsAdd")."@@")." WHERE _id=".$this->_id);}
 		elseif($this->fullRight())																				{Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id);}
 		//On supprime l'événement s'il est affecté à aucun agenda
 		if(Db::getVal("SELECT count(*) FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id)==0)  {parent::delete();}

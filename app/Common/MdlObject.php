@@ -12,8 +12,8 @@
  */
 class MdlObject
 {
-	//Utilise les classes des menus et attributs
-	use MdlObjectMenus, MdlObjectAttributes;
+	//Utilise les classes des menus ("trait")
+	use MdlObjectMenus;
 
 	//Propriétés de base
 	const moduleName=null;
@@ -24,7 +24,7 @@ class MdlObject
 	const MdlObjectContainer=null;
 	const isFolder=false;
 	const isFolderContent=false;
-	protected static $_hasAccessRight=null;
+	protected static $_hasAccessRight=null;//pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
 	//Propriétés d'affichage et d'édition (d'IHM)
 	const isSelectable=false;
 	const hasShortcut=false;
@@ -41,6 +41,10 @@ class MdlObject
 	private $_accessRight=null;
 	private $_containerObj=null;
 	private $_affectations=null;
+	private $_attachedFiles=null;
+	private $_attachedFilesMenu=null;
+	private $_usersComment=null;
+	private $_usersLike=null;
 	protected static $_sqlTargets=null;
 
 	/*******************************************************************************************
@@ -61,7 +65,7 @@ class MdlObject
 		}
 		////	Identifiant tjs numérique + Identifiant générique (exple : "fileFolder-19")
 		$this->_id=(int)$this->_id;
-		$this->_targetObjId=static::objectType."-".$this->_id;
+		$this->_typeId=static::objectType."-".$this->_id;
 	}
 
 	/*******************************************************************************************
@@ -208,7 +212,7 @@ class MdlObject
 				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND ".$sqlSpaces);
 			}
 			//Ajoute les nouveaux droits d'accès : passés en paramètre / provenant du formulaire
-			$newAccessRight=(Req::isParam("objectRight"))  ?  Req::getParam("objectRight")  :  $objectRightSpecific;
+			$newAccessRight=Req::isParam("objectRight")  ?  Req::param("objectRight")  :  $objectRightSpecific;
 			foreach($newAccessRight as $tmpRight){
 				$tmpRight=explode("_",$tmpRight);//exple :  "55_U33_2"  devient ["_idSpace"=>"5","target"=>"U3","accessRight"=>"2"]  correspond à droit "2" sur l'user "33" de l'espace "55"
 				Db::query($sqlInsertBase." _idSpace=".Db::format($tmpRight[0]).", target=".Db::format($tmpRight[1]).", accessRight=".Db::format($tmpRight[2]));
@@ -334,8 +338,8 @@ class MdlObject
 	{
 		//Controle le droit d'accès en écriture
 		if($this->editRight()==false)  {Ctrl::noAccessExit();}
-		//Controle si l'objet n'est pas en cour d'édition par un autre user (dans la dernières minute)
-		$_idUserEditSameObj=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editObjId=".Db::formatParam("targetObjId")." AND `date` > ".(time()-60));
+		//Controle si l'objet n'est pas déjà en cour de modification par un autre user (cf. "messengerUpdate()")
+		$_idUserEditSameObj=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editTypeId=".Db::param("typeId")." AND `date` > ".(time()-60));
 		if($this->isNew()==false && !empty($_idUserEditSameObj))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$_idUserEditSameObj)->getLabel()." !");}
 	}
 
@@ -350,8 +354,8 @@ class MdlObject
 		elseif(!empty($this->description))	{$tmpLabel=$this->description;}	//exple: sujet/message du forum (sans titre)
 		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//exple: link
 		else								{$tmpLabel=null;}
-		//Renvoi un résultat "clean" & sans tags
-		return Txt::reduce(strip_tags($tmpLabel),40);
+		//Renvoi un résultat "clean"
+		return Txt::reduce(strip_tags($tmpLabel),50);
 	}
 
 	/*******************************************************************************************
@@ -362,13 +366,13 @@ class MdlObject
 		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe pas encore (ou plus)
 		else
 		{
-			$urlBase="?ctrl=".static::moduleName."&targetObjId=";
-			if($display=="vue")									{return $urlBase.$this->_targetObjId."&action=Vue".static::objectType;}							//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
-			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=FolderEdit&targetObjId=".$this->_targetObjId;}						//Edite un dossier dans une lightbox via "actionFolderEdit()"
-			elseif($display=="edit")							{return $urlBase.$this->_targetObjId."&action=".static::objectType."Edit";}						//Edite un objet dans une lightbox
-			elseif($display=="delete")							{return "?ctrl=object&action=delete&targetObjects[".static::objectType."]=".$this->_id;}		//Url de suppression via "CtrlObject->delete()"
-			elseif(static::isContainerContent())				{return $urlBase.$this->containerObj()->_targetObjId."&targetObjIdChild=".$this->_targetObjId;}	//Affichage par défaut d'un "content" dans son "Container" (file/contact/task/link/forumMessage). Surchargé pour les "calendarEvent" car on doit sélectionner l'agenda principal de l'evt
-			else												{return $urlBase.$this->_targetObjId;}															//Affichage par défaut (Folder,news,forumSubject...)
+			$urlBase="?ctrl=".static::moduleName."&typeId=";
+			if($display=="vue")									{return $urlBase.$this->_typeId."&action=Vue".static::objectType;}							//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
+			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=FolderEdit&typeId=".$this->_typeId;}							//Edite un dossier dans une lightbox via "actionFolderEdit()"
+			elseif($display=="edit")							{return $urlBase.$this->_typeId."&action=".static::objectType."Edit";}						//Edite un objet dans une lightbox
+			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}	//Url de suppression via "CtrlObject->delete()"
+			elseif(static::isContainerContent())				{return $urlBase.$this->containerObj()->_typeId."&typeIdChild=".$this->_typeId;}			//Affichage par défaut d'un "content" dans son "Container" (file/contact/task/link/forumMessage). Surchargé pour les "calendarEvent" car on doit sélectionner l'agenda principal de l'evt
+			else												{return $urlBase.$this->_typeId;}															//Affichage par défaut (Folder,news,forumSubject...)
 		}
 	}
 
@@ -378,7 +382,7 @@ class MdlObject
 	public function getUrlExternal()
 	{
 		//Cible la page de connexion > l'espace courant > puis le conteneur de l'objet (urlencodé)
-		return Req::getCurUrl()."/?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&targetObjUrl=".urlencode($this->getUrl());
+		return Req::getCurUrl()."/?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&objUrl=".urlencode($this->getUrl());
 	}
 
 	/*******************************************************************************************
@@ -388,7 +392,7 @@ class MdlObject
 	{
 		$url=(static::isFolder==true)  ?  "?ctrl=object&action=FolderEdit"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";//Nouveau dossier / Nouvel objet
 		if(!empty(Ctrl::$curContainer))  {$url.="&_idContainer=".Ctrl::$curContainer->_id;}//Ajoute l'id du container?
-		return $url."&targetObjId=".static::objectType."-0";
+		return $url."&typeId=".static::objectType."-0";
 	}
 
 	/*******************************************************************************************
@@ -404,7 +408,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public function md5IdControl()
 	{
-		return (Req::isParam("md5Id") && $this->md5Id()==Req::getParam("md5Id"));
+		return (Req::isParam("md5Id") && $this->md5Id()==Req::param("md5Id"));
 	}
 
 	/*******************************************************************************************
@@ -414,10 +418,8 @@ class MdlObject
 	{
 		if($this->deleteRight())
 		{
-			//Supprime les fichiers joints
-			if(static::hasAttachedFiles==true){
-				foreach($this->getAttachedFileList() as $tmpFile)  {$this->deleteAttachedFile($tmpFile);}
-			}
+			//Supprime les fichiers joints (s'il y en a)
+			foreach($this->attachedFileList() as $tmpFile)  {$this->attachedFileDelete($tmpFile);}
 			//Init la sélection de l'objet dans les tables
 			$sqlSelectObject="WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id;
 			//Supprime les éventuels "usersComment" & "usersLike"
@@ -425,8 +427,9 @@ class MdlObject
 			if(static::hasUsersLike)	{Db::query("DELETE FROM ap_objectLike ".$sqlSelectObject);}
 			//Ajoute le log de suppression, mais pas en dernier!
 			Ctrl::addLog("delete",$this);
-			//Supprime les droits d'accès, puis enfin l'objet lui-même!
+			//Supprime les droits d'accès (s'il y en a)
 			Db::query("DELETE FROM ap_objectTarget ".$sqlSelectObject);
+			//Supprime enfin l'objet lui-même !
 			Db::query("DELETE FROM ".static::dbTable." WHERE _id=".$this->_id);
 		}
 	}
@@ -514,8 +517,8 @@ class MdlObject
 				else				{$sqlProperties.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}
 			}
 			////	Propriétés optionnelles "_idContainer", "shortcut" (attention au decochage)
-			if(Req::isParam("_idContainer"))	{$sqlProperties.=", _idContainer=".Db::formatParam("_idContainer");}
-			if(static::hasShortcut==true)		{$sqlProperties.=", shortcut=".Db::formatParam("shortcut");}
+			if(Req::isParam("_idContainer"))	{$sqlProperties.=", _idContainer=".Db::param("_idContainer");}
+			if(static::hasShortcut==true)		{$sqlProperties.=", shortcut=".Db::param("shortcut");}
 			////	LANCE L'INSERT/UPDATE !!
 			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlProperties, true);}
 			else{
@@ -524,9 +527,10 @@ class MdlObject
 			}
 			////	Reload l'objet pour prendre en compte les nouvelles propriétés ("true" pour l'update du cache)
 			$reloadedObj=Ctrl::getObj(static::objectType, $_id, true);
-			////	Ajoute si besoin les droits d'accès et/ou les fichiers joints
+			////	Ajoute si besoin les droits d'accès
 			$reloadedObj->setAffectations();
-			$reloadedObj->addAttachedFiles();
+			////	Ajoute si besoin les fichiers joints
+			$reloadedObj->attachedFileAdd();
 			////	Reload à nouveau l'objet (exple: si la description est maj avec insertion d'image)
 			$reloadedObj=Ctrl::getObj(static::objectType, $_id, true);
 			////	Ajoute aux Logs  &  Renvoie l'objet rechargé
@@ -537,60 +541,48 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * ENVOI D'UN MAIL DE NOTIFICATION (cf. "menuEdit")
+	 * ENVOI UNE NOTIF PAR MAIL DE L'EDITION DE L'OBJET (cf. "menuEdit")
 	 *******************************************************************************************/
 	public function sendMailNotif($specificLabel=null, $addDescription=null, $addFiles=null, $addUserIds=null)
 	{
 		//Notification demandé par l'auteur de l'objet  OU  Destinataires ajoutés automatiquement (Exple: notif automatique d'un nouveau message du forum)
 		if(Req::isParam("notifMail") || !empty($addUserIds))
 		{
-			////	Sujet et Message : "Fichier créé par boby SMITH"
-			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//"-OBJLABEL- créé par" / "-OBJLABEL- modifié par"
+			////	Sujet : "Fichier créé par boby SMITH"
+			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Exple: "Fichier créé par" / "News modifiée par"
 			$subject=ucfirst($this->tradObject($tradCreaModif))." ".Ctrl::$curUser->getLabel();
-			////	Message
-			//Label principal de l'objet : spécifique
+			////	Message : Label principal de l'objet
 			if(!empty($specificLabel))		{$objContent="<b>".$specificLabel."</b>";}	//Nom des fichiers uploadés, etc 
 			elseif(!empty($this->title))	{$objContent="<b>".$this->title."</b>";}	//forum subject, task, etc
 			elseif(!empty($this->name))		{$objContent="<b>".$this->name."</b>";}		//folder name, etc
 			else							{$objContent=null;}
-			//Ajoute si besoin la description
+			////	Ajoute si besoin la description && Remplace si besoin les chemins relatifs
 			if(!empty($this->description))	{$objContent.="<br>".$this->description;}
 			if(!empty($addDescription))		{$objContent.="<br>".$addDescription;}
-			$objContent=Txt::reduce($objContent,8000);											//Limite la taille du texte (tester avec 5000 carctères + une mise en page, car "reduce()" lance aussi un "strip_tag()")
-			$objContent=str_replace(PATH_DATAS, Req::getCurUrl()."/".PATH_DATAS, $objContent);	//Remplace si besoin les chemins relatifs dans le label de l'objet
-			$objContentStyle="display:inline-block;background-color:#f5f5f5;color:#333;border:1px solid #bbb;border-radius:3px;padding:15px;";//Style du corps du message
-			$message="<br>".$subject." :<br><br><div style=\"".$objContentStyle."\">".$objContent."</div><br><br><a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";//Finalise le message (sur une seule ligne!!)
-			////	Users à destination de la notif : destinataires spécifiques OU users affectées à l'objet (tous!)
-			$notifUsersIds=[];
-			if(Req::isParam("notifMail"))	{$notifUsersIds=(Req::isParam("notifMailUsers"))  ?  Req::getParam("notifMailUsers")  :  $this->affectedUserIds();}
-			////	Ajoute si besoin les destinataires passés en paramètres
+			$objContent=str_replace(PATH_DATAS, Req::getCurUrl()."/".PATH_DATAS, $objContent);
+			////	Corps du mail
+			$message="<style>  #mailSubject {margin-top:20px; margin-bottom:30px;}  #mailContent {margin-bottom:30px;max-width:1024px;background-color:#f5f5f5;color:#333;border:1px solid #bbb;border-radius:3px;padding:15px;}  #mailContent img {max-width:100%}</style>
+					  <div id='mailSubject'>".$subject." :</div>
+					  <div id='mailContent'>".$objContent."</div>
+					  <a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";
+			////	Users à destination de la notif : destinataires spécifiques OU Tous les users affectées à l'objet
+			$mailUserIds=[];
+			if(Req::isParam("notifMail"))	{$mailUserIds=Req::isParam("notifMailUsers") ? Req::param("notifMailUsers") : $this->affectedUserIds();}
+			////	Ajoute si besoin les destinataires passés en paramètres (cf. notif de nouveaux messages du forum)
 			if(!empty($addUserIds)){
-				if(Req::isParam("notifMail")==false)  {$addedOptions="noNotify";}//Par défaut, on n'affiche pas si le mail a bien été envoyé ou pas (cf. "notify()")
-				$notifUsersIds=array_unique(array_merge($notifUsersIds,$addUserIds));
-			}
-			////	Ajoute si besoin les images jointes à l'objet et intégré dans sa description (exple: images intégrées à une actualité)
-			if(static::htmlEditorField!=null)
-			{
-				if($addFiles==null)  {$addFiles=[];}
-				foreach($this->getAttachedFileList() as $tmpFile)
-				{
-					//Vérifie s'il s'agit d'une image et si son url est présente dans le message (exple: "?ctrl=object&action=displayAttachedFile...")
-					if(File::isType("imageBrowser",$tmpFile["name"]) && stristr($message,$tmpFile["url"])){
-						$tmpFileCid="attachedFile".$tmpFile["_id"];								//"cid" de l'image dans l'email
-						$message=str_replace($tmpFile["url"], "cid:".$tmpFileCid, $message);	//Remplace l'url de l'image par le "cid" de l'image ajouté en pièce jointe
-						$addFiles[]=["path"=>$tmpFile["path"], "cid"=>$tmpFileCid];				//Ajoute la pièce jointe du mail avec le "cid" correspondant
-					}
-				}
+				if(Req::isParam("notifMail")==false)  {$noNotify=true;}//Pas de notification d'envoi d'email
+				$mailUserIds=array_unique(array_merge($mailUserIds,$addUserIds));
 			}
 			////	Envoi du message
-			if(!empty($notifUsersIds))
+			if(!empty($mailUserIds))
 			{
-				$options="objectNotif";
-				if(Req::getParam("receptionNotif"))	{$options.="receptionNotif,";}
-				if(Req::getParam("addReplyTo"))		{$options.="addReplyTo,";}
-				if(Req::getParam("hideRecipients"))	{$options.="hideRecipients,";}
-				if(!empty($addedOptions))			{$options.=",".$addedOptions;}
-				Tool::sendMail($notifUsersIds, $subject, $message, $options, $addFiles);
+				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";												//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
+				if(Req::isParam("mailOptions"))  {$options=array_merge($options,Req::param("mailOptions"));}					//Options sélectionnées par l'user
+				if(static::htmlEditorField!=null)  {$message=$this->attachedFileImageCid($message);}							//Affiche si besoin les images en pièce jointe dans le corps du mail
+				if(Req::isDevServer())  {$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}	//Evite le spam en mod Dev (cf. "getUrlExternal()")
+				$attachedFiles=$this->attachedFileList();																		//Fichiers joints de l'objet
+				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}									//Ajoute si besoin les fichiers spécifiques (exple: fichier ".ics" d'un évenement)
+				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);										//Envoie l'email
 			}
 		}
 	}
@@ -633,29 +625,16 @@ class MdlObject
 			$MdlObjectContainer=static::MdlObjectContainer;
 			$return="(".$return." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $keyId
 		}
-		////	Renvoie le résultat
+		////	Renvoi le résultat
 		return $return;
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : RECUPÈRE LES OBJETS D'UN "PLUGIN" ($params["type"] : "dashboard"/"shortcut"/"search")
+	 * RECUPÈRE LES OBJETS D'UN "PLUGIN" (FONCTION DE $params ET DES DROITS D'ACCES)
 	 *******************************************************************************************/
-	public static function getPlugins($params)
+	public static function getPluginObjects($params)
 	{
-		$returnObjects=[];
-		if(isset($params["type"]))
-		{
-			//// Recupere les elements en fonction de leurs droits d'accès
-			$sqlDisplay=static::sqlDisplay();
-			$returnObjects=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPlugins($params)." AND ".$sqlDisplay." ORDER BY dateCrea desc");
-			//// Ajoute si besoin les plugins courant du Dashboard : ayant lieu dans la periode affichée (idem "evtList()")
-			if($params["type"]=="dashboard" && (static::objectType=="calendarEvent" || static::objectType=="task")){
-				$sqlTimeSlot="(  (dateBegin between ".Db::format($params["dateTimeBegin"])." and ".Db::format($params["dateTimeEnd"]).")  OR  (dateEnd between ".Db::format($params["dateTimeBegin"])." and ".Db::format($params["dateTimeEnd"]).")  OR  (dateBegin < ".Db::format($params["dateTimeBegin"])." and dateEnd > ".Db::format($params["dateTimeEnd"]).")  )";
-				$currentObjs=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlTimeSlot." AND ".$sqlDisplay." ORDER BY dateCrea desc");
-				foreach($currentObjs as $tmpObj)   {$tmpObj->pluginIsCurrent=true;  $returnObjects[$tmpObj->_id]=$tmpObj;}//ajoute/remplace l'objet du tableau
-			}
-		}
-		return $returnObjects;
+		return (!empty($params))  ?  Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPlugins($params)." AND ".static::sqlDisplay()." ORDER BY dateCrea desc")  :  [];
 	}
 
 	/*******************************************************************************************
@@ -723,12 +702,11 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE LA DATE DE CRÉATION OU MODIFICATION
+	 * AFFICHE LA DATE DE CRÉATION OU DE MODIFICATION
 	 *******************************************************************************************/
-	public function dateLabel($getDateCrea=true, $format="normal")
+	public function dateLabel($dateModif=false, $format="normal")
 	{
-		if($getDateCrea==true)	{return Txt::dateLabel($this->dateCrea,$format);}
-		else					{return Txt::dateLabel($this->dateModif,$format);}
+		return ($dateModif==true)  ?  Txt::dateLabel($this->dateModif,$format)  :  Txt::dateLabel($this->dateCrea,$format);
 	}
 
 	/*******************************************************************************************
@@ -737,7 +715,7 @@ class MdlObject
 	public function autorDateLabel($withAutorIcon=false)
 	{
 		$autorIcon=($withAutorIcon==true)  ?  Ctrl::getObj("user",$this->_idUser)->getImg(true,true)  :  null;
-		return $autorIcon." ".$this->autorLabel()."<div class='objAutorDateCrea'>".$this->dateLabel(true,"full")."</div>";
+		return $autorIcon." ".$this->autorLabel()."<div class='objAutorDateCrea'>".$this->dateLabel()."</div>";
 	}
 
 	/*******************************************************************************************
@@ -745,20 +723,216 @@ class MdlObject
 	 *******************************************************************************************/
 	public function tradObject($tradKey)
 	{
-		//// Trad de base
+		//// Trad principale
 		$trad=Txt::trad($tradKey);
-		//// Trad de l'objet courant
+		//// Trad de l'objet courant : remplace OBJCONTENT (ex: News) et si besoin OBJCONTENT (ex: fichier)
 		if(Txt::isTrad("OBJECT".static::objectType)){
 			$objLabel=Txt::trad("OBJECT".static::objectType);
-			$trad=str_replace("-OBJLABEL-", $objLabel, $trad);//Remplace -OBJLABEL-
-			if(static::isContainerContent())  {$trad=str_replace("-OBJCONTENT-", $objLabel, $trad);}//Remplace -OBJCONTENT-
+			$trad=str_replace("-OBJLABEL-", $objLabel, $trad);
+			if(static::isContainerContent())  {$trad=str_replace("-OBJCONTENT-", $objLabel, $trad);}
 		}
-		//// Trad des objets "content" d'un "Container" : remplace -OBJCONTENT-
+		//// Trad d'un objet container (ex: dossier) : remplace OBJCONTENT par son contenu (ex: fichiers)
 		if(static::isContainer()){
 			$MdlObjectContent=static::MdlObjectContent;
 			if(Txt::isTrad("OBJECT".$MdlObjectContent::objectType))  {$trad=str_replace("-OBJCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $trad);}
 		}
 		//// Retourne la trad
 		return $trad;
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : INFOS SUR UN FICHIER JOINT
+	 *******************************************************************************************/
+	public static function attachedFileInfos($file)
+	{
+		if(!empty($file))
+		{
+			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}	//Si besoin, récupère les infos en bdd
+			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);						//Path/chemin réel du fichier
+			$file["url"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url pour un affichage du fichier via "actionAttachedFileDisplay()"
+			$file["containerObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);									//Ajoute l'objet dont dépend le fichier joint
+			if(File::isType("imageBrowser",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}					//"cid" du fichier pour l'envoi des mails (cf. "attachedFileImageCid()")
+			return $file;
+		}
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : URL D'AFFICHAGE DU FICHIER VIA "actionAttachedFileDisplay()"
+	 *******************************************************************************************/
+	public static function attachedFileDisplayUrl($fileId, $fileName)
+	{
+		//Ajoute "&amp;" pour Tinymce et ajoute l'extension en toute fin (cf. fancybox des images et le controle des type de fichier)
+		return "?ctrl=object&amp;action=AttachedFileDisplay&amp;_id=".$fileId."&amp;extension=.".File::extension($fileName);
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : AJOUTE DANS LE CORPS DE L'EMAIL LES IMAGES EN PIECE JOINTE ("CID")
+	 *******************************************************************************************/
+	public function attachedFileImageCid($mailMessage)
+	{
+		foreach($this->attachedFileList() as $tmpFile){																		//Parcourt chaque fichier joint de l'objet courant
+			if(!empty($tmpFile["cid"]))  {$mailMessage=str_replace($tmpFile["url"], "cid:".$tmpFile["cid"], $mailMessage);}	//Si c'est une image, on remplace l'url par le "cid" (exple : CID="XYZ" correspond à "<img src='cid:XYZ'>")
+		}
+		return $mailMessage;
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : LISTE DES FICHIERS JOINTS DE L'OBJET
+	 *******************************************************************************************/
+	public function attachedFileList()
+	{
+		//Mise en cache des fichiers joints
+		if($this->_attachedFiles===null){																														
+			if(static::hasAttachedFiles!==true)  {$this->_attachedFiles==[];}																					//Ce type d'objet ne gère pas les fichiers joint : tableau vide
+			else{
+				$this->_attachedFiles=Db::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);	//Récupère les fichiers joints de l'objet en BDD
+				foreach($this->_attachedFiles as $key=>$tmpFile)  {$this->_attachedFiles[$key]=self::attachedFileInfos($tmpFile);}								//Ajoute le "path" et autres infos de chaque fichier joint
+			}
+		}
+		//Retoune les résultats (toujours au format "array")
+		return (array)$this->_attachedFiles;
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : MENUS DES FICHIERS JOINTS DE L'OBJET (Menu contextuel ou vue description. Affiche et propose le téléchargement)
+	 *******************************************************************************************/
+	public function attachedFileMenu($separator="<hr>")
+	{
+		//Mise en cache du menu des fichiers joints
+		if($this->_attachedFilesMenu===null)
+		{
+			$this->_attachedFilesMenu="";
+			//Affiche le menu avec chaque fichiers
+			if(count($this->attachedFileList())>0)
+			{
+				foreach($this->attachedFileList() as $tmpFile){
+					$getFileUrl="?ctrl=object&action=AttachedFileDownload&_id=".$tmpFile["_id"];
+					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::appGetFileUrl($getFileUrl,$tmpFile["name"]);}//Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
+					$this->_attachedFilesMenu.="<div class='menuAttachedFile sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
+				}
+			}
+		}
+		//Retoune les résultats, avec un séparateur différent pour chaque affichage
+		if($this->_attachedFilesMenu)  {return $separator.$this->_attachedFilesMenu;}
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : AJOUTE LES FICHIERS JOINTS DU "menuEdit()"
+	 *******************************************************************************************/
+	public function attachedFileAdd()
+	{
+		if(static::hasAttachedFiles==true)
+		{
+			foreach($_FILES as $inputId=>$tmpFile)
+			{
+				//Ajoute chaque fichier joint (cf. "VueObjAttachedFile.php")
+				if(stristr($inputId,"attachedFile") && $tmpFile["error"]==0 && File::controleUpload($tmpFile["name"],$tmpFile["size"]))
+				{
+					//Ajoute le fichier en Bdd et dans le dossier de destination
+					$_idFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($tmpFile["name"]).", objectType='".static::objectType."', _idObject=".$this->_id, true);
+					$filePath=PATH_OBJECT_ATTACHMENT.$_idFile.".".File::extension($tmpFile["name"]);
+					$isMoved=move_uploaded_file($tmpFile["tmp_name"], $filePath);
+					//Fichier ajouté
+					if($isMoved==true)
+					{
+						//Optimise si besoin le fichier + chmod
+						if(File::isType("imageResize",$filePath))  {File::imageResize($filePath,$filePath,1600);}
+						File::setChmod($filePath);
+						//Nouvelle Image/Vidéo/Mp3 insérée dans le texte : modifie le "SRCINPUT" pour y mettre le path final
+						if(static::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"]))
+						{
+							$inputCpt=str_replace("attachedFile",null,$inputId);																	//Récupère le compteur de l'input (cf. "VueObjAttachedFile.php")
+							$editorValue=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id);			//Récupère le texte de l'éditeur
+							$editorValue=str_replace("SRCINPUT".$inputCpt, self::attachedFileDisplayUrl($_idFile,$tmpFile["name"]), $editorValue);	//Remplace les "SRCINPUT" temporaires du fichier (cf. "VueObjHtmlEditor.php") par l'url finale d'affichage du fichier
+							$editorValue=str_replace("attachedFileTagInput".$inputCpt, "attachedFileTag".$_idFile, $editorValue);					//Remplace l'id temporaire du fichier/input par le $_idFile final (cf. "VueObjHtmlEditor.php")
+							Db::query("UPDATE ".static::dbTable." SET ".static::htmlEditorField."=".Db::format($editorValue,"editor")." WHERE _id=".$this->_id);//Update le texte de l'éditeur !
+						}
+					}
+				}
+			}
+			File::datasFolderSize(true);//Recalcule $_SESSION["datasFolderSize"]
+		}
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : SUPPRIME UN FICHIER JOINT
+	 *******************************************************************************************/
+	public function attachedFileDelete($curFile)
+	{
+		if($this->editRight() && is_array($curFile)){
+			File::rm($curFile["path"]);
+			if(!is_file($curFile["path"])){
+				Db::query("DELETE FROM ap_objectAttachedFile WHERE _id=".(int)$curFile["_id"]);
+				return true;
+			}
+		}
+	}
+
+	/*******************************************************************************************
+	 * COMMENTAIRES : L'OBJET PEUT AVOIR DES COMMENTAIRES?
+	 *******************************************************************************************/
+	public function hasUsersComment()
+	{
+		return (static::hasUsersComment && !empty(Ctrl::$agora->usersComment));
+	}
+
+	/*******************************************************************************************
+	 * COMMENTAIRES : LISTE LES COMMENTAIRES
+	 *******************************************************************************************/
+	public function getUsersComment()
+	{
+		//Mise en cache des commentaires de l'objet
+		if($this->_usersComment===null)
+			{$this->_usersComment=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);}
+		//Renvoi les résultats
+		return $this->_usersComment;
+	}
+
+	/*******************************************************************************************
+	 * COMMENTAIRE : DROIT D'ÉDITION/SUPPRESSION D'UN COMMENTAIRE
+	 *******************************************************************************************/
+	public static function userCommentEditRight($_idComment)
+	{
+		if(!empty($_idComment)){
+			$idUser=Db::getVal("SELECT _idUser FROM ap_objectComment WHERE _id=".(int)$_idComment);
+			return (Ctrl::$curUser->isAdminGeneral() || $idUser==Ctrl::$curUser->_id);
+		}
+	}
+
+	/*******************************************************************************************
+	 * LIKES : L'OBJET PEUT AVOIR DES "LIKES"?
+	 *******************************************************************************************/
+	public function hasUsersLike()
+	{
+		return (static::hasUsersLike && !empty(Ctrl::$agora->usersLike));
+	}
+
+	/*******************************************************************************************
+	 * LIKES : LISTE DES "LIKE"/"DONTLIKE" (passer en parametre)
+	 *******************************************************************************************/
+	public function getUsersLike($like_dontlike)
+	{
+		//Mise en cache
+		if($this->_usersLike===null){
+			//Init les "like" et "dontike"
+			$this->_usersLike=["like"=>[],"dontlike"=>[]];
+			//Récupère les users (non supprimés) qui ont posté un "like" ou "dontlike"
+			foreach(Db::getTab("SELECT * FROM ap_objectLike WHERE objectType='".static::objectType."' AND _idObject=".$this->_id." AND _idUser IN (select _id from ap_user)")  as  $tmpLike){
+				if($tmpLike["value"]==1)	{$this->_usersLike["like"][]=$tmpLike;}
+				else						{$this->_usersLike["dontlike"][]=$tmpLike;}
+			}
+		}
+		//Renvoie le tableau de résultats
+		return $this->_usersLike[$like_dontlike];
+	}
+
+	/*******************************************************************************************
+	 * LIKES : RÉCUPÈRE LE TOOLTIP ($like_dontlike => "like" ou "donlike")
+	 *******************************************************************************************/
+	public function getUsersLikeTooltip($like_dontlike)
+	{
+		$tooltip=Txt::trad("AGORA_usersLike_".$like_dontlike)."<br>";
+		foreach($this->getUsersLike($like_dontlike) as $tmpLike)  {$tooltip.=Ctrl::getObj("user",$tmpLike["_idUser"])->getLabel().", ";}
+		return trim($tooltip,", ");
 	}
 }

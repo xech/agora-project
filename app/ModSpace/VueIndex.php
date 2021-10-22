@@ -18,9 +18,10 @@
 <div id="pageFull">
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
-			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>');" title="<?= Txt::trad("SPACE_moduleInfo") ?>"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div><hr>
+			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>');" title="<?= Txt::trad("SPACE_moduleInfo") ?>"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
+			<div class="infos"><?= Txt::trad("SPACE_moduleInfo") ?></div>
 		</div>
 	</div>
 	<div id="pageFullContent" class="objBlocks">
@@ -31,9 +32,9 @@
 			////	CONTENEUR
 			echo $tmpSpace->divContainer().$tmpSpace->contextMenu();
 				////	NOM & DESCRIPTION & MODULES AFFECTES
-				echo $tmpSpace->name."<div class='vSpaceDescription' title=\"".$tmpSpace->description."\">".Txt::reduce($tmpSpace->description,(Req::isMobile()?50:80))."</div>";
+				echo $tmpSpace->name."<div class='vSpaceDescription' title=\"".Txt::tooltip($tmpSpace->description)."\">".Txt::reduce($tmpSpace->description,(Req::isMobile()?50:80))."</div>";
 				echo "<div class='vModules'>";
-					foreach($tmpSpace->moduleList(false) as $tmpModule)  {echo "<img src='app/img/".$tmpModule["moduleName"]."/icon.png' title=\"".$tmpModule["description"]."\">";}
+					foreach($tmpSpace->moduleList(false) as $tmpModule)  {echo "<img src='app/img/".$tmpModule["moduleName"]."/icon.png' title=\"".Txt::tooltip($tmpModule["description"])."\">";}
 				echo "</div><hr>";
 				////	AFFECTATIONS
 				echo "<div class='vSpaceAffectationLabel'>".Txt::trad("EDIT_accessRight")." :</div>";
