@@ -4,7 +4,7 @@ Nouvelle fonctionnalité d'ajout et édition d'image/video directement depuis l'
 Nouvelle option du paramétrage général : url de visio alternative (Jitsi)
 Amélioration de la gestion des Newsletters avec intégration d'images dans l'éditeur
 Amélioration de la gestion des fonds d'écran
-Correction le import/export des agendas au format Ical
+Correction de l'import/export des agendas au format Ical
 Optimisations de "Txt::reduce()" et autres fonctions de base
 Mise à jour de l'éditeur TinyMce en version majeure 5.9.2
 Mise à jour de PHMailer en version 6.5.1

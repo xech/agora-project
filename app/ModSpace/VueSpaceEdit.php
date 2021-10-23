@@ -50,10 +50,11 @@ $(function(){
 ////	Contrôle du formulaire
 function formControl()
 {
-   //Controle le password (pas de "isValidPassword()")
-   if($("input[name='public']").prop("checked") && $("#divPassword input[name=password]").val().length<6)  {notify("<?= Txt::trad("passwordInvalid") ?>"); return false; }
-   //Controle le nb de modules cochés
-   if($("input[name='moduleList[]']:checked").length==0)  {notify("<?= Txt::trad("SPACE_selectModule") ?>"); return false; }
+	//Controle le password (ne pas utiliser "isValidPassword()")
+	if($("input[name='public']").prop("checked") && $("#divPassword input[name=password]").isEmpty()==false && $("#divPassword input[name=password]").val().length<6)
+		{notify("<?= Txt::trad("passwordInvalid") ?>"); return false; }
+	//Controle le nb de modules cochés
+	if($("input[name='moduleList[]']:checked").length==0)  {notify("<?= Txt::trad("SPACE_selectModule") ?>"); return false; }
 	//Controle final (champs obligatoires, affectations/droits d'accès, etc)
 	return mainFormControl();
 }
