@@ -755,7 +755,7 @@ function userGroupSelect(thisGroup, idContainerUsers)
 }
 
 /**************************************************************************************************
- * LANCE UNE VISIO AVEC LE NOM DE L'USER COURANT
+ * LANCE UNE VISIO (SI BESOIN AVEC LE NOM DES USERS CONCERNES DANS L'URL)
  **************************************************************************************************/
 function launchVisio(visioURL)
 {

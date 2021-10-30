@@ -405,10 +405,11 @@ class Trad extends Txt
 		self::$trad["VISIO_launchFromEvent"]="Lancer la visioconférence de l'événement";
 		self::$trad["VISIO_urlMail"]="Ajouter un lien pour lancer une nouvelle visiofonférence";
 		self::$trad["VISIO_launchInfo"]="Pensez à autoriser l'accès à votre webcam et microphone !";
-		self::$trad["VISIO_launchHelp"]="Cliquez ici si vous rencontrez des problèmes au lancement de la visioconférence";
+		self::$trad["VISIO_launchHelp"]="Problèmes de caméra ou de micro au lancement de votre visioconférence ? Suivez le guide <img src='app/img/pdf.png'>";
+		self::$trad["VISIO_installJitsi"]="Installez gratuitement l'application Jitsi pour lancer vos visioconférences";
 		self::$trad["VISIO_launchServerInfo"]="Choisissez le serveur secondaire si le serveur principal ne fonctionne pas comme souhaité :<br>Notez que vos interlocuteurs devront sélectionner le même serveur de visioconférence que vous.";
-		self::$trad["VISIO_launchServerMain"]="Serveur principal";
-		self::$trad["VISIO_launchServerAlt"]="Serveur secondaire";
+		self::$trad["VISIO_launchServerMain"]="Serveur de visio principal";
+		self::$trad["VISIO_launchServerAlt"]="Serveur de visio secondaire";
 		self::$trad["VISIO_launchButton"]="Lancer la visioconférence";
 
 		////	vueObjMenuEdit

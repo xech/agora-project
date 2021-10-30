@@ -406,6 +406,7 @@ class Trad extends Txt
 		self::$trad["VISIO_urlMail"]="Add a link at the end of the text to start a new videoconference";
 		self::$trad["VISIO_launchInfo"]="Remember to allow access to your webcam and microphone";
 		self::$trad["VISIO_launchHelp"]="Click here if you have problems launching the videoconference";
+		self::$trad["VISIO_installJitsi"]="Install the free Jitsi application to launch your videoconferences";
 		self::$trad["VISIO_launchServerInfo"]="Choose the secondary server if the primary server is not functioning properly.<br>Your contacts will have to select the same video server.";
 		self::$trad["VISIO_launchServerMain"]="Main server";
 		self::$trad["VISIO_launchServerAlt"]="Secondary server";

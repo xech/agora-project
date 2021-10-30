@@ -10,7 +10,6 @@ $(function(){
 		if($("#visioHostServer").exist() && $("#visioHostServer").val()=="alt")  {visioURL=visioURL.replace("<?= Ctrl::$agora->visioHost ?>","<?= Ctrl::$agora->visioHostAlt ?>");}
 		////	Lance la visio
 		window.open(visioURL);
-		////Ouverture de l'appli Jitsi Android:  var visioURLObj=new URL(visioURL);  window.open("intent://"+visioURLObj.hostname+"/"+visioURLObj.pathname+"#Intent;scheme=org.jitsi.meet;package=org.jitsi.meet;end");
 	});
 });
 </script>
@@ -18,15 +17,20 @@ $(function(){
 <style>
 .lightboxContent	{padding-top:40px; padding-bottom:30px; text-align:center; font-size:1.05em;}
 #launchVisio		{width:300px; height:60px; border-radius:5px; font-size:1.1em;}
-#visioInfos			{display:block; margin:30px;}
+.visioInfos			{display:block; margin:30px;}
 </style>
 
 <div class="lightboxContent">
 	<?php
+	////	Install l'application Jitsi
+	if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))
+		{echo "<a href=\"javascript:window.open('android-app://org.jitsi.meet#omnispaceApp_action=getFile_nameMd5')\" class='visioInfos'><img src='app/img/jitsi.png'> ".Txt::trad("VISIO_installJitsi")."</a>";}
+
 	////	Bouton de lancement && Infos sur la visio
 	echo "<button id='launchVisio'>".Txt::trad("VISIO_launchButton")." &nbsp; <img src='app/img/visioSmall.png'></button>
-		  <a href='docs/VISIO.pdf' target='_blank' id='visioInfos' title=\"".Txt::trad("VISIO_launchHelp")."\"><img src='app/img/pdf.png'>&nbsp; ".Txt::trad("VISIO_launchInfo")."</a>";
-	////Selection du serveur de visio
+		  <a href='docs/VISIO.pdf' target='_blank' class='visioInfos' title=\"".Txt::trad("VISIO_launchHelp")."\"><img src='app/img/pdf.png'>&nbsp; ".Txt::trad("VISIO_launchInfo")."</a>";
+
+	////	Selection du serveur de visio
 	if(!empty(Ctrl::$agora->visioHostAlt)){
 		echo "<div title=\"".Txt::trad("VISIO_launchServerInfo")."\">
 				<img src='app/img/info.png'> &nbsp;

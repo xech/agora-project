@@ -210,9 +210,15 @@ class CtrlMisc extends Ctrl
 	 *******************************************************************************************/
 	public static function actionLaunchVisio()
 	{
-		////	Url de visio :  Mode Android > lance le browser (cf. "getFile_nameMd5" de Ionic)  ||  Mode normal > ajoute le nom de l'user dans l'Url
+		//// Init l'Url
 		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));
-		$vDatas["visioURL"].=(Req::isMobileApp())  ?  "#omnispaceApp_action=getFile_nameMd5"  :  "#userInfo.displayName=%22"+(is_object(Ctrl::$curUser)?Ctrl::$curUser->getLabel():null)+"%22";
+		//// Appli Android > lance la visio depuis l'appli Jitsi
+		if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))  {$vDatas["visioURL"]="org.jitsi.meet://".str_replace("https://",null,$vDatas["visioURL"]);}
+		//// Appli mobile Android/IOS > lance un lien externe (cf. "getFile_nameMd5" de Ionic)
+		if(Req::isMobileApp())				{$vDatas["visioURL"].="#omnispaceApp_action=getFile_nameMd5";}
+		//// Ajoute si besoin le nom de l'user dans l'Url
+		if(is_object(Ctrl::$curUser))	{$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}
+		//// Affiche la vue
 		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
 
@@ -366,8 +372,8 @@ class CtrlMisc extends Ctrl
 	 *******************************************************************************************/
 	public static function actionGetFile()
 	{
-		if(Req::isParam(["fileName","filePath"]))		{File::download(Req::param("fileName"),Req::param("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"
-		elseif(Req::param("fileType")=="attached")	{CtrlObject::actionGetFile();}											//Download d'un fichier "AttachedFile"
-		else											{CtrlFile::actionGetFile();}											//Download d'un fichier du module "File"
+		if(Req::isParam(["fileName","filePath"]))	{File::download(Req::param("fileName"),Req::param("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"
+		elseif(Req::param("fileType")=="attached")	{CtrlObject::actionGetFile();}										//Download d'un fichier "AttachedFile"
+		else										{CtrlFile::actionGetFile();}										//Download d'un fichier du module "File"
 	}
 }
