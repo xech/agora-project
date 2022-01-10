@@ -106,63 +106,71 @@ function dashboardPollVote()
 
 <style>
 /*Menu principal/contextuel de chaque option*/
-#dashboardMenu					{display:table; position:relative; width:100%; height:40px; margin-bottom:10px;}
-#dashboardMenu>a				{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.1em;}/*label du menu*/
-#dashboardMenu hr				{display:inline; position:absolute; bottom:0px; left:0px; width:<?= $isPolls==true?33:50 ?>%; height:6px; margin:0px; background:tomato; transition:0.1s ease-in-out;}/*Surlignage des options du module*/
-.menuCircleBis					{margin:0px 0px 0px 5px; width:18px; height:18px; line-height:18px; font-size:11px!important; background-color:#c40;}/*surcharge*/
-#mainMenuNews.sLinkSelect ~ hr	{margin-left:0%;}
-#mainMenuPolls.sLinkSelect ~ hr	{margin-left:33%;}
-#mainMenuElems.sLinkSelect ~ hr	{margin-left:<?= $isPolls==true?66:50 ?>%;}
-.dashboardLoadingImg			{text-align:center; padding:20px;}
+#dashboardMenu							{display:table; position:relative; width:100%; height:40px; margin-bottom:10px;}
+#dashboardMenu>a						{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.1em;}/*label du menu*/
+#dashboardMenu hr						{display:inline; position:absolute; bottom:0px; left:0px; width:<?= $isPolls==true?33:50 ?>%; height:6px; margin:0px; background:tomato; transition:0.1s ease-in-out;}/*Surlignage des options du module*/
+.menuCircleBis							{margin:0px 0px 0px 5px; width:18px; height:18px; line-height:18px; font-size:11px!important; background-color:#c40;}/*surcharge*/
+#mainMenuNews.sLinkSelect ~ hr			{margin-left:0%;}
+#mainMenuPolls.sLinkSelect ~ hr			{margin-left:33%;}
+#mainMenuElems.sLinkSelect ~ hr			{margin-left:<?= $isPolls==true?66:50 ?>%;}
+.dashboardLoadingImg					{text-align:center; padding:20px;}
 [id^=modMenu], #pageCenterContent>div:not(#dashboardMenu)	{display:none;}/*masque par défaut tous les menus et contenus du module, sauf le menu principal*/
 #contentNews>div, #contentPolls>div, #contentElems>div		{width:100%;}
 
 /*Affichage des News*/
-.vNewsHidden					{display:none;}/*cf. infinite scroll*/
-.vNewsContainer.objContainer	{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/
-.vNewsDescription				{font-weight:normal;}
-.vNewsDescription a				{text-decoration:underline;}/*idem editeur*/
-.vNewsDetail					{margin-top:20px; text-align:center;}
+.vNewsHidden							{display:none;}/*cf. infinite scroll*/
+.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/
+.vNewsDescription						{font-weight:normal;}
+.vNewsDescription a						{text-decoration:underline;}/*idem editeur*/
+.vNewsDetail							{margin-top:20px; text-align:center;}
 .vNewsDetail span, .vNewsDetail .menuAttachedFile	{display:inline-block; margin-right:20px;}
-.vNewsTopNews					{color:#c40;}
-#modMenuNews .vPollsTitle		{margin:10px 20px; font-size:1.05em;}/*Surcharge : Sondages dans le menu contextuel de gauche*/
-#modMenuNews .vPollsContainer ul{padding-left:10px!important;}/*Idem*/
-#vNewsPollsHr					{background:#ddd;}
-#vNewsPollsHr:last-of-type		{display:none;}
-.calEventProposition			{margin:10px;}/*propositions d'événements*/
+.vNewsTopNews							{color:#c40;}
+.calEventProposition					{margin:10px;}/*propositions d'événements*/
 
-/*Affichage des sondages*/
-.vPollsHidden					{display:none;}/*cf. infinite scroll*/
-.vPollsContainer.objContainer	{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/
-.vPollsTitle,.vPollsDescription	{text-align:center; margin:15px 0px;}/*Titre et Description*/
-#contentPolls .vPollsTitle		{font-size:1.25em;}/*Titre de l'affichage principal (pas avec les news)*/
-.vPollsDescription img			{max-height:400px;}/*Affichage des images dans la description*/
-.vPollsContainer ul li			{list-style:none; margin-bottom:20px;}
-.vPollsDetails					{margin-top:20px; text-align:center;}
-div.vPollsDescription:empty, .vPollsDetails:empty  {display:none;}/*masque les divs non remplis*/
-.vPollsDetails span, .vPollsDetails .menuAttachedFile	{display:inline-block; margin-right:20px;}
-.vPollsResponseFile				{margin-top:8px;}/*cf. MdlDashboardPoll*/
-.vPollsResponseFile img			{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
-.vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
-.vPollsContainer .submitButtonMain		{padding-top:10px;}/*surcharge*/
-.vPollsContainer button			{width:220px!important;}/*surcharge*/
-.vPollsResultBarContainer		{width:90%; margin-top:8px; padding:2px; border-radius:5px; background-color:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
-.vPollsResultBar				{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
-.vPollsResultBar0				{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
-.vPollsResultBar50				{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
-.vPollsResultBar100				{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
+/*New par défaut : "INSTALL_dataDashboardNews"*/
+.vNewsDescription h3					{text-align:center;}
+.vNewsDescription h3, .vNewsDescription h4:nth-last-child(3), .vNewsDescription h4:nth-last-child(1)  {margin-bottom:30px;}/*première ligne + avant-avant dernière ligne + dernière ligne*/
+.vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.vPollsContainer ul	{padding-left:0px!important;}
+	.vNewsDescription h3	{font-size:1.4em;}
+}
+
+/*Affichage des sondages*/
+#modMenuNews hr							{margin:20px 0px;}/*Menu contextuel de gauche*/
+#modMenuNews .vPollsTitle				{margin:20px 0px; font-size:1.05em;}/*Menu contextuel de gauche*/
+#modMenuNews .vPollsContainer ul		{padding-left:10px!important;}/*surcharge*/
+.vPollsHidden							{display:none;}/*cf. infinite scroll*/
+.vPollsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/
+.vPollsTitle,.vPollsDescription			{text-align:center; margin:15px 0px;}/*Titre et Description*/
+#contentPolls .vPollsTitle				{font-size:1.25em;}/*Titre de l'affichage principal (pas avec les news)*/
+.vPollsDescription img					{max-height:400px;}/*Affichage des images dans la description*/
+.vPollsContainer ul li					{list-style:none; margin-bottom:20px;}
+.vPollsDetails							{margin-top:20px; text-align:center;}
+div.vPollsDescription:empty, .vPollsDetails:empty		{display:none;}/*masque les divs non remplis*/
+.vPollsDetails span, .vPollsDetails .menuAttachedFile	{display:inline-block; margin-right:20px;}
+.vPollsResponseFile						{margin-top:8px;}/*cf. MdlDashboardPoll*/
+.vPollsResponseFile img					{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
+.vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
+.vPollsContainer .submitButtonMain		{padding-top:10px;}/*surcharge*/
+.vPollsContainer button					{width:220px!important;}/*surcharge*/
+.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:5px; background-color:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
+.vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
+.vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
+.vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
+.vPollsResultBar100						{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
+/*RESPONSIVE*/
+@media screen and (max-width:1023px){
+	.vPollsContainer ul		{padding-left:0px!important;}
 }
 
 /*Affichage des elements (nouveaux/courants)*/
-#modMenuElems>div					{padding:5px;}
-#contentElems .menuLine				{padding:3px;}
-#contentElems .menuIcon				{width:15px;}
-#contentElems .menuIcon img			{max-width:15px;}
-.vContentElemsModuleLabel			{text-align:center;}
-.vContentElemsModuleLabel img		{max-height:28px; margin-right:8px;}
+#modMenuElems>div						{padding:5px;}
+#contentElems .menuLine					{padding:3px;}
+#contentElems .menuIcon					{width:15px;}
+#contentElems .menuIcon img				{max-width:15px;}
+.vContentElemsModuleLabel				{text-align:center;}
+.vContentElemsModuleLabel img			{max-height:28px; margin-right:8px;}
 </style>
 
 <div id="pageCenter">
@@ -178,8 +186,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty  {display:none;}/*masque les d
 				if(!empty($offlineNewsCount))		{echo "<div class='menuLine ".(Req::param("offlineNews")==1?'sLinkSelect':'sLink')."' onclick=\"redir('?ctrl=dashboard&offlineNews=".(Req::param("offlineNews")==1?0:1)."')\"><div class='menuIcon'><img src='app/img/dashboard/newsOffline.png'></div><div>".Txt::trad("DASHBOARD_newsOffline").(!empty($offlineNewsCount)?"<div class='menuCircle menuCircleBis'>".$offlineNewsCount."</div>":null)."</div></div>";}
 				echo MdlDashboardNews::menuSort();
 				//// Affichage des sondages (option "newsDisplay")
-				if(!empty($pollsListNewsDisplay)){
-					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll)  {echo "<br><hr><div class='vPollsContainer'><div class='vPollsTitle' title=\"".Txt::tooltip($tmpPoll->description)."\">".$tmpPoll->title."</div><div class=\"vPollContent".$tmpPoll->_id."\">".$tmpPoll->vuePollForm(true)."</div></div>";}
+				if(Req::isMobile()==false && !empty($pollsListNewsDisplay)){
+					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll)  {echo "<hr><div class='vPollsContainer'><div class='vPollsTitle' title=\"".Txt::tooltip($tmpPoll->description)."\">".$tmpPoll->title."</div><div class=\"vPollContent".$tmpPoll->_id."\">".$tmpPoll->vuePollForm(true)."</div></div>";}
 				}
 			echo "</div>";
 
@@ -263,9 +271,9 @@ div.vPollsDescription:empty, .vPollsDetails:empty  {display:none;}/*masque les d
 			foreach($pluginsList as $tmpObj)
 			{
 				//// Affiche le libellé du module?
-				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj->pluginModule){
-					echo "<div class='vContentElemsModuleLabel'><hr><img src='app/img/".$tmpObj->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpObj->pluginModule)."_headerModuleName")."</div>";
-					$tmpModuleName=$tmpObj->pluginModule;
+				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName){
+					echo "<div class='vContentElemsModuleLabel'><hr><img src='app/img/".$tmpObj::moduleName."/icon.png'>".Txt::trad(strtoupper($tmpObj::moduleName)."_headerModuleName")."</div>";
+					$tmpModuleName=$tmpObj::moduleName;
 				}
 				//// Plugin Spécifique (ex: proposition d'evt)  ||  Plugin lambda
 				if(isset($tmpObj->pluginSpecificMenu))  {echo $tmpObj->pluginSpecificMenu;}

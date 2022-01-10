@@ -6,8 +6,8 @@ lightboxSetWidth(600);
 $(function(){
 	//Affiche/masque la liste des utilisateurs
 	$("[name='messengerDisplay']").on("click",function(){
-		if($(this).val()=="some")	{$("#divSomeUsers").slideDown();}
-		else						{$("#divSomeUsers").slideUp();}
+		if(this.value=="some")	{$("#divSomeUsers").slideDown();}
+		else					{$("#divSomeUsers").slideUp();}
 	});
 	//Validation du formulaire : vérif
 	$("form").submit(function(){

@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxSetWidth(650);
 
 ////	INIT
 $(function(){
@@ -27,9 +27,8 @@ $(function(){
 </script>
 
 <style>
-/*formulaires*/
-.miscContainer					{margin-top:40px; padding:10px; border:#999 1px solid;}
-.miscContainer:last-of-type		{display:none; border:#999 2px solid;}/*masque le dernier formulaire : ajout d'element'*/
+.miscContainer					{margin-top:40px; border:#999 1px solid;}
+.miscContainer:first-of-type	{display:none; border:#999 2px solid;}/*masque le 1er formulaire : ajout d'element'*/
 input[name='title']				{width:300px; max-width:80%; color:#fff;}
 input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 .vAutorSubmit					{display:table; width:100%; margin-top:20px;}
@@ -37,10 +36,6 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 .vAutorSubmit>div:first-child	{font-style:italic; font-weight:normal;}
 .vAutorSubmit>div:last-child	{text-align:right;}
 .vAutorSubmit button			{width:120px; margin-right:10px;}
-/*Ajout d'element*/
-#addElem						{margin-top:50px; text-align:center;}
-#addElem button					{width:200px; height:50px;}
-
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.vAutorSubmit, .vAutorSubmit>div  {display:block; margin-top:20px;}
@@ -49,10 +44,13 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 
 
 <div class="lightboxContent">
-	<div class="lightboxTitle"><img src="app/img/category.png"> <?= Txt::trad("CALENDAR_editCategories") ?></div>
-	
-	<div class="infos"><?= Txt::trad("CALENDAR_editCategoriesRight") ?></div>
-
+	<div class="lightboxTitle">
+		<img src="app/img/category.png"> <?= Txt::trad("CALENDAR_editCategories") ?>
+		<div class="lightboxTitleDetail"><img src="app/img/info.png"> <?= Txt::trad("CALENDAR_editCategoriesRight") ?></div>
+	</div>
+	<div class="lightboxAddElem">
+		<button onclick="$('form:first-of-type').slideToggle();$('form:first-of-type [name=title]').focus();"><img src="app/img/plus.png"> <?= Txt::trad("CALENDAR_addCategory") ?></button>
+	</div>
 	<?php
 	////	LISTE LES CATEGORIES
 	foreach($categoriesList as $tmpCategory)
@@ -60,7 +58,7 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 		//Init
 		$colorPickerTextId="title-".$tmpCategory->tmpId;
 		$colorPickerHiddenId="color-".$tmpCategory->tmpId;
-		$buttonsSubmitDelete=($tmpCategory->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("record",false);
+		$buttonsSubmitDelete=($tmpCategory->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
 		if($tmpCategory->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"confirmDelete('".$tmpCategory->getUrl("delete")."')\">";}
 		//Affichage du formulaire
 		echo "<form action='index.php' method='post' class='miscContainer'>
@@ -76,8 +74,4 @@ input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 			  </form>";
 	}
 	?>
-
-	<div id="addElem">
-		<button onclick="$('form:last-of-type').slideToggle();$('form:last-of-type [name=title]').focus();"><img src="app/img/plus.png"> <?= Txt::trad("CALENDAR_addCategory") ?></button>	
-	</div>
 </div>

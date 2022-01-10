@@ -12,7 +12,7 @@ lightboxSetWidth(550);
 <div class="lightboxContent">
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->getLabel("full")."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->menuContextEdit().$curObj->getLabel("full")."</div>";
 
 	////	IMAGE & DETAILS DE l'USER
 	echo "<div class='personLabelImg'>".$curObj->getImg()."</div>";
@@ -24,7 +24,7 @@ lightboxSetWidth(550);
 	if(!empty($groupsLabel))  {echo "<div class='objField'><div class='fieldLabel'><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";}
 	
 	////	ADMIN GENERAL/D'ESPACE
-	if($curObj->isAdminGeneral())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/adminGeneral.png'> ".Txt::trad("USER_adminGeneral")."</div>";}
-	elseif($curObj->isAdminSpace())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/adminSpace.png'> ".Txt::trad("USER_adminSpace")." <span>".Ctrl::$curSpace->name."</span></div>";}
+	if($curObj->isAdminGeneral())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminGeneral.png'> ".Txt::trad("USER_adminGeneral")."</div>";}
+	elseif($curObj->isAdminSpace())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminSpace.png'> ".Txt::trad("USER_adminSpace")." <span>".Ctrl::$curSpace->name."</span></div>";}
 	?>
 </div>

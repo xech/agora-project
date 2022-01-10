@@ -741,7 +741,7 @@ class DbUpdate extends Db
 				//Corrige l'accès aux emoticons sur AP v3.5.0 (tinyMce v4.8.2)
 				foreach(["ap_dashboardNews","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)  {self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'app/js/tinymce_4.8.2/','app/js/tinymce/')");}
 				//Corrige les traductions des sondages par défaut
-				self::query("UPDATE ap_dashboardPoll SET title=REPLACE(title,'What do you think of the new survey tool?','".Txt::trad("INSTALL_dataDashboardPoll")."')");
+				self::query("UPDATE ap_dashboardPoll SET title=REPLACE(title,'What do you think of the new survey tool?',".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).")");
 				self::query("UPDATE ap_dashboardPollResponse SET label=REPLACE(label,'Essential !',".Db::format(Txt::trad("INSTALL_dataDashboardPollA"))."),  label=REPLACE(label,'Pretty interesting',".Db::format(Txt::trad("INSTALL_dataDashboardPollB"))."),  label=REPLACE(label,'Not very useful',".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).")");
 				//Affecte le sondage par défaut à tous les espaces disponibles
 				foreach(Db::getCol("SELECT _id FROM ap_space WHERE _id NOT IN (select _idSpace from ap_objectTarget where objectType='dashboardPoll' and _idObject=1)") as $_idSpace)  {self::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, target, accessRight) VALUES ('dashboardPoll', 1, ".(int)$_idSpace.", 'spaceUsers', 1)");}
@@ -829,6 +829,13 @@ class DbUpdate extends Db
 				//Remplace l'url d'affichage des images dans les descriptions TinyMce (cf. "actionAttachedFileDisplay()")
 				foreach(["ap_dashboardNews","ap_dashboardPoll","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)
 					{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'action=displayAttachedFile','action=attachedFileDisplay')");}
+			}
+
+			if(self::updateVersion("21.12.3"))
+			{
+				//Allège la gestion des connexions ldap
+				if(self::fieldExist("ap_agora","ldap_crea_auto_users"))  {self::query("ALTER TABLE ap_agora DROP ldap_crea_auto_users");}
+				if(self::fieldExist("ap_agora","ldap_pass_cryptage"))  {self::query("ALTER TABLE ap_agora DROP ldap_pass_cryptage");}
 			}
 			////	ATTENTION !!!
 			////	MODIFIER FICHIER SQL  "ModOffline/db.sql"   &&   MODIFIER N° DE VERSION : "Common/Params.php" + "js/common-xx.js" + "css/common-xx.css" + "changelog.txt"

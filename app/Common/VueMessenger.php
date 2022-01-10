@@ -43,10 +43,9 @@ function messengerUpdate()
 		if(initMessenger==true || result.livecounterUpdate==true)
 		{
 			//Réinit l'affichage
-			$("#messengerStandby,#livecounterMain,#livecounterConnectedLabel,#iconAllUsersOldMessages").hide();
-			//Affiche l'icone pour voir les anciens messages ("standby")  OU  Affiche le livecounter principal
-			if(result.livecounterMainHtml.length==0)  {$("#messengerStandby").show();}
-			else{
+			$("#livecounterMain,#livecounterConnectedLabel,#iconAllUsersOldMessages").hide();
+			//Affiche le livecounter principal
+			if(result.livecounterMainHtml.length>0){
 				$("#livecounterUsers").html(result.livecounterMainHtml);															//Affiche d'abord les users du livecounter principal
 				if(!isMobile())  {$("#livecounterConnectedLabel").show();}															//Affiche le label "Connecté:"
 				if($(".vLivecounterUser").length>=2 || $(".vMessengerOldMessage").exist())  {$("#iconAllUsersOldMessages").show();}	//Affiche l'icone pour discuter à plusieurs OU voir les anciens messages
@@ -206,7 +205,6 @@ function proposeVisio()
 
 <style>
 /*Principal*/
-#messengerStandby							{display:none; position:fixed; left:10px; bottom:8px;}
 #messengerMain, #livecounterMain 			{display:none; position:fixed; max-width:100%!important; max-height:100%!important; color:#ddd!important; box-shadow:0px 0px 3px 2px rgba(0,0,0,0.3);}/*"position:fixed" pour qu'en responsive le clavier viruel ne cache pas le formulaire*/
 #messengerMain								{z-index:30; bottom:0px!important; background:#111; padding:20px; padding-top:10px; width:850px; min-width:300px; border-radius:5px; border:0px;}
 #messengerMain td							{vertical-align:top;}
@@ -252,7 +250,7 @@ function proposeVisio()
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	#livecounterMain						{padding:10px 20px; bottom:-5px!important; font-size:1.1em;}
+	#livecounterMain						{padding:10px; bottom:-5px!important; font-size:1.1em;}
 	#livecounterConnectedLabel				{display:none;}						/*masque le "Connecté :"*/
 	.vLivecounterUser						{display:inline-flex;}				/*tester l'affichage avec 10 personnes et en responsive (cf. 'display:inline-flex')*/
 	#messengerMain							{border-radius:0px; padding:0px;}	
@@ -269,10 +267,6 @@ function proposeVisio()
 	#messengerNobodyDiv .infos				{margin:0px; padding:0px 30px; border:0px; line-height:18px;}/*limite la hauteur (cf. affichage du bouton "close")*/
 }
 </style>
-
-
-<!--ICONE DU MESSENGER EN "STAND BY" : "SEUL SUR L'ESPACE"  &&  LISTE EVENTUELLEMENT LES ANCIENS MESSAGES-->
-<img src="app/img/messengerStandby.png" onclick="messengerDisplay('all')" class="sLink" id="messengerStandby" title="<?= Txt::trad("MESSENGER_nobody")."<br>".Txt::trad("MESSENGER_nobodyTitle") ?>">
 
 <!--LIVECOUNTER PRINCIPAL : LISTE DES USERS CONNECTES-->
 <table id="livecounterMain">

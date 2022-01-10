@@ -14,9 +14,9 @@
 .vSwitchSpace:hover img[src*=edit]				{visibility:visible;}/*"scaleX" : inverse l'image*/
 /*MENU DES MODULES*/
 #headerModuleTab								{display:inline-table; height:100%;}
-.vHeaderModule									{display:table-cell; <?= (Ctrl::$agora->moduleLabelDisplay=="hide") ? "padding:0px 10px 0px 10px;" : "padding:0px 5px 0px 5px;" ?> text-align:center; vertical-align:middle; border:solid 1px transparent; cursor:pointer;}/*Par défaut, le border est transparent*/
-.vHeaderModule:hover, .vHeaderCurModule			{<?= Ctrl::$agora->skin=="black" ? "background:#333;border-color:transparent #555 transparent #555;" : "background:#fff;border-color:transparent #ddd transparent #ddd;" ?>}/*Sélectionne le module courant*/
-.vHeaderModuleLabel								{<?= (Ctrl::$agora->moduleLabelDisplay=="hide" && Req::isMobile()==false) ? "display:none" : "display:inline-block;min-width:45px;" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
+.vHeaderModule									{display:table-cell; text-align:center; vertical-align:middle; cursor:pointer;}
+.vHeaderModuleButton							{margin:0px 3px; padding:3px; border:solid 1px transparent; border-radius:5px;}/*bouton du module : cf. vHeaderModuleCurrent (par défaut border transparent de 1px)*/
+.vHeaderModuleLabel								{<?= (Req::isMobile() || Ctrl::$agora->moduleLabelDisplay!="hide") ? "display:inline-block;min-width:45px;" : "display:none" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
 #headerModuleResp								{display:none;}
 
 /*RESPONSIVE*/
@@ -31,9 +31,9 @@
 	#headerMainMenuRight						{border:0px;}
 	#headerMainMenuOmnispace					{display:none;}
 	/*MENU DES MODULES (intégré dans le menu responsive "#respMenuOne" de VueStructure.php)*/
-	#headerModuleTab							{display:none!important;}/*liste des modules masqués dans le menu principal...*/
-	.vHeaderModule								{display:inline-block; padding:8px; margin:0px 0px 2px 2px; width:145px; text-align:left;}/*...mais copiés dans le menu responsive (pas plus de 145px de large)*/
-	.vHeaderModule:hover, .vHeaderCurModule		{border-radius:5px; <?= Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f9f9f9;border:solid 1px #ddd;" ?>}/*mod. courant: background grisé*/
+	#headerModuleTab							{display:none!important;}								/*liste des modules masqués dans la barre de menu..*/
+	.vHeaderModule								{display:inline-block; width:142px; text-align:left;}	/*..mais copiés dans le menu responsive (pas plus de 145px de large)*/
+	.vHeaderModuleButton						{margin:5px 3px;}
 }
 </style>
 
@@ -132,20 +132,29 @@
 		</div>
 	</div>
 
-	<!--LISTE DES MODULES-->
 	<div>
+		<!--MODULES DE L'ESPACE-->
 		<div id="headerModuleTab">
-		<?php
-		//Pour chaque module : init l'icone+label, retient si besoin pour l'affichage responsive ..puis affiche le module
-		foreach($moduleList as $tmpMod){
-			echo "<div onclick=\"redir('".$tmpMod["url"]."')\" title=\"".Txt::tooltip($tmpMod["description"])."\" class=\"vHeaderModule ".($tmpMod["isCurModule"]==true?'vHeaderCurModule':null)."\">
-					<img src='app/img/".$tmpMod["moduleName"]."/".((Ctrl::$agora->moduleLabelDisplay=='hide' && Req::isMobile()==false)?'icon':'iconSmall').".png'> <span class='vHeaderModuleLabel'>".$tmpMod["label"]."</span>
-				  </div>";
-			if($tmpMod["isCurModule"]==true)  {$respModLabel="<img src='app/img/".$tmpMod["moduleName"]."/iconSmall.png'> <label>".$tmpMod["label"]."</label>";}
-		}
-		?>
+			<?php
+			foreach($moduleList as $tmpMod){
+				//Affiche le module courant
+				$tmpModClass=($tmpMod["isCurModule"]==true)  ?  "vHeaderModuleCurrent"  :  null;
+				$tmpModIcon=(Req::isMobile() || Ctrl::$agora->moduleLabelDisplay!="hide")  ?  "iconSmall.png"  :  "icon.png";
+				echo '<div class="vHeaderModule" onclick="redir(\''.$tmpMod["url"].'\')" title="'.Txt::tooltip($tmpMod["description"]).'">
+						<div class="vHeaderModuleButton '.$tmpModClass.'"><img src="app/img/'.$tmpMod["moduleName"].'/'.$tmpModIcon.'"> <span class="vHeaderModuleLabel">'.$tmpMod["label"].'</span></div>
+					  </div>';
+				//Mod Responsive : retient le module courant
+				if(Req::isMobile() && $tmpMod["isCurModule"]==true)  {$respModLabel='<img src="app/img/'.$tmpMod["moduleName"].'/iconSmall.png"> <label>'.$tmpMod["label"].'</label>';}
+			}
+			?>
+			<!--MESSENGER (cf. "VueMessenger")-->
+			<?php if(self::$curUser->messengerEnabled()) { ?>
+			<div class="vHeaderModule" onclick="messengerDisplay('all')" title="<?= Txt::trad("MESSENGER_nobody")."<br>".Txt::trad("MESSENGER_nobodyTitle") ?>">
+				<div class="vHeaderModuleButton"><img src="app/img/messenger.png"></div>
+			</div>
+			<?php } ?>
 		</div>
-		
+	
 		<!--RESPONSIVE : LABEL DU MODULE COURANT-->
 		<div id="headerModuleResp" class="menuLaunch" for="headerModuleTab" forBis="pageModMenu"><?= isset($respModLabel) ? $respModLabel : "modules" ?> <img src='app/img/arrowBottom.png'>&nbsp;</div>
 	</div>

@@ -8,7 +8,7 @@ $(function(){
 
 	////	Si "adminLogin" est un email : on l'ajoute à "adminMail"
 	$("input[name='adminLogin']").on("keyup change",function(){
-		if($(this).isMail())  {$("input[name='adminMail']").val($(this).val());}
+		if($(this).isMail())  {$("input[name='adminMail']").val(this.value);}
 	});
 
 	////	Validation du formulaire
@@ -97,8 +97,8 @@ h3								{margin-top:20px; font-style:italic;}
 			</select>
 		</div>
 		<!--VALIDATION-->
-		<?= Txt::submitButton() ?>
 		<img src="app/img/loading.png" id="imgLoading">
+		<?= Txt::submitButton() ?>
 	</form>
 	<?php } ?>
 </div>

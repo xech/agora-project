@@ -12,7 +12,7 @@ $(function(){
 	$("[name='priority']").val("<?= $curObj->priority ?>");
 	////	Change de priorité : modif l'icone
 	$("[name='priority']").change(function(){
-		var imgPriority="app/img/task/priority"+$(this).val()+".png";
+		var imgPriority="app/img/task/priority"+this.value+".png";
 		$("img[src*='priority']").attr("src",imgPriority);
 	});
 	////	Affiche le block des responsables s'il y en a de sélectionnés

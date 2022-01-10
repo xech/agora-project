@@ -75,7 +75,7 @@ $(function(){
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo CtrlObject::folderPathMenu(Txt::trad("TASK_addTask"),MdlTask::getUrlNew());
-		echo $foldersList;
+		echo CtrlObject::vueFolders();
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask)
 		{
@@ -91,7 +91,7 @@ $(function(){
 				</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
-		if(empty($foldersList) && empty($tasksList)){
+		if(empty(CtrlObject::vueFolders()) && empty($tasksList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("TASK_addTask")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("TASK_noTask").$addElement."</div>";
 		}
@@ -120,7 +120,7 @@ $(function(){
 						if($isTaskDateBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"])
 							{$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".($isTaskDateBegin==true?"colspan='".$tmpTask->timelineColspan."'":null)." >".($isTaskDateBegin==true?$tmpTask->timelineBeginEnd():"&nbsp;")."</td>";}
 					}
-					echo "<tr class='sTableRow'>
+					echo "<tr class='lineHover'>
 							<td class='vTimelineTitle'><a href=\"javascript:lightboxOpen('".$tmpTask->getUrl("vue")."')\" title=\"".Txt::tooltip($tmpTask->title)."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?35:50))."</a></td>".
 							$tmpTaskCells.
 						 "</tr>";

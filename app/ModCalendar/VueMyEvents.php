@@ -20,7 +20,7 @@ lightboxSetWidth(650);//Resize
 
 	<!--LISTE DES EVT-->
 	<?php foreach($myEvents as $tmpEvent){ ?>
-	<div class="vEventLine sTableRow" title="<?= Txt::dateLabel($tmpEvent->dateBegin,"full",$tmpEvent->dateEnd) ?><br><?= $tmpEvent->description ?>">
+	<div class="vEventLine lineHover" title="<?= Txt::dateLabel($tmpEvent->dateBegin,"full",$tmpEvent->dateEnd) ?><br><?= $tmpEvent->description ?>">
 		<div class="vEventDate"><?= Txt::dateLabel($tmpEvent->dateBegin,"normal",$tmpEvent->dateEnd) ?></div>
 		<div><?= $tmpEvent->title ?></div>
 		<div class="vEventOptions">

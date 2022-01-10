@@ -16,14 +16,16 @@ abstract class Ctrl
 	const moduleName=null;
 	public static $moduleOptions=[];
 	public static $agora, $curUser, $curSpace;
-	public static $isMainPage=false;				//Page principale ou Iframe
-	public static $userHasConnected=false;			//Controle si l'user vient de s'identifier / connecter
-	public static $curContainer=null;				//Objet conteneur courant (dossier, sujet, etc)
-	public static $curTimezone=null;				//Timezone courante
-	public static $notify=[];						//Messages de Notifications (cf. Vues)
-	protected static $initCtrlFull=true;			//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
-	protected static $folderObjectType=null;		//Module avec une arborescence
-	protected static $cacheObjects=[];				//Objets mis en cache !
+	public static $isMainPage=false;			//Page principale ou Iframe
+	public static $userHasConnected=false;		//Controle si l'user vient de s'identifier / connecter
+	public static $isMenuSelectObjects=false;	//Menu de sélection d'objets affiché ?
+	public static $curContainer=null;			//Conteneur courant (dossier/sujet/agenda..)
+	public static $curContainerRoot=null;		//Conteneur dossier root
+	public static $curTimezone=null;			//Timezone courante
+	public static $notify=[];					//Messages de Notifications (cf. Vues)
+	protected static $initCtrlFull=true;		//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
+	protected static $folderObjType=null;		//Module avec une arborescence
+	protected static $cacheObjects=[];			//Objets mis en cache !
 
 	/*******************************************************************************************
 	 * INITIALISE LE CONTROLEUR PRINCIPAL (session, parametrages, connexion de l'user, etc)
@@ -79,16 +81,14 @@ abstract class Ctrl
 			}
 			////	Affichage des utilisateurs : space/all
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
-			////	Objet à charger et à controler (tjs après chargement des trads!)
-			if(Req::isParam("typeId"))					{$tmpObj=self::getObjTarget();}//Dossier (ou autre element) passé en GET
-			elseif(static::$folderObjectType!==null)	{$tmpObj=self::getObj(static::$folderObjectType,1);}//Dossier racine par défaut
-			////	Charge le dossier/conteneur courant & controle son accès
-			if(isset($tmpObj) && is_object($tmpObj) && !empty($tmpObj->_id)){
-				if($tmpObj::isContainer())  {self::$curContainer=$tmpObj;}
-				if($tmpObj->readRight()==false){
-					if(static::$isMainPage==true)	{self::redir("?ctrl=".Req::$curCtrl);}//redirige vers controleur principal
-					else							{self::noAccessExit();}//message d'erreur
-				}
+			////	Charge l'objet courant (toujours après "loadTrads()"!)
+			if(Req::isParam("typeId"))				{$curObj=self::getObjTarget();}						//Objet passé en GET
+			elseif(static::$folderObjType!==null)	{$curObj=self::getObj(static::$folderObjType,1);}	//Dossier racine par défaut
+			////	Objet courant (dejà existant)
+			if(!empty($curObj) && $curObj->isNew()==false){
+				if($curObj->readRight()==false)  {static::$isMainPage==true ? self::redir("?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Controle d'accès : redirige vers le Ctrl principal ou affiche une notif d'erreur
+				if($curObj::isContainer())  {self::$curContainer=$curObj;}																	//Charge le conteneur courant (dossier/sujet/agenda..)
+				if($curObj::isFolder==true)  {self::$curContainerRoot=self::getObj(get_class($curObj),1);}									//Charge le dossier root
 			}
 		}
 	}
@@ -124,9 +124,6 @@ abstract class Ctrl
 			//// HEADERMENU & MESSENGER
 			if(static::moduleName!="offline")
 			{
-				//Mise à jour récente : notification dans le "pageFooterHtml" pour l'admin de l'espace
-				if(self::$curUser->isAdminSpace() && self::$curUser->previousConnection<strtotime(self::$agora->dateUpdateDb))
-					{self::$agora->footerHtml="<span id='footerHtmlUpdate' style='cursor:pointer' onclick=\"javascript:lightboxOpen('docs/CHANGELOG.txt')\">Updated to version ".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
 				//Espace Disk
 				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
 				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70);
@@ -170,12 +167,14 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * REDIRIGE À L'ADRESSE DEMANDÉE (si besoin avec les notifs)
+	 * REDIRIGE À L'ADRESSE DEMANDÉE DEPUIS UNE IFRAME OU UNE PAGE PRINCIPALE
 	 *******************************************************************************************/
 	public static function redir($urlRedir)
 	{
-		header("Location: ".$urlRedir.self::urlNotify());
-		exit;
+		$redirUrl=$urlRedir.self::urlNotify();																	//Ajoute si besoin les notifs
+		if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redir depuis la page principale
+		else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redir depuis une Iframe (cf. "CtrlObject::actionDelete()")
+		exit;																									//Fin de script
 	}
 
 	/*******************************************************************************************
@@ -215,7 +214,6 @@ abstract class Ctrl
 	{
 		return defined("HOST_DOMAINE");
 	}
-
 
 	/*******************************************************************************************
 	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
@@ -261,22 +259,16 @@ abstract class Ctrl
 		$objects=[];
 		if(Req::isParam("objectsTypeId") && is_array(Req::param("objectsTypeId"))){
 			foreach(Req::param("objectsTypeId") as $objType=>$objectsId){				//Parcourt chaque objet
-				if($objTypeFilter==null || $objType==$objTypeFilter){						//filtre si besoin par type d'objet
-					foreach(explode("-",$objectsId) as $objId){								//Récupère l'_id des objets
-						$tmpObj=self::getObj($objType, $objId);								//Charge l'objet
-						if($tmpObj->readRight())  {$objects[]=$tmpObj;}						//Controle ok : ajoute à la liste
+				if($objTypeFilter==null || $objType==$objTypeFilter){					//filtre si besoin par type d'objet
+					foreach(explode("-",$objectsId) as $objId){							//Récupère l'_id des objets
+						$tmpObj=self::getObj($objType, $objId);							//Charge l'objet
+						if($tmpObj->readRight())  {$objects[]=$tmpObj;}					//Controle ok : ajoute à la liste
 					}
 				}
 			}
 		}
 		return $objects;
 	}
-
-
-	/***************************************************************************************************************************/
-	/*******************************************	SPECIFIC METHODS	********************************************************/
-	/***************************************************************************************************************************/
-
 
 	/*******************************************************************************************
 	 * CONNECTION D'UN USER ET SELECTION D'UN ESPACE ?
@@ -296,11 +288,9 @@ abstract class Ctrl
 			$sqlPasswordSha1="AND `password`=".Db::format($passwordSha1);
 			if(self::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::param("connectPassword"),$sqlPasswordSha1);}
 			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($login)." ".$sqlPasswordSha1);
-			//User pas connecté : tente une identification LDAP (avec creation d'user à la volee)
-			if(empty($tmpUser) && $connectViaForm==true)  {$tmpUser=MdlUser::ldapConnectCreateUser(Req::param("connectLogin"),Req::param("connectPassword"));}
-			//...User toujours pas connecté : message d'erreur et déconnexion
+			//User pas identifié : message d'erreur et déconnexion
 			if(empty($tmpUser))   {self::notify("NOTIF_identification");  self::redir("?disconnect=1");}
-			//User déjà connecté sur un autre poste & avec une autre ip (pas de controle sur l'appli)
+			//User déjà connecté avec une autre IP (appli non concerné)
 			if(Req::isMobileApp()==false){
 				$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND `date` > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
 				if($autreIpConnected>0)   {self::notify("NOTIF_presentIp");  self::redir("?disconnect=1");}
@@ -446,26 +436,5 @@ abstract class Ctrl
 				$_SESSION["logsCleared"]=true;
 			}
 		}
-	}
-
-	/*******************************************************************************************
-	 * PLUGINS DU MODULE : RECUPERE LES PLUGINS "FOLDER"
-	 *******************************************************************************************/
-	public static function getPluginFolders($params, $MdlObjectFolder)
-	{
-		$pluginsList=[];
-		foreach($MdlObjectFolder::getPluginObjects($params) as $objFolder)
-		{
-			$objFolder->pluginModule=static::moduleName;
-			$objFolder->pluginIcon="folder/folderSmall.png";
-			$objFolder->pluginLabel=$objFolder->name;
-			$objFolder->pluginTooltip=$objFolder->folderPath("text");
-			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
-			$objFolder->pluginJsIcon="windowParent.redir('".$objFolder->getUrl()."');";//Redir vers le dossier
-			$objFolder->pluginJsLabel=$objFolder->pluginJsIcon;
-			$objFolder->pluginIsFolder=true;
-			$pluginsList[]=$objFolder;
-		}
-		return $pluginsList;
 	}
 }

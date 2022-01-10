@@ -17,7 +17,7 @@ $(function(){
 			event.preventDefault();
 			//Vérifie si un autre dossier porte le même nom
 			$.ajax("?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>&controledName="+encodeURIComponent($("[name='name']").val())).done(function(result){
-				if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName"); ?>","warning");  return false;}	//Un autre fichier porte le même nom...
+				if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>","warning");  return false;}	//Un autre fichier porte le même nom...
 				else if(mainFormControl())		{mainFormControled=true;  $("#mainForm").submit();}								//Sinon : image "Loading" & Sinon on confirme le formulaire !
 			});
 		}

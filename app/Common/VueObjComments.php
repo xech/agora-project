@@ -20,7 +20,7 @@ $(function(){
 function formControl()
 {
 	if($("textarea[name='comment']").isEmpty())
-		{notify("<?= Txt::trad("fillAllFields"); ?>");  return false;}
+		{notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
 }
 </script>
 
@@ -56,7 +56,7 @@ form button				{width:120px;}
 	foreach($commentList as $tmpComment)
 	{
 		echo "<div class='vCommentsTable'>
-				<div class='vCommentsRow sTableRow'>
+				<div class='vCommentsRow lineHover'>
 					<div class='vCommentDateUser'>".Ctrl::getObj("user",$tmpComment["_idUser"])->getLabel()." <div>".Txt::dateLabel($tmpComment["dateCrea"],"full")."</div></div>
 					<div class='vCommentText' id='commentText".$tmpComment["_id"]."'>
 						<div>".$tmpComment["comment"]."</div>

@@ -37,8 +37,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 .vModuleLabel img					{max-height:28px; margin-right:8px;}
 .menuLine							{padding:5px;}
 .vSearchResultWord					{color:#900; text-decoration:underline;}/*mots surlignés dans le résultat de recherche*/
-.vPluginNews						{display:none; padding:10px; background-color:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
-.vPluginNews .objMenuBurgerInline	{float:right;}/*menu contextuel des news*/
+.vPluginNews						{display:none; position:relative;/*cf.objMenuBurger 'position:absolute'*/ padding:10px; background-color:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){	
@@ -121,22 +120,21 @@ if(Req::isParam("searchText"))
 	$searchTextList=explode(" ",Req::param("searchText"));
 	foreach($pluginsList as $tmpObj)
 	{
-		//// Affiche le libellé du module?
-		if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj->pluginModule){
-			echo "<div class='vModuleLabel'><hr><img src='app/img/".$tmpObj->pluginModule."/icon.png'>".Txt::trad(strtoupper($tmpObj->pluginModule)."_headerModuleName")."</div>";
-			$tmpModuleName=$tmpObj->pluginModule;
+		//// Header des plugins du module : affiche si besoin le libellé du module
+		if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName){
+			echo "<div class='vModuleLabel'><hr><img src='app/img/".$tmpObj::moduleName."/icon.png'>".Txt::trad(strtoupper($tmpObj::moduleName)."_headerModuleName")."</div>";
+			$tmpModuleName=$tmpObj::moduleName;
 		}
-		//// Label principal pour les objets lambda
+		//// Label des objets lambda  ||  "dashboardNews" : "reduce()" du label/description + possibilité de l'afficher entièrement + menu contextuel
 		if($tmpObj::objectType!="dashboardNews")  {$pluginLabel=$tmpObj->pluginLabel;}
-		//// News du dashboard : new avec un "reduce()" + possibilité d'afficher la news complete avec menu contextuel
 		else{
-			$pluginLabel="<span onclick=\"$(this).slideUp();$('#pluginNews".$tmpObj->_id."').slideDown();\">".Txt::reduce($tmpObj->pluginLabel)." <img src='app/img/arrowBottom.png'></span>
-						  <div class='vPluginNews' id='pluginNews".$tmpObj->_id."'>".$tmpObj->contextMenu(["iconBurger"=>"small"])." ".$tmpObj->description."</div>";
+			$pluginLabel="<span onclick=\"$(this).hide();$('#pluginNews".$tmpObj->_id."').slideDown();\">".Txt::reduce($tmpObj->pluginLabel)." <img src='app/img/arrowBottom.png'></span>
+						  <div class='vPluginNews' id='pluginNews".$tmpObj->_id."'>".$tmpObj->contextMenu(["iconBurger"=>"floatBig"])." ".$tmpObj->description."</div>";
 		}
 		//// Surligne les mots recherchés dans le label des résultats
 		foreach($searchTextList as $tmpText)  {$pluginLabel=preg_replace("/".Txt::clean($tmpText)."/i", "<span class='vSearchResultWord'>".$tmpText."</span>", $pluginLabel);}
-		//// Affiche les plugins "search" ("reduce()" pour réduire la taille du texte et des tags html, surtout sur le label principal)
-		echo "<div class='menuLine sLink objHover' title=\"".Txt::tooltip($tmpObj->pluginTooltip)."\">
+		//// Affiche le plugin
+		echo "<div class='menuLine sLink lineHover' title=\"".Txt::tooltip($tmpObj->pluginTooltip)."\">
 				<div onclick=\"".$tmpObj->pluginJsIcon."\" class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div>
 				<div onclick=\"".$tmpObj->pluginJsLabel."\">".$pluginLabel."</div>
 			  </div>";

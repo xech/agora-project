@@ -45,7 +45,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 		////DEBUT DU TABLEAU + HEADER
 		echo '<table class="vTable">
 				<tr class="vTableHeader">
-					<td title="'.Txt::trad("invertSelection").'"><img src="app/img/switch.png" class="sLink" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
+					<td title="'.Txt::trad("selectSwitch").'"><img src="app/img/switch.png" class="sLink" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
 					<td>'.Txt::trad("CALENDAR_importIcalState").'</td>
 					<td>'.Txt::trad("begin").' - '.Txt::trad("end").'</td>
 					<td>'.Txt::trad("title").'</td>

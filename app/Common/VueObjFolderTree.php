@@ -75,7 +75,7 @@ function formControl(){
 </style>
 
 
-<div id="treeFolders" class="noSelect">
+<div id="treeFolders">
 	<?php
 	////	DEPLACEMENT DE DOSSIER : AFFICHE LE FORMULAIRE
 	if($context=="move")  {echo "<form action='index.php' method='post' onsubmit=\"return formControl()\" class='lightboxContent'>";}

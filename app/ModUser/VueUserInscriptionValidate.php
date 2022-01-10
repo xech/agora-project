@@ -30,7 +30,7 @@ $(function(){
 	<?php
 	//// LISTE DES INSCRIPTIONS D'USERS
 	foreach(CtrlUser::userInscriptionValidate() as $tmpInsc){
-		echo "<div class='vInscription sTableRow'>
+		echo "<div class='vInscription lineHover'>
 				<input type='checkbox' name='inscriptionValidate[]' value=\"".$tmpInsc["_id"]."\" id='inputInscription".$tmpInsc["_id"]."'>
 				<label for='inputInscription".$tmpInsc["_id"]."'>".Txt::dateLabel($tmpInsc["date"])." : ".$tmpInsc["name"]." ".$tmpInsc["firstName"]." - ".$tmpInsc["mail"]."</label>
 				<div class='vInscriptionSpace'><img src='app/img/arrowRight.png'> ".ucfirst(Txt::trad("SPACE_space"))." <b>".Ctrl::getObj("space",$tmpInsc["_idSpace"])->getLabel()."</b></div>

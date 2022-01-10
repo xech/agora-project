@@ -238,7 +238,7 @@ class MdlPerson extends MdlObject
 	public function getImgPath($getDefaultImg=false)
 	{
 		if($this->hasImg())				{return $this->pathImgThumb()."?version=".md5($this->dateModif);}//"version" pour toujours afficher la derniere image mise en cache
-		elseif($getDefaultImg==true)	{return "app/img/".static::moduleName."/iconBg.png";}//image par défaut (si demandé)
+		elseif($getDefaultImg==true)	{return "app/img/user/userDefault.png";}//image par défaut (si demandé)
 	}
 
 	/*******************************************************************************************
@@ -382,66 +382,68 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 * CONNEXION A UN SERVEUR LDAP
 	 *******************************************************************************************/
-	public static function ldapConnect($ldapServer=null, $ldapServerPort=null, $ldapUserLogin=null, $ldapUserPassword=null, $displayNotif=true)
+	public static function ldapConnect($ldap_server=null, $ldap_server_port=null, $ldap_admin_login=null, $ldap_admin_pass=null, $displayError=true)
 	{
-		// la fonction de connexion LDAP est activée ?
-		if(!function_exists("ldap_connect"))	{return false;}
-		// Config
-		if(empty($ldapServer))			{$ldapServer		=Ctrl::$agora->ldap_server;}
-		if(empty($ldapServerPort))		{$ldapServerPort	=Ctrl::$agora->ldap_server_port;}
-		if(empty($ldapUserLogin))		{$ldapUserLogin		=Ctrl::$agora->ldap_admin_login;}
-		if(empty($ldapUserPassword))	{$ldapUserPassword	=Ctrl::$agora->ldap_admin_pass;}
-		// Connexion au serveur LDAP
-		$ldapConnection=@ldap_connect($ldapServer, $ldapServerPort);
-		ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);	//Utiliser LDAP Protocol V3! (v2 par défaut)
-		ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);		//Pour Active Directory
-		// Identification au serveur LDAP en tant qu'admin + retourne la connexion ldap si c'est ok
-		$ldapIdentification=@ldap_bind($ldapConnection, $ldapUserLogin, $ldapUserPassword);
-		if($ldapIdentification==false && $displayNotif==true)	{Ctrl::notify("AGORA_ldapConnectError");}
-		return ($ldapIdentification==false) ? false : $ldapConnection;
+		// Controle si la connexion LDAP est activée
+		if(!function_exists("ldap_connect"))  {return false;}
+		// Récupère la config du paramétrage général (sinon c'est un test de connexion du paramétrage général)
+		if(empty($ldap_server))			{$ldap_server		=Ctrl::$agora->ldap_server;}
+		if(empty($ldap_server_port))	{$ldap_server_port	=Ctrl::$agora->ldap_server_port;}
+		if(empty($ldap_admin_login))	{$ldap_admin_login	=Ctrl::$agora->ldap_admin_login;}
+		if(empty($ldap_admin_pass))		{$ldap_admin_pass	=Ctrl::$agora->ldap_admin_pass;}
+		// Initialise la connexion au serveur LDAP et vérifie si l'uri donnée est plausible ($ldap_server)
+		$ldapConnectServer=ldap_connect($ldap_server, $ldap_server_port);
+		ldap_set_option($ldapConnectServer, LDAP_OPT_PROTOCOL_VERSION, 3);	//Utiliser LDAP Protocol V3! (v2 par défaut)
+		ldap_set_option($ldapConnectServer, LDAP_OPT_REFERRALS, 0);			//Pour Active Directory
+		// Lien de connexion au serveur Ldap (identification) en tant qu'admin
+		$ldapConnect=ldap_bind($ldapConnectServer, $ldap_admin_login, $ldap_admin_pass);
+		if($ldapConnect==false && $displayError==true)  {Ctrl::notify("AGORA_ldapConnectError");}
+		// Retourne la connexion ldap si c'est ok
+		return ($ldapConnect==false)  ?  false  :  $ldapConnectServer;
 	}
 
-	/*******************************************************************************************
-	 * RECUPERES DES PERSONNES DE L'ANNUAIRE LDAP  (exple de $searchFilter -> "(&(samaccountname=MONLOGIN)(cn=*))" )
-	 *******************************************************************************************/
-	public static function ldapSearch($getLoginPassword=false, $searchMode="importArray", $searchFilter="(cn=*)")
+	/***************************************************************************************************************
+	 * RECUPERES DES PERSONNES DE L'ANNUAIRE LDAP  (exple de $importLdapFilter -> "(&(samaccountname=MONLOGIN)(cn=*))" )
+	 ***************************************************************************************************************/
+	public static function ldapSearch($importLoginPassword, $importLdapDn, $importLdapFilter)
 	{
-		$ldapConnection=self::ldapConnect();
-		if($ldapConnection!=false)
+		$ldapConnect=self::ldapConnect();
+		if($ldapConnect!=false)
 		{
-			// Champs Agora => Attributs LDAP correspondants (Toujours en minucule!)
-			$ldapAttributes=array(
-				"civility"			=>array("designation"),
-				"name"				=>array("sn","name","lastname"),//Sur ActiveDirectory : "sn" est avant "name"
-				"firstName"			=>array("firstname","givenname","knownas"),
-				"mail"				=>array("mail"),
-				"telmobile"			=>array("mobile","mobiletelephonenumber"),
-				"telephone"			=>array("telephonenumber","homephone","hometelephonenumber"),
-				"adress"			=>array("postaladdress","homepostaladdress","streetaddress","street"),
-				"postalCode"		=>array("postalcode","homepostalcode"),
-				"city"				=>array("localityname","l"),
-				"companyOrganization"=>array("company","department","organizationname","organizationalunitname","o","ou"),
-				"function"			=>array("title","titleall"),
-				"comment"			=>array("description"));
-			// Champs Agora  => On ajoute l'id/password en cas d'import d'utilisateur
-			if($getLoginPassword==true){
-				$ldapAttributes["login"]=array("uid","samaccountname");
-				$ldapAttributes["password"]=array("userpassword","password");
+			// Champs Agora => Attributs LDAP correspondants (Le champ plus plausible en dernier & toujours en minucule!)
+			$ldapFields=array(
+				"civility"				=>["designation","initials"],
+				"name"					=>["sn","lastname","name"],
+				"firstName"				=>["knownas","givenname","firstname"],
+				"mail"					=>["email","mail"],
+				"telmobile"				=>["mobiletelephonenumber","mobile"],
+				"telephone"				=>["hometelephonenumber","homephone","telephonenumber"],
+				"adress"				=>["postaladdress","homepostaladdress","streetaddress","street"],
+				"postalCode"			=>["postalcode","homepostalcode"],
+				"city"					=>["localityname","city","l"],
+				"companyOrganization"	=>["department","organizationalunitname","ou","organizationname","company"],
+				"function"				=>["title","titleall","function"],
+				"comment"				=>["description","comment"]
+			);
+			// Champs Agora  => On ajoute le login/password s'il s'agit d'utilisateurs
+			if($importLoginPassword==true){
+				$ldapFields["login"]=["uid","samaccountname"];
+				$ldapFields["password"]=["userpassword","password"];
 			}
 			// Récupere les users LDAP
-			$ldapSearch=@ldap_search($ldapConnection, Ctrl::$agora->ldap_base_dn, $searchFilter);
+			$ldapSearch=ldap_search($ldapConnect, $importLdapDn, $importLdapFilter);
 			if($ldapSearch!=false)
 			{
-				$searchPersons=ldap_get_entries($ldapConnection, $ldapSearch);
+				$searchPersons=ldap_get_entries($ldapConnect, $ldapSearch);
 				if($searchPersons["count"]>0)
 				{
 					////	Champs Agora à utiliser
 					$importedFields=[];
 					foreach($searchPersons as $userAttributes){
 						//Pour chaque champs de l'utilisateur importé : vérif si le champ ldap correspond à un champ Agora
-						foreach($ldapAttributes as $agoraField=>$tmpLdapAttributes){
-							foreach($tmpLdapAttributes as $ldapAttribute){
-								if(!empty($userAttributes[$ldapAttribute][0]) && !in_array($agoraField,$importedFields))   {$importedFields[]=$agoraField;}
+						foreach($ldapFields as $agoraField=>$ldapTmpFields){
+							foreach($ldapTmpFields as $ldapField){
+								if(!empty($userAttributes[$ldapField][0]) && !in_array($agoraField,$importedFields))  {$importedFields[]=$agoraField;}
 							}
 						}
 					}
@@ -452,27 +454,27 @@ class MdlPerson extends MdlObject
 						if(is_numeric($userKey))
 						{
 							$importedPerson=[];
-							foreach($ldapAttributes as $agoraField=>$tmpLdapAttributes)
+							foreach($ldapFields as $agoraField=>$ldapTmpFields)
 							{
 								//Cle du tableau d'entête correspondant au champ visé (tableau d'import: numéro de colonne du champ agora || import direct : nom du champ agora)
 								$fieldCpt=array_search($agoraField,$importedFields);
-								$fieldKey=($searchMode=="importArray") ? $fieldCpt : $agoraField;
+								$fieldKey=$fieldCpt;
 								// Ajoute la valeur si l'attribut ldap correspond à un champ de l'agora (..et qu'il n'a pas déjà été ajouté avec un autre attribut)
-								foreach($tmpLdapAttributes as $ldapAttribute){
-									if(isset($userAttributes[$ldapAttribute][0]))   {$importedPerson[$fieldKey]=$userAttributes[$ldapAttribute][0];}
+								foreach($ldapTmpFields as $ldapField){
+									if(isset($userAttributes[$ldapField][0]))  {$importedPerson[$fieldKey]=$userAttributes[$ldapField][0];}
 								}
 								//Champ non spécifié : "null"
-								if(empty($importedPerson[$fieldKey]))   {$importedPerson[$fieldKey]="";}//pas de null
-								//Si besoin, re-tri les champs en fonction du numéro de colonne du champ agora
-								if($searchMode=="importArray")	{ksort($importedPerson);}
+								if(empty($importedPerson[$fieldKey]))  {$importedPerson[$fieldKey]="";}//pas de null
+								//Re-tri les champs en fonction du numéro de colonne du champ agora
+								ksort($importedPerson);
 							}
 							//Ajoute les Valeurs à l'user temporaire
 							$importedPersons[]=$importedPerson;
 						}
 					}
 					//Ferme la connexion et retourne le résultat
-					ldap_close($ldapConnection);
-					return array("headerFields"=>$importedFields, "ldapPersons"=>$importedPersons);
+					ldap_close($ldapConnect);
+					return ["headerFields"=>$importedFields, "ldapPersons"=>$importedPersons];
 				}
 			}
 		}

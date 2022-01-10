@@ -37,12 +37,6 @@ $(function(){
 		spaceAffectationsLabel();																		//Stylise les labels
 	});
 
-	//// L'user courant est admin de l'espace : évite de se désaffecter de son propre espace..
-	$(".adminAlwaysChecked").click(function(event){							//Click de label ou checkbox
-		$(this).find(".spaceAffectInput[value$='_2']").prop("checked",true);//Check toujours la case "admin"
-		spaceAffectationsLabel();											//Stylise les labels
-	});
-
 	////	Init les affectations des Spaces<->Users (cf. "common.js")
 	spaceAffectations();
 });
@@ -71,13 +65,12 @@ textarea[name='description']			{margin-top:20px; <?= empty($curSpace->descriptio
 .vWallpaper>div:first-of-type			{width:90px;}
 .vWallpaper img							{max-height:90px;}
 label[for='allUsers']					{font-size:1.15em;}
-.usersFieldset							{max-height:700px; overflow:auto;}/*fieldset des users*/
 
 /*modules*/
 #modulesFieldset						{padding:0px;}/*surcharge*/
 #modulesList							{list-style-type:none; margin:0px; padding:0px; width:100%;}
 #modulesList .ui-state-default			{border-top:none;}
-#modulesList li							{padding:8px 0px 8px 0px; background:linear-gradient(to bottom, #fff, #fcfcfc, #f5f5f5); border-bottom:#ddd 1px solid;}
+#modulesList li							{padding:8px 0px 8px 0px; background:<?= Ctrl::$agora->skin=="black"?"#222":"#f1f1f1" ?>; border-top:<?= Ctrl::$agora->skin=="black"?"#555":"#ddd" ?> 1px solid;}
 #modulesList li.highlight				{border:1px dashed #aaa; height:80px; }/*module "fantome" durant le déplacement*/
 .vModuleLine							{display:table; width:100%;}
 .vModuleLine>div						{display:table-cell; font-weight:bold; padding:4px;}
@@ -185,10 +178,10 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<div class="lightboxBlock usersFieldset">
 		<div class="spaceAffectLine">
 			<label>&nbsp;</label>
-			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><img src="app/img/user/accesUser.png"> <?= Txt::trad("SPACE_user") ?></div>
-			<div title="<?= Txt::trad("SPACE_adminInfo") ?>"><img src="app/img/user/adminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
+			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
+			<div title="<?= Txt::trad("SPACE_adminInfo") ?>"><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
-		<div class="spaceAffectLine sTableRow">
+		<div class="spaceAffectLine lineHover">
 			<label for="allUsers"><?= Txt::trad("SPACE_allUsers") ?></label>
 			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curSpace->allUsersAffected())?'checked':null ?>></div>
 			<div>&nbsp;</div>
@@ -197,11 +190,10 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 		//Affectations des utilisateurs
 		foreach($userList as $tmpUser)
 		{
-			$adminAlwaysChecked=($tmpUser->_id==Ctrl::$curUser->_id && $tmpUser->isAdminSpace())  ?  "adminAlwaysChecked" :  null;	//L'user courant est admin de l'espace : évite de se désaffecter de son propre espace..
-			$userChecked=($curSpace->accessRightUser($tmpUser)==1 || $curSpace->allUsersAffected())  ?  "checked"  :  null;			//Sélectionne la box "user"
-			$userDisabled=($curSpace->allUsersAffected())  ?  "disabled"  :  null;													//Désactive "user" si "allUsers" est sélectionné
-			$adminChecked=($curSpace->accessRightUser($tmpUser)==2)  ?  "checked"  :  null;											//Sélectionne la box "admin"
-			echo '<div class="spaceAffectLine sTableRow '.$adminAlwaysChecked.'" id="targetLine'.$tmpUser->_id.'">
+			$userChecked =($curSpace->userAffectation($tmpUser)==1) ? "checked" : null;	//Sélectionne la box "user"
+			$adminChecked=($curSpace->userAffectation($tmpUser)==2) ? "checked" : null;	//Sélectionne la box "admin"
+			$userDisabled=($curSpace->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
+			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpUser->_id.'">
 					<label class="spaceAffectLabel">'.$tmpUser->getLabel().'</label>
 					<div title="'.Txt::trad("SPACE_userInfo").'"> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
 					<div title="'.Txt::trad("SPACE_adminInfo").'"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>

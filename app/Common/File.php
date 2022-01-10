@@ -417,62 +417,62 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * MODIF DU FICHIER DE CONFIG "config.inc.php"
+	 * MODIFIE LE FICHIER "config.inc.php"
 	 *******************************************************************************************/
-	public static function updateConfigFile($tabAddModifConst=null, $tabDeleteConst=null)
+	public static function updateConfigFile($constantsEdit=null, $constantsDelete=null)
 	{
-		// FICHIER ACCESSIBLE EN ÉCRITURE?
+		//Fichier accessible en écriture?
 		$configFilePath=PATH_DATAS."config.inc.php";
-		if(!is_writable($configFilePath))	{throw new Exception("config.inc.php : the file doesn't exist or is not writable");}
+		if(!is_writable($configFilePath))  {throw new Exception("config.inc.php not writable/accessible");}
 		else
 		{
-			//Récupère le fichier sous forme de tableau
-			$configTab=file($configFilePath);
-			if(count($configTab)>1)
+			//Récupère le fichier sous forme de tableau de lignes
+			$configLines=file($configFilePath);
+			if(count($configLines)>1)
 			{
-				$modifiedConstants=[];
-				////	Parcourt chaque ligne/constante du fichier
-				foreach($configTab as $lineKey=>$lineValue)
+				//Liste des constantes modifiées
+				$constantsModified=[];
+				//// Modifie ou supprime des constantes du fichier
+				foreach($configLines as $lineKey=>$lineValue)
 				{
-					//ON MODIFIE "limite_nb_utils" : AGORA V2
-					if(stristr($lineValue,"limite_nb_utils"))	{$lineValue=str_replace("limite_nb_utils","limite_nb_users",$lineValue);}
-					//SUPPRIME LA CONSTANTE COURANTE?
-					if(!empty($tabDeleteConst)){
-						foreach($tabDeleteConst as $constName){
-							if(!empty($constName) && stristr($lineValue,'"'.$constName.'"'))	{$lineValue="";}
+					//Modifie "limite_nb_utils" : agora v2
+					if(stristr($lineValue,"limite_nb_utils"))  {$lineValue=str_replace("limite_nb_utils","limite_nb_users",$lineValue);}
+					//Supprime la constante de la ligne courante ?
+					if(!empty($constantsDelete)){
+						foreach($constantsDelete as $constName){
+							if(!empty($constName) && stristr($lineValue,'"'.$constName.'"'))  {$lineValue="";}
 						}
 					}
-					//MODIF LA CONSTANTE COURANTE : SI ELLE EST DANS "$tabAddModifConst"
-					if(!empty($tabAddModifConst)){
-						foreach($tabAddModifConst as $constName=>$constValue){
+					//Modifie la constante de la ligne courante ?
+					if(!empty($constantsEdit)){
+						foreach($constantsEdit as $constName=>$constValue){
 							if(stristr($lineValue,$constName)){
-								if($constValue===true || $constName=="true")		{$constValue="true";}//true sans guillemet
-								elseif($constValue===false || $constName=="false")	{$constValue="false";}//false sans guillemet
-								else												{$constValue="\"".$constValue."\"";}//const non booléenne entre guillemet
-								$lineValue="define(\"".$constName."\", ".$constValue.");\n";
-								$modifiedConstants[]=$constName;//Ajoute à la liste des constantes modifiées
+								if($constName=="db_password")						{$constValue="'".addslashes($constValue)."'";}	//guillemet simple pour les passwords car n'interprete pas les "$" comme des variables
+								elseif($constValue===true || $constName=="true")	{$constValue='true';}							//booléen sans guillemet
+								elseif($constValue===false || $constName=="false")	{$constValue='false';}							//idem
+								else												{$constValue='"'.$constValue.'"';}				//guillemet double
+								$lineValue="define(\"".$constName."\", ".$constValue.");\n";										//modif la constante
+								$constantsModified[]=$constName;																	//ajoute à la liste des constantes modifiées
 							}
 						}
 					}
-					//SUPPRIME AU BESOIN LA BALISE PHP DE FERMETURE (INUTILE ET PEUT POSER PB LORS D'AJOUT DE CONSTANTE)
-					$lineValue=str_replace("?>","",$lineValue);
-					// ENREGISTRE LA VALEUR FINALE DE LA LIGNE !!
-					$configTab[$lineKey]=$lineValue;
+					//Enregistre la ligne
+					$configLines[$lineKey]=$lineValue;
 				}
-				////	AJOUTE LES CONSTANTES DE ABSENTES DU FICHIER (ET PAS PRECEDEMENT MODIFIES!)
-				if(!empty($tabAddModifConst)){
-					foreach($tabAddModifConst as $constName=>$constValue){
-						//contante pas modifiée : on l'ajoute au fichier!
-						if(!in_array($constName,$modifiedConstants)){
-							if($constValue===true || $constName=="true")		{$constValue="true";}//true sans guillemet
-							elseif($constValue===false || $constName=="false")	{$constValue="false";}//false sans guillemet
-							else												{$constValue="\"".$constValue."\"";}//const non booléenne entre guillemet
-							$configTab[]="define(\"".$constName."\", ".$constValue.");\n";
+				//// Ajoute des constantes au fichier
+				if(!empty($constantsEdit)){
+					foreach($constantsEdit as $constName=>$constValue){
+						if(!in_array($constName,$constantsModified)){
+							if($constName=="db_password")						{$constValue="'".addslashes($constValue)."'";}	//guillemet simple pour les passwords car n'interprete pas les "$" comme des variables
+							elseif($constValue===true || $constName=="true")	{$constValue='true';}							//booléen sans guillemet
+							elseif($constValue===false || $constName=="false")	{$constValue='false';}							//idem
+							else												{$constValue='"'.$constValue.'"';}				//guillemet double
+							$lineValue="define(\"".$constName."\", ".$constValue.");\n";										//modif la constante
 						}
 					}
 				}
 				////	ON REMPLACE LE FICHIER !
-				$fileContent=implode("", $configTab);
+				$fileContent=implode("", $configLines);
 				$fp=fopen($configFilePath, "w");
 				fwrite($fp, $fileContent);
 				fclose($fp);

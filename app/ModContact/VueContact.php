@@ -1,11 +1,11 @@
 <script>
-lightboxSetWidth(450);//Resize
+lightboxSetWidth(550);//Resize
 </script>
 
 <div class="lightboxContent">
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->getLabel("full")."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->menuContextEdit().$curObj->getLabel("full")."</div>";
 	
 	////	IMAGE & DETAILS DU CONTACT
 	echo "<div class='personLabelImg'>".$curObj->getImg()."</div>

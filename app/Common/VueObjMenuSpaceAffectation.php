@@ -3,8 +3,8 @@
 $(function(){
 	var divSpaces="#spaceListMenu<?= $curObj->_typeId ?>";//Selecteur du menu des espaces
 	$(divSpaces+" :checkbox").change(function(){
-		if($(this).val()=="all")	{$(divSpaces+" :checkbox").not(this).prop("checked",false);}	//Déselectionne chaque espace si "tous les espaces" est sélectionné
-		else						{$(divSpaces+" :checkbox[value='all']").prop("checked",false);}	//Déselectionne "tous les espaces" si un espace est sélectionné
+		if(this.value=="all")	{$(divSpaces+" :checkbox").not(this).prop("checked",false);}	//Déselectionne chaque espace si "tous les espaces" est sélectionné
+		else					{$(divSpaces+" :checkbox[value='all']").prop("checked",false);}	//Déselectionne "tous les espaces" si un espace est sélectionné
 	});
 });
 </script>

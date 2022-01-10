@@ -26,7 +26,7 @@
 	.vCalMonthDayLabel>div						{margin:2px 0px 0px 2px;}
 	.vCalMonthImgAddEvt							{height:20px;}
 	.vCalMonthWeekNb, .vCalMonthDayCelebration	{display:none!important;}
-	.vCalEvtBlock .vCalEvtLabel					{text-transform:lowercase; font-size:0.85em; line-height:0.95em;}
+	.vCalEvtBlock .vCalEvtLabel					{text-transform:lowercase; font-size:0.8em; line-height:0.8em;}
 }
 
 /* IMPRESSION */
@@ -73,7 +73,7 @@ function calendarDimensions()
 
 	<?php
 	////	JOURS DU MOIS
-	foreach($periodDays as $tmpDay)
+	foreach($periodDays as $tmpDate=>$tmpDay)
 	{
 		////	AJOUTE UN DEBUT DE LIGNE & LE NUMERO DE LA SEMAINE
 		if(date("N",$tmpDay["timeBegin"])==1)	{echo "<div class='vCalMonthDaysLine'>";}
@@ -94,16 +94,10 @@ function calendarDimensions()
 						<img src='app/img/plus.png' class='vCalMonthImgAddEvt sLink' ".$addEvtLink." title=\"".Txt::tooltip($tmpCal->addEventLabel)."\">
 					  </div>";
 				//EVENEMENTS DU JOUR
-				foreach($tmpCal->eventList[$tmpDay["date"]] as $tmpEvt)
-				{
-					//Init l'evt (pas de menu context ni de "dateLabel()" en responsive)
-					$divContainerAttr="data-catColor='".$tmpEvt->catColor."' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."');event.stopPropagation();\"";
-					$evtContextMenu=(Req::isMobile()==false)  ?  $tmpEvt->contextMenu(["iconBurger"=>"small","_idCal"=>$tmpCal->_id,"curDateTime"=>strtotime($tmpEvt->dateBegin)])  :  null;
-					$evtDisplayDate=(Req::isMobile()==false)  ?  Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)."&nbsp; "  :  null;
-					$evtImportant=(!empty($tmpEvt->important))  ?  " <img src='app/img/important.png'>"  :  null;
-					//Affiche l'evt
-					echo $tmpEvt->divContainer("vCalEvtBlock",$divContainerAttr).$evtContextMenu.
-							"<div class='vCalEvtLabel'>".$evtDisplayDate.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$evtImportant."</div>
+				foreach($tmpCal->eventList[$tmpDate] as $tmpEvt){
+					$divContainerAttr="data-catColor='".$tmpEvt->catColor."' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\"";
+					echo $tmpEvt->divContainer("vCalEvtBlock stopPropagation",$divContainerAttr).$tmpEvt->contextMenu.
+							"<div class='vCalEvtLabel'>".$tmpEvt->dateTimeLabel.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$tmpEvt->importantIcon."</div>
 						 </div>";
 				}
 		echo "</div>";

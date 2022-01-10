@@ -114,7 +114,7 @@ class Trad extends Txt
 		self::$trad["selectUnselect"]="Sélectionner / Déselectionner";
 		self::$trad["selectUnselectAll"]="Tout sélectionner / déselectionner";
 		self::$trad["selectAll"]="Tout sélectionner";
-		self::$trad["invertSelection"]="Inverser la sélection";
+		self::$trad["selectSwitch"]="Inverser la sélection";
 		self::$trad["deleteElems"]="Supprimer la sélection";
 		self::$trad["changeFolder"]="Déplacer vers un autre dossier";
 		self::$trad["showOnMap"]="Voir les contacts sur une carte";
@@ -215,16 +215,16 @@ class Trad extends Txt
 		self::$trad["objHistory"]="Historique de l'élément";
 		self::$trad["all"]="tous";
 		self::$trad["deletedUser"]="compte utilisateur supprimé";
-		self::$trad["accessRead"]="Lecture";
-		self::$trad["readInfos"]="Accès en lecture";
-		self::$trad["accessWriteLimit"]="Ecriture limitée";
-		self::$trad["readLimitInfos"]="Accès en écriture limité : possibilité d'ajouter des -OBJCONTENT-s dans le dossier, mais chaque utilisateur ne peut modifier/supprimer que les -OBJCONTENT-s qu'il a créé.";
-		self::$trad["accessWrite"]="Ecriture";
-		self::$trad["writeInfos"]="Accès en écriture";
-		self::$trad["writeInfosContainer"]="Accès en écriture : possibilité d'ajouter, modifier ou supprimer tous les -OBJCONTENT-s du -OBJLABEL-";
-		self::$trad["autorPrivilege"]="Seul l'auteur et les administrateurs peuvent modifier/supprimer le -OBJLABEL-";
-		self::$trad["accessRightsInherited"]="Droits d'accès hérités du -OBJLABEL- parent";
 		self::$trad["folderContent"]="contenu";
+		self::$trad["accessRead"]="Lecture";
+		self::$trad["accessReadInfo"]="Accès en lecture";
+		self::$trad["accessWriteLimit"]="Ecriture limitée";
+		self::$trad["accessWriteLimitInfo"]="Accès en écriture limité : chaque utilisateur ne peut modifier ou supprimer que les -OBJCONTENT-s qu'il a créé dans ce -OBJLABEL-.";
+		self::$trad["accessWrite"]="Ecriture";
+		self::$trad["accessWriteInfo"]="Accès en écriture";
+		self::$trad["accessWriteInfoContainer"]="Accès en écriture : possibilité de modifier ou supprimer tous les -OBJCONTENT-s du -OBJLABEL-";
+		self::$trad["accessAutorPrivilege"]="Seul l'auteur et les administrateurs peuvent modifier ou supprimer ce -OBJLABEL-";
+		self::$trad["accessRightsInherited"]="Droits d'accès hérités du -OBJLABEL- parent";
 
 		////	Libellé des objets (cf. "MdlObject::objectType")
 		self::$trad["OBJECTcontainer"]="conteneur";
@@ -250,10 +250,8 @@ class Trad extends Txt
 		self::$trad["MAIL_hello"]="Bonjour";
 		self::$trad["MAIL_receptionNotif"]="Accusé de reception";
 		self::$trad["MAIL_receptionNotifInfo"]="Demander un accusé de réception à l'ouverture de l'email :<br>Notez que certaines messageries ne prennent pas en charge cette fonctionnalité";
-		self::$trad["MAIL_addReplyTo"]="Ajouter mon email dans ''Répondre à''";
-		self::$trad["MAIL_addReplyToInfo"]="Ajouter mon email dans la propriété ''Répondre à'' (plutôt que ''Noreply'')<br>Notez que s'il y a trop de destinataires, l'email peut être considéré comme Spam";
 		self::$trad["MAIL_hideRecipients"]="Masquer les destinataires";
-		self::$trad["MAIL_hideRecipientsInfo"]="Mettre tous les destinataires en copie caché :<br>Notez que s'il y a trop de destinataires, l'email peut être considéré comme Spam";
+		self::$trad["MAIL_hideRecipientsInfo"]="Mettre tous les destinataires en copie caché.<br>Notez que s'il y a trop de destinataires, l'email peut être considéré comme Spam";
 		self::$trad["MAIL_noFooter"]="Ne pas signer le message";
 		self::$trad["MAIL_noFooterInfo"]="Ne pas signer la fin du message avec le nom de l'expéditeur et un lien vers l'espace";
 		self::$trad["MAIL_fileMaxSize"]="L'ensemble de vos pièces jointes ne doit pas dépasser 15 Mo :<br>Certaines messageries pouvant refuser les emails au delà de cette limite";
@@ -342,11 +340,13 @@ class Trad extends Txt
 		self::$trad["userInscriptionInvalidateMail"]="Désolé mais votre inscription n'a pas été validée sur";
 
 		////	Importer ou Exporter : Contact OU Utilisateurs
-		self::$trad["export"]="Export";
-		self::$trad["import"]="Import";
-		self::$trad["importExport_user"]="d'utilisateurs";
-		self::$trad["importExport_contact"]="de contacts";
-		self::$trad["exportFormat"]="format";
+		self::$trad["importExport_user"]="Importer / Exporter des utilisateurs";
+		self::$trad["import_user"]="Importer des utilisateurs dans l'espace courant";
+		self::$trad["export_user"]="Exporter les utilisateurs de l'espace courant";
+		self::$trad["importExport_contact"]="Importer / Exporter des contacts";
+		self::$trad["import_contact"]="Importer des contacts dans le dossier courant";
+		self::$trad["export_contact"]="Exporter les contacts du dossier courant";
+		self::$trad["exportFormat"]="au format";
 		self::$trad["specifyFile"]="Merci de spécifier un fichier";
 		self::$trad["fileExtension"]="Le type de fichier n'est pas valide. Il doit être de type";
 		self::$trad["importContactRootFolder"]="Les contacts importés dans le dossier principal sont affectés par défaut à &quot;tous les utilisateurs de l'espace&quot;";//"Mon espace"
@@ -364,7 +364,7 @@ class Trad extends Txt
 		self::$trad["NOTIF_diskSpace"]="L'espace pour le stockage de vos fichiers est insuffisant, vous ne pouvez pas ajouter de fichier";
 		self::$trad["NOTIF_fileVersion"]="Type de fichier différent de l'original";
 		self::$trad["NOTIF_fileVersionForbidden"]="Type de fichier non autorisé";
-		self::$trad["NOTIF_folderMove"]="Vous ne pouvez pas déplacer le dossier à l'intérieur de lui-même..!";
+		self::$trad["NOTIF_folderMove"]="Vous ne pouvez pas déplacer le dossier à l'intérieur de lui-même !";
 		self::$trad["NOTIF_duplicateName"]="Un dossier ou fichier avec le même nom existe déjà";
 		self::$trad["NOTIF_fileName"]="Un fichier avec le même nom existe déjà, mais a été conservé (pas remplacé par le nouveau fichier)";
 		self::$trad["NOTIF_chmodDATAS"]="Le dossier DATAS n'est pas accessible en écriture : un droit d'accès en ecriture doit être attribué au proprietaire et groupe du dossier (''chmod 775'')";
@@ -423,15 +423,16 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsers"]="Tout les utilisateurs";
 		self::$trad["EDIT_allUsersInfo"]="Droit d'acccès pour tous les utilisateurs de l'espace <i>--SPACENAME--</i>";
 		self::$trad["EDIT_allUsersAndGuests"]="Tout les utilisateurs et invités";
-		self::$trad["EDIT_allUsersAndGuestsInfo"]="Droit d'acccès pour tous les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Les invités ne pourront y accéder qu'en lecture (invités: personnes accédant à l'espace sans s'identifier)";
+		self::$trad["EDIT_allUsersAndGuestsInfo"]="Droit d'acccès pour tous les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Les invités n'ont qu'un accès en lecture aux éléments de l'espace (invité: personne sans compte utilisateur).";
 		self::$trad["EDIT_adminSpace"]="Administrateur : accès total à tous les éléments de l'espace";
-		self::$trad["EDIT_displayMoreUsers"]="Afficher + d'utilisateurs";
-		self::$trad["EDIT_mySpaces"]="Afficher tous mes espaces";
+		self::$trad["EDIT_showAllUsers"]="Afficher tous les utilisateurs";
+		self::$trad["EDIT_showAllSpaces"]="Afficher tous mes espaces";
 		self::$trad["EDIT_notifMail"]="Notifier par email";
 		self::$trad["EDIT_notifMail2"]="Envoyer une notification par email";
-		self::$trad["EDIT_notifMailInfo"]="La notification sera envoyée aux personnes affectées à l'élément.<br>Si vous ne souhaitez l'envoyer qu'à certains utilisateurs, utilisez l'option ''Spécifier les destinataires''.";
-		self::$trad["EDIT_notifMailAddFiles"]="Joindre le/les fichiers à la notification";
-		self::$trad["EDIT_notifMailSelect"]="Spécifier les destinataires des notifications";
+		self::$trad["EDIT_notifMailInfo"]="Envoyer une notification par email aux personnes affectées à l'élément / -OBJLABEL-.";
+		self::$trad["EDIT_notifMailInfoCal"]="<hr>Si vous affectez l'événement à des agendas personnels, alors la notification ne sera envoyée qu'aux propriétaires de ces agendas (accès en écriture).";
+		self::$trad["EDIT_notifMailAddFiles"]="Joindre les fichiers à la notification";
+		self::$trad["EDIT_notifMailSelect"]="Choisir les destinataires des notifications";
 		self::$trad["EDIT_accessRightSubFolders"]="Donner les mêmes droits d'accès aux sous-dossiers";
 		self::$trad["EDIT_accessRightSubFolders_info"]="Etendre les droits d'accès aux sous-dossiers <br>(uniquement ceux accessibles en écriture)";
 		self::$trad["EDIT_shortcut"]="Raccourci";
@@ -460,20 +461,25 @@ class Trad extends Txt
 		self::$trad["INSTALL_confirmInstall"]="Confirmer l'installation ?";
 		self::$trad["INSTALL_installOk"]="Agora-Project a bien été installé !";
 		self::$trad["INSTALL_spaceDescription"]="Espace de partage et de travail collaboratif";
-		self::$trad["INSTALL_dataDashboardNews1"]="Bienvenue sur votre nouvel espace !";
-		self::$trad["INSTALL_dataDashboardNews2"]="Cliquez ici pour inviter des personnes à vous rejoindre";
-		self::$trad["INSTALL_dataDashboardNews3"]="Partagez dès maintenant vos Fichiers, Agendas, Fil d'Actualités, Sondages, Notes et tâches, échangez des Contacts ou des Liens Internet, dialoguez sur un Forum ou une Messagerie Instantanée, envoyez des Newsletter, etc.";
-		self::$trad["INSTALL_dataDashboardPoll"]="Que pensez-vous du nouveau module de Sondage ?";
+		self::$trad["INSTALL_dataDashboardNews"]="<h3>Bienvenue sur votre nouvel espace de partage !</h3>
+												<h4><img src='app/img/file/iconSmall.png'> Partagez dès maintenant vos fichiers dans le gestionnaire de fichiers</h4>
+												<h4><img src='app/img/calendar/iconSmall.png'> Partagez des événements dans votre agenda commun ou votre agenda personnel</h4>
+												<h4><img src='app/img/dashboard/iconSmall.png'> Développez le fil d'actualités de votre communauté</h4>
+												<h4><img src='app/img/messenger.png'> Communiquez via le forum, la messagerie instantanée ou des visioconférences</h4>
+												<h4><img src='app/img/task/iconSmall.png'> Centralisez vos notes, projets et contacts</h4>
+												<h4><img src='app/img/mail/iconSmall.png'> Envoyez des newsletters par email</h4>
+												<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">Cliquez ici pour envoyer des emails d'invitation et développer votre communauté !</a></h4>
+												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/?ctrl=offline&action=Documentation' target='_blank'>Cliquez ici pour consulter le guide d'utilisation</a></h4>";
+		self::$trad["INSTALL_dataDashboardPoll"]="Que pensez-vous du fil d'actualité ?";
 		self::$trad["INSTALL_dataDashboardPollA"]="Très intéressant !";
 		self::$trad["INSTALL_dataDashboardPollB"]="Intéressant";
 		self::$trad["INSTALL_dataDashboardPollC"]="Peu intéressant";
 		self::$trad["INSTALL_dataCalendarEvt"]="Bienvenue sur votre espace !";
 		self::$trad["INSTALL_dataForumSubject1"]="Bienvenue sur le forum !";
-		self::$trad["INSTALL_dataForumSubject2"]="N'hésitez pas à partager vos questions ou évoquer les sujets sur lesquels vous souhaitez échanger.";
+		self::$trad["INSTALL_dataForumSubject2"]="N'hésitez pas à partager vos questions sur ce forum et évoquer les sujets sur lesquels vous souhaitez échanger.";
 		
 		////	MODULE_PARAMETRAGE DE L'AGORA
 		////
-		self::$trad["AGORA_headerModuleName"]="Paramétrage général";
 		self::$trad["AGORA_generalSettings"]="Paramétrage général";
 		self::$trad["AGORA_versions"]="Versions";
 		self::$trad["AGORA_dateUpdate"]="mis à jour le";
@@ -490,7 +496,7 @@ class Trad extends Txt
 		self::$trad["AGORA_mapApiKeyInvalid"]="Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'";
 		self::$trad["AGORA_gSigninKeyInvalid"]="Si vous choisissez la connexion optionnelle via Gmail, vous devez y spécifier un 'API Key' pour Google SignIn";
 		self::$trad["AGORA_confirmModif"]="Confirmez-vous les modifications ?";
-		self::$trad["AGORA_name"]="Nom du site";
+		self::$trad["AGORA_name"]="Nom de l'espace principal / du site";
 		self::$trad["AGORA_footerHtml"]="Texte en bas de page";
 		self::$trad["AGORA_lang"]="Langue par défaut";
 		self::$trad["AGORA_timezone"]="Fuseau horaire";
@@ -502,7 +508,7 @@ class Trad extends Txt
 		self::$trad["AGORA_visioHostInfo"]="Url du serveur de visioconférence principal. Exemple : https://framatalk.org ou https://meet.jit.si";
 		self::$trad["AGORA_visioHostAlt"]="Serveur de visioconférence alternatif";
 		self::$trad["AGORA_visioHostAltInfo"]="Url du serveur de visioconférence alternatif : en cas d'indisponibilité du serveur Jitsi principal";
-		self::$trad["AGORA_skin"]="Couleur de l'affichage général";
+		self::$trad["AGORA_skin"]="Couleur de l'interface";
 		self::$trad["AGORA_black"]="Mode sombre";
 		self::$trad["AGORA_white"]="Mode clair";
 		self::$trad["AGORA_wallpaperLogoError"]="Le fond d'écran et le logo doivent être au format .jpg ou .png";
@@ -530,8 +536,8 @@ class Trad extends Txt
 		self::$trad["AGORA_gPeopleApiKey"]="API KEY pour Google People";
 		self::$trad["AGORA_gPeopleApiKeyInfo"]="Parametrage obligatoire pour la récupération des contacts Gmail / Google People. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
 		self::$trad["AGORA_messengerDisabled"]="Messagerie instantanée activée";
-		self::$trad["AGORA_moduleLabelDisplay"]="Nom des modules dans la barre de menu principal";
-		self::$trad["AGORA_folderDisplayMode"]="Affichage par défaut des éléments des dossiers";
+		self::$trad["AGORA_moduleLabelDisplay"]="Afficher le nom des modules dans la barre de menu";
+		self::$trad["AGORA_folderDisplayMode"]="Affichage par défaut des dossiers";
 		self::$trad["AGORA_personsSort"]="Trier les utilisateurs et contacts par";
 		//SMTP
 		self::$trad["AGORA_smtpLabel"]="Connexion SMTP & sendMail";
@@ -546,23 +552,22 @@ class Trad extends Txt
 		self::$trad["AGORA_smtpPass"]="Mot de passe";
 		//LDAP
 		self::$trad["AGORA_ldapLabel"]="Connexion à un serveur LDAP";
-		self::$trad["AGORA_ldapHost"]="Adresse du serveur LDAP (hostname)";
-		self::$trad["AGORA_ldapPort"]="Port sur serveur";
-		self::$trad["AGORA_ldapPortInfo"]="''389'' par défaut";
-		self::$trad["AGORA_ldapLogin"]="Chaine de connexion pour l'admin";
-		self::$trad["AGORA_ldapLoginInfo"]="par exemple ''uid=admin,ou=mon_entreprise''";
-		self::$trad["AGORA_ldapPass"]="Mot de passe de l'admin";
-		self::$trad["AGORA_ldapDn"]="Groupe d'utilisateurs / base DN";
-		self::$trad["AGORA_ldapDnInfo"]="Emplacement des utilisateurs dans l'annuaire.<br>Par exemple ''ou=users,o=mon_organisme''";
+		self::$trad["AGORA_ldapLabelInfo"]="Connexion à un serveur LDAP pour la création d'utilisateur sur votre espace : cf. option ''Import/export d'utilisateur'' du module ''Utilisateur''";
+		self::$trad["AGORA_ldapUri"]="URI LDAP";
+		self::$trad["AGORA_ldapUriInfo"]="URI LDAP complet de la forme LDAP://hostname:port ou LDAPS://hostname:port pour le chiffrement SSL.";
+		self::$trad["AGORA_ldapPort"]="Port du serveur";
+		self::$trad["AGORA_ldapPortInfo"]="Le port utilisé pour la connexion : ''389'' par défaut";
+		self::$trad["AGORA_ldapLogin"]="DN de l'administrateur LDAP (Distinguished Name)";
+		self::$trad["AGORA_ldapLoginInfo"]="par exemple ''cn=admin,dc=mon-entreprise,dc=com''";
+		self::$trad["AGORA_ldapPass"]="Mot de passe de l'administrateur LDAP";
+		self::$trad["AGORA_ldapDn"]="DN du groupe d'utilisateurs (Distinguished Name)";
+		self::$trad["AGORA_ldapDnInfo"]="DN du groupe d'utilisateurs : emplacement des utilisateurs dans l'annuaire. Exemple ''ou=mon-groupe,dc=mon-entreprise,dc=com''";
+		self::$trad["importLdapFilterInfo"]="Filtre de recherche LDAP (cf. https://www.php.net/manual/function.ldap-search.php). Exemple ''(cn=*)'' ou ''(&(samaccountname=MONLOGIN)(cn=*))''";
+		self::$trad["AGORA_ldapDisabled"]="Le module PHP de connexion à un serveur LDAP n'est pas installé";
 		self::$trad["AGORA_ldapConnectError"]="Erreur de connexion au serveur LDAP !";
-		self::$trad["AGORA_ldapCreaAutoUsers"]="Création auto d'utilisateurs, si identification";
-		self::$trad["AGORA_ldapCreaAutoUsersInfo"]="Créer automatiquement un utilisateur s'il est absent de l'Agora mais présent sur le serveur LDAP : il sera alors affecté aux espaces accessibles à ''tous les utilisateurs du site''.<br>Dans le cas contraire, l'utilisateur ne sera pas créé.";
-		self::$trad["AGORA_ldapPassEncrypt"]="Password cryptés sur le serveur";
-		self::$trad["AGORA_ldapDisabled"]="Le module PHP de connexion à un serveur LDAP n'est pas installé"; 
 
 		////	MODULE_LOG
 		////
-		self::$trad["LOG_headerModuleName"]="Logs";
 		self::$trad["LOG_moduleDescription"]="Historique des événements (logs)";
 		self::$trad["LOG_path"]="Chemin";
 		self::$trad["LOG_filter"]="Filtre";
@@ -584,7 +589,6 @@ class Trad extends Txt
 
 		////	MODULE_ESPACE
 		////
-		self::$trad["SPACE_headerModuleName"]="Espaces";
 		self::$trad["SPACE_moduleInfo"]="L'espace principal (le site) peut également être subdivisée en plusieurs espaces, également appelés ''sous-espace''";
 		self::$trad["SPACE_manageSpaces"]="Gérer les espaces du site";
 		self::$trad["SPACE_config"]="Paramétrer l'espace";
@@ -620,7 +624,7 @@ class Trad extends Txt
 		//Index
 		self::$trad["USER_allUsers"]="Gérer tous les utilisateurs du site";
 		self::$trad["USER_allUsersInfo"]="Gérer tous les utilisateurs du site : de tous les espaces<br>(réservé à l'administrateur général)";
-		self::$trad["USER_spaceUsers"]="Gérer les utilisateurs de l'espace";
+		self::$trad["USER_spaceUsers"]="Gérer les utilisateurs de l'espace courant";
 		self::$trad["USER_deleteDefinitely"]="Supprimer définitivement";
 		self::$trad["USER_deleteFromCurSpace"]="Désaffecter de l'espace courant";
 		self::$trad["USER_deleteFromCurSpaceConfirm"]="Confirmer la désaffectation de l'utilisateur à l'espace courant ?";
@@ -753,11 +757,11 @@ class Trad extends Txt
 		////
 		// Menu principal
 		self::$trad["CALENDAR_headerModuleName"]="Agenda";
-		self::$trad["CALENDAR_moduleDescription"]="Agendas personnels et partagés";
-		self::$trad["CALENDAR_option_adminAddRessourceCalendar"]="Seul l'administrateur peut créer des agendas partagés";//OPTION!
+		self::$trad["CALENDAR_moduleDescription"]="Agendas communs et personnels";
+		self::$trad["CALENDAR_option_adminAddRessourceCalendar"]="Seul l'administrateur peut créer des agendas communs";//OPTION!
 		self::$trad["CALENDAR_option_adminAddCategory"]="Seul l'administrateur peut créer des categories d'événement";//OPTION!
-		self::$trad["CALENDAR_option_createSpaceCalendar"]="Créer un agenda partagé";//OPTION!
-		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="L'agenda portera le même nom que l'espace<br>(option utile si les agendas des utilisateurs sont désactivés)";
+		self::$trad["CALENDAR_option_createSpaceCalendar"]="Créer un agenda commun";//OPTION!
+		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="Par défaut, l'agenda commun porte le même nom que l'espace. L'agenda commun est aussi appelé 'agenda de ressource' car il peut concerner une salle, un véhicule, etc.";
 		self::$trad["CALENDAR_option_moduleDisabled"]="Le module agenda reste toujours accessible aux utilisateurs qui laissent leur agenda personnel activé. Pour désactiver complètement ce module, modifiez l'option ''Agenda personnel désactivé'' de votre profil utilisateur";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Agendas disponibles";
@@ -765,8 +769,8 @@ class Trad extends Txt
 		self::$trad["CALENDAR_hideAllCals"]="Masquer tous les agendas";
 		self::$trad["CALENDAR_printCalendars"]="Imprimer l'agenda";
 		self::$trad["CALENDAR_printCalendarsInfos"]="Imprimez la page en mode paysage";
-		self::$trad["CALENDAR_addSharedCalendar"]="Créer un agenda partagé";
-		self::$trad["CALENDAR_addSharedCalendarInfo"]="Créer un agenda partagé :<br>pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.";
+		self::$trad["CALENDAR_addSharedCalendar"]="Créer un agenda commun";
+		self::$trad["CALENDAR_addSharedCalendarInfo"]="Créer un agenda commun :<br>pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.";
 		self::$trad["CALENDAR_exportIcal"]="Exporter les événements au format iCal";
 		self::$trad["CALENDAR_icalUrl"]="Copier le lien/url d'export des événements au format Ical";
 		self::$trad["CALENDAR_icalUrlCopy"]="Permet une lecture des événements de l'agenda au format Ical, via une application externe tel que Google Calendar, Mozilla Thunderbird, Microsoft Outlook, etc.";
@@ -908,23 +912,23 @@ class Trad extends Txt
 		self::$trad["FORUM_forumRootResp"]="Accueil";
 		self::$trad["FORUM_noTheme"]="Sans thème";
 		self::$trad["FORUM_editThemes"]="Editer les thèmes de sujet";
-		self::$trad["FORUM_editThemesInfo"]="Chaque theme peut être modifié par son auteur ou par l'administrateur général";
+		self::$trad["FORUM_editThemesInfo"]="Chaque theme peut être modifié par son auteur ou par l'admin général";
 		self::$trad["FORUM_addTheme"]="Ajouter un theme";
 
 		////	MODULE_TACHE
 		////
 		// Menu principal
-		self::$trad["TASK_headerModuleName"]="Tâches";
-		self::$trad["TASK_moduleDescription"]="Tâches & Notes";
-		self::$trad["TASK_option_adminRootAddContent"]="Seul l'administrateur peut créer des dossiers et tâches à la racine";//OPTION!
+		self::$trad["TASK_headerModuleName"]="Notes";
+		self::$trad["TASK_moduleDescription"]="Notes / Tâches";
+		self::$trad["TASK_option_adminRootAddContent"]="Seul l'administrateur peut créer des dossiers et notes à la racine";//OPTION!
 		// TRI
 		self::$trad["SORT_priority"]="Priorité";
 		self::$trad["SORT_advancement"]="Avancement";
 		self::$trad["SORT_dateBegin"]="Date de debut";
 		self::$trad["SORT_dateEnd"]="Date de fin";
 		//Index
-		self::$trad["TASK_addTask"]="Créer une nouvelle tâche";
-		self::$trad["TASK_noTask"]="Aucune tâche pour le moment";
+		self::$trad["TASK_addTask"]="Créer une nouvelle note";
+		self::$trad["TASK_noTask"]="Aucune note pour le moment";
 		self::$trad["TASK_advancement"]="Avancement";
 		self::$trad["TASK_advancementAverage"]="Avancement moyen";
 		self::$trad["TASK_priority"]="Priorité";

@@ -13,7 +13,7 @@
 class CtrlContact extends Ctrl
 {
 	const moduleName="contact";
-	public static $folderObjectType="contactFolder";
+	public static $folderObjType="contactFolder";
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=["MdlContact","MdlContactFolder"];
 
@@ -22,7 +22,6 @@ class CtrlContact extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["contactList"]=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplay(self::$curContainer)." ".MdlContact::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
@@ -32,10 +31,9 @@ class CtrlContact extends Ctrl
 	 *******************************************************************************************/
 	public static function getPlugins($params)
 	{
-		$pluginsList=self::getPluginFolders($params,"MdlContactFolder");
+		$pluginsList=MdlContactFolder::getPluginFolders($params);
 		foreach(MdlContact::getPluginObjects($params) as $tmpObj)
 		{
-			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
@@ -84,36 +82,35 @@ class CtrlContact extends Ctrl
 	 *******************************************************************************************/
 	public static function actionEditPersonsImportExport()
 	{
-		////	Folder courant
+		////	Folder courant  &&  Controle d'accès
 		$curFolder=self::getObj("contactFolder",Req::param("_idContainer"));
-		////	Controle d'accès
 		if(Ctrl::$curUser->isAdminSpace()==false)  {static::lightboxClose();}
 		////	Validation de formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//// Export de contacts
 			if(Req::param("actionImportExport")=="export"){
-				$contactList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplay(self::$curContainer));
+				$contactList=Db::getObjTab("contact", "SELECT * FROM ".MdlContact::dbTable." WHERE ".MdlContact::sqlDisplay(self::$curContainer));
 				MdlContact::exportPersons($contactList, Req::param("exportType"));
 			}
 			//// Import de contacts
-			elseif(Req::param("actionImportExport")=="import" && Req::param("personFields"))
+			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields"))
 			{
 				$personFields=Req::param("personFields");
 				foreach(Req::param("personsImport") as $personCpt)
 				{
-					//Créé le contact (avec le "_idContainer" pour le controle d'accès : cf. "createUpdate()" + "createRight()")
+					//Créé le contact  &&  Spécifie le "_idContainer" pour le controle d'accès (cf. "createUpdate()"+"createRight()")
 					$curObj=new MdlContact();
 					$curObj->_idContainer=$curFolder->_id;
 					$sqlProperties=null;
 					//Récupère la valeur de chaque champ du contact
 					foreach(Req::param("agoraFields") as $fieldCpt=>$curFieldName){
 						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
-						if(!empty($curFieldVal) && !empty($curFieldName))  {$sqlProperties.=$curFieldName."=".Db::format($curFieldVal).", ";}
+						if(!empty($curFieldVal) && !empty($curFieldName))  {$sqlProperties.="`".$curFieldName."`=".Db::format($curFieldVal).", ";}
 					}
-					//Enregistre le contact
+					//Enregistre le nouveau contact !
 					$curObj=$curObj->createUpdate($sqlProperties);
-					//Ajoute si besoin l'affectation du contact : 'tous les users' de l'espace courant, avec un accès en 'lecture'
+					//Nouveau contact du dossier racine : affecte en lecture à "tous les users" de l'espace courant
 					if($curFolder->isRootFolder())  {Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
 				}
 				//Ferme la page

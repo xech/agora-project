@@ -59,7 +59,7 @@ class Req
 		require_once PATH_DATAS."config.inc.php";
 		//Lance l'action demandée
 		try{
-			//"isInstalling" : pas d'initialisation du controleur
+			//Installation d'AP : pas d'initialisation du controleur
 			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}
 			//Lance le controleur / Lance une Exception
 			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}
@@ -141,8 +141,8 @@ class Req
 		if($urlProtocol==false)				{$urlProtocol=null;}
 		elseif(!empty($_SERVER['HTTPS']))	{$urlProtocol="https://";}
 		else								{$urlProtocol="http://";}
-		//Renvoie l'url sans les paramètres ni le dernier "/". Note : Toutes les requêtes passent par "index.php"
-		return $urlProtocol.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']);
+		//Renvoie l'url sans les paramètres ni le dernier "/" (Note : toutes les requêtes passent par "index.php")
+		return $urlProtocol.$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER["PHP_SELF"]),'/');
 	}
 
 	/********************************************************************************************
@@ -150,7 +150,7 @@ class Req
 	 ********************************************************************************************/
 	public static function isDevServer()
 	{
-		return (stristr($_SERVER["HTTP_HOST"],"debian") || stristr($_SERVER["HTTP_HOST"],"192.168"));
+		return (stristr($_SERVER['SERVER_NAME'],"debian") || stristr($_SERVER['SERVER_NAME'],"192.168"));
 	}
 
 	/********************************************************************************************

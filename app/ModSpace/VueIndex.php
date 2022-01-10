@@ -48,7 +48,7 @@
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$userRightAcces=$tmpSpace->accessRightUser($tmpUser);
 						if($tmpSpace->allUsersAffected() && $userRightAcces==1)	{continue;}//Pas d'affichage si simple user et tous les users sont affectés
-						echo "<div class='vSpaceAffectation sLink' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."');\"><img src='app/img/user/".($userRightAcces==2?'adminSpace.png':'accesUser.png')."'> ".$tmpUser->getLabel()."</div>";
+						echo "<div class='vSpaceAffectation sLink' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."');\"><img src='app/img/user/".($userRightAcces==2?'userAdminSpace.png':'user.png')."'> ".$tmpUser->getLabel()."</div>";
 					}
 				echo "</div>";
 			echo "</div>";

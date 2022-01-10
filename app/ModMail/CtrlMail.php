@@ -80,6 +80,7 @@ class CtrlMail extends Ctrl
 		}
 		////	Charge un ancien mail ou un nouveau mail  &&  Affiche la page
 		$vDatas["curMail"]=Req::isParam("oldMailTypeId")  ?  Ctrl::getObjTarget(Req::param("oldMailTypeId"))  :  Ctrl::getObj("mail");
+		$vDatas["curUserMailsCount"]=Db::getVal("SELECT count(*) FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id);
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 

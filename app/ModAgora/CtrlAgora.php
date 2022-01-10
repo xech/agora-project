@@ -58,9 +58,7 @@ class CtrlAgora extends Ctrl
 				ldap_server_port=".Db::param("ldap_server_port").",
 				ldap_admin_login=".Db::param("ldap_admin_login").",
 				ldap_admin_pass=".Db::param("ldap_admin_pass").",
-				ldap_base_dn=".Db::param("ldap_base_dn").",
-				ldap_crea_auto_users=".Db::param("ldap_crea_auto_users").",
-				ldap_pass_cryptage=".Db::param("ldap_pass_cryptage"));
+				ldap_base_dn=".Db::param("ldap_base_dn"));
 			////	Ajoute un Wallpaper
 			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"]))
 			{
@@ -97,23 +95,24 @@ class CtrlAgora extends Ctrl
 				File::imageResize(PATH_DATAS.$logoConnectFileName, PATH_DATAS.$logoConnectFileName, 700, 300);
 				Db::query("UPDATE ap_agora SET logoConnect=".Db::format($logoConnectFileName));
 			}
-			////	Test de connexion LDAP
-			if(Req::isParam("ldap_server"))  {MdlPerson::ldapConnect(Req::param("ldap_server"),Req::param("ldap_server_port"),Req::param("ldap_admin_login"),Req::param("ldap_admin_pass"),true);}
-			//Modifie l'espace disque
+			////	Test la connexion LDAP
+			if(Req::isParam("ldap_server"))
+				{MdlPerson::ldapConnect(Req::param("ldap_server"),Req::param("ldap_server_port"),Req::param("ldap_admin_login"),Req::param("ldap_admin_pass"),true);}
+			////	Modif l'espace disque
 			if(Ctrl::isHost()==false && Req::param("limite_espace_disque")>0){
 				$limite_espace_disque=File::getBytesSize(Req::param("limite_espace_disque")."G");//exprimé en Go
 				File::updateConfigFile(array("limite_espace_disque"=>$limite_espace_disque));
 			}
-			//Notif & Relance la page
+			////	Notif & Relance la page
 			Ctrl::notify(Txt::trad("modifRecorded"));
 			self::redir("?ctrl=".Req::$curCtrl);
 		}
-		//Supprime un wallpaper?
+		////	Supprime un wallpaper?
 		if(Req::isParam("deleteCustomWallpaper")){
 			$wallpaperPath=PATH_WALLPAPER_CUSTOM.Req::param("deleteCustomWallpaper");
 			File::rm($wallpaperPath);
 		}
-		//Affiche la page
+		////	Affiche la page
 		static::displayPage("VueIndex.php");
 	}
 

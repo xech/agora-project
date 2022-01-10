@@ -129,8 +129,6 @@ $(function(){
 				timeLastClick=Date.now();
 				containerIdLastClick=this.id;
 			});
-			//Pas de sélection si on clique un lien d'un bloc
-			$(".objContainer a").click(function(event){ event.stopPropagation(); });
 		}
 		////	Menu flottant du module (à gauche)
 		if($("#pageModuleMenu").exist())
@@ -254,9 +252,9 @@ $(function(){
 function mainPageDisplay(firstLoad)
 {
 	////	Affiche les "Title" avec Tooltipster
-	tooltipsterOptions={theme:"tooltipster-shadow",delay:700,animation:"grow",contentAsHTML:true};//Variable globale (delais identique à un 'title' normal..)
-	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);					//Applique le tooltipster (sauf si "noTooltip" est spécifié, ou le tooltip contient une URL, ou le title est vide)
-	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));							//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
+	tooltipsterOptions={theme:"tooltipster-shadow",delay:800,contentAsHTML:true};				//Variable globale : delais identique à un 'title' normal + pas de "animation" (sinon un scroller apparait dans les lightbox!)
+	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);	//Applique le tooltipster (sauf si "noTooltip" est spécifié, ou le tooltip contient une URL, ou le title est vide)
+	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));			//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
 
 	////	Fancybox des images (dans les news, etc) & inline (contenu html)
 	var fancyboxImagesButtons=(isMobile()) ? ['close'] : ['fullScreen','thumbs','close'];
@@ -329,15 +327,16 @@ function initMenuContext()
 		//// Mouseover/Click d'un "launcher" (icone/texte) : affiche le menu classique
 		$(".menuLaunch").on("mouseover click",function(){ showMenuContext(this); });
 		//// Click Droit d'un block d'objet : affiche le menu context ("Return false" pour pas afficher le menu du browser)
-		$(".objContainer[for^='objMenu_']").on("contextmenu",function(event){ showMenuContext(this,event);  return false; });
+		$(".objContainer[for^='objMenu']").on("contextmenu",function(event){ showMenuContext(this,event);  return false; });
 		//// Masque le menu dès qu'on le quitte
 		$(".menuContext").on("mouseleave",function(){ $(".menuContext").hide(); });
 	}
 	////	Click/Survol le corps de la page : masque le menu contextuel
 	$("#pageFull,#pageCenter").on("click mouseenter", function(){ $(".menuContext").hide(); });
-	////	Click sur un menu context ou son launcher : pas de propagation au block ".objContainer" (exple: pour pas sélectionner un block d'objet via "objSelect()")
-	$(".menuLaunch,.menuContext").click(function(event){ event.stopPropagation(); });
+	////	Pas de sélection d'un objet via "objSelect()" : si on click sur son menu context (ou son launcher) ou un lien spécifique (exple: sujet du forum ou download de fichier)
+	$(".menuLaunch, .menuContext, .stopPropagation, .objContainer a, .objLabelLink").click(function(event){  event.stopPropagation();  });
 }
+
 /*MENU NORMAL : AFFICHE LE MENU CONTEXT*/
 function showMenuContext(thisLauncher, event)
 {
@@ -366,6 +365,7 @@ function showMenuContext(thisLauncher, event)
 	$(menuId).css("left",menuPosX+"px").css("top",menuPosY+"px").slideDown(20);//Positionne le menu. Affiche avec un rapide slide (pas de "show()"!)
 	$(".menuContext").not(menuId).hide();//Masque les autres menus
 }
+
 /*MENU RESPONSIVE : AFFICHE LE MENU CONTEXT (cf. VueStructure.php)*/
 function showRespMenu(menuOneSourceId, menuTwoSourceId)
 {
@@ -385,6 +385,7 @@ function showRespMenu(menuOneSourceId, menuTwoSourceId)
 		$("body").css("overflow","hidden");
 	}
 }
+
 /*MENU RESPONSIVE : MASQUE LE MENU RESPONSIVE*/
 function hideRespMenu(swipeCurrentX)
 {
@@ -452,7 +453,7 @@ function isValidPassword(password)
  **************************************************************************************************/
 function extension(fileName)
 {
-	if(isValue(fileName))  {return fileName.split('.').pop().toLowerCase();}
+	if(isValue(fileName))  {return fileName.split(".").pop().toLowerCase();}
 }
 
 /**************************************************************************************************
@@ -477,15 +478,15 @@ function notify(curMessage, typeNotif)
 	}
 }
 
-/**************************************************************************************************
- * CONTROLE LES REDIRECTIONS DE PAGE : CONFIRME SI BESOIN LA FERMETURE D'UN FORMULAIRE
- **************************************************************************************************/
+/*******************************************************************************************************
+ * REDIRECTION DEPUIS UNE PAGE PRINCIPALE OU LIGHTBOX : CONFIRME SI BESOIN LA FERMETURE D'UN FORMULAIRE
+ *******************************************************************************************************/
 function redir(adress)
 {
 	if(closeFormConfirmed()==false)  {return false;}
-	location.href=adress;//Redirection depuis une page principale ou lightbox
+	location.href=adress;
 }
-/*Idem avec "<a href>"*/
+/*IDEM : REDIRECTION VIA BALISE "<A HREF>"*/
 $(function(){
 	$("a:not(.noConfirmClose)").click(function(event){
 		if(closeFormConfirmed()==false)  {event.preventDefault(); return false;}
@@ -676,13 +677,13 @@ function spaceAffectations()
 function spaceAffectationsLabel()
 {
 	//Réinit le style des affectations
-	$(".spaceAffectLine").removeClass("sLineSelect sAccessRead sAccessWrite");
+	$(".spaceAffectLine").removeClass("lineSelect sAccessRead sAccessWrite");
 	//Stylise les labels && la ligne sélectionnées
 	$(".spaceAffectInput:checked").each(function(){
 		var targetId   =this.value.split("_")[0];	//Id de l'user ou espace (exple: "55_2" -> "55")
 		var targetRight=this.value.split("_")[1];	//Droit "user" ou "admin" (exple: "55_2" -> "2")
-		if(targetRight=="1")		{$("#targetLine"+targetId).addClass("sLineSelect sAccessRead");}	//Sélectionne la box "user"
-		else if(targetRight=="2")	{$("#targetLine"+targetId).addClass("sLineSelect sAccessWrite");}	//Sélectionne la box "admin"
+		if(targetRight=="1")		{$("#targetLine"+targetId).addClass("lineSelect sAccessRead");}	//Sélectionne la box "user"
+		else if(targetRight=="2")	{$("#targetLine"+targetId).addClass("lineSelect sAccessWrite");}	//Sélectionne la box "admin"
 	});
 }
 
@@ -745,7 +746,7 @@ function userGroupSelect(thisGroup, idContainerUsers)
 		else{
 			var userChecked=false;
 			$("[name='"+thisGroup.name+"']:checked").not(thisGroup).each(function(){
-				var otherGroupUserIds=$(this).val().split(",");
+				var otherGroupUserIds=this.value.split(",");
 				if($.inArray(idUsers[tmpKey],otherGroupUserIds)!==-1)  {userChecked=true;}
 			});
 		}

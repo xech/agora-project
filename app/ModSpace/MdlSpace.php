@@ -26,38 +26,89 @@ class MdlSpace extends MdlObject
 	private $_usersAccessRight=[];
 
 	/*******************************************************************************************
-	 * SURCHARGE : RÉCUPÈRE LES DROITS D'ACCÈS A L'ESPACE POUR L'USER COURANT
+	 * SURCHARGE : DROITS D'ACCÈS A L'ESPACE POUR L'USER COURANT
 	 *******************************************************************************************/
 	public function accessRight()
 	{
 		return $this->accessRightUser(Ctrl::$curUser);
  	}
 
-	 /*****************************************************************************************************************
-	  * DROIT D'ACCÈS À L'ESPACE POUR UN USER SPECIFIQUE :
-	  * Droit d'accès : admin=2  ||  1 = user lambda ou guest  ||  0 = aucun accès
-	  *****************************************************************************************************************/
-	 public function accessRightUser($objUser)
-	 {
-		 //Mise en cache du droit d'accès
-		 if(empty($this->_usersAccessRight[$objUser->_id]))
-		 {
-			 if($objUser->isAdminGeneral())	{$curRight=2;}//Droit d'admin général
-			 elseif($objUser->isUser())		{$curRight=Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");}//Droit maxi affecté à un user
-			 else							{$curRight=$this->public;}//Droit d'accès à l'espace public (guests)
-			 $this->_usersAccessRight[$objUser->_id]=(int)$curRight;
-		 }
-		 //Renvoie le droit d'accès
-		 return $this->_usersAccessRight[$objUser->_id];
-	 }
-
 	 /*******************************************************************************************
-	  * SURCHARGE : DROIT D'ÉDITION POUR L'USER COURANT
-	  *******************************************************************************************/
+	  * SURCHARGE : DROIT D'ÉDITION DE L'ESPACE POUR L'USER COURANT
+	 *******************************************************************************************/
 	 public function editRight()
 	 {
 		 return ($this->accessRight()==2);
 	 }
+ 
+	 /*******************************************************************************************
+	  * SURCHARGE : DROIT DE SUPPRESSION DE L'ESPACE POUR L'USER COURANT
+	  *******************************************************************************************/
+	 public function deleteRight()
+	 {
+		 return (Ctrl::$curUser->isAdminGeneral() && $this->isCurSpace()==false);
+	 }
+
+	/*****************************************************************************************************************
+	 * DROIT D'ACCÈS D'UN USER À L'ESPACE
+	 * admin => 2 || user lambda ou guest => 1 || aucun accès => 0
+	 *****************************************************************************************************************/
+	public function accessRightUser($objUser)
+	{
+		if(empty($this->_usersAccessRight[$objUser->_id]))									//Droit d'accès déjà en "cache" ?
+		{
+			if($objUser->isAdminGeneral())	{$curRight=2;}									//Droit d'admin général (même si aucun affectation à l'espace)
+			elseif($objUser->isUser())		{$curRight=$this->userAffectation($objUser);}	//Droit d'affectation de l'user
+			else							{$curRight=$this->public;}						//Droit d'accès "guest" (espace public)
+			$this->_usersAccessRight[$objUser->_id]=(int)$curRight;							//Ajoute le droit d'accès en "cache"
+		}
+		return $this->_usersAccessRight[$objUser->_id];										//Renvoie le droit d'accès
+	}
+
+	/*****************************************************************************************************************
+	 * AFFECTATION D'UN USER À L'ESPACE : DROIT MAXI || "allUsers" SELECTIONNÉ
+	*****************************************************************************************************************/
+	public function userAffectation($objUser)
+	{
+		return (int)Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");
+	}
+
+	/*******************************************************************************************
+	 * VERIFIE SI TOUS LES UTILISATEURS DU SITE SONT AFFECTES À L'ESPACE
+	 *******************************************************************************************/
+	public function allUsersAffected()
+	{
+		if($this->_allUsersAffected===null)  {$this->_allUsersAffected=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND allUsers=1") > 0);}
+		return $this->_allUsersAffected;
+	}
+
+	/*******************************************************************************************
+	 * UTILISATEURS AFFECTÉS À UN ESPACE  ($return= "objects" OU "idsTab" OU "idsSql")
+	 *******************************************************************************************/
+	public function getUsers($return="objects")
+	{
+		//Initialise la liste des objets "user"
+		if($this->_spaceUsers===null){
+			$personsSort="ORDER BY ".Ctrl::$agora->personsSort;
+			$objUsers=($this->allUsersAffected())  ?  Db::getObjTab("user","SELECT * FROM ap_user ".$personsSort)  :  Db::getObjTab("user","SELECT DISTINCT T1.* FROM ap_user T1, ap_joinSpaceUser T2 WHERE T1._id=T2._idUser AND T2._idSpace=".$this->_id." ".$personsSort);
+			$this->_spaceUsers=$objUsers;
+		}
+		//Retourne un tableau d'objets OU une liste d'identifiants
+		if($return=="objects")	{return $this->_spaceUsers;}
+		else
+		{
+			//Liste des ids d'users
+			$idsList=[];
+			foreach($this->_spaceUsers as $objUser)  {$idsList[]=$objUser->_id;}
+			//Retourne le tableau d'identifiants
+			if($return=="idsTab")  {return $idsList;}
+			//Sinon retourne une liste d'identifiants pour les requêtes SQL (exple: "WHERE _idUser IN (1,3,5,0)")
+			elseif($return=="idsSql"){
+				$idsList[]=0;//Ajoute un pseudo user pour pas avoir d'erreur SQL si la liste est vide
+				return implode(",",$idsList);
+			}
+		}
+	}
 
 	/*******************************************************************************************
 	 * LISTE COMPLETE DES MODULES DISPONIBLES
@@ -111,52 +162,6 @@ class MdlSpace extends MdlObject
 	{
 		$moduleList=$this->moduleList();
 		return !empty($moduleList[$moduleName]);
-	}
-	
-	/*******************************************************************************************
-	 * VERIFIE SI TOUS LES UTILISATEURS DU SITE SONT AFFECTES À L'ESPACE
-	 *******************************************************************************************/
-	public function allUsersAffected()
-	{
-		if($this->_allUsersAffected===null)
-			{$this->_allUsersAffected=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND allUsers=1") > 0);}
-		return $this->_allUsersAffected;
-	}
-
-	/*******************************************************************************************
-	 * UTILISATEURS AFFECTÉS À UN ESPACE  ($return= "objects" OU "idsTab" OU "idsSql")
-	 *******************************************************************************************/
-	public function getUsers($return="objects")
-	{
-		//Initialise la liste des objets "user"
-		if($this->_spaceUsers===null){
-			$personsSort="ORDER BY ".Ctrl::$agora->personsSort;
-			$objUsers=($this->allUsersAffected())  ?  Db::getObjTab("user","SELECT * FROM ap_user ".$personsSort)  :  Db::getObjTab("user","SELECT DISTINCT T1.* FROM ap_user T1, ap_joinSpaceUser T2 WHERE T1._id=T2._idUser AND T2._idSpace=".$this->_id." ".$personsSort);
-			$this->_spaceUsers=$objUsers;
-		}
-		//Retourne un tableau d'objets OU une liste d'identifiants
-		if($return=="objects")	{return $this->_spaceUsers;}
-		else
-		{
-			//Liste des ids d'users
-			$idsList=[];
-			foreach($this->_spaceUsers as $objUser)  {$idsList[]=$objUser->_id;}
-			//Retourne le tableau d'identifiants
-			if($return=="idsTab")  {return $idsList;}
-			//Sinon retourne une liste d'identifiants pour les requêtes SQL (exple: "WHERE _idUser IN (1,3,5,0)")
-			elseif($return=="idsSql"){
-				$idsList[]=0;//Ajoute un pseudo user pour pas avoir d'erreur SQL si la liste est vide
-				return implode(",",$idsList);
-			}
-		}
-	}
-
-	/*******************************************************************************************
-	 * DROIT DE SUPPRESSION D'UN ESPACE (PAS L'ESPACE COURANT)
-	 *******************************************************************************************/
-	public function deleteRight()
-	{
-		return (Ctrl::$curUser->isAdminGeneral() && $this->isCurSpace()==false);
 	}
 
 	/*******************************************************************************************

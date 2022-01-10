@@ -76,10 +76,10 @@ class MdlFile extends MdlObject
 	public function urlDownloadDisplay($action="download", $dateCrea=null)
 	{
 		$returndUrl="?ctrl=file&action=getFile&typeId=".$this->_typeId;								//Url de base
-		if(!empty($dateCrea))	{$returndUrl.="&dateCrea=".urlencode($dateCrea);}					//Sélectionne une version spécifique du fichier
+		if(!empty($dateCrea))  {$returndUrl.="&dateCrea=".urlencode($dateCrea);}					//Sélectionne une version spécifique du fichier
 		if($action=="display")		{$returndUrl.="&display=true";}									//Affiche le fichier dans une lightbox (images/pdf/txt/etc)
 		elseif(Req::isMobileApp())  {$returndUrl=CtrlMisc::appGetFileUrl($returndUrl,$this->name);}	//OU Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
-		return $returndUrl."&extension=.".File::extension($this->name);								//Ajoute l'extension du fichier (cf. controles d'action depuis mobileApp)
+		return $returndUrl."&extension=.".File::extension($this->name);								//Retourne l'Url de download avec l'extension du fichier (cf. controles d'action depuis mobileApp)
 	}
 
 	/*******************************************************************************************

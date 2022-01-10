@@ -25,7 +25,7 @@
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo CtrlObject::folderPathMenu(Txt::trad("LINK_addLink"),MdlLink::getUrlNew());
-		echo $foldersList;
+		echo CtrlObject::vueFolders();
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{
@@ -41,7 +41,7 @@
 			</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
-		if(empty($foldersList) && empty($linkList)){
+		if(empty(CtrlObject::vueFolders()) && empty($linkList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("LINK_noLink").$addElement."</div>";
 		}

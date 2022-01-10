@@ -22,7 +22,7 @@
 		<script src="app/js/fancybox/dist/jquery.fancybox.min.js"></script>
 		<link  href="app/js/fancybox/dist/jquery.fancybox.css" rel="stylesheet">
 		<script type="text/javascript" src="app/js/tooltipster/tooltipster.bundle.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="app/js/tooltipster/tooltipster.bundle.min.css">
+		<link rel="stylesheet" type="text/css" href="app/js/tooltipster/tooltipster.bundle.css">
 		<link rel="stylesheet" type="text/css" href="app/js/tooltipster/tooltipster-sideTip-shadow.min.css">
 		<script type="text/javascript" src="app/js/toastmessage/jquery.toastmessage.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/toastmessage/toastmessage.css">
@@ -80,7 +80,7 @@
 
 		/*FOOTER*/
 		#pageFooterHtml, #pageFooterIcon			{position:fixed; bottom:0px; z-index:20; display:inline-block; font-weight:normal;}/*pas de margin*/
-		#pageFooterHtml								{left:80px; padding:5px; padding-right:10px; color:#eee; font-size:1.1em; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
+		#pageFooterHtml								{padding:15px; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
 		#pageFooterIcon								{right:2px; bottom:3px;}
 		#pageFooterIcon img							{max-height:65px; max-width:200px;}
 		#pageFooterSpecial							{display:inline-block; margin:0px 0px -7px -7px; background-color:rgba(0,0,0,0.7); border-radius:5px; padding:8px; color:#c00; font-weight:bold;}/*host*/
@@ -90,15 +90,15 @@
 		@media screen and (max-width:1023px){
 			#pageFooterHtml, #pageFooterIcon		{visibility:hidden;}/*pas de "display:none" pour laisser de la marge avec le contenu de la page pour le Messenger/Livecounter et le "respAddButton"*/
 			/*Menu responsive : cf. "common.js"*/
-			#respAddButton							{z-index:20; position:fixed; bottom:8px; right:8px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
+			#respAddButton							{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
 			#respMenuMain, #respMenuBg				{position:fixed; top:0px; right:0px; height:100%;}
 			#respMenuBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
-			#respMenuMain							{z-index:101; max-width:330px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.1em!important; background:linear-gradient(135deg,<?= @Ctrl::$agora->skin=='black'?'#555,#333':'#eee,#fff' ?> 100px);}/*max-width: cf. "#pageModuleMenu"*/
+			#respMenuMain							{z-index:101; max-width:330px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}/*max-width: cf. "#pageModuleMenu"*/
 			#respMenuMain #respMenuClose			{position:absolute; top:7px; right:7px;}/*tester avec Ionic*/
 			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
-			#respMenuMain hr						{background:#ddd; margin-top:15px; margin-bottom:15px;}/*surcharge*/
-			#respMenuTwo							{display:none; margin-top:10px; border-radius:5px; <?= @Ctrl::$agora->skin=="black" ? "background:#333;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?>}/*cf. style de ".vHeaderModule" en responsive*/
+			#respMenuMain hr						{margin:15px 0px;}/*surcharge*/
+			#respMenuTwo							{display:none; margin-top:10px; border-radius:5px; <?= @Ctrl::$agora->skin=="black" ? "background:#444;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?>}/*cf. style de ".vHeaderModule" en responsive*/
 		}
 
 		/*IMPRESSION*/
@@ -127,6 +127,10 @@
 
 		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
+			//Mise à jour récente : notification "footerHtml" spécifique pour l'admin
+			if(Ctrl::$curUser->isAdminSpace() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
+				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
+			//Affiche le footer
 			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>
 				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".Txt::tooltip($pathLogoTitle)."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
 		}

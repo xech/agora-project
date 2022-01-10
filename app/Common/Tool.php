@@ -24,7 +24,6 @@ class Tool
 	 * -"hideRecipients":	Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
 	 * -"hideUserLabel":	Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
 	 * -"receptionNotif":	Demande un accusé de réception pour l'user/expéditeur
-	 * -"addReplyTo": 		Ajoute le mail de l'user/expéditeur en "replyTo" (déconseillé pas défaut : cf. Spamassassin)
 	 * -"noFooter": 		Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
 	 * -"noNotify": 		Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
 	 * -"objectNotif": 		Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
@@ -65,17 +64,17 @@ class Tool
 			}
 
 			////	Expediteur
-			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);													//Se base sur le Domaine du serveur (pas sur l'url et le $_SERVER['HTTP_HOST'])
-			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;	//Exple: "noreply@mondomaine.net" -> email "noreply" du domaine courant OU email du paramétrage général
-			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;								//Nom de l'espace OU Domaine courant
-			$mail->SetFrom($fromMail, $fromLabel);																		//"SetFrom" : Tjs utiliser un email correspondant au domaine courant ou d'un SMTP spécifique (évite la spambox)
+			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Se base sur le Domaine du serveur (pas sur l'url et le $_SERVER['HTTP_HOST'])
+			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;			//Email du paramétrage général OU "noreply@" du domaine courant (ex: "noreply@mondomaine.net")
+			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;										//Nom de l'espace OU Domaine courant
+			$mail->SetFrom($fromMail, $fromLabel);																				//"SetFrom" : utiliser un email correspondant au domaine courant ou un SMTP spécifique (evite la spambox)
+			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());	//Vérif que l'email est envoyé depuis un user connecté
 			//Ajoute si besoin le libellé de l'user connecté
-			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());
 			if(in_array("hideUserLabel",$options)==false && $fromConnectedUser){
-				$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());												//Ajoute le nom de l'user dans le $fromLabel (ex: "Mon espace - BOB SMITH <bob@domaine.tld>")
-				if(!empty(Ctrl::$curUser->mail)){																					//Verif si l'user courant a bien spécifié un email
-					if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute son email à "ReplyTo" ? à éviter car un email "ReplyTo" différent du $fromMail peut arriver en spambox (cf. Spamassassin)
-					if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}							//Demande une confirmation de lecture à l'user courant?
+				$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());											//Ajoute le nom de l'user dans le $fromLabel (ex: "Mon espace - BOB SMITH <bob@domaine.tld>")
+				if(!empty(Ctrl::$curUser->mail)){																				//Verif si l'user courant a bien spécifié un email
+					$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());										//Ajoute son email à "ReplyTo" ?
+					if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}						//Demande une confirmation de lecture à l'user courant?
 				}
 			}
 

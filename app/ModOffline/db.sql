@@ -35,9 +35,7 @@ CREATE TABLE `ap_agora` (
   `ldap_server_port` varchar(255) DEFAULT NULL,
   `ldap_admin_login` varchar(255) DEFAULT NULL,
   `ldap_admin_pass` varchar(255) DEFAULT NULL,
-  `ldap_base_dn` varchar(255) DEFAULT NULL,
-  `ldap_crea_auto_users` tinyint(1) unsigned DEFAULT NULL,
-  `ldap_pass_cryptage` varchar(255) DEFAULT NULL
+  `ldap_base_dn` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_calendar` (

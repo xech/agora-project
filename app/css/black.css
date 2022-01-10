@@ -1,34 +1,38 @@
 /**SKIN NOIR**/
 
 /*Basic*/
-body, a, .sLink																		{color:#d5d5d5;}
+body, a, .sLink																		{color:#ddd;}
+input, textarea, select																{color:#ddd; background:#333;}
 a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label		{color:rgb(173, 211, 255);}
+#htmlLightbox																		{background:#222;}
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
 	#htmlMainPage	{background:#222 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
-	#htmlLightbox	{background:#222;}
 }
 
 /*Blocks d'objet & menus contextuels*/
-.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#333;}/*survol une ligne de menu*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{background:linear-gradient(135deg,#444,#222 100px); background-color:#222;}
-.objContainerSelect, .objContainerSelect .objLabel				{background:#444!important;}/*".objLabel" pour les vignettes d'image du module "File"*/
-.objLines .objContainer											{border-bottom:solid 1px #777; box-shadow:2px 2px 8px rgb(50,50,50);}
-.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover	{background:#333; background-image:none;}/*lignes survolées et lignes impaires*/
-.objLines .alternateLines:nth-child(even)						{background:#222;}/*ligne paire*/
-.objBlocks .hasThumb .objLabel									{background:rgba(0,0,0,0.95);}
-.emptyContainer													{background:rgba(0,0,0,0.7);}
+.objContainer, .miscContainer, .emptyContainer, .menuContext	{background:rgba(10,10,10,0.9);}					/*blocks principaux*/
+.lineOdd:nth-child(odd), .selectContainer						{background:rgba(20,20,20,0.9);}					/*blocks principaux survolés & blocks d'objets impaires (cf. forum)*/
+.objContainerSelect, #objSelectMenu  							{background:#444!important;}						/*objets sélectionnés ("!important" pour surcharger les ":hover")*/
+.objLines .objContainer											{border-bottom:solid 1px #555; box-shadow:none;}	/*pas de "box-shadow" en affichage "objLines"*/
+.menuContext .menuLine:hover, .lineHover:hover, .lineSelect		{background:#444!important;}						/*lignes survolées ou sélectionnées (cf. droit d'accès d'objets ou affectations d'evts)*/
+/*RESPONSIVE*/
+@media screen and (max-width:1023px){
+	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:0px 3px 8px rgb(100,100,100);}/*cf. affichage de news et fichiers*/
+}
+
+/*Barre de menu*/
+#headerBar											{background:#000; box-shadow:0px 3px 8px rgb(80,80,80);}		/*barre de menu principale*/
+.vHeaderModuleButton:hover, .vHeaderModuleCurrent	{background:#444; border:solid 1px #555!important;}			/*module courant*/
 
 /*Droits d'accès d'utilisateurs*/
-.sAccessRead						{color:#9bf;}
-.sAccessWrite, .sAccessWriteLimit	{color:#f88;}
+.sAccessRead										{color:#9bf;}
+.sAccessWrite, .sAccessWriteLimit					{color:#f88;}
 
 /*Divers*/
-.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#444 solid 1px;}
+hr													{background:linear-gradient(90deg,#555,#999,#555);}	/*barre de séparation*/
+div::-webkit-scrollbar								{background:#333; width:15px;}							/*scrollbar: background et width*/
+div::-webkit-scrollbar-thumb						{background:#888;}										/*scrollbar: couleur de la barre*/
+.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#444 solid 1px;}								/*blocks des lightboxes et onglets du menu d'édition d'objets*/
 .objMenuLabel										{background:linear-gradient(180deg,#444,#111);}
 .lightboxBlockTitle									{border-bottom:#222 solid 1px; background:#222;}
-#headerBar											{background:linear-gradient(to bottom,#222,#333,#222);}
-#sortableModules .ui-state-default					{background:linear-gradient(#111,#000);}
-hr													{background:linear-gradient(to right,#555,#999,#555);}
-div::-webkit-scrollbar								{background:#333; width:15px;}/*scrollbar: background et width*/
-div::-webkit-scrollbar-thumb						{background:#888;}/*scrollbar: couleur de la barre*/

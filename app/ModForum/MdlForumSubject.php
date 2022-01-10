@@ -21,6 +21,7 @@ class MdlForumSubject extends MdlObject
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
+	const isSelectable=true;
 	protected static $_hasAccessRight=true;
 	public static $pageNbObjects=30;
 	public static $requiredFields=["description"];

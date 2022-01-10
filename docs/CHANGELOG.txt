@@ -1,3 +1,27 @@
+VERSION 22.2
+###############
+Amélioration des emails de notifications
+-----
+Improved email notifications
+
+
+VERSION 21.12.2
+###############
+Amélioration du menu des droits d'accès des objets et des notifications email
+Amélioration du menu de sélection des objets
+Amélioration de la connexion et l'import LDAP
+Amélioration et optimisation des styles CSS
+Nouvelle option de sélection de plusieurs sujets du forum pour suppression
+Corrections et optimisations diverses
+-----
+Improvement of the access rights menu for objects and email notifications
+Improved item selection menu
+Improved connection and LDAP import
+Improvement and optimization of CSS styles
+New option to select multiple forum topics for deletion
+Various fixes and optimizations
+
+
 VERSION 21.10
 #############
 Nouvelle fonctionnalité d'ajout et édition d'image/video directement depuis l'éditeur de texte TinyMce

@@ -16,30 +16,30 @@ trait MdlObjectMenus
 	public static $displayMode=null;	//Type d'affichage en préference (ligne/block)
 
 	/*******************************************************************************************
-	 * BALISE OUVRANTE DU BLOCK DE L'OBJET : CONTIENT L'URL D'ÉDITION (pour le DblClick)  ET L'ID DU MENU CONTEXTUEL (Click droit)
+	 * BALISE OUVRANTE DU BLOCK DE L'OBJET :  CONTIENT L'ID DU MENU CONTEXTUEL (click droit && "initMenuContext()")  &&  L'URL D'ÉDITION (dblClick)
 	 *******************************************************************************************/
 	public function divContainer($specificClass=null, $specificAttributes=null)
 	{
-		$isSelectableclass=(static::isSelectable==true)  ?  "isSelectable"  :  null;
-		$urlEdit=($this->editRight())  ?  "data-urlEdit=\"".$this->getUrl("edit")."\""  :  null;
-		return  "<div class=\"objContainer ".$isSelectableclass." ".$specificClass."\" ".$specificAttributes." id=\"".$this->menuId("objBlock")."\" for=\"".$this->menuId("objMenu")."\" ".$urlEdit.">";
+		if(static::isSelectable==true)	{$specificClass.=' isSelectable';}
+		if($this->editRight())			{$specificAttributes.=' data-urlEdit="'.$this->getUrl('edit').'"';}
+		return  '<div id="'.$this->uniqId("objContainer").'" for="'.$this->uniqId("objMenu").'" class="objContainer '.$specificClass.'" '.$specificAttributes.'>';
 	}
 
 	/*******************************************************************************************
-	 * IDENTIFIANT DU MENU CONTEXTUEL : "objBlock"/"objBlock"/"objAttachment" (Cf. "initMenuContext()"!)
+	 * IDENTIFIANT UNIQUE DE L'OBJET : CONTENEUR DE L'OBJET, MENU CONTEXTUEL, ETC
 	 *******************************************************************************************/
-	public function menuId($prefix)
+	public function uniqId($prefix)
 	{
-		if(empty($this->contextMenuId))  {$this->contextMenuId=Txt::uniqId();}//Un menu par instance de l'objet (Tester avec les evts récurrents ou les menus d'agendas)
-		return $prefix."_".$this->contextMenuId;
+		if(empty($this->objUniqId))  {$this->objUniqId=Txt::uniqId();}	//Un seul ID par instance de l'objet (tester avec les événements récurrents de l'agenda)
+		return $prefix.$this->objUniqId;								//Renvoi l'id avec un prefix : "objContainer" / "objMenu" / "objCheckbox" / "objAttachment"
 	}
 
 	/*******************************************************************************************
 	 * VUE : MENU CONTEXTUEL (édition, droit d'accès, etc)
-	 * $options["iconBurger"] (text)		: icone "burger" du launcher ("small", "big" ou "float" par défaut)
-	 * $options["deleteLabel"] (Bool)		: label spécifique de suppression
-	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu : chaque bouton est un tableau avec par les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
-	 * $options["specificLabels"] (Array)	: Texte à afficher (Exple avec les "affectedCalendarsLabel()" pour afficher les agendas ou se trouve un evenement)
+	 * $options["iconBurger"] (text)		: Icone "burger" du launcher => "inlineSmall" / "inlineBig" / "floatSmall" / "floatBig" (par défaut)
+	 * $options["deleteLabel"] (text)		: label spécifique de suppression
+	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu : chaque bouton a les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
+	 * $options["specificLabels"] (Array)	: Texte à afficher (exple : "affectedCalendarsLabel()" pour afficher les agendas affectés à un evenement)
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
@@ -48,7 +48,7 @@ trait MdlObjectMenus
 
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
-		$vDatas["iconBurger"]=(!empty($options["iconBurger"]))  ?  $options["iconBurger"]  :  "float";//Icone "burger" du launcher : "small" inline / "big" inline / "float" en position absolute (par défaut)
+		$vDatas["iconBurger"]=(!empty($options["iconBurger"]))  ?  $options["iconBurger"]  :  "floatBig";
 		$vDatas["specificOptions"]=(!empty($options["specificOptions"]))  ?  $options["specificOptions"]  :  array();
 		$vDatas["specificLabels"]=(!empty($options["specificLabels"]))  ?  $options["specificLabels"]  :  array();
 
@@ -83,14 +83,10 @@ trait MdlObjectMenus
 		else
 		{
 			////	MODIFIER ELEMENT  &  LOGS/HISTORIQUE  &  CHANGER DE DOSSIER (SI Y EN A..)
-			if($this->editRight())
-			{
+			if($this->editRight()){
 				$vDatas["editLabel"]=($this->hasAccessRight())  ?  Txt::trad("modifyAndAccesRight")  :  Txt::trad("modify");
 				$vDatas["logUrl"]="?ctrl=object&action=logs&typeId=".$this->_typeId;
-				if($this::isInArbo() && !empty(Ctrl::$curContainer)){
-					$curRootFolder=Ctrl::getObj(get_class(Ctrl::$curContainer),1);//Récupère le dossier racine et compte le nb de sous-dossiers
-					if(count($curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
-				}
+				if(!empty(Ctrl::$curContainerRoot) && count(Ctrl::$curContainerRoot->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			}
 			////	SUPPRIMER
 			if($this->deleteRight())
@@ -105,25 +101,6 @@ trait MdlObjectMenus
 				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$confirmDeleteOptions.")";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
-			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
-			if($this->hasAccessRight() || $this->accessRightFromContainer())
-			{
-				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
-				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
-				$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
-				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
-				//Affiche si l'objet est personnel ("isPersoAccess")
-				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
-				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["target_id"]==Ctrl::$curUser->_id);
-				//Tooltip spécifique
-				if(static::isContainer())  					{$tooltipDetail=$this->tradObject("autorPrivilege")."<hr>";}						//"Seul l'auteur ou l'admin peuvent modifier/supprimer le -dossier-"
-				elseif($this->accessRightFromContainer())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
-				else										{$tooltipDetail=null;}
-				//Tooltip : description de chaque droit d'accès
-				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("readInfos");}
-				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("readLimitInfos");}
-				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("writeInfosContainer")  :  $tooltipDetail.Txt::trad("writeInfos");}
-			}
 			////	AUTEUR/DATE DE CREATION/MODIF
 			//Init les labels  &&  vérif si c'est un nouvel objet (créé dans les 24 heures ou depuis la précédente connexion)
 			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
@@ -135,6 +112,26 @@ trait MdlObjectMenus
 			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel();}
 			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div class='sAccessWrite'>".Txt::trad("objNew")." <img src='app/img/menuNewSmall.png'></div>";}
 			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(true);}
+
+			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
+			if($this->hasAccessRight() || $this->accessRightFromContainer())
+			{
+				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
+				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
+				$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
+				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
+				//Affiche si l'objet est personnel ("isPersoAccess")
+				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
+				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["target_id"]==Ctrl::$curUser->_id);
+				//Tooltip spécifique
+				if(static::isContainer())  					{$tooltipDetail=$this->tradObject("accessAutorPrivilege")."<hr>";}					//"Seul l'auteur ou l'admin peuvent modifier/supprimer le -dossier-"
+				elseif($this->accessRightFromContainer())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
+				else										{$tooltipDetail=null;}
+				//Tooltip : description de chaque droit d'accès
+				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("accessReadInfo");}
+				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("accessWriteLimitInfo");}
+				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("accessWriteInfoContainer")  :  $tooltipDetail.Txt::trad("accessWriteInfo");}
+			}
 			////	USERS LIKES
 			$vDatas["showMiscMenuClass"]=null;
 			if($this->hasUsersLike())
@@ -162,20 +159,21 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * INPUT "HIDDEN" DE SÉLECTION (cf. "VueObjMenuContext.php" & Co)
+	 * INPUT "HIDDEN" DE SÉLECTION D'OBJETS (cf. "VueObjMenuContext.php" & Co)
 	 *******************************************************************************************/
-	public function objectsTypeIdInput()
+	public function objSelectCheckbox()
 	{
-		return "<input type='checkbox' name='objectsTypeId[]' class='objectsTypeIdInput' value=\"".$this->_typeId."\" id=\"".$this->menuId("objBlock")."_selectBox\">";
+		return '<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="'.$this->_typeId.'" id="'.$this->uniqId("objCheckbox").'">';
 	}
 
 	/*******************************************************************************************
-	 * VUE DES OBJETS : AFFICHE LE MENU CONTEXTUEL  OU LE BOUTON D'EDITION
+	 * VUE DES OBJETS : AFFICHE LE MENU CONTEXTUEL ET SI BESOIN LE BOUTON D'EDITION
 	 *******************************************************************************************/
 	public function menuContextEdit()
 	{
-		if(Req::isMobile())			{return $this->contextMenu(["iconBurger"=>"big"]);}
-		elseif($this->editRight())  {return "<img src='app/img/edit.png' onclick=\"lightboxOpen('".$this->getUrl("edit")."')\" class='sLink lightboxMenuEdit' title=\"".Txt::trad("modify")."\">";}
+		$return=$this->contextMenu(["iconBurger"=>"inlineBig"]);
+		if($this->editRight())  {$return.="<img src='app/img/edit.png' onclick=\"lightboxOpen('".$this->getUrl("edit")."')\" class='sLink' title=\"".Txt::trad("modify")."\">";}
+		return '<span class="lightboxTitleMenu">'.$return.'</span>';
 	}
 
 	/*******************************************************************************************
@@ -195,48 +193,48 @@ trait MdlObjectMenus
 		if($this->hasAccessRight())
 		{
 			////	Init & Label
-			$vDatas["accessRightMenu"]=true;
-			$vDatas["accessRightMenuLabel"]=(static::isContainer())  ?  "<span title=\"".$this->tradObject("autorPrivilege")."<hr>".$this->tradObject("readLimitInfos")."\">".Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png'></span>"  :  Txt::trad("EDIT_accessRight");
+			$vDatas["objMenuAccessRight"]=true;
+			$vDatas["objMenuAccessRightLabel"]=(static::isContainer())  ?  "<span title=\"".$this->tradObject("accessAutorPrivilege")."<hr>".$this->tradObject("accessWriteLimitInfo")."\">".Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png'></span>"  :  Txt::trad("EDIT_accessRight");
 			////	Droits d'accès pour chaque espace ("targets")
-			$vDatas["spacesAccessRight"]=[];
+			$vDatas["accessRightSpaces"]=[];
 			foreach(Ctrl::$curUser->getSpaces() as $tmpSpace)
 			{
 				//Verif si le module de l'objet est bien activé sur l'espace
 				if(array_key_exists(static::moduleName,$tmpSpace->moduleList()))
 				{
-					//Init
+					////	Init les "targetLines"
 					$tmpSpace->targetLines=[];
-					////	Tous les utilisateurs de l'espace  (..."et les invités" : si l'espace est public et que l'objet n'est pas un agenda perso)
-					if(!empty($tmpSpace->public) && $this->type!="user")	{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests");	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsInfo");}
-					else													{$allUsersLabel=Txt::trad("EDIT_allUsers");				$allUsersLabelInfo=Txt::trad("EDIT_allUsersInfo");}
-					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/icon.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
+					////	"Tous les utilisateurs" ("et les invités" si l'espace est public)
+					if(!empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests");	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsInfo");}
+					else							{$allUsersLabel=Txt::trad("EDIT_allUsers");				$allUsersLabelInfo=Txt::trad("EDIT_allUsersInfo");}
+					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/accessAll.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
 					////	Groupe d'utilisateurs de l'espace
 					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
-						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_G".$tmpGroup->_id, "label"=>$tmpGroup->title, "icon"=>"user/userGroup.png", "tooltip"=>Txt::reduce($tmpGroup->usersLabel)];
+						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_G".$tmpGroup->_id, "label"=>$tmpGroup->title, "icon"=>"user/accessGroup.png", "tooltip"=>Txt::reduce($tmpGroup->usersLabel)];
 					}
 					////	Chaque user de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						if($tmpSpace->accessRightUser($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}//Admin d'espace
 						else										{$tmpUserFullAccess=false;	$tmpUserTooltip=null;}//User lambda
-						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>"user/user.png", "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
+						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>"user/accessUser.png", "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
 					}
 					////	Ajoute l'espace
-					$vDatas["spacesAccessRight"][]=$tmpSpace;
+					$vDatas["accessRightSpaces"][]=$tmpSpace;
 				}
 			}
-			////	Prépare les targets de chaque espace
+			////	Prépare les affectations possibles de chaque espace (targets)
 			$objAffects=$this->getAffectations();
-			foreach($vDatas["spacesAccessRight"] as $tmpSpaceKey=>$tmpSpace)
+			foreach($vDatas["accessRightSpaces"] as $tmpSpaceKey=>$tmpSpace)
 			{
 				foreach($tmpSpace->targetLines as $targetKey=>$targetLine)
 				{
 					//Init les propriétés des checkboxes (pas de "class"!). Utilise des "id" pour une sélection rapide des checkboxes par jQuery
 					$targetId=$targetLine["targetId"];//exple : "1_spaceUsers" ou "2_G4
 					foreach(["1","1.5","2"] as $tmpRight)
-						{$targetLine["boxProp"][$tmpRight]="value=\"".$targetId."_".$tmpRight."\"  id=\"objectRightBox_".$targetId."_".str_replace('.','',$tmpRight)."\"";}//Utiliser "_15" au lieu de "_1.5" à cause du selector jQuery
+						{$targetLine["boxProp"][$tmpRight]="value=\"".$targetId."_".$tmpRight."\"  id=\"objectRightBox_".$targetId."_".str_replace('.','',$tmpRight)."\"";}//"_15" au lieu de "_1.5" à cause du selector jQuery
 					//Check une des boxes ?
 					if(isset($objAffects[$targetId])){
-						$tmpRight=(string)$objAffects[$targetId]["accessRight"];//Typer en 'string', pas 'float'
+						$tmpRight=(string)$objAffects[$targetId]["accessRight"];//Toujours typer les index en 'string', pas en 'float'
 						$targetLine["boxProp"][$tmpRight].=" checked";
 						$targetLine["isChecked"]=true;
 					}
@@ -244,29 +242,28 @@ trait MdlObjectMenus
 					if(!empty($targetLine["onlyFullAccess"]))	{$targetLine["boxProp"]["1"].=" disabled";  $targetLine["boxProp"]["1.5"].=" disabled";}
 					if(!empty($targetLine["onlyReadAccess"]))	{$targetLine["boxProp"]["2"].=" disabled";  $targetLine["boxProp"]["1.5"].=" disabled";}
 					//Met à jour les propriétés de la target ($targetKey est la concaténation des champs "_idSpace" et "target")
-					$vDatas["spacesAccessRight"][$tmpSpaceKey]->targetLines[$targetKey]=$targetLine;
+					$vDatas["accessRightSpaces"][$tmpSpaceKey]->targetLines[$targetKey]=$targetLine;
 				}
 			}
 		}
-		////	OPTION "FICHIERS JOINTS"
-		if(static::hasAttachedFiles==true){
-			$vDatas["attachedFiles"]=true;
-		}
 		////	OPTIONS NOTIFICATION PAR MAIL
 		if(static::hasNotifMail==true && function_exists("mail")){
-			$vDatas["moreOptions"]=$vDatas["notifMail"]=true;
+			$vDatas["objMenuNotifMail"]=true;
 			$vDatas["notifMailUsers"]=Ctrl::$curUser->usersVisibles(true);
 			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");
 			$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 		}
+		////	OPTION "FICHIERS JOINTS"
+		if(static::hasAttachedFiles==true){
+			$vDatas["objMenuAttachedFile"]=true;
+		}
 		////	OPTION "SHORTCUT"
 		if(static::hasShortcut==true){
-			$vDatas["moreOptions"]=$vDatas["shortcut"]=true;
-			$vDatas["shortcutChecked"]=(!empty($this->shortcut)) ? "checked" : null;
+			$vDatas["objMenuShortcut"]=true;
 		}
 		////	AFFICHE LA VUE
 		$vDatas["curObj"]=$this;
-		$vDatas["writeReadLimitInfos"]=$this->tradObject("readLimitInfos");
+		$vDatas["accessWriteLimitInfo"]=$this->tradObject("accessWriteLimitInfo");
 		$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
 		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
@@ -276,19 +273,20 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public static function prefDbKey($containerObj)
 	{
-		if(is_object($containerObj))											{return $containerObj->_typeId;}			//"_typeId" de l'objet en parametre
-		elseif(!empty(Ctrl::$curContainer) && is_object(Ctrl::$curContainer))	{return Ctrl::$curContainer->_typeId;}		//"_typeId" du conteneur/dossier courant
-		else																	{return static::moduleName;}				//"moduleName" courant
+		if(is_object($containerObj))											{return $containerObj->_typeId;}		//"_typeId" de l'objet en parametre
+		elseif(!empty(Ctrl::$curContainer) && is_object(Ctrl::$curContainer))	{return Ctrl::$curContainer->_typeId;}	//"_typeId" du conteneur/dossier courant
+		else																	{return static::moduleName;}			//"moduleName" courant
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU DE SÉLECTION D'OBJETS (menu contextuel flottant)
+	 * VUE : MENU DE SÉLECTION DE PLUSIEURS OBJETS (cf. menu contextuel du module)
 	 *******************************************************************************************/
 	public static function menuSelectObjects()
 	{
 		if(Req::isMobile()==false){
-			$vDatas["curFolderIsWritable"]=(is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight());
-			$vDatas["rootFolderHasTree"]=($vDatas["curFolderIsWritable"]==true && count(Ctrl::getObj(get_class(Ctrl::$curContainer),1)->folderTree())>1);
+			Ctrl::$isMenuSelectObjects=true;
+			$vDatas["curContainerEditContentRight"]=(!empty(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight());
+			$vDatas["folderMoveOption"]=($vDatas["curContainerEditContentRight"]==true && count(Ctrl::$curContainerRoot->folderTree())>1);
 			return Ctrl::getVue(Req::commonPath."VueObjMenuSelection.php",$vDatas);
 		}
 	}
@@ -301,7 +299,7 @@ trait MdlObjectMenus
 		//Récupère la préférence en Bdd ou params GET/POST
 		$objectsSort=Ctrl::prefUser("sort_".static::prefDbKey($containerObj), "sort");
 		//Tri par défaut si aucune préférence n'est précisé ou le tri sélectionné n'est pas dispo pour l'objet courant 
-		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))    {$objectsSort=static::$sortFields[0];}
+		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))  {$objectsSort=static::$sortFields[0];}
 		//renvoie le tri
 		return $objectsSort;
 	}

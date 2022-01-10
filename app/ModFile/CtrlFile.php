@@ -13,7 +13,7 @@
 class CtrlFile extends Ctrl
 {
 	const moduleName="file";
-	public static $folderObjectType="fileFolder";
+	public static $folderObjType="fileFolder";
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=["MdlFile","MdlFileFolder"];
 
@@ -37,7 +37,6 @@ class CtrlFile extends Ctrl
 			$vDatas["fillRateBar"]=Tool::percentBar($diskSpacePercent, $txtBar, $txtTooltip, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
-		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
@@ -76,10 +75,9 @@ class CtrlFile extends Ctrl
 	 *******************************************************************************************/
 	public static function getPlugins($params)
 	{
-		$pluginsList=self::getPluginFolders($params,"MdlFileFolder");
+		$pluginsList=MdlFileFolder::getPluginFolders($params);
 		foreach(MdlFile::getPluginObjects($params) as $tmpObj)
 		{
-			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");

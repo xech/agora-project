@@ -23,7 +23,7 @@ function deleteResponseFile(_idReponse)
 function formControl()
 {
 	//Au moins 2 réponses au sondage
-	var responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return $(this).val(); }).length;
+	var responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return this.value; }).length;
 	if(responsesNb<2)  {notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");  return false;}
 	//Controle final (champs obligatoires, affectations/droits d'accès, etc)
 	if(mainFormControl())	{$("input:disabled").prop("disabled",false);  return true;}	//Réactive au besoin les champs désactivés (cf. sondage déjà votés)

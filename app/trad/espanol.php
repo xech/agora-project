@@ -114,7 +114,7 @@ class Trad extends Txt
 		self::$trad["selectUnselect"]="Seleccionar / Deseleccionar";
 		self::$trad["selectUnselectAll"]="Seleccionar/deseleccionar todo";
 		self::$trad["selectAll"]="Seleccionar todo";
-		self::$trad["invertSelection"]="Invertir selección";
+		self::$trad["selectSwitch"]="Invertir selección";
 		self::$trad["deleteElems"]="Eliminar elementos";
 		self::$trad["changeFolder"]="Mover a otro carpeta";
 		self::$trad["showOnMap"]="Mostrar en el mapa";
@@ -215,16 +215,16 @@ class Trad extends Txt
 		self::$trad["objHistory"]="histórico del elemento";
 		self::$trad["all"]="todos";
 		self::$trad["deletedUser"]="cuenta de usuario eliminada";
-		self::$trad["accessRead"]="lectura";
-		self::$trad["readInfos"]="Acceso de lectura";
-		self::$trad["accessWriteLimit"]="escritura limitada";
-		self::$trad["readLimitInfos"]="Acceso en escritura limitada : possibilidad de añadir -OBJCONTENT-s, sin modificar o suprimir los creados por otros usuarios";
-		self::$trad["accessWrite"]="escritura";
-		self::$trad["writeInfos"]="Acceso en escritura";
-		self::$trad["writeInfosContainer"]="Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los -OBJCONTENT- del -OBJLABEL-";
-		self::$trad["autorPrivilege"]="Solo el autor y los administradores pueden cambiar los permisos de acceso o eliminar el -OBJLABEL-";
-		self::$trad["accessRightsInherited"]="Derechos de acceso heredados del -OBJLABEL-";
 		self::$trad["folderContent"]="contenido";
+		self::$trad["accessRead"]="lectura";
+		self::$trad["accessReadInfo"]="Acceso de lectura";
+		self::$trad["accessWriteLimit"]="escritura limitada";
+		self::$trad["accessWriteLimitInfo"]="Acceso de escritura limitado: posibilidad de agregar -OBJCONTENT- en el -OBJLABEL-,<br> pero cada usuario solo puede modificar/borrar los -OBJCONTENT- que ha creado.";
+		self::$trad["accessWrite"]="escritura";
+		self::$trad["accessWriteInfo"]="Acceso en escritura";
+		self::$trad["accessWriteInfoContainer"]="Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los -OBJCONTENT- del -OBJLABEL-";
+		self::$trad["accessAutorPrivilege"]="Solo el autor y los administradores pueden cambiar los permisos de acceso o eliminar el -OBJLABEL-";
+		self::$trad["accessRightsInherited"]="Derechos de acceso heredados del -OBJLABEL-";
 		
 		////	Libellé des objets
 		self::$trad["OBJECTcontainer"]="contenedor";
@@ -250,8 +250,6 @@ class Trad extends Txt
 		self::$trad["MAIL_hello"]="Hola";
 		self::$trad["MAIL_receptionNotif"]="Confirmación de entrega";
 		self::$trad["MAIL_receptionNotifInfo"]="Advertencia! algunos clientes de correo electrónico no soportan el recibo de entrega";
-		self::$trad["MAIL_addReplyTo"]="Agregar 'Responder a'";
-		self::$trad["MAIL_addReplyToInfo"]="Agregue mi dirección de correo electrónico en el campo 'Responder a'. Tenga cuidado porque si hay demasiados destinatarios, el correo electrónico puede considerarse Spam.";
 		self::$trad["MAIL_hideRecipients"]="Ocultar los destinatarios";
 		self::$trad["MAIL_hideRecipientsInfo"]="Por defecto, los destinatarios de correo electrónico aparecen en el mensaje.";
 		self::$trad["MAIL_noFooter"]="No firme el mensaje";
@@ -342,10 +340,12 @@ class Trad extends Txt
 		self::$trad["userInscriptionInvalidateMail"]="Su cuenta no ha sido validado en";
 		
 		////	Importer ou Exporter : Contact OU Utilisateurs
-		self::$trad["export"]="Exportar";
-		self::$trad["import"]="Importar";
-		self::$trad["importExport_user"]="usuarios";
-		self::$trad["importExport_contact"]="contactos";
+		self::$trad["importExport_user"]="Importar / Exportar usuarios";
+		self::$trad["import_user"]="Importar usuarios en el espacio actual";
+		self::$trad["export_user"]="Exportar usuarios del espacio";
+		self::$trad["importExport_contact"]="Importar / Exportar contactos";
+		self::$trad["import_contact"]="Importar contactos en la carpeta actual";
+		self::$trad["export_contact"]="Exportar contactos de la carpeta actual";
 		self::$trad["exportFormat"]="formato";
 		self::$trad["specifyFile"]="or favor, especifique un archivo";
 		self::$trad["fileExtension"]="El tipo del archivo no es válido. Debe ser de tipo";
@@ -425,11 +425,12 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsersInfo"]="Todos los usuarios del espacio <i>--SPACENAME--</i>";
 		self::$trad["EDIT_allUsersAndGuestsInfo"]="Todos los usuarios del espacio <i>--SPACENAME--</i>, y los invitados pero con acceso solo de lectura (invitados: personas que no tienen una cuenta de usuario)";
 		self::$trad["EDIT_adminSpace"]="Administrador del espacio:<br>acceso de escritura a todos los elementos del espacio";
-		self::$trad["EDIT_displayMoreUsers"]="Mostrar mas usuarios";
-		self::$trad["EDIT_mySpaces"]="Mostrar todos mis espacios";
+		self::$trad["EDIT_showAllUsers"]="Mostrar todos los usuarios";
+		self::$trad["EDIT_showAllSpaces"]="Mostrar todos mis espacios";
 		self::$trad["EDIT_notifMail"]="Notificar";
 		self::$trad["EDIT_notifMail2"]="Enviar una notificación de creación/cambio por email";
-		self::$trad["EDIT_notifMailInfo"]="Si no selecciona los destinatarios, de forma predeterminada, se enviará a las personas afectadas al elemento";
+		self::$trad["EDIT_notifMailInfo"]="La notificación se enviará a las personas asignadas al elemento / -OBJLABEL-.";
+		self::$trad["EDIT_notifMailInfoCal"]="<hr>Si asigna el evento a calendarios personales, la notificación solo se enviará a los propietarios de estos calendarios (acceso de escritura).";
 		self::$trad["EDIT_notifMailAddFiles"]="Adjuntar archivos a la notificación";
 		self::$trad["EDIT_notifMailSelect"]="Seleccionar los destinatarios de las notificaciones";
 		self::$trad["EDIT_accessRightSubFolders"]="Dar igualdad de derechos a todos los sub-carpetas";
@@ -460,10 +461,16 @@ class Trad extends Txt
 		self::$trad["INSTALL_confirmInstall"]="Confirmar instalación ?";
 		self::$trad["INSTALL_installOk"]="Agora-Project ha sido instalado !";
 		self::$trad["INSTALL_spaceDescription"]="Espacio para el intercambio y el trabajo colaborativo";
-		self::$trad["INSTALL_dataDashboardNews1"]="Bienvenido a tu nuevo espacio Omnispace";
-		self::$trad["INSTALL_dataDashboardNews2"]="Haga clic aquí para invitar a personas a unirse a usted";
-		self::$trad["INSTALL_dataDashboardNews3"]="Comparta archivos, agenda y noticias, administre tareas y proyectos, intercambie contactos o enlaces a Internet, chatee en foros o envíe mensajes instantáneos, envíe boletines, etc.";
-		self::$trad["INSTALL_dataDashboardPoll"]="¿Qué opinas de la nueva herramienta de encuesta?";
+		self::$trad["INSTALL_dataDashboardNews"]="<h3>¡Bienvenido a tu nuevo espacio para compartir!</h3>
+												<h4><img src='app/img/file/iconSmall.png'> Comparta sus archivos ahora en el administrador de archivos</h4>
+												<h4><img src='app/img/calendar/iconSmall.png'> Comparta sus calendarios comunes o su calendario personal</h4>
+												<h4><img src='app/img/dashboard/iconSmall.png'> Amplíe el suministro de noticias de su comunidad</h4>
+												<h4><img src='app/img/messenger.png'> Comunicarse a través del foro, mensajería instantánea o videoconferencias</h4>
+												<h4><img src='app/img/task/iconSmall.png'> Centraliza tus notas, proyectos y contactos</h4>
+												<h4><img src='app/img/mail/iconSmall.png'> Enviar boletines por correo electrónico</h4>
+												<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">¡Haga clic aquí para enviar correos electrónicos de invitación y hacer crecer su comunidad!</a></h4>
+												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/?ctrl=offline&action=Documentation' target='_blank'>Para obtener más información, consulte la documentación oficial de Omnispace & Agora-Project</a></h4>";
+		self::$trad["INSTALL_dataDashboardPoll"]="¿Qué opinas de la herramienta de noticias?";
 		self::$trad["INSTALL_dataDashboardPollA"]="Muy interesante !";
 		self::$trad["INSTALL_dataDashboardPollB"]="Interesante";
 		self::$trad["INSTALL_dataDashboardPollC"]="Sin interés";
@@ -473,7 +480,6 @@ class Trad extends Txt
 
 		////	MODULE_PARAMETRAGE
 		////
-		self::$trad["AGORA_headerModuleName"]="Administración general";
 		self::$trad["AGORA_generalSettings"]="Administración general";
 		self::$trad["AGORA_versions"]="Versiones";
 		self::$trad["AGORA_dateUpdate"]="actualización el";
@@ -546,23 +552,22 @@ class Trad extends Txt
 		self::$trad["AGORA_smtpPass"]="Contraseña";
 		//LDAP
 		self::$trad["AGORA_ldapLabel"]="Conexión a un servidor LDAP";
-		self::$trad["AGORA_ldapHost"]="Dirección del servidor";
-		self::$trad["AGORA_ldapPort"]="Puerto de servidor";
-		self::$trad["AGORA_ldapPortInfo"]="''389'' por defecto";
-		self::$trad["AGORA_ldapLogin"]="Cadena de conexión para admin";
-		self::$trad["AGORA_ldapLoginInfo"]="por ejemplo ''uid=admin,ou=my_company''";
+		self::$trad["AGORA_ldapLabelInfo"]="Conexión a un servidor LDAP para la creación de usuarios en el espacio : cf. Opción ''Importación/exportación de usuarios'' del módulo ''Usuario''";
+		self::$trad["AGORA_ldapUri"]="URI LDAP";
+		self::$trad["AGORA_ldapUriInfo"]="URI de LDAP completo con el formato LDAP://hostname:port o LDAPS://hostname:port para el cifrado SSL.";
+		self::$trad["AGORA_ldapPort"]="Puerto del servidor";
+		self::$trad["AGORA_ldapPortInfo"]="El puerto utilizado para la conexión: '' 389 '' por defecto";
+		self::$trad["AGORA_ldapLogin"]="DN del administrador LDAP (Distinguished Name)";
+		self::$trad["AGORA_ldapLoginInfo"]="por ejemplo ''cn=admin,dc=mon-entreprise,dc=com''";
 		self::$trad["AGORA_ldapPass"]="Contraseña del administrador";
-		self::$trad["AGORA_ldapDn"]="Grupo / base DN";
-		self::$trad["AGORA_ldapDnInfo"]="Localización de los usuarios del directorio.<br> por ejemplo ''ou=users,o=my_company''";
-		self::$trad["AGORA_ldapConnectError"]="Error al conectar con el servidor LDAP !";
-		self::$trad["AGORA_ldapCreaAutoUsers"]="Auto creación de usuarios después identificación";
-		self::$trad["AGORA_ldapCreaAutoUsersInfo"]="Creación automática de un usuario si no está en el Agora, pero presente en el servidor LDAP : se le asignará a los espacios accesibles a ''todos los usuarios del sitio''.<br>De lo contrario, el usuario no se creará.";
-		self::$trad["AGORA_ldapPassEncrypt"]="Contraseñas cifrado en el servidor";
-		self::$trad["AGORA_ldapDisabled"]="Módulo PHP para la conexión a un servidor LDAP no está instalado";
+		self::$trad["AGORA_ldapDn"]="DN del grupo de usuarios (Distinguished Name)";
+		self::$trad["AGORA_ldapDnInfo"]="DN del grupo de usuarios : ubicación de los usuarios en el directorio. Ejemplo ''ou=mon-groupe,dc=mon-entreprise,dc=com''";
+		self::$trad["importLdapFilterInfo"]="Filtro de búsqueda LDAP (cf. https://www.php.net/manual/function.ldap-search.php). Ejemplo ''(cn=*)'' o ''(&(samaccountname=MONLOGIN)(cn=*))''";
+		self::$trad["AGORA_ldapDisabled"]="El módulo PHP para conectarse a un servidor LDAP no está instalado";
+		self::$trad["AGORA_ldapConnectError"]="Error de conexión del servidor LDAP !";
 
 		////	MODULE_LOG
 		////
-		self::$trad["LOG_headerModuleName"]="Logs";
 		self::$trad["LOG_moduleDescription"]="Logs - Registro de eventos";
 		self::$trad["LOG_path"]="Camino";
 		self::$trad["LOG_filter"]="filtro";
@@ -584,7 +589,6 @@ class Trad extends Txt
 
 		////	MODULE_ESPACE
 		////
-		self::$trad["SPACE_headerModuleName"]="Espacios";
 		self::$trad["SPACE_moduleInfo"]="El sitio (o el espacio principal) puede ser subdivisado en varios espacios";
 		self::$trad["SPACE_manageSpaces"]="Gestión de los spacios del sitio";
 		self::$trad["SPACE_config"]="Administración del espacio";
@@ -620,7 +624,7 @@ class Trad extends Txt
 		//Index
 		self::$trad["USER_allUsers"]="Ver todos los usuarios";
 		self::$trad["USER_allUsersInfo"]="Todos los usuarios de todos los espacios";
-		self::$trad["USER_spaceUsers"]="Usuarios del espacio";
+		self::$trad["USER_spaceUsers"]="Usuarios del espacio corriente";
 		self::$trad["USER_deleteDefinitely"]="Eliminar definitivamente";
 		self::$trad["USER_deleteFromCurSpace"]="Desasignar del espacio corriente";
 		self::$trad["USER_deleteFromCurSpaceConfirm"]="Confirmar la desasignación del usuario al espacio corriente ?";

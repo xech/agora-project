@@ -172,9 +172,7 @@ class CtrlOffline extends Ctrl
 				$adminName=Req::param("adminName");
 				$adminFirstName=Req::param("adminFirstName");
 				$adminMail=Req::param("adminMail");
-				$newsDescription="<p style='font-weight:bold;font-size:1.2em;'>".Txt::trad("INSTALL_dataDashboardNews1")."</p><br>
-								  <p style='font-weight:bold;'><a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">".Txt::trad("INSTALL_dataDashboardNews2")."</a></p><br>
-								  <p style='font-weight:bold;'>".Txt::trad("INSTALL_dataDashboardNews3")."</p><br>";
+				$newsDescription=Txt::trad("INSTALL_dataDashboardNews");
 
 /***************************************************************************************************************************/
 				//Paramétrage général

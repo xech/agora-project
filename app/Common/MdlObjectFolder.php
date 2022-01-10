@@ -197,12 +197,12 @@
 	 *******************************************************************************************/
 	public function folderTree($accessRightMini=1, $curFolder=null, $treeLevel=0)
 	{
-		//Arborescence "visible" déjà en cache : renvoie le résultat
+		//// Arborescence "visible" déjà en cache : renvoie le résultat
 		if($treeLevel==0 && $accessRightMini==1 && !empty($this->_visibleFolderTree))  {return $this->_visibleFolderTree;}
-		//Init la liste des sous-dossiers && le dossier de départ de toute l'arborescence
+		//// Init la liste des sous-dossiers && le dossier de départ de toute l'arborescence
 		$folderList=[];
 		if($curFolder==null)  {$curFolder=$this;}
-		//Ajoute le dossier courant ?
+		//// Ajoute le dossier courant ?
 		if($accessRightMini=="all" || $curFolder->accessRight()>=$accessRightMini)
 		{
 			//Ajoute le dossier courant à la liste, avec son niveau
@@ -215,9 +215,9 @@
 				$folderList=array_merge($folderList,$subFolders);
 			}
 		}
-		//Arborescence "visible" pas encore en cache : ajoute l'arborescence (cf. pour controler si on affiche l'option "Déplacer dans un autre dossier" dans les menus contextuels)
+		//// Arborescence "visible" pas encore en cache : ajoute l'arborescence (cf. pour controler si on affiche l'option "Déplacer dans un autre dossier" dans les menus contextuels)
 		if($treeLevel==0 && $accessRightMini==1 && $this->_visibleFolderTree===null)  {$this->_visibleFolderTree=$folderList;}
-		//Renvoie le résultat
+		//// Renvoie le résultat
 		return $folderList;
 	}
 
@@ -228,20 +228,6 @@
 	{
 		foreach($this->folderTree("all") as $tmpFolder){
 			if($folderId==$tmpFolder->_id)  {return true;}
-		}
-	}
-
-	/*******************************************************************************************
-	 * VUE : LISTE DE DOSSIERS À AFFICHER
-	 *******************************************************************************************/
-	public function folders()
-	{
-		$vDatas["foldersList"]=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay($this)." ".static::sqlSort());
-		if(!empty($vDatas["foldersList"])){
-			$vDatas["objContainerClass"]=null;
-			if(static::moduleName=="contact")	{$vDatas["objContainerClass"]="objPerson";}			//Conteneur plus grand
-			elseif(static::moduleName=="file")	{$vDatas["objContainerClass"]="objContentCenter";}	//Affichage centré (icone + contenu)
-			return Ctrl::getVue(Req::commonPath."VueObjFolders.php",$vDatas);
 		}
 	}
 }

@@ -236,20 +236,17 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * INPUTS "HIDDEN" DE BASE (Ctrl, Action, etc)  &&  BOUTON "SUBMIT" DU FORMULAIRE
+	 * INPUTS HIDDEN (Ctrl, Action, TypeId, etc)  &&  BOUTON SUBMIT DU FORMULAIRE
 	 *******************************************************************************************/
 	public static function submitButton($tradSubmit="validate", $isMainButton=true)
 	{
-		//Prépare le "button"
-		$inputTypeId=Req::isParam("typeId")  ?  "<input type='hidden' name='typeId' value=\"".Req::param("typeId")."\">"  :  null;
-		$buttonDivClass=($isMainButton==true) ? 'submitButtonMain' : 'submitButtonInline';
-		$buttonLabel=(self::isTrad($tradSubmit)) ? self::trad($tradSubmit) : $tradSubmit;
-		//Renvoie le button et inputs "hidden" : typeId, controleur, etc
-		return  $inputTypeId.
-				"<input type='hidden' name='ctrl' value=\"".Req::$curCtrl."\">
-				 <input type='hidden' name='action' value=\"".Req::$curAction."\">
-				 <input type='hidden' name='formValidate' value='1'>
-				 <div class='".$buttonDivClass."'><button type='submit'>".$buttonLabel." <img src='app/img/loadingSmall.png' class='submitButtonLoading'></button></div>";
+		return '<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
+				<input type="hidden" name="action" value="'.Req::$curAction.'">
+				<input type="hidden" name="formValidate" value="1">
+				'.(Req::isParam('typeId')?'<input type="hidden" name="typeId" value="'.Req::param("typeId").'">':null).'
+				<div class="'.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
+					<button type="submit">'.(self::isTrad($tradSubmit)?self::trad($tradSubmit):$tradSubmit).' <img src="app/img/loadingSmall.png" class="submitButtonLoading"></button>
+				</div>';
 	}
 
 	/*******************************************************************************************
@@ -274,11 +271,11 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * CRÉÉ UN IDENTIFIANT UNIQUE
+	 * CRÉÉ UN IDENTIFIANT UNIQUE D'UNE CERTAINE LONGEUR
 	 *******************************************************************************************/
 	public static function uniqId($length=15)
 	{
-		//"md5" car deux "uniqid()" à intervalles proches auront le même début. "rand()" pour pas prendre en compte que le microtime du "uniqid()"
+		//"uniqid()" se base sur le microtime du systeme : on ajoute donc un prefixe via "rand()" et mouline le tout en "md5()"
 		return substr(md5(uniqid(rand())), 0, $length);
 	}
 

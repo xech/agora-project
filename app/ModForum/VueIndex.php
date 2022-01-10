@@ -5,25 +5,23 @@ $(function(){
 	<?php if($displayForum=="messages"){ ?>
 		$("#notifyLastMessage").click(function(){
 			$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= $curSubject->_typeId ?>").done(function(ajaxResult){
-				if(ajaxResult=="addUser")	{$("#notifyLastMessage").addClass("vNotifyLastMessage");}
-				else						{$("#notifyLastMessage").removeClass("vNotifyLastMessage");}
+				$("#notifyLastMessage").toggleClass("vNotifyLastMessage",(ajaxResult=="addUser"));
 			});
 		});
-		//Selectionne "Me notifier par email"?
-		if("<?= (int)$curSubject->curUserNotifyLastMessage() ?>"=="1")  {$("#notifyLastMessage").addClass("vNotifyLastMessage");}
 	<?php } ?>
 });
 </script>
 
 <style>
 /*General*/
-.vNotifyLastMessage			{color:#a00; font-style:italic;}
+.vNotifyLastMessage			{color:#080;}
 .objContainer, .objContent	{height:auto!important;}/*surcharge la hauteur "auto" (pas fixe)*/
 .objContainer				{padding-right:35px!important;}/*"padding-right" pour les "objMiscMenus" : cf. ci-dessous*/
 .objMiscMenus				{width:40px;}/*surcharge pour les "objMiscMenus" : affichés les uns sur les autres*/
 .objContent>div				{padding:12px;}/*surcharge pour un contenu plus aéré*/
 .vObjDetails				{white-space:nowrap; line-height:20px; text-align:right;}/*Auteur du dernier post*/
 .vObjDetails hr				{display:none;}/*affichés en responsive*/
+.objContainer.isSelectable	{cursor:default;}/*Surcharge : On affiche l'icone "checkSelect.png" pour la sélection des sujets*/
 
 /*Themes*/
 .vThemes .objContainer		{padding-right:10px!important;}/*surcharge le "padding-right" des "objMiscMenus"*/
@@ -55,18 +53,19 @@ $(function(){
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 		<?php
-		////	MENU DES SUJETS
+		////	MENU DES SUJETS :  AJOUT DE SUJET / SELECTION DE SUJET / TRI D'AFFICHAGE / NB DE SUJETS
 		if($displayForum=="subjects"){
 			if(MdlForumSubject::addRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlForumSubject::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FORUM_addSubject")."</div></div><hr>";}
-			echo MdlForumSubject::menuSort()."<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$subjectsTotalNb." ".Txt::trad($subjectsTotalNb>1?"FORUM_subjects":"FORUM_subject")."</div></div>";
+			echo MdlForumSubject::menuSelectObjects().MdlForumSubject::menuSort().
+			"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$subjectsTotalNb." ".Txt::trad($subjectsTotalNb>1?"FORUM_subjects":"FORUM_subject")."</div></div>";
 		}
-		////	MENU D'UN SUJET ET SES MESSAGES
+		////	MENU D'UN SUJET ET SES MESSAGES :  AJOUT DE MESSAGE / NOTIF PAR MAIL / TRI D'AFFICHAGE / NB DE MESSAGES
 		if($displayForum=="messages"){
 			if(Ctrl::$curContainer->addContentRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FORUM_addMessage")."</div></div><hr>";}
-			if(!empty(Ctrl::$curUser->mail))  {echo "<div class='menuLine sLink' id='notifyLastMessage' title=\"".Txt::trad("FORUM_notifyLastPostInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("FORUM_notifyLastPost")."</div></div>";}
+			if(!empty(Ctrl::$curUser->mail))  {echo "<div class='menuLine sLink ".($curSubject->curUserNotifyLastMessage()?"vNotifyLastMessage":null)."' id='notifyLastMessage' title=\"".Txt::trad("FORUM_notifyLastPostInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("FORUM_notifyLastPost")."</div></div>";}
 			echo "<hr>".MdlForumMessage::menuSort()."<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$curSubject->messagesNb." ".Txt::trad($curSubject->messagesNb>1?"FORUM_messages":"FORUM_message")."</div></div>";
 		}
-		////	MENU DES THEMES
+		////	MENU DES THEMES :  EDITION DES THEMES / NB DE THEMES
 		if($editThemeMenu==true)  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=forum&action=ForumThemeEdit');\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".Txt::trad("FORUM_editThemes")."</div></div>";}
 		if($displayForum=="themes")  {echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".count($themeList)." ".Txt::trad("FORUM_subjectThemes")."</div></div>";}
 		?>
@@ -108,8 +107,8 @@ $(function(){
 				if(!empty($tmpTheme->subjectLast))  {$lastPost.=Txt::trad("FORUM_lastSubject")." ".$tmpTheme->subjectLast->autorLabel()." : ".$tmpTheme->subjectLast->dateLabel();}
 				if(empty($lastPost))				{$lastPost.=Txt::trad("FORUM_noSubject");}
 				//Affichage
-				echo "<div class='objContainer alternateLines' onClick=\"redir('?ctrl=forum&_idTheme=".$tmpTheme->idThemeUrl."')\">
-						<div class='objContent sLink'>
+				echo "<div class='objContainer lineOdd'>
+						<div class='objContent sLink' onClick=\"redir('?ctrl=forum&_idTheme=".$tmpTheme->idThemeUrl."')\">
 							<div><div class='vThemeTitle'>".$tmpTheme->display()."</div>".$tmpDescription."</div>
 							<div class='vObjDetails'><hr>".$lastPost."</div>
 						</div>
@@ -131,8 +130,8 @@ $(function(){
 					if(Req::isMobile()==false)  {$lastPost.=" : ".$tmpSubject->messageLast->dateLabel();}
 				}
 				//Affichage
-				echo $tmpSubject->divContainer("alternateLines").$tmpSubject->contextMenu().
-					"<div class='objContent sLink ".$isNewSubject."' onclick=\"redir('?ctrl=forum&typeId=".$tmpSubject->_typeId."')\" title=\"".Txt::trad("FORUM_displaySubject")."\">
+				echo $tmpSubject->divContainer("lineOdd").$tmpSubject->contextMenu().
+					"<div class='objContent sLink stopPropagation ".$isNewSubject."' onclick=\"redir('?ctrl=forum&typeId=".$tmpSubject->_typeId."')\" title=\"".Txt::trad("FORUM_displaySubject")."\">
 						<div>".$displayedTitle."<div class='vSubjMessDescription'>".Txt::reduce($tmpSubject->description)."</div>
 						</div>
 						<div class='vObjDetails'>
@@ -155,7 +154,7 @@ $(function(){
 		{
 			//SUJET
 			$displayedTitle=(!empty($curSubject->title))  ?  $curSubject->title."<hr>"  :  null;
-			echo $curSubject->divContainer("alternateLines").$curSubject->contextMenu().
+			echo $curSubject->divContainer("lineOdd").$curSubject->contextMenu().
 					"<div class='objContent vSubjectMessages'>
 						<div>".$displayedTitle."<div class='vSubjMessDescription'>".$curSubject->description.$curSubject->attachedFileMenu()."</div></div>
 						<div class='vObjDetails'><hr>".$curSubject->autorDateLabel(true)."</div>
@@ -173,7 +172,7 @@ $(function(){
 					$quotedMessage="<div class='vMessageQuoted'>".$quotedMessageObj->title."<br>".$quotedMessageObj->description."<img src='app/img/forum/quote.png'></div><br>";
 				}
 				//Affichage
-				echo $tmpMessage->divContainer("alternateLines").$tmpMessage->contextMenu().
+				echo $tmpMessage->divContainer("lineOdd").$tmpMessage->contextMenu().
 						"<div class='objContent vSubjectMessages'>
 							<div>".$subjMessQuote.$quotedMessage.$displayedTitle."<div class='vSubjMessDescription'>".$tmpMessage->description.$tmpMessage->attachedFileMenu()."</div></div>
 							<div class='vObjDetails'><hr>".$tmpMessage->autorDateLabel(true)."</div>

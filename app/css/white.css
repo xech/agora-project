@@ -2,33 +2,37 @@
 
 /*Basic*/
 body, a, .sLink																		{color:#555;}
+input, textarea, select																{color:#555; background:#fff;}
 a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label		{color:rgb(1, 112, 156);}
 #htmlLightbox																		{background:#fff;}
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
-	#htmlMainPage	{background:#f8f8f8 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#htmlMainPage	{background:#f9f9f9 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 }
 
 /*Blocks d'objet & menus contextuels*/
-.menuContext .menuLine:hover, .sTableRow:hover, .sLineSelect	{background:#f8f8f8;}/*survol une ligne de menu*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{background:linear-gradient(333deg,#eee,#fff 100px); background-color:#fff;}
-.objContainerSelect, .objContainerSelect .objLabel				{background:#ddd!important;}/*".objLabel" pour les vignettes d'image du module "File"*/
-.objLines .objContainer											{border-bottom:solid 1px #ccc; box-shadow:2px 2px 8px rgb(200,200,200);}
-.objLines .objContainer:hover, .objLines .alternateLines:nth-child(odd), .objHover:hover	{background:#f9f9f9; background-image:none;}/*lignes survolées et lignes impaires*/
-.objLines .alternateLines:nth-child(even)						{background:#fff;}/*ligne paire*/
-.objBlocks .hasThumb .objLabel									{background:rgba(250,250,250,0.9);}
-.emptyContainer													{background:rgba(255,255,255,0.7);}
+.objContainer, .miscContainer, .emptyContainer, .menuContext	{background:#fff;}									/*blocks principaux*/
+.lineOdd:nth-child(odd), .selectContainer						{background:#f9f9f9;}								/*blocks principaux survolés & blocks d'objets impaires (cf. forum)*/
+.objContainerSelect, #objSelectMenu  							{background:#ddd!important;}						/*objets sélectionnés ("!important" pour surcharger les ":hover")*/
+.objLines .objContainer											{border-bottom:solid 1px #ccc; box-shadow:none;}	/*pas de "box-shadow" en affichage "objLines"*/
+.menuContext .menuLine:hover, .lineHover:hover, .lineSelect		{background:#eee!important;}						/*lignes survolées ou sélectionnées (cf. droit d'accès d'objets ou affectations d'evts)*/
+/*RESPONSIVE*/
+@media screen and (max-width:1023px){
+	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:2px 2px 5px rgb(200,200,200);}/*cf. affichage de news et fichiers*/
+}
+
+/*Barre de menu*/
+#headerBar											{background:linear-gradient(180deg,#fff,#f5f5f5,#fff); box-shadow:2px 2px 8px rgb(80,80,80);}	/*barre de menu principale*/
+.vHeaderModuleButton:hover, .vHeaderModuleCurrent	{background:#fff; border:solid 1px #ccc!important;}												  /*module courant*/
 
 /*Droits d'accès d'utilisateurs*/
-.sAccessRead						{color:#008;}
-.sAccessWrite, .sAccessWriteLimit	{color:#800;}
+.sAccessRead										{color:#008;}
+.sAccessWrite, .sAccessWriteLimit					{color:#800;}
 
 /*Divers*/
-.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}
+hr													{background:linear-gradient(90deg,#eee,#ccc,#eee);}	/*barre de séparation*/
+div::-webkit-scrollbar								{background:#eee; width:15px;}							/*scrollbar: background et width*/
+div::-webkit-scrollbar-thumb						{background:#ccc;}										/*scrollbar: couleur de la barre*/
+.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}								/*blocks des lightboxes et onglets du menu d'édition d'objets*/
 .objMenuLabel										{background:linear-gradient(180deg,#f5f5f5,#fff);}
 .lightboxBlockTitle									{border-bottom:#ddd solid 1px; background:#fafafa;}
-#headerBar											{background:linear-gradient(to bottom,#f5f5f5,#fafafa,#eee);}
-#sortableModules .ui-state-default					{background:linear-gradient(#f9f9f9,#fff);}
-hr													{background:linear-gradient(to right,#eee,#ccc,#eee);}
-div::-webkit-scrollbar								{background:#eee; width:15px;}/*scrollbar: background et width*/
-div::-webkit-scrollbar-thumb						{background:#ccc;}/*scrollbar: couleur de la barre*/

@@ -169,24 +169,27 @@ class MdlObject
 		if($this->_affectations===null)
 		{
 			//Init
-			$this->_affectations=$tmpAffectations=[];
-			////	Objet existant : récupère les affectations en Bdd ("ORDER BY" pour le libellé des affectations dans le "contextMenu()")
-			if($this->isNew()==false)	{$tmpAffectations=Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." ORDER BY _idSpace, target");}
+			$this->_affectations=$affects=[];
+			////	Objet existant : récupère les affectations en Bdd
+			if($this->isNew()==false){
+				$affects=Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." ORDER BY _idSpace, target");//"ORDER BY" pour les labels du "contextMenu()"
+				if(empty($affects))  {$affects[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"U".$this->_idUser, "accessRight"=>2];}//Aucun droit n'est défini : droit en écriture pour l'auteur (cf. agendas persos et affichage des droits d'accès par défaut dans le menu d'édition)
+			}
 			////	Nouvel objet : initialise les affectations par défaut en type "string" !
 			else{
-				$tmpAffectations[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"spaceUsers",			 "accessRight"=>(static::isContainer()?"1.5":"1")];	//Espace courant : Lecture || Ecriture limité pour les conteneurs. Attention : "accessRight" est de type "string"!
-				$tmpAffectations[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"U".Ctrl::$curUser->_id, "accessRight"=>"2"];								//Accès écriture pour l'user courant ..qui est aussi l'auteur
+				$affects[]=["_idSpace"=>Ctrl::$curSpace->_id,  "target"=>"spaceUsers",				"accessRight"=>(static::isContainer() ? 1.5 : 1)];	//Users de l'espace courant : Ecriture limité (conteneurs)  ||  Lecture
+				$affects[]=["_idSpace"=>Ctrl::$curSpace->_id,  "target"=>"U".Ctrl::$curUser->_id,	"accessRight"=>2];									//User courant (auteur) : Ecriture
 			}
-			////	Formate les affectations
-			foreach($tmpAffectations as $tmpAffect)
+			////	Formate chaque affectation
+			foreach($affects as $tmpAffect)
 			{
 				//Affectations détaillées :  "Espace Bidule > tous les utilisateurs"  /  "Groupe Bidule"  /  "Jean Dupont"
 				$tmpAffect["targetType"]=$tmpAffect["target_id"]=$tmpAffect["label"]=null;
-				if($tmpAffect["target"]=="spaceUsers")				{$tmpAffect["targetType"]="spaceUsers";		$tmpAffect["target_id"]=$tmpAffect["_idSpace"];					$tmpAffect["label"]=Ctrl::getObj("space",$tmpAffect["_idSpace"])->name." <img src='app/img/arrowRight.png'> ".strtolower(Txt::trad("SPACE_allUsers"));}
-				elseif(preg_match("/^G/",$tmpAffect["target"]))		{$tmpAffect["targetType"]="group";			$tmpAffect["target_id"]=(int)substr($tmpAffect["target"],1);	$tmpAffect["label"]=Ctrl::getObj("userGroup",$tmpAffect["target_id"])->title;}
-				elseif(preg_match("/^U/",$tmpAffect["target"]))		{$tmpAffect["targetType"]="user";			$tmpAffect["target_id"]=(int)substr($tmpAffect["target"],1);	$tmpAffect["label"]=Ctrl::getObj("user",$tmpAffect["target_id"])->getLabel();}
-				//Affectation individuelle sur un autre espace que l'espace courant : ajoute le nom de l'espace
-				if($tmpAffect["_idSpace"]!=Ctrl::$curSpace->_id && $tmpAffect["target"]!="spaceUsers")  {$tmpAffect["label"]=Ctrl::getObj("space",$tmpAffect["_idSpace"])->name." <img src='app/img/arrowRight.png'> ".$tmpAffect["label"];}
+				if(preg_match("/^U/",$tmpAffect["target"]))		{$tmpAffect["targetType"]="user";			$tmpAffect["target_id"]=(int)substr($tmpAffect["target"],1);	$tmpAffect["label"]=Ctrl::getObj("user",$tmpAffect["target_id"])->getLabel();}
+				elseif(preg_match("/^G/",$tmpAffect["target"]))	{$tmpAffect["targetType"]="group";			$tmpAffect["target_id"]=(int)substr($tmpAffect["target"],1);	$tmpAffect["label"]=Ctrl::getObj("userGroup",$tmpAffect["target_id"])->getLabel();}
+				elseif($tmpAffect["target"]=="spaceUsers")		{$tmpAffect["targetType"]="spaceUsers";		$tmpAffect["target_id"]=$tmpAffect["_idSpace"];					$tmpSpace=Ctrl::getObj("space",$tmpAffect["_idSpace"]);		$tmpAffect["label"]=$tmpSpace->getLabel()." <img src='app/img/arrowRight.png'> ".(!empty($tmpSpace->public)?Txt::trad("EDIT_allUsersAndGuests"):Txt::trad("EDIT_allUsers"));}
+				//Affectation perso/groupe sur un autre espace : ajoute le nom de l'espace (cf. "contextMenu()")
+				if($tmpAffect["_idSpace"]!=Ctrl::$curSpace->_id && $tmpAffect["target"]!="spaceUsers")  {$tmpAffect["label"]=Ctrl::getObj("space",$tmpAffect["_idSpace"])->getLabel()." <img src='app/img/arrowRight.png'> ".$tmpAffect["label"];}
 				//Ajoute l'affectation
 				$targetKey=(int)$tmpAffect["_idSpace"]."_".$tmpAffect["target"];//concaténation des champs "_idSpace" et "target"
 				$this->_affectations[$targetKey]=$tmpAffect;
@@ -221,7 +224,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * RÉCUPÈRE LES DROITS D'ACCÈS SUR L'OBJET POUR L'USER COURANT :  element conteneur (dossier, agenda, sujet, etc)  OU  element basique (actualité, fichier, taches, etc)
+	 * RÉCUPÈRE LE DROIT D'ACCÈS DE L'USER COURANT SUR L'OBJET :  element conteneur (dossier, agenda, sujet, etc)  OU  element basique (actualité, fichier, taches, etc)
 	 *		3	[total]					element conteneur	-> modif/suppression du conteneur + modif/suppression des elements contenus (de premier niveau*)
 	 *									element basique		-> modif/suppression
 	 *		2	[ecriture]				element conteneur	-> lecture du conteneur + modif/suppression des elements contenus (de premier niveau*)
@@ -456,8 +459,8 @@ class MdlObject
 				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id);
 				//Déplace à la racine : récupère les droits d'accès de l'ancien dossier conteneur
 				if($newFolder->isRootFolder()){
-					foreach(Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType='".$oldFolder::objectType."' AND _idObject=".$oldFolder->_id) as $oldFolderAccessRight){
-						Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format(static::objectType).", _idObject=".$this->_id.", _idSpace=".$oldFolderAccessRight["_idSpace"].", target='".$oldFolderAccessRight["target"]."', accessRight='".$oldFolderAccessRight["accessRight"]."'");
+					foreach(Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType='".$oldFolder::objectType."' AND _idObject=".$oldFolder->_id) as $oldAccessRight){
+						Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format(static::objectType).", _idObject=".$this->_id.", _idSpace=".(int)$oldAccessRight["_idSpace"].", target=".Db::format($oldAccessRight["target"]).", accessRight=".Db::format($oldAccessRight["accessRight"]));
 					}
 				}
 			}
@@ -485,18 +488,19 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * LISTE DES USERS AFFECTÉS À L'OBJET (surchargé)
+	 * LISTE DES USERS AFFECTÉS À L'OBJET
 	 *******************************************************************************************/
-	public function affectedUserIds()
+	public function affectedUserIds($onlyWriteAccess=false)
 	{
-		//Objet de référence pour les affectations
+		//Init les users et l'objet de référence des affectations (ex: dossier parent d'un fichier)
 		$userIds=[];
 		$refObject=($this->hasAccessRight())  ?  $this :  $this->containerObj();
 		//Récupère les users de chaque affectation
 		foreach($refObject->getAffectations() as $affect){
-			if($affect["targetType"]=="spaceUsers")	{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["target_id"])->getUsers("idsTab"));}
-			elseif($affect["targetType"]=="group")	{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["target_id"])->userIds);}
-			elseif($affect["targetType"]=="user")	{$userIds[]=$affect["target_id"];}
+			if($onlyWriteAccess==true && $affect["accessRight"]<2)	{continue;}																							//Uniquement accès en écriture ? (cf. agendas perso)
+			elseif($affect["targetType"]=="spaceUsers")				{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["target_id"])->getUsers("idsTab"));}	//Ajoute tous les users de l'espace
+			elseif($affect["targetType"]=="group")					{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["target_id"])->userIds);}			//Ajoute les users du groupe
+			elseif($affect["targetType"]=="user")					{$userIds[]=$affect["target_id"];}																	//Ajoute l'user
 		}
 		//Renvoi la liste des users
 		return array_unique($userIds);
@@ -545,7 +549,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public function sendMailNotif($specificLabel=null, $addDescription=null, $addFiles=null, $addUserIds=null)
 	{
-		//Notification demandé par l'auteur de l'objet  OU  Destinataires ajoutés automatiquement (Exple: notif automatique d'un nouveau message du forum)
+		//Notification demandé par l'auteur de l'objet  OU  Destinataires passés en paramètres (exple: notif de nouveaux messages du forum)
 		if(Req::isParam("notifMail") || !empty($addUserIds))
 		{
 			////	Sujet : "Fichier créé par boby SMITH"
@@ -556,21 +560,21 @@ class MdlObject
 			elseif(!empty($this->title))	{$objContent="<b>".$this->title."</b>";}	//forum subject, task, etc
 			elseif(!empty($this->name))		{$objContent="<b>".$this->name."</b>";}		//folder name, etc
 			else							{$objContent=null;}
-			////	Ajoute si besoin la description && Remplace si besoin les chemins relatifs
-			if(!empty($this->description))	{$objContent.="<br>".$this->description;}
-			if(!empty($addDescription))		{$objContent.="<br>".$addDescription;}
+			////	Ajoute la description && Remplace les chemins relatifs && Ajoute le max-width aux images
+			if(!empty($this->description))	{$objContent.="<div>".$this->description."</div>";}
+			if(!empty($addDescription))		{$objContent.="<div>".$addDescription."</div>";}
 			$objContent=str_replace(PATH_DATAS, Req::getCurUrl()."/".PATH_DATAS, $objContent);
-			////	Corps du mail
-			$message="<style>  #mailSubject {margin-top:20px; margin-bottom:30px;}  #mailContent {margin-bottom:30px;max-width:1024px;background-color:#f5f5f5;color:#333;border:1px solid #bbb;border-radius:3px;padding:15px;}  #mailContent img {max-width:100%}</style>
-					  <div id='mailSubject'>".$subject." :</div>
-					  <div id='mailContent'>".$objContent."</div>
+			$objContent=str_replace("<img ", "<img style='max-width:100%;cursor:initial' ", $objContent);
+			////	Corps du mail (pas de balise <style> car souvent supprimés par les clients mail)
+			$message="<div style='margin:20px 0px'>".$subject." :</div>
+					  <div style='margin:20px 0px;padding:10px;max-width:1024px;background-color:#eee;color:#333;border:1px solid #bbb;border-radius:3px;'>".$objContent."</div>
 					  <a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";
-			////	Users à destination de la notif : destinataires spécifiques OU Tous les users affectées à l'objet
+			////	Destinataires de la notif : Users spécifiques OU Users affectées à l'objet (lecture ou+)
 			$mailUserIds=[];
 			if(Req::isParam("notifMail"))	{$mailUserIds=Req::isParam("notifMailUsers") ? Req::param("notifMailUsers") : $this->affectedUserIds();}
-			////	Ajoute si besoin les destinataires passés en paramètres (cf. notif de nouveaux messages du forum)
+			////	Ajoute si besoin les destinataires passés en paramètres (exple: notif de nouveaux messages du forum)
 			if(!empty($addUserIds)){
-				if(Req::isParam("notifMail")==false)  {$noNotify=true;}//Pas de notification d'envoi d'email
+				if(Req::isParam("notifMail")==false)  {$noNotify=true;}//Pas de "notifiy()" sur l'envoie de l'email
 				$mailUserIds=array_unique(array_merge($mailUserIds,$addUserIds));
 			}
 			////	Envoi du message
@@ -579,7 +583,7 @@ class MdlObject
 				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";												//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
 				if(Req::isParam("mailOptions"))  {$options=array_merge($options,Req::param("mailOptions"));}					//Options sélectionnées par l'user
 				if(static::htmlEditorField!=null)  {$message=$this->attachedFileImageCid($message);}							//Affiche si besoin les images en pièce jointe dans le corps du mail
-				if(Req::isDevServer())  {$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}	//Evite le spam en mod Dev (cf. "getUrlExternal()")
+				if(Req::isDevServer())  {$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}	//Evite le spam en DEV (cf. "getUrlExternal()")
 				$attachedFiles=$this->attachedFileList();																		//Fichiers joints de l'objet
 				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}									//Ajoute si besoin les fichiers spécifiques (exple: fichier ".ics" d'un évenement)
 				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);										//Envoie l'email
@@ -638,6 +642,25 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
+	 * RECUPERE LES PLUGINS DE TYPE "FOLDER"
+	 *******************************************************************************************/
+	public static function getPluginFolders($params)
+	{
+		$pluginsList=[];
+		foreach(static::getPluginObjects($params) as $objFolder)
+		{
+			$objFolder->pluginIcon="folder/folderSmall.png";
+			$objFolder->pluginLabel=$objFolder->name;
+			$objFolder->pluginTooltip=$objFolder->folderPath("text");
+			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
+			$objFolder->pluginJsIcon="windowParent.redir('".$objFolder->getUrl()."');";//Redir vers le dossier
+			$objFolder->pluginJsLabel=$objFolder->pluginJsIcon;
+			$pluginsList[]=$objFolder;
+		}
+		return $pluginsList;
+	}
+
+	/*******************************************************************************************
 	 * STATIC SQL : SELECTIONNE LES OBJETS EN FONCTION DU TYPE DE PLUGIN
 	 * $params["type"] => "dashboard": cree dans la periode selectionné / "shortcut": ayant un raccourci / "search": issus d'une recherche
 	 *******************************************************************************************/
@@ -691,7 +714,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE L'AUTEUR DE L' OBJET
+	 * AUTEUR DE L'OBJET
 	 *******************************************************************************************/
 	public function autorLabel($getCreator=true, $tradAutor=false)
 	{
@@ -702,7 +725,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE LA DATE DE CRÉATION OU DE MODIFICATION
+	 * DATE DE CRÉATION OU MODIFICATION
 	 *******************************************************************************************/
 	public function dateLabel($dateModif=false, $format="normal")
 	{
@@ -710,7 +733,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE L'AUTEUR ET LA DATE AU FORMAT "OBJLINES"
+	 * AUTEUR DE L' OBJET + DATE DE CRÉATION OU MODIFICATION
 	 *******************************************************************************************/
 	public function autorDateLabel($withAutorIcon=false)
 	{
@@ -723,20 +746,21 @@ class MdlObject
 	 *******************************************************************************************/
 	public function tradObject($tradKey)
 	{
-		//// Trad principale
+		//// Traduction principale
 		$trad=Txt::trad($tradKey);
-		//// Trad de l'objet courant : remplace OBJCONTENT (ex: News) et si besoin OBJCONTENT (ex: fichier)
-		if(Txt::isTrad("OBJECT".static::objectType)){
-			$objLabel=Txt::trad("OBJECT".static::objectType);
-			$trad=str_replace("-OBJLABEL-", $objLabel, $trad);
-			if(static::isContainerContent())  {$trad=str_replace("-OBJCONTENT-", $objLabel, $trad);}
-		}
-		//// Trad d'un objet container (ex: dossier) : remplace OBJCONTENT par son contenu (ex: fichiers)
+		//// Remplace le label principal de l'objet (exple : "news", "fichier", "dossier")
+		$trad=str_replace("-OBJLABEL-", Txt::trad("OBJECT".static::objectType), $trad);
+		//// Remplace le label du contenu de l'objet (exple: "fichier" si l'objet courant est un dossier)
 		if(static::isContainer()){
 			$MdlObjectContent=static::MdlObjectContent;
-			if(Txt::isTrad("OBJECT".$MdlObjectContent::objectType))  {$trad=str_replace("-OBJCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $trad);}
+			$trad=str_replace("-OBJCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $trad);
 		}
-		//// Retourne la trad
+		//// Remplace le label du conteneur de l'objet (exple: "agenda" si l'objet courant est un evt)
+		if(static::isContainerContent()){
+			$MdlObjectContainer=static::MdlObjectContainer;
+			$trad=str_replace("-OBJCONTAINER-", Txt::trad("OBJECT".$MdlObjectContainer::objectType), $trad);
+		}
+		/// Retourne la trad
 		return $trad;
 	}
 

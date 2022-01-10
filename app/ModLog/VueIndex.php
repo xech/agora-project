@@ -26,7 +26,7 @@ $(function(){
 	$(".dataTables_filter input").attr("placeholder","<?= Txt::trad("LOG_search") ?>");
 	//Filtre sur le input text et "select" du footer
 	$("tfoot input, tfoot select").on("keyup change",function(){
-		oTable.fnFilter($(this).val(), this.parentNode.cellIndex);
+		oTable.fnFilter(this.value, this.parentNode.cellIndex);
 	});
 });
 </script>

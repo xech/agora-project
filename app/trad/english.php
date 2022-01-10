@@ -114,7 +114,7 @@ class Trad extends Txt
 		self::$trad["selectUnselect"]="Select / Unselect";
 		self::$trad["selectUnselectAll"]="Select/unselect all";
 		self::$trad["selectAll"]="Select all";
-		self::$trad["invertSelection"]="Reverse the selection";
+		self::$trad["selectSwitch"]="Switch selection";
 		self::$trad["deleteElems"]="Remove the selected elements";
 		self::$trad["changeFolder"]="Move in another folder";
 		self::$trad["showOnMap"]="Show on a map";
@@ -215,16 +215,16 @@ class Trad extends Txt
 		self::$trad["objHistory"]="Element history";
 		self::$trad["all"]="all";
 		self::$trad["deletedUser"]="deleted user account";
-		self::$trad["accessRead"]="Read";
-		self::$trad["readInfos"]="Access in reading";
-		self::$trad["accessWriteLimit"]="limited writing";
-		self::$trad["readLimitInfos"]="Limited access in writing: Ability to add -OBJCONTENT-s, without modify or delete those created by other users";
-		self::$trad["accessWrite"]="write";
-		self::$trad["writeInfos"]="Access in writing";
-		self::$trad["writeInfosContainer"]="Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the -OBJLABEL-";
-		self::$trad["autorPrivilege"]="Only the author and administrators can edit the access rights or delete the -OBJLABEL-";
-		self::$trad["accessRightsInherited"]="Access rights inherited from the -OBJLABEL-";
 		self::$trad["folderContent"]="content";
+		self::$trad["accessRead"]="Read";
+		self::$trad["accessReadInfo"]="Access in reading";
+		self::$trad["accessWriteLimit"]="limited writing";
+		self::$trad["accessWriteLimitInfo"]="Limited write access: possibility to add -OBJCONTENT- in the -OBJLABEL-,<br> but each user can only modify/delete the -OBJCONTENT- he created.";
+		self::$trad["accessWrite"]="write";
+		self::$trad["accessWriteInfo"]="Access in writing";
+		self::$trad["accessWriteInfoContainer"]="Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the -OBJLABEL-";
+		self::$trad["accessAutorPrivilege"]="Only the author and administrators can edit the access rights or delete the -OBJLABEL-";
+		self::$trad["accessRightsInherited"]="Access rights inherited from the -OBJLABEL-";
 		
 		////	Libellé des objets
 		self::$trad["OBJECTcontainer"]="container";
@@ -250,8 +250,6 @@ class Trad extends Txt
 		self::$trad["MAIL_hello"]="Hello";
 		self::$trad["MAIL_receptionNotif"]="Delivery receipt";
 		self::$trad["MAIL_receptionNotifInfo"]="Warning! some email clients don't support delivery receipts";
-		self::$trad["MAIL_addReplyTo"]="Add 'Reply to'";
-		self::$trad["MAIL_addReplyToInfo"]="Add my email address in the 'Reply to' field. Be careful because if there are too many recipients, the email can be considered as Spam";
 		self::$trad["MAIL_hideRecipients"]="Hide recipients";
 		self::$trad["MAIL_hideRecipientsInfo"]="By default, email recipients are displayed in the message.";
 		self::$trad["MAIL_noFooter"]="Do not sign the message";
@@ -342,10 +340,12 @@ class Trad extends Txt
 		self::$trad["userInscriptionInvalidateMail"]="Your account has not been validated on";
 
 		////	Importer ou Exporter : Contact OU Utilisateurs
-		self::$trad["export"]="Export";
-		self::$trad["import"]="Import";
-		self::$trad["importExport_user"]="Users";
-		self::$trad["importExport_contact"]="Contacts";
+		self::$trad["importExport_user"]="Import / Export users";
+		self::$trad["import_user"]="Import users into the current space";
+		self::$trad["export_user"]="Export current space users";
+		self::$trad["importExport_contact"]="Import / Export contacts";
+		self::$trad["import_contact"]="Import contacts into the current folder";
+		self::$trad["export_contact"]="Export contacts from current folder";
 		self::$trad["exportFormat"]="Format";
 		self::$trad["specifyFile"]="Thank you for choosing a file";
 		self::$trad["fileExtension"]="The file type is invalid. It must be of the type";
@@ -425,11 +425,12 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsersInfo"]="All the users of the space <i>--SPACENAME--</i>";
 		self::$trad["EDIT_allUsersAndGuestsInfo"]="All the users of the space <i>--SPACENAME--</i> and guests but with a read only access (guests : people who do not have a user account)";
 		self::$trad["EDIT_adminSpace"]="Administrator of this space:<br>write access to all the elements of this space";
-		self::$trad["EDIT_displayMoreUsers"]="Display more users";
-		self::$trad["EDIT_mySpaces"]="Display all my spaces";
+		self::$trad["EDIT_showAllUsers"]="Display all users";
+		self::$trad["EDIT_showAllSpaces"]="Display all my spaces";
 		self::$trad["EDIT_notifMail"]="Notify";
 		self::$trad["EDIT_notifMail2"]="Send a notification of creation/modification by email";
-		self::$trad["EDIT_notifMailInfo"]="If you don't select recipients, by default, it will be sent to the persons who are affected to the element";
+		self::$trad["EDIT_notifMailInfo"]="The notification will be sent to the people assigned to the item / -OBJLABEL-.";
+		self::$trad["EDIT_notifMailInfoCal"]="<hr>If you assign the event to personal calendars, then the notification will only be sent to the owners of these calendars (write access).";
 		self::$trad["EDIT_notifMailAddFiles"]="Attach files to the notification";
 		self::$trad["EDIT_notifMailSelect"]="Select the recipients of notifications";
 		self::$trad["EDIT_accessRightSubFolders"]="Assign the same access rights to the under-folders";
@@ -460,10 +461,16 @@ class Trad extends Txt
 		self::$trad["INSTALL_confirmInstall"]="Confirm the installation ?";
 		self::$trad["INSTALL_installOk"]="Agora-Project was installed correctly !";
 		self::$trad["INSTALL_spaceDescription"]="Space for sharing and collaborative work";
-		self::$trad["INSTALL_dataDashboardNews1"]="Welcome on your new Omnispace !";
-		self::$trad["INSTALL_dataDashboardNews2"]="Click here to invite people to join you";
-		self::$trad["INSTALL_dataDashboardNews3"]="Share your files, a Calendar and a News Feed, manage Tasks and Projects, exchange Contacts or Internet Links, chat on a Forum or Instant Messaging, send Newsletter, etc.";
-		self::$trad["INSTALL_dataDashboardPoll"]="What do you think of the new survey tool?";
+		self::$trad["INSTALL_dataDashboardNews"]="<h3>Welcome to your new sharing space!</h3>
+												<h4><img src='app/img/file/iconSmall.png'> Share your files now in the file manager</h4>
+												<h4><img src='app/img/calendar/iconSmall.png'> Share your common calendars or your personal calendar</h4>
+												<h4><img src='app/img/dashboard/iconSmall.png'> Expand your community's news feed</h4>
+												<h4><img src='app/img/messenger.png'> Communicate via the forum, instant messaging or video conferences</h4>
+												<h4><img src='app/img/task/iconSmall.png'> Centralize your notes, projects and contacts</h4>
+												<h4><img src='app/img/mail/iconSmall.png'> Send newsletters by email</h4>
+												<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">Click here to send invitation emails and grow your community!</a></h4>
+												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/?ctrl=offline&action=Documentation' target='_blank'>For more information, see the official Omnispace & Agora-Project documentation</a></h4>";
+		self::$trad["INSTALL_dataDashboardPoll"]="What do you think of the news feed ?";
 		self::$trad["INSTALL_dataDashboardPollA"]="Very interesting !";
 		self::$trad["INSTALL_dataDashboardPollB"]="Interesting";
 		self::$trad["INSTALL_dataDashboardPollC"]="Not interesting";
@@ -473,7 +480,6 @@ class Trad extends Txt
 
 		////	MODULE_PARAMETRAGE
 		////
-		self::$trad["AGORA_headerModuleName"]="General settings";
 		self::$trad["AGORA_generalSettings"]="General Settings";
 		self::$trad["AGORA_versions"]="Versions";
 		self::$trad["AGORA_dateUpdate"]="Updated on";
@@ -546,23 +552,22 @@ class Trad extends Txt
 		self::$trad["AGORA_smtpPass"]="Password";
 		//LDAP
 		self::$trad["AGORA_ldapLabel"]="Connecting to an LDAP server";
-		self::$trad["AGORA_ldapHost"]="Server address";
-		self::$trad["AGORA_ldapPort"]="Port server";
-		self::$trad["AGORA_ldapPortInfo"]="''389'' by default";
-		self::$trad["AGORA_ldapLogin"]="String connection for admin";
-		self::$trad["AGORA_ldapLoginInfo"]="for example ''uid=admin,ou=my_company''";
+		self::$trad["AGORA_ldapLabelInfo"]="Connection to an LDAP server for user creation on your space: cf. ''User import/export'' option of the ''User'' module";
+		self::$trad["AGORA_ldapUri"]="URI LDAP";
+		self::$trad["AGORA_ldapUriInfo"]="Full LDAP URI as LDAP://hostname:port or LDAPS://hostname:port for SSL encryption.";
+		self::$trad["AGORA_ldapPort"]="Server port";
+		self::$trad["AGORA_ldapPortInfo"]="The port used for the connection: '' 389 '' by default";
+		self::$trad["AGORA_ldapLogin"]="DN of the LDAP administrator (Distinguished Name)";
+		self::$trad["AGORA_ldapLoginInfo"]="for example ''cn=admin,dc=mon-entreprise,dc=com''";
 		self::$trad["AGORA_ldapPass"]="Password of the admin";
-		self::$trad["AGORA_ldapDn"]="Group / base DN";
-		self::$trad["AGORA_ldapDnInfo"]="Location of directory users.<br> For example ''ou=users,o=my_company''";
-		self::$trad["AGORA_ldapConnectError"]="Error connecting to LDAP server !";
-		self::$trad["AGORA_ldapCreaAutoUsers"]="Auto creation of users after identification";
-		self::$trad["AGORA_ldapCreaAutoUsersInfo"]="Automatically create a user if it is missing from the Agora but present on the LDAP server: it will be assigned to areas accessible to ''all users of the Site''.<br>Otherwise, the user will not be created.";
-		self::$trad["AGORA_ldapPassEncrypt"]="Passwords encrypted on the server";
-		self::$trad["AGORA_ldapDisabled"]="PHP module for connection to an LDAP server is not installed";
+		self::$trad["AGORA_ldapDn"]="DN of the group (Distinguished Name)";
+		self::$trad["AGORA_ldapDnInfo"]="DN of the group : location of users in the directory. Example ''ou=mon-groupe,dc=mon-entreprise,dc=com''";
+		self::$trad["importLdapFilterInfo"]="LDAP search filter (cf. https://www.php.net/manual/function.ldap-search.php). Example ''(cn=*)'' or ''(&(samaccountname=MONLOGIN)(cn=*))''";
+		self::$trad["AGORA_ldapDisabled"]="The PHP module for connecting to an LDAP server is not installed";
+		self::$trad["AGORA_ldapConnectError"]="LDAP server connection error !";
 
 		////	MODULE_LOG
 		////
-		self::$trad["LOG_headerModuleName"]="Logs";
 		self::$trad["LOG_moduleDescription"]="Logs - Event Log";
 		self::$trad["LOG_path"]="Path";
 		self::$trad["LOG_filter"]="filter";
@@ -584,7 +589,6 @@ class Trad extends Txt
 
 		////	MODULE_ESPACE
 		////
-		self::$trad["SPACE_headerModuleName"]="Spaces";
 		self::$trad["SPACE_moduleInfo"]="The site (or main space) can be divided into several spaces";
 		self::$trad["SPACE_manageSpaces"]="Manage spaces of the site";
 		self::$trad["SPACE_config"]="Settings of the space";
@@ -620,7 +624,7 @@ class Trad extends Txt
 		//Index
 		self::$trad["USER_allUsers"]="View all users";
 		self::$trad["USER_allUsersInfo"]="View all users from all spaces";
-		self::$trad["USER_spaceUsers"]="Users of the space";
+		self::$trad["USER_spaceUsers"]="Users of the current space";
 		self::$trad["USER_deleteDefinitely"]="Delete permanently";
 		self::$trad["USER_deleteFromCurSpace"]="Unassign to the current space";
 		self::$trad["USER_deleteFromCurSpaceConfirm"]="Confirm the unassignment of the user to current space ?";

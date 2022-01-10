@@ -26,20 +26,23 @@ class MdlDashboardNews extends MdlObject
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc"];
 
 	/*******************************************************************************************
-	 * STATIC : RÉCUPÈRE LES NEWS POUR L'INFINITE SCROLL ($mode: "count"/"list". $newsOffsetCpt est le compteur d'affichage de l'infinite scroll)
+	 * STATIC : RÉCUPÈRE LES NEWS POUR L'INFINITE SCROLL
+	 * $mode :  Count des news :"count"  ||  Affichage avec "infinite scroll" : "scroll"
+	 * $offline : récupère uniquement les news "offline"
 	 *******************************************************************************************/
-	public static function getNews($mode, $newsOffsetCpt=0, $offlineNews=false)
+	public static function getNews($mode, $offline=false, $offsetCpt=0)
 	{
-		//// Archiver/désarchiver automatiquement des news
+		// Archiver/désarchiver automatiquement des news
 		if(empty($_SESSION["dashboardNewsUpdated"])){
 			Db::query("UPDATE ".static::dbTable."  SET offline=1     WHERE dateOffline is not null  AND UNIX_TIMESTAMP(dateOffline)<".time());
 			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline is not null   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline is null or UNIX_TIMESTAMP(dateOffline)>".time().")");
 			$_SESSION["dashboardNewsUpdated"]=true;
 		}
-		//// Nombre ou Liste de news
-		$sqlOffline=(!empty($offlineNews)) ? "AND offline=1" : "AND offline is null";//Archivée (Offline) ?
+		// uniquement les news "offline" ?
+		$sqlOffline=($offline==true)  ?  "AND offline=1"  :  "AND offline is null";
+		// Count des news  ||  Affichage avec "infinite scroll" (LIMIT + OFFSET)
 		if($mode=="count")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline);}
-		else				{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("une desc")."  LIMIT 10 OFFSET ".((int)$newsOffsetCpt * 10));}//Affiche les news par blocks de 10
+		else				{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("une desc")."  LIMIT 10 OFFSET ".((int)$offsetCpt * 10));}//"infinite scroll" par blocs de 10
 	}
 
 	/*******************************************************************************************

@@ -17,7 +17,7 @@ function contactAddUser(typeId)
 			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
-				if(Ctrl::$curUser->isAdminSpace())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("import")."/".Txt::trad("export")." ".Txt::trad("importExport_contact")."</div></div>";}
+				if(Ctrl::$curUser->isAdminSpace())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_contact")."</div></div>";}
 				echo "<hr>";
 			}
 			////	ARBORESCENCE  &  MENU DE SELECTION/AFFICHAGE/TRI
@@ -30,7 +30,7 @@ function contactAddUser(typeId)
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo CtrlObject::folderPathMenu(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());
-		echo $foldersList;
+		echo CtrlObject::vueFolders();
 		////	LISTE DES CONTACTS
 		foreach($contactList as $tmpContact)
 		{
@@ -48,7 +48,7 @@ function contactAddUser(typeId)
 			</div>";
 		}
 		////	AUCUN CONTENU & AJOUTER
-		if(empty($foldersList) && empty($contactList)){
+		if(empty(CtrlObject::vueFolders()) && empty($contactList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("CONTACT_addContact")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("CONTACT_noContact").$addElement."</div>";
 		}

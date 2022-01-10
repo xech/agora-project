@@ -203,14 +203,17 @@ class MdlCalendarEvent extends MdlObject
 		return parent::contextMenu($options);
 	}
 
-	/*******************************************************************************************
-	 * SURCHARGE : LISTE DES USERS AFFECTÉS À L'OBJET (USERS DE CHAQUE AGENDA OU L'EVT EST AFFETÉ)
-	 *******************************************************************************************/
-	public function affectedUserIds()
+	/*********************************************************************************************************************************************
+	 * SURCHARGE : USERS AFFECTÉS À L'EVT => USERS AFFECTÉS AUX AGENDAS DE L'EVT
+	 *************************************************************************************************************************************************/
+	public function affectedUserIds($onlyWriteAccess=null)
 	{
-		$affectedUserIds=[];
-		foreach($this->affectedCalendars("all") as $tmpCal)  {$affectedUserIds=array_merge($tmpCal->affectedUserIds(),$affectedUserIds);}
-		return array_unique($affectedUserIds);
+		$return=[];
+		foreach($this->affectedCalendars("all") as $tmpCal){															//Pour chaque agenda de l'evt : récupère les users affectés à l'agendas
+			$affectedUserIds=($tmpCal->type=="user")  ?  $tmpCal->affectedUserIds(true)  :  $tmpCal->affectedUserIds();	//Agenda perso : récupère uniquement les users ayant accès en écriture à l'agenda
+			$return=array_merge($return,$affectedUserIds);																//Ajoute les users du $tmpCal à la liste
+		}
+		return array_unique($return);
 	}
 
 	/*******************************************************************************************

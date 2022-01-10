@@ -27,7 +27,7 @@ function calendarDimensions(printCalendar)
 		hearlierEvtTop=null;
 		$(curCalId+" .vCalEvtBlock").each(function(){
 			//Largeur, Position left et top
-			var curDaySelector=curCalId+" .vCalWeekLine:first-child [data-dayCpt='"+$(this).attr("data-dayCpt")+"']";
+			var curDaySelector=curCalId+" .vCalWeekLine:first-child [data-dayDate='"+$(this).attr("data-dayDate")+"']";
 			var evtPosLeft=$(curDaySelector).position().left;
 			var evtWidth=$(curDaySelector).outerWidth()-1;
 			//L'evt précédent se trouve sur le même créneau horaire : on décale l'evt courant OU on split les 2 evt
@@ -118,7 +118,7 @@ function calendarDimensions(printCalendar)
 	.vCalWeekHourLabel										{width:18px!important; max-width:18px!important; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
 	.vCalWeekHeaderDay										{font-size:0.9em!important;}
 	.vCalWeekHeaderCelebrationDay, .vCalWeekHourLabelZero	{display:none;}
-	.vCalEvtBlock .vCalEvtLabel								{text-transform:lowercase; font-size:0.9em;}
+	.vCalEvtBlock .vCalEvtLabel								{text-transform:lowercase; font-size:0.85em;}
 }
 
 /* IMPRESSION */
@@ -153,19 +153,12 @@ function calendarDimensions(printCalendar)
 	////	PARTIE SCROLLABLE DE L'AGENDA : EVENEMENTS & GRILLE DES HEURES/MINUTES
 	echo "<div class='vCalWeekScroller' id=\"calWeekScroller".$tmpCal->_typeId."\" data-timeSlotBegin=\"".$tmpCal->timeSlotBegin."\" data-timeSlotDuration=\"".round($tmpCal->timeSlotEnd-$tmpCal->timeSlotBegin)."\">";
 
-		////	EVENEMENTS DU JOUR
-		foreach($tmpCal->eventList as $tmpDateEvts)
-		{
-			foreach($tmpDateEvts as $tmpEvt)
-			{
-				//Init l'evt (pas de menu context en responsive)
-				$divContainerAttr="onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."');event.stopPropagation();\" data-dayCpt=\"".$tmpEvt->dayCpt."\" data-timeBegin=\"".strtotime($tmpEvt->dateBegin)."\" data-timeEnd=\"".strtotime($tmpEvt->dateEnd)."\" data-minutesFromDayBegin=\"".$tmpEvt->minutesFromDayBegin."\" data-durationMinutes=\"".$tmpEvt->durationMinutes."\" data-catColor=\"".$tmpEvt->catColor."\"";
-				$evtContextMenu=(Req::isMobile()==false)  ?  $tmpEvt->contextMenu(["iconBurger"=>"small","_idCal"=>$tmpCal->_id,"curDateTime"=>strtotime($tmpEvt->dateBegin)])  :  null;
-				$evtDisplayDate=Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd);
-				$evtImportant=(!empty($tmpEvt->important))  ?  " <img src='app/img/important.png'>"  :  null;
-				//Affiche l'evt
-				echo $tmpEvt->divContainer("vCalEvtBlock",$divContainerAttr).$evtContextMenu.
-						"<div class='vCalEvtLabel'>".$evtDisplayDate."&nbsp; ".$tmpEvt->title.$evtImportant."</div>
+		////	EVENEMENTS DE CHAQUE JOUR AFFICHÉ
+		foreach($tmpCal->eventList as $tmpDate=>$tmpDateEvts){
+			foreach($tmpDateEvts as $tmpEvt){
+				$divContainerAttr="onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\" data-dayDate=\"".$tmpDate."\" data-timeBegin=\"".$tmpEvt->timeBegin."\" data-timeEnd=\"".$tmpEvt->timeEnd."\" data-minutesFromDayBegin=\"".$tmpEvt->minutesFromDayBegin."\" data-durationMinutes=\"".$tmpEvt->durationMinutes."\" data-catColor=\"".$tmpEvt->catColor."\"";
+				echo $tmpEvt->divContainer("vCalEvtBlock stopPropagation",$divContainerAttr).$tmpEvt->contextMenu.
+						"<div class='vCalEvtLabel'>".$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon."</div>
 					 </div>";
 			}
 		}
@@ -179,10 +172,10 @@ function calendarDimensions(printCalendar)
 				//LIGNE DE L'HEURE COURANTE : LABEL DE L'HEURE + CELLULE DE L'HEURE POUR CHAQUE JOUR
 				echo "<div class='vCalWeekLine'>";
 					echo "<div class='vCalWeekHourLabel'>".$H."<span class='vCalWeekHourLabelZero'>:00</span></div>";//:00 pour les minutes
-					foreach($periodDays as $dayCpt=>$tmpDay)
+					foreach($periodDays as $tmpDate=>$tmpDay)
 					{
 						//CELLULE DE L'HEURE
-						echo "<div class='vCalWeekCell ".$tmpHourClass."' data-dayCpt=\"".$dayCpt."\">";
+						echo "<div class='vCalWeekCell ".$tmpHourClass."' data-dayDate=\"".$tmpDate."\">";
 						//AJOUT OU PROPOSITION D'EVT : CREE LE TABLEAU DE SELECTION D'UN CRENEAU HORAIRE PAR "DRAG & DROP" (SAUF SUR MOBILE)
 						if($tmpCal->addOrProposeEvt() && Req::isMobile()==false)
 						{

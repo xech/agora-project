@@ -13,7 +13,7 @@
 class CtrlLink extends Ctrl
 {
 	const moduleName="link";
-	public static $folderObjectType="linkFolder";
+	public static $folderObjType="linkFolder";
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=["MdlLink","MdlLinkFolder"];
 
@@ -22,7 +22,6 @@ class CtrlLink extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		$vDatas["foldersList"]=self::$curContainer->folders();
 		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplay(self::$curContainer)." ".MdlLink::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
@@ -32,10 +31,9 @@ class CtrlLink extends Ctrl
 	 *******************************************************************************************/
 	public static function getPlugins($params)
 	{
-		$pluginsList=self::getPluginFolders($params,"MdlLinkFolder");
+		$pluginsList=MdlLinkFolder::getPluginFolders($params);
 		foreach(MdlLink::getPluginObjects($params) as $tmpObj)
 		{
-			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->description))  ?  $tmpObj->description  :  $tmpObj->adress;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");

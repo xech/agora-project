@@ -13,7 +13,7 @@
 class CtrlTask extends Ctrl
 {
 	const moduleName="task";
-	public static $folderObjectType="taskFolder";
+	public static $folderObjType="taskFolder";
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=["MdlTask","MdlTaskFolder"];
 
@@ -22,7 +22,6 @@ class CtrlTask extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		$vDatas["foldersList"]=self::$curContainer->folders();
 		$filterPriority=Req::param("filterPriority")>=1 ? "AND priority=".Db::param("filterPriority") : null;
 		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplay(self::$curContainer)." ".$filterPriority." ".MdlTask::sqlSort());
 		////	TIMELINE/GANTT
@@ -82,10 +81,9 @@ class CtrlTask extends Ctrl
 	 *******************************************************************************************/
 	public static function getPlugins($params)
 	{
-		$pluginsList=self::getPluginFolders($params,"MdlTaskFolder");
+		$pluginsList=MdlTaskFolder::getPluginFolders($params);
 		foreach(MdlTask::getPluginObjects($params) as $tmpObj)
 		{
-			$tmpObj->pluginModule=self::moduleName;
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");

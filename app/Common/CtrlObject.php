@@ -8,10 +8,13 @@
 
 
 /*
- * Controleur concernant les objets (menus, vues, etc)
+ * Controleur pour les "action" ou "vue" concernant les objets (menus, vues, etc)
  */
 class CtrlObject extends Ctrl
 {
+	//Vue des Folders en cache
+	public static $vueFolders=null;
+
 	/*******************************************************************************************
 	 * ACTION : AFFICHE LES LOGS D'UN OBJET
 	 *******************************************************************************************/
@@ -82,7 +85,7 @@ class CtrlObject extends Ctrl
 	public static function folderTreeMenu($context="nav")
 	{
 		//Arborescence du dossier racine
-		$vDatas["rootFolderTree"]=Ctrl::getObj(get_class(Ctrl::$curContainer),1)->folderTree();
+		$vDatas["rootFolderTree"]=Ctrl::$curContainerRoot->folderTree();
 		//Affiche l'arborescence s'il y a au moins un dossier (en + du dossier racine)
 		if(count($vDatas["rootFolderTree"])>1){
 			$vDatas["context"]=$context;
@@ -103,6 +106,28 @@ class CtrlObject extends Ctrl
 			$vDatas["addElemUrl"]=$addElemUrl;
 			return Ctrl::getVue(Req::commonPath."VueObjFolderPath.php", $vDatas);
 		}
+	}
+
+	/*******************************************************************************************
+	 * VUE : LISTE DES DOSSIERS DU DOSSIER COURANT
+	 *******************************************************************************************/
+	public static function vueFolders()
+	{
+		if(self::$vueFolders===null)
+		{
+			//Récupère le dossier courant et les dossiers qu'il contient
+			$curFolder=Ctrl::$curContainer;
+			$vDatas["foldersList"]=Db::getObjTab($curFolder::objectType, "SELECT * FROM ".$curFolder::dbTable." WHERE ".$curFolder::sqlDisplay($curFolder)." ".$curFolder::sqlSort());
+			//Aucun dossier / Liste des dossiers
+			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
+			else{
+				if($curFolder::moduleName=="contact")	{$vDatas["objContainerClass"]="objPerson";}			//Affichage spécifique aux contacts
+				elseif($curFolder::moduleName=="file")	{$vDatas["objContainerClass"]="objContentCenter";}	//Affichage centré (icone + contenu)
+				else									{$vDatas["objContainerClass"]=null;}				//Affichage normal
+				self::$vueFolders=Ctrl::getVue(Req::commonPath."VueObjFolders.php",$vDatas);
+			}
+		}
+		return self::$vueFolders;
 	}
 
 	/*******************************************************************************************

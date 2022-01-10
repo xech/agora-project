@@ -10,7 +10,7 @@ lightboxSetWidth(550);//Resize
 <div class="lightboxContent">
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo $curObj->menuContextEdit()."<div class='lightboxTitle'>".$curObj->priority()." ".$curObj->title."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->menuContextEdit().$curObj->priority()." ".$curObj->title."</div>";
 
 	////	DESCRIPTION / PERSONNES RESPONSABLES / AVANCEMENT / DATES DEBUT & FIN / FICHIERS JOINTS
 	if(!empty($curObj->description))	{echo $curObj->description."<hr>";}

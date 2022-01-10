@@ -1,13 +1,13 @@
 <script>
 ////	Resize
-lightboxSetWidth(800);
+lightboxSetWidth(850);
 
 ////	INIT
 $(function(){
 	////	Archive la news si ya une date de mise en ligne (futur)
 	$(".dateBegin").change(function(){
 		//date d'aujourd'hui en ms
-		var dateBegin=$(this).val().split("/");
+		var dateBegin=this.value.split("/");
 		var timeBegin=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]);//attention au format : mois/jour/annee
 		//Date "online" spécifié && supérieure à aujourd'hui &&  "offline" pas sélectionné
 		if($(".dateBegin").isEmpty()==false && Date.now() < timeBegin.valueOf() && $("[name='offline']").prop("checked")==false){
@@ -23,8 +23,7 @@ $(function(){
 #newsOptions>div		{display:inline-block; margin-right:20px; margin-top:15px;}
 #newsOptions img		{vertical-align:bottom;}
 .dateBegin, .dateEnd	{width:160px!important;}/*surcharge*/
-.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.95em;}/*Taille du "placeholder"*/
-input[name='une'],input[name='offline']	{display:none;}
+.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.9em;}/*Taille du "placeholder"*/
 /*RESPONSIVE & FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.dateBegin, .dateEnd	{width:125px!important;}/*surcharge*/
@@ -43,15 +42,13 @@ input[name='une'],input[name='offline']	{display:none;}
 	<div id="newsOptions">
 		<!--A LA UNE-->
 		<div>
-			<img src="app/img/dashboard/topNews.png">
 			<input type="checkbox" name="une" value="1" id="uneCheckbox" <?= $objNews->une==1?"checked":"" ?>>
-			<label for="uneCheckbox" title="<?= Txt::trad("DASHBOARD_topNewsInfo") ?>"><?= Txt::trad("DASHBOARD_topNews") ?></label>	
+			<label for="uneCheckbox" title="<?= Txt::trad("DASHBOARD_topNewsInfo") ?>"><img src="app/img/dashboard/topNews.png"> <?= Txt::trad("DASHBOARD_topNews") ?></label>	
 		</div>
 		<!--IS OFFLINE-->
 		<div>
-			<img src="app/img/dashboard/newsOffline.png">
 			<input type="checkbox" name="offline" value="1" id="offlineCheckbox" <?= $objNews->offline==1?"checked":null ?>>
-			<label for="offlineCheckbox"><?= Txt::trad("DASHBOARD_offline") ?></label>
+			<label for="offlineCheckbox"><img src="app/img/dashboard/newsOffline.png"> <?= Txt::trad("DASHBOARD_offline") ?></label>
 		</div>
 		<!--DATE ONLINE-->
 		<div>

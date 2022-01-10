@@ -87,7 +87,7 @@ $(function(){
 
 <style>
 #pageCenter				{margin-top:120px;}/*surcharge*/
-.miscContainer			{display:none; max-width:500px;/*pour le responsive*/ padding:30px 10px 30px 10px; margin:0px auto 0px auto; background:rgba(255,255,255,0.9); border-radius:5px; text-align:center;}/*surcharge*/
+.miscContainer			{display:none; max-width:500px;/*pour le responsive*/ padding:30px 10px; margin:0px auto 0px auto; border-radius:5px; text-align:center;}/*surcharge*/
 #headerBar>div			{padding:10px;}/*surcharge*/
 #customLogo				{margin-bottom:40px;}
 #customLogo img			{max-width:100%; max-height:250px;}
@@ -107,7 +107,7 @@ $(function(){
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	#pageCenter				{margin-top:70px;}/*surcharge*/
-	.miscContainer			{width:95%!important;}
+	.miscContainer			{width:100%!important;}
 	#headerBar>div			{padding:8px; font-weight:normal;}/*surcharge*/
 	#connectOptionsMain.vConnectOptions, #connectOptionsMain.vConnectOptions>div	{display:block;}
 	#publicSpaceListTitle	{margin-left:10px;}

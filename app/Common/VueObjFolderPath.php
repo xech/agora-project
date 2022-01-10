@@ -12,7 +12,7 @@
 		//Affiche le libellé du dossier
 		$leftIcon=(empty($tmpFolder->_idContainer))  ?  "folder/folderSmall"  :  "arrowRightBig";									//Icone "Folder" pour le dossier racine OU Icone "arrowRight"
 		$folderLink=($curFolder->_id!=$tmpFolder->_id)  ?  "class='sLink' onclick=\"redir('".$tmpFolder->getUrl()."')\""  :  null;	//Lien vers le dossier (sauf pour le dossier courant)
-		$ContextMenu=(Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id && $curFolder->isRootFolder()==false)  ?  $tmpFolder->contextMenu(["iconBurger"=>"small"])  :  null;	//Menu contextuel du dossier courant (sauf responsive)
+		$ContextMenu=(Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id && $curFolder->isRootFolder()==false)  ?  $tmpFolder->contextMenu(["iconBurger"=>"inlineSmall"])  :  null;	//Menu contextuel du dossier courant (sauf responsive)
 		echo "<div><img src='app/img/".$leftIcon.".png'></div><div ".$folderLink." title=\"".Txt::tooltip($tmpFolder->description)."\">".Txt::reduce($tmpFolder->name,40)." ".$ContextMenu."</div>";	//Tester en responsive avec un "name" très long
 	}
 	////	Menu d'ajout d'élément

@@ -8,13 +8,12 @@
 
 
 /*
- * Controleur pour les opérations diverses
+ * Controleur pour les "action" diverses (sans init complete du controleur)
  */
 class CtrlMisc extends Ctrl
 {
-	//Pas d'initialisation complete du controleur
+	//Désactive l'initialisation complete du controleur
 	protected static $initCtrlFull=false;
-
 
 	/*******************************************************************************************
 	 * AJAX : UPDATE DU MESSENGER & LIVECOUNTER
@@ -74,7 +73,7 @@ class CtrlMisc extends Ctrl
 													   </div>";
 				}
 				//Ajoute "inverser la sélection" si ya + de 5 users
-				if(count($_SESSION["livecounterUsers"])>5)	{$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'><label onclick=\"$('label[for^=messengerUserCheckbox]').trigger('click');\"><img src='app/img/checkSelect.png'> &nbsp; ".Txt::trad("invertSelection")."</label></div>";}
+				if(count($_SESSION["livecounterUsers"])>5)	{$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'><label onclick=\"$('label[for^=messengerUserCheckbox]').trigger('click');\"><img src='app/img/checkSelect.png'> &nbsp; ".Txt::trad("selectSwitch")."</label></div>";}
 			}
 
 			////	LISTE DES MESSAGES DU MESSENGER  &&  DES "PULSATES"

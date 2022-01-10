@@ -95,7 +95,6 @@ class CtrlForum extends Ctrl
 		//Sujets
 		foreach(MdlForumSubject::getPluginObjects($params) as $objSubject)
 		{
-			$objSubject->pluginModule=self::moduleName;
 			$objSubject->pluginIcon=self::moduleName."/icon.png";
 			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  Txt::reduce($objSubject->description);
 			$objSubject->pluginTooltip=$objSubject->pluginLabel;
@@ -108,7 +107,6 @@ class CtrlForum extends Ctrl
 		{
 			foreach(MdlForumMessage::getPluginObjects($params) as $objMessage)
 			{
-				$objMessage->pluginModule=self::moduleName;
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  Txt::reduce($objMessage->description);
 				$objMessage->pluginTooltip=$objMessage->pluginLabel;
@@ -151,9 +149,8 @@ class CtrlForum extends Ctrl
 			//Ferme la page
 			static::lightboxClose();
 		}
-		////	Liste des themes
-		$vDatas["themesList"]=MdlForumTheme::getThemes(true);
-		$vDatas["themesList"][]=new MdlForumTheme();//nouveau theme vide
+		////	Liste des themes (en 1er un nouveau theme "vierge")
+		$vDatas["themesList"]=array_merge([new MdlForumTheme()], MdlForumTheme::getThemes(true));
 		foreach($vDatas["themesList"] as $tmpKey=>$tmpTheme){
 			if($tmpTheme->editRight()==false)	{unset($vDatas["themesList"][$tmpKey]);}
 			else{
@@ -210,7 +207,7 @@ class CtrlForum extends Ctrl
 			if($curObj->isNewlyCreated()==false)	{$notifUserIds=null;}
 			else{
 				$notifUserIds=array_diff(Txt::txt2tab($curObj->containerObj()->usersNotifyLastMessage), [Ctrl::$curUser->_id]);//Users qui on demandé une notif .. et enlève l'auteur courant
-				$notifUserIds=array_intersect($notifUserIds, $curObj->containerObj()->affectedUserIds());//Enlève les users qui n'ont plus accès au sujet en question
+				$notifUserIds=array_intersect($notifUserIds, $curObj->containerObj()->affectedUserIds());//Enlève les users qui ne sont plus affectés au sujet
 			}
 			//Notifie par mail aux users spécifiés & Ferme la page
 			$curObj->sendMailNotif(null, null, null, $notifUserIds);

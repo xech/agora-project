@@ -119,13 +119,12 @@ $(function(){
 
 /*Evenements*/
 .vCalEvtBlock.objContainer			{height:22px; min-height:22px; padding:4px; margin:0px; margin-bottom:1px; box-shadow:1px 1px 2px #555; cursor:pointer; border-radius:3px;}/*surcharge .objContainer : "height", "padding", etc*/
-.vCalEvtBlock .objMenuBurgerInline	{float:right; margin-left:4px; margin-bottom:4px;}/*Surchage du menu "burger" de chaque événement (que l'on affiche pas en responsive)*/
+.vCalEvtBlock .objMenuBurger		{position:relative; float:right; top:0px; right:0px; margin:0px;}/*Surchage du menu "burger" de chaque événement*/
 .vCalEvtBlock .vCalEvtLabel			{height:98%; overflow:hidden; font-size:0.9em; font-weight:normal; color:#fff;}/*overflow pour ne pas dépasser du block parent*/
 .vCalEvtBlock .vCalEvtLabel img		{max-height:13px;}
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.vCalendarTitle .objMenuBurger		{width:15px; height:15px;}/*Icone "burger" de chaque agenda*/
 	.vCalendarTitleLabel				{margin-left:0px; margin-right:5px;}
 	.vCalendarTitle .personImgSmall		{display:none;}/*cf. "getImg()"*/
 	#calendarPrev,#calendarNext			{margin:0px 5px 0px 5px;}
@@ -143,7 +142,7 @@ $(function(){
 	.vCalendarBlock								{page-break-after:always; margin:0px; box-shadow:none;}/*saut de page, sauf pour le dernier de la liste*/
 	.vCalendarBlock:last-child					{page-break-after:avoid;}
 	.vCalEvtBlock								{background:none;}
-	.objMenuBurger, .objMenuBurgerInline		{display:none;}/*Bouton 'burger' de chaque événement*/
+	.objMenuBurger, .objMenuBurgerInline		{display:none;}/*Masque le menu contextuel*/
 	.vCalEvtLabel								{color:#333;}
 }
 </style>
@@ -165,7 +164,7 @@ $(function(){
 					foreach($visibleCalendars as $tmpCal){
 						echo "<div>
 								<input type='checkbox' name='displayedCalendars[]' value='".$tmpCal->_id."' id=\"displayedCal".$tmpCal->_typeId."\" onchange=\"$('#calsList button').fadeIn();\" ".(CtrlCalendar::isDisplayedCal($displayedCalendars,$tmpCal)?"checked":null).">
-								<label for=\"displayedCal".$tmpCal->_typeId."\" title=\"".Txt::tooltip($tmpCal->description)."\" class='noTooltip'>".$tmpCal->title."</label> ".(Req::isMobile()==false?$tmpCal->contextMenu(["iconBurger"=>"small"]):null)."
+								<label for=\"displayedCal".$tmpCal->_typeId."\" title=\"".Txt::tooltip($tmpCal->description)."\" class='noTooltip'>".$tmpCal->title."</label> ".(Req::isMobile()==false?$tmpCal->contextMenu(["iconBurger"=>"inlineSmall"]):null)."
 							 </div>";
 					}
 					//"Afficher tous les agendas" (Admin gé.)
@@ -229,13 +228,13 @@ $(function(){
 
 	<div id="pageFullContent">
 		<!--SYNTHESE DES AGENDAS ?-->
-		<?php if(!empty($periodDaysSynthese)){ ?>
+		<?php if(!empty($periodSynthese)){ ?>
 			<div id="syntheseBlock" class="miscContainer">
 				<div id="syntheseTable">
 					<!--HEADER DE LA SYNTHESE-->
 					<div id="syntheseLineHeader">
 						<div class="vSyntheseLabel">&nbsp;</div>
-						<?php foreach($periodDaysSynthese as $tmpDay)  {echo "<div class=\"vSyntheseDay ".(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d")?"vSyntheseDayCurDay":null)."\">".(int)date("d",$tmpDay["timeBegin"])."</div>";} ?>
+						<?php foreach($periodSynthese as $tmpDay)  {echo "<div class=\"vSyntheseDay ".(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d")?"vSyntheseDayCurDay":null)."\">".(int)date("d",$tmpDay["timeBegin"])."</div>";} ?>
 					</div>
 					<!--AFFICHE CHAQUE AGENDA-->
 					<?php foreach($displayedCalendars as $tmpCal){ ?>
@@ -243,11 +242,11 @@ $(function(){
 						<div class="vSyntheseLabel sLink" onclick="$('#blockCal<?= $tmpCal->_typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<!--CELLULES DE CHAQUE JOUR DE L'AGENDA-->
 						<?php
-						foreach($periodDaysSynthese as $tmpDay)
+						foreach($periodSynthese as $tmpDay)
 						{
 							//Tooltip des evts du jour
 							$tmpEvtTooltip="<div class='vSyntheseDayEvtTooltip'>".$tmpCal->title." : ".Txt::dateLabel($tmpDay["timeBegin"],"dateFull")."<ul>";
-							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.="<li>".Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)." : ".Txt::reduce($tmpEvt->title,60)."</li>";}
+							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.="<br><img src='app/img/arrowRight.png'> ".Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)." : ".Txt::reduce($tmpEvt->title,60);}
 							$tmpEvtTooltip.="</ul></div>";
 							//Cellule des evts du jour
 							$syntheseDayCalWE=$syntheseDayEvts=null;
@@ -263,10 +262,10 @@ $(function(){
 					<!--LIGNE DE SYNTHESE DES AGENDAS-->
 					<div class="vSyntheseLineFooter">
 						<div class="vSyntheseLabel"><?= Txt::trad("CALENDAR_synthese") ?></div>
-						<?php foreach($periodDaysSynthese as $tmpDay){ ?>
+						<?php foreach($periodSynthese as $tmpDay){ ?>
 						<div class="vSyntheseDay vSyntheseDayCal <?= date("N",$tmpDay["timeBegin"])>5?"vSyntheseDayCalWE":null ?>">
 							<div class="vSyntheseDayEvts">
-								<?php if(!empty($tmpDay["nbCalsOccuppied"])){ ?><div class="vSyntheseDayEvt" style="background-color:#777" title="<div class='vSyntheseDayEvtTooltip'><?= "".$tmpDay["nbCalsOccuppied"]."</div>" ?>">&nbsp;</div><?php } ?>	
+								<?php if(!empty($tmpDay["nbCalsWithEvt"])){ ?><div class="vSyntheseDayEvt" style="background-color:#777" title="<div class='vSyntheseDayEvtTooltip'><?= $tmpDay["nbCalsWithEvt"]."</div>" ?>">&nbsp;</div><?php } ?>	
 							</div>
 						</div>
 						<?php } ?>
@@ -286,7 +285,7 @@ $(function(){
 					//Menu contextuel de l'agenda (cf. ".objMenuBurger")  &&  Label de l'agenda  &&  Icone de l'user (agenda perso)
 					$tmpCalLabel=(Req::isMobile())  ?  Txt::reduce($tmpCal->title,20)  :  $tmpCal->title;
 					$tmpCalIcon=($tmpCal->type=="user")  ?  Ctrl::getObj("user",$tmpCal->_idUser)->getImg(true,true)  :  null;
-					echo $tmpCalIcon."<span class='vCalendarTitleLabel' title=\"".Txt::tooltip($tmpCal->description)."\">".$tmpCalLabel."</span>".$tmpCal->contextMenu(["iconBurger"=>"big"]);
+					echo $tmpCalIcon."<span class='vCalendarTitleLabel' title=\"".Txt::tooltip($tmpCal->description)."\">".$tmpCalLabel."</span>".$tmpCal->contextMenu(["iconBurger"=>"inlineBig"]);
 					?>
 				</div>
 				<!--PERIODE AFFICHEE-->

@@ -49,8 +49,7 @@ class CtrlUser extends Ctrl
 		{
 			foreach(MdlUser::getPluginObjects($params) as $tmpObj)
 			{
-				$tmpObj->pluginModule=self::moduleName;
-				$tmpObj->pluginIcon="user/accesUser.png";
+				$tmpObj->pluginIcon="user/user.png";
 				$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 				$tmpObj->pluginTooltip=$tmpObj->pluginLabel;
 				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";
@@ -170,11 +169,11 @@ class CtrlUser extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * IMPORT-EXPORT D'UTILISATEUR
+	 * VUE : IMPORT/EXPORT D'UTILISATEUR
 	 *******************************************************************************************/
 	public static function actionEditPersonsImportExport()
 	{
-		////	Controle du droit d'accès et du nombre max d'utilisateurs
+		////	Controle d'accès && nombre max d'utilisateurs
 		if(Ctrl::$curUser->isAdminSpace()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
 		////	Validation de formulaire
 		if(Req::isParam("formValidate"))
@@ -185,7 +184,7 @@ class CtrlUser extends Ctrl
 				MdlUser::exportPersons($userList, Req::param("exportType"));
 			}
 			//// Import de users
-			elseif(Req::param("actionImportExport")=="import" && Req::param("personFields"))
+			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields"))
 			{
 				$personFields=Req::param("personFields");
 				foreach(Req::param("personsImport") as $personCpt)
@@ -194,18 +193,17 @@ class CtrlUser extends Ctrl
 					$curObj=new MdlUser();
 					$tmpUser=[];
 					$sqlProperties=null;
-					//Récupère la valeur de chaque champ du user
+					//Récupère la valeur de chaque champ
 					foreach(Req::param("agoraFields") as $fieldCpt=>$curFieldName){
-						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
-						if(!empty($curFieldVal) && !empty($curFieldName) && !preg_match("/^(login|pass)/i",$curFieldName))  {$sqlProperties.=$curFieldName."=".Db::format($curFieldVal).", ";}
-						$tmpUser[$curFieldName]=$curFieldVal;
+						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;//Récupère la valeur correspondante au champ "agora"
+						if(!empty($curFieldVal) && !empty($curFieldName) && !preg_match("/^(login|pass)/i",$curFieldName))  {$sqlProperties.="`".$curFieldName."`=".Db::format($curFieldVal).", ";}//Incrémente la requête (sauf si login/password)
+						$tmpUser[$curFieldName]=$curFieldVal;//Retient la valeur pour définir le login/password ci-après
 					}
-					//Password par défaut via "uniqId()"
-					if(empty($tmpUser["password"]))  {$tmpUser["password"]=Txt::uniqId(8);}
-					//Login par défaut : email || login standard ("Gérard D'AGOBERT"=>"gerdagobert")
-					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))  {$tmpUser["login"]=$tmpUser["mail"];}
-					if(empty($tmpUser["login"]))  {$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",true,null),0,3) .substr(Txt::clean($tmpUser["name"],"max",true,null),0,8) );}
-					//Créé l'user (Ajoute login/password pour les controles)
+					//Login et Password par défaut
+					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))  {$tmpUser["login"]=$tmpUser["mail"];}//Login email par défaut
+					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",true,null),0,1).substr(Txt::clean($tmpUser["name"],"max",true,null),0,8) );}//Ou login prédéfinit par défaut. Exple: "Jean Durant"=>"jdurant"
+					if(empty($tmpUser["password"]))	{$tmpUser["password"]=Txt::uniqId(8);}//Password par défaut
+					//Enregistre le nouvel utilisateur !
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpUser["login"], $tmpUser["password"]);
 					//Options de création
 					if(is_object($curObj)){
@@ -213,7 +211,7 @@ class CtrlUser extends Ctrl
 						if(Req::isParam("notifCreaUser"))  {$curObj->newUserCoordsSendMail($tmpUser["password"]);}
 						//Affecte si besoin l'utilisateur aux espaces spécifiés
 						if(Req::isParam("spaceAffectList")){
-							foreach(Req::param("spaceAffectList") as $_idSpace)	{Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$_idSpace.", _idUser=".$curObj->_id.", accessRight=1");}
+							foreach(Req::param("spaceAffectList") as $_idSpace)  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$_idSpace.", _idUser=".$curObj->_id.", accessRight=1");}
 						}
 					}
 				}
@@ -373,10 +371,9 @@ class CtrlUser extends Ctrl
 			$curObj->createUpdate("title=".Db::param("title").", _idSpace=".Ctrl::$curSpace->_id.", _idUsers=".Db::formatTab2txt(Req::param("userList")));
 			static::lightboxClose();
 		}
-		//Users et groupes de l'espace
+		//Users et groupes de l'espace (en 1er un nouveau groupe "vierge")
 		$vDatas["usersList"]=Ctrl::$curSpace->getUsers();
-		$vDatas["groupList"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
-		$vDatas["groupList"][]=new MdlUserGroup();
+		$vDatas["groupList"]=array_merge([new MdlUserGroup()], MdlUserGroup::getGroups(Ctrl::$curSpace));
 		foreach($vDatas["groupList"] as $tmpKey=>$tmpGroup){
 			if($tmpGroup->editRight()==false)	{unset($vDatas["groupList"][$tmpKey]);}
 			else{

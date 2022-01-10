@@ -30,21 +30,20 @@ class MdlDashboardPoll extends MdlObject
 
 	/*******************************************************************************************
 	 * STATIC : LISTE DES SONDAGES À AFFICHER
-	 * $mode : "list" / "count"
-	 * $pollsOffsetCpt : compteur de début de liste
-	 * $notVoted : non voté (true/false)
-	 * $newsDisplay : affiché avec les news (true/false)
+	 * $mode :  Count des sondages :"count"  ||  Affichage avec les news : "news"  || Affichage avec "infinite scroll" : "scroll"
+	 * $notVoted : récupère uniquement les sondages non votés
+	 * $offsetCpt : début de liste de l'infinite scroll
 	 *******************************************************************************************/
-	public static function getPolls($mode, $pollsOffsetCpt=0, $notVoted=false, $newsDisplay=false)
+	public static function getPolls($mode, $notVoted=false, $offsetCpt=0)
 	{
-		//Selection SQL : Sondages que l'on peut voir  && Uniquement ceux non votés ?  && Uniquement ceux affichés avec les news ?
+		//Selection SQL de base  && filtre uniquement ceux affichés avec les news ?  && filtre uniquement ceux non votés ?
 		$sqlSelection=static::sqlDisplay();
-		if($notVoted==true)		{$sqlSelection.=" AND _id NOT IN (select _idPoll as _id from ap_dashboardPollResponseVote where _idUser=".Ctrl::$curUser->_id.")";}
-		if($newsDisplay==true)	{$sqlSelection.=" AND newsDisplay IS NOT NULL";}
-		//Nombre de sondages  ||  Sondages en affichage normal (infinite scroll)  ||  Sondages en affichage "newsDisplay" ("GROUP BY" : affiche les + votés en premier!)
-		if($mode=="count")			{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".$sqlSelection);}
-		elseif($newsDisplay==false)	{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlSelection." ".static::sqlSort()." LIMIT 10 OFFSET ".((int)$pollsOffsetCpt * 10));}//$pollsOffsetCpt: "infinite scroll" par blocs de 10
-		else						{return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelection."  GROUP BY _id, title, description, dateEnd, multipleResponses, newsDisplay, publicVote, dateCrea, _idUser, dateModif, _idUserModif  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");}//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
+		if($mode=="news")	{$sqlSelection.=" AND newsDisplay IS NOT NULL";}
+		if($notVoted==true)	{$sqlSelection.=" AND _id NOT IN (select _idPoll as _id from ap_dashboardPollResponseVote where _idUser=".Ctrl::$curUser->_id.")";}
+		//Count des sondages  ||  Affichage avec les news ("GROUP BY" pour afficher les plus votés en premier)  ||  Affichage avec "infinite scroll" (LIMIT + OFFSET)
+		if($mode=="count")		{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".$sqlSelection);}
+		elseif($mode=="news")	{return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelection."  GROUP BY _id, title, description, dateEnd, multipleResponses, newsDisplay, publicVote, dateCrea, _idUser, dateModif, _idUserModif  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");}//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
+		elseif($mode=="scroll")	{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlSelection." ".static::sqlSort()." LIMIT 10 OFFSET ".((int)$offsetCpt * 10));}//"infinite scroll" par blocs de 10
 	}
 
 	/*******************************************************************************************

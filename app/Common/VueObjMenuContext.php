@@ -1,19 +1,19 @@
 <?php
 ////	 ICONE "BURGER" : LAUNCHER DU MENU CONTEXT
-$iconBurgerName=(!empty($isNewObject))  ?  "menuNew"  :  "menu";						//nouvel objet?
-if($iconBurger=="small")  {$iconBurgerName.="Small";}									//petite icone?
-$iconBurgerClass=($iconBurger=="float")  ?  "objMenuBurger"  :  "objMenuBurgerInline";	//affichage "float" (par défaut) ou "inline"
-echo "<img src='app/img/".$iconBurgerName.".png' for=\"".$curObj->menuId("objMenu")."\" class='menuLaunch ".$iconBurgerClass."'>";
+$iconBurgerImg=(!empty($isNewObject))  ?  "menuNew"  :  "menu";									//Icone de nouvel objet?
+if(stristr($iconBurger,"small"))  {$iconBurgerImg.="Small";}									//Petite icone?
+$iconBurgerClass=(stristr($iconBurger,"inline"))  ?  "objMenuBurgerInline"  :  "objMenuBurger";	//Affichage "inline" ou "float" (par défaut : position absolute à droite)
+echo "<img src='app/img/".$iconBurgerImg.".png' for=\"".$curObj->uniqId("objMenu")."\" class='menuLaunch ".$iconBurgerClass."'>";
 
 
 ////	MENU CONTEXTUEL
-echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
+echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 
 	////	RESPONSIVE : LABEL DE L'OBJET
 	if(Req::isMobile())  {echo "<div class='infos'>".$curObj->getLabel()."</div>";}
-
-	////	SELECTIONNER L'OBJET (checkbox "hidden". Pas sur mobile ou pour le dossier courant)
-	if($curObj::isSelectable && Req::isMobile()==false && ($curObj::isFolder==false || Ctrl::$curContainer->_typeId!=$curObj->_typeId))  {echo "<div class='menuLine sLink' onclick=\"objSelect('".$curObj->menuId("objBlock")."')\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("selectUnselect")."</div></div>".$curObj->objectsTypeIdInput();}
+	////	SÉLECTION DE L'OBJET (si l'objet sélectionnable + s'assurer que le menu de sélection a bien été affiché + on n'affiche pas le conteneur courant)
+	if($curObj::isSelectable && Ctrl::$isMenuSelectObjects==true && (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$curObj->_typeId))
+	  {echo $curObj->objSelectCheckbox()."<div class='menuLine sLink' onclick=\"objSelect('".$curObj->uniqId("objCheckbox")."')\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("selectUnselect")."</div></div>";}
 
 	////	MODIFIER L'OBJET
 	if(!empty($editLabel))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$curObj->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".$editLabel."</div></div>";}
@@ -27,7 +27,7 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 	////	HISTORIQUE/LOGS
 	if(!empty($logUrl))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$logUrl."')\"><div class='menuIcon'><img src='app/img/log.png'></div><div>".Txt::trad("objHistory")."</div></div>";}
 
-	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") (A LA FIN: JUSTE AVANT L'OPTION DE SUPPRESSION)
+	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	foreach($specificOptions as $tmpOption){
 		$actionJsTmp=(!empty($tmpOption["actionJs"])) ?  'onclick="'.$tmpOption["actionJs"].'"'  :  null;
 		$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  'title="'.$tmpOption["tooltip"].'"'  :  null;
@@ -41,7 +41,7 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 	////	LABELS SPECIFIQUES (Ex: "Agenda affecté à Bob, Will")
 	foreach($specificLabels as $tmpLabel){
 		$tooltipTmp =(!empty($tmpLabel["tooltip"]))  ?  'title="'.$tmpLabel["tooltip"].'"'  :  null;
-		echo "<hr><div class='menuLine specificLabels' ".$tooltipTmp.">".$tmpLabel["label"]."</div>";
+		echo "<hr><div class='menuLine menuContextSpecificLabels' ".$tooltipTmp.">".$tmpLabel["label"]."</div>";
 	}
 
 	////	OBJET USER : EDIT DU MESSENGER / SUPPRIMER DE L'ESPACE / ESPACES AFFECTES A L'USER
@@ -50,21 +50,21 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 	if(!empty($userSpaceList))				{echo "<hr><div class='menuLine'><div class='menuIcon'><img src='app/img/space.png'></div><div>".$userSpaceList."</div></div>";}
 
 	////	OBJET DOSSIER : CONTENU DU DOSSIER (nb d'elements & co)
-	if($curObj::isFolder==true)  {echo "<hr><div class='menuLine'><div class='menuTxtLeft'>".Txt::trad("folderContent")."</div><div>".$curObj->folderContentDescription()."</div></div>";}
+	if($curObj::isFolder==true)  {echo "<hr><div class='menuLine'><div class='menuContextTxtLeft'>".Txt::trad("folderContent")."</div><div>".$curObj->folderContentDescription()."</div></div>";}
 
 	////	AUTEUR ET DATE DE CREATION/MODIF
 	if(!empty($autorDateCrea)){
 		echo "<hr>";
-		if(!empty($autorDateCrea))	{echo "<div class='menuLine'><div class='menuTxtLeft'>".Txt::trad("createBy")."</div><div>".$autorDateCrea."</div></div>";}
-		if(!empty($autorDateModif))	{echo "<div class='menuLine'><div class='menuTxtLeft'>".Txt::trad("modifBy")."</div><div>".$autorDateModif."</div></div>";}
+		if(!empty($autorDateCrea))	{echo "<div class='menuLine'><div class='menuContextTxtLeft'>".Txt::trad("createBy")."</div><div>".$autorDateCrea."</div></div>";}
+		if(!empty($autorDateModif))	{echo "<div class='menuLine'><div class='menuContextTxtLeft'>".Txt::trad("modifBy")."</div><div>".$autorDateModif."</div></div>";}
 	}
 
 	////	AFFECTATIONS ET DROITS D'ACCES
 	if(!empty($affectLabels)){
 		echo "<hr>";
-		if(!empty($affectLabels["2"]))		{echo "<div class='menuLine sAccessWrite' title=\"".$affectTooltips["2"]."\"><div class='menuTxtLeft'><abbr>".Txt::trad("accessWrite")."</abbr></div><div>".$affectLabels["2"]."</div></div>";}
-		if(!empty($affectLabels["1.5"]))	{echo "<div class='menuLine sAccessWriteLimit' title=\"".$affectTooltips["1.5"]."\"><div class='menuTxtLeft'><abbr>".Txt::trad("accessWriteLimit")."</abbr></div><div>".$affectLabels["1.5"]."</div></div>";}
-		if(!empty($affectLabels["1"]))		{echo "<div class='menuLine sAccessRead' title=\"".$affectTooltips["1"]."\"><div class='menuTxtLeft'><abbr>".Txt::trad("accessRead")."</abbr></div><div>".$affectLabels["1"]."</div></div>";}
+		if(!empty($affectLabels["2"]))		{echo "<div class='menuLine sAccessWrite' title=\"".$affectTooltips["2"]."\"><div class='menuContextTxtLeft'><abbr>".Txt::trad("accessWrite")."</abbr></div><div>".$affectLabels["2"]."</div></div>";}
+		if(!empty($affectLabels["1.5"]))	{echo "<div class='menuLine sAccessWriteLimit' title=\"".$affectTooltips["1.5"]."\"><div class='menuContextTxtLeft'><abbr>".Txt::trad("accessWriteLimit")."</abbr></div><div>".$affectLabels["1.5"]."</div></div>";}
+		if(!empty($affectLabels["1"]))		{echo "<div class='menuLine sAccessRead' title=\"".$affectTooltips["1"]."\"><div class='menuContextTxtLeft'><abbr>".Txt::trad("accessRead")."</abbr></div><div>".$affectLabels["1"]."</div></div>";}
 	}
 
 	////	LISTE DES FICHIERS JOINTS
@@ -73,8 +73,8 @@ echo "<div id=\"".$curObj->menuId("objMenu")."\" class='menuContext'>";
 echo "</div>";
 
 
-////	ICONES FLOTTANTES :  LIKES / COMMENTAIRES / FICHIERS JOINTS / ACCÈS PERSO
-if($iconBurger=="float")
+////	MENU BURGER PRINCIPAL : LIKES / COMMENTAIRES / FICHIERS JOINTS / ACCÈS PERSO
+if($iconBurger=="floatBig")
 {
 	echo "<div class='objMiscMenus'>";
 		//ICONE DES LIKES (+ "DISLIKES" ?)
@@ -95,11 +95,11 @@ if($iconBurger=="float")
 		}
 		//ICONE DES FICHIERS JOINTS
 		if($curObj->attachedFileMenu()){
-			echo "<div class='objMiscMenuDiv menuLaunch' for=\"".$curObj->menuId("objAttachment")."\"><img src='app/img/attachment.png'></div>
-				  <div class='menuContext' id=\"".$curObj->menuId("objAttachment")."\">".$curObj->attachedFileMenu(null)."</div>";
+			echo "<div class='objMiscMenuDiv menuLaunch' for=\"".$curObj->uniqId("objAttachment")."\"><img src='app/img/attachment.png'></div>
+				  <div class='menuContext' id=\"".$curObj->uniqId("objAttachment")."\">".$curObj->attachedFileMenu(null)."</div>";
 		}
 		//ICONE D'ACCÈS PERSO
 		if(!empty($isPersoAccess))
-			{echo "<div class='objMiscMenuDiv'><img src='app/img/user/user.png' title=\"".Txt::trad("personalAccess")."\"></div>";}
+			{echo "<div class='objMiscMenuDiv'><img src='app/img/user/accessUser.png' title=\"".Txt::trad("personalAccess")."\"></div>";}
 	echo "</div>";
 }

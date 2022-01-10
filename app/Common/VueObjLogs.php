@@ -27,7 +27,7 @@ lightboxSetWidth(700);
 	foreach($logsList as $tmpLog)
 	{
 		$logoLog=(preg_match("/(add|modif)/i",$tmpLog["action"]))  ?  "edit"  :  "eye";
-		echo "<div class='vLogsRow sTableRow'>
+		echo "<div class='vLogsRow lineHover'>
 				<div class='vLogAction'><img src='app/img/".$logoLog.".png'> ".ucfirst(Txt::trad("LOG_".$tmpLog["action"]))."</div>
 				<div class='vLogDate'>".Txt::dateLabel($tmpLog["dateUnix"])."</div>
 				<div class='vLogUser'>".Ctrl::getObj("user",$tmpLog["_idUser"])->getLabel()."</div>
