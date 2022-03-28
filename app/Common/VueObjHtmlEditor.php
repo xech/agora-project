@@ -18,7 +18,7 @@ tinymce.init({
 	content_style:"body{margin:10px;font-size:13px;font-family:Arial,Helvetica,sans-serif;}  p{margin:0px;padding:3px;}  .attachedFileTag{max-width:100%;}",//Style dans l'éditeur : idem "app/css/common.css" !
 	////	Charge les plugins et options de la "toolbar" (autres plugins dispos : code print preview hr anchor pagebreak wordcount fullscreen insertdatetime)
 	plugins: ["autoresize lists advlist link autolink image charmap emoticons visualchars media nonbreaking table paste"],
-	toolbar1: (isMobile()  ?  "undo redo | emoticons imageUpload | editorDraft"  :  "undo redo | copy paste removeformat | table charmap media emoticons link imageUpload | editorDraft"),//Option "code" pour modifier le code HTML
+	toolbar1: (isMobile()  ?  "undo redo | emoticons attachedFileImg | editorDraft"  :  "undo redo | copy paste removeformat | table charmap media emoticons link attachedFileImg | editorDraft"),//Option "code" pour modifier le code HTML
 	toolbar2: (isMobile()  ?  "fontsizeselect | bold underline forecolor bullist"  :  "bold italic underline strikethrough forecolor | fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist"),
 	////	Chargement de l'éditeur : parametrages spécifiques
 	setup: function(editor){
@@ -31,7 +31,7 @@ tinymce.init({
 			lightboxResize();					//Resize si besoin le lightbox en fonction du contenu (après "autoresize" : cf. plugin ci-dessus)
 			windowParent.confirmCloseForm=true;	//Marqueur pour demander confirmation de sortie de formulaire ("windowParent" si on est dans une lightbox)
 		});
-		//// Ajoute un bouton de récup du brouillon/draft (cf. "toolbar1" ci-dessus et enregistrements dans "ap_userLivecounter")
+		//// Bouton de récupération du brouillon/draft (cf. "toolbar1" ci-dessus et enregistrements dans "ap_userLivecounter")
 		var editorDraftHtml="<?= addslashes(str_replace(["\n","\r"],null,$editorDraft)) ?>";//Pas de \n\r car pb avec les images en pièces jointe
 		if(editorDraftHtml.length>0)
 		{
@@ -43,10 +43,10 @@ tinymce.init({
 				onAction:function(_){  if(confirm("<?= Txt::trad("editorDraftConfirm") ?> ?")) {editor.selection.setContent(editorDraftHtml);}  }	//"editorDraft" sélectionné : ajoute le brouillon/draft au texte courant
 			});
 		}
-		//// Ajoute un bouton d'insertion d'image (cf. "toolbar1" ci-dessus)
+		//// Bouton d'insertion d'image (cf. "toolbar1" ci-dessus)
 		if($(".attachedFileInput").exist())
 		{
-			editor.ui.registry.addButton("imageUpload",{
+			editor.ui.registry.addButton("attachedFileImg",{
 				icon: "image",
 				tooltip: "<?= Txt::trad("editorFileInsert") ?>",
 				onAction:function(_){
@@ -75,7 +75,7 @@ function isEmptyEditor()
 function editorContent()
 {
 	var content=tinymce.activeEditor.getContent();						//Récupère le contenu de l'éditeur
-	if(/attachedFileTagInput/i.test(content)==false)  {return content;}	//Renvoie le contenu s'il ne contient pas d'image temporaire (format Blob d'une image : trop lourd pour le "editorDraft"!)
+	if(/attachedFileTagInput/i.test(content)==false)  {return content;}	//Renvoie le contenu s'il contient pas d'image temporaire (car le format Blob d'une image est trop lourd pour l'envoyer en ajax dans l'editorDraft)
 }
 
 /*******************************************************************************************
@@ -117,7 +117,7 @@ function attachedFileInsert(fileId, displayUrl)
 /********************************************************************************************************************************************************
  *	FICHIERS JOINTS TEMPORAIRES D'IMAGES : REMPLACE LE "SRC" AU FORMAT BLOB PAR UN ID TEMPORAIRE (cf. "VueObjMenuEdit.php" & "ModMail/index.php") 
  ********************************************************************************************************************************************************/
-function attachedFileTmpSrc()
+function attachedFileReplaceSRCINPUT()
 {
 	if(typeof tinymce!="undefined"){
 		$(tinymce.activeEditor.getBody()).find("a[id*=attachedFileTagInput]").each(function(){	//Accède à Tinymce via "getBody()" puis parcourt les tags <a> ayant un "attachedFileTagInput" (cf. "attachedFileInsert()" ci-dessus)

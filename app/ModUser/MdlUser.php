@@ -193,9 +193,9 @@ class MdlUser extends MdlPerson
 			Db::query("DELETE FROM ap_userMessengerMessage	WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_userPreference		WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_objectLike			WHERE _idUser=".$this->_id);
-			//Suppr l'agenda
+			//Suppr l'agenda et ses evts
 			$objCalendar=new MdlCalendar(Db::getVal("SELECT _id FROM ap_calendar WHERE _idUser=".$this->_id." AND type='user'"));
-			$objCalendar::$persoCalendarDeleteRight=true;//cf. "deleteRight()" du "MdlCalendar"
+			$objCalendar::$forceDeleteRight=true;//Force la suppression de l'agenda : cf. "MdlCalendar::deleteRight()"
 			$objCalendar->delete();
 			//Suppr l'user
 			parent::delete();

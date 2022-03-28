@@ -1,8 +1,26 @@
-VERSION 22.2
+VERSION 22.3.1
 ###############
 Amélioration des emails de notifications
+Amélioration de l'affichage des droits d'accès aux objets
+Amélioration de l'affichage des affectations aux agendas dans l'édition d'événements
+Amélioration du menu d'affichage des news archivées et sondages déjà votés
+Ajout d'un champ libre d'emails dans le module Mail
+Contrôle  de la taille des fichiers joints dans le module Mail
+Correction de compatibilités avec PHP 8.1
+Correction de l'affichage des propositions d'événement si accès en écriture à l'agenda
+Correction de l'affichage des Emojis dans les descriptions et les emails
+Corrections et optimisations diverses
 -----
 Improved email notifications
+Improved display of object access rights
+Improved display of agenda assignments in event editing
+Improvement of the menu for displaying archived news and already voted polls
+New free email field in the Mail module
+Control of the size of attached files in the Mail module
+Fixed compatibilities with PHP 8.1
+Fixed the display of event proposals if write access to the calendar
+Fixed display of Emojis in descriptions and emails
+Various fixes and optimizations
 
 
 VERSION 21.12.2

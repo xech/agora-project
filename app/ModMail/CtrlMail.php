@@ -44,6 +44,12 @@ class CtrlMail extends Ctrl
 					}
 				}
 			}
+			////	Emails complémentaires
+			if(Req::isParam("addEmails")){
+				foreach(Req::param("addEmails") as $addEmail){
+					if(Txt::isMail($addEmail))  {$mailTo.=$addEmail.",";}
+				}
+			}
 			////	Enregistre un nouvel email  &&  Recharge le mail pour récupérer les "attachedFileList()" des Inputs
 			$curObj=Ctrl::getObj("mail");
 			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", recipients=".Db::format(trim($mailTo,",")));

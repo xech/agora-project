@@ -75,6 +75,6 @@ function objSelectAction(urlRedir, openPage)
 	}
 	?>
 	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
-	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSelect.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
+	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
 	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/switch.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
 </div>

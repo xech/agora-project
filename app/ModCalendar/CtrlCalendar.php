@@ -27,8 +27,8 @@ class CtrlCalendar extends Ctrl
 		$vDatas["eventProposition"]=self::eventProposition();
 		////	AGENDAS VISIBLE POUR L'USER (OU TOUS LES AGENDAS : "affectationCalendars()" SI ADMIN GENERAL)  &&  AGENDAS AFFICHES  &&  EVT PROPOSÉS
 		if(empty($_SESSION["displayAllCals"]) || Req::isParam("displayAllCals"))   {$_SESSION["displayAllCals"]=(Req::param("displayAllCals")==1 && Ctrl::$curUser->isAdminGeneral());}
-		$vDatas["visibleCalendars"]=($_SESSION["displayAllCals"]==true)  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::visibleCalendars();
-		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["visibleCalendars"]);
+		$vDatas["readableCalendars"]=($_SESSION["displayAllCals"]==true)  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::readableCalendars();
+		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["readableCalendars"]);
 		////	MODE D'AFFICHAGE (cf. MdlCalendar::$displayModes : month, week, workWeek, 4Days, day)
 		$displayMode=self::prefUser("calendarDisplayMode","displayMode");
 		if(empty($displayMode))  {$displayMode=(Req::isMobile()) ? "4Days" : "month";}//Affichage par défaut
@@ -179,20 +179,20 @@ class CtrlCalendar extends Ctrl
 	{
 		$pluginsList=[];
 		//// Uniquement pour "search" et "dashboard"  (vérif s'il y a des agendas dispo)
-		if(preg_match("/search|dashboard/i",$params["type"]) && count(MdlCalendar::visibleCalendars())>0)
+		if(preg_match("/search|dashboard/i",$params["type"]) && count(MdlCalendar::readableCalendars())>0)
 		{
-			//// Affichage "dashboard" : ajoute si besoin les propositions d'evt
+			//// Ajoute les propositions d'evt : affichage "dashboard"
 			if($params["type"]=="dashboard"){
 				$eventProposition=self::eventProposition();
-				if(!empty($eventProposition))  {$pluginsList["eventProposition"]=(object)["pluginModule"=>self::moduleName, "pluginSpecificMenu"=>$eventProposition];}//"(object)" créé un objet standard
+				if(!empty($eventProposition))  {$pluginsList["eventProposition"]=(object)["moduleName"=>self::moduleName, "pluginSpecificMenu"=>$eventProposition];}//créé un objet via "(object)" (idem "new stdClass()")
 			}
-			//// Parcourt chaque agenda visible
-			foreach(MdlCalendar::visibleCalendars() as $tmpCal)
+			//// Parcourt chaque agenda visible : ajoute les événements de l'agenda
+			foreach(MdlCalendar::readableCalendars() as $tmpCal)
 			{
-				//// Ajoute les événements de l'agenda (accessRight>=1 et trié par "dateBegin")
+				////  "evtList()" : accessRight>=1 et trié par "dateBegin" (cf. $params)
 				foreach($tmpCal->evtList(null,null,1,false,$params) as $tmpEvt)
 				{
-					//// Vérif si l'evt n'a pas déjà été ajouté (car peut être affecté à plusieurs agendas) && se limite à 100 evt max (cf. import d'événements depuis fichier Ical)
+					//// Vérif si l'evt n'a pas déjà été ajouté (car peut être affecté à plusieurs agendas) && se limite à 100 evt max (cf. affichage des nouveaux evt après import de fichier Ical)
 					if(empty($pluginsList[$tmpEvt->_typeId]) && count($pluginsList)<200)
 					{
 						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
@@ -278,7 +278,7 @@ class CtrlCalendar extends Ctrl
 				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){
 					$isConfirmed=in_array($idCal,$affectationCals);
 					Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$tmpCal->_id.", confirmed=".Db::format($isConfirmed));		//Ajoute l'affectation à l'agenda
-					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$propositionIdUsers=array_merge($propositionIdUsers,$tmpCal->calendarOwnerIdUsers());}//Proposition : ajoute les proprios de l'agenda pour la notif mail
+					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$propositionIdUsers=array_merge($propositionIdUsers,$tmpCal->affectedUserIds(true));}	//Proposition : ajoute les proprios de l'agenda pour la notif mail
 				}
 			}
 			////	NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
@@ -294,7 +294,7 @@ class CtrlCalendar extends Ctrl
 				$objLabel=Txt::dateLabel($curObj->dateBegin,"full",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
 				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title).".ics"]];
-				$curObj->sendMailNotif($objLabel, null, $icsFile);
+				$curObj->sendMailNotif($objLabel, $icsFile);
 				File::rm($icalPath);
 			}
 			//Ferme la page
@@ -374,18 +374,17 @@ class CtrlCalendar extends Ctrl
 	}
 
 	/********************************************************************************************
-	 * VUE : AFFICHE LES PROPOSITIONS D'EVENEMENT DES AGENDAS DE L'USER
+	 * VUE : AFFICHE LES PROPOSITIONS D'EVENEMENT DES AGENDAS GÉRÉS PAR L'USER COURANT
 	 ********************************************************************************************/
 	public static function eventProposition()
 	{
-		//// Récupère les propositions d'événement de tous les agendas de l'user courant
 		$vDatas["eventPropositions"]=[];
-		foreach(MdlCalendar::curUserCalendars() as $tmpCal)
-		{
-			//// Liste les propositions d'événement sur l'agenda :  Supprime la proposition si obsolète (+ de 60 jours)  ||  Ajoute la proposition d'evt à l'agenda concerné
+		//Parcourt chaque agenda géré par l'user courant
+		foreach(MdlCalendar::writableCalendars() as $tmpCal){
+			// Récupère les événements pas encore confirmés sur l'agenda
 			foreach(Db::getObjTab("calendarEvent","SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2._idCal=".$tmpCal->_id." AND T2.confirmed is null") as $tmpEvt){
-				if($tmpEvt->isOldEvt(time()-5184000))	{$tmpEvt->deleteAffectation($tmpCal->_id);}
-				else									{$vDatas["eventPropositions"][]=["evt"=>$tmpEvt,"cal"=>$tmpCal];}
+				if($tmpEvt->isOldEvt(time()-5184000))	{$tmpEvt->deleteAffectation($tmpCal->_id);}							//Supprime la proposition si elle est obsolète (+ de 60 jours)
+				else									{$vDatas["eventPropositions"][]=["evt"=>$tmpEvt,"cal"=>$tmpCal];}	//Sinon on ajoute la proposition d'evt à l'agenda!
 			}
 		}
 		//Renvoie la vue s'il y a des propositions
@@ -399,7 +398,7 @@ class CtrlCalendar extends Ctrl
 	{
 		//Récupère l'agenda concerné et vérif le droit d'accès (cf. "typeId")
 		$curCal=Ctrl::getObjTarget();
-		if($curCal->curUserProperty())
+		if($curCal->editContentRight())
 		{
 			//Récup L'evt et l'email pour la notif
 			$curEvt=Ctrl::getObj("calendarEvent",Req::param("_idEvt"));

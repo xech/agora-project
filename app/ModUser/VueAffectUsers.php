@@ -6,7 +6,7 @@ lightboxSetWidth(450);
 function formControl()
 {
 	//Controle les champs de recherche
-	if($("input[name^='searchFields']").is(":visible"))
+	if($("input[name^='searchFields']").isVisible())
 	{
 		var emptySearch=true;
 		//Vérifie si tous les champs de recherche sont vides
@@ -17,7 +17,7 @@ function formControl()
 		if(emptySearch==true)	{notify("<?= Txt::trad("USER_searchPrecision") ?>"); return false;}
 	}
 	//Confirmer les affectations
-	else if($("input[name^='usersList']").is(":visible") && !confirm("<?= Txt::trad("USER_userAffectConfirm") ?>"))  {return false;}
+	else if($("input[name^='usersList']").isVisible() && !confirm("<?= Txt::trad("USER_userAffectConfirm") ?>"))  {return false;}
 }
 </script>
 

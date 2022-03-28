@@ -28,22 +28,33 @@ class MdlDashboardPoll extends MdlObject
 	private $_responseList=null;
 	private $_votesNbTotal=null;
 
-	/*******************************************************************************************
-	 * STATIC : LISTE DES SONDAGES À AFFICHER
-	 * $mode :  Count des sondages :"count"  ||  Affichage avec les news : "news"  || Affichage avec "infinite scroll" : "scroll"
-	 * $notVoted : récupère uniquement les sondages non votés
-	 * $offsetCpt : début de liste de l'infinite scroll
-	 *******************************************************************************************/
-	public static function getPolls($mode, $notVoted=false, $offsetCpt=0)
+	/**************************************************************************************************************************************************************
+	 * STATIC : SONDAGES À AFFICHER
+	 * $mode :  Nb de sondages déjà votés : "pollsVotedNb"  ||  Sondages non votés et affichés avec les news : "newsDisplay"  ||  Affichage infinite scroll = "scroll"
+	 **************************************************************************************************************************************************************/
+	public static function getPolls($mode, $pollsOffset=0)
 	{
-		//Selection SQL de base  && filtre uniquement ceux affichés avec les news ?  && filtre uniquement ceux non votés ?
+		// Init/Switch l'affichage uniquement des sondages déjà votés
+		if(empty($_SESSION["pollsVotedShow"]) || Req::isParam("pollsVotedShow"))  {$_SESSION["pollsVotedShow"]=(bool)(Req::param("pollsVotedShow")=="true");}
+		// Selection SQL de base
 		$sqlSelection=static::sqlDisplay();
-		if($mode=="news")	{$sqlSelection.=" AND newsDisplay IS NOT NULL";}
-		if($notVoted==true)	{$sqlSelection.=" AND _id NOT IN (select _idPoll as _id from ap_dashboardPollResponseVote where _idUser=".Ctrl::$curUser->_id.")";}
-		//Count des sondages  ||  Affichage avec les news ("GROUP BY" pour afficher les plus votés en premier)  ||  Affichage avec "infinite scroll" (LIMIT + OFFSET)
-		if($mode=="count")		{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".$sqlSelection);}
-		elseif($mode=="news")	{return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelection."  GROUP BY _id, title, description, dateEnd, multipleResponses, newsDisplay, publicVote, dateCrea, _idUser, dateModif, _idUserModif  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");}//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
-		elseif($mode=="scroll")	{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlSelection." ".static::sqlSort()." LIMIT 10 OFFSET ".((int)$offsetCpt * 10));}//"infinite scroll" par blocs de 10
+		// Filtre uniquement les sondages déjà votés (cf. "pollsVoted") ou les sondages non votés (cf. "newsDisplay")
+		if($mode=="newsDisplay" || $mode=="pollsVotedNb" || $_SESSION["pollsVotedShow"]==true){
+			$selector=($mode=="newsDisplay") ? "NOT IN" : "IN";
+			$sqlSelection.=" AND _id ".$selector." (select _idPoll as _id from ap_dashboardPollResponseVote where _idUser=".Ctrl::$curUser->_id.")";
+		}
+		// Nb de sondages déjà votés
+		if($mode=="pollsVotedNb")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".$sqlSelection);}
+		// Récupère les sondages non votés et affichés avec les news (affiche les sondages les + populaires en premier : cf. "nbVotes")
+		elseif($mode=="newsDisplay"){
+			$sqlGroupBy="GROUP BY _id, title, description, dateEnd, multipleResponses, newsDisplay, publicVote, dateCrea, _idUser, dateModif, _idUserModif";//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
+			return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelection." AND newsDisplay is not null  ".$sqlGroupBy."  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");
+		}
+		// Sondages pour l'affichage "infinite scroll"
+		else{
+			$sqlLimit="LIMIT 10 OFFSET ".((int)$pollsOffset * 10);//"infinite scroll" par blocs de 10
+			return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlSelection." ".static::sqlSort()." ".$sqlLimit);
+		}
 	}
 
 	/*******************************************************************************************

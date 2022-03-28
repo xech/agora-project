@@ -2,8 +2,8 @@
 ////	LISTE DES SONDAGES
 foreach($pollsList as $tmpPoll)
 {
-	////	Class du container ("vPollsHidden" : cf. infinite scroll)
-	$containerClass=(empty($infiniteSroll))  ?  "vPollsContainer"  :  "vPollsContainer vPollsHidden";
+	////	Class du container
+	$containerClass=(empty($infiniteSroll))  ?  "vPollsContainer"  :  "vPollsContainer infiniteScrollHidden";
 	////	Formulaire de vote OU Résultat du sondage  &&  Date de fin du sondage
 	$pollContent=($tmpPoll->curUserHasVoted() || $tmpPoll->isFinished())  ?  $tmpPoll->vuePollResult()  :  $tmpPoll->vuePollForm();
 	$spanDateEnd=(!empty($tmpPoll->dateEnd))  ?  "<span><img src='app/img/dashboard/pollDateEnd.png'> ".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($tmpPoll->dateEnd,"dateFull")."</span>"  :  null;

@@ -11,10 +11,7 @@ class Trad extends Txt
 	{
 		////	Header http / Editeurs Tinymce,DatePicker,etc / Dates formatées par PHP
 		self::$trad["CURLANG"]="en";
-		self::$trad["HEADER_HTTP"]="en";
-		self::$trad["DATEPICKER"]="en";
 		self::$trad["HTML_EDITOR"]="en_GB";//pas "null"
-		self::$trad["UPLOADER"]="en";
 		setlocale(LC_TIME, "en_US.utf8", "en_US.UTF-8", "en_US", "en", "english");
 
 		////	Divers
@@ -79,10 +76,10 @@ class Trad extends Txt
 		self::$trad["connectAuto"]="Remember me";
 		self::$trad["connectAutoInfo"]="Save my login and password to automatically connect";
 		self::$trad["gSigninButton"]="Login with Google";
-		self::$trad["gSigninButtonInfo"]="Sign in with your Gmail account : to do this, you must already have an account on this space, with an email address <i>@gmail.com</i>";
+		self::$trad["gSigninButtonInfo"]="Sign in with your Google / Gmail account : to do this, you must already have an account on this space, with an email address <i>@gmail.com</i>";
 		self::$trad["gSigninUserNotRegistered"]="is not registered on the space with the email";
 		self::$trad["switchOmnispace"]="Switch to another space Omnispace";
-		self::$trad["guestAccess"]="Connect to a public space as a guest";
+		self::$trad["guestAccess"]="Login as guest";
 		self::$trad["spacePassError"]="Wrong password";
 		self::$trad["ieObsolete"]="Your browser is outdated and does not support all HTML standards : It is advisable to update it or use another browser";
 		
@@ -112,7 +109,6 @@ class Trad extends Txt
 		////	Sélectionner / Déselectionner tous les éléments
 		self::$trad["select"]="Select";
 		self::$trad["selectUnselect"]="Select / Unselect";
-		self::$trad["selectUnselectAll"]="Select/unselect all";
 		self::$trad["selectAll"]="Select all";
 		self::$trad["selectSwitch"]="Switch selection";
 		self::$trad["deleteElems"]="Remove the selected elements";
@@ -254,7 +250,9 @@ class Trad extends Txt
 		self::$trad["MAIL_hideRecipientsInfo"]="By default, email recipients are displayed in the message.";
 		self::$trad["MAIL_noFooter"]="Do not sign the message";
 		self::$trad["MAIL_noFooterInfo"]="Do not sign the end of the message with the sender's name and a weblink to the space";
-		self::$trad["MAIL_fileMaxSize"]="All of your attachments must not exceed 15 MB: <br> Some mailboxes may refuse emails beyond this limit";
+		self::$trad["MAIL_addEmails"]="Add email addresses";
+		self::$trad["MAIL_addEmailsInfo"]="Add email addresses listed on the space";
+		self::$trad["MAIL_fileMaxSize"]="All of your attachments should not exceed 15 MB, some messaging services may refuse emails beyond this limit. Send anyway?";
 		self::$trad["MAIL_sendButton"]="Send email";
 		self::$trad["MAIL_sendBy"]="Sent by";//"Envoyé par" Mr trucmuche
 		self::$trad["MAIL_sendOk"]="The email was sent !";
@@ -426,7 +424,7 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsersAndGuestsInfo"]="All the users of the space <i>--SPACENAME--</i> and guests but with a read only access (guests : people who do not have a user account)";
 		self::$trad["EDIT_adminSpace"]="Administrator of this space:<br>write access to all the elements of this space";
 		self::$trad["EDIT_showAllUsers"]="Display all users";
-		self::$trad["EDIT_showAllSpaces"]="Display all my spaces";
+		self::$trad["EDIT_showAllUsersAndSpaces"]="Display all users and spaces";
 		self::$trad["EDIT_notifMail"]="Notify";
 		self::$trad["EDIT_notifMail2"]="Send a notification of creation/modification by email";
 		self::$trad["EDIT_notifMailInfo"]="The notification will be sent to the people assigned to the item / -OBJLABEL-.";
@@ -494,7 +492,7 @@ class Trad extends Txt
 		self::$trad["AGORA_diskSpaceInvalid"]="Disk space for files must be an integer";
 		self::$trad["AGORA_visioHostInvalid"]="The web address of your videocall server is invalid : it must start with 'https'";
 		self::$trad["AGORA_mapApiKeyInvalid"]="If you choose Google Map as the mapping tool, you must specify an 'API Key'";
-		self::$trad["AGORA_gSigninKeyInvalid"]="If you choose the optional connection via Gmail, you must specify an 'API Key' for Google SignIn";
+		self::$trad["AGORA_gSigninKeyInvalid"]="If you choose the optional connection via Google, you must specify an 'API Key' for Google SignIn";
 		self::$trad["AGORA_confirmModif"]="Confirm modifications ?";
 		self::$trad["AGORA_name"]="Site name";
 		self::$trad["AGORA_footerHtml"]="Footer text/html";
@@ -529,12 +527,12 @@ class Trad extends Txt
 		self::$trad["AGORA_mapToolInfo"]="Mapping tool to see users and contacts on a map";
 		self::$trad["AGORA_mapApiKey"]="API Key for mapping tool";
 		self::$trad["AGORA_mapApiKeyInfo"]="API Key for Google Map mapping tool";
-		self::$trad["AGORA_gSignin"]="Optional connection via Gmail (Sign-In)";
-		self::$trad["AGORA_gSigninInfo"]="Users can connect more easily to their space through their Gmail account : for that, an email <i>@gmail.com</ i> must already be registered on the account of the user.";
+		self::$trad["AGORA_gSignin"]="Optional connection via Google";
+		self::$trad["AGORA_gSigninInfo"]="Users can connect more easily to their space through their Google account : for that, an email <i>@gmail.com</ i> must already be registered on the account of the user.";
 		self::$trad["AGORA_gSigninClientId"]="Google Sign-In settings : Client ID";
 		self::$trad["AGORA_gSigninClientIdInfo"]="This setting is required to enable Google Sign-In : https://developers.google.com/identity/sign-in/web/";
 		self::$trad["AGORA_gPeopleApiKey"]="Google People settings :  API KEY";
-		self::$trad["AGORA_gPeopleApiKeyInfo"]="This setting is required to get Gmail contacts (People 'API KEY') : <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
+		self::$trad["AGORA_gPeopleApiKeyInfo"]="This setting is required to get Google / Gmail contacts : <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
 		self::$trad["AGORA_messengerDisabled"]="Instant messenger enabled";
 		self::$trad["AGORA_moduleLabelDisplay"]="Name of modules in the menu bar";
 		self::$trad["AGORA_folderDisplayMode"]="Default view mode in folders";
@@ -542,7 +540,7 @@ class Trad extends Txt
 		//SMTP
 		self::$trad["AGORA_smtpLabel"]="Connecting SMTP & sendMail";
 		self::$trad["AGORA_sendmailFrom"]="Email 'From'";
-		self::$trad["AGORA_sendmailFromPlaceholder"]="eg: 'noreply@mydomain.com'";
+		self::$trad["AGORA_sendmailFromPlaceholder"]="eg: 'postmaster@mydomain.com'";
 		self::$trad["AGORA_smtpHost"]="Server address (hostname)";
 		self::$trad["AGORA_smtpPort"]="Port server";
 		self::$trad["AGORA_smtpPortInfo"]="'25' by défault. '587' or '465' for SSL/TLS";
@@ -604,8 +602,8 @@ class Trad extends Txt
 		self::$trad["SPACE_selectModule"]="You must select a module";
 		self::$trad["SPACE_spaceModules"]="Space modules";
 		self::$trad["SPACE_moduleRank"]="Move to set the display order of modules";
-		self::$trad["SPACE_publicSpace"]="Public space";
-		self::$trad["SPACE_publicSpaceInfo"]="Gives access to people who do not have a user account : the 'guests'. It is possible to specify a password to protect access to the space. The following modules will not be accessible to guests : 'mail' and 'user' (if the public space does not have a password)";
+		self::$trad["SPACE_publicSpace"]="Public space : guest access";
+		self::$trad["SPACE_publicSpaceInfo"]="A public space is open to people who do not have a user account: the 'guests'. You can specify a generic password to protect access to this public space. The following modules will not be accessible to guests : 'mail' and 'user' (if the public space does not have a password)";
 		self::$trad["SPACE_publicSpaceNotif"]="If your public space contains sensitive data such as personal contact details (Contact module) or documents (File module): you are required to add password access to your public space, to comply with the GDPR.<hr>The General Data Protection Regulation is a regulation of the European Union constituting the reference text for the protection of personal data.";
 		self::$trad["SPACE_usersInvitation"]="Users can send invitations by email";
 		self::$trad["SPACE_usersInvitationInfo"]="All users can send email invitations to join the space";
@@ -651,7 +649,7 @@ class Trad extends Txt
 		self::$trad["USER_myProfilEdit"]="Modify my user profile";
 		// Invitation
 		self::$trad["USER_sendInvitation"]="Send invitations by email";
-		self::$trad["USER_sendInvitationInfo"]="Send invitations by email to your contacts to join you on the current space.<hr><img src='app/img/gSignin.png' height=15> If you have a Gmail account, you can also get your Gmail contacts to send invitations.";
+		self::$trad["USER_sendInvitationInfo"]="Send invitations by email to your contacts to join you on the current space.<hr><img src='app/img/gSignin.png' height=15> If you have a Google account, you can also get your Gmail contacts to send invitations.";
 		self::$trad["USER_mailInvitationObject"]="Invitation of "; // ..Jean DUPOND
 		self::$trad["USER_mailInvitationFromSpace"]="invites you to join "; // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 		self::$trad["USER_mailInvitationConfirm"]="Click here to confirm the invitation";
@@ -708,11 +706,12 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_menuPolls"]="Polls";
 		self::$trad["DASHBOARD_menuElems"]="Recent & current elements";
 		self::$trad["DASHBOARD_addNews"]="Add news";
-		self::$trad["DASHBOARD_newsOffline"]="Archived news";
+		self::$trad["DASHBOARD_offlineNews"]="Show archived news";
+		self::$trad["DASHBOARD_offlineNewsNb"]="archived news";//"55 actualités archivées"
 		self::$trad["DASHBOARD_noNews"]="No news for the moment";
 		self::$trad["DASHBOARD_addPoll"]="Add a poll";
-		self::$trad["DASHBOARD_pollsNotVoted"]="Current polls : not voted";
-		self::$trad["DASHBOARD_pollsNotVotedInfo"]="Show only polls that you have not voted on yet";
+		self::$trad["DASHBOARD_pollsVoted"]="Show only voted polls";
+		self::$trad["DASHBOARD_pollsVotedNb"]="polls I've already voted for";//"55 sondages..déjà voté"
 		self::$trad["DASHBOARD_vote"]="Vote and see the results !";
 		self::$trad["DASHBOARD_voteTooltip"]="The votes are anonymous : nobody will know your choice of vote";
 		self::$trad["DASHBOARD_answerVotesNb"]="Voté --NB_VOTES-- times";
@@ -762,7 +761,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_option_adminAddCategory"]="Only the admin can add a category of event";
 		self::$trad["CALENDAR_option_createSpaceCalendar"]="Create a shared agenda";
 		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="The calendar will have the same name than the space. This can be useful if the calendars of the users are disabled.";
-		self::$trad["CALENDAR_option_moduleDisabled"]="The calendar is always accessible to users who leave their calendar activated. To deactivate it, modify the option ''Personal calendar deactivated'' in your user profile";
+		self::$trad["CALENDAR_option_moduleDisabled"]="Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Available calendars";
 		self::$trad["CALENDAR_displayAllCals"]="Show all calendars (for administrators)";
@@ -772,14 +771,13 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addSharedCalendar"]="Add a chared calendar";
 		self::$trad["CALENDAR_addSharedCalendarInfo"]="Add a chared calendar :<br>for the reservations of a room, vehicle, videoprojector, etc";
 		self::$trad["CALENDAR_exportIcal"]="Export the events (iCal)";
-		self::$trad["CALENDAR_icalUrl"]="Copy the event export link/url in Ical format";
-		self::$trad["CALENDAR_icalUrlCopy"]="Allows reading of calendar events in Ical format, via an external application such as Google Calendar, Mozilla Thunderbird, Microsoft Outlook, etc.";
+		self::$trad["CALENDAR_icalUrl"]="Copy the link/url to view the calendar on an external app";
+		self::$trad["CALENDAR_icalUrlCopy"]="Allows reading of calendar events via an external application such as Microsoft Outlook, Google Calendar, Mozilla Thunderbird, etc.";
 		self::$trad["CALENDAR_importIcal"]="Import the events (iCal)";
 		self::$trad["CALENDAR_ignoreOldEvt"]="Do not import events older than one year";
 		self::$trad["CALENDAR_importIcalState"]="State";
 		self::$trad["CALENDAR_importIcalStatePresent"]="Already present";
 		self::$trad["CALENDAR_importIcalStateImport"]="To import";
-		self::$trad["CALENDAR_inputProposed"]="The event will be proposed to the owner of the calendar";
 		self::$trad["CALENDAR_displayMode"]="Display";
 		self::$trad["CALENDAR_display_day"]="Day";
 		self::$trad["CALENDAR_display_4Days"]="4 days";
@@ -820,7 +818,6 @@ class Trad extends Txt
 		self::$trad["CALENDAR_noPeriodicity"]="Only once";
 		self::$trad["CALENDAR_period_weekDay"]="Every week";
 		self::$trad["CALENDAR_period_month"]="Every month";
-		self::$trad["CALENDAR_period_dayOfMonth"]="of the month"; // Le 21 du mois
 		self::$trad["CALENDAR_period_year"]="Every year";
 		self::$trad["CALENDAR_periodDateEnd"]="End of recurrence";
 		self::$trad["CALENDAR_periodException"]="Recurrence exception";
@@ -831,6 +828,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_proposeEvtTooltip"]="Propose an event to the owner of the calendar";
 		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Propose the event to the owner of the calendar";
 		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Propose the event to the owner of the calendar : calendar accessible only for reading";
+		self::$trad["CALENDAR_inputProposed"]="The event will be proposed to the owner of the calendar";
 		self::$trad["CALENDAR_verifCalNb"]="Thank you for selecting a calendar";
 		self::$trad["CALENDAR_noModifInfo"]="Modification forbidden because you don't have access to write in this calendar";
 		self::$trad["CALENDAR_editLimit"]="You are not the author of the event: you can only manage your calendars assignments";

@@ -100,10 +100,12 @@ class Txt
 	 ********************************************************************************************/
 	public static function tooltip($text)
 	{
-		$text=nl2br(str_replace('"','&quot;',$text));	//Remplace les quotes et retours à la ligne puis renvoie le résultat !
-		$text=strip_tags($text,"<span><img><br><hr>");	//Enlève les principale balises
-		if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}	//Place les urls dans une balise <a>
-		return $text;
+		if(!empty($text)){
+			$text=nl2br(str_replace('"','&quot;',$text));	//Remplace les quotes et retours à la ligne puis renvoie le résultat !
+			$text=strip_tags($text,"<span><img><br><hr>");	//Enlève les principale balises
+			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}	//Place les urls dans une balise <a>
+			return $text;
+		}
 	}
 
 	/*******************************************************************************************
@@ -155,6 +157,11 @@ class Txt
 	 *****************************************************************************************************/
 	public static function dateLabel($timeBegin, $format="normal", $timeEnd=null)
 	{
+/*
+$formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::LONG);
+echo $formatter->format(time());
+exit;
+*/
 		// Vérif de base
 		if(!empty($timeBegin) || !empty($timeEnd))
 		{
@@ -204,8 +211,8 @@ class Txt
 			elseif(!empty($timeEnd))					{$dateLabel=Txt::trad("end")." : ".trim(strftime($_end,$timeEnd),$separator);}	//Date de fin
 
 			//Formate les minutes "00" et affiche si besoin "Aujourd'hui"
-			if($diffHours==false && $diffHours==false)  {$dateLabel=str_replace(" 0:00", null, $dateLabel);}//Efface les "0:00" (cf. tasks qui peuvent ne pas avoir d'heure)
-			if($format=="mini")  {$dateLabel=str_replace(":00","h",$dateLabel);}							//Enleve les minutes ":00" aux heures pleines (ex pour les événements : "12:00" -> "12h")
+			if($diffHours==false && $diffHours==false)  {$dateLabel=str_replace(" 0:00","",$dateLabel);}//Efface les "0:00" (cf. tasks qui peuvent ne pas avoir d'heure)
+			if($format=="mini")  {$dateLabel=str_replace(":00","h",$dateLabel);}						//Enleve les minutes ":00" aux heures pleines (ex pour les événements : "12:00" -> "12h")
 			elseif(($format=="normal" || $format=="full") && date("Ymd")==date("Ymd",$timeBegin))  {$dateLabel=str_replace(strftime($_DMY),self::trad("today"),$dateLabel);}	//Affiche "Aujourd'hui" au lieu du $_DMY
 
 			//Renvoie le résultat (encodé si besoin en UTF-8)

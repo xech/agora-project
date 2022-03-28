@@ -42,11 +42,10 @@ class CtrlObject extends Ctrl
 		{
 			//Enregistre l'Url de redirection après le delete
 			if(empty($redirUrl)){
-				if($tmpObj::isFolder==true)																{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr de dossier : affiche le dossier parent 
-				elseif($tmpObj::isContainerContent())													{$redirUrl=$tmpObj->getUrl();}					//Suppr de "content" : affiche le "container"
-				elseif($tmpObj::objectType=="forumSubject")												{$redirUrl=$tmpObj->getUrl("theme");}			//Suppr de sujet du forum : "getUrl()" surchargé (theme courant)
-				elseif(preg_match("/(EventCategory|forumTheme|userGroup|mail)/i",$tmpObj::objectType))	{$redirUrl=$_SERVER['HTTP_REFERER'];}			//Suppr depuis une liste (themes, categories, etc) : reload l'iframe de liste
-				else																					{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
+				if($tmpObj::isFolder==true)						{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
+				elseif($tmpObj::isContainerContent())			{$redirUrl=$tmpObj->getUrl();}					//Suppr un contenu (content) : affiche le "container"
+				elseif($tmpObj::objectType=="forumSubject")		{$redirUrl=$tmpObj->getUrl("theme");}			//Suppr de sujet du forum : "getUrl()" surchargé
+				else											{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
 			}
 			//Enregistre si on doit mettre à jour le "datasFolderSize()"
 			if($tmpObj::moduleName=="file")  {$updateDatasFolderSize=true;}

@@ -127,7 +127,7 @@ class MdlCalendarEvent extends MdlObject
 		if($this->_containerObj===null){
 			$tmpAccessRight=0;
 			foreach($this->affectedCalendars() as $tmpCal){
-				if($tmpCal->curUserPerso())							{$this->_containerObj=$tmpCal;	break;}
+				if($tmpCal->isPersonalCalendar())							{$this->_containerObj=$tmpCal;	break;}
 				elseif($tmpAccessRight < $tmpCal->accessRight())	{$this->_containerObj=$tmpCal;	$tmpAccessRight=$tmpCal->accessRight();}
 			}
 		}
@@ -204,15 +204,12 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/*********************************************************************************************************************************************
-	 * SURCHARGE : USERS AFFECTÉS À L'EVT => USERS AFFECTÉS AUX AGENDAS DE L'EVT
+	 * SURCHARGE : USERS AFFECTÉS À L'EVT (DONC AFFECTÉS AUX AGENDAS DE L'EVT)
 	 *************************************************************************************************************************************************/
-	public function affectedUserIds($onlyWriteAccess=null)
+	public function affectedUserIds($onlyWriteAccess=false)
 	{
 		$return=[];
-		foreach($this->affectedCalendars("all") as $tmpCal){															//Pour chaque agenda de l'evt : récupère les users affectés à l'agendas
-			$affectedUserIds=($tmpCal->type=="user")  ?  $tmpCal->affectedUserIds(true)  :  $tmpCal->affectedUserIds();	//Agenda perso : récupère uniquement les users ayant accès en écriture à l'agenda
-			$return=array_merge($return,$affectedUserIds);																//Ajoute les users du $tmpCal à la liste
-		}
+		foreach($this->affectedCalendars("all") as $tmpCal)  {$return=array_merge($return, $tmpCal->affectedUserIds($onlyWriteAccess));}//Récupère les users affectés à chaque agendas où se trouve l'evt
 		return array_unique($return);
 	}
 

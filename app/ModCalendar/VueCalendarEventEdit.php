@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(700);
+lightboxSetWidth(800);
 
 ////	INIT
 $(function(){
@@ -61,13 +61,6 @@ $(function(){
 		}
 	});
 
-	////	SELECTION D'AGENDA : SWITCH LA SÉLECTION
-	$("#calsAffectSwitch").click(function(){
-		var calsSelector=".vCalendarInput:enabled";
-		if($(calsSelector).length==$(calsSelector+":checked").length)	{$(calsSelector+":checked").trigger("click");}/*désélectionne tous les agendas*/
-		else															{$(calsSelector+":not(:checked)").trigger("click");}/*sélectionne les agendas pas encore sélectionnés*/
-	});
-
 	////	SELECTION D'AGENDA : CHECK/UNCKECK L'INPUT PRINCIPAL D'UN AGENDA VIA SON LABEL
 	$(".vCalendarInput").change(function(){
 		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
@@ -102,8 +95,8 @@ function displayPeriodType()
 	if($("[name='periodType']").val()=="month" && $("[name*='periodValues_month']:checked").length==0)  {$("input[name*='periodValues_month']").prop("checked","true");}
 	//Affiche les détails de périodicité (exple : "le 15 du mois")
 	var periodTypeLabelTmp="";
-	if($("[name='periodType']").val()=="month")		{periodTypeLabelTmp="<?= Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2)+" <?= Txt::trad("CALENDAR_period_dayOfMonth") ?> ";}//"le 15 du mois"
-	else if($("[name='periodType']").val()=="year")	{periodTypeLabelTmp="<?= Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,5);}//"le 15/10" de l'année
+	if($("[name='periodType']").val()=="month")		{periodTypeLabelTmp="<?= Txt::trad("CALENDAR_period_month").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2);}//"Tous les mois, le 22"
+	else if($("[name='periodType']").val()=="year")	{periodTypeLabelTmp="<?= Txt::trad("CALENDAR_period_year").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,5);}//"Tous les ans, le 15/10"
 	$("#periodTypeLabel").html(periodTypeLabelTmp);
 	//Masque les exceptions de périodicité vides
 	$(".periodExceptionDiv").each(function(){
@@ -166,7 +159,7 @@ function formControl()
 <style>
 #blockDescription						{margin:20px 0px; <?= empty($curObj->description)?"display:none;":null ?>}
 #eventDetails							{text-align:center;}
-.vEventDetails							{display:inline-block; margin:10px 15px;}
+.vEventDetails							{display:inline-block; margin:12px;}
 /*RESPONSIVE*/
 @media screen and (max-width:440px){
 	.vEventDetails						{margin:10px 5px;}
@@ -174,7 +167,7 @@ function formControl()
 
 /*PÉRIODICITÉ*/
 #periodTypeLabel, #periodOptionsDiv							{display:none;}
-#periodTypeLabel											{margin-left:5px; text-decoration:underline;}/*exple: "Tous les ans...le 10/12"*/
+#periodTypeLabel											{margin-bottom:10px; text-decoration:underline;}/*exple: "Tous les 22 du mois"*/
 #periodOption_weekDay, #periodOption_month					{text-align:left; vertical-align:middle;}/*checkboxes des jours ou des mois*/
 #periodOption_weekDay>div, #periodOption_month>div			{display:inline-block; width:25%; padding:2px;}
 #periodDateEnd, #periodDateExceptions, .periodExceptionDiv	{display:inline-block; margin:10px 5px;}
@@ -190,15 +183,16 @@ function formControl()
 #visioUrlInput													{width:280px; font-size:0.95em;}
 
 /*AFFECTATION AUX AGENDAS*/
-.lightboxBlock.vCalAffectOptions		{padding:5px;}/*surcharge*/
-#calsAffectDiv							{max-height:135px; overflow-y:auto;}
-.vCalAffectBlock						{display:inline-block; width:48%; margin:2px; margin-right:5px; border-radius:3px;}
+.lightboxBlock.vCalAffectOptions		{padding:3px;}/*surcharge*/
+#calsAffectDiv							{max-height:200px; overflow-y:auto;}
+#calsAffectDiv hr						{margin:3px;}
+.vCalAffectBlock						{display:inline-block; width:32%; margin:2px; margin-right:5px; border-radius:3px;}
 .vCalAffectBlock .vCalendarInput		{display:none;}
 .vCalAffectBlock label					{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
 .vCalAffectBlock img					{max-height:18px;}
 .vCalAffectBlockBis label				{width:100%;}
-.vCalAffectProposition					{display:none; float:right; padding:3px; background:#ddd;}
-.vCalAffectProposition input			{margin-right:2px;}
+.vCalAffectProposition					{display:none; float:right; height:25px; padding:3px; background:#e5e5e5;}
+.vCalAffectProposition input			{margin-right:5px;}
 input[name='calUsersGroup[]']			{display:none;}
 /*RESPONSIVE*/
 @media screen and (max-width:440px){
@@ -222,13 +216,12 @@ input[name='guestMail']					{margin-left:20px;}
 
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("CALENDAR_addEvt"); ?>
+	<?= $curObj->editRespTitle("CALENDAR_addEvt") ?>
 	
 	<!--PAS AUTEUR DE L'EVT : "VOUS N'AVEZ PAS D'ACCES AUX DETAILS"-->
 	<?php if($curObj->fullRight()==false)  {echo "<div class='infos'><img src='app/img/info.png'> ".Txt::trad("CALENDAR_editLimit")."</div><br>";} ?>
 
 	<div id="eventDetails">
-
 		<!--TITRE & DESCRIPTION (EDITOR)-->
 		<span class="vEventDetails">
 			<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title") ?>"> &nbsp;
@@ -242,9 +235,20 @@ input[name='guestMail']					{margin-left:20px;}
 		<span class="vEventDetails">
 			<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>">
 			<input type="text" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" placeholder="H:m">
-			&nbsp; <img src="app/img/arrowRight.png"> &nbsp; 
+			&nbsp;<img src="app/img/arrowRight.png">&nbsp; 
 			<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>">
 			<input type="text" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" placeholder="H:m">
+		</span>
+
+		<!--CATEGORIE-->
+		<span class="vEventDetails">
+			<?= Txt::trad("CALENDAR_category") ?>:
+			<select name="_idCat">
+				<option value=""><?= Txt::trad("noneFem") ?></option>
+				<?php foreach(MdlCalendarEventCategory::getCategories() as $tmpCat){ ?>
+				<option value="<?= $tmpCat->_id ?>" data-color="<?= $tmpCat->color ?>"><?= $tmpCat->title ?></option>
+				<?php } ?>
+			</select>
 		</span>
 	
 		<!--PERIODICITE-->
@@ -255,11 +259,12 @@ input[name='guestMail']					{margin-left:20px;}
 				<option value="month"><?= Txt::trad("CALENDAR_period_month") ?></option>
 				<option value="year"><?= Txt::trad("CALENDAR_period_year") ?></option>
 			</select>
-			<span id="periodTypeLabel">&nbsp;</span><!--Ex: "Tous les ans..le 15/12"-->
 		</span>
 
 		<!--PERIODICITE : DIV DES OPTIONS-->
 		<div id="periodOptionsDiv" class="infos">
+			<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (exple: "le 22 du mois")-->
+			<div id="periodTypeLabel">&nbsp;</div>
 			<!--PERIODICITE: JOURS DE LA SEMAINE-->
 			<div id="periodOption_weekDay">
 				<?php
@@ -290,7 +295,7 @@ input[name='guestMail']					{margin-left:20px;}
 			</div>
 			<!--EXCEPTIONS DE PERIODICITE-->
 			<div id="periodDateExceptions">
-				<span class="sLink" onclick="$('.periodExceptionDiv:hidden').first().show()"><?= Txt::trad("CALENDAR_periodException") ?> <img src="app/img/plusSmall.png"></span>
+				<span class="sLink" onclick="$('.periodExceptionDiv:hidden:first').fadeIn()"><?= Txt::trad("CALENDAR_periodException") ?> <img src="app/img/plusSmall.png"></span>
 			</div>
 			<?php
 			////	Dates d'exceptions de périodicité (10 max)
@@ -302,17 +307,6 @@ input[name='guestMail']					{margin-left:20px;}
 			}
 			?>
 		</div>
-
-		<!--CATEGORIE-->
-		<span class="vEventDetails">
-			<?= Txt::trad("CALENDAR_category") ?>:
-			<select name="_idCat">
-				<option value=""><?= Txt::trad("noneFem") ?></option>
-				<?php foreach(MdlCalendarEventCategory::getCategories() as $tmpCat){ ?>
-				<option value="<?= $tmpCat->_id ?>" data-color="<?= $tmpCat->color ?>"><?= $tmpCat->title ?></option>
-				<?php } ?>
-			</select>
-		</span>
 		
 		<!--IMPORTANT-->
 		<span class="vEventDetails vEventDetailsAdvanced">
@@ -361,7 +355,7 @@ input[name='guestMail']					{margin-left:20px;}
 			if($tmpCal->isDisabled!=null)				{$tmpCal->title.=" &#42;&#42;";}
 			elseif($tmpCal->inputType=="proposition")	{$tmpCal->title.=" &#42;";}
 			//Ajoute l'option de proposition d'événement (sauf pour l'agenda perso)
-			if($tmpCal->inputType=="affectation" && $tmpCal->curUserPerso()==false){
+			if($tmpCal->inputType=="affectation" && $tmpCal->isPersonalCalendar()==false){
 				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'";  $propositionChecked="checked";  $tmpCal->isChecked=null;}	//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
 				else																				{$propositionShow=$propositionChecked=null;}															//Sinon on masque par défaut l'option de proposition
 				$moreInputs.="<div class='vCalAffectProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
@@ -373,10 +367,10 @@ input[name='guestMail']					{margin-left:20px;}
 					".$moreInputs."
 				  </div>";
 		}
-		////	TOUT SELECTIONNER/DESELECTIONNER  OU SELECTION D'UN GROUPE D'UTILISATEURS
+		////	SWITCH LA SELECTION OU SELECTIONNE UN GROUPE D'USERS
 		if(count($affectationCalendars)>2)
 		{
-			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis lineHover' id='calsAffectSwitch'><label><img src='app/img/check.png'> ".Txt::trad("selectUnselectAll")."</label></div>";
+			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis lineHover' onclick=\"$('.vCalendarInput:enabled').trigger('click')\"><label><img src='app/img/check.png'> ".Txt::trad("selectSwitch")."</label></div>";
 			foreach($curSpaceUserGroups as $tmpGroup){
 				echo "<div class='vCalAffectBlock vCalAffectBlockBis lineHover' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
 						<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_typeId."' onchange=\"userGroupSelect(this,'#calsAffectDiv');\">

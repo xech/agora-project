@@ -11,7 +11,6 @@ extMp3=["<?= implode('","',File::fileTypes("mp3")) ?>"];					//Extension de MP3
  *	SELECTION D'UN FICHIER DANS UN INPUT ".attachedFileInput"
  *******************************************************************************************/
 $(function(){
-
 	$(".attachedFileInput").change(function(){
 		if(this.files && this.files[0].size < <?= File::uploadMaxFilesize() ?>){								//Vérif la taille du fichier
 			var cptFile=Math.round(this.name.replace("attachedFile",""));										//Récupère le compteur du fichier
@@ -40,7 +39,7 @@ function attachedFileDelete(_id)
 
 
 <style>
-.attachedFileDiv					{margin-top:5px; padding:5px;}								/*Div des inputs et des fichiers déjà enregistré*/
+.attachedFileDiv					{margin-top:5px;}											/*Div des inputs et des fichiers déjà enregistré*/
 .attachedFileDiv label				{margin-left:10px;}											/*options "insérer dans le texte" et "supprimer"*/
 [id^=attachedFileDivList]:hover		{background-color:#eee;}									/*Survol chaque fichier déjà enregistré (cf. padding)*/
 [id^=attachedFileDivAdd]:not(#attachedFileDivAdd1), [id^=attachedFileOption]  {display:none;}	/*Masque tous les inputs, sauf le premier input  &&  Masque les boutons "insérer dans le texte" des inputs*/
@@ -49,13 +48,13 @@ function attachedFileDelete(_id)
 
 <?php
 ////	INPUTS DES FICHIERS À ATTACHER (si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
-echo '<div class="attachedFileDiv"><img src="app/img/attachment.png"> '.Txt::trad("EDIT_attachedFileAdd").' :</div>';
+echo '<div><img src="app/img/attachment.png"> '.Txt::trad("EDIT_attachedFileAdd").' :</div>';
 for($cptFile=1; $cptFile<=20; $cptFile++){
 	$insertOption=($curObj::htmlEditorField!=null)  ?  '<label onclick="attachedFileInsert('.$cptFile.')" id="attachedFileOption'.$cptFile.'" title="'.Txt::trad("EDIT_attachedFileInsertInfo").'"><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
 	echo '<div id="attachedFileDivAdd'.$cptFile.'" class="attachedFileDiv"><input type="file" name="attachedFile'.$cptFile.'" id="attachedFileInput'.$cptFile.'" class="attachedFileInput">'.$insertOption.'</div>';
 }
 
-////	AFFICHE LES FICHIERS JOINTS ATTACHÉS A L'OBJET (si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
+////	LISTE DES FICHIERS JOINTS DEJA ATTACHÉS A UN OBJET (affiche si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
 if(count($curObj->attachedFileList())>0){
 	echo '<hr>';
 	foreach($curObj->attachedFileList() as $tmpFile){

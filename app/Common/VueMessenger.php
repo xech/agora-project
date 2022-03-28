@@ -74,8 +74,8 @@ function messengerUpdate()
 function messengerDisplay(messengerDisplayModeNew)
 {
 	//// MessengerDisplayMode
-	messengerDisplayMode=($("#messengerMain").is(":visible") && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;	//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
-	if(messengerDisplayMode!="none")  {$.ajax({url:"?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode});}		//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
+	messengerDisplayMode=($("#messengerMain").isVisible() && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;	//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
+	if(messengerDisplayMode!="none")  {$.ajax({url:"?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode});}	//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
 
 	//// Masque le messenger principal
 	if(messengerDisplayMode=="none"){
@@ -87,6 +87,7 @@ function messengerDisplay(messengerDisplayModeNew)
 	{
 		//// Affichage du messenger en mode mobile / normal
 		if(isMobile()){
+			respMenuClose();											//Masque si besoin le menu principal (cf. icone messenger du menu des modules)
 			messengerFullPage();										//Messenger en pleine page.
 			$(window).on("resize",function(){ messengerFullPage(); });	//Idem si on resize la page (change d'orientation ou affiche le clavier virtuel)
 		}else{

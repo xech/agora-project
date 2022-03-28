@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="<?= Txt::trad("HEADER_HTTP") ?>" id="<?= Ctrl::$isMainPage==true?'htmlMainPage':'htmlLightbox' ?>">
+<html lang="<?= Txt::trad("CURLANG") ?>" id="<?= Ctrl::$isMainPage==true?'htmlMainPage':'htmlLightbox' ?>">
 	<head>
 		<!-- AGORA-PROJECT :: UNDER THE GENERAL PUBLIC LICENSE V2 :: http://www.gnu.org -->
 		<meta charset="UTF-8">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<meta http-equiv="content-language" content="<?= Txt::trad("HEADER_HTTP") ?>">
+		<meta http-equiv="content-language" content="<?= Txt::trad("CURLANG") ?>">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge"><!--IE : mode de compatibilité via Edge-->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"><!--Pas de zoom en responsive-->
 		<link rel="icon" type="image/gif" href="app/img/favicon.png" />
@@ -16,7 +16,7 @@
 		<!-- JQUERY & JQUERY-UI -->
 		<script src="app/js/jquery-3.6.0.min.js"></script>
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
-		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("DATEPICKER") ?>.js"></script><!--traduction-->
+		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
 		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">
 		<!-- JQUERY PLUGINS -->
 		<script src="app/js/fancybox/dist/jquery.fancybox.min.js"></script>
@@ -129,7 +129,7 @@
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
 			//Mise à jour récente : notification "footerHtml" spécifique pour l'admin
 			if(Ctrl::$curUser->isAdminSpace() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
-				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to v".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
+				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to version ".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
 			//Affiche le footer
 			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>
 				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".Txt::tooltip($pathLogoTitle)."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";

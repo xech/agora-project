@@ -28,7 +28,6 @@ $(function(){
 input[name='title']				{width:50%;}
 .vUserListMenu					{margin-top:20px; overflow:auto; max-height:150px;}
 .userListUser					{display:inline-block; width:33%; padding:2px;}
-.userListUser input				{display:none;}
 .vAutorSubmit					{display:table; width:100%; margin-top:20px;}
 .vAutorSubmit>div				{display:table-cell; vertical-align:middle;}
 .vAutorSubmit>div:first-child	{font-style:italic; font-weight:normal;}

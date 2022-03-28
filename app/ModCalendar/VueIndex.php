@@ -54,7 +54,7 @@ $(function(){
 			//Détecte un swipe horizontal (amplitude verticale < 40px)
 			if(typeof swipeBeginX!="undefined"  &&  Math.abs(swipeBeginY - event.touches[0].clientY) < 40){
 				//Vérifie que le swipe part du centre de la page (25% à 75% de la largeur de page) et que le menu responsive n'est pas déjà affiché ("respMenuMain")
-				if(swipeBeginX > ($(window).width()*0.25)  &&  swipeBeginX < ($(window).width()*0.75) && $("#respMenuMain").is(":visible")==false){
+				if(swipeBeginX > ($(window).width()*0.25)  &&  swipeBeginX < ($(window).width()*0.75) && $("#respMenuMain").isVisible()==false){
 					//Swipe vers la droite/gauche d'au moins 50px : redirige vers la période précédente/suivante
 					if((event.touches[0].clientX - swipeBeginX) > 50)		{var buttonSwipePeriod="#calendarPrev";}
 					else if((swipeBeginX - event.touches[0].clientX) > 50)	{var buttonSwipePeriod="#calendarNext";}
@@ -73,8 +73,7 @@ $(function(){
 /*Footer & Menus du module*/
 #pageFooterIcon img					{display:none;}
 #calsList							{max-height:400px; overflow-y:auto;}
-#calsList>div						{margin:4px;}
-#calsList>div:first-child			{margin-bottom:10px;}
+#calsList>div						{height:25px;}
 #calsList .menuLaunch				{display:none;}/*menu context des agendas*/
 #calsList>div:hover .menuLaunch		{display:inline; margin-left:5px;}/*idem*/
 #calsList button					{display:none; width:120px; margin-left:20px; margin-top:10px;}
@@ -156,12 +155,12 @@ $(function(){
 			if(!empty($eventProposition))  {echo $eventProposition;}
 
 			////	AGENDAS VISIBLES
-			if(!empty($visibleCalendars))
+			if(!empty($readableCalendars))
 			{
 				echo "<form action='index.php' method='get' id='calsList' class='noConfirmClose'>";
 					//Label du menu & liste des agendas
 					echo "<div>".Txt::trad("CALENDAR_calsList")." :</div>";
-					foreach($visibleCalendars as $tmpCal){
+					foreach($readableCalendars as $tmpCal){
 						echo "<div>
 								<input type='checkbox' name='displayedCalendars[]' value='".$tmpCal->_id."' id=\"displayedCal".$tmpCal->_typeId."\" onchange=\"$('#calsList button').fadeIn();\" ".(CtrlCalendar::isDisplayedCal($displayedCalendars,$tmpCal)?"checked":null).">
 								<label for=\"displayedCal".$tmpCal->_typeId."\" title=\"".Txt::tooltip($tmpCal->description)."\" class='noTooltip'>".$tmpCal->title."</label> ".(Req::isMobile()==false?$tmpCal->contextMenu(["iconBurger"=>"inlineSmall"]):null)."

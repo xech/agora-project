@@ -43,7 +43,7 @@
 					if(count($tmpSpace->getUsers())==0 && $tmpSpace->allUsersAffected()==false && empty($tmpSpace->public))  {echo "<div class='infos'>".Txt::trad("SPACE_accessRightUndefined")."</div>";}
 					//Espace public / tous les users affectes
 					if($tmpSpace->allUsersAffected())	{echo "<div class='vSpaceAffectation'><img src='app/img/user/icon.png'> ".Txt::trad("SPACE_allUsers")."</div>";}
-					if(!empty($tmpSpace->public))		{echo "<div class='vSpaceAffectation'><img src='app/img/public.png'> ".Txt::trad("SPACE_publicSpace")."</div>";}
+					if(!empty($tmpSpace->public))		{echo "<div class='vSpaceAffectation'><img src='app/img/user/accessGuest.png'> ".Txt::trad("SPACE_publicSpace")."</div>";}
 					//Users affectes
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$userRightAcces=$tmpSpace->accessRightUser($tmpUser);

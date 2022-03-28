@@ -51,7 +51,7 @@ audio						{min-width:350px;}
 .miscContainer										{padding:15px;}/*cf. form de parametrage general, newsletter, etc.*/
 .objContainerSelect, #objSelectMenu					{border:1px dashed rgb(255,0,0)!important;}
 #objSelectMenu										{display:none; margin:10px 0px 20px 0px; box-shadow:2px 0px 8px rgb(80,80,80);}/*menu de sélection masqué par défaut (cf. menu de gauche du module)*/
-.objContainer.isSelectable							{cursor:url("../img/checkSelect.png"),default;}
+.objContainer.isSelectable							{cursor:url("../img/checkSmall.png"),default;}
 .emptyContainer										{padding:30px; text-align:center;}/*Aucun contenu sur la page*/
 .emptyContainer .sLink								{margin-top:20px;}/*Idem*/
 .objContentScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}/*"height"+"min-height" pour correspondre au "objContainer". Note: ".objContentScroll" permet l'overflow "scroll" du "objContent" ci-après*/
@@ -109,11 +109,11 @@ audio						{min-width:350px;}
 
 /*** MENUS DES MODULES & MENUS CONTEXTUELS*/
 .menuLine									{display:table; width:100%;}
-.menuLine>div								{display:table-cell; padding:6px; vertical-align:middle; text-align:left; max-width:500px;}
+.menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
 .menuIcon									{width:35px; vertical-align:top!important; text-align:center!important;}/*width de 35px minimum pour les icones + padding*/
 .menuIcon img								{max-width:26px!important; max-height:26px!important;}
-#pageFull #pageModMenu						{border-radius:0px 4px 4px 0px;}/*Menus des modules (flottant si besoin)*/
-#pageModuleMenu .miscContainer				{padding:5px;}
+#pageModMenu								{padding:5px;}
+#pageFull #pageModMenu						{border-radius:0px 4px 4px 0px;}/*Menus des modules en affichage full (arborescnce)*/
 .menuLaunch									{display:inline-block; cursor:pointer;}/*launcher du menu contextuel*/
 .menuContext								{display:none; position:absolute; z-index:100; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px; box-shadow:0px 0px 8px rgb(80,80,80);}/*cursor 'default' pour pas prendre celui du block conteneur (de l'objet ou autre))*/
 .menuContext .menuLine>div					{line-height:18px;}
@@ -139,7 +139,7 @@ input[type=text], input[type=password], input[type=file], input[type=url], texta
 input[type=text]:hover, input[type=password]:hover, input[type=url]:hover, textarea:hover			{box-shadow:0px 0px 4px rgb(80,80,80);}
 input[type=text]:focus, input[type=password]:focus, input[type=url]:hover, textarea:focus			{box-shadow:0px 0px 4px rgb(0,100,200); border:#aad 1px solid;}
 .focusRed																							{box-shadow:0px 0px 4px rgb(240,0,0)!important;}
-input[type=radio], input[type=checkbox]		{vertical-align:middle;}
+input[type=radio], input[type=checkbox]		{vertical-align:middle; margin:0px 3px;}/*pas de margin vertical*/
 input[type=text], input[type=password]		{max-width:100%;}
 input[type=file]							{height:auto;}
 textarea									{width:100%; height:70px;}
@@ -265,9 +265,9 @@ form .fieldLabel							{line-height:25px;}/*Pour aligner les labels avec les inp
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle; height:20px;}
 .categoryColor,.themeColor		{display:inline-block; width:15px; height:15px; margin-right:3px; margin-bottom:3px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement ou d'un theme du forum*/
-.orLabel						{display:table; width:100%; margin:20px 0px 20px 0px;}
+.orLabel						{display:table; width:100%; margin:30px 0px;}
 .orLabel div					{display:table-cell; width:45%; text-align:center;}
-.orLabel div:nth-child(2)		{width:10%; min-width:70px; opacity:0.7; font-size:1.1em;}
+.orLabel div:nth-child(2)		{width:10%; min-width:50px; opacity:0.5; text-transform:uppercase;}/*texte "OU"*/
 .orLabel hr						{background:#ddd;}
 .attachedFileTag				{max-width:100%;}/*cf. "attachedFileInsert()". Tester avec une image et une vidéo*/
 label, .objContainer, .miscContainer, #headerBar, #treeFolders, #objMenuLabels, #objMenuBlocks  {user-select:none;}/*pas de sélection du texte html avec la souris*/

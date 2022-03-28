@@ -22,16 +22,16 @@ class CtrlDashboard extends Ctrl
 	public static function actionDefault()
 	{
 		////	Objets Actualités/News
-		$vDatas["offlineNewsCount"]=MdlDashboardNews::getNews("count",true);					//Nb total de news
-		$vDatasNews["newsList"]=MdlDashboardNews::getNews("scroll",Req::param("offlineNews"));	//Affichage principal des news (infinite scroll)
+		$vDatas["offlineNewsNb"]=MdlDashboardNews::getNews("offlineNewsNb");			//Nb de news archivées
+		$vDatasNews["newsList"]=MdlDashboardNews::getNews("scroll");					//Affichage principal des news "infinite scroll"
 		$vDatas["vueNewsListInitial"]=self::getVue(Req::curModPath()."VueNewsList.php", $vDatasNews);
 		////	Objets Sondages/Polls (sauf guest)
 		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isUser()==false) ?  false  :  true;
 		if($vDatas["isPolls"]==true){
-			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("news",true);						//Sondages affichés avec les news (menu de gauche) et pas encore votés
-			$vDatas["pollsNotVotedNb"]=MdlDashboardPoll::getPolls("count");									//Nombre total de sondages non votés
-			$vDatasPollsMain["pollsList"]=MdlDashboardPoll::getPolls("scroll",Req::param("pollsNotVoted"));	//Affichage principal des sondages (infinite scroll)
-			$vDatas["vuePollsListInitial"]=self::getVue(Req::curModPath()."VuePollsList.php", $vDatasPollsMain);
+			$vDatas["pollsVotedNb"]=MdlDashboardPoll::getPolls("pollsVotedNb");			//Nb de sondages votés
+			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("newsDisplay");	//Sondages non votés et affichés avec les news (menu de gauche)
+			$vDatasPolls["pollsList"]=MdlDashboardPoll::getPolls("scroll");				//Affichage principal des sondages "infinite scroll"
+			$vDatas["vuePollsListInitial"]=self::getVue(Req::curModPath()."VuePollsList.php", $vDatasPolls);
 		}
 		////	Plugin des nouveaux éléments (sauf guest)
 		$vDatas["showNewElems"]=(Ctrl::$curUser->isUser());
@@ -63,7 +63,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionGetMoreNews()
 	{
 		$vDatas["infiniteSroll"]=true;
-		$vDatas["newsList"]=MdlDashboardNews::getNews("scroll",Req::param("offlineNews"),Req::param("newsOffsetCpt"));
+		$vDatas["newsList"]=MdlDashboardNews::getNews("scroll",Req::param("newsOffset"));
 		if(!empty($vDatas["newsList"]))  {echo self::getVue(Req::curModPath()."VueNewsList.php", $vDatas);}
 	}
 
@@ -73,7 +73,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionGetMorePolls()
 	{
 		$vDatas["infiniteSroll"]=true;
-		$vDatas["pollsList"]=MdlDashboardPoll::getPolls("scroll",Req::param("pollsNotVoted"),Req::param("pollsOffsetCpt"));
+		$vDatas["pollsList"]=MdlDashboardPoll::getPolls("scroll",Req::param("pollsOffset"));
 		if(!empty($vDatas["pollsList"]))  {echo self::getVue(Req::curModPath()."VuePollsList.php", $vDatas);}
 	}
 
@@ -173,7 +173,7 @@ class CtrlDashboard extends Ctrl
 			$pollVote="<ul style='padding-left:20px;'>";
 			foreach($objPoll->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
 			$pollVote.="</ul><a href='".$objPoll->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
-			$objPoll->sendMailNotif(null,$pollVote);
+			$objPoll->sendMailNotif($pollVote);
 			static::lightboxClose(null,"&dashboardPoll=true");
 		}
 		////	Affiche la vue

@@ -30,7 +30,7 @@ function folderTreeDisplay(folderId, toggle)
 	var openIconSelector=".vTreeFolder[data-folderId='"+folderId+"'] .vIconOpen";
 	var subFoldersSelector=".vTreeFolder[data-containerId='"+folderId+"']";
 	//Affiche les sous-dossiers : niveau juste en dessous
-	if(toggle==true && $(subFoldersSelector).is(":visible")==false){
+	if(toggle==true && $(subFoldersSelector).isVisible()==false){
 		$(subFoldersSelector).slideDown();
 		$(openIconSelector).addClass("vIconOpened");
 	}

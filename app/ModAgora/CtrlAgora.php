@@ -129,7 +129,7 @@ class CtrlAgora extends Ctrl
 		{
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille
 			ini_set("max_execution_time","1200");//20mn max
-			$archiveName="BackupAgora_".strftime("%Y-%m-%d");
+			$archiveName="BackupAgora_".date("Y-m-d");
 			////	Sauvegarde via "shell_exec()"
 			if(Ctrl::isHost())
 			{
@@ -147,7 +147,7 @@ class CtrlAgora extends Ctrl
 		////	Sauvegarde uniquement la Bdd
 		else{
 			$filesList=[ ["realPath"=>$dumpPath, "zipPath"=>str_replace(PATH_DATAS,null,$dumpPath)] ];
-			File::downloadArchive($filesList, "BackupAgoraBdd_".strftime("%Y-%m-%d").".zip");
+			File::downloadArchive($filesList, "BackupAgoraBdd_".date("Y-m-d").".zip");
 		}
 	}
 

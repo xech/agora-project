@@ -104,7 +104,7 @@ trait MdlObjectMenus
 			////	AUTEUR/DATE DE CREATION/MODIF
 			//Init les labels  &&  vérif si c'est un nouvel objet (créé dans les 24 heures ou depuis la précédente connexion)
 			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
-			$vDatas["isNewObject"]=(strtotime($this->dateCrea) > (time()-86400) || strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection);
+			$vDatas["isNewObject"]=(!empty($this->dateCrea)  &&  (strtotime($this->dateCrea) > (time()-86400)  ||  strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
 			//Auteur de l'objet (Guest?)
 			if($this->_idUser)		{$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a>";}
 			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}
@@ -204,9 +204,9 @@ trait MdlObjectMenus
 				{
 					////	Init les "targetLines"
 					$tmpSpace->targetLines=[];
-					////	"Tous les utilisateurs" ("et les invités" si l'espace est public)
-					if(!empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests");	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsInfo");}
-					else							{$allUsersLabel=Txt::trad("EDIT_allUsers");				$allUsersLabelInfo=Txt::trad("EDIT_allUsersInfo");}
+					////	"Tous les utilisateurs"  OU  "Tous les utilisateurs et invités"
+					if(empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsers");															$allUsersLabelInfo=Txt::trad("EDIT_allUsersInfo");}
+					else							{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests").' <img src="app/img/user/accessGuest.png">';	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsInfo");}
 					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/accessAll.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
 					////	Groupe d'utilisateurs de l'espace
 					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
@@ -214,9 +214,9 @@ trait MdlObjectMenus
 					}
 					////	Chaque user de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
-						if($tmpSpace->accessRightUser($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}//Admin d'espace
-						else										{$tmpUserFullAccess=false;	$tmpUserTooltip=null;}//User lambda
-						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>"user/accessUser.png", "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
+						if($tmpSpace->accessRightUser($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserIcon="user/accessUserAdmin.png";	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}	//Admin d'espace
+						else										{$tmpUserFullAccess=false;	$tmpUserIcon="user/accessUser.png";			$tmpUserTooltip=null;}							//User lambda
+						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>$tmpUserIcon, "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
 					}
 					////	Ajoute l'espace
 					$vDatas["accessRightSpaces"][]=$tmpSpace;
@@ -238,9 +238,8 @@ trait MdlObjectMenus
 						$targetLine["boxProp"][$tmpRight].=" checked";
 						$targetLine["isChecked"]=true;
 					}
-					//Disable des boxes ?
+					//Donne uniquement accès à la checkbox "write" (cf. administrateurs)
 					if(!empty($targetLine["onlyFullAccess"]))	{$targetLine["boxProp"]["1"].=" disabled";  $targetLine["boxProp"]["1.5"].=" disabled";}
-					if(!empty($targetLine["onlyReadAccess"]))	{$targetLine["boxProp"]["2"].=" disabled";  $targetLine["boxProp"]["1.5"].=" disabled";}
 					//Met à jour les propriétés de la target ($targetKey est la concaténation des champs "_idSpace" et "target")
 					$vDatas["accessRightSpaces"][$tmpSpaceKey]->targetLines[$targetKey]=$targetLine;
 				}

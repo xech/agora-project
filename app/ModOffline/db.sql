@@ -55,7 +55,7 @@ CREATE TABLE `ap_calendar` (
 CREATE TABLE `ap_calendarEvent` (
   `_id` mediumint(8) unsigned NOT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `description` text,
+  `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `dateBegin` datetime DEFAULT NULL,
   `dateEnd` datetime DEFAULT NULL,
   `_idCat` smallint(5) unsigned DEFAULT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE `ap_contactFolder` (
   `_idContainer` mediumint(8) unsigned NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
-  `icon` VARCHAR(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
   `shortcut` tinyint(1) unsigned DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE `ap_contactFolder` (
 
 CREATE TABLE `ap_dashboardNews` (
   `_id` mediumint(8) unsigned NOT NULL,
-  `description` text,
+  `description` text CHARACTER SET utf8mb4,
   `une` tinyint(1) unsigned DEFAULT NULL,
   `offline` tinyint(1) unsigned DEFAULT NULL,
   `dateOnline` datetime DEFAULT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE `ap_fileFolder` (
   `_idContainer` mediumint(8) unsigned NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
-  `icon` VARCHAR(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
   `shortcut` tinyint(1) unsigned DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `ap_forumMessage` (
   `_idMessageParent` int(10) unsigned DEFAULT NULL,
   `_idContainer` mediumint(8) unsigned DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `description` text,
+  `description` text CHARACTER SET utf8mb4,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE `ap_forumMessage` (
 CREATE TABLE `ap_forumSubject` (
   `_id` mediumint(8) unsigned NOT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `description` text,
+  `description` text CHARACTER SET utf8mb4,
   `_idTheme` smallint(6) DEFAULT NULL,
   `dateLastMessage` datetime DEFAULT NULL,
   `usersConsultLastMessage` varchar(10000) DEFAULT NULL,
@@ -261,7 +261,7 @@ CREATE TABLE `ap_linkFolder` (
   `_idContainer` mediumint(8) unsigned NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
-  `icon` VARCHAR(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
   `shortcut` tinyint(1) unsigned DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
@@ -285,7 +285,7 @@ CREATE TABLE `ap_mail` (
   `_id` mediumint(8) unsigned NOT NULL,
   `recipients` text,
   `title` text,
-  `description` text,
+  `description` text CHARACTER SET utf8mb4,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -342,7 +342,7 @@ CREATE TABLE `ap_task` (
   `_id` mediumint(8) unsigned NOT NULL,
   `_idContainer` mediumint(8) unsigned NOT NULL,
   `title` text,
-  `description` text,
+  `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `priority` varchar(255) DEFAULT NULL,
   `advancement` tinyint(1) unsigned DEFAULT NULL,
   `responsiblePersons` text,
@@ -360,7 +360,7 @@ CREATE TABLE `ap_taskFolder` (
   `_idContainer` mediumint(8) unsigned NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
-  `icon` VARCHAR(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
   `shortcut` tinyint(1) unsigned DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` mediumint(8) unsigned DEFAULT NULL,
@@ -425,7 +425,7 @@ CREATE TABLE `ap_userLivecouter` (
   `_idUser` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `ipAdress` varchar(255) DEFAULT NULL,
   `editTypeId` varchar(255) DEFAULT NULL,
-  `editorDraft` TEXT DEFAULT NULL,
+  `editorDraft` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `draftTypeId` varchar(255) DEFAULT NULL,
   `date` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -453,7 +453,7 @@ CREATE TABLE `ap_userPreference` (
 CREATE TABLE `ap_dashboardPoll` (
   `_id` mediumint(8) unsigned NOT NULL,
   `title` varchar(200) NOT NULL,
-  `description` TEXT CHARACTER SET utf8mb4 DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
   `multipleResponses` tinyint(1) unsigned DEFAULT NULL,
   `newsDisplay` tinyint(1) unsigned DEFAULT NULL,
@@ -479,68 +479,68 @@ CREATE TABLE `ap_dashboardPollResponseVote` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-ALTER TABLE `ap_calendar`					ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_calendarEvent`				ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_calendar`                 ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_calendarEvent`			      ADD PRIMARY KEY (`_id`);
 ALTER TABLE `ap_calendarEventAffectation`	ADD KEY `indexes` (`_idCal`);
 ALTER TABLE `ap_calendarEventCategory`		ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_contact`					ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_contactFolder`				ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_dashboardNews`				ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_file`						ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_fileFolder`					ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_fileVersion`				ADD KEY `indexes` (`_idFile`);
-ALTER TABLE `ap_forumMessage`				ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idMessageParent`,`_idContainer`);
-ALTER TABLE `ap_forumSubject`				ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idTheme`);
-ALTER TABLE `ap_forumTheme`					ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_invitation`					ADD KEY `indexes` (`_idInvitation`);
-ALTER TABLE `ap_joinSpaceModule`			ADD KEY `indexes` (`_idSpace`);
-ALTER TABLE `ap_joinSpaceUser`				ADD KEY `indexes` (`_idSpace`);
-ALTER TABLE `ap_link`						ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_linkFolder`					ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_log`						ADD KEY `indexes` (`action`,`_idObject`);
-ALTER TABLE `ap_mail`				ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_objectAttachedFile`			ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_objectComment`				ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_objectLike`					ADD KEY `indexes` (`objectType`(100),`_idObject`);
-ALTER TABLE `ap_objectTarget`				ADD KEY `indexes` (`objectType`(100),`_idObject`);
-ALTER TABLE `ap_space`						ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_task`						ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_taskFolder`					ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
-ALTER TABLE `ap_user`						ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_userGroup`					ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_userInscription`			ADD PRIMARY KEY (`_id`);
-ALTER TABLE `ap_userLivecouter`				ADD PRIMARY KEY (`_idUser`);
-ALTER TABLE `ap_userMessenger`				ADD KEY `indexes` (`_idUserMessenger`,`_idUser`);
-ALTER TABLE `ap_userMessengerMessage`		ADD KEY `indexes` (`_idUser`);
-ALTER TABLE `ap_userPreference`				ADD KEY `indexes` (`_idUser`);
-ALTER TABLE `ap_dashboardPoll`				ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_contact`                  ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_contactFolder`            ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_dashboardNews`				    ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_file`						          ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_fileFolder`				      	ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_fileVersion`				      ADD KEY `indexes` (`_idFile`);
+ALTER TABLE `ap_forumMessage`				      ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idMessageParent`,`_idContainer`);
+ALTER TABLE `ap_forumSubject`				      ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idTheme`);
+ALTER TABLE `ap_forumTheme`					      ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_invitation`				      	ADD KEY `indexes` (`_idInvitation`);
+ALTER TABLE `ap_joinSpaceModule`		     	ADD KEY `indexes` (`_idSpace`);
+ALTER TABLE `ap_joinSpaceUser`				    ADD KEY `indexes` (`_idSpace`);
+ALTER TABLE `ap_link`					          	ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_linkFolder`			      		ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_log`					          	ADD KEY `indexes` (`action`,`_idObject`);
+ALTER TABLE `ap_mail`		              		ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_objectAttachedFile`			  ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_objectComment`			      ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_objectLike`				      	ADD KEY `indexes` (`objectType`(100),`_idObject`);
+ALTER TABLE `ap_objectTarget`			      	ADD KEY `indexes` (`objectType`(100),`_idObject`);
+ALTER TABLE `ap_space`						        ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_task`					          	ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_taskFolder`				      	ADD PRIMARY KEY (`_id`), ADD KEY `indexes` (`_id`,`_idContainer`);
+ALTER TABLE `ap_user`					          	ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_userGroup`				      	ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_userInscription`        	ADD PRIMARY KEY (`_id`);
+ALTER TABLE `ap_userLivecouter`			    	ADD PRIMARY KEY (`_idUser`);
+ALTER TABLE `ap_userMessenger`				    ADD KEY `indexes` (`_idUserMessenger`,`_idUser`);
+ALTER TABLE `ap_userMessengerMessage`	  	ADD KEY `indexes` (`_idUser`);
+ALTER TABLE `ap_userPreference`			    	ADD KEY `indexes` (`_idUser`);
+ALTER TABLE `ap_dashboardPoll`			    	ADD PRIMARY KEY (`_id`);
 ALTER TABLE `ap_dashboardPollResponse`		ADD PRIMARY KEY (`_id`(20));
 ALTER TABLE `ap_dashboardPollResponseVote`	ADD PRIMARY KEY (`_idUser`,`_idResponse`(20));
 
 
-ALTER TABLE `ap_calendar`				MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_calendarEvent`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_calendar`				        MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_calendarEvent`			    MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ap_calendarEventCategory`	MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_contact`				MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_contactFolder`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_dashboardNews`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_file`					MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_fileFolder`				MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_forumMessage`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_forumSubject`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_forumTheme`				MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_link`					MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_linkFolder`				MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_mail`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_objectAttachedFile`		MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_objectComment`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_space`					MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_task`					MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_taskFolder`				MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_user`					MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_userGroup`				MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_userInscription`		MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_dashboardPoll`			MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_contact`			        	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_contactFolder`		    	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_dashboardNews`		    	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_file`				        	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_fileFolder`			    	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_forumMessage`		    	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_forumSubject`		    	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_forumTheme`			      	MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_link`					          MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_linkFolder`				      MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_mail`			              MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_objectAttachedFile`     MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_objectComment`		      MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_space`				        	MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_task`				          	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_taskFolder`		          MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_user`					          MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_userGroup`				      MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_userInscription`	      MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_dashboardPoll`			    MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
 
 
 

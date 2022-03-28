@@ -14,7 +14,7 @@ $(function(){
 		$(this).removeClass("objMenuLabelUnselect");//sélectionne l'onglet
 		$("#"+$(this).attr("for")).fadeIn();//affiche le menu associé
 	});
-	//Affiche le premier menu disponible
+	//Puis affiche le premier menu disponible
 	$(".objMenuLabel:first-child").trigger("click");
 
 	////	AFFECTATIONS : CLICK LE LABEL D'UNE AFFECTATION
@@ -35,46 +35,40 @@ $(function(){
 
 	////	AFFECTATIONS : CLICK LA CHECKBOX D'UNE AFFECTATION
 	$(".vSpaceTable:visible [id^=objectRightBox]").change(function(){
-		var objectRight=this.value;
-		var targetId=objectRight.slice(0, objectRight.lastIndexOf("_"));//exple "1_U2_1.5" => "1_U2"
-		$("[id^=objectRightBox_"+targetId+"]").not(this).prop("checked",false);//"uncheck" les autres checkbox du "target"
-		labelStyleRightControl(this.id);//Style des labels & Controle des droits
+		var targetId=this.value.slice(0, this.value.lastIndexOf("_"));			//exple "1_U2_1.5" => "1_U2"
+		$("[id^=objectRightBox_"+targetId+"]").not(this).prop("checked",false);	//"uncheck" les autres checkbox du "target"
+		labelStyleRightControl(this.id);										//Style des labels & Controle des droits
 	});
 
 	////	AFFECTATIONS : CLICK SUR "AFFICHER TOUS LES UTILISATEURS"
-	$("#ShowAllUsers").click(function(){
-		$(".vSpaceTargetHide").removeClass("vSpaceTargetHide");//Réaffiche les users
-		$(this).hide();//Masque le menu
-		$("#ShowAllSpaces").show().pulsate(3);//Affiche si besoin "Afficher tous mes espaces"
-		lightboxResize();//Resize le lightbox
-	});
-
-	////	AFFECTATIONS : CLICK SUR "AFFICHER TOUS MES ESPACES"
-	$("#ShowAllSpaces").click(function(){
-		$('[id^=spaceTable]').fadeIn();//Affiche tous les blocks d'espace
-		$(".vSpaceHeaderName").css("visibility","visible");//Raffiche le nom de l'espace courant (masqué par défaut)
-		$(this).hide();//Masque le menu
+	$("#showAllUsers").click(function(){
+		$(".vSpaceTargetHide").removeClass("vSpaceTargetHide");	//Affiche tous les users et espaces masqués
+		$(".vSpaceLabelSpace").css("visibility","visible");		//Affiche le nom des espaces (masqué par défaut)
+		$(this).hide();											//Masque le menu qui vient d'être cliqué
+		labelStyleRightControl();								//Style des labels
+		lightboxResize();										//Resize le lightbox
 	});
 
 	////	INIT LE MENU
+	//// Masque par défaut tous les espaces sans affectations
+	$("[id^=spaceTable]").each(function(){
+		if($(this).find("[name='objectRight[]']:checked").length==0)  {$(this).addClass("vSpaceTargetHide");}
+	});
+	//// Affiche le menu "Afficher tous les utilisateurs" s'il ya des ".vSpaceTargetHide"
+	$("#showAllUsers").toggle($(".vSpaceTargetHide").exist());
+	//// Masque le libellé de l'espace courant si c'est le seul disponible
+	if($(".vSpaceLabelSpace").length==1)  {$(".vSpaceLabelSpace").css("visibility","hidden");}
+	//// Masque et désactive les droits en ecriture limité ("boxWriteLimit")
+	<?php if($curObj::isContainer()==false){ ?>
+		$(".vSpaceWriteLimit").hide();
+		$("[name='objectRight[]'][value$='_1.5']").prop("disabled",true);
+	<?php } ?>
+	//// Init le style des labels
+	labelStyleRightControl();
 	//// Focus sur le premier champ obligatoire (sauf en responsive, pour pas afficher le clavier virtuel)
 	<?php if(!empty($curObj::$requiredFields)){ ?>
 		if(!isMobile())  {$("input[name='<?=$curObj::$requiredFields[0] ?>']").focus();}
 	<?php } ?>
-	//// Affectations : masque par défaut tous les espaces sans affectations
-	$("[id^=spaceTable]").each(function(){
-		if($(this).find("[name='objectRight[]']:checked").length==0)  {$(this).hide();}
-	});
-	//// Affectations : Si besoin "Afficher tous mes espaces"
-	if($("#ShowAllUsers").exist()==false)	{$("#ShowAllSpaces").show();}
-	else								 	{$("#ShowAllSpaces").hide();}
-	//// Affectations : masque et désactive les droits "boxWriteLimit"
-	<?php if($curObj::isContainer()==false){ ?>
-		$("[name='objectRight[]'][value$='_1.5']").prop("disabled",true);
-		$(".vSpaceWriteLimit").hide();
-	<?php } ?>
-	//// Affectations : Init le style des labels
-	labelStyleRightControl();
 });
 
 /*******************************************************************************************
@@ -94,11 +88,10 @@ function labelStyleRightControl(boxId)
 		if(targetRight=="1")		{$("#"+targetLabelId).addClass("sAccessRead");}
 		else if(targetRight=="15")	{$("#"+targetLabelId).addClass("sAccessWriteLimit");}
 		else if(targetRight=="2")	{$("#"+targetLabelId).addClass("sAccessWrite");}
-		//Ligne sélectionnée : surligne
-		$("#targetLine"+targetLabelId).addClass("lineSelect");
-		//Sujet du forum : affiche "preférez le droit écriture limité" ?	=> pas un droit "écriture limité"  & box que l'on vient de sélectionner (pas les pré-sélections)
-		if("<?= $curObj::objectType ?>"=="forumSubject" && targetRight!="15" && boxId && boxId==this.id)
-			{notify("<?= Txt::trad("FORUM_accessRightInfos") ?>");}
+		//Si on affiche tout, on met les lignes sélectionnées en surbrillance
+		if($("#showAllUsers").isVisible()==false)  {$("#targetLine"+targetLabelId).addClass("lineSelect");}
+		//Sujet du forum : affiche "preférez le droit écriture limité" ? (si pas un droit "écriture limité" & box que l'on vient de sélectionner, donc pas les pré-sélections)
+		if("<?= $curObj::objectType ?>"=="forumSubject" && targetRight!="15" && boxId && boxId==this.id)  {notify("<?= Txt::trad("FORUM_accessRightInfos") ?>");}
 	});
 	//Control Ajax d'une affectation (droit d'accès) pour un sous dossier
 	<?php if($curObj::isFolder && $curObj->containerObj()->isRootFolder()==false){ ?>
@@ -153,7 +146,7 @@ function mainFormControl()
 	}
 
 	////	Fichier joint : remplace le "src" des images temporaires (cf. "VueObjHtmlEditor.php")
-	if(typeof attachedFileTmpSrc=="function")  {attachedFileTmpSrc();}
+	if(typeof attachedFileReplaceSRCINPUT=="function")  {attachedFileReplaceSRCINPUT();}
 
 	////	Controle OK : affiche l'icone "loading"
 	if(validForm==true)  {submitButtonLoading();}
@@ -163,44 +156,42 @@ function mainFormControl()
 
 <style>
 /*OPTIONS D'EDITION (ex 'fieldset')*/
-#objMenuBlocks							{text-align:left; margin-top:35px;}
-#objMenuLabels							{display:table; width:100%; margin-top:35px; margin-bottom:-35px;}/*cf. "lightboxBlockTitle"*/
-.objMenuLabel							{display:table-cell; padding:8px 2px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
-.objMenuLabel>img						{margin-right:8px;}
-.objMenuLabel[for='objMenuAccessRight']	{min-width:150px!important;}/*droits d'accès*/
-.objMenuLabel:not(.objMenuLabelUnselect){border-bottom:none!important;}
-.objMenuLabelUnselect					{opacity:0.75;}
+#objMenuLabels								{display:table; width:100%; margin-top:35px; margin-bottom:-35px;}/*cf. "lightboxBlockTitle"*/
+.objMenuLabel								{display:table-cell; padding:10px 3px; text-align:center; cursor:pointer; border-radius:3px 3px 0px 0px;}
+.objMenuLabel>img							{margin-right:8px;}
+.objMenuLabel[for='objMenuAccessRight']		{min-width:150px!important;}/*droits d'accès*/
+.objMenuLabel:not(.objMenuLabelUnselect)	{border-bottom:none!important;}
+.objMenuLabelUnselect						{opacity:0.75;}
+#objMenuBlocks>div:not(#objMenuAccessRight)	{margin:10px 0px 10px 30px; text-align:left;}/*block de chaque menu (sauf des droits d'accès)*/
 
 /*DROITS D'ACCÈS*/
-#objMenuAccessRight, [id^=spaceTable]	{text-align:center;}
-.vSpaceTable							{display:inline-table; width:100%; max-width:500px; margin-bottom:20px; padding:5px 10px 10px 10px; border-radius:8px; background-color:<?= Ctrl::$agora->skin=="black"?"#333":"#f9f9f9"?>;}
+#objMenuAccessRight						{text-align:center;}
+.vSpaceTable							{display:inline-table; width:100%; max-width:500px; margin:12px 0px; padding:5px 0px; border-radius:8px; background:<?= Ctrl::$agora->skin=="black"?"#333":"#f9f9f9"?>;}
 .vSpaceTable>div						{display:table-row;}
 .vSpaceTable>div>div					{display:table-cell; padding:5px; text-align:center;}
 .vSpaceTable img						{max-height:20px;}
-.vSpaceHeader>div						{vertical-align:top;}
-.vSpaceHeaderName						{vertical-align:middle; font-style:italic; visibility:hidden;}/*Nom de l'espace (masqué par défaut)*/
-.vSpaceLabel							{cursor:pointer; text-align:left!important;}
+.vSpaceHeader>div						{vertical-align:top; padding-bottom:10px!important;}
+.vSpaceLabelSpace						{text-align:left!important; padding-left:10px!important; font-style:italic;}/*nom de l'espace*/
+.vSpaceLabel							{text-align:left!important; cursor:pointer;}
 .vSpaceRead, .vSpaceWrite 				{width:70px;}/*colonne des checkboxes*/
 .vSpaceWriteLimit						{width:110px;}/*idem*/
-.vSpaceTargetHide						{display:none!important;}/*Par défaut : masque les users non sélectionnés de l'espace courant*/
-.vSpaceTargetIcon						{margin-right:10px;}
-#ShowAllUsers, #ShowAllSpaces, #ExtendToSubfolders	{text-align:center; cursor:pointer; margin-bottom:10px;}
+.vSpaceTargetIcon						{margin-right:8px;}
+#showAllUsers, #extendToSubfoldersDiv	{cursor:pointer; margin-bottom:10px;}
+.vSpaceTargetHide						{display:none!important;}/*Par défaut : masque les users décochés de l'espace courant*/
 
 /*MENU DES NOTIFICATIONS PAR MAIL*/
 #notifMailUsersPlus, #notifMailSelectList, #notifMailOptions  {display:none;}
 #notifMailSelectList					{padding-left:10px; border-radius:3px;}
 #notifMailSelectList>div				{display:inline-block; width:33%; min-width:210px; padding:3px;}
 #notifMailOptions>div					{margin-left:10px; margin-top:8px;}
-#notifMailOptions input					{display:none;}
-
 
 /*RESPONSIVE & FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.objMenuLabel img							{display:none;}
 	.vSpaceHeader, .vSpaceLabel					{font-size:0.95em;}/*Entête du tableau et label des "targets"*/
-	.vSpaceTable>div>div						{padding:3px;}
 	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit	{width:55px;}/*colonne des checkboxes*/
 	.vSpaceTargetIcon							{display:none;}
+	#objMenuBlocks>div:not(#objMenuAccessRight)	{margin:5px;}/*block de chaque menu*/
 }
 </style>
 
@@ -230,19 +221,17 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			foreach($accessRightSpaces as $tmpSpace)
 			{
 				//BLOCK + TABLEAU + ENTETE DE L'ESPACE (nom de l'espace + entete des droits d'acces)
-				echo '<div id="spaceTable'.$tmpSpace->_id.'">
-						<div class="vSpaceTable">
+				echo '<div class="vSpaceTable" id="spaceTable'.$tmpSpace->_id.'">
 							<div class="vSpaceHeader">
-								<div class="vSpaceLabel vSpaceHeaderName" title="'.$tmpSpace->name.'<br>'.$tmpSpace->description.'">'.Txt::reduce($tmpSpace->name,40).'</div>
+								<div class="vSpaceLabelSpace" title="'.$tmpSpace->name.'<br>'.$tmpSpace->description.'">'.Txt::reduce($tmpSpace->name,40).'</div>
 								<div class="vSpaceRead" title="'.Txt::trad("accessReadInfo").'">'.Txt::trad("accessRead").'</div>
 								<div class="vSpaceWriteLimit" title="'.$accessWriteLimitInfo.'">'.Txt::trad("accessWriteLimit").'</div>
 								<div class="vSpaceWrite" title="'.Txt::trad("accessWriteInfo").'">'.Txt::trad("accessWrite").'</div>
 							</div>';
 				//TARGETS DE L'ESPACE (id des checkboxes deja dans "boxProp"!)
-				$curSpaceTargetsHide=($tmpSpace->isCurSpace() && count($tmpSpace->targetLines)>5);//Masque par défaut les targets "unchecked" (>5 targets disponibles)
 				foreach($tmpSpace->targetLines as $targetLine)
 				{
-					$targetHide=($curSpaceTargetsHide==true && empty($targetLine["isChecked"]))  ?  "vSpaceTargetHide"  :  null;										//Masque la target si "unchecked"
+					$targetHide=(!empty($targetLine["isChecked"]) || ($tmpSpace->isCurSpace() && count($tmpSpace->targetLines)<5))  ?  null  :  "vSpaceTargetHide";		//Affiche les targets "checked"" ou toutes celles de l'espace courant s'il compte moins de 5 users
 					$targetIconAdmin=(!empty($targetLine["onlyFullAccess"]))  ?  "vSpaceTargetIconAdmin"  :  null;														//Icone d'un admin de l'espace?
 					$targetIcon=(!empty($targetLine["icon"]))  ?  '<img src="app/img/'.$targetLine["icon"].'" class="vSpaceTargetIcon '.$targetIconAdmin.'">'  : null;	//Icone spécifiée pour la target?
 					echo '<div class="lineHover '.$targetHide.'" id="targetLine'.$targetLine["targetId"].'">
@@ -252,14 +241,12 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 							<div class="vSpaceWrite" title="'.Txt::trad("accessWriteInfo").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["2"].'></div>
 						  </div>';
 				}
-				//Fin du block principal "spaceTable..."
-				echo '</div></div>';
-				//"AFFICHER TOUS LES UTILISATEURS" (targets masquées car très nombreuses)
-				if($curSpaceTargetsHide==true)  {echo '<div id="ShowAllUsers">'.Txt::trad("EDIT_showAllUsers").' <img src="app/img/arrowBottom.png"></div>';}
+				//Fin du block principal "spaceTable"
+				echo '</div>';
 			}
-			//"AFFICHER TOUS MES ESPACES"  &&  "ETENDRE LES DROITS AUX SOUS-DOSSIERS"
-			if(count($accessRightSpaces)>=2)  {echo '<div id="ShowAllSpaces">'.Txt::trad("EDIT_showAllSpaces").' <img src="app/img/arrowBottom.png"></div>';}
-			if(!empty($extendToSubfolders))   {echo '<div id="ExtendToSubfolders"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1" checked="checked"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFolders_info").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#ExtendToSubfolders").pulsate(3);</script>';}
+			//Menu "Afficher tous les utilisateurs" (.."et espace")  &&  Menu "Etendre les droits aux sous-dossiers"
+			echo '<div id="showAllUsers">'.(count($accessRightSpaces)==1?Txt::trad("EDIT_showAllUsers"):Txt::trad("EDIT_showAllUsersAndSpaces")).' <img src="app/img/arrowBottom.png"></div>';
+			if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1" checked="checked"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFolders_info").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(3);</script>';}
 			//Fin du "objMenuAccessRight"
 			echo '</div>';
 		}

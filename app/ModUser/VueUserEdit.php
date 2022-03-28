@@ -53,7 +53,7 @@ select[name="connectionSpace"]	{width:100%}
 
 <form action="index.php" method="post" id="mainForm" class="lightboxContent" enctype="multipart/form-data">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("USER_addUser"); ?>
+	<?= $curObj->editRespTitle("USER_addUser") ?>
 
 	<!--IMAGE-->
 	<div class="objField">

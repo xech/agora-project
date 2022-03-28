@@ -50,7 +50,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $objPoll->editRespTitle("DASHBOARD_addPoll"); ?>
+	<?= $objPoll->editRespTitle("DASHBOARD_addPoll") ?>
 	
 	<!--SONDAGE DEJA VOTÉ : AFFICHE UNE NOTIFICATION "Attention : dès que le sondage est voté la modif des réponses est impossible"-->
 	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.png"> <?= Txt::trad("DASHBOARD_votedPollNotif") ?></div><?php } ?>

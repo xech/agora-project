@@ -20,23 +20,23 @@ class MdlObject
 	const objectType=null;
 	const dbTable=null;
 	//Propriétés de dépendance
-	const MdlObjectContent=null;
-	const MdlObjectContainer=null;
-	const isFolder=false;
-	const isFolderContent=false;
-	protected static $_hasAccessRight=null;//pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
+	const MdlObjectContent=null;					//Objet contenu par l'objet courant : objets enfants
+	const MdlObjectContainer=null;					//Objet contenant l'objet courant : objet parent
+	const isFolder=false;							//Objet de type dossier
+	const isFolderContent=false;					//Contenu d'un dossier (fichier, contact, etc)
+	protected static $_hasAccessRight=null;			//pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
 	//Propriétés d'affichage et d'édition (d'IHM)
-	const isSelectable=false;
-	const hasShortcut=false;
-	const hasNotifMail=false;
-	const hasAttachedFiles=false;
-	const hasUsersLike=false;
-	const hasUsersComment=false;
-	const htmlEditorField=null;			//Champ "description" le plus souvent
-	public static $displayModes=[];		//Type d'affichage : ligne/block le plus souvent
-	public static $requiredFields=[];	//Champs obligatoires pour valider l'édition d'un objet
-	public static $searchFields=[];		//Champs de recherche
-	public static $sortFields=[];		//Champs/Options de tri des résulats
+	const isSelectable=false;						//Sélection multiple : arborescence le plus souvent
+	const hasShortcut=false;						//Création de raccourcis sur l'objet
+	const hasNotifMail=false;						//Envoye de notif d'édition par mail
+	const hasAttachedFiles=false;					//Ajouter des pièces jointes
+	const hasUsersLike=false;						//Like sur l'objet
+	const hasUsersComment=false;					//Ajout de commentaires sur l'objet
+	const htmlEditorField=null;						//Champ "description" le plus souvent
+	public static $displayModes=[];					//Type d'affichage : ligne/block le plus souvent
+	public static $requiredFields=[];				//Champs obligatoires pour valider l'édition d'un objet
+	public static $searchFields=[];					//Champs de recherche
+	public static $sortFields=[];					//Champs/Options de tri des résulats
 	//Valeurs mises en cache
 	private $_accessRight=null;
 	private $_containerObj=null;
@@ -547,7 +547,7 @@ class MdlObject
 	/*******************************************************************************************
 	 * ENVOI UNE NOTIF PAR MAIL DE L'EDITION DE L'OBJET (cf. "menuEdit")
 	 *******************************************************************************************/
-	public function sendMailNotif($specificLabel=null, $addDescription=null, $addFiles=null, $addUserIds=null)
+	public function sendMailNotif($messageSpecific=null, $addFiles=null, $addUserIds=null)
 	{
 		//Notification demandé par l'auteur de l'objet  OU  Destinataires passés en paramètres (exple: notif de nouveaux messages du forum)
 		if(Req::isParam("notifMail") || !empty($addUserIds))
@@ -555,19 +555,18 @@ class MdlObject
 			////	Sujet : "Fichier créé par boby SMITH"
 			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Exple: "Fichier créé par" / "News modifiée par"
 			$subject=ucfirst($this->tradObject($tradCreaModif))." ".Ctrl::$curUser->getLabel();
-			////	Message : Label principal de l'objet
-			if(!empty($specificLabel))		{$objContent="<b>".$specificLabel."</b>";}	//Nom des fichiers uploadés, etc 
-			elseif(!empty($this->title))	{$objContent="<b>".$this->title."</b>";}	//forum subject, task, etc
-			elseif(!empty($this->name))		{$objContent="<b>".$this->name."</b>";}		//folder name, etc
-			else							{$objContent=null;}
-			////	Ajoute la description && Remplace les chemins relatifs && Ajoute le max-width aux images
-			if(!empty($this->description))	{$objContent.="<div>".$this->description."</div>";}
-			if(!empty($addDescription))		{$objContent.="<div>".$addDescription."</div>";}
-			$objContent=str_replace(PATH_DATAS, Req::getCurUrl()."/".PATH_DATAS, $objContent);
-			$objContent=str_replace("<img ", "<img style='max-width:100%;cursor:initial' ", $objContent);
-			////	Corps du mail (pas de balise <style> car souvent supprimés par les clients mail)
+			////	Message : Label principal de l'objet et si besoin description de l'objet
+			if(!empty($messageSpecific))	{$messageObj="<div><b>".$messageSpecific."</b></div>";}	//ex: nom des fichiers uploadés, etc 
+			elseif(!empty($this->title))	{$messageObj="<div><b>".$this->title."</b></div>";}		//ex: titre des sujets, task, etc
+			elseif(!empty($this->name))		{$messageObj="<div><b>".$this->name."</b></div>";}		//ex: nom des dossiers, etc
+			else							{$messageObj=null;}
+			if(!empty($this->description))	{$messageObj.="<div><b>".$this->description."</b></div>";}
+			////	Message : Remplace les chemins relatifs en chemins absolus && Ajoute le max-width des images des descriptions
+			$messageObj=str_replace(PATH_DATAS, Req::getCurUrl()."/".PATH_DATAS, $messageObj);
+			$messageObj=str_replace("<img ", "<img style='max-width:100%!important;cursor:initial' ", $messageObj);
+			////	Message : Corps du mail (pas de balise <style> car souvent supprimés par les clients mail)
 			$message="<div style='margin:20px 0px'>".$subject." :</div>
-					  <div style='margin:20px 0px;padding:10px;max-width:1024px;background-color:#eee;color:#333;border:1px solid #bbb;border-radius:3px;'>".$objContent."</div>
+					  <div style='margin:20px 0px;padding:10px;max-width:1024px;background-color:#eee;color:#333;border:1px solid #bbb;border-radius:3px;'>".$messageObj."</div>
 					  <a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";
 			////	Destinataires de la notif : Users spécifiques OU Users affectées à l'objet (lecture ou+)
 			$mailUserIds=[];

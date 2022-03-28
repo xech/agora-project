@@ -235,18 +235,18 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 * PATH DE L'IMAGE DE PROFIL
 	 *******************************************************************************************/
-	public function getImgPath($getDefaultImg=false)
+	public function getImgPath($defaultImg=false)
 	{
-		if($this->hasImg())				{return $this->pathImgThumb()."?version=".md5($this->dateModif);}//"version" pour toujours afficher la derniere image mise en cache
-		elseif($getDefaultImg==true)	{return "app/img/user/userDefault.png";}//image par défaut (si demandé)
+		if($this->hasImg())			{return $this->pathImgThumb();}
+		elseif($defaultImg==true)	{return "app/img/user/userDefault.png";}//img par défaut
 	}
 
 	/*******************************************************************************************
 	 * BALISE <IMG> DE L'IMAGE DU PROFIL
 	 *******************************************************************************************/
-	public function getImg($openProfile=false, $smallImg=false, $getDefaultImg=false)
+	public function getImg($openProfile=false, $smallImg=false, $defaultImg=false)
 	{
-		$imgPath=$this->getImgPath($getDefaultImg);
+		$imgPath=$this->getImgPath($defaultImg);
 		if(!empty($imgPath)){
 			$personImg="<img src='".$imgPath."' class='personImg ".($smallImg==true?"personImgSmall":null)."'>";
 			if($openProfile==true)  {$personImg="<a href=\"javascript:lightboxOpen('".$this->getUrl("vue")."');\" title=\"".Txt::trad("displayProfil")."\">".$personImg."</a>";}

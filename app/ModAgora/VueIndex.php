@@ -186,12 +186,12 @@ function formControl()
 
 			<!--LANG-->
 			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/public.png"><?= Txt::trad("AGORA_lang") ?></div>
+				<div class="fieldLabel"><img src="app/img/earth.png"><?= Txt::trad("AGORA_lang") ?></div>
 				<div><?= Txt::menuTrad("agora",Ctrl::$agora->lang) ?></div>
 			</div>
 			<!--TIMEZONE-->
 			<div class="objField">
-				<div class="fieldLabel"><img src="app/img/public.png"><?= Txt::trad("AGORA_timezone") ?></div>
+				<div class="fieldLabel"><img src="app/img/earth.png"><?= Txt::trad("AGORA_timezone") ?></div>
 				<div>
 					<select name="timezone">
 						<?php foreach(Tool::$tabTimezones as $tmpLabel=>$timezone)  {echo "<option value=\"".$timezone."\" ".($timezone==Tool::$tabTimezones[Ctrl::$curTimezone]?'selected':null).">[gmt ".($timezone>0?"+":"").$timezone."] ".$tmpLabel."</option>";}?>

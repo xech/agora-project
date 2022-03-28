@@ -1,7 +1,7 @@
 <!--CHARGE PLUPLOAD (SI BESOIN) -->
 <?php if(Req::isParam("addVersion")==false){ ?>
 <script type="text/javascript" src="app/js/plupload/plupload.full.min.js"></script>
-<script type="text/javascript" src="app/js/plupload/i18n/<?= Txt::trad("UPLOADER") ?>.js"></script>
+<script type="text/javascript" src="app/js/plupload/i18n/<?= Txt::trad("CURLANG") ?>.js"></script>
 <script type="text/javascript" src="app/js/plupload/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 <link rel="stylesheet" href="app/js/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
 <?php } ?>
@@ -46,7 +46,7 @@ $(function(){
 function formControl()
 {
 	//Ajout de fichier via Plupload
-	if($("#uploadMultiple").is(":visible")){
+	if($("#uploadMultiple").isVisible()){
 		//Aucun fichier sélectionné?
 		if($("#uploadMultiple").plupload("getFiles").length==0)  {notify("<?= Txt::trad("FILE_selectFile") ?>");  return false;}
 		//Controle global est OK : lance l'upload via Plupload (..qui valide ensuite le formulaire)
@@ -101,7 +101,7 @@ function formControl()
 
 <form action="index.php" method="post" onsubmit="return formControl()" id="filesForm" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("FILE_addFile"); ?>
+	<?= $curObj->editRespTitle("FILE_addFile") ?>
 
 	<!--NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)-->
 	<?php if(Req::isParam("addVersion")){ ?>

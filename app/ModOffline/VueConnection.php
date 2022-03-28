@@ -93,15 +93,14 @@ $(function(){
 #customLogo img			{max-width:100%; max-height:250px;}
 #formConnect input[type=text], #formConnect input[type=password], #formConnect button	{width:80%!important; max-width:280px!important; height:35px; margin-bottom:15px;}/*surcharge*/
 .vConnectOptions		{display:inline-table;}
-.vConnectOptions>div	{display:table-cell; padding:15px;}
+.vConnectOptions>div	{display:table-cell; padding:10px;}
 .vConnectOptions button	{height:40px; width:200px;}
-.vConnectOptions #gSignInButton:not(:hover) img	{filter:grayscale(30%);}
 .vPasswordForms			{display:none;}
 .vPasswordForms input	{height:35px; margin:5px; width:230px;}
 .vPasswordForms button	{height:35px; margin:5px; width:150px;}
-#publicSpaceListTitle, #publicSpaceList	{text-align:left;}
-#publicSpaceListTitle	{margin-left:70px;}
-#publicSpaceList li		{margin:10px; margin-left:70px; list-style-type:circle;}
+#publicSpaceTitle, #publicSpaceList	{text-align:left; margin-left:25%;}
+#publicSpaceTitle		{font-size:1.1em;}
+#publicSpaceList li		{margin-top:10px; list-style:circle;}
 #formSpacePasswordLabel	{display:none;}
 
 /*RESPONSIVE*/
@@ -109,9 +108,8 @@ $(function(){
 	#pageCenter				{margin-top:70px;}/*surcharge*/
 	.miscContainer			{width:100%!important;}
 	#headerBar>div			{padding:8px; font-weight:normal;}/*surcharge*/
-	#connectOptionsMain.vConnectOptions, #connectOptionsMain.vConnectOptions>div	{display:block;}
-	#publicSpaceListTitle	{margin-left:10px;}
-	#publicSpaceList li		{margin-left:30px;}
+	.vConnectOptions, .vConnectOptions>div	{display:block;}
+	#publicSpaceTitle, #publicSpaceList	{margin-left:20px;}
 }
 </style>
 
@@ -126,7 +124,7 @@ $(function(){
 	<div class="miscContainer">
 		<?php
 		//Logo custom et Séparateur "-or-"
-		if(strlen(Ctrl::$agora->pathLogoConnect())>0)	{echo "<div id='customLogo'><img src=\"".Ctrl::$agora->pathLogoConnect()."\"></div>";}
+		if(Ctrl::$agora->pathLogoConnect())  {echo "<div id='customLogo'><img src=\"".Ctrl::$agora->pathLogoConnect()."\"></div>";}
 		$separateHrOr="<div class='orLabel'><div><hr></div><div>".Txt::trad("or")."</div><div><hr></div></div>";
 		?>
 
@@ -189,20 +187,29 @@ $(function(){
 		<?php } ?>
 
 		<?php
-		////	CONNEXION AVEC GSIGNIN  /  INSCRIPTION D'USER
-		if(Ctrl::$agora->gSigninEnabled() || !empty($userInscription)){
-			echo $separateHrOr."<div id='connectOptionsMain' class='vConnectOptions'>";
-				if(Ctrl::$agora->gSigninEnabled())	{echo "<div><button id='gSignInButton' title=\"".Txt::trad("gSigninButtonInfo")."\"><img src='app/img/gSignin.png'> ".Txt::trad("gSigninButton")."</button></div>";}
-				if(!empty($userInscription))		{echo "<div><button onclick=\"lightboxOpen('?action=userInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>";}
-			echo "</div>";
+		////	CONNEXION AVEC GSIGNIN
+		if(Ctrl::$agora->gSigninEnabled()){
+			echo $separateHrOr.
+				"<div class='vConnectOptions'>
+					<button id='gSignInButton' title=\"".Txt::trad("gSigninButtonInfo")."\"><img src='app/img/gSignin.png'> ".Txt::trad("gSigninButton")."</button>
+				</div>";
 		}
 
-		////	ESPACES PUBLICS
+		////	CONNEXION EN TANT QU'INVITE
 		if(!empty($objPublicSpaces)){
-			echo $separateHrOr."<div id='publicSpaceListTitle'><img src='app/img/public.png'> ".Txt::trad("guestAccess")."</div>
-				 <ul id='publicSpaceList'>";
-			foreach($objPublicSpaces as $tmpSpace)  {echo "<li class='sLink' onclick=\"publicSpaceAccess(".$tmpSpace->_id.",".(!empty($tmpSpace->password)?"true":"false").");\">".$tmpSpace->name."</li>";}
+			echo $separateHrOr.
+				"<div id='publicSpaceTitle'><img src='app/img/user/accessGuest.png'> ".Txt::trad("guestAccess")." :</div>
+				  <ul id='publicSpaceList'>";
+				foreach($objPublicSpaces as $tmpSpace)  {echo "<li class='sLink' onclick=\"publicSpaceAccess(".$tmpSpace->_id.",".(!empty($tmpSpace->password)?"true":"false").");\">".$tmpSpace->name."</li>";}
 			echo "</ul>";
+		}
+
+		////	INSCRIPTION D'USER
+		if(!empty($userInscription)){
+			echo $separateHrOr.
+				"<div class='vConnectOptions'>
+					<div><button onclick=\"lightboxOpen('?action=userInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>
+				</div>";
 		}
 		?>
 

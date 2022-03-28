@@ -271,15 +271,15 @@ class CtrlFile extends Ctrl
 					}
 					////	Incrémente l'espace disque total
 					$datasFolderSize+=$fileSize;
-					////	Prepare la notif mail (Affiche le nom des 10 premiers fichiers ..puis le nombre de fichiers restant)
-					if(count($notifFilesLabel)<10)		{$notifFilesLabel[]=$tmpObj->name.(!empty($tmpObj->description)?"<br>".$tmpObj->description:null);}
-					elseif(count($notifFilesLabel)==10)	{$notifFilesLabel[]="... + ".(count($newFiles)-5)." ".Txt::trad("OBJECTfile");}
+					////	Prepare la notif mail (Affiche le nom des 15 premiers fichiers ..puis le nombre de fichiers restant)
+					if(count($notifFilesLabel)<15)		{$notifFilesLabel[]=$tmpObj->name;}
+					elseif(count($notifFilesLabel)==15)	{$notifFilesLabel[]="... + ".(count($newFiles)-15)." ".Txt::trad("OBJECTfile")."s";}
 					////	Joint le fichier à la notif? pas plus de 20 fichiers et 20Mo
 					if(Req::isParam("notifMailAddFiles") && count($notifFiles)<=20)  {$notifFiles[]=array("path"=>$tmpObj->filePath(),"name"=>$tmpObj->name);}
 				}
 			}
 			////	Notifie par mail?  &&  Supprime le dossier temporaire?  &&  Maj du nouveau "datasFolderSize" (force)  &&  Ferme la page
-			if(!empty($lastObjFile))  {$lastObjFile->sendMailNotif(implode("<br><br>",$notifFilesLabel), null, $notifFiles);}
+			if(!empty($lastObjFile))  {$lastObjFile->sendMailNotif(implode("<br><br>",$notifFilesLabel), $notifFiles);}
 			if(!empty($tmpDirPath) && is_dir($tmpDirPath))  {File::rm($tmpDirPath);}
 			File::datasFolderSize(true);
 			static::lightboxClose();

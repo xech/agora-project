@@ -25,24 +25,28 @@ class MdlDashboardNews extends MdlObject
 	public static $searchFields=["description"];
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","description@@asc","description@@desc"];
 
-	/*******************************************************************************************
-	 * STATIC : RÉCUPÈRE LES NEWS POUR L'INFINITE SCROLL
-	 * $mode :  Count des news :"count"  ||  Affichage avec "infinite scroll" : "scroll"
-	 * $offline : récupère uniquement les news "offline"
-	 *******************************************************************************************/
-	public static function getNews($mode, $offline=false, $offsetCpt=0)
+	/**************************************************************************************************
+	 * STATIC : NEWS A AFFICHER
+	 * $mode :  Nb de news archivées = "offlineNewsNb"  ||  Affichage infinite scroll = "scroll"
+	 **************************************************************************************************/
+	public static function getNews($mode, $newsOffset=0)
 	{
-		// Archiver/désarchiver automatiquement des news
+		// Archive/désarchive automatiquement les news
 		if(empty($_SESSION["dashboardNewsUpdated"])){
 			Db::query("UPDATE ".static::dbTable."  SET offline=1     WHERE dateOffline is not null  AND UNIX_TIMESTAMP(dateOffline)<".time());
 			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline is not null   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline is null or UNIX_TIMESTAMP(dateOffline)>".time().")");
 			$_SESSION["dashboardNewsUpdated"]=true;
 		}
-		// uniquement les news "offline" ?
-		$sqlOffline=($offline==true)  ?  "AND offline=1"  :  "AND offline is null";
-		// Count des news  ||  Affichage avec "infinite scroll" (LIMIT + OFFSET)
-		if($mode=="count")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline);}
-		else				{return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("une desc")."  LIMIT 10 OFFSET ".((int)$offsetCpt * 10));}//"infinite scroll" par blocs de 10
+		// Init/Switch l'affichage des news archivées
+		if(empty($_SESSION["offlineNewsShow"]) || Req::isParam("offlineNewsShow"))  {$_SESSION["offlineNewsShow"]=(bool)(Req::param("offlineNewsShow")=="true");}
+		// Nb de news archivées
+		if($mode=="offlineNewsNb")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplay()." AND offline=1");}
+		// News pour l'affichage "infinite scroll"
+		else{
+			$sqlOffline=($_SESSION["offlineNewsShow"]==true)  ?  "AND offline=1"  :  "AND offline is null";
+			$sqlLimit="LIMIT 10 OFFSET ".((int)$newsOffset * 10);//"infinite scroll" par blocs de 10
+			return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("une desc")." ".$sqlLimit);
+		}
 	}
 
 	/*******************************************************************************************

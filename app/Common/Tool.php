@@ -20,7 +20,7 @@ class Tool
 	/*******************************************************************************************
 	 * ENVOI D'UN MAIL
 	 * ***************
-	 * $options des mails
+	 * $options des mails (utiliser "in_array()" pour les tests)
 	 * -"hideRecipients":	Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
 	 * -"hideUserLabel":	Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
 	 * -"receptionNotif":	Demande un accusé de réception pour l'user/expéditeur
@@ -65,7 +65,7 @@ class Tool
 
 			////	Expediteur
 			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Se base sur le Domaine du serveur (pas sur l'url et le $_SERVER['HTTP_HOST'])
-			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "noreply@".$fromDomain;			//Email du paramétrage général OU "noreply@" du domaine courant (ex: "noreply@mondomaine.net")
+			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "postmaster@".$fromDomain;		//Email du paramétrage général OU du domaine courant (ex: "postmaster@mondomaine.net")
 			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;										//Nom de l'espace OU Domaine courant
 			$mail->SetFrom($fromMail, $fromLabel);																				//"SetFrom" : utiliser un email correspondant au domaine courant ou un SMTP spécifique (evite la spambox)
 			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());	//Vérif que l'email est envoyé depuis un user connecté

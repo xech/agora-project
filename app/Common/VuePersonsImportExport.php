@@ -43,7 +43,7 @@ $(function(){
 function formControl()
 {
 	//Controle que le fichier d'import est au format csv
-	if($("#selectImportExport").is(":visible") && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
+	if($("#selectImportExport").isVisible() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
 		notify("<?= Txt::trad("fileExtension") ?> CSV");
 		return false;
 	}

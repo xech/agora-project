@@ -21,10 +21,9 @@ class MdlCalendar extends MdlObject
 	public static $requiredFields=["title"];
 	public static $searchFields=["title","description"];
 	public static $displayModes=["month","week","workWeek","4Days","day"];	//Modes d'affichage des agendas
-	public static $persoCalendarDeleteRight=false;							//Droit de supprimer un agenda perso
+	public static $forceDeleteRight=false;									//Force la suppression de l'agenda pour les agendas persos : cf. "MdlCalendar::deleteRight()"
 	//Valeurs mises en cache
-	private $_calendarOwnerIdUsers=null;
-	private static $_visibleCalendars=null;
+	private static $_readableCalendars=null;
 	private static $_myCalendars=null;
 	private static $_affectationCalendars=null;
 
@@ -52,28 +51,45 @@ class MdlCalendar extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
-	 * VERIF : DROIT D'AJOUTER UN AGENDA DE RESSOURCE (ne concerne pas les agenda de type 'user')
-	 *******************************************************************************************/
+	/**************************************************************************************************************
+	 * VERIF SI L'USER COURANT PEUT AJOUTER UN AGENDA DE RESSOURCE (ne concerne pas les agenda de type 'user')
+	 **************************************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddRessourceCalendar")==false));
 	}
 
-	/*******************************************************************************************
-	 * VERIF : DROIT D'AJOUTER OU PROPOSER UN ÉVÉNEMENT ("true" pour tous les users && pour les guests si l'option "propositionGuest" de l'agenda est activé)
-	 *******************************************************************************************/
+	/*************************************************************************************************************************************************************************
+	 * VERIF SI L'USER COURANT PEUT AJOUTER OU PROPOSER UN ÉVÉNEMENT ("true" pour tous les users && pour les guests si l'option "propositionGuest" de l'agenda est activé)
+	 *************************************************************************************************************************************************************************/
 	public function addOrProposeEvt()
 	{
 		return (Ctrl::$curUser->isUser() || !empty($this->propositionGuest));
 	}
 
+	/***************************************************************************************************************************************************************
+	 * VERIF SI L'EVT SE TROUVE SUR LA PÉRIODE SELECTIONNEE (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)
+	 ***************************************************************************************************************************************************************/
+	public static function evtInTimeSlot($evtBegin, $evtEnd, $periodBegin, $periodEnd)
+	{
+		return ( ($periodBegin<=$evtBegin && $evtBegin<=$periodEnd) || ($periodBegin<=$evtEnd && $evtEnd<=$periodEnd) || ($evtBegin<=$periodBegin && $periodEnd<=$evtEnd) );
+	}
+
 	/*******************************************************************************************
-	 * SURCHARGE : DROIT DE SUPPRESSION D'UN AGENDA (pas pour les agendas d'users)
+	 * VERIF SI C'EST L'AGENDA PERSO DE L'USER COURANT
 	 *******************************************************************************************/
+	public function isPersonalCalendar()
+	{
+		return ($this->type=="user" && $this->isAutor());
+	}
+
+	/**************************************************************************************************************************************
+	 * SURCHARGE : DROIT DE SUPPRIMER L'AGENDA POUR L'USER COURANT => DESACTIVÉ PAR DEFAUT POUR LES AGENDAS PERSOS (cf. $forceDeleteRight)
+	 **************************************************************************************************************************************/
 	public function deleteRight()
 	{
-		return ($this->type=="user" && $this::$persoCalendarDeleteRight==false)  ?  false  :  parent::deleteRight();
+		//"MdlUser::delete()" supprime l'agenda perso en passant $forceDeleteRight à "true" : cela garde ainsi le "deleteRight()" à "true" dans "MdlCalendar::delete()" et "parent::delete()"
+		return ($this->type=="user" && $this::$forceDeleteRight==false)  ?  false  :  parent::deleteRight();
 	}
 
 	/*******************************************************************************************
@@ -98,7 +114,7 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * LISTE DES EVENEMENTS CONFIRMÉS DE L'AGENDA
+	 * EVENEMENTS CONFIRMÉS AFFECTÉS A L'AGENDA
 	 *******************************************************************************************/
 	public function evtList($periodTimeBegin=null, $periodTimeEnd=null, $accessRightMini=0.5, $orderByHourMinute=true, $pluginParams=null)
 	{
@@ -109,7 +125,7 @@ class MdlCalendar extends MdlObject
 			$periodEnd  =Db::format(date("Y-m-d 23:59",$periodTimeEnd));
 			$sqlPeriod="AND ( (dateBegin between ".$periodBegin." and ".$periodEnd.") OR (dateEnd between ".$periodBegin." and ".$periodEnd.") OR (dateBegin <= ".$periodBegin." and ".$periodEnd." <= dateEnd) OR periodType is not null)";
 		}
-		//// Liste des evenements confirmés et affectés à l'agenda
+		//// Evénements confirmés et affectés à l'agenda
 		$sqlPlugins=(!empty($pluginParams))  ?  "AND ".MdlCalendarEvent::sqlPlugins($pluginParams)  :  null;//Sélection d'evt "plugins"
 		$sqlOrderBy=($orderByHourMinute==true)  ?  "DATE_FORMAT(dateBegin,'%H:%i') ASC"  :  "dateBegin ASC";//Tri par "H:m" (affiche juste une journée) || Tri par "dateBegin" (affiche une liste complete: "plugins")
 		$eventsList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlPeriod." ".$sqlPlugins." ORDER BY ".$sqlOrderBy);
@@ -161,112 +177,70 @@ class MdlCalendar extends MdlObject
 		return $eventsReturned;
 	}
 
-	/***************************************************************************************************************************************************************
-	 * VERIF SI L'EVENEMENT SE TROUVE SUR LA PÉRIODE SELECTIONNEE (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)
-	 ***************************************************************************************************************************************************************/
-	public static function evtInTimeSlot($evtBegin, $evtEnd, $periodBegin, $periodEnd)
-	{
-		return ( ($periodBegin<=$evtBegin && $evtBegin<=$periodEnd) || ($periodBegin<=$evtEnd && $evtEnd<=$periodEnd) || ($evtBegin<=$periodBegin && $periodEnd<=$evtEnd) );
-	}
-
 	/*******************************************************************************************
-	 * VERIF : AGENDA PERSONNEL DE L'USER COURANT
+	 * AGENDAS ACCESSIBLES EN LECTURE A L'USER COURANT
 	 *******************************************************************************************/
-	public function curUserPerso()
+	public static function readableCalendars()
 	{
-		return ($this->type=="user" && $this->isAutor());
-	}
-
-	/*******************************************************************************************
-	 * VERIF : AGENDA GÉRÉ OU CREE PAR L'USER COURANT (confirmation de proposition d'événement ou autre)
-	 *******************************************************************************************/
-	public function curUserProperty()
-	{
-		return in_array(Ctrl::$curUser->_id, $this->calendarOwnerIdUsers());
-	}
-
-	/*******************************************************************************************
-	 * LISTE DES USERS GESTIONNAIRES OU AUTEUR DE L'AGENDA (gestionnaires : users affectées explicitement en écriture à un agenda de "ressource". Ne pas se baser sur les droits d'accès, pour pas inclure "Tous les utilisateurs"..)
-	 *******************************************************************************************/
-	public function calendarOwnerIdUsers()
-	{
-		if($this->_calendarOwnerIdUsers===null){
-			//Sélection SQL : Auteur de l'Agenda  &&  Users affectés en écriture (type "ressource" uniquement)
-			$sqlSelect="_id IN (SELECT _idUser as _id FROM ap_calendar WHERE _id=".$this->_id.")";
-			if($this->type=="ressource")  {$sqlSelect.=" OR _id IN (SELECT replace(target,'U','') as _id FROM ap_objectTarget WHERE objectType='calendar' AND _idObject=".$this->_id." AND target like 'U%' AND accessRight=2)";}
-			$this->_calendarOwnerIdUsers=Db::getCol("SELECT DISTINCT _id FROM ap_user WHERE ".$sqlSelect);
-		}
-		return $this->_calendarOwnerIdUsers;
-	}
-
-	/*******************************************************************************************
-	 * LISTE D'AGENDAS : AGENDAS VISIBLES POUR L'USER COURANT  (Agendas de ressource + Agenda de l'user courant + Agendas persos affectés à l'user courant)
-	 *******************************************************************************************/
-	public static function visibleCalendars()
-	{
-		if(self::$_visibleCalendars===null)
-		{
-			//Agendas de ressource + Agendas persos activés (pas "Disabled") + Agenda de l'user courant
+		//Agendas de ressource && Agendas personnels (pas "Disabled") && Agenda de l'user
+		if(self::$_readableCalendars===null){
 			$sqlDisplay=self::sqlDisplay();
 			$ressourceCals	=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplay);
 			$persoCals		=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (".$sqlDisplay." OR _idUser=".Ctrl::$curUser->_id.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
-			//Tri les agendas par leur nom
-			self::$_visibleCalendars=self::sortCalendars( array_merge($ressourceCals,$persoCals) );
+			self::$_readableCalendars=self::sortCalendars( array_merge($ressourceCals,$persoCals) );//Tri les agendas
 		}
-		return self::$_visibleCalendars;
+		return self::$_readableCalendars;
 	}
 
 	/*******************************************************************************************
-	 * LISTE D'AGENDAS : AGENDAS GÉRÉS OU PROPRIÉTÉ DE L'USER COURANT
+	 * AGENDAS ACCESSIBLES EN ECRITURE POUR L'USER COURANT
 	 *******************************************************************************************/
-	public static function curUserCalendars()
+	public static function writableCalendars()
 	{
 		if(self::$_myCalendars===null){
 			self::$_myCalendars=[];
-			foreach(self::visibleCalendars() as $tmpCal){
-				if($tmpCal->curUserProperty())  {self::$_myCalendars[]=$tmpCal;}
+			foreach(self::readableCalendars() as $tmpCal){
+				if($tmpCal->editContentRight())  {self::$_myCalendars[]=$tmpCal;}
 			}
 		}
 		return self::$_myCalendars;
 	}
 
-	/*******************************************************************************************
-	 * LISTE D'AGENDAS : AGENDAS SUR LESQUELS L'USER COURANT PEUT AFFECTER OU PROPOSER DES ÉVÉNEMENTS
-	 *******************************************************************************************/
+	/**************************************************************************************************
+	 * AGENDAS SUR LESQUELS L'USER COURANT PEUT AFFECTER OU PROPOSER DES ÉVÉNEMENTS
+	 **************************************************************************************************/
 	public static function affectationCalendars()
 	{
 		if(self::$_affectationCalendars===null)
 		{
-			//// Ajoute les agendas accessibles en lecture
-			self::$_affectationCalendars=self::visibleCalendars();
-			//// Puis ajoute les agendas persos non accessibles en lecture : pour pouvoir faire les propositions d'événement (Pas dispo pour les "guest")  
-			if(Ctrl::$curUser->isUser() && count(Ctrl::$curSpace->getUsers())>0)
-			{
-				//Ajoute les agendas qui ne sont pas encore dans la liste
-				foreach(Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND _idUser IN (".Ctrl::$curSpace->getUsers("idsSql").") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)") as $tmpCal){
-					if(!in_array($tmpCal,self::$_affectationCalendars))  {self::$_affectationCalendars[]=$tmpCal;}
+			//Agendas accessibles en lecture
+			self::$_affectationCalendars=self::readableCalendars();
+			//Ajoute les agendas persos des users de l'espace, mais inaccessibles en lecture ("guest" non concernés) : cf. propositions d'événement
+			if(Ctrl::$curUser->isUser()){
+				$otherPersoCalendars=Db::getObjTab("calendar", "SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND _idUser IN (".Ctrl::$curSpace->getUsers("idsSql").") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
+				foreach($otherPersoCalendars as $tmpCal){
+					if(!in_array($tmpCal,self::$_affectationCalendars))  {self::$_affectationCalendars[]=$tmpCal;}//Ajoute l'agenda?
 				}
-				//Tri les agendas par leur nom
-				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);//Tri les agendas par leur nom
+				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);//Tri les agendas
 			}
 		}
 		return self::$_affectationCalendars;
 	}
 
 	/*******************************************************************************************
-	 * LISTE D'AGENDAS : AGENDAS AFFICHÉS ACTUELLEMENT
+	 * AGENDAS ACTUELLEMENT AFFICHÉS
 	 *******************************************************************************************/
-	public static function displayedCalendars($visibleCalendars)
+	public static function displayedCalendars($readableCalendars)
 	{
-		//Init les agendas à retourner && Récup éventuellement les agendas enregistrés en préférence
+		//Init les agendas à retourner && Récup au besoin les agendas enregistrés en préférence
 		$displayedCalendars=[];
 		$prefCalendars=Txt::txt2tab(Ctrl::prefUser("displayedCalendars"));
 		//Récupère les agendas à afficher :  Agendas enregistrés en préférences  OU  Agenda de l'espace créé par défaut (_id=1)
-		foreach($visibleCalendars as $tmpCal){
-			if(in_array($tmpCal->_id,$prefCalendars)  || (empty($prefCalendars) && $tmpCal->_id==1 && $tmpCal->type=="ressource"))   {$displayedCalendars[]=$tmpCal;}
+		foreach($readableCalendars as $tmpCal){
+			if(in_array($tmpCal->_id,$prefCalendars) || (empty($prefCalendars) && $tmpCal->_id==1))  {$displayedCalendars[]=$tmpCal;}
 		}
-		//Toujours pas d'agendas à afficher : on prend le premier des $visibleCalendars
-		if(empty($displayedCalendars) && !empty($visibleCalendars))  {$displayedCalendars[]=$visibleCalendars[0];}
+		//Toujours pas d'agendas à afficher : on prend le premier des $readableCalendars
+		if(empty($displayedCalendars) && !empty($readableCalendars))  {$displayedCalendars[]=$readableCalendars[0];}
 		//Supprime les evénements de plus de 3 ans (lancé en début de session)
 		if(empty($_SESSION["calendarsCleanEvt"]))
 		{
@@ -287,15 +261,15 @@ class MdlCalendar extends MdlObject
 		return $displayedCalendars;
 	}
 
-	/*******************************************************************************************
-	 * TRI UNE LISTE D'AGENDAS  (Agenda de l'user courant >> Puis agendas de ressource >> Enfin les agendas des autres users)
-	 *******************************************************************************************/
+	/**********************************************************************************************************************************************
+	 * LISTE D'AGENDAS : TRI DES AGENDAS => AGENDA DE L'USER COURANT >> PUIS AGENDAS DE RESSOURCE >> PUIS AUTRES AGENDAS D'USERS
+	 **********************************************************************************************************************************************/
 	public static function sortCalendars($calendarsTab)
 	{
 		//Prépare le tri en fonction du champs spécifique "sortField"
 		$userSortField=(Ctrl::$agora->personsSort=="name")  ?  "userName"  :  "userFirstName";//Tri des agendas persos en fonction du nom ou du prénom (cf. "__construct()" ci-dessus)
 		foreach($calendarsTab as $tmpCal){
-			if($tmpCal->curUserPerso())			{$tmpCal->sortField="A__".$tmpCal->$userSortField;}
+			if($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="A__".$tmpCal->$userSortField;}
 			elseif($tmpCal->type=="ressource")	{$tmpCal->sortField="B__".$tmpCal->title;}
 			else								{$tmpCal->sortField="C__".$tmpCal->$userSortField;}
 		}

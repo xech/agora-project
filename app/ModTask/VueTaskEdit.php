@@ -41,7 +41,7 @@ img[src*='user/icon']	{height:20px;}
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("TASK_addTask"); ?>
+	<?= $curObj->editRespTitle("TASK_addTask") ?>
 
 	<!--TITRE & DESCRIPTION (EDITOR)-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("title") ?>">

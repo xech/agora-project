@@ -11,10 +11,7 @@ class Trad extends Txt
 	{
 		////	Langue courante / Header http / Editeurs Tinymce,DatePicker,etc / Dates formatées par PHP
 		self::$trad["CURLANG"]="fr";
-		self::$trad["HEADER_HTTP"]="fr";
-		self::$trad["DATEPICKER"]="fr";
 		self::$trad["HTML_EDITOR"]="fr_FR";
-		self::$trad["UPLOADER"]="fr";
 		setlocale(LC_TIME, "fr_FR.utf8", "fr_FR.UTF-8", "fr_FR", "fr", "french");
 
 		////	Divers
@@ -78,11 +75,11 @@ class Trad extends Txt
 		self::$trad["connect"]="Connexion";
 		self::$trad["connectAuto"]="Se souvenir de moi";
 		self::$trad["connectAutoInfo"]="Retenir mon identifiant / mot de passe pour une connexion automatique";
-		self::$trad["gSigninButton"]="Connexion avec Gmail";
-		self::$trad["gSigninButtonInfo"]="Connectez-vous avec votre compte Gmail : vous devez déjà posséder sur cet espace un compte avec une adresse <i>@gmail.com</i> comme identifiant";
+		self::$trad["gSigninButton"]="Connexion avec Google";
+		self::$trad["gSigninButtonInfo"]="Connectez-vous avec votre compte Google : votre compte utilisateur doit alors avoir une adresse <i>@gmail.com</i> comme identifiant";
 		self::$trad["gSigninUserNotRegistered"]="n'est pas enregistré sur l'espace avec l'email";//"Boby Smith" n'est pas enregistré sur l'espace avec l'email "boby.smith@gmail.com"
 		self::$trad["switchOmnispace"]="Se connecter à un autre espace Omnispace";
-		self::$trad["guestAccess"]="Connexion à un espace en tant qu'invité";
+		self::$trad["guestAccess"]="Connexion en tant qu'invité";
 		self::$trad["spacePassError"]="Mot de passe erroné";
 		self::$trad["ieObsolete"]="Votre navigateur Internet Explorer n'est plus mis à jour par Microsoft depuis plusieurs années : ll est fortement conseillé d'utiliser un autre navigateur tel que Firefox, Chrome, Edge ou Safari.";
 
@@ -112,7 +109,6 @@ class Trad extends Txt
 		////	Sélectionner / Déselectionner tous les éléments
 		self::$trad["select"]="Sélectionner";
 		self::$trad["selectUnselect"]="Sélectionner / Déselectionner";
-		self::$trad["selectUnselectAll"]="Tout sélectionner / déselectionner";
 		self::$trad["selectAll"]="Tout sélectionner";
 		self::$trad["selectSwitch"]="Inverser la sélection";
 		self::$trad["deleteElems"]="Supprimer la sélection";
@@ -254,7 +250,9 @@ class Trad extends Txt
 		self::$trad["MAIL_hideRecipientsInfo"]="Mettre tous les destinataires en copie caché.<br>Notez que s'il y a trop de destinataires, l'email peut être considéré comme Spam";
 		self::$trad["MAIL_noFooter"]="Ne pas signer le message";
 		self::$trad["MAIL_noFooterInfo"]="Ne pas signer la fin du message avec le nom de l'expéditeur et un lien vers l'espace";
-		self::$trad["MAIL_fileMaxSize"]="L'ensemble de vos pièces jointes ne doit pas dépasser 15 Mo :<br>Certaines messageries pouvant refuser les emails au delà de cette limite";
+		self::$trad["MAIL_addEmails"]="Ajouter des adresses email";
+		self::$trad["MAIL_addEmailsInfo"]="Ajouter des adresses email non répertoriées sur l'espace";
+		self::$trad["MAIL_fileMaxSize"]="L'ensemble de vos pièces jointes ne devraient pas dépasser 15 Mo, Certaines messageries pouvant refuser les emails au delà de cette limite. Envoyer tout de même ?";
 		self::$trad["MAIL_sendButton"]="Envoyer l'email";
 		self::$trad["MAIL_sendBy"]="Envoyé par";//"Envoyé par" M. Trucmuche
 		self::$trad["MAIL_sendOk"]="L'email a bien été envoyé";
@@ -272,7 +270,7 @@ class Trad extends Txt
 		self::$trad["kiloOctet"]="Ko";
 		self::$trad["rootFolder"]="Dossier principal";
 		self::$trad["rootFolderEditInfo"]="Ouvrez le parametrage de l'espace<br>pour pouvoir modifier les droits d'accès au dossier principal (dossier racine)";
-		self::$trad["addFolder"]="Créer un nouveau dossier";
+		self::$trad["addFolder"]="Ajouter un dossier";
 		self::$trad["download"]="Télécharger le fichier";
 		self::$trad["downloadFolder"]="Télécharger le dossier";
 		self::$trad["diskSpaceUsed"]="Espace disque utilisé";
@@ -426,7 +424,7 @@ class Trad extends Txt
 		self::$trad["EDIT_allUsersAndGuestsInfo"]="Droit d'acccès pour tous les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Les invités n'ont qu'un accès en lecture aux éléments de l'espace (invité: personne sans compte utilisateur).";
 		self::$trad["EDIT_adminSpace"]="Administrateur : accès total à tous les éléments de l'espace";
 		self::$trad["EDIT_showAllUsers"]="Afficher tous les utilisateurs";
-		self::$trad["EDIT_showAllSpaces"]="Afficher tous mes espaces";
+		self::$trad["EDIT_showAllUsersAndSpaces"]="Afficher tous les utilisateurs et espaces";
 		self::$trad["EDIT_notifMail"]="Notifier par email";
 		self::$trad["EDIT_notifMail2"]="Envoyer une notification par email";
 		self::$trad["EDIT_notifMailInfo"]="Envoyer une notification par email aux personnes affectées à l'élément / -OBJLABEL-.";
@@ -494,7 +492,7 @@ class Trad extends Txt
 		self::$trad["AGORA_diskSpaceInvalid"]="L'espace disque pour les fichiers doit être un entier";
 		self::$trad["AGORA_visioHostInvalid"]="L'adresse web du serveur de visioconférence est invalide : elle doit commencer par 'https'";
 		self::$trad["AGORA_mapApiKeyInvalid"]="Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'";
-		self::$trad["AGORA_gSigninKeyInvalid"]="Si vous choisissez la connexion optionnelle via Gmail, vous devez y spécifier un 'API Key' pour Google SignIn";
+		self::$trad["AGORA_gSigninKeyInvalid"]="Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn";
 		self::$trad["AGORA_confirmModif"]="Confirmez-vous les modifications ?";
 		self::$trad["AGORA_name"]="Nom de l'espace principal / du site";
 		self::$trad["AGORA_footerHtml"]="Texte en bas de page";
@@ -529,12 +527,12 @@ class Trad extends Txt
 		self::$trad["AGORA_mapToolInfo"]="Outil de cartographie pour voir les utilisateurs et contacts sur une carte";
 		self::$trad["AGORA_mapApiKey"]="API Key pour la catographie Google Map";
 		self::$trad["AGORA_mapApiKeyInfo"]="Parametrage obligatoire pour l'outil de cartographie Google Map. Plus d'infos sur https://developers.google.com/maps/";
-		self::$trad["AGORA_gSignin"]="Connexion optionnelle via Gmail (Sign-In)";
-		self::$trad["AGORA_gSigninInfo"]="Les utilisateurs peuvent se connecter plus facilement à leur espace via leur compte Gmail (Sign-In) :<br>Pour cela, le compte de l'utilisateur doit avoir comme identifiant une adresse <i>@gmail.com</i>";
-		self::$trad["AGORA_gSigninClientId"]="API Key pour Google Sign-In";
-		self::$trad["AGORA_gSigninClientIdInfo"]="Paramètrage obligatoire pour la connexion via Gmail / Google Sign-In. Plus d'infos sur <a href='https://developers.google.com/identity/sign-in/' target='_blank'>https://developers.google.com/identity/sign-in/</a>";
-		self::$trad["AGORA_gPeopleApiKey"]="API KEY pour Google People";
-		self::$trad["AGORA_gPeopleApiKeyInfo"]="Parametrage obligatoire pour la récupération des contacts Gmail / Google People. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
+		self::$trad["AGORA_gSignin"]="Connexion via Google (option)";
+		self::$trad["AGORA_gSigninInfo"]="Les utilisateurs peuvent se connecter via leur compte Google : le compte utilisateur doit alors avoir un identifiant avec une adresse <i>@gmail.com</i>";
+		self::$trad["AGORA_gSigninClientId"]="API Key pour la connexion via Google";
+		self::$trad["AGORA_gSigninClientIdInfo"]="Une 'API Key' est nécessaire pour la connexion via Google. Plus d'infos sur <a href='https://developers.google.com/identity/sign-in/web' target='_blank'>https://developers.google.com/identity/sign-in/web</a>";
+		self::$trad["AGORA_gPeopleApiKey"]="API KEY pour importer les contacts Google";
+		self::$trad["AGORA_gPeopleApiKeyInfo"]="Une 'API Key' est nécessaire pour la récupération des contacts Google / Gmail. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>";
 		self::$trad["AGORA_messengerDisabled"]="Messagerie instantanée activée";
 		self::$trad["AGORA_moduleLabelDisplay"]="Afficher le nom des modules dans la barre de menu";
 		self::$trad["AGORA_folderDisplayMode"]="Affichage par défaut des dossiers";
@@ -542,7 +540,7 @@ class Trad extends Txt
 		//SMTP
 		self::$trad["AGORA_smtpLabel"]="Connexion SMTP & sendMail";
 		self::$trad["AGORA_sendmailFrom"]="Email 'From'";
-		self::$trad["AGORA_sendmailFromPlaceholder"]="ex: 'noreply@mydomain.com'";
+		self::$trad["AGORA_sendmailFromPlaceholder"]="exple: 'postmaster@mydomain.com'";
 		self::$trad["AGORA_smtpHost"]="Adresse du serveur SMTP (hostname)";
 		self::$trad["AGORA_smtpPort"]="Port sur serveur";
 		self::$trad["AGORA_smtpPortInfo"]="'25' par défaut. '587' ou '465' pour une connexion SSL/TLS";
@@ -604,8 +602,8 @@ class Trad extends Txt
 		self::$trad["SPACE_selectModule"]="Vous devez sélectionner au moins un module";
 		self::$trad["SPACE_spaceModules"]="Modules de l'espace";
 		self::$trad["SPACE_moduleRank"]="Déplacer le module pour modifier son ordre d'affichage dans la barre de menu";
-		self::$trad["SPACE_publicSpace"]="Espace public";
-		self::$trad["SPACE_publicSpaceInfo"]="Cette option permet à ceux qui n'ont pas de compte utilisateur d'accéder à l'espace : les 'invités'. Vous pouvez également spécifier un mot de passe pour en protéger l'accès. Les modules 'mail' et 'utilisateur' ne sont pas disponibles pour les invités";
+		self::$trad["SPACE_publicSpace"]="Espace public : accès invité";
+		self::$trad["SPACE_publicSpaceInfo"]="Un espace public est ouvert aux personnes n'ayant pas de compte utilisateur : les 'invités'. Vous pouvez spécifier un mot de passe générique pour protéger l'accès à cet espace public. Les modules 'mail' et 'utilisateur' ne sont pas disponibles pour les invités";
 		self::$trad["SPACE_publicSpaceNotif"]="Si votre espace public contient des coordonnées personnelles (contact ou autre) : vous êtes tenu d'y ajouter un mot de passe pour être conforme à la RGPD.<br><br>Le Règlement Général sur la Protection des Données (RGPD) est un texte de référence de l'Union Européenne sur la protection des données personnelles.";
 		self::$trad["SPACE_usersInvitation"]="Les utilisateurs peuvent envoyer des invitations par email";
 		self::$trad["SPACE_usersInvitationInfo"]="Tous les utilisateurs peuvent envoyer des invitations par email pour rejoindre l'espace";
@@ -651,7 +649,7 @@ class Trad extends Txt
 		self::$trad["USER_myProfilEdit"]="Modifier mon profil utilisateur";
 		// Invitations
 		self::$trad["USER_sendInvitation"]="Envoyer des invitations par email";
-		self::$trad["USER_sendInvitationInfo"]="Envoyer des invitations à votre entourage pour qu'ils vous rejoignent sur votre espace.<hr><img src='app/img/gSignin.png' height=15> Si vous possédez un compte Gmail, vous pourrez récupérer vos contacts Gmail pour envoyer des invitations.";
+		self::$trad["USER_sendInvitationInfo"]="Envoyer des invitations à votre entourage pour qu'ils vous rejoignent sur votre espace.<hr><img src='app/img/gSignin.png' height=15> Si vous possédez un compte Google, vous pourrez récupérer vos contacts Gmail pour envoyer des invitations.";
 		self::$trad["USER_mailInvitationObject"]="Invitation de "; // ..Jean DUPOND
 		self::$trad["USER_mailInvitationFromSpace"]="vous invite sur "; // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 		self::$trad["USER_mailInvitationConfirm"]="Cliquez ici pour confirmer l'invitation";
@@ -660,7 +658,7 @@ class Trad extends Txt
 		self::$trad["USER_invitPassword"]="Confirmez votre invitation";
 		self::$trad["USER_invitPassword2"]="Choisissez votre mot de passe puis validez votre invitation";
 		self::$trad["USER_invitationValidated"]="Votre invitation a été validée !";
-		self::$trad["USER_gPeopleImport"]="Récupérer mes contacts Gmail";
+		self::$trad["USER_gPeopleImport"]="Récupérer mes contacts Google / Gmail";
 		self::$trad["USER_importQuotaExceeded"]="Vous êtes limité à --USERS_QUOTA_REMAINING-- nouveaux comptes utilisateurs, sur un total de --LIMITE_NB_USERS-- utilisateurs";
 		// groupes
 		self::$trad["USER_spaceGroups"]="Groupes d'utilisateurs de l'espace";
@@ -708,11 +706,12 @@ class Trad extends Txt
 		self::$trad["DASHBOARD_menuPolls"]="Sondages";
 		self::$trad["DASHBOARD_menuElems"]="Nouveautés";
 		self::$trad["DASHBOARD_addNews"]="Créer une nouvelle actualité";
-		self::$trad["DASHBOARD_newsOffline"]="Actualités archivées";
+		self::$trad["DASHBOARD_offlineNews"]="Voir les actualités archivées";
+		self::$trad["DASHBOARD_offlineNewsNb"]="actualités archivées";//"55 actualités archivées"
 		self::$trad["DASHBOARD_noNews"]="Aucune actualité pour le moment";
 		self::$trad["DASHBOARD_addPoll"]="Créer un nouveau sondage";
-		self::$trad["DASHBOARD_pollsNotVoted"]="Sondages à voter";
-		self::$trad["DASHBOARD_pollsNotVotedInfo"]="Afficher uniquement les sondages que vous n'avez pas encore voté";
+		self::$trad["DASHBOARD_pollsVoted"]="Voir uniquement les sondages votés";
+		self::$trad["DASHBOARD_pollsVotedNb"]="sondages pour lesquels j'ai déjà voté";//"55 sondages..déjà voté"
 		self::$trad["DASHBOARD_vote"]="Voter et voir les résultats !";
 		self::$trad["DASHBOARD_voteTooltip"]="Le vote est anonyme : personne n'aura connaissance de votre choix";
 		self::$trad["DASHBOARD_answerVotesNb"]="Voté --NB_VOTES-- fois";
@@ -762,7 +761,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_option_adminAddCategory"]="Seul l'administrateur peut créer des categories d'événement";//OPTION!
 		self::$trad["CALENDAR_option_createSpaceCalendar"]="Créer un agenda commun";//OPTION!
 		self::$trad["CALENDAR_option_createSpaceCalendarInfo"]="Par défaut, l'agenda commun porte le même nom que l'espace. L'agenda commun est aussi appelé 'agenda de ressource' car il peut concerner une salle, un véhicule, etc.";
-		self::$trad["CALENDAR_option_moduleDisabled"]="Le module agenda reste toujours accessible aux utilisateurs qui laissent leur agenda personnel activé. Pour désactiver complètement ce module, modifiez l'option ''Agenda personnel désactivé'' de votre profil utilisateur";
+		self::$trad["CALENDAR_option_moduleDisabled"]="Les utilisateurs n'ayant pas désactivé leur agenda personnel dans leur profil utilisateur verront toujours le module Agenda dans la barre de menu";
 		//Index
 		self::$trad["CALENDAR_calsList"]="Agendas disponibles";
 		self::$trad["CALENDAR_displayAllCals"]="Afficher tous les agendas (réservé aux administrateurs)";
@@ -772,14 +771,13 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addSharedCalendar"]="Créer un agenda commun";
 		self::$trad["CALENDAR_addSharedCalendarInfo"]="Créer un agenda commun :<br>pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.";
 		self::$trad["CALENDAR_exportIcal"]="Exporter les événements au format iCal";
-		self::$trad["CALENDAR_icalUrl"]="Copier le lien/url d'export des événements au format Ical";
-		self::$trad["CALENDAR_icalUrlCopy"]="Permet une lecture des événements de l'agenda au format Ical, via une application externe tel que Google Calendar, Mozilla Thunderbird, Microsoft Outlook, etc.";
+		self::$trad["CALENDAR_icalUrl"]="Copier le lien/url pour consulter l'agenda depuis une appli externe";
+		self::$trad["CALENDAR_icalUrlCopy"]="Permet une lecture des événements de l'agenda depuis une application externe tel que Microsoft Outlook, Google Calendar, Mozilla Thunderbird, etc.";
 		self::$trad["CALENDAR_importIcal"]="Importer des événements au format iCal";
 		self::$trad["CALENDAR_ignoreOldEvt"]="Ne pas importer les événements de plus d'un an";
 		self::$trad["CALENDAR_importIcalState"]="Etat";
 		self::$trad["CALENDAR_importIcalStatePresent"]="Déjà présent";
 		self::$trad["CALENDAR_importIcalStateImport"]="A importer";
-		self::$trad["CALENDAR_inputProposed"]="L'événement sera proposé au gestionnaire / auteur de l'agenda";
 		self::$trad["CALENDAR_displayMode"]="Affichage";
 		self::$trad["CALENDAR_display_day"]="Jour";
 		self::$trad["CALENDAR_display_4Days"]="4 jours";
@@ -794,7 +792,7 @@ class Trad extends Txt
 		self::$trad["CALENDAR_evtProposed"]="Proposition d'événement à confirmer";
 		self::$trad["CALENDAR_evtProposedBy"]="Proposé par";//..Mr SMITH
 		self::$trad["CALENDAR_evtProposedConfirm"]="Confirmer la proposition";
-		self::$trad["CALENDAR_evtProposedConfirmBis"]="La proposition d'événement a bien été intégrée à l'agenda";
+		self::$trad["CALENDAR_evtProposedConfirmBis"]="La proposition d'événement a bien été ajouté à l'agenda";
 		self::$trad["CALENDAR_evtProposedConfirmMail"]="Votre proposition d'événement a bien été confirmée par";
 		self::$trad["CALENDAR_evtProposedDecline"]="Décliner la proposition";
 		self::$trad["CALENDAR_evtProposedDeclineBis"]="La proposition a été décliné";
@@ -820,7 +818,6 @@ class Trad extends Txt
 		self::$trad["CALENDAR_noPeriodicity"]="Une seule fois";
 		self::$trad["CALENDAR_period_weekDay"]="Toutes les semaines";
 		self::$trad["CALENDAR_period_month"]="Tous les mois";
-		self::$trad["CALENDAR_period_dayOfMonth"]="du mois";//Le 21 du mois
 		self::$trad["CALENDAR_period_year"]="Tous les ans";
 		self::$trad["CALENDAR_periodDateEnd"]="Fin de récurrence";
 		self::$trad["CALENDAR_periodException"]="Exception de récurrence";
@@ -828,16 +825,17 @@ class Trad extends Txt
 		self::$trad["CALENDAR_addEvt"]="Créer un nouvel événement";
 		self::$trad["CALENDAR_addEvtTooltip"]="Ajouter un événement à l'agenda";
 		self::$trad["CALENDAR_addEvtTooltipBis"]="Ajouter l'événement à l'agenda";
-		self::$trad["CALENDAR_proposeEvtTooltip"]="Proposer un événement au gestionnaire/auteur de l'agenda";
-		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proposer l'événement au gestionnaire/auteur de cet agenda";
-		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Proposer l'événement au gestionnaire/auteur de cet agenda (vous n'avez pas accès en écriture à cet agenda)";
+		self::$trad["CALENDAR_proposeEvtTooltip"]="Proposer un événement au gestionnaire(s) de l'agenda";
+		self::$trad["CALENDAR_proposeEvtTooltipBis"]="Proposer l'événement au gestionnaire(s) de cet agenda";
+		self::$trad["CALENDAR_proposeEvtTooltipBis2"]="Proposer l'événement au gestionnaire(s) de cet agenda (vous n'avez pas accès en écriture à cet agenda)";
+		self::$trad["CALENDAR_inputProposed"]="L'événement sera d'abord proposé au gestionnaire(s) de cet agenda, avant d'y être éventuellement ajouté";
 		self::$trad["CALENDAR_verifCalNb"]="Merci de sélectionner au moins un agenda";
 		self::$trad["CALENDAR_noModifInfo"]="Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)";
 		self::$trad["CALENDAR_editLimit"]="Vous n'êtes pas l'auteur de l'événement :<br> Vous ne pouvez donc gérer que les affectations à vos agendas";
 		self::$trad["CALENDAR_busyTimeslot"]="Créneau est déjà occupé sur l'agenda suivant :";
 		self::$trad["CALENDAR_timeSlot"]="Plage horaire pour l'affichage \"semaine\"";
 		self::$trad["CALENDAR_propositionNotify"]="Me notifier par email à chaque propositions d'événement";
-		self::$trad["CALENDAR_propositionNotifyInfo"]="Chaque proposition d'événement sera validé ou invalidé<br>par le gestionnaire/auteur de l'agenda.";
+		self::$trad["CALENDAR_propositionNotifyInfo"]="Chaque proposition d'événement sera validé ou invalidé<br>par le gestionnaire(s) de l'agenda.";
 		self::$trad["CALENDAR_propositionGuest"]="Les invités peuvent proposer des événements";
 		self::$trad["CALENDAR_propositionGuestInfo"]="Pensez à sélectionnez 'tous les utilisateur et invités' dans les droits d'accès ci-dessous.";
 		self::$trad["CALENDAR_propositionNotifTitle"]="Nouvel événement proposé par";//.."boby SMITH"

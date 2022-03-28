@@ -20,6 +20,10 @@ $.fn.exist=function(){
 $.fn.isEmpty=function(){
 	return (this.length==0 || this.val().trim().length==0);
 };
+////	Verifie si l'element est visible
+$.fn.isVisible=function(){
+	return this.is(":visible");
+};
 ////	Vérifie si l'element est un email (cf. "isMail()")
 $.fn.isMail=function(){
 	return isMail(this.val());
@@ -302,25 +306,25 @@ function initMenuContext()
 	if(isMobile()){
 		//// Click d'un "launcher" (icone/texte) : affiche le menu responsive
 		$(".menuLaunch").click(function(){
-			if($("#respMenuContent").is(":visible")==false)	{showRespMenu(this.getAttribute("for"),this.getAttribute("forBis"));}			//Menu masqué : on l'affiche
+			if($("#respMenuContent").isVisible()==false)	{showRespMenu(this.getAttribute("for"),this.getAttribute("forBis"));}			//Menu masqué : on l'affiche
 			else											{$("#"+this.getAttribute("for")).addClass("menuContextSubMenu").slideToggle();}	//Menu déjà affiché : on affiche le sous-menu
 		});
 		//// Swipe sur la page pour afficher/masquer le menu
 		document.addEventListener("touchmove",function(event){
 			if(typeof swipeBeginX!="undefined"  &&  Math.abs(swipeBeginY - event.touches[0].clientY) < 40){					//Swipe horizontal de 40px maxi d'amplitude verticale
-				if((event.touches[0].clientX - swipeBeginX) > 10)  {hideRespMenu(event.touches[0].clientX);}				//Swipe right : masque progressivement le menu  (swipe d'au moins 10px)
+				if((event.touches[0].clientX - swipeBeginX) > 10)  {respMenuClose(event.touches[0].clientX);}				//Swipe right : masque progressivement le menu  (swipe d'au moins 10px)
 				else if((swipeBeginX - event.touches[0].clientX) > 50  &&  parseInt($(window).width()-swipeBeginX)<100){	//Swipe left : affiche le menu  (swipe d'au moins 50px, à moins de 100px du bord droit de la page)
 					if($("#headerModuleTab").exist())		{showRespMenu("headerModuleTab","pageModMenu");}				//Affiche la liste des modules ("headerModuleTab")
 					else if($("#headerMainMenu").exist())	{showRespMenu("headerMainMenu","pageModMenu");}					//Affiche sinon le menu principal de la page ("headerMainMenu")
 				}
 			}
 		});
-		//// Swipe terminé ("touchend") && menu en partie masqué => on le raffiche totalement (cf. position "right" du "hideRespMenu()")
+		//// Swipe terminé ("touchend") && menu en partie masqué => on le raffiche totalement (cf. position "right" du "respMenuClose()")
 		document.addEventListener("touchend",function(){
-			if($("#respMenuMain").is(":visible") && parseInt($("#respMenuMain").css("right"))<0)  {$("#respMenuMain").css("right","0px");}
+			if($("#respMenuMain").isVisible() && parseInt($("#respMenuMain").css("right"))<0)  {$("#respMenuMain").css("right","0px");}
 		});
 		//// Click sur l'icone "close" ou le background du menu responsive : masque le menu
-		$("#respMenuClose,#respMenuBg").click(function(){ hideRespMenu(); });
+		$("#respMenuClose,#respMenuBg").click(function(){ respMenuClose(); });
 	}
 	////	MENU NORMAL (tester sur tablette)
 	else{
@@ -380,16 +384,16 @@ function showRespMenu(menuOneSourceId, menuTwoSourceId)
 		if($(respMenuTwoSourceId).exist())  {$(respMenuTwoSourceId+">*").appendTo("#respMenuTwo");  $("#respMenuTwo").show();}
 		//Affiche le menu et son contenu
 		$("#respMenuOne,#respMenuBg").fadeIn(50);
-		$("#respMenuMain").css("right","0px").show("slide",{direction:"right"});//Réinit si besoin la position "right" (cf. "hideRespMenu()"), Puis affiche le menu
+		$("#respMenuMain").css("right","0px").show("slide",{direction:"right"});//Réinit si besoin la position "right" (cf. "respMenuClose()"), Puis affiche le menu
 		//Désactive le scroll de page en arriere plan
 		$("body").css("overflow","hidden");
 	}
 }
 
 /*MENU RESPONSIVE : MASQUE LE MENU RESPONSIVE*/
-function hideRespMenu(swipeCurrentX)
+function respMenuClose(swipeCurrentX)
 {
-	if($("#respMenuMain").is(":visible"))
+	if($("#respMenuMain").isVisible())
 	{
 		//// Masque progressivement le menu sur les 80 premiers pixels de "swipe" (déplace le menu vers la droite en même temps que le swipe)
 		if(typeof swipeCurrentX!="undefined" && parseInt($("#respMenuMain").css("right")) > -80)  {$("#respMenuMain").css("right", "-"+(swipeCurrentX-swipeBeginX)+"px");}
@@ -564,7 +568,7 @@ function lightboxSetWidth(iframeBodyWidth)
 function lightboxResize()
 {
 	//Resize si le lightbox est visible
-	if(isMainPage!=true && windowParent.$(".fancybox-iframe").is(":visible"))
+	if(isMainPage!=true && windowParent.$(".fancybox-iframe").isVisible())
 	{
 		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}//Pas de cumul de Timeout
 		//Timeout de 350ms minimum (temps minimum pour laisser les "fadeIn" ou autre se faire : cf. "$.fx.speeds._default" à 100ms)

@@ -21,7 +21,7 @@ $(function(){
 .objContent>div				{padding:12px;}/*surcharge pour un contenu plus aéré*/
 .vObjDetails				{white-space:nowrap; line-height:20px; text-align:right;}/*Auteur du dernier post*/
 .vObjDetails hr				{display:none;}/*affichés en responsive*/
-.objContainer.isSelectable	{cursor:default;}/*Surcharge : On affiche l'icone "checkSelect.png" pour la sélection des sujets*/
+.objContainer.isSelectable	{cursor:default;}/*Surcharge : On affiche l'icone "checkSmall.png" pour la sélection des sujets*/
 
 /*Themes*/
 .vThemes .objContainer		{padding-right:10px!important;}/*surcharge le "padding-right" des "objMiscMenus"*/

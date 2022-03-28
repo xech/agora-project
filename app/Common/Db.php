@@ -65,7 +65,7 @@ class Db
 	 *******************************************************************************************/
 	public static function getObjTab($objectType, $sqlQuery)
 	{
-		//"getObj" pour récupérer l'objet en cache s'il a déjà été chargé (donc pas de "FETCH_CLASS").
+		//"getObj" pour récupérer l'objet en cache s'il a déjà été chargé (pas de "FETCH_CLASS").
 		$returnTab=[];
 		$result=self::objPDO()->query($sqlQuery);
 		foreach($result->fetchAll(PDO::FETCH_ASSOC) as $objValues)  {$returnTab[$objValues["_id"]]=Ctrl::getObj($objectType, $objValues);}
@@ -112,7 +112,7 @@ class Db
 	/*******************************************************************************************
 	 * FORMATE UNE VALEUR DANS UNE REQUETE (insert,update,etc)
 	 *******************************************************************************************/
-	public static function format($text, $options=null)
+	public static function format($text, $options="")
 	{
 		$text=trim($text);
 		if(empty($text))  {return "NULL";}
@@ -146,12 +146,12 @@ class Db
 		return Db::format(Txt::tab2txt($text));
 	}
 
-	/*******************************************************************************************
-	 * FORMATE LA DATE ACTUELLE D'UN CHAMP "DATETIME" OU "DATE", AVEC LE TIMEZONE SPÉCIFIÉ (équivalent à "now()" mais assure le formatage via "date_default_timezone_set()")
-	 *******************************************************************************************/
+	/******************************************************************************************************************************************
+	 * FORMATE LA DATE ACTUELLE D'UN CHAMP "DATETIME", AVEC LE TIMEZONE SPÉCIFIÉ (équivalent à "now()", cf. "date_default_timezone_set()")
+	 ******************************************************************************************************************************************/
 	public static function dateNow()
 	{
-		return "'".strftime("%Y-%m-%d %H:%M:%S")."'";
+		return "'".date("Y-m-d H:i:s")."'";
 	}
 	
 	

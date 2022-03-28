@@ -1,10 +1,12 @@
 /**SKIN BLANC**/
 
 /*Basic*/
-body, a, .sLink																		{color:#555;}
-input, textarea, select																{color:#555; background:#fff;}
-a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label		{color:rgb(1, 112, 156);}
-#htmlLightbox																		{background:#fff;}
+body, a, .sLink																					{color:#555;}
+input, textarea, select																			{color:#555; background:#fff;}
+#htmlLightbox																					{background:#fff;}
+a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label, .sAccessRead	{color:rgb(0,97,177);}	/*Liens + labels sélectionnés + accès utilisateur*/
+.sAccessWrite, .sAccessWriteLimit																{color:#900;}			/*Accès admin*/
+
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
 	#htmlMainPage	{background:#f9f9f9 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
@@ -24,10 +26,6 @@ a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label	
 /*Barre de menu*/
 #headerBar											{background:linear-gradient(180deg,#fff,#f5f5f5,#fff); box-shadow:2px 2px 8px rgb(80,80,80);}	/*barre de menu principale*/
 .vHeaderModuleButton:hover, .vHeaderModuleCurrent	{background:#fff; border:solid 1px #ccc!important;}												  /*module courant*/
-
-/*Droits d'accès d'utilisateurs*/
-.sAccessRead										{color:#008;}
-.sAccessWrite, .sAccessWriteLimit					{color:#800;}
 
 /*Divers*/
 hr													{background:linear-gradient(90deg,#eee,#ccc,#eee);}	/*barre de séparation*/

@@ -98,7 +98,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 
 	<!--ESPACE PUBLIC (avec password?)-->
 	<div class="vSpaceOption">
-		<img src="app/img/public.png"> <input type="checkbox" name="public" id="public" value="1" <?= (!empty($curSpace->public))?'checked':null ?>>
+		<img src="app/img/user/accessGuest.png"> <input type="checkbox" name="public" id="public" value="1" <?= (!empty($curSpace->public))?'checked':null ?>>
 		<label for="public" title="<?= Txt::trad("SPACE_publicSpaceInfo") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
 		<div id="divPassword">
 			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; <input type="text" name="password" value="<?= $curSpace->password ?>">

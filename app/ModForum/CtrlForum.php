@@ -206,11 +206,11 @@ class CtrlForum extends Ctrl
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")
 			if($curObj->isNewlyCreated()==false)	{$notifUserIds=null;}
 			else{
-				$notifUserIds=array_diff(Txt::txt2tab($curObj->containerObj()->usersNotifyLastMessage), [Ctrl::$curUser->_id]);//Users qui on demandé une notif .. et enlève l'auteur courant
-				$notifUserIds=array_intersect($notifUserIds, $curObj->containerObj()->affectedUserIds());//Enlève les users qui ne sont plus affectés au sujet
+				$notifUserIds=array_diff(Txt::txt2tab($curObj->containerObj()->usersNotifyLastMessage), [Ctrl::$curUser->_id]);	//Users qui on demandé une notif (enlève l'auteur courant)
+				$notifUserIds=array_intersect($notifUserIds, $curObj->containerObj()->affectedUserIds());						//Enlève les users qui ne sont plus affectés au sujet
 			}
 			//Notifie par mail aux users spécifiés & Ferme la page
-			$curObj->sendMailNotif(null, null, null, $notifUserIds);
+			$curObj->sendMailNotif(null, null, $notifUserIds);
 			static::lightboxClose();
 		}
 		////	Affiche la vue

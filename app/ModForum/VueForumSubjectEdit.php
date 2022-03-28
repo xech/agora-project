@@ -40,7 +40,7 @@ function checkThemeSpace()
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("FORUM_addSubject"); ?>
+	<?= $curObj->editRespTitle("FORUM_addSubject") ?>
 	
 	<!--TITRE & THEME-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title")." ".Txt::trad("optional") ?>"> &nbsp;

@@ -826,9 +826,6 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_userLivecouter","draftTargetObjId"))  {self::query("ALTER TABLE ap_userLivecouter CHANGE `draftTargetObjId` `draftTypeId` TINYTEXT DEFAULT NULL");}
 				//Change le type de champ "ap_dashboardPoll.description"
 				self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `description` `description` TEXT DEFAULT NULL");
-				//Remplace l'url d'affichage des images dans les descriptions TinyMce (cf. "actionAttachedFileDisplay()")
-				foreach(["ap_dashboardNews","ap_dashboardPoll","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)
-					{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'action=displayAttachedFile','action=attachedFileDisplay')");}
 			}
 
 			if(self::updateVersion("21.12.3"))
@@ -836,6 +833,19 @@ class DbUpdate extends Db
 				//Allège la gestion des connexions ldap
 				if(self::fieldExist("ap_agora","ldap_crea_auto_users"))  {self::query("ALTER TABLE ap_agora DROP ldap_crea_auto_users");}
 				if(self::fieldExist("ap_agora","ldap_pass_cryptage"))  {self::query("ALTER TABLE ap_agora DROP ldap_pass_cryptage");}
+			}
+
+			if(self::updateVersion("22.3.1"))
+			{
+				//Ajoute le support des emojis dans les desriptions d'objets et les brouillons (cf. utf8mb4)
+				if(version_compare(PHP_VERSION,7,">=")){
+					foreach(["MdlCalendarEvent","MdlDashboardNews","MdlDashboardPoll","MdlForumMessage","MdlForumSubject","MdlMail","MdlTask"] as $objMdl)
+						{Db::query("ALTER TABLE ".$objMdl::dbTable." CHANGE `".$objMdl::htmlEditorField."` `".$objMdl::htmlEditorField."` TEXT CHARACTER SET utf8mb4");}
+					Db::query("ALTER TABLE ap_userLivecouter CHANGE `editorDraft` `editorDraft` TEXT CHARACTER SET utf8mb4");
+				}
+				//Remplace l'url d'affichage des images dans les descriptions TinyMce (cf. "actionAttachedFileDisplay()")
+				foreach(["ap_dashboardNews","ap_dashboardPoll","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)
+					{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'displayAttachedFile','attachedFileDisplay')");}
 			}
 			////	ATTENTION !!!
 			////	MODIFIER FICHIER SQL  "ModOffline/db.sql"   &&   MODIFIER N° DE VERSION : "Common/Params.php" + "js/common-xx.js" + "css/common-xx.css" + "changelog.txt"

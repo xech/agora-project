@@ -41,7 +41,7 @@ abstract class Ctrl
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
-			setcookie("AGORAP_PASS", null, -1);
+			setcookie("AGORAP_PASS", "", -1);
 		}
 
 		////	Controle du cache du navigateur (Complété avec un .htaccess "mod_expires" pour les images & co)
@@ -72,8 +72,8 @@ abstract class Ctrl
 			Txt::loadTrads();
 			////	Affiche une page principale (Controles d'accès au module, Menu principal, Footer, etc)
 			if(Req::$curAction=="default")  {static::$isMainPage=true;}
-			////	Controle d'accès au module de l'espace (l'user souhaite afficher un module "standard" qui n'est pas affecté à l'espace courant : redirige vers le premier module de l'espace)
-			if(static::$isMainPage==true && !in_array(Req::$curCtrl,["agora","log","offline","space","user"]) && !array_key_exists(Req::$curCtrl,self::$curSpace->moduleList()))  {self::redir("?ctrl=".key(self::$curSpace->moduleList()));}
+			////	Controle d'accès au module de l'espace (sauf modules spécifiques/communs) si on est en page principale : redirige vers le premier module de l'espace
+			if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false && static::$isMainPage==true && array_key_exists(Req::$curCtrl,self::$curSpace->moduleList())==false)  {self::redir("?ctrl=".key(self::$curSpace->moduleList()));}
 			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
@@ -86,7 +86,7 @@ abstract class Ctrl
 			elseif(static::$folderObjType!==null)	{$curObj=self::getObj(static::$folderObjType,1);}	//Dossier racine par défaut
 			////	Objet courant (dejà existant)
 			if(!empty($curObj) && $curObj->isNew()==false){
-				if($curObj->readRight()==false)  {static::$isMainPage==true ? self::redir("?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Controle d'accès : redirige vers le Ctrl principal ou affiche une notif d'erreur
+				if($curObj->readRight()==false)  {static::$isMainPage==true ? self::redir("?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Pas d'accès en lecture : redirige vers le Ctrl principal / affiche une notif d'erreur
 				if($curObj::isContainer())  {self::$curContainer=$curObj;}																	//Charge le conteneur courant (dossier/sujet/agenda..)
 				if($curObj::isFolder==true)  {self::$curContainerRoot=self::getObj(get_class($curObj),1);}									//Charge le dossier root
 			}
@@ -112,7 +112,7 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	protected static function displayPage($fileMainVue, $vDatasMainVue=array())
 	{
-		////	PAGE PRINCIPALE : WALLPAPER, HEADER, ETC.
+		////	PAGE PRINCIPALE : AFFICHE LE HEADER, WALLPAPER, ETC.
 		if(static::$isMainPage==true)
 		{
 			//// WALLPAPER & LOGO FOOTER
@@ -167,13 +167,13 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * REDIRIGE À L'ADRESSE DEMANDÉE DEPUIS UNE IFRAME OU UNE PAGE PRINCIPALE
+	 * REDIRIGE VERS L'ADRESSE DEMANDÉE : REDIRECTION SIMPLE OU SUR LA PAGE PRINCIPALE (IFRAME)
 	 *******************************************************************************************/
 	public static function redir($urlRedir)
 	{
 		$redirUrl=$urlRedir.self::urlNotify();																	//Ajoute si besoin les notifs
-		if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redir depuis la page principale
-		else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redir depuis une Iframe (cf. "CtrlObject::actionDelete()")
+		if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redirection simple
+		else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redirection de la page principale depuis une Iframe (ex: après édit/suppr d'un objet)
 		exit;																									//Fin de script
 	}
 

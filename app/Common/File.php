@@ -214,9 +214,9 @@ class File
 	 *******************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
-		if(preg_match("/(g|go)$/i",$sizeText))		{return str_ireplace(["go","g"],null,$sizeText) * self::sizeGo;}
-		elseif(preg_match("/(m|mo)$/i",$sizeText))	{return str_ireplace(["mo","m"],null,$sizeText) * self::sizeMo;}
-		elseif(preg_match("/(k|ko)$/i",$sizeText))	{return str_ireplace(["ko","k"],null,$sizeText) * self::sizeKo;}
+		if(preg_match("/(g|go)$/i",$sizeText))		{return str_ireplace(["go","g"],"",$sizeText) * self::sizeGo;}
+		elseif(preg_match("/(m|mo)$/i",$sizeText))	{return str_ireplace(["mo","m"],"",$sizeText) * self::sizeMo;}
+		elseif(preg_match("/(k|ko)$/i",$sizeText))	{return str_ireplace(["ko","k"],"",$sizeText) * self::sizeKo;}
 		else										{return $sizeText;}
 	}
 

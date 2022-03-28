@@ -4,7 +4,7 @@ lightboxSetWidth(550);//Resize
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("CONTACT_addContact"); ?>
+	<?= $curObj->editRespTitle("CONTACT_addContact") ?>
 	
 	<!--IMAGE-->
 	<div class="objField">
@@ -13,5 +13,5 @@ lightboxSetWidth(550);//Resize
 	</div>
 	<hr>
 	<!--CHAMPS PRINCIPAUX & MENU COMMUN-->
-	<?php echo $curObj->getFieldsValues("edit").$curObj->menuEdit() ?>
+	<?= $curObj->getFieldsValues("edit").$curObj->menuEdit() ?>
 </form>

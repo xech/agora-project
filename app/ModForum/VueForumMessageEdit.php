@@ -12,7 +12,7 @@ lightboxSetWidth(800);
 
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
 	<!--TITRE RESPONSIVE-->
-	<?php echo $curObj->editRespTitle("FORUM_addMessage"); ?>
+	<?= $curObj->editRespTitle("FORUM_addMessage") ?>
 	
 	<!--MESSAGE A CITER?-->
 	<?php if(!empty($messageParent))  {echo "<div class='vMessageQuoted'>".$messageParent->title."<br>".$messageParent->description."<img src='app/img/forum/quote.png'></div><br>";} ?>

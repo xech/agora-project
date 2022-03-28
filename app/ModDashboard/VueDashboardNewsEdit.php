@@ -34,7 +34,7 @@ $(function(){
 <form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
 	
 	<!--TITRE RESPONSIVE-->
-	<?php echo $objNews->editRespTitle("DASHBOARD_addNews"); ?>
+	<?= $objNews->editRespTitle("DASHBOARD_addNews") ?>
 
 	<!--DESCRIPTION (EDITOR)-->
 	<textarea name="description"><?= $objNews->description ?></textarea>
