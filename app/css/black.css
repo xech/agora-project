@@ -23,14 +23,11 @@ a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label,
 	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:0px 3px 8px rgb(100,100,100);}/*cf. affichage de news et fichiers*/
 }
 
-/*Barre de menu*/
-#headerBar											{background:#000; box-shadow:0px 3px 8px rgb(80,80,80);}		/*barre de menu principale*/
-.vHeaderModuleButton:hover, .vHeaderModuleCurrent	{background:#444; border:solid 1px #555!important;}			/*module courant*/
-
 /*Divers*/
-hr													{background:linear-gradient(90deg,#555,#999,#555);}	/*barre de séparation*/
-div::-webkit-scrollbar								{background:#333; width:15px;}							/*scrollbar: background et width*/
-div::-webkit-scrollbar-thumb						{background:#888;}										/*scrollbar: couleur de la barre*/
-.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#444 solid 1px;}								/*blocks des lightboxes et onglets du menu d'édition d'objets*/
+#headerBar											{background:#000; box-shadow:0px 3px 8px rgb(80,80,80);}		/*barre de menu principale*/
+hr													{background:linear-gradient(90deg,#555,#999,#555);}			/*barre de séparation*/
+div::-webkit-scrollbar								{background:#333; width:15px;}									/*scrollbar: background et width*/
+div::-webkit-scrollbar-thumb						{background:#888;}												/*scrollbar: couleur de la barre*/
+.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#444 solid 1px;}										/*blocks des lightboxes et onglets du menu d'édition d'objets*/
 .objMenuLabel										{background:linear-gradient(180deg,#444,#111);}
 .lightboxBlockTitle									{border-bottom:#222 solid 1px; background:#222;}

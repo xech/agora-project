@@ -226,7 +226,7 @@ class CtrlObject extends Ctrl
 		$vDatas["fieldName"]=$fieldName;
 		//Sélectionne au besoin le "draftTypeId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editTypeId" car il est effacé dès qu'on sort de l'édition de l'objet...)
 		$sqlTypeId=Req::isParam("typeId")  ?  "draftTypeId=".Db::param("typeId")  :  "draftTypeId IS NULL";
-		$vDatas["editorDraft"]=Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
+		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
 		//Affiche la vue de l'éditeur TinyMce
 		return self::getVue(Req::commonPath."VueObjHtmlEditor.php",$vDatas);
 	}
@@ -246,8 +246,7 @@ class CtrlObject extends Ctrl
 	public static function actionAttachedFileDownload()
 	{
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))
-			{File::download($curFile["name"],$curFile["path"]);}
+		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))   {File::download($curFile["name"],$curFile["path"]);}
 	}
 
 	/*******************************************************************************************
@@ -256,8 +255,17 @@ class CtrlObject extends Ctrl
 	 public static function actionAttachedFileDisplay()
 	{
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"]) && $curFile["containerObj"]->readRight())  {File::display($curFile["path"]);}
-	 }
+		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))   {File::display($curFile["path"]);}
+	}
+
+	/*******************************************************************************************
+	 * FICHIER JOINT : URL D'AFFICHAGE DU FICHIER VIA "actionAttachedFileDisplay()"
+	 *******************************************************************************************/
+	public static function attachedFileDisplayUrl($fileId, $fileName)
+	{
+		//Ajoute "&amp;" pour Tinymce et ajoute l'extension en toute fin (cf. fancybox des images et controle du type de fichier)
+		return "?ctrl=object&amp;action=AttachedFileDisplay&amp;_id=".$fileId."&amp;extension=.".File::extension($fileName);
+	}
 
 	/*******************************************************************************************
 	 * AJAX : SUPPRIME UN FICHIER JOINT

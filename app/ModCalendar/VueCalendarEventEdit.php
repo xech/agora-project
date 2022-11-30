@@ -93,7 +93,7 @@ function displayPeriodType()
 	if($("[name='periodType']").isEmpty()==false)  {$("#periodTypeLabel,#periodOptionsDiv, #periodDateEnd, #periodDateExceptions, #periodOption_"+$("[name='periodType']").val()).slideDown();}
 	//Pré-check si besoin tous les mois
 	if($("[name='periodType']").val()=="month" && $("[name*='periodValues_month']:checked").length==0)  {$("input[name*='periodValues_month']").prop("checked","true");}
-	//Affiche les détails de périodicité (exple : "le 15 du mois")
+	//Affiche les détails de périodicité (ex: "le 15 du mois")
 	var periodTypeLabelTmp="";
 	if($("[name='periodType']").val()=="month")		{periodTypeLabelTmp="<?= Txt::trad("CALENDAR_period_month").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2);}//"Tous les mois, le 22"
 	else if($("[name='periodType']").val()=="year")	{periodTypeLabelTmp="<?= Txt::trad("CALENDAR_period_year").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,5);}//"Tous les ans, le 15/10"
@@ -263,7 +263,7 @@ input[name='guestMail']					{margin-left:20px;}
 
 		<!--PERIODICITE : DIV DES OPTIONS-->
 		<div id="periodOptionsDiv" class="infos">
-			<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (exple: "le 22 du mois")-->
+			<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
 			<div id="periodTypeLabel">&nbsp;</div>
 			<!--PERIODICITE: JOURS DE LA SEMAINE-->
 			<div id="periodOption_weekDay">

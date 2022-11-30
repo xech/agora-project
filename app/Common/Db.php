@@ -106,7 +106,7 @@ class Db
 	public static function dbVersion()
 	{
 		$dbVersion=self::objPDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
-		return str_replace(strstr($dbVersion,"-"),null,$dbVersion);//Enlève les détails après "-" (ex: "5.5.5-10.1.26-MariaDB-0+deb9u1")
+		return str_replace(strstr($dbVersion,"-"),"",$dbVersion);//Enlève les détails après "-" (ex: "5.5.5-10.1.26-MariaDB-0+deb9u1")
 	}
 
 	/*******************************************************************************************
@@ -114,14 +114,16 @@ class Db
 	 *******************************************************************************************/
 	public static function format($text, $options="")
 	{
-		$text=trim($text);
+		$text=trim((string)$text);
+		$options=(string)$options;
 		if(empty($text))  {return "NULL";}
 		else{
+			//$option toujours en "string"
 			//Filtre le résultat
 			if(stristr($options,"editor")==false)					{$text=htmlspecialchars(strip_tags($text));}	//Input "text" : enlève les éventuelles balises html et convertit les caractères spéciaux ('€'->'&#128;')
 			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}				//Valeur flottante : remplace les virgules par des points
 			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}						//Url : ajoute "http://"
-			if(stristr($options,"likeSearch"))						{$text="%".$text."%";}							//Search : délimite par des "%"
+			if(stristr($options,"sqlLike"))						{$text="%".$text."%";}							//Search : délimite par des "%"
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
 			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}
@@ -167,7 +169,7 @@ class Db
 		//Path
 		$dumpPath=PATH_DATAS."BackupDatabase_".db_name.".sql";
 		//Via "exec()" OU Via un script
-		if(Ctrl::isHost())  {exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);}
+		if(Req::isHost())  {exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);}
 		else
 		{
 			// Recupere chaque table

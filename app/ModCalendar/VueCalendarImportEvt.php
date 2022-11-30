@@ -71,7 +71,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodDateEnd]"	value="'.$tmpEvt["dbPeriodDateEnd"].'">
 						</td>
 						<td><img src="app/img/'.$isPresentImg.'" title="'.Txt::trad($isPresentTrad).'"></td>
-						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"full",$tmpEvt["dbDateEnd"]).'</td>
+						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"normal",$tmpEvt["dbDateEnd"]).'</td>
 						<td><label for="'.$evtBoxId.'">'.$tmpEvt["dbTitle"].'</label></td>
 						<td>'.Txt::reduce($tmpEvt["dbDescription"],120).'</td>
 					</tr>';

@@ -75,13 +75,13 @@ class CtrlCalendar extends Ctrl
 		$vDatas["urlCatFilter"]=Req::isParam("_idCatFilter")  ?  "&_idCatFilter=".Req::param("_idCatFilter")  :  null;
 		////	LABEL DU MOIS AFFICHÉ : AFFICHAGE MOBILE OU  NORMAL
 		$monthTime=$vDatas["timeBegin"];//Début de période comme référence
-		if(Req::isMobile())	{$vDatas["labelMonth"]=(date("Y")==date("Y",$monthTime))  ?  Txt::formatime("%B",$monthTime)  :  Txt::formatime("%b %Y",$monthTime);}//"Janvier" OU "Janvier 2018" (si affiche une autre année)
-		else				{$vDatas["labelMonth"]=(date("Ym",$vDatas["timeBegin"])==date("Ym",$vDatas["timeEnd"]))  ?  Txt::formatime("%B %Y",$monthTime)  :  Txt::formatime("%b %Y",$vDatas["timeBegin"])." / ".Txt::formatime("%b %Y",$vDatas["timeEnd"]);}//"Janvier 2020" OU "Janv. 2020 / fev. 2020" (si on affiche une semaine sur 2 mois)
+		if(Req::isMobile())	{$vDatas["labelMonth"]=(date("Y")==date("Y",$monthTime))  ?  Txt::formatime("MMMM",$monthTime)  :  Txt::formatime("MMM y",$monthTime);}//"Janvier" OU "Janv. 2018" (si affiche une autre année)
+		else				{$vDatas["labelMonth"]=(date("Ym",$vDatas["timeBegin"])==date("Ym",$vDatas["timeEnd"]))  ?  Txt::formatime("MMMM y",$monthTime)  :  Txt::formatime("MMMM y",$vDatas["timeBegin"])." / ".Txt::formatime("MMMM y",$vDatas["timeEnd"]);}//"Janvier 2020" OU "Janvier 2020 / fevrier 2020" (si on affiche une semaine sur 2 mois)
 		////	MENU DES ANNÉES & MOIS
 		$vDatas["calMonthPeriodMenu"]=null;
 		for($tmpMonth=1; $tmpMonth<=12; $tmpMonth++){
 			$tmpMonthTime=strtotime(date("Y",$curTime)."-".($tmpMonth>9?$tmpMonth:"0".$tmpMonth)."-01");
-			$vDatas["calMonthPeriodMenu"].="<a onClick=\"redir('?ctrl=calendar&curTime=".$tmpMonthTime."')\" ".(date("Y-m",$curTime)==date("Y-m",$tmpMonthTime)?"class='sLinkSelect'":null).">".Txt::formatime("%B",$tmpMonthTime)."</a>";
+			$vDatas["calMonthPeriodMenu"].="<a onClick=\"redir('?ctrl=calendar&curTime=".$tmpMonthTime."')\" ".(date("Y-m",$curTime)==date("Y-m",$tmpMonthTime)?"class='sLinkSelect'":null).">".Txt::formatime("MMMM",$tmpMonthTime)."</a>";
 		}
 		$vDatas["calMonthPeriodMenu"].="<hr>";
 		for($tmpYear=date("Y")-3; $tmpYear<=date("Y")+5; $tmpYear++){
@@ -154,7 +154,7 @@ class CtrlCalendar extends Ctrl
 					$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::periodEvts($tmpCal->allPeriodEvts,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);	//- Récupère uniquement les evts de la journée
 					if(!empty($tmpDay["calsEvts"][$tmpCal->_id]))  {$nbCalsWithEvt++;}															//- Incrémente $nbCalsWithEvt ?
 				}
-				$tmpDay["nbCalsWithEvt"]=(!empty($nbCalsWithEvt))  ?  Txt::dateLabel($tmpDate,"full")." :<br>".Txt::trad("CALENDAR_calendarsPercentBusy")." : ".$nbCalsWithEvt." sur ".count($tmpDay["calsEvts"])  :  null;//Tooltip de synthese si au moins un agenda possède un événement à cette date
+				$tmpDay["nbCalsWithEvt"]=(!empty($nbCalsWithEvt))  ?  Txt::dateLabel($tmpDate,"dateFull")." :<br>".Txt::trad("CALENDAR_calendarsPercentBusy")." : ".$nbCalsWithEvt." sur ".count($tmpDay["calsEvts"])  :  null;//Tooltip de synthese si au moins un agenda possède un événement à cette date
 				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;																					//Ajoute le jour de la synthese
 			}
 		}
@@ -197,7 +197,7 @@ class CtrlCalendar extends Ctrl
 					{
 						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
 						$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
-						$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
+						$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
 						$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl()."');";//Affiche l'evt dans son principal agenda (cf "getUrl()" surchargée)
 						$tmpEvt->pluginJsLabel="lightboxOpen('".$tmpEvt->getUrl("vue")."');";//Affiche l'evt en détail
 						$pluginsList[$tmpEvt->_typeId]=$tmpEvt;
@@ -283,7 +283,7 @@ class CtrlCalendar extends Ctrl
 			}
 			////	NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
 			if(!empty($propositionIdUsers)){
-				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"full",$curObj->dateEnd);
+				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionNotifTitle")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionNotifMessage"));
 				Tool::sendMail($propositionIdUsers, $mailSubject, $mailMessage, ["noNotify"]);
@@ -291,7 +291,7 @@ class CtrlCalendar extends Ctrl
 			////	NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
 			if(Req::isParam("notifMail") && $curObj->fullRight())
 			{
-				$objLabel=Txt::dateLabel($curObj->dateBegin,"full",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
+				$objLabel=Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
 				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title).".ics"]];
 				$curObj->sendMailNotif($objLabel, $icsFile);
@@ -410,7 +410,7 @@ class CtrlCalendar extends Ctrl
 			if(!empty($notifMail)){
 				$mailSubject=Req::isParam("isConfirmed")  ?  Txt::trad("CALENDAR_evtProposedConfirmMail")." ".Ctrl::$curUser->getLabel()  :  Txt::trad("CALENDAR_evtProposedDeclineMail");
 				$mailMessage=$mailSubject." : <br><br>".
-							 $curEvt->title." : ".Txt::dateLabel($curEvt->dateBegin,"full",$curEvt->dateEnd)."<br><br>".
+							 $curEvt->title." : ".Txt::dateLabel($curEvt->dateBegin,"normal",$curEvt->dateEnd)."<br><br>".
 							 ucfirst(Txt::trad("OBJECTcalendar"))." : ".$curCal->title;
 				Tool::sendMail($notifMail, $mailSubject, $mailMessage, ["noNotify"]);
 			}
@@ -441,12 +441,12 @@ class CtrlCalendar extends Ctrl
 			}
 			if(!empty($periodValues))	{$vDatas["labelPeriod"].=" : ".trim($periodValues, ", ");}
 			//Périodicité : fin
-			if(!empty($curObj->periodDateEnd))	{$vDatas["labelPeriod"].="<br>".Txt::trad("CALENDAR_periodDateEnd")." : ".Txt::dateLabel($curObj->periodDateEnd,"full");}
+			if(!empty($curObj->periodDateEnd))	{$vDatas["labelPeriod"].="<br>".Txt::trad("CALENDAR_periodDateEnd")." : ".Txt::dateLabel($curObj->periodDateEnd,"date");}
 			//Périodicité : exceptions
 			if(!empty($curObj->periodDateExceptions)){
 				$vDatas["labelPeriod"].="<br>".Txt::trad("CALENDAR_periodException")." : ";
 				$periodDateExceptions=array_filter(Txt::txt2tab($curObj->periodDateExceptions));//"array_filter" pour enlever les valeurs vides
-				foreach($periodDateExceptions as $tmpVal)	{$vDatas["labelPeriod"].=Txt::dateLabel($tmpVal,"dateMini").", ";}
+				foreach($periodDateExceptions as $tmpVal)	{$vDatas["labelPeriod"].=Txt::dateLabel($tmpVal,"date").", ";}
 				$vDatas["labelPeriod"]=trim($vDatas["labelPeriod"], ", ");
 			}
 		}
@@ -534,7 +534,7 @@ class CtrlCalendar extends Ctrl
 							if(stristr($tmpEvt["RRULE"],"FREQ=WEEKLY") && stristr($tmpEvt["RRULE"],"BYDAY=")){
 								$tmpEvt["dbPeriodType"]="weekDay";
 								foreach($rruleTab as $rruleTmp){//Jours de la période
-									if(stristr($rruleTmp,"BYDAY="))  {$tmpEvt["dbPeriodValues"]=str_replace(['BYDAY=',',','MO','TU','WE','TH','FR','SA','SU'], [null,'@@',1,2,3,4,5,6,7], $rruleTmp);}
+									if(stristr($rruleTmp,"BYDAY="))  {$tmpEvt["dbPeriodValues"]=str_replace(['BYDAY=',',','MO','TU','WE','TH','FR','SA','SU'], ['','@@',1,2,3,4,5,6,7], $rruleTmp);}
 								}
 							}
 							//Périodique : mois
@@ -672,7 +672,7 @@ class CtrlCalendar extends Ctrl
 					elseif($tmpEvt->periodType=="month")	{$icalDescription.=Txt::trad("month_".$tmpVal).", ";}
 				}
 			}
-			$icalDescription="DESCRIPTION:".html_entity_decode(strip_tags($icalDescription)).$newLine;//"Nettoye" la description
+			$icalDescription="DESCRIPTION:".Txt::clean($icalDescription).$newLine;//Description nettoyé (tester import sur thunderbird & ical Validator)
 			//Ajoute l'evenement
 			$ical.= "BEGIN:VEVENT".$newLine.
 					"CREATED:".self::icalDate($tmpEvt->dateCrea).$newLine.
@@ -714,7 +714,7 @@ class CtrlCalendar extends Ctrl
 		// Exemple avec "-5:30"
 		$hourTimezone=Tool::$tabTimezones[self::$curTimezone];
 		$valueSign=(substr($hourTimezone,0,1)=="-") ? '-' : '+';				//"-"
-		$hourAbsoluteVal=str_replace(['-','+'],null,substr($hourTimezone,0,-3));//"5"
+		$hourAbsoluteVal=str_replace(['-','+'],'',substr($hourTimezone,0,-3));	//"5"
 		$hourAbsoluteVal+=$timeLag;												//Si $timeLag=2 -> "7"
 		if($hourAbsoluteVal<10)	{$hourAbsoluteVal="0".$hourAbsoluteVal;}		//"05"
 		$minutes=substr($hourTimezone,-2);										//"30"

@@ -11,12 +11,13 @@ class Trad extends Txt
 	{
 		////	Header http / Editeurs Tinymce,DatePicker,etc / Dates formatées par PHP
 		self::$trad["CURLANG"]="en";
-		self::$trad["HTML_EDITOR"]="en_GB";//pas "null"
+		self::$trad["DATELANG"]="en_GB";
+		self::$trad["EDITORLANG"]="en_GB";
 		setlocale(LC_TIME, "en_US.utf8", "en_US.UTF-8", "en_US", "en", "english");
 
 		////	Divers
 		self::$trad["OK"]="OK";
-		self::$trad["fillAllFields"]="Thank you for entering all the fields";
+		self::$trad["fillFieldsForm"]="Please fill in the fields of the form";
 		self::$trad["requiredFields"]="Required Fields";
 		self::$trad["inaccessibleElem"]="Inaccessible Element";
 		self::$trad["warning"]="Warning";
@@ -78,7 +79,8 @@ class Trad extends Txt
 		self::$trad["gSigninButton"]="Login with Google";
 		self::$trad["gSigninButtonInfo"]="Sign in with your Google / Gmail account : to do this, you must already have an account on this space, with an email address <i>@gmail.com</i>";
 		self::$trad["gSigninUserNotRegistered"]="is not registered on the space with the email";
-		self::$trad["switchOmnispace"]="Switch to another space Omnispace";
+		self::$trad["connectSpaceSwitch"]="Connect to another space";
+		self::$trad["connectSpaceSwitchConfirm"]="Are you sure you want to leave this space to connect to another space ?";
 		self::$trad["guestAccess"]="Login as guest";
 		self::$trad["spacePassError"]="Wrong password";
 		self::$trad["ieObsolete"]="Your browser is outdated and does not support all HTML standards : It is advisable to update it or use another browser";
@@ -357,7 +359,7 @@ class Trad extends Txt
 		self::$trad["NOTIF_identification"]="Invalid login or password";
 		self::$trad["NOTIF_presentIp"]="This user account is currently being used from another computer, with another ip address. An account can only be used on one computer at the same time.";
 		self::$trad["NOTIF_noSpaceAccess"]="Your user account has been successfully identified, but you are not currently assigned to any space. Please contact the administrator";
-		self::$trad["NOTIF_noAccess"]="Unauthorized access";
+		self::$trad["NOTIF_noAccess"]="You are logged out";
 		self::$trad["NOTIF_fileOrFolderAccess"]="File or folder not accessible";
 		self::$trad["NOTIF_diskSpace"]="Space for the storage of your files is insufficient, you cannot add file";
 		self::$trad["NOTIF_fileVersionForbidden"]="File type not allowed";
@@ -380,11 +382,12 @@ class Trad extends Txt
 		self::$trad["FOOTER_pageGenerated"]="page generated in";
 
 		////	Messenger / Visio
+		self::$trad["MESSENGER_headerModuleName"]="Messages";
+		self::$trad["MESSENGER_moduleDescription"]="Instant messaging : Chat live or start a videoconference with people connected to the space";
 		self::$trad["MESSENGER_messengerTitle"]="Instant messaging : click on a person's name to chat or start a video conference";
-		self::$trad["MESSENGER_messengerMultipleUsers"]="View all messages sent to me | Chat with others by selecting my interlocutors in the right pane";
+		self::$trad["MESSENGER_messengerMultiUsers"]="Chat with others by selecting my interlocutors in the right pane";
 		self::$trad["MESSENGER_connected"]="Online";
-		self::$trad["MESSENGER_nobody"]="You are currently the only user logged in on the space";
-		self::$trad["MESSENGER_nobodyTitle"]="Click here to view your old discussions (kept for 15 days)";
+		self::$trad["MESSENGER_nobody"]="You are currently the only user logged in on the space.<br> Note: your old discussions are kept for 30 days";
 		self::$trad["MESSENGER_messageFrom"]="Message from";
 		self::$trad["MESSENGER_messageTo"]="sent to";
 		self::$trad["MESSENGER_chatWith"]="Chat with";
@@ -427,7 +430,7 @@ class Trad extends Txt
 		self::$trad["EDIT_showAllUsersAndSpaces"]="Display all users and spaces";
 		self::$trad["EDIT_notifMail"]="Notify";
 		self::$trad["EDIT_notifMail2"]="Send a notification of creation/modification by email";
-		self::$trad["EDIT_notifMailInfo"]="The notification will be sent to the people assigned to the item / -OBJLABEL-.";
+		self::$trad["EDIT_notifMailInfo"]="The notification will be sent to the people assigned to the item (-OBJLABEL-)";
 		self::$trad["EDIT_notifMailInfoCal"]="<hr>If you assign the event to personal calendars, then the notification will only be sent to the owners of these calendars (write access).";
 		self::$trad["EDIT_notifMailAddFiles"]="Attach files to the notification";
 		self::$trad["EDIT_notifMailSelect"]="Select the recipients of notifications";
@@ -467,7 +470,7 @@ class Trad extends Txt
 												<h4><img src='app/img/task/iconSmall.png'> Centralize your notes, projects and contacts</h4>
 												<h4><img src='app/img/mail/iconSmall.png'> Send newsletters by email</h4>
 												<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">Click here to send invitation emails and grow your community!</a></h4>
-												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/?ctrl=offline&action=Documentation' target='_blank'>For more information, see the official Omnispace & Agora-Project documentation</a></h4>";
+												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>For more information, see the official Omnispace & Agora-Project documentation</a></h4>";
 		self::$trad["INSTALL_dataDashboardPoll"]="What do you think of the news feed ?";
 		self::$trad["INSTALL_dataDashboardPollA"]="Very interesting !";
 		self::$trad["INSTALL_dataDashboardPollB"]="Interesting";

@@ -14,7 +14,7 @@
 		<meta name="application-name" content="Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
 		<!-- JQUERY & JQUERY-UI -->
-		<script src="app/js/jquery-3.6.0.min.js"></script>
+		<script src="app/js/jquery-3.6.1.min.js"></script>
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
 		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
 		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">
@@ -69,7 +69,7 @@
 
 		<?php
 		////	FOOTER JAVASCRIPT DU HOST ?
-		if(Ctrl::isHost())  {Host::footerJsNotify();}
+		if(Req::isHost())  {Host::footerJsNotify();}
 		?>
 
 		<style>
@@ -90,15 +90,16 @@
 		@media screen and (max-width:1023px){
 			#pageFooterHtml, #pageFooterIcon		{visibility:hidden;}/*pas de "display:none" pour laisser de la marge avec le contenu de la page pour le Messenger/Livecounter et le "respAddButton"*/
 			/*Menu responsive : cf. "common.js"*/
-			#respAddButton							{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
 			#respMenuMain, #respMenuBg				{position:fixed; top:0px; right:0px; height:100%;}
 			#respMenuBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
-			#respMenuMain							{z-index:101; max-width:330px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}/*max-width: cf. "#pageModuleMenu"*/
-			#respMenuMain #respMenuClose			{position:absolute; top:7px; right:7px;}/*tester avec Ionic*/
+			#respMenuMain							{z-index:101; max-width:370px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
+			#respMenuMain #respMenuClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
 			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
 			#respMenuMain hr						{margin:15px 0px;}/*surcharge*/
-			#respMenuTwo							{display:none; margin-top:10px; border-radius:5px; <?= @Ctrl::$agora->skin=="black" ? "background:#444;border:solid 1px #555;" : "background:#f5f5f5;border:solid 1px #ddd;" ?>}/*cf. style de ".vHeaderModule" en responsive*/
+			#respMenuTwo							{display:none; margin-top:10px; border-radius:5px;}
+			#respMenuTwo, .vHeaderModuleCurrent		{<?= @Ctrl::$agora->skin=="black" ? "background:#444!important;border:solid 1px #555;" : "background:#eee!important;border:solid 1px #ddd;" ?>}
+			#respAddButton							{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
 		}
 
 		/*IMPRESSION*/
@@ -131,8 +132,9 @@
 			if(Ctrl::$curUser->isAdminSpace() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
 				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to version ".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
 			//Affiche le footer
+			$pageFooterIconTooltip="".OMNISPACE_URL_LABEL." - ".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." secondes";
 			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>
-				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".Txt::tooltip($pathLogoTitle)."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
+				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".Txt::tooltip($pageFooterIconTooltip)."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
 		}
 		?>
 	</body>

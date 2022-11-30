@@ -246,7 +246,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			}
 			//Menu "Afficher tous les utilisateurs" (.."et espace")  &&  Menu "Etendre les droits aux sous-dossiers"
 			echo '<div id="showAllUsers">'.(count($accessRightSpaces)==1?Txt::trad("EDIT_showAllUsers"):Txt::trad("EDIT_showAllUsersAndSpaces")).' <img src="app/img/arrowBottom.png"></div>';
-			if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1" checked="checked"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFolders_info").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(3);</script>';}
+			if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFolders_info").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(5);</script>';}
 			//Fin du "objMenuAccessRight"
 			echo '</div>';
 		}

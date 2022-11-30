@@ -6,7 +6,7 @@
 tinymce.init({
 	////	parametrage général
 	selector: "textarea[name='<?= $fieldName ?>']",			//Selecteur du textarea
-	language:"<?= Txt::trad("HTML_EDITOR") ?>",				//Langue du menu de l'éditeur
+	language:"<?= Txt::trad("EDITORLANG") ?>",				//Langue du menu de l'éditeur
 	width: "100%",											//Largeur de l'éditeur
 	min_height:(isMainPage==true?350:250),					//Hauteur par défaut de l'éditeur (cf. "lightboxResize()")
 	menubar: false,											//Pas de "menubar" en haut de l'éditeur (menu déroulant)
@@ -32,7 +32,7 @@ tinymce.init({
 			windowParent.confirmCloseForm=true;	//Marqueur pour demander confirmation de sortie de formulaire ("windowParent" si on est dans une lightbox)
 		});
 		//// Bouton de récupération du brouillon/draft (cf. "toolbar1" ci-dessus et enregistrements dans "ap_userLivecounter")
-		var editorDraftHtml="<?= addslashes(str_replace(["\n","\r"],null,$editorDraft)) ?>";//Pas de \n\r car pb avec les images en pièces jointe
+		var editorDraftHtml="<?= addslashes(str_replace(["\n","\r"],"",$editorDraft)) ?>";//Pas de \n\r car pb avec les images en pièces jointe
 		if(editorDraftHtml.length>0)
 		{
 			editor.ui.registry.addButton("editorDraft",{
@@ -52,7 +52,7 @@ tinymce.init({
 				onAction:function(_){
 					$("[for='objMenuAttachedFile']").click();																//"VueObjMenuEdit.php" : affiche le menu/onglet des fichiers joints
 					var fileInput=$(".attachedFileInput").filter(function(){ return !this.value; }).first();				//Sélectionne le premier input "attachedFile" disponible
-					fileInput.click().change(function(){ attachedFileInsert(this.id.replace("attachedFileInput","")); });	//Récupère le fichier (trigger "click") puis ajoute l'image dans le texte via "attachedFileInsert()" avec en parametre le numéro de l'input (exple : "attachedFileInput5". Voir "VueObjAttacheedFile.php")		
+					fileInput.click().change(function(){ attachedFileInsert(this.id.replace("attachedFileInput","")); });	//Récupère le fichier (trigger "click") puis ajoute l'image dans le texte via "attachedFileInsert()" avec en parametre le numéro de l'input (ex: "attachedFileInput5". Voir "VueObjAttacheedFile.php")		
 				}
 			});
 		}
@@ -121,7 +121,7 @@ function attachedFileReplaceSRCINPUT()
 {
 	if(typeof tinymce!="undefined"){
 		$(tinymce.activeEditor.getBody()).find("a[id*=attachedFileTagInput]").each(function(){	//Accède à Tinymce via "getBody()" puis parcourt les tags <a> ayant un "attachedFileTagInput" (cf. "attachedFileInsert()" ci-dessus)
-			srcInput=this.id.replace("attachedFileTagInput","SRCINPUT");						//Init le href/src temporaire à partir de l'id du tag (exple: "attachedFileTagInput555" devient "SRCINPUT555")
+			srcInput=this.id.replace("attachedFileTagInput","SRCINPUT");						//Init le href/src temporaire à partir de l'id du tag (ex: "attachedFileTagInput555" devient "SRCINPUT555")
 			$(this).attr("href",srcInput);														//Remplace le "href" du tag <a> (tag <a> du fancybox des images)
 			$(tinymce.activeEditor.getBody()).find("#"+this.id+" img").attr("src",srcInput);	//Accède à Tinymce via "getBody()" (encore une fois!) puis remplace le "src" du tag <img>
 		});

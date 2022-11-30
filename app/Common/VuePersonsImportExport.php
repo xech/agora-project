@@ -151,7 +151,7 @@ form											{text-align:center;}
 						echo "<th><select name='agoraFields[".$fieldCpt."]' class='vAgoraFieldSelect' data-fieldCpt='".$fieldCpt."'><option></option>";	//Début du <select> et option vide (champ pas importé)
 						foreach(MdlPerson::$csvFormats["csv_agora"]["fieldKeys"] as $agoraFieldName){													//Parcourt les champs "agora" disponibles
 							if($importLoginPassword==true || !preg_match("/(login|password)/i",$agoraFieldName)){										//Vérif si c'est un login/password et s'ils sont importables
-								$selectField=(Txt::clean($headerFields[$fieldCpt])==$agoraFieldName)  ?  "selected"  :  null;							//Sélectionne le champ "agora" s'il correspond au champ de l'import 
+								$selectField=(Txt::clean($headerFields[$fieldCpt],"max")==$agoraFieldName)  ?  "selected"  :  null;						//Sélectionne le champ "agora" s'il correspond au champ de l'import 
 								echo "<option value='".$agoraFieldName."' ".$selectField.">".Txt::trad($agoraFieldName)."</option>";					//Affiche l'option du champ "agora"
 							}
 						}

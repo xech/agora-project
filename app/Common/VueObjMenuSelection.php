@@ -33,8 +33,8 @@ function objSelectAction(urlRedir, openPage)
 	var objSelector=":checked[name='objectsTypeId[]']";
 	$(objSelector).each(function(){
 		var typeId=this.value.split("-");																					//Transforme en tableau. Ex: "file-22" -> array('file',22)
-		if(objectsTypeId!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];  objectsTypeId=typeId[0];}	//Ajoute une nouvelle liste de "objectsTypeId" (exple: "&objectsTypeId[file]=22")
-		else							{urlRedir+="-"+typeId[1];}															//Incrémente la liste (exple: "&objectsTypeId[file]=22-33")
+		if(objectsTypeId!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];  objectsTypeId=typeId[0];}	//Ajoute une nouvelle liste de "objectsTypeId" (ex: "&objectsTypeId[file]=22")
+		else							{urlRedir+="-"+typeId[1];}															//Incrémente la liste (ex: "&objectsTypeId[file]=22-33")
 	});
 	//Confirme une désaffectation d'espace?
 	if(/deleteFromCurSpace/i.test(urlRedir)){

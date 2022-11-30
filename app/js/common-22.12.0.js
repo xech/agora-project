@@ -337,7 +337,7 @@ function initMenuContext()
 	}
 	////	Click/Survol le corps de la page : masque le menu contextuel
 	$("#pageFull,#pageCenter").on("click mouseenter", function(){ $(".menuContext").hide(); });
-	////	Pas de sélection d'un objet via "objSelect()" : si on click sur son menu context (ou son launcher) ou un lien spécifique (exple: sujet du forum ou download de fichier)
+	////	Pas de sélection d'un objet via "objSelect()" : si on click sur son menu context (ou son launcher) ou un lien spécifique (ex: sujet du forum ou download de fichier)
 	$(".menuLaunch, .menuContext, .stopPropagation, .objContainer a, .objLabelLink").click(function(event){  event.stopPropagation();  });
 }
 
@@ -584,7 +584,7 @@ function lightboxResize()
 }
 
 /**************************************************************************************************
- * RELOAD LA PAGE PRINCIPALE DEPUIS UNE LIGHTBOX (exple: après edit d'objet)
+ * RELOAD LA PAGE PRINCIPALE DEPUIS UNE LIGHTBOX (ex: après edit d'objet)
  **************************************************************************************************/
 function lightboxClose(urlRedir, urlParms)
 {
@@ -651,7 +651,7 @@ function spaceAffectations()
 	//// Click le Label d'une affectation (sauf "allUsers")
 	$(".spaceAffectLabel").click(function(){
 		//init
-		var _idTarget=$(this).parent().attr("id").replace("targetLine","");	//Id de l'user ou espace dans le div parent contenant "targetLine" (exple: "targetLine55" -> "55")
+		var _idTarget=$(this).parent().attr("id").replace("targetLine","");	//Id de l'user ou espace dans le div parent contenant "targetLine" (ex: "targetLine55" -> "55")
 		var box1=".spaceAffectInput[value='"+_idTarget+"_1']";				//Checkbox "user"
 		var box2=".spaceAffectInput[value='"+_idTarget+"_2']";				//Checkbox "admin"
 		//Switch de checkbox
@@ -666,7 +666,7 @@ function spaceAffectations()
 
 	//// Click la checkbox d'une affectation
 	$(".spaceAffectInput").change(function(){
-		var targetId=this.value.split("_")[0];																//Id de l'user ou espace (exple: "55_2" -> "55")
+		var targetId=this.value.split("_")[0];																//Id de l'user ou espace (ex: "55_2" -> "55")
 		$("[name='spaceAffect[]'][value^='"+targetId+"_']:not(:disabled)").not(this).prop("checked",false);	//Uncheck les autres box de l'user ou espace (sauf celles disabled)
 		spaceAffectationsLabel();																			//Stylise les labels
 	});
@@ -684,8 +684,8 @@ function spaceAffectationsLabel()
 	$(".spaceAffectLine").removeClass("lineSelect sAccessRead sAccessWrite");
 	//Stylise les labels && la ligne sélectionnées
 	$(".spaceAffectInput:checked").each(function(){
-		var targetId   =this.value.split("_")[0];	//Id de l'user ou espace (exple: "55_2" -> "55")
-		var targetRight=this.value.split("_")[1];	//Droit "user" ou "admin" (exple: "55_2" -> "2")
+		var targetId   =this.value.split("_")[0];	//Id de l'user ou espace (ex: "55_2" -> "55")
+		var targetRight=this.value.split("_")[1];	//Droit "user" ou "admin" (ex: "55_2" -> "2")
 		if(targetRight=="1")		{$("#targetLine"+targetId).addClass("lineSelect sAccessRead");}	//Sélectionne la box "user"
 		else if(targetRight=="2")	{$("#targetLine"+targetId).addClass("lineSelect sAccessWrite");}	//Sélectionne la box "admin"
 	});

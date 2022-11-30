@@ -35,7 +35,7 @@ class MdlTaskFolder extends MdlObjectFolder
 		if(!empty($folderDetails["dateBegin"]) && !empty($folderDetails["dateEnd"])){
 			$fillPercent=((time()-strtotime($folderDetails["dateBegin"])) / (strtotime($folderDetails["dateEnd"])-strtotime($folderDetails["dateBegin"]))) * 100;
 			$txtBar="<img src='app/img/task/date.png'> ".Txt::dateLabel($folderDetails["dateBegin"],"mini",$folderDetails["dateEnd"]);
-			$txtTooltip=Txt::dateLabel($folderDetails["dateBegin"],"full",$folderDetails["dateEnd"]);
+			$txtTooltip=Txt::dateLabel($folderDetails["dateBegin"],"normal",$folderDetails["dateEnd"]);
 			$textReturn.=Tool::percentBar($fillPercent, $txtBar, $txtTooltip, false, MdlTask::barWidth);
 		}
 		return $textReturn." &nbsp; &nbsp; ";

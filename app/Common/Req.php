@@ -59,11 +59,9 @@ class Req
 		require_once PATH_DATAS."config.inc.php";
 		//Lance l'action demandée
 		try{
-			//Installation d'AP : pas d'initialisation du controleur
-			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}
-			//Lance le controleur / Lance une Exception
-			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}
-			else												{throw new Exception("Page introuvable : Action '".$curActionMethod."'");  exit;}
+			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}																			//Lance le controleur principal (sauf si Install AP)
+			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}												//Lance le controleur spécifique
+			else												{throw new Exception("Page introuvable : Action '".$curActionMethod."'");  exit;}	//Lance une Exception
 		}
 		//Gestion des exceptions
 		catch(Exception $e){
@@ -108,7 +106,7 @@ class Req
 		{
 			//Enlève le javascript
 			$value=preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $value);
-			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Ctrl::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
+			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Req::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
 			//Enleve les balises html pour les parametres qui ne proviennent pas de l'éditeur tinyMce (sauf <p><div><span>...). Tester avec les News et avec l'url "index.php?ctrl=dashboard&notify=<svg/onload=alert(/myXss/)>"
 			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}
 		}
@@ -145,6 +143,14 @@ class Req
 		return $urlProtocol.$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER["PHP_SELF"]),'/');
 	}
 
+	/*******************************************************************************************
+	 * VÉRIF SI ON EST SUR UN HOST
+	 *******************************************************************************************/
+	public static function isHost()
+	{
+		return defined("HOST_DOMAINE");
+	}
+
 	/********************************************************************************************
 	 * VÉRIFIE SI ON EST EN MODE 'DEV' ('DEBIAN' OU IP LOCALE POUR IONIC DEVAPP)
 	 ********************************************************************************************/
@@ -163,12 +169,24 @@ class Req
 	}
 
 	/********************************************************************************************
-	 * NAVIGATION TACTILE SUR APP
+	 * NAVIGATION SUR APP MOBILE
 	 ********************************************************************************************/
 	public static function isMobileApp()
 	{
-		return (!empty($_COOKIE["mobileAppliTrue"]));
+		return (!empty($_COOKIE["mobileAppli"]));
 	}
+
+	/********************************************************************************************
+	 * NAVIGATION SUR APP MOBILE : URL POUR SWITCHER D'ESPACE
+	 ********************************************************************************************/
+	public static function connectSpaceSwitchUrl()
+	{
+		return OMNISPACE_URL_PUBLIC."/index.php?ctrl=offline&action=connectSpace&connectSpaceSwitch=true";
+	}
+
+	/***************************************************************************************************************************/
+	/*******************************************	SPECIFIC METHODS	********************************************************/
+	/***************************************************************************************************************************/
 
 	/********************************************************************************************
 	 * AFFICHE UNE ERREUR D'EXECUTION
@@ -176,16 +194,11 @@ class Req
     private function displayExeption(Exception $exception)
 	{
 		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
-		if(preg_match("/dbInstall/i",$exception) && self::isInstalling()==false && Ctrl::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+		if(preg_match("/dbInstall/i",$exception) && self::isInstalling()==false && Req::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		//Affiche le message
         echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage()."<br><br><a href='?ctrl=offline'>Retour</a></h3>";
 		exit;
     }
-
-
-	/***************************************************************************************************************************/
-	/*******************************************	SPECIFIC METHODS	********************************************************/
-	/***************************************************************************************************************************/
 
 	/********************************************************************************************
 	 * VÉRIF SI L'APPLI EST EN COUR D'INSTALL

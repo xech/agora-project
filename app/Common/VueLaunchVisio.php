@@ -22,9 +22,9 @@ $(function(){
 
 <div class="lightboxContent">
 	<?php
-	////	Install l'application Jitsi
+	////	Depuis le browser systeme d'Android : propose d'installer l'appli Jitsi 
 	if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))
-		{echo "<a href=\"javascript:window.open('android-app://org.jitsi.meet#omnispaceApp_action=getFile_nameMd5')\" class='visioInfos'><img src='app/img/jitsi.png'> ".Txt::trad("VISIO_installJitsi")."</a>";}
+		{echo "<a href=\"javascript:window.open('android-app://org.jitsi.meet#omnispaceMobileApp_getFile')\" class='visioInfos'><img src='app/img/jitsi.png'> ".Txt::trad("VISIO_installJitsi")."</a>";}
 
 	////	Bouton de lancement && Infos sur la visio
 	echo "<button id='launchVisio'>".Txt::trad("VISIO_launchButton")." &nbsp; <img src='app/img/visioSmall.png'></button>

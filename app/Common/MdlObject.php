@@ -63,7 +63,7 @@ class MdlObject
 				foreach($objValues as $propertieKey=>$propertieVal)  {$this->$propertieKey=$propertieVal;}
 			}
 		}
-		////	Identifiant tjs numérique + Identifiant générique (exple : "fileFolder-19")
+		////	Identifiant tjs numérique + Identifiant générique (ex: "fileFolder-19")
 		$this->_id=(int)$this->_id;
 		$this->_typeId=static::objectType."-".$this->_id;
 	}
@@ -385,7 +385,7 @@ class MdlObject
 	public function getUrlExternal()
 	{
 		//Cible la page de connexion > l'espace courant > puis le conteneur de l'objet (urlencodé)
-		return Req::getCurUrl()."/?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&objUrl=".urlencode($this->getUrl());
+		return Req::getCurUrl()."/index.php?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&objUrl=".urlencode($this->getUrl());
 	}
 
 	/*******************************************************************************************
@@ -535,7 +535,7 @@ class MdlObject
 			$reloadedObj->setAffectations();
 			////	Ajoute si besoin les fichiers joints
 			$reloadedObj->attachedFileAdd();
-			////	Reload à nouveau l'objet (exple: si la description est maj avec insertion d'image)
+			////	Reload à nouveau l'objet (ex: si la description est maj avec insertion d'image)
 			$reloadedObj=Ctrl::getObj(static::objectType, $_id, true);
 			////	Ajoute aux Logs  &  Renvoie l'objet rechargé
 			$logAction=(strtotime($reloadedObj->dateCrea)==time())  ?  "add"  :  "modif";
@@ -549,7 +549,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public function sendMailNotif($messageSpecific=null, $addFiles=null, $addUserIds=null)
 	{
-		//Notification demandé par l'auteur de l'objet  OU  Destinataires passés en paramètres (exple: notif de nouveaux messages du forum)
+		//Notification demandé par l'auteur de l'objet  OU  Destinataires passés en paramètres (ex: notif de nouveaux messages du forum)
 		if(Req::isParam("notifMail") || !empty($addUserIds))
 		{
 			////	Sujet : "Fichier créé par boby SMITH"
@@ -571,7 +571,7 @@ class MdlObject
 			////	Destinataires de la notif : Users spécifiques OU Users affectées à l'objet (lecture ou+)
 			$mailUserIds=[];
 			if(Req::isParam("notifMail"))	{$mailUserIds=Req::isParam("notifMailUsers") ? Req::param("notifMailUsers") : $this->affectedUserIds();}
-			////	Ajoute si besoin les destinataires passés en paramètres (exple: notif de nouveaux messages du forum)
+			////	Ajoute si besoin les destinataires passés en paramètres (ex: notif de nouveaux messages du forum)
 			if(!empty($addUserIds)){
 				if(Req::isParam("notifMail")==false)  {$noNotify=true;}//Pas de "notifiy()" sur l'envoie de l'email
 				$mailUserIds=array_unique(array_merge($mailUserIds,$addUserIds));
@@ -584,7 +584,7 @@ class MdlObject
 				if(static::htmlEditorField!=null)  {$message=$this->attachedFileImageCid($message);}							//Affiche si besoin les images en pièce jointe dans le corps du mail
 				if(Req::isDevServer())  {$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}	//Evite le spam en DEV (cf. "getUrlExternal()")
 				$attachedFiles=$this->attachedFileList();																		//Fichiers joints de l'objet
-				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}									//Ajoute si besoin les fichiers spécifiques (exple: fichier ".ics" d'un évenement)
+				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}									//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
 				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);										//Envoie l'email
 			}
 		}
@@ -676,8 +676,8 @@ class MdlObject
 			$searchText=Txt::clean($params["searchText"]);
 			//// Recherche l'expression exacte
 			if($params["searchMode"]=="exactPhrase"){
-				//Formate chaque recherche d'expression : "likesearch" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()"
-				foreach($objSearchFields as $tmpField)  {$return.="`".$tmpField."` LIKE ".Db::format($searchText)." OR `".$tmpField."` LIKE ".Db::format(htmlentities($searchText),"likeSearch,editor")." OR ";}
+				//Formate chaque recherche d'expression : "sqlLike" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()"
+				foreach($objSearchFields as $tmpField)  {$return.="`".$tmpField."` LIKE ".Db::format($searchText)." OR `".$tmpField."` LIKE ".Db::format(htmlentities($searchText),"sqlLike,editor")." OR ";}
 			}
 			//// Recherche n'importe quel mot spécifié OU Recherche tous les mots spécifiés
 			else
@@ -695,7 +695,7 @@ class MdlObject
 				//Pour chaque champ de l'objet, on ajoute une sélection SQL pour chaque mot recherché
 				foreach($objSearchFields as $tmpField){
 					$sqlField=null;
-					foreach($searchWords as $tmpWord)  {$sqlField.="`".$tmpField."` LIKE ".Db::format($tmpWord,"likeSearch,editor")." ".$operator;}	//"likesearch" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()" ci-dessus
+					foreach($searchWords as $tmpWord)  {$sqlField.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike,editor")." ".$operator;}	//"sqlLike" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()" ci-dessus
 					$return.="(".trim($sqlField,$operator).") OR ";																					//supprime le dernier $operator entre chaque mot recherché && ajoute un "OR" pour la recherche sur un autre champ
 				}
 			}
@@ -747,14 +747,14 @@ class MdlObject
 	{
 		//// Traduction principale
 		$trad=Txt::trad($tradKey);
-		//// Remplace le label principal de l'objet (exple : "news", "fichier", "dossier")
+		//// Remplace le label principal de l'objet (ex: "news", "fichier", "dossier")
 		$trad=str_replace("-OBJLABEL-", Txt::trad("OBJECT".static::objectType), $trad);
-		//// Remplace le label du contenu de l'objet (exple: "fichier" si l'objet courant est un dossier)
+		//// Remplace le label du contenu de l'objet (ex: "fichier" si l'objet courant est un dossier)
 		if(static::isContainer()){
 			$MdlObjectContent=static::MdlObjectContent;
 			$trad=str_replace("-OBJCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $trad);
 		}
-		//// Remplace le label du conteneur de l'objet (exple: "agenda" si l'objet courant est un evt)
+		//// Remplace le label du conteneur de l'objet (ex: "agenda" si l'objet courant est un evt)
 		if(static::isContainerContent()){
 			$MdlObjectContainer=static::MdlObjectContainer;
 			$trad=str_replace("-OBJCONTAINER-", Txt::trad("OBJECT".$MdlObjectContainer::objectType), $trad);
@@ -772,20 +772,11 @@ class MdlObject
 		{
 			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}	//Si besoin, récupère les infos en bdd
 			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);						//Path/chemin réel du fichier
-			$file["url"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url pour un affichage du fichier via "actionAttachedFileDisplay()"
+			$file["url"]=CtrlObject::attachedFileDisplayUrl($file["_id"], $file["name"]);								//Url pour un affichage du fichier via "actionAttachedFileDisplay()"
 			$file["containerObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);									//Ajoute l'objet dont dépend le fichier joint
 			if(File::isType("imageBrowser",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}					//"cid" du fichier pour l'envoi des mails (cf. "attachedFileImageCid()")
 			return $file;
 		}
-	}
-
-	/*******************************************************************************************
-	 * FICHIER JOINT : URL D'AFFICHAGE DU FICHIER VIA "actionAttachedFileDisplay()"
-	 *******************************************************************************************/
-	public static function attachedFileDisplayUrl($fileId, $fileName)
-	{
-		//Ajoute "&amp;" pour Tinymce et ajoute l'extension en toute fin (cf. fancybox des images et le controle des type de fichier)
-		return "?ctrl=object&amp;action=AttachedFileDisplay&amp;_id=".$fileId."&amp;extension=.".File::extension($fileName);
 	}
 
 	/*******************************************************************************************
@@ -794,7 +785,7 @@ class MdlObject
 	public function attachedFileImageCid($mailMessage)
 	{
 		foreach($this->attachedFileList() as $tmpFile){																		//Parcourt chaque fichier joint de l'objet courant
-			if(!empty($tmpFile["cid"]))  {$mailMessage=str_replace($tmpFile["url"], "cid:".$tmpFile["cid"], $mailMessage);}	//Si c'est une image, on remplace l'url par le "cid" (exple : CID="XYZ" correspond à "<img src='cid:XYZ'>")
+			if(!empty($tmpFile["cid"]))  {$mailMessage=str_replace($tmpFile["url"], "cid:".$tmpFile["cid"], $mailMessage);}	//Si c'est une image, on remplace l'url par le "cid" (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
 		}
 		return $mailMessage;
 	}
@@ -816,9 +807,9 @@ class MdlObject
 		return (array)$this->_attachedFiles;
 	}
 
-	/*******************************************************************************************
-	 * FICHIER JOINT : MENUS DES FICHIERS JOINTS DE L'OBJET (Menu contextuel ou vue description. Affiche et propose le téléchargement)
-	 *******************************************************************************************/
+	/*********************************************************************************************************************************
+	 * FICHIER JOINT : MENUS DES FICHIERS JOINTS DE L'OBJET (Menu contextuel OU vue description. Affiche et propose le téléchargement)
+	 *********************************************************************************************************************************/
 	public function attachedFileMenu($separator="<hr>")
 	{
 		//Mise en cache du menu des fichiers joints
@@ -830,8 +821,8 @@ class MdlObject
 			{
 				foreach($this->attachedFileList() as $tmpFile){
 					$getFileUrl="?ctrl=object&action=AttachedFileDownload&_id=".$tmpFile["_id"];
-					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::appGetFileUrl($getFileUrl,$tmpFile["name"]);}//Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
-					$this->_attachedFilesMenu.="<div class='menuAttachedFile sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
+					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::urlGetFile($getFileUrl,$tmpFile["name"]);}//Download externe via mobileApp : modif l'url pour switcher sur "ctrl=misc"
+					$this->_attachedFilesMenu.="<div class='attachedFileMenu sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
 				}
 			}
 		}
@@ -864,10 +855,10 @@ class MdlObject
 						//Nouvelle Image/Vidéo/Mp3 insérée dans le texte : modifie le "SRCINPUT" pour y mettre le path final
 						if(static::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"]))
 						{
-							$inputCpt=str_replace("attachedFile",null,$inputId);																	//Récupère le compteur de l'input (cf. "VueObjAttachedFile.php")
-							$editorValue=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id);			//Récupère le texte de l'éditeur
-							$editorValue=str_replace("SRCINPUT".$inputCpt, self::attachedFileDisplayUrl($_idFile,$tmpFile["name"]), $editorValue);	//Remplace les "SRCINPUT" temporaires du fichier (cf. "VueObjHtmlEditor.php") par l'url finale d'affichage du fichier
-							$editorValue=str_replace("attachedFileTagInput".$inputCpt, "attachedFileTag".$_idFile, $editorValue);					//Remplace l'id temporaire du fichier/input par le $_idFile final (cf. "VueObjHtmlEditor.php")
+							$inputCpt=str_replace("attachedFile","",$inputId);																				//Récupère le compteur de l'input (cf. "VueObjAttachedFile.php")
+							$editorValue=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id);					//Récupère le texte de l'éditeur
+							$editorValue=str_replace("SRCINPUT".$inputCpt, CtrlObject::attachedFileDisplayUrl($_idFile,$tmpFile["name"]), $editorValue);	//Remplace les "SRCINPUT" temporaires du fichier (cf. "VueObjHtmlEditor.php") par l'url finale d'affichage du fichier
+							$editorValue=str_replace("attachedFileTagInput".$inputCpt, "attachedFileTag".$_idFile, $editorValue);							//Remplace l'id temporaire du fichier/input par le $_idFile final (cf. "VueObjHtmlEditor.php")
 							Db::query("UPDATE ".static::dbTable." SET ".static::htmlEditorField."=".Db::format($editorValue,"editor")." WHERE _id=".$this->_id);//Update le texte de l'éditeur !
 						}
 					}

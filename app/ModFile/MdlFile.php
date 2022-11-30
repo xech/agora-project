@@ -71,15 +71,22 @@ class MdlFile extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * URL DE DOWNLOAD/DISPLAY DU FICHIER ($action : "download" ou "display")
+	 * URL DE DOWNLOAD
 	 *******************************************************************************************/
-	public function urlDownloadDisplay($action="download", $dateCrea=null)
+	public function urlDownload($dateCrea=null)
 	{
-		$returndUrl="?ctrl=file&action=getFile&typeId=".$this->_typeId;								//Url de base
-		if(!empty($dateCrea))  {$returndUrl.="&dateCrea=".urlencode($dateCrea);}					//Sélectionne une version spécifique du fichier
-		if($action=="display")		{$returndUrl.="&display=true";}									//Affiche le fichier dans une lightbox (images/pdf/txt/etc)
-		elseif(Req::isMobileApp())  {$returndUrl=CtrlMisc::appGetFileUrl($returndUrl,$this->name);}	//OU Download depuis mobileApp : Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
-		return $returndUrl."&extension=.".File::extension($this->name);								//Retourne l'Url de download avec l'extension du fichier (cf. controles d'action depuis mobileApp)
+		$returndUrl="?ctrl=file&action=GetFile&typeId=".$this->_typeId;							//Url de base
+		if(!empty($dateCrea))	{$returndUrl.="&dateCrea=".urlencode($dateCrea);}				//Sélectionne une version spécifique
+		if(Req::isMobileApp())	{$returndUrl=CtrlMisc::urlGetFile($returndUrl,$this->name);}	//Download externe via mobileApp : modif l'url pour switcher sur "ctrl=misc"
+		return $returndUrl;																		//Retourne l'Url
+	}
+
+	/*******************************************************************************************
+	 * URL D'AFFICHAGE DANS LE BROWSER (IMG/PDF/ETC)
+	 *******************************************************************************************/
+	public function urlDisplay()
+	{
+		return $this->urlDownload()."&display=true";
 	}
 
 	/*******************************************************************************************
@@ -123,13 +130,17 @@ class MdlFile extends MdlObject
 			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
 			elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))
 			{
-				$tmpThumb=new Imagick();
-				$tmpThumb->readimage($this->filePath()."[0]"); 
-				$tmpThumb=$tmpThumb->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);//Pour pas avoir de background noir
-				$tmpThumb->writeImage($this->getThumbPath());
-				$tmpThumb->clear();
-				$tmpThumb->destroy();
-				return File::imageResize($this->getThumbPath(),$this->getThumbPath(),300);
+				try {
+					$imgTmp=new Imagick();
+					$imgTmp->readimage($this->filePath()."[0]"); 
+					$imgTmp=$imgTmp->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);//Pour pas avoir de background noir
+					$imgTmp->writeImage($this->getThumbPath());
+					$imgTmp->clear();
+					$imgTmp->destroy();
+					return File::imageResize($this->getThumbPath(),$this->getThumbPath(),300);
+				} catch (Exception $error){
+					Ctrl::notify($this->getLabel()." :<br>".$error->getMessage());//les .pdf avec password renvoient "Failed to read the file"
+				}
 			}
 		}
 	}
@@ -159,7 +170,7 @@ class MdlFile extends MdlObject
 			$tooltipDownloadedBy="title=\"".Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "))."\"";
 		}
 		//// "TÉLÉCHARGER LE FICHIER" + TOOLTIP "FICHIER TÉLÉCHARGÉ X FOIS"  &&  "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
-		$options["specificOptions"][]=["actionJs"=>"window.open('".$this->urlDownloadDisplay()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
+		$options["specificOptions"][]=["actionJs"=>"window.open('".$this->urlDownload()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
 		if(count($this->getVersions())>1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
 		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->_typeId)."')"];}
 		return parent::contextMenu($options);

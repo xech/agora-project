@@ -62,7 +62,7 @@ class CtrlAgora extends Ctrl
 			////	Ajoute un Wallpaper
 			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"]))
 			{
-				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"],"max",true);
+				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"],"max");
 				$wallpaperName=str_replace(".".File::extension($wallpaperName), ".jpg", $wallpaperName);
 				$wallpaperPath=PATH_WALLPAPER_CUSTOM.$wallpaperName;
 				move_uploaded_file($_FILES["wallpaperFile"]["tmp_name"], $wallpaperPath);
@@ -99,13 +99,13 @@ class CtrlAgora extends Ctrl
 			if(Req::isParam("ldap_server"))
 				{MdlPerson::ldapConnect(Req::param("ldap_server"),Req::param("ldap_server_port"),Req::param("ldap_admin_login"),Req::param("ldap_admin_pass"),true);}
 			////	Modif l'espace disque
-			if(Ctrl::isHost()==false && Req::param("limite_espace_disque")>0){
+			if(Req::isHost()==false && Req::param("limite_espace_disque")>0){
 				$limite_espace_disque=File::getBytesSize(Req::param("limite_espace_disque")."G");//exprimé en Go
 				File::updateConfigFile(array("limite_espace_disque"=>$limite_espace_disque));
 			}
 			////	Notif & Relance la page
 			Ctrl::notify(Txt::trad("modifRecorded"));
-			self::redir("?ctrl=".Req::$curCtrl);
+			self::redir("index.php?ctrl=".Req::$curCtrl);
 		}
 		////	Supprime un wallpaper?
 		if(Req::isParam("deleteCustomWallpaper")){
@@ -131,7 +131,7 @@ class CtrlAgora extends Ctrl
 			ini_set("max_execution_time","1200");//20mn max
 			$archiveName="BackupAgora_".date("Y-m-d");
 			////	Sauvegarde via "shell_exec()"
-			if(Ctrl::isHost())
+			if(Req::isHost())
 			{
 				$archiveTmpPath=tempnam(File::getTempDir(),"backupAgora".uniqid());
 				shell_exec("cd ".PATH_DATAS."; tar -cf ".$archiveTmpPath." *");//-c=creation -f=nom du dossier source
@@ -146,7 +146,7 @@ class CtrlAgora extends Ctrl
 		}
 		////	Sauvegarde uniquement la Bdd
 		else{
-			$filesList=[ ["realPath"=>$dumpPath, "zipPath"=>str_replace(PATH_DATAS,null,$dumpPath)] ];
+			$filesList=[ ["realPath"=>$dumpPath, "zipPath"=>str_replace(PATH_DATAS,"",$dumpPath)] ];
 			File::downloadArchive($filesList, "BackupAgoraBdd_".date("Y-m-d").".zip");
 		}
 	}
@@ -164,7 +164,7 @@ class CtrlAgora extends Ctrl
 		foreach(scandir($tmpPath) as $tmpFileName)
 		{
 			$tmpFileRealPath=$tmpPath."/".$tmpFileName;
-			$tmpFileZipPath=str_replace(PATH_DATAS,null,$tmpFileRealPath);
+			$tmpFileZipPath=str_replace(PATH_DATAS,"",$tmpFileRealPath);
 			//Ajoute un fichier/dossier
 			if(is_file($tmpFileRealPath))	{$filesList[]=["realPath"=>$tmpFileRealPath, "zipPath"=>$tmpFileZipPath];}
 			elseif(in_array($tmpFileName,['.','..'])==false && is_dir($tmpFileRealPath)){

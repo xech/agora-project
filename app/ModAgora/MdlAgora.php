@@ -49,7 +49,7 @@ class MdlAgora extends MdlObject
 	{
 		if(!empty($this->visioHost)){
 			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");												//Prefixe aléatoire à chaque appel de la fonction
-			return $this->visioHost."/".(Ctrl::isHost()?"room":"omnispace-room")."-".substr($roomId,0,$roomIdLength);	//Url avec le préfixe et le $roomId à la longeur souhaitée
+			return $this->visioHost."/".(Req::isHost()?"room":"omnispace-room")."-".substr($roomId,0,$roomIdLength);	//Url avec le préfixe et le $roomId à la longeur souhaitée
 		}
 	}
 

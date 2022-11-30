@@ -8,13 +8,13 @@
 
 
 ////	URLS
-$OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "http://".$_SERVER['SERVER_NAME']."/omnispace"  :  "https://www.omnispace.fr";//IP de dev (Ionic and Co) || IP de Prod
+$OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "https://".$_SERVER['SERVER_NAME']."/omnispace"  :  "https://www.omnispace.fr";//IP de dev (Flutter and Co) || IP de Prod
 define("OMNISPACE_URL_PUBLIC", $OMNISPACE_URL_PUBLIC);
 define("OMNISPACE_URL_LABEL","www.omnispace.fr");
 
 ////    VERSIONS
-define("VERSION_AGORA","22.3.1");            //Version courante d'AP
-define("VERSION_AGORA_PHP_MINIMUM","5.5");  //Version minimum de PHP
+define("VERSION_AGORA","22.12.0");			//Version courante d'AP
+define("VERSION_AGORA_PHP_MINIMUM","5.5");	//Version minimum de PHP
 
 ////    INIT LE "PATH_DATAS" & CHEMINS SPÉCIFIQUES
 if(is_file("Host.php"))	{require_once "Host.php";  Host::initHost();}

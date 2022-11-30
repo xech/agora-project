@@ -94,7 +94,7 @@ $(function(){
 			//Pas de validation par défaut du formulaire
 			event.preventDefault();
 			//Verif les champs obligatoires et l'email
-			if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>","warning");  return false;}
+			if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillFieldsForm") ?>","warning");  return false;}
 			if($("input[name='mail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
 			// Verif si le compte utilisateur existe déjà
 			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){

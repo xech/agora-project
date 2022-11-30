@@ -115,6 +115,10 @@ function dashboardPollVote()
 #tabMenuPolls.sLinkSelect ~ hr			{margin-left:33%;}
 #tabMenuElems.sLinkSelect ~ hr			{margin-left:<?= $isPolls==true?66:50 ?>%;}
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
+/*RESPONSIVE*/
+@media screen and (max-width:1023px){
+	#tabMenus.miscContainer	{padding:8px;}/*surcharge*/
+}
 
 /*Infinites scrolls : News / Sondages*/
 .infiniteScrollHidden					{display:none;}
@@ -125,15 +129,17 @@ function dashboardPollVote()
 .vNewsDescription						{font-weight:normal;}
 .vNewsDescription a						{text-decoration:underline;}/*idem editeur*/
 .vNewsDetail							{margin-top:20px; text-align:center;}
-.vNewsDetail span, .vNewsDetail .menuAttachedFile	{display:inline-block; margin-right:20px;}
+.vNewsDetail>div						{display:inline-block; margin:0px 10px;}
 .vNewsTopNews							{color:#c40;}
 .calEventProposition					{margin:10px;}/*propositions d'événements*/
-.vNewsDescription h3					{text-align:center;}																/*New par défaut : "INSTALL_dataDashboardNews"*/
-.vNewsDescription h3, .vNewsDescription h4:nth-last-child(3), .vNewsDescription h4:nth-last-child(1)  {margin-bottom:30px;}	/*Idem : première ligne + avant-avant dernière ligne + dernière ligne*/
-.vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}										/*Idem : images des dernières lignes*/
+.vNewsDescription h3					{text-align:center;}							/*New par défaut : cf. "INSTALL_dataDashboardNews"*/
+.vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}	/*Idem : images de chaque ligne*/
+.vNewsDescription h3, .vNewsDescription h4:nth-last-child(3)	{margin-bottom:25px;}	/*Idem : première ligne + avant-avant dernière ligne + dernière ligne*/
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
-	.vNewsDescription h3	{font-size:1.4em;}
+	.vNewsDescription h3		{font-size:1.5em;}				/*New par défaut*/
+	.vNewsDescription h4>img	{margin-bottom:5px;}			/*Idem : images de chaque ligne*/
+	.vNewsDetail>div			{display:block; margin:8px;}
 }
 
 /*Sondages*/
@@ -147,8 +153,8 @@ function dashboardPollVote()
 .vPollsDescription img					{max-height:400px;}/*Affichage des images dans la description*/
 .vPollsContainer ul li					{list-style:none; margin-bottom:20px;}
 .vPollsDetails							{margin-top:20px; text-align:center;}
-div.vPollsDescription:empty, .vPollsDetails:empty		{display:none;}/*masque les divs non remplis*/
-.vPollsDetails span, .vPollsDetails .menuAttachedFile	{display:inline-block; margin-right:20px;}
+.vPollsDetails>div						{display:inline-block; margin:0px 10px;}
+div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les divs non remplis*/
 .vPollsResponseFile						{margin-top:8px;}/*cf. MdlDashboardPoll*/
 .vPollsResponseFile img					{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
 .vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
@@ -161,6 +167,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty		{display:none;}/*masque les d
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	.vPollsContainer ul		{padding-left:0px!important;}
+	.vPollsDetails>div		{display:block; margin:8px;}
 }
 
 /*Nouveaux elements*/

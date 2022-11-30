@@ -11,12 +11,13 @@ class Trad extends Txt
 	{
 		////	Langue courante / Header http / Editeurs Tinymce,DatePicker,etc / Dates formatées par PHP
 		self::$trad["CURLANG"]="fr";
-		self::$trad["HTML_EDITOR"]="fr_FR";
+		self::$trad["DATELANG"]="fr_FR";
+		self::$trad["EDITORLANG"]="fr_FR";
 		setlocale(LC_TIME, "fr_FR.utf8", "fr_FR.UTF-8", "fr_FR", "fr", "french");
 
 		////	Divers
 		self::$trad["OK"]="OK";
-		self::$trad["fillAllFields"]="Merci de remplir tous les champs";
+		self::$trad["fillFieldsForm"]="Merci de remplir les champs du formulaire";
 		self::$trad["requiredFields"]="Champ obligatoire";
 		self::$trad["inaccessibleElem"]="L'élément demandé n'est pas accessible";
 		self::$trad["warning"]="Attention";
@@ -78,7 +79,8 @@ class Trad extends Txt
 		self::$trad["gSigninButton"]="Connexion avec Google";
 		self::$trad["gSigninButtonInfo"]="Connectez-vous avec votre compte Google : votre compte utilisateur doit alors avoir une adresse <i>@gmail.com</i> comme identifiant";
 		self::$trad["gSigninUserNotRegistered"]="n'est pas enregistré sur l'espace avec l'email";//"Boby Smith" n'est pas enregistré sur l'espace avec l'email "boby.smith@gmail.com"
-		self::$trad["switchOmnispace"]="Se connecter à un autre espace Omnispace";
+		self::$trad["connectSpaceSwitch"]="Se connecter à un autre espace";
+		self::$trad["connectSpaceSwitchConfirm"]="Êtes-vous sûr de vouloir quitter cet espace pour vous connecter à un autre espace ?";
 		self::$trad["guestAccess"]="Connexion en tant qu'invité";
 		self::$trad["spacePassError"]="Mot de passe erroné";
 		self::$trad["ieObsolete"]="Votre navigateur Internet Explorer n'est plus mis à jour par Microsoft depuis plusieurs années : ll est fortement conseillé d'utiliser un autre navigateur tel que Firefox, Chrome, Edge ou Safari.";
@@ -357,7 +359,7 @@ class Trad extends Txt
 		self::$trad["NOTIF_identification"]="Identifiant ou mot de passe invalide";
 		self::$trad["NOTIF_presentIp"]="Ce compte utilisateur est actuellement utilisé depuis un autre ordinateur, avec une autre adresse ip. Un compte ne peut être utilisé que sur un seul ordinateur en même temps.";
 		self::$trad["NOTIF_noSpaceAccess"]="Votre compte utilisateur a bien été identifié, mais vous n'êtes actuellement affecté à aucun espace. Merci de contacter l'administrateur pour vérifier vos droits d'accès";
-		self::$trad["NOTIF_noAccess"]="Accès non autorisé";
+		self::$trad["NOTIF_noAccess"]="Vous êtes déconnecté";
 		self::$trad["NOTIF_fileOrFolderAccess"]="Fichier/Dossier inaccessible";
 		self::$trad["NOTIF_diskSpace"]="L'espace pour le stockage de vos fichiers est insuffisant, vous ne pouvez pas ajouter de fichier";
 		self::$trad["NOTIF_fileVersion"]="Type de fichier différent de l'original";
@@ -380,11 +382,12 @@ class Trad extends Txt
 		self::$trad["FOOTER_pageGenerated"]="page générée en";
 
 		////	Messenger / Visio
-		self::$trad["MESSENGER_messengerTitle"]="Messagerie instantanée : cliquer sur le nom d'une personne pour discuter ou lancer une visioconférence";
-		self::$trad["MESSENGER_messengerMultipleUsers"]="Afficher tous les messages qui m'ont été envoyés &nbsp;|&nbsp; Discuter à plusieurs en sélectionnant mes interlocuteurs dans le volet de droite";
+		self::$trad["MESSENGER_headerModuleName"]="Messages";
+		self::$trad["MESSENGER_moduleDescription"]="Messages instantanés : discutez en direct ou lancez une visioconférence avec les personnes connectées à l'espace";
+		self::$trad["MESSENGER_messengerTitle"]="Messages instantanés : cliquer sur le nom d'une personne pour discuter ou lancer une visioconférence";
+		self::$trad["MESSENGER_messengerMultiUsers"]="Discuter à plusieurs en sélectionnant mes interlocuteurs dans le volet de droite";
 		self::$trad["MESSENGER_connected"]="Connecté";
-		self::$trad["MESSENGER_nobody"]="Vous êtes pour l'instant la seule personne connectée à l'espace";
-		self::$trad["MESSENGER_nobodyTitle"]="Cliquez ici pour voir vos anciennes discussions (conservées 15 jours)";
+		self::$trad["MESSENGER_nobody"]="Vous êtes pour l'instant la seule personne connectée à l'espace.<br> Notez que vos anciennes discussions sont conservées durant 30 jours";
 		self::$trad["MESSENGER_messageFrom"]="Message de";
 		self::$trad["MESSENGER_messageTo"]="envoyé à";
 		self::$trad["MESSENGER_chatWith"]="Discuter avec";
@@ -427,7 +430,7 @@ class Trad extends Txt
 		self::$trad["EDIT_showAllUsersAndSpaces"]="Afficher tous les utilisateurs et espaces";
 		self::$trad["EDIT_notifMail"]="Notifier par email";
 		self::$trad["EDIT_notifMail2"]="Envoyer une notification par email";
-		self::$trad["EDIT_notifMailInfo"]="Envoyer une notification par email aux personnes affectées à l'élément / -OBJLABEL-.";
+		self::$trad["EDIT_notifMailInfo"]="Envoyer une notification par email aux personnes affectées à l'élément (-OBJLABEL-)";
 		self::$trad["EDIT_notifMailInfoCal"]="<hr>Si vous affectez l'événement à des agendas personnels, alors la notification ne sera envoyée qu'aux propriétaires de ces agendas (accès en écriture).";
 		self::$trad["EDIT_notifMailAddFiles"]="Joindre les fichiers à la notification";
 		self::$trad["EDIT_notifMailSelect"]="Choisir les destinataires des notifications";
@@ -467,7 +470,7 @@ class Trad extends Txt
 												<h4><img src='app/img/task/iconSmall.png'> Centralisez vos notes, projets et contacts</h4>
 												<h4><img src='app/img/mail/iconSmall.png'> Envoyez des newsletters par email</h4>
 												<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">Cliquez ici pour envoyer des emails d'invitation et développer votre communauté !</a></h4>
-												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/?ctrl=offline&action=Documentation' target='_blank'>Cliquez ici pour consulter le guide d'utilisation</a></h4>";
+												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>Cliquez ici pour consulter le guide d'utilisation</a></h4>";
 		self::$trad["INSTALL_dataDashboardPoll"]="Que pensez-vous du fil d'actualité ?";
 		self::$trad["INSTALL_dataDashboardPollA"]="Très intéressant !";
 		self::$trad["INSTALL_dataDashboardPollB"]="Intéressant";
@@ -588,7 +591,7 @@ class Trad extends Txt
 		////	MODULE_ESPACE
 		////
 		self::$trad["SPACE_moduleInfo"]="L'espace principal (le site) peut également être subdivisée en plusieurs espaces, également appelés ''sous-espace''";
-		self::$trad["SPACE_manageSpaces"]="Gérer les espaces du site";
+		self::$trad["SPACE_manageSpaces"]="Paramétrer les espaces du site";
 		self::$trad["SPACE_config"]="Paramétrer l'espace";
 		//Index
 		self::$trad["SPACE_confirmDeleteDbl"]="Notez que seules les données affectées uniquement à cet espace seront effacées. Cependant si vous souhaitez les conserver, pensez d'abord à les réaffecter à un autre espace. Confirmez tout de même la suppression de cet espace ?";

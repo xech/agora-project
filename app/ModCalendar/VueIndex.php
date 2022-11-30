@@ -109,9 +109,9 @@ $(function(){
 .vCalendarDisplayMode				{text-align:right;}
 .vCalendarDisplayMode>span			{margin-left:15px;}
 .vCalendarDisplayModeLabel			{margin-left:5px;}
-.vCalendarPeriod					{text-align:center;}
-.vCalendarTitle						{text-transform:uppercase;}
+.vCalendarTitle, .vCalendarPeriodLabel  {font-size:1.1em;}
 .vCalendarTitleLabel				{margin-left:7px; margin-right:7px;}
+.vCalendarPeriod					{text-align:center;}
 #calendarPrev,#calendarNext			{margin:0px 10px 0px 10px;}
 [id^=calMonthPeriodMenu]			{width:250px; overflow:visible;}
 #calMonthPeriodMenuContainer a		{display:inline-block; width:75px; padding:3px; text-align:left;}
@@ -124,6 +124,7 @@ $(function(){
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
+	.vCalendarTitle, .vCalendarPeriodLabel  {font-size:1em;}
 	.vCalendarTitleLabel				{margin-left:0px; margin-right:5px;}
 	.vCalendarTitle .personImgSmall		{display:none;}/*cf. "getImg()"*/
 	#calendarPrev,#calendarNext			{margin:0px 5px 0px 5px;}
@@ -290,14 +291,14 @@ $(function(){
 				<!--PERIODE AFFICHEE-->
 				<div class="vCalendarPeriod">
 					<img src="app/img/navPrev.png" id="calendarPrev" class="sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimePrev.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
-					<span id="calendarLabelMonth" for="calMonthPeriodMenu<?= $tmpCal->_typeId ?>" class="menuLaunch"><?= ucfirst($labelMonth) ?></span>
+					<span class="menuLaunch vCalendarPeriodLabel" for="calMonthPeriodMenu<?= $tmpCal->_typeId ?>"><?= ucfirst($labelMonth) ?></span>
 					<?php if(!empty($calMonthPeriodMenu))  {echo "<div class='menuContext' id='calMonthPeriodMenu".$tmpCal->_typeId."'><div id='calMonthPeriodMenuContainer'>".$calMonthPeriodMenu."</div></div>";} ?>
 					<img src="app/img/navNext.png"  id="calendarNext" class="sLink noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimeNext.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
 				</div>
-				<!--OPTION "AUJOURD'HUI"  &&  MENU DES MODES D'AFFICHAGE (month, week, workWeek, 4Days, day)-->
+				<!--OPTION "AUJOURD'HUI"  &&  AFFICHAGE MONTH/WEEK/WORKWEEK/4DAYS/DAY-->
 				<div class="vCalendarDisplayMode">
 					<span class="vCalendarDisplayToday sLink" onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')"><img src="app/img/calendar/displayToday.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("today") ?></span></span>
-					<span for="menuDisplayMode<?= $tmpCal->_typeId ?>" class="menuLaunch"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("CALENDAR_displayMode")." ".Txt::trad("CALENDAR_display_".$displayMode) ?></span>&nbsp;<img src="app/img/arrowBottom.png"></span>
+					<span class="menuLaunch" for="menuDisplayMode<?= $tmpCal->_typeId ?>"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.gif"><span class="vCalendarDisplayModeLabel"><?= Txt::trad("CALENDAR_displayMode")." ".Txt::trad("CALENDAR_display_".$displayMode) ?></span>&nbsp;<img src="app/img/arrowBottom.png"></span>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->_typeId ?>">
 					<?php
 					//Affiche les $displayModes

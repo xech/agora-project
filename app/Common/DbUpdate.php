@@ -350,7 +350,7 @@ class DbUpdate extends Db
 						{
 							//chemin du fichier joint
 							$fileExtension=".".File::extension($tmpFile["name"]);
-							$oldPath="../".(Ctrl::isHost()?PATH_DATAS:'stock_fichiers/')."fichiers_objet/".$tmpFile["_id"].$fileExtension;//exple : "../stock_fichiers/fichiers_objet/123.jpg"
+							$oldPath="../".(Req::isHost()?PATH_DATAS:'stock_fichiers/')."fichiers_objet/".$tmpFile["_id"].$fileExtension;//exple : "../stock_fichiers/fichiers_objet/123.jpg"
 							$newPath="index.php?ctrl=object&action=AttachedFileDisplay&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObject.php"
 							//Mp3 ("url_encode" : lecteur mp3)  ||  Videos 
 							if(File::isType("mp3",$tmpFile["name"]))  {$newPath=urlencode($newPath);}
@@ -369,7 +369,7 @@ class DbUpdate extends Db
 					$descriptionUpdates[]="description=REPLACE(description,'../divers/tiny_mce/plugins','app/js/tinymce/plugins')";//plugins tinymce
 					$descriptionUpdates[]="description=REPLACE(description,'plugins/emotions','plugins/emoticons')";//idem
 					$descriptionUpdates[]="description=REPLACE(description,'../module_fichier/index.php?id_dossier=','index.php?ctrl=file&typeId=fileFolder-')";//liens vers les dossiers de fichiers
-					$descriptionUpdates[]="description=REPLACE(description,'../".(Ctrl::isHost()?PATH_DATAS:'stock_fichiers/')."gestionnaire_fichiers/','".PATH_MOD_FILE."')";//liens vers les fichiers
+					$descriptionUpdates[]="description=REPLACE(description,'../".(Req::isHost()?PATH_DATAS:'stock_fichiers/')."gestionnaire_fichiers/','".PATH_MOD_FILE."')";//liens vers les fichiers
 					$descriptionUpdates[]="description=REPLACE(description,'stock_fichiers/','DATAS/')";
 					self::query("UPDATE ".$tmpTable." SET ".implode(", ",$descriptionUpdates));
 				}
@@ -484,7 +484,7 @@ class DbUpdate extends Db
 				fwrite($fp, $majHtaccessBis);
 				fclose($fp);
 				$deleteConst=array("agora_maintenance","controle_ip","duree_livecounter","duree_messages_messenger");
-				if(Ctrl::isHost())  {$deleteConst[]="db_host";}
+				if(Req::isHost())  {$deleteConst[]="db_host";}
 				File::updateConfigFile(null,$deleteConst);
 
 				////	MAJ DU LOGO DU FOOTER (POUR CORRESPONDRE AU .htaccess)
@@ -669,7 +669,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_agora", "gSignin",			"ALTER TABLE ap_agora ADD gSignin tinyint DEFAULT NULL AFTER mapApiKey");
 				self::fieldExist("ap_agora", "gSigninClientId",	"ALTER TABLE ap_agora ADD gSigninClientId varchar(255) DEFAULT NULL AFTER gSignin");//uniquement pour AP
 				self::fieldExist("ap_agora", "gPeopleApiKey",	"ALTER TABLE ap_agora ADD gPeopleApiKey varchar(255) DEFAULT NULL AFTER gSigninClientId");//idem
-				if(Ctrl::isHost())  {self::query("UPDATE ap_agora SET gSignin=1");}
+				if(Req::isHost())  {self::query("UPDATE ap_agora SET gSignin=1");}
 			}
 
 			if(self::updateVersion("3.4.3"))
@@ -837,7 +837,10 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("22.3.1"))
 			{
-				//Ajoute le support des emojis dans les desriptions d'objets et les brouillons (cf. utf8mb4)
+				//Ré-Ajoute au besoin les champs "editorDraft" du Livecouter
+				self::fieldExist("ap_userLivecouter", "editorDraft", "ALTER TABLE ap_userLivecouter ADD editorDraft TEXT DEFAULT NULL");
+				self::fieldExist("ap_userLivecouter", "draftTypeId", "ALTER TABLE ap_userLivecouter ADD draftTypeId TINYTEXT DEFAULT NULL");
+				//Ajoute le support des emojis (cf. utf8mb4) dans les desriptions d'objets et le editorDraft
 				if(version_compare(PHP_VERSION,7,">=")){
 					foreach(["MdlCalendarEvent","MdlDashboardNews","MdlDashboardPoll","MdlForumMessage","MdlForumSubject","MdlMail","MdlTask"] as $objMdl)
 						{Db::query("ALTER TABLE ".$objMdl::dbTable." CHANGE `".$objMdl::htmlEditorField."` `".$objMdl::htmlEditorField."` TEXT CHARACTER SET utf8mb4");}
@@ -847,9 +850,22 @@ class DbUpdate extends Db
 				foreach(["ap_dashboardNews","ap_dashboardPoll","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)
 					{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'displayAttachedFile','attachedFileDisplay')");}
 			}
-			////	ATTENTION !!!
-			////	MODIFIER FICHIER SQL  "ModOffline/db.sql"   &&   MODIFIER N° DE VERSION : "Common/Params.php" + "js/common-xx.js" + "css/common-xx.css" + "changelog.txt"
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			if(self::updateVersion("22.12.0"))
+			{
+				//Conversion en Utf8 d'anciennes tables en Latin1 (verifier que la table n'est pas deja en utf8/utf8mb4)
+				foreach(["ap_userInscription","ap_log"] as $nom_table) {
+					$tableCollationTmp=self::getVal("SELECT table_collation FROM information_schema.tables WHERE table_schema='".db_name."' AND table_name='".$nom_table."'");
+					if(preg_match("/utf8/i",$tableCollationTmp)==false){
+						self::query("ALTER TABLE ".$nom_table." CHARACTER SET UTF8");
+						self::query("ALTER TABLE ".$nom_table." CONVERT TO CHARACTER SET UTF8");
+					}
+				}
+				//Commentaires des logs en utf8mb4
+				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_log CHANGE `comment` `comment` TEXT CHARACTER SET utf8mb4");}
+			}
+			//// ATTENTION !! ===>  MODIFIER SQL D'INSTALL "db.sql"  +  "changelog.txt"  +  N° DE VERSION DANS "Params.php" / "common-xx.js" / "common-xx.css"
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 			////	MAJ "dateUpdateDb" && "version_agora"

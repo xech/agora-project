@@ -43,13 +43,13 @@ function messengerUpdate()
 		if(initMessenger==true || result.livecounterUpdate==true)
 		{
 			//Réinit l'affichage
-			$("#livecounterMain,#livecounterConnectedLabel,#iconAllUsersOldMessages").hide();
+			$("#livecounterMain,#livecounterConnectedLabel,#messengerMultiUsersIcon").hide();
 			//Affiche le livecounter principal
 			if(result.livecounterMainHtml.length>0){
-				$("#livecounterUsers").html(result.livecounterMainHtml);															//Affiche d'abord les users du livecounter principal
-				if(!isMobile())  {$("#livecounterConnectedLabel").show();}															//Affiche le label "Connecté:"
-				if($(".vLivecounterUser").length>=2 || $(".vMessengerOldMessage").exist())  {$("#iconAllUsersOldMessages").show();}	//Affiche l'icone pour discuter à plusieurs OU voir les anciens messages
-				$("#livecounterMain").css("left", ($(window).width()/2)-($("#livecounterMain").outerWidth()/2) ).show();			//Affiche enfin le livecounter centré sur la page
+				$("#livecounterUsers").html(result.livecounterMainHtml);												//Affiche d'abord les users du livecounter principal
+				if(!isMobile())  {$("#livecounterConnectedLabel").show();}												//Affiche le label "Connecté:"
+				if($(".vLivecounterUser").length>=2)  {$("#messengerMultiUsersIcon").show();}							//Affiche l'icone pour discuter à plusieurs (et voir les anciens messages)
+				$("#livecounterMain").css("left", ($(window).width()/2)-($("#livecounterMain").outerWidth()/2) ).show();//Affiche enfin le livecounter centré sur la page
 			}
 			//Update les users du messenger (checkboxes)
 			$("#messengerUsersAjax").html("<div class='vMessengerUser'><?= Txt::trad("MESSENGER_chatWith") ?> :</div>"+result.livecounterFormHtml);
@@ -79,8 +79,9 @@ function messengerDisplay(messengerDisplayModeNew)
 
 	//// Masque le messenger principal
 	if(messengerDisplayMode=="none"){
-		$("#messengerMain").fadeOut();
-		if(isMobile())  {$("body").css("overflow","visible");}//Réactive le scroll de la page en arriere plan
+		$("#messengerMain").fadeOut();											//Masque le messenger!
+		$("#headerModuleButtonMessenger").removeClass("vHeaderModuleCurrent");	//cf. VueHeaderMenu.php
+		if(isMobile())  {$("body").css("overflow","visible");}					//Réactive le scroll de la page en arriere plan
 	}
 	//// Affiche le messenger principal
 	else
@@ -96,8 +97,9 @@ function messengerDisplay(messengerDisplayModeNew)
 		}
 	
 		//// Affiche le messenger  &&  Check un ou plusieurs users
-		$("#messengerMain").show();
-		$(".messengerUserCheckbox").prop("checked",false);//Réinit le "check" des users
+		$("#messengerMain").show();											//Affiche le messenger!
+		$("#headerModuleButtonMessenger").addClass("vHeaderModuleCurrent");	//cf. VueHeaderMenu.php
+		$(".messengerUserCheckbox").prop("checked",false);					//Réinit le "check" des users
 		if($.isNumeric(messengerDisplayMode))	{$("#messengerUserCheckbox"+messengerDisplayMode).prop("checked",true);}												//User spécifique "checked"
 		else if(messengerDisplayMode=="all")	{ messengerCheckedUsers.forEach(function(idUserTmp){ $("#messengerUserCheckbox"+idUserTmp).prop("checked",true); }); }	//Re-check les users déjà sélectionné lors d'une discussion à plusieurs
 
@@ -125,7 +127,7 @@ function messengerDisplay(messengerDisplayModeNew)
 function messengerDisplayUser()
 {
 	//Réinit le surlignage d'user dans le livecounter principal
-	$(".vLivecounterUser,#iconAllUsersOldMessages").removeClass("vLivecounterUserSelect");
+	$(".vLivecounterUser,#messengerMultiUsersIcon").removeClass("vLivecounterUserSelect");
 	//Messenger affiché?
 	if(messengerDisplayMode!="none")
 	{
@@ -134,7 +136,7 @@ function messengerDisplayUser()
 		//Affiche tous les utilisateurs et messages
 		if(messengerDisplayMode=="all"){
 			$(".vMessengerMessage,#messengerUsersCell").show();					//Affiche tous les messages
-			$("#iconAllUsersOldMessages").addClass("vLivecounterUserSelect");	//Surligne dans le livecounter l'icone "#iconAllUsersOldMessages"
+			$("#messengerMultiUsersIcon").addClass("vLivecounterUserSelect");	//Surligne dans le livecounter l'icone "#messengerMultiUsersIcon"
 		}
 		//Affiche uniquement l'user sélectionné
 		else if($.isNumeric(messengerDisplayMode)){
@@ -190,8 +192,8 @@ function proposeVisio()
 	if($(".messengerUserCheckbox:checked").length==0)  {notify("<?= Txt::trad("selectUser") ?>");  return false;}
 	else if(confirm(visioButtonLabel+" ?"))
 	{
-		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";														//Destinaires de la visio : commence par l'user courant
-		visioURL="<?= Ctrl::$agora->visioUrl(6)."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max",true) ?>";	//Url de la visio + Label encodé de l'user courant
+		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";													//Destinaires de la visio : commence par l'user courant
+		visioURL="<?= Ctrl::$agora->visioUrl(6)."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";	//Url de la visio + Label encodé de l'user courant
 		$(".messengerUserCheckbox:checked").each(function(){	//Pour chaque user sélectionné :
 			visioUsers+=" & "+$(this).attr("data-user-label");	//Ajoute le label de l'user dans la liste des destinaires
 			visioURL+="-"+$(this).attr("data-user-label-visio");//Ajoute le label de l'user dans l'url
@@ -209,7 +211,9 @@ function proposeVisio()
 #messengerMain, #livecounterMain 			{display:none; position:fixed; max-width:100%!important; max-height:100%!important; color:#ddd!important; box-shadow:0px 0px 3px 2px rgba(0,0,0,0.3);}/*"position:fixed" pour qu'en responsive le clavier viruel ne cache pas le formulaire*/
 #messengerMain								{z-index:30; bottom:0px!important; background:#111; padding:20px; padding-top:10px; width:850px; min-width:300px; border-radius:5px; border:0px;}
 #messengerMain td							{vertical-align:top;}
-#livecounterMain							{z-index:31; bottom:5px!important; background:#333; padding:15px 25px; border-radius:5px;}
+#messengerBottomMargin						{height:60px;}/*marge du bas du messenger : pour afficher le livecounter ci-dessus qui s'y superpose (cf. "#livecounterMain td" ci-dessus)*/
+#messengerNobodyDiv							{background:#333; padding:10px; line-height:25px;}
+#livecounterMain							{z-index:31; bottom:5px!important; background:#333; padding:18px 30px; border-radius:5px;}
 #livecounterMain td							{vertical-align:middle;}
 
 /*Livecounter principal : #livecounterMain*/
@@ -218,7 +222,7 @@ function proposeVisio()
 .vLivecounterUser							{padding:10px; margin-left:5px; border:solid 1px transparent;}	/*Label de chaque user : height de 30px (cf. "CtrlMisc::actionMessengerUpdate")*/
 .vLivecounterUserSelect						{border:solid 1px #777; border-radius:3px; background:#555;}	/*Label d'un user sélectionné*/
 .vLivecounterUser .personImg				{width:30px; height:30px; margin-right:5px;}					/*Image des users (cf. "CtrlMisc::actionMessengerUpdate")*/
-#iconAllUsersOldMessages					{padding-left:10px; cursor:pointer;}
+#messengerMultiUsersIcon					{padding-left:10px; cursor:pointer;}
 
 /*Messenger : #messengerMain*/
 #messengerMove								{height:16px; cursor:move; background-image:url(app/img/dragDrop.png);}
@@ -247,13 +251,13 @@ function proposeVisio()
 #messengerButtonForm						{width:140px; margin-bottom:3px;}
 #launchVisioButton							{margin-left:10px; cursor:pointer;}/*bouton de proposition de visio*/
 .launchVisioMessage img[src*='visioSmall']	{margin-left:10px;}
-#messengerBottomMargin						{height:60px;}/*marge du bas du messenger : pour afficher le livecounter ci-dessus qui s'y superpose (cf. "#livecounterMain td" ci-dessus)*/
 
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	#livecounterMain						{padding:10px; bottom:-5px!important; font-size:1.1em;}
 	#livecounterConnectedLabel				{display:none;}						/*masque le "Connecté :"*/
 	.vLivecounterUser						{display:inline-flex;}				/*tester l'affichage avec 10 personnes et en responsive (cf. 'display:inline-flex')*/
+	.vLivecounterUser .personImg			{display:none;}						/*Image des users (cf. "CtrlMisc::actionMessengerUpdate")*/
 	#messengerMain							{border-radius:0px; padding:0px;}	
 	#messengerMove							{background-image:none;}			/*masque "dragDrop.png"*/
 	#messengerClose							{top:12px; right:2px;}				/*repositionne le "close"*/
@@ -265,7 +269,7 @@ function proposeVisio()
 	#messengerButtonForm					{width:80px;}
 	#messengerButtonForm img				{display:none;}
 	.vMessengerScroll::-webkit-scrollbar	{width:5px;}
-	#messengerNobodyDiv .infos				{margin:0px; padding:0px 30px; border:0px; line-height:18px;}/*limite la hauteur (cf. affichage du bouton "close")*/
+	#messengerNobodyDiv						{margin:10px;}
 }
 </style>
 
@@ -274,7 +278,7 @@ function proposeVisio()
 	<tr>
 		<td class="cursorHelp" title="<?= Txt::trad("MESSENGER_messengerTitle") ?>"><img src="app/img/messenger.png"><span id="livecounterConnectedLabel"><?= Txt::trad("MESSENGER_connected") ?><img src="app/img/arrowRight.png"></span></td>
 		<td id="livecounterUsers"></td>
-		<td id="iconAllUsersOldMessages" onclick="messengerDisplay('all');" title="<?= Txt::trad("MESSENGER_messengerMultipleUsers") ?>"><img src="app/img/user/iconSmall.png"></td>
+		<td id="messengerMultiUsersIcon" onclick="messengerDisplay('all');" title="<?= Txt::trad("MESSENGER_messengerMultiUsers") ?>"><img src="app/img/user/iconSmall.png"></td>
 	</tr>
 </table>
 
@@ -295,7 +299,7 @@ function proposeVisio()
 					<button id="messengerButtonForm" onclick="messengerPost(event);"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
 					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="proposeVisio()"><?php } ?>
 				</div>
-				<div id="messengerNobodyDiv"><div class="infos"><?= Txt::trad("MESSENGER_nobody") ?></div></div>
+				<div id="messengerNobodyDiv" class="infos"><img src="app/img/messenger.png"> <?= Txt::trad("MESSENGER_nobody") ?></div>
 			</td>
 		</tr>
 		<tr><td id="messengerBottomMargin" colspan="2">&nbsp;</td></tr>

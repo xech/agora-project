@@ -14,6 +14,7 @@ class Txt
 {
 	protected static $trad=[];
 	protected static $detectEncoding=null;
+	protected static $IntlDateFormatter=null;
 
 	/*******************************************************************************************
 	 * CHARGE LES TRADUCTIONS
@@ -37,7 +38,7 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE UN TEXT TRADUIT (exple: Txt::trad('rootFolder')")
+	 * AFFICHE UN TEXT TRADUIT (ex: Txt::trad('rootFolder')")
 	 *******************************************************************************************/
 	public static function trad($keyTrad, $addSlashes=false)
 	{
@@ -79,9 +80,9 @@ class Txt
 		}
 	}
 
-	/********************************************************************************************
+	/*******************************************************************************************
 	 * REDUCTION DE TEXTE POUR LES TOOLTIPS, LOGS, ETC : ENLEVE LES TAGS HTML
-	 ********************************************************************************************/
+	 *******************************************************************************************/
 	public static function reduce($text, $maxCaracNb=200)
 	{
 		$text=html_entity_decode(strip_tags($text));							//Enlève les tags html (pour pas briser l'affichage d'un tag html..) && Converti les caractères html accentués (&egrave; &eacute; etc)
@@ -108,22 +109,23 @@ class Txt
 		}
 	}
 
-	/*******************************************************************************************
-	 * SUPPRIME LES CARACTERES SPECIAUX D'UNE CHAINE DE CARACTERES (dowload de fichier & co)
-	 * Exple de $scope avec  "<div>L'ÉTÉ (!)</div>"  :  min -> "l'été (_)"  max -> "l_été__"
-	 *******************************************************************************************/
-	public static function clean($text, $scope="min", $replaceAccents=false, $replaceBy="_")
+	/********************************************************************************************
+	 * SUPPRIME LES CARACTERES SPECIAUX
+	 * $scope="min" pour les noms de fichier ou la recherche :	"L'ÉTÉ (!)"  ->  "l'été (_)"
+	 * $scope="max" pour les identifiants ou les noms en bdd :	"L'ÉTÉ (!)"  ->  "l_ete__"
+	 ********************************************************************************************/
+	public static function clean($text, $scope="min", $replaceBy="_")
 	{
-		//Enleve les éventuelles balises et convertit les caractères spéciaux html
-		$text=htmlspecialchars_decode(strip_tags($text));
-		//Remplace si besoin les caractères accentués
-		if($replaceAccents==true){
+		//Enleve les éventuels balises et caractères html de l'éditeur (&quot; &eacute; &amp; etc)
+		$text=html_entity_decode(strip_tags($text));
+		//Remplace les caractères accentués
+		if($scope=="max"){
 			$searchedCarac=explode(",", "å,á,à,â,ä,è,é,ê,ë,í,î,ï,ì,ò,ó,ô,ö,ø,ú,ù,û,ü,ÿ,ç,ñ,Å,Á,À,Â,Ä,È,É,Ê,Ë,Í,Î,Ï,Ì,Ò,Ó,Ô,Ö,Ø,Ú,Ù,Û,Ü,Ÿ,Ç,Ñ,æ,œ,Æ,Œ");
 			$replacedCarac=explode(",", "a,a,a,a,a,e,e,e,e,i,i,i,i,o,o,o,o,o,u,u,u,u,y,c,n,A,A,A,A,A,E,E,E,E,I,I,I,I,O,O,O,O,O,U,U,U,U,Y,C,N,ae,oe,AE,OE");
 			$text=str_replace($searchedCarac, $replacedCarac, $text);
 		}
 		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
-		$acceptedCarac=($scope=="max")  ?  ['-','.','_']  :  ['-','.','_',' ','\'','(',')','[',']','@'];
+		$acceptedCarac=($scope=="max")  ?  ['.','-','_']  :  ['.','-','_',',',':',' ','\'','(',')','[',']','@'];
 		foreach(preg_split('//u',$text) as $tmpCarac){																								//pas de "str_split()" qui ne reconnait pas les caractères accentués..
 			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpCarac) && !in_array($tmpCarac,$acceptedCarac))  {$text=str_replace($tmpCarac,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
 		}
@@ -141,91 +143,96 @@ class Txt
 		return (static::$detectEncoding==false || mb_detect_encoding($text,"UTF-8",true))  ?  $text  :  utf8_encode($text);
 	}
 
+	/*****************************************************************************************************************
+	 * INSTANCIE "IntlDateFormatter" POUR LA MANIPULATION DES DATES, AVEC LA "LANG" ET "TIMEZONE" LOCALE
+	 *****************************************************************************************************************/
+	public static function IntlDateFormatterObj()
+	{
+		if(static::$IntlDateFormatter===null){
+			if(extension_loaded("intl"))	{static::$IntlDateFormatter=new IntlDateFormatter(Txt::trad("DATELANG"), IntlDateFormatter::FULL, IntlDateFormatter::FULL, Ctrl::$curTimezone, IntlDateFormatter::GREGORIAN);;}
+			else 							{static::$IntlDateFormatter=false;}//L'extention PHP "intl" n'est pas instanciée (cf. perso.free & Co)
+		}
+		return static::$IntlDateFormatter;
+	}
+
 	/*******************************************************************************************
 	 * FORMATE UNE DATE PUIS ENCODE SI BESOIN EN UTF-8
 	 *******************************************************************************************/
-	public static function formatime($format, $timestamp)
+	public static function formatime($pattern, $timestamp)
 	{
-		return self::utf8Encode(strftime($format,$timestamp));
+		$dateFormat=self::IntlDateFormatterObj();		//Récupère l'objet "IntlDateFormatter"
+		if(is_object($dateFormat))						//Vérif si l'objet est instancié
+		{
+			$dateFormat->setPattern($pattern);			//Initialise le format/pattern de sortie
+			$dateLabel=$dateFormat->format($timestamp);	//Formate la date
+			return static::utf8Encode($dateLabel);		//Renvoie le résultat en utf-8
+		}
+		else{return date("d/m/Y H:i",$timestamp);}		//Sinon renvoie le format basique
 	}
 
-	/*****************************************************************************************************
-	 * AFFICHAGE D'UNE DATE
-	 * $timeBegin & $timeEnd : Timestamp unix ou format DateTime
-	 * $format => normal / full / mini / dateFull / dateMini
-	 * Note : les 'task' peuvent avoir un $dateBegin à null et un $dateEnd non-null (cf. "dateBeginEnd()")
-	 *****************************************************************************************************/
-	public static function dateLabel($timeBegin, $format="normal", $timeEnd=null)
+	/***************************************************************************************************************************************************************************
+	 * AFFICHAGE D'UNE DATE ET HEURE
+	 * $timeBegin & $timeEnd =>  Timestamp unix  ||  format DateTime en Bdd
+	 * $format 				 =>  "normal" -> "lun. 8 mars 2050 9:05"  ||  "mini" -> "8 mar. 2050" ou "9:05"  ||  "dateFull" -> "lundi 8 mars 2050"  ||  "date" -> "8/03/2050"
+	 * Note : les "task" peuvent avoir un $dateBegin null et un $dateEnd non null (cf. "MdlTask::dateBeginEnd()")
+	 ***************************************************************************************************************************************************************************/
+	public static function dateLabel($timeBegin=null, $format="normal", $timeEnd=null)
 	{
-/*
-$formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::LONG);
-echo $formatter->format(time());
-exit;
-*/
-		// Vérif de base
-		if(!empty($timeBegin) || !empty($timeEnd))
+		//Controles de base
+		if((!empty($timeBegin) || !empty($timeEnd)))
 		{
-			//Formate en timestamp si besoin ('dateTime' de bdd en entrée?)
-			if(!is_numeric($timeBegin))						{$timeBegin=strtotime($timeBegin);}
-			if(!empty($timeEnd) && !is_numeric($timeEnd))	{$timeEnd=strtotime($timeEnd);}
-			//Controle si les jours de debut/fin sont différents et si les heures de debut/fin sont différentes
-			$diffDays=$diffHours=false;
-			if(!empty($timeBegin) && !empty($timeEnd)){
-				if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))  {$diffDays=true;}
-				if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))  {$diffHours=true;}
-			}
-			//Prépare le formatage via "strftime()"
-			$_begin=$_end=null;																							//Init le formatage complet du début/fin
-			$_HM="%k:%M";																								//Format de l'heure (ex: "9:30")
-			$_DMY=($format=="full" || $format=="dateFull")  ?  "%A %e"  :  "%e";										//Format du jour (ex: "lundi 8" ou "8")
-			$_DMY.=" %B";																								//Format du mois (ex: "mars")
-			if(date("y",$timeBegin)!=date("y") || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$_DMY.=" %Y";}	//Format de l'année (ex: "2050") : si différente de l'année courante
-			$separator=" <img src='app/img/arrowRight.png'> ";															//Image de séparation de début/fin
+			//Convertit si besoin en timestamp
+			if(!empty($timeBegin) && !is_numeric($timeBegin))	{$timeBegin=strtotime($timeBegin);}
+			if(!empty($timeEnd) && !is_numeric($timeEnd))		{$timeEnd=strtotime($timeEnd);}
 
-			//NORMAL OU FULL
-			if($format=="normal" || $format=="full"){
-				$_begin=$_DMY." ".$_HM;													//[lundi] 8 mars 2050 11:30
-				if($diffDays==true)			{$_end=$separator.$_begin;}					//[lundi] 8 mars 2050 11:30 > [mercredi] 15 mars 2050 17:30
-				elseif($diffHours==true)	{$_end="-".$_HM;}							//[lundi] 8 mars 2050 11:30-12:30
+			//Récupère l'objet "IntlDateFormatter" && Vérif si l'objet est instancié
+			$dateFormat=self::IntlDateFormatterObj();
+			if(is_object($dateFormat))
+			{
+				//Jours ou heures de debut/fin différents
+				$diffDays=$diffHours=false;
+				if(!empty($timeBegin) && !empty($timeEnd)){
+					if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))	{$diffDays=true;}
+					if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))	{$diffHours=true;}
+				}
+
+				//Formatage du jour/mois => patterns sur https://unicode-org.github.io/icu/userguide/format_parse/datetime/
+				$dateLabel=$pattern=null;																			//Init le label et le pattern
+				if($format=="normal" && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (pas dans le $pattern !)
+				elseif($format=="normal" || $format=="dateFull")				{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 mars"
+				elseif($format=="mini" && $diffDays==true)						{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
+				//Formatage année/heure/minute/date
+				if((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$pattern.=" Y";}		//Année si diff. de l'année courante	-> Ex: "2050"
+				if(!preg_match("/date/i",$format))																					{$pattern.=" H:mm";}	//Heure sur 24h	(pas "date"/"dateFull)	-> Ex: "9:05" ou "23:23"
+				if($format=="date")																									{$pattern="dd/MM/Y";}	//Date au format basique				-> Ex: "08/03/2050"
+
+				//Applique le formatage via la class "IntlDateFormatter()" avec la "lang" et "timezone" locale
+				$dateFormat->setPattern($pattern);
+				if(!empty($timeBegin))	{$dateLabel.=$dateFormat->format($timeBegin);}																//Label de début
+				if(!empty($timeEnd)){																												//Label de fin :
+					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais diff. heures : ajoute l'heure de fin	-> Ex: "11:30-12:30"
+					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Diff. jours : ajoute la date de fin 				-> $pattern idem
+					else										{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin uniquement, pas de début 				-> $pattern idem
+				}
+
+				//Simplifie les heures pleines -> Ex: "12:00"->"12h"
+				if($format=="mini")  {$dateLabel=str_replace(":00", "h", $dateLabel);}
+				//Renvoie le résultat en utf-8
+				return static::utf8Encode($dateLabel);
 			}
-			//MINI
-			elseif($format=="mini"){
-				if($diffDays==true)			{$_begin=$_DMY;	$_end=$separator.$_begin;}	//8 fev. 2050 > 15 mars 2050
-				elseif($diffHours==true)	{$_begin=$_HM;	$_end="-".$_begin;}			//11:30-12:30
-				else						{$_begin=$_HM;}								//11:30
-			}
-			//DATE FULL
-			elseif($format=="dateFull"){
-				$_begin=$_DMY;															//lundi 8 mars 2050
-				if($diffDays==true)	{$_end=$separator.$_begin;}							//lundi 8 mars 2050 > mercredi 15 mars 2050
-			}
-			//DATE MINI (..OU SI $FORMAT N'EXISTE PAS)
+			//Sinon renvoie le format basique
 			else{
-				$_begin=$_DMY="%d/%m/%Y";												//8/02/2015
-				if($diffDays==true)	{$_end=$separator.$_begin;}							//8/02/2015 > 15/03/2015
+				return (preg_match("/date/i",$format))  ?  date("d/m/Y",$timeBegin)  :  date("d/m/Y H:i",$timeBegin);
 			}
-
-			//Applique le formatage demandé avec la configuration locale (timezone)
-			if(!empty($timeBegin) && !empty($timeEnd))	{$dateLabel=strftime($_begin,$timeBegin).strftime($_end,$timeEnd);}				//Date de début + fin
-			elseif(!empty($timeBegin))					{$dateLabel=strftime($_begin,$timeBegin);}										//Date de début
-			elseif(!empty($timeEnd))					{$dateLabel=Txt::trad("end")." : ".trim(strftime($_end,$timeEnd),$separator);}	//Date de fin
-
-			//Formate les minutes "00" et affiche si besoin "Aujourd'hui"
-			if($diffHours==false && $diffHours==false)  {$dateLabel=str_replace(" 0:00","",$dateLabel);}//Efface les "0:00" (cf. tasks qui peuvent ne pas avoir d'heure)
-			if($format=="mini")  {$dateLabel=str_replace(":00","h",$dateLabel);}						//Enleve les minutes ":00" aux heures pleines (ex pour les événements : "12:00" -> "12h")
-			elseif(($format=="normal" || $format=="full") && date("Ymd")==date("Ymd",$timeBegin))  {$dateLabel=str_replace(strftime($_DMY),self::trad("today"),$dateLabel);}	//Affiche "Aujourd'hui" au lieu du $_DMY
-
-			//Renvoie le résultat (encodé si besoin en UTF-8)
-			return static::utf8Encode($dateLabel);
 		}
 	}
 
 	/*******************************************************************************************
-	 * FORMATAGE D'UNE DATE  (Exple : "2050-12-31 12:50:00" => "31/12/2050")
+	 * FORME UN DATETIME  (ex: "2050-12-31 12:50:00" => "31/12/2050")
 	 *******************************************************************************************/
 	public static function formatDate($dateValue, $inFormat, $outFormat, $emptyHourNull=false)
 	{
-		$dateValue=trim($dateValue);
+		$dateValue=trim((string)$dateValue);
 		$formatList=["dbDatetime"=>"Y-m-d H:i", "dbDate"=>"Y-m-d", "inputDatetime"=>"d/m/Y H:i", "inputDate"=>"d/m/Y", "inputHM"=>"H:i", "time"=>"U"];
 		if(!empty($dateValue) && array_key_exists($inFormat,$formatList) && array_key_exists($outFormat,$formatList))
 		{
@@ -269,7 +276,7 @@ exit;
 		$menuLangOptions=null;
 		foreach(scandir("app/trad/") as $tmpFileLang){
 			if(strstr($tmpFileLang,".php")){
-				$tmpLang=str_replace(".php",null,$tmpFileLang);
+				$tmpLang=str_replace(".php","",$tmpFileLang);
 				$tmpLabel=($typeConfig=="user" && $tmpLang==Ctrl::$agora->lang)  ?  $tmpLang." (".Txt::trad("byDefault").")"  :  $tmpLang;
 				$menuLangOptions.= "<option value=\"".$tmpLang."\" ".($tmpLang==$selectedLang?"selected":null)."> ".$tmpLabel."</option>";
 			}

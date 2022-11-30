@@ -35,9 +35,9 @@ $(function(){
 function formControl()
 {
 	//Contrôle le nom de l'espace
-	if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
+	if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
 	//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gSigninClientId
-	<?php if(Ctrl::isHost()==false){ ?>
+	<?php if(Req::isHost()==false){ ?>
 	if(isNaN($("#limite_espace_disque").val()))   																		{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
 	if($("input[name='visioHost']").isEmpty()==false && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
 	if($("input[name='visioHostAlt']").isEmpty()==false && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
@@ -72,9 +72,9 @@ function formControl()
 		<!--INFOS & VERSIONS-->
 		<div class="miscContainer" id="agoraInfos">
 			<div>Agora-Project / Omnispace version <?= Ctrl::$agora->version_agora ?></div>
-			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"dateMini") ?></div>
+			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"date") ?></div>
 			<div><a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a></div>
-			<div>PHP <?= str_replace(strstr(phpversion(),"-"),null,phpversion()) ?> &nbsp;&nbsp; MariaDB / MySql <?= Db::dbVersion() ?></div>
+			<div>PHP <?= str_replace(strstr(phpversion(),"-"),"",phpversion()) ?> &nbsp;&nbsp; MariaDB / MySql <?= Db::dbVersion() ?></div>
 			<?php if(!function_exists("mail")){ ?><div ><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
 			<?php if(!function_exists("ldap_connect")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_ldapDisabled") ?></div><?php } ?>
@@ -199,7 +199,7 @@ function formControl()
 				</div>
 			</div>
 			<!--DISK SPACE (AUTO-HEBERGEMENT)-->
-			<?php if(Ctrl::isHost()==false){ ?>
+			<?php if(Req::isHost()==false){ ?>
 			<div class="objField">
 				<div class="fieldLabel"><img src="app/img/diskSpace.png"><?= Txt::trad("AGORA_diskSpaceLimit") ?></div>
 				<div><input type="text" name="limite_espace_disque" id="limite_espace_disque" value="<?= round((limite_espace_disque/File::sizeGo),2) ?>"> <?= Txt::trad("gigaOctet")?></div>
@@ -263,7 +263,7 @@ function formControl()
 			<hr><!--SEPARATEUR-->
 
 			<!--SERVEURS JITSI (AUTO-HEBERGEMENT)-->
-			<?php if(Ctrl::isHost()==false){ ?>
+			<?php if(Req::isHost()==false){ ?>
 			<div class="objField" title="<?= Txt::trad("AGORA_visioHostInfo") ?>">
 				<div class="fieldLabel"><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHost") ?></div>
 				<div><input type="text" name="visioHost" value="<?= Ctrl::$agora->visioHost ?>"></div>
@@ -284,7 +284,7 @@ function formControl()
 				</div>
 			</div>
 			<!--GOOGLE MAP APIKEY (AUTO-HEBERGEMENT)-->
-			<?php if(Ctrl::isHost()==false){ ?>
+			<?php if(Req::isHost()==false){ ?>
 			<div class="objField" id="mapApiKeyDiv" title="<?= Txt::trad("AGORA_mapApiKeyInfo") ?>">
 				<div class="fieldLabel"><img src="app/img/map.png"><?= Txt::trad("AGORA_mapApiKey") ?></div>
 				<div><input type="text" name="mapApiKey" value="<?= Ctrl::$agora->mapApiKey ?>"></div>
@@ -301,7 +301,7 @@ function formControl()
 				</div>
 			</div>
 			<!--GOOGLE SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AUTO-HEBERGEMENT)-->
-			<?php if(Ctrl::isHost()==false){ ?>
+			<?php if(Req::isHost()==false){ ?>
 			<div class="objField" id="gSigninClientIdDiv" title="<?= Txt::trad("AGORA_gSigninClientIdInfo") ?>">
 				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gSigninClientId") ?></div>
 				<div><input type="text" name="gSigninClientId" value="<?= Ctrl::$agora->gSigninClientId ?>"></div>
@@ -313,7 +313,7 @@ function formControl()
 			<?php } ?>
 
 			<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AUTO-HEBERGEMENT)-->
-			<?php if(Ctrl::isHost()==false){ ?>
+			<?php if(Req::isHost()==false){ ?>
 			<hr><!--SEPARATEUR-->
 			<div class="objField sLink" onclick="$('#smtpConfig').fadeToggle()">
 				<div class="fieldLabel"><img src="app/img/postMessage.png"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowBottom.png"></div>

@@ -1,3 +1,31 @@
+VERSION 22.12.0
+###############
+Optimisation du download de fichiers
+Correction de la creation de vignette des .Pdf protégés par password
+Optimisation du menu principal et de la messagerie instantanée
+Mise à jour de PHMailer en version 6.6.5
+Mise à jour de PlUpload en version 3.1.5
+-----
+Optimization of file downloading
+Fixed creation of thumbnail of .Pdf protected by password
+Optimization of the main menu and the instant messenger
+PHMailer updated to 6.6.5 version
+PlUpload updated to 3.1.5 version
+
+
+VERSION 22.9.2
+##############
+Optimisation de la fonction de formatage des dates/heures
+Optimisation de compatibilités avec PHP 8.1
+Conversion en Utf8 des anciennes tables en Latin1
+Correction de l'import d'événements  sur Thunderbird Calendar
+-----
+Optimization of the date/time formatting function
+Optimization of compatibilities with PHP 8.1
+Conversion to Utf8 of old tables in Latin1*
+Fixed import of events on Thunderbird Calendar
+
+
 VERSION 22.3.1
 ###############
 Amélioration des emails de notifications
@@ -608,7 +636,7 @@ VERSION 3.1.0 (03-2016)
 Nouveau script d'affichage des menus contextuels : meilleur positionnement en bordure de page et sur des petites résolutions
 Amélioration diverses d'ergonomie, notamment des modules Dashboard et Calendar
 Amélioration de la confirmation de fermeture des iframes d'édition d'objet
-Correction de l'enregistrement des preferences des invités (exple : affichage des agendas)
+Correction de l'enregistrement des preferences des invités (ex: affichage des agendas)
 Optimisations diverses
 
 

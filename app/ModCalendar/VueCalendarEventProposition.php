@@ -59,7 +59,7 @@ foreach($eventPropositions as $cpt=>$tmpProposition)
 		$curCalTitle=$tmpCal->title;//retient le titre courant
 	}
 	////	Affiche la proposition d'événement dans un tooltip
-	$evtTooltip=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"full",$tmpEvt->dateEnd)."<hr>".
+	$evtTooltip=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)."<hr>".
 				Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
 				ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
 	if($tmpEvt->description)  {$evtTooltip.=Txt::reduce($tmpEvt->description);}

@@ -1,4 +1,4 @@
-METTRE A JOUR PHPMAILER :
-*************************
+METTRE A JOUR PHPMAILER 6.6.5:
+******************************
 - Récupérer la dernière version de PHPMailer sur https://github.com/PHPMailer/PHPMailer
 - Remplacer tous les fichiers présents par ceux de l'archive, garder uniquement les trads "fr" et "es" dans le dossier "language/"

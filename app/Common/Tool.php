@@ -120,7 +120,7 @@ class Tool
 					$tmpFileSize=@filesize($tmpFile["path"]);
 					if(is_file($tmpFile["path"]) && ($fileSizeCpt+$tmpFileSize)<File::mailMaxFilesSize){
 						$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
-						if(!empty($tmpFile["cid"]))			{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre une image dans le message (exple : CID="XYZ" correspond à "<img src='cid:XYZ'>")
+						if(!empty($tmpFile["cid"]))			{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre une image dans le message (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
 						elseif(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute un fichier joint classique
 					}
 				}

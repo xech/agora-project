@@ -13,7 +13,7 @@ function formControl()
 {
 	//Texte à rechercher && Champs de recherche avancée
 	if($("[name=searchText]").val().length<3)  {notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
-	if($("input[name='searchModules[]']:checked").isEmpty() || $("input[name='searchFields[]']:checked").isEmpty())  {notify("<?= Txt::trad("fillAllFields") ?>");  return false;}
+	if($("input[name='searchModules[]']:checked").isEmpty() || $("input[name='searchFields[]']:checked").isEmpty())  {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
 }
 
 ////	Recherche avancée

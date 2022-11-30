@@ -60,7 +60,7 @@ class CtrlMail extends Ctrl
 				foreach($oldMail->attachedFileList() as $oldFile){																											//Parcourt chaque fichier joint
 					$_idNewFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($oldFile["name"]).", objectType='mail', _idObject=".$curObj->_id, true);	//Copie le fichier en BDD
 					copy($oldFile["path"], PATH_OBJECT_ATTACHMENT.$_idNewFile.".".File::extension($oldFile["name"]));														//Copie dans DATAS  
-					$curObj->description=str_replace($oldFile["url"], MdlObject::attachedFileDisplayUrl($_idNewFile,$oldFile["name"]), $curObj->description);//Remplace le "attachedFileDisplayUrl()" dans le texte de l'éditeur
+					$curObj->description=str_replace($oldFile["url"], CtrlObject::attachedFileDisplayUrl($_idNewFile,$oldFile["name"]), $curObj->description);				//Remplace le "attachedFileDisplayUrl()" dans le texte de l'éditeur
 				}
 				//Update le texte de l'éditeur  &&  recharge l'email (avec les nouveaux fichiers & co)
 				Db::query("UPDATE ".$curObj::dbTable." SET ".$curObj::htmlEditorField."=".Db::format($curObj->description,"editor")." WHERE _id=".$curObj->_id);

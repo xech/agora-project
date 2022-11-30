@@ -102,7 +102,7 @@ class MdlSpace extends MdlObject
 			foreach($this->_spaceUsers as $objUser)  {$idsList[]=$objUser->_id;}
 			//Retourne le tableau d'identifiants
 			if($return=="idsTab")  {return $idsList;}
-			//Sinon retourne une liste d'identifiants pour les requêtes SQL (exple: "WHERE _idUser IN (1,3,5,0)")
+			//Sinon retourne une liste d'identifiants pour les requêtes SQL (ex: "WHERE _idUser IN (1,3,5,0)")
 			elseif($return=="idsSql"){
 				$idsList[]=0;//Ajoute un pseudo user pour pas avoir d'erreur SQL si la liste est vide
 				return implode(",",$idsList);

@@ -91,16 +91,15 @@ $(function(){
 #headerBar>div			{padding:10px;}/*surcharge*/
 #customLogo				{margin-bottom:40px;}
 #customLogo img			{max-width:100%; max-height:250px;}
-#formConnect input[type=text], #formConnect input[type=password], #formConnect button	{width:80%!important; max-width:280px!important; height:35px; margin-bottom:15px;}/*surcharge*/
+#formConnect input[type=text], #formConnect input[type=password], #formConnect button, .vMiscOptions button	{width:280px!important; height:45px; margin-bottom:15px;}/*surcharge*/
 .vConnectOptions		{display:inline-table;}
 .vConnectOptions>div	{display:table-cell; padding:10px;}
-.vConnectOptions button	{height:40px; width:200px;}
 .vPasswordForms			{display:none;}
 .vPasswordForms input	{height:35px; margin:5px; width:230px;}
 .vPasswordForms button	{height:35px; margin:5px; width:150px;}
 #publicSpaceTitle, #publicSpaceList	{text-align:left; margin-left:25%;}
 #publicSpaceTitle		{font-size:1.1em;}
-#publicSpaceList li		{margin-top:10px; list-style:circle;}
+#publicSpaceList li		{font-size:1.05em; margin-top:10px; list-style:circle;}
 #formSpacePasswordLabel	{display:none;}
 
 /*RESPONSIVE*/
@@ -108,7 +107,6 @@ $(function(){
 	#pageCenter				{margin-top:70px;}/*surcharge*/
 	.miscContainer			{width:100%!important;}
 	#headerBar>div			{padding:8px; font-weight:normal;}/*surcharge*/
-	.vConnectOptions, .vConnectOptions>div	{display:block;}
 	#publicSpaceTitle, #publicSpaceList	{margin-left:20px;}
 }
 </style>
@@ -151,7 +149,7 @@ $(function(){
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
-		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD -> 2 ÈME ETAPE-->
+		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD => 2 ÈME ETAPE-->
 		<?php if(!empty($resetPasswordIdOk) && Req::isParam("newPassword")==false){ ?>
 			<div><a data-fancybox="inline" data-src="#formResetPasswordBis" id="formResetPasswordBisLabel"><?= Txt::trad("passwordModify") ?></a></div>
 			<form id="formResetPasswordBis" class="vPasswordForms" action="index.php" method="post" onsubmit="return resetPasswordControlNew();">
@@ -190,7 +188,7 @@ $(function(){
 		////	CONNEXION AVEC GSIGNIN
 		if(Ctrl::$agora->gSigninEnabled()){
 			echo $separateHrOr.
-				"<div class='vConnectOptions'>
+				"<div class='vMiscOptions'>
 					<button id='gSignInButton' title=\"".Txt::trad("gSigninButtonInfo")."\"><img src='app/img/gSignin.png'> ".Txt::trad("gSigninButton")."</button>
 				</div>";
 		}
@@ -207,9 +205,17 @@ $(function(){
 		////	INSCRIPTION D'USER
 		if(!empty($userInscription)){
 			echo $separateHrOr.
-				"<div class='vConnectOptions'>
-					<div><button onclick=\"lightboxOpen('?action=userInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button></div>
+				"<div class='vMiscOptions'>
+					<button onclick=\"lightboxOpen('?action=userInscription')\" title=\"".Txt::trad("userInscriptionInfo")."\"><img src='app/img/check.png'> ".Txt::trad("userInscription")."</button>
 				</div>";
+		}
+
+		////	SWITCH D'ESPACE (APP MOBILE || HOST)
+		if(Req::isMobileApp() || Req::isHost()){
+			echo $separateHrOr.
+			"<div class='vMiscOptions'>
+				<button onclick=\"redir('".Req::connectSpaceSwitchUrl()."')\"><img src='app/img/switch.png'> ".Txt::trad("connectSpaceSwitch")."</button>
+			</div>";
 		}
 		?>
 
@@ -221,10 +227,5 @@ $(function(){
 			<input type="hidden" name="_idSpace" id="formSpacePassword_idSpace"><br>
 			<button onclick="publicSpaceAccess($('#formSpacePassword_idSpace').val(),$('#formSpacePasswordPassword').val());"><?= Txt::trad("validate") ?></button>
 		</div>
-
-		<?php
-		////	MOBILE APP : SWITCH SPACE
-		if(Ctrl::isHost() && Req::isMobileApp())  {echo $separateHrOr.Host::mobileAppliSwitchSpaceMenu();}
-		?>
 	</div>
 </div>

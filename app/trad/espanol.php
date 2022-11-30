@@ -11,12 +11,13 @@ class Trad extends Txt
 	{
 		////	Header http / Editeurs Tinymce,DatePicker,etc / Dates formatées par PHP
 		self::$trad["CURLANG"]="es";
-		self::$trad["HTML_EDITOR"]="es";
+		self::$trad["DATELANG"]="es_ES";
+		self::$trad["EDITORLANG"]="es";
 		setlocale(LC_TIME, "es_ES.utf8", "es_ES.UTF-8", "es_ES", "es", "spanish");
 
 		////	Divers
 		self::$trad["OK"]="OK";
-		self::$trad["fillAllFields"]="Gracias rellene todos los campos";
+		self::$trad["fillFieldsForm"]="Por favor, rellene los campos del formulario";
 		self::$trad["requiredFields"]="Campo obligatorio";
 		self::$trad["inaccessibleElem"]="Elemento inaccesible";
 		self::$trad["warning"]="Atención";
@@ -47,7 +48,7 @@ class Trad extends Txt
 		self::$trad["visibleAllSpaces"]="Visible en todos los espacios";
 		self::$trad["confirmCloseForm"]="¿Quieres cerrar el formulario?";
 		self::$trad["modifRecorded"]="Los cambios fueron registrados";
-		self::$trad["confirm"]="Confirmar ?";
+		self::$trad["confirm"]="¿ Confirmar ?";
 		self::$trad["comment"]="Comentario";
 		self::$trad["commentAdd"]="Añadir un comentario";
 		self::$trad["optional"]="(opcional)";
@@ -78,7 +79,8 @@ class Trad extends Txt
 		self::$trad["gSigninButton"]="iniciar sesión con google";
 		self::$trad["gSigninButtonInfo"]="Inicie sesión con su cuenta Google : ya debe tener una cuenta en este espacio, con una dirección de correo electrónico <i>@gmail.com</i>";
 		self::$trad["gSigninUserNotRegistered"]="no está registrado en el espacio con el correo electrónico";
-		self::$trad["switchOmnispace"]="Conectarse a otro espacio Omnispace";
+		self::$trad["connectSpaceSwitch"]="Conectarse a otro espacio";
+		self::$trad["connectSpaceSwitchConfirm"]="¿Está seguro de que desea abandonar este espacio para conectarse a otro espacio?";
 		self::$trad["guestAccess"]="Iniciar sesión como invitado";
 		self::$trad["spacePassError"]="Contraseña incorrecta";
 		self::$trad["ieObsolete"]="Su navegador es demasiado viejo y no soporta todos los elementos de HTML : Se recomienda actualizarlo o utilizar otro navegador";
@@ -92,7 +94,7 @@ class Trad extends Txt
 		self::$trad["passwordInvalid"]="Su contraseña debe tener al menos 6 caracteres con al menos 1 dígito y al menos 1 letra";
 		self::$trad["passwordConfirmError"]="Your confirmation password is not valid";
 		self::$trad["specifyPassword"]="Gracias especificar una contraseña";
-		self::$trad["resetPassword"]="Información de inicio de sesión olvidada ?";
+		self::$trad["resetPassword"]="¿Información de inicio de sesión olvidada ?";
 		self::$trad["resetPassword2"]="Introduzca su dirección de correo electrónico para recibir sus datos de acceso";
 		self::$trad["resetPasswordNotif"]="Se acaba de enviar un correo electrónico a su dirección para restablecer su contraseña. Si no ha recibido un correo electrónico, verifique que la dirección especificada sea correcta o que el correo electrónico no esté en su correo no deseado.";
 		self::$trad["resetPasswordMailTitle"]="Restablecer su contraseña";
@@ -192,9 +194,9 @@ class Trad extends Txt
 		self::$trad["tri_descendant"]="Descendente";
 		
 		////	Options de suppression
-		self::$trad["confirmDelete"]="Confirmar eliminación ?";
+		self::$trad["confirmDelete"]="¿ Confirmar eliminación ?";
 		self::$trad["confirmDeleteNbElems"]="elementos seleccionados";//"55 éléments sélectionnés"
-		self::$trad["confirmDeleteDbl"]="Está seguro ?!";
+		self::$trad["confirmDeleteDbl"]="¿ Está seguro ?";
 		self::$trad["confirmDeleteFolderAccess"]="Advertencia : algunos sub-carpetas no son accessible : serán tambien eliminados !";
 		self::$trad["notifyBigFolderDelete"]="Eliminar --NB_FOLDERS-- archivos puede ser un poco largo, espere unos momentos antes del final del proceso";
 		self::$trad["delete"]="Eliminar";
@@ -357,7 +359,7 @@ class Trad extends Txt
 		self::$trad["NOTIF_identification"]="Nombre de usuario o contraseña no válida";
 		self::$trad["NOTIF_presentIp"]="Esta cuenta de usuario se está utilizando actualmente desde otra computadora, con otra dirección IP. Una cuenta solo se puede usar en un computadora al mismo tiempo.";
 		self::$trad["NOTIF_noSpaceAccess"]="Su cuenta de usuario se ha identificado correctamente, pero actualmente no está asignado a ningún espacio. Por favor contacte al administrador";
-		self::$trad["NOTIF_noAccess"]="Acceso no autorizado";
+		self::$trad["NOTIF_noAccess"]="No estas logueado";
 		self::$trad["NOTIF_fileOrFolderAccess"]="El archivo o la carpeta no está disponible";
 		self::$trad["NOTIF_diskSpace"]="El espacio para almacenar sus archivos no es suficiente, no se puede añadir archivos";
 		self::$trad["NOTIF_fileVersionForbidden"]="Tipo de archivo no permitido";
@@ -380,11 +382,12 @@ class Trad extends Txt
 		self::$trad["FOOTER_pageGenerated"]="página generada en";
 
 		////	Messenger / Visio
+		self::$trad["MESSENGER_headerModuleName"]="Mensajes";
+		self::$trad["MESSENGER_moduleDescription"]="Mensajería instantánea: Chatea en vivo o inicia una videoconferencia con las personas conectadas al espacio";
 		self::$trad["MESSENGER_messengerTitle"]="Mensajería instantánea : haga clic en el nombre de una persona para chatear o iniciar una videoconferencia";
-		self::$trad["MESSENGER_messengerMultipleUsers"]="Ver todos los mensajes enviados a mí | Chatear con otros seleccionando mis interlocutores en el panel derecho";
+		self::$trad["MESSENGER_messengerMultiUsers"]="Chatear con otros seleccionando mis interlocutores en el panel derecho";
 		self::$trad["MESSENGER_connected"]="Conectado";
-		self::$trad["MESSENGER_nobody"]="Actualmente eres el único usuario que inició sesión en el espacio";
-		self::$trad["MESSENGER_nobodyTitle"]="Haga clic aquí para ver sus antiguas discusiones (guardados durante 15 días)";
+		self::$trad["MESSENGER_nobody"]="Actualmente eres el único usuario que inició sesión en el espacio.<br> Nota: sus conversaciones anteriores se guardan durante 30 días";
 		self::$trad["MESSENGER_messageFrom"]="Mensaje de";
 		self::$trad["MESSENGER_messageTo"]="enviado a";
 		self::$trad["MESSENGER_chatWith"]="Chatear con";
@@ -427,7 +430,7 @@ class Trad extends Txt
 		self::$trad["EDIT_showAllUsersAndSpaces"]="Mostrar todos los usuarios y espacios";
 		self::$trad["EDIT_notifMail"]="Notificar";
 		self::$trad["EDIT_notifMail2"]="Enviar una notificación de creación/cambio por email";
-		self::$trad["EDIT_notifMailInfo"]="La notificación se enviará a las personas asignadas al elemento / -OBJLABEL-.";
+		self::$trad["EDIT_notifMailInfo"]="La notificación se enviará a las personas asignadas al elemento (-OBJLABEL-)";
 		self::$trad["EDIT_notifMailInfoCal"]="<hr>Si asigna el evento a calendarios personales, la notificación solo se enviará a los propietarios de estos calendarios (acceso de escritura).";
 		self::$trad["EDIT_notifMailAddFiles"]="Adjuntar archivos a la notificación";
 		self::$trad["EDIT_notifMailSelect"]="Seleccionar los destinatarios de las notificaciones";
@@ -456,7 +459,7 @@ class Trad extends Txt
 		self::$trad["INSTALL_dbErrorIdentification"]="No identificación con la base de datos MariaDB/MySQL";
 		self::$trad["INSTALL_dbErrorAppInstalled"]="La instalación ya se ha realizado en esta base de datos. Gracias simplemente eliminar la base de datos si se debe reiniciar la instalación.";
 		self::$trad["INSTALL_PhpOldVersion"]="Agora-Project requiere una versión más reciente de PHP";
-		self::$trad["INSTALL_confirmInstall"]="Confirmar instalación ?";
+		self::$trad["INSTALL_confirmInstall"]="¿ Confirmar instalación ?";
 		self::$trad["INSTALL_installOk"]="Agora-Project ha sido instalado !";
 		self::$trad["INSTALL_spaceDescription"]="Espacio para el intercambio y el trabajo colaborativo";
 		self::$trad["INSTALL_dataDashboardNews"]="<h3>¡Bienvenido a tu nuevo espacio para compartir!</h3>
@@ -467,7 +470,7 @@ class Trad extends Txt
 												<h4><img src='app/img/task/iconSmall.png'> Centraliza tus notas, proyectos y contactos</h4>
 												<h4><img src='app/img/mail/iconSmall.png'> Enviar boletines por correo electrónico</h4>
 												<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">¡Haga clic aquí para enviar correos electrónicos de invitación y hacer crecer su comunidad!</a></h4>
-												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/?ctrl=offline&action=Documentation' target='_blank'>Para obtener más información, consulte la documentación oficial de Omnispace & Agora-Project</a></h4>";
+												<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>Para obtener más información, consulte la documentación oficial de Omnispace & Agora-Project</a></h4>";
 		self::$trad["INSTALL_dataDashboardPoll"]="¿Qué opinas de la herramienta de noticias?";
 		self::$trad["INSTALL_dataDashboardPollA"]="Muy interesante !";
 		self::$trad["INSTALL_dataDashboardPollB"]="Interesante";
@@ -625,7 +628,7 @@ class Trad extends Txt
 		self::$trad["USER_spaceUsers"]="Usuarios del espacio corriente";
 		self::$trad["USER_deleteDefinitely"]="Eliminar definitivamente";
 		self::$trad["USER_deleteFromCurSpace"]="Desasignar del espacio corriente";
-		self::$trad["USER_deleteFromCurSpaceConfirm"]="Confirmar la desasignación del usuario al espacio corriente ?";
+		self::$trad["USER_deleteFromCurSpaceConfirm"]="¿ Confirmar la desasignación del usuario al espacio corriente ?";
 		self::$trad["USER_allUsersOnSpaceNotif"]="Todo los usuarios son asignados a este espacio";
 		self::$trad["USER_user"]="Usuario";
 		self::$trad["USER_users"]="usuarios";
@@ -637,7 +640,7 @@ class Trad extends Txt
 		self::$trad["USER_sendCoords"]="Enviar el nombre de usuario y contraseña";
 		self::$trad["USER_sendCoordsInfo"]="Envíe a los usuarios un correo electrónico con su Login y un enlace web para inicializar su contraseña";
 		self::$trad["USER_sendCoordsInfo2"]="Enviar a cada nuevo usuario un correo electrónico con información de acceso.";
-		self::$trad["USER_sendCoordsConfirm"]="Confirmar ?";
+		self::$trad["USER_sendCoordsConfirm"]="¿ Confirmar ?";
 		self::$trad["USER_sendCoordsMail"]="Sus datos de acceso a su espacio";
 		self::$trad["USER_noUser"]="Ningún usuario asignado a este espacio por el momento";
 		self::$trad["USER_spaceList"]="Espacios del usuario";
@@ -668,7 +671,7 @@ class Trad extends Txt
 		self::$trad["USER_userGroups"]="Grupos del usuario";
 		// Utilisateur_affecter
 		self::$trad["USER_searchPrecision"]="Gracias a especificar un nombre, un apellido o una dirección de correo electrónico";
-		self::$trad["USER_userAffectConfirm"]="Confirmar las asignaciónes ?";
+		self::$trad["USER_userAffectConfirm"]="¿ Confirmar las asignaciónes ?";
 		self::$trad["USER_userSearch"]="Buscar usuarios para añadirlo al espacio";
 		self::$trad["USER_allUsersOnSpace"]="Todos los usuarios del sitio ya están asignados a este espacio";
 		self::$trad["USER_usersSpaceAffectation"]="Asignar usuarios al espacio :";
@@ -797,9 +800,9 @@ class Trad extends Txt
 		self::$trad["CALENDAR_evtProposedDecline"]="Rechazar la propuesta";
 		self::$trad["CALENDAR_evtProposedDeclineBis"]="La propuesta ha sido rechazada";
 		self::$trad["CALENDAR_evtProposedDeclineMail"]="Tu propuesta de evento ha sido rechazada";
-		self::$trad["CALENDAR_deleteEvtCal"]="Eliminar sólo en ese calendario ?";
-		self::$trad["CALENDAR_deleteEvtCals"]="Eliminar en todos los calendarios ?";
-		self::$trad["CALENDAR_deleteEvtDate"]="Eliminar sólo en esta fecha ?";
+		self::$trad["CALENDAR_deleteEvtCal"]="¿ Eliminar sólo en ese calendario ?";
+		self::$trad["CALENDAR_deleteEvtCals"]="¿ Eliminar en todos los calendarios ?";
+		self::$trad["CALENDAR_deleteEvtDate"]="¿ Eliminar sólo en esta fecha ?";
 		self::$trad["CALENDAR_evtPrivate"]="Évento privado";
 		self::$trad["CALENDAR_evtAutor"]="Eventos que he creado";
 		self::$trad["CALENDAR_noEvt"]="No hay eventos";
@@ -873,7 +876,7 @@ class Trad extends Txt
 		self::$trad["FILE_fileContent"]="contenido";
 		// Versions_fichier
 		self::$trad["FILE_versionsOf"]="Versiones de"; // versions de fichier.gif
-		self::$trad["FILE_confirmDeleteVersion"]="Confirme la eliminación de esta versión ?";
+		self::$trad["FILE_confirmDeleteVersion"]="¿ Confirme la eliminación de esta versión ?";
 
 		////	MODULE_FORUM
 		////
@@ -947,7 +950,7 @@ class Trad extends Txt
 		self::$trad["CONTACT_addContact"]="Añadir un contacto";
 		self::$trad["CONTACT_noContact"]="No hay contacto todavía";
 		self::$trad["CONTACT_createUser"]="Crear un usuario en este espacio";
-		self::$trad["CONTACT_createUserInfo"]="Crear un usuario en este espacio con este contacto ?";
+		self::$trad["CONTACT_createUserInfo"]="¿ Crear un usuario en este espacio con este contacto ?";
 		self::$trad["CONTACT_createUserConfirm"]="El usuario fue creado";
 
 		////	MODULE_LIEN

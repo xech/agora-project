@@ -39,7 +39,7 @@ trait MdlObjectMenus
 	 * $options["iconBurger"] (text)		: Icone "burger" du launcher => "inlineSmall" / "inlineBig" / "floatSmall" / "floatBig" (par défaut)
 	 * $options["deleteLabel"] (text)		: label spécifique de suppression
 	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu : chaque bouton a les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
-	 * $options["specificLabels"] (Array)	: Texte à afficher (exple : "affectedCalendarsLabel()" pour afficher les agendas affectés à un evenement)
+	 * $options["specificLabels"] (Array)	: Texte à afficher (ex: "affectedCalendarsLabel()" pour afficher les agendas affectés à un evenement)
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
@@ -119,7 +119,7 @@ trait MdlObjectMenus
 				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
 				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
 				$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
-				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
+				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][(string)$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
 				//Affiche si l'objet est personnel ("isPersoAccess")
 				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
 				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["target_id"]==Ctrl::$curUser->_id);
@@ -291,7 +291,7 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * STATIC : TRI D'OBJETS : PREFERENCE EN BDD / PARAMÈTRE PASSÉ EN GET (exple: "firstName@@asc")
+	 * STATIC : TRI D'OBJETS : PREFERENCE EN BDD / PARAMÈTRE PASSÉ EN GET (ex: "firstName@@asc")
 	 *******************************************************************************************/
 	private static function getSort($containerObj=null)
 	{

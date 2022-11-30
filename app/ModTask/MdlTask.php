@@ -72,10 +72,10 @@ class MdlTask extends MdlObject
 		if(!empty($this->dateBegin) || !empty($this->dateEnd))
 		{
 			//Affichage : Icone + tooltip / Barre détaillée
-			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<img src='app/img/task/date.png' class='cursorHelp' title=\"".Txt::dateLabel($this->dateBegin,"full",$this->dateEnd)."\">";}
+			if($percentBar==null && MdlTask::getDisplayMode()=="block")	{return "<img src='app/img/task/date.png' class='cursorHelp' title=\"".Txt::dateLabel($this->dateBegin,"normal",$this->dateEnd)."\">";}
 			else{
 				$txtBar="<img src='app/img/task/date.png'> ".Txt::dateLabel($this->dateBegin,"normal",$this->dateEnd);
-				$txtTooltip=Txt::dateLabel($this->dateBegin,"full",$this->dateEnd)." <br>".$this->isDelayed(true);
+				$txtTooltip=Txt::dateLabel($this->dateBegin,"normal",$this->dateEnd)." <br>".$this->isDelayed(true);
 				return Tool::percentBar($this->fillPercent(), $txtBar, $txtTooltip, $this->isDelayed(), static::barWidth);
 			}
 		}
@@ -126,7 +126,7 @@ class MdlTask extends MdlObject
 	{
 		if(!empty($this->dateBegin) || !empty($this->dateEnd)){
 			$txtBar=null;
-			$txtTooltip=$this->title."<br>".Txt::dateLabel($this->dateBegin,"full",$this->dateEnd);
+			$txtTooltip=$this->title."<br>".Txt::dateLabel($this->dateBegin,"normal",$this->dateEnd);
 			if(!empty($this->advancement)){
 				$txtBar.="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".$this->advancement."%";
 				$txtTooltip.="<br><img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'> ".Txt::trad("TASK_advancement")." : ".$this->advancement." % <br>".$this->isDelayed(true);

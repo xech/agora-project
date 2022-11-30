@@ -23,14 +23,11 @@ a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label,
 	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:2px 2px 5px rgb(200,200,200);}/*cf. affichage de news et fichiers*/
 }
 
-/*Barre de menu*/
-#headerBar											{background:linear-gradient(180deg,#fff,#f5f5f5,#fff); box-shadow:2px 2px 8px rgb(80,80,80);}	/*barre de menu principale*/
-.vHeaderModuleButton:hover, .vHeaderModuleCurrent	{background:#fff; border:solid 1px #ccc!important;}												  /*module courant*/
-
 /*Divers*/
-hr													{background:linear-gradient(90deg,#eee,#ccc,#eee);}	/*barre de séparation*/
-div::-webkit-scrollbar								{background:#eee; width:15px;}							/*scrollbar: background et width*/
-div::-webkit-scrollbar-thumb						{background:#ccc;}										/*scrollbar: couleur de la barre*/
-.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}								/*blocks des lightboxes et onglets du menu d'édition d'objets*/
+#headerBar											{background:linear-gradient(180deg,#fff,#f5f5f5,#fff); box-shadow:2px 2px 8px rgb(80,80,80);}	/*barre de menu principale*/
+hr													{background:linear-gradient(90deg,#eee,#ccc,#eee);}		/*barre de séparation*/
+div::-webkit-scrollbar								{background:#eee; width:15px;}									/*scrollbar: background et width*/
+div::-webkit-scrollbar-thumb						{background:#ccc;}												/*scrollbar: couleur de la barre*/
+.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}										/*blocks des lightboxes et onglets du menu d'édition d'objets*/
 .objMenuLabel										{background:linear-gradient(180deg,#f5f5f5,#fff);}
 .lightboxBlockTitle									{border-bottom:#ddd solid 1px; background:#fafafa;}

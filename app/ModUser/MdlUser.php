@@ -253,7 +253,7 @@ class MdlUser extends MdlPerson
 		if(self::usersQuotaRemaining()>0)  {return true;}
 		else{
 			if($notify==true){
-				$msgUgrade=(Ctrl::isHost()) ? Host::notifUpgradeUsers() : null;//Propose l'upgrade?
+				$msgUgrade=(Req::isHost()) ? Host::notifUpgradeUsers() : null;//Propose l'upgrade?
 				Ctrl::notify(Txt::trad("NOTIF_usersNb")." ".limite_nb_users.$msgUgrade);
 			}
 			return false;
@@ -322,7 +322,7 @@ class MdlUser extends MdlPerson
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else
 		{
-			$resetPasswordUrl=Req::getCurUrl()."/?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
+			$resetPasswordUrl=Req::getCurUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
 			$mailSubject=Txt::trad("resetPasswordMailTitle");
 			$mailMessage=Txt::trad("MAIL_hello").",<br><br>".
 					 	 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
@@ -344,7 +344,7 @@ class MdlUser extends MdlPerson
 		{
 			$mailSubject=Txt::trad("USER_mailNotifObject")." ".ucfirst(Ctrl::$agora->name);//"Bienvenue sur Mon-espace"
 			$mailMessage=Txt::trad("USER_mailNotifContent")." <i>".Ctrl::$agora->name."</i> (".Req::getCurUrl(false).")<br><br>".//"Votre compte utilisateur vient d'être créé sur <i>Mon-espace</i>"
-						 "<a href=\"".Req::getCurUrl()."/?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
+						 "<a href=\"".Req::getCurUrl()."/index.php?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
 						 Txt::trad("login")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
 						 Txt::trad("passwordToModify")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
 						 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"

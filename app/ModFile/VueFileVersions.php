@@ -27,14 +27,13 @@ img[src*='delete']		{margin-left:20px;}
 			<li class="vFileVersion">
 				<?= $tmpVersion["name"] ?>
 				<div class="versionDetails">
-					<?= Txt::dateLabel($tmpVersion["dateCrea"],"full") ?>
-					<img src="app/img/separator.png">
-					<?= Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel() ?>
-					<img src="app/img/separator.png">
-					<?= File::displaySize($tmpVersion["octetSize"]) ?>
-					<br>
-					<a href="<?= $curObj->urlDownloadDisplay("download",$tmpVersion["dateCrea"]) ?>" target="_blank"><img src="app/img/download.png"> <?= Txt::trad("download")?></a>
-					<a href="javascript:confirmDeleteVersion('<?= urlencode($tmpVersion["dateCrea"]) ?>')"><img src="app/img/delete.png"> <?= Txt::trad("delete")?></a>
+					<?php
+					echo Txt::dateLabel($tmpVersion["dateCrea"]).'<img src="app/img/separator.png">'.
+					Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel().'<img src="app/img/separator.png">'.
+					File::displaySize($tmpVersion["octetSize"]).'<br>'.
+					'<a href="'.$curObj->urlDownload($tmpVersion["dateCrea"]).'" target="_blank"><img src="app/img/download.png"> '.Txt::trad("download").'</a>'.
+					'<a href="javascript:confirmDeleteVersion(\''.urlencode($tmpVersion["dateCrea"]).'\')"><img src="app/img/delete.png"> '.Txt::trad("delete").'</a>';
+					?>
 				</div>
 			</li>
 		<?php } ?>

@@ -38,7 +38,7 @@ class File
 	}
 	
 	/*******************************************************************************************
-	 * EXTENSION DU FICHIER (SANS LE POINT!)
+	 * EXTENSION DU FICHIER ..SANS LE POINT!
 	 *******************************************************************************************/
 	public static function extension($fileName)
 	{
@@ -60,6 +60,7 @@ class File
 				"textEditor"=>["doc","docx","odt","sxw"],
 				"text"=>["txt","text","rtf"],
 				"pdf"=>["pdf"],
+				"pdfTxt"=>["pdf","txt","text"],
 				"calc"=>["xls","xlsx","ods","sxc"],
 				"presentation"=>["ppt","pptx","pps","ppsx","odp","sxi"],
 				"archive"=>["zip","rar","7z","tar","gz","tgz","iso"],
@@ -71,9 +72,8 @@ class File
 				"audio"=>["mp3","flac","wma","wav","aac","mid"],
 				"mp3"=>["mp3"],
 				"video"=>["mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"],
-				"videoPlayer"=>["mp4","webm"],		//video
-				"mediaPlayer"=>["mp4","webm","mp3"],//video + mp3
-				"pdfTxt"=>["pdf","txt","text"],		//pdf + txt
+				"videoPlayer"=>["mp4","webm"],
+				"mediaPlayer"=>["mp4","webm","mp3"],
 				"attachedFileInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],										//Fichiers joints pouvant être intégrés dans une description (imageBrowser + mediaPlayer)
 				"forbidden"=>["htaccess","sh","so","bin","cgi","rpm","deb","bat","php","phtml","php3","php4","php5","js"]	//Fichiers script interdits
 			];
@@ -90,9 +90,9 @@ class File
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
 	}
 	
-	/*******************************************************************************************
+	/***********************************************************************************************
 	 * CONTROLE L'UPLOAD D'UN NOUVEAU FICHIER : TYPE DE FICHIER AUTORISÉ & ESPACE DISQUE SUFFISANT ?
-	 *******************************************************************************************/
+	 ***********************************************************************************************/
 	public static function controleUpload($fileName, $fileSize, $datasFolderSize=null)
 	{
 		//Init le $datasFolderSize
@@ -103,51 +103,48 @@ class File
 		else														{return true;}
 	}
 
-	/*******************************************************************************************
-	 * TELECHARGE UN FICHIER
-	 *******************************************************************************************/
+	/************************************************************************************************************************************
+	 * DOWNLOAD UN FICHIER :  DU DOSSIER /DATAS (cf. $filePath)  ||  GÉNÉRÉ À LA VOLÉE (cf. $fileContent. Ex: listing logs/contacts)
+	 ************************************************************************************************************************************/
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		////	Annule le download depuis l'appli, pour ne pas bloquer InAppBrowser. Download ensuite le fichier via le browser system, avec en paramètre "fromMobileApp". Note: InAppBrowser et le browser system utilisent les mêmes cookies : "Tool::isMobileApp()" renvoie donc toujours "true"..
-		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
-		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
-		elseif(!empty($fileContent) || is_file($filePath))
+		if(!empty($fileContent) || is_file($filePath))
 		{
-			////	Augmente la duree du script (pas en safemode)
+			////	Augmente la duree du script (sauf safemode)
 			@set_time_limit(120);
 			////	Headers
 			header("Content-Type: application/octet-stream");
-			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName)."\"");
 			header("Cache-Control: no-store");
-			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}//fichier dans DATAS
-			////	Download d'un fichier généré à la volée
+			header("Content-Transfer-Encoding: Binary"); 
+			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName)."\"");
+			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}
+			////	Fichier généré à la volée (ex: csv des logs)
 			if(!empty($fileContent)){
-				header("Content-Type: text/plain; charset=utf-8");
 				echo $fileContent;
 			}
-			////	Download direct d'un fichier < 50 mo
-			elseif(filesize($filePath)<(self::sizeMo*50)){
-				readfile($filePath);
-			}
-			////	Download du fichier par tranche de 1mo
-			else{
-				session_write_close();//permet de continuer à naviguer sur le site durant le téléchargement!
+			////	Download d'un fichier > 20Mo par tranche de 1Mo, pour pas bloquer la navigation durant le download (tester en prod!)
+			elseif(filesize($filePath) > (self::sizeMo*20)){
+				session_write_close();
 				$handle=fopen($filePath,"rb");
 				while(!feof($handle)){
 					print fread($handle,self::sizeMo);
-					flush();//Vide les tampons de sortie
-					ob_flush();//Envoie le tampon de sortie
+					flush();
+					ob_flush();
 				}
 				fclose($handle);
-				ob_end_clean();//Détruit les données du tampon de sortie et éteint la temporisation de sortie
+				ob_end_clean();
 			}
-			////	Fin de script : fonctionnement par défaut ..sauf par exemple si on veut supprimer le fichier temporaire
+			////	Download direct du fichier
+			else{
+				readfile($filePath);
+			}
+			////	Fin de script (action par défaut, sauf si on supprime un fichier tmp par exemple)
 			if($exitScript==true)  {exit;}
 		}
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE LE FICHIER DANS LE BROWSER : MASQUE LE PATH REEL DU FICHIER
+	 * AFFICHE UN FICHIER DANS LE BROWSER (masque le path reel du fichier img/pdf/etc)
 	 *******************************************************************************************/
 	public static function display($filePath)
 	{
@@ -160,10 +157,9 @@ class File
 			else										{$contentType="application/octet-stream";}
 			//Envoie le "Header"
 			header('Content-Type: '.$contentType);
-			header('Content-Length: '.filesize($filePath));
 			header('Cache-Control: no-store');
 			header('Content-Transfer-Encoding: binary');
-			header('Accept-Ranges: bytes');//Pour ne pas bloquer la lecture des balises audio/video
+			header('Content-Length: '.filesize($filePath));
 			readfile($filePath);
 			exit;
 		}
@@ -210,7 +206,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE UNE VALEUR EN OCTETS, À PARTIR D'UNE VALEUR EN Go/Mo/Ko	(exple : 10Mo)
+	 * RETOURNE UNE VALEUR EN OCTETS, À PARTIR D'UNE VALEUR EN Go/Mo/Ko	(ex: 10Mo)
 	 *******************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
@@ -221,7 +217,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE LA TAILLE D'UN FICHIER/DOSSIER À PARTIR D'UNE VALEUR EN OCTETS ..OU D'UN TEXTE (exple : 10Mo)
+	 * RETOURNE LA TAILLE D'UN FICHIER/DOSSIER À PARTIR D'UNE VALEUR EN OCTETS ..OU D'UN TEXTE (ex: 10Mo)
 	 *******************************************************************************************/
 	public static function displaySize($size, $displayLabel=true)
 	{
@@ -279,12 +275,6 @@ class File
 		}
 	}
 
-
-
-	/***************************************************************************************************************************/
-	/**************************************************	    SPECIFIC METHODS	************************************************/
-	/***************************************************************************************************************************/
-
 	/*******************************************************************************************
 	 * REDIMENSIONNE UNE IMAGE ("imgSrc.png"= "imgDest.jpg")
 	 *******************************************************************************************/
@@ -308,19 +298,21 @@ class File
 				////	Resize via la lib "Imagick"
 				if(extension_loaded("imagick"))
 				{
-					$imgImagick=new Imagick($imgPathSrc);
+					$imgTmp=new Imagick($imgPathSrc);
 					//Vérifie s'il faut réorienter l'image
-					$imgOrientation=$imgImagick->getImageOrientation();
+					$imgOrientation=$imgTmp->getImageOrientation();
 					if($imgOrientation==6)		{$imgRotation=90;}
 					elseif($imgOrientation==8)	{$imgRotation=-90;}
 					if(isset($imgRotation)){
 						list($newWidth,$newHeight)=[$newHeight,$newWidth];//Switch le width et height?
-						$imgImagick->rotateImage("#000",$imgRotation);
+						$imgTmp->rotateImage("#000",$imgRotation);
 					}
 					//Compresse && Resize && enregistre l'image
-					$imgImagick->setImageCompressionQuality($compressionQuality); 
-					$imgImagick->thumbnailImage($newWidth, $newHeight);
-					$imgImagick->writeImage($imgPathDest);
+					$imgTmp->setImageCompressionQuality($compressionQuality); 
+					$imgTmp->thumbnailImage($newWidth, $newHeight);
+					$imgTmp->writeImage($imgPathDest);
+					$imgTmp->clear();
+					$imgTmp->destroy();
 					$resizeReturn=true;
 				}
 				////	Resize via la lib "GD"
@@ -365,7 +357,7 @@ class File
 			//temps d'execution
 			@set_time_limit(240);//disabled en safemode
 			//Création de l'archive
-			$archiveTmpPath=tempnam(self::getTempDir(),"archive".uniqid());
+			$archiveTmpPath=tempnam(self::getTempDir(),"archive".uniqid()).".zip";
 			$zip=new ZipArchive();
 			$zip->open($archiveTmpPath, ZipArchive::CREATE);
 			//Ajout de chaque fichier à l'archive (avec "realPath" & un "zipPath") ou un dossier vide (avec "emptyFolderZipPath")
@@ -402,7 +394,7 @@ class File
 	public static function getTempDir()
 	{
 		//Dossier temporaire du systeme  ||  Dossier temporaire des hosts indépendants
-		if(Ctrl::isHost())	{$tmpDir=sys_get_temp_dir();}
+		if(Req::isHost())	{$tmpDir=sys_get_temp_dir();}
 		else{
 			$tmpDir=rtrim(PATH_TMP,"/");//Path sans le dernier "/"
 			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé le dossier?

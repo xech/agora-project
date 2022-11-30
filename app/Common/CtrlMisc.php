@@ -34,9 +34,9 @@ class CtrlMisc extends Ctrl
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
 				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				//Supprime les livecounters des users déconnectés (+ de 7 jours)  &&  Les vieux messages du messenger (+ de 15 jours. cf. trad "MESSENGER_nobodyTitle")  &&  Les vieilles propositions de visio (+ de 2h)
+				//Supprime les livecounters des users déconnectés (+ de 7 jours)  &&  Les vieux messages du messenger (+ de 30 jours : cf. $trad["MESSENGER_nobody"])  &&  Les vieilles propositions de visio (+ de 2h)
 				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-604800));
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-1209600));
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-2592000));
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisioMessage%' AND `date` < ".intval(time()-7200));
 				//Garde en session les users qui rendent visible leur messenger (cf. paramétrage dans "ap_userMessenger")
 				$idsUsersVisibles=[0];//Ajoute un pseudo user '0'
@@ -68,7 +68,7 @@ class CtrlMisc extends Ctrl
 					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
 					$_SESSION["livecounterMainHtml"].="<label class='vLivecounterUser' id='livecounterUser".$tmpUser->_id."' onclick='messengerDisplay(".$tmpUser->_id.");' title=\"".Txt::trad("MESSENGER_chatWith")." ".$userTitle."\">".$userImg.$userFirstName."</label>";
 					$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'>
-															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean($userFirstName,"max",true)."\">
+															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean($userFirstName,"max")."\">
 															<label for='messengerUserCheckbox".$tmpUser->_id."' title=\"".Txt::trad("select")." ".$userTitle."\">".$userImg.$userFirstName."</label>
 													   </div>";
 				}
@@ -93,7 +93,7 @@ class CtrlMisc extends Ctrl
 					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}			//Ajoute si besoin l'icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
 					$oldMessageClass="vMessengerOldMessage";//Par défaut on ajoute la class "vMessengerOldMessage"...
-					$messageTitle=Txt::dateLabel($message["date"],"full")." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageTo")." ";//Date/heure et auteur du message 
+					$messageTitle=Txt::dateLabel($message["date"])." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageTo")." ";//Date/heure et auteur du message 
 					foreach($destList as $_idUserDest){
 						if($_idUserDest!=$autorObj->_id) {$messageTitle.=self::getObj("user",$_idUserDest)->getLabel().", ";}	//Ajoute le libellé du destinataire
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Le message est bien affecté à un user connnecté : on retire la class "vMessengerOldMessage" 
@@ -212,9 +212,9 @@ class CtrlMisc extends Ctrl
 		//// Init l'Url
 		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));
 		//// Appli Android > lance la visio depuis l'appli Jitsi
-		if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))  {$vDatas["visioURL"]="org.jitsi.meet://".str_replace("https://",null,$vDatas["visioURL"]);}
-		//// Appli mobile Android/IOS > lance un lien externe (cf. "getFile_nameMd5" de Ionic)
-		if(Req::isMobileApp())				{$vDatas["visioURL"].="#omnispaceApp_action=getFile_nameMd5";}
+		if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))  {$vDatas["visioURL"]="org.jitsi.meet://".str_replace("https://","",$vDatas["visioURL"]);}
+		//// Lance un lien externe depuis l'appli mobile (cf. "VueLaunchVisio.php" & controle via "getFile" de l'appli mobile)
+		if(Req::isMobileApp())			{$vDatas["visioURL"].="#omnispaceMobileApp_getFile";}
 		//// Ajoute si besoin le nom de l'user dans l'Url
 		if(is_object(Ctrl::$curUser))	{$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}
 		//// Affiche la vue
@@ -299,7 +299,7 @@ class CtrlMisc extends Ctrl
 		{
 			//La personne est visible et possède une adresse
 			if($tmpPerson->readRight() && method_exists($tmpPerson,"hasAdress") && $tmpPerson->hasAdress()){
-				$tmpAdress=trim($tmpPerson->adress.", ".$tmpPerson->postalCode." ".str_ireplace("cedex",null,$tmpPerson->city)." ".$tmpPerson->country,  ", ");
+				$tmpAdress=trim($tmpPerson->adress.", ".$tmpPerson->postalCode." ".str_ireplace("cedex","",$tmpPerson->city)." ".$tmpPerson->country,  ", ");
 				$tmpLabel=$tmpPerson->getLabel()." <br> ".$tmpAdress;
 				if(!empty($tmpPerson->companyOrganization) || !empty($tmpPerson->function))  {$tmpLabel.="<br>".trim($tmpPerson->function." - ".$tmpPerson->companyOrganization, " - ");}
 				$tmpImg=($tmpPerson->hasImg())  ?  $tmpPerson->getImgPath()  :  "app/img/mapBig.png";
@@ -322,7 +322,7 @@ class CtrlMisc extends Ctrl
 		$filesList=array_merge(scandir(PATH_WALLPAPER_DEFAULT),scandir(PATH_WALLPAPER_CUSTOM));
 		foreach($filesList as $tmpFile){
 			if(!in_array($tmpFile,['.','..']) && File::isType("imageBrowser",$tmpFile)){
-				if(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))	{$path=PATH_WALLPAPER_DEFAULT.$tmpFile;		$value=WALLPAPER_DEFAULT_DB_PREFIX.$tmpFile;	$sortName=str_replace(File::extension($tmpFile),null,$tmpFile);}//Tri en fonction de la valeur numérique
+				if(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))	{$path=PATH_WALLPAPER_DEFAULT.$tmpFile;		$value=WALLPAPER_DEFAULT_DB_PREFIX.$tmpFile;	$sortName=str_replace(File::extension($tmpFile),"",$tmpFile);}//Tri en fonction de la valeur numérique
 				else											{$path=PATH_WALLPAPER_CUSTOM.$tmpFile;		$value=$tmpFile;								$sortName="zz".$tmpFile;}//Place les wallpapers customs à la fin
 				$vDatas["wallpaperList"][]=["path"=>$path, "value"=>$value, "name"=>$tmpFile, "sortName"=>$sortName];
 			}
@@ -357,22 +357,23 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * MODIF L'URL DE DOWNLOAD/AFFICHAGE D'UN FICHIER DEPUIS UNE MOBILEAPP => modif du controleur, ajout du "nameMd5" et du type de fichier à télécharger
+	 * MODIF L'URL DE DOWNLOAD DE FICHIER DEPUIS LA MOBILEAPP & CO
 	 *******************************************************************************************/
-	public static function appGetFileUrl($downloadUrl, $fileName)
+	public static function urlGetFile($downloadUrl, $fileName)
 	{
-		$downloadUrl.=(stristr($downloadUrl,"ctrl=object"))  ?  "&fileType=attached"  :  "&fileType=modFile";	//Fichier joint d'un objet  OU  Fichier du module "File"  => Toujours modifier en premier !
-		$downloadUrl=str_ireplace(["ctrl=object","ctrl=file"],"ctrl=misc",$downloadUrl);						//Switch sur le controleur "ctrl=misc" (cf. "$initCtrlFull=false")
-		return $downloadUrl."&nameMd5=".md5($fileName);															//Ajoute le "nameMd5" du controle d'accès (cf. "CtrlObject::actionGetFile()" && "CtrlFile::actionGetFile()")
+		$downloadUrl.=stristr($downloadUrl,"ctrl=object")  ?  "&fileType=attachedFile"  :  "&fileType=modFile";				//Fichier joint ou fichier du module "File" => tjs ajouter en premier !
+		$downloadUrl=str_ireplace(["ctrl=file","ctrl=object"],"ctrl=misc",$downloadUrl);									//Switch sur le controleur "misc" (cf. "$initCtrlFull=false" du controleur principal)
+		$downloadUrl=str_ireplace(["action=GetFile","action=AttachedFileDownload"],"action=ExternalGetFile",$downloadUrl);	//Switch sur l'action "GetFileExternal()"  (cf. Methode suivante)
+		return $downloadUrl."&nameMd5=".md5($fileName)."&extension=.".File::extension($fileName);							//Retourne l'url avec le controle d'accès "nameMd5" +  l'extension pour controler l'action (cf. "main.dart" de l'appli)
 	}
 
 	/*******************************************************************************************
-	 * ACTION : DOWNLOAD/AFFICHAGE D'UN FICHIER DEPUIS UNE MOBILEAPP (avec controle du "nameMd5" & co)
+	 * ACTION : DOWNLOAD DEPUIS L'EXTERIEUR : MOBILEAPP & CO  (cf. "self::urlGetFile()")
 	 *******************************************************************************************/
-	public static function actionGetFile()
+	public static function actionExternalGetFile()
 	{
-		if(Req::isParam(["fileName","filePath"]))	{File::download(Req::param("fileName"),Req::param("filePath"));}	//Affichage d'un pdf (exple: "Documentation.pdf" du "VueHeaderMenu.php"). Tjs mettre "fromMobileApp=true" dans l'url pour ne pas annuler le "File::download()"
-		elseif(Req::param("fileType")=="attached")	{CtrlObject::actionGetFile();}										//Download d'un fichier "AttachedFile"
-		else										{CtrlFile::actionGetFile();}										//Download d'un fichier du module "File"
+		if(Req::isParam(["fileName","filePath"]) && stristr(Req::param("fileName"),"documentation"))	{File::download(Req::param("fileName"),Req::param("filePath"));}//Download "Documentation.pdf" (cf. "VueHeaderMenu.php")
+		elseif(Req::param("fileType")=="attachedFile")													{CtrlObject::actionAttachedFileDownload();}						//Download un fichier joint
+		else																							{CtrlFile::actionGetFile();}									//Download un fichier du module "File"
 	}
 }

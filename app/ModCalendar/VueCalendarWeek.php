@@ -102,7 +102,7 @@ function calendarDimensions(printCalendar)
 .vCalWeekHeaderLine, .vCalWeekLine, .vCalWeekHourCells			{display:table-row;}
 .vCalWeekHeaderLine>div, .vCalWeekLine>div, .vCalWeekHourCell	{display:table-cell;}
 .vCalWeekHeaderLine>div											{text-align:center; vertical-align:bottom;}
-.vCalWeekHeaderLine>div:last-child								{width:10px;}/*width du scroller*/
+.vCalWeekHeaderScroller											{width:15px!important;}/*width du scroller dans le header*/
 .vCalWeekHourLabel												{width:35px!important; max-width:35px!important; text-align:right; color:#aaa; font-size:0.9em!important;}
 .vCalWeekCell													{background:#fff; border-top:solid 1px #ddd; border-bottom:solid 1px #fff; border-left:solid 1px #ddd;}
 .vCalWeekHourCell												{height:25%; line-height:5px;}/*"line-height" pour contenir la hauteur des heures sur les petites résolutions*/
@@ -118,7 +118,7 @@ function calendarDimensions(printCalendar)
 	.vCalWeekHourLabel										{width:18px!important; max-width:18px!important; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
 	.vCalWeekHeaderDay										{font-size:0.9em!important;}
 	.vCalWeekHeaderCelebrationDay, .vCalWeekHourLabelZero	{display:none;}
-	.vCalEvtBlock .vCalEvtLabel								{text-transform:lowercase; font-size:0.85em;}
+	.vCalEvtBlock .vCalEvtLabel								{text-transform:lowercase; font-size:0.8em;}
 }
 
 /* IMPRESSION */
@@ -140,12 +140,13 @@ function calendarDimensions(printCalendar)
 			<div class="vCalWeekHourLabel">&nbsp;</div>
 			<?php
 			foreach($periodDays as $tmpDay){
-				$dayLabelFormat=Req::isMobile() ? "%a" : "%A";
+				$dayLabelFormat=Req::isMobile() ? "ccc" : "cccc";//Nom abrégé/complet du jour de la semaine ("lun." ou "lundi")
 				$classToday=(date("y-m-d",$tmpDay["timeBegin"])==date("y-m-d"))  ?  "vCalWeekHeaderDayToday"  :  null;
 				$celebrationDay=(!empty($tmpDay["celebrationDay"]))  ?  " <img src='app/img/calendar/celebrationDay.png' class='vCalWeekHeaderCelebrationDay' title=\"".Txt::tooltip($tmpDay["celebrationDay"])."\">"  :  null;
 				echo "<div class=\"vCalWeekHeaderDay ".$classToday."\">".ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"]))."<span class='vCalWeekHeaderDayNumber'>".date("j",$tmpDay["timeBegin"])."</span>".$celebrationDay."</div>";
 			}
 			?>
+			<div class="vCalWeekHeaderScroller">&nbsp;</div>
 		</div>
 	</div>
 
@@ -165,13 +166,13 @@ function calendarDimensions(printCalendar)
 
 		////	GRILLE DES HEURES/MINUTES
 		echo "<div class='vCalWeekTable'>";
-			for($H=0; $H<=23; $H++)
+			for($tmpHour=0; $tmpHour<=23; $tmpHour++)
 			{
 				//CRÉNEAU HORS DU "TIMESLOT" DE L'AGENDA?
-				$tmpHourClass=($H<$tmpCal->timeSlotBegin || $H>$tmpCal->timeSlotEnd || $H==12 || $H==13)  ?  "vCalWeekHourOutTimeslot"  :  null;
+				$tmpHourClass=($tmpHour<$tmpCal->timeSlotBegin || $tmpHour>$tmpCal->timeSlotEnd || $tmpHour==12 || $tmpHour==13)  ?  "vCalWeekHourOutTimeslot"  :  null;
 				//LIGNE DE L'HEURE COURANTE : LABEL DE L'HEURE + CELLULE DE L'HEURE POUR CHAQUE JOUR
 				echo "<div class='vCalWeekLine'>";
-					echo "<div class='vCalWeekHourLabel'>".$H."<span class='vCalWeekHourLabelZero'>:00</span></div>";//:00 pour les minutes
+					echo "<div class='vCalWeekHourLabel'>".$tmpHour."<span class='vCalWeekHourLabelZero'>:00</span></div>";//:00 pour les minutes
 					foreach($periodDays as $tmpDate=>$tmpDay)
 					{
 						//CELLULE DE L'HEURE
@@ -186,7 +187,7 @@ function calendarDimensions(printCalendar)
 								foreach([0,1,2,3] as $quarterHour)
 								{
 									//Init
-									$cellTimeBegin=$tmpDay["timeBegin"]+(3600*$H)+(900*$quarterHour);
+									$cellTimeBegin=$tmpDay["timeBegin"]+(3600*$tmpHour)+(900*$quarterHour);
 									$cellTimeEnd=$cellTimeBegin+900;	
 									if(time()>$cellTimeBegin && time()<$cellTimeEnd)	{$halfCellClass="vCalWeekHourCellCurrent";}
 									elseif($cellTimeBegin<time())						{$halfCellClass="vCalWeekHourCellPastTime";}

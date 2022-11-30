@@ -1,7 +1,7 @@
 <script>
 ////	INIT : LARGEUR DE LA TIMELINE (GANTT)
 $(function(){
-	$(".vTimelineBlock").width($("#pageFullContent").width()).show();/*masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"*/
+	$(".vTimelineBlock").width($("#pageFullContent").width()-20).show();/*masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"*/
 });
 </script>
 
@@ -29,7 +29,6 @@ $(function(){
 .vTimelineBlock .percentBarContent	{text-align:left; cursor:pointer;}
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	input[type=text], input[type=password], input[type=file], textarea, select, button	{height:30px; padding:3px;}
 	.ui-datepicker-calendar .ui-state-default	{height:24px!important;}/*surcharge du datepicker*/
 	.vTimelineMonths, .vTimelineDays, .vTimelineTaskDays	{width:18px; min-width:18px;}
 	.vTimelineBlock .percentBar img		{display:none;}/*surcharge*/

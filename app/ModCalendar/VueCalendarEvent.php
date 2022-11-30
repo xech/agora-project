@@ -12,7 +12,7 @@ lightboxSetWidth(550);
 	echo "<div class='lightboxTitle'>".$curObj->menuContextEdit().$curObj->title."</div>";
 
 	////	DATE / PERIODICITE
-	echo "<div class='vEventDetails'><img src='app/img/calendar/clock.png'> &nbsp; ".Txt::dateLabel($curObj->dateBegin,"full",$curObj->dateEnd)."</div>";
+	echo "<div class='vEventDetails'><img src='app/img/calendar/clock.png'> &nbsp; ".Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd)."</div>";
 	if(!empty($labelPeriod))	{echo "<hr><div class='vEventDetails'>".$labelPeriod."</div>";}
 	
 	////	IMPORTANT / CATEGORIE

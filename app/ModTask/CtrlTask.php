@@ -60,7 +60,7 @@ class CtrlTask extends Ctrl
 				$vDatas["timelineDays"][]=array(
 					"curDate"=>date("Y-m-d",$dayTimeBegin),
 					"timeBegin"=>$dayTimeBegin,
-					"newMonthLabel"=>($newMonth==true ? ucfirst(Txt::formatime("%B %Y",$dayTimeBegin)) : null),
+					"newMonthLabel"=>($newMonth==true ? ucfirst(Txt::formatime("MMMM y",$dayTimeBegin)) : null),
 					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
 					"vTimelineLeftBorder"=>(($dayTimeBegin==$timelineBegin || date("N",$dayTimeBegin)==1 || date("j",$dayTimeBegin)==1)  ?  "vTimelineLeftBorder"  :  null),//début de timeline/de mois/de semaine : affiche les pointillés
 					"vTimelineToday"=>(date("Y-m-d",$dayTimeBegin)==date("Y-m-d")  ?  "vTimelineToday"  :  null),//Label d'aujourd'hui

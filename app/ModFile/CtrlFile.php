@@ -40,13 +40,14 @@ class CtrlFile extends Ctrl
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
-			//Lien du label du fichier : Télécharge le fichier (dans une nouvelle fenêtre car cela peut bloquer la page si c'est un gros fichier)
-			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) window.open('".$tmpFile->urlDownloadDisplay()."','_blank');\"";
-			//Lien de l'icone du fichier :
-			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDownloadDisplay("display")."\" data-fancybox='images'";}	//Lightbox d'image ("href" et "data-fancybox" obligatoires)
-			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->urlDownloadDisplay("display")."');\"";}	//Lightbox de pdf ou text
-			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."');\"";}						//Lightbox de vidéo ou mp3
-			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}															//Telechargement direct
+			//Lien du label/nom du fichier : Download direct
+			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpFile->urlDownload()."');\"";
+			//Lien de l'icone/vignette du fichier : Display ou Download
+			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDisplay()."\" data-fancybox='images'";}	//Lightbox d'image ("href" et "data-fancybox" dans un <div> ou <a>)
+			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink="onclick=\"redir('".$tmpFile->urlDisplay()."');\"";}			//Affichage d'un pdf via mobileApp
+			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->urlDisplay()."');\"";}		//Lightbox de pdf ou text
+			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."');\"";}		//Lightbox de vidéo ou mp3
+			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}											//Download direct
 			//Tooltips et description
 			$tmpFile->tooltip=Txt::trad("download")." <i>".$tmpFile->name."</i>";
 			$tmpFile->iconTooltip=$tmpFile->name." - ".File::displaySize($tmpFile->octetSize);
@@ -82,7 +83,7 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownloadDisplay()."');}";
+			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownload()."');}";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;
@@ -97,11 +98,11 @@ class CtrlFile extends Ctrl
 		{
 			//Récupère le fichier et controle le droit d'accès
 			$curFile=self::getObjTarget();
-			if($curFile->readRight()  ||  (Req::isParam("nameMd5") && md5($curFile->name)==Req::param("nameMd5")))
+			if($curFile->readRight()  ||  md5($curFile->name)==Req::param("nameMd5"))
 			{
-				//Affichage du fichier
+				//Affichage du fichier dans le browser
 				if(Req::isParam("display"))  {File::display($curFile->filePath());}
-				//Download du fichier
+				//Download direct du fichier
 				else
 				{
 					//Ajout l'user courant à "downloadedBy"

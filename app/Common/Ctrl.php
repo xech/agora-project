@@ -50,7 +50,7 @@ abstract class Ctrl
 		////	Toujours après "session_start" : Mise à jour si besoin  &&  Récup le parametrage de l'agora  &&  Récup le parametrage du host si besoin
 		DbUpdate::lauchUpdate();
 		self::$agora=self::getObj("agora");
-		if(self::isHost())  {Host::agoraParams();}
+		if(Req::isHost())  {Host::agoraParams();}
 
 		////	Init le fuseau horaire
 		self::$curTimezone=array_search(self::$agora->timezone,Tool::$tabTimezones);
@@ -70,10 +70,16 @@ abstract class Ctrl
 			self::userConnectionSpaceSelection();
 			////	Chargement des trads et des "locales"
 			Txt::loadTrads();
+			////	Enregistre le cookie pour le "isMobileApp()" de l'espace
+			if(Req::isParam("mobileAppli")){
+				setcookie("mobileAppli", "true", (time()+315360000));
+				$_COOKIE["mobileAppli"]="true";//charge le cookie
+			}
 			////	Affiche une page principale (Controles d'accès au module, Menu principal, Footer, etc)
 			if(Req::$curAction=="default")  {static::$isMainPage=true;}
 			////	Controle d'accès au module de l'espace (sauf modules spécifiques/communs) si on est en page principale : redirige vers le premier module de l'espace
-			if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false && static::$isMainPage==true && array_key_exists(Req::$curCtrl,self::$curSpace->moduleList())==false)  {self::redir("?ctrl=".key(self::$curSpace->moduleList()));}
+			if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false && static::$isMainPage==true && array_key_exists(Req::$curCtrl,self::$curSpace->moduleList())==false)
+				{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
 			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
@@ -86,9 +92,9 @@ abstract class Ctrl
 			elseif(static::$folderObjType!==null)	{$curObj=self::getObj(static::$folderObjType,1);}	//Dossier racine par défaut
 			////	Objet courant (dejà existant)
 			if(!empty($curObj) && $curObj->isNew()==false){
-				if($curObj->readRight()==false)  {static::$isMainPage==true ? self::redir("?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Pas d'accès en lecture : redirige vers le Ctrl principal / affiche une notif d'erreur
-				if($curObj::isContainer())  {self::$curContainer=$curObj;}																	//Charge le conteneur courant (dossier/sujet/agenda..)
-				if($curObj::isFolder==true)  {self::$curContainerRoot=self::getObj(get_class($curObj),1);}									//Charge le dossier root
+				if($curObj->readRight()==false)	{static::$isMainPage==true ? self::redir("index.php?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Pas d'accès en lecture : redirige vers le Ctrl principal / affiche une notif d'erreur
+				if($curObj::isContainer())		{self::$curContainer=$curObj;}																		//Charge le conteneur courant (dossier/sujet/agenda..)
+				if($curObj::isFolder==true)		{self::$curContainerRoot=self::getObj(get_class($curObj),1);}										//Charge le dossier root
 			}
 		}
 	}
@@ -120,7 +126,6 @@ abstract class Ctrl
 			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			$vDatas["pathLogoTitle"]="<div style='text-align:center;line-height:25px;'>".OMNISPACE_URL_LABEL."</div>".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." seconde";
 			//// HEADERMENU & MESSENGER
 			if(static::moduleName!="offline")
 			{
@@ -178,7 +183,7 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * FERME LE LIGHTBOX VIA JS (exple: après édit d'objet)
+	 * FERME LE LIGHTBOX VIA JS (ex: après édit d'objet)
 	 *******************************************************************************************/
 	public static function lightboxClose($urlRedir=null, $urlParms=null)
 	{
@@ -208,14 +213,6 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * VÉRIF SI ON EST SUR UN HOST
-	 *******************************************************************************************/
-	public static function isHost()
-	{
-		return defined("HOST_DOMAINE");
-	}
-
-	/*******************************************************************************************
 	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
 	 *******************************************************************************************/
 	public static function getObj($objTypeOrMdl, $objIdOrValues=null, $updateCache=false)
@@ -242,12 +239,12 @@ abstract class Ctrl
 	public static function getObjTarget($typeId=null)
 	{
 		if(Req::isParam("typeId") || !empty($typeId)){
-			$typeId=(!empty($typeId))  ?  explode("-",$typeId)  :  explode("-",Req::param("typeId"));								//Récupère le "typeId" de l'objet (vérifier en premier si ya un argument!)
-			$isNewObj=(empty($typeId[1]));																							//Vérif si c'est un nouvel objet
-			$curObj=($isNewObj==true)  ?  self::getObj($typeId[0])  :  self::getObj($typeId[0],$typeId[1]);							//Charge un nouvel objet OU un objet existant
-			if($isNewObj==false && $curObj->_id==0)  {self::notify("inaccessibleElem");  self::redir("?ctrl=".static::moduleName);}	//Objet inexistant/supprimé en BDD : renvoie une erreur
-			if($isNewObj==true && Req::isParam("_idContainer"))  {$curObj->_idContainer=Req::param("_idContainer");}				//Ajoute si besoin "_idContainer" pour le controle d'accès d'un nouvel objet (cf. "createUpdate()" puis "createRight()")
-			return $curObj;																											//Renvoie l'objet
+			$typeId=(!empty($typeId))  ?  explode("-",$typeId)  :  explode("-",Req::param("typeId"));										//Récupère le "typeId" de l'objet (vérifier en premier si ya un argument!)
+			$isNewObj=(empty($typeId[1]));																									//Vérif si c'est un nouvel objet
+			$curObj=($isNewObj==true)  ?  self::getObj($typeId[0])  :  self::getObj($typeId[0],$typeId[1]);									//Charge un nouvel objet OU un objet existant
+			if($isNewObj==false && $curObj->_id==0)  {self::notify("inaccessibleElem"); self::redir("index.php?ctrl=".static::moduleName);}	//Objet inexistant/supprimé en BDD : renvoie une erreur
+			if($isNewObj==true && Req::isParam("_idContainer"))  {$curObj->_idContainer=Req::param("_idContainer");}						//Ajoute si besoin "_idContainer" pour le controle d'accès d'un nouvel objet (cf. "createUpdate()" puis "createRight()")
+			return $curObj;																													//Renvoie l'objet
 		}
 	}
 
@@ -275,28 +272,26 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function userConnectionSpaceSelection()
 	{
-		////	CONNEXION D'UN USER (demandée ou auto)
+		////	Connexion d'un user (demandée ou auto)
 		$connectViaForm=Req::isParam(["connectLogin","connectPassword"]);
 		$connectViaCookie=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]) && Req::isParam("disconnect")==false);
 		if(self::$curUser->isUser()==false  &&  ($connectViaForm==true || $connectViaCookie==true))
 		{
-			//// IDENTIFICATION ET CONTROLES D'ACCES
+			////	Identification et controles d'acces
 			//Connexion demandé ou auto
 			if($connectViaForm==true)		{$login=Req::param("connectLogin");  $passwordSha1=MdlUser::passwordSha1(Req::param("connectPassword"));}
 			elseif($connectViaCookie==true)	{$login=$_COOKIE["AGORAP_LOG"];			$passwordSha1=$_COOKIE["AGORAP_PASS"];}
 			//Identification + recup des infos sur l'user
 			$sqlPasswordSha1="AND `password`=".Db::format($passwordSha1);
-			if(self::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::param("connectPassword"),$sqlPasswordSha1);}
+			if(Req::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::param("connectPassword"),$sqlPasswordSha1);}
 			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($login)." ".$sqlPasswordSha1);
 			//User pas identifié : message d'erreur et déconnexion
-			if(empty($tmpUser))   {self::notify("NOTIF_identification");  self::redir("?disconnect=1");}
-			//User déjà connecté avec une autre IP (appli non concerné)
-			if(Req::isMobileApp()==false){
-				$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND `date` > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
-				if($autreIpConnected>0)   {self::notify("NOTIF_presentIp");  self::redir("?disconnect=1");}
-			}
+			if(empty($tmpUser))  {self::notify("NOTIF_identification");  self::redir("index.php?disconnect=1");}
+			//User actuellement connecté avec une autre IP : notification
+			$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND `date` > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
+			if($autreIpConnected>0)  {self::notify("NOTIF_presentIp");}
 
-			//// INIT L'USER
+			////	Init l'user
 			//Init la session
 			$_SESSION=["_idUser"=>(int)$tmpUser["_id"]];//Id du client
 			//Maj les dates de "lastConnection" && "previousConnection"
@@ -308,15 +303,15 @@ abstract class Ctrl
 			self::addLog("connexion");
 			//Récupère les préférences
 			foreach(Db::getTab("select * from ap_userPreference where _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
-			//Enregistre login & password pour une connexion auto (pour 10ans)
+			//Enregistre login & password pour une connexion auto (10ans)
 			if(Req::isParam("rememberMe")){
 				setcookie("AGORAP_LOG", $login, (time()+315360000));
 				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000));
 			}
 		}
 
-		////	STATS DE CONNEXION DU HOST (après la connexion && avant la sélection d'un espace qui redirige)
-		if(self::isHost())  {Host::connectStatsHostInfos();}
+		////	Stats de connexion du host (lancer entre la connexion et la sélection d'un espace)
+		if(Req::isHost())  {Host::connectStatsHostInfos();}
 
 		////	SELECTION D'UN ESPACE  (l'user vient de se connecter  ||  (page de connexion && (user déjà connecté || espace demandé par guest/notif mail)))
 		////	=> tester le switch d'espace d'un user + connexion d'un user affecté à aucun espace + connexion d'un guest et switch d'espace + notif mail d'objet en mode connecté et déconnecté
@@ -354,17 +349,17 @@ abstract class Ctrl
 			}
 			//// Espace sélectionné : charge l'espace + redirection vers le module principal
 			if(!empty($idSpaceSelected)){
-				$_SESSION["_idSpace"]=$idSpaceSelected;																					//Enregistre l'espace courant
-				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();														//Récup les modules de l'espace courant
-				if($isNotifMail==true && self::$curUser->isUser())	{self::redir(Req::param("objUrl"));}								//Redir vers le controleur et l'objet demandé (notif mail d'objet)
-				if(!empty($spaceModules))							{self::redir("?ctrl=".key($spaceModules));}							//Redir vers le premier module de l'espace
-				else												{self::notify("NOTIF_noAccess");  self::redir("?disconnect=1");}	//Aucun module disponible sur l'espace : message d'erreur et déconnexion
+				$_SESSION["_idSpace"]=$idSpaceSelected;																	//Enregistre l'espace courant
+				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();										//Récup les modules de l'espace courant
+				if($isNotifMail==true && self::$curUser->isUser())	{self::redir(Req::param("objUrl"));}				//Redir vers le controleur et l'objet demandé (notif mail d'objet)
+				if(!empty($spaceModules))	{self::redir("index.php?ctrl=".key($spaceModules));}						//Redir vers le premier module de l'espace
+				else						{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace : "Vous êtes maintenant déconnecté"
 			}
 			//// User identifié mais affecté à aucun espace : message d'erreur et déconnexion
-			elseif(self::$userHasConnected==true && $isNotifMail==false)   {self::notify("NOTIF_noSpaceAccess");  self::redir("?disconnect=1");}
+			elseif(self::$userHasConnected==true && $isNotifMail==false)   {self::notify("NOTIF_noSpaceAccess");  self::redir("index.php?disconnect=1");}
 		}
-		//// User non identifié + aucun espace public disponible : message d'erreur et déconnexion
-		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::notify("NOTIF_noAccess");  self::redir("?disconnect=1");}
+		//// User non identifié + aucun espace public disponible : "Vous êtes maintenant déconnecté"
+		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}
 	}
 
 	/*******************************************************************************************
@@ -377,7 +372,7 @@ abstract class Ctrl
 		if(empty($prefParamKey))  {$prefParamKey=$prefDbKey;}
 		//Préférence passé en Get/Post ?
 		if(Req::isParam($prefParamKey))										{$prefParamVal=Req::param($prefParamKey);}
-		elseif($emptyValueEnabled==true && Req::isParam("formValidate"))	{$prefParamVal="";}//Enregistre une valeur vide? (exple: checkbox non cochée dans un formulaire)
+		elseif($emptyValueEnabled==true && Req::isParam("formValidate"))	{$prefParamVal="";}//Enregistre une valeur vide? (ex: checkbox non cochée dans un formulaire)
 		//Enregistre si besoin la préférence  ("isset" pour aussi enregistrer les valeurs vides) 
 		if(isset($prefParamVal))
 		{
@@ -407,7 +402,6 @@ abstract class Ctrl
 			////	Init la requête Sql
 			$moduleName=Req::$curCtrl;
 			$sqlObjectType=$sqlObjectId=null;
-			$sqlLogValues=", `date`=".Db::dateNow().", _idUser=".Db::format(self::$curUser->_id).", _idSpace=".Db::format(self::$curSpace->_id).", ip=".Db::format($_SERVER["REMOTE_ADDR"]);
 			////	Element : ajoute les détails (nom, titre, chemin, etc)
 			if(is_object($curObj) && $curObj->isNew()==false)
 			{
@@ -427,7 +421,7 @@ abstract class Ctrl
 				$comment=Txt::reduce($comment,800);
 			}
 			////	Ajoute le log
-			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", `comment`=".Db::format($comment)." ".$sqlLogValues);
+			Db::query("INSERT INTO ap_log SET action=".Db::format($action).", moduleName=".Db::format($moduleName).", objectType=".Db::format($sqlObjectType).", _idObject=".Db::format($sqlObjectId).", `comment`=".Db::format($comment).", `date`=".Db::dateNow().", _idUser=".Db::format(self::$curUser->_id).", _idSpace=".Db::format(self::$curSpace->_id).", ip=".Db::format($_SERVER["REMOTE_ADDR"]));
 			////	Supprime les anciens logs (lancé qu'une fois par session)
 			if(empty($_SESSION["logsCleared"])){
 				Db::query("DELETE FROM ap_log WHERE action='connexion'	AND UNIX_TIMESTAMP(date) <= ".intval(time()-(14*86400)));										 //Logs de connexion			: conservés 2 semaines

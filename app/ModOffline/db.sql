@@ -273,12 +273,12 @@ CREATE TABLE `ap_log` (
   `action` varchar(50) DEFAULT NULL,
   `moduleName` varchar(50) DEFAULT NULL,
   `objectType` varchar(50) DEFAULT NULL,
-  `_idObject` mediumint(8) unsigned DEFAULT NULL,
+  `_idObject` mediumint(8) UNSIGNED DEFAULT NULL,
   `date` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
-  `_idSpace` smallint(5) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
+  `_idSpace` smallint(5) UNSIGNED DEFAULT NULL,
   `ip` varchar(255) DEFAULT NULL,
-  `comment` varchar(1000) DEFAULT NULL
+  `comment` text CHARACTER SET utf8mb4 DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_mail` (

@@ -201,7 +201,7 @@ class CtrlUser extends Ctrl
 					}
 					//Login et Password par défaut
 					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))  {$tmpUser["login"]=$tmpUser["mail"];}//Login email par défaut
-					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",true,null),0,1).substr(Txt::clean($tmpUser["name"],"max",true,null),0,8) );}//Ou login prédéfinit par défaut. Exple: "Jean Durant"=>"jdurant"
+					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",""),0,1).substr(Txt::clean($tmpUser["name"],"max",""),0,8) );}//Ou login prédéfinit par défaut. Exple: "Jean Durant"=>"jdurant"
 					if(empty($tmpUser["password"]))	{$tmpUser["password"]=Txt::uniqId(8);}//Password par défaut
 					//Enregistre le nouvel utilisateur !
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpUser["login"], $tmpUser["password"]);
@@ -309,7 +309,7 @@ class CtrlUser extends Ctrl
 				{
 					$_idInvitation=Txt::uniqId();
 					$password=Txt::uniqId(8);
-					$confirmUrl=Req::getCurUrl()."/?ctrl=offline&disconnect=1&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
+					$confirmUrl=Req::getCurUrl()."/index.php?ctrl=offline&disconnect=1&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
 					//Envoi du mail d'invitation.  "Invitation de Jean DUPOND"  =>  "Jean DUPOND vous invite à rejoindre l'espace Mon Espace..."
 					$mailSubject=Txt::trad("USER_mailInvitationObject")." ".Ctrl::$curUser->getLabel();
 					$mailMessage="<b>".Ctrl::$curUser->getLabel()." ".Txt::trad("USER_mailInvitationFromSpace")." ".Ctrl::$curSpace->name." :</b>
