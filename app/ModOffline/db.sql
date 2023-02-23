@@ -15,8 +15,8 @@ CREATE TABLE `ap_agora` (
   `usersComment` tinyint(1) unsigned DEFAULT NULL,
   `mapTool` varchar(255) DEFAULT 'gmap',
   `mapApiKey` varchar(255) DEFAULT NULL,
-  `gSignin` tinyint(1) DEFAULT NULL,
-  `gSigninClientId` varchar(255) DEFAULT NULL,
+  `gIdentity` tinyint(1) DEFAULT NULL,
+  `gIdentityClientId` varchar(255) DEFAULT NULL,
   `gPeopleApiKey` varchar(255) DEFAULT NULL,
   `messengerDisabled` tinyint(1) unsigned DEFAULT NULL,
   `moduleLabelDisplay` varchar(255) DEFAULT NULL,
@@ -545,7 +545,7 @@ ALTER TABLE `ap_dashboardPoll`			    MODIFY `_id` mediumint(8) unsigned NOT NULL
 
 
 
-INSERT INTO ap_agora SET name='Omnispace / Agora-Project', personsSort='firstName', logsTimeOut='120', version_agora='3.0.0', dateUpdateDb=NOW(), usersLike='likeSimple', usersComment=1, mapTool='gmap', gSignin='1';
+INSERT INTO ap_agora SET name='Omnispace / Agora-Project', personsSort='firstName', logsTimeOut='120', version_agora='3.0.0', dateUpdateDb=NOW(), usersLike='likeSimple', usersComment=1, mapTool='gmap', gIdentity='1';
 
 INSERT INTO ap_space SET _id=1, usersInvitation=1;
 

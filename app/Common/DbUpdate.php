@@ -831,8 +831,8 @@ class DbUpdate extends Db
 			if(self::updateVersion("21.12.3"))
 			{
 				//Allège la gestion des connexions ldap
-				if(self::fieldExist("ap_agora","ldap_crea_auto_users"))  {self::query("ALTER TABLE ap_agora DROP ldap_crea_auto_users");}
-				if(self::fieldExist("ap_agora","ldap_pass_cryptage"))  {self::query("ALTER TABLE ap_agora DROP ldap_pass_cryptage");}
+				if(self::fieldExist("ap_agora","ldap_crea_auto_users"))	{self::query("ALTER TABLE ap_agora DROP ldap_crea_auto_users");}
+				if(self::fieldExist("ap_agora","ldap_pass_cryptage"))	{self::query("ALTER TABLE ap_agora DROP ldap_pass_cryptage");}
 			}
 
 			if(self::updateVersion("22.3.1"))
@@ -863,6 +863,13 @@ class DbUpdate extends Db
 				}
 				//Commentaires des logs en utf8mb4
 				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_log CHANGE `comment` `comment` TEXT CHARACTER SET utf8mb4");}
+			}
+
+			if(self::updateVersion("23.2.3"))
+			{
+				//Renomme les champs "gSignin" et "gSigninClientId" en "gIdentity" et "gIdentityClientId"
+				if(self::fieldExist("ap_agora","gSignin"))  		{self::query("ALTER TABLE ap_agora CHANGE `gSignin` `gIdentity` tinyint DEFAULT NULL");}
+				if(self::fieldExist("ap_agora","gSigninClientId"))  {self::query("ALTER TABLE ap_agora CHANGE `gSigninClientId` `gIdentityClientId` varchar(255) DEFAULT NULL");}
 			}
 			//// ATTENTION !! ===>  MODIFIER SQL D'INSTALL "db.sql"  +  "changelog.txt"  +  N° DE VERSION DANS "Params.php" / "common-xx.js" / "common-xx.css"
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

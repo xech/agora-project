@@ -239,6 +239,14 @@ class CtrlObject extends Ctrl
 		$vDatas["curObj"]=$curObj;
 		return self::getVue(Req::commonPath."VueObjAttachedFile.php",$vDatas);
 	}
+	
+	/*******************************************************************************************
+	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
+	 *******************************************************************************************/
+	public static function sendMailBasicOptions()
+	{
+		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
+	}
 
 	/*******************************************************************************************
 	 * ACTION : TELECHARGE UN FICHIER JOINT

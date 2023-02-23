@@ -22,7 +22,7 @@ function formControl()
 </script>
 
 
-<form action="index.php" method="post" OnSubmit="return formControl();" class="lightboxContent">
+<form action="index.php" method="post" onsubmit="return formControl();" class="lightboxContent">
 	<?php
 	//// Recherche
 	if(empty($usersList))

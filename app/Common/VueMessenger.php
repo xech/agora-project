@@ -212,7 +212,8 @@ function proposeVisio()
 #messengerMain								{z-index:30; bottom:0px!important; background:#111; padding:20px; padding-top:10px; width:850px; min-width:300px; border-radius:5px; border:0px;}
 #messengerMain td							{vertical-align:top;}
 #messengerBottomMargin						{height:60px;}/*marge du bas du messenger : pour afficher le livecounter ci-dessus qui s'y superpose (cf. "#livecounterMain td" ci-dessus)*/
-#messengerNobodyDiv							{background:#333; padding:10px; line-height:25px;}
+#messengerNobodyDiv							{position:relative; background:#333; padding:10px; margin:10px; line-height:30px; border-radius:10px;}
+#messengerNobodyDiv img[src*=messenger]		{position:absolute; top:-20px; left:-10px;}
 #livecounterMain							{z-index:31; bottom:5px!important; background:#333; padding:18px 30px; border-radius:5px;}
 #livecounterMain td							{vertical-align:middle;}
 
@@ -235,7 +236,7 @@ function proposeVisio()
 .vMessengerMessage							{width:100%;}
 .vMessengerMessage tr:hover					{background:#444;}/*survol d'un message*/
 .vMessengerMessage td						{padding:4px; cursor:help; vertical-align:middle;}
-.vMessengerMessageDateAutor					{min-width:80px; width:1%; white-space:nowrap; color:#888; vertical-align:top; white-space:nowrap; font-size:0.9em;}/*Heure et label de l'auteur. Width ajusté au contenu via 'nowrap'*/
+.vMessengerMessageDateAutor					{min-width:80px; width:1%; vertical-align:top; color:#888; white-space:nowrap; font-size:0.9em;}/*Heure et label de l'auteur. Width ajusté au contenu via 'nowrap'*/
 .vMessengerMessage .personImg				{width:22px; height:22px; margin-left:8px;}/*image des users dans les messages (cf. "CtrlMisc::actionMessengerUpdate")*/
 .vMessengerMessage .iconUsersMultiple		{height:15px; margin-bottom:10px; margin-left:2px;}/*Icone de discussion à plusieurs*/
 .vMessengerMessage a						{color:#fff;}/*lien des visios*/
@@ -269,7 +270,6 @@ function proposeVisio()
 	#messengerButtonForm					{width:80px;}
 	#messengerButtonForm img				{display:none;}
 	.vMessengerScroll::-webkit-scrollbar	{width:5px;}
-	#messengerNobodyDiv						{margin:10px;}
 }
 </style>
 
@@ -299,7 +299,7 @@ function proposeVisio()
 					<button id="messengerButtonForm" onclick="messengerPost(event);"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
 					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="proposeVisio()"><?php } ?>
 				</div>
-				<div id="messengerNobodyDiv" class="infos"><img src="app/img/messenger.png"> <?= Txt::trad("MESSENGER_nobody") ?></div>
+				<div id="messengerNobodyDiv"><img src="app/img/messenger.png"> <?= Txt::trad("MESSENGER_nobody") ?></div>
 			</td>
 		</tr>
 		<tr><td id="messengerBottomMargin" colspan="2">&nbsp;</td></tr>

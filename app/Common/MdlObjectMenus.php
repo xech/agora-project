@@ -16,6 +16,15 @@ trait MdlObjectMenus
 	public static $displayMode=null;	//Type d'affichage en préference (ligne/block)
 
 	/*******************************************************************************************
+	 * IDENTIFIANT UNIQUE DE L'OBJET : CONTENEUR DE L'OBJET, MENU CONTEXTUEL, ETC
+	 *******************************************************************************************/
+	public function uniqId($prefix)
+	{
+		if(empty($this->objUniqId))  {$this->objUniqId=Txt::uniqId();}	//Un seul ID par instance de l'objet (tester avec les événements récurrents de l'agenda)
+		return $prefix.$this->objUniqId;								//Renvoi l'id avec un prefix : "objContainer" / "objMenu" / "objCheckbox" / "objAttachment"
+	}
+
+	/*******************************************************************************************
 	 * BALISE OUVRANTE DU BLOCK DE L'OBJET :  CONTIENT L'ID DU MENU CONTEXTUEL (click droit && "initMenuContext()")  &&  L'URL D'ÉDITION (dblClick)
 	 *******************************************************************************************/
 	public function divContainer($specificClass=null, $specificAttributes=null)
@@ -26,26 +35,16 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * IDENTIFIANT UNIQUE DE L'OBJET : CONTENEUR DE L'OBJET, MENU CONTEXTUEL, ETC
-	 *******************************************************************************************/
-	public function uniqId($prefix)
-	{
-		if(empty($this->objUniqId))  {$this->objUniqId=Txt::uniqId();}	//Un seul ID par instance de l'objet (tester avec les événements récurrents de l'agenda)
-		return $prefix.$this->objUniqId;								//Renvoi l'id avec un prefix : "objContainer" / "objMenu" / "objCheckbox" / "objAttachment"
-	}
-
-	/*******************************************************************************************
 	 * VUE : MENU CONTEXTUEL (édition, droit d'accès, etc)
 	 * $options["iconBurger"] (text)		: Icone "burger" du launcher => "inlineSmall" / "inlineBig" / "floatSmall" / "floatBig" (par défaut)
-	 * $options["deleteLabel"] (text)		: label spécifique de suppression
-	 * $options["specificOptions"] (Array)	: boutons à ajouter au menu : chaque bouton a les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
+	 * $options["deleteLabel"] (text)		: Label spécifique de suppression
+	 * $options["specificOptions"] (Array)	: Boutons à ajouter au menu : chaque bouton a les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
 	 * $options["specificLabels"] (Array)	: Texte à afficher (ex: "affectedCalendarsLabel()" pour afficher les agendas affectés à un evenement)
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		////	PAS DE MENU CONTEXT POUR LES GUESTS
+		////	RETOURNE "FALSE" SI GUESTS
 		if(Ctrl::$curUser->isUser()==false)  {return false;}
-
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
 		$vDatas["iconBurger"]=(!empty($options["iconBurger"]))  ?  $options["iconBurger"]  :  "floatBig";
@@ -55,6 +54,8 @@ trait MdlObjectMenus
 		////	OBJET USER
 		if(static::objectType=="user")
 		{
+			////	RETOURNE "FALSE" SI ON EST PAS PROPRIO DE L'OBJET NI ADMIN D'ESPACE
+			if($this->isAutor()==false && Ctrl::$curUser->isAdminSpace()==false)  {return false;}
 			////	MODIFIER ELEMENT  &  MODIF MESSENGER
 			if($this->editRight()){
 				$vDatas["editLabel"]=Txt::trad("USER_profilEdit");
@@ -70,7 +71,7 @@ trait MdlObjectMenus
 				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."','".Txt::trad("confirmDeleteDbl",true)."')";
 				$vDatas["deleteLabel"]=Txt::trad("USER_deleteDefinitely");
 			}
-			////	ESPACE DE L'UTILISATEUR
+			////	LISTE DES ESPACES DE L'UTILISATEUR
 			if(Ctrl::$curUser->isAdminGeneral()){
 				$vDatas["userSpaceList"]=Txt::trad("USER_spaceList")." : ";
 				if(count($this->getSpaces())==0)	{$vDatas["userSpaceList"].=Txt::trad("USER_spaceNoAffectation");}
@@ -88,6 +89,9 @@ trait MdlObjectMenus
 				$vDatas["logUrl"]="?ctrl=object&action=logs&typeId=".$this->_typeId;
 				if(!empty(Ctrl::$curContainerRoot) && count(Ctrl::$curContainerRoot->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			}
+			////	COPIER L'ADRESSE/URL D'ACCES
+			if(Ctrl::$curUser->isUser())
+				{$vDatas["getUrlExternal"]=$this->getUrlExternal();}
 			////	SUPPRIMER
 			if($this->deleteRight())
 			{
@@ -156,14 +160,6 @@ trait MdlObjectMenus
 		}
 		////	Affichage
 		return Ctrl::getVue(Req::commonPath."VueObjMenuContext.php",$vDatas);
-	}
-
-	/*******************************************************************************************
-	 * INPUT "HIDDEN" DE SÉLECTION D'OBJETS (cf. "VueObjMenuContext.php" & Co)
-	 *******************************************************************************************/
-	public function objSelectCheckbox()
-	{
-		return '<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="'.$this->_typeId.'" id="'.$this->uniqId("objCheckbox").'">';
 	}
 
 	/*******************************************************************************************

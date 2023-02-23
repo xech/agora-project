@@ -7,19 +7,21 @@ tinymce.init({
 	////	parametrage général
 	selector: "textarea[name='<?= $fieldName ?>']",			//Selecteur du textarea
 	language:"<?= Txt::trad("EDITORLANG") ?>",				//Langue du menu de l'éditeur
+	skin: 'tinymce-5',										//ancien skin + clair
 	width: "100%",											//Largeur de l'éditeur
-	min_height:(isMainPage==true?350:250),					//Hauteur par défaut de l'éditeur (cf. "lightboxResize()")
+	min_height:(isMainPage==true?350:250),					//Hauteur par défaut de l'éditeur
+	convert_urls: false,									//Urls des liens : ne pas les convertir en "relatives"
 	menubar: false,											//Pas de "menubar" en haut de l'éditeur (menu déroulant)
 	statusbar: false,										//Pas de "statusbar" en bas de l'éditeur
-	allow_script_urls: true,								//Autorise l'ajout de js dans les hrefs (cf. "lightboxOpen()")
+	allow_script_urls: true,								//Autorise l'ajout de js dans les hrefs ("lightboxOpen()" & co)
 	browser_spellcheck: true,								//Correcteur orthographique du browser activé
 	contextmenu: false,										//Désactive le menu contextuel de l'éditeur : cf. "browser_spellcheck" ci-dessus
-	fontsize_formats: "11px 13px 16px 20px 24px 28px 32px",	//Liste des "fontsize" : cf. "content_style" ci-dessus pour le "font-size" par défaut
+	font_size_formats:"11px 13px 16px 20px 24px 28px 32px",	//Liste des "fontsize" : cf. "content_style" ci-dessus pour le "font-size" par défaut
 	content_style:"body{margin:10px;font-size:13px;font-family:Arial,Helvetica,sans-serif;}  p{margin:0px;padding:3px;}  .attachedFileTag{max-width:100%;}",//Style dans l'éditeur : idem "app/css/common.css" !
 	////	Charge les plugins et options de la "toolbar" (autres plugins dispos : code print preview hr anchor pagebreak wordcount fullscreen insertdatetime)
-	plugins: ["autoresize lists advlist link autolink image charmap emoticons visualchars media nonbreaking table paste"],
-	toolbar1: (isMobile()  ?  "undo redo | emoticons attachedFileImg | editorDraft"  :  "undo redo | copy paste removeformat | table charmap media emoticons link attachedFileImg | editorDraft"),//Option "code" pour modifier le code HTML
-	toolbar2: (isMobile()  ?  "fontsizeselect | bold underline forecolor bullist"  :  "bold italic underline strikethrough forecolor | fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist"),
+	plugins: "autoresize lists advlist link autolink image charmap emoticons visualchars media nonbreaking table",
+	toolbar1: (isMobile()  ?  "undo redo | emoticons attachedFileImg | editorDraft"	:  "undo redo | copy paste removeformat | table charmap media emoticons link attachedFileImg | editorDraft"),
+	toolbar2: (isMobile()  ?  "fontsize | bold underline forecolor bullist"			:  "bold italic underline strikethrough forecolor | fontsize | alignleft aligncenter alignright alignjustify | bullist numlist"),
 	////	Chargement de l'éditeur : parametrages spécifiques
 	setup: function(editor){
 		//// Init : Focus l'éditeur (sauf en responsive pour pas afficher le clavier virtuel ..ou si ya deja un focus)
@@ -36,10 +38,10 @@ tinymce.init({
 		if(editorDraftHtml.length>0)
 		{
 			editor.ui.registry.addButton("editorDraft",{
+				text: "<?= Txt::trad("editorDraft") ?>",
 				icon: "restore-draft",
-				text: "<span id='editorDraftLabel'><?= Txt::trad("editorDraft") ?></span>",
 				tooltip: "<?= Txt::trad("editorDraftConfirm") ?>",
-				onSetup:function(_){  $("#editorDraftLabel").pulsate(7);  },																		//Pulsate le bouton "editorDraft" à l'affichage du menu
+				onSetup:function(_){  $(".tox-tbtn__select-label").pulsate(10);  },																	//Pulsate le bouton "editorDraft" à l'affichage du menu
 				onAction:function(_){  if(confirm("<?= Txt::trad("editorDraftConfirm") ?> ?")) {editor.selection.setContent(editorDraftHtml);}  }	//"editorDraft" sélectionné : ajoute le brouillon/draft au texte courant
 			});
 		}
@@ -69,9 +71,9 @@ function isEmptyEditor()
 	return ($.trim(content).length==0);				//Renvoie "true" si l'éditeur est vide
 }
 
-/*******************************************************************************************
- *	RENVOI LE CONTENU DE L'EDITEUR (CF. "VueMessenger.php")
- *******************************************************************************************/
+/**************************************************************************************************************
+ *	RENVOI LE CONTENU DE L'EDITEUR (cf. "editorDraft" ci-dessus && "messengerUpdate()" du "VueMessenger.php")
+ **************************************************************************************************************/
 function editorContent()
 {
 	var content=tinymce.activeEditor.getContent();						//Récupère le contenu de l'éditeur
@@ -87,20 +89,20 @@ function attachedFileInsert(fileId, displayUrl)
 	var isNewFile=(typeof displayUrl=="undefined");
 	if(isNewFile==true)	{var tagId="attachedFileTagInput"+fileId;  var displayUrl=$("#attachedFileInput"+fileId).val();}	//Id du tag html temporaire en fonction de l'input + "FakePath" de l'input
 	else				{var tagId="attachedFileTag"+fileId;}																//Id du tag html en fonction de l'_id réel du fichier
-	var fileExt=extension(displayUrl);
+	var fileExtension=extension(displayUrl);
 	//// Controle s'il s'agit bien d'une image/vidéo/mp3
-	if($.inArray(fileExt,extFileInsert)==-1){
+	if($.inArray(fileExtension,extensionsFileInsert)==-1){
 		notify("<?= Txt::trad("editorFileInsertNotif") ?>");//"Merci de sélectionner une image .jpeg"
 		if(isNewFile==true)  {$("#attachedFileInput"+fileId).val("");}//réinit l'input
 		return false;
 	}
 	//// Créé le Tag html du fichier (cf. ".attachedFileTag" du "common.css")
-	if($.inArray(fileExt,extImage)>=0)		{fileTag='<a href="SRCINPUT" data-fancybox="images" id="'+tagId+'"><img src="SRCINPUT" class="attachedFileTag"></a>';}//"data-fancybox" pour afficher dans une lightBox
-	else if($.inArray(fileExt,extVideo)>=0)	{fileTag='<video controls controlsList="nodownload" id="'+tagId+'" class="attachedFileTag"><source src="SRCINPUT" type="video/'+fileExt+'">HTML5 required</video>';}
-	else if($.inArray(fileExt,extMp3)>=0)	{fileTag='<audio controls controlsList="nodownload" id="'+tagId+'" class="attachedFileTag"><source src="SRCINPUT" type="audio/mp3">HTML5 required</audio>';}
+	if($.inArray(fileExtension,extensionsFileImage)>=0)			{fileTag='<a href="SRCINPUT" data-fancybox="images" id="'+tagId+'"><img src="SRCINPUT" class="attachedFileTag"></a>';}//"data-fancybox" pour afficher dans une lightBox
+	else if($.inArray(fileExtension,extensionsFileVideo)>=0)	{fileTag='<video controls controlsList="nodownload" id="'+tagId+'" class="attachedFileTag"><source src="SRCINPUT" type="video/'+fileExtension+'">HTML5 required</video>';}
+	else if($.inArray(fileExtension,extensionsFileMp3)>=0)		{fileTag='<audio controls controlsList="nodownload" id="'+tagId+'" class="attachedFileTag"><source src="SRCINPUT" type="audio/mp3">HTML5 required</audio>';}
 	fileTag='<p>&nbsp;</p>'+fileTag;//retour à la ligne
 	//// Nouvelle image : affiche l'image dans l'éditeur
-	if(isNewFile==true && $.inArray(fileExt,extImage)>=0){																	//Verif l'extension du fichier (cf. "extImage" de "VueObjAttachedFile.php")
+	if(isNewFile==true && $.inArray(fileExtension,extensionsFileImage)>=0){														//Verif l'extension du fichier (cf. "extensionsFileImage" de "VueObjAttachedFile.php")
 		var reader=new FileReader();																						//Lance le "FileReader" Javascript pour récupérer le contenu de l'image
 		reader.readAsDataURL($("#attachedFileInput"+fileId).prop("files")[0]);												//Récupère l'image depuis le "FakePath" de l'input, sous forme d'URL/Blob
 		reader.onload=function(){ tinymce.activeEditor.selection.setContent(fileTag.replace(/SRCINPUT/g,reader.result)); };	//Affiche l'image dans l'éditeur ("g" remplace tous les "SRCINPUT")
@@ -114,9 +116,9 @@ function attachedFileInsert(fileId, displayUrl)
 	lightboxResize();
 }
 
-/********************************************************************************************************************************************************
- *	FICHIERS JOINTS TEMPORAIRES D'IMAGES : REMPLACE LE "SRC" AU FORMAT BLOB PAR UN ID TEMPORAIRE (cf. "VueObjMenuEdit.php" & "ModMail/index.php") 
- ********************************************************************************************************************************************************/
+/******************************************************************************************************************************************************************
+ *	FICHIERS JOINTS TEMPORAIRES D'IMAGES : REMPLACE LE CONTENU DANS LE "SRC" (FORMAT "BLOB") PAR UN ID TEMPORAIRE (cf. "VueObjMenuEdit.php" & "ModMail/index.php") 
+ ******************************************************************************************************************************************************************/
 function attachedFileReplaceSRCINPUT()
 {
 	if(typeof tinymce!="undefined"){

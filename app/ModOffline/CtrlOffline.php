@@ -15,7 +15,7 @@ class CtrlOffline extends Ctrl
 	const moduleName="offline";
 
 	/*******************************************************************************************
-	 * VUE : PAGE PRINCIPALE => CONNEXION A L'ESPACE
+	 * VUE : PAGE PRINCIPALE
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
@@ -39,13 +39,13 @@ class CtrlOffline extends Ctrl
 				{
 					//Vérifie le "resetPasswordId()"
 					$vDatas["resetPasswordIdOk"]=($tmpUser->resetPasswordId()==Req::param("resetPasswordId"));
-					//"resetPasswordId" OK : enregistre le nouveau password!					
+					//Enregistre le nouveau password ("resetPasswordId" OK)					
 					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
 						$sqlNewPassword=MdlUser::passwordSha1(Req::param("newPassword"));
 						Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
 						Ctrl::notify("modifRecorded","success");
 					}
-					//"resetPasswordId" pas OK : affiche "Le lien de renouvellement de password a expiré"
+					//Notify "Le lien de renouvellement de password a expiré" ("resetPasswordId" expiré)
 					elseif($vDatas["resetPasswordIdOk"]!=true)  {self::notify("resetPasswordIdExpired");}
 				}
 			}
@@ -122,6 +122,40 @@ class CtrlOffline extends Ctrl
 	}
 
 	/*******************************************************************************************
+	 * AJAX : TEST LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC
+	 *******************************************************************************************/
+	public static function actionPublicSpaceAccess()
+	{
+		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpace")." AND BINARY `password`=".Db::param("password"));//"BINARY"=>case sensitive
+		echo empty($password) ? "false" : "true";
+	}
+
+	/*******************************************************************************************
+	 * AJAX : AUTHENTIFICATION VIA GOOGLE IDENTITY / OAUTH 
+	 * https://developers.google.com/identity/gsi/web/guides/overview
+	 *******************************************************************************************/
+	public static function actionGIdentityControl()
+	{
+		require_once 'app/misc/google-api-php-client/vendor/autoload.php';										//Charge l'API Google Identity/Oauth
+		$gClient=new Google_Client(["client_id"=>Ctrl::$agora->gIdentityClientId]);								//Créé un client Google Identity
+		$gClientUser=$gClient->verifyIdToken(Req::param("credential"));											//Vérifie le token du client et récupère ses infos
+		if(!empty($gClientUser)){																				//Client Google authentifié par l'API ?
+			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($gClientUser["email"]));		//Verif si un user existe déjà avec le même email
+			if(!empty($tmpUser)){																				//Données récupérées?
+				$objUser=Ctrl::getObj("user",$tmpUser);															//Charge l'objet "user"
+				if($objUser->hasImg()==false && !empty($gClientUser["picture"])){								//Enregistre l'image du profil Google de l'user ?
+					$imgPath=File::getTempDir()."/".uniqid().".png";											//Path de l'image temporaire
+					file_put_contents($imgPath, file_get_contents($gClientUser["picture"]));					//Enregistre l'image dans le fichier tmp
+					File::imageResize($imgPath,$objUser->pathImgThumb(),200);									//Redimensionne l'image
+				}
+				setcookie("AGORAP_LOG", $objUser->login, (time()+315360000));									//Enregistre login : connexion auto
+				setcookie("AGORAP_PASS", $objUser->password, (time()+315360000));								//Enregistre password : idem
+				echo "userConnected";																			//Retour OK
+			}
+		}
+	}
+
+	/*******************************************************************************************
 	 * ACTION : INSTALL DE L'AGORA
 	 *******************************************************************************************/
 	public static function actionInstall()
@@ -131,8 +165,9 @@ class CtrlOffline extends Ctrl
 		Req::verifPhpVersion();
 		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && self::installDbControl(db_host,db_login,db_password,db_name)=="dbErrorAppInstalled")  {self::noAccessExit(Txt::trad("INSTALL_dbErrorAppInstalled"));}
 
-		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
+		////	Affiche/Valide le formulaire
+		if(Req::isParam("formValidate")==false)  {static::displayPage("VueInstall.php");}
+		else
 		{
 			////	CONTROLES DE BASE
 			$installDbControl=self::installDbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
@@ -204,12 +239,6 @@ class CtrlOffline extends Ctrl
 			//RENVOI LE RESULTAT
 			echo json_encode($result);
 		}
-		////	Affiche le formulaire
-		else
-		{
-			Txt::loadTrads();
-			static::displayPage("VueInstall.php");
-		}
 	}
 
 	/*******************************************************************************************
@@ -233,46 +262,5 @@ class CtrlOffline extends Ctrl
 		}
 		//Pas d'erreur : Db disponible
 		return "dbAvailable";
-	}
-
-	/*******************************************************************************************
-	 * AJAX : TEST LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC
-	 *******************************************************************************************/
-	public static function actionPublicSpaceAccess()
-	{
-		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpace")." AND BINARY `password`=".Db::param("password"));//"BINARY"=>case sensitive
-		echo (empty($password)) ? "false" : "true";
-	}
-
-	/*******************************************************************************************
-	 * AJAX : AUTHENTIFICATION VIA GSIGNIN
-	 *******************************************************************************************/
-	public static function actionGSigninAuth()
-	{
-		//Récup l'API Google Sign-In pour vérif de l'user
-		require_once 'app/misc/google-api-php-client/vendor/autoload.php';
-		$gClient=new Google_Client(["client_id"=>Ctrl::$agora->gSigninClientId]);//Charge l'API avec le "ClientId"
-		$gClientUser=$gClient->verifyIdToken(Req::param("id_token"));//Vérifie le token du client et récupère ses infos
-		//User vérifié par l'API
-		if(!empty($gClientUser))
-		{
-			//Verif si un compte utilisateur avec le même email existe sur l'espace
-			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($gClientUser["email"]));
-			if(!empty($tmpUser))
-			{
-				//Récup l'user (obj) && Enregistre login & password pour une connexion auto
-				$objUser=Ctrl::getObj("user",$tmpUser);
-				setcookie("AGORAP_LOG", $objUser->login, (time()+315360000));
-				setcookie("AGORAP_PASS", $objUser->password, (time()+315360000));
-				//Enregistre l'image de l'user?
-				if($objUser->hasImg()==false && !empty($gClientUser["picture"])){
-					$tmpImagePath=File::getTempDir()."/".uniqid().".".File::extension($gClientUser["picture"]);
-					file_put_contents($tmpImagePath, file_get_contents($gClientUser["picture"]));
-					if(is_file($tmpImagePath) && filesize($tmpImagePath)>0)  {File::imageResize($tmpImagePath,$objUser->pathImgThumb(),200);}
-				}
-				//Retour OK
-				echo "userConnected";
-			}
-		}
 	}
 }

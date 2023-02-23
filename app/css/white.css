@@ -9,7 +9,7 @@ a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label,
 
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
-	#htmlMainPage	{background:#f9f9f9 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#htmlMainPage	{background:#fff url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 }
 
 /*Blocks d'objet & menus contextuels*/

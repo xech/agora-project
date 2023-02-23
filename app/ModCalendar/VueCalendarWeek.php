@@ -109,8 +109,7 @@ function calendarDimensions(printCalendar)
 .vCalWeekHourCellCurrent										{border-top:solid 1px #f00;}
 .vCalWeekHourOutTimeslot, .vCalWeekHourCellPastTime				{background:#fafafa;}
 .vCalWeekHourCell:hover, .vCalWeekHourCellSelect				{background:#eee;}
-.vCalWeekHeaderDayToday											{color:#c00;}
-.vCalWeekHeaderDayNumber										{font-size:1.1em!important; margin-left:3px;}
+.vCalWeekHeaderDayToday											{font-size:1.1em; color:#c00;}
 .vCalEvtBlock													{position:absolute;}
 
 /*RESPONSIVE*/
@@ -140,10 +139,10 @@ function calendarDimensions(printCalendar)
 			<div class="vCalWeekHourLabel">&nbsp;</div>
 			<?php
 			foreach($periodDays as $tmpDay){
-				$dayLabelFormat=Req::isMobile() ? "ccc" : "cccc";//Nom abrégé/complet du jour de la semaine ("lun." ou "lundi")
+				$dayLabelFormat=Req::isMobile() ? "ccc d" : "cccc d";//Jour de la semaine ("lun. 12" ou "lundi 12")
 				$classToday=(date("y-m-d",$tmpDay["timeBegin"])==date("y-m-d"))  ?  "vCalWeekHeaderDayToday"  :  null;
 				$celebrationDay=(!empty($tmpDay["celebrationDay"]))  ?  " <img src='app/img/calendar/celebrationDay.png' class='vCalWeekHeaderCelebrationDay' title=\"".Txt::tooltip($tmpDay["celebrationDay"])."\">"  :  null;
-				echo "<div class=\"vCalWeekHeaderDay ".$classToday."\">".ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"]))."<span class='vCalWeekHeaderDayNumber'>".date("j",$tmpDay["timeBegin"])."</span>".$celebrationDay."</div>";
+				echo "<div class=\"vCalWeekHeaderDay ".$classToday."\">".ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"])).$celebrationDay."</div>";
 			}
 			?>
 			<div class="vCalWeekHeaderScroller">&nbsp;</div>

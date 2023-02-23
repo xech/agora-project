@@ -7,14 +7,14 @@
 		<meta http-equiv="content-language" content="<?= Txt::trad("CURLANG") ?>">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge"><!--IE : mode de compatibilité via Edge-->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"><!--Pas de zoom en responsive-->
-		<link rel="icon" type="image/gif" href="app/img/favicon.png" />
+		<link rel="icon" type="image/png" href="app/img/favicon.png">
 		<!--REFERENCEMENT-->
 		<title><?= !empty(Ctrl::$agora->name) ? Ctrl::$agora->name : "Omnispace.fr - Agora-Project" ?></title>
 		<meta name="Description" content="<?= !empty(Ctrl::$agora->description) ? Ctrl::$agora->description : "Omnispace.fr - Agora-Project" ?>">
 		<meta name="application-name" content="Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
 		<!-- JQUERY & JQUERY-UI -->
-		<script src="app/js/jquery-3.6.1.min.js"></script>
+		<script src="app/js/jquery-3.6.3.min.js"></script>
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
 		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
 		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">

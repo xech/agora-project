@@ -108,7 +108,10 @@ class File
 	 ************************************************************************************************************************************/
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		if(!empty($fileContent) || is_file($filePath))
+		////	Old mobileApp sous Cordova : annule le download pour ne pas bloquer InAppBrowser, et alncer le download via le browser system (InAppBrowser et le browser system utilisent les mêmes cookies: "isMobileApp()" renvoie donc toujours "true")
+		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
+		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
+		elseif(!empty($fileContent) || is_file($filePath))
 		{
 			////	Augmente la duree du script (sauf safemode)
 			@set_time_limit(120);
@@ -380,7 +383,7 @@ class File
 		$archiveSizeControl=true;
 		$limitSize=(self::sizeGo*2);	//2Go max (tester avec un 'top' du systeme)
 		$disabledBegin=9;				//debut plage horaire de limitation
-		$disabledEnd=19;				//fin plage horaire de limitation
+		$disabledEnd=18;				//fin plage horaire de limitation
 		if($archiveSizeControl==true && date("G") > $disabledBegin && date("G") < $disabledEnd && (int)$archiveSize > $limitSize){
 			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::displaySize($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
 			Ctrl::notify($alertLabel, "warning");

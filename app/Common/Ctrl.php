@@ -68,9 +68,7 @@ abstract class Ctrl
 		{
 			////	Connection d'un user et selection d'un espace ?
 			self::userConnectionSpaceSelection();
-			////	Chargement des trads et des "locales"
-			Txt::loadTrads();
-			////	Enregistre le cookie pour le "isMobileApp()" de l'espace
+			////	Enregistre le cookie pour le "Req::isMobileApp()" de l'espace
 			if(Req::isParam("mobileAppli")){
 				setcookie("mobileAppli", "true", (time()+315360000));
 				$_COOKIE["mobileAppli"]="true";//charge le cookie
@@ -163,7 +161,7 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * AJOUTE UNE NOTIFICATION À AFFICHER VIA "VUESTRUCTURE.PHP"
 	 * $message : message spécifique OU clé de traduction
-	 * $type : "info" / "success" / "warning"
+	 * $type : "notice" / "success" / "warning"
 	 *******************************************************************************************/
 	public static function notify($messageTrad, $type="notice")
 	{

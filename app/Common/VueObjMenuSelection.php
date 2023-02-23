@@ -60,7 +60,7 @@ function objSelectAction(urlRedir, openPage)
 	if(Req::$curCtrl=="file")  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=file&action=downloadArchive','newPage')\"><div class='menuIcon'><img src='app/img/download.png'></div><div>".Txt::trad("FILE_downloadSelection")."</div></div>";}
 
 	////	"VOIR SUR UNE CARTE" (modUser / modContact)
-	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=misc&action=PersonsMap','lightbox')\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
+	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=misc&action=PersonsMap','lightbox')\" title=\"".Txt::trad("showOnMapInfo")."\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
 
 	////	"DEPLACER DES OBJETS" (arborescence)
 	if($folderMoveOption==true)  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=object&action=FolderMove&typeId=".Ctrl::$curContainer->_typeId."','lightbox')\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}

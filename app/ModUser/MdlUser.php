@@ -193,6 +193,7 @@ class MdlUser extends MdlPerson
 			Db::query("DELETE FROM ap_userMessengerMessage	WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_userPreference		WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_objectLike			WHERE _idUser=".$this->_id);
+			Db::query("UPDATE ap_userGroup					SET _idUsers=REPLACE(_idUsers,'@@".$this->_id."@@','')");
 			//Suppr l'agenda et ses evts
 			$objCalendar=new MdlCalendar(Db::getVal("SELECT _id FROM ap_calendar WHERE _idUser=".$this->_id." AND type='user'"));
 			$objCalendar::$forceDeleteRight=true;//Force la suppression de l'agenda : cf. "MdlCalendar::deleteRight()"
@@ -327,7 +328,7 @@ class MdlUser extends MdlPerson
 			$mailMessage=Txt::trad("MAIL_hello").",<br><br>".
 					 	 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
 					 	 "<br><br>".Txt::trad("resetPasswordMailLoginRemind")." : <i>".$this->login."</i>";
-			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);
+			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify","noTimeControl"]);//"noTimeControl" pour l'envoi de mails en série (cf. "actionResetPasswordSendMailUsers()")
 		}
 	}
 
@@ -346,7 +347,7 @@ class MdlUser extends MdlPerson
 			$mailMessage=Txt::trad("USER_mailNotifContent")." <i>".Ctrl::$agora->name."</i> (".Req::getCurUrl(false).")<br><br>".//"Votre compte utilisateur vient d'être créé sur <i>Mon-espace</i>"
 						 "<a href=\"".Req::getCurUrl()."/index.php?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
 						 Txt::trad("login")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
-						 Txt::trad("passwordToModify")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
+						 Txt::trad("passwordToModify2")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
 						 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage);
 		}

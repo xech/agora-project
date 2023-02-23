@@ -45,7 +45,6 @@ class Guzzle5HttpHandler
      *
      * @param RequestInterface $request
      * @param array $options
-     *
      * @return ResponseInterface
      */
     public function __invoke(RequestInterface $request, array $options = [])
@@ -62,7 +61,6 @@ class Guzzle5HttpHandler
      *
      * @param RequestInterface $request
      * @param array $options
-     *
      * @return Promise
      */
     public function async(RequestInterface $request, array $options = [])
@@ -108,7 +106,7 @@ class Guzzle5HttpHandler
         return $this->client->createRequest(
             $request->getMethod(),
             $request->getUri(),
-            array_merge([
+            array_merge_recursive([
                 'headers' => $request->getHeaders(),
                 'body' => $request->getBody(),
             ], $options)

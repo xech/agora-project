@@ -3,13 +3,13 @@
 /*Basic*/
 body, a, .sLink																					{color:#ddd;}
 input, textarea, select																			{color:#ddd; background:#333;}
-#htmlLightbox																					{background:#222;}
+#htmlLightbox																					{background:#333;}
 a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label, .sAccessRead	{color:rgb(173, 211, 255);}	/*Liens + labels sélectionnés + accès utilisateur*/
 .sAccessWrite, .sAccessWriteLimit																{color:#f88;}					/*Accès admin*/
 
 /*Pages principales Responsives (cf. 'VueStructure.php')*/
 @media screen and (max-width:1023px){
-	#htmlMainPage	{background:#222 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#htmlMainPage	{background:#333 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 }
 
 /*Blocks d'objet & menus contextuels*/

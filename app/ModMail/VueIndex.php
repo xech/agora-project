@@ -30,13 +30,6 @@ $(function(){
 	$(".vMailsLabel").click(function(){
 		$("#mailsContainer"+$(this).attr("data-typeId")).slideToggle();
 	});
-
-	/*******************************************************************************************
-	 *	AJOUTE UNE NOUVELLE ADRESSE EMAIL COMPLEMENTAIRE
-	 *******************************************************************************************/
-	$("#addEmails").click(function(){
-		$(".addEmailsDiv:hidden:first").fadeIn();
-	});
 	
 	/*******************************************************************************************
 	 *	AJOUTE UNE NOUVELLE UNE URL DE VISIO
@@ -60,10 +53,6 @@ function formControl()
 	if($("[name='personList[]']:checked, [name='groupList[]']:checked").length==0)	{validForm=false;  notify("<?= Txt::trad("MAIL_specifyMail") ?>");  }
 	else if($("[name='title']").isEmpty())											{validForm=false;  notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_title") ?>");}
 	else if(isEmptyEditor())														{validForm=false;  notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_description") ?>");}
-	//// Controle les emails complémentaires
-	$("input[name='addEmails[]']").each(function(){
-		if($(this).isEmpty()==false && $(this).isMail()==false)  {validForm=false;  $(this).focus();  notify("<?= Txt::trad("mailInvalid") ?> : "+this.value);}
-	});
 	//// Fichier joint : remplace le "src" des images temporaires (cf. "VueObjHtmlEditor.php")
 	attachedFileReplaceSRCINPUT();
 	//// Fichiers joints : la taille ne doit pas dépasser 15Mo 
@@ -82,32 +71,30 @@ function formControl()
 
 
 <style>
-/*Menu des destinataires*/
-#pageModuleMenu								{width:300px;}/*surcharge*/
-#recipientLabel								{text-align:center; margin-top:5px;}
-#recipientLabel hr							{margin:5px;}/*surcharge*/
+/*Menu "Historique" & "Destinataires"*/
+#historyLabel								{border-bottom:solid 1px #bbb; margin-bottom:20px;}
+#historyLabel, #recipientLabel				{text-align:center; padding:10px;}
 #recipientLabel img							{max-height:22x;}
-.vMailsBlock								{margin:10px 10px;}
+.vMailsBlock								{margin:0px 10px 15px 10px;}
 .vMailsLabel 								{display:table;}
 .vMailsLabel>div 							{display:table-cell; vertical-align:middle;}
 .vMailsLabel img							{max-width:24px; margin-right:10px;}
 .vMailsMenu									{padding-left:5px!important; display:none;}
 .vMailsMenu.vMailsMenuDisplay				{display:block;}
-.vMailsMenu>div								{padding:5px;}
-#recipientMainMenu							{margin-bottom:10px;}
+.vMailsMenu>div								{padding:7px;}
 /*formulaire principal*/
 #mailContainer								{padding:10px;}
 #mailContainer [name='title']				{width:100%; height:35px; margin-bottom:20px;}
 #mailOptions								{display:table; width:100%; margin-top:20px;}
 #mailOptions>div							{display:table-cell;}/*options et bouton "Envoyer"*/
 #mailOptions>div>div						{margin:10px;}/*lignes des options*/
-#mailOptions [src*=plusSmall]				{display:none;}
-#mailOptions>div>div:hover [src*=plusSmall]	{display:inline;}
-.addEmailsDiv								{display:none;}/*emails complementaires*/
-.addEmailsDiv input							{width:300px;}
+#mailOptions img[src*=dependency]			{display:none;}
+#visioUrlAdd img[src*=plusSmall]			{display:none;}
+#visioUrlAdd:hover img[src*=plusSmall]		{display:inline;}
 .submitButtonMain button					{width:220px; height:50px;}
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
+	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
 	#mailOptions, #mailOptions>div	{display:inline-block;}
 }
@@ -117,16 +104,11 @@ function formControl()
 <form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data">
 <div id="pageCenter">
 	<div id="pageModuleMenu">
-		<div id="pageModMenu">
-			<?php if($curUserMailsCount>0){ ?>
-			<div class="miscContainer">
-				<div class="menuLine sLink" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');">
-					<div class="menuIcon"><img src="app/img/log.png"></div>
-					<div><?= Txt::trad("MAIL_historyTitle") ?></div>
-				</div>
-			</div>
-			<?php } ?>
-			<div id="recipientMainMenu" class="miscContainer">
+		<div id="pageModMenu" class="miscContainer">
+			<!--Historique-->
+			<div id="historyLabel" class="sLink" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/log.png"> <?= Txt::trad("MAIL_historyTitle") ?></div>
+			<!--Destinataires-->
+			<div id="recipientMainMenu">
 				<div id="recipientLabel"><img src="app/img/mail.png"> <?= Txt::trad("MAIL_recipients") ?> :<hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS DE L'AGORA / DU MODULE CONTACT
@@ -187,20 +169,14 @@ function formControl()
 			<!--OPTIONS DU MAIL-->
 			<div id="mailOptions">
 				<div>
-					<?php
-					//// "Masquer les destinataires"  &&  "Ne pas signer le message"
-					echo '<div title="'.Txt::trad("MAIL_hideRecipientsInfo").'"><input type="checkbox" name="mailOptions[]" value="hideRecipients" id="hideRecipients"> <label for="hideRecipients">'.Txt::trad("MAIL_hideRecipients").'</label></div>
-						  <div title="'.Txt::trad("MAIL_noFooterInfo").'"><input type="checkbox" name="mailOptions[]" value="noFooter" id="noFooter"> <label for="noFooter">'.Txt::trad("MAIL_noFooter").'</label></div>';
-					//// "Accusé de réception"
-					if(!empty(Ctrl::$curUser->mail))  {echo "<div title=\"".Txt::trad("MAIL_receptionNotifInfo")."\"><input type='checkbox' name='mailOptions[]' value='receptionNotif' id='receptionNotif'> <label for='receptionNotif'>".Txt::trad("MAIL_receptionNotif")."</label></div>";}
-					//// "Ajouter des adresses emails"
-					echo '<div id="addEmails" class="sLink" title="'.Txt::trad("MAIL_addEmailsInfo").'"><img src="app/img/arobase.png">&nbsp; '.Txt::trad("MAIL_addEmails").' <img src="app/img/plusSmall.png"></div>';
-					for($cptMail=1; $cptMail<=20; $cptMail++)  {echo '<div class="addEmailsDiv"><input type="text" name="addEmails[]"></div>';}
-					//// "Ajouter une visioconférence"
-					if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" title="'.Txt::trad("VISIO_urlMail").'"><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").' <img src="app/img/plusSmall.png"></div>';}
-					//// "joindre des fichiers"
-					echo CtrlObject::attachedFile($curMail);
-					?>
+				<?php
+				// Options de base des emails (cf. Tool::sendMail()")
+				echo CtrlObject::sendMailBasicOptions();
+				//// "Ajouter une visioconférence"
+				if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" title="'.Txt::trad("VISIO_urlMail").'"><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").' <img src="app/img/plusSmall.png"></div>';}
+				//// "joindre des fichiers"
+				echo CtrlObject::attachedFile($curMail);
+				?>
 				</div>
 				<div>
 					<?php

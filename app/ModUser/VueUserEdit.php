@@ -87,8 +87,8 @@ select[name="connectionSpace"]	{width:100%}
 	<!--NOTIFICATION DE CREATION  && ADMIN GENERAL  &&  AGENDA PERSO DESACTIVE-->
 	<hr>
 	<?php if(empty($curObj->_id) && function_exists("mail")){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="notifMail" id="notifMail" value="1" checked='checked'> <label for="notifMail"><?= Txt::trad("EDIT_notifMail2") ?> <img src="app/img/mail.png"></label></div><?php } ?>
-	<?php if($curObj->editAdminGeneralRight()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="generalAdmin" id="generalAdmin" value="1" <?= !empty($curObj->generalAdmin)?'checked':null ?>> <label for="generalAdmin"><?= Txt::trad("USER_adminGeneral") ?> <img src="app/img/user/userAdminGeneral.png"></label></div><?php } ?>
-	<?php if(Ctrl::$curUser->isAdminGeneral()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?>> <label for="calendarDisabled"><?= Txt::trad("USER_persoCalendarDisabled") ?></label> <img src="app/img/info.png" title="<?= Txt::trad("USER_persoCalendarDisabledInfo") ?>"></div><?php } ?>
+	<?php if($curObj->editAdminGeneralRight()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="generalAdmin" id="generalAdmin" value="1" <?= !empty($curObj->generalAdmin)?'checked':null ?>> <label for="generalAdmin" title="<?= Txt::trad("USER_adminGeneralInfo") ?>"><?= Txt::trad("USER_adminGeneral") ?> <img src="app/img/user/userAdminGeneral.png"></label></div><?php } ?>
+	<?php if(Ctrl::$curUser->isAdminGeneral()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?>> <label for="calendarDisabled" title="<?= Txt::trad("USER_persoCalendarDisabledInfo") ?>"><?= Txt::trad("USER_persoCalendarDisabled") ?></label></div><?php } ?>
 
 	<!--ESPACES AFFECTES A L'UTILISATEUR-->
 	<?php if(Ctrl::$curUser->isAdminGeneral()){ ?>
@@ -106,11 +106,11 @@ select[name="connectionSpace"]	{width:100%}
 			$adminChecked=($tmpSpace->userAffectation($curObj)==2) ? "checked" : null;	//Sélectionne la box "admin"
 			$userDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
 			$userTooltip=($tmpSpace->allUsersAffected())  ?  Txt::trad("USER_allUsersOnSpaceNotif")  :  Txt::trad("SPACE_userInfo");
-			echo "<div class='spaceAffectLine lineHover' id=\"targetLine".$tmpSpace->_id."\" title=\"".Txt::tooltip($userTooltip)."\">
-					<label class='spaceAffectLabel'>".$tmpSpace->name."</label>
-					<div> <input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_1\" ".$userChecked." ".$userDisabled."></div>
-					<div title=\"".Txt::trad("SPACE_adminInfo")."\"><input type='checkbox' name='spaceAffect[]' class='spaceAffectInput' value=\"".$tmpSpace->_id."_2\" ".$adminChecked."></div>
-				  </div>";
+			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpSpace->_id.'">
+					<label class="spaceAffectLabel" title="'.Txt::tooltip($userTooltip).'">'.$tmpSpace->name.'</label>
+					<div> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpSpace->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
+					<div title="'.Txt::trad("SPACE_adminInfo").'"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpSpace->_id.'_2" '.$adminChecked.'></div>
+				  </div>';
 		}
 		?>
 	</div>

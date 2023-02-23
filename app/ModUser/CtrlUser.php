@@ -239,7 +239,7 @@ class CtrlUser extends Ctrl
 			{
 				//Affecte chaque user
 				foreach(Req::param("usersList") as $_idUser){
-					if(is_numeric($_idUser))	{Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".Ctrl::$curSpace->_id.",  _idUser=".$_idUser.", accessRight=1");}
+					if(is_numeric($_idUser))  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".Ctrl::$curSpace->_id.",  _idUser=".$_idUser.", accessRight=1");}
 				}
 				//Ferme la page
 				static::lightboxClose();
@@ -265,13 +265,13 @@ class CtrlUser extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * VUE : ENVOIE LES COORDONNÉES DE CONNEXION À DES UTILISATEURS
+	 * VUE : ENVOI UN EMAIL POUR REINITIALISER LES COORDONNEES DE CONNEXION D'USERS
 	 *******************************************************************************************/
-	public static function actionSendCoordinates()
+	public static function actionResetPasswordSendMailUsers()
 	{
 		////	Admin general uniquement
 		if(Ctrl::$curUser->isAdminGeneral()==false)  {static::lightboxClose();}
-		////	Validation de formulaire
+		////	Validation de formulaire : envoi de plusieurs mails en série !
 		if(Req::isParam("formValidate") && Req::isParam("usersList")){
 			foreach(Req::param("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
 			if($isSendmail==true)  {Ctrl::notify(Txt::trad("MAIL_sendOk"),"success");}
@@ -279,7 +279,7 @@ class CtrlUser extends Ctrl
 		}
 		////	Affichage du formulaire
 		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." AND LENGTH(mail)>0 AND _id!=".Ctrl::$curUser->_id." ".MdlUser::sqlSort());
-		static::displayPage("VueSendCoordinates.php",$vDatas);
+		static::displayPage("VueResetPasswordSendMailUsers.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -317,7 +317,7 @@ class CtrlUser extends Ctrl
 								  <br>".Txt::trad("passwordToModify")." : <b>".$password."</b>
 								  <br><br><a href=\"".$confirmUrl."\" target=\"_blank\"><u><b>".Txt::trad("USER_mailInvitationConfirm")."</u></b></a>"; // Confirmer l'invitation ?
 					if(Req::isParam("comment"))  {$mailMessage.="<br><br>".Txt::trad("comment").":<br>".Req::param("comment");}
-					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage);
+					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage, ["noTimeControl"]);//"noTimeControl" pour l'envoi de mails en série
 					//On ajoute l'invitation temporaire
 					if($isSendMail==true)  {Db::query("INSERT INTO ap_invitation SET _idInvitation=".Db::format($_idInvitation).", _idSpace=".(int)Ctrl::$curSpace->_id.", name=".Db::format($invitationTmp["name"]).", firstName=".Db::format($invitationTmp["firstName"]).", mail=".Db::format($invitationTmp["mail"]).", `password`=".Db::format($password).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);}
 				}

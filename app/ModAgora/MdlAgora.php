@@ -62,11 +62,11 @@ class MdlAgora extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * GOOGLE SIGNIN/OAUTH : VERIF S'IL EST ACTIVÉ
+	 * GOOGLE IDENTITY/OAUTH : VERIF S'IL EST ACTIVÉ
 	 *******************************************************************************************/
-	public function gSigninEnabled()
+	public function gIdentityEnabled()
 	{
-		return (Req::isMobileApp()==false && !empty($this->gSigninClientId) && !empty($this->gSignin));
+		return (Req::isMobileApp()==false && !empty($this->gIdentityClientId) && !empty($this->gIdentity));
 	}
 
 	/*******************************************************************************************
@@ -74,7 +74,7 @@ class MdlAgora extends MdlObject
 	 *******************************************************************************************/
 	public function gPeopleEnabled()
 	{
-		return (Req::isMobileApp()==false && !empty($this->gSigninClientId) && !empty($this->gPeopleApiKey));
+		return (Req::isMobileApp()==false && !empty($this->gIdentityClientId) && !empty($this->gPeopleApiKey));
 	}
 
 	/*******************************************************************************************

@@ -11,21 +11,24 @@ echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 
 	////	RESPONSIVE : LABEL DE L'OBJET
 	if(Req::isMobile())  {echo "<div class='infos'>".$curObj->getLabel()."</div>";}
-	////	SÉLECTION DE L'OBJET (si l'objet sélectionnable + s'assurer que le menu de sélection a bien été affiché + on n'affiche pas le conteneur courant)
-	if($curObj::isSelectable && Ctrl::$isMenuSelectObjects==true && (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$curObj->_typeId))
-	  {echo $curObj->objSelectCheckbox()."<div class='menuLine sLink' onclick=\"objSelect('".$curObj->uniqId("objCheckbox")."')\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("selectUnselect")."</div></div>";}
+
+	////	SÉLECTION DE L'OBJET (objet sélectionnable + user courant pas guest + menu de sélection affiché + n'affiche pas le conteneur courant)
+	if($curObj::isSelectable && Ctrl::$curUser->isUser() && Ctrl::$isMenuSelectObjects==true && (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$curObj->_typeId)){
+		echo '<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="'.$curObj->_typeId.'" id="'.$curObj->uniqId("objCheckbox").'">
+			  <div class="menuLine sLink" onclick="objSelect(\''.$curObj->uniqId("objCheckbox").'\')"><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("selectUnselect").'</div></div>';
+	}
 
 	////	MODIFIER L'OBJET
 	if(!empty($editLabel))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$curObj->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".$editLabel."</div></div>";}
-
-	////	COPIER L'ADRESSE/URL D'ACCES (affiche puis masque l'input pour pouvoir être copié..)
-	echo "<div class='menuLine sLink' title=\"".Txt::trad("copyUrlInfo")."\" onclick=\"$(this).find('input').show().select();document.execCommand('copy');$(this).find('input').hide();notify('".Txt::trad("copyUrlConfirmed",true)."');\"><div class='menuIcon'><img src='app/img/link.png'></div><div>".Txt::trad("copyUrl")."<input type='text' value=\"".$curObj->getUrlExternal()."\" style='display:none'></div></div>";
 
 	////	CHANGER DE DOSSIER
 	if(!empty($moveObjectUrl))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$moveObjectUrl."')\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
 
 	////	HISTORIQUE/LOGS
 	if(!empty($logUrl))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$logUrl."')\"><div class='menuIcon'><img src='app/img/log.png'></div><div>".Txt::trad("objHistory")."</div></div>";}
+
+	////	COPIER L'ADRESSE/URL D'ACCES (affiche puis masque l'input pour pouvoir être copié..)
+	if(!empty($getUrlExternal))  {echo "<div class='menuLine sLink' title=\"".Txt::trad("copyUrlInfo")."\" onclick=\"$(this).find('input').show().select();document.execCommand('copy');$(this).find('input').hide();notify('".Txt::trad("copyUrlConfirmed",true)."');\"><div class='menuIcon'><img src='app/img/link.png'></div><div>".Txt::trad("copyUrl")."<input type='text' value=\"".$getUrlExternal."\" style='display:none'></div></div>";}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	foreach($specificOptions as $tmpOption){

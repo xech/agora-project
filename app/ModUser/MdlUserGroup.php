@@ -24,9 +24,11 @@ class MdlUserGroup extends MdlObject
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Users affectés au groupe
-		$this->userIds=Txt::txt2tab($this->_idUsers);
-		//Liste des users : tableau d'Id et libellé des users
+		//Users affectés au groupe (verif qu'ils sont tous affectés à l'espace via "array_intersect()")
+		$groupUsersIds=Txt::txt2tab($this->_idUsers);
+		$spaceUsersIds=Ctrl::getObj("space",$this->_idSpace)->getUsers("idsTab");
+		$this->userIds=(array)array_intersect($groupUsersIds, $spaceUsersIds);
+		//Libellé des users
 		$this->usersLabel=null;
 		foreach($this->userIds as $userId)	{$this->usersLabel.=Ctrl::getObj("user",$userId)->getLabel().", ";}
 		$this->usersLabel=trim($this->usersLabel,", ");

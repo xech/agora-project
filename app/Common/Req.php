@@ -64,8 +64,8 @@ class Req
 			else												{throw new Exception("Page introuvable : Action '".$curActionMethod."'");  exit;}	//Lance une Exception
 		}
 		//Gestion des exceptions
-		catch(Exception $e){
-			$this->displayExeption($e);
+		catch(Exception $error){
+			$this->displayExeption($error);
 		}
 	}
 

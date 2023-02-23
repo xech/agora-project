@@ -2,20 +2,20 @@
 /*******************************************************************************************
  *	EXTENSIONS DE FICHIERS POUVANT ETRE INSEREES DANS L'EDITEUR
  *******************************************************************************************/
-extFileInsert=["<?= implode('","',File::fileTypes("attachedFileInsert")) ?>"];//Extensions acceptées pour l'insertion d'images/vidéos/mp3
-extImage=["<?= implode('","',File::fileTypes("imageBrowser")) ?>"];			//Extensions des images
-extVideo=["<?= implode('","',File::fileTypes("videoPlayer")) ?>"];			//Extensions des vidéos
-extMp3=["<?= implode('","',File::fileTypes("mp3")) ?>"];					//Extension de MP3
+extensionsFileInsert=["<?= implode('","',File::fileTypes("attachedFileInsert")) ?>"];	//Extensions acceptées pour l'insertion d'images/vidéos/mp3
+extensionsFileImage=["<?= implode('","',File::fileTypes("imageBrowser")) ?>"];			//Extensions des images
+extensionsFileVideo=["<?= implode('","',File::fileTypes("videoPlayer")) ?>"];			//Extensions des vidéos
+extensionsFileMp3=["<?= implode('","',File::fileTypes("mp3")) ?>"];						//Extension de MP3
 
 /*******************************************************************************************
  *	SELECTION D'UN FICHIER DANS UN INPUT ".attachedFileInput"
  *******************************************************************************************/
 $(function(){
 	$(".attachedFileInput").change(function(){
-		if(this.files && this.files[0].size < <?= File::uploadMaxFilesize() ?>){								//Vérif la taille du fichier
-			var cptFile=Math.round(this.name.replace("attachedFile",""));										//Récupère le compteur du fichier
-			$("#attachedFileDivAdd"+(cptFile+1)).fadeIn();														//Affiche l'input suivant
-			if($.inArray(extension(this.value),extFileInsert)>=0)  {$("#attachedFileOption"+cptFile).show();}	//Affiche l'option "insérer dans le texte" (cf. Tinymce)
+		if(this.files && this.files[0].size < <?= File::uploadMaxFilesize() ?>){										//Vérif la taille du fichier
+			var cptFile=Math.round(this.name.replace("attachedFile",""));												//Récupère le compteur du fichier
+			$("#attachedFileDivAdd"+(cptFile+1)).fadeIn();																//Affiche l'input suivant
+			if($.inArray(extension(this.value),extensionsFileInsert)>=0)  {$("#attachedFileOption"+cptFile).show();}	//Affiche l'option "insérer dans le texte" (cf. Tinymce)
 		}
 	});
 });

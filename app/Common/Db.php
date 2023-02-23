@@ -99,14 +99,14 @@ class Db
 		$record=$result->fetch(PDO::FETCH_NUM);
 		if(!empty($record))  {return $record[0];}
 	}
-	
+
 	/*******************************************************************************************
-	 * NUMÉRO DE VERSION DE MariaDB
+	 * NUMERO DE VERSION DE MARIADB
 	 *******************************************************************************************/
 	public static function dbVersion()
 	{
-		$dbVersion=self::objPDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
-		return str_replace(strstr($dbVersion,"-"),"",$dbVersion);//Enlève les détails après "-" (ex: "5.5.5-10.1.26-MariaDB-0+deb9u1")
+		$dbVersion=self::getVal("select version()");												//Récupère la version complete (exple: "10.5.18-MariaDB")
+		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql")." ".strtok($dbVersion, "-");	//Renvoie "MariaDb" ou "Mysql" && le numero de version (texte avant le 1er "-". Exple: 10.5.18)
 	}
 
 	/*******************************************************************************************
@@ -114,16 +114,15 @@ class Db
 	 *******************************************************************************************/
 	public static function format($text, $options="")
 	{
-		$text=trim((string)$text);
-		$options=(string)$options;
+		$text=trim((string)$text);	//cast en "string"
+		$options=trim((string)$options);//idem
 		if(empty($text))  {return "NULL";}
 		else{
-			//$option toujours en "string"
 			//Filtre le résultat
 			if(stristr($options,"editor")==false)					{$text=htmlspecialchars(strip_tags($text));}	//Input "text" : enlève les éventuelles balises html et convertit les caractères spéciaux ('€'->'&#128;')
 			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}				//Valeur flottante : remplace les virgules par des points
 			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}						//Url : ajoute "http://"
-			if(stristr($options,"sqlLike"))						{$text="%".$text."%";}							//Search : délimite par des "%"
+			if(stristr($options,"sqlLike"))							{$text="%".$text."%";}							//Search : délimite par des "%"
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
 			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}

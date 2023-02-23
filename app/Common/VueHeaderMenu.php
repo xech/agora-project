@@ -80,8 +80,8 @@
 						if(Ctrl::$curUser->messengerAvailable())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=".Ctrl::$curUser->_typeId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messengerSmall.png'></div><div>".Txt::trad("USER_messengerEdit")."</div></div>";}
 						////	DECONNEXION DE L'ESPACE
 						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
-						////	SWITCH D'ESPACE (APP MOBILE || HOST)
-						if(Req::isMobileApp() || Req::isHost())	{echo "<div class='menuLine sLink' onclick=\"if(confirm('".Txt::trad("connectSpaceSwitchConfirm",true)."')) redir('".Req::connectSpaceSwitchUrl()."')\"><div class='menuIcon'><img src='app/img/switch.png'></div><div>".Txt::trad("connectSpaceSwitch")."</div></div>";}
+						////	SWITCH D'ESPACE (APP MOBILE OU HOST)
+						if(Req::isMobileApp() || Req::isHost())		{echo "<div class='menuLine sLink' onclick=\"if(confirm('".Txt::trad("connectSpaceSwitchConfirm",true)."')) redir('".Req::connectSpaceSwitchUrl()."')\"><div class='menuIcon'><img src='app/img/switch.png'></div><div>".Txt::trad("connectSpaceSwitch")."</div></div>";}
 						////	PARAMETRAGE DE L'ESPACE COURANT
 						if(Ctrl::$curUser->isAdminSpace())			{echo "<hr><div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/settings.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,35)."</i></div></div>";}
 						////	 EDITION DES ESPACES DU SITE

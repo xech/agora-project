@@ -24,9 +24,9 @@ $(function(){
 			{notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
-	////	Affiche du "mapApiKeyDiv" si "mapTool"=="gmap"  &&   Affiche du "gSigninClientId" si "gSignin" est activé  ("trigger()" initie l'affichage)
+	////	Affiche du "mapApiKeyDiv" si "mapTool"=="gmap"  &&   Affiche du "gIdentityClientId" si "gIdentity" est activé  ("trigger()" initie l'affichage)
 	$("select[name='mapTool']").on("change",function(){  this.value=="gmap" ? $("#mapApiKeyDiv").fadeIn() : $("#mapApiKeyDiv").fadeOut();  }).trigger("change");
-	$("select[name='gSignin']").on("change",function(){  this.value=="1" ? $("#gSigninClientIdDiv").fadeIn() : $("#gSigninClientIdDiv").fadeOut();  }).trigger("change");
+	$("select[name='gIdentity']").on("change",function(){  this.value=="1" ? $("#gIdentityClientIdDiv").fadeIn() : $("#gIdentityClientIdDiv").fadeOut();  }).trigger("change");
 });
 
 /*******************************************************************************************
@@ -36,13 +36,13 @@ function formControl()
 {
 	//Contrôle le nom de l'espace
 	if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
-	//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gSigninClientId
+	//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gIdentityClientId
 	<?php if(Req::isHost()==false){ ?>
 	if(isNaN($("#limite_espace_disque").val()))   																		{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
 	if($("input[name='visioHost']").isEmpty()==false && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
 	if($("input[name='visioHostAlt']").isEmpty()==false && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
 	if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())								{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
-	if($("select[name='gSignin']").val()=="1" && $("input[name='gSigninClientId']").isEmpty())							{notify("<?= Txt::trad("AGORA_gSigninKeyInvalid") ?>");  return false;}	//Idem
+	if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())							{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>");  return false;}	//Idem
 	<?php } ?>
 	return confirm("<?= Txt::trad("AGORA_confirmModif") ?>");
 }
@@ -74,7 +74,7 @@ function formControl()
 			<div>Agora-Project / Omnispace version <?= Ctrl::$agora->version_agora ?></div>
 			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"date") ?></div>
 			<div><a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a></div>
-			<div>PHP <?= str_replace(strstr(phpversion(),"-"),"",phpversion()) ?> &nbsp;&nbsp; MariaDB / MySql <?= Db::dbVersion() ?></div>
+			<div>PHP <?= str_replace(strstr(phpversion(),"-"),"",phpversion()) ?> &nbsp;&nbsp; <?= Db::dbVersion() ?></div>
 			<?php if(!function_exists("mail")){ ?><div ><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
 			<?php if(!function_exists("ldap_connect")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_ldapDisabled") ?></div><?php } ?>
@@ -291,23 +291,23 @@ function formControl()
 			</div>
 			<?php } ?>
 			<!--GOOGLE SIGNIN ENABLED/DISABLED-->
-			<div class="objField" title="<?= Txt::trad("AGORA_gSigninInfo") ?>">
-				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gSignin") ?></div>
+			<div class="objField" title="<?= Txt::trad("AGORA_gIdentityInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentity") ?></div>
 				<div>
-					<select name="gSignin">
+					<select name="gIdentity">
 						<option value="0"><?= Txt::trad("no") ?></option>
-						<option value="1" <?= !empty(Ctrl::$agora->gSignin)?"selected":null ?>><?= Txt::trad("yes") ?></option>
+						<option value="1" <?= !empty(Ctrl::$agora->gIdentity)?"selected":null ?>><?= Txt::trad("yes") ?></option>
 					</select>
 				</div>
 			</div>
 			<!--GOOGLE SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-			<div class="objField" id="gSigninClientIdDiv" title="<?= Txt::trad("AGORA_gSigninClientIdInfo") ?>">
-				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gSigninClientId") ?></div>
-				<div><input type="text" name="gSigninClientId" value="<?= Ctrl::$agora->gSigninClientId ?>"></div>
+			<div class="objField" id="gIdentityClientIdDiv" title="<?= Txt::trad("AGORA_gIdentityClientIdInfo") ?>">
+				<div class="fieldLabel"><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentityClientId") ?></div>
+				<div><input type="text" name="gIdentityClientId" value="<?= Ctrl::$agora->gIdentityClientId ?>"></div>
 			</div>
 			<div class="objField" title="<?= Txt::trad("AGORA_gPeopleApiKeyInfo") ?>">
-				<div class="fieldLabel"><img src="app/img/gSignin.png"><?= Txt::trad("AGORA_gPeopleApiKey") ?></div>
+				<div class="fieldLabel"><img src="app/img/google.png"><?= Txt::trad("AGORA_gPeopleApiKey") ?></div>
 				<div><input type="text" name="gPeopleApiKey" value="<?= Ctrl::$agora->gPeopleApiKey ?>"></div>
 			</div>
 			<?php } ?>

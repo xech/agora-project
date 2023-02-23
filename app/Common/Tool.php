@@ -20,9 +20,9 @@ class Tool
 	/*******************************************************************************************
 	 * ENVOI D'UN MAIL
 	 * ***************
-	 * $options des mails (utiliser "in_array()" pour les tests)
+	 * $options des mails ("in_array()" pour les tests)
 	 * -"hideRecipients":	Masque les destinataires du mail : ajoute tout le monde en copie caché via "AddBCC()"
-	 * -"hideUserLabel":	Masque le label de l'user/expéditeur ("Host::notifMail()" : notif automatique)
+	 * -"addReplyTo":		Ajoute l'email de l'expériteur dans le "replyTo"
 	 * -"receptionNotif":	Demande un accusé de réception pour l'user/expéditeur
 	 * -"noFooter": 		Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
 	 * -"noNotify": 		Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
@@ -47,10 +47,9 @@ class Tool
 		$mail=new PHPMailer();
 
 		////	Envoi l'email via PHPMailer
-		try {
+		try{
+			////	Parametrage CHARSET / DKIM / SMTP
 			$mail->CharSet="UTF-8";
-
-			////	Parametrage DKIM / SMTP
 			if(defined("DKIM_domain") && defined("DKIM_private") && defined("DKIM_selector"))   {$mail->DKIM_domain=DKIM_domain;   $mail->DKIM_private=DKIM_private;   $mail->DKIM_selector=DKIM_selector;}
 			if(Req::isDevServer() && is_file("../PARAMS/smtp.inc.php"))  {require_once "../PARAMS/smtp.inc.php";}//Config spécifique (Ctrl::$agora->sendmailFrom & co)
 			if(!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)){
@@ -64,50 +63,57 @@ class Tool
 			}
 
 			////	Expediteur
-			$fromDomain=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Se base sur le Domaine du serveur (pas sur l'url et le $_SERVER['HTTP_HOST'])
-			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "postmaster@".$fromDomain;		//Email du paramétrage général OU du domaine courant (ex: "postmaster@mondomaine.net")
-			$fromLabel=(!empty(Ctrl::$agora->name))  ?  Ctrl::$agora->name  :  $fromDomain;										//Nom de l'espace OU Domaine courant
-			$mail->SetFrom($fromMail, $fromLabel);																				//"SetFrom" : utiliser un email correspondant au domaine courant ou un SMTP spécifique (evite la spambox)
-			$fromConnectedUser=(isset(Ctrl::$curUser) && method_exists(Ctrl::$curUser,"isUser") && Ctrl::$curUser->isUser());	//Vérif que l'email est envoyé depuis un user connecté
-			//Ajoute si besoin le libellé de l'user connecté
-			if(in_array("hideUserLabel",$options)==false && $fromConnectedUser){
-				$mail->SetFrom($fromMail, $fromLabel." - ".Ctrl::$curUser->getLabel());											//Ajoute le nom de l'user dans le $fromLabel (ex: "Mon espace - BOB SMITH <bob@domaine.tld>")
-				if(!empty(Ctrl::$curUser->mail)){																				//Verif si l'user courant a bien spécifié un email
-					$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());										//Ajoute son email à "ReplyTo" ?
-					if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}						//Demande une confirmation de lecture à l'user courant?
-				}
+			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
+			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "ne_pas_repondre@".$serverName;	//Email du paramétrage général OU du domaine courant (ex: "ne_pas_repondre@mondomaine.net")
+			$mail->SetFrom($fromMail, ucfirst($serverName));																	//"SetFrom" fixe (cf. score des antispams)
+			//Controles de base
+			if(in_array("noTimeControl",$options)==false && (time()-@$_SESSION["sendMailTime"])<10)	{echo "please wait 10 sec."; exit;}	//Temps minimum entre chaque mail
+			else																					{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
+			if(empty($_SESSION["sendMailCounter"][date("Y-m-d-H")]))	{$_SESSION["sendMailCounter"][date("Y-m-d-H")]=1;}		//Init le compteur de nb max de mail/heure
+			elseif($_SESSION["sendMailCounter"][date("Y-m-d-H")]>=30)	{echo "30 mails/h max"; exit;}							//- quota dépassé
+			else														{$_SESSION["sendMailCounter"][date("Y-m-d-H")]++;}		//- incrémente le compteur
+			if(Req::isHost())  {Host::sendMailControl($message);}																//Controle des spambots
+			$fromUserWithMail=(isset(Ctrl::$curUser) && Ctrl::$curUser->isUser() && !empty(Ctrl::$curUser->mail));				//Verif que l'expediteur est un user authentifié avec un email
+			//Ajoute si besoin l'email de l'user en replyTo ou pour une demande de notif de lecture
+			if($fromUserWithMail==true){
+				if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute si besoin un "ReplyTo" avec son email (tjs en option: cf. score des antispams)
+				if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}							//Ajoute une demande de notification de lecture (envoyé à l'expéditeur du présent mail)
 			}
 
 			////	Destinataires (idUser au format text/array)
-			$mailsToNotif=null;																																//Prépare la notification finale
-			if(in_array("hideRecipients",$options) && $fromConnectedUser==true && !empty(Ctrl::$curUser->mail))  {$mail->AddAddress(Ctrl::$curUser->mail);}	//Destinataires masqués: ajoute l'expéditeur en email principal (evite la spambox)
-			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}																			//Liste des destinataires au format "array"
-			$mailsTo=array_unique($mailsTo);																												//Elimine les éventuels doublons
+			$mailsToNotif=null;																									//Prépare la notification finale via "notify()"
+			if($fromUserWithMail==true && in_array("hideRecipients",$options))  {$mail->AddAddress(Ctrl::$curUser->mail);}		//Destinataires masqués: ajoute l'expéditeur en email principal (tjs en option: cf. score des antispams)
+			if(is_string($mailsTo))  {$mailsTo=explode(",",trim($mailsTo,","));}												//Liste des destinataires au format "array"
+			foreach((array)Req::param("specificMails") as $tmpMail){  if(Txt::isMail($tmpMail)) {$mailsTo[]=$tmpMail;}  }		//Ajoute des emails spécifiques/complémentaires
+			$mailsTo=array_unique($mailsTo);																					//Elimine les éventuels doublons
 			//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
 			foreach($mailsTo as $tmpDest){
-				if(is_numeric($tmpDest) && method_exists(Ctrl::$curUser,"isUser"))	{$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}
-				if(!empty($tmpDest)){
-					$mailsToNotif.=", ".$tmpDest;
-					if(in_array("hideRecipients",$options))	{$mail->AddBCC($tmpDest);}
-					else									{$mail->AddAddress($tmpDest);}
+				if(is_numeric($tmpDest) && isset(Ctrl::$curUser))  {$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}				//Récupère l'email d'un user
+				if(!empty($tmpDest)){																							//Email existe bien
+					$tmpDest=filter_var($tmpDest, FILTER_SANITIZE_EMAIL);														//Enlève les espace et autre caractères (indispensable!)
+					if(PHPMailer::validateAddress($tmpDest)){																	//Email valide
+						$mailsToNotif.=", ".$tmpDest;																			//Ajoute l'email pour les notifs
+						if(in_array("hideRecipients",$options))	{$mail->AddBCC($tmpDest);}										//Ajoute l'email en copy caché
+						else									{$mail->AddAddress($tmpDest);}									//Ajoute l'email en clair
+					}
 				}
 			}
 
 			////	Sujet & message
-			$mail->Subject=$subject;
-			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){
-				$fromTheSpace=ucfirst(Ctrl::$agora->name);																										//Nom de l'espace principal
-				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)	{$fromTheSpace.=" &raquo; ".Ctrl::$curSpace->name;}				//Ajoute si besoin le nom du sous-espace ("&raquo;"=">>")
-				$messageSendBy=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//"Envoyé par boby SMITH"
-				$message.="<br><br>".$messageSendBy.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getCurUrl()."\" target='_blank'>".$fromTheSpace."</a>";	//"depuis l'espace Mon espace"
+			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".Ctrl::$agora->name  :  ucfirst($subject);									//"Sujet de mon email - Mon espace"
+			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){													//Footer du message :
+				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																										//Label de l'espace
+				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}			//Ajoute le nom du sous-espace (">> sous-espace")
+				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;								//"Envoyé par boby SMITH"...
+				$message.="<br><br>".$curUserLabel.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getCurUrl()."\" target='_blank'>".$curSpaceLabel."</a>";	//"Depuis <a>mon-espace</a>"
 			}
-			$mail->MsgHTML($message);
+			$mail->msgHTML($message);
 
-			////	Logo du footer en fin de mail (signe avec un logo spécifique ou le logo par défaut)
+			////	Logo du footer en fin de mail : logo spécifique ou par défaut (toujours mettre un "alt", même vide : cf. score des antispams)
 			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoLabel.png";
 			if(in_array("noFooter",$options)==false && is_file($logoFooterPath)){
 				$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
-				$mail->MsgHTML($message."<br><br><img src='cid:logoFooterId' style='max-height:100px'>");
+				$mail->msgHTML($message."<br><br><img src='cid:logoFooterId' style='max-height:100px' alt=''>");
 			}
 
 			////	Fichiers joints à ajouter
@@ -127,18 +133,17 @@ class Tool
 			}
 
 			////	Envoi du mail + rapport d'envoi si demandé
-			$isSendMail=$mail->Send();
+			$sendReturn=$mail->Send();
 			if(in_array("noNotify",$options)==false){																										//Affiche une notification si l'email a été envoyé ou pas 
 				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");									//Affiche si besoin "L'email de notification a bien été envoyé"
-				if($isSendMail==true)		{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}	//Mail correctement envoyé
-				elseif(count($mailsTo)>=2)	{Ctrl::notify("MAIL_notSendEverybody");}																		//Mail non envoyé à tous les destinataires
-				else						{Ctrl::notify("MAIL_notSend");}																					//Mail non envoyé
+				if($sendReturn==true)			{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
+				if(!empty($mail->ErrorInfo))	{Ctrl::notify("Mailer Error :<br>".Txt::clean($mail->ErrorInfo));}											//Mail envoyé avec des erreurs
 			}
-			return $isSendMail;
+			return $sendReturn;//tjs renvoyer
 		}
-		////	Sinon envoi une exception PHPMailer
-		catch (Exception $e){
-			echo Txt::trad("MAIL_notSend").". PHPMailer Error : ".$mail->ErrorInfo;
+		////	Exception PHPMailer
+		catch (Exception $error){
+			Ctrl::notify(Txt::trad("MAIL_notSend")."<br><br>Mailer Error :<br>".Txt::clean($mail->ErrorInfo));
 		}
 	}
 

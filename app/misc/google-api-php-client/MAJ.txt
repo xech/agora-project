@@ -1,1 +1,5 @@
-Supprimer "\vendor\google\apiclient-services\" => garder uniquement "\vendor\google\Auth\"
+VERSION 2.13.0
+##############
+
+- Récupérer la dernière release sur https://github.com/googleapis/google-api-php-client/releases
+- Supprimer le contenu du dossier  "\vendor\google\apiclient-services\src\*"  :  sauf les dossier  "IdentityToolkit"  et  "Oauth2"  !

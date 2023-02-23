@@ -11,9 +11,9 @@ $(function(){
 	gapi.load("client:auth2", function(){
 		gapi.client.init({
 			apiKey:"<?= Ctrl::$agora->gPeopleApiKey ?>",//"gPeopleApiKey" de l'API "People
-			clientId:"<?= Ctrl::$agora->gSigninClientId ?>",//"gSigninClientId" du Google Projet
-			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"],//Spécification obligatoires..
-			scope:"https://www.googleapis.com/auth/contacts.readonly"//Etendue des données à récupérer
+			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",//"gIdentityClientId" du Google Projet
+			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"],//Spécification obligatoires
+			scope:"https://www.googleapis.com/auth/contacts.readonly"//Type de données à récupérer
 		}).then(function(){
 			if(gapi.auth2.getAuthInstance().isSignedIn.get())  {gapi.auth2.getAuthInstance().signOut();}	//On se déconnecte par défaut, car si on est déjà connecté, le "listen()" suivant ne se lance pas
 			$("#gPeopleImportButton button").click(function(){ gapi.auth2.getAuthInstance().signIn(); });	//Clique sur "Importer les contacts" : lance en premier l'authentification via "signIn()"
@@ -28,7 +28,7 @@ $(function(){
 		if(gapi.auth2.getAuthInstance().isSignedIn.get())
 		{
 			//Récupère et affiche chaque contacts : "pageSize" = nb maximum d'users à afficher, "sortOrder" = Tri des résultats, "personFields" = champs à récupérer
-			gapi.client.people.people.connections.list({resourceName:"people/me", pageSize:500, sortOrder:"FIRST_NAME_ASCENDING", personFields:"names,emailAddresses"}).then(
+			gapi.client.people.people.connections.list({resourceName:"people/me", pageSize:100, sortOrder:"FIRST_NAME_ASCENDING", personFields:"names,emailAddresses"}).then(
 				function(response){
 					//Affiche les contacts
 					if(response.result.connections && response.result.connections.length>0)
@@ -46,7 +46,7 @@ $(function(){
 								var familyNameTmp=	person.names[0].familyName;
 								if(typeof familyNameTmp=="undefined")  {familyNameTmp="";}
 								mailListToControl.push(mailTmp);
-								contactInputs+="<div class='contactLine' title=\""+mailTmp+"\" data-mail=\""+mailTmp+"\"><input type='checkbox' name='gPeopleContacts[]' value=\""+givenNameTmp+"@@"+familyNameTmp+"@@"+mailTmp+"\" id='contact"+cpt+"'> &nbsp; <label for='contact"+cpt+"'>"+givenNameTmp+" "+familyNameTmp+"</label></div>";
+								contactInputs+='<div class="contactLine" title="'+mailTmp+'" data-mail="'+mailTmp+'"><input type="checkbox" name="gPeopleContacts[]" value="'+givenNameTmp+'@@'+familyNameTmp+'@@'+mailTmp+'" id="contact'+cpt+'"> &nbsp; <label for="contact'+cpt+'">'+givenNameTmp+' '+familyNameTmp+'</label></div>';
 							}
 						}
 						//Affiche le formulaire avec chaque contact (inputs) et Masque l'autre formulaires a co
@@ -136,7 +136,7 @@ $(function(){
 	<?php if(Ctrl::$agora->gPeopleEnabled()){ ?>
 	<div id="gPeopleImportButton">
 		<div class="orLabel"><div><hr></div><div><?= Txt::trad("or") ?></div><div><hr></div></div>
-		<button><img src="app/img/gSignin.png"> <?= Txt::trad("USER_gPeopleImport") ?></button>
+		<button><img src="app/img/google.png"> <?= Txt::trad("USER_gPeopleImport") ?></button>
 	</div>
 	<form id="gPeopleForm">
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>

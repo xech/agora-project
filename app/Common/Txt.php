@@ -24,13 +24,15 @@ class Txt
 		//Charge les trads si besoin (et garde en session)
 		if(empty(self::$trad))
 		{
-			//Trad demandée (param)  /  Trad du paramétrage de l'user  /  Trad du paramétrage de l'espace  /  Trad en fonction du navigateur (ctrl=install || agora-project.net)
-			if(Req::isParam("curTrad"))																					{$_SESSION["curTrad"]=Req::param("curTrad");}
-			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))												{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}
-			elseif(!empty(Ctrl::$agora->lang))																			{$_SESSION["curTrad"]=Ctrl::$agora->lang;}
-			elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^en-US/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="english";}
-			elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^es-ES/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="espanol";}
-			else																										{$_SESSION["curTrad"]="francais";}
+			//Sélectionne la traduction
+			if(Req::isParam("curTrad"))																						{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
+			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))													{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad de l'user
+			elseif(!empty(Ctrl::$agora->lang))																				{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad de l'espace
+			elseif(empty($_SESSION["curTrad"])){																															//Trad par défaut en fonction du browser
+				if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^en-US/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))		{$_SESSION["curTrad"]="english";}
+				elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^es-ES/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="espanol";}
+				elseif(empty($_SESSION["curTrad"]))																			{$_SESSION["curTrad"]="francais";}
+			}
 			//Charge les trads (classe & methode)
 			require_once "app/trad/".$_SESSION["curTrad"].".php";
 			Trad::loadTradsLang();
@@ -149,7 +151,7 @@ class Txt
 	public static function IntlDateFormatterObj()
 	{
 		if(static::$IntlDateFormatter===null){
-			if(extension_loaded("intl"))	{static::$IntlDateFormatter=new IntlDateFormatter(Txt::trad("DATELANG"), IntlDateFormatter::FULL, IntlDateFormatter::FULL, Ctrl::$curTimezone, IntlDateFormatter::GREGORIAN);;}
+			if(extension_loaded("intl"))	{static::$IntlDateFormatter=new IntlDateFormatter(Txt::trad("DATELANG"), IntlDateFormatter::SHORT, IntlDateFormatter::SHORT);}
 			else 							{static::$IntlDateFormatter=false;}//L'extention PHP "intl" n'est pas instanciée (cf. perso.free & Co)
 		}
 		return static::$IntlDateFormatter;
@@ -160,14 +162,18 @@ class Txt
 	 *******************************************************************************************/
 	public static function formatime($pattern, $timestamp)
 	{
-		$dateFormat=self::IntlDateFormatterObj();		//Récupère l'objet "IntlDateFormatter"
-		if(is_object($dateFormat))						//Vérif si l'objet est instancié
-		{
-			$dateFormat->setPattern($pattern);			//Initialise le format/pattern de sortie
-			$dateLabel=$dateFormat->format($timestamp);	//Formate la date
-			return static::utf8Encode($dateLabel);		//Renvoie le résultat en utf-8
+		//Récupère l'objet "IntlDateFormatter" && Vérif si l'objet est instancié
+		$dateFormat=self::IntlDateFormatterObj();
+		if(is_object($dateFormat)){
+			$dateFormat->setPattern($pattern);				//Init le format/pattern de sortie
+			$dateLabel=$dateFormat->format($timestamp);		//Formate la date
+			return static::utf8Encode($dateLabel);			//Renvoie le résultat en utf-8
 		}
-		else{return date("d/m/Y H:i",$timestamp);}		//Sinon renvoie le format basique
+		//Sinon renvoie au format "date()". Remplace le pattern utilisé par "IntlDateFormatter()" (https://www.php.net/manual/fr/datetime.format.php)
+		else{																							
+			$pattern=str_replace(["yyyy","MMMM","MMM","cccc","ccc"], ["Y","F","M","l","D"], $pattern);
+			return date($pattern,$timestamp);
+		}
 	}
 
 	/***************************************************************************************************************************************************************************
@@ -201,10 +207,11 @@ class Txt
 				if($format=="normal" && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (pas dans le $pattern !)
 				elseif($format=="normal" || $format=="dateFull")				{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 mars"
 				elseif($format=="mini" && $diffDays==true)						{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
-				//Formatage année/heure/minute/date
-				if((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y")))  {$pattern.=" Y";}		//Année si diff. de l'année courante	-> Ex: "2050"
-				if(!preg_match("/date/i",$format))																					{$pattern.=" H:mm";}	//Heure sur 24h	(pas "date"/"dateFull)	-> Ex: "9:05" ou "23:23"
-				if($format=="date")																									{$pattern="dd/MM/Y";}	//Date au format basique				-> Ex: "08/03/2050"
+				//Formatage année (si différente de l'année courante)
+				if($format!="mini" &&  ((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y"))))  {$pattern.=" Y";}
+				//Formatage heure:minute || date
+				if(preg_match("/date/i",$format)==false)	{$pattern.=" H:mm";}	//Heure sur 24h	(pas "date"/"dateFull)	-> Ex: "9:05" ou "23:23"
+				elseif($format=="date")						{$pattern="dd/MM/Y";}	//Date au format basique				-> Ex: "08/03/2050"
 
 				//Applique le formatage via la class "IntlDateFormatter()" avec la "lang" et "timezone" locale
 				$dateFormat->setPattern($pattern);
@@ -220,9 +227,9 @@ class Txt
 				//Renvoie le résultat en utf-8
 				return static::utf8Encode($dateLabel);
 			}
-			//Sinon renvoie le format basique
+			//Sinon renvoie au format "date()"
 			else{
-				return (preg_match("/date/i",$format))  ?  date("d/m/Y",$timeBegin)  :  date("d/m/Y H:i",$timeBegin);
+				return (preg_match("/date/i",$format))  ?  date("d/m/y",$timeBegin)  :  date("d/m/y H:i",$timeBegin);
 			}
 		}
 	}
