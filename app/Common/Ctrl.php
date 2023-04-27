@@ -280,12 +280,12 @@ abstract class Ctrl
 		{
 			////	CONNEXION VIA FORMULAIRE
 			if($connectViaForm==true){
-				//// Infos de l'user
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
 				$passwordClear=Req::param("connectPassword");
+				$passwordHost=(Req::isHost() && Host::passwordHost($passwordClear));
 				//// Verif si le password correspond à un hash Bcrypt, Sha1 (old) ou Host (specific) : enregistre alors le hash Bcrypt du password (le salt est généré via "password_hash()")
-				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || (Req::isHost() && Host::passwordHost($passwordClear)))){
-					Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));
+				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || $passwordHost==true)){
+					if($passwordHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}
 					$userAuthentified=true;
 				}
 			}
@@ -303,7 +303,6 @@ abstract class Ctrl
 
 			////	USER AUTHENTIFIE
 			if($userAuthentified==true){
-
 				//// Charge l'user courant (toujours en 1er)
 				self::$curUser=self::getObj("user",(int)$tmpUser["_id"]);
 				$_SESSION=["_idUser"=>self::$curUser->_id];
@@ -385,26 +384,21 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function resetUserAuthToken($mode)
 	{
-		//// S'il existe un cookie "userAuthToken" : on supprime le token en bdd PUIS le cookie 
-		if(!empty($_COOKIE["userAuthToken"])){					
-			$userAuthToken=explode("@@@",$_COOKIE["userAuthToken"]);														
+		//// S'il existe un cookie "userAuthToken" : supprime le token en bdd ..puis le cookie 
+		if(!empty($_COOKIE["userAuthToken"])){
+			$userAuthToken=explode("@@@",$_COOKIE["userAuthToken"]);
 			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($userAuthToken[1]));
 			setcookie("userAuthToken", "", -1);
 		}
-		//// Créé un nouveau token au format Bcrypt : enregistre le token en bdd et le cookie (10 ans)
+		//// Créé un nouveau token au format Bcrypt : enregistre le token en bdd ..puis en cookie (un an)
 		if($mode=="newToken"){
 			$newUserAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);
 			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".self::$curUser->_id.", userAuthToken=".Db::format($newUserAuthToken).", dateCrea=NOW()");
-			setcookie("userAuthToken", self::$curUser->_id."@@@".$newUserAuthToken, (time()+315360000));
+			setcookie("userAuthToken", self::$curUser->_id."@@@".$newUserAuthToken, (time()+31536000));
 		}
 		//// Supprime les cookies de l'ancienne méthode et les tokens obsolètes (+ d'un an)
 		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG",null,-1);  setcookie("AGORAP_PASS",null,-1);}
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-31536000));
-/*TEST CONNEXION AUTO - OLD METHOD
-setcookie("AGORAP_LOG", "admin", (time()+315360000));
-setcookie("AGORAP_PASS", "SHA1-PASSDORDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", (time()+315360000));
-setcookie("authToken",null,-1);
-*/
 	}
 
 	/*******************************************************************************************

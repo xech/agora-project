@@ -41,7 +41,7 @@ class CtrlOffline extends Ctrl
 					$vDatas["resetPasswordIdOk"]=($tmpUser->resetPasswordId()==Req::param("resetPasswordId"));
 					//Enregistre le nouveau password ("resetPasswordId" OK)					
 					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
-						$sqlNewPassword=MdlUser::passwordSha1(Req::param("newPassword"));
+						$sqlNewPassword=password_hash(Req::param("newPassword"),PASSWORD_DEFAULT);
 						Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
 						Ctrl::notify("modifRecorded","success");
 					}
@@ -183,9 +183,8 @@ class CtrlOffline extends Ctrl
 			{
 				////	CHMOD DE "PATH_DATAS" & MODIF DU FICHIER DE CONFIG
 				File::setChmod(PATH_DATAS);
-				$AGORA_SALT=Txt::uniqId(8);
 				$spaceDiskLimit=File::getBytesSize(Req::param("spaceDiskLimit")."go");
-				File::updateConfigFile(["AGORA_SALT"=>$AGORA_SALT, "db_host"=>Req::param("db_host"), "db_login"=>Req::param("db_login"), "db_password"=>Req::param("db_password"), "db_name"=>Req::param("db_name"), "limite_nb_users"=>"10000", "limite_espace_disque"=>$spaceDiskLimit]);
+				File::updateConfigFile(["db_host"=>Req::param("db_host"), "db_login"=>Req::param("db_login"), "db_password"=>Req::param("db_password"), "db_name"=>Req::param("db_name"), "limite_nb_users"=>"10000", "limite_espace_disque"=>$spaceDiskLimit]);
 
 				////	CREE LA BASE DE DONNEES (AVEC CONTROLES D'ACCES)
 				if($installDbControl=="dbToCreate"){
@@ -210,7 +209,7 @@ class CtrlOffline extends Ctrl
 				$spaceLang=Req::param("lang");
 				$spacePublic=(Req::param("spacePublic")==1)  ?  1  :  "NULL";
 				$adminLogin=Req::param("adminLogin");
-				$adminPassword=MdlUser::passwordSha1(Req::param("adminPassword"),$AGORA_SALT);
+				$adminPassword=password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT);
 				$adminName=Req::param("adminName");
 				$adminFirstName=Req::param("adminFirstName");
 				$adminMail=Req::param("adminMail");

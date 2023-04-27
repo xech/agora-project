@@ -459,7 +459,7 @@ class Trad extends Txt
 
 			////	Formulaire d'installation
 			"INSTALL_dbConnect"=>"Connexion à la base de données",
-			"INSTALL_dbHost"=>"Nom du serveur MariaDB ou MySql (Hostname)",
+			"INSTALL_dbHost"=>"Serveur MariaDB ou MySql (Hostname)",
 			"INSTALL_dbName"=>"Nom de la Base de Données",
 			"INSTALL_dbLogin"=>"Nom d'utilisateur",
 			"INSTALL_adminAgora"=>"Administrateur de l'Agora",

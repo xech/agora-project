@@ -272,7 +272,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : AJOUT/MODIF D'UTILISATEUR
 	 *******************************************************************************************/
-	public function createUpdate($sqlProperties, $login=null, $password=null, $spaceId=null)
+	public function createUpdate($sqlProperties, $login=null, $passwordClear=null, $spaceId=null)
 	{
 		////	Controles : quota atteint ? Login existe déjà ?
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
@@ -280,7 +280,7 @@ class MdlUser extends MdlPerson
 		////	Ajoute le login, le password? si l'agenda perso est désactivé?
 		$sqlProperties=trim(trim($sqlProperties),",");
 		$sqlProperties.=", `login`=".Db::format($login);
-		if(!empty($password))  {$sqlProperties.=", `password`=".Db::format(self::passwordSha1($password));}
+		if(!empty($passwordClear))  {$sqlProperties.=", `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT));}
 		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
 		$reloadedObj=parent::createUpdate($sqlProperties);
 		if($reloadedObj->isNewlyCreated()){
@@ -298,9 +298,9 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
 	 *******************************************************************************************/
-	public static function passwordSha1($password)
+	public static function passwordSha1($passwordClear)
 	{
-		return sha1(self::passwordSalt().sha1($password));
+		return sha1(self::passwordSalt().sha1($passwordClear));
 	}
 
 	/*******************************************************************************************
