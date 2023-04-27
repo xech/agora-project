@@ -116,7 +116,7 @@ class MdlCalendar extends MdlObject
 	/*******************************************************************************************
 	 * EVENEMENTS CONFIRMÉS AFFECTÉS A L'AGENDA
 	 *******************************************************************************************/
-	public function evtList($periodTimeBegin=null, $periodTimeEnd=null, $accessRightMini=0.5, $orderByHourMinute=true, $pluginParams=null)
+	public function evtList($periodTimeBegin=null, $periodTimeEnd=null, $accessRightMin=0.5, $orderByHourMinute=true, $pluginParams=null)
 	{
 		//// Evénements sur un période donnée (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)  +  Evénements périodiques 
 		$sqlPeriod=null;
@@ -132,7 +132,7 @@ class MdlCalendar extends MdlObject
 		//// renvoie les evts en fonction du droit d'accès minimum 
 		$eventsReturned=[];
 		foreach($eventsList as $evtTmp){
-			if($evtTmp->accessRight()>=$accessRightMini)  {$eventsReturned[]=$evtTmp;}
+			if($evtTmp->accessRight()>=$accessRightMin)  {$eventsReturned[]=$evtTmp;}
 		}
 		//// Renvoie les evenements
 		return $eventsReturned;

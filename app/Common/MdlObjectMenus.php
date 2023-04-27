@@ -56,10 +56,10 @@ trait MdlObjectMenus
 		{
 			////	RETOURNE "FALSE" SI ON EST PAS PROPRIO DE L'OBJET NI ADMIN D'ESPACE
 			if($this->isAutor()==false && Ctrl::$curUser->isAdminSpace()==false)  {return false;}
-			////	MODIFIER ELEMENT  &  MODIF MESSENGER
+			////	MODIFIER L'OBJET  &  MODIF MESSENGER
 			if($this->editRight()){
 				$vDatas["editLabel"]=Txt::trad("USER_profilEdit");
-				$vDatas["editMessengerObjUrl"]="?ctrl=user&action=UserEditMessenger&typeId=".$this->_typeId;
+				$vDatas["userEditMessengerUrl"]="?ctrl=user&action=userEditMessenger&typeId=".$this->_typeId;
 			}
 			////	SUPPRESSION DE L'ESPACE COURANT
 			if($this->deleteFromCurSpaceRight()){
@@ -83,15 +83,14 @@ trait MdlObjectMenus
 		////	OBJET LAMBDA
 		else
 		{
-			////	MODIFIER ELEMENT  &  LOGS/HISTORIQUE  &  CHANGER DE DOSSIER (SI Y EN A..)
+			////	MODIFIER L'OBJET  &  LOGS/HISTORIQUE  &  DEPLACER L'OBJET DANS UN AUTRE DOSSIER (si ya pas que le dossier racine)
 			if($this->editRight()){
 				$vDatas["editLabel"]=($this->hasAccessRight())  ?  Txt::trad("modifyAndAccesRight")  :  Txt::trad("modify");
 				$vDatas["logUrl"]="?ctrl=object&action=logs&typeId=".$this->_typeId;
-				if(!empty(Ctrl::$curContainerRoot) && count(Ctrl::$curContainerRoot->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
+				if(!empty(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			}
 			////	COPIER L'ADRESSE/URL D'ACCES
-			if(Ctrl::$curUser->isUser())
-				{$vDatas["getUrlExternal"]=$this->getUrlExternal();}
+			if(Ctrl::$curUser->isUser())   {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
 			////	SUPPRIMER
 			if($this->deleteRight())
 			{
@@ -280,8 +279,8 @@ trait MdlObjectMenus
 	{
 		if(Req::isMobile()==false){
 			Ctrl::$isMenuSelectObjects=true;
-			$vDatas["curContainerEditContentRight"]=(!empty(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight());
-			$vDatas["folderMoveOption"]=($vDatas["curContainerEditContentRight"]==true && count(Ctrl::$curContainerRoot->folderTree())>1);
+			$vDatas["curContainerEditContentRight"]=(!empty(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight());											//Droit de modifier le contenu (ex: fichiers du dossier)
+			$vDatas["folderMoveOption"]=(!empty(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1 && $vDatas["curContainerEditContentRight"]==true);	//Droit de déplacer le contenu (si ya pas que le dossier racine)
 			return Ctrl::getVue(Req::commonPath."VueObjMenuSelection.php",$vDatas);
 		}
 	}

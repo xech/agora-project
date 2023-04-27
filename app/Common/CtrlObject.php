@@ -83,14 +83,12 @@ class CtrlObject extends Ctrl
 	 *******************************************************************************************/
 	public static function folderTreeMenu($context="nav")
 	{
-		//Arborescence du dossier racine
-		$vDatas["rootFolderTree"]=Ctrl::$curContainerRoot->folderTree();
-		//Affiche l'arborescence s'il y a au moins un dossier (en + du dossier racine)
-		if(count($vDatas["rootFolderTree"])>1){
+		//Affiche l'arborescence (si ya pas que le dossier racine)
+		if(count(Ctrl::$curRootFolder->folderTree())>1){
 			$vDatas["context"]=$context;
 			$vueFolderTree=Req::commonPath."VueObjFolderTree.php";
-			if($context=="nav")	{return Ctrl::getVue($vueFolderTree,$vDatas);}//"nav" -> redirige vers un dossier
-			else				{static::displayPage($vueFolderTree,$vDatas);}//"move" -> selectionne un dossier pour y déplacer un element
+			if($context=="nav")	{return Ctrl::getVue($vueFolderTree,$vDatas);}//"nav"	: renvoie le menu de navigation de l'arborescence de dossiers
+			else				{static::displayPage($vueFolderTree,$vDatas);}//"move"	: affiche uniquement le menu de selection d'un dossier pour y déplacer un element
 		}
 	}
 

@@ -126,8 +126,8 @@ class CtrlOffline extends Ctrl
 	 *******************************************************************************************/
 	public static function actionPublicSpaceAccess()
 	{
-		$password=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpace")." AND BINARY `password`=".Db::param("password"));//"BINARY"=>case sensitive
-		echo empty($password) ? "false" : "true";
+		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("publicSpace_idSpaceAccess")." AND BINARY `password`=".Db::param("publicSpacePassword"));//"BINARY"=>case sensitive
+		echo empty($passwordValid) ? "false" : "true";
 	}
 
 	/*******************************************************************************************
@@ -160,16 +160,22 @@ class CtrlOffline extends Ctrl
 	 *******************************************************************************************/
 	public static function actionInstall()
 	{
-		////	Init  & Controle de version PHP  & Verif si l'application est déjà installée
+		////	Init
 		static::$isMainPage=true;
+		$dbFile="app/ModOffline/db.sql";
+
+		////	Controle de version PHP  && Verif si l'application est déjà installée  &&  Vérif si le fichier "db.sql" est toujours disponible
 		Req::verifPhpVersion();
-		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && self::installDbControl(db_host,db_login,db_password,db_name)=="dbErrorAppInstalled")  {self::noAccessExit(Txt::trad("INSTALL_dbErrorAppInstalled"));}
+		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && self::installDbControl(db_host,db_login,db_password,db_name)=="dbErrorAlreadyInstalled")
+			{self::noAccessExit(Txt::trad("INSTALL_dbErrorAlreadyInstalled"));}
+		elseif(is_file($dbFile)==false)
+			{self::noAccessExit(Txt::trad("INSTALL_dbErrorNoSqlFile"));}
 
 		////	Affiche/Valide le formulaire
 		if(Req::isParam("formValidate")==false)  {static::displayPage("VueInstall.php");}
 		else
 		{
-			////	CONTROLES DE BASE
+			////	CONTROLES LES PARAMS D'ACCES A LA BDD
 			$installDbControl=self::installDbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
 			if($installDbControl!="dbAvailable" && $installDbControl!="dbToCreate")  {$result["notifError"]=Txt::trad("INSTALL_".$installDbControl);}
 			////	CONTROLE OK : INSTALL
@@ -186,15 +192,16 @@ class CtrlOffline extends Ctrl
 					$objPDO=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
 					$objPDO->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
 				}
-				//Se connecte au sgbd & Importe la Bdd!
+				//Se connecte au sgbd && Importe la Bdd
 				$objPDO=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
-				$dbFile="app/ModOffline/db.sql";
 				$handle=fopen($dbFile,"r");
 				foreach(explode(";",fread($handle,filesize($dbFile))) as $tmpQuery){
 					if(strlen($tmpQuery)>5)  {$objPDO->query($tmpQuery);}
 				}
+				//Supprime le fichier Sql après l'import
+				File::rm($dbFile);
 
-				////	INITIALISE LES TABLES DE LA BDD  (pas de "Db::format()", car instancie un "new PDO()")
+				////	INITIALISE LES TABLES DE LA BDD
 				//Init les données
 				$spaceName=Req::param("spaceName");
 				$spaceDescription=Txt::trad("INSTALL_spaceDescription");
@@ -209,10 +216,10 @@ class CtrlOffline extends Ctrl
 				$adminMail=Req::param("adminMail");
 				$newsDescription=Txt::trad("INSTALL_dataDashboardNews");
 
-/***************************************************************************************************************************/
+/**************************!!!!		ATTENTION : TOUJOURS UTILISER "$objPDO->query()"	!!!!********************/
 				//Paramétrage général
-				$objPDO->query("UPDATE ap_agora SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescription).", timezone=".$objPDO->quote($spaceTimeZone).", lang=".$objPDO->quote($spaceLang).", dateUpdateDb=NOW(), version_agora='".VERSION_AGORA."'");
-				//Paramétrage du premier espace
+				$objPDO->query("UPDATE ap_agora SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescription).", version_agora=".$objPDO->quote(Req::appVersion()).", timezone=".$objPDO->quote($spaceTimeZone).", lang=".$objPDO->quote($spaceLang).", dateUpdateDb=NOW()");
+				//Paramétrage du 1er espace
 				$objPDO->query("UPDATE ap_space SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescriptionBis).", public=".$spacePublic." WHERE _id=1");
 				//User principal (admin général)
 				$objPDO->query("UPDATE ap_user SET `login`=".$objPDO->quote($adminLogin).", `password`=".$objPDO->quote($adminPassword).", `name`=".$objPDO->quote($adminName).", firstName=".$objPDO->quote($adminFirstName).", mail=".$objPDO->quote($adminMail)." WHERE _id=1");
@@ -252,13 +259,12 @@ class CtrlOffline extends Ctrl
 			$objPDO=new PDO("mysql:host=".$db_host.";dbname=".$db_name.";charset=utf8;", $db_login, $db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
 			//Vérif si l'appli est déjà installée sur la db
 			$result=$objPDO->query("SHOW TABLES FROM `".$db_name."` WHERE `Tables_in_".$db_name."` LIKE 'gt_%' OR `Tables_in_".$db_name."` LIKE 'ap_%'");
-			if(count($result->fetchAll(PDO::FETCH_COLUMN,0))>0)  {return "dbErrorAppInstalled";}//Erreur: L'application est déjà installée
+			if(count($result->fetchAll(PDO::FETCH_COLUMN,0))>0)  {return "dbErrorAlreadyInstalled";}//Erreur: L'application est déjà installée
 		}
 		//Erreur de connexion à la bdd
 		catch(PDOException $exception){
-			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbToCreate";}				//Erreur: Database non créé => on créé automatiquement la DB !
-			elseif(preg_match("/(denied|interdit)/i",$exception->getMessage()))	{return "dbErrorIdentification";}	//Erreur: User de la Db non identifié
-			else																{return "dbErrorUnknown";}			//Erreur: Probleme d'accès inconnu
+			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbToCreate";}			//Erreur: Bdd non installée
+			else																{return "dbErrorConnect";}	//Erreur: Pas de connexion à la Bdd
 		}
 		//Pas d'erreur : Db disponible
 		return "dbAvailable";

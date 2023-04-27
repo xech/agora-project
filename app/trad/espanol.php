@@ -365,8 +365,9 @@ class Trad extends Txt
 			
 			////	Messages d'erreur / Notifications
 			"NOTIF_identification"=>"Nombre de usuario o contraseña no válida",
-			"NOTIF_presentIp"=>"Esta cuenta de usuario se está utilizando actualmente desde otra computadora, con otra dirección IP. Una cuenta solo se puede usar en un computadora al mismo tiempo.",
-			"NOTIF_noSpaceAccess"=>"Su cuenta de usuario se ha identificado correctamente, pero actualmente no está asignado a ningún espacio. Por favor contacte al administrador",
+			"NOTIF_identificationToken"=>"Token de autenticación obsoleto, vuelva a iniciar sesión",
+			"NOTIF_presentIp"=>"Esta cuenta de usuario se está utilizando actualmente desde otra computadora, con otra dirección IP",
+			"NOTIF_noAccessNoSpaceAffected"=>"Su cuenta de usuario se ha identificado correctamente, pero actualmente no está asignado a ningún espacio. Por favor contacte al administrador",
 			"NOTIF_noAccess"=>"No estas logueado",
 			"NOTIF_fileOrFolderAccess"=>"El archivo o la carpeta no está disponible",
 			"NOTIF_diskSpace"=>"El espacio para almacenar sus archivos no es suficiente, no se puede añadir archivos",
@@ -462,10 +463,10 @@ class Trad extends Txt
 			"INSTALL_dbName"=>"Nombre de la base de datos",
 			"INSTALL_dbLogin"=>"Nombre de Usuario",
 			"INSTALL_adminAgora"=>"Administrador del Ágora",
-			"INSTALL_dbErrorDbName"=>"Advertencia: el nombre de la base de datos debe contener solo caracteres alfanuméricos y guiones o guiones bajos",
-			"INSTALL_dbErrorUnknown"=>"No hay conexión con la base de datos MariaDB/MySQL",
-			"INSTALL_dbErrorIdentification"=>"No identificación con la base de datos MariaDB/MySQL",
-			"INSTALL_dbErrorAppInstalled"=>"La instalación ya se ha realizado en esta base de datos. Gracias simplemente eliminar la base de datos si se debe reiniciar la instalación.",
+			"INSTALL_dbErrorName"=>"Advertencia: el nombre de la base de datos debe contener solo caracteres alfanuméricos y guiones o guiones bajos",
+			"INSTALL_dbErrorConnect"=>"No identificación con la base de datos MariaDB/MySQL",
+			"INSTALL_dbErrorAlreadyInstalled"=>"La instalación ya se ha realizado en esta base de datos. Gracias simplemente eliminar la base de datos si se debe reiniciar la instalación.",
+			"INSTALL_dbErrorNoSqlFile"=>"No se puede acceder al archivo de instalación db.sql o se eliminó porque la instalación ya se realizó",
 			"INSTALL_PhpOldVersion"=>"Agora-Project requiere una versión más reciente de PHP",
 			"INSTALL_confirmInstall"=>"¿ Confirmar instalación ?",
 			"INSTALL_installOk"=>"Agora-Project ha sido instalado !",
@@ -609,20 +610,20 @@ class Trad extends Txt
 			"SPACE_modules"=>"Módulos",
 			"SPACE_addSpace"=>"Añadir un espacio",
 			//Edit
-			"SPACE_usersAccess"=>"Usuarios asignados al espacio",
+			"SPACE_userAdminAccess"=>"Usuarios y administradores del espacio",
 			"SPACE_selectModule"=>"Debe seleccionar al menos un módulo",
 			"SPACE_spaceModules"=>"Módulos del espacio",
 			"SPACE_moduleRank"=>"Mover a establecer el orden de presentación de los módulos",
 			"SPACE_publicSpace"=>"Espacio público : acceso invitado",
 			"SPACE_publicSpaceInfo"=>"Un espacio público está abierto a las personas que no tienen una cuenta de usuario: los 'invitados'. Puede especificar una contraseña genérica para proteger el acceso a este espacio pública. Los siguientes módulos serán inaccesibles para los invitados : 'mail' y 'user' (si el espacio público no tiene una contraseña)",
-			"SPACE_publicSpaceNotif"=>"Si el espacio público contiene datos confidenciales, como información de contacto personal (módulo de Contacto) o documentos (módulo de Archivo): debe agregar una contraseña de acceso para cumplir con el GDPR. <Hr> El Reglamento general de protección de datos es un reglamento de la Unión Europea que constituye el texto de referencia para la protección de datos personales.",
+			"SPACE_publicSpaceNotif"=>"Tu espacio es público: si contiene datos personales (teléfono, dirección, etc.) recuerda especificar una contraseña para cumplir con el RGPD: Reglamento General de Protección de Datos",
 			"SPACE_usersInvitation"=>"Los usuarios pueden enviar invitaciones por correo",
 			"SPACE_usersInvitationInfo"=>"Todos los usuarios pueden enviar invitaciones por correo electrónico para unirse al espacio",
 			"SPACE_allUsers"=>"Todos los usuarios",
 			"SPACE_user"=>" Usuarios",
 			"SPACE_userInfo"=>"Usuario del espacio : <br> Acceso normal al espacio",
 			"SPACE_admin"=>"Administrador",
-			"SPACE_adminInfo"=>"Administrador del espacio : <br>-ecceso en escritura a todos los elementos del espacio <br>- posibilidad de enviar invitaciones por correo electrónico <br>- añadir nuevos usuarios <br>- configuración del espacio",
+			"SPACE_adminInfo"=>"El administrador de un espacio es un usuario que puede editar o eliminar todos los elementos presentes en el espacio. También puede configurar el espacio, crear nuevas cuentas de usuario, crear grupos de usuarios, enviar invitaciones por correo electrónico para añadir nuevos usuarios, etc.",
 
 			////	MODULE_UTILISATEUR
 			////
@@ -654,7 +655,7 @@ class Trad extends Txt
 			"USER_spaceList"=>"Espacios del usuario",
 			"USER_spaceNoAffectation"=>"Ningún espacio",
 			"USER_adminGeneral"=>"Administrador General del Sitio",
-			"USER_adminGeneralInfo"=>"El administrador general puede gestionar todas las configuraciones del sitio, todos los usuarios, espacios y elementos. Tiene control total sobre la configuración y los elementos del espacio: por lo tanto, es recomendable asignar este privilegio a dos o tres usuarios máximo.",
+			"USER_adminGeneralInfo"=>"Advertencia: el derecho de acceso de ''administrador general'' otorga muchos privilegios y responsabilidades, en particular para editar todos los elementos (calendarios, carpetas, archivos, etc.), así como todos los usuarios y espacios. Por lo tanto, es recomendable asignar este privilegio a 2 o 3 usuarios como máximo.<br><br>Para privilegios más restringidos, elija el derecho de acceso ''administrador del espacio'' (ver menú principal > ''Configurar el espacio'')",
 			"USER_adminSpace"=>"Administrador del espacio",
 			"USER_userSpace"=>"Usuario del espacio",
 			"USER_profilEdit"=>"Editar el perfil",
@@ -990,6 +991,7 @@ class Trad extends Txt
 			"MAIL_resendInfo"=>"Recupere el contenido de este correo electrónico e intégrelo directamente en el editor para un nuevo envío",
 			"MAIL_historyEmpty"=>"No correo electrónico",
 			"MAIL_recipients"=>"Destinatarios",
+			"MAIL_attachedFileError"=>"El archivo no se agregó al correo electrónico porque es demasiado grande",
 		);
 	}
 

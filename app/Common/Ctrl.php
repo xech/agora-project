@@ -17,10 +17,10 @@ abstract class Ctrl
 	public static $moduleOptions=[];
 	public static $agora, $curUser, $curSpace;
 	public static $isMainPage=false;			//Page principale ou Iframe
-	public static $userHasConnected=false;		//Controle si l'user vient de s'identifier / connecter
+	public static $userJustConnected=false;		//Controle si l'user vient de s'identifier / connecter
 	public static $isMenuSelectObjects=false;	//Menu de sélection d'objets affiché ?
-	public static $curContainer=null;			//Conteneur courant (dossier/sujet/agenda..)
-	public static $curContainerRoot=null;		//Conteneur dossier root
+	public static $curContainer=null;			//Conteneur courant : dossier / sujet / agenda
+	public static $curRootFolder=null;			//Dossier root du module courant
 	public static $curTimezone=null;			//Timezone courante
 	public static $notify=[];					//Messages de Notifications (cf. Vues)
 	protected static $initCtrlFull=true;		//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
@@ -32,67 +32,67 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function initCtrl()
 	{
-		////	Init la session
-		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Une session pour chaque espace et DB du serveur
+		////	Lance la session || Déconnexion & réinit la session
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Différente pour chaque espace/db
 		session_cache_limiter("nocache");
 		session_start();
-
-		////	Déconnexion : reinit les valeurs de session
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
-			setcookie("AGORAP_PASS", "", -1);
+			self::resetUserAuthToken("disconnect");
 		}
 
-		////	Controle du cache du navigateur (Complété avec un .htaccess "mod_expires" pour les images & co)
-		header("Etag: W/\"".md5(VERSION_AGORA)."\"");//"Etag" via VERSION_AGORA
-
-		////	Toujours après "session_start" : Mise à jour si besoin  &&  Récup le parametrage de l'agora  &&  Récup le parametrage du host si besoin
+		////	Mise à jour et parametrage général  &&  parametrage du host (Tjs après "session_start()"!)
 		DbUpdate::lauchUpdate();
 		self::$agora=self::getObj("agora");
 		if(Req::isHost())  {Host::agoraParams();}
 
-		////	Init le fuseau horaire
-		self::$curTimezone=array_search(self::$agora->timezone,Tool::$tabTimezones);
-		if(empty(self::$curTimezone))	{self::$curTimezone="Europe/Paris";}
-		date_default_timezone_set(self::$curTimezone);
-
-		////	Init l'user et l'espace courant (..tjs après init de session)
-		$_idUser=(!empty($_SESSION["_idUser"])) ? $_SESSION["_idUser"] : null;
+		////	Init l'user et l'espace courant
+		$_idUser =(!empty($_SESSION["_idUser"]))  ? $_SESSION["_idUser"]  : null;
 		$_idSpace=(!empty($_SESSION["_idSpace"])) ? $_SESSION["_idSpace"] : null;
 		self::$curUser=self::getObj("user",$_idUser);
 		self::$curSpace=self::getObj("space",$_idSpace);
 
-		////	Init complète du controleur : connexion de l'user/invité, selection d'espace, etc
+		////	Cache control Etag (complète le .htaccess)  &&  Init le fuseau horaire
+		header("Etag: ".md5(Req::appVersion()));
+		self::$curTimezone=array_search(self::$agora->timezone,Tool::$tabTimezones);
+		if(empty(self::$curTimezone))	{self::$curTimezone="Europe/Paris";}
+		date_default_timezone_set(self::$curTimezone);
+
+		////	Init complète du controleur
 		if(static::$initCtrlFull==true)
 		{
-			////	Connection d'un user et selection d'un espace ?
+			////	Connection d'un user  &&  selection d'un espace !
 			self::userConnectionSpaceSelection();
-			////	Enregistre le cookie pour le "Req::isMobileApp()" de l'espace
+
+			////	Enregistre et charge le cookie pour "Req::isMobileApp()" (10ans)
 			if(Req::isParam("mobileAppli")){
 				setcookie("mobileAppli", "true", (time()+315360000));
-				$_COOKIE["mobileAppli"]="true";//charge le cookie
+				$_COOKIE["mobileAppli"]="true";
 			}
-			////	Affiche une page principale (Controles d'accès au module, Menu principal, Footer, etc)
-			if(Req::$curAction=="default")  {static::$isMainPage=true;}
-			////	Controle d'accès au module de l'espace (sauf modules spécifiques/communs) si on est en page principale : redirige vers le premier module de l'espace
-			if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false && static::$isMainPage==true && array_key_exists(Req::$curCtrl,self::$curSpace->moduleList())==false)
-				{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
-			////	Affichage administrateur demandé : switch l'affichage et "cast" la valeur en booléen (pas de "boolval()"..)
+
+			////	Affiche une page principale  &&  Controle d'accès au module (sauf module spécifique)
+			if(Req::$curAction=="default"){
+				static::$isMainPage=true;
+				if(!in_array(Req::$curCtrl,["agora","log","offline","space","user"])  &&  !array_key_exists(Req::$curCtrl,self::$curSpace->moduleList()))  {self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
+			}
+
+			////	Affichage administrateur demandé
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
-				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
-				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");//Bool
+				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." :<br>".Txt::trad("HEADER_displayAdminInfo"));}
 			}
-			////	Affichage des utilisateurs : space/all
+	
+			////	Affichage des utilisateurs ("space"=espace courant || "all"=tous)  &&  Charge l'objet courant
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
-			////	Charge l'objet courant (toujours après "loadTrads()"!)
 			if(Req::isParam("typeId"))				{$curObj=self::getObjTarget();}						//Objet passé en GET
 			elseif(static::$folderObjType!==null)	{$curObj=self::getObj(static::$folderObjType,1);}	//Dossier racine par défaut
-			////	Objet courant (dejà existant)
+
+			////	Control d'accès à l'objet courant
 			if(!empty($curObj) && $curObj->isNew()==false){
-				if($curObj->readRight()==false)	{static::$isMainPage==true ? self::redir("index.php?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Pas d'accès en lecture : redirige vers le Ctrl principal / affiche une notif d'erreur
+				if($curObj->readRight()==false)	{static::$isMainPage==true ? self::redir("index.php?ctrl=".Req::$curCtrl) : self::noAccessExit();}	//Pas d'accès en lecture : redir vers le Ctrl principal || notif d'erreur
 				if($curObj::isContainer())		{self::$curContainer=$curObj;}																		//Charge le conteneur courant (dossier/sujet/agenda..)
-				if($curObj::isFolder==true)		{self::$curContainerRoot=self::getObj(get_class($curObj),1);}										//Charge le dossier root
+				if($curObj::isFolder==true)		{self::$curRootFolder=self::getObj($curObj::objectType,1);}											//Charge le dossier root du module courant
 			}
 		}
 	}
@@ -185,7 +185,7 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function lightboxClose($urlRedir=null, $urlParms=null)
 	{
-		echo '<script src="app/js/common-'.VERSION_AGORA.'.js"></script>
+		echo '<script src="app/js/common-'.Req::appVersion().'.js"></script>
 			  <script>lightboxClose("'.$urlRedir.'","'.$urlParms.self::urlNotify().'");</script>';
 		exit;
 	}
@@ -266,73 +266,93 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * CONNECTION D'UN USER ET SELECTION D'UN ESPACE ?
+	 * CONNECTION D'UN USER  &&  SELECTION D'UN ESPACE
 	 *******************************************************************************************/
 	public static function userConnectionSpaceSelection()
 	{
-		////	Connexion d'un user (demandée ou auto)
-		$connectViaForm=Req::isParam(["connectLogin","connectPassword"]);
-		$connectViaCookie=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]) && Req::isParam("disconnect")==false);
-		if(self::$curUser->isUser()==false  &&  ($connectViaForm==true || $connectViaCookie==true))
+		////	INIT
+		$userAuthentified=false;
+		$connectViaForm		=(Req::isParam(["connectLogin","connectPassword"]));
+		$connectViaToken	=(!empty($_COOKIE["userAuthToken"]));
+		$connectViaCookieOld=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]));
+		////	CONNEXION D'UN USER
+		if(self::$curUser->isUser()==false && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true || $connectViaCookieOld==true))
 		{
-			////	Identification et controles d'acces
-			//Connexion demandé ou auto
-			if($connectViaForm==true)		{$login=Req::param("connectLogin");  $passwordSha1=MdlUser::passwordSha1(Req::param("connectPassword"));}
-			elseif($connectViaCookie==true)	{$login=$_COOKIE["AGORAP_LOG"];			$passwordSha1=$_COOKIE["AGORAP_PASS"];}
-			//Identification + recup des infos sur l'user
-			$sqlPasswordSha1="AND `password`=".Db::format($passwordSha1);
-			if(Req::isHost())  {$sqlPasswordSha1=Host::sqlPassword(Req::param("connectPassword"),$sqlPasswordSha1);}
-			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($login)." ".$sqlPasswordSha1);
-			//User pas identifié : message d'erreur et déconnexion
-			if(empty($tmpUser))  {self::notify("NOTIF_identification");  self::redir("index.php?disconnect=1");}
-			//User actuellement connecté avec une autre IP : notification
-			$autreIpConnected=Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".(int)$tmpUser["_id"]." AND `date` > '".(time()-60)."' AND ipAdress NOT LIKE '".$_SERVER["REMOTE_ADDR"]."'");
-			if($autreIpConnected>0)  {self::notify("NOTIF_presentIp");}
+			////	CONNEXION VIA FORMULAIRE
+			if($connectViaForm==true){
+				//// Infos de l'user
+				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
+				$passwordClear=Req::param("connectPassword");
+				//// Verif si le password correspond à un hash Bcrypt, Sha1 (old) ou Host (specific) : enregistre alors le hash Bcrypt du password (le salt est généré via "password_hash()")
+				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || (Req::isHost() && Host::passwordHost($passwordClear)))){
+					Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));
+					$userAuthentified=true;
+				}
+			}
+			////	CONNEXION AUTO VIA TOKEN
+			elseif($connectViaToken==true){
+				$userAuthToken=explode("@@@",$_COOKIE["userAuthToken"]);
+				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($userAuthToken[0])." AND T2.userAuthToken=".Db::format($userAuthToken[1]));
+				if(!empty($tmpUser))  {$userAuthentified=true;}
+			}
+			////	CONNEXION AUTO VIA L'ANCIENNE METHODE	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
+			elseif($connectViaCookieOld==true){
+				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($_COOKIE["AGORAP_LOG"])." AND `password`=".Db::format($_COOKIE["AGORAP_PASS"]));	
+				if(!empty($tmpUser))  {$userAuthentified=true;}
+			}
 
-			////	Init l'user
-			//Init la session
-			$_SESSION=["_idUser"=>(int)$tmpUser["_id"]];//Id du client
-			//Maj les dates de "lastConnection" && "previousConnection"
-			$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
-			Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".(int)$tmpUser["_id"]);
-			//Charge l'user courant!
-			self::$curUser=self::getObj("user",$_SESSION["_idUser"]);
-			self::$userHasConnected=true;
-			self::addLog("connexion");
-			//Récupère les préférences
-			foreach(Db::getTab("select * from ap_userPreference where _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
-			//Enregistre login & password pour une connexion auto (10ans)
-			if(Req::isParam("rememberMe")){
-				setcookie("AGORAP_LOG", $login, (time()+315360000));
-				setcookie("AGORAP_PASS", $passwordSha1, (time()+315360000));
+			////	USER AUTHENTIFIE
+			if($userAuthentified==true){
+
+				//// Charge l'user courant (toujours en 1er)
+				self::$curUser=self::getObj("user",(int)$tmpUser["_id"]);
+				$_SESSION=["_idUser"=>self::$curUser->_id];
+				self::$userJustConnected=true;
+				self::addLog("connexion");
+
+				//// Charge les preferences de l'user  &&  update "lastconnection"/"previousconnection"
+				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
+				$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
+				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".self::$curUser->_id);
+
+				//// Reinitialise le token de connexion auto
+				if(($connectViaForm==true && Req::isParam("rememberMe")) || $connectViaToken==true || $connectViaCookieOld==true)  {self::resetUserAuthToken("newToken");}
+
+				//// Notif si l'user est connecté via une autre ip
+				if(Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".Db::format($tmpUser["_id"])." AND `date`>".Db::format(time()-60)." AND ipAdress NOT LIKE ".Db::format($_SERVER["REMOTE_ADDR"])) > 0)
+					{self::notify(Txt::trad("NOTIF_presentIp")." -> ".$_SERVER["REMOTE_ADDR"]);}
+			}
+			////	USER NON-AUTHENTIFIÉ
+			else{
+				//// Notif d'erreur de credentials || notif de token obsolete
+				self::notify($connectViaForm==true?"NOTIF_identification":"NOTIF_identificationToken");
+				self::redir("index.php?disconnect=1");
 			}
 		}
 
-		////	Stats de connexion du host (lancer entre la connexion et la sélection d'un espace)
+		////	STATS DE CONNEXION DU HOST (tjs entre connexion & sélection d'espace)
 		if(Req::isHost())  {Host::connectStatsHostInfos();}
 
-		////	SELECTION D'UN ESPACE  (l'user vient de se connecter  ||  (page de connexion && (user déjà connecté || espace demandé par guest/notif mail)))
-		////	=> tester le switch d'espace d'un user + connexion d'un user affecté à aucun espace + connexion d'un guest et switch d'espace + notif mail d'objet en mode connecté et déconnecté
-		if(self::$userHasConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess"))))
+		////	SELECTION D'UN ESPACE  (Tester switch d'espace + connexion d'user sans espace affecté + connexion de guest avec switch d'espace + accès à un objet depuis notif mail)
+		if(self::$userJustConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess"))))
 		{
-			//// Init
-			$idSpaceSelected=null;													//Init l'espace sélectionné
-			$userSpaces=self::$curUser->getSpaces();								//Espaces disponibles pour l'user courant ou le guest
-			$isNotifMail=(static::moduleName=="offline" && Req::isParam("objUrl"));	//Accès depuis une notif mail d'objet (cf. "MdlObject::getUrlExternal()")
+			//// Init l'espace sélectionné et les espaces disponibles
+			$idSpaceSelected=null;
+			$userSpaces=self::$curUser->getSpaces();
 			//// Sélectionne un espace
 			if(!empty($userSpaces))
 			{
-				//// Espace demandé :  L'user switch d'espace  ||  Accès depuis une notif mail d'objet (user identifié)  ||  Accès Guest
+				//// Espace demandé (Switch d'espace || Accès Guest en page de connexion)
 				if(Req::isParam("_idSpaceAccess")){
 					foreach($userSpaces as $objSpace){
-						if($objSpace->_id==Req::param("_idSpaceAccess") && (self::$curUser->isUser() || empty($objSpace->password) || $objSpace->password==Req::param("password")))
+						if($objSpace->_id==Req::param("_idSpaceAccess")  &&  (self::$curUser->isUser() || empty($objSpace->password) || $objSpace->password==Req::param("password")))
 							{$idSpaceSelected=$objSpace->_id;  break;}
 					}
 				}
 				//// Espace par défaut d'un user
 				elseif(self::$curUser->isUser())
 				{
-					//Espace enregistré dans les préférences des l'user
+					//Espace enregistré dans les préférences de l'user
 					if(!empty(self::$curUser->connectionSpace)){
 						foreach($userSpaces as $objSpace){
 							if($objSpace->_id==self::$curUser->connectionSpace)  {$idSpaceSelected=$objSpace->_id;  break;}
@@ -345,19 +365,46 @@ abstract class Ctrl
 					}
 				}
 			}
-			//// Espace sélectionné : charge l'espace + redirection vers le module principal
+			//// Espace sélectionné : charge l'espace + redirection
 			if(!empty($idSpaceSelected)){
-				$_SESSION["_idSpace"]=$idSpaceSelected;																	//Enregistre l'espace courant
-				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();										//Récup les modules de l'espace courant
-				if($isNotifMail==true && self::$curUser->isUser())	{self::redir(Req::param("objUrl"));}				//Redir vers le controleur et l'objet demandé (notif mail d'objet)
-				if(!empty($spaceModules))	{self::redir("index.php?ctrl=".key($spaceModules));}						//Redir vers le premier module de l'espace
-				else						{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace : "Vous êtes maintenant déconnecté"
+				$_SESSION["_idSpace"]=$idSpaceSelected;																		//Charge l'espace courant
+				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();											//Récup les modules de l'espace courant		
+				if(Req::isParam("objUrl"))		{self::redir(Req::param("objUrl"));}										//Redir vers un objet de l'espace (cf. "getUrlExternal()")
+				elseif(!empty($spaceModules))	{self::redir("index.php?ctrl=".key($spaceModules));}						//Redir vers le premier module de l'espace
+				else							{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace : message d'erreur et déconnexion
 			}
 			//// User identifié mais affecté à aucun espace : message d'erreur et déconnexion
-			elseif(self::$userHasConnected==true && $isNotifMail==false)   {self::notify("NOTIF_noSpaceAccess");  self::redir("index.php?disconnect=1");}
+			elseif(self::$userJustConnected==true)   {self::notify("NOTIF_noAccessNoSpaceAffected");  self::redir("index.php?disconnect=1");}
 		}
-		//// User non identifié + aucun espace public disponible : "Vous êtes maintenant déconnecté"
+		////	USER NON IDENTIFIÉ + AUCUN ESPACE PUBLIC DISPONIBLE (notif "Vous êtes maintenant déconnecté")
 		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}
+	}
+
+	/*******************************************************************************************
+	 * RE-INITIALISE LE TOKEN DE CONNEXION AUTO : DE LA BDD ET DU COOKIE 
+	 *******************************************************************************************/
+	public static function resetUserAuthToken($mode)
+	{
+		//// S'il existe un cookie "userAuthToken" : on supprime le token en bdd PUIS le cookie 
+		if(!empty($_COOKIE["userAuthToken"])){					
+			$userAuthToken=explode("@@@",$_COOKIE["userAuthToken"]);														
+			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($userAuthToken[1]));
+			setcookie("userAuthToken", "", -1);
+		}
+		//// Créé un nouveau token au format Bcrypt : enregistre le token en bdd et le cookie (10 ans)
+		if($mode=="newToken"){
+			$newUserAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".self::$curUser->_id.", userAuthToken=".Db::format($newUserAuthToken).", dateCrea=NOW()");
+			setcookie("userAuthToken", self::$curUser->_id."@@@".$newUserAuthToken, (time()+315360000));
+		}
+		//// Supprime les cookies de l'ancienne méthode et les tokens obsolètes (+ d'un an)
+		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG",null,-1);  setcookie("AGORAP_PASS",null,-1);}
+		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-31536000));
+/*TEST CONNEXION AUTO - OLD METHOD
+setcookie("AGORAP_LOG", "admin", (time()+315360000));
+setcookie("AGORAP_PASS", "SHA1-PASSDORDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", (time()+315360000));
+setcookie("authToken",null,-1);
+*/
 	}
 
 	/*******************************************************************************************

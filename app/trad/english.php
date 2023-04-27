@@ -365,8 +365,9 @@ class Trad extends Txt
 
 			////	Messages d'erreur / Notifications
 			"NOTIF_identification"=>"Invalid login or password",
-			"NOTIF_presentIp"=>"This user account is currently being used from another computer, with another ip address. An account can only be used on one computer at the same time.",
-			"NOTIF_noSpaceAccess"=>"Your user account has been successfully identified, but you are not currently assigned to any space. Please contact the administrator",
+			"NOTIF_identificationToken"=>"Obsolete authentication token, please log in again",
+			"NOTIF_presentIp"=>"This user account is currently being used from another computer, with another IP address",
+			"NOTIF_noAccessNoSpaceAffected"=>"Your user account has been successfully identified, but you are not currently assigned to any space. Please contact the administrator",
 			"NOTIF_noAccess"=>"You are logged out",
 			"NOTIF_fileOrFolderAccess"=>"File or folder not accessible",
 			"NOTIF_diskSpace"=>"Space for the storage of your files is insufficient, you cannot add file",
@@ -462,10 +463,10 @@ class Trad extends Txt
 			"INSTALL_dbName"=>"Name of the database",
 			"INSTALL_dbLogin"=>"User name",
 			"INSTALL_adminAgora"=>"Information about the administrator of the ",
-			"INSTALL_dbErrorDbName"=>"Warning: the name of the database should preferably contain only alphanumeric characters and dashes or underscores",
-			"INSTALL_dbErrorUnknown"=>"The connection to the MariaDB/MySQL database failed",
-			"INSTALL_dbErrorIdentification"=>"The identification to the MariaDB/MySQL database failed",
-			"INSTALL_dbErrorAppInstalled"=>"The installation has already been done. Thank you to remove the database whether to restart the installation.",
+			"INSTALL_dbErrorName"=>"Warning: the name of the database should preferably contain only alphanumeric characters and dashes or underscores",
+			"INSTALL_dbErrorConnect"=>"The identification to the MariaDB/MySQL database failed",
+			"INSTALL_dbErrorAlreadyInstalled"=>"The installation has already been done. Thank you to remove the database whether to restart the installation.",
+			"INSTALL_dbErrorNoSqlFile"=>"The db.sql installation file is not accessible or has been deleted because the installation has already been performed",
 			"INSTALL_PhpOldVersion"=>"Agora-Project requires a newer version of PHP",
 			"INSTALL_confirmInstall"=>"Confirm the installation ?",
 			"INSTALL_installOk"=>"Agora-Project was installed correctly !",
@@ -609,20 +610,20 @@ class Trad extends Txt
 			"SPACE_modules"=>"Modules",
 			"SPACE_addSpace"=>"Add a space",
 			//Edit
-			"SPACE_usersAccess"=>"Users assigned to the space",
+			"SPACE_userAdminAccess"=>"Space users and administrators",
 			"SPACE_selectModule"=>"You must select a module",
 			"SPACE_spaceModules"=>"Space modules",
 			"SPACE_moduleRank"=>"Move to set the display order of modules",
 			"SPACE_publicSpace"=>"Public space : guest access",
 			"SPACE_publicSpaceInfo"=>"A public space is open to people who do not have a user account: the 'guests'. You can specify a generic password to protect access to this public space. The following modules will not be accessible to guests : 'mail' and 'user' (if the public space does not have a password)",
-			"SPACE_publicSpaceNotif"=>"If your public space contains sensitive data such as personal contact details (Contact module) or documents (File module): you are required to add password access to your public space, to comply with the GDPR.<hr>The General Data Protection Regulation is a regulation of the European Union constituting the reference text for the protection of personal data.",
+			"SPACE_publicSpaceNotif"=>"Your space is public: if it contains personal data (telephone, address, etc.) remember to specify a password to comply with the GDPR: General Data Protection Regulation",
 			"SPACE_usersInvitation"=>"Users can send invitations by email",
 			"SPACE_usersInvitationInfo"=>"All users can send email invitations to join the space",
 			"SPACE_allUsers"=>"All the users",
 			"SPACE_user"=>" User",
 			"SPACE_userInfo"=>"User of the space : <br> Normal access to the space",
 			"SPACE_admin"=>"Administrator",
-			"SPACE_adminInfo"=>"Administrator of the space : <br>- Write access to all elements of the space <br>- ability to send email invitations <br>- ability to add users <br>- space setting",
+			"SPACE_adminInfo"=>"The administrator of a space is a user who can edit or delete all the elements present in the space. He can also configure the space, create new user accounts, create user groups, send invitations by email to add new users, etc.",
 
 			////	MODULE_UTILISATEUR
 			////
@@ -654,7 +655,7 @@ class Trad extends Txt
 			"USER_spaceList"=>"Spaces of the user",
 			"USER_spaceNoAffectation"=>"No space",
 			"USER_adminGeneral"=>"General administrator of the site",
-			"USER_adminGeneralInfo"=>"The general administrator can manage all the settings of the site, all the users, spaces and elements assigned to it. He has full control over the settings and the elements of the space: it is therefore advisable to assign this privilege to two or three users maximum.",
+			"USER_adminGeneralInfo"=>"Warning: the ''general administrator'' access right gives many privileges and responsibilities, in particular to edit all the elements (calendars, folders, files, etc.), as well as all the users and spaces. It is therefore advisable to assign this privilege to 2 or 3 users maximum.<br><br>For more restricted privileges, choose the access right ''space administrator'' (see main menu > ''Set the space'')",
 			"USER_adminSpace"=>"Administrator of the space",
 			"USER_userSpace"=>"User of the space",
 			"USER_profilEdit"=>"Modify profile",
@@ -990,6 +991,7 @@ class Trad extends Txt
 			"MAIL_resendInfo"=>"Retrieve the content of this email and integrate it directly into the editor for a new sending",
 			"MAIL_historyEmpty"=>"No email",
 			"MAIL_recipients"=>"Recipients",
+			"MAIL_attachedFileError"=>"The file was not added to the email because it is too large",
 		);
 	}
 

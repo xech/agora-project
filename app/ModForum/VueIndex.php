@@ -168,7 +168,7 @@ $(function(){
 				if($curSubject->addContentRight())	{$subjMessQuote="<span class='vSubjMessQuote' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."&_idMessageParent=".$tmpMessage->_id."')\" title=\"".Txt::trad("FORUM_quoteMessage")."\"><img src='app/img/forum/quoteReponse.png'></span>";}
 				if(!empty($tmpMessage->title))		{$displayedTitle=$tmpMessage->title."<hr>";}
 				if(!empty($tmpMessage->_idMessageParent)){
-					$quotedMessageObj=Ctrl::getObj(get_class($tmpMessage),$tmpMessage->_idMessageParent);
+					$quotedMessageObj=Ctrl::getObj($tmpMessage::objectType,$tmpMessage->_idMessageParent);
 					$quotedMessage="<div class='vMessageQuoted'>".$quotedMessageObj->title."<br>".$quotedMessageObj->description."<img src='app/img/forum/quote.png'></div><br>";
 				}
 				//Affichage

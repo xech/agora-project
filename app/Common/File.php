@@ -16,8 +16,8 @@ class File
 	const sizeGo=1073741824;
 	const sizeMo=1048576;
 	const sizeKo=1024;
-	//Taille maxi de la totalité des fichiers attachés aux mails (20Mo)
-	const mailMaxFilesSize=20971520;
+	//Taille maxi de la totalité des fichiers attachés aux mails (cf. "message_size_limit" du /etc/postfix/mail.cf à 25Mo)
+	const mailMaxFilesSize=26214400;
 	//init les types de fichiers
 	private static $_fileTypes=null;
 

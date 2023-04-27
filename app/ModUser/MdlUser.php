@@ -296,12 +296,19 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * CRYPTE LE PASSWORD EN SHA1() + SALT
+	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
 	 *******************************************************************************************/
-	public static function passwordSha1($password, $specificSalt=null)
+	public static function passwordSha1($password)
 	{
-		$SALT=(!empty($specificSalt))  ?  $specificSalt  :  self::getSalt();
-		return sha1($SALT.sha1($password));
+		return sha1(self::passwordSalt().sha1($password));
+	}
+
+	/*******************************************************************************************
+	 * SALT DU PASSWORD				=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
+	 *******************************************************************************************/
+	public static function passwordSalt()
+	{
+		return (!defined("AGORA_SALT") || empty(AGORA_SALT))  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
 	}
 
 	/*******************************************************************************************
@@ -351,13 +358,5 @@ class MdlUser extends MdlPerson
 						 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage);
 		}
-	}
-
-	/*******************************************************************************************
-	 * RÉCUPÈRE LE SALT
-	 *******************************************************************************************/
-	public static function getSalt()
-	{
-		return (!defined("AGORA_SALT") || !AGORA_SALT)  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
 	}
 }

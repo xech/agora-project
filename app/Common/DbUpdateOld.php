@@ -42,8 +42,7 @@ class DbUpdateOld extends DbUpdate
 
 	/*
 	 * Teste si un champ existe & le renomme au besoin
-	 * ATTENTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * au besoin, penser a mettre a jour le "fieldRenameOld()" qui le precede, pour que le champ ne soit pas recree a chaque update..
+	 * penser a mettre a jour le "fieldRenameOld()" qui le precede, pour que le champ ne soit pas recree a chaque update..
 	 */
 	public static function fieldRenameOld($versionUpdate, $table, $fieldOld, $sqlQuery)
 	{
@@ -318,7 +317,7 @@ class DbUpdateOld extends DbUpdate
 		if($fieldExist!=true)
 		{
 			////	ajout d'un "grain de sel" dans les mots de passe deja cryptes en sha1..
-			$AGORA_SALT=MdlUser::getSalt();
+			$AGORA_SALT=MdlUser::passwordSalt();
 			foreach(self::getTab("select * from gt_utilisateur") as $user_tmp){
 				//Pas de  "sha1(AGORA_SALT.sha1($user_tmp["pass"]))"  car le sha1 à dejà ete appliqué précédement en v2.8
 				self::updateQueryOld("2.12.0", "UPDATE gt_utilisateur SET pass='".sha1($AGORA_SALT.$user_tmp["pass"])."' WHERE id_utilisateur='".$user_tmp["id_utilisateur"]."'");

@@ -36,11 +36,11 @@ $(function(){
 </style>
 
 <div id="pageFull">
-
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
-			////	AJOUT D'ELEMENTS
+			////	MENU DE SELECTION MULTIPLE  &&  MENU D'AJOUT D'ELEMENTS
+			echo MdlTask::menuSelectObjects();
 			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("TASK_addTask")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlTaskFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
@@ -53,19 +53,22 @@ $(function(){
 				<div>
 					<span class="menuLaunch" for="menuPriority"><?= Txt::trad("TASK_priority")." ".(Req::param("filterPriority")>=1?Txt::trad("TASK_priority".Req::param("filterPriority")):null) ?></span>
 					<div id="menuPriority" class="menuContext">
-						<?php for($tmpPriority=0; $tmpPriority<=4; $tmpPriority++){
+						<?php
+						////	Affiche chaque niveau de priorité
+						for($tmpPriority=0; $tmpPriority<=4; $tmpPriority++){
 							if($tmpPriority==0)  {$tmpPriority=null;}
 							echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/task/priority".$tmpPriority.".png'></div><div><a onclick=\"redir('".Tool::getParamsUrl("filterPriority")."&filterPriority=".$tmpPriority."')\" ".($tmpPriority==Req::param("filterPriority")?"class='sLinkSelect'":null).">".(empty($tmpPriority)?Txt::trad("displayAll"):Txt::trad("TASK_priority".$tmpPriority))."</a></div></div>";
-						} ?>
+						}
+						?>
 					</div>
 				</div>
 			</div>
 			<hr>
 			<?php
-			////	ARBORESCENCE  &  MENU DE SELECTION/AFFICHAGE/TRI
-			echo CtrlObject::folderTreeMenu().MdlTask::menuSelectObjects().MdlTask::menuDisplayMode().MdlTask::menuSort();
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			echo CtrlObject::folderTreeMenu().MdlTask::menuDisplayMode().MdlTask::menuSort();
+			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
 			?>
-			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= Ctrl::$curContainer->folderContentDescription() ?></div></div>
 		</div>
 	</div>
 

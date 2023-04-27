@@ -22,7 +22,7 @@ $(function(){
 		});
 		if(installEmptyField==true)   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
 		//Vérif que le nom de la base de données est bien formaté
-		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   {$("[name='db_name']").focusRed();  notify("<?= Txt::trad("INSTALL_dbErrorDbName") ?>","warning");  return false;}
+		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   {$("[name='db_name']").focusRed();  notify("<?= Txt::trad("INSTALL_dbErrorName") ?>","warning");  return false;}
 		//Controle le mail &  password
 		if($("[name='adminMail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid"); ?>","warning");  return false;}
 		if(isValidPassword($("[name='adminPassword']").val())==false)					{notify("<?= Txt::trad("passwordInvalid") ?>","warning");	return false;}
@@ -59,7 +59,7 @@ h3								{margin-top:20px; font-style:italic;}
 	<?php }else{ ?>
 	<form id="pageCenterContent" class="miscContainer noConfirmClose" enctype="multipart/form-data">
 		<!--HEADER-->
-		<div class="vHeader"><img src="app/img/install.png"><img src="app/img/logoLabel.png"></div>
+		<div class="vHeader"><h1><img src="app/img/install.png"> Install <img src="app/img/logoLabel.png"></h1></div>
 		<!--LANGUE-->
 		<div class="objField"><div class="fieldLabel"><?= Txt::trad("USER_langs") ?></div><div><?= Txt::menuTrad("install",Req::param("curTrad")) ?></div></div>
 		<!--CONFIG DB-->

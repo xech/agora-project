@@ -114,7 +114,7 @@ class Db
 	 *******************************************************************************************/
 	public static function format($text, $options="")
 	{
-		$text=trim((string)$text);	//cast en "string"
+		$text=trim((string)$text);		//cast en "string"
 		$options=trim((string)$options);//idem
 		if(empty($text))  {return "NULL";}
 		else{

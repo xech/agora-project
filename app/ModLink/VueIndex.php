@@ -9,16 +9,17 @@
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
-			////	AJOUT D'ELEMENTS
+			////	MENU DE SELECTION MULTIPLE  &&  MENU D'AJOUT D'ELEMENTS
+			echo MdlLink::menuSelectObjects();
 			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
-			////	ARBORESCENCE  &  MENU DE SELECTION/AFFICHAGE/TRI
-			echo CtrlObject::folderTreeMenu().MdlLink::menuSelectObjects().MdlLink::menuDisplayMode().MdlLink::menuSort();
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			echo CtrlObject::folderTreeMenu().MdlLink::menuDisplayMode().MdlLink::menuSort();
+			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
 			?>
-			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= Ctrl::$curContainer->folderContentDescription() ?></div></div>
 		</div>
 	</div>
 	<div id="pageFullContent" class="<?= MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">

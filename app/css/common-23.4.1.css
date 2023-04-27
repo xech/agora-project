@@ -50,7 +50,7 @@ audio						{min-width:350px;}
 .objContainer										{position:relative; padding:0px; padding-right:35px; height:90px; min-height:90px;}/*"height"+"min-height" pour l'overflow" du "objContentScroll". "padding-right" pour l'affichage des "objMiscMenus"*/
 .miscContainer										{padding:15px;}/*cf. form de parametrage general, newsletter, etc.*/
 .objContainerSelect, #objSelectMenu					{border:1px dashed rgb(220,0,0)!important;}
-#objSelectMenu										{display:none; margin:10px 0px 20px 0px; box-shadow:2px 0px 8px rgb(80,80,80);}/*menu de sélection masqué par défaut (cf. menu de gauche du module)*/
+#objSelectMenu										{display:none; margin:15px 0px; box-shadow:2px 0px 8px rgb(80,80,80);}/*menu de sélection masqué par défaut (cf. menu de gauche du module)*/
 .objContainer.isSelectable							{cursor:url("../img/checkSmall.png"),default;}
 .emptyContainer										{padding:30px; text-align:center;}/*Aucun contenu sur la page*/
 .emptyContainer .sLink								{margin-top:20px;}/*Idem*/
@@ -116,7 +116,7 @@ audio						{min-width:350px;}
 .menuIcon									{width:35px; vertical-align:top!important; text-align:center!important;}/*width de 35px minimum pour les icones + padding*/
 .menuIcon img								{max-width:26px!important; max-height:26px!important;}
 #pageModMenu								{padding:8px;}/*surcharge .miscContainer*/
-#pageFull #pageModMenu						{border-radius:0px 4px 4px 0px; padding-left:15px;}/*Menus des modules en affichage full (arborescnce)*/
+#pageFull #pageModMenu						{border-radius:0px 4px 4px 0px; padding-left:12px;}/*Menus des modules en affichage full (arborescence)*/
 .menuLaunch									{display:inline-block; cursor:pointer;}/*launcher du menu contextuel*/
 .menuContext								{display:none; position:absolute; z-index:100; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px; box-shadow:0px 0px 8px rgb(80,80,80);}/*cursor 'default' pour pas prendre celui du block conteneur (de l'objet ou autre))*/
 .menuContext .menuLine>div					{line-height:18px;}

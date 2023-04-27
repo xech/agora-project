@@ -1,3 +1,37 @@
+VERSION 23.4.1
+###############
+Meilleure ergonomie du menu de navigation dans l'arborescence de dossiers
+Mise en cache des arborescences de dossier pour un affichage plus rapide (jusqu'à 20x plus rapide)
+Amélioration du contrôle des fichiers joints aux notifications par mail
+Amélioration de la sécurisation des connexions auto via password_hash(), Bcrypt et token temporaire en bdd
+Amélioration des contrôles du formulaire d'installation
+-----
+Improved ergonomics of the navigation menu in the folder tree
+Caching of folder trees for faster display (up to 20x faster)
+Improved control of files attached to email notifications
+Improved security of auto connections via password_hash(), Bcrypt and temporary token in db
+Improved installation form controls
+
+
+VERSION 23.2.3
+###############
+Nouvelle option pour ajouter des destinataires dans les emails de notification
+Optimisation de la fonction sendMail() 
+Amélioration de l'affichage des dates de l'agenda
+Amélioration de l'ergonomie de la page de connexion
+Mise à jour de la fonction OAuth Google Identity
+Mise à jour de PHMailer en version 6.7.1
+Mise à jour de l'éditeur TinyMce en version 6.3.1
+-----
+Optimization of the sendMail() function
+Option to add recipients in notification emails
+Improved calendar dates display
+Improved login page
+OAuth Google Identity Update
+PHMailer updated to 6.7.1 version
+TinyMce updated to 6.3.1 version
+
+
 VERSION 22.12.0
 ###############
 Optimisation du download de fichiers

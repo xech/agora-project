@@ -31,8 +31,8 @@
 		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
 		<!-- JAVASCRIPT & CSS PRINCIPAUX (TOUJOURS À LA FIN!)-->
-		<script src="app/js/common-<?= VERSION_AGORA?>.js"></script>
-		<link href="app/css/common-<?= VERSION_AGORA?>.css" rel="stylesheet" type="text/css">
+		<script src="app/js/common-<?= Req::appVersion() ?>.js"></script>
+		<link href="app/css/common-<?= Req::appVersion() ?>.css" rel="stylesheet" type="text/css">
 		<link href="app/css/<?= $skinCss ?>.css" rel="stylesheet" type="text/css">
 	
 		<script>
@@ -130,7 +130,7 @@
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
 			//Mise à jour récente : notification "footerHtml" spécifique pour l'admin
 			if(Ctrl::$curUser->isAdminSpace() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
-				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to version ".VERSION_AGORA."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
+				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to version ".Req::appVersion()."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
 			//Affiche le footer
 			$pageFooterIconTooltip="".OMNISPACE_URL_LABEL." - ".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." secondes";
 			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>

@@ -27,6 +27,7 @@ class Req
 	const commonPath="app/Common/";
 	private static $_getPostParams;
 	private static $_isMobile=null;
+	private static $_appVersion=null;
 	public static $curCtrl;		//exple : "offline"
 	public static $curAction;	//exple : "default"
 
@@ -44,7 +45,7 @@ class Req
 			else{
 				foreach($tmpVal as $tmpSubKey=>$tmpSubVal)	{self::$_getPostParams[$tmpKey][$tmpSubKey]=self::paramFilter($tmpSubKey,$tmpSubVal);}
 			}
-			//S'il s'agit d'un ancien paramètre (cf. liens des notif mail d'édition d'objet) : on ajoute le nouveau paramètre équivalent pour assurer la continuité
+			//S'il s'agit d'un ancien paramètre (cf. liens des notif mail d'édition d'objet) : on ajoute le nouveau paramètre équivalent pour assurer la continuité (à partir de la v21.10)
 			if($tmpKey=="targetObjId")			{self::$_getPostParams["typeId"]=self::$_getPostParams["targetObjId"];}
 			elseif($tmpKey=="targetObjUrl")		{self::$_getPostParams["objUrl"]=self::$_getPostParams["targetObjUrl"];}
 		}
@@ -67,6 +68,25 @@ class Req
 		catch(Exception $error){
 			$this->displayExeption($error);
 		}
+	}
+
+	/*******************************************************************************************
+	 * RÉCUPÈRE LE NUMÉRO DE VERSION DE L'APPLI  &&  MODIF SI BESOIN LES FICHIERS JS/CSS
+	 *******************************************************************************************/
+	public static function appVersion()
+	{
+		//Récupère le numéro de version et l'enregistre en cache
+		if(self::$_appVersion===null){
+			//Récupère le numéro de version dans le fichier ad'hoc (tjs avec un trim()!)
+			self::$_appVersion=trim((string)file_get_contents('app/VERSION.txt'));
+			//Renomme si besoin les fichiers JS & CSS
+			if(!is_file('app/js/common-'.self::$_appVersion.'.js')){
+				rename(glob('app/js/common-*.js')[0], 'app/js/common-'.self::$_appVersion.'.js');
+				rename(glob('app/css/common-*.css')[0], 'app/css/common-'.self::$_appVersion.'.css');
+			}
+		}
+		//Renvoi le numéro de version
+		return self::$_appVersion;
 	}
 
 	/********************************************************************************************
@@ -194,7 +214,7 @@ class Req
     private function displayExeption(Exception $exception)
 	{
 		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
-		if(preg_match("/dbInstall/i",$exception) && self::isInstalling()==false && Req::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		//Affiche le message
         echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage()."<br><br><a href='?ctrl=offline'>Retour</a></h3>";
 		exit;
@@ -213,8 +233,9 @@ class Req
 	 ********************************************************************************************/
 	public static function verifPhpVersion()
 	{
-		if(version_compare(PHP_VERSION,VERSION_AGORA_PHP_MINIMUM,"<")){
-			echo "<h3>".Txt::trad("INSTALL_PhpOldVersion")."</h3><h4>PHP version required : ".VERSION_AGORA_PHP_MINIMUM."</h4><h4>PHP current version : ".PHP_VERSION."</h4>";
+		$versionPhpMinimum="5.6";
+		if(version_compare(PHP_VERSION,$versionPhpMinimum,"<=")){
+			echo "<h2><img src='app/img/important.png'> ".Txt::trad("INSTALL_PhpOldVersion")." : ".$versionPhpMinimum." minimum &nbsp; (current version : ".PHP_VERSION.")</h2>";
 			exit;
 		}
 	}

@@ -71,7 +71,7 @@ function formControl()
 	<div id="pageModuleMenu">
 		<!--INFOS & VERSIONS-->
 		<div class="miscContainer" id="agoraInfos">
-			<div>Agora-Project / Omnispace version <?= Ctrl::$agora->version_agora ?></div>
+			<div>Agora-Project / Omnispace version <?= Req::appVersion() ?></div>
 			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"date") ?></div>
 			<div><a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a></div>
 			<div>PHP <?= str_replace(strstr(phpversion(),"-"),"",phpversion()) ?> &nbsp;&nbsp; <?= Db::dbVersion() ?></div>

@@ -7,7 +7,7 @@ $(function(){
 	////	Option "espace public"
 	$("input[name='public']").change(function(){
 		$("#divPassword").toggle(this.checked);//Affiche l'option du password ?
-		if(this.checked && $("#divPassword input[name=password]").isEmpty())  {notify("<?= Txt::trad("SPACE_publicSpaceNotif") ?>","warning");}	//Affiche la notif  "Si votre espace public contient des coordonnées perso.."
+		if(this.checked && $("#divPassword input[name=password]").isEmpty())  {notify("<?= Txt::trad("SPACE_publicSpaceNotif") ?>");}	//Affiche la notif  "Si votre espace public contient des coordonnées perso.."
 	}).trigger("change");//Init l'affichage
 
 	////	Option "Formulaire d'inscription en page de connexion"
@@ -174,7 +174,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 
 	<!--USERS DE L'ESPACE-->
 	<?php if(Ctrl::$curUser->isAdminSpace()){ ?>
-	<div class="lightboxBlockTitle"><?= Txt::trad("SPACE_usersAccess") ?></div>
+	<div class="lightboxBlockTitle" title="<?= Txt::trad("SPACE_adminInfo") ?>"><?= Txt::trad("SPACE_userAdminAccess") ?> <img src="app/img/info.png"></div>
 	<div class="lightboxBlock usersFieldset">
 		<div class="spaceAffectLine">
 			<label>&nbsp;</label>

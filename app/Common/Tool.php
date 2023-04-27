@@ -117,17 +117,17 @@ class Tool
 			}
 
 			////	Fichiers joints à ajouter
-			if(!empty($attachedFiles))
-			{
+			if(!empty($attachedFiles)){
 				$fileSizeCpt=0;
-				foreach($attachedFiles as $tmpFile)
-				{
-					//Limite à 20Mo la taille de tous les fichiers, pour pas être rejeté par les serveurs de messagerie
+				foreach($attachedFiles as $tmpFile){
+					//Taille du fichier
 					$tmpFileSize=@filesize($tmpFile["path"]);
-					if(is_file($tmpFile["path"]) && ($fileSizeCpt+$tmpFileSize)<File::mailMaxFilesSize){
+					//Controle l'accès et la taille du fichier (25M max par défaut)  ||  Fichier Ok : on l'ajoute à l'email
+					if(!is_file($tmpFile["path"]) || ($fileSizeCpt+$tmpFileSize) > File::mailMaxFilesSize)  {Ctrl::notify(Txt::trad("MAIL_attachedFileError")."<br>".$tmpFile["name"]." = ".File::displaySize($tmpFileSize)." (".File::displaySize(File::mailMaxFilesSize)." max)");}
+					else{
 						$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
-						if(!empty($tmpFile["cid"]))			{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}//Intègre une image dans le message (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
-						elseif(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}	//Ajoute un fichier joint classique
+						if(!empty($tmpFile["cid"]))			{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Intègre une image dans le message (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
+						elseif(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}		//Ajoute un fichier joint classique
 					}
 				}
 			}

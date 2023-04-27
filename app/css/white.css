@@ -4,7 +4,7 @@
 body, a, .sLink																					{color:#555;}
 input, textarea, select																			{color:#555; background:#fff;}
 #htmlLightbox																					{background:#fff;}
-a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label, .sAccessRead	{color:rgb(0,97,177);}	/*Liens + labels sélectionnés + accès utilisateur*/
+a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label, .sAccessRead	{color:rgb(0, 104, 189);}	/*Liens + labels sélectionnés + accès utilisateur*/
 .sAccessWrite, .sAccessWriteLimit																{color:#900;}			/*Accès admin*/
 
 /*Pages principales Responsives (cf. 'VueStructure.php')*/

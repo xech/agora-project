@@ -19,9 +19,9 @@ $(function(){
 	 *	INIT L'AFFICHAGE DE L'ARBORESCENCE DE CONTACTS
 	 *******************************************************************************************/
 	$(".vMailsBlock").each(function(){
-		var folderTreeLevel=$(this).attr("data-treeLevel");
+		var folderTreeLevel=$(this).attr("data-folderTreeLevel");
 		if(typeof folderTreeLevel!=="undefined" && folderTreeLevel>0)
-			{$(this).css("padding-left",(folderTreeLevel*22)+"px");}
+			{$(this).css("padding-left",(folderTreeLevel*18)+"px");}
 	});
 
 	/*******************************************************************************************
@@ -78,7 +78,7 @@ function formControl()
 .vMailsBlock								{margin:0px 10px 15px 10px;}
 .vMailsLabel 								{display:table;}
 .vMailsLabel>div 							{display:table-cell; vertical-align:middle;}
-.vMailsLabel img							{max-width:24px; margin-right:10px;}
+.vMailsLabel img							{max-width:24px; margin-right:8px;}
 .vMailsMenu									{padding-left:5px!important; display:none;}
 .vMailsMenu.vMailsMenuDisplay				{display:block;}
 .vMailsMenu>div								{padding:7px;}
@@ -111,21 +111,21 @@ function formControl()
 			<div id="recipientMainMenu">
 				<div id="recipientLabel"><img src="app/img/mail.png"> <?= Txt::trad("MAIL_recipients") ?> :<hr></div>
 				<?php
-				////	LISTE DES DESTINATAIRES : USERS DE L'AGORA / DU MODULE CONTACT
+				////	LISTE DES DESTINATAIRES : USERS & CONTACTS
 				foreach($containerList as $tmpContainer)
 				{
-					//// INIT
+					////	INIT
 					$cptPerson=0;
 					$tmpGroupsFields=$tmpPersonsFields=$tmpSwitchOption=null;
 					$mailsMenuClass=($tmpContainer->_typeId==Ctrl::$curSpace->_typeId)  ?  "vMailsMenuDisplay"  :  null;//par défaut, on n'affiche que les users de l'espace courant
-					//// GROUPES D'USERS
+					////	GROUPES D'USERS (prépare l'affichage)
 					if($tmpContainer::objectType=="space"){
 						foreach(MdlUserGroup::getGroups($tmpContainer) as $tmpGroup){
 							$tmpBoxId=$tmpContainer->_typeId.$tmpGroup->_typeId;
 							$tmpGroupsFields.="<div title=\"".Txt::tooltip($tmpGroup->usersLabel)."\"><input type='checkbox' name=\"groupList[]\" value=\"".$tmpGroup->_typeId."\" id=\"".$tmpBoxId."\"> <label for=\"".$tmpBoxId."\"><img src='app/img/user/accessGroup.png'> ".$tmpGroup->title."</label></div>";
 						}
 					}
-					//// PERSONNES DU CONTENEUR
+					////	PERSONNES DU CONTENEUR (prépare l'affichage)
 					foreach($tmpContainer->personList as $tmpPerson)
 					{
 						if(empty($tmpPerson->mail))  {continue;}														//zap les personnes sans mails
@@ -138,11 +138,11 @@ function formControl()
 						$tmpPersonsFields.="<div title=\"".Txt::tooltip($tmpPerson->mail)."\"><input type='checkbox' name=\"personList[]\" value=\"".$tmpPerson->_typeId."\" id=\"".$tmpBoxId."\" ".$tmpPerson->mailChecked."> <label for=\"".$tmpBoxId."\">".$tmpPerson->getLabel()."</label></div>";
 						$cptPerson++;
 					}
-					//// BOUTON SWITCH LA SELECTION (5 pers. minimum)
+					////	BOUTON SWITCH LA SELECTION (5 pers. minimum)
 					if(count($tmpContainer->personList)>=5)
 						{$tmpSwitchOption="<div class='sLink' onclick=\"$('#mailsContainer".$tmpContainer->_typeId." input[name^=personList]').trigger('click');\"><img src='app/img/switch.png'> ".Txt::trad("selectSwitch")."</div>";}
-					//// AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
-					echo "<div class='vMailsBlock' ".($tmpContainer::objectType=="contactFolder"?"data-treeLevel='".$tmpContainer->treeLevel."'":null).">
+					////	AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
+					echo "<div class='vMailsBlock' ".($tmpContainer::isFolder==true?"data-folderTreeLevel='".$tmpContainer->treeLevel."'":null).">
 							<div class='vMailsLabel sLink' data-typeId=\"".$tmpContainer->_typeId."\">
 								<div><img src=\"app/img/mail/".($tmpContainer::objectType=="space"?"user":"contact").".png\"></div>
 								<div>".$tmpContainer->name." <img src='app/img/arrowBottom.png'></div>

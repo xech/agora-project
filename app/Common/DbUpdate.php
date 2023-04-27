@@ -24,7 +24,7 @@ class DbUpdate extends Db
 			else										{throw new Exception("dbInstall_dbEmpty");}//Sinon renvoi une Exception "dbInstall"
 		}
 		//Renvoie "true" si l'appli doit être mise à jour en Bdd
-		return version_compare($_SESSION["dbVersionAgora"],VERSION_AGORA,"<");
+		return version_compare($_SESSION["dbVersionAgora"],Req::appVersion(),"<");
 	}
 
 	/********************************************************************************************
@@ -871,16 +871,24 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_agora","gSignin"))  		{self::query("ALTER TABLE ap_agora CHANGE `gSignin` `gIdentity` tinyint DEFAULT NULL");}
 				if(self::fieldExist("ap_agora","gSigninClientId"))  {self::query("ALTER TABLE ap_agora CHANGE `gSigninClientId` `gIdentityClientId` varchar(255) DEFAULT NULL");}
 			}
-			//// ATTENTION !! ===>  MODIFIER SQL D'INSTALL "db.sql"  +  "changelog.txt"  +  N° DE VERSION DANS "Params.php" / "common-xx.js" / "common-xx.css"
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			if(self::updateVersion("23.4.1"))
+			{
+				//Ajoute la table pour la connexion auto via token
+				self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+			}
+			////	MODIFIER :  DB.SQL  +  CHANGELOG.TXT  +  VERSION.TXT  !!!!
+			//////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////
 
 
 			////	MAJ "dateUpdateDb" && "version_agora"
-			self::query("UPDATE ap_agora SET dateUpdateDb=".Db::dateNow().", version_agora='".VERSION_AGORA."'");
-			////	SUPPRIME $updateLOCK
-			File::rm($updateLOCK);
+			self::query("UPDATE ap_agora SET dateUpdateDb=".Db::dateNow().", version_agora='".Req::appVersion()."'");
 			////	OPTIMISE LES TABLES
-			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)    {self::query("OPTIMIZE TABLE `".$tableName."`");}
+			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
+			////	SUPPRIME $updateLOCK ET SI BESOIN LE ".htaccess"
+			File::rm($updateLOCK);
+			if(preg_match("/free\.fr/i",$_SERVER['HTTP_HOST']))  {File::rm("app/.htaccess");}
 			////	REINIT LA SESSION & REDIRECTION
 			$_SESSION=[];
 			Ctrl::redir("?ctrl=offline");

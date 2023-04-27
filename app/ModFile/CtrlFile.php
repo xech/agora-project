@@ -275,7 +275,7 @@ class CtrlFile extends Ctrl
 					////	Prepare la notif mail (Affiche le nom des 15 premiers fichiers ..puis le nombre de fichiers restant)
 					if(count($notifFilesLabel)<15)		{$notifFilesLabel[]=$tmpObj->name;}
 					elseif(count($notifFilesLabel)==15)	{$notifFilesLabel[]="... + ".(count($newFiles)-15)." ".Txt::trad("OBJECTfile")."s";}
-					////	Joint le fichier à la notif? pas plus de 20 fichiers et 20Mo
+					////	Joint le fichier à la notif (limite à 20 fichiers)
 					if(Req::isParam("notifMailAddFiles") && count($notifFiles)<=20)  {$notifFiles[]=array("path"=>$tmpObj->filePath(),"name"=>$tmpObj->name);}
 				}
 			}

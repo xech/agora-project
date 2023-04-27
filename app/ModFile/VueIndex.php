@@ -23,14 +23,15 @@
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
-			////	AJOUT D'ELEMENTS
+			////	MENU DE SELECTION MULTIPLE  &&  MENU D'AJOUT D'ELEMENTS
+			echo MdlFile::menuSelectObjects();
 			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FILE_addFile")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlFileFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
-			////	ARBORESCENCE  &  MENU DE SELECTION/AFFICHAGE/TRI  &  DESCRIPTION DU CONTENU  &  ESPACE DISQUE
-			echo CtrlObject::folderTreeMenu().MdlFile::menuSelectObjects().MdlFile::menuDisplayMode().MdlFile::menuSort();
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU  &  ESPACE DISQUE
+			echo CtrlObject::folderTreeMenu().MdlFile::menuDisplayMode().MdlFile::menuSort();
 			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
 			if(!empty($fillRateBar))  {echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/diskSpace".($diskSpaceAlert==true?"Alert":null).".png'></div><div>".$fillRateBar."</div></div>";}
 			?>

@@ -48,7 +48,7 @@ echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 	}
 
 	////	OBJET USER : EDIT DU MESSENGER / SUPPRIMER DE L'ESPACE / ESPACES AFFECTES A L'USER
-	if(!empty($editMessengerObjUrl))		{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$editMessengerObjUrl."')\"><div class='menuIcon'><img src='app/img/messengerSmall.png'></div><div>".Txt::trad("USER_messengerEdit2")."</div></div>";}
+	if(!empty($userEditMessengerUrl))		{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$userEditMessengerUrl."')\"><div class='menuIcon'><img src='app/img/messengerSmall.png'></div><div>".Txt::trad("USER_messengerEdit2")."</div></div>";}
 	if(!empty($deleteFromCurSpaceConfirm))	{echo "<div class='menuLine sLink' onclick=\"".$deleteFromCurSpaceConfirm."\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteFromCurSpace")."</div></div>";}
 	if(!empty($userSpaceList))				{echo "<hr><div class='menuLine'><div class='menuIcon'><img src='app/img/space.png'></div><div>".$userSpaceList."</div></div>";}
 

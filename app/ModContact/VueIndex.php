@@ -13,17 +13,18 @@ function contactAddUser(typeId)
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
 			<?php
-			////	AJOUT D'ELEMENTS
+			////	MENU DE SELECTION MULTIPLE  &&  MENU D'AJOUT D'ELEMENTS
+			echo MdlContact::menuSelectObjects();
 			if(Ctrl::$curContainer->addContentRight()){
 				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
 					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
 				if(Ctrl::$curUser->isAdminSpace())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_contact")."</div></div>";}
 				echo "<hr>";
 			}
-			////	ARBORESCENCE  &  MENU DE SELECTION/AFFICHAGE/TRI
-			echo CtrlObject::folderTreeMenu().MdlContact::menuSelectObjects().MdlContact::menuDisplayMode().MdlContact::menuSort();
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			echo CtrlObject::folderTreeMenu().MdlContact::menuDisplayMode().MdlContact::menuSort();
+			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
 			?>
-			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= Ctrl::$curContainer->folderContentDescription() ?></div></div>
 		</div>
 	</div>
 	<div id="pageFullContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">

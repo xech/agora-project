@@ -12,13 +12,13 @@ CREATE TABLE `ap_agora` (
   `skin` varchar(255) DEFAULT NULL,
   `footerHtml` text,
   `usersLike` varchar(255) DEFAULT NULL,
-  `usersComment` tinyint(1) unsigned DEFAULT NULL,
+  `usersComment` tinyint(1) UNSIGNED DEFAULT NULL,
   `mapTool` varchar(255) DEFAULT 'gmap',
   `mapApiKey` varchar(255) DEFAULT NULL,
   `gIdentity` tinyint(1) DEFAULT NULL,
   `gIdentityClientId` varchar(255) DEFAULT NULL,
   `gPeopleApiKey` varchar(255) DEFAULT NULL,
-  `messengerDisabled` tinyint(1) unsigned DEFAULT NULL,
+  `messengerDisabled` tinyint(1) UNSIGNED DEFAULT NULL,
   `moduleLabelDisplay` varchar(255) DEFAULT NULL,
   `folderDisplayMode` varchar(255) DEFAULT NULL,
   `personsSort` varchar(255) DEFAULT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE `ap_agora` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_calendar` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `type` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text,
@@ -47,19 +47,19 @@ CREATE TABLE `ap_calendar` (
   `propositionNotify` varchar(1) DEFAULT NULL,
   `propositionGuest` varchar(1) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_calendarEvent` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `dateBegin` datetime DEFAULT NULL,
   `dateEnd` datetime DEFAULT NULL,
-  `_idCat` smallint(5) unsigned DEFAULT NULL,
-  `important` tinyint(1) unsigned DEFAULT NULL,
+  `_idCat` smallint(5) UNSIGNED DEFAULT NULL,
+  `important` tinyint(1) UNSIGNED DEFAULT NULL,
   `contentVisible` varchar(255) DEFAULT NULL,
   `visioUrl` varchar(255) DEFAULT NULL,
   `periodType` varchar(255) DEFAULT NULL,
@@ -67,34 +67,34 @@ CREATE TABLE `ap_calendarEvent` (
   `periodDateEnd` date DEFAULT NULL,
   `periodDateExceptions` text,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `guest` varchar(255) DEFAULT NULL,
   `guestMail` varchar(255) DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_calendarEventAffectation` (
-  `_idEvt` mediumint(8) unsigned NOT NULL,
-  `_idCal` mediumint(8) unsigned NOT NULL,
-  `confirmed` tinyint(1) unsigned DEFAULT NULL
+  `_idEvt` mediumint(8) UNSIGNED NOT NULL,
+  `_idCal` mediumint(8) UNSIGNED NOT NULL,
+  `confirmed` tinyint(1) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_calendarEventCategory` (
-  `_id` smallint(5) unsigned NOT NULL,
+  `_id` smallint(5) UNSIGNED NOT NULL,
   `_idSpaces` text,
   `title` varchar(255) DEFAULT NULL,
   `description` text,
   `color` varchar(255) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_contact` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `civility` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `firstName` varchar(255) DEFAULT NULL,
@@ -109,114 +109,114 @@ CREATE TABLE `ap_contact` (
   `telmobile` varchar(255) DEFAULT NULL,
   `mail` text,
   `comment` text,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_contactFolder` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
   `icon` varchar(255) DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_dashboardNews` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `description` text CHARACTER SET utf8mb4,
-  `une` tinyint(1) unsigned DEFAULT NULL,
-  `offline` tinyint(1) unsigned DEFAULT NULL,
+  `une` tinyint(1) UNSIGNED DEFAULT NULL,
+  `offline` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateOnline` datetime DEFAULT NULL,
   `dateOffline` datetime DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_file` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
   `octetSize` int(11) DEFAULT NULL,
-  `downloadsNb` int(10) unsigned NOT NULL DEFAULT '0',
+  `downloadsNb` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `downloadedBy` varchar(10000) DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_fileFolder` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
   `icon` varchar(255) DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_fileVersion` (
-  `_idFile` mediumint(8) unsigned DEFAULT NULL,
+  `_idFile` mediumint(8) UNSIGNED DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `realName` text,
-  `octetSize` int(10) unsigned DEFAULT NULL,
+  `octetSize` int(10) UNSIGNED DEFAULT NULL,
   `description` text,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_forumMessage` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idMessageParent` int(10) unsigned DEFAULT NULL,
-  `_idContainer` mediumint(8) unsigned DEFAULT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idMessageParent` int(10) UNSIGNED DEFAULT NULL,
+  `_idContainer` mediumint(8) UNSIGNED DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text CHARACTER SET utf8mb4,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_forumSubject` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text CHARACTER SET utf8mb4,
   `_idTheme` smallint(6) DEFAULT NULL,
   `dateLastMessage` datetime DEFAULT NULL,
   `usersConsultLastMessage` varchar(10000) DEFAULT NULL,
   `usersNotifyLastMessage` varchar(10000) DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_forumTheme` (
-  `_id` smallint(5) unsigned NOT NULL,
+  `_id` smallint(5) UNSIGNED NOT NULL,
   `_idSpaces` text,
   `title` varchar(255) DEFAULT NULL,
   `description` text,
   `color` varchar(255) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_invitation` (
@@ -227,46 +227,46 @@ CREATE TABLE `ap_invitation` (
   `mail` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_joinSpaceModule` (
-  `_idSpace` smallint(5) unsigned DEFAULT NULL,
+  `_idSpace` smallint(5) UNSIGNED DEFAULT NULL,
   `moduleName` varchar(255) DEFAULT NULL,
-  `rank` tinyint(1) unsigned DEFAULT NULL,
+  `rank` tinyint(1) UNSIGNED DEFAULT NULL,
   `options` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_joinSpaceUser` (
-  `_idSpace` smallint(5) unsigned DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
-  `allUsers` tinyint(1) unsigned DEFAULT NULL,
+  `_idSpace` smallint(5) UNSIGNED DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
+  `allUsers` tinyint(1) UNSIGNED DEFAULT NULL,
   `accessRight` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_link` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `adress` text,
   `description` text,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_linkFolder` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
   `icon` varchar(255) DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_log` (
@@ -282,24 +282,24 @@ CREATE TABLE `ap_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_mail` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `recipients` text,
   `title` text,
   `description` text CHARACTER SET utf8mb4,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_objectAttachedFile` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `name` text,
   `objectType` varchar(255) DEFAULT NULL,
-  `_idObject` mediumint(8) unsigned DEFAULT NULL,
-  `downloadsNb` int(10) unsigned NOT NULL DEFAULT '0'
+  `_idObject` mediumint(8) UNSIGNED DEFAULT NULL,
+  `downloadsNb` int(10) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `ap_objectComment` (
-  `_id` mediumint(8) unsigned not null,
+  `_id` mediumint(8) UNSIGNED not null,
   `objectType` varchar(255) NOT NULL,
   `_idObject` mediumint(8) NOT NULL,
   `_idUser` mediumint(8) NOT NULL,
@@ -316,60 +316,60 @@ CREATE TABLE IF NOT EXISTS `ap_objectLike` (
 
 CREATE TABLE `ap_objectTarget` (
   `objectType` varchar(255) DEFAULT NULL,
-  `_idObject` mediumint(8) unsigned DEFAULT NULL,
-  `_idSpace` smallint(5) unsigned DEFAULT NULL,
+  `_idObject` mediumint(8) UNSIGNED DEFAULT NULL,
+  `_idSpace` smallint(5) UNSIGNED DEFAULT NULL,
   `target` varchar(255) DEFAULT NULL,
-  `accessRight` float unsigned DEFAULT NULL
+  `accessRight` float UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_space` (
-  `_id` smallint(5) unsigned NOT NULL,
+  `_id` smallint(5) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
-  `public` tinyint(1) unsigned DEFAULT NULL,
+  `public` tinyint(1) UNSIGNED DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `userInscription` tinyint(1) unsigned DEFAULT NULL,
-  `userInscriptionNotify` tinyint(1) unsigned DEFAULT NULL,
-  `usersInvitation` tinyint(1) unsigned DEFAULT NULL,
+  `userInscription` tinyint(1) UNSIGNED DEFAULT NULL,
+  `userInscriptionNotify` tinyint(1) UNSIGNED DEFAULT NULL,
+  `usersInvitation` tinyint(1) UNSIGNED DEFAULT NULL,
   `wallpaper` varchar(255) DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_task` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `title` text,
   `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `priority` varchar(255) DEFAULT NULL,
-  `advancement` tinyint(1) unsigned DEFAULT NULL,
+  `advancement` tinyint(1) UNSIGNED DEFAULT NULL,
   `responsiblePersons` text,
   `dateBegin` datetime DEFAULT NULL,
   `dateEnd` datetime DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_taskFolder` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idContainer` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idContainer` mediumint(8) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
   `icon` varchar(255) DEFAULT NULL,
-  `shortcut` tinyint(1) unsigned DEFAULT NULL,
+  `shortcut` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_user` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `civility` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `firstName` varchar(255) DEFAULT NULL,
@@ -386,32 +386,38 @@ CREATE TABLE `ap_user` (
   `function` text,
   `companyOrganization` text,
   `comment` text,
-  `lastConnection` int(10) unsigned DEFAULT NULL,
-  `previousConnection` int(10) unsigned DEFAULT NULL,
-  `generalAdmin` tinyint(1) unsigned DEFAULT NULL,
+  `lastConnection` int(10) UNSIGNED DEFAULT NULL,
+  `previousConnection` int(10) UNSIGNED DEFAULT NULL,
+  `generalAdmin` tinyint(1) UNSIGNED DEFAULT NULL,
   `lang` varchar(255) DEFAULT NULL,
   `connectionSpace` varchar(255) DEFAULT NULL,
-  `calendarDisabled` tinyint(1) unsigned DEFAULT NULL,
+  `calendarDisabled` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ap_userAuthToken` (
+  `_idUser` mediumint(8) UNSIGNED NOT NULL,
+  `userAuthToken` varchar(255) NOT NULL,
+  `dateCrea` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_userGroup` (
-  `_id` smallint(5) unsigned NOT NULL,
+  `_id` smallint(5) UNSIGNED NOT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `_idSpace` mediumint(8) unsigned DEFAULT NULL,
+  `_idSpace` mediumint(8) UNSIGNED DEFAULT NULL,
   `_idUsers` text,
   `dateCrea` datetime DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_userInscription` (
-  `_id` mediumint(8) unsigned NOT NULL,
-  `_idSpace` smallint(5) unsigned DEFAULT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
+  `_idSpace` smallint(5) UNSIGNED DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `firstName` varchar(255) DEFAULT NULL,
   `mail` varchar(255) DEFAULT NULL,
@@ -422,7 +428,7 @@ CREATE TABLE `ap_userInscription` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_userLivecouter` (
-  `_idUser` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `_idUser` mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   `ipAdress` varchar(255) DEFAULT NULL,
   `editTypeId` varchar(255) DEFAULT NULL,
   `editorDraft` text CHARACTER SET utf8mb4 DEFAULT NULL,
@@ -431,13 +437,13 @@ CREATE TABLE `ap_userLivecouter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_userMessenger` (
-  `_idUserMessenger` mediumint(8) unsigned DEFAULT NULL,
-  `allUsers` tinyint(1) unsigned DEFAULT NULL,
-  `_idUser` mediumint(8) unsigned DEFAULT NULL
+  `_idUserMessenger` mediumint(8) UNSIGNED DEFAULT NULL,
+  `allUsers` tinyint(1) UNSIGNED DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_userMessengerMessage` (
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `_idUsers` text,
   `message` text CHARACTER SET utf8mb4,
   `color` varchar(255) DEFAULT NULL,
@@ -445,37 +451,37 @@ CREATE TABLE `ap_userMessengerMessage` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_userPreference` (
-  `_idUser` mediumint(8) unsigned DEFAULT NULL,
+  `_idUser` mediumint(8) UNSIGNED DEFAULT NULL,
   `keyVal` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_dashboardPoll` (
-  `_id` mediumint(8) unsigned NOT NULL,
+  `_id` mediumint(8) UNSIGNED NOT NULL,
   `title` varchar(200) NOT NULL,
   `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
-  `multipleResponses` tinyint(1) unsigned DEFAULT NULL,
-  `newsDisplay` tinyint(1) unsigned DEFAULT NULL,
-  `publicVote` tinyint(1) unsigned DEFAULT NULL,
+  `multipleResponses` tinyint(1) UNSIGNED DEFAULT NULL,
+  `newsDisplay` tinyint(1) UNSIGNED DEFAULT NULL,
+  `publicVote` tinyint(1) UNSIGNED DEFAULT NULL,
   `dateCrea` datetime NOT NULL,
-  `_idUser` mediumint(8) unsigned NOT NULL,
+  `_idUser` mediumint(8) UNSIGNED NOT NULL,
   `dateModif` datetime DEFAULT NULL,
-  `_idUserModif` mediumint(8) unsigned DEFAULT NULL
+  `_idUserModif` mediumint(8) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_dashboardPollResponse` (
   `_id` varchar(255) NOT NULL,
-  `_idPoll` mediumint(8) unsigned NOT NULL,
+  `_idPoll` mediumint(8) UNSIGNED NOT NULL,
   `label` varchar(500) NOT NULL,
-  `rank` tinyint(2) unsigned NOT NULL,
+  `rank` tinyint(2) UNSIGNED NOT NULL,
   `fileName` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ap_dashboardPollResponseVote` (
-  `_idUser` mediumint(8) unsigned NOT NULL,
+  `_idUser` mediumint(8) UNSIGNED NOT NULL,
   `_idResponse` varchar(255) NOT NULL,
-  `_idPoll` mediumint(8) unsigned NOT NULL
+  `_idPoll` mediumint(8) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -518,29 +524,29 @@ ALTER TABLE `ap_dashboardPollResponse`		ADD PRIMARY KEY (`_id`(20));
 ALTER TABLE `ap_dashboardPollResponseVote`	ADD PRIMARY KEY (`_idUser`,`_idResponse`(20));
 
 
-ALTER TABLE `ap_calendar`				        MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_calendarEvent`			    MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_calendarEventCategory`	MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_contact`			        	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_contactFolder`		    	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_dashboardNews`		    	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_file`				        	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_fileFolder`			    	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_forumMessage`		    	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_forumSubject`		    	  MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_forumTheme`			      	MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_link`					          MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_linkFolder`				      MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_mail`			              MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_objectAttachedFile`     MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_objectComment`		      MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_space`				        	MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_task`				          	MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_taskFolder`		          MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_user`					          MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_userGroup`				      MODIFY `_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_userInscription`	      MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
-ALTER TABLE `ap_dashboardPoll`			    MODIFY `_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_calendar`				        MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_calendarEvent`			    MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_calendarEventCategory`	MODIFY `_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_contact`			        	MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_contactFolder`		    	MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_dashboardNews`		    	MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_file`				        	  MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_fileFolder`			    	  MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_forumMessage`		    	  MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_forumSubject`		    	  MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_forumTheme`			      	MODIFY `_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_link`					          MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_linkFolder`				      MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_mail`			              MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_objectAttachedFile`     MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_objectComment`		      MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_space`				        	MODIFY `_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_task`				          	MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_taskFolder`		          MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_user`					          MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_userGroup`				      MODIFY `_id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_userInscription`	      MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `ap_dashboardPoll`			    MODIFY `_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 
 
@@ -549,7 +555,7 @@ INSERT INTO ap_agora SET name='Omnispace / Agora-Project', personsSort='firstNam
 
 INSERT INTO ap_space SET _id=1, usersInvitation=1;
 
-INSERT INTO ap_user SET _id=1, generalAdmin=1;
+INSERT INTO ap_user SET _id=1, generalAdmin=1, dateCrea=NOW(), _idUser=1;
 
 INSERT INTO ap_userMessenger SET _idUserMessenger=1, allUsers=1;
 

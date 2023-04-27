@@ -292,11 +292,11 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * CRÉÉ UN IDENTIFIANT UNIQUE D'UNE CERTAINE LONGEUR
+	 * CRÉÉ UN IDENTIFIANT UNIQUE D'UNE CERTAINE LONGEUR (MAX 32 CARACTÈRES)
 	 *******************************************************************************************/
 	public static function uniqId($length=15)
 	{
-		//"uniqid()" se base sur le microtime du systeme : on ajoute donc un prefixe via "rand()" et mouline le tout en "md5()"
+		//"uniqid()" utilise le microtime du systeme : on ajoute donc un prefixe "rand()"
 		return substr(md5(uniqid(rand())), 0, $length);
 	}
 

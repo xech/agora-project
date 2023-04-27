@@ -12,11 +12,7 @@ $OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "https://".$_SERVER['SERVER_NAME'
 define("OMNISPACE_URL_PUBLIC", $OMNISPACE_URL_PUBLIC);
 define("OMNISPACE_URL_LABEL","www.omnispace.fr");
 
-////    VERSIONS
-define("VERSION_AGORA","23.2.3");			//Version courante d'AP
-define("VERSION_AGORA_PHP_MINIMUM","5.5");	//Version minimum de PHP
-
-////    INIT LE "PATH_DATAS" & CHEMINS SPÉCIFIQUES
+////    PATH DES "DATAS" & PATHS SPÉCIFIQUES
 if(is_file("Host.php"))	{require_once "Host.php";  Host::initHost();}
 else					{define("PATH_DATAS","DATAS/");}
 define("PATH_TMP", PATH_DATAS."tmp/");

@@ -24,7 +24,6 @@
 	public static $sortFields=["name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc"];
 	//Valeurs en cache
 	private $_contentDescription=null;
-	private $_visibleFolderTree=null;
 
 	/*******************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
@@ -105,6 +104,16 @@
 			}
 			//Suppression récursive d'un dossier (cf. "$tmpFolder->delete(false);")
 			else {parent::delete();}
+		}
+	}
+
+	/*******************************************************************************************
+	 * CONTROLE SI UN DOSSIER SE TROUVE DANS L'ARBORECENCE DU DOSSIER COURANT
+	 *******************************************************************************************/
+	public function isInFolderTree($folderId)
+	{
+		foreach($this->folderTree("all") as $tmpFolder){
+			if($folderId==$tmpFolder->_id)  {return true;}
 		}
 	}
 
@@ -193,41 +202,37 @@
 	}
 
 	/*******************************************************************************************
-	 * ARBORESCENCE D'OBJETS DOSSIERS (FONCTION RÉCURSIVE)
+	 * ARBORESCENCE D'OBJETS DOSSIERS (fonc. récursive)
 	 *******************************************************************************************/
-	public function folderTree($accessRightMini=1, $curFolder=null, $treeLevel=0)
+	public function folderTree($accessRightMin=1, $curFolder=null, $treeLevel=0)
 	{
-		//// Arborescence "visible" déjà en cache : renvoie le résultat
-		if($treeLevel==0 && $accessRightMini==1 && !empty($this->_visibleFolderTree))  {return $this->_visibleFolderTree;}
-		//// Init la liste des sous-dossiers && le dossier de départ de toute l'arborescence
-		$folderList=[];
+		////	Arbo du dossier racine (arbo complete) : renvoi l'arbo en cache?
+		$isRootFolderTree=($accessRightMin==1 && $treeLevel==0);									//Verif si on récupère l'arbo complete du dossier racine (dont l'user a accès: "$accessRightMin=1")
+		if($isRootFolderTree==true){																//Idem
+			$rootFolderTreeSessKey="rootFolderTree_".static::objectType."_".Ctrl::$curSpace->_id;	//Clé de session de l'arbo root (prend en compte le module et l'espace concerné)
+			$rootFolderTreeSessKeyTime=$rootFolderTreeSessKey."_time";								//Clé de session de son timestamp (cf. verif de l'update suivante)
+			$rootFolderTreeLastModifTime=Db::getVal("SELECT MAX(UNIX_TIMESTAMP(date)) FROM ap_log WHERE objectType='".static::objectType."'");								//Date de dernière modif de l'arbo dans les logs
+			if(isset($_SESSION[$rootFolderTreeSessKey]) && $_SESSION[$rootFolderTreeSessKeyTime]>$rootFolderTreeLastModifTime)  {return $_SESSION[$rootFolderTreeSessKey];}	//Renvoie l'arbo en cache !
+		}
+		////	Init l'arbo finale & Ajoute si besoin le dossier de départ de l'arbo
+		$curFolderTree=[];
 		if($curFolder==null)  {$curFolder=$this;}
-		//// Ajoute le dossier courant ?
-		if($accessRightMini=="all" || $curFolder->accessRight()>=$accessRightMini)
-		{
-			//Ajoute le dossier courant à la liste, avec son niveau
-			$curFolder->treeLevel=$treeLevel;
-			$folderList[]=$curFolder;
-			//Récupère récursivement les sous-dossiers du dossier courant (tjs triés par nom)  =>  tous les sous-dossiers ("all")  OU  les sous-dossiers en fonction de leur droit d'accès ("sqlDisplay()") 
-			$sqlDisplay=($accessRightMini=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);
-			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlDisplay." ORDER BY name ASC")  as $subFolder){
-				$subFolders=$this->folderTree($accessRightMini, $subFolder, $treeLevel+1);
-				$folderList=array_merge($folderList,$subFolders);
+		////	Ajoute le dossier courant
+		if($accessRightMin=="all" || $curFolder->accessRight()>=$accessRightMin){																	//Vérif le droit d'accès au dossier courant
+			$curFolder->treeLevel=$treeLevel;																										//Ajoute le niveau du dossier courant
+			$curFolderTree[]=$curFolder;																											//Ajoute à l'arbo le dossier courant
+			$sqlFilter=($accessRightMin=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);								//Tous les dossiers ("all")  ||  Dossiers en fonction des droits d'accès
+			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlFilter." ORDER BY name ASC") as $subFolder){	//Récupère les sous-dossiers du dossier courant (triés par nom)
+				$subFolderTree=$this->folderTree($accessRightMin, $subFolder, $treeLevel+1);														//Lance récursivement la fonction pour récupérer leurs sous-dossiers !
+				$curFolderTree=array_merge($curFolderTree,$subFolderTree);																			//Ajoute tous les sous-dossiers à l'arbo courante
 			}
 		}
-		//// Arborescence "visible" pas encore en cache : ajoute l'arborescence (cf. pour controler si on affiche l'option "Déplacer dans un autre dossier" dans les menus contextuels)
-		if($treeLevel==0 && $accessRightMini==1 && $this->_visibleFolderTree===null)  {$this->_visibleFolderTree=$folderList;}
-		//// Renvoie le résultat
-		return $folderList;
-	}
-
-	/*******************************************************************************************
-	 * CONTROLE SI UN DOSSIER SE TROUVE DANS L'ARBORECENCE DU DOSSIER COURANT
-	 *******************************************************************************************/
-	public function isInFolderTree($folderId)
-	{
-		foreach($this->folderTree("all") as $tmpFolder){
-			if($folderId==$tmpFolder->_id)  {return true;}
+		////	Arborescence du dossier racine : met en cache
+		if($isRootFolderTree==true){
+			$_SESSION[$rootFolderTreeSessKey]=$curFolderTree;	//Ajoute en cache l'arbo du dossier racine
+			$_SESSION[$rootFolderTreeSessKeyTime]=time();		//Timestamp de l'arbo mise en cache
 		}
+		////	Renvoie l'arborescence finale
+		return $curFolderTree;
 	}
 }

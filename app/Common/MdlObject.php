@@ -155,7 +155,7 @@ class MdlObject
 	public function containerObj()
 	{
 		if($this->_containerObj===null && !empty($this->_idContainer)){
-			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;//l'objet courant est un dossiers || Récupère le modèle de l'objet parent
+			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;//Récup le modèle du dossier courant || Récup le modèle de l'objet parent
 			$this->_containerObj=Ctrl::getObj($MdlObjectContainer,$this->_idContainer);
 		}
 		return $this->_containerObj;
@@ -223,21 +223,23 @@ class MdlObject
 		}
 	}
 
-	/*******************************************************************************************
-	 * RÉCUPÈRE LE DROIT D'ACCÈS DE L'USER COURANT SUR L'OBJET :  element conteneur (dossier, agenda, sujet, etc)  OU  element basique (actualité, fichier, taches, etc)
-	 *		3	[total]					element conteneur	-> modif/suppression du conteneur + modif/suppression des elements contenus (de premier niveau*)
-	 *									element basique		-> modif/suppression
-	 *		2	[ecriture]				element conteneur	-> lecture du conteneur + modif/suppression des elements contenus (de premier niveau*)
-	 *									element basique		-> modif/suppression
-	 *		1.5	[ecriture limité]		element conteneur	-> lecture du conteneur + modif/suppression du contenu qu'on a créé
-	 *									element basique		-> -non disponible-
-	 *		1	[lecture]				element conteneur	-> lecture du conteneur
-	 *									element basique		-> lecture
-	 *		(*) les éléments d'un dossier (fichier, taches, etc) héritent des droits d'accès de leur dossier conteneur
-	****************************************************************************************** */
+	/*****************************************************************************************************************************************
+	 * RÉCUPÈRE LE DROIT D'ACCÈS DE L'USER COURANT SUR L'OBJET
+	 *		3	[total]					objet indépendant *	-> modif/suppression
+	 *									objet conteneur **	-> modif/suppression du conteneur + modif/suppression de tout le contenu ***
+	 *		2	[ecriture]				objet indépendant *	-> modif/suppression
+	 *									objet conteneur **	-> lecture du conteneur + modif/suppression de tout le contenu ***
+	 *		1.5	[ecriture limité]		objet indépendant *	-> -non disponible-
+	 *									objet conteneur **	-> lecture du conteneur + modif/suppression du contenu créé par l'user courant
+	 *		1	[lecture]				objet indépendant *	-> lecture
+	 *									objet conteneur **	-> lecture du conteneur
+	 *		*	objet indépendant : 		actualités et objets du dossier racine (fichiers, taches, etc)
+	 *		**	objet conteneur : 			dossiers, agendas, sujets du forum
+	 *		***	contenu d'un conteneur :	fichiers, taches, message du forum, etc qui héritent des droits d'accès du dossier conteneur
+	******************************************************************************************************************************************/
 	public function accessRight()
 	{
-		//Init la mise en cache
+		//Mise en cache du droit d'accès
 		if($this->_accessRight===null)
 		{
 			//Init
@@ -362,29 +364,30 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * URL D'ACCÈS À L'OBJET  ($display: "vue"/"edit"/"delete"/default)
+	 * URL D'ACCÈS À L'OBJET  :  $display => "vue" / "edit" / "delete" / "default"
 	****************************************************************************************** */
 	public function getUrl($display=null)
 	{
-		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe pas encore (ou plus)
+		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe plus ou pas encore
 		else
 		{
-			$urlBase="?ctrl=".static::moduleName."&typeId=";
-			if($display=="vue")									{return $urlBase.$this->_typeId."&action=Vue".static::objectType;}							//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
-			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=FolderEdit&typeId=".$this->_typeId;}							//Edite un dossier dans une lightbox via "actionFolderEdit()"
-			elseif($display=="edit")							{return $urlBase.$this->_typeId."&action=".static::objectType."Edit";}						//Edite un objet dans une lightbox
+			$urlCtrl="?ctrl=".static::moduleName;
+			if($display=="vue")									{return $urlCtrl."&typeId=".$this->_typeId."&action=Vue".static::objectType;}				//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
 			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}	//Url de suppression via "CtrlObject->delete()"
-			elseif(static::isContainerContent())				{return $urlBase.$this->containerObj()->_typeId."&typeIdChild=".$this->_typeId;}			//Affichage par défaut d'un "content" dans son "Container" (file/contact/task/link/forumMessage). Surchargé pour les "calendarEvent" car on doit sélectionner l'agenda principal de l'evt
-			else												{return $urlBase.$this->_typeId;}															//Affichage par défaut (Folder,news,forumSubject...)
+			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=folderEdit&typeId=".$this->_typeId;}							//Edite un dossier via "actionFolderEdit()"
+			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}			//Edite un objet lambda : via une "action" spécifique
+			elseif(static::isContainerContent())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId."&typeIdChild=".$this->_typeId;}	//Affichage par défaut d'un "content" dans son "Container" (file/contact/task/link/forumMessage). Surchargé pour les "calendarEvent" car on doit sélectionner l'agenda principal de l'evt
+			else												{return $urlCtrl."&typeId=".$this->_typeId;}												//Affichage par défaut (Folder,news,forumSubject...)
 		}
 	}
 
 	/*******************************************************************************************
-	 * URL EXTERNE D'ACCÈS À L'OBJET (notif mail and co)
+	 * URL D'ACCÈS À L'OBJET :  Accès direct à l'élément  ||  Accès depuis une notifs mail
+	 * => Cf. "Ctrl::userConnectionSpaceSelection()"
 	 *******************************************************************************************/
 	public function getUrlExternal()
 	{
-		//Cible la page de connexion > l'espace courant > puis le conteneur de l'objet (urlencodé)
+		//Depuis la page de connexion : Cible l'espace courant > puis l'url encodé de l'objet (module + typeId de l'objet)
 		return Req::getCurUrl()."/index.php?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&objUrl=".urlencode($this->getUrl());
 	}
 
@@ -393,7 +396,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public static function getUrlNew()
 	{
-		$url=(static::isFolder==true)  ?  "?ctrl=object&action=FolderEdit"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";//Nouveau dossier / Nouvel objet
+		$url=(static::isFolder==true)  ?  "?ctrl=object&action=FolderEdit"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";//Nouveau dossier ou nouvel objet
 		if(!empty(Ctrl::$curContainer))  {$url.="&_idContainer=".Ctrl::$curContainer->_id;}//Ajoute l'id du container?
 		return $url."&typeId=".static::objectType."-0";
 	}
@@ -444,7 +447,7 @@ class MdlObject
 	{
 		////	Ancien et nouveau dossier
 		$oldFolder=$this->containerObj();
-		$newFolder=Ctrl::getObj(get_class($oldFolder), $newFolderId);
+		$newFolder=Ctrl::getObj($oldFolder::objectType, $newFolderId);
 		////	Objet pas dans une arbo? Droit d'accès pas ok? || dossier de destination inaccessible sur le disque? || Déplace un dossier à l'interieur de lui même?
 		if(static::isInArbo()==false || $this->accessRight()<2 || $newFolder->accessRight()<2 || (static::objectType=="fileFolder" && is_dir($newFolder->folderPath("real"))==false))	{Ctrl::notify(Txt::trad("inaccessibleElem")." : ".$this->name.$this->title);}
 		elseif(static::isFolder && $this->isInFolderTree($newFolderId))																													{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
