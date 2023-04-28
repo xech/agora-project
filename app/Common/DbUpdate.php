@@ -872,10 +872,11 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_agora","gSigninClientId"))  {self::query("ALTER TABLE ap_agora CHANGE `gSigninClientId` `gIdentityClientId` varchar(255) DEFAULT NULL");}
 			}
 
-			if(self::updateVersion("23.4.1"))
+			if(self::updateVersion("23.4.2"))
 			{
 				//Ajoute la table pour la connexion auto via token
-				self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+				if(self::tableExist("ap_userAuthToken")==false)
+					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
 			}
 			////	MODIFIER :  DB.SQL  +  CHANGELOG.TXT  +  VERSION.TXT  !!!!
 			//////////////////////////////////////////////////////////////////

@@ -282,17 +282,17 @@ abstract class Ctrl
 			if($connectViaForm==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
 				$passwordClear=Req::param("connectPassword");
-				$passwordHost=(Req::isHost() && Host::passwordHost($passwordClear));
-				//// Verif si le password correspond à un hash Bcrypt, Sha1 (old) ou Host (specific) : enregistre alors le hash Bcrypt du password (le salt est généré via "password_hash()")
-				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || $passwordHost==true)){
-					if($passwordHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}
+				$passwordVerifyHost=(Req::isHost() && Host::passwordVerify($passwordClear));
+				//// Verif si le password correspond à un hash Bcrypt / Sha1 (old) / Host (specific). Enregistre au besoin le hash Bcrypt du password (le salt est généré via "password_hash()")
+				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || $passwordVerifyHost==true)){
+					if($passwordVerifyHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}
 					$userAuthentified=true;
 				}
 			}
 			////	CONNEXION AUTO VIA TOKEN
 			elseif($connectViaToken==true){
-				$userAuthToken=explode("@@@",$_COOKIE["userAuthToken"]);
-				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($userAuthToken[0])." AND T2.userAuthToken=".Db::format($userAuthToken[1]));
+				$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
+				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
 				if(!empty($tmpUser))  {$userAuthentified=true;}
 			}
 			////	CONNEXION AUTO VIA L'ANCIENNE METHODE	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
@@ -386,8 +386,8 @@ abstract class Ctrl
 	{
 		//// S'il existe un cookie "userAuthToken" : supprime le token en bdd ..puis le cookie 
 		if(!empty($_COOKIE["userAuthToken"])){
-			$userAuthToken=explode("@@@",$_COOKIE["userAuthToken"]);
-			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($userAuthToken[1]));
+			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
+			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));
 			setcookie("userAuthToken", "", -1);
 		}
 		//// Créé un nouveau token au format Bcrypt : enregistre le token en bdd ..puis en cookie (un an)
