@@ -207,7 +207,7 @@
 	public function folderTree($accessRightMin=1, $curFolder=null, $treeLevel=0)
 	{
 		////	Arbo du dossier racine (arbo complete) : renvoi l'arbo en cache?
-		$isRootFolderTree=($accessRightMin==1 && $treeLevel==0);									//Verif si on récupère l'arbo complete du dossier racine (dont l'user a accès: "$accessRightMin=1")
+		$isRootFolderTree=($this->_id==1 && $accessRightMin==1 && $treeLevel==0);					//Verif si on récupère l'arbo complete du dossier racine (dont l'user a accès: "$accessRightMin=1")
 		if($isRootFolderTree==true){																//Idem
 			$rootFolderTreeSessKey="rootFolderTree_".static::objectType."_".Ctrl::$curSpace->_id;	//Clé de session de l'arbo root (prend en compte le module et l'espace concerné)
 			$rootFolderTreeSessKeyTime=$rootFolderTreeSessKey."_time";								//Clé de session de son timestamp (cf. verif de l'update suivante)
@@ -219,7 +219,7 @@
 		if($curFolder==null)  {$curFolder=$this;}
 		////	Ajoute le dossier courant
 		if($accessRightMin=="all" || $curFolder->accessRight()>=$accessRightMin){																	//Vérif le droit d'accès au dossier courant
-			$curFolder->treeLevel=$treeLevel;																										//Ajoute le niveau du dossier courant
+			$curFolder->treeLevel=$treeLevel;																										//Ajoute le niveau du dossier courant par rapport au dossier demandé
 			$curFolderTree[]=$curFolder;																											//Ajoute à l'arbo le dossier courant
 			$sqlFilter=($accessRightMin=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);								//Tous les dossiers ("all")  ||  Dossiers en fonction des droits d'accès
 			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlFilter." ORDER BY name ASC") as $subFolder){	//Récupère les sous-dossiers du dossier courant (triés par nom)
