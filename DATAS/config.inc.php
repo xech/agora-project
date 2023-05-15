@@ -9,3 +9,4 @@ define("db_name", "test");
 define("limite_espace_disque", "10737418240");
 define("limite_nb_users", "10000");
 define("AGORA_SALT", "");
+

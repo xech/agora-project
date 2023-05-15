@@ -63,3 +63,4 @@ Please try to be as detailed as possible in your report.
   <b>Contacts directory</b><br><br>
   <img src="https://www.agora-project.net/app/img/screenshots/contact.jpg">
 </p>
+
