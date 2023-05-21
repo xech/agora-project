@@ -1,3 +1,12 @@
+VERSION 23.5.0
+###############
+Ajout du nom de l'element dans les confirmations de suppression
+Optimisation du processus de mise à jour de l'appli
+-----
+Add of the name of the element in the confirmation of deletion
+Optimization of the app update process
+
+
 VERSION 23.4.2
 ###############
 Meilleure ergonomie du menu de navigation dans l'arborescence de dossiers
