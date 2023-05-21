@@ -64,11 +64,11 @@ trait MdlObjectMenus
 			////	SUPPRESSION DE L'ESPACE COURANT
 			if($this->deleteFromCurSpaceRight()){
 				$deleteFromCurSpaceUrl="?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id;
-				$vDatas["deleteFromCurSpaceConfirm"]="confirmDelete('".$deleteFromCurSpaceUrl."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')";
+				$vDatas["deleteFromCurSpaceConfirm"]="if(confirm('".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')) redir('".$deleteFromCurSpaceUrl."')";
 			}
-			////	SUPPRESSION DEFINITIVE
+			////	SUPPRESSION DEFINITIVE (double confirmation)
 			if($this->deleteRight()){
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."','".Txt::trad("confirmDeleteDbl",true)."')";
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."',labelConfirmDeleteDbl)";
 				$vDatas["deleteLabel"]=Txt::trad("USER_deleteDefinitely");
 			}
 			////	LISTE DES ESPACES DE L'UTILISATEUR
@@ -94,14 +94,13 @@ trait MdlObjectMenus
 			////	SUPPRIMER
 			if($this->deleteRight())
 			{
-				$confirmDeleteOptions=null;
-				//Suppression d'espace ou de conteneur : Double confirmation
-				if(static::objectType=="space")	{$confirmDeleteOptions=",'".Txt::trad("SPACE_confirmDeleteDbl",true)."'";}	
-				elseif(static::isContainer())	{$confirmDeleteOptions=",'".Txt::trad("confirmDeleteDbl",true)."'";}
-				//Suppression de dossier : controle Ajax (droit  d'accès and co)
-				if(static::isFolder==true)  {$confirmDeleteOptions.=",'?ctrl=object&action=folderDeleteControl&typeId=".$this->_typeId."'";}
+				//Options du "confirmDelete()" 
+				$labelConfirmDbl=$ajaxControlUrl="null";
+				if(static::objectType=="space")	{$labelConfirmDbl="'".Txt::trad("SPACE_confirmDeleteDbl",true)."'";}						//Suppression d'espace : double confirmation spécifique
+				if(static::isContainer())		{$labelConfirmDbl="labelConfirmDeleteDbl";}													//Suppression de conteneur : double confirmation du "VueStructure.php"
+				if(static::isFolder==true)		{$ajaxControlUrl="'?ctrl=object&action=folderDeleteControl&typeId=".$this->_typeId."'";}	//Suppression de dossier : controle d'accès via Ajax
 				//Ajoute l'option
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."' ".$confirmDeleteOptions.")";
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."',".$labelConfirmDbl.",".$ajaxControlUrl.",'".$this->uniqId("objLabel")."')";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	AUTEUR/DATE DE CREATION/MODIF

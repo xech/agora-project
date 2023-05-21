@@ -207,10 +207,10 @@
 	public function folderTree($accessRightMin=1, $curFolder=null, $treeLevel=0)
 	{
 		////	Arbo du dossier racine (arbo complete) : renvoi l'arbo en cache?
-		$isRootFolderTree=($this->_id==1 && $accessRightMin==1 && $treeLevel==0);					//Verif si on récupère l'arbo complete du dossier racine (dont l'user a accès: "$accessRightMin=1")
+		$isRootFolderTree=($this->_id==1 && $accessRightMin==1 && $treeLevel==0);					//Verif si on récupère l'arbo complete du dossier racine
 		if($isRootFolderTree==true){																//Idem
-			$rootFolderTreeSessKey="rootFolderTree_".static::objectType."_".Ctrl::$curSpace->_id;	//Clé de session de l'arbo root (prend en compte le module et l'espace concerné)
-			$rootFolderTreeSessKeyTime=$rootFolderTreeSessKey."_time";								//Clé de session de son timestamp (cf. verif de l'update suivante)
+			$rootFolderTreeSessKey="rootFolderTree_".static::objectType."_".Ctrl::$curSpace->_id;	//Clé de session de l'arbo root   (cf. module et espace courant)
+			$rootFolderTreeSessKeyTime=$rootFolderTreeSessKey."_time";								//Clé de session de son timestamp (cf. verif d'update ci-dessous)
 			$rootFolderTreeLastModifTime=Db::getVal("SELECT MAX(UNIX_TIMESTAMP(date)) FROM ap_log WHERE objectType='".static::objectType."'");								//Date de dernière modif de l'arbo dans les logs
 			if(isset($_SESSION[$rootFolderTreeSessKey]) && $_SESSION[$rootFolderTreeSessKeyTime]>$rootFolderTreeLastModifTime)  {return $_SESSION[$rootFolderTreeSessKey];}	//Renvoie l'arbo en cache !
 		}

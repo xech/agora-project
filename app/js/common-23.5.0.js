@@ -596,12 +596,15 @@ function lightboxClose(urlRedir, urlParms)
 /**************************************************************************************************
  * CONFIRME UNE SUPPRESSION PUIS REDIRIGE POUR EFFECTUER LA SUPPRESION
  **************************************************************************************************/
-function confirmDelete(redirUrl, labelDoubleConfirm, ajaxControlUrl)
+function confirmDelete(redirUrl, labelConfirmDbl, ajaxControlUrl, objLabelId)
 {
-	////	"Confirmer la suppression ?" (cf. VueStructure.php)
-	if(isValue(labelConfirmDelete) && confirm(labelConfirmDelete)==false)  {return false;}
-	////	Double confirmation : "Cette action est définitive : confirmer tout de même ?" (par exemple)
-	if(isValue(labelDoubleConfirm) && confirm(labelDoubleConfirm)==false)  {return false;}
+	////	"labelConfirmDelete" de "VueStructure.php" ("Voulez-vous supprimer...")  &  Ajoute si besoin le label d'un objet (cf "menuContextLabel" et "objLabelId")
+	var labelConfirm=(isValue(labelConfirmDelete))  ?  "\n "+labelConfirmDelete  :  null;
+	if(isValue(objLabelId) && $("#"+objLabelId).exist())  {labelConfirm+=" \n \n -> "+$("#"+objLabelId).text();}
+	////	Confirmation principale
+	if(isValue(labelConfirm) && confirm(labelConfirm)==false)  {return false;}
+	////	Double confirmation (Ex: "labelConfirmDeleteDbl" de "VueStructure.php" ou "SPACE_confirmDeleteDbl")
+	if(isValue(labelConfirmDbl) && confirm(labelConfirmDbl)==false)  {return false;}
 	////	Controle Ajax pour une suppression de dossier : "Certains sous-dossiers ne vous sont pas accessibles [...] confirmer ?"
 	if(isValue(ajaxControlUrl)){
 		$.ajax({url:ajaxControlUrl,dataType:"json"}).done(function(result){
@@ -610,7 +613,7 @@ function confirmDelete(redirUrl, labelDoubleConfirm, ajaxControlUrl)
 		});
 	}
 	////	Redirection pour executer la suppression
-	redir(redirUrl);																							
+	redir(redirUrl);
 }
 
 

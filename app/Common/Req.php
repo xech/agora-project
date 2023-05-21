@@ -215,8 +215,9 @@ class Req
 	{
 		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
 		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
-		//Affiche le message
-        echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage()."<br><br><a href='?ctrl=offline'>Retour</a></h3>";
+		//Affiche le message et si besoin un lien "Retour"
+        echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage();
+		if(preg_match("/error/i",$exception->getMessage())==false)  {echo "<br><br><a href='?ctrl=offline'>Retour</a></h3>";}
 		exit;
     }
 

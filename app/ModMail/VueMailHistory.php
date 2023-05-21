@@ -35,8 +35,8 @@ li									{margin-bottom:20px;}
 		$autorRecipents="<div class='vMailDetail'>".Txt::trad("MAIL_sendBy")." ".Ctrl::getObj("user",$tmpMail->_idUser)->getLabel()." : ".$tmpMail->dateLabel()."</div>".
 						"<div class='vMailDetail'>".Txt::trad("MAIL_recipients")." : ".str_replace(',',' - ',$tmpMail->recipients)."</div>";
 		//Récupération de l'email || Suppression de l'email 
-		$buttonResend="<div class='vMailDetail vMailDetailOption sLink' onclick=\"sendOldMail('".$tmpMail->_typeId."');\" title=\"".Txt::trad("MAIL_resendInfo")."\"><img src='app/img/mail/resend.png'> ".Txt::trad("MAIL_resend")."</div>";
-		$buttonDelete="<div class='vMailDetail vMailDetailOption sLink' onclick=\"confirmDelete('".$tmpMail->getUrl("delete")."');\"><img src='app/img/delete.png'> ".Txt::trad("MAIL_delete")."</div>";
+		$buttonResend="<div class='vMailDetail vMailDetailOption sLink' onclick=\"sendOldMail('".$tmpMail->_typeId."')\" title=\"".Txt::trad("MAIL_resendInfo")."\"><img src='app/img/mail/resend.png'> ".Txt::trad("MAIL_resend")."</div>";
+		$buttonDelete="<div class='vMailDetail vMailDetailOption sLink' onclick=\"confirmDelete('".$tmpMail->getUrl("delete")."')\"><img src='app/img/delete.png'> ".Txt::trad("MAIL_delete")."</div>";
 		//Affiche chaque email envoyé
 		echo "<li>
 				<label onclick=\"$('#mailDetailBlock".$tmpMail->_id."').slideToggle()\">".$tmpMail->title." <img src='app/img/arrowBottom.png'></label>

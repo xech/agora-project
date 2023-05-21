@@ -392,15 +392,17 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * RENVOIE LE DOSSIER TEMPORAIRE DU SYSTÈME "/tmp"  OU  RENVOIE LE DOSSIER TEMPORAIRE "./DATAS/tmp"
+	 * DOSSIER TEMPORAIRE DU SYSTÈME "/tmp"  OU  DOSSIER TEMPORAIRE "./DATAS/tmp"
 	 *******************************************************************************************/
 	public static function getTempDir()
 	{
-		//Dossier temporaire du systeme  ||  Dossier temporaire des hosts indépendants
-		if(Req::isHost())	{$tmpDir=sys_get_temp_dir();}
-		else{
+		//Dossier temporaire du systeme  ||  Dossier temporaire dans /DATAS
+		if(Req::isHost()){
+			$tmpDir=sys_get_temp_dir();
+			if(is_dir(PATH_TMP) && is_writable(PATH_TMP))  {self::rm(PATH_TMP);}//suppr l'ancien PATH_TMP si besoin
+		}else{
 			$tmpDir=rtrim(PATH_TMP,"/");//Path sans le dernier "/"
-			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé le dossier?
+			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé si besoin le dossier
 		}
 		//Supprime les fichiers temporaires de plus de 48h (fichiers tjs présents si le script est interrompu)
 		foreach(scandir($tmpDir) as $tmpFileName){

@@ -119,6 +119,7 @@ audio						{min-width:350px;}
 #pageFull #pageModMenu						{border-radius:0px 4px 4px 0px; padding-left:12px;}/*Menus des modules en affichage full (arborescence)*/
 .menuLaunch									{display:inline-block; cursor:pointer;}/*launcher du menu contextuel*/
 .menuContext								{display:none; position:absolute; z-index:100; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px; box-shadow:0px 0px 8px rgb(80,80,80);}/*cursor 'default' pour pas prendre celui du block conteneur (de l'objet ou autre))*/
+.menuContextLabel							{text-align:center; padding:8px 0px; }
 .menuContext .menuLine>div					{line-height:18px;}
 .menuContext .menuLine>div:last-child		{white-space:nowrap;}/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
 .menuContext hr								{margin:3px 0px!important;}

@@ -46,6 +46,7 @@
 		labelCancel					="<?= Txt::trad("cancel") ?>";
 		labelConfirmCloseForm		="<?= Txt::trad("confirmCloseForm") ?>";
 		labelConfirmDelete			="<?= Txt::trad("confirmDelete") ?>";
+		labelConfirmDeleteDbl		="<?= Txt::trad("confirmDeleteDbl") ?>";
 		labelSpecifyLoginPassword	="<?= Txt::trad("specifyLoginPassword") ?>";
 		labelDateBeginEndControl	="<?= Txt::trad("beginEndError") ?>";
 		labelUploadMaxFilesize		="<?= File::uploadMaxFilesize("error") ?>";
@@ -84,7 +85,7 @@
 		#pageFooterIcon								{right:2px; bottom:3px;}
 		#pageFooterIcon img							{max-height:65px; max-width:200px;}
 		#pageFooterSpecial							{display:inline-block; margin:0px 0px -7px -7px; background-color:rgba(0,0,0,0.7); border-radius:5px; padding:8px; color:#c00; font-weight:bold;}/*host*/
-		#respAddButton, #respMenuBg, #respMenuMain {display:none;}/*Masquer par défaut les principaux elements responsives*/
+		#respAddButton, #respMenuBg, #respMenuMain	{display:none;}/*Masquer par défaut les principaux elements responsives*/
 
 		/*RESPONSIVE*/
 		@media screen and (max-width:1023px){
@@ -96,7 +97,7 @@
 			#respMenuMain #respMenuClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
 			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
-			#respMenuMain hr						{margin:15px 0px;}/*surcharge*/
+			#respMenuMain hr						{margin:10px 0px;}/*surcharge*/
 			#respMenuTwo							{display:none; margin-top:10px; border-radius:5px;}
 			#respMenuTwo, .vHeaderModuleCurrent		{<?= @Ctrl::$agora->skin=="black" ? "background:#444!important;border:solid 1px #555;" : "background:#eee!important;border:solid 1px #ddd;" ?>}
 			#respAddButton							{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/

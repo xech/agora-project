@@ -9,8 +9,8 @@ echo "<img src='app/img/".$iconBurgerImg.".png' for=\"".$curObj->uniqId("objMenu
 ////	MENU CONTEXTUEL
 echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 
-	////	RESPONSIVE : LABEL DE L'OBJET
-	if(Req::isMobile())  {echo "<div class='infos'>".$curObj->getLabel()."</div>";}
+	////	LABEL DE L'OBJET
+	echo "<div class='menuContextLabel' id=\"".$curObj->uniqId("objLabel")."\">".$curObj->getLabel()."</div><hr>";
 
 	////	SÉLECTION DE L'OBJET (objet sélectionnable + user courant pas guest + menu de sélection affiché + n'affiche pas le conteneur courant)
 	if($curObj::isSelectable && Ctrl::$curUser->isUser() && Ctrl::$isMenuSelectObjects==true && (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$curObj->_typeId)){

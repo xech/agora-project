@@ -200,9 +200,10 @@ class Trad extends Txt
 			"tri_descendant"=>"Descendant",
 
 			////	Options de suppression
-			"confirmDelete"=>"Confirmer la suppression ?",
-			"confirmDeleteNbElems"=>"éléments sélectionnés",//"55 éléments sélectionnés"
+			"confirmDelete"=>"Voulez-vous supprimer cet élément de façon permanente ?",
 			"confirmDeleteDbl"=>"Cette action est définitive : confirmer tout de même ?",
+			"confirmDeleteSelect"=>"Voulez-vous supprimer ces éléments de façon permanente ?",
+			"confirmDeleteSelectNb"=>"éléments sélectionnés",//"55 éléments sélectionnés"
 			"confirmDeleteFolderAccess"=>"Certains sous-dossiers ne vous sont pas accessibles, car affectés à d'autres utilisateurs : confirmer tout de même ?",
 			"notifyBigFolderDelete"=>"La suppression des --NB_FOLDERS-- dossiers peut prendre un certain temps : merci de patienter un instant avant la fin du processus!",
 			"delete"=>"Supprimer",
@@ -396,7 +397,7 @@ class Trad extends Txt
 			"MESSENGER_messengerTitle"=>"Messages instantanés : cliquer sur le nom d'une personne pour discuter ou lancer une visioconférence",
 			"MESSENGER_messengerMultiUsers"=>"Discuter à plusieurs en sélectionnant mes interlocuteurs dans le volet de droite",
 			"MESSENGER_connected"=>"Connecté",
-			"MESSENGER_nobody"=>"Vous êtes pour l'instant la seule personne connectée à l'espace.<br> Notez que vos anciennes discussions sont conservées durant 30 jours",
+			"MESSENGER_nobody"=>"Vous êtes pour l'instant seul a être connecté à l'espace<br> Notez que vos anciennes discussions sont conservées durant 30 jours",
 			"MESSENGER_messageFrom"=>"Message de",
 			"MESSENGER_messageTo"=>"envoyé à",
 			"MESSENGER_chatWith"=>"Discuter avec",
@@ -636,8 +637,8 @@ class Trad extends Txt
 			"USER_allUsersInfo"=>"Gérer tous les utilisateurs du site : de tous les espaces<br>(réservé à l'administrateur général)",
 			"USER_spaceUsers"=>"Gérer les utilisateurs de l'espace courant",
 			"USER_deleteDefinitely"=>"Supprimer définitivement",
-			"USER_deleteFromCurSpace"=>"Désaffecter de l'espace courant",
-			"USER_deleteFromCurSpaceConfirm"=>"Confirmer la désaffectation de l'utilisateur à l'espace courant ?",
+			"USER_deleteFromCurSpace"=>"Ne plus affecter à l'espace courant",
+			"USER_deleteFromCurSpaceConfirm"=>"Ne plus affecter l'utilisateur à l'espace courant ?",
 			"USER_allUsersOnSpaceNotif"=>"Tous les utilisateurs ont été affectés à cet espace",
 			"USER_user"=>"Utilisateur",
 			"USER_users"=>"utilisateurs",

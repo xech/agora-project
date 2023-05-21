@@ -42,10 +42,10 @@ abstract class Ctrl
 			self::resetUserAuthToken("disconnect");
 		}
 
-		////	Mise à jour et parametrage général  &&  parametrage du host (Tjs après "session_start()"!)
-		DbUpdate::lauchUpdate();
-		self::$agora=self::getObj("agora");
+		////	Récup le parametrage général (après "session_start()")  &&  Lance si besoin la mise à jour de la DB
+		self::$agora=new MdlAgora();
 		if(Req::isHost())  {Host::agoraParams();}
+		DbUpdate::lauchUpdate();
 
 		////	Init l'user et l'espace courant
 		$_idUser =(!empty($_SESSION["_idUser"]))  ? $_SESSION["_idUser"]  : null;
@@ -98,181 +98,13 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-     * GÉNÈRE UNE VUE  (cf. paramètres $datas)
-     *******************************************************************************************/
-	public static function getVue($filePath, $datas=array())
-	{
-		if(file_exists($filePath)){
-			ob_start();				//Démarre la temporisation de sortie
-			extract($datas);		//On rend les $datas accessibles à la vue ($data["monParametre"] devient $monParametre)
-			require $filePath;		//Inclut le fichier vue
-			return ob_get_clean();	//Renvoie du tampon de sortie
-		}
-		else{throw new Exception("File '".$filePath."' unreachable");}
-	}
-
-	/*******************************************************************************************
-	 * AFFICHE UNE PAGE COMPLETE (ENSEMBLE DE VUES)
-	 *******************************************************************************************/
-	protected static function displayPage($fileMainVue, $vDatasMainVue=array())
-	{
-		////	PAGE PRINCIPALE : AFFICHE LE HEADER, WALLPAPER, ETC.
-		if(static::$isMainPage==true)
-		{
-			//// WALLPAPER & LOGO FOOTER
-			if(!empty(self::$curSpace->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$curSpace->wallpaper);}
-			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
-			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
-			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			//// HEADERMENU & MESSENGER
-			if(static::moduleName!="offline")
-			{
-				//Espace Disk
-				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
-				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70);
-				//Récupère les plugins "shortcuts" de chaque module
-				$vDatasHeader["pluginsShortcut"]=[];
-				foreach(self::$curSpace->moduleList() as $tmpModule){
-					if(method_exists($tmpModule["ctrl"],"getPlugins"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"], $tmpModule["ctrl"]::getPlugins(["type"=>"shortcut"]));}
-				}
-				//Validation d'inscription d'utilisateurs  && Affiche la liste des espaces  && Liste des modules (Url, Description, Libellé, Class de l'icone)
-				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
-				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1);
-				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
-				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName);}
-				//Récupère le menu principal : "HeaderMenu"
-				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
-				//Récupère le Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
-				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}
-			}
-		}
-		////	SKIN DE LA PAGE
-		$vDatas["skinCss"]=(!empty(self::$agora->skin) && self::$agora->skin=="black")  ?  "black"  :  "white";
-		////	NOTIFICATIONS PASSÉES EN GET/POST
-		if(Req::isParam("notify")){
-			foreach(Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}
-		}
-		////	AFFICHE LA VUE
-		$pathVue=(strstr($fileMainVue,Req::commonPath)==false)  ?  Req::curModPath()  :  null;//"app/Common/" déjà précisé?
-		$vDatas["mainContent"]=self::getVue($pathVue.$fileMainVue, $vDatasMainVue);
-		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
-	}
-
-	/*******************************************************************************************
-	 * AJOUTE UNE NOTIFICATION À AFFICHER VIA "VUESTRUCTURE.PHP"
-	 * $message : message spécifique OU clé de traduction
-	 * $type : "notice" / "success" / "warning"
-	 *******************************************************************************************/
-	public static function notify($messageTrad, $type="notice")
-	{
-		//Ajoute la notification au tableau "self::$notify" si elle n'est pas déjà présente
-		if(Tool::arraySearch(self::$notify,$messageTrad)==false)  {self::$notify[]=["message"=>$messageTrad,"type"=>$type];}
-	}
-
-	/*******************************************************************************************
-	 * REDIRIGE VERS L'ADRESSE DEMANDÉE : REDIRECTION SIMPLE OU SUR LA PAGE PRINCIPALE (IFRAME)
-	 *******************************************************************************************/
-	public static function redir($urlRedir)
-	{
-		$redirUrl=$urlRedir.self::urlNotify();																	//Ajoute si besoin les notifs
-		if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redirection simple
-		else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redirection de la page principale depuis une Iframe (ex: après édit/suppr d'un objet)
-		exit;																									//Fin de script
-	}
-
-	/*******************************************************************************************
-	 * FERME LE LIGHTBOX VIA JS (ex: après édit d'objet)
-	 *******************************************************************************************/
-	public static function lightboxClose($urlRedir=null, $urlParms=null)
-	{
-		echo '<script src="app/js/common-'.Req::appVersion().'.js"></script>
-			  <script>lightboxClose("'.$urlRedir.'","'.$urlParms.self::urlNotify().'");</script>';
-		exit;
-	}
-
-	/********************************************************************************************
-	 * AJOUTE SI BESOIN LES "NOTIFY()" COURANTE À UNE URL DE REDIRECTION
-	 ********************************************************************************************/
-	public static function urlNotify()
-	{
-		$urlNotify=null;
-		foreach(self::$notify as $message)  {$urlNotify.="&notify[]=".urlencode($message["message"]);}
-		return $urlNotify;
-	}
-
-	/*******************************************************************************************
-	 * AFFICHE "ELEMENT INACCESSIBLE" (OU AUTRE) & FIN DE SCRIPT
-	 *******************************************************************************************/
-	public static function noAccessExit($message=null)
-	{
-		if($message===null)  {$message=Txt::trad("inaccessibleElem");}
-		echo "<h2><img src='app/img/important.png' style='vertical-align:middle;'> ".$message."</h2>";
-		exit;
-	}
-
-	/*******************************************************************************************
-	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
-	 *******************************************************************************************/
-	public static function getObj($objTypeOrMdl, $objIdOrValues=null, $updateCache=false)
-	{
-		//Récupère le modèle de l'objet (exple si on passe en paramètre uniquement le "type" de l'objet : "fileFolder" => "MdlFileFolder")
-		$MdlClass=(preg_match("/^Mdl/i",$objTypeOrMdl))  ?  $objTypeOrMdl  :  "Mdl".ucfirst($objTypeOrMdl);
-		//Retourne un nouvel objet OU un objet existant (déjà en cache?)
-		if(empty($objIdOrValues))	{return new $MdlClass();}
-		else
-		{
-			//Id de l'objet && clé de l'objet en cache
-			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;
-			$cacheKey=$MdlClass::objectType."-".$objId;
-			//Ajoute/Update l'objet en cache?
-			if(isset(self::$cacheObjects[$cacheKey])==false || $updateCache==true)  {self::$cacheObjects[$cacheKey]=new $MdlClass($objIdOrValues);}
-			//Retourne l'objet en cache
-			return self::$cacheObjects[$cacheKey];
-		}
-	}
-
-	/*******************************************************************************************
-	 * RECUPÈRE L'OBJET PASSÉ EN GET/POST OU EN ARGUMENT (ex: "typeId=fileFolder-55")
-	 ******************************************************************************************/
-	public static function getObjTarget($typeId=null)
-	{
-		if(Req::isParam("typeId") || !empty($typeId)){
-			$typeId=(!empty($typeId))  ?  explode("-",$typeId)  :  explode("-",Req::param("typeId"));										//Récupère le "typeId" de l'objet (vérifier en premier si ya un argument!)
-			$isNewObj=(empty($typeId[1]));																									//Vérif si c'est un nouvel objet
-			$curObj=($isNewObj==true)  ?  self::getObj($typeId[0])  :  self::getObj($typeId[0],$typeId[1]);									//Charge un nouvel objet OU un objet existant
-			if($isNewObj==false && $curObj->_id==0)  {self::notify("inaccessibleElem"); self::redir("index.php?ctrl=".static::moduleName);}	//Objet inexistant/supprimé en BDD : renvoie une erreur
-			if($isNewObj==true && Req::isParam("_idContainer"))  {$curObj->_idContainer=Req::param("_idContainer");}						//Ajoute si besoin "_idContainer" pour le controle d'accès d'un nouvel objet (cf. "createUpdate()" puis "createRight()")
-			return $curObj;																													//Renvoie l'objet
-		}
-	}
-
-	/*******************************************************************************************
-	 * RECUPÈRE LES OBJETS ENVOYÉS VIA GET/POST  (ex: objectsTypeId[file]=2-4-6)
-	 *******************************************************************************************/
-	public static function getObjectsTypeId($objTypeFilter=null)
-	{
-		$objects=[];
-		if(Req::isParam("objectsTypeId") && is_array(Req::param("objectsTypeId"))){
-			foreach(Req::param("objectsTypeId") as $objType=>$objectsId){				//Parcourt chaque objet
-				if($objTypeFilter==null || $objType==$objTypeFilter){					//filtre si besoin par type d'objet
-					foreach(explode("-",$objectsId) as $objId){							//Récupère l'_id des objets
-						$tmpObj=self::getObj($objType, $objId);							//Charge l'objet
-						if($tmpObj->readRight())  {$objects[]=$tmpObj;}					//Controle ok : ajoute à la liste
-					}
-				}
-			}
-		}
-		return $objects;
-	}
-
-	/*******************************************************************************************
 	 * CONNECTION D'UN USER  &&  SELECTION D'UN ESPACE
 	 *******************************************************************************************/
 	public static function userConnectionSpaceSelection()
 	{
 		////	INIT
 		$userAuthentified=false;
-		$connectViaForm		=(Req::isParam(["connectLogin","connectPassword"]));
+		$connectViaForm		=Req::isParam(["connectLogin","connectPassword"]);
 		$connectViaToken	=(!empty($_COOKIE["userAuthToken"]));
 		$connectViaCookieOld=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]));
 		////	CONNEXION D'UN USER
@@ -392,9 +224,9 @@ abstract class Ctrl
 		}
 		//// Créé un nouveau token au format Bcrypt : enregistre le token en bdd ..puis en cookie (un an)
 		if($mode=="newToken"){
-			$newUserAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);
-			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".self::$curUser->_id.", userAuthToken=".Db::format($newUserAuthToken).", dateCrea=NOW()");
-			setcookie("userAuthToken", self::$curUser->_id."@@@".$newUserAuthToken, (time()+31536000));
+			$newToken=password_hash(uniqid(),PASSWORD_DEFAULT);
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".self::$curUser->_id.", userAuthToken=".Db::format($newToken).", dateCrea=NOW()");
+			setcookie("userAuthToken", self::$curUser->_id."@@@".$newToken, (time()+31536000));
 		}
 		//// Supprime les cookies de l'ancienne méthode et les tokens obsolètes (+ d'un an)
 		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG",null,-1);  setcookie("AGORAP_PASS",null,-1);}
@@ -427,6 +259,67 @@ abstract class Ctrl
 		}
 		//retourne la preference
 		if(isset($_SESSION["pref"][$prefDbKey]))  {return $_SESSION["pref"][$prefDbKey];}
+	}
+
+	/*******************************************************************************************
+     * GÉNÈRE UNE VUE  (cf. paramètres $datas)
+     *******************************************************************************************/
+	public static function getVue($filePath, $datas=array())
+	{
+		if(file_exists($filePath)){
+			ob_start();				//Démarre la temporisation de sortie
+			extract($datas);		//On rend les $datas accessibles à la vue ($data["monParametre"] devient $monParametre)
+			require $filePath;		//Inclut le fichier vue
+			return ob_get_clean();	//Renvoie du tampon de sortie
+		}
+		else{throw new Exception("File '".$filePath."' unreachable");}
+	}
+
+	/*******************************************************************************************
+	 * AFFICHE UNE PAGE COMPLETE (ENSEMBLE DE VUES)
+	 *******************************************************************************************/
+	protected static function displayPage($fileMainVue, $vDatasMainVue=array())
+	{
+		////	PAGE PRINCIPALE : AFFICHE LE HEADER, WALLPAPER, ETC.
+		if(static::$isMainPage==true)
+		{
+			//// WALLPAPER & LOGO FOOTER
+			if(!empty(self::$curSpace->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$curSpace->wallpaper);}
+			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
+			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
+			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
+			//// HEADERMENU & MESSENGER
+			if(static::moduleName!="offline")
+			{
+				//Espace Disk
+				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
+				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70);
+				//Récupère les plugins "shortcuts" de chaque module
+				$vDatasHeader["pluginsShortcut"]=[];
+				foreach(self::$curSpace->moduleList() as $tmpModule){
+					if(method_exists($tmpModule["ctrl"],"getPlugins"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"], $tmpModule["ctrl"]::getPlugins(["type"=>"shortcut"]));}
+				}
+				//Validation d'inscription d'utilisateurs  && Affiche la liste des espaces  && Liste des modules (Url, Description, Libellé, Class de l'icone)
+				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
+				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1);
+				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
+				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName);}
+				//Récupère le menu principal : "HeaderMenu"
+				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
+				//Récupère le Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
+				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}
+			}
+		}
+		////	SKIN DE LA PAGE
+		$vDatas["skinCss"]=(!empty(self::$agora->skin) && self::$agora->skin=="black")  ?  "black"  :  "white";
+		////	NOTIFICATIONS PASSÉES EN GET/POST
+		if(Req::isParam("notify")){
+			foreach(Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}
+		}
+		////	AFFICHE LA VUE
+		$pathVue=(strstr($fileMainVue,Req::commonPath)==false)  ?  Req::curModPath()  :  null;//"app/Common/" déjà précisé?
+		$vDatas["mainContent"]=self::getVue($pathVue.$fileMainVue, $vDatasMainVue);
+		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -469,5 +362,118 @@ abstract class Ctrl
 				$_SESSION["logsCleared"]=true;
 			}
 		}
+	}
+
+
+	/***************************************************************************************************************************/
+	/************************************************   BASIC METHODS   ********************************************************/
+	/***************************************************************************************************************************/
+
+
+	/*******************************************************************************************
+	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
+	 *******************************************************************************************/
+	public static function getObj($objTypeOrMdl, $objIdOrValues=null, $updateCache=false)
+	{
+		//Récupère le modèle de l'objet (exple si on passe en paramètre uniquement le "type" de l'objet : "fileFolder" => "MdlFileFolder")
+		$MdlClass=(preg_match("/^Mdl/i",$objTypeOrMdl))  ?  $objTypeOrMdl  :  "Mdl".ucfirst($objTypeOrMdl);
+		//Retourne un nouvel objet OU un objet existant (déjà en cache?)
+		if(empty($objIdOrValues))	{return new $MdlClass();}
+		else
+		{
+			//Id de l'objet && clé de l'objet en cache
+			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;
+			$cacheKey=$MdlClass::objectType."-".$objId;
+			//Ajoute/Update l'objet en cache?
+			if(isset(self::$cacheObjects[$cacheKey])==false || $updateCache==true)  {self::$cacheObjects[$cacheKey]=new $MdlClass($objIdOrValues);}
+			//Retourne l'objet en cache
+			return self::$cacheObjects[$cacheKey];
+		}
+	}
+
+	/*******************************************************************************************
+	 * RECUPÈRE L'OBJET PASSÉ EN GET/POST OU EN ARGUMENT (ex: "typeId=fileFolder-55")
+	 ******************************************************************************************/
+	public static function getObjTarget($typeId=null)
+	{
+		if(Req::isParam("typeId") || !empty($typeId)){
+			$typeId=(!empty($typeId))  ?  explode("-",$typeId)  :  explode("-",Req::param("typeId"));										//Récupère le "typeId" de l'objet (vérifier en premier si ya un argument!)
+			$isNewObj=(empty($typeId[1]));																									//Vérif si c'est un nouvel objet
+			$curObj=($isNewObj==true)  ?  self::getObj($typeId[0])  :  self::getObj($typeId[0],$typeId[1]);									//Charge un nouvel objet OU un objet existant
+			if($isNewObj==false && $curObj->_id==0)  {self::notify("inaccessibleElem"); self::redir("index.php?ctrl=".static::moduleName);}	//Objet inexistant/supprimé en BDD : renvoie une erreur
+			if($isNewObj==true && Req::isParam("_idContainer"))  {$curObj->_idContainer=Req::param("_idContainer");}						//Ajoute si besoin "_idContainer" pour le controle d'accès d'un nouvel objet (cf. "createUpdate()" puis "createRight()")
+			return $curObj;																													//Renvoie l'objet
+		}
+	}
+
+	/*******************************************************************************************
+	 * RECUPÈRE LES OBJETS ENVOYÉS VIA GET/POST  (ex: objectsTypeId[file]=2-4-6)
+	 *******************************************************************************************/
+	public static function getObjectsTypeId($objTypeFilter=null)
+	{
+		$objects=[];
+		if(Req::isParam("objectsTypeId") && is_array(Req::param("objectsTypeId"))){
+			foreach(Req::param("objectsTypeId") as $objType=>$objectsId){				//Parcourt chaque objet
+				if($objTypeFilter==null || $objType==$objTypeFilter){					//filtre si besoin par type d'objet
+					foreach(explode("-",$objectsId) as $objId){							//Récupère l'_id des objets
+						$tmpObj=self::getObj($objType, $objId);							//Charge l'objet
+						if($tmpObj->readRight())  {$objects[]=$tmpObj;}					//Controle ok : ajoute à la liste
+					}
+				}
+			}
+		}
+		return $objects;
+	}
+
+	/*******************************************************************************************
+	 * REDIRIGE VERS L'ADRESSE DEMANDÉE : REDIRECTION SIMPLE OU SUR LA PAGE PRINCIPALE (IFRAME)
+	 *******************************************************************************************/
+	public static function redir($urlRedir)
+	{
+		$redirUrl=$urlRedir.self::urlNotify();																	//Ajoute si besoin les notifs
+		if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redirection simple
+		else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redirection de la page principale depuis une Iframe (ex: après édit/suppr d'un objet)
+		exit;																									//Fin de script
+	}
+
+	/*******************************************************************************************
+	 * AJOUTE UNE NOTIFICATION À AFFICHER VIA "VUESTRUCTURE.PHP"
+	 * $message : message spécifique OU clé de traduction
+	 * $type : "notice" / "success" / "warning"
+	 *******************************************************************************************/
+	public static function notify($messageTrad, $type="notice")
+	{
+		//Ajoute la notification au tableau "self::$notify" si elle n'est pas déjà présente
+		if(Tool::arraySearch(self::$notify,$messageTrad)==false)  {self::$notify[]=["message"=>$messageTrad,"type"=>$type];}
+	}
+
+	/********************************************************************************************
+	 * AJOUTE SI BESOIN LES "NOTIFY()" COURANTE À UNE URL DE REDIRECTION
+	 ********************************************************************************************/
+	public static function urlNotify()
+	{
+		$urlNotify=null;
+		foreach(self::$notify as $message)  {$urlNotify.="&notify[]=".urlencode($message["message"]);}
+		return $urlNotify;
+	}
+	
+	/*******************************************************************************************
+	 * FERME LE LIGHTBOX VIA JS (ex: après édit d'objet)
+	 *******************************************************************************************/
+	public static function lightboxClose($urlRedir=null, $urlParms=null)
+	{
+		echo '<script src="app/js/common-'.Req::appVersion().'.js"></script>
+			  <script>lightboxClose("'.$urlRedir.'","'.$urlParms.self::urlNotify().'");</script>';
+		exit;
+	}
+
+	/*******************************************************************************************
+	 * AFFICHE "ELEMENT INACCESSIBLE" (OU AUTRE) & FIN DE SCRIPT
+	 *******************************************************************************************/
+	public static function noAccessExit($message=null)
+	{
+		if($message===null)  {$message=Txt::trad("inaccessibleElem");}
+		echo "<h2><img src='app/img/important.png' style='vertical-align:middle;'> ".$message."</h2>";
+		exit;
 	}
 }

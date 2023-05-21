@@ -28,25 +28,26 @@ function objSelect(menuId)
 ////	Action sur les objets sélectionnés
 function objSelectAction(urlRedir, openPage)
 {
-	//Ajoute chaque objet sélectionné
-	var objectsTypeId=null;
-	var objSelector=":checked[name='objectsTypeId[]']";
-	$(objSelector).each(function(){
-		var typeId=this.value.split("-");																					//Transforme en tableau. Ex: "file-22" -> array('file',22)
-		if(objectsTypeId!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];  objectsTypeId=typeId[0];}	//Ajoute une nouvelle liste de "objectsTypeId" (ex: "&objectsTypeId[file]=22")
-		else							{urlRedir+="-"+typeId[1];}															//Incrémente la liste (ex: "&objectsTypeId[file]=22-33")
+	//Ajoute chaque objet sélectionné dans "urlRedir"
+	var objCurType=null;
+	var objListSelector=":checked[name='objectsTypeId[]']";
+	$(objListSelector).each(function(){
+		var typeId=this.value.split("-");																			//Transforme l'objet courant en tableau (ex: "file-22" -> ["file",22])
+		if(objCurType!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];  objCurType=typeId[0];}	//Ajoute à l'url un nouveau "objectsTypeId"  (ex: "&objectsTypeId[file]=22")
+		else						{urlRedir+="-"+typeId[1];}														//Ajoute à l'url le "_id" de l'objet courant (ex: "-33")
 	});
-	//Confirme une désaffectation d'espace?
+	//Nombre d'elements sélectionnés
+	var confirmDeleteSelectNb="\n \n -> "+$(objListSelector).length+" <?= Txt::trad("confirmDeleteSelectNb") ?>";
+	//Confirme une désaffectation d'un user à l'espace courant
 	if(/deleteFromCurSpace/i.test(urlRedir)){
-		if(!confirm("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?> ("+$(objSelector).length+" <?= Txt::trad("confirmDeleteNbElems") ?>)"))  {return false;}
+		if(!confirm("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?> "+confirmDeleteSelectNb))  {return false;}
 	}
-	//Confirme une suppression?
+	//Confirme la suppression d'un ou plusieurs elements (cf. "labelConfirmDelete" et "labelConfirmDeleteDbl" de " VueStructure.php")
 	else if(/delete/i.test(urlRedir)){
-		var confirmDelete="<?= Txt::trad("confirmDelete") ?> ("+$(objSelector).length+" <?= Txt::trad("confirmDeleteNbElems") ?>)";
-		var confirmDeleteDbl="<?= Txt::trad("confirmDeleteDbl") ?>";
-		if(!confirm(confirmDelete) || !confirm(confirmDeleteDbl))  {return false;}
+		var firstConfirmDelete=($(objListSelector).length==1)  ?  "\n "+labelConfirmDelete  :  "\n <?= Txt::trad("confirmDeleteSelect") ?> "+confirmDeleteSelectNb;
+		if(!confirm(firstConfirmDelete) || !confirm(labelConfirmDeleteDbl))  {return false;}
 	}
-	//Ouvre une page, une lightbox ou redirection simple
+	//Ouvre une page (download), ouvre une lightbox (folderMove) ou redirection simple (delete users)
 	if(openPage=="newPage")			{window.open(urlRedir);}
 	else if(openPage=="lightbox")	{lightboxOpen(urlRedir);}
 	else							{redir(urlRedir);}

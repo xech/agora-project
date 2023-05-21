@@ -200,9 +200,10 @@ class Trad extends Txt
 			"tri_descendant"=>"Descendente",
 			
 			////	Options de suppression
-			"confirmDelete"=>"¿ Confirmar eliminación ?",
-			"confirmDeleteNbElems"=>"elementos seleccionados",//"55 éléments sélectionnés"
-			"confirmDeleteDbl"=>"¿ Está seguro ?",
+			"confirmDelete"=>"¿Desea eliminar este elemento permanentemente ?",
+			"confirmDeleteDbl"=>"Esta acción es definitiva ¿confirmar de todos modos?",
+			"confirmDeleteSelect"=>"¿Desea eliminar estos elementos permanentemente?",
+			"confirmDeleteSelectNb"=>"elementos seleccionados",//"55 éléments sélectionnés"
 			"confirmDeleteFolderAccess"=>"Advertencia : algunos sub-carpetas no son accessible : serán tambien eliminados !",
 			"notifyBigFolderDelete"=>"Eliminar --NB_FOLDERS-- archivos puede ser un poco largo, espere unos momentos antes del final del proceso",
 			"delete"=>"Eliminar",
@@ -636,8 +637,8 @@ class Trad extends Txt
 			"USER_allUsersInfo"=>"Todos los usuarios de todos los espacios",
 			"USER_spaceUsers"=>"Usuarios del espacio corriente",
 			"USER_deleteDefinitely"=>"Eliminar definitivamente",
-			"USER_deleteFromCurSpace"=>"Desasignar del espacio corriente",
-			"USER_deleteFromCurSpaceConfirm"=>"¿ Confirmar la desasignación del usuario al espacio corriente ?",
+			"USER_deleteFromCurSpace"=>"Desasignar al espacio actual",
+			"USER_deleteFromCurSpaceConfirm"=>"¿Desasignar el usuario del espacio actual?",
 			"USER_allUsersOnSpaceNotif"=>"Todo los usuarios son asignados a este espacio",
 			"USER_user"=>"Usuario",
 			"USER_users"=>"usuarios",

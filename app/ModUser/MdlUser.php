@@ -296,19 +296,12 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
+	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ !!
 	 *******************************************************************************************/
 	public static function passwordSha1($passwordClear)
 	{
-		return sha1(self::passwordSalt().sha1($passwordClear));
-	}
-
-	/*******************************************************************************************
-	 * SALT DU PASSWORD				=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
-	 *******************************************************************************************/
-	public static function passwordSalt()
-	{
-		return (!defined("AGORA_SALT") || empty(AGORA_SALT))  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
+		$passwordSalt=(!defined("AGORA_SALT") || empty(AGORA_SALT))  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
+		return sha1($passwordSalt.sha1($passwordClear));
 	}
 
 	/*******************************************************************************************

@@ -217,9 +217,9 @@ class Txt
 				$dateFormat->setPattern($pattern);
 				if(!empty($timeBegin))	{$dateLabel.=$dateFormat->format($timeBegin);}																//Label de début
 				if(!empty($timeEnd)){																												//Label de fin :
-					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais diff. heures : ajoute l'heure de fin	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Diff. jours : ajoute la date de fin 				-> $pattern idem
-					else										{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin uniquement, pas de début 				-> $pattern idem
+					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente 	-> Exple: "11:30-12:30"
+					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Différents jours : ajoute la fin 	-> même $pattern que le début
+					elseif(empty($timeBegin))					{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin, mais sans début		-> même $pattern que le début
 				}
 
 				//Simplifie les heures pleines -> Ex: "12:00"->"12h"

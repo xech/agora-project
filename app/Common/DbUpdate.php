@@ -8,80 +8,59 @@
 
 
 /*
- * MISES A JOUR 
+ * MISE A JOUR DE LA DB
  */
 class DbUpdate extends Db
 {
 	/********************************************************************************************
-	 * RÉCUPÈRE ET CONTROLE LA VERSION DE L'APPLI (+ RAPIDE EN SESSION) : RENVOI "TRUE" SI L'APPLI DOIT ÊTRE MISE À JOUR
-	 ********************************************************************************************/
-	private static function versionAgoraUpdate($confirmVersion=false)
-	{
-		//"versionAgora" : Init OU Confirme la version
-		if(empty($_SESSION["dbVersionAgora"]) || $confirmVersion==true){
-			if(self::tableExist("ap_agora"))			{$_SESSION["dbVersionAgora"]=self::getVal("SELECT version_agora FROM ap_agora");}//Version 3.0 ou+
-			elseif(self::tableExist("gt_agora_info"))	{$_SESSION["dbVersionAgora"]=(self::fieldExist("gt_agora_info","version_agora"))  ?  self::getVal("SELECT version_agora FROM gt_agora_info")  :  "2.0.0";}//Version 2.0 ou+ : le champ "version_agora" peut être absent..
-			else										{throw new Exception("dbInstall_dbEmpty");}//Sinon renvoi une Exception "dbInstall"
-		}
-		//Renvoie "true" si l'appli doit être mise à jour en Bdd
-		return version_compare($_SESSION["dbVersionAgora"],Req::appVersion(),"<");
-	}
-
-	/********************************************************************************************
-	 * MISE À JOUR DEMANDÉ PLUS RÉCENTE QUE LA "DBVERSIONAGORA" : UPDATE!
-	 ********************************************************************************************/
-	protected static function updateVersion($versionUpdate)
-	{
-		return (version_compare($_SESSION["dbVersionAgora"],$versionUpdate,"<") || $versionUpdate==null);
-	}
-
-	/********************************************************************************************
-	 * TESTE SI UNE TABLE EXISTE & LA CRÉE AU BESOIN
-	 ********************************************************************************************/
-	private static function tableExist($tableName, $createQuery=null)
-	{
-		$result=self::getCol("show tables like '".$tableName."'");
-		if(empty($result) && !empty($createQuery))    {self::query($createQuery);}
-		return (!empty($result));
-	}
-
-	/********************************************************************************************
-	 * TESTE SI UN CHAMP EXISTE & LE CREE AU BESOIN
+	 * TESTE SI LE CHAMP D'UNE TABLE EXISTE : CRÉE SI BESOIN
 	 ********************************************************************************************/
 	private static function fieldExist($tableName, $fieldName, $createQuery=null)
 	{
 		$result=self::getCol("show columns from `".$tableName."` like '".$fieldName."'");
-		if(empty($result) && !empty($createQuery))    {self::query($createQuery);}
+		if(empty($result) && !empty($createQuery))  {self::query($createQuery);}
 		return (!empty($result));
 	}
 
 	/********************************************************************************************
-	 * LANCE LA MISE À JOUR DE LA BDD
+	 * TESTE SI UNE TABLE EXISTE : CRÉE SI BESOIN
+	 ********************************************************************************************/
+	private static function tableExist($tableName, $createQuery=null)
+	{
+		$result=self::getCol("show tables like '".$tableName."'");
+		if(empty($result) && !empty($createQuery))  {self::query($createQuery);}
+		return (!empty($result));
+	}
+
+	/********************************************************************************************
+	 * MISE À JOUR DEMANDÉ PLUS RÉCENTE QUE LA "dbAppVersion" : UPDATE!
+	 ********************************************************************************************/
+	protected static function updateVersion($versionUpdate)
+	{
+		return version_compare(Ctrl::$agora->version_agora, $versionUpdate, "<");
+	}
+
+	/********************************************************************************************
+	 * LANCE SI BESOIN LA MISE À JOUR DE LA DB !
 	 ********************************************************************************************/
 	public static function lauchUpdate()
 	{
-		////	RÉCUP LA VERSION DE L'APPLI && LANCE LA MISE A JOUR?
-		if(self::versionAgoraUpdate())
+		////	VERIF QUE LE NUMERO DE VERSION SOIT ACCESSIBLE  &&  VERIF SI L'APPLI DOIT ETRE MISE A JOUR EN DB
+		if(empty(Ctrl::$agora->version_agora))	{throw new Exception("Update error : Please update first to Agora-Project v3.8");}
+		elseif(version_compare(Ctrl::$agora->version_agora, Req::appVersion(), "<"))
 		{
-			////	VERIF DE BASE : VERSION DE PHP SI MIGRATION & ACCES AU FICHIER DE CONFIG
+			////	VERIF LA VERSION DE PHP & L'ACCES AU FICHIER DE CONFIG
 			Req::verifPhpVersion();
-			if(!is_writable(PATH_DATAS."config.inc.php"))	{echo "<h2>Config file not writable (config.inc.php)</h2>";  exit;}
-			////	DOUBLE VERIF (SI l'APPLI A DEJA ETE MAJ PAR UN AUTRE USER.. LE $_SESSION["dbVersionAgora"] DE L'USER COURANT DEVIENT ALORS OBSOLETE!)
-			if(self::versionAgoraUpdate(true)==false)	{$_SESSION=[];  Ctrl::redir("?ctrl=offline");}/*Si ya une connexion auto de l'user, on met à jour de manière transparente : donc pas de "disconnect=true"!*/
-			////	UPDATE EN COURS : NOTIFICATION ET SORTIE DE SCRIPT
-			$updateLOCK=PATH_DATAS."updateLOCK.log";
-			if(!is_file($updateLOCK))	{file_put_contents($updateLOCK,"LOCKING UPDATE - VERROUILAGE DE MISE A JOUR");}
-			else{
-				if((time()-filemtime($updateLOCK))<30)	{echo "<br>Update in progress : please wait a few seconds<br><br>Mise à jour en cours : merci d'attendre quelques secondes";}
-				else									{echo "<br>Update generates errors : check Apache logs for details.<br>If the issue is resolved : delete the '/DATAS/updateLOCK.log' file and try the update procedure again.<br><br>La mise a jour a généré des erreurs : consultez les logs d'Apache pour plus de détails.<br>Si le problème est résolu : supprimez le fichier '/DATAS/updateLOCK.log' puis relancez la mise à jour.";}
-				exit;
-			}
-			////	PAS D'INTERRUPTION DE SCRIPT
+			if(is_writable(PATH_DATAS."config.inc.php")==false)  {throw new Exception("Update error : Config.inc.php is not writable");}
+			////	VERROUILAGE DE LA MISE A JOUR
+			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
+			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE MISE A JOUR");}
+			elseif((time()-filemtime($lockedUpdate))<30)	{throw new Exception("Update in progress : please wait a few seconds");}
+			else											{throw new Exception("Update error : check Apache logs for details. If the issue is resolved : delete the '/DATAS/lockedUpdate.log' file.");}
+			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
-			@set_time_limit(120);//désactivé en safemode 
-			////	SAUVEGARDE LA BDD && MAJ SI BESOIN LA VERSION 2
+			@set_time_limit(120);//pas en safemode 
 			self::getDump();
-			if(version_compare($_SESSION["dbVersionAgora"],"3.0.0","<"))	{DbUpdateOld::lauchUpdate();}
 
 			////	MAJ v3.0.0
 			if(self::updateVersion("3.0.0"))
@@ -878,19 +857,19 @@ class DbUpdate extends Db
 				if(self::tableExist("ap_userAuthToken")==false)
 					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
 			}
-			////	MODIFIER :  DB.SQL  +  CHANGELOG.TXT  +  VERSION.TXT  !!!!
-			//////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////
+			////	MODIFIER :  DB.SQL  +  CHANGELOG.TXT  +  VERSION.TXT  !!
+			////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////
 
 
 			////	MAJ "dateUpdateDb" && "version_agora"
 			self::query("UPDATE ap_agora SET dateUpdateDb=".Db::dateNow().", version_agora='".Req::appVersion()."'");
 			////	OPTIMISE LES TABLES
 			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
-			////	SUPPRIME $updateLOCK ET SI BESOIN LE ".htaccess"
-			File::rm($updateLOCK);
+			////	SUPPRIME $lockedUpdate ET SI BESOIN LE ".htaccess"
+			File::rm($lockedUpdate);
 			if(preg_match("/free\.fr/i",$_SERVER['HTTP_HOST']))  {File::rm("app/.htaccess");}
-			////	REINIT LA SESSION & REDIRECTION
+			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!
 			$_SESSION=[];
 			Ctrl::redir("?ctrl=offline");
 		}

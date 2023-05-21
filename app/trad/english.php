@@ -200,9 +200,10 @@ class Trad extends Txt
 			"tri_descendant"=>"Descend",
 			
 			////	Options de suppression
-			"confirmDelete"=>"Confirm the deletion ?",
-			"confirmDeleteNbElems"=>"items selected",//"55 éléments sélectionnés"
-			"confirmDeleteDbl"=>"Are you sure ?!",
+			"confirmDelete"=>"Do you want to permanently delete these item ?",
+			"confirmDeleteDbl"=>"This action is definitive : confirm all the same ?",
+			"confirmDeleteSelect"=>"Do you want to permanently delete these items?",
+			"confirmDeleteSelectNb"=>"items selected",//"55 éléments sélectionnés"
 			"confirmDeleteFolderAccess"=>"Caution ! certain sub-folders are not accessible for you : they will be deleted !",
 			"notifyBigFolderDelete"=>"Deleting --NB_FOLDERS-- sub-folders can be a little large, please wait a few moments before the end of the process",
 			"delete"=>"Delete",
@@ -636,8 +637,8 @@ class Trad extends Txt
 			"USER_allUsersInfo"=>"View all users from all spaces",
 			"USER_spaceUsers"=>"Users of the current space",
 			"USER_deleteDefinitely"=>"Delete permanently",
-			"USER_deleteFromCurSpace"=>"Unassign to the current space",
-			"USER_deleteFromCurSpaceConfirm"=>"Confirm the unassignment of the user to current space ?",
+			"USER_deleteFromCurSpace"=>"Unassign to current space",
+			"USER_deleteFromCurSpaceConfirm"=>"Unassign the user to the current space?",
 			"USER_allUsersOnSpaceNotif"=>"All the users are affected to this space",
 			"USER_user"=>"User",
 			"USER_users"=>"users",
