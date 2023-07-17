@@ -5,25 +5,6 @@ Create your workspace to communicate with your team : share files, calendars, pu
 See the [project page](https://www.agora-project.net/?curTrad=english) for documentation and a demonstration.
 
 
-## License
-
-Agora-Project is licensed under the [GPLv2](http://choosealicense.com/licenses/gpl-3.0) license for all open source applications.
-
-
-## Bugs and feature requests
-
-If you find a bug or need a new feature, please report it [here on Github](https://github.com/xech/agora-project/issues)
-
-Guidelines for bug reports:
-
-1. Use the GitHub issue search — check if the issue has already been reported.
-2. Check if the issue has been fixed — try to reproduce it using the latest master or development branch in the repository.
-3. Isolate the problem — create a reduced test case and a live example.
-
-A good bug report shouldn't leave others needing to chase you up for more information.
-Please try to be as detailed as possible in your report.
-
-
 ## Installation guide
 
 1. Check that your web server has a PHP version 5.5 or later, if possible with the "Imagick" library (creation of thumbnails of images).
@@ -64,3 +45,21 @@ Please try to be as detailed as possible in your report.
   <img src="https://www.agora-project.net/app/img/screenshots/contact.jpg">
 </p>
 
+
+## License
+
+Agora-Project is licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) license for all open source applications.
+
+
+## Bugs and feature requests
+
+If you find a bug or need a new feature, please report it [here on Github](https://github.com/xech/agora-project/issues)
+
+Guidelines for bug reports:
+
+1. Use the GitHub issue search — check if the issue has already been reported.
+2. Check if the issue has been fixed — try to reproduce it using the latest master or development branch in the repository.
+3. Isolate the problem — create a reduced test case and a live example.
+
+A good bug report shouldn't leave others needing to chase you up for more information.
+Please try to be as detailed as possible in your report.
