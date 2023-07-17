@@ -637,7 +637,7 @@ class DbUpdate extends Db
 			
 			if(self::updateVersion("3.4.1"))
 			{
-				// Ajoute le type d'outil de cartographie utilisé (Gmap ou Leaflet) et l'Identifiant utilisé (pour gmap)
+				// Ajoute le type d'outil de cartographie utilisé ("gmap ou "leaflet") et l'Identifiant utilisé (pour gmap)
 				self::fieldExist("ap_agora", "mapTool",		"ALTER TABLE ap_agora ADD mapTool varchar(255) DEFAULT 'gmap' AFTER usersComment");
 				self::fieldExist("ap_agora", "mapApiKey",	"ALTER TABLE ap_agora ADD mapApiKey varchar(255) DEFAULT NULL AFTER mapTool");
 			}

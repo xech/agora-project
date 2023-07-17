@@ -127,7 +127,7 @@ class MdlUser extends MdlPerson
 	public function sendInvitationRight($objSpace=null)
 	{
 		if($objSpace==null)	{$objSpace=Ctrl::$curSpace;}
-		return (function_exists("mail") && ($this->isAdminSpace() || (!empty($objSpace->usersInvitation) && $this->isUser())));
+		return (Tool::mailEnabled() && ($this->isAdminSpace() || (!empty($objSpace->usersInvitation) && $this->isUser())));
 	}
 
 	/*******************************************************************************************

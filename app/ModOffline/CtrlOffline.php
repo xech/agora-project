@@ -148,8 +148,7 @@ class CtrlOffline extends Ctrl
 					file_put_contents($imgPath, file_get_contents($gClientUser["picture"]));					//Enregistre l'image dans le fichier tmp
 					File::imageResize($imgPath,$objUser->pathImgThumb(),200);									//Redimensionne l'image
 				}
-				setcookie("AGORAP_LOG", $objUser->login, (time()+315360000));									//Enregistre login : connexion auto
-				setcookie("AGORAP_PASS", $objUser->password, (time()+315360000));								//Enregistre password : idem
+				Ctrl::userAuthToken("create",$objUser->_id);													//Créé le token de connexion auto
 				echo "userConnected";																			//Retour OK
 			}
 		}

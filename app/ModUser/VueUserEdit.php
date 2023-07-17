@@ -6,8 +6,8 @@ lightboxSetWidth(550);
 $(function(){
 	////	Controle du login
 	$("input[name='login']").focusout(function(){
-		if($(this).isMail())	{$("input[name='mail']").val(this.value);}											//Login "mail" : on préremplit alors le champ "mail" du dessous
-		else					{notify("<?= Txt::trad("specifyLoginMail") ?>");  $(this).addClass("focusRed");}	//Sinon "notify()" : "Merci de mettre de préférence un email" (pas de "focusRed()" car champ pas obligatoire)
+		if($(this).isMail())				{$("input[name='mail']").val(this.value);}											//Login "mail" : on préremplit le champ "mail" du dessous
+		else if($(this).isEmpty()==false)	{$(this).addClass("focusRed");  notify("<?= Txt::trad("specifyLoginMail") ?>");}	//Met le focus (pas via "focusRed()")  &&  notif "Merci de mettre de préférence un email"
 	});
 
 	////	Contrôle du formulaire
@@ -86,7 +86,7 @@ select[name="connectionSpace"]	{width:100%}
 
 	<!--NOTIFICATION DE CREATION  && ADMIN GENERAL  &&  AGENDA PERSO DESACTIVE-->
 	<hr>
-	<?php if(empty($curObj->_id) && function_exists("mail")){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="notifMail" id="notifMail" value="1" checked='checked'> <label for="notifMail"><?= Txt::trad("EDIT_notifMail2") ?> <img src="app/img/mail.png"></label></div><?php } ?>
+	<?php if(empty($curObj->_id) && Tool::mailEnabled()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="notifMail" id="notifMail" value="1" checked='checked'> <label for="notifMail"><?= Txt::trad("EDIT_notifMail2") ?> <img src="app/img/mail.png"></label></div><?php } ?>
 	<?php if($curObj->editAdminGeneralRight()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="generalAdmin" id="generalAdmin" value="1" <?= !empty($curObj->generalAdmin)?'checked':null ?>> <label for="generalAdmin" title="<?= Txt::trad("USER_adminGeneralInfo") ?>"><?= Txt::trad("USER_adminGeneral") ?> <img src="app/img/user/userAdminGeneral.png"></label></div><?php } ?>
 	<?php if(Ctrl::$curUser->isAdminGeneral()){ ?><div class="vFieldLabelSpecial"><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?>> <label for="calendarDisabled" title="<?= Txt::trad("USER_persoCalendarDisabledInfo") ?>"><?= Txt::trad("USER_persoCalendarDisabled") ?></label></div><?php } ?>
 

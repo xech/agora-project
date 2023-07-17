@@ -65,7 +65,7 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION : MENU POUR DÉPLACER DES ÉLÉMENTS DANS UN AUTRE DOSSIER
+	 * VUE : MENU POUR DÉPLACER DES ÉLÉMENTS DANS UN AUTRE DOSSIER
 	 *******************************************************************************************/
 	public static function actionFolderMove()
 	{
@@ -128,7 +128,7 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION VUE : EDITION D'UN DOSSIER
+	 * VUE : EDITION D'UN DOSSIER
 	 *******************************************************************************************/
 	public static function actionFolderEdit()
 	{
@@ -214,9 +214,18 @@ class CtrlObject extends Ctrl
 			}
 		}
 	}
+	
+	/*******************************************************************************************
+	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
+	 *******************************************************************************************/
+	public static function sendMailBasicOptions()
+	{
+		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
+	}
 
 	/*******************************************************************************************
-	 * VUE : AFFICHE L'EDITEUR TINYMCE (doit déjà y avoir un champ "textarea")
+	 * VUE : AFFICHE L'EDITEUR TINYMCE
+	 * Note : il doit déjà y avoir un champ "textarea" dans la vue principale
 	 *******************************************************************************************/
 	public static function htmlEditor($fieldName)
 	{
@@ -237,14 +246,6 @@ class CtrlObject extends Ctrl
 		$vDatas["curObj"]=$curObj;
 		return self::getVue(Req::commonPath."VueObjAttachedFile.php",$vDatas);
 	}
-	
-	/*******************************************************************************************
-	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
-	 *******************************************************************************************/
-	public static function sendMailBasicOptions()
-	{
-		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
-	}
 
 	/*******************************************************************************************
 	 * ACTION : TELECHARGE UN FICHIER JOINT
@@ -256,7 +257,7 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION : AFFICHE UN FICHIER JOINT IMAGE/PDF/ETC
+	 * ACTION : AFFICHE UN FICHIER JOINT (IMAGE/PDF/ETC) DANS LE BROWSER
 	 *******************************************************************************************/
 	 public static function actionAttachedFileDisplay()
 	{

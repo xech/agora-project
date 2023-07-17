@@ -33,7 +33,7 @@ class CtrlAgora extends Ctrl
 				wallpaper=".Db::param("wallpaper").",
 				logoUrl=".Db::param("logoUrl").",
 				skin=".Db::param("skin").",
-				footerHtml=".Db::param("footerHtml","editor").",
+				footerHtml=".Db::param("footerHtml").",
 				usersLike=".Db::param("usersLike").",
 				usersComment=".Db::param("usersComment").",
 				mapTool=".Db::param("mapTool").",

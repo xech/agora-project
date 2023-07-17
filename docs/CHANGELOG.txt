@@ -1,10 +1,37 @@
+
+#################################
+CHANGELOG - JOURNAL DES VERSIONS 
+#################################
+
+
+VERSION 23.7.1
+###############
+Nouvelle option pour copier/coller des images directement dans l'éditeur TinyMce
+Mise à jour de l'éditeur TinyMce en version 6.4.2
+Amélioration du moteur de recherche et de la présentation des résultats
+Correction de l'affichage des cartographies sur Leaflet / OpenStreetmap (désactivation de mapbox)
+Nouvelle fonction "mailEnabled()" pour vérifier que "mail()" de PHP est activé ou qu'un paramétrage SMTP a été spécifié
+Amélioration des controles de sécurité sur les fichiers uploadés
+Amélioration de la connexion auto via "userAuthToken"
+-----
+New option to copy/paste images directly in the TinyMce editor
+TinyMce updated to 6.4.2 version
+Improvement of the search engine and the presentation of results
+Fixed display of maps on Leaflet / OpenStreetmap (mapbox disabled)
+New "mailEnabled()" function to check that PHP "mail()" is enabled or that an SMTP setting has been specified
+Improved security checks on uploaded files
+Improved auto connection via "userAuthToken"
+
+
 VERSION 23.5.0
 ###############
-Ajout du nom de l'element dans les confirmations de suppression
+Ajout du nom de l'élément  dans les confirmations de suppression
 Optimisation du processus de mise à jour de l'appli
+Correction du téléchargement de dossier
 -----
 Add of the name of the element in the confirmation of deletion
 Optimization of the app update process
+Fixed folder download issue
 
 
 VERSION 23.4.2

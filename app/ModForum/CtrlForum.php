@@ -176,7 +176,7 @@ class CtrlForum extends Ctrl
 		{
 			//Enregistre & recharge l'objet
 			$dateLastMessage=($curObj->isNew())  ?  ", dateLastMessage=".Db::dateNow()  :  null;//Init "dateLastMessage" pour un nouveau sujet (classement des sujets)
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", _idTheme=".Db::param("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", _idTheme=".Db::param("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxClose();
@@ -200,7 +200,7 @@ class CtrlForum extends Ctrl
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
 			$idMessageParent=Req::isParam("_idMessageParent")  ?  ", _idMessageParent=".Db::param("_idMessageParent")  :  null;//Rattaché à un message parent?
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").$idMessageParent);
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").$idMessageParent);
 			//MAJ "dateLastMessage" & "usersConsultLastMessage" du sujet conteneur
 			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE _id=".$curObj->_idContainer);
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")

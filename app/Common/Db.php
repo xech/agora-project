@@ -114,19 +114,18 @@ class Db
 	 *******************************************************************************************/
 	public static function format($text, $options="")
 	{
-		$text=trim((string)$text);		//cast en "string"
-		$options=trim((string)$options);//idem
+		$text=trim((string)$text);			//cast en "string"
+		$options=trim((string)$options);	//idem
 		if(empty($text))  {return "NULL";}
 		else{
 			//Filtre le résultat
-			if(stristr($options,"editor")==false)					{$text=htmlspecialchars(strip_tags($text));}	//Input "text" : enlève les éventuelles balises html et convertit les caractères spéciaux ('€'->'&#128;')
-			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}				//Valeur flottante : remplace les virgules par des points
-			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}						//Url : ajoute "http://"
-			if(stristr($options,"sqlLike"))							{$text="%".$text."%";}							//Search : délimite par des "%"
+			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}		//Valeur flottante : remplace les virgules par des points
+			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}				//Ajoute "http://" devant les Urls
+			if(stristr($options,"sqlLike"))							{$text="%".$text."%";}					//Délimite $text par des "%" (cf. "sqlPlugins()" de type "search")
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
 			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}
-			//renvoie le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
+			//Renvoie le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
 			return (stristr($options,"noquotes"))  ?  $text  :  self::objPDO()->quote($text);
 		}
 	}

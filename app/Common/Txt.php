@@ -15,6 +15,7 @@ class Txt
 	protected static $trad=[];
 	protected static $detectEncoding=null;
 	protected static $IntlDateFormatter=null;
+	public static $tradList=["francais","english","espanol"];
 
 	/*******************************************************************************************
 	 * CHARGE LES TRADUCTIONS
@@ -25,16 +26,16 @@ class Txt
 		if(empty(self::$trad))
 		{
 			//Sélectionne la traduction
-			if(Req::isParam("curTrad"))																						{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
-			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))													{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad de l'user
-			elseif(!empty(Ctrl::$agora->lang))																				{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad de l'espace
-			elseif(empty($_SESSION["curTrad"])){																															//Trad par défaut en fonction du browser
+			if(Req::isParam("curTrad") && preg_match("/[a-z]/i",Req::param("curTrad")))										{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
+			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))													{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad en fonction de l'user
+			elseif(!empty(Ctrl::$agora->lang))																				{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad en fonction de l'espace
+			elseif(empty($_SESSION["curTrad"])){																															//Trad en fonction du browser
 				if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^en-US/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))		{$_SESSION["curTrad"]="english";}
 				elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^es-ES/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="espanol";}
 				elseif(empty($_SESSION["curTrad"]))																			{$_SESSION["curTrad"]="francais";}
 			}
 			//Charge les trads (classe & methode)
-			require_once "app/trad/".$_SESSION["curTrad"].".php";
+			if(in_array($_SESSION["curTrad"],self::$tradList))  {require_once "app/trad/".$_SESSION["curTrad"].".php";}
 			Trad::loadTradsLang();
 		}
 	}
@@ -87,9 +88,10 @@ class Txt
 	 *******************************************************************************************/
 	public static function reduce($text, $maxCaracNb=200)
 	{
-		$text=html_entity_decode(strip_tags($text));							//Enlève les tags html (pour pas briser l'affichage d'un tag html..) && Converti les caractères html accentués (&egrave; &eacute; etc)
-		$text=str_replace('&nbsp;', '', $text);									//Enlève les &nbsp; (pas pris en charge par "html_entity_decode()"..)
-		if(strlen($text)>$maxCaracNb){											//Vérif la taille du texte brut
+		$text=html_entity_decode(strip_tags($text));							//Enlève les tags html && Converti les caractères html accentués ("&egrave;" "&eacute;" etc)
+		$text=str_replace('&nbsp;', '', $text);									//Enlève les "&nbsp;" (pas pris en charge par "html_entity_decode()"..)
+		$text=preg_replace('!\s+!', ' ', $text);								//Supprime les espaces et retours à la ligne en excès
+		if(strlen($text)>$maxCaracNb){											//Vérifie que la taille du texte brut ne dépasse pas $maxCaracNb
 			$text=substr($text, 0, $maxCaracNb);								//Réduit le texte en fonction de $maxCaracNb
 			if($maxCaracNb>100)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot si $maxCaracNb>100 (sinon on réduit trop le texte)
 			$text=rtrim($text,",")."...";										//Ajoute "..." en fin de texte (enlève éventuellement la dernière virgule)
@@ -112,24 +114,23 @@ class Txt
 	}
 
 	/********************************************************************************************
-	 * SUPPRIME LES CARACTERES SPECIAUX
+	 * SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
 	 * $scope="min" pour les noms de fichier ou la recherche :	"L'ÉTÉ (!)"  ->  "l'été (_)"
-	 * $scope="max" pour les identifiants ou les noms en bdd :	"L'ÉTÉ (!)"  ->  "l_ete__"
+	 * $scope="max" pour les identifiants ou les noms en bdd :	"L'ÉTÉ (!)"  ->  "l_ete_"
 	 ********************************************************************************************/
 	public static function clean($text, $scope="min", $replaceBy="_")
 	{
-		//Enleve les éventuels balises et caractères html de l'éditeur (&quot; &eacute; &amp; etc)
+		//Editeur TinyMce && injection XSS : enleve les balises html via "strip_tags()" && décode les caractères html (&quot; &amp; etc) via "html_entity_decode()"
 		$text=html_entity_decode(strip_tags($text));
 		//Remplace les caractères accentués
 		if($scope=="max"){
-			$searchedCarac=explode(",", "å,á,à,â,ä,è,é,ê,ë,í,î,ï,ì,ò,ó,ô,ö,ø,ú,ù,û,ü,ÿ,ç,ñ,Å,Á,À,Â,Ä,È,É,Ê,Ë,Í,Î,Ï,Ì,Ò,Ó,Ô,Ö,Ø,Ú,Ù,Û,Ü,Ÿ,Ç,Ñ,æ,œ,Æ,Œ");
-			$replacedCarac=explode(",", "a,a,a,a,a,e,e,e,e,i,i,i,i,o,o,o,o,o,u,u,u,u,y,c,n,A,A,A,A,A,E,E,E,E,I,I,I,I,O,O,O,O,O,U,U,U,U,Y,C,N,ae,oe,AE,OE");
-			$text=str_replace($searchedCarac, $replacedCarac, $text);
+			$accentedChars=['Š'=>'S','š'=>'s','Ž'=>'Z','ž'=>'z','À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Ä'=>'A','Å'=>'A','Æ'=>'A','Ç'=>'C','È'=>'E','É'=>'E','Ê'=>'E','Ë'=>'E','Ì'=>'I','Í'=>'I','Î'=>'I','Ï'=>'I','Ñ'=>'N','Ò'=>'O','Ó'=>'O','Ô'=>'O','Õ'=>'O','Ö'=>'O','Ø'=>'O','Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U','Ý'=>'Y','Þ'=>'B','ß'=>'Ss','à'=>'a','á'=>'a','â'=>'a','ã'=>'a','ä'=>'a','å'=>'a','æ'=>'a','ç'=>'c','è'=>'e','é'=>'e','ê'=>'e','ë'=>'e','ì'=>'i','í'=>'i','î'=>'i','ï'=>'i','ð'=>'o','ñ'=>'n','ò'=>'o','ó'=>'o','ô'=>'o','õ'=>'o','ö'=>'o','ø'=>'o','ù'=>'u','ú'=>'u','û'=>'u','ý'=>'y','þ'=>'b','ÿ'=>'y'];
+			$text=strtr($text, $accentedChars);
 		}
 		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
-		$acceptedCarac=($scope=="max")  ?  ['.','-','_']  :  ['.','-','_',',',':',' ','\'','(',')','[',']','@'];
-		foreach(preg_split('//u',$text) as $tmpCarac){																								//pas de "str_split()" qui ne reconnait pas les caractères accentués..
-			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpCarac) && !in_array($tmpCarac,$acceptedCarac))  {$text=str_replace($tmpCarac,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
+		$acceptedChars=($scope=="max")  ?  ['.','-','_']  :  ['.','-','_',',',':',' ','\'','(',')','[',']','@'];
+		foreach(preg_split('//u',$text) as $tmpChars){																								//pas de "str_split()" car ne reconnait pas les caractères accentués
+			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpChars) && !in_array($tmpChars,$acceptedChars))  {$text=str_replace($tmpChars,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
 		}
 		//Minimise le nb de $replaceBy et renvoie le résultat
 		$text=str_replace($replaceBy.$replaceBy, $replaceBy, $text);

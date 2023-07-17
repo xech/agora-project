@@ -110,7 +110,7 @@ class CtrlDashboard extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$objNews=$objNews->createUpdate("description=".Db::param("description","editor").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","date").", dateOffline=".Db::param("dateOffline","date"));
+			$objNews=$objNews->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","date").", dateOffline=".Db::param("dateOffline","date"));
 			//Notif par mail & Ferme la page
 			$objNews->sendMailNotif();
 			static::lightboxClose();
@@ -134,7 +134,7 @@ class CtrlDashboard extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$objPoll=$objPoll->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","date"));
+			$objPoll=$objPoll->createUpdate("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","date"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
 			if($pollIsVoted==false)
 			{
@@ -159,7 +159,7 @@ class CtrlDashboard extends Ctrl
 						if(!empty($_FILES["responsesFile".$_idResponse]))
 						{
 							$tmpFile=$_FILES["responsesFile".$_idResponse];
-							if(File::controleUpload($tmpFile["name"],$tmpFile["size"])){
+							if(File::controleUpload($tmpFile["tmp_name"],$tmpFile["name"],$tmpFile["size"])){
 								$responseFilePath=$objPoll->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
 								move_uploaded_file($tmpFile["tmp_name"],$responseFilePath);
 								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1024);}//1024px max

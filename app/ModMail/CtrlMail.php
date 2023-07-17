@@ -46,7 +46,7 @@ class CtrlMail extends Ctrl
 			}
 			////	Enregistre un nouvel email  &&  Recharge le mail pour récupérer les "attachedFileList()" des Inputs
 			$curObj=Ctrl::getObj("mail");
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description","editor").", recipients=".Db::format(trim($mailTo,",")));
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", recipients=".Db::format(trim($mailTo,",")));
 			////	S'il s'agit d'un email reloadé : on copie chaque pièce jointe
 			if(Req::isParam("oldMailTypeId"))
 			{
@@ -57,7 +57,7 @@ class CtrlMail extends Ctrl
 					$curObj->description=str_replace($oldFile["url"], CtrlObject::attachedFileDisplayUrl($_idNewFile,$oldFile["name"]), $curObj->description);				//Remplace le "attachedFileDisplayUrl()" dans le texte de l'éditeur
 				}
 				//Update le texte de l'éditeur  &&  recharge l'email (avec les nouveaux fichiers & co)
-				Db::query("UPDATE ".$curObj::dbTable." SET ".$curObj::htmlEditorField."=".Db::format($curObj->description,"editor")." WHERE _id=".$curObj->_id);
+				Db::query("UPDATE ".$curObj::dbTable." SET ".$curObj::htmlEditorField."=".Db::format($curObj->description)." WHERE _id=".$curObj->_id);
 				$curObj=Ctrl::getObjTarget($curObj->_typeId);
 			}
 			////	Envoi du mail

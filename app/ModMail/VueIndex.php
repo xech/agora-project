@@ -54,8 +54,8 @@ function formControl()
 	else if($("[name='title']").isEmpty())											{validForm=false;  notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_title") ?>");}
 	else if(isEmptyEditor())														{validForm=false;  notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_description") ?>");}
 	//// Fichier joint : remplace le "src" des images temporaires (cf. "VueObjHtmlEditor.php")
-	attachedFileReplaceSRCINPUT();
-	//// Fichiers joints : la taille ne doit pas dépasser 15Mo 
+	attachedFileSrcReplace();
+	//// Fichiers joints : la taille ne doit pas dépasser 15Mo
 	var filesSize=0;
 	$(".attachedFileInput").each(function(){
 		if($(this).isEmpty()==false){

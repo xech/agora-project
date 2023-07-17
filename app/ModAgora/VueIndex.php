@@ -69,12 +69,13 @@ function formControl()
 
 <div id="pageCenter">
 	<div id="pageModuleMenu">
-		<!--INFOS & VERSIONS-->
 		<div class="miscContainer" id="agoraInfos">
+			<!--VERSIONS D'AGORA-PROJECT (ET DATE D'UPDATE) / PHP / MYSQL-->
 			<div>Agora-Project / Omnispace version <?= Req::appVersion() ?></div>
 			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"date") ?></div>
 			<div><a href="javascript:lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a></div>
 			<div>PHP <?= str_replace(strstr(phpversion(),"-"),"",phpversion()) ?> &nbsp;&nbsp; <?= Db::dbVersion() ?></div>
+			<!--FONCTIONS PHP DÉSACTIVÉES-->
 			<?php if(!function_exists("mail")){ ?><div ><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
 			<?php if(!function_exists("ldap_connect")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_ldapDisabled") ?></div><?php } ?>

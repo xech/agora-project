@@ -46,7 +46,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * TABLEAU DES TYPES DE FICHIERS
+	 * TABLEAU DES EXTENSIONS DE FICHIERS
 	 *******************************************************************************************/
 	public static function fileTypes($typeKey)
 	{
@@ -74,8 +74,8 @@ class File
 				"video"=>["mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"],
 				"videoPlayer"=>["mp4","webm"],
 				"mediaPlayer"=>["mp4","webm","mp3"],
-				"attachedFileInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],										//Fichiers joints pouvant être intégrés dans une description (imageBrowser + mediaPlayer)
-				"forbidden"=>["htaccess","sh","so","bin","cgi","rpm","deb","bat","php","phtml","php3","php4","php5","js"]	//Fichiers script interdits
+				"attachedFileInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],							//Fichiers joints intégrable dans l'éditeur TinyMce
+				"forbiddenExt"=>["php","phtml","js","htaccess","sh","so","bin","cgi","rpm","deb","bat","exe"],	//Fichiers non autorisés
 			];
 		}
 		//renvoie les fichiers correspondant aux types
@@ -89,18 +89,21 @@ class File
 	{
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
 	}
-	
+
 	/***********************************************************************************************
 	 * CONTROLE L'UPLOAD D'UN NOUVEAU FICHIER : TYPE DE FICHIER AUTORISÉ & ESPACE DISQUE SUFFISANT ?
 	 ***********************************************************************************************/
-	public static function controleUpload($fileName, $fileSize, $datasFolderSize=null)
+	public static function controleUpload($filePath, $fileName, $fileSize, $datasFolderSizeTmp=null)
 	{
-		//Init le $datasFolderSize
-		$datasFolderSize=(!empty($datasFolderSize))  ?  $datasFolderSize  :  self::datasFolderSize();
-		////	Controle du type de fichier  &  L'espace disque disponible
-		if(self::isType("forbidden",$fileName))						{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
-		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)	{Ctrl::notify("NOTIF_diskSpace");  return false;}
-		else														{return true;}
+		////	Init le $datasFolderSize
+		$datasFolderSize=(!empty($datasFolderSizeTmp))  ?  $datasFolderSizeTmp  :  self::datasFolderSize();
+		////	Récupère le type mime du fichier
+		$isForbiddenMimeType=preg_match("/(php|javascript|application|octet-stream|shell|binary|executable|msdownload|debian)/i", mime_content_type($filePath));
+		////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
+		if(self::isType("forbiddenExt",$fileName) || $isForbiddenMimeType==true)			{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
+		elseif(is_uploaded_file($filePath)==false && Req::param("tmpFolderName")==false)	{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
+		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)							{Ctrl::notify("NOTIF_diskSpace");  return false;}
+		else																				{return true;}
 	}
 
 	/************************************************************************************************************************************
@@ -108,7 +111,7 @@ class File
 	 ************************************************************************************************************************************/
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		////	Old mobileApp sous Cordova : annule le download pour ne pas bloquer InAppBrowser, et alncer le download via le browser system (InAppBrowser et le browser system utilisent les mêmes cookies: "isMobileApp()" renvoie donc toujours "true")
+		////	Old mobileApp sous Cordova : annule le download pour ne pas bloquer InAppBrowser, et lancer le download via le browser system (InAppBrowser et le browser system utilisent les mêmes cookies: "isMobileApp()" renvoie donc toujours "true")
 		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
 		elseif(!empty($fileContent) || is_file($filePath))

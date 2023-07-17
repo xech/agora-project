@@ -239,7 +239,7 @@ class MdlObject
 	******************************************************************************************************************************************/
 	public function accessRight()
 	{
-		//Mise en cache du droit d'accès
+		//Mise en cache
 		if($this->_accessRight===null)
 		{
 			//Init
@@ -360,7 +360,7 @@ class MdlObject
 		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//exple: link
 		else								{$tmpLabel=null;}
 		//Renvoi un résultat "clean"
-		return Txt::reduce(strip_tags($tmpLabel),50);
+		return Txt::reduce($tmpLabel,50);
 	}
 
 	/*******************************************************************************************
@@ -625,14 +625,14 @@ class MdlObject
 			$conditions[]=$keyId." IN (select _idObject as ".$keyId." from ap_objectTarget where objectType='".static::objectType."' and _idSpace=".Ctrl::$curSpace->_id."  ".$sqlTargets.")";
 		}
 		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (retourne aucune erreur ni objet)
-		$return=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." IS NULL";
+		$returnSql=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." IS NULL";
 		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a acces (dossiers/sujets..)
 		if($containerObj==null && static::isContainerContent()){
 			$MdlObjectContainer=static::MdlObjectContainer;
-			$return="(".$return." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $keyId
+			$returnSql="(".$returnSql." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $keyId
 		}
 		////	Renvoi le résultat
-		return $return;
+		return $returnSql;
 	}
 
 	/*******************************************************************************************
@@ -664,7 +664,7 @@ class MdlObject
 
 	/*******************************************************************************************
 	 * STATIC SQL : SELECTIONNE LES OBJETS EN FONCTION DU TYPE DE PLUGIN
-	 * $params["type"] => "dashboard": cree dans la periode selectionné / "shortcut": ayant un raccourci / "search": issus d'une recherche
+	 * $params["type"] =>  "dashboard" : cree dans la periode selectionné  ||  "shortcut" : ayant un raccourci  ||  "search" : issus d'une recherche
 	 *******************************************************************************************/
 	public static function sqlPlugins($params)
 	{
@@ -672,46 +672,38 @@ class MdlObject
 		elseif($params["type"]=="shortcut")	{return "shortcut=1";}
 		elseif($params["type"]=="search")
 		{
-			$return=null;
-			//// Champs concernés par la recherche : tous les champs de l'objet ou uniquement ceux demandés
+			////	Init la requete SQL  &&  La liste des champs de recherche (tous ou uniquement ceux demandés)
+			$returnSql=null;
 			$objSearchFields=(!empty($params["searchFields"]))  ?  array_intersect(static::$searchFields,$params["searchFields"])  :  static::$searchFields;
-			//// Prépare les termes de la recherche
-			$searchText=Txt::clean($params["searchText"]);
-			//// Recherche l'expression exacte
+			////	Recherche "l'expression exacte"
 			if($params["searchMode"]=="exactPhrase"){
-				//Formate chaque recherche d'expression : "sqlLike" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()"
-				foreach($objSearchFields as $tmpField)  {$return.="`".$tmpField."` LIKE ".Db::format($searchText)." OR `".$tmpField."` LIKE ".Db::format(htmlentities($searchText),"sqlLike,editor")." OR ";}
-			}
-			//// Recherche n'importe quel mot spécifié OU Recherche tous les mots spécifiés
-			else
-			{
-				//Récupère les mots cles de la recherche (>=3 carac)
-				$searchWords=[];
-				foreach(explode(" ",$searchText) as $tmpWord){
-					if(strlen($tmpWord)>=3){
-						$searchWords[]=$tmpWord;														//Recherche le texte brut
-						if($params["searchMode"]=="anyWord")  {$searchWords[]=htmlentities($tmpWord);}	//Recherche aussi les caractères html accentués (cf. tinyMce avec "&eacute;", "&egrave;"..)
-					}
-				}
-				//Opérateur de liaison (garder les espaces) : "n'importe quel mot" || "Tous les mots"
-				$operator=($params["searchMode"]=="anyWord")  ?  "OR"  :  "AND";
-				//Pour chaque champ de l'objet, on ajoute une sélection SQL pour chaque mot recherché
-				foreach($objSearchFields as $tmpField){
-					$sqlField=null;
-					foreach($searchWords as $tmpWord)  {$sqlField.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike,editor")." ".$operator;}	//"sqlLike" pour les "%" && "editor" pour ne pas avoir de "htmlspecialchars()" perturbant le "htmlentities()" ci-dessus
-					$return.="(".trim($sqlField,$operator).") OR ";																					//supprime le dernier $operator entre chaque mot recherché && ajoute un "OR" pour la recherche sur un autre champ
+				foreach($objSearchFields as $tmpField){																					//Recherche sur chaque champ de l'objet
+					$searchText=($tmpField==static::htmlEditorField) ?  htmlentities($params["searchText"])  :  $params["searchText"];	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
+					$returnSql.="`".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";										//"sqlLike" délimite le texte avec "%"  &&  "OR" pour rechercher sur le champ suivant
 				}
 			}
-			//// Sélection de base : supprime le dernier opérateur "OR" entre chaque champ de recherche (cf "rtrim()")
-			$return="(".trim($return,"OR ").")";
-			//// Filtre en fonction de la date de creation
+			////	Recherche "n'importe quel mot"  ||  Recherche "Tous les mots"
+			else{
+				$searchWords=explode(" ",$params["searchText"]);												//Liste des mots clés recherchés
+				$operatorWords=($params["searchMode"]=="anyWord")  ?  " OR "  :  " AND ";						//Opérateur entre chaque mot : "n'importe quel mot" ou "Tous les mots" (laisser les espaces)
+				foreach($objSearchFields as $tmpField){															//Recherche sur chaque champ de l'objet
+					$sqlWords=null;																				//Init la sous-requete pour chaque mot
+					foreach($searchWords as $tmpWord){															//Sélection SQL pour chaque mot recherché
+						$tmpWord=($tmpField==static::htmlEditorField)  ?  htmlentities($tmpWord)  :  $tmpWord;	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
+						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;		//"sqlLike" délimite le texte avec "%"  
+					}	
+					$returnSql.="(".trim($sqlWords,$operatorWords).") OR ";										//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
+				}
+			}
+			////	Supprime le dernier opérateur "OR" entre chaque champ de recherche
+			$returnSql="(".trim($returnSql," OR ").")";
+			////	Filtre en fonction de la date de creation
 			if($params["creationDate"]!="all"){
-				$nbDays=["day"=>1,"week"=>7,"month"=>31,"year"=>365];
-				$timeCreationDate=time() - (86400 * $nbDays[$params["creationDate"]]);
-				$return.=" AND dateCrea >= '".date("Y-m-d 00:00",$timeCreationDate)."'";
+				$timeCreationDate=time() - (86400 * $params["creationDate"]);
+				$returnSql.=" AND dateCrea >= '".date("Y-m-d 00:00",$timeCreationDate)."'";
 			}
-			//// Retourne le résultat
-			return $return;
+			////	Retourne le résultat
+			return $returnSql;
 		}
 	}
 
@@ -744,7 +736,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * TRADUCTION AVEC CHANGEMENT DES LIBELLES -OBJLABEL- ET -OBJCONTENT- PAR CEUX DES OBJETS CONCERNÉS
+	 * LIBELLE DE L'OBJET (CHANGE -OBJLABEL- & CO)
 	 *******************************************************************************************/
 	public function tradObject($tradKey)
 	{
@@ -783,7 +775,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * FICHIER JOINT : AJOUTE DANS LE CORPS DE L'EMAIL LES IMAGES EN PIECE JOINTE ("CID")
+	 * FICHIER JOINT : AJOUTE DANS LE CORPS DE L'EMAIL LES IMAGES EN PIECE JOINTE => "CID"
 	 *******************************************************************************************/
 	public function attachedFileImageCid($mailMessage)
 	{
@@ -794,11 +786,11 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * FICHIER JOINT : LISTE DES FICHIERS JOINTS DE L'OBJET
+	 * FICHIER JOINT : TABLEAU DES FICHIERS JOINTS DE L'OBJET
 	 *******************************************************************************************/
 	public function attachedFileList()
 	{
-		//Mise en cache des fichiers joints
+		//Mise en cache
 		if($this->_attachedFiles===null){																														
 			if(static::hasAttachedFiles!==true)  {$this->_attachedFiles==[];}																					//Ce type d'objet ne gère pas les fichiers joint : tableau vide
 			else{
@@ -811,11 +803,11 @@ class MdlObject
 	}
 
 	/*********************************************************************************************************************************
-	 * FICHIER JOINT : MENUS DES FICHIERS JOINTS DE L'OBJET (Menu contextuel OU vue description. Affiche et propose le téléchargement)
+	 * FICHIER JOINT : AFFICHE LES FICHIERS JOINTS DE L'OBJET (Menu contextuel OU vue description. Affiche et propose le téléchargement)
 	 *********************************************************************************************************************************/
 	public function attachedFileMenu($separator="<hr>")
 	{
-		//Mise en cache du menu des fichiers joints
+		//Mise en cache
 		if($this->_attachedFilesMenu===null)
 		{
 			$this->_attachedFilesMenu="";
@@ -843,7 +835,7 @@ class MdlObject
 			foreach($_FILES as $inputId=>$tmpFile)
 			{
 				//Ajoute chaque fichier joint (cf. "VueObjAttachedFile.php")
-				if(stristr($inputId,"attachedFile") && $tmpFile["error"]==0 && File::controleUpload($tmpFile["name"],$tmpFile["size"]))
+				if(stristr($inputId,"attachedFile") && $tmpFile["error"]==0 && File::controleUpload($tmpFile["tmp_name"],$tmpFile["name"],$tmpFile["size"]))
 				{
 					//Ajoute le fichier en Bdd et dans le dossier de destination
 					$_idFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($tmpFile["name"]).", objectType='".static::objectType."', _idObject=".$this->_id, true);
@@ -855,14 +847,13 @@ class MdlObject
 						//Optimise si besoin le fichier + chmod
 						if(File::isType("imageResize",$filePath))  {File::imageResize($filePath,$filePath,1600);}
 						File::setChmod($filePath);
-						//Nouvelle Image/Vidéo/Mp3 insérée dans le texte : modifie le "SRCINPUT" pour y mettre le path final
-						if(static::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"]))
-						{
-							$inputCpt=str_replace("attachedFile","",$inputId);																				//Récupère le compteur de l'input (cf. "VueObjAttachedFile.php")
-							$editorValue=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id);					//Récupère le texte de l'éditeur
-							$editorValue=str_replace("SRCINPUT".$inputCpt, CtrlObject::attachedFileDisplayUrl($_idFile,$tmpFile["name"]), $editorValue);	//Remplace les "SRCINPUT" temporaires du fichier (cf. "VueObjHtmlEditor.php") par l'url finale d'affichage du fichier
-							$editorValue=str_replace("attachedFileTagInput".$inputCpt, "attachedFileTag".$_idFile, $editorValue);							//Remplace l'id temporaire du fichier/input par le $_idFile final (cf. "VueObjHtmlEditor.php")
-							Db::query("UPDATE ".static::dbTable." SET ".static::htmlEditorField."=".Db::format($editorValue,"editor")." WHERE _id=".$this->_id);//Update le texte de l'éditeur !
+						//Nouvelle Image/Vidéo/Mp3 insérée dans l'éditeur (cf. "VueObjHtmlEditor.php") : remplace le "fileSrcTmp" par le path final
+						if(static::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"])){												//Vérifie qu'il s'agit d'un fichier autorisé
+							$inputCpt=str_replace("attachedFile","",$inputId);																					//Récupère le compteur de l'input (cf. "VueObjAttachedFile.php")
+							$editorContent=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id);						//Récupère le texte de l'éditeur
+							$editorContent=str_replace("fileSrcTmp".$inputCpt, CtrlObject::attachedFileDisplayUrl($_idFile,$tmpFile["name"]), $editorContent);	//Remplace "fileSrcTmp" par l'url d'affichage du fichier
+							$editorContent=str_replace("attachedFileTagTmp".$inputCpt, "attachedFileTag".$_idFile, $editorContent);								//Remplace "attachedFileTagTmp" par l'id du fichier en BDD
+							Db::query("UPDATE ".static::dbTable." SET ".static::htmlEditorField."=".Db::format($editorContent)." WHERE _id=".$this->_id);		//Update le texte de l'éditeur !
 						}
 					}
 				}
@@ -898,7 +889,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public function getUsersComment()
 	{
-		//Mise en cache des commentaires de l'objet
+		//Mise en cache
 		if($this->_usersComment===null)
 			{$this->_usersComment=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);}
 		//Renvoi les résultats

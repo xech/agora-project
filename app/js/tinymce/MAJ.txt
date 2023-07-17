@@ -4,8 +4,8 @@ Mise à jour TinyMCE V6.3.1
 - télécharger les traductions "fr_FR" + "es"			-> https://www.tiny.cloud/download/language-packages/
 - vérifier le fonctionnement du plugin "autoresize"
 - remplacer dans la trad francaise "fr_FR.js" :
-	- "Tailles de police" 						-> "Taille du texte"
-	- "Source"									-> "Source / Adresse web"
-	- "coller"									-> "Coller (ou clic droit puis 'coller')"
-	->"Rich Text Area [...]"					-> RIEN !
-	=>"Ins\u00e9rer\/modifier un m\u00e9dia"	-> "Ins\u00e9rer\/modifier une vid\u00e9o externe"
+	- "Tailles de police" 				-> "Taille du texte"
+	- "Source"							-> "Source / Adresse web"
+	- "coller"							-> "Coller (ou clic droit puis 'coller')"
+	=>"Ins\xe9rer/modifier un m\xe9dia"	-> "Inserer/modifier une video externe"
+	->"Rich Text Area [...]"			-> RIEN !

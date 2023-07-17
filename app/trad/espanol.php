@@ -312,7 +312,7 @@ class Trad extends Txt
 			"captchaError"=>"La identificación visual no es valida",
 			
 			////	Rechercher
-			"searchSpecifyText"=>"Por favor, especifique las palabras clave de al menos 3 caracteres",
+			"searchSpecifyText"=>"Especifique al menos 3 caracteres (alfanuméricos y sin caracteres especiales)",
 			"search"=>"Buscar",
 			"searchDateCrea"=>"Fecha de creación",
 			"searchDateCreaDay"=>"menos de un día",
@@ -539,7 +539,7 @@ class Trad extends Txt
 			"AGORA_mapTool"=>"Herramienta de mapeo",
 			"AGORA_mapToolInfo"=>"Herramienta de mapeo para ver usuarios y contactos en un mapa",
 			"AGORA_mapApiKey"=>"'API Key' para herramienta de mapeo",
-			"AGORA_mapApiKeyInfo"=>"API Key para la herramienta de mapeo Google Map",
+			"AGORA_mapApiKeyInfo"=>"API Key para la herramienta de mapeo Google Map : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
 			"AGORA_gIdentity"=>"Conexión opcional con Google",
 			"AGORA_gIdentityInfo"=>"Los usuarios pueden conectarse más fácilmente a su espacio a través de su cuenta de Google : para eso, un correo electrónico <i>@gmail.com</ i> ya debe estar registrado en la cuenta del usuario",
 			"AGORA_gIdentityClientId"=>"Configuración de Sign-In : Client ID",

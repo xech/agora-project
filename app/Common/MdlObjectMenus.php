@@ -240,7 +240,7 @@ trait MdlObjectMenus
 			}
 		}
 		////	OPTIONS NOTIFICATION PAR MAIL
-		if(static::hasNotifMail==true && function_exists("mail")){
+		if(static::hasNotifMail==true && Tool::mailEnabled()){
 			$vDatas["objMenuNotifMail"]=true;
 			$vDatas["notifMailUsers"]=Ctrl::$curUser->usersVisibles(true);
 			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");

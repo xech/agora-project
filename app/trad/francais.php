@@ -164,7 +164,7 @@ class Trad extends Txt
 			"editorDraft"=>"Récupérer mon texte",
 			"editorDraftConfirm"=>"Récuperer le dernier texte que j'ai saisi",
 			"editorFileInsert"=>"Ajouter une image ou vidéo",
-			"editorFileInsertNotif"=>"Merci de sélectionner une image ou vidéo au format jpg, png, gif ou mp4",
+			"editorFileInsertNotif"=>"Merci de sélectionner une image au format jpg, png, gif ou une vidéo au format mp4 ou webm",
 			
 			////	Validation des formulaires
 			"add"=>"Ajouter",
@@ -312,7 +312,7 @@ class Trad extends Txt
 			"captchaError"=>"L'identification visuelle est erronée (5 caractères à recopier)",
 			
 			////	Rechercher
-			"searchSpecifyText"=>"Merci de préciser des mots clés d'au moins 3 caractères",
+			"searchSpecifyText"=>"Merci de préciser au moins 3 caractères (alphanumériques et sans caractères spéciaux)",
 			"search"=>"Rechercher",
 			"searchDateCrea"=>"Date de création",
 			"searchDateCreaDay"=>"moins d'un jour",
@@ -323,7 +323,7 @@ class Trad extends Txt
 			"advancedSearch"=>"Recherche avancée",
 			"advancedSearchAnyWord"=>"n'importe quel mot",
 			"advancedSearchAllWords"=>"tous les mots",
-			"advancedSearchExactPhrase"=>"expression exacte",
+			"advancedSearchExactPhrase"=>"l'expression exacte",
 			"keywords"=>"Mots clés",
 			"listModules"=>"Modules",
 			"listFields"=>"Champs",
@@ -539,7 +539,7 @@ class Trad extends Txt
 			"AGORA_mapTool"=>"Outil de cartographie",
 			"AGORA_mapToolInfo"=>"Outil de cartographie pour voir les utilisateurs et contacts sur une carte",
 			"AGORA_mapApiKey"=>"API Key pour la catographie Google Map",
-			"AGORA_mapApiKeyInfo"=>"Parametrage obligatoire pour l'outil de cartographie Google Map. Plus d'infos sur https://developers.google.com/maps/",
+			"AGORA_mapApiKeyInfo"=>"Parametrage obligatoire pour l'outil de cartographie Google Map : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
 			"AGORA_gIdentity"=>"Connexion via Google (option)",
 			"AGORA_gIdentityInfo"=>"Les utilisateurs peuvent se connecter via leur compte Google : le compte utilisateur doit alors avoir un identifiant avec une adresse <i>@gmail.com</i>",
 			"AGORA_gIdentityClientId"=>"API Key pour la connexion via Google",

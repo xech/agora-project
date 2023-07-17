@@ -58,7 +58,7 @@ class Tool
 				$mail->Port=(int)Ctrl::$agora->smtpPort;
 				if(empty(Ctrl::$agora->smtpSecure))	{$mail->SMTPAutoTLS=false;}						//Specifie qu'il n'y a pas de connexion TLS
 				else								{$mail->SMTPSecure=Ctrl::$agora->smtpSecure;}	//Précise le type de connexion sécurisé TLS
-				if(preg_match("/WIN/i",PHP_OS) && !empty(Ctrl::$agora->smtpSecure))  {$mail->SMTPOptions=['ssl'=>['verify_peer'=>false,'verify_peer_name'=>false,'allow_self_signed'=>true]];}//TLS bridé sur Wamp
+				if(preg_match("/WIN/i",PHP_OS) && !empty(Ctrl::$agora->smtpSecure))  {$mail->SMTPOptions=['ssl'=>['verify_peer'=>false,'verify_peer_name'=>false,'allow_self_signed'=>true]];}			//TLS bridé sur Wamp
 				if(!empty(Ctrl::$agora->smtpUsername) && !empty(Ctrl::$agora->smtpPass))   {$mail->Username=Ctrl::$agora->smtpUsername;  $mail->Password=Ctrl::$agora->smtpPass;  $mail->SMTPAuth=true;}//Connection authentifié
 			}
 
@@ -199,7 +199,9 @@ class Tool
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/
 
-	// Tableau des timeszones
+	/*******************************************************************************************
+	 *  TABLEAU DES TIMESZONES
+	 *******************************************************************************************/
 	public static $tabTimezones=array(
 		"Kwajalein"=>"-12:00",
 		"Pacific/Midway"=>"-11:00",
@@ -227,9 +229,17 @@ class Tool
 		"Australia/Sydney"=>"10:00",
 		"Asia/Magadan"=>"11:00",
 		"Pacific/Fiji"=>"12:00",
-		"Pacific/Tongatapu"=>"13:00");
-	
-	
+		"Pacific/Tongatapu"=>"13:00"
+	);	
+
+	/*******************************************************************************************
+	 * ENVOI DES MAILS ACTIVÉ SUR LE SERVEUR
+	 *******************************************************************************************/
+	public static function mailEnabled()
+	{
+		return (function_exists("mail") || (!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)));
+	}
+
 	/*******************************************************************************************
 	 * COLORPICKER / SELECTEUR DE COULEURS ($bgTxtColor : "background-color"/"color")
 	 *******************************************************************************************/

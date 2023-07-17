@@ -25,7 +25,7 @@ class CtrlMisc extends Ctrl
 		{
 			////	UPDATE LE LIVECOUNTER DE L'USER COURANT EN BDD :  SPECIFIE SI ON EST EN TRAIN DE MODIFIER UN OBJET (via "editTypeId")  &&  ENREGISTRE SI BESOIN LE CONTENU DE L'EDITEUR (via "editorDraft")
 			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editTypeId=".Db::param("editTypeId").", `date`=".Db::format(time());
-			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::param("editorDraft","editor").", draftTypeId=".Db::param("editTypeId");}//Vérifie si "editorDraft" est spécifié (pour pas l'effacer..)
+			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::param("editorDraft").", draftTypeId=".Db::param("editTypeId");}//Vérifie si "editorDraft" est spécifié (pour pas l'effacer..)
 			Db::query("INSERT INTO ap_userLivecouter SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 
 			////	INIT LE MESSENGER EN DEBUT DE SESSION
@@ -131,7 +131,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * AJAX : UPDATE LE "MessengerDisplayTimes" : AFFICHAGE D'UN USER OU DE "ALL"
+	 * AJAX : UPDATE LE "MessengerDisplayTimes" D'UN USER OU DE "ALL"
 	 *******************************************************************************************/
 	public static function actionMessengerDisplayTimesUpdate()
 	{
@@ -143,7 +143,8 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * AJAX : POST D'UN MESSAGE SUR LE MESSENGER (note : les messages sont encodés en "utf8mb4" pour le support des "emoji" sur mobile)
+	 * AJAX : POST D'UN MESSAGE SUR LE MESSENGER
+	 * Note : les messages sont encodés en "utf8mb4" pour le support des "emoji"
 	 *******************************************************************************************/
 	public static function actionMessengerPost()
 	{
@@ -152,14 +153,10 @@ class CtrlMisc extends Ctrl
 			//Init les destinataires du message et le message
 			$usersIds=Req::param("messengerUsers");
 			$usersIds[]=self::$curUser->_id;
-			$message=Db::param("message");
-			//Proposition de visio : modifie le message
-			if(stristr(Req::param("message"),"launchVisio")){
-				$message=Db::param("message","editor");//Récupère le message sans filtrer les tags html (mode "editor")
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE _idUser=".self::$curUser->_id." AND _idUsers=".Db::formatTab2txt($usersIds)." AND message=".$message);//Supprime si besoin les anciens liens de visio identiques
-			}
+			//Proposition de visio : supprime si besoin les anciens liens de visio identiques
+			if(stristr(Req::param("message"),"launchVisio"))  {Db::query("DELETE FROM ap_userMessengerMessage WHERE _idUser=".self::$curUser->_id." AND _idUsers=".Db::formatTab2txt($usersIds)." AND message=".Db::param("message"));}
 			//Enregistre le message
-			Db::query("INSERT INTO ap_userMessengerMessage SET _idUser=".self::$curUser->_id.", _idUsers=".Db::formatTab2txt($usersIds).", message=".$message.", `date`=".Db::format(time()));
+			Db::query("INSERT INTO ap_userMessengerMessage SET _idUser=".self::$curUser->_id.", _idUsers=".Db::formatTab2txt($usersIds).", message=".Db::param("message").", `date`=".Db::format(time()));
 			//Update les users "checked" lors d'une discussion à plusieurs (3 users minimum : user courant + 2 destinataires au moins)
 			if(count($usersIds)>=3)  {$_SESSION["messengerCheckedUsers"]=$usersIds;}
 		}
@@ -306,7 +303,7 @@ class CtrlMisc extends Ctrl
 				$adressList[]=["adress"=>$tmpAdress, "personLabel"=>$tmpLabel, "personImg"=>$tmpImg];
 			}
 		}
-		//Affiche la carte Gmap ou Leaflet
+		//Affiche la carte : "gmap" ou "leaflet"
 		$vDatas["adressList"]=json_encode($adressList);
 		$vDatas["mapTool"]=Ctrl::$agora->gMapsEnabled()  ?  "gmap"  :  "leaflet";
 		static::displayPage(Req::commonPath."VuePersonsMap.php",$vDatas);

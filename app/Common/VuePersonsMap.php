@@ -6,40 +6,34 @@
 <div id="mapid"></div>
 
 
-<?php
-////	CHARGE LA LIBRAIRIE GOOGLE MAP  ||  LIBRAIRIE LEAFLET/OPENSTRETMAP
-if($mapTool=="gmap"){
-	//"mapApiKey" à récupérer sur "https://developers.google.com/maps/documentation/javascript/get-api-key"
-	echo '<script src="https://maps.googleapis.com/maps/api/js?key='.Ctrl::$agora->mapApiKey.'"></script>';
-}else{
-	echo '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-		  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>';
-}
-?>
+<!--CHARGE LA LIBRAIRIE GOOGLE MAP OU LEAFLET/OPENSTREETMAP-->
+<?php if($mapTool=="gmap"){ ?>
+	<script src="https://maps.googleapis.com/maps/api/js?key=<?= Ctrl::$agora->mapApiKey ?>"></script>
+<?php }else{ ?>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<?php } ?>
 
 
 <script>
 ////	INIT LA CARTE ET MARQUE LES ADRESSES
 $(function(){
 	//// Init l'affichage
-	mapTool="<?= $mapTool ?>";//Carte Gmap OU Leaflet
+	mapTool="<?= $mapTool ?>";//"gmap" ou "leaflet"
 	$("#mapid").css("width",parent.$(window).width()+"px").css("height",parent.$(window).height()+"px");//Redimensionne le div de la carte
 	parent.$.fancybox.getInstance().update();//Redimensionne le fancybox
 
-	//// Instancie la carte GMAP
+	//// Instancie la carte Google Map
 	if(mapTool=="gmap"){
-		map		=new google.maps.Map(document.getElementById("mapid"), {zoom:8});//Init la carte Gmap
-		geocoder=new google.maps.Geocoder();//Init le géocodeur
-		bounds	=new google.maps.LatLngBounds();//bornes la carte (latitude/longitude)
+		gMap	=new google.maps.Map(document.getElementById("mapid"), {zoom:7});	//Init la carte
+		geocoder=new google.maps.Geocoder();										//Init le géocodeur
+		bounds	=new google.maps.LatLngBounds();									//bornes la carte (latitude/longitude)
 	}
-	//// Instancie la carte LEAFLET
+	//// Instancie la carte Leaflet/Openstreetmap
 	else{
-		myMap=L.map("mapid").setView([45,-20], 14);																													//Créé une carte positionnée par défaut sur l'Atlantique
-		var layerUrl='https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';															//Url de la carte générée via mapbox.com
-		var layerToken="pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw";													//Token de la carte
-		L.tileLayer(layerUrl, {id:"mapbox/streets-v11", accessToken:layerToken, tileSize:512, zoomOffset:-1, attribution:'OpenStreetMap | Mapbox'}).addTo(myMap);	//Affiche la carte avec la vue "mapbox/streets-v11"
+		leafletMap=L.map("mapid").setView([45,-20], 14);																//Créé une nouvelle carte (par défaut sur l'Atlantique)
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'OpenStreetMap'}).addTo(leafletMap);	//Ajoute les tuiles/vues d'Openstreetmap	
 	}
-
 	//// Init les adresses && lance l'affichage de chaque adresse
 	adressList=<?= $adressList ?>;//Adresses au format json
 	displayAdress();
@@ -52,7 +46,7 @@ function displayAdress(adressKey)
 	if(typeof adressKey=="undefined")  {adressKey=0;}
 	var tmpAdress=adressList[adressKey];
 
-	//// Carte GMAP
+	//// Carte Google Map
 	if(mapTool=="gmap")
 	{
 		//// Géocode et marque chaque adresse
@@ -65,12 +59,12 @@ function displayAdress(adressKey)
 				tmpAdress.lng=results[0].geometry.location.lng();
 				// Image du marker (url + position de la photo par rapport au point du marker = centre/bottom + dimension de la photo)
 				var tmpMarkerImage=new google.maps.MarkerImage(tmpAdress.personImg, null, null, new google.maps.Point(19,38), new google.maps.Size(38,38));
-				tmpAdress.marker=new google.maps.Marker({map:map, title:tmpAdress.personLabel, position:results[0].geometry.location, icon:tmpMarkerImage});
+				tmpAdress.marker=new google.maps.Marker({map:gMap, title:tmpAdress.personLabel, position:results[0].geometry.location, icon:tmpMarkerImage});
 				// Infobulle du marker
 				tmpAdress.tooltipHtml=tmpAdress.personLabel+"<div id='streetView"+adressKey+"' style='width:400px;height:300px;'>Street View loading ...</div>";
 				tmpAdress.tooltip=new google.maps.InfoWindow( {content:tmpAdress.tooltipHtml} );
 				google.maps.event.addListener(tmpAdress.marker, "click", function(){
-					tmpAdress.tooltip.open(map, tmpAdress.marker);
+					tmpAdress.tooltip.open(gMap, tmpAdress.marker);
 					setTimeout(function(){//Appel de StreetView une fois l'infobulle chargée
 						StreetView=new google.maps.StreetViewPanorama(document.getElementById("streetView"+adressKey));
 						StreetView.setPosition(new google.maps.LatLng(tmpAdress.lat,tmpAdress.lng));
@@ -91,13 +85,13 @@ function displayAdress(adressKey)
 			//// Géolocalise l'adresse suivante  OU  Affichage final : recentre et ajuste le zoom en fonction des limites de la carte (bounds)
 			if(getAdressKeyNext(adressKey))  {displayAdress(getAdressKeyNext(adressKey));}
 			else{
-				map.fitBounds(bounds);
-				if(map.getZoom()>15)  {map.setZoom(15);}//Dézoom la carte si besoin
+				gMap.fitBounds(bounds);
+				if(gMap.getZoom()>15)  {gMap.setZoom(15);}//Dézoom si besoin
 				$("img[src*=loading]").hide();
 			}
 		});
 	}
-	//// Carte LEAFLET
+	//// Carte Leaflet/Openstreetmap
 	else
 	{
 		//// Géocode et marque chaque adresse
@@ -105,6 +99,8 @@ function displayAdress(adressKey)
 			//// "Adresse non trouvé"  OU  Adresse trouvée et placée sur la carte
 			if(result.length==0)  {notify("<?= Txt::trad("mapLocalizationFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapLocalizationFailure2") ?>");}
 			else{
+				//Debug si besoin
+				//notify(tmpAdress.adress+"<br>->"+result[0].display_name+"<br>->"+result[0].lat+"<br>->"+result[0].lon);
 				//Init la liste des markers
 				if(typeof markersList=="undefined")  {markersList=[];}
 				//Ajoute la position dans la liste des markers
@@ -112,13 +108,13 @@ function displayAdress(adressKey)
 				markersList.push(latLngTmp);
 				//Ajoute l'icone et label de l'user/contact
 				var markerIcon=L.icon({ iconUrl:tmpAdress.personImg, iconSize:[38,38] });
-				L.marker(latLngTmp,{icon:markerIcon}).bindPopup(tmpAdress.personLabel).addTo(myMap);
-				//Ajoute le marker pour délimiter la carte (bounds). Debug:  notify(tmpAdress.adress+" => "+result[0].display_name+" => "+result[0].lat+" => "+result[0].lon);
+				L.marker(latLngTmp,{icon:markerIcon}).bindPopup(tmpAdress.personLabel).addTo(leafletMap);
+				//Ajoute le marker pour délimiter la carte (bounds)
 				var bounds=new L.LatLngBounds(markersList);
 			}
-			//// Géolocalise l'adresse suivante  OU  Affichage final : recentre et ajuste le zoom en fonction des limites de la carte (bounds)
+			//// Géolocalise l'adresse suivante  OU  Affichage final : recentre et ajuste le zoom en fonction des limites de la carte ("fitBounds()" et "zoomOut()")
 			if(getAdressKeyNext(adressKey))	{displayAdress(getAdressKeyNext(adressKey));}
-			else							{myMap.fitBounds(bounds);  $("img[src*=loading]").hide();}
+			else							{leafletMap.fitBounds(bounds).zoomOut(1);  $("img[src*=loading]").hide();}
 		});
 	}
 }

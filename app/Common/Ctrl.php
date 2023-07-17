@@ -39,7 +39,7 @@ abstract class Ctrl
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
-			self::resetUserAuthToken("disconnect");
+			self::userAuthToken("delete");
 		}
 
 		////	Récup le parametrage général (après "session_start()")  &&  Lance si besoin la mise à jour de la DB
@@ -114,10 +114,10 @@ abstract class Ctrl
 			if($connectViaForm==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
 				$passwordClear=Req::param("connectPassword");
-				$passwordVerifyHost=(Req::isHost() && Host::passwordVerify($passwordClear));
-				//// Verif si le password correspond à un hash Bcrypt / Sha1 (old) / Host (specific). Enregistre au besoin le hash Bcrypt du password (le salt est généré via "password_hash()")
+				$passwordKeepOld=(Req::isDevServer()==false && Req::isHost() && Host::passwordVerifyShorts($passwordClear));
+				//// Verif si le password correspond à un hash :  Bcrypt (généré via "password_hash()")  ||  Sha1 (obsolete mais tjs retro-compatible)  ||  Host (specific)
 				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || $passwordVerifyHost==true)){
-					if($passwordVerifyHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}
+					if($passwordKeepOld==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}// UPDATE LE HASH !
 					$userAuthentified=true;
 				}
 			}
@@ -127,7 +127,7 @@ abstract class Ctrl
 				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
 				if(!empty($tmpUser))  {$userAuthentified=true;}
 			}
-			////	CONNEXION AUTO VIA L'ANCIENNE METHODE	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ
+			////	CONNEXION AUTO VIA L'ANCIENNE METHODE (obsolete depuis v23.4 mais retro-compatible : les cookies sont supprimés dès que $userAuthentified=true !)
 			elseif($connectViaCookieOld==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($_COOKIE["AGORAP_LOG"])." AND `password`=".Db::format($_COOKIE["AGORAP_PASS"]));	
 				if(!empty($tmpUser))  {$userAuthentified=true;}
@@ -147,7 +147,7 @@ abstract class Ctrl
 				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".self::$curUser->_id);
 
 				//// Reinitialise le token de connexion auto
-				if(($connectViaForm==true && Req::isParam("rememberMe")) || $connectViaToken==true || $connectViaCookieOld==true)  {self::resetUserAuthToken("newToken");}
+				if( ($connectViaForm==true && Req::isParam("rememberMe")) || $connectViaToken==true || $connectViaCookieOld==true)  {self::userAuthToken("create",self::$curUser->_id);}
 
 				//// Notif si l'user est connecté via une autre ip
 				if(Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".Db::format($tmpUser["_id"])." AND `date`>".Db::format(time()-60)." AND ipAdress NOT LIKE ".Db::format($_SERVER["REMOTE_ADDR"])) > 0)
@@ -212,23 +212,25 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * RE-INITIALISE LE TOKEN DE CONNEXION AUTO : DE LA BDD ET DU COOKIE 
+	 * CREE/SUPPRIME LE TOKEN DE CONNEXION AUTOMATIQUE
+	 * @param string $action "create" or "delete"
+	 * @param int $_idUser with "create" $action
 	 *******************************************************************************************/
-	public static function resetUserAuthToken($mode)
+	public static function userAuthToken($action, $_idUser=null)
 	{
-		//// S'il existe un cookie "userAuthToken" : supprime le token en bdd ..puis le cookie 
+		////	S'il existe déjà un cookie "userAuthToken" : supprime le token en bdd et du cookie 
 		if(!empty($_COOKIE["userAuthToken"])){
 			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
 			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));
 			setcookie("userAuthToken", "", -1);
 		}
-		//// Créé un nouveau token au format Bcrypt : enregistre le token en bdd ..puis en cookie (un an)
-		if($mode=="newToken"){
+		////	Créé un nouveau token au format Bcrypt : enregistre le token en bdd et dans un cookie (un an)
+		if($action=="create"){
 			$newToken=password_hash(uniqid(),PASSWORD_DEFAULT);
-			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".self::$curUser->_id.", userAuthToken=".Db::format($newToken).", dateCrea=NOW()");
-			setcookie("userAuthToken", self::$curUser->_id."@@@".$newToken, (time()+31536000));
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($newToken).", dateCrea=NOW()");
+			setcookie("userAuthToken", $_idUser."@@@".$newToken, (time()+31536000));
 		}
-		//// Supprime les cookies de l'ancienne méthode et les tokens obsolètes (+ d'un an)
+		////	Supprime les cookies de l'ancienne méthode et les tokens obsolètes (+ d'un an)
 		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG",null,-1);  setcookie("AGORAP_PASS",null,-1);}
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-31536000));
 	}
@@ -438,13 +440,15 @@ abstract class Ctrl
 
 	/*******************************************************************************************
 	 * AJOUTE UNE NOTIFICATION À AFFICHER VIA "VUESTRUCTURE.PHP"
-	 * $message : message spécifique OU clé de traduction
-	 * $type : "notice" / "success" / "warning"
+	 * $message : 	message spécifique  /  clé de traduction
+	 * $type : 		"notice"  /  "success"  /  "warning"
 	 *******************************************************************************************/
-	public static function notify($messageTrad, $type="notice")
+	public static function notify($message, $type="notice")
 	{
-		//Ajoute la notification au tableau "self::$notify" si elle n'est pas déjà présente
-		if(Tool::arraySearch(self::$notify,$messageTrad)==false)  {self::$notify[]=["message"=>$messageTrad,"type"=>$type];}
+		if(Tool::arraySearch(self::$notify,$message)==false){						//Vérifie si le message n'est pas déjà dans la liste (évite les doublons de notif)
+			$message=htmlspecialchars(strip_tags($message), ENT_QUOTES, 'UTF-8');	//Filtre le message pour éviter les XSS (tester avec l'url "&notify[]=<i>iii<%2fi>68617")%3balert(1)%2f%2f869")
+			self::$notify[]=["message"=>$message, "type"=>$type];					//Ajoute la notification au tableau "self::$notify"
+		}
 	}
 
 	/********************************************************************************************

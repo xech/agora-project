@@ -120,10 +120,12 @@ function mainFormControl()
 	}
 	?>
 	//Notify sur les champs vides
-	if(notifRequiredFields.length>0)  {notify("<?= Txt::trad("requiredFields") ?> : "+notifRequiredFields);}
+	if(notifRequiredFields.length>0)
+		{notify("<?= Txt::trad("requiredFields") ?> : "+notifRequiredFields);}
 
-	////	Controle les mails
-	if($("input[name='mail']").isEmpty()==false && $("input[name='mail']").isMail()==false)   {validForm=false;  notify("<?= Txt::trad("mailInvalid"); ?>");}
+	////	Controle le formatage des mails
+	if($("input[name='mail']").isEmpty()==false && $("input[name='mail']").isMail()==false)
+		{validForm=false;  notify("<?= Txt::trad("mailInvalid"); ?>");}
 
 	////	Controle le formatage des dates
 	$(".dateInput,.dateBegin,.dateEnd").each(function(){
@@ -134,8 +136,7 @@ function mainFormControl()
 	});
 
 	////	Controle les affectations
-	if($("input[name='objectRight[]']").exist())
-	{
+	if($("input[name='objectRight[]']").exist()){
 		//Aucune affectation : false
 		if($(":checked[name='objectRight[]']").length==0)   {validForm=false;  notify("<?= Txt::trad("EDIT_notifNoSelection") ?>");}
 		//Sujet du forum et uniquement des accès en lecture : false!
@@ -146,7 +147,7 @@ function mainFormControl()
 	}
 
 	////	Fichier joint : remplace le "src" des images temporaires (cf. "VueObjHtmlEditor.php")
-	if(typeof attachedFileReplaceSRCINPUT=="function")  {attachedFileReplaceSRCINPUT();}
+	if(typeof attachedFileSrcReplace=="function")  {attachedFileSrcReplace();}
 
 	////	Controle OK : affiche l'icone "loading"
 	if(validForm==true)  {submitButtonLoading();}

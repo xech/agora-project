@@ -219,46 +219,44 @@ class CtrlFile extends Ctrl
 			//Init
 			@set_time_limit(240);//disabled en safemode
 			$newFiles=$notifFilesLabel=$notifFiles=[];
-			////	RECUPERE LES FICHIERS DEJA ENVOYÉS AVEC "PLUPLOAD"
+			////	FICHIERS ENVOYÉS VIA "PLUPLOAD"
 			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")))
 			{
 				$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
 				if(is_dir($tmpDirPath)){
 					foreach(scandir($tmpDirPath) as $tmpFileName){
 						$tmpFilePath=$tmpDirPath.$tmpFileName;
-						if(is_file($tmpFilePath))  {$newFiles[]=array("tmpPath"=>$tmpFilePath,"name"=>$tmpFileName);}
+						if(is_file($tmpFilePath))  {$newFiles[]=["tmpPath"=>$tmpFilePath, "name"=>$tmpFileName, "size"=>filesize($tmpFilePath)];}
 					}
 				}
 			}
-			////	RECUPERE LES FICHIERS ENVOYÉS AVEC $_FILE ("addFileVersion" OU "addFileSimple")
+			////	FICHIERS ENVOYÉS VIA L'INPUT DE TYPE "FILE" ("addFileVersion"/"addFileSimple")
 			elseif(!empty($_FILES))
 			{
-				foreach($_FILES as $fileKey=>$tmpFile){
+				foreach($_FILES as $tmpFile){
 					if($tmpFile["error"]==0){
-						$newFiles[]=["tmpPath"=>$tmpFile["tmp_name"], "name"=>$tmpFile["name"]];//Ajoute le fichier
+						$newFiles[]=["tmpPath"=>$tmpFile["tmp_name"], "name"=>$tmpFile["name"], "size"=>$tmpFile["size"]];//Ajoute le fichier
 						if(Req::isParam("addVersion") && File::extension($curObj->name)!=File::extension($tmpFile["name"]))
 							{Ctrl::notify(Txt::trad("NOTIF_fileVersion")." : ".File::extension($tmpFile["name"])." -> ".File::extension($tmpFile["name"]));}//Notifie si besoin du changement d'extension du fichier
 					}
 				}
 			}
-	
 			////	AJOUTE CHAQUE FICHIER
-			$datasFolderSize=File::datasFolderSize();
-			foreach($newFiles as $fileKey=>$tmpFile)
+			$datasFolderSizeTmp=File::datasFolderSize();
+			foreach($newFiles as $tmpFile)
 			{
 				////	Controle du fichier
-				$fileSize=filesize($tmpFile["tmpPath"]);
-				if(File::controleUpload($tmpFile["name"],$fileSize,$datasFolderSize))
+				if(File::controleUpload($tmpFile["tmpPath"],$tmpFile["name"],$tmpFile["size"],$datasFolderSizeTmp))
 				{
 					////	Vérifie si un autre fichier existe déjà avec le meme nom
 					if(Db::getVal("SELECT count(*) FROM ap_file WHERE _idContainer=".(int)$curObj->_idContainer." AND _id!=".$curObj->_id." AND name=".Db::format($tmpFile["name"]))>0)
 						{Ctrl::notify(Txt::trad("NOTIF_fileName")." :<br><br>".$tmpFile["name"]);}
-					////	Charge le fichier (nouveau fichier : create OU nouvelle version du fichier : update) && Enregistre ses propriétés && Recharge l'objet
+					////	Charge le fichier (nouveau fichier OU nouvelle version du fichier)  &&  Enregistre ses propriétés  &&  Recharge l'objet
 					$tmpObj=Ctrl::getObjTarget();
-					$tmpObj=$lastObjFile=$tmpObj->createUpdate("name=".Db::format($tmpFile["name"]).", description=".Db::param("description").", octetSize=".Db::format($fileSize));
-					////	Ajoute la version du fichier
+					$tmpObj=$lastObjFile=$tmpObj->createUpdate("name=".Db::format($tmpFile["name"]).", description=".Db::param("description").", octetSize=".Db::format($tmpFile["size"]));
+					////	Ajoute la nouvelle version du fichier
 					$sqlVersionFileName=$tmpObj->_id."_".time().".".File::extension($tmpFile["name"]);
-					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($fileSize).", description=".Db::param("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
+					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($tmpFile["size"]).", description=".Db::param("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 					copy($tmpFile["tmpPath"], $tmpObj->filePath());//copie dans le dossier final (après avoir enregistré la version en Bdd!!)
 					File::setChmod($tmpObj->filePath());
 					////	Creation de vignette && Optimise si besoin l'image (1920px max)
@@ -266,12 +264,12 @@ class CtrlFile extends Ctrl
 					if(File::isType("imageResize",$tmpFile["name"]) && Req::isParam("imageResize")){
 						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1920);
 						clearstatcache();//Pour mettre à jour le "filesize()"
-						$fileSize=(int)filesize($tmpObj->filePath());
-						Db::query("UPDATE ap_file SET octetSize=".Db::format($fileSize)." WHERE _id=".$tmpObj->_id);
-						Db::query("UPDATE ap_fileVersion SET octetSize=".Db::format($fileSize)." WHERE _idFile=".$tmpObj->_id." AND realName=".Db::format($sqlVersionFileName));
+						$tmpFile["size"]=(int)filesize($tmpObj->filePath());
+						Db::query("UPDATE ap_file SET octetSize=".Db::format($tmpFile["size"])." WHERE _id=".$tmpObj->_id);
+						Db::query("UPDATE ap_fileVersion SET octetSize=".Db::format($tmpFile["size"])." WHERE _idFile=".$tmpObj->_id." AND realName=".Db::format($sqlVersionFileName));
 					}
-					////	Incrémente l'espace disque total
-					$datasFolderSize+=$fileSize;
+					////	Incrémente la taille temporaire de l'espace disque total
+					$datasFolderSizeTmp+=$tmpFile["size"];
 					////	Prepare la notif mail (Affiche le nom des 15 premiers fichiers ..puis le nombre de fichiers restant)
 					if(count($notifFilesLabel)<15)		{$notifFilesLabel[]=$tmpObj->name;}
 					elseif(count($notifFilesLabel)==15)	{$notifFilesLabel[]="... + ".(count($newFiles)-15)." ".Txt::trad("OBJECTfile")."s";}
@@ -305,7 +303,8 @@ class CtrlFile extends Ctrl
 			//Vérifie l'accès au dossier temporaire && y place chaque fichier correctement uploadé
 			if(is_writable($tmpDirPath)){
 				foreach($_FILES as $tmpFile){
-					if($tmpFile["error"]==0)  {move_uploaded_file($tmpFile["tmp_name"], $tmpDirPath.$tmpFile["name"]);}
+					if($tmpFile["error"]==0  && File::controleUpload($tmpFile["tmp_name"],$tmpFile["name"],$tmpFile["size"]))
+						{move_uploaded_file($tmpFile["tmp_name"], $tmpDirPath.$tmpFile["name"]);}
 				}
 			}
 		}

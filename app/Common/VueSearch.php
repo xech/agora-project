@@ -11,9 +11,10 @@ $(function(){
 ////	Contrôle du formulaire
 function formControl()
 {
-	//Texte à rechercher && Champs de recherche avancée
-	if($("[name=searchText]").val().length<3)  {notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
-	if($("input[name='searchModules[]']:checked").isEmpty() || $("input[name='searchFields[]']:checked").isEmpty())  {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
+	//Vérif que les mots recherchés sont d'au moins 3 caracteres alphanumeriques  &&  Qu'au moins un module et champ de recherche sont sélectionnés (cf. recherche avancée)
+	var searchText=$("[name=searchText]").val();
+	if(searchText.length<3 || /[\w]/.test(searchText)==false)																{notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
+	else if($("input[name='searchModules[]']:checked").isEmpty() || $("input[name='searchFields[]']:checked").isEmpty())	{notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
 }
 
 ////	Recherche avancée
@@ -24,6 +25,7 @@ function displayAdvancedSearch()
 	else									{$("[name=advancedSearch]").val(1);}
 }
 </script>
+
 
 <style>
 input[name="searchText"]			{width:250px; margin-right:5px;}
@@ -36,8 +38,9 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 .vModuleLabel						{text-align:center; padding-top:20px;}
 .vModuleLabel img					{max-height:28px; margin-right:8px;}
 .menuLine							{padding:5px;}
-.vSearchResultWord					{color:#900; text-decoration:underline;}/*mots surlignés dans le résultat de recherche*/
-.vPluginNews						{display:none; position:relative;/*cf.objMenuBurger 'position:absolute'*/ padding:10px; background-color:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
+.menuLine mark						{padding:2px;}/*mots de la recherche surlignés*/
+.menuLine .vContextMenu				{width:50px; vertical-align:top;}
+.vPluginNews						{display:none; padding:5px; background-color:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
 
 /*RESPONSIVE FANCYBOX (440px)*/
 @media screen and (max-width:440px){	
@@ -49,6 +52,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 </style>
 
 
+<!--FORMULAIRE DE RECHERCHE-->
 <form action="index.php" method="post" OnSubmit="return formControl()" class="lightboxContent noConfirmClose">
 	<div class="lightboxTitle"><?= Txt::trad("searchOnSpace") ?></div>
 
@@ -76,7 +80,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 			<div>
 				<select name="creationDate">
 					<option value="all"><?= Txt::trad("all") ?></option>
-					<?php foreach(["day","week","month","year"] as $tmpOption)	{echo "<option value=\"".$tmpOption."\" ".(Req::param("creationDate")==$tmpOption?'selected':null).">".Txt::trad("searchDateCrea".ucfirst($tmpOption))."</option>";} ?>
+					<?php foreach(["day"=>1,"week"=>7,"month"=>31,"year"=>365] as $tmpLabel=>$tmpValue)	{echo "<option value=\"".$tmpValue."\" ".(Req::param("creationDate")==$tmpValue?'selected':null).">".Txt::trad("searchDateCrea".ucfirst($tmpLabel))."</option>";} ?>
 				</select>
 			</div>
 		</div>
@@ -112,12 +116,12 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 	</div>
 </form>
 
+
 <!--RESULTATS DE LA RECHERCHE-->
 <?php
 if(Req::isParam("searchText"))
 {
 	//Résultats à afficher
-	$searchTextList=explode(" ",Req::param("searchText"));
 	foreach($pluginsList as $tmpObj)
 	{
 		//// Header des plugins du module : affiche si besoin le libellé du module
@@ -128,16 +132,19 @@ if(Req::isParam("searchText"))
 		//// Label des objets lambda  ||  "dashboardNews" : "reduce()" du label/description + possibilité de l'afficher entièrement + menu contextuel
 		if($tmpObj::objectType!="dashboardNews")  {$pluginLabel=$tmpObj->pluginLabel;}
 		else{
-			$pluginLabel="<span onclick=\"$(this).hide();$('#pluginNews".$tmpObj->_id."').slideDown();\">".Txt::reduce($tmpObj->pluginLabel)." <img src='app/img/arrowBottom.png'></span>
-						  <div class='vPluginNews' id='pluginNews".$tmpObj->_id."'>".$tmpObj->contextMenu(["iconBurger"=>"floatBig"])." ".$tmpObj->description."</div>";
+			$pluginLabel="<div onclick=\"$(this).hide();$('#pluginNews".$tmpObj->_id."').slideDown();\">".Txt::reduce($tmpObj->pluginLabel)." <img src='app/img/arrowBottom.png'></div>
+						  <div class='vPluginNews' id='pluginNews".$tmpObj->_id."'>".$tmpObj->description."</div>";
 		}
-		//// Surligne les mots recherchés dans le label des résultats
-		foreach($searchTextList as $tmpText)  {$pluginLabel=preg_replace("/".Txt::clean($tmpText)."/i", "<span class='vSearchResultWord'>".$tmpText."</span>", $pluginLabel);}
+		//// Surligne le texte ou les mots recherchés
+		$searchText=html_entity_decode(Req::param("searchText"));																					//Décode les accents de l'éditeur (&agrave; &egrave; etc)
+		$pluginLabel=str_replace($searchText, "<mark>".$searchText."</mark>", $pluginLabel);														//Surligne l'expression exacte
+		foreach(explode(" ",$searchText) as $tmpWord)  {$pluginLabel=str_replace(" ".$tmpWord." ", " <mark>".$tmpWord."</mark> ", $pluginLabel);}	//Surligne chaque mot recherché (garder les espaces)
 		//// Affiche le plugin
-		echo "<div class='menuLine sLink lineHover' title=\"".Txt::tooltip($tmpObj->pluginTooltip)."\">
-				<div onclick=\"".$tmpObj->pluginJsIcon."\" class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div>
-				<div onclick=\"".$tmpObj->pluginJsLabel."\">".$pluginLabel."</div>
-			  </div>";
+		echo '<div class="menuLine lineHover">
+				<div onclick"'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
+				<div onclick="'.$tmpObj->pluginJsLabel.'" class="sLink" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">'.$pluginLabel.'</div>
+				<div class="vContextMenu">'.$tmpObj->contextMenu(["iconBurger"=>"inlineSmall"]).'</div>
+			  </div>';
 	}
 	//Aucun résultat à afficher
 	if(empty($pluginsList))  {echo "<div class='emptyContainer'>".Txt::trad("noResults")."</div>";}
