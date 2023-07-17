@@ -63,3 +63,4 @@ Guidelines for bug reports:
 
 A good bug report shouldn't leave others needing to chase you up for more information.
 Please try to be as detailed as possible in your report.
+
