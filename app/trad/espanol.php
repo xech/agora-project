@@ -14,10 +14,11 @@ class Trad extends Txt
 
 		////	TRADUCTIONS
 		self::$trad=array(
-			////	Header http / Editeurs Tinymce,DatePicker,etc
+			////	Langue courante / Header http / Editeurs Tinymce / Documention pdf
 			"CURLANG"=>"es",
 			"DATELANG"=>"es_ES",
 			"EDITORLANG"=>"es",
+			"DOCFILE"=>"docs/DOCUMENTATION_EN.pdf",
 
 			////	Divers
 			"fillFieldsForm"=>"Por favor, rellene los campos del formulario",

@@ -26,7 +26,7 @@ class Txt
 		if(empty(self::$trad))
 		{
 			//Sélectionne la traduction
-			if(Req::isParam("curTrad") && preg_match("/[a-z]/i",Req::param("curTrad")))										{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
+			if(Req::isParam("curTrad") && preg_match("/^[A-Z]+$/i",Req::param("curTrad")))									{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
 			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))													{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad en fonction de l'user
 			elseif(!empty(Ctrl::$agora->lang))																				{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad en fonction de l'espace
 			elseif(empty($_SESSION["curTrad"])){																															//Trad en fonction du browser

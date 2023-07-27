@@ -71,8 +71,7 @@
 						////	ENVOI D'INVITATION
 						if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\" title=\"".Txt::trad("USER_sendInvitationInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 						////	DOCUMENTATION PDF
-						$docFileName=(Txt::trad("CURLANG")=="fr")  ?  "DOCUMENTATION_FR.pdf"  :  "DOCUMENTATION_EN.pdf";
-						$docLink=(Req::isMobileApp())  ?  "redir('?ctrl=misc&action=ExternalGetFile&fileName=".$docFileName."&filePath=".urlencode("docs/".$docFileName)."');"  :  "lightboxOpen('docs/".$docFileName."');";
+						$docLink=(Req::isMobileApp())  ?  "redir('?ctrl=misc&action=ExternalGetFile&DOCFILE=".urlencode(Txt::trad("DOCFILE"))."');"  :  "lightboxOpen('".Txt::trad("DOCFILE")."');";
 						echo "<div class='menuLine sLink' onclick=\"".$docLink."\"><div class='menuIcon'><img src='app/img/info.png'></div><div>".Txt::trad("HEADER_documentation")."</div></div>";
 						////	EDITION DU PROFIL DE L'USER
 						echo "<hr><div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curUser->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/edit.png'></div><div>".Txt::trad("USER_myProfilEdit")." &nbsp;".Ctrl::$curUser->getImg(false,true)."</div></div>";

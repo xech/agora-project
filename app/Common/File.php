@@ -38,7 +38,7 @@ class File
 	}
 	
 	/*******************************************************************************************
-	 * EXTENSION DU FICHIER ..SANS LE POINT!
+	 * EXTENSION DU FICHIER -> SANS LE POINT !
 	 *******************************************************************************************/
 	public static function extension($fileName)
 	{

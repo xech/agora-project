@@ -295,9 +295,9 @@ class MdlUser extends MdlPerson
 		return $reloadedObj;
 	}
 
-	/*******************************************************************************************
-	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ !!
-	 *******************************************************************************************/
+	/*****************************************************************************************************
+	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ TEMPORAIRE
+	 *****************************************************************************************************/
 	public static function passwordSha1($passwordClear)
 	{
 		$passwordSalt=(!defined("AGORA_SALT") || empty(AGORA_SALT))  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;

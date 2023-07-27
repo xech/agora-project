@@ -26,7 +26,7 @@ class CtrlUser extends Ctrl
 		//Filtre Alphabet : avec la première lettre du nom
 		$sqlDisplay=MdlUser::sqlDisplay();
 		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(name,1)) as initiale FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ORDER BY initiale");
-		$sqlAlphabetFilter=Req::isParam("alphabet")  ?  "AND name LIKE '".Req::param("alphabet")."%'"  :  null;
+		$sqlAlphabetFilter=(Req::isParam("alphabet") && preg_match("/^[A-Z]+$/i",Req::param("alphabet")))  ?  "AND name LIKE '".Req::param("alphabet")."%'"  :  null;
 		//Utilisateurs et menus
 		$sqlDisplayedUsers="SELECT * FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ".$sqlAlphabetFilter." ".MdlUser::sqlSort();
 		$vDatas["displayedUsers"]=Db::getObjTab("user", $sqlDisplayedUsers." ".MdlUser::sqlPagination());

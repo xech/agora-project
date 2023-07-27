@@ -361,7 +361,7 @@ class CtrlMisc extends Ctrl
 		$downloadUrl.=stristr($downloadUrl,"ctrl=object")  ?  "&fileType=attachedFile"  :  "&fileType=modFile";				//Fichier joint ou fichier du module "File" => tjs ajouter en premier !
 		$downloadUrl=str_ireplace(["ctrl=file","ctrl=object"],"ctrl=misc",$downloadUrl);									//Switch sur le controleur "misc" (cf. "$initCtrlFull=false" du controleur principal)
 		$downloadUrl=str_ireplace(["action=GetFile","action=AttachedFileDownload"],"action=ExternalGetFile",$downloadUrl);	//Switch sur l'action "GetFileExternal()"  (cf. Methode suivante)
-		return $downloadUrl."&nameMd5=".md5($fileName)."&extension=.".File::extension($fileName);							//Retourne l'url avec le controle d'accès "nameMd5" +  l'extension pour controler l'action (cf. "main.dart" de l'appli)
+		return $downloadUrl."&nameMd5=".md5($fileName)."&extension=.".File::extension($fileName);							//Retourne l'url avec un controle d'accès "nameMd5" +  Extension pour controler l'action (cf. "main.dart" de l'appli)
 	}
 
 	/*******************************************************************************************
@@ -369,8 +369,8 @@ class CtrlMisc extends Ctrl
 	 *******************************************************************************************/
 	public static function actionExternalGetFile()
 	{
-		if(Req::isParam(["fileName","filePath"]) && stristr(Req::param("fileName"),"documentation"))	{File::download(Req::param("fileName"),Req::param("filePath"));}//Download "Documentation.pdf" (cf. "VueHeaderMenu.php")
-		elseif(Req::param("fileType")=="attachedFile")													{CtrlObject::actionAttachedFileDownload();}						//Download un fichier joint
-		else																							{CtrlFile::actionGetFile();}									//Download un fichier du module "File"
+		if(Req::isParam("DOCFILE") && preg_match("/^docs\//i",Req::param("DOCFILE")) && is_file(Req::param("DOCFILE")))	{File::download(Req::param("DOCFILE"),Req::param("DOCFILE"));}	//"documentation.pdf" (cf. "VueHeaderMenu.php")
+		elseif(Req::param("fileType")=="attachedFile")																	{CtrlObject::actionAttachedFileDownload();}						//Download un fichier joint
+		elseif(Req::isParam("typeId"))																					{CtrlFile::actionGetFile();}									//Download un fichier du "ModFile"
 	}
 }
