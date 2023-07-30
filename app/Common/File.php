@@ -98,7 +98,7 @@ class File
 		////	Init le $datasFolderSize
 		$datasFolderSize=(!empty($datasFolderSizeTmp))  ?  $datasFolderSizeTmp  :  self::datasFolderSize();
 		////	Récupère le type mime du fichier
-		$isForbiddenMimeType=preg_match("/(php|javascript|application|octet-stream|shell|binary|executable|msdownload|debian)/i", mime_content_type($filePath));
+		$isForbiddenMimeType=preg_match("/(php|javascript|shell|binary|executable|msdownload|debian)/i", mime_content_type($filePath));
 		////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
 		if(self::isType("forbiddenExt",$fileName) || $isForbiddenMimeType==true)			{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
 		elseif(is_uploaded_file($filePath)==false && Req::param("tmpFolderName")==false)	{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}

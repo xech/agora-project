@@ -55,7 +55,7 @@ function formControl()
 			$(".plupload_filelist_footer .plupload_file_status").show();//Affiche le % de progression
 			$("#uploadMultiple").plupload("start").on("complete",function(){  $("#filesForm")[0].submit();  });//Valide le formulaire à la fin des téléchargements
 		}
-		//Retourne "false" car c'est Plupload qui valide le formulaire
+		//Retourne "false" : Plupload valide le formulaire via le "on("complete")" ci-dessus
 		return false;
 	}
 	//Ajout de fichier via un input "file" (envoi simple ou  nouvelle version de fichier)

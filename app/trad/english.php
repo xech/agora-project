@@ -118,6 +118,7 @@ class Trad extends Txt
 			"select"=>"Select",
 			"selectUnselect"=>"Select / Unselect",
 			"selectAll"=>"Select all",
+			"selectNone"=>"Unselect all",
 			"selectSwitch"=>"Switch selection",
 			"deleteElems"=>"Remove the selected elements",
 			"changeFolder"=>"Move in another folder",

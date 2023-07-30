@@ -15,7 +15,7 @@ echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 	////	SÉLECTION DE L'OBJET (objet sélectionnable + user courant pas guest + menu de sélection affiché + n'affiche pas le conteneur courant)
 	if($curObj::isSelectable && Ctrl::$curUser->isUser() && Ctrl::$isMenuSelectObjects==true && (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$curObj->_typeId)){
 		echo '<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="'.$curObj->_typeId.'" id="'.$curObj->uniqId("objCheckbox").'">
-			  <div class="menuLine sLink" onclick="objSelect(\''.$curObj->uniqId("objCheckbox").'\')"><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("selectUnselect").'</div></div>';
+			  <div class="menuLine sLink" onclick="objSelectSwitch(\''.$curObj->uniqId("objCheckbox").'\')"><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("selectUnselect").'</div></div>';
 	}
 
 	////	MODIFIER L'OBJET

@@ -126,9 +126,9 @@ $(function(){
 				//Double click?
 				diffNowAndLastClick=(Date.now()-timeLastClick);
 				var isDblClick=(diffNowAndLastClick>10 && diffNowAndLastClick<timeDblClick && containerIdLastClick==this.id);
-				//Action sur l'objet
-				if(isDblClick==true && $(blockId).attr("data-urlEdit"))		{lightboxOpen($(blockId).attr("data-urlEdit"));}//dblClick + "data-urlEdit" => édition d'objet
-				else if(isDblClick==false && typeof objSelect=="function")	{objSelect(this.id);}							//click + fonction "objSelect()" => lance la fonction (cf. "VueObjMenuSelection.php")
+				//Double click sur l'objet
+				if(isDblClick==true && $(blockId).attr("data-urlEdit"))				{lightboxOpen($(blockId).attr("data-urlEdit"));}//Edition d'objet
+				else if(isDblClick==false && typeof objSelectSwitch=="function")	{objSelectSwitch(this.id);}						//Switch la sélection (cf. "VueObjMenuSelection.php")
 				//Update "lastClickTime" & "containerIdLastClick"
 				timeLastClick=Date.now();
 				containerIdLastClick=this.id;
@@ -337,7 +337,7 @@ function initMenuContext()
 	}
 	////	Click/Survol le corps de la page : masque le menu contextuel
 	$("#pageFull,#pageCenter").on("click mouseenter", function(){ $(".menuContext").hide(); });
-	////	Pas de sélection d'un objet via "objSelect()" : si on click sur son menu context (ou son launcher) ou un lien spécifique (ex: sujet du forum ou download de fichier)
+	////	Pas de sélection d'un objet via "objSelectSwitch()" : si on click sur son menu context (ou son launcher) ou un lien spécifique (ex: sujet du forum ou download de fichier)
 	$(".menuLaunch, .menuContext, .stopPropagation, .objContainer a, .objLabelLink").click(function(event){  event.stopPropagation();  });
 }
 

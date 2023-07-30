@@ -1,20 +1,25 @@
 <script>
 $(function(){
-	////	Sélectionner tous les objets (déselectionne tout, puis switch la sélection)
+	////	Sélectionne tous les objets : passe tout à "false" puis switch la sélection
 	$("#objSelectAll").click(function(){
 		$("[name='objectsTypeId[]']").prop("checked",false);
-		$("[name='objectsTypeId[]']").each(function(){ objSelect(this.id); });
+		$("[name='objectsTypeId[]']").each(function(){ objSelectSwitch(this.id); });
+	});
+	////	Désélectionne tous les objets : passe tout à "true" puis switch la sélection
+	$("#objSelectNone").click(function(){
+		$("[name='objectsTypeId[]']").prop("checked",true);
+		$("[name='objectsTypeId[]']").each(function(){ objSelectSwitch(this.id); });
 	});
 	////	Switch la sélection de tous les objets
 	$("#objSelectSwitch").click(function(){
-		$("[name='objectsTypeId[]']").each(function(){ objSelect(this.id); });
+		$("[name='objectsTypeId[]']").each(function(){ objSelectSwitch(this.id); });
 	});
 });
 
-////	Swich la sélection d'un objet
-function objSelect(menuId)
+////	Switch la sélection d'un objet
+function objSelectSwitch(menuId)
 {
-	//"MenuId" de l'objet sans préfixe
+	//Récupère le "MenuId" de l'objet (sans préfixe)
 	var menuId=menuId.replace(/(objCheckbox|objContainer)/i,"");
 	//Swich la sélection de la checkbox
 	$("#objCheckbox"+menuId).prop("checked", !$("#objCheckbox"+menuId).prop("checked"));
@@ -77,5 +82,6 @@ function objSelectAction(urlRedir, openPage)
 	?>
 	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
 	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
+	<div class="menuLine sLink" id="objSelectNone"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectNone") ?></div></div>
 	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/switch.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
 </div>
