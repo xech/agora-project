@@ -90,7 +90,7 @@ trait MdlObjectMenus
 				if(!empty(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			}
 			////	COPIER L'ADRESSE/URL D'ACCES
-			if(Ctrl::$curUser->isUser())   {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
+			if(Ctrl::$curUser->isUser() && static::objectType!="space")   {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
 			////	SUPPRIMER
 			if($this->deleteRight())
 			{
@@ -130,9 +130,9 @@ trait MdlObjectMenus
 				elseif($this->accessRightFromContainer())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
 				else										{$tooltipDetail=null;}
 				//Tooltip : description de chaque droit d'accès
-				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("accessReadInfo");}
-				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("accessWriteLimitInfo");}
-				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("accessWriteInfoContainer")  :  $tooltipDetail.Txt::trad("accessWriteInfo");}
+				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("accessReadTooltip");}
+				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("accessWriteLimitTooltip");}
+				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("accessWriteTooltipContainer")  :  $tooltipDetail.Txt::trad("accessWriteTooltip");}
 			}
 			////	USERS LIKES
 			$vDatas["showMiscMenuClass"]=null;
@@ -188,7 +188,7 @@ trait MdlObjectMenus
 		{
 			////	Init & Label
 			$vDatas["objMenuAccessRight"]=true;
-			$vDatas["objMenuAccessRightLabel"]=(static::isContainer())  ?  "<span title=\"".$this->tradObject("accessAutorPrivilege")."<hr>".$this->tradObject("accessWriteLimitInfo")."\">".Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png'></span>"  :  Txt::trad("EDIT_accessRight");
+			$vDatas["objMenuAccessRightLabel"]=(static::isContainer())  ?  "<span title=\"".$this->tradObject("accessAutorPrivilege")."<hr>".$this->tradObject("accessWriteLimitTooltip")."\">".Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png'></span>"  :  Txt::trad("EDIT_accessRight");
 			////	Droits d'accès pour chaque espace ("targets")
 			$vDatas["accessRightSpaces"]=[];
 			foreach(Ctrl::$curUser->getSpaces() as $tmpSpace)
@@ -199,8 +199,8 @@ trait MdlObjectMenus
 					////	Init les "targetLines"
 					$tmpSpace->targetLines=[];
 					////	"Tous les utilisateurs"  OU  "Tous les utilisateurs et invités"
-					if(empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsers");															$allUsersLabelInfo=Txt::trad("EDIT_allUsersInfo");}
-					else							{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests").' <img src="app/img/user/accessGuest.png">';	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsInfo");}
+					if(empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsers");															$allUsersLabelInfo=Txt::trad("EDIT_allUsersTooltip");}
+					else							{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests").' <img src="app/img/user/accessGuest.png">';	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsTooltip");}
 					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/accessAll.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
 					////	Groupe d'utilisateurs de l'espace
 					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
@@ -256,7 +256,7 @@ trait MdlObjectMenus
 		}
 		////	AFFICHE LA VUE
 		$vDatas["curObj"]=$this;
-		$vDatas["accessWriteLimitInfo"]=$this->tradObject("accessWriteLimitInfo");
+		$vDatas["accessWriteLimitTooltip"]=$this->tradObject("accessWriteLimitTooltip");
 		$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
 		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}

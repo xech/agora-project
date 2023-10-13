@@ -197,7 +197,15 @@ class Req
 	}
 
 	/********************************************************************************************
-	 * NAVIGATION SUR APP MOBILE : URL POUR SWITCHER D'ESPACE
+	 * SWITCH D'ESPACE : BOUTON DE RETOUR AU MENU DE RECHERCHE (APP MOBILE OU HOST)
+	 ********************************************************************************************/
+	public static function isSpaceSwitch()
+	{
+		return (Req::isMobileApp() || Req::isHost());
+	}
+
+	/********************************************************************************************
+	 * SWITCH D'ESPACE : URL DE RETOUR AU MENU DE RECHERCHE
 	 ********************************************************************************************/
 	public static function connectSpaceSwitchUrl()
 	{

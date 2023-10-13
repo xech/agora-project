@@ -318,7 +318,7 @@ input[name='guestMail']					{margin-left:20px;}
 
 		<!--VISIBILITE-->
 		<span class="vEventDetails vEventDetailsAdvanced">
-			<select name="contentVisible" title="<?= Txt::trad("CALENDAR_visibilityInfo") ?>">
+			<select name="contentVisible" title="<?= Txt::trad("CALENDAR_visibilityTooltip") ?>">
 				<option value="public"><?= Txt::trad("CALENDAR_visibilityPublic") ?></option>
 				<option value="prive"><?= Txt::trad("CALENDAR_visibilityPrivate") ?></option>
 				<option value="public_cache"><?= Txt::trad("CALENDAR_visibilityPublicHide") ?></option>
@@ -392,7 +392,7 @@ input[name='guestMail']					{margin-left:20px;}
 	if(Ctrl::$curUser->isUser()==false){
 		echo "<div class='lightboxBlock' id='guestMenu'>
 				<input type='text' name='guest' placeholder=\"".Txt::trad("EDIT_guestName")."\">
-				<input type='text' name='guestMail' placeholder=\"".Txt::trad("EDIT_guestMail")."\" title=\"".Txt::trad("EDIT_guestMailInfo")."\">
+				<input type='text' name='guestMail' placeholder=\"".Txt::trad("EDIT_guestMail")."\" title=\"".Txt::trad("EDIT_guestMailTooltip")."\">
 				<hr>".CtrlMisc::menuCaptcha()."
 			</div>";
 	}

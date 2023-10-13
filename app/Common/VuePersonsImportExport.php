@@ -88,8 +88,8 @@ form											{text-align:center;}
 			<?php if(Ctrl::$agora->ldap_server){ ?><option value="ldap">LDAP</option><?php } ?>
 		</select><br><br><br>
 		<input type="file" name="importFile" id="importCsvFile">
-		<input type="text" name="importLdapDn" id="importLdapDn" value="<?= Ctrl::$agora->ldap_base_dn ?>" title="<?= Txt::trad("AGORA_ldapDnInfo") ?>">
-		<input type="text" name="importLdapFilter" id="importLdapFilter" value="(cn=*)" title="<?= Txt::trad("importLdapFilterInfo") ?>">
+		<input type="text" name="importLdapDn" id="importLdapDn" value="<?= Ctrl::$agora->ldap_base_dn ?>" title="<?= Txt::trad("AGORA_ldapDnTooltip") ?>">
+		<input type="text" name="importLdapFilter" id="importLdapFilter" value="(cn=*)" title="<?= Txt::trad("importLdapFilterTooltip") ?>">
 	</span>
 	<!--INPUTS D'EXPORT-->
 	<span id="exportBlock">
@@ -181,7 +181,7 @@ form											{text-align:center;}
 			if($curObjClass::objectType=="user")
 			{
 				echo '<div class="vImportUserOptions">';
-					echo '<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser"><label for="notifCreaUser" title="'.Txt::trad("USER_sendCoordsInfo2").'">'.Txt::trad("USER_sendCoords").'</label><hr>';
+					echo '<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser"><label for="notifCreaUser" title="'.Txt::trad("USER_sendCoordsTooltip2").'">'.Txt::trad("USER_sendCoords").'</label><hr>';
 					echo "<div>".Txt::trad("USER_spaceList")." :</div>";
 					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
 						if($tmpSpace->accessRight()==2){

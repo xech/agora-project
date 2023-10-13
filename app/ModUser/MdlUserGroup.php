@@ -31,7 +31,7 @@ class MdlUserGroup extends MdlObject
 		//Libellé des users
 		$this->usersLabel=null;
 		foreach($this->userIds as $userId)	{$this->usersLabel.=Ctrl::getObj("user",$userId)->getLabel().", ";}
-		$this->usersLabel=trim($this->usersLabel,", ");
+		$this->usersLabel=@trim($this->usersLabel,", ");
 	}
 
 	/*******************************************************************************************

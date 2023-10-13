@@ -104,8 +104,8 @@ class CtrlOffline extends Ctrl
 					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->accessRightUser($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
 					if(!empty($adminMails)){
 						$newUserLabel=Req::param("name")." ".Req::param("firstName");
-						$subject=Txt::trad("userInscriptionNotifSubject")." ".$curSpace->name;
-						$mainMessage="<br>".str_replace(["--SPACE_NAME--","--NEW_USER_LABEL--","--NEW_USER_MESSAGE--"], [$curSpace->name,$newUserLabel,Req::param("message")], Txt::trad("userInscriptionNotifMessage"));
+						$subject=Txt::trad("userInscriptionEmailSubject")." ".$curSpace->name;
+						$mainMessage="<br>".str_replace(["--SPACE_NAME--","--NEW_USER_LABEL--","--NEW_USER_MESSAGE--"], [$curSpace->name,$newUserLabel,Req::param("message")], Txt::trad("userInscriptionEmailMessage"));
 						Tool::sendMail($adminMails, $subject, $mainMessage, ["noNotify"]);
 					}
 				}
@@ -261,7 +261,7 @@ class CtrlOffline extends Ctrl
 		}
 		//Erreur de connexion à la bdd
 		catch(PDOException $exception){
-			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbToCreate";}			//Erreur: Bdd non installée
+			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbToCreate";}		//Erreur: Bdd non installée
 			else																{return "dbErrorConnect";}	//Erreur: Pas de connexion à la Bdd
 		}
 		//Pas d'erreur : Db disponible

@@ -62,7 +62,7 @@ $(function(){
 		////	MENU D'UN SUJET ET SES MESSAGES :  AJOUT DE MESSAGE / NOTIF PAR MAIL / TRI D'AFFICHAGE / NB DE MESSAGES
 		if($displayForum=="messages"){
 			if(Ctrl::$curContainer->addContentRight())  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlForumMessage::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("FORUM_addMessage")."</div></div><hr>";}
-			if(!empty(Ctrl::$curUser->mail))  {echo "<div class='menuLine sLink ".($curSubject->curUserNotifyLastMessage()?"vNotifyLastMessage":null)."' id='notifyLastMessage' title=\"".Txt::trad("FORUM_notifyLastPostInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("FORUM_notifyLastPost")."</div></div>";}
+			if(!empty(Ctrl::$curUser->mail))  {echo "<div class='menuLine sLink ".($curSubject->curUserNotifyLastMessage()?"vNotifyLastMessage":null)."' id='notifyLastMessage' title=\"".Txt::trad("FORUM_notifyLastPostTooltip")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("FORUM_notifyLastPost")."</div></div>";}
 			echo "<hr>".MdlForumMessage::menuSort()."<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$curSubject->messagesNb." ".Txt::trad($curSubject->messagesNb>1?"FORUM_messages":"FORUM_message")."</div></div>";
 		}
 		////	MENU DES THEMES :  EDITION DES THEMES / NB DE THEMES

@@ -68,7 +68,7 @@ class CtrlMisc extends Ctrl
 					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
 					$_SESSION["livecounterMainHtml"].="<label class='vLivecounterUser' id='livecounterUser".$tmpUser->_id."' onclick='messengerDisplay(".$tmpUser->_id.");' title=\"".Txt::trad("MESSENGER_chatWith")." ".$userTitle."\">".$userImg.$userFirstName."</label>";
 					$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'>
-															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean($userFirstName,"max")."\">
+															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean(trim($userFirstName),"max")."\">
 															<label for='messengerUserCheckbox".$tmpUser->_id."' title=\"".Txt::trad("select")." ".$userTitle."\">".$userImg.$userFirstName."</label>
 													   </div>";
 				}

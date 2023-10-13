@@ -14,7 +14,7 @@
 			////	MENU "USERS DE L'ESPACE"/"TOUS LES USERS"
 			if($menuDisplayUsers==true){
 				echo "<div id='displayUsersDiv'>
-						<select name='displayUsers' class='sLinkSelect' onChange=\"redir('?ctrl=user&displayUsers='+this.value)\" title=\"".Txt::trad("USER_allUsersInfo")."\">
+						<select name='displayUsers' class='sLinkSelect' onChange=\"redir('?ctrl=user&displayUsers='+this.value)\" title=\"".Txt::trad("USER_spaceOrAllUsersTooltip")."\">
 							<option value='space'>".Txt::trad("USER_spaceUsers")."</option>
 							<option value='all' ".($_SESSION["displayUsers"]=='all'?'selected':null).">".Txt::trad("USER_allUsers")."</option>
 						</select>
@@ -34,9 +34,9 @@
 			////	AJOUTER UN UTILISATEUR  /  AFFECTER UN USER EXISTANT A L'ESPACE  /  ENVOYER DES INVITATIONS  /  IMPORTER DES UTILISATEURS  /  ENVOI DES COORDONNEES DE CONNEXION
 			if(self::$curUser->isAdminSpace())			{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" title=\"".Txt::trad($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
 			if(self::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" title=\"".Txt::trad("USER_addExistUserTitle")."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
-			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendInvitationInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
+			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendInvitationTooltip")."\" onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 			if(self::$curUser->isAdminSpace())			{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_user")."</div></div>";}
-			if(self::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendCoordsInfo")."\" onclick=\"lightboxOpen('?ctrl=user&action=ResetPasswordSendMailUsers');\"><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
+			if(self::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' title=\"".Txt::trad("USER_sendCoordsTooltip")."\" onclick=\"lightboxOpen('?ctrl=user&action=ResetPasswordSendMailUsers');\"><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
 			////	SELECTION D'UTILISATEURS / TYPE D'AFFICHAGE / TRI D'AFFICHAGE
 			echo "<hr>".MdlUser::menuSelectObjects().MdlUser::menuDisplayMode().MdlUser::menuSort();
 			////	FILTRAGE ALPHABET

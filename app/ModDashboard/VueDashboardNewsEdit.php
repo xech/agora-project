@@ -43,7 +43,7 @@ $(function(){
 		<!--A LA UNE-->
 		<div>
 			<input type="checkbox" name="une" value="1" id="uneCheckbox" <?= $objNews->une==1?"checked":"" ?>>
-			<label for="uneCheckbox" title="<?= Txt::trad("DASHBOARD_topNewsInfo") ?>"><img src="app/img/dashboard/topNews.png"> <?= Txt::trad("DASHBOARD_topNews") ?></label>	
+			<label for="uneCheckbox" title="<?= Txt::trad("DASHBOARD_topNewsTooltip") ?>"><img src="app/img/dashboard/topNews.png"> <?= Txt::trad("DASHBOARD_topNews") ?></label>	
 		</div>
 		<!--IS OFFLINE-->
 		<div>
@@ -53,12 +53,12 @@ $(function(){
 		<!--DATE ONLINE-->
 		<div>
 			<img src="app/img/dashboard/dateOnline.png">
-			<input type="text" name="dateOnline" class="dateBegin" value="<?= Txt::formatDate($objNews->dateOnline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOnline") ?>" title="<?= Txt::trad("DASHBOARD_dateOnlineInfo") ?>">
+			<input type="text" name="dateOnline" class="dateBegin" value="<?= Txt::formatDate($objNews->dateOnline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOnline") ?>" title="<?= Txt::trad("DASHBOARD_dateOnlineTooltip") ?>">
 		</div>
 		<!--DATE OFFLINE-->
 		<div>
 			<img src="app/img/dashboard/dateOffline.png">
-			<input type="text" name="dateOffline" class="dateEnd" value="<?= Txt::formatDate($objNews->dateOffline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOffline") ?>" title="<?= Txt::trad("DASHBOARD_dateOfflineInfo") ?>">
+			<input type="text" name="dateOffline" class="dateEnd" value="<?= Txt::formatDate($objNews->dateOffline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOffline") ?>" title="<?= Txt::trad("DASHBOARD_dateOfflineTooltip") ?>">
 		</div>
 	</div>
 

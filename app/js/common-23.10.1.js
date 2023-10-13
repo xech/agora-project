@@ -45,7 +45,7 @@ $.fn.totalHeight=function(){
 };
 ////	Scroll vers un element de la page
 $.fn.scrollTo=function(){
-	var scrollTopPos=$(this).offset().top - $("#headerBar,#headerBarCenter").height() - 10;//Soustrait la barre de menu principale fixe (#headerBar ou #headerBarCenter en fonction de la page)
+	var scrollTopPos=$(this).offset().top - parseInt($("#headerBar,#headerContainer").height()) - 15;//Soustrait la barre de menu principale fixe (#headerBar ou #headerBarCenter en fonction de la page)
 	$("html,body").animate({scrollTop:scrollTopPos},300);
 };
 
@@ -55,19 +55,19 @@ $.fn.scrollTo=function(){
 $(function(){
 	if(isMainPage==true){
 		var forceReload=(isTouchDevice() && /windowWidth/i.test(document.cookie)==false);	//Cookie "windowWidth" absent sur un appareil tactile : force un premier reload (cf. affichage des "respMenu")
-		windowWidthCookie(forceReload);														//Init le cookie "windowWidth"
-		window.onresize=function(){	windowWidthCookie(false); };							//Redimensionne la page (width/Height)
-		window.onorientationchange=function(){ windowWidthCookie(false); };					//Change l'orientation de la page
+		windowWidthRecord(forceReload);														//Init le cookie "windowWidth"
+		window.onresize=function(){	windowWidthRecord(false); };							//Redimensionne la page (width/Height)
+		screen.orientation.onchange=function(e){ windowWidthRecord(false); };				//Change l'orientation de la page
 	}
 });
 ////	Enregistre le "windowWidth" dans un cookie. Timeout le temps d'avoir le width final (cf. "onresize"/"onorientationchange")
-function windowWidthCookie(forceReload){
+function windowWidthRecord(forceReload){
 	if(typeof onresizeTimeout!="undefined")  {clearTimeout(onresizeTimeout);}//Pas de cumul de Timeout (cf. "onresize"/"onorientationchange")
 	onresizeTimeout=setTimeout(function(){
 		var pageReload=(forceReload==true || (typeof pageWidthLast!="undefined" && Math.abs($(window).width()-pageWidthLast)>30));	//Reload uniquement si le width a été modifé d'au moins 30px (pas de reload avec l'apparition/disparition de l'ascenseur)
 		pageWidthLast=$(window).width();																							//Enregistre/Update le width courant pour le controle ci-dessus
 		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";							//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
-		if(pageReload==true && windowParent.confirmCloseForm==false)  {location.reload();}											//Reload la page (sauf si on affiche un formulaire principal)
+		if(pageReload==true && confirmCloseForm==false)  {location.reload();}														//Reload la page ...sauf si on affiche un formulaire (lightbox ou pas)
 	},500);
 }
 
@@ -376,15 +376,15 @@ function showRespMenu(menuOneSourceId, menuTwoSourceId)
 	//// Id des menus d'origine qui seront intégrés au menu responsive
 	respMenuOneSourceId="#"+menuOneSourceId;
 	respMenuTwoSourceId=(typeof menuTwoSourceId=="string") ? "#"+menuTwoSourceId : null;
-	//// Vérifie que le menu demandé existe bien
-	if($(respMenuOneSourceId).exist())
+	//// Vérifie que le menu à afficher existe bien && Qu'un menu contextuel n'est pas déjà ouvert
+	if($(respMenuOneSourceId).exist() && $("#respMenuMain").isVisible()==false)
 	{
 		//Déplace les menus demandés dans "#respMenuOne" et "#respMenuTwo"  ("appendTo()" conserve les listeners, contrairement à "html()")
 		$(respMenuOneSourceId+">*").appendTo("#respMenuOne");
 		if($(respMenuTwoSourceId).exist())  {$(respMenuTwoSourceId+">*").appendTo("#respMenuTwo");  $("#respMenuTwo").show();}
 		//Affiche le menu et son contenu
 		$("#respMenuOne,#respMenuBg").fadeIn(50);
-		$("#respMenuMain").css("right","0px").show("slide",{direction:"right"});//Réinit si besoin la position "right" (cf. "respMenuClose()"), Puis affiche le menu
+		$("#respMenuMain").css("right","0px").show("slide",{direction:"right",duration:200});//Réinit la position "right" (cf. "respMenuClose()"), Puis affiche le menu en 200ms
 		//Désactive le scroll de page en arriere plan
 		$("body").css("overflow","hidden");
 	}
@@ -395,13 +395,13 @@ function respMenuClose(swipeCurrentX)
 {
 	if($("#respMenuMain").isVisible())
 	{
-		//// Masque progressivement le menu sur les 80 premiers pixels de "swipe" (déplace le menu vers la droite en même temps que le swipe)
-		if(typeof swipeCurrentX!="undefined" && parseInt($("#respMenuMain").css("right")) > -80)  {$("#respMenuMain").css("right", "-"+(swipeCurrentX-swipeBeginX)+"px");}
+		//// Masque progressivement le menu sur les 120 premiers pixels de "swipe" (déplace le menu vers la droite en même temps que le swipe)
+		if(typeof swipeCurrentX!="undefined" && parseInt($("#respMenuMain").css("right")) > -120)  {$("#respMenuMain").css("right", "-"+(swipeCurrentX-swipeBeginX)+"px");}
 		//// Sinon on masque totalement le menu
 		else{
 			//Masque les menus
 			$("#respMenuOne,#respMenuTwo,#respMenuBg").fadeOut(50);
-			$("#respMenuMain").hide("slide",{direction: "right"});
+			$("#respMenuMain").hide("slide",{direction: "right",duration:200});
 			//Remet le contenu de "#respMenuOne" et "#respMenuTwo" dans leur div d'origine ("respMenuOneSourceId" et "respMenuTwoSourceId")
 			$("#respMenuOne>*").appendTo(respMenuOneSourceId);
 			if(respMenuTwoSourceId!=null)  {$("#respMenuTwo>*").appendTo(respMenuTwoSourceId);}

@@ -44,7 +44,7 @@ abstract class Ctrl
 
 		////	Récup le parametrage général (après "session_start()")  &&  Lance si besoin la mise à jour de la DB
 		self::$agora=new MdlAgora();
-		if(Req::isHost())  {Host::agoraParams();}
+		if(Req::isHost())  {Host::getParams();}
 		DbUpdate::lauchUpdate();
 
 		////	Init l'user et l'espace courant
@@ -80,7 +80,7 @@ abstract class Ctrl
 			////	Affichage administrateur demandé
 			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");//Bool
-				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." :<br>".Txt::trad("HEADER_displayAdminInfo"));}
+				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
 			}
 	
 			////	Affichage des utilisateurs ("space"=espace courant || "all"=tous)  &&  Charge l'objet courant
@@ -114,10 +114,10 @@ abstract class Ctrl
 			if($connectViaForm==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
 				$passwordClear=Req::param("connectPassword");
-				$passwordKeepOld=(Req::isDevServer()==false && Req::isHost() && Host::passwordVerifyShorts($passwordClear));
-				//// Verif si le password correspond à un hash :  Bcrypt (généré via "password_hash()")  ||  Sha1 (obsolete mais tjs retro-compatible)  ||  Host (specific)
+				$passwordVerifyHost=(Req::isHost() && Host::passwordVerifyHost($passwordClear));
+				//// Verif si le password correspond à un hash :  "password_verify()" avec hash Bcrypt  ||  "passwordSha1()" : obsolete mais tjs retro-compatible  ||  "passwordVerifyHost()" : specific aux hosts
 				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || $passwordVerifyHost==true)){
-					if($passwordKeepOld==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}// UPDATE LE HASH !
+					if($passwordVerifyHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}// Update le hash ..sauf pour les hosts!
 					$userAuthentified=true;
 				}
 			}
@@ -127,7 +127,7 @@ abstract class Ctrl
 				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
 				if(!empty($tmpUser))  {$userAuthentified=true;}
 			}
-			////	CONNEXION AUTO VIA L'ANCIENNE METHODE (obsolete depuis v23.4 mais retro-compatible : les cookies sont supprimés dès que $userAuthentified=true !)
+			////	CONNEXION AUTO VIA L'ANCIENNE METHODE (obsolete depuis v23.4 mais retro-compatible : cookies supprimés dès que $userAuthentified=true)
 			elseif($connectViaCookieOld==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($_COOKIE["AGORAP_LOG"])." AND `password`=".Db::format($_COOKIE["AGORAP_PASS"]));	
 				if(!empty($tmpUser))  {$userAuthentified=true;}
@@ -445,9 +445,8 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function notify($message, $type="notice")
 	{
-		if(Tool::arraySearch(self::$notify,$message)==false){						//Vérifie si le message n'est pas déjà dans la liste (évite les doublons de notif)
-			$message=htmlspecialchars(strip_tags($message), ENT_QUOTES, 'UTF-8');	//Filtre le message pour éviter les XSS (tester avec l'url "&notify[]=<i>iii<%2fi>68617")%3balert(1)%2f%2f869")
-			self::$notify[]=["message"=>$message, "type"=>$type];					//Ajoute la notification au tableau "self::$notify"
+		if(Tool::arraySearch(self::$notify,$message)==false){		//Vérifie si le message n'est pas déjà dans la liste (évite les doublons de notif)
+			self::$notify[]=["message"=>$message, "type"=>$type];	//Ajoute la notification au tableau "self::$notify"
 		}
 	}
 

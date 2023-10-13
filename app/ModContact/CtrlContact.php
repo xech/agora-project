@@ -140,7 +140,7 @@ class CtrlContact extends Ctrl
 			$sqlProperties="civility=".Db::format($contactRef->civility).", name=".Db::format($contactRef->name).", firstName=".Db::format($contactRef->firstName).", mail=".Db::format($contactRef->mail).", telephone=".Db::format($contactRef->telephone).", telmobile=".Db::format($contactRef->telmobile).", adress=".Db::format($contactRef->adress).", postalCode=".Db::format($contactRef->postalCode).", city=".Db::format($contactRef->city).", country=".Db::format($contactRef->country).", `function`=".Db::format($contactRef->function).", companyOrganization=".Db::format($contactRef->companyOrganization).", `comment`=".Db::format($contactRef->comment);
 			$newUser=$newUser->createUpdate($sqlProperties, $login, $password, Ctrl::$curSpace->_id);
 			if(is_object($newUser)){
-				Ctrl::notify("CONTACT_createUserConfirm");
+				Ctrl::notify("CONTACT_createUserConfirmed");
 				if(is_file($contactRef->pathImgThumb()))  {copy($contactRef->pathImgThumb(),$newUser->pathImgThumb());}//Récupère l'image?
 			}
 			//Redirige

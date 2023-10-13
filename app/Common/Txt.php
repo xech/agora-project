@@ -88,7 +88,7 @@ class Txt
 	 *******************************************************************************************/
 	public static function reduce($text, $maxCaracNb=200)
 	{
-		$text=html_entity_decode(strip_tags($text));							//Enlève les tags html && Converti les caractères html accentués ("&egrave;" "&eacute;" etc)
+		$text=html_entity_decode(@strip_tags($text));							//Enlève les tags html && Converti les caractères html accentués ("&egrave;" "&eacute;" etc)
 		$text=str_replace('&nbsp;', '', $text);									//Enlève les "&nbsp;" (pas pris en charge par "html_entity_decode()"..)
 		$text=preg_replace('!\s+!', ' ', $text);								//Supprime les espaces et retours à la ligne en excès
 		if(strlen($text)>$maxCaracNb){											//Vérifie que la taille du texte brut ne dépasse pas $maxCaracNb

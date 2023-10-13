@@ -25,13 +25,13 @@ lightboxSetWidth(580);
 	echo "<div class='vCalendarOption'>".Txt::trad("CALENDAR_timeSlot")." : <select name='timeSlotBegin'>".$timeSlotBegin."</select> &nbsp; ".Txt::trad("at")." &nbsp; <select name='timeSlotEnd'>".$timeSlotEnd."</select></div>";
 
 	////	OPTION DE NOTIFICATION PAR EMAIL À CHAQUE PROPOSITION D'ÉVÉNEMENT
-	echo "<div class='vCalendarOption' title=\"".Txt::trad("CALENDAR_propositionNotifyInfo")."\">
+	echo "<div class='vCalendarOption' title=\"".Txt::trad("CALENDAR_propositionNotifTooltip")."\">
 			<input type='checkbox' name='propositionNotify' value='1' ".(!empty($curObj->propositionNotify)?'checked':null)." id='inputPropositionNotify'>
-			<label for='inputPropositionNotify'>".Txt::trad("CALENDAR_propositionNotify")." <img src='app/img/mail.png'></label>
+			<label for='inputPropositionNotify'>".Txt::trad("CALENDAR_propositionNotif")." <img src='app/img/mail.png'></label>
 		  </div>";
 
 	////	OPTION DE PROPOSITION D'ÉVÉNEMENT POUR LES GUESTS
-	echo "<div class='vCalendarOption' id='divPropositionGuest' title=\"".Txt::trad("CALENDAR_propositionGuestInfo")."\">
+	echo "<div class='vCalendarOption' id='divPropositionGuest' title=\"".Txt::trad("CALENDAR_propositionGuestTooltip")."\">
 			<input type='checkbox' name='propositionGuest' value='1' ".(!empty($curObj->propositionGuest)?'checked':null)." id='inputPropositionGuest'>
 			<label for='inputPropositionGuest'>".Txt::trad("CALENDAR_propositionGuest")." <img src='app/img/user/accessGuest.png'></label>
 		  </div>";

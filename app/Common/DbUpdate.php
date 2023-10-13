@@ -55,8 +55,8 @@ class DbUpdate extends Db
 			////	VERROUILAGE DE LA MISE A JOUR
 			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
 			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE MISE A JOUR");}
-			elseif((time()-filemtime($lockedUpdate))<30)	{throw new Exception("Update in progress : please wait a few seconds");}
-			else											{throw new Exception("Update error : check Apache logs for details. If the issue is resolved : delete the '/DATAS/lockedUpdate.log' file.");}
+			elseif((time()-filemtime($lockedUpdate))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
+			else											{throw new Exception("Update error : check Apache/PHP logs for details. If the issue is resolved : delete the '/DATAS/lockedUpdate.log' file.");}
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
 			@set_time_limit(120);//pas en safemode 
@@ -856,6 +856,14 @@ class DbUpdate extends Db
 				//Ajoute la table pour la connexion auto via token
 				if(self::tableExist("ap_userAuthToken")==false)
 					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
+			}
+
+			if(self::updateVersion("23.10.1"))
+			{
+				//Suppression d'anciens champs
+				if(self::fieldExist("ap_user","picture"))			{self::query("ALTER TABLE ap_user DROP picture");}
+				if(self::fieldExist("ap_user","passwordToken"))		{self::query("ALTER TABLE ap_user DROP passwordToken");}
+				if(self::fieldExist("ap_contact","picture"))		{self::query("ALTER TABLE ap_contact DROP picture");}
 			}
 			////	MODIFIER :  DB.SQL  +  CHANGELOG.TXT  +  VERSION.TXT  !!
 			////////////////////////////////////////////////////////////////

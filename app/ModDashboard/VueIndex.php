@@ -217,8 +217,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				foreach($pluginPeriodOptions as $periodValue=>$tmpPeriod)
 				{
 					$selectedPeriod=($pluginPeriod==$periodValue)  ?  "checked='checked'"  :  null;
-					$titlePeriod=($periodValue=="day")  ?  Txt::trad("today")  :  Txt::trad("DASHBOARD_pluginsInfo2")." ".date("d/m/Y",$tmpPeriod["timeBegin"])." ".Txt::trad("and")." ".date("d/m/Y",$tmpPeriod["timeEnd"]);
-					echo "<div title=\"".Txt::trad("DASHBOARD_pluginsInfo")." ".$titlePeriod."\">
+					$titlePeriod=($periodValue=="day")  ?  Txt::trad("today")  :  Txt::trad("DASHBOARD_pluginsTooltip2")." ".date("d/m/Y",$tmpPeriod["timeBegin"])." ".Txt::trad("and")." ".date("d/m/Y",$tmpPeriod["timeEnd"]);
+					echo "<div title=\"".Txt::trad("DASHBOARD_pluginsTooltip")." ".$titlePeriod."\">
 							<input name='pluginPeriod' type='radio' id='radioPeriod".$periodValue."' ".$selectedPeriod." onclick=\"redir('?ctrl=dashboard&pluginPeriod=".$periodValue."')\">
 							<label for='radioPeriod".$periodValue."'>".Txt::trad("DASHBOARD_plugins_".$periodValue)."</label>
 						  </div>";

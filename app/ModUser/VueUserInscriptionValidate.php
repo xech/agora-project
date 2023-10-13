@@ -26,7 +26,7 @@ $(function(){
 
 
 <form action="index.php" method="post" class="lightboxContent">
-	<div class="lightboxTitle"><?= Txt::trad("userInscriptionValidateInfo") ?></div>
+	<div class="lightboxTitle"><?= Txt::trad("userInscriptionValidateTooltip") ?></div>
 	<?php
 	//// LISTE DES INSCRIPTIONS D'USERS
 	foreach(CtrlUser::userInscriptionValidate() as $tmpInsc){

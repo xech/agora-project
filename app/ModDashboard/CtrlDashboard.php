@@ -159,7 +159,7 @@ class CtrlDashboard extends Ctrl
 						if(!empty($_FILES["responsesFile".$_idResponse]))
 						{
 							$tmpFile=$_FILES["responsesFile".$_idResponse];
-							if(File::controleUpload($tmpFile["tmp_name"],$tmpFile["name"],$tmpFile["size"])){
+							if(File::uploadControl($tmpFile)){
 								$responseFilePath=$objPoll->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
 								move_uploaded_file($tmpFile["tmp_name"],$responseFilePath);
 								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1024);}//1024px max

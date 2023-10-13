@@ -67,9 +67,9 @@
 					else
 					{
 						////	VALIDATION D'INSCRIPTION D'USERS
-						if($userInscriptionValidate==true)			{echo "<div class='menuLine sLink pulsate' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateInfo")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div>";}
+						if($userInscriptionValidate==true)			{echo "<div class='menuLine sLink pulsate' onclick=\"lightboxOpen('?ctrl=user&action=UserInscriptionValidate')\" title=\"".Txt::trad("userInscriptionValidateTooltip")."\"><div class='menuIcon'><img src='app/img/check.png'></div><div>".Txt::trad("userInscriptionValidate")."</div></div>";}
 						////	ENVOI D'INVITATION
-						if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\" title=\"".Txt::trad("USER_sendInvitationInfo")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
+						if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\" title=\"".Txt::trad("USER_sendInvitationTooltip")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 						////	DOCUMENTATION PDF
 						$docLink=(Req::isMobileApp())  ?  "redir('?ctrl=misc&action=ExternalGetFile&DOCFILE=".urlencode(Txt::trad("DOCFILE"))."');"  :  "lightboxOpen('".Txt::trad("DOCFILE")."');";
 						echo "<div class='menuLine sLink' onclick=\"".$docLink."\"><div class='menuIcon'><img src='app/img/info.png'></div><div>".Txt::trad("HEADER_documentation")."</div></div>";
@@ -79,16 +79,16 @@
 						if(Ctrl::$curUser->messengerAvailable())	{echo "<div class='menuLine sLink' onclick=\"lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=".Ctrl::$curUser->_typeId."')\" title=\"".Txt::trad("USER_livecounterVisibility")."\"><div class='menuIcon'><img src='app/img/messengerSmall.png'></div><div>".Txt::trad("USER_messengerEdit")."</div></div>";}
 						////	DECONNEXION DE L'ESPACE
 						echo "<div class='menuLine sLink' onclick=\"redir('?disconnect=1')\"><div class='menuIcon'><img src='app/img/logout.png'></div><div>".Txt::trad("HEADER_disconnect")."</div></div>";
-						////	SWITCH D'ESPACE (APP MOBILE OU HOST)
-						if(Req::isMobileApp() || Req::isHost())		{echo "<div class='menuLine sLink' onclick=\"if(confirm('".Txt::trad("connectSpaceSwitchConfirm",true)."')) redir('".Req::connectSpaceSwitchUrl()."')\"><div class='menuIcon'><img src='app/img/switch.png'></div><div>".Txt::trad("connectSpaceSwitch")."</div></div>";}
+						////	SWITCH D'ESPACE
+						if(Req::isSpaceSwitch())					{echo "<div class='menuLine sLink' onclick=\"if(confirm('".Txt::trad("connectSpaceSwitchConfirm",true)."')) redir('".Req::connectSpaceSwitchUrl()."')\"><div class='menuIcon'><img src='app/img/switch.png'></div><div>".Txt::trad("connectSpaceSwitch")."</div></div>";}
 						////	PARAMETRAGE DE L'ESPACE COURANT
 						if(Ctrl::$curUser->isAdminSpace())			{echo "<hr><div class='menuLine sLink' onclick=\"lightboxOpen('".Ctrl::$curSpace->getUrl("edit")."')\"><div class='menuIcon'><img src='app/img/settings.png'></div><div>".Txt::trad("SPACE_config")." <i>".Txt::reduce(Ctrl::$curSpace->name,35)."</i></div></div>";}
 						////	 EDITION DES ESPACES DU SITE
-						if(Ctrl::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=space')\" title=\"".Txt::trad("SPACE_moduleInfo")."\"><div class='menuIcon'><img src='app/img/settingsSpaces.png'></div><div>".Txt::trad("SPACE_manageSpaces")."</div></div>";}
+						if(Ctrl::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=space')\" title=\"".Txt::trad("SPACE_moduleTooltip")."\"><div class='menuIcon'><img src='app/img/settingsSpaces.png'></div><div>".Txt::trad("SPACE_manageSpaces")."</div></div>";}
 						////	PARAMETRAGE GENERAL
 						if(Ctrl::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=agora')\"><div class='menuIcon'><img src='app/img/settingsGeneral.png'></div><div>".Txt::trad("AGORA_generalSettings")."</div></div>";}
 						////	PARAMETRAGE DES UTILISATEURS
-						if(Ctrl::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=user&displayUsers=all')\" title=\"".Txt::trad("USER_allUsersInfo")."\"><div class='menuIcon'><img src='app/img/user/icon.png'></div><div>".Txt::trad("USER_allUsers")."</div></div>";}
+						if(Ctrl::$curUser->isAdminGeneral())		{echo "<div class='menuLine sLink' onclick=\"redir('?ctrl=user&displayUsers=all')\" title=\"".Txt::trad("USER_spaceOrAllUsersTooltip")."\"><div class='menuIcon'><img src='app/img/user/icon.png'></div><div>".Txt::trad("USER_allUsers")."</div></div>";}
 						////	AFFICHAGE "ADMINISTRATEUR"
 						if(Ctrl::$curUser->isAdminSpace())			{echo "<div class='menuLine ".(empty($_SESSION["displayAdmin"])?'sLink':'sLinkSelect')."' onclick=\"redir('?ctrl=".Req::$curCtrl."&displayAdmin=".(empty($_SESSION["displayAdmin"])?"true":"false")."')\" title=\"".Txt::trad("HEADER_displayAdminInfo")."\"><div class='menuIcon'><img src='app/img/eye.png'></div><div>".Txt::trad("HEADER_displayAdmin")."</div></div>";}
 						////	MODULE "LOGS"

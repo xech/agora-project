@@ -105,7 +105,7 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 			<?php } ?>
 			<button type="submit"><?= Txt::trad("connect") ?></button>
 			<div class="vConnectOptions">
-				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked><label for="boxRememberMe" title="<?= Txt::trad("connectAutoInfo") ?>"><?= Txt::trad("connectAuto") ?></label></div>
+				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked><label for="boxRememberMe" title="<?= Txt::trad("connectAutoTooltip") ?>"><?= Txt::trad("connectAuto") ?></label></div>
 				<div><a data-fancybox="inline" data-src="#formResetPassword" id="labelResetPassword"><?= Txt::trad("resetPassword") ?></a></div>
 			</div>
 		</form>
@@ -179,7 +179,7 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 			<div id="publicSpaceTab">
 				<div><img src="app/img/user/accessGuest.png"> <?= Txt::trad("guestAccess") ?> :</div>
 				<div><ul>
-				<?php foreach($objPublicSpaces as $tmpSpace)  {echo '<li class="sLink" onclick="publicSpaceAccess('.$tmpSpace->_id.','.($tmpSpace->password?'true':'false').')" title="'.Txt::trad("guestAccessInfo").'">'.$tmpSpace->name.'</li>';} ?>
+				<?php foreach($objPublicSpaces as $tmpSpace)  {echo '<li class="sLink" onclick="publicSpaceAccess('.$tmpSpace->_id.','.($tmpSpace->password?'true':'false').')" title="'.Txt::trad("guestAccessTooltip").'">'.$tmpSpace->name.'</li>';} ?>
 				</ul></div>
 			</div>
 		<?php }  ?>
@@ -195,11 +195,11 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 
 		<!--INSCRIPTION D'USER-->
 		<?php if(!empty($userInscription)){ ?>
-			<hr><button class="vMainButton" onclick="lightboxOpen('?action=userInscription')" title="<?= Txt::trad("userInscriptionInfo") ?>"><img src="app/img/check.png"> <?= Txt::trad("userInscription") ?></button>
+			<hr><button class="vMainButton" onclick="lightboxOpen('?action=userInscription')" title="<?= Txt::trad("userInscriptionTooltip") ?>"><img src="app/img/check.png"> <?= Txt::trad("userInscription") ?></button>
 		<?php }  ?>
 
-		<!--SWITCH D'ESPACE (APP MOBILE)-->
-		<?php if(Req::isMobileApp()){ ?>
+		<!--SWITCH D'ESPACE-->
+		<?php if(Req::isSpaceSwitch()){ ?>
 			<hr><button class="vMainButton" onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.png"> <?= Txt::trad("connectSpaceSwitch") ?></button>
 		<?php }  ?>
 

@@ -43,13 +43,13 @@ class MdlAgora extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * VISIO JITSI : URL DU SERVEUR DE VISIO AVEC LE NOM DE LA "ROOM"
+	 * VISIO JITSI : URL DU SERVEUR DE VISIO AVEC LE NOM DE LA "ROOM" (ex: "room-AFTKEOPDRF")
 	 *******************************************************************************************/
-	public function visioUrl($roomIdLength=10)
+	public function visioUrl()
 	{
 		if(!empty($this->visioHost)){
-			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");												//Prefixe aléatoire à chaque appel de la fonction
-			return $this->visioHost."/".(Req::isHost()?"room":"omnispace-room")."-".substr($roomId,0,$roomIdLength);	//Url avec le préfixe et le $roomId à la longeur souhaitée
+			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");													//$roomId de 10 caractères aléatoires
+			return $this->visioHost."/".(Req::isHost()?"visio-room":"omnispace-room")."-".substr($roomId,0,10);	//Url avec un préfixe + $roomId
 		}
 	}
 

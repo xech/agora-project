@@ -14,7 +14,7 @@ function formControl(){
 
 
 <form action="index.php" method="post" onsubmit="return formControl();" class="lightboxContent">
-	<div class="lightboxTitle"><?= Txt::trad("USER_sendCoordsInfo") ?></div>
+	<div class="lightboxTitle"><?= Txt::trad("USER_sendCoordsTooltip") ?></div>
 	<?php
 	////	LISTE DES UTILISATEURS AVEC MAIL
 	foreach($usersList as $tmpUser){

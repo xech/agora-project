@@ -52,7 +52,7 @@ class MdlContact extends MdlPerson
 	{
 		//"Créer un utilisateur sur cet espace" : admin général uniquement!
 		if(Ctrl::$curUser->isAdminGeneral())
-			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_typeId."')", "iconSrc"=>"plus.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserInfo")];}
+			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_typeId."')", "iconSrc"=>"plus.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];}
 		return parent::contextMenu($options);
 	}
 }

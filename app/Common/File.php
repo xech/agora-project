@@ -90,20 +90,24 @@ class File
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
 	}
 
-	/***********************************************************************************************
-	 * CONTROLE L'UPLOAD D'UN NOUVEAU FICHIER : TYPE DE FICHIER AUTORISÉ & ESPACE DISQUE SUFFISANT ?
-	 ***********************************************************************************************/
-	public static function controleUpload($filePath, $fileName, $fileSize, $datasFolderSizeTmp=null)
+	/*******************************************************************************************************
+	 * CONTROLE L'UPLOAD D'UN NOUVEAU FICHIER $_FILES : TYPE DE FICHIER AUTORISÉ & ESPACE DISQUE SUFFISANT ?
+	 *******************************************************************************************************/
+	public static function uploadControl($tmpFile, $tmpDatasFolderSize=null)
 	{
-		////	Init le $datasFolderSize
-		$datasFolderSize=(!empty($datasFolderSizeTmp))  ?  $datasFolderSizeTmp  :  self::datasFolderSize();
-		////	Récupère le type mime du fichier
-		$isForbiddenMimeType=preg_match("/(php|javascript|shell|binary|executable|msdownload|debian)/i", mime_content_type($filePath));
-		////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
-		if(self::isType("forbiddenExt",$fileName) || $isForbiddenMimeType==true)			{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$fileName);  return false;}
-		elseif(is_uploaded_file($filePath)==false && Req::param("tmpFolderName")==false)	{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
-		elseif(($datasFolderSize+$fileSize) > limite_espace_disque)							{Ctrl::notify("NOTIF_diskSpace");  return false;}
-		else																				{return true;}
+		//Controle l'accès au fichier
+		if($tmpFile["error"]==0 && is_file($tmpFile["tmp_name"]))
+		{
+			////	Init le $datasFolderSize
+			$datasFolderSize=(!empty($tmpDatasFolderSize))  ?  $tmpDatasFolderSize  :  self::datasFolderSize();
+			////	Récupère le type mime du fichier
+			$isForbiddenMimeType=preg_match("/(php|javascript|shell|binary|executable|msdownload|debian)/i", mime_content_type($tmpFile["tmp_name"]));
+			////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
+			if(self::isType("forbiddenExt",$tmpFile["name"]) || $isForbiddenMimeType==true)					{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$tmpFile["name"]);  return false;}
+			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)		{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
+			elseif(($datasFolderSize+$tmpFile["size"]) > limite_espace_disque)								{Ctrl::notify("NOTIF_diskSpace");  return false;}
+			else																							{return true;}
+		}
 	}
 
 	/************************************************************************************************************************************

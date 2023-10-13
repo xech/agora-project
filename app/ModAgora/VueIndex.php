@@ -84,8 +84,8 @@ function formControl()
 		<!--SAUVEGARDER LA BDD ET LE FICHIERS-->
 		<?php if(Req::isMobile()==false){ ?>
 		<form class="miscContainer vBackupForm" action="index.php" method="post" onsubmit="return confirm('<?= Txt::trad('AGORA_backupConfirm',true) ?>')">
-			<button type="submit" name="typeBackup" value="all" title="<?= Txt::trad("AGORA_backupFullInfo") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
-			<button type="submit" name="typeBackup" value="db" title="<?= Txt::trad("AGORA_backupDbInfo") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
+			<button type="submit" name="typeBackup" value="all" title="<?= Txt::trad("AGORA_backupFullTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
+			<button type="submit" name="typeBackup" value="db" title="<?= Txt::trad("AGORA_backupDbTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
 			<input type="hidden" name="ctrl" value="agora">
 			<input type="hidden" name="action" value="getBackup">
 		</form>
@@ -135,7 +135,7 @@ function formControl()
 				<div><?= CtrlMisc::menuWallpaper(Ctrl::$agora->wallpaper) ?></div>
 			</div>
 			<!--LOGO CONNECT-->
-			<div class="objField" title="<?= Txt::trad("AGORA_logoConnectInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_logoConnectTooltip") ?>">
 				<div class="fieldLabel"><?= Txt::trad("AGORA_logoConnect") ?></div>
 				<div>
 					<img src="<?= Ctrl::$agora->pathLogoConnect() ?>" id="imgLogoConnect">
@@ -207,7 +207,7 @@ function formControl()
 			</div>
 			<?php } ?>
 			<!--LOGS TIMEOUT-->
-			<div class="objField" title="<?= Txt::trad("AGORA_logsTimeOutInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_logsTimeOutTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/log.png"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
 				<div>
 					<select name="logsTimeOut">
@@ -265,17 +265,17 @@ function formControl()
 
 			<!--SERVEURS JITSI (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-			<div class="objField" title="<?= Txt::trad("AGORA_visioHostInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_visioHostTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHost") ?></div>
 				<div><input type="text" name="visioHost" value="<?= Ctrl::$agora->visioHost ?>"></div>
 			</div>
-			<div class="objField" title="<?= Txt::trad("AGORA_visioHostAltInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_visioHostAltTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHostAlt") ?></div>
 				<div><input type="text" name="visioHostAlt" value="<?= Ctrl::$agora->visioHostAlt ?>"></div>
 			</div>
 			<?php } ?>
 			<!--MAP : OPENSTREETMAP / GOOGLE MAP-->
-			<div class="objField" title="<?= Txt::trad("AGORA_mapToolInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_mapToolTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/map.png"><?= Txt::trad("AGORA_mapTool") ?></div>
 				<div>
 					<select name="mapTool">
@@ -286,13 +286,13 @@ function formControl()
 			</div>
 			<!--GOOGLE MAP APIKEY (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-			<div class="objField" id="mapApiKeyDiv" title="<?= Txt::trad("AGORA_mapApiKeyInfo") ?>">
+			<div class="objField" id="mapApiKeyDiv" title="<?= Txt::trad("AGORA_mapApiKeyTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/map.png"><?= Txt::trad("AGORA_mapApiKey") ?></div>
 				<div><input type="text" name="mapApiKey" value="<?= Ctrl::$agora->mapApiKey ?>"></div>
 			</div>
 			<?php } ?>
 			<!--GOOGLE SIGNIN ENABLED/DISABLED-->
-			<div class="objField" title="<?= Txt::trad("AGORA_gIdentityInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_gIdentityTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentity") ?></div>
 				<div>
 					<select name="gIdentity">
@@ -303,11 +303,11 @@ function formControl()
 			</div>
 			<!--GOOGLE SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-			<div class="objField" id="gIdentityClientIdDiv" title="<?= Txt::trad("AGORA_gIdentityClientIdInfo") ?>">
+			<div class="objField" id="gIdentityClientIdDiv" title="<?= Txt::trad("AGORA_gIdentityClientIdTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentityClientId") ?></div>
 				<div><input type="text" name="gIdentityClientId" value="<?= Ctrl::$agora->gIdentityClientId ?>"></div>
 			</div>
-			<div class="objField" title="<?= Txt::trad("AGORA_gPeopleApiKeyInfo") ?>">
+			<div class="objField" title="<?= Txt::trad("AGORA_gPeopleApiKeyTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/google.png"><?= Txt::trad("AGORA_gPeopleApiKey") ?></div>
 				<div><input type="text" name="gPeopleApiKey" value="<?= Ctrl::$agora->gPeopleApiKey ?>"></div>
 			</div>
@@ -324,11 +324,11 @@ function formControl()
 					<div class="fieldLabel"><?= Txt::trad("AGORA_smtpHost") ?></div>
 					<div><input type="text" name="smtpHost" value="<?= Ctrl::$agora->smtpHost ?>"></div>
 				</div>
-				<div class="objField" title="<?= Txt::trad("AGORA_smtpPortInfo") ?>">
+				<div class="objField" title="<?= Txt::trad("AGORA_smtpPortTooltip") ?>">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_smtpPort") ?></div>
 					<div><input type="text" name="smtpPort" value="<?= Ctrl::$agora->smtpPort ?>"></div>
 				</div>
-				<div class="objField" title="<?= Txt::trad("AGORA_smtpSecureInfo") ?>">
+				<div class="objField" title="<?= Txt::trad("AGORA_smtpSecureTooltip") ?>">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_smtpSecure") ?></div>
 					<div><input type="text" name="smtpSecure" value="<?= Ctrl::$agora->smtpSecure ?>"></div>
 				</div>
@@ -349,19 +349,19 @@ function formControl()
 
 			<!--PARAMETRAGE LDAP-->
 			<?php if(function_exists("ldap_connect")){ ?>
-			<div class="objField sLink" onclick="$('#ldapConfig').fadeToggle()" title="<?= Txt::trad("AGORA_ldapLabelInfo") ?>">
+			<div class="objField sLink" onclick="$('#ldapConfig').fadeToggle()" title="<?= Txt::trad("AGORA_ldapLabelTooltip") ?>">
 				<div class="fieldLabel"><img src="app/img/user/ldap.png"> <?= Txt::trad("AGORA_ldapLabel") ?> <img src="app/img/arrowBottom.png"></div>
 			</div>
 			<div id="ldapConfig" class="selectContainer" <?= empty(Ctrl::$agora->ldap_server)?"style='display:none'":null ?>>
-				<div class="objField" title="<?= Txt::trad("AGORA_ldapUriInfo") ?>">
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapUriTooltip") ?>">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapUri") ?></div>
 					<div><input type="text" name="ldap_server" value="<?= Ctrl::$agora->ldap_server ?>"></div>
 				</div>
-				<div class="objField" title="<?= Txt::trad("AGORA_ldapPortInfo") ?>">
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapPortTooltip") ?>">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapPort") ?></div>
 					<div><input type="text" name="ldap_server_port" value="<?= Ctrl::$agora->ldap_server_port ?>"></div>
 				</div>
-				<div class="objField" title="<?= Txt::trad("AGORA_ldapLoginInfo") ?>">
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapLoginTooltip") ?>">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapLogin") ?></div>
 					<div><input type="text" name="ldap_admin_login" value="<?= Ctrl::$agora->ldap_admin_login ?>"></div>
 				</div>
@@ -369,7 +369,7 @@ function formControl()
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapPass") ?></div>
 					<div><input type="password" name="ldap_admin_pass" value="<?= Ctrl::$agora->ldap_admin_pass ?>"></div>
 				</div>
-				<div class="objField" title="<?= Txt::trad("AGORA_ldapDnInfo") ?>">
+				<div class="objField" title="<?= Txt::trad("AGORA_ldapDnTooltip") ?>">
 					<div class="fieldLabel"><?= Txt::trad("AGORA_ldapDn") ?></div>
 					<div><input type="text" name="ldap_base_dn" value="<?= Ctrl::$agora->ldap_base_dn ?>"></div>
 				</div>

@@ -99,7 +99,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<!--ESPACE PUBLIC (avec password?)-->
 	<div class="vSpaceOption">
 		<img src="app/img/user/accessGuest.png"> <input type="checkbox" name="public" id="public" value="1" <?= (!empty($curSpace->public))?'checked':null ?>>
-		<label for="public" title="<?= Txt::trad("SPACE_publicSpaceInfo") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
+		<label for="public" title="<?= Txt::trad("SPACE_publicSpaceTooltip") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
 		<div id="divPassword">
 			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; <input type="text" name="password" value="<?= $curSpace->password ?>">
 		</div>
@@ -108,16 +108,16 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<!--INSCRIPTION A L'ESPACE-->
 	<div class="vSpaceOption">
 		<img src="app/img/edit.png"> <input type="checkbox" name="userInscription" id="userInscription" value="1" <?= (!empty($curSpace->userInscription))?'checked':null ?>>
-		<label for="userInscription" title="<?= Txt::trad("userInscriptionEditInfo") ?>"><?= Txt::trad("userInscriptionEdit") ?></label>
-		<div id="divUserInscriptionNotify" title="<?= Txt::trad("userInscriptionNotifyEditInfo") ?>">
+		<label for="userInscription" title="<?= Txt::trad("userInscriptionEditTooltip") ?>"><?= Txt::trad("userInscriptionEdit") ?></label>
+		<div id="divUserInscriptionNotify" title="<?= Txt::trad("userInscriptionNotifTooltip") ?>">
 			<img src="app/img/dependency.png">
 			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curSpace->userInscriptionNotify))?'checked':null ?>>
-			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotifyEdit") ?></label>
+			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotif") ?></label>
 		</div>
 	</div>
 
 	<!--INVITATIONS PAR MAIL-->
-	<div class="vSpaceOption" title="<?= Txt::trad("SPACE_usersInvitationInfo") ?>">
+	<div class="vSpaceOption" title="<?= Txt::trad("SPACE_usersInvitationTooltip") ?>">
 		<img src="app/img/mail.png"> <input type="checkbox" name="usersInvitation" id="usersInvitation" value="1" <?= (!empty($curSpace->usersInvitation))?'checked':null ?>>
 		<label for="usersInvitation"><?= Txt::trad("SPACE_usersInvitation") ?></label>
 	</div>
@@ -174,16 +174,16 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 
 	<!--USERS DE L'ESPACE-->
 	<?php if(Ctrl::$curUser->isAdminSpace()){ ?>
-	<div class="lightboxBlockTitle" title="<?= Txt::trad("SPACE_adminInfo") ?>"><?= Txt::trad("SPACE_userAdminAccess") ?> <img src="app/img/info.png"></div>
+	<div class="lightboxBlockTitle" title="<?= Txt::trad("SPACE_adminTooltip") ?>"><?= Txt::trad("SPACE_userAdminAccess") ?> <img src="app/img/info.png"></div>
 	<div class="lightboxBlock usersFieldset">
 		<div class="spaceAffectLine">
 			<label>&nbsp;</label>
-			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
-			<div title="<?= Txt::trad("SPACE_adminInfo") ?>"><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
+			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
+			<div title="<?= Txt::trad("SPACE_adminTooltip") ?>"><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
 		<div class="spaceAffectLine lineHover">
 			<label for="allUsers"><?= Txt::trad("SPACE_allUsers") ?></label>
-			<div title="<?= Txt::trad("SPACE_userInfo") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curSpace->allUsersAffected())?'checked':null ?>></div>
+			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curSpace->allUsersAffected())?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>
 		<?php
@@ -195,8 +195,8 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			$userDisabled=($curSpace->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
 			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpUser->_id.'">
 					<label class="spaceAffectLabel">'.$tmpUser->getLabel().'</label>
-					<div title="'.Txt::trad("SPACE_userInfo").'"> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
-					<div title="'.Txt::trad("SPACE_adminInfo").'"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>
+					<div title="'.Txt::trad("SPACE_userTooltip").'"> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
+					<div title="'.Txt::trad("SPACE_adminTooltip").'"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>
 				  </div>';
 		}
 		?>

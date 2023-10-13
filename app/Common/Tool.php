@@ -64,8 +64,9 @@ class Tool
 
 			////	Expediteur
 			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
-			$fromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "ne_pas_repondre@".$serverName;	//Email du paramétrage général OU du domaine courant (ex: "ne_pas_repondre@mondomaine.net")
-			$mail->SetFrom($fromMail, ucfirst($serverName));																	//"SetFrom" fixe (cf. score des antispams)
+			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "ne_pas_repondre@".$serverName;//Email du paramétrage général OU du domaine courant (ex: "ne_pas_repondre@mondomaine.net")
+			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);				//Nom de l'expediteur (exple: "monespace.fr")
+			$mail->SetFrom($setFromMail, $setFromName);																			//"SetFrom" fixe (cf. score des antispams)
 			//Controles de base
 			if(in_array("noTimeControl",$options)==false && (time()-@$_SESSION["sendMailTime"])<10)	{echo "please wait 10 sec."; exit;}	//Temps minimum entre chaque mail
 			else																					{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
@@ -87,14 +88,15 @@ class Tool
 			foreach((array)Req::param("specificMails") as $tmpMail){  if(Txt::isMail($tmpMail)) {$mailsTo[]=$tmpMail;}  }		//Ajoute des emails spécifiques/complémentaires
 			$mailsTo=array_unique($mailsTo);																					//Elimine les éventuels doublons
 			//Ajoute chaque destinataire en adresse principale ou BCC (Copie cachée)
-			foreach($mailsTo as $tmpDest){
+			foreach($mailsTo as $cptDest=>$tmpDest){
 				if(is_numeric($tmpDest) && isset(Ctrl::$curUser))  {$tmpDest=Ctrl::getObj("user",$tmpDest)->mail;}				//Récupère l'email d'un user
-				if(!empty($tmpDest)){																							//Email existe bien
-					$tmpDest=filter_var($tmpDest, FILTER_SANITIZE_EMAIL);														//Enlève les espace et autre caractères (indispensable!)
-					if(PHPMailer::validateAddress($tmpDest)){																	//Email valide
-						$mailsToNotif.=", ".$tmpDest;																			//Ajoute l'email pour les notifs
-						if(in_array("hideRecipients",$options))	{$mail->AddBCC($tmpDest);}										//Ajoute l'email en copy caché
-						else									{$mail->AddAddress($tmpDest);}									//Ajoute l'email en clair
+				if(!empty($tmpDest)){																							//Email existe bien pour l'user
+					$tmpDest=filter_var($tmpDest, FILTER_SANITIZE_EMAIL);														//Enlève les espaces et caractères spéciaux (toujours!)
+					if(PHPMailer::validateAddress($tmpDest)){																	//Email Ok :
+						if($cptDest<20)			{$mailsToNotif.=", ".$tmpDest;}													//- "notify" l'email des destinataires
+						elseif($cptDest==20)	{$mailsToNotif.=", etc.";}														//- Idem (20 emails max)
+						if(in_array("hideRecipients",$options))	{$mail->AddBCC($tmpDest);}										//- ajoute l'email en copy caché
+						else									{$mail->AddAddress($tmpDest);}									//- ou ajoute l'email en clair
 					}
 				}
 			}
@@ -134,10 +136,11 @@ class Tool
 
 			////	Envoi du mail + rapport d'envoi si demandé
 			$sendReturn=$mail->Send();
-			if(in_array("noNotify",$options)==false){																										//Affiche une notification si l'email a été envoyé ou pas 
-				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");									//Affiche si besoin "L'email de notification a bien été envoyé"
-				if($sendReturn==true)			{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
-				if(!empty($mail->ErrorInfo))	{Ctrl::notify("Mailer Error :<br>".Txt::clean($mail->ErrorInfo));}											//Mail envoyé avec des erreurs
+			if(in_array("noNotify",$options)==false){																											//Affiche une notification si l'email a été envoyé ou pas 
+				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");										//Affiche si besoin "L'email de notification a bien été envoyé"
+				if($sendReturn==true)				{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
+				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}											//Erreurs dans l'envoi de l'email
+				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																//Mail non envoyé
 			}
 			return $sendReturn;//tjs renvoyer
 		}

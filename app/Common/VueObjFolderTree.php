@@ -80,7 +80,7 @@ function formControl(){
 	foreach(Ctrl::$curRootFolder->folderTree() as $tmpFolder)
 	{
 		//Tooltip
-		if($tmpFolder->isRootFolder() && Ctrl::$curUser->isAdminSpace())		{$folderTooltip=Txt::trad("rootFolderEditInfo");}
+		if($tmpFolder->isRootFolder() && Ctrl::$curUser->isAdminSpace())		{$folderTooltip=Txt::trad("rootFolderEditTooltip");}
 		elseif(strlen($tmpFolder->name)>70 || !empty($tmpFolder->description))	{$folderTooltip=$tmpFolder->name."<hr>".$tmpFolder->description;}
 		else																	{$folderTooltip=null;}
 		//Style && Actions Js && Input de changement de dossier conteneur (jamais le dossier courant!)

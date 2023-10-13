@@ -50,7 +50,7 @@ function attachedFileDelete(_id)
 ////	INPUTS DES FICHIERS À ATTACHER (si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
 echo '<div><img src="app/img/attachment.png"> '.Txt::trad("EDIT_attachedFileAdd").' :</div>';
 for($cptInputFile=1; $cptInputFile<=20; $cptInputFile++){
-	$insertOption=($curObj::htmlEditorField!=null)  ?  '<label onclick="attachedFileInsert('.$cptInputFile.')" id="attachedFileOption'.$cptInputFile.'" title="'.Txt::trad("EDIT_attachedFileInsertInfo").'"><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
+	$insertOption=($curObj::htmlEditorField!=null)  ?  '<label onclick="attachedFileInsert('.$cptInputFile.')" id="attachedFileOption'.$cptInputFile.'" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
 	echo '<div id="attachedFileDivAdd'.$cptInputFile.'" class="attachedFileDiv"><input type="file" name="attachedFile'.$cptInputFile.'" id="attachedFileInput'.$cptInputFile.'" class="attachedFileInput">'.$insertOption.'</div>';
 }
 
@@ -59,7 +59,7 @@ if(count($curObj->attachedFileList())>0){
 	echo '<hr>';
 	foreach($curObj->attachedFileList() as $tmpFile){
 		$fileOptions='<label onclick="attachedFileDelete('.$tmpFile["_id"].');" title="'.Txt::trad("delete").'"><img src="app/img/delete.png"></label>';
-		if($curObj::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"]))  {$fileOptions='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" title="'.Txt::trad("EDIT_attachedFileInsertInfo").'"></label>'.$fileOptions;}
+		if($curObj::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"]))  {$fileOptions='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"></label>'.$fileOptions;}
 		echo '<div id="attachedFileDivList'.$tmpFile["_id"].'" class="attachedFileDiv"><img src="app/img/attachment.png"> '.$tmpFile["name"].$fileOptions.'</div>';
 	}
 }

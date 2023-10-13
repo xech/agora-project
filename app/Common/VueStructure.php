@@ -56,11 +56,12 @@
 			<?php
 			////	Affiche si besoin des notifications
 			foreach(Ctrl::$notify as $tmpNotif){
-				if(Txt::isTrad($tmpNotif["message"]))  {$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}//notif à traduire?
+				if(Txt::isTrad($tmpNotif["message"]))	{$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}
+				else									{$tmpNotif["message"]=str_replace(["\"","'"],["&quot;","&apos;"],strip_tags($tmpNotif["message"],"<br>"));}//Evite les XSS : tester avec  &notify[]=<i>test<%2fi>")%3balert(1)%2f%2f
 				echo 'notify("'.$tmpNotif["message"].'", "'.$tmpNotif["type"].'");';
 			}
 			?>
-			//// Responsive : Affiche le bouton en bas de page pour ajouter un nouvel element
+			////	Responsive : Affiche le bouton en bas de page pour ajouter un nouvel element
 			if(isMobile()){
 				var addElemButton=$("#pageModMenu img[src*='plus.png']").first().parents(".menuLine");//Sélectionne le div ".menuLine" du premier bouton "Ajouter"
 				if(addElemButton.exist())  {$("#respAddButton").attr("onclick",addElemButton.attr("onclick")).show();}//Ajoute l'attribut "onclick" au bouton responsive, puis affiche ce bouton
@@ -93,7 +94,7 @@
 			/*Menu responsive : cf. "common.js"*/
 			#respMenuMain, #respMenuBg				{position:fixed; top:0px; right:0px; height:100%;}
 			#respMenuBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
-			#respMenuMain							{z-index:101; max-width:370px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
+			#respMenuMain							{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
 			#respMenuMain #respMenuClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
 			#respMenuMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#respMenuMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/

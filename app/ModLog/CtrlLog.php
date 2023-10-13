@@ -52,9 +52,9 @@ class CtrlLog extends Ctrl
 					$curLog["action"]=Txt::isTrad($actionTrad)  ?  Txt::trad($actionTrad)  :  $tmpLog["action"];
 				}
 				elseif($tmpField=="objectType"){
-					if(stristr($tmpLog["objectType"],"folder"))			{$curLog["objectType"]=Txt::trad("OBJECTfolder");}//dossier
-					elseif(Txt::isTrad("OBJECT".$tmpLog["objectType"]))	{$curLog["objectType"]=Txt::trad("OBJECT".$tmpLog["objectType"]);}//autre objet
-					else												{$curLog["objectType"]=null;}
+					if(!empty($tmpLog["objectType"]) && stristr($tmpLog["objectType"],"folder"))	{$curLog["objectType"]=Txt::trad("OBJECTfolder");}//dossier
+					elseif(Txt::isTrad("OBJECT".$tmpLog["objectType"]))								{$curLog["objectType"]=Txt::trad("OBJECT".$tmpLog["objectType"]);}//autre objet
+					else																			{$curLog["objectType"]=null;}
 				}else{
 					$curLog[$tmpField]=$tmpLog[$tmpField];
 				}

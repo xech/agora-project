@@ -72,7 +72,7 @@ $(function(){
 <style>
 /*Footer & Menus du module*/
 #pageFooterIcon img					{display:none;}
-#calsList							{max-height:400px; overflow-y:auto;}
+#calsList							{max-height:600px; overflow-y:auto;}
 #calsList>div						{height:25px;}
 #calsList .menuLaunch				{display:none;}/*menu context des agendas*/
 #calsList>div:hover .menuLaunch		{display:inline; margin-left:5px;}/*idem*/
@@ -199,7 +199,7 @@ $(function(){
 
 			<!--CREER AGENDA PARTAGE-->
 			<?php if(MdlCalendar::addRight()){ ?>
-			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlCalendar::getUrlNew() ?>');" title="<?= Txt::trad("CALENDAR_addSharedCalendarInfo") ?>">
+			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlCalendar::getUrlNew() ?>');" title="<?= Txt::trad("CALENDAR_addSharedCalendarTooltip") ?>">
 				<div class="menuIcon"><img src="app/img/calendar/calendarAdd.png"></div>
 				<div><?= Txt::trad("CALENDAR_addSharedCalendar") ?></div>
 			</div>

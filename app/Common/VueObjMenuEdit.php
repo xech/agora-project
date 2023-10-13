@@ -225,9 +225,9 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 				echo '<div class="vSpaceTable" id="spaceTable'.$tmpSpace->_id.'">
 							<div class="vSpaceHeader">
 								<div class="vSpaceLabelSpace" title="'.$tmpSpace->name.'<br>'.$tmpSpace->description.'">'.Txt::reduce($tmpSpace->name,40).'</div>
-								<div class="vSpaceRead" title="'.Txt::trad("accessReadInfo").'">'.Txt::trad("accessRead").'</div>
-								<div class="vSpaceWriteLimit" title="'.$accessWriteLimitInfo.'">'.Txt::trad("accessWriteLimit").'</div>
-								<div class="vSpaceWrite" title="'.Txt::trad("accessWriteInfo").'">'.Txt::trad("accessWrite").'</div>
+								<div class="vSpaceRead" title="'.Txt::trad("accessReadTooltip").'">'.Txt::trad("accessRead").'</div>
+								<div class="vSpaceWriteLimit" title="'.$accessWriteLimitTooltip.'">'.Txt::trad("accessWriteLimit").'</div>
+								<div class="vSpaceWrite" title="'.Txt::trad("accessWriteTooltip").'">'.Txt::trad("accessWrite").'</div>
 							</div>';
 				//TARGETS DE L'ESPACE (id des checkboxes deja dans "boxProp"!)
 				foreach($tmpSpace->targetLines as $targetLine)
@@ -237,9 +237,9 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 					$targetIcon=(!empty($targetLine["icon"]))  ?  '<img src="app/img/'.$targetLine["icon"].'" class="vSpaceTargetIcon '.$targetIconAdmin.'">'  : null;	//Icone spécifiée pour la target?
 					echo '<div class="lineHover '.$targetHide.'" id="targetLine'.$targetLine["targetId"].'">
 							<div class="vSpaceLabel" id="'.$targetLine["targetId"].'" title="'.$targetLine["tooltip"].'">'.$targetIcon.$targetLine["label"].'</div>
-							<div class="vSpaceRead" title="'.Txt::trad("accessReadInfo").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1"].'></div>
-							<div class="vSpaceWriteLimit" title="'.$accessWriteLimitInfo.'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1.5"].'></div>
-							<div class="vSpaceWrite" title="'.Txt::trad("accessWriteInfo").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["2"].'></div>
+							<div class="vSpaceRead" title="'.Txt::trad("accessReadTooltip").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1"].'></div>
+							<div class="vSpaceWriteLimit" title="'.$accessWriteLimitTooltip.'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1.5"].'></div>
+							<div class="vSpaceWrite" title="'.Txt::trad("accessWriteTooltip").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["2"].'></div>
 						  </div>';
 				}
 				//Fin du block principal "spaceTable"
@@ -247,7 +247,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			}
 			//Menu "Afficher tous les utilisateurs" (.."et espace")  &&  Menu "Etendre les droits aux sous-dossiers"
 			echo '<div id="showAllUsers">'.(count($accessRightSpaces)==1?Txt::trad("EDIT_showAllUsers"):Txt::trad("EDIT_showAllUsersAndSpaces")).' <img src="app/img/arrowBottom.png"></div>';
-			if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFolders_info").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(5);</script>';}
+			if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFoldersTooltip").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(5);</script>';}
 			//Fin du "objMenuAccessRight"
 			echo '</div>';
 		}
@@ -256,8 +256,8 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		{
 			echo '<div id="objMenuNotifMail">';
 			//CHECKBOX PRINCIPALE & BLOCK DES OPTIONS
-			$notifMailTooltip=$curObj->tradObject("EDIT_notifMailInfo");
-			if($curObj::objectType=="calendarEvent")  {$notifMailTooltip.=Txt::trad("EDIT_notifMailInfoCal");}//"la notification ne sera envoyée qu'aux propriétaires de ces agendas"
+			$notifMailTooltip=$curObj->tradObject("EDIT_notifMailTooltip");
+			if($curObj::objectType=="calendarEvent")  {$notifMailTooltip.=Txt::trad("EDIT_notifMailTooltipCal");}//"la notification ne sera envoyée qu'aux propriétaires de ces agendas"
 			echo '<input type="checkbox" name="notifMail" id="boxNotifMail" value="1" onChange="$(\'#notifMailOptions\').slideToggle();"> <label for="boxNotifMail" title="'.$notifMailTooltip.'">'.Txt::trad("EDIT_notifMail2").'</label>';
 			echo '<div id="notifMailOptions">';
 				//Option du module "File" : "Joindre les fichiers à la notification"

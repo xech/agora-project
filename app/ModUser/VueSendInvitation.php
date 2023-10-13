@@ -122,7 +122,7 @@ $(function(){
 
 
 <div class="lightboxContent">
-	<div class="lightboxTitle"><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png" title="<?= Txt::trad("USER_sendInvitationInfo") ?>"></div>
+	<div class="lightboxTitle"><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png" title="<?= Txt::trad("USER_sendInvitationTooltip") ?>"></div>
 
 	<!--INVITATION SIMPLE-->
 	<form id="mainForm">

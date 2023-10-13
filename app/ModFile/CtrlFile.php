@@ -226,7 +226,7 @@ class CtrlFile extends Ctrl
 				if(is_dir($tmpDirPath)){
 					foreach(scandir($tmpDirPath) as $tmpFileName){
 						$tmpFilePath=$tmpDirPath.$tmpFileName;
-						if(is_file($tmpFilePath))  {$newFiles[]=["tmpPath"=>$tmpFilePath, "name"=>$tmpFileName, "size"=>filesize($tmpFilePath)];}
+						if(is_file($tmpFilePath))  {$newFiles[]=["error"=>0, "tmp_name"=>$tmpFilePath, "name"=>$tmpFileName, "size"=>filesize($tmpFilePath)];}//Parametres idem à $_FILES
 					}
 				}
 			}
@@ -235,18 +235,18 @@ class CtrlFile extends Ctrl
 			{
 				foreach($_FILES as $tmpFile){
 					if($tmpFile["error"]==0){
-						$newFiles[]=["tmpPath"=>$tmpFile["tmp_name"], "name"=>$tmpFile["name"], "size"=>$tmpFile["size"]];//Ajoute le fichier
-						if(Req::isParam("addVersion") && File::extension($curObj->name)!=File::extension($tmpFile["name"]))
-							{Ctrl::notify(Txt::trad("NOTIF_fileVersion")." : ".File::extension($tmpFile["name"])." -> ".File::extension($tmpFile["name"]));}//Notifie si besoin du changement d'extension du fichier
+						$newFiles[]=$tmpFile;																					//Ajoute le fichier
+						if(Req::isParam("addVersion") && File::extension($curObj->name)!=File::extension($tmpFile["name"]))		//Notif si besoin du changement d'extension du fichier
+							{Ctrl::notify(Txt::trad("NOTIF_fileVersion")." : ".File::extension($tmpFile["name"])." -> ".File::extension($tmpFile["name"]));}
 					}
 				}
 			}
 			////	AJOUTE CHAQUE FICHIER
-			$datasFolderSizeTmp=File::datasFolderSize();
+			$tmpDatasFolderSize=File::datasFolderSize();
 			foreach($newFiles as $tmpFile)
 			{
 				////	Controle du fichier
-				if(File::controleUpload($tmpFile["tmpPath"],$tmpFile["name"],$tmpFile["size"],$datasFolderSizeTmp))
+				if(File::uploadControl($tmpFile,$tmpDatasFolderSize))
 				{
 					////	Vérifie si un autre fichier existe déjà avec le meme nom
 					if(Db::getVal("SELECT count(*) FROM ap_file WHERE _idContainer=".(int)$curObj->_idContainer." AND _id!=".$curObj->_id." AND name=".Db::format($tmpFile["name"]))>0)
@@ -257,7 +257,7 @@ class CtrlFile extends Ctrl
 					////	Ajoute la nouvelle version du fichier
 					$sqlVersionFileName=$tmpObj->_id."_".time().".".File::extension($tmpFile["name"]);
 					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($tmpFile["size"]).", description=".Db::param("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
-					copy($tmpFile["tmpPath"], $tmpObj->filePath());//copie dans le dossier final (après avoir enregistré la version en Bdd!!)
+					copy($tmpFile["tmp_name"], $tmpObj->filePath());//copie dans le dossier final, après avoir enregistré la version en Bdd !
 					File::setChmod($tmpObj->filePath());
 					////	Creation de vignette && Optimise si besoin l'image (1920px max)
 					$tmpObj->createThumb();
@@ -269,7 +269,7 @@ class CtrlFile extends Ctrl
 						Db::query("UPDATE ap_fileVersion SET octetSize=".Db::format($tmpFile["size"])." WHERE _idFile=".$tmpObj->_id." AND realName=".Db::format($sqlVersionFileName));
 					}
 					////	Incrémente la taille temporaire de l'espace disque total
-					$datasFolderSizeTmp+=$tmpFile["size"];
+					$tmpDatasFolderSize+=$tmpFile["size"];
 					////	Prepare la notif mail (Affiche le nom des 15 premiers fichiers ..puis le nombre de fichiers restant)
 					if(count($notifFilesLabel)<15)		{$notifFilesLabel[]=$tmpObj->name;}
 					elseif(count($notifFilesLabel)==15)	{$notifFilesLabel[]="... + ".(count($newFiles)-15)." ".Txt::trad("OBJECTfile")."s";}
@@ -303,8 +303,7 @@ class CtrlFile extends Ctrl
 			//Vérifie l'accès au dossier temporaire && y place chaque fichier correctement uploadé
 			if(is_writable($tmpDirPath)){
 				foreach($_FILES as $tmpFile){
-					if($tmpFile["error"]==0  && File::controleUpload($tmpFile["tmp_name"],$tmpFile["name"],$tmpFile["size"]))
-						{move_uploaded_file($tmpFile["tmp_name"], $tmpDirPath.$tmpFile["name"]);}
+					if(File::uploadControl($tmpFile))  {move_uploaded_file($tmpFile["tmp_name"], $tmpDirPath.$tmpFile["name"]);}
 				}
 			}
 		}

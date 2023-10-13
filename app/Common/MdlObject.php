@@ -28,7 +28,7 @@ class MdlObject
 	//Propriétés d'affichage et d'édition (d'IHM)
 	const isSelectable=false;						//Sélection multiple : arborescence le plus souvent
 	const hasShortcut=false;						//Création de raccourcis sur l'objet
-	const hasNotifMail=false;						//Envoye de notif d'édition par mail
+	const hasNotifMail=false;						//Envoyer des notifs d'édition par mail
 	const hasAttachedFiles=false;					//Ajouter des pièces jointes
 	const hasUsersLike=false;						//Like sur l'objet
 	const hasUsersComment=false;					//Ajout de commentaires sur l'objet
@@ -74,6 +74,14 @@ class MdlObject
 	function __get($propertyName)
 	{
 		if(isset($this->$propertyName))  {return $this->$propertyName;}
+	}
+
+	/********************************************************************************************
+	 * VÉRIFIE SI UN OBJET EST DÉJÀ CRÉÉ ET POSSÈDE UN _ID  (L'OJECT PEUT NE PAS ENCORE EXISTER)
+	 ********************************************************************************************/
+	public static function isObject($curObj=null)
+	{
+		return (!empty($curObj) && is_object($curObj) && !empty($curObj->_id));
 	}
 
 	/*******************************************************************************************
@@ -835,7 +843,7 @@ class MdlObject
 			foreach($_FILES as $inputId=>$tmpFile)
 			{
 				//Ajoute chaque fichier joint (cf. "VueObjAttachedFile.php")
-				if(stristr($inputId,"attachedFile") && $tmpFile["error"]==0 && File::controleUpload($tmpFile["tmp_name"],$tmpFile["name"],$tmpFile["size"]))
+				if(stristr($inputId,"attachedFile") && File::uploadControl($tmpFile))
 				{
 					//Ajoute le fichier en Bdd et dans le dossier de destination
 					$_idFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($tmpFile["name"]).", objectType='".static::objectType."', _idObject=".$this->_id, true);

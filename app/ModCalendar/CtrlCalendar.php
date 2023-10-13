@@ -284,8 +284,8 @@ class CtrlCalendar extends Ctrl
 			////	NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
 			if(!empty($propositionIdUsers)){
 				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd);
-				$mailSubject=Txt::trad("CALENDAR_propositionNotifTitle")." ".$curObj->autorLabel();
-				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionNotifMessage"));
+				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
+				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
 				Tool::sendMail($propositionIdUsers, $mailSubject, $mailMessage, ["noNotify"]);
 			}
 			////	NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
@@ -316,7 +316,7 @@ class CtrlCalendar extends Ctrl
 			$tmpCal->isDisabled=($tmpCal->addContentRight()==false && $curObj->fullRight()==false)  ?  "disabled"  :  null;								//Input principal : désactive l'agenda s'il n'est pas accessible en écriture && user courant pas auteur de l'evt
 			$tmpCal->reinitCalendarInput=($curObj->isNew()==false && $tmpCal->isDisabled==null);														//Ajoute l'input "hidden" de réinitialisation de l'affectation : modif d'evt et input pas "disabled"
 			//Tooltip du label principal
-			if($tmpCal->isDisabled!=null)				{$tmpCal->tooltip=Txt::trad("CALENDAR_noModifInfo");}			//"Modification non autorisé..." (tjs mettre en premier)
+			if($tmpCal->isDisabled!=null)				{$tmpCal->tooltip=Txt::trad("CALENDAR_noModifTooltip");}			//"Modification non autorisé..." (tjs mettre en premier)
 			elseif($tmpCal->inputType=="affectation")	{$tmpCal->tooltip=Txt::trad("CALENDAR_addEvtTooltipBis");}		//"Ajouter l'événement.."
 			else										{$tmpCal->tooltip=Txt::trad("CALENDAR_proposeEvtTooltipBis2");}	//"Proposer l'événement .."
 			if(!empty($tmpCal->description))  {$tmpCal->tooltip.=" (".$tmpCal->description.")";}//Ajoute la description de l'agenda

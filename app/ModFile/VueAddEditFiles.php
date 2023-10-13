@@ -38,7 +38,7 @@ $(function(){
 		}
 	});
 	////	PlUpload : Ajoute la taille Max des fichiers dans le "title" du bouton  "Ajouter les fichiers"
-	$(".plupload_add").attr("title","<?= $uploadMaxFilesize ?> Maximum par fichier. <?= Txt::trad("FILE_addMultipleFilesInfo") ?>");
+	$(".plupload_add").attr("title","<?= $uploadMaxFilesize ?> Maximum par fichier. <?= Txt::trad("FILE_addMultipleFilesTooltip") ?>");
 	<?php } ?>
 });
 

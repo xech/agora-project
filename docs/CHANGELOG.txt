@@ -4,6 +4,21 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
+VERSION 23.10.1
+###############
+Amélioration de la gestion des "Screen orientation" sur mobile
+Optimisation des contrôles d'upload des fichiers
+Renommage des cles de traduction des toolips
+Amélioration des notifications d'envoi des emails
+Correction de l'affichage des logs avec PHP 8.1 +
+-----
+Improved management of "Screen orientation" on mobile
+Optimization of file upload controls
+Renaming toolip translation keys
+Improved email sending notifications
+Fixing the display of logs with PHP 8.1 +
+
+
 VERSION 23.7.3
 ###############
 Nouvelle option pour copier/coller des images directement dans l'éditeur TinyMce

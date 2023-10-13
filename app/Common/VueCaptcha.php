@@ -15,7 +15,7 @@ $(function(){
 #captchaReload	{cursor:pointer; width:16px;}
 </style>
 
-<div id="captchaDiv" title="<?= Txt::trad("captchaInfo") ?>">
+<div id="captchaDiv" title="<?= Txt::trad("captchaTooltip") ?>">
 	<img src="?ctrl=misc&action=CaptchaImg" id="captchaImg">
 	<img src="app/img/arrowRight.png" id="captchaArrow">
 	<input type="text" name="captcha" id="captchaText" placeholder="<?= Txt::trad("captcha") ?>">

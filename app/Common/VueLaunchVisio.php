@@ -28,11 +28,11 @@ $(function(){
 
 	////	Bouton de lancement && Infos sur la visio
 	echo "<button id='launchVisio'>".Txt::trad("VISIO_launchButton")." &nbsp; <img src='app/img/visioSmall.png'></button>
-		  <a href='docs/VISIO.pdf' target='_blank' class='visioInfos' title=\"".Txt::trad("VISIO_launchHelp")."\"><img src='app/img/pdf.png'>&nbsp; ".Txt::trad("VISIO_launchInfo")."</a>";
+		  <a href='docs/VISIO.pdf' target='_blank' class='visioInfos' title=\"".Txt::trad("VISIO_launchTooltip2")."\"><img src='app/img/pdf.png'>&nbsp; ".Txt::trad("VISIO_launchTooltip")."</a>";
 
 	////	Selection du serveur de visio
 	if(!empty(Ctrl::$agora->visioHostAlt)){
-		echo "<div title=\"".Txt::trad("VISIO_launchServerInfo")."\">
+		echo "<div title=\"".Txt::trad("VISIO_launchServerTooltip")."\">
 				<img src='app/img/info.png'> &nbsp;
 				<select id='visioHostServer'>
 					<option value='main'>".Txt::trad("VISIO_launchServerMain")."</option>

@@ -4,7 +4,7 @@
  *******************************************************************************************/
 function contactAddUser(typeId)
 {
-	if(confirm("<?= Txt::trad("CONTACT_createUserInfo") ?>"))
+	if(confirm("<?= Txt::trad("CONTACT_createUserConfirm") ?>"))
 		{redir("?ctrl=contact&action=contactAddUser&typeId="+typeId);}
 }
 </script>

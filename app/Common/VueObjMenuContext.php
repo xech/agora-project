@@ -28,7 +28,7 @@ echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 	if(!empty($logUrl))  {echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".$logUrl."')\"><div class='menuIcon'><img src='app/img/log.png'></div><div>".Txt::trad("objHistory")."</div></div>";}
 
 	////	COPIER L'ADRESSE/URL D'ACCES (affiche puis masque l'input pour pouvoir être copié..)
-	if(!empty($getUrlExternal))  {echo "<div class='menuLine sLink' title=\"".Txt::trad("copyUrlInfo")."\" onclick=\"$(this).find('input').show().select();document.execCommand('copy');$(this).find('input').hide();notify('".Txt::trad("copyUrlConfirmed",true)."');\"><div class='menuIcon'><img src='app/img/link.png'></div><div>".Txt::trad("copyUrl")."<input type='text' value=\"".$getUrlExternal."\" style='display:none'></div></div>";}
+	if(!empty($getUrlExternal))  {echo "<div class='menuLine sLink' title=\"".Txt::trad("copyUrlTooltip")."\" onclick=\"$(this).find('input').show().select();document.execCommand('copy');$(this).find('input').hide();notify('".Txt::trad("copyUrlConfirmed",true)."');\"><div class='menuIcon'><img src='app/img/link.png'></div><div>".Txt::trad("copyUrl")."<input type='text' value=\"".$getUrlExternal."\" style='display:none'></div></div>";}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	foreach($specificOptions as $tmpOption){
