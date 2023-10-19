@@ -82,11 +82,12 @@ class Trad extends Txt
 			"connectAutoTooltip"=>"Retenir mon identifiant / mot de passe pour une connexion automatique",
 			"gIdentityUserUnknown"=>"n'est pas enregistré sur l'espace",//"boby.smith@gmail.com" n'est pas enregistré sur l'espace
 			"connectSpaceSwitch"=>"Me connecter à un autre espace",
-			"connectSpaceSwitchConfirm"=>"Êtes-vous sûr de vouloir quitter cet espace pour vous connecter à un autre espace ?",
+			"connectSpaceSwitchConfirm"=>"Confirmer la déconnexion pour vous connecter à un autre espace ?",
 			"guestAccess"=>"Connexion invité",
 			"guestAccessTooltip"=>"Me connecter à cet espace en tant qu'invité",
 			"spacePassError"=>"Mot de passe erroné",
-			"ieObsolete"=>"Votre navigateur Internet Explorer n'est plus mis à jour par Microsoft depuis plusieurs années : ll est fortement conseillé d'utiliser un autre navigateur tel que Firefox, Chrome, Edge ou Safari.",
+			"disconnectSpace"=>"Se déconnecter",
+			"disconnectSpaceConfirm"=>"Confirmer la déconnexion de l'espace principal ?",
 
 			////	Password : connexion d'user / edition d'user / reset du password
 			"password"=>"Mot de passe",
@@ -384,10 +385,9 @@ class Trad extends Txt
 			"HEADER_displaySpace"=>"Espaces disponibles",
 			"HEADER_displayAdmin"=>"Affichage Administrateur",
 			"HEADER_displayAdminEnabled"=>"Affichage Administrateur activé",
-			"HEADER_displayAdminInfo"=>"permet d'afficher tous les éléments présents sur cet espace",
+			"HEADER_displayAdminInfo"=>"Cette option permet d'afficher tous les éléments présents sur l'espace courant, même ceux qui ne vous sont pas attribués",
 			"HEADER_searchElem"=>"Rechercher sur l'espace",
 			"HEADER_documentation"=>"Guide d'utilisation",
-			"HEADER_disconnect"=>"Déconnexion",
 			"HEADER_shortcuts"=>"Raccourcis",
 			"FOOTER_pageGenerated"=>"page générée en",
 
@@ -600,9 +600,9 @@ class Trad extends Txt
 
 			////	MODULE_ESPACE
 			////
-			"SPACE_moduleTooltip"=>"L'espace principal (le site) peut également être subdivisée en plusieurs espaces, également appelés ''sous-espace''",
-			"SPACE_manageSpaces"=>"Paramétrer les espaces du site",
-			"SPACE_config"=>"Paramétrer l'espace",
+			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (cf. ''sous-espace'')",
+			"SPACE_manageAllSpaces"=>"Gérer tous les espaces",
+			"SPACE_config"=>"Paramétrer l'espace",//.."mon espace"
 			//Index
 			"SPACE_confirmDeleteDbl"=>"Notez que seules les données affectées uniquement à cet espace seront effacées. Cependant si vous souhaitez les conserver, pensez d'abord à les réaffecter à un autre espace. Confirmez tout de même la suppression de cet espace ?",
 			"SPACE_space"=>"espace",
@@ -634,8 +634,8 @@ class Trad extends Txt
 			"USER_option_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",//OPTION!
 			//Index
 			"USER_spaceOrAllUsersTooltip"=>"Gérer les utilisateurs de l'espace affiché / Gérer les utilisateurs de tous les espaces (réservé à l'administrateur général)",
-			"USER_spaceUsers"=>"Utilisateurs de l'espace courant",
-			"USER_allUsers"=>"Tous les utilisateurs (admin général)",
+			"USER_spaceUsers"=>"Gérer les utilisateurs de l'espace courant",
+			"USER_allUsers"=>"Gérer tous les utilisateurs",
 			"USER_deleteDefinitely"=>"Supprimer définitivement",
 			"USER_deleteFromCurSpace"=>"Ne plus affecter à l'espace courant",
 			"USER_deleteFromCurSpaceConfirm"=>"Ne plus affecter l'utilisateur à l'espace courant ?",

@@ -306,7 +306,7 @@ class UserInfo extends \Google\Collection
   /**
    * @return string
    */
-  public function passwordSalt()
+  public function getSalt()
   {
     return $this->salt;
   }

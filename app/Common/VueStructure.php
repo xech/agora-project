@@ -36,21 +36,17 @@
 		<link href="app/css/<?= $skinCss ?>.css" rel="stylesheet" type="text/css">
 	
 		<script>
-		////	Alerte pour MSIE (sauf IE-11: encore très utilisé)
-		if(/msie/i.test(navigator.userAgent))  {alert("<?= Txt::trad("ieObsolete") ?>");}
-		////	Divers params
+		////	Parametres de base et labels de "common.js"
 		isMainPage=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
-		windowParent=(isMainPage==true) ? window : window.parent;//Si l'espace est intégré dans un Iframe (cf. redirection "invisible" de domaine)
-		confirmCloseForm=false;//Init la confirmation de fermeture de page (cf. lightbox d'édition)
-		////	Labels de "common.js"
-		labelCancel					="<?= Txt::trad("cancel") ?>";
+		windowParent=(isMainPage==true) ? window : window.parent;//Accès à la page principale via common.js
+		confirmCloseForm=false;//Confirmation de fermeture de formulaire (exple: édit d'objet)
 		labelConfirmCloseForm		="<?= Txt::trad("confirmCloseForm") ?>";
 		labelConfirmDelete			="<?= Txt::trad("confirmDelete") ?>";
 		labelConfirmDeleteDbl		="<?= Txt::trad("confirmDeleteDbl") ?>";
-		labelSpecifyLoginPassword	="<?= Txt::trad("specifyLoginPassword") ?>";
 		labelDateBeginEndControl	="<?= Txt::trad("beginEndError") ?>";
 		labelUploadMaxFilesize		="<?= File::uploadMaxFilesize("error") ?>";
 		valueUploadMaxFilesize		=<?= File::uploadMaxFilesize() ?>;
+
 		////	Au chargement de la page
 		$(function(){
 			<?php

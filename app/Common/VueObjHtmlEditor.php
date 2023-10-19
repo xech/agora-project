@@ -1,4 +1,4 @@
-<script type="text/javascript" src="app/js/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="app/js/tinymce_6.7.0/tinymce.min.js"></script>
 <script>
 /*******************************************************************************************
  ***********************			INIT L'EDITEUR TINYMCE			************************

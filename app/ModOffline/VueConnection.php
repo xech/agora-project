@@ -41,13 +41,13 @@ function resetPasswordControlNew()
 	if($("[name='newPassword']").val()!=$("[name='newPasswordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError") ?>");	return false;}//Passwords différents
 }
 
-////	Contrôle d'identification / connexion!
+////	Contrôle d'identification / connexion
 function controlConnect()
 {
 	var inputLogin=$("[name=connectLogin]");
 	var inputPassword=$("[name=connectPassword]");
 	if(inputLogin.isEmpty() || inputLogin.val()==inputLogin.attr("placeholder") || inputPassword.isEmpty() || inputPassword.val()==inputPassword.attr("placeholder")){
-		notify(labelSpecifyLoginPassword);
+		notify("<?= Txt::trad("specifyLoginPassword") ?>");
 		return false;
 	}
 }
@@ -200,7 +200,7 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 
 		<!--SWITCH D'ESPACE-->
 		<?php if(Req::isSpaceSwitch()){ ?>
-			<hr><button class="vMainButton" onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.png"> <?= Txt::trad("connectSpaceSwitch") ?></button>
+			<hr><button class="vMainButton" onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/login.png"> <?= Txt::trad("connectSpaceSwitch") ?></button>
 		<?php }  ?>
 
 	</div>

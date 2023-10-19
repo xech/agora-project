@@ -86,8 +86,9 @@ class Trad extends Txt
 			"guestAccess"=>"Login as guest",
 			"guestAccessTooltip"=>"Log in to this space as a guest",
 			"spacePassError"=>"Wrong password",
-			"ieObsolete"=>"Your browser is outdated and does not support all HTML standards : It is advisable to update it or use another browser",
-			
+			"disconnectSpace"=>"Log out",
+			"disconnectSpaceConfirm"=>"Confirm log out from the space ?",
+
 			////	Password : connexion d'user / edition d'user / reset du password
 			"password"=>"Password",
 			"passwordModify"=>"Change password",
@@ -384,10 +385,9 @@ class Trad extends Txt
 			"HEADER_displaySpace"=>"Available spaces",
 			"HEADER_displayAdmin"=>"Administrator view",
 			"HEADER_displayAdminEnabled"=>"Administrator view enabled",
-			"HEADER_displayAdminInfo"=>"Show all elements of the current space (reserved for administrators)",
+			"HEADER_displayAdminInfo"=>"This option allows you to display all the elements present in the current space, even those which are not assigned to you",
 			"HEADER_searchElem"=>"Search in the space",
 			"HEADER_documentation"=>"Documentation",
-			"HEADER_disconnect"=>"Log out from Agora",
 			"HEADER_shortcuts"=>"Shortcuts",
 			"FOOTER_pageGenerated"=>"page generated in",
 
@@ -600,9 +600,9 @@ class Trad extends Txt
 
 			////	MODULE_ESPACE
 			////
-			"SPACE_moduleTooltip"=>"The site (or main space) can be divided into several spaces",
-			"SPACE_manageSpaces"=>"Manage spaces of the site",
-			"SPACE_config"=>"Settings of the space",
+			"SPACE_moduleTooltip"=>"The main space can be subdivided into several spaces (see ''subspace'')",
+			"SPACE_manageAllSpaces"=>"Manage all spaces",
+			"SPACE_config"=>"Settings of the space",//.."mon espace"
 			//Index
 			"SPACE_confirmDeleteDbl"=>"Confirm the deletion ? Attention, this action cannot be undone !",
 			"SPACE_space"=>"space",
@@ -635,7 +635,7 @@ class Trad extends Txt
 			//Index
 			"USER_spaceOrAllUsersTooltip"=>"Manage users of the displayed space / Manage users of all spaces (reserved for the general administrator)",
 			"USER_spaceUsers"=>"Current space users",
-			"USER_allUsers"=>"All users (general admin)",
+			"USER_allUsers"=>"Manage all users",
 			"USER_deleteDefinitely"=>"Delete permanently",
 			"USER_deleteFromCurSpace"=>"Unassign to current space",
 			"USER_deleteFromCurSpaceConfirm"=>"Unassign the user to the current space?",

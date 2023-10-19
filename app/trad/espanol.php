@@ -50,7 +50,7 @@ class Trad extends Txt
 			"folders"=>"carpetas",
 			"close"=>"Cerrar",
 			"visibleAllSpaces"=>"Visible en todos los espacios",
-			"confirmCloseForm"=>"¿Quieres cerrar el formulario?",
+			"confirmCloseForm"=>"¿ Quieres cerrar el formulario ?",
 			"modifRecorded"=>"Los cambios fueron registrados",
 			"confirm"=>"¿ Confirmar ?",
 			"comment"=>"Comentario",
@@ -82,12 +82,13 @@ class Trad extends Txt
 			"connectAutoTooltip"=>"Recordar mi nombre de usuario y la contraseña para una conexión automática",
 			"gIdentityUserUnknown"=>"no está registrado en el espacio",
 			"connectSpaceSwitch"=>"Conectarse a otro espacio",
-			"connectSpaceSwitchConfirm"=>"¿Está seguro de que desea abandonar este espacio para conectarse a otro espacio?",
+			"connectSpaceSwitchConfirm"=>"¿ Está seguro de que desea abandonar este espacio para conectarse a otro espacio ?",
 			"guestAccess"=>"Iniciar sesión como invitado",
 			"guestAccessTooltip"=>"Iniciar sesión en un espacio como invitado",
 			"spacePassError"=>"Contraseña incorrecta",
-			"ieObsolete"=>"Su navegador es demasiado viejo y no soporta todos los elementos de HTML : Se recomienda actualizarlo o utilizar otro navegador",
-			
+			"disconnectSpace"=>"Cerrar sesión",
+			"disconnectSpaceConfirm"=>"¿ Confirmar desconexión del espacio ?",
+
 			////	Password : connexion d'user / edition d'user / reset du password
 			"password"=>"Contraseña",
 			"passwordModify"=>"Cambiar la contraseña",
@@ -200,9 +201,9 @@ class Trad extends Txt
 			"tri_descendant"=>"Descendente",
 			
 			////	Options de suppression
-			"confirmDelete"=>"¿Desea eliminar este elemento permanentemente ?",
-			"confirmDeleteDbl"=>"Esta acción es definitiva ¿confirmar de todos modos?",
-			"confirmDeleteSelect"=>"¿Desea eliminar estos elementos permanentemente?",
+			"confirmDelete"=>"¿ Desea eliminar este elemento permanentemente ?",
+			"confirmDeleteDbl"=>"¿ Esta acción es definitiva ¿confirmar de todos modos ?",
+			"confirmDeleteSelect"=>"¿ Desea eliminar estos elementos permanentemente ?",
 			"confirmDeleteSelectNb"=>"elementos seleccionados",//"55 éléments sélectionnés"
 			"confirmDeleteFolderAccess"=>"Advertencia : algunos sub-carpetas no son accessible : serán tambien eliminados !",
 			"notifyBigFolderDelete"=>"Eliminar --NB_FOLDERS-- archivos puede ser un poco largo, espere unos momentos antes del final del proceso",
@@ -263,7 +264,7 @@ class Trad extends Txt
 			"MAIL_receptionNotifTooltip"=>"Advertencia! algunos clientes de correo electrónico no soportan el recibo de entrega",
 			"MAIL_specificMails"=>"Agregar direcciones de correo electrónico",
 			"MAIL_specificMailsTooltip"=>"Agregar direcciones de correo electrónico no enumeradas en el espacio",
-			"MAIL_fileMaxSize"=>"Todos sus archivos adjuntos no deben exceder los 15 MB, algunos servicios de mensajería pueden rechazar correos electrónicos más allá de este límite. ¿Enviar de todos modos?",
+			"MAIL_fileMaxSize"=>"Todos sus archivos adjuntos no deben exceder los 15 MB, algunos servicios de mensajería pueden rechazar correos electrónicos más allá de este límite. ¿ Enviar de todos modos ?",
 			"MAIL_sendButton"=>"Enviar correo electrónico",
 			"MAIL_sendBy"=>"Enviado por",//"Envoyé par" M. Trucmuche
 			"MAIL_sendOk"=>"El correo electrónico ha sido enviado !",
@@ -384,10 +385,9 @@ class Trad extends Txt
 			"HEADER_displaySpace"=>"Espacios disponibles",
 			"HEADER_displayAdmin"=>"Visualización de Administrador",
 			"HEADER_displayAdminEnabled"=>"Visualización de Administrador activada",
-			"HEADER_displayAdminInfo"=>"Mostrar todos los elementos del espacio (solo para los administradores)",
+			"HEADER_displayAdminInfo"=>"Esta opción le permite visualizar todos los elementos presentes en el espacio actual, incluso aquellos que no le están asignados.",
 			"HEADER_searchElem"=>"Buscar en el espacio",
 			"HEADER_documentation"=>"Documentación",
-			"HEADER_disconnect"=>"Cerrar sesión del Ágora",
 			"HEADER_shortcuts"=>"Acceso directo",
 			"FOOTER_pageGenerated"=>"página generada en",
 
@@ -425,7 +425,7 @@ class Trad extends Txt
 
 			////	vueObjMenuEdit
 			"EDIT_notifNoSelection"=>"Debe seleccionar al menos una persona o un espacio",
-			"EDIT_notifNoPersoAccess"=>"Usted no se ha asignado al elemento. validar todos lo mismo ?",
+			"EDIT_notifNoPersoAccess"=>"¿ Usted no se ha asignado al elemento. validar todos lo mismo ?",
 			"EDIT_notifWriteAccess"=>"Debe haber al menos una persona o un espacio asignado para escribir",
 			"EDIT_parentFolderAccessError"=>"Recuerde verificar los derechos de acceso de la carpeta superior ''<i>--FOLDER_NAME--</i>'': si no está también asignada a ''<i>--TARGET_LABEL--</i>'', el archivo actual no será accesible para el.",
 			"EDIT_accessRight"=>"Derechos de acceso",
@@ -481,7 +481,7 @@ class Trad extends Txt
 													<h4><img src='app/img/mail/iconSmall.png'> Enviar boletines por correo electrónico</h4>
 													<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">¡Haga clic aquí para enviar correos electrónicos de invitación y hacer crecer su comunidad!</a></h4>
 													<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>Para obtener más información, consulte la documentación oficial de Omnispace & Agora-Project</a></h4>",
-			"INSTALL_dataDashboardPoll"=>"¿Qué opinas de la herramienta de noticias?",
+			"INSTALL_dataDashboardPoll"=>"¿ Qué opinas de la herramienta de noticias ?",
 			"INSTALL_dataDashboardPollA"=>"Muy interesante !",
 			"INSTALL_dataDashboardPollB"=>"Interesante",
 			"INSTALL_dataDashboardPollC"=>"Sin interés",
@@ -501,12 +501,12 @@ class Trad extends Txt
 			"AGORA_backupFullTooltip"=>"Recupere la copia de seguridad completa del espacio: todos los archivos y la base de datos",
 			"AGORA_backupDb"=>"Hacer una copia de seguridad de la base de datos",
 			"AGORA_backupDbTooltip"=>"Recupere solo la copia de seguridad de la base de datos espacial",
-			"AGORA_backupConfirm"=>"Esta operación puede tardar varios minutos: ¿confirmar la descarga?",
+			"AGORA_backupConfirm"=>"¿ Esta operación puede tardar varios minutos: ¿confirmar la descarga ?",
 			"AGORA_diskSpaceInvalid"=>"El espacio en disco para los archivos debe ser un número entero",
 			"AGORA_visioHostInvalid"=>"La dirección web de su servidor de videoconferencia no es válida: debe comenzar con 'https'",
 			"AGORA_mapApiKeyInvalid"=>"Si elige Google Map como herramienta de mapeo, debe especificar una 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Si elige la conexión opcional a través de Google, debe especificar una 'API Key' para Google SignIn",
-			"AGORA_confirmModif"=>"Confirmar los cambios ?",
+			"AGORA_confirmModif"=>"¿ Confirmar los cambios ?",
 			"AGORA_name"=>"Nombre del sitio",
 			"AGORA_footerHtml"=>"Footer / Pie de página texto/html",
 			"AGORA_lang"=>"Lenguaje por defecto",
@@ -600,9 +600,9 @@ class Trad extends Txt
 
 			////	MODULE_ESPACE
 			////
-			"SPACE_moduleTooltip"=>"El sitio (o el espacio principal) puede ser subdivisado en varios espacios",
-			"SPACE_manageSpaces"=>"Gestión de los spacios del sitio",
-			"SPACE_config"=>"Administración del espacio",
+			"SPACE_moduleTooltip"=>"El espacio principal se puede subdividir en varios espacios (ver ''subespacio'')",
+			"SPACE_manageAllSpaces"=>"Administrar todos los espacios",
+			"SPACE_config"=>"Administración del espacio",//.."mon espace"
 			// Index
 			"SPACE_confirmDeleteDbl"=>"Confirmar eliminación ? Atención, los datos afectados a este espacio seran  definitivamente perdidas !!",
 			"SPACE_space"=>"Espacio",
@@ -635,10 +635,10 @@ class Trad extends Txt
 			//Index
 			"USER_spaceOrAllUsersTooltip"=>"Administrar usuarios del espacio actual / Administrar usuarios de todos los espacios (reservado para el administrador general)",
 			"USER_spaceUsers"=>"Usuarios del espacio corriente",
-			"USER_allUsers"=>"Todos los usuarios (administrador global)",
+			"USER_allUsers"=>"Administrar todos los usuarios",
 			"USER_deleteDefinitely"=>"Eliminar definitivamente",
 			"USER_deleteFromCurSpace"=>"Desasignar al espacio actual",
-			"USER_deleteFromCurSpaceConfirm"=>"¿Desasignar el usuario del espacio actual?",
+			"USER_deleteFromCurSpaceConfirm"=>"¿ Desasignar el usuario del espacio actual ?",
 			"USER_allUsersOnSpaceNotif"=>"Todo los usuarios son asignados a este espacio",
 			"USER_user"=>"Usuario",
 			"USER_users"=>"usuarios",
