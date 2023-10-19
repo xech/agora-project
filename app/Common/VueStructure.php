@@ -14,7 +14,7 @@
 		<meta name="application-name" content="Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
 		<!-- JQUERY & JQUERY-UI -->
-		<script src="app/js/jquery-3.7.0.min.js"></script>
+		<script src="app/js/jquery-3.7.1.min.js"></script>
 		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
 		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
 		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">

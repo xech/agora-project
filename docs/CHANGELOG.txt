@@ -4,24 +4,28 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
-VERSION 23.10.2
+VERSION 23.10.3
 ###############
 Amélioration du menu principal
 Amélioration de la gestion des "Screen orientation" sur mobile
+Fichiers joints dans les menus d'edition des objets : ajout d'une vignette pour les images
 Optimisation des contrôles d'upload des fichiers
 Renommage des cles de traduction des toolips
 Amélioration des notifications d'envoi des emails
 Correction de l'affichage des logs avec PHP 8.1 +
-Mise à jour de l'éditeur TinyMce en version 6.7.0
-Mise à jour de OAuth via "google-api-php-client" en version 2.15.1
+TinyMce mis à jour en v6.7.0
+JQuery mis à jour en  v3.7.1
+OAuth via "google-api-php-client" mis à jour en v2.15.1
 -----
 Improved main menu
 Improved management of "Screen orientation" on mobile
+Attached files in object editing menus : addition of a thumbnail for images
 Optimization of file upload controls
 Renaming toolip translation keys
 Improved email sending notifications
 Fixing the display of logs with PHP 8.1 +
 TinyMce updated to v6.7.0
+JQuery updated to v3.7.1
 OAuth via "google-api-php-client" updated to v2.15.1
 
 

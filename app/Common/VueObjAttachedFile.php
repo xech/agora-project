@@ -56,10 +56,13 @@ for($cptInputFile=1; $cptInputFile<=20; $cptInputFile++){
 
 ////	LISTE DES FICHIERS JOINTS DEJA ATTACHÉS A UN OBJET (affiche si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
 if(count($curObj->attachedFileList())>0){
-	echo '<hr>';
 	foreach($curObj->attachedFileList() as $tmpFile){
 		$fileOptions='<label onclick="attachedFileDelete('.$tmpFile["_id"].');" title="'.Txt::trad("delete").'"><img src="app/img/delete.png"></label>';
-		if($curObj::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"]))  {$fileOptions='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"></label>'.$fileOptions;}
-		echo '<div id="attachedFileDivList'.$tmpFile["_id"].'" class="attachedFileDiv"><img src="app/img/attachment.png"> '.$tmpFile["name"].$fileOptions.'</div>';
+		if($curObj::htmlEditorField!=null){
+			//Insertion de l'image/video/mp3 dans le texte  &&  Affichage d'une miniature de l'image
+			if(File::isType("attachedFileInsert",$tmpFile["name"]))		{$fileOptions.='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"></label>';}
+			if(File::isType("imageBrowser",$tmpFile["name"]))			{$fileOptions.=' &nbsp; <img src="'.$tmpFile["url"].'" class="attachedFileInsertImg">';}
+		}
+		echo '<hr><div id="attachedFileDivList'.$tmpFile["_id"].'" class="attachedFileDiv"><img src="app/img/attachment.png"> '.$tmpFile["name"].$fileOptions.'</div>';
 	}
 }

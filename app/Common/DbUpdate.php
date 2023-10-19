@@ -858,7 +858,7 @@ class DbUpdate extends Db
 					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
 			}
 
-			if(self::updateVersion("23.10.2"))
+			if(self::updateVersion("23.10.3"))
 			{
 				//Suppression d'anciens champs
 				if(self::fieldExist("ap_user","picture"))			{self::query("ALTER TABLE ap_user DROP picture");}

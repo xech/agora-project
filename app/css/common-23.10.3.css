@@ -103,6 +103,7 @@ audio						{min-width:350px;}
 .attachedFileMenu							{display:flex; margin:5px;}
 .attachedFileMenu img						{margin-right:5px;}
 .attachedFileTag							{max-width:100%; height:auto;}														/*cf. "attachedFileInsert()". Tester l'affichage d'une image en mobileApp*/
+.attachedFileInsertImg						{max-width:50px!important; max-height:50px!important;}								/*Liste des images dans le menu d'edition*/
 /*RESPONSIVE*/
 @media screen and (max-width:1023px){
 	.objMenuBurger			{opacity:1!important;}/*Icones affichées sans opacité*/
