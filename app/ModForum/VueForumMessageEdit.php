@@ -3,28 +3,26 @@
 lightboxSetWidth(800);
 </script>
 
+
 <style>
-[name='title']					{margin-bottom:20px !important;}
-.vEvtOptionsLabel img			{max-height:15px;}
+[name='title']					{width:100%; margin-bottom:30px!important;}
 .vMessageQuoted					{position:relative; display:inline-block; overflow:auto; max-height:100px; margin-bottom:20px; padding:10px; padding-left:40px; border-radius:5px; font-style:italic; font-weight:normal; background-color:<?= Ctrl::$agora->skin=="black"?"#333":"#eee" ?>;}
 .vMessageQuoted [src*='quote']	{position:absolute; top:5px; left:5px; opacity:0.5;}
 </style>
 
-<form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
-	<!--TITRE RESPONSIVE-->
-	<?= $curObj->editRespTitle("FORUM_addMessage") ?>
-	
-	<!--MESSAGE A CITER?-->
-	<?php if(!empty($messageParent))  {echo "<div class='vMessageQuoted'>".$messageParent->title."<br>".$messageParent->description."<img src='app/img/forum/quote.png'></div><br>";} ?>
 
-	<!--TITRE & DESCRIPTION (EDITOR)-->
-	<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title")." ".Txt::trad("optional") ?>">
-	<textarea name="description"><?= $curObj->description ?></textarea>
-
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<?php
-	////	"_idMessageParent?
+	////	TITRE MOBILE  &&  CITATION D'UN AUTRE MESSAGE (?)
+	echo $curObj->titleMobile("FORUM_addMessage");
+	if(!empty($messageParent))  {echo "<div class='vMessageQuoted'>".$messageParent->title."<br>".$messageParent->description."<img src='app/img/forum/quote.png'></div><br>";}
+
+	////	TITRE DU MESSAGE
+	echo '<input type="text" name="title" value="'.$curObj->title.'" placeholder="'.Txt::trad("title").' '.Txt::trad("optional").'">';
+
+	////	DESCRIPTION (EDITOR)  &&  MESSAGE PARENT (?)  &&  MENU COMMUN
+	echo $curObj->editDescription(false);
 	if(Req::isParam("_idMessageParent"))  {echo "<input type='hidden' name='_idMessageParent' value=\"".Req::param("_idMessageParent")."\">";}
-	////	MENU COMMUN
-	echo $curObj->menuEdit();
+	echo $curObj->editMenuSubmit();
 	?>
 </form>

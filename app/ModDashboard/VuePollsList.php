@@ -9,7 +9,7 @@ foreach($pollsList as $tmpPoll)
 	$divDateEnd=(!empty($tmpPoll->dateEnd))  ?  "<div><img src='app/img/dashboard/pollDateEnd.png'> ".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($tmpPoll->dateEnd,"dateFull")."</div>"  :  null;
 
 	////	Affiche le résultat
-	echo $tmpPoll->divContainer($containerClass).$tmpPoll->contextMenu()."
+	echo $tmpPoll->objContainer($containerClass).$tmpPoll->contextMenu()."
 			<div class='vPollsTitle'>".$tmpPoll->title."</div>
 			<div class='vPollsDescription'>".$tmpPoll->description."</div>
 			<div class=\"vPollContent".$tmpPoll->_id."\">".$pollContent."</div>

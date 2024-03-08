@@ -112,7 +112,7 @@ function calendarDimensions(printCalendar)
 .vCalWeekHeaderDayToday											{font-size:1.1em; color:#c00;}
 .vCalEvtBlock													{position:absolute;}
 
-/*RESPONSIVE*/
+/*MOBILE*/
 @media screen and (max-width:1023px){
 	.vCalWeekHourLabel										{width:18px!important; max-width:18px!important; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
 	.vCalWeekHeaderDay										{font-size:0.9em!important;}
@@ -157,7 +157,7 @@ function calendarDimensions(printCalendar)
 		foreach($tmpCal->eventList as $tmpDate=>$tmpDateEvts){
 			foreach($tmpDateEvts as $tmpEvt){
 				$divContainerAttr="onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\" data-dayDate=\"".$tmpDate."\" data-timeBegin=\"".$tmpEvt->timeBegin."\" data-timeEnd=\"".$tmpEvt->timeEnd."\" data-minutesFromDayBegin=\"".$tmpEvt->minutesFromDayBegin."\" data-durationMinutes=\"".$tmpEvt->durationMinutes."\" data-catColor=\"".$tmpEvt->catColor."\"";
-				echo $tmpEvt->divContainer("vCalEvtBlock stopPropagation",$divContainerAttr).$tmpEvt->contextMenu.
+				echo $tmpEvt->objContainer("vCalEvtBlock",$divContainerAttr).$tmpEvt->contextMenu.
 						"<div class='vCalEvtLabel'>".$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon."</div>
 					 </div>";
 			}

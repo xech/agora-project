@@ -1,17 +1,12 @@
 <script>
 $(function(){
 	////	Sélectionne tous les objets : passe tout à "false" puis switch la sélection
-	$("#objSelectAll").click(function(){
+	$("#objSelectAll").on("click",function(){
 		$("[name='objectsTypeId[]']").prop("checked",false);
 		$("[name='objectsTypeId[]']").each(function(){ objSelectSwitch(this.id); });
 	});
-	////	Désélectionne tous les objets : passe tout à "true" puis switch la sélection
-	$("#objSelectNone").click(function(){
-		$("[name='objectsTypeId[]']").prop("checked",true);
-		$("[name='objectsTypeId[]']").each(function(){ objSelectSwitch(this.id); });
-	});
 	////	Switch la sélection de tous les objets
-	$("#objSelectSwitch").click(function(){
+	$("#objSelectSwitch").on("click",function(){
 		$("[name='objectsTypeId[]']").each(function(){ objSelectSwitch(this.id); });
 	});
 });
@@ -26,8 +21,8 @@ function objSelectSwitch(menuId)
 	//Swich la sélection/class du block de l'objet
 	$("#objContainer"+menuId).toggleClass("objContainerSelect", $("#objCheckbox"+menuId).prop("checked"));
 	//Affiche/Masque le menu des objets sélectionnés
-	if($(":checked[name='objectsTypeId[]']").length==0)	{$("#objSelectMenu").slideUp();}
-	else												{$("#objSelectMenu").slideDown();}
+	if($(":checked[name='objectsTypeId[]']").length==0)	{$("#objSelectMenu").slideUp(350);}
+	else												{$("#objSelectMenu").slideDown(350);}
 }
 
 ////	Action sur les objets sélectionnés
@@ -60,28 +55,33 @@ function objSelectAction(urlRedir, openPage)
 </script>
 
 
-<div id="objSelectMenu">
+<style>
+#objSelectMenu							{display:none;}										/*menu masqué par défaut*/
+#objSelectMenu, .objContainerSelect		{box-shadow:2px 2px 5px rgb(80,80,80)!important;}	/*border des elements sélectionnés*/
+</style>
+
+
+<div id="objSelectMenu" class="miscContainer">
 	<?php
 	////	"TELECHARGER LES FICHIERS" (modFile)
-	if(Req::$curCtrl=="file")  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=file&action=downloadArchive','newPage')\"><div class='menuIcon'><img src='app/img/download.png'></div><div>".Txt::trad("FILE_downloadSelection")."</div></div>";}
+	if(Req::$curCtrl=="file")  {echo "<div class='menuLine' onclick=\"objSelectAction('?ctrl=file&action=downloadArchive','newPage')\"><div class='menuIcon'><img src='app/img/download.png'></div><div>".Txt::trad("FILE_downloadSelection")."</div></div>";}
 
 	////	"VOIR SUR UNE CARTE" (modUser / modContact)
-	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=misc&action=PersonsMap','lightbox')\" title=\"".Txt::trad("showOnMapTooltip")."\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
+	if(Req::$curCtrl=="contact" || Req::$curCtrl=="user")  {echo "<div class='menuLine' onclick=\"objSelectAction('?ctrl=misc&action=PersonsMap','lightbox')\" title=\"".Txt::trad("showOnMapTooltip")."\"><div class='menuIcon'><img src='app/img/map.png'></div><div>".Txt::trad("showOnMap")."</div></div>";}
 
 	////	"DEPLACER DES OBJETS" (arborescence)
-	if($folderMoveOption==true)  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=object&action=FolderMove&typeId=".Ctrl::$curContainer->_typeId."','lightbox')\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
+	if($folderMoveOption==true)  {echo "<div class='menuLine' onclick=\"objSelectAction('?ctrl=object&action=FolderMove&typeId=".Ctrl::$curContainer->_typeId."','lightbox')\"><div class='menuIcon'><img src='app/img/folder/folderMove.png'></div><div>".Txt::trad("changeFolder")."</div></div>";}
 
 	////	"DESAFFECTER DE L'ESPACE" (modUser)
-	if(Req::$curCtrl=="user" && Ctrl::$curUser->isAdminSpace() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=user&action=DeleteFromCurSpace')\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteFromCurSpace")."</div></div>";}
+	if(Req::$curCtrl=="user" && Ctrl::$curUser->isSpaceAdmin() && self::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine' onclick=\"objSelectAction('?ctrl=user&action=DeleteFromCurSpace')\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".Txt::trad("USER_deleteFromCurSpace")."</div></div>";}
 
 	////	"SUPPRIMER" (arborescence / subjet / modUser)
-	if($curContainerEditContentRight==true  ||  (Req::$curCtrl=="forum" && Ctrl::$curUser->isUser())  ||  (Req::$curCtrl=="user" && Ctrl::$curUser->isAdminGeneral())){
+	if($curContainerEditContentRight==true  ||  (Req::$curCtrl=="forum" && Ctrl::$curUser->isUser())  ||  (Req::$curCtrl=="user" && Ctrl::$curUser->isGeneralAdmin())){
 		$deleteLabel=(Req::$curCtrl=="user")  ?  Txt::trad("USER_deleteDefinitely")  :  Txt::trad("deleteElems");
-		echo "<div class='menuLine sLink' onclick=\"objSelectAction('?ctrl=object&action=Delete')\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".$deleteLabel."</div></div>";
+		echo "<div class='menuLine' onclick=\"objSelectAction('?ctrl=object&action=Delete')\"><div class='menuIcon'><img src='app/img/delete.png'></div><div>".$deleteLabel."</div></div>";
 	}
 	?>
 	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
 	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
-	<div class="menuLine sLink" id="objSelectNone"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectNone") ?></div></div>
-	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/switch.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
+	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
 </div>

@@ -1,8 +1,8 @@
 <script>
-////	RESPONSIVE : PULSATES DE MENU
+////	SUR MOBILE : PULSATE DU MENU
 if(isMobile()){
-	if($("#mainMenuElems").exist()) {$("#mainMenuElems").pulsate();}	//Pulsate le menu des nouveaux élément dans le "DashboardNews"
-	else							{$("#headerModuleResp").pulsate(3);}//Pulsate l'icone du module dans le "vueheadermenu.php
+	if($("#mainMenuElems").exist()) {$("#mainMenuElems").pulsate();}		//Pulsate le menu des nouveaux élément dans le "DashboardNews"
+	else							{$("#headerModuleMobile").pulsate(3);}	//Pulsate l'icone du module dans le "vueheadermenu.php
 }
 
 ////	CONFIRMATION / ANNULATION DE PROPOSITION D'ÉVÉNEMENT (via "jquery-confirm")
@@ -59,11 +59,11 @@ foreach($eventPropositions as $cpt=>$tmpProposition)
 		$curCalTitle=$tmpCal->title;//retient le titre courant
 	}
 	////	Affiche la proposition d'événement dans un tooltip
-	$evtTooltip=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)."<hr>".
-				Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
-				ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
-	if($tmpEvt->description)  {$evtTooltip.=Txt::reduce($tmpEvt->description);}
-	echo "<li class='sLink' id=\"eventPropositionDiv".$tmpEvt->_id."\" title=\"".Txt::tooltip($evtTooltip)."\" data-confirmDetails=\"".Txt::tooltip($evtTooltip)."\" onclick=\"eventPropositionConfirm(".$tmpCal->_id.",".$tmpEvt->_id.",this.id)\">".$tmpEvt->title."</li>";
+	$confirmDetails=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)."<hr>".
+					Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
+					ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
+	if($tmpEvt->description)  {$confirmDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}
+	echo '<li id="eventPropositionDiv'.$tmpEvt->_id.'" data-confirmDetails="'.Txt::tooltip($confirmDetails).'" onclick="eventPropositionConfirm('.$tmpCal->_id.','.$tmpEvt->_id.',this.id)">'.$tmpEvt->title.'</li>';
 }
 
 ////	Fin du block "List"

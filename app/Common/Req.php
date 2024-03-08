@@ -12,8 +12,8 @@
  ********************************************************************************************/
 function agoraAutoloader($className)
 {
-	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}								//exple: "app/common/Txt.php"
-	elseif(is_file(Req::modClassPath($className)))	{require_once Req::modClassPath($className);}									//exple: "app/modFile/MdlFile.php"
+	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}								//Ex: "app/common/Txt.php"
+	elseif(is_file(Req::modClassPath($className)))	{require_once Req::modClassPath($className);}									//Ex: "app/modFile/MdlFile.php"
 	else											{throw new Exception("Désolé, cette page est introuvable. (".$className.")");}	//Dev: message d'erreur
 }
 spl_autoload_register("agoraAutoloader");
@@ -134,7 +134,7 @@ class Req
 	}
 
 	/********************************************************************************************
-	 * PATH D'UNE CLASS DANS MODULE  (La 2ème partie du nom de classe contient le nom du module. exple: "MdlFileFolder" => "File")
+	 * PATH D'UNE CLASS DANS MODULE  (La 2ème partie du nom de classe contient le nom du module. Ex: "MdlFileFolder" => "File")
 	 ********************************************************************************************/
 	public static function modClassPath($className)
 	{

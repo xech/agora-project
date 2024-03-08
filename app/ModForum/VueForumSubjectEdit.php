@@ -4,59 +4,42 @@ lightboxSetWidth(800);
 
 ////	INIT
 $(function(){
-	//Au changement du thème ou d'affectation d'un espace : Vérifie la dispo du thème pour l'espace
-	$("select[name='_idTheme']").on("change",function(){ checkThemeSpace(); });
-	$("[id^='spaceBlock'] input[type=checkbox]").on("change",function(){ checkThemeSpace(); });//Cf "VueObjMenuEdit.php"
-	//"trigger" pour initialiser la couleur de l'input
-	$("select[name='_idTheme']").val("<?= $curObj->_idTheme ?>").trigger("change");
+	//// Sélectionne l'accès en écriture pour tout le monde : "L'accès en ''Ecriture'' est destiné aux modérateurs du sujet"
+	$("[name='objectRight[]'][value$='spaceUsers_2']").on("change",function(){
+		if(this.checked)  {notify("<?= Txt::trad("FORUM_notifWriteAccess") ?>");}
+	});
 });
 
-////	Vérifie que le thème courant est accessible sur tous les espaces affectés !
-function checkThemeSpace()
-{
-	//Vérifie sur chaque espace affecté, que le thème courant y est bien disponible!
-	notifThemeSpace=null;
-	$("[id^='spaceBlock']").each(function(){
-		var _idSpaceTmp=this.id.replace("spaceBlock","");
-		var themeSpaceIds=$("select[name='_idTheme'] option:selected").attr("data-spaceIds");
-		if($("#"+this.id+" input:checked").length>0 && typeof themeSpaceIds!="undefined" && themeSpaceIds.length>0 && themeSpaceIds.split(",").indexOf(_idSpaceTmp)==-1)
-			{notifThemeSpace="<?= Txt::trad("FORUM_themeSpaceAccessInfo") ?> : <i>"+$("select[name='_idTheme'] option:selected").attr("data-spaceLabels")+"</i>";}
+////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+function objectFormControl(){
+	return new Promise((resolve)=>{
+		//// Retourne false si ya uniquement des accès en lecture pour le sujet du forum
+		if($("[name='objectRight[]']:checked").length==$("[name='objectRight[]'][value$='_1']:checked").length)		{resolve(false);  notify("<?= Txt::trad("FORUM_notifOnlyReadAccess") ?>");}
+		else																										{resolve(true);}
 	});
-	if(notifThemeSpace!==null)	{notify(notifThemeSpace,"warning");}
 }
 </script>
 
-<style>
-[name='title']		{margin-bottom:20px !important;}
-[name="_idTheme"]	{width:200px !important; margin:10px 0px 10px 0px;}
-.vEvtOptionsLabel	{white-space:nowrap;}
 
-/*RESPONSIVE*/
-@media screen and (max-width:1023px){
-	[name='title']		{width:95%;}
-	[name="_idTheme"]	{width:75%;}
+<style>
+[name='title'], [name="_idTheme"]	{margin-bottom:30px!important;}
+[name='title']						{width:45%; margin-right:20px!important;}
+[name="_idTheme"]					{width:35%;}
+
+/*MOBILE FANCYBOX (440px)*/
+@media screen and (max-width:440px){
+	[name='title'], [name="_idTheme"]	{width:90%;}
 }
 </style>
 
-<form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
-	<!--TITRE RESPONSIVE-->
-	<?= $curObj->editRespTitle("FORUM_addSubject") ?>
-	
-	<!--TITRE & THEME-->
-	<input type="text" name="title" value="<?= $curObj->title ?>" class="textBig" placeholder="<?= Txt::trad("title")." ".Txt::trad("optional") ?>"> &nbsp;
-	<?php if(!empty($themesList)){ ?>
-		<span class="vEvtOptionsLabel">
-			<img src="app/img/category.png"><?= Txt::trad("FORUM_subjectTheme") ?>
-			<select name="_idTheme">
-				<option value=""></option>
-				<?php foreach($themesList as $tmpTheme){echo "<option value=\"".$tmpTheme->_id."\" data-color=\"".$tmpTheme->color."\" data-spaceIds=\"".implode(",",$tmpTheme->spaceIds)."\" data-spaceLabels=\"".$tmpTheme->spaceLabels()."\">".$tmpTheme->title."</option>";} ?>
-			</select>
-		</span>
-	<?php } ?>
 
-	<!--DESCRIPTION (EDITOR)-->
-	<textarea name="description"><?= $curObj->description ?></textarea>
-
-	<!--MENU COMMUN-->
-	<?= $curObj->menuEdit() ?>
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
+	<?php
+	////	TITRE MOBILE &&  INPUT TITRE  &&  <SELECT> DU THEME  &&  DESCRIPTION (EDITOR)  &&  MENU COMMUN
+	echo $curObj->titleMobile("FORUM_addSubject").
+		'<input type="text" name="title" value="'.$curObj->title.'" class="inputTitleName" placeholder="'.Txt::trad("title")." ".Txt::trad("optional").'">'.
+		 MdlForumTheme::selectInput($curObj->_idTheme).
+		 $curObj->editDescription(false).
+		 $curObj->editMenuSubmit();
+	?>
 </form>

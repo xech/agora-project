@@ -51,7 +51,7 @@ class MdlContact extends MdlPerson
 	public function contextMenu($options=null)
 	{
 		//"Créer un utilisateur sur cet espace" : admin général uniquement!
-		if(Ctrl::$curUser->isAdminGeneral())
+		if(Ctrl::$curUser->isGeneralAdmin())
 			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_typeId."')", "iconSrc"=>"plus.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];}
 		return parent::contextMenu($options);
 	}

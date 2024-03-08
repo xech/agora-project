@@ -1,6 +1,6 @@
 <?php
 /*
- * Classe de gestion d'une langue
+ * Classe de traduction
  */
 class Trad extends Txt
 {
@@ -29,16 +29,15 @@ class Trad extends Txt
 			"yes"=>"yes",
 			"no"=>"no",
 			"none"=>"no",
-			"noneFem"=>"no",
 			"or"=>"or",
 			"and"=>"and",
 			"goToPage"=>"Go to page",
 			"alphabetFilter"=>"Alphabetical Filter",
 			"displayAll"=>"Display all",
-			"allCategory"=>"Any category",
 			"show"=>"Show",
 			"hide"=>"Hide",
 			"byDefault"=>"By default",
+			"changeOrder"=>"Move to set the display order of modules",
 			"mapLocalize"=>"Localize on the map",
 			"mapLocalizationFailureLeaflet"=>"Localization of the following address failed",
 			"mapLocalizationFailureLeaflet2"=>"Please check that the following address exists on www.google.com/maps or www.openstreetmap.org",
@@ -49,7 +48,6 @@ class Trad extends Txt
 			"folder"=>"folder",
 			"folders"=>"folders",
 			"close"=>"Close",
-			"visibleAllSpaces"=>"Visible on all spaces",
 			"confirmCloseForm"=>"Are you sure you want to close the form?",
 			"modifRecorded"=>"The changes were saved",
 			"confirm"=>"Confirm ?",
@@ -74,9 +72,8 @@ class Trad extends Txt
 			////	Connexion
 			"specifyLoginPassword"=>"Thank you for choosing a login and a password",
 			"specifyLogin"=>"Thank you for choosing an email/login (without space)",
-			"specifyLoginMail"=>"It is recommended to use an email as login",
-			"login"=>"Email / Login",
-			"loginPlaceholder"=>"Email / Login",
+			"mailLloginNotif"=>"It is recommended to use an email as a login ID.",
+			"mailLlogin"=>"Email / Login",
 			"connect"=>"Log In",
 			"connectAuto"=>"Remember me",
 			"connectAutoTooltip"=>"Save my login and password to automatically connect",
@@ -85,7 +82,7 @@ class Trad extends Txt
 			"connectSpaceSwitchConfirm"=>"Are you sure you want to leave this space to connect to another space ?",
 			"guestAccess"=>"Login as guest",
 			"guestAccessTooltip"=>"Log in to this space as a guest",
-			"spacePassError"=>"Wrong password",
+			"publicSpacePasswordError"=>"Wrong password",
 			"disconnectSpace"=>"Log out",
 			"disconnectSpaceConfirm"=>"Confirm log out from the space ?",
 
@@ -96,7 +93,7 @@ class Trad extends Txt
 			"passwordToModify2"=>"Password (change if needed)",//Mail de création de compte
 			"passwordVerif"=>"Confirm password",
 			"passwordTooltip"=>"Leave blank if you want to keep your password",
-			"passwordInvalid"=>"Your password must have at least 6 characters with at least 1 digit and at least 1 letter",
+			"passwordInvalid"=>"Your password must contain numbers, letters and at least 6 characters",
 			"passwordConfirmError"=>"Your confirmation password is not valid",
 			"specifyPassword"=>"Thank you to specify a password",
 			"resetPassword"=>"Forgotten login info ?",
@@ -123,9 +120,11 @@ class Trad extends Txt
 			"changeFolder"=>"Move in another folder",
 			"showOnMap"=>"Show on a map",
 			"showOnMapTooltip"=>"See on a map the contacts with an address, postal code, city",
-			"selectUser"=>"Thank you for selecting a user",
-			"selectUsers"=>"Thank you for selecting at least 2 users",
+			"notifSelectUser"=>"Thank you for selecting a user",
+			"notifSelectUsers"=>"Thank you for selecting at least 2 users",
 			"selectSpace"=>"Thank you for selecting at least one space",
+			"visibleAllSpaces"=>"Visible in all spaces",/*cf. Categories, themes, etc*/
+			"visibleOnSpace"=>"Visible in the space",/*"..Mon espace"*/
 			
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", etc.)
 			"from"=>"of ",
@@ -133,6 +132,7 @@ class Trad extends Txt
 			"the"=>"the",
 			"begin"=>"Begin",
 			"end"=>"End",
+			"beginEnd"=>"Begin / End",
 			"days"=>"days",
 			"day_1"=>"Monday",
 			"day_2"=>"Tuesday",
@@ -201,9 +201,9 @@ class Trad extends Txt
 			"tri_descendant"=>"Descend",
 			
 			////	Options de suppression
-			"confirmDelete"=>"Do you want to permanently delete these item ?",
+			"confirmDelete"=>"Do you want to permanently delete these element ?",
 			"confirmDeleteDbl"=>"This action is definitive : confirm all the same ?",
-			"confirmDeleteSelect"=>"Do you want to permanently delete these items?",
+			"confirmDeleteSelect"=>"Do you want to permanently delete the selection ?",
 			"confirmDeleteSelectNb"=>"items selected",//"55 éléments sélectionnés"
 			"confirmDeleteFolderAccess"=>"Caution ! certain sub-folders are not accessible for you : they will be deleted !",
 			"notifyBigFolderDelete"=>"Deleting --NB_FOLDERS-- sub-folders can be a little large, please wait a few moments before the end of the process",
@@ -220,6 +220,7 @@ class Trad extends Txt
 			"modifBy"=>"Modified by",
 			"objHistory"=>"Element history",
 			"all"=>"all",
+			"all2"=>"all",
 			"deletedUser"=>"deleted user account",
 			"folderContent"=>"content",
 			"accessRead"=>"Read",
@@ -231,7 +232,9 @@ class Trad extends Txt
 			"accessWriteTooltipContainer"=>"Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the -OBJLABEL-",
 			"accessAutorPrivilege"=>"Only the author and administrators can edit the access rights or delete the -OBJLABEL-",
 			"accessRightsInherited"=>"Access rights inherited from the -OBJLABEL-",
-			
+			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",//Ex: "Thème bidule -n'est accessible que sur l'espace- Machin"
+			"categoryNotifChangeOrder"=>"The display order has been changed",
+
 			////	Libellé des objets
 			"OBJECTcontainer"=>"container",
 			"OBJECTelement"=>"element",
@@ -281,7 +284,7 @@ class Trad extends Txt
 			"megaOctet"=>"Mb",
 			"kiloOctet"=>"Kb",
 			"rootFolder"=>"Root folder",
-			"rootFolderEditTooltip"=>"Open the the space settings to change the access rights to the root folder",
+			"rootFolderTooltip"=>"Open the the space settings to change the access rights to the root folder",
 			"addFolder"=>"add a folder",
 			"download"=>"Download file",
 			"downloadFolder"=>"Download folder",
@@ -367,7 +370,7 @@ class Trad extends Txt
 
 			////	Messages d'erreur / Notifications
 			"NOTIF_identification"=>"Invalid login or password",
-			"NOTIF_identificationToken"=>"Obsolete authentication token, please log in again",
+			"NOTIF_identificationToken"=>"Authentication token initialised, please log in again",
 			"NOTIF_presentIp"=>"This user account is currently being used from another computer, with another IP address",
 			"NOTIF_noAccessNoSpaceAffected"=>"Your user account has been successfully identified, but you are not currently assigned to any space. Please contact the administrator",
 			"NOTIF_noAccess"=>"You are logged out",
@@ -376,13 +379,13 @@ class Trad extends Txt
 			"NOTIF_fileVersionForbidden"=>"File type not allowed",
 			"NOTIF_fileVersion"=>"File type different from the original",
 			"NOTIF_folderMove"=>"You cannot move the folder inside..!",
-			"NOTIF_duplicateName"=>"A folder or file with the same name already exists",
+			"NOTIF_duplicateName"=>"An element with the same name already exists",
 			"NOTIF_fileName"=>"A file with the same name already exists (but not replaced with the current file)",
 			"NOTIF_chmodDATAS"=>"The ''DATAS'' folder is not accessible in writing. You need to give a read-write access to the owner and the group (''chmod 775'').",
 			"NOTIF_usersNb"=>"You cannot add new user: limited to ", // "...limité à" 10
 			
 			////	Header / Footer
-			"HEADER_displaySpace"=>"Available spaces",
+			"HEADER_displaySpace"=>"workspaces",
 			"HEADER_displayAdmin"=>"Administrator view",
 			"HEADER_displayAdminEnabled"=>"Administrator view enabled",
 			"HEADER_displayAdminInfo"=>"This option allows you to display all the elements present in the current space, even those which are not assigned to you",
@@ -423,11 +426,10 @@ class Trad extends Txt
 			"VISIO_launchServerAlt"=>"Secondary server",
 			"VISIO_launchButton"=>"Start the videoconference",
 
-			////	vueObjMenuEdit
+			////	VueObjEditMenuSubmit.php
 			"EDIT_notifNoSelection"=>"You must select at least a person or a space",
 			"EDIT_notifNoPersoAccess"=>"You are not assigned to the element. validate all the same ?",
-			"EDIT_notifWriteAccess"=>"There must be at least a person or a space assigned in writing",
-			"EDIT_parentFolderAccessError"=>"Remember to check the access rights of the parent folder ''<i>--FOLDER_NAME--</i>'': If it is not also assigned to ''<i>--TARGET_LABEL--</i>'', the present file will not be accessible to him.",
+			"EDIT_parentFolderAccessError"=>"Check the access rights of the parent folder <br><i>--FOLDER_NAME--</i><br><br> There must also be an access right for <br><i>--SPACE_LABEL--</i> &nbsp;>&nbsp; <i>--TARGET_LABEL--</i><br><br> Otherwise this file will not be accessible!",
 			"EDIT_accessRight"=>"Access rights",
 			"EDIT_accessRightContent"=>"Access rights to the content",
 			"EDIT_spaceNoModule"=>"The current module has not yet been added to this space",
@@ -464,23 +466,24 @@ class Trad extends Txt
 			"INSTALL_dbName"=>"Name of the database",
 			"INSTALL_dbLogin"=>"User name",
 			"INSTALL_adminAgora"=>"Information about the administrator of the ",
-			"INSTALL_dbErrorName"=>"Warning: the name of the database should preferably contain only alphanumeric characters and dashes or underscores",
-			"INSTALL_dbErrorConnect"=>"The identification to the MariaDB/MySQL database failed",
-			"INSTALL_dbErrorAlreadyInstalled"=>"The installation has already been done. Thank you to remove the database whether to restart the installation.",
-			"INSTALL_dbErrorNoSqlFile"=>"The db.sql installation file is not accessible or has been deleted because the installation has already been performed",
+			"INSTALL_errorDbNameFormat"=>"Warning: the name of the database should preferably contain only alphanumeric characters and dashes or underscores",
+			"INSTALL_errorDbConnection"=>"The identification to the MariaDB/MySQL database failed",
+			"INSTALL_errorDbExist"=>"Application already installed: <a href='index.php'>click here to access it</a><br><br>To restart the installation, remember to delete the database",
+			"INSTALL_errorDbNoSqlFile"=>"The db.sql installation file is not accessible or has been deleted because the installation has already been performed",
 			"INSTALL_PhpOldVersion"=>"Agora-Project requires a newer version of PHP",
 			"INSTALL_confirmInstall"=>"Confirm the installation ?",
 			"INSTALL_installOk"=>"Agora-Project was installed correctly !",
-			"INSTALL_spaceDescription"=>"Space for sharing and collaborative work",
+			// Premiers enregistrements en DB
+			"INSTALL_agoraDescription"=>"Space for sharing and collaborative work",
 			"INSTALL_dataDashboardNews"=>"<h3>Welcome to your new sharing space!</h3>
-													<h4><img src='app/img/file/iconSmall.png'> Share your files now in the file manager</h4>
-													<h4><img src='app/img/calendar/iconSmall.png'> Share your common calendars or your personal calendar</h4>
-													<h4><img src='app/img/dashboard/iconSmall.png'> Expand your community's news feed</h4>
-													<h4><img src='app/img/messenger.png'> Communicate via the forum, instant messaging or video conferences</h4>
-													<h4><img src='app/img/task/iconSmall.png'> Centralize your notes, projects and contacts</h4>
-													<h4><img src='app/img/mail/iconSmall.png'> Send newsletters by email</h4>
-													<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">Click here to send invitation emails and grow your community!</a></h4>
-													<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>For more information, see the official Omnispace & Agora-Project documentation</a></h4>",
+											<h4><img src='app/img/file/iconSmall.png'> Share your files now in the file manager</h4>
+											<h4><img src='app/img/calendar/iconSmall.png'> Share your common calendars or your personal calendar</h4>
+											<h4><img src='app/img/dashboard/iconSmall.png'> Expand your community's news feed</h4>
+											<h4><img src='app/img/messenger.png'> Communicate via the forum, instant messaging or video conferences</h4>
+											<h4><img src='app/img/task/iconSmall.png'> Centralize your notes, projects and contacts</h4>
+											<h4><img src='app/img/mail/iconSmall.png'> Send newsletters by email</h4>
+											<h4><img src='app/img/postMessage.png'> <a onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\">Click here to send invitation emails and grow your community!</a></h4>
+											<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>For more information, see the official Omnispace & Agora-Project documentation</a></h4>",
 			"INSTALL_dataDashboardPoll"=>"What do you think of the news feed ?",
 			"INSTALL_dataDashboardPollA"=>"Very interesting !",
 			"INSTALL_dataDashboardPollB"=>"Interesting",
@@ -488,6 +491,10 @@ class Trad extends Txt
 			"INSTALL_dataCalendarEvt"=>"Welcome on Omnispace !",
 			"INSTALL_dataForumSubject1"=>"Welcome to the Omnispace forum !",
 			"INSTALL_dataForumSubject2"=>"Feel free to share your questions or discuss the topics you want to share.",
+			"INSTALL_dataTaskStatus1"=>"To do",
+			"INSTALL_dataTaskStatus2"=>"In progress",
+			"INSTALL_dataTaskStatus3"=>"To validate",
+			"INSTALL_dataTaskStatus4"=>"Finished",
 
 			////	MODULE_PARAMETRAGE
 			////
@@ -614,7 +621,6 @@ class Trad extends Txt
 			"SPACE_userAdminAccess"=>"Space users and administrators",
 			"SPACE_selectModule"=>"You must select a module",
 			"SPACE_spaceModules"=>"Space modules",
-			"SPACE_moduleRank"=>"Move to set the display order of modules",
 			"SPACE_publicSpace"=>"Public space : guest access",
 			"SPACE_publicSpaceTooltip"=>"A public space is open to people who do not have a user account (guests). They will then be able to access the space from the home page. You can specify a password to protect access to this public space. The 'Emails' and 'Users' modules are not available for guests.",
 			"SPACE_publicSpaceNotif"=>"Your space is public: if it contains personal data (telephone, address, etc.) remember to specify a password to comply with the GDPR: General Data Protection Regulation",
@@ -631,7 +637,7 @@ class Trad extends Txt
 			// Menu principal
 			"USER_headerModuleName"=>"User",
 			"USER_moduleDescription"=>"Users of the space",
-			"USER_option_allUsersAddGroup"=>"Users can also create groups",
+			"USER_option_allUsersAddGroup"=>"Users can also create groups",//OPTION!
 			//Index
 			"USER_spaceOrAllUsersTooltip"=>"Manage users of the displayed space / Manage users of all spaces (reserved for the general administrator)",
 			"USER_spaceUsers"=>"Current space users",
@@ -663,7 +669,7 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Modify my user profile",
 			// Invitation
 			"USER_sendInvitation"=>"Send invitations by email",
-			"USER_sendInvitationTooltip"=>"Send invitations by email to your contacts to join you on the current space.<hr><img src='app/img/google.png' height=15> If you have a Google account, you can also get your Gmail contacts to send invitations.",
+			"USER_sendInvitationTooltip"=>"Send invitations to your contacts, to create a user account and join the workspace.<hr><img src='app/img/google.png' height=15> If you have a Google account, you will be able to send invitations to your Gmail contacts.",
 			"USER_mailInvitationObject"=>"Invitation of ", // ..Jean DUPOND
 			"USER_mailInvitationFromSpace"=>"invites you to join ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Click here to confirm the invitation",
@@ -687,6 +693,7 @@ class Trad extends Txt
 			"USER_allUsersOnSpace"=>"All the users of the site are already assigned to this space",
 			"USER_usersSpaceAffectation"=>"Assign users to the space :",
 			"USER_usersSearchNoResult"=>"No user found",
+			"USER_usersSearchBack"=>"Back",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Language",
 			"USER_persoCalendarDisabled"=>"Personal calendar disabled",
@@ -771,12 +778,13 @@ class Trad extends Txt
 			// Menu principal
 			"CALENDAR_headerModuleName"=>"Calendar",
 			"CALENDAR_moduleDescription"=>"Personal and shared calendar",
-			"CALENDAR_option_adminAddRessourceCalendar"=>"Only the admin can add resource calendars",
-			"CALENDAR_option_adminAddCategory"=>"Only the admin can add a category of event",
-			"CALENDAR_option_moduleDisabled"=>"Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar",
+			"CALENDAR_option_adminAddRessourceCalendar"=>"Only the admin can add resource calendars",//OPTION!
+			"CALENDAR_option_adminAddCategory"=>"Only the admin can add a category of event",//OPTION!
+			"CALENDAR_option_createSpaceCalendar"=>"Create a shared calendar for this space",//OPTION!
+			"CALENDAR_moduleAlwaysEnabledInfo"=>"Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar",
 			//Index
 			"CALENDAR_calsList"=>"Available calendars",
-			"CALENDAR_displayAllCals"=>"Show all calendars (for administrators)",
+			"CALENDAR_calsListDisplayAll"=>"Show all calendars (for administrators)",
 			"CALENDAR_hideAllCals"=>"Hide all calendars",
 			"CALENDAR_printCalendars"=>"Print calendar(s)",
 			"CALENDAR_printCalendarsInfos"=>"Print in landscape mode",
@@ -790,7 +798,6 @@ class Trad extends Txt
 			"CALENDAR_importIcalState"=>"State",
 			"CALENDAR_importIcalStatePresent"=>"Already present",
 			"CALENDAR_importIcalStateImport"=>"To import",
-			"CALENDAR_displayMode"=>"Display",
 			"CALENDAR_display_day"=>"Day",
 			"CALENDAR_display_4Days"=>"4 days",
 			"CALENDAR_display_workWeek"=>"Working week",
@@ -804,7 +811,7 @@ class Trad extends Txt
 			"CALENDAR_evtProposed"=>"Events proposals to confirm", 
 			"CALENDAR_evtProposedBy"=>"Proposed by",//..Mr SMITH
 			"CALENDAR_evtProposedConfirm"=>"Confirm the proposal",
-			"CALENDAR_evtProposedConfirmBis"=>"The event proposal has been integrated into the agenda",
+			"CALENDAR_evtProposedConfirmBis"=>"The event proposal has been integrated into the calendar",
 			"CALENDAR_evtProposedConfirmMail"=>"Your event proposal has been confirmed",
 			"CALENDAR_evtProposedDecline"=>"Decline the proposal",
 			"CALENDAR_evtProposedDeclineBis"=>"The proposal has been declined",
@@ -814,12 +821,12 @@ class Trad extends Txt
 			"CALENDAR_deleteEvtDate"=>"Delete only for this date ?",
 			"CALENDAR_evtPrivate"=>"Private event",
 			"CALENDAR_evtAutor"=>"Events which I created",
+			"CALENDAR_evtAutor2"=>"Show only events I created",
 			"CALENDAR_noEvt"=>"No event",
 			"CALENDAR_synthese"=>"Calendars synthesis",
 			"CALENDAR_calendarsPercentBusy"=>"Busy calendars",
 			"CALENDAR_noCalendarDisplayed"=>"No calendars displayed",
 			// Evenement
-			"CALENDAR_category"=>"Category",
 			"CALENDAR_importanceNormal"=>"Normal importance",
 			"CALENDAR_importanceHight"=>"High importance",
 			"CALENDAR_visibilityPublic"=>"Normal visibility",
@@ -827,6 +834,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublicHide"=>"Semi-private visibility",
 			"CALENDAR_visibilityTooltip"=>"<u>private visibility</ u>: visible only to those whose event is accessible in writing <br><br> <u>semi-private visibility</u> : Only the time slot is displayed (without title and details) if the event is read-only",
 			// Agenda/Evenement : edit
+			"CALENDAR_sharedCalendarDescription"=>"Shared calendar of the space",
 			"CALENDAR_noPeriodicity"=>"Only once",
 			"CALENDAR_period_weekDay"=>"Every week",
 			"CALENDAR_period_month"=>"Every month",
@@ -837,37 +845,42 @@ class Trad extends Txt
 			"CALENDAR_addEvt"=>"Add an event",
 			"CALENDAR_addEvtTooltip"=>"Add an event",
 			"CALENDAR_addEvtTooltipBis"=>"Add the event to the calendar",
-			"CALENDAR_proposeEvtTooltip"=>"Propose an event to the owner of the calendar",
-			"CALENDAR_proposeEvtTooltipBis"=>"Propose the event to the owner of the calendar",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Propose the event to the owner of the calendar : calendar accessible only for reading",
-			"CALENDAR_inputProposed"=>"The event will be proposed to the owner of the calendar",
+			"CALENDAR_proposeEvtTooltip"=>"Propose an event to the administrator of the calendar",
+			"CALENDAR_proposeEvtTooltipBis"=>"Propose the event to the administrator/owner of the calendar",
+			"CALENDAR_proposeEvtTooltipBis2"=>"Propose the event to the administrator/owner of the calendar : the calendar is only accessible for reading",
+			"CALENDAR_inputProposed"=>"The event will be proposed to the administrator of the calendar",
 			"CALENDAR_verifCalNb"=>"Thank you for selecting a calendar",
 			"CALENDAR_noModifTooltip"=>"Modification forbidden because you don't have access to write in this calendar",
 			"CALENDAR_editLimit"=>"You are not the author of the event: you can only manage your calendars assignments",
 			"CALENDAR_busyTimeslot"=>"The slot is already occupied on this calendar :",
 			"CALENDAR_timeSlot"=>"Time range of the ''week'' display",
 			"CALENDAR_propositionNotif"=>"Notify by email of each event proposal",
-			"CALENDAR_propositionNotifTooltip"=>"Note: Each event proposal is validated or invalidated by the owner of the calendar.",
+			"CALENDAR_propositionNotifTooltip"=>"Note: Each event proposal is validated or invalidated by the administrator of the calendar.",
 			"CALENDAR_propositionGuest"=>"Guests can propose events",
 			"CALENDAR_propositionGuestTooltip"=>"Note: Remember to select 'all users and guests' in the access rights below.",
 			"CALENDAR_propositionEmailSubject"=>"New event proposed by",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"New event proposed by --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Access your space to confirm or cancel this proposal",
-			// Categories
-			"CALENDAR_editCategories"=>"Manage event categories",
-			"CALENDAR_editCategoriesRight"=>"Each category can be modified by its author or the general administrator",
-			"CALENDAR_addCategory"=>"Add a category",
-			"CALENDAR_filterByCategory"=>"View only events by caterory",
+			// Categorie : Catégories d'événement
+			"CALENDAR_categoryCurrent"=>"Category displayed",
+			"CALENDAR_categoryDisplayed"=>"Filter by event category",
+			"CALENDAR_categoryUndefined"=>"Without category",
+			"CALENDAR_categoriesEditTitle"=>"Edit event categories",
+			"CALENDAR_categoriesEditInfo"=>"Each event category can be modified by its author or by the general administrator",
+			"CALENDAR_categoriesAddButton"=>"Add an event category",
 
 			////	MODULE_FICHIER
 			////
 			// Menu principal
 			"FILE_headerModuleName"=>"File manager",
 			"FILE_moduleDescription"=>"File manager",
-			"FILE_option_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",
+			"FILE_option_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",//OPTION!
 			//Index
 			"FILE_addFile"=>"Add files",
 			"FILE_addFileAlert"=>"Folder on the server not accessible in writing! thank you to contact the administrator",
 			"FILE_downloadSelection"=>"Download Selection",
+			"FILE_fileDownload"=>"Download",
+			"FILE_fileSize"=>"File size",
+			"FILE_imageSize"=>"Image size",
 			"FILE_nbFileVersions"=>"versions of the file",//"55 versions du fichier"
 			"FILE_downloadsNb"=>"(downloaded --NB_DOWNLOAD-- times)",
 			"FILE_downloadedBy"=>"file Downloaded by",//"..boby, will"
@@ -892,11 +905,13 @@ class Trad extends Txt
 			// Menu principal
 			"FORUM_headerModuleName"=>"Forum",
 			"FORUM_moduleDescription"=>"Forum",
-			"FORUM_option_adminAddSubject"=>"Only the administrator can add topics",
-			"FORUM_option_allUsersAddTheme"=>"Users can also add themes",
+			"FORUM_option_adminAddSubject"=>"Only the administrator can add topics",//OPTION!
+			"FORUM_option_adminAddTheme"=>"Only the administrator can add themes",//OPTION!
 			// TRI
 			"SORT_dateLastMessage"=>"Last message",
 			//Index & Sujet
+			"FORUM_forumRoot"=>"Forum Home",
+			"FORUM_forumRootMobile"=>"Home",
 			"FORUM_subject"=>"Topic",
 			"FORUM_subjects"=>"Topics",
 			"FORUM_message"=>"Message",
@@ -913,24 +928,22 @@ class Trad extends Txt
 			"FORUM_notifyLastPost"=>"Notify by email",
 			"FORUM_notifyLastPostTooltip"=>"Send me a notification by email to each new message",
 			// Sujet_edit  &  Message_edit
-			"FORUM_accessRightInfos"=>"Attention: the reading access does not allow to participate in the discussion. So prefer limited write access. Write access should be reserved for moderators.",
-			"FORUM_themeSpaceAccessInfo"=>"The topic is available in the spaces",
-			// Themes
-			"FORUM_subjectTheme"=>"Theme",
-			"FORUM_subjectThemes"=>"Themes",
-			"FORUM_forumRoot"=>"Forum Home",
-			"FORUM_forumRootResp"=>"Home",
-			"FORUM_noTheme"=>"Without theme",
-			"FORUM_editThemes"=>"Manage themes",
-			"FORUM_editThemesInfo"=>"Each theme can be modified by its author or the general administrator",
-			"FORUM_addTheme"=>"Add a theme",
+			"FORUM_notifOnlyReadAccess"=>"If there is only read access, no one can contribute to the topic",
+			"FORUM_notifWriteAccess"=>"''Write'' access is intended for moderators :<br>Rather prefer the ''Limited Writing'' rights",
+			// Categorie : Themes
+			"FORUM_categoryThemes"=>"Themes",
+			"FORUM_categoryUndefined"=>"Without theme",
+			"FORUM_categoriesEditTitle"=>"Manage themes",
+			"FORUM_categoriesEditInfo"=>"Each theme can be modified by its author or the general administrator",
+			"FORUM_categoriesAddButton"=>"Add a theme",
 
 			////	MODULE_TACHE
 			////
 			// Menu principal
 			"TASK_headerModuleName"=>"Tasks",
 			"TASK_moduleDescription"=>"Tasks",
-			"TASK_option_adminRootAddContent"=>"Only the administrator can add folders and tasks in the root folder",
+			"TASK_option_adminRootAddContent"=>"Only the administrator can add folders and tasks in the root folder",//OPTION!
+			"TASK_option_adminAddStatus"=>"Only admin can create Kanban status",//OPTION!
 			// TRI
 			"SORT_priority"=>"Priority",
 			"SORT_advancement"=>"Progress",
@@ -942,19 +955,25 @@ class Trad extends Txt
 			"TASK_advancement"=>"Progress",
 			"TASK_advancementAverage"=>"Average progress",
 			"TASK_priority"=>"Priority",
+			"TASK_priorityUndefined"=>"Priority undefined",
 			"TASK_priority1"=>"Low",
 			"TASK_priority2"=>"Medium",
 			"TASK_priority3"=>"High",
-			"TASK_priority4"=>"Critical",
-			"TASK_responsiblePersons"=>"Leaders",
+			"TASK_assignedTo"=>"Assigned to",
 			"TASK_advancementLate"=>"Progress delayed",
+			"TASK_folderDateBeginEnd"=>"Earliest start date / latest end date",
+			//Categorie : Colonnes Kanban
+			"TASK_categoryUndefined"=>"Undefined status",
+			"TASK_categoriesEditTitle"=>"Edit Kanban status",
+			"TASK_categoriesEditInfo"=>"Each status can be modified by its author or by the general admin",
+			"TASK_categoriesAddButton"=>"Add a status",
 
 			////	MODULE_CONTACT
 			////
 			// Menu principal
 			"CONTACT_headerModuleName"=>"Contacts",
 			"CONTACT_moduleDescription"=>"Directory of contacts",
-			"CONTACT_option_adminRootAddContent"=>"Only the administrator can add folders and contacts in the root folder",
+			"CONTACT_option_adminRootAddContent"=>"Only the administrator can add folders and contacts in the root folder",//OPTION!
 			//Index
 			"CONTACT_addContact"=>"Add a contact",
 			"CONTACT_noContact"=>"No contact for the moment",
@@ -967,7 +986,7 @@ class Trad extends Txt
 			// Menu principal
 			"LINK_headerModuleName"=>"Bookmarks",
 			"LINK_moduleDescription"=>"Bookmarks",
-			"LINK_option_adminRootAddContent"=>"Only the administrator can add folders and bookmarks to the root folder",
+			"LINK_option_adminRootAddContent"=>"Only the administrator can add folders and bookmarks to the root folder",//OPTION!
 			//Index
 			"LINK_addLink"=>"Add a bookmark",
 			"LINK_noLink"=>"No bookmark at the moment",

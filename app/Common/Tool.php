@@ -65,7 +65,7 @@ class Tool
 			////	Expediteur
 			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
 			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "ne_pas_repondre@".$serverName;//Email du paramétrage général OU du domaine courant (ex: "ne_pas_repondre@mondomaine.net")
-			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);				//Nom de l'expediteur (exple: "monespace.fr")
+			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);				//Nom de l'expediteur (Ex: "monespace.fr")
 			$mail->SetFrom($setFromMail, $setFromName);																			//"SetFrom" fixe (cf. score des antispams)
 			//Controles de base
 			if(in_array("noTimeControl",$options)==false && (time()-@$_SESSION["sendMailTime"])<10)	{echo "please wait 10 sec."; exit;}	//Temps minimum entre chaque mail
@@ -139,7 +139,7 @@ class Tool
 			if(in_array("noNotify",$options)==false){																											//Affiche une notification si l'email a été envoyé ou pas 
 				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");										//Affiche si besoin "L'email de notification a bien été envoyé"
 				if($sendReturn==true)				{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
-				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}											//Erreurs dans l'envoi de l'email
+				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo,"max"));}										//Erreurs dans l'envoi de l'email
 				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																//Mail non envoyé
 			}
 			return $sendReturn;//tjs renvoyer
@@ -244,38 +244,19 @@ class Tool
 	}
 
 	/*******************************************************************************************
-	 * COLORPICKER / SELECTEUR DE COULEURS ($bgTxtColor : "background-color"/"color")
-	 *******************************************************************************************/
-	public static function colorPicker($inputText, $inputColor, $bgTxtColor="background-color")
-	{
-		$colorMap=null;
-		$menuContextId=Txt::uniqId();
-		$colors=array("#9b9b9b","#cb0000","#f56b00","#ffcb2f","#f482a4","#32cb00","#00d2cb","#3166ff","#6434fc","#656565","#9a0000","#ce6301","#cd9934","#999903","#009901","#329a9d","#3531ff","#6200c9","#343434","#680100","#963400","#986536","#646809","#036400","#34696d","#00009b","#303498","#000000","#330001","#643403","#663234","#343300","#013300","#003532","#010066","#340096");
-		foreach(array_reverse($colors) as $key=>$tmpColor){
-			$colorMap.="<div class='colorPickerCell' style=\"background:".$tmpColor.";\" OnClick=\"$('#".$inputText."').css('".$bgTxtColor."','".$tmpColor."'); $('#".$inputColor."').val('".$tmpColor."');\">&nbsp;</div>";
-			if((($key+1)%9)==0)	{$colorMap.="</div><div class='colorPickerRow'>";}
-		}
-		return "<div class='colorPicker menuContext' id='".$menuContextId."'>
-					<div class='colorPickerTable'><div class='colorPickerRow'>".$colorMap."</div></div>
-				</div>
-				<img src='app/img/colorPicker.png' class='menuLaunch' for='".$menuContextId."'>";
-	}
-
-	/*******************************************************************************************
 	 * BARRE DE POURCENTAGE
 	 *******************************************************************************************/
-	public static function percentBar($fillPercent, $txtBar, $txtTooltip, $orangeBarAlert=false, $barWidth=null)
+	public static function progressBar($barLabel, $barTooltip, $barFillPercent=0, $orangeBar=false)
 	{
-		//Width de "100%" par défaut && Remplissage à 100% maximum
-		if(empty($barWidth))	{$barWidth="100%";}
-		if($fillPercent>100)	{$fillPercent=100;}
-		//Couleur de barre de remplissage
-		if($orangeBarAlert==true)	{$percentBarImg="percentBarAlert";}		//avancement retard ou autre (barre orange)
-		elseif($fillPercent==100)	{$percentBarImg="percentBar100";}		//terminé à 100% : vert
-		else						{$percentBarImg="percentBarCurrent";}	//en cours : vert clair
-		//renvoie la percentbar
-		return "<div class='percentBar' style='width:".$barWidth.";' title=\"".Txt::tooltip($txtTooltip)."\">
-					<div class='percentBarContent' style='background-image:url(app/img/".$percentBarImg.".png);background-size:".(int)$fillPercent."% 100%;'>".$txtBar."</div>
-				</div>";
+		// $barFillPercent de 100% maximum
+		if($barFillPercent>100)  {$barFillPercent=100;}
+		//Image du background
+		if($orangeBar==true)			{$barImg="progressBarAlert";}	//Task "isDelayed" / File "diskSpaceAlert"  => orange
+		elseif($barFillPercent==100)	{$barImg="progressBarFull";}	//Terminé à 100%  => vert
+		else							{$barImg="progressBarCurrent";}	//En cours  => vert clair
+		//Style du background
+		$barStyle=(!empty($barFillPercent))  ?  'style="background-image:url(app/img/'.$barImg.'.png);background-size:'.(int)$barFillPercent.'% 100%;"'  :  null;
+		// Renvoie la progressBar
+		return '<div class="progressBar" title="'.Txt::tooltip($barTooltip).'" '.$barStyle.'>'.$barLabel.'</div>';
 	}
 }

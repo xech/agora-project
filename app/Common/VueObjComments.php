@@ -4,24 +4,22 @@ lightboxSetWidth(600);
 
 ////	Init l'affichage
 $(function(){
-	//Focus du champ (pas en responsive pour ne pas afficher le clavier virtuel)
-	if(!isMobile())  {$(".vCommentAdd textarea").focus();}
+	////	Contrôle l'ajout/modif d'un commentaire
+	$("form").submit(function(){
+		if($(this).find("textarea").isEmpty())  {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
+	});
 
-	////	Affiche le nombre de comment en page principale
+	////	Après validation d'un formulaire : update le nombre de commentaire en page principale
 	<?php if(!empty($updateCircleNb)){ ?>
 	var commentMenuId="#commentMenu_<?= $curObj->_typeId ?>";
-	parent.$(commentMenuId).parent(".objMiscMenus").find(".objMenuLikeComment").addClass("showMiscMenu");//Affichage permanent du "objMiscMenus"
-	parent.$(commentMenuId+" .menuCircle").html("<?= count($commentList) ?>").removeClass("menuCircleHide");//Affiche le nb de commentaires (circle)
-	parent.$(commentMenuId).attr("title","<?= $commentsTitle ?>").tooltipster("destroy").tooltipster(tooltipsterOptions);//Maj le "title" du menu des commentaires
+	parent.$(commentMenuId).parent(".objMiscMenus").find(".objMenuLikeComment").addClass("showMiscMenu");					//Affichage permanent du "objMiscMenus"
+	parent.$(commentMenuId+" .menuCircle").html("<?= count($commentList) ?>").removeClass("menuCircleHide");				//Maj le nb de commentaires (circle)
+	parent.$(commentMenuId).attr("title","<?= $commentsTitle ?>").tooltipster("destroy").tooltipster(tooltipsterOptions);	//Maj le "title" du menu des commentaires
 	<?php } ?>
-});
 
-////	Contrôle du formulaire
-function formControl()
-{
-	if($("textarea[name='comment']").isEmpty())
-		{notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
-}
+	////	Focus du champ (pas sur mobile pour ne pas afficher le clavier virtuel)
+	if(!isMobile())  {$(".vCommentAddTextarea").focus();}
+});
 </script>
 
 
@@ -38,7 +36,7 @@ form button				{width:120px;}
 .vCommentOptions img	{max-height:18px;}
 .submitButtonInline		{padding-top:10px;}
 
-/*RESPONSIVE*/
+/*MOBILE*/
 @media screen and (max-width:440px){
 	.vCommentsTable, .vCommentsRow, .vCommentsRow>div	{display:block; width:100%;}
 	.vCommentsRow			{margin-bottom:15px!important;}
@@ -48,7 +46,7 @@ form button				{width:120px;}
 </style>
 
 
-<div class="lightboxContent">
+<div>
 	<div class="lightboxTitle"><?= $commentsTitle ?></div>
 
 	<?php
@@ -60,11 +58,16 @@ form button				{width:120px;}
 					<div class='vCommentDateUser'>".Ctrl::getObj("user",$tmpComment["_idUser"])->getLabel()." <div>".Txt::dateLabel($tmpComment["dateCrea"])."</div></div>
 					<div class='vCommentText' id='commentText".$tmpComment["_id"]."'>
 						<div>".$tmpComment["comment"]."</div>
-						<form action='index.php' method='post'><textarea name='comment' maxlength='200'>".$tmpComment["comment"]."</textarea><input type='hidden' name='idComment' value='".$tmpComment["_id"]."'><input type='hidden' name='actionComment' value='modif'>".Txt::submitButton("modify",false)."</form>
+						<form action='index.php' method='post'>
+							<textarea name='comment' maxlength='200'>".$tmpComment["comment"]."</textarea>
+							<input type='hidden' name='idComment' value='".$tmpComment["_id"]."'>
+							<input type='hidden' name='actionComment' value='modif'>
+							".Txt::submitButton("modify",false)."
+						</form>
 					</div>
 					<div class='vCommentOptions' ".(MdlObject::userCommentEditRight($tmpComment["_id"])?null:"style='visibility:hidden'").">
-						<img src='app/img/edit.png' class='sLink' onclick=\"$('#commentText".$tmpComment["_id"].">*').toggle()\">
-						<img src='app/img/delete.png' class='sLink' onclick=\"confirmDelete('?ctrl=object&action=comments&typeId=".$curObj->_typeId."&idComment=".$tmpComment["_id"]."&actionComment=delete')\">
+						<img src='app/img/edit.png' onclick=\"$('#commentText".$tmpComment["_id"].">*').toggle()\">
+						<img src='app/img/delete.png' onclick=\"confirmDelete('?ctrl=object&action=comments&typeId=".$curObj->_typeId."&idComment=".$tmpComment["_id"]."&actionComment=delete')\">
 					</Div>
 				</div>
 			  </div>";
@@ -72,8 +75,8 @@ form button				{width:120px;}
 	?>
 
 	<!--AJOUT D'UN COMMENTAIRE-->
-	<form class="vCommentAdd" action="index.php" method="post" onsubmit="return formControl()">
-		<textarea name="comment" maxlength="200" placeholder="<?= Txt::trad("commentAdd") ?>"></textarea>
+	<form action="index.php" method="post">
+		<textarea name="comment" maxlength="200" placeholder="<?= Txt::trad("commentAdd") ?>" class="vCommentAddTextarea"></textarea>
 		<input type='hidden' name='actionComment' value='add'>
 		<?= Txt::submitButton("add",false); ?>
 	</form>

@@ -1,14 +1,14 @@
 
-<ul id="pollResult<?= $objPoll->_id ?>">
+<ul id="pollResult<?= $curObj->_id ?>">
 	<?php
 	////	Affiche le résultat de chaque réponse au sondage
-	foreach($objPoll->getResponses(true) as $tmpResponse)
+	foreach($curObj->getResponses(true) as $tmpResponse)
 	{
 		//Nombre de votes et users ayant voté (si le vote est public)
-		$votesNb	 =$objPoll->votesNb($tmpResponse["_id"]);
-		$votesPercent=$objPoll->votesPercent($tmpResponse["_id"]);
+		$votesNb	 =$curObj->votesNb($tmpResponse["_id"]);
+		$votesPercent=$curObj->votesPercent($tmpResponse["_id"]);
 		$responseTitle=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_answerVotesNb"));
-		$responseTitle.=(!empty($votesNb) && !empty($objPoll->publicVote))  ?  " : ".$objPoll->votesUsers($tmpResponse["_id"])  :  null;
+		$responseTitle.=(!empty($votesNb) && !empty($curObj->publicVote))  ?  " : ".$curObj->votesUsers($tmpResponse["_id"])  :  null;
 		//Couleur et ID de la pollsResultBar
 		$pollsResultBarId="vPollsResultBar".$tmpResponse["_id"];
 		if($votesPercent>50)	{$pollsResultBarColor="vPollsResultBar100";}
@@ -16,7 +16,7 @@
 		else					{$pollsResultBarColor="vPollsResultBar0";}
 		//Affiche
 		echo "<li title=\"".Txt::tooltip($responseTitle)."\">
-				<label>".$tmpResponse["label"].$objPoll->responseFileDiv($tmpResponse)."</label>
+				<label>".$tmpResponse["label"].$curObj->responseFileDiv($tmpResponse)."</label>
 				<div class='vPollsResultBarContainer'><div class='vPollsResultBar ".$pollsResultBarId." ".$pollsResultBarColor."'>".$votesPercent."%</div></div>
 				<script> $(\".".$pollsResultBarId."\").animate({width:'".$votesPercent."%'},500);</script>
 			  </li>";

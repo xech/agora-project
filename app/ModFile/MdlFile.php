@@ -166,7 +166,7 @@ class MdlFile extends MdlObject
 	{
 		//// ADMIN D'ESPACE : "TÉLÉCHARGÉ PAR" + LISTE DES USERS AYANT TELECHARGE LE FICHIER
 		$tooltipDownloadedBy=null;
-		if(Ctrl::$curUser->isAdminSpace() && !empty($this->downloadedBy)){
+		if(Ctrl::$curUser->isSpaceAdmin() && !empty($this->downloadedBy)){
 			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
 			$tooltipDownloadedBy="title=\"".Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "))."\"";
 		}

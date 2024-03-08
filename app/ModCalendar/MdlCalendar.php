@@ -56,7 +56,7 @@ class MdlCalendar extends MdlObject
 	 **************************************************************************************************************/
 	public static function addRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddRessourceCalendar")==false));
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddRessourceCalendar")==false));
 	}
 
 	/*************************************************************************************************************************************************************************
@@ -73,6 +73,14 @@ class MdlCalendar extends MdlObject
 	public static function evtInTimeSlot($evtBegin, $evtEnd, $periodBegin, $periodEnd)
 	{
 		return ( ($periodBegin<=$evtBegin && $evtBegin<=$periodEnd) || ($periodBegin<=$evtEnd && $evtEnd<=$periodEnd) || ($evtBegin<=$periodBegin && $periodEnd<=$evtEnd) );
+	}
+
+	/*******************************************************************************************
+	 * VERIF SI C'EST L'AGENDA PARTAGE DE L'ESPACE COURANT
+	 *******************************************************************************************/
+	public function isSpacelCalendar()
+	{
+		return ($this->type=="ressource" && ($this->_id==1 || $this->title==Ctrl::$curSpace->name));
 	}
 
 	/*******************************************************************************************
@@ -232,16 +240,28 @@ class MdlCalendar extends MdlObject
 	 *******************************************************************************************/
 	public static function displayedCalendars($readableCalendars)
 	{
-		//Init les agendas à retourner && Récup au besoin les agendas enregistrés en préférence
+		//// Init les agendas
 		$displayedCalendars=[];
+		//// Récupère d'abord les agendas enregistrés en préférence (pas forcément dans les $readableCalendars de l'espace courant !)
 		$prefCalendars=Txt::txt2tab(Ctrl::prefUser("displayedCalendars"));
-		//Récupère les agendas à afficher :  Agendas enregistrés en préférences  OU  Agenda de l'espace créé par défaut (_id=1)
-		foreach($readableCalendars as $tmpCal){
-			if(in_array($tmpCal->_id,$prefCalendars) || (empty($prefCalendars) && $tmpCal->_id==1))  {$displayedCalendars[]=$tmpCal;}
+		if(!empty($prefCalendars)){
+			foreach($readableCalendars as $tmpCal){
+				if(in_array($tmpCal->_id,$prefCalendars))  {$displayedCalendars[]=$tmpCal;}
+			}
 		}
-		//Toujours pas d'agendas à afficher : on prend le premier des $readableCalendars
-		if(empty($displayedCalendars) && !empty($readableCalendars))  {$displayedCalendars[]=$readableCalendars[0];}
-		//Supprime les evénements de plus de 3 ans (lancé en début de session)
+		//// Tjs aucun agenda : récupère l'agenda partagé de l'espace
+		if(empty($displayedCalendars)){
+			foreach($readableCalendars as $tmpCal){
+				if($tmpCal->isSpacelCalendar())  {$displayedCalendars[]=$tmpCal;}
+			}
+		}
+		//// Tjs aucun agenda : récupère l'agenda perso de l'user courant
+		if(empty($displayedCalendars)){
+			foreach($readableCalendars as $tmpCal){
+				if($tmpCal->isPersonalCalendar())	{$displayedCalendars[]=$tmpCal;}
+			}
+		}
+		//// Supprime les evénements de plus de 3 ans (lancé en début de session)
 		if(empty($_SESSION["calendarsCleanEvt"]))
 		{
 			//Période des evenements "old"
@@ -257,21 +277,22 @@ class MdlCalendar extends MdlObject
 			}
 			$_SESSION["calendarsCleanEvt"]=true;
 		}
-		//Retour les agendas à afficher
+		//// Retourne les agendas affichés
 		return $displayedCalendars;
 	}
 
 	/**********************************************************************************************************************************************
-	 * LISTE D'AGENDAS : TRI DES AGENDAS => AGENDA DE L'USER COURANT >> PUIS AGENDAS DE RESSOURCE >> PUIS AUTRES AGENDAS D'USERS
+	 * LISTE D'AGENDAS TRIÉS :  AGENDA DE L'ESPACE COURANT  >  AGENDAS DE RESSOURCE  >  AGENDA DE L'USER COURANT  >  AUTRES AGENDAS D'USERS
 	 **********************************************************************************************************************************************/
 	public static function sortCalendars($calendarsTab)
 	{
 		//Prépare le tri en fonction du champs spécifique "sortField"
 		$userSortField=(Ctrl::$agora->personsSort=="name")  ?  "userName"  :  "userFirstName";//Tri des agendas persos en fonction du nom ou du prénom (cf. "__construct()" ci-dessus)
 		foreach($calendarsTab as $tmpCal){
-			if($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="A__".$tmpCal->$userSortField;}
-			elseif($tmpCal->type=="ressource")	{$tmpCal->sortField="B__".$tmpCal->title;}
-			else								{$tmpCal->sortField="C__".$tmpCal->$userSortField;}
+			if($tmpCal->isSpacelCalendar())			{$tmpCal->sortField="A__".$tmpCal->$userSortField;}
+			elseif($tmpCal->type=="ressource")		{$tmpCal->sortField="B__".$tmpCal->title;}
+			elseif($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="C__".$tmpCal->$userSortField;}
+			else									{$tmpCal->sortField="D__".$tmpCal->$userSortField;}
 		}
 		//Tri les agendas via "self::sortCompareCalendars()"
 		usort($calendarsTab,["self","sortCompareCalendars"]);

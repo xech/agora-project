@@ -8,7 +8,7 @@
 
 
 /*
- * Controleur pour les "action" ou "vue" concernant les objets (menus, vues, etc)
+ * CONTROLEUR POUR LES "ACTION" ET "VUE" DES OBJETS : MENU, CONTROLE AJAX, VUE, ETC.
  */
 class CtrlObject extends Ctrl
 {
@@ -44,7 +44,7 @@ class CtrlObject extends Ctrl
 			if(empty($redirUrl)){
 				if($tmpObj::isFolder==true)						{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
 				elseif($tmpObj::isContainerContent())			{$redirUrl=$tmpObj->getUrl();}					//Suppr un contenu (content) : affiche le "container"
-				elseif($tmpObj::objectType=="forumSubject")		{$redirUrl=$tmpObj->getUrl("theme");}			//Suppr de sujet du forum : "getUrl()" surchargé
+				elseif($tmpObj::objectType=="forumSubject")		{$redirUrl=$tmpObj->getUrl("theme");}			//Suppr un sujet du forum : "getUrl()" surchargé
 				else											{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
 			}
 			//Enregistre si on doit mettre à jour le "datasFolderSize()"
@@ -118,9 +118,7 @@ class CtrlObject extends Ctrl
 			//Aucun dossier / Liste des dossiers
 			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
 			else{
-				if($curFolder::moduleName=="contact")	{$vDatas["objContainerClass"]="objPerson";}			//Affichage spécifique aux contacts
-				elseif($curFolder::moduleName=="file")	{$vDatas["objContainerClass"]="objContentCenter";}	//Affichage centré (icone + contenu)
-				else									{$vDatas["objContainerClass"]=null;}				//Affichage normal
+				$vDatas["objContainerClass"]=$curFolder::moduleName=="contact" ? "objPerson" : null;
 				self::$vueFolders=Ctrl::getVue(Req::commonPath."VueObjFolders.php",$vDatas);
 			}
 		}
@@ -130,7 +128,7 @@ class CtrlObject extends Ctrl
 	/*******************************************************************************************
 	 * VUE : EDITION D'UN DOSSIER
 	 *******************************************************************************************/
-	public static function actionFolderEdit()
+	public static function actionEditFolder()
 	{
 		////	Charge le dossier et Controle d'accès: dossier existant / nouveau dossier
 		$curObj=Ctrl::getObjTarget();
@@ -152,22 +150,57 @@ class CtrlObject extends Ctrl
 		else
 		{
 			$vDatas["curObj"]=$curObj;
-			static::displayPage(Req::commonPath."VueObjFolderEdit.php",$vDatas);
+			static::displayPage(Req::commonPath."VueObjEditFolder.php",$vDatas);
 		}
 	}
 
+	/**************************************************************************************************************
+	* VUE : EDITION DES OBJETS DE TYPE "CATEGORY" : CATEGORIES D'EVT / THEMES DE SUJET / COLONNES KANBAN
+	**************************************************************************************************************/
+	public static function actionEditCategories()
+	{
+		////	Modèle des objets (ex: "MdlTaskStatus")  &&  Droit d'ajouter un objet ?
+		$MdlObject="Mdl".ucfirst(Req::param("objectType"));
+		if($MdlObject::addRight()==false)  {static::lightboxClose();}
+		////	Valide le formulaire : edite une des categories
+		if(Req::isParam("formValidate")){
+			$curObj=Ctrl::getObjTarget();
+			$curObj->editControl();
+			$_idSpaces=(in_array("allSpaces",Req::param("spaceList")))  ?  null : Txt::tab2txt(Req::param("spaceList"));
+			$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
+			static::lightboxClose();
+		}
+		////	Liste des objets à afficher (+ nouvel objet)  &&  Liste des espaces de l'user courant  &&  Préfixe des traduction
+		$vDatas["objectList"]=array_merge($MdlObject::getList(true), [new $MdlObject()]);
+		$vDatas["spaceList"]=Ctrl::$curUser->getSpaces();
+		$vDatas["tradModulePrefix"]=strtoupper($MdlObject::moduleName);
+		////	Affiche la vue
+		static::displayPage(Req::commonPath."VueObjEditCategories.php",$vDatas);
+	}
+
 	/*******************************************************************************************
-	 * AJAX : CONTROLE SI UN AUTRE OBJET FICHIER/DOSSIER PORTE LE MÊME NOM
+	 * AJAX : CHANGE L'ORDRE DES CATEGORIES
+	 *******************************************************************************************/
+	public static function actionCategoryChangeOrder()
+	{
+		foreach(self::getObjectsTypeId() as $cpt=>$tmpObj){
+			Db::query("UPDATE ".$tmpObj::dbTable." SET `rank`=".Db::format($cpt+1)." WHERE _id=".(int)$tmpObj->_id);
+		}
+		echo "true";
+	}
+
+	/*******************************************************************************************
+	 * AJAX : CONTROLE SI UN AUTRE OBJET PORTE LE MÊME NOM (FOLDER/FILE) OU TITRE (CALENDAR)
 	 *******************************************************************************************/
 	public static function actionControlDuplicateName()
 	{
-		//Précise "typeIdContainer" pour les nouveaux dossiers/fichiers
-		if(Req::isParam(["typeId","typeIdContainer","controledName"])){
-			//init
+		if(Req::isParam(["typeId","controledName"])){
+			//Récupère l'objet courant +  Recherche sur le nom ou le titre  +  Sélectionne si besoin le conteur de l'objet (cf. dossier/fichier)
 			$curObj=Ctrl::getObjTarget();
-			$objContainer=Ctrl::getObjTarget(Req::param("typeIdContainer"));
-			//Recherche les doublons dans le conteneur courant et affectés à l'espace courant
-			$nbDuplicate=Db::getVal("SELECT count(*) FROM ".$curObj::dbTable." WHERE name=".Db::param("controledName")." AND _id!=".$curObj->_id." AND _idContainer=".$objContainer->_id." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")");
+			$sqlMainSelectors=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");
+			if(Req::isParam("typeIdContainer"))  {$sqlMainSelectors.="AND _idContainer=".Ctrl::getObjTarget(Req::param("typeIdContainer"))->_id;}
+			//Recherche les doublons dans les objets affectés à l'espace courant
+			$nbDuplicate=Db::getVal("SELECT count(*) FROM ".$curObj::dbTable." WHERE  _id!=".$curObj->_id." AND ".$sqlMainSelectors." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")");
 			if($nbDuplicate>0)  {echo "duplicate";}
 		}
 	}
@@ -191,30 +224,27 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * AJAX : EDITION D'UN DOSSIER => CONTROL LE DROIT D'ACCÈS D'UN USER/ESPACE AU DOSSIER PARENT
+	 * AJAX : EDITION D'UN DOSSIER => CONTROL LE DROIT D'ACCÈS AU DOSSIER PARENT
 	 *******************************************************************************************/
 	public static function actionAccessRightParentFolder()
 	{
-		//Init
-		$parentFolder=Ctrl::getObjTarget();
-		$objectRight=explode("_",Req::param("objectRight"));//exple: "1_U2_2" ou "1_spaceUsers_1.5"
-		//Controle?
-		if($parentFolder->isRootFolder()==false && count($objectRight)==3)
-		{
-			$sqlObjSelect="SELECT count(*) FROM ap_objectTarget WHERE objectType=".Db::format($parentFolder::objectType)." AND _idObject=".(int)$parentFolder->_id." AND _idSpace=".(int)$objectRight[0];
-			$sqlTargetSelect=($objectRight[1]=="spaceUsers")  ?  " AND target='spaceUsers'"  :  " AND (target='spaceUsers' OR target=".Db::format($objectRight[1]).")";
-			if(Db::getVal($sqlObjSelect.$sqlTargetSelect)==0)
-			{
-				$ajaxResult["error"]=true;
-				if(preg_match("/^G/i",$objectRight[1]))		{$targetLabel=self::getObj("userGroup",str_ireplace("G","",$objectRight[1]))->title;}
-				elseif(preg_match("/^U/i",$objectRight[1]))	{$targetLabel=self::getObj("user",str_ireplace("U","",$objectRight[1]))->getLabel();}
-				else										{$targetLabel=Txt::trad("EDIT_allUsers");}
-				$ajaxResult["message"]=str_replace(["--TARGET_LABEL--","--FOLDER_NAME--"], [$targetLabel,Txt::reduce($parentFolder->name,40)], Txt::trad("EDIT_parentFolderAccessError"));
-				echo json_encode($ajaxResult);
+		$objFolder=Ctrl::getObjTarget();						//Récupère le dossier parent
+		$objectRight=explode("_",Req::param("objectRight"));	//Droit d'accès sélectionné pour le dossier édité (Ex: "1_U2_2" ou "1_spaceUsers_1.5")
+		$_idSpace=(int)$objectRight[0];							//Espace du droit d'accès
+		$target=(string)$objectRight[1];						//Target du droit d'accès
+		if($objFolder::isFolder==true && $objFolder->isRootFolder()==false && count($objectRight)==3){
+			$nbAffectations=Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE objectType='".$objFolder::objectType."' AND _idObject=".$objFolder->_id." AND _idSpace=".$_idSpace." AND (target='spaceUsers' OR target='".$target."')");
+			if(empty($nbAffectations)){																								//Erreur si la "target" n'a pas été affecté au dossier parent !
+				$spaceLabel=Ctrl::getObj("space",$_idSpace)->getLabel();															//Label de l'espace du droit d'accès
+				if(preg_match("/^G/",$target))		{$targetLabel=self::getObj("userGroup",str_ireplace("G","",$target))->title;}	//Label du Groupe
+				elseif(preg_match("/^U/",$target))	{$targetLabel=self::getObj("user",str_ireplace("U","",$target))->getLabel();}	//Label de l'user spécifique
+				else								{$targetLabel=Txt::trad("EDIT_allUsers");}										//"Tous les utilisateurs"
+				$result["errorMessage"]=str_replace(["--SPACE_LABEL--","--TARGET_LABEL--","--FOLDER_NAME--"], [$spaceLabel,$targetLabel,$objFolder->name], Txt::trad("EDIT_parentFolderAccessError"));
+				echo json_encode($result);
 			}
 		}
 	}
-	
+
 	/*******************************************************************************************
 	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
 	 *******************************************************************************************/
@@ -223,23 +253,8 @@ class CtrlObject extends Ctrl
 		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
 	}
 
-	/*******************************************************************************************
-	 * VUE : AFFICHE L'EDITEUR TINYMCE
-	 * Note : il doit déjà y avoir un champ "textarea" dans la vue principale
-	 *******************************************************************************************/
-	public static function htmlEditor($fieldName)
-	{
-		//Nom du champ "textarea"
-		$vDatas["fieldName"]=$fieldName;
-		//Sélectionne au besoin le "draftTypeId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editTypeId" car il est effacé dès qu'on sort de l'édition de l'objet...)
-		$sqlTypeId=Req::isParam("typeId")  ?  "draftTypeId=".Db::param("typeId")  :  "draftTypeId IS NULL";
-		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
-		//Affiche la vue de l'éditeur TinyMce
-		return self::getVue(Req::commonPath."VueObjHtmlEditor.php",$vDatas);
-	}
-
 	/*******************************************************************************************************************************************
-	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "VueHtmlEditor.php")
+	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "editDescription()")
 	 *******************************************************************************************************************************************/
 	public static function attachedFile($curObj=null)
 	{

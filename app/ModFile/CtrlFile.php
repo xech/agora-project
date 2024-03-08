@@ -23,47 +23,46 @@ class CtrlFile extends Ctrl
 	public static function actionDefault()
 	{
 		////	Verif l'accès en écriture & Occupation d'espace disque
-		if(Ctrl::$curUser->isAdminGeneral())
+		if(Ctrl::$curUser->isGeneralAdmin())
 		{
 			//Verif l'accès en écriture
 			if(!is_writable(Ctrl::$curContainer->folderPath("real")))
 				{Ctrl::notify(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "warning");}
 			//Occupation d'espace disque
 			$folderSize=File::folderSize(PATH_MOD_FILE);
-			$diskSpacePercent=ceil(($folderSize/limite_espace_disque)*100);
-			$txtBar=Txt::trad("diskSpaceUsed")." : ".$diskSpacePercent."%";
-			$txtTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::displaySize($folderSize)." ".Txt::trad("from")." ".File::displaySize(limite_espace_disque);
-			$vDatas["diskSpaceAlert"]=($diskSpacePercent>70);
-			$vDatas["fillRateBar"]=Tool::percentBar($diskSpacePercent, $txtBar, $txtTooltip, $vDatas["diskSpaceAlert"]);
+			$barFillPercent=ceil(($folderSize/limite_espace_disque)*100);
+			$barLabel=Txt::trad("diskSpaceUsed")." : ".$barFillPercent."%";
+			$barTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::displaySize($folderSize)." ".Txt::trad("from")." ".File::displaySize(limite_espace_disque);
+			$vDatas["diskSpaceAlert"]=($barFillPercent>70);
+			$vDatas["diskSpaceProgressBar"]=Tool::progressBar($barLabel, $barTooltip, $barFillPercent, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer)." ".MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
-			//Lien du label/nom du fichier : Download direct
+			//// Lien du label/nom du fichier : Download direct
 			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpFile->urlDownload()."');\"";
-			//Lien de l'icone/vignette du fichier : Display ou Download
-			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDisplay()."\" data-fancybox='images'";}	//Lightbox d'image ("href" et "data-fancybox" dans un <div> ou <a>)
-			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink="onclick=\"redir('".$tmpFile->urlDisplay()."');\"";}			//Affichage d'un pdf via mobileApp
-			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->urlDisplay()."');\"";}		//Lightbox de pdf ou text
-			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."');\"";}		//Lightbox de vidéo ou mp3
+			//// Lien de l'icone/vignette du fichier : Display ou Download
+			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDisplay()."\" data-fancybox='images'";}	//Affiche l'image dans la fancybox
+			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink="onclick=\"redir('".$tmpFile->urlDisplay()."')\"";}				//Download le pdf si isMobileApp
+			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->urlDisplay()."')\"";}		//Affiche le pdf/text dans une Lightbox 
+			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."')\"";}		//Affiche la video/mp3 dans une Lightbox
 			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}											//Download direct
-			//Tooltips et description
-			$tmpFile->tooltip=Txt::trad("download")." <i>".$tmpFile->name."</i>";
-			$tmpFile->iconTooltip=$tmpFile->name." - ".File::displaySize($tmpFile->octetSize);
-			if(!empty($tmpFile->description))	{$tmpFile->iconTooltip.="<hr>".Txt::tooltip($tmpFile->description);}
-			//Vignette d'image/pdf
-			if($tmpFile->hasThumb())
-			{
-				//Classe de la vignette : "thumb"
-				$tmpFile->hasThumbClass="hasThumb";
-				//Image (pas pdf) : ajoute la résolution d'image && la classe "thumbLandscape" ou "thumbPortrait"
-				if(File::isType("imageBrowser",$tmpFile->name)){
+			//// Vignette d'image/pdf
+			if($tmpFile->hasThumb()){
+				$tmpFile->hasThumbClass="hasThumb";					//Ajoute la classe "hasThumb"
+				if(File::isType("imageBrowser",$tmpFile->name)){	//Fichier image : ajoute la résolution et la "thumbClass" en fonction de l'orientation
 					list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
-					$tmpFile->iconTooltip.=" - ".$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
+					$tmpFile->imageSize=$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
 					$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
 				}
 			}
+			//// Tooltip
+			$tooltipTxt="<i>".$tmpFile->name."</i><hr>".Txt::trad("FILE_fileSize")." : ".File::displaySize($tmpFile->octetSize);										//Nom & taille du fichier
+			if(!empty($tmpFile->imageSize))		{$tooltipTxt.="<hr>".Txt::trad("FILE_imageSize")." : ".$tmpFile->imageSize;}											//Taille de l'image
+			if(!empty($tmpFile->description))	{$tooltipTxt.="<hr>".$tmpFile->description;}																			//Description du fichier
+			$tmpFile->labelTooltip=$tmpFile->iconTooltip="<img src='app/img/download.png'> ".Txt::trad("FILE_fileDownload")." ".$tooltipTxt;							//Tooltip de download
+			if(preg_match("/redir/i",$tmpFile->iconLink)==false)  {$tmpFile->iconTooltip="<img src='app/img/search.png'> ".ucfirst(Txt::trad("show"))." ".$tooltipTxt;}	//Tooltip de l'icone pour afficher le fichier
 			//Ajoute le fichier
 			$vDatas["filesList"][$fileKey]=$tmpFile;
 		}
@@ -177,28 +176,14 @@ class CtrlFile extends Ctrl
 			$curObj=$curObj->createUpdate("name=".Db::format($fileName).", description=".Db::param("description"));
 			$lastVersion=$curObj->getVersion();
 			Db::Query("UPDATE ap_fileVersion SET name=".Db::format($fileName).", description=".Db::param("description")." WHERE _idFile=".$lastVersion["_idFile"]." AND dateCrea=".Db::format($lastVersion["dateCrea"]));
-			//Modif contenu du fichier texte/html
-			if(Req::isParam("fileContent") && Req::param("fileContent")!=Req::param("fileContentOld"))
-			{
-				$folderPath=$curObj->containerObj()->folderPath("real");
-				$newFileRealName=$curObj->_id."_".time().Req::param("dotExtension");
-				$fp=fopen($folderPath.$newFileRealName, "w");
-				fwrite($fp, stripslashes(Req::param("fileContent")));//au cas ou "magic_quote_gpc" est activé..
-				fclose($fp);
-				Db::query("INSERT INTO ap_fileVersion SET _idFile=".$curObj->_id.", name=".Db::param("name").", realName=".Db::format($newFileRealName).", description=".Db::param("description").", octetSize=".(int)filesize($folderPath.$newFileRealName).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
-			}
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
+			static::lightboxClose();
 		}
 		////	Affiche la vue
 		else
 		{
 			$vDatas["curObj"]=$curObj;
-			//Fichier directement éditable (text/html) ?
-			if(File::isType("text",$curObj->name) || File::isType("html",$curObj->name)){
-				$vDatas["fileContent"]=implode("",file($curObj->filePath()));
-				if(File::isType("html",$curObj->name))  {$vDatas["initHtmlEditor"]=true;}
-			}
 			static::displayPage("VueFileEdit.php",$vDatas);
 		}
 	}

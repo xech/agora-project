@@ -15,7 +15,7 @@ class MdlDashboardNews extends MdlObject
 	const moduleName="dashboard";
 	const objectType="dashboardNews";
 	const dbTable="ap_dashboardNews";
-	const htmlEditorField="description";
+	const descriptionEditor=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
@@ -54,6 +54,6 @@ class MdlDashboardNews extends MdlObject
 	 *******************************************************************************************/
 	public static function addRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddNews")==false));
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddNews")==false));
 	}
 }

@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(550);
+lightboxSetWidth(500);
 </script>
 
 <style>
@@ -9,10 +9,10 @@ lightboxSetWidth(550);
 .vAdminLabel span	{font-style:italic; margin-left:5px;}
 </style>
 
-<div class="lightboxContent">
+<div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->menuContextEdit().$curObj->getLabel("full")."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->inlineContextMenu().$curObj->getLabel("full")."</div>";
 
 	////	IMAGE & DETAILS DE l'USER
 	echo "<div class='personLabelImg'>".$curObj->getImg()."</div>";
@@ -21,10 +21,10 @@ lightboxSetWidth(550);
 	////	GROUPES D'UTILISATEURS
 	$groupsLabel=null;
 	foreach(MdlUserGroup::getGroups(null,$curObj) as $tmpGroup)  {$groupsLabel.="<img src='app/img/arrowRight.png'> ".$tmpGroup->title."<br>";}
-	if(!empty($groupsLabel))  {echo "<div class='objField'><div class='fieldLabel'><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";}
+	if(!empty($groupsLabel))  {echo "<div class='objField'><div><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";}
 	
 	////	ADMIN GENERAL/D'ESPACE
-	if($curObj->isAdminGeneral())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminGeneral.png'> ".Txt::trad("USER_adminGeneral")."</div>";}
-	elseif($curObj->isAdminSpace())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminSpace.png'> ".Txt::trad("USER_adminSpace")." <span>".Ctrl::$curSpace->name."</span></div>";}
+	if($curObj->isGeneralAdmin())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminGeneral.png'> ".Txt::trad("USER_adminGeneral")."</div>";}
+	elseif($curObj->isSpaceAdmin())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminSpace.png'> ".Txt::trad("USER_adminSpace")." <span>".Ctrl::$curSpace->name."</span></div>";}
 	?>
 </div>

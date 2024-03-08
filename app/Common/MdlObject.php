@@ -32,7 +32,7 @@ class MdlObject
 	const hasAttachedFiles=false;					//Ajouter des pièces jointes
 	const hasUsersLike=false;						//Like sur l'objet
 	const hasUsersComment=false;					//Ajout de commentaires sur l'objet
-	const htmlEditorField=null;						//Champ "description" le plus souvent
+	const descriptionEditor=false;					//Editeur html dans la description
 	public static $displayModes=[];					//Type d'affichage : ligne/block le plus souvent
 	public static $requiredFields=[];				//Champs obligatoires pour valider l'édition d'un objet
 	public static $searchFields=[];					//Champs de recherche
@@ -52,18 +52,18 @@ class MdlObject
 	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
-		////	Par défaut
+		////	Init l'id
 		$this->_id=0;
 		////	Assigne des propriétés à l'objet : Objet déjà créé / Objet à créer
 		if(!empty($objIdOrValues)){
-			//Récupère les propriétés en bdd / propriétés déjà passées en paramètre
+			//Récupère les propriétés en BDD ou celles passées en paramètre
 			$objValues=(is_numeric($objIdOrValues))  ?  Db::getLine("select * from ".static::dbTable." where _id=".(int)$objIdOrValues)  :  $objIdOrValues;
-			//S'il y a des propriétés
+			//Assigne chaque propriété
 			if(!empty($objValues)){
 				foreach($objValues as $propertieKey=>$propertieVal)  {$this->$propertieKey=$propertieVal;}
 			}
 		}
-		////	Identifiant tjs numérique + Identifiant générique (ex: "fileFolder-19")
+		////	Cast l'id en Interger  + Init l'identifiant générique (ex: "fileFolder-19")
 		$this->_id=(int)$this->_id;
 		$this->_typeId=static::objectType."-".$this->_id;
 	}
@@ -76,12 +76,19 @@ class MdlObject
 		if(isset($this->$propertyName))  {return $this->$propertyName;}
 	}
 
-	/********************************************************************************************
+	/*******************************************************************************************
 	 * VÉRIFIE SI UN OBJET EST DÉJÀ CRÉÉ ET POSSÈDE UN _ID  (L'OJECT PEUT NE PAS ENCORE EXISTER)
-	 ********************************************************************************************/
+	 *******************************************************************************************/
 	public static function isObject($curObj=null)
 	{
 		return (!empty($curObj) && is_object($curObj) && !empty($curObj->_id));
+	}
+
+	/*******************************************************************************************
+	 * VERIF : OBJECT EN COURS DE CRÉATION ET AVEC UN _ID==0 ?
+	 *******************************************************************************************/
+	public function isNew(){
+		return empty($this->_id);
 	}
 
 	/*******************************************************************************************
@@ -143,13 +150,6 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * VERIF : OBJECT EN COURS DE CRÉATION ET AVEC UN _ID==0 ?
-	 *******************************************************************************************/
-	public function isNew(){
-		return (empty($this->_id));
-	}
-
-	/*******************************************************************************************
 	 * VERIF : OBJET CRÉÉ À L'INSTANT ? (pour les mails de notif and co)
 	****************************************************************************************** */
 	public function isNewlyCreated(){
@@ -207,7 +207,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * EDITE LES AFFECTATIONS ET DROITS D'ACCÈS DE L'OBJET (cf."menuEdit()"). Par défaut : accès en lecture à l'espace courant
+	 * EDITE LES AFFECTATIONS ET DROITS D'ACCÈS DE L'OBJET (cf."editMenuSubmit()"). Par défaut : accès en lecture à l'espace courant
 	 *******************************************************************************************/
 	public function setAffectations($objectRightSpecific=null)
 	{
@@ -219,7 +219,7 @@ class MdlObject
 			//Réinitialise les droits, uniquement sur les espaces auxquels l'user courant a accès
 			if($this->isNew()==false){
 				$sqlSpaces="_idSpace IN (".implode(",",Ctrl::$curUser->getSpaces("ids")).")";
-				if(Ctrl::$curUser->isAdminGeneral())	{$sqlSpaces="(".$sqlSpaces." OR _idSpace is null)";}
+				if(Ctrl::$curUser->isGeneralAdmin())	{$sqlSpaces="(".$sqlSpaces." OR _idSpace is null)";}
 				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND ".$sqlSpaces);
 			}
 			//Ajoute les nouveaux droits d'accès : passés en paramètre / provenant du formulaire
@@ -253,7 +253,7 @@ class MdlObject
 			//Init
 			$this->_accessRight=0;
 			////	DROIT D'ACCES TOTAL  =>  Admin général  ||  Auteur de l'objet  ||  Nouvel objet
-			if(Ctrl::$curUser->isAdminGeneral() || $this->isAutor() || $this->createRight())  {$this->_accessRight=3;}
+			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())  {$this->_accessRight=3;}
 			////	DROIT D'ACCES EN LECTURE POUR UN ACCES EXTERNE
 			elseif($this->md5IdControl())  {$this->_accessRight=1;}
 			////	DROIT D'ACCES EN FONCTION DU CONTENEUR PARENT
@@ -263,8 +263,8 @@ class MdlObject
 			{
 				//Init la requete des droits d'acces
 				$sqlAccessRight="objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND _idSpace=".Ctrl::$curSpace->_id;
-				//Acces total si "isAdminSpace()" et objet affecté à l'espace (sauf pour les agendas perso : pas de privilège)
-				if(Ctrl::$curUser->isAdminSpace() && Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE ".$sqlAccessRight)>0 && static::objectType!="calendar" && $this->type!="user")  {$this->_accessRight=3;}
+				//Acces total si "isSpaceAdmin()" et objet affecté à l'espace (sauf pour les agendas perso : pas de privilège)
+				if(Ctrl::$curUser->isSpaceAdmin() && Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE ".$sqlAccessRight)>0 && static::objectType!="calendar" && $this->type!="user")  {$this->_accessRight=3;}
 				//Acces en fonction des affectations à l'user => recupere le droit le plus important !
 				else{
 					$this->_accessRight=Db::getVal("SELECT max(accessRight) FROM ap_objectTarget WHERE ".$sqlAccessRight." AND target IN (".static::sqlAffectations().")");
@@ -362,10 +362,10 @@ class MdlObject
 	public function getLabel()
 	{
 		//Label principal
-		if(!empty($this->name))				{$tmpLabel=$this->name;}		//exple: nom de fichier
-		elseif(!empty($this->title))		{$tmpLabel=$this->title;}		//exple: task
-		elseif(!empty($this->description))	{$tmpLabel=$this->description;}	//exple: sujet/message du forum (sans titre)
-		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//exple: link
+		if(!empty($this->name))				{$tmpLabel=$this->name;}		//Ex: nom de fichier
+		elseif(!empty($this->title))		{$tmpLabel=$this->title;}		//Ex: task
+		elseif(!empty($this->description))	{$tmpLabel=$this->description;}	//Ex: sujet/message du forum (sans titre)
+		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//Ex: link
 		else								{$tmpLabel=null;}
 		//Renvoi un résultat "clean"
 		return Txt::reduce($tmpLabel,50);
@@ -373,7 +373,7 @@ class MdlObject
 
 	/*******************************************************************************************
 	 * URL D'ACCÈS À L'OBJET  :  $display => "vue" / "edit" / "delete" / "default"
-	****************************************************************************************** */
+	********************************************************************************************/
 	public function getUrl($display=null)
 	{
 		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe plus ou pas encore
@@ -382,17 +382,17 @@ class MdlObject
 			$urlCtrl="?ctrl=".static::moduleName;
 			if($display=="vue")									{return $urlCtrl."&typeId=".$this->_typeId."&action=Vue".static::objectType;}				//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
 			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}	//Url de suppression via "CtrlObject->delete()"
-			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=folderEdit&typeId=".$this->_typeId;}							//Edite un dossier via "actionFolderEdit()"
+			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=EditFolder&typeId=".$this->_typeId;}							//Edite un dossier via "actionEditFolder()"
 			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}			//Edite un objet lambda : via une "action" spécifique
 			elseif(static::isContainerContent())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId."&typeIdChild=".$this->_typeId;}	//Affichage par défaut d'un "content" dans son "Container" (file/contact/task/link/forumMessage). Surchargé pour les "calendarEvent" car on doit sélectionner l'agenda principal de l'evt
 			else												{return $urlCtrl."&typeId=".$this->_typeId;}												//Affichage par défaut (Folder,news,forumSubject...)
 		}
 	}
 
-	/*******************************************************************************************
-	 * URL D'ACCÈS À L'OBJET :  Accès direct à l'élément  ||  Accès depuis une notifs mail
-	 * => Cf. "Ctrl::userConnectionSpaceSelection()"
-	 *******************************************************************************************/
+	/*****************************************************************************************************************
+	 * URL D'ACCÈS À L'OBJET
+	 * Accès direct à l'élément  ||  Accès depuis une notifs mail (cf. "Ctrl::userConnectionSpaceSelection()")
+	 *****************************************************************************************************************/
 	public function getUrlExternal()
 	{
 		//Depuis la page de connexion : Cible l'espace courant > puis l'url encodé de l'objet (module + typeId de l'objet)
@@ -404,7 +404,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public static function getUrlNew()
 	{
-		$url=(static::isFolder==true)  ?  "?ctrl=object&action=FolderEdit"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";//Nouveau dossier ou nouvel objet
+		$url=(static::isFolder==true)  ?  "?ctrl=object&action=EditFolder"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";//Nouveau dossier ou nouvel objet
 		if(!empty(Ctrl::$curContainer))  {$url.="&_idContainer=".Ctrl::$curContainer->_id;}//Ajoute l'id du container?
 		return $url."&typeId=".static::objectType."-0";
 	}
@@ -564,7 +564,7 @@ class MdlObject
 		if(Req::isParam("notifMail") || !empty($addUserIds))
 		{
 			////	Sujet : "Fichier créé par boby SMITH"
-			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Exple: "Fichier créé par" / "News modifiée par"
+			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par" / "News modifiée par"
 			$subject=ucfirst($this->tradObject($tradCreaModif))." ".Ctrl::$curUser->getLabel();
 			////	Message : Label principal de l'objet et si besoin description de l'objet
 			if(!empty($messageSpecific))	{$messageObj="<div><b>".$messageSpecific."</b></div>";}	//ex: nom des fichiers uploadés, etc 
@@ -590,13 +590,13 @@ class MdlObject
 			////	Envoi du message
 			if(!empty($mailUserIds))
 			{
-				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";												//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
-				if(Req::isParam("mailOptions"))  {$options=array_merge($options,Req::param("mailOptions"));}					//Options sélectionnées par l'user
-				if(static::htmlEditorField!=null)  {$message=$this->attachedFileImageCid($message);}							//Affiche si besoin les images en pièce jointe dans le corps du mail
-				if(Req::isDevServer())  {$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}	//Evite le spam en DEV (cf. "getUrlExternal()")
-				$attachedFiles=$this->attachedFileList();																		//Fichiers joints de l'objet
-				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}									//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
-				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);										//Envoie l'email
+				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";										//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
+				if(Req::isParam("mailOptions"))  		{$options=array_merge($options,Req::param("mailOptions"));}		//Options sélectionnées par l'user
+				if(static::descriptionEditor==true)		{$message=$this->attachedFileImageCid($message);}				//Affiche si besoin les images en pièce jointe dans le corps du mail
+				if(Req::isDevServer())  				{$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}		//Evite le spam en DEV (cf. "getUrlExternal()")
+				$attachedFiles=$this->attachedFileList();																//Fichiers joints de l'objet
+				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}							//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
+				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);								//Envoie l'email
 			}
 		}
 	}
@@ -685,22 +685,22 @@ class MdlObject
 			$objSearchFields=(!empty($params["searchFields"]))  ?  array_intersect(static::$searchFields,$params["searchFields"])  :  static::$searchFields;
 			////	Recherche "l'expression exacte"
 			if($params["searchMode"]=="exactPhrase"){
-				foreach($objSearchFields as $tmpField){																					//Recherche sur chaque champ de l'objet
-					$searchText=($tmpField==static::htmlEditorField) ?  htmlentities($params["searchText"])  :  $params["searchText"];	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-					$returnSql.="`".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";										//"sqlLike" délimite le texte avec "%"  &&  "OR" pour rechercher sur le champ suivant
+				foreach($objSearchFields as $tmpField){																											//Recherche sur chaque champ de l'objet
+					$searchText=($tmpField=="description" && static::descriptionEditor==true) ?  htmlentities($params["searchText"])  :  $params["searchText"];	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
+					$returnSql.="`".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";																//"sqlLike" délimite le texte avec "%"  &&  "OR" pour rechercher sur le champ suivant
 				}
 			}
 			////	Recherche "n'importe quel mot"  ||  Recherche "Tous les mots"
 			else{
-				$searchWords=explode(" ",$params["searchText"]);												//Liste des mots clés recherchés
-				$operatorWords=($params["searchMode"]=="anyWord")  ?  " OR "  :  " AND ";						//Opérateur entre chaque mot : "n'importe quel mot" ou "Tous les mots" (laisser les espaces)
-				foreach($objSearchFields as $tmpField){															//Recherche sur chaque champ de l'objet
-					$sqlWords=null;																				//Init la sous-requete pour chaque mot
-					foreach($searchWords as $tmpWord){															//Sélection SQL pour chaque mot recherché
-						$tmpWord=($tmpField==static::htmlEditorField)  ?  htmlentities($tmpWord)  :  $tmpWord;	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;		//"sqlLike" délimite le texte avec "%"  
+				$searchWords=explode(" ",$params["searchText"]);																		//Liste des mots clés recherchés
+				$operatorWords=($params["searchMode"]=="anyWord")  ?  " OR "  :  " AND ";												//Opérateur entre chaque mot : "n'importe quel mot" ou "Tous les mots" (laisser les espaces)
+				foreach($objSearchFields as $tmpField){																					//Recherche sur chaque champ de l'objet
+					$sqlWords=null;																										//Init la sous-requete pour chaque mot
+					foreach($searchWords as $tmpWord){																					//Sélection SQL pour chaque mot recherché
+						$tmpWord=($tmpField=="description" && static::descriptionEditor==true)  ?  htmlentities($tmpWord)  :  $tmpWord;	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
+						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;								//"sqlLike" délimite le texte avec "%"  
 					}	
-					$returnSql.="(".trim($sqlWords,$operatorWords).") OR ";										//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
+					$returnSql.="(".trim($sqlWords,$operatorWords).") OR ";																//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
 				}
 			}
 			////	Supprime le dernier opérateur "OR" entre chaque champ de recherche
@@ -729,9 +729,10 @@ class MdlObject
 	/*******************************************************************************************
 	 * DATE DE CRÉATION OU MODIFICATION
 	 *******************************************************************************************/
-	public function dateLabel($dateModif=false, $format="normal")
+	public function dateLabel($isDateCrea=true, $format="dateFull")
 	{
-		return ($dateModif==true)  ?  Txt::dateLabel($this->dateModif,$format)  :  Txt::dateLabel($this->dateCrea,$format);
+		//Renvoie la date de création si elle est demandée || si "dateModif" n'est pas (encore) spécifié 
+		return ($isDateCrea==true || empty($this->dateModif))  ?  Txt::dateLabel($this->dateCrea,$format)  :  Txt::dateLabel($this->dateModif,$format);
 	}
 
 	/*******************************************************************************************
@@ -740,7 +741,7 @@ class MdlObject
 	public function autorDateLabel($withAutorIcon=false)
 	{
 		$autorIcon=($withAutorIcon==true)  ?  Ctrl::getObj("user",$this->_idUser)->getImg(true,true)  :  null;
-		return $autorIcon." ".$this->autorLabel()."<div class='objAutorDateCrea'>".$this->dateLabel()."</div>";
+		return $autorIcon." ".$this->autorLabel()."<div class='objAutorDateCrea'>".$this->dateLabel(false)."</div>";
 	}
 
 	/*******************************************************************************************
@@ -825,7 +826,7 @@ class MdlObject
 				foreach($this->attachedFileList() as $tmpFile){
 					$getFileUrl="?ctrl=object&action=AttachedFileDownload&_id=".$tmpFile["_id"];
 					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::urlGetFile($getFileUrl,$tmpFile["name"]);}//Download externe via mobileApp : modif l'url pour switcher sur "ctrl=misc"
-					$this->_attachedFilesMenu.="<div class='attachedFileMenu sLink' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
+					$this->_attachedFilesMenu.="<div class='attachedFileMenu' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
 				}
 			}
 		}
@@ -834,7 +835,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * FICHIER JOINT : AJOUTE LES FICHIERS JOINTS DU "menuEdit()"
+	 * FICHIER JOINT : AJOUTE LES FICHIERS JOINTS DU "editMenuSubmit()"
 	 *******************************************************************************************/
 	public function attachedFileAdd()
 	{
@@ -855,13 +856,13 @@ class MdlObject
 						//Optimise si besoin le fichier + chmod
 						if(File::isType("imageResize",$filePath))  {File::imageResize($filePath,$filePath,1600);}
 						File::setChmod($filePath);
-						//Nouvelle Image/Vidéo/Mp3 insérée dans l'éditeur (cf. "VueObjHtmlEditor.php") : remplace le "fileSrcTmp" par le path final
-						if(static::htmlEditorField!=null && File::isType("attachedFileInsert",$tmpFile["name"])){												//Vérifie qu'il s'agit d'un fichier autorisé
+						//Nouvelle Image/Vidéo/Mp3 insérée dans l'éditeur TinyMce : remplace le "fileSrcTmp" par le path final
+						if(static::descriptionEditor==true && File::isType("attachedFileInsert",$tmpFile["name"])){												//Vérifie qu'il s'agit d'un fichier autorisé
 							$inputCpt=str_replace("attachedFile","",$inputId);																					//Récupère le compteur de l'input (cf. "VueObjAttachedFile.php")
-							$editorContent=Db::getVal("SELECT ".static::htmlEditorField." FROM ".static::dbTable." WHERE _id=".$this->_id);						//Récupère le texte de l'éditeur
+							$editorContent=Db::getVal("SELECT `description` FROM `".static::dbTable."` WHERE _id=".$this->_id);									//Récupère le texte de l'éditeur
 							$editorContent=str_replace("fileSrcTmp".$inputCpt, CtrlObject::attachedFileDisplayUrl($_idFile,$tmpFile["name"]), $editorContent);	//Remplace "fileSrcTmp" par l'url d'affichage du fichier
 							$editorContent=str_replace("attachedFileTagTmp".$inputCpt, "attachedFileTag".$_idFile, $editorContent);								//Remplace "attachedFileTagTmp" par l'id du fichier en BDD
-							Db::query("UPDATE ".static::dbTable." SET ".static::htmlEditorField."=".Db::format($editorContent)." WHERE _id=".$this->_id);		//Update le texte de l'éditeur !
+							Db::query("UPDATE ".static::dbTable." SET `description`=".Db::format($editorContent)." WHERE _id=".$this->_id);						//Update le texte de l'éditeur !
 						}
 					}
 				}
@@ -911,7 +912,7 @@ class MdlObject
 	{
 		if(!empty($_idComment)){
 			$idUser=Db::getVal("SELECT _idUser FROM ap_objectComment WHERE _id=".(int)$_idComment);
-			return (Ctrl::$curUser->isAdminGeneral() || $idUser==Ctrl::$curUser->_id);
+			return (Ctrl::$curUser->isGeneralAdmin() || $idUser==Ctrl::$curUser->_id);
 		}
 	}
 

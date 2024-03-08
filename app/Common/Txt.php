@@ -41,7 +41,7 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE UN TEXT TRADUIT (ex: Txt::trad('rootFolder')")
+	 * AFFICHE UN TEXT TRADUIT
 	 *******************************************************************************************/
 	public static function trad($keyTrad, $addSlashes=false)
 	{
@@ -106,8 +106,8 @@ class Txt
 	public static function tooltip($text)
 	{
 		if(!empty($text)){
-			$text=nl2br(str_replace('"','&quot;',$text));	//Remplace les quotes et retours à la ligne puis renvoie le résultat !
-			$text=strip_tags($text,"<span><img><br><hr>");	//Enlève les principale balises
+			$text=nl2br(str_replace('"','&quot;',$text));		//Remplace les quotes et retours à la ligne puis renvoie le résultat !
+			$text=strip_tags($text,"<img><br><span><hr><i>");	//Enlève les principale balises (sauf <img> <br>...)
 			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}	//Place les urls dans une balise <a>
 			return $text;
 		}
@@ -180,7 +180,7 @@ class Txt
 	/***************************************************************************************************************************************************************************
 	 * AFFICHAGE D'UNE DATE ET HEURE
 	 * $timeBegin & $timeEnd =>  Timestamp unix  ||  format DateTime en Bdd
-	 * $format 				 =>  "normal" -> "lun. 8 mars 2050 9:05"  ||  "mini" -> "8 mar. 2050" ou "9:05"  ||  "dateFull" -> "lundi 8 mars 2050"  ||  "date" -> "8/03/2050"
+	 * $format 				 =>  "normal" -> "lun. 8 mars 2050 9:05"  ||  "mini" -> "8 mar. 2050" ou "9:05"  ||  "dateFull" -> "lun. 8 mars 2050"  ||  "date" -> "8/03/2050"
 	 * Note : les "task" peuvent avoir un $dateBegin null et un $dateEnd non null (cf. "MdlTask::dateBeginEnd()")
 	 ***************************************************************************************************************************************************************************/
 	public static function dateLabel($timeBegin=null, $format="normal", $timeEnd=null)
@@ -204,10 +204,10 @@ class Txt
 				}
 
 				//Formatage du jour/mois => patterns sur https://unicode-org.github.io/icu/userguide/format_parse/datetime/
-				$dateLabel=$pattern=null;																			//Init le label et le pattern
-				if($format=="normal" && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (pas dans le $pattern !)
-				elseif($format=="normal" || $format=="dateFull")				{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 mars"
-				elseif($format=="mini" && $diffDays==true)						{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
+				$dateLabel=$pattern=null;																									//Init le label et le pattern
+				if(($format=="normal" || $format=="dateFull") && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (pas dans le $pattern !)
+				elseif($format=="normal" || $format=="dateFull")										{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 mars"
+				elseif($format=="mini" && $diffDays==true)												{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
 				//Formatage année (si différente de l'année courante)
 				if($format!="mini" &&  ((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y"))))  {$pattern.=" Y";}
 				//Formatage heure:minute || date
@@ -215,10 +215,10 @@ class Txt
 				elseif($format=="date")						{$pattern="dd/MM/Y";}	//Date au format basique				-> Ex: "08/03/2050"
 
 				//Applique le formatage via la class "IntlDateFormatter()" avec la "lang" et "timezone" locale
-				$dateFormat->setPattern($pattern);
+				if(!empty($pattern))	{$dateFormat->setPattern($pattern);}
 				if(!empty($timeBegin))	{$dateLabel.=$dateFormat->format($timeBegin);}																//Label de début
 				if(!empty($timeEnd)){																												//Label de fin :
-					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente 	-> Exple: "11:30-12:30"
+					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente 	-> Ex: "11:30-12:30"
 					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Différents jours : ajoute la fin 	-> même $pattern que le début
 					elseif(empty($timeBegin))					{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin, mais sans début		-> même $pattern que le début
 				}
@@ -260,14 +260,14 @@ class Txt
 	/*******************************************************************************************
 	 * INPUTS HIDDEN (Ctrl, Action, TypeId, etc)  &&  BOUTON SUBMIT DU FORMULAIRE
 	 *******************************************************************************************/
-	public static function submitButton($tradSubmit="validate", $isMainButton=true)
+	public static function submitButton($tradButton="record", $isMainButton=true)
 	{
 		return '<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
 				<input type="hidden" name="action" value="'.Req::$curAction.'">
 				<input type="hidden" name="formValidate" value="1">
-				'.(Req::isParam('typeId')?'<input type="hidden" name="typeId" value="'.Req::param("typeId").'">':null).'
+				'.(Req::isParam("typeId")?'<input type="hidden" name="typeId" value="'.Req::param("typeId").'">':null).'
 				<div class="'.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
-					<button type="submit">'.(self::isTrad($tradSubmit)?self::trad($tradSubmit):$tradSubmit).' <img src="app/img/loadingSmall.png" class="submitButtonLoading"></button>
+					<button type="submit">'.(self::isTrad($tradButton)?self::trad($tradButton):$tradButton).' <img src="app/img/loading.png" class="submitButtonLoading"></button>
 				</div>';
 	}
 

@@ -1,31 +1,28 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxSetWidth(500);
 
-////	INIT
+////	Sélectionner au moins une demande d'inscription
 $(function(){
-	////	Au moins une personne sélectionnée
 	$("form").submit(function(){
-		if($(this).find("[name='inscriptionValidate[]']:checked").length==0){
-			notify("<?= Txt::trad("selectUser") ?>");
-			return false;
-		}
+		if($(this).find("[name='inscriptionValidate[]']:checked").length==0)   {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	});
 });
 </script>
+
 
 <style>
 .vInscription								{padding:10px;}
 .vInscription label							{margin-right:10px;}
 .vInscriptionMessage, .vInscriptionSpace	{margin-top:8px; margin-left:30px; font-weight:normal; }
 .vInscriptionMessage:empty					{display:none;}
-.submitButtonMain							{padding-top:20px; padding-bottom:0px;}/*surcharge*/
-.submitButtonMain button					{width:320px;}/*surcharge*/
+.submitButtonMain							{margin:30px 0px;}/*surcharge*/
+.submitButtonMain button					{width:350px; height:50px;}/*surcharge*/
 .submitButtonMain button img				{margin-right:10px;}
 </style>
 
 
-<form action="index.php" method="post" class="lightboxContent">
+<form action="index.php" method="post">
 	<div class="lightboxTitle"><?= Txt::trad("userInscriptionValidateTooltip") ?></div>
 	<?php
 	//// LISTE DES INSCRIPTIONS D'USERS

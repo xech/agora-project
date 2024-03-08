@@ -124,10 +124,10 @@ class CtrlOffline extends Ctrl
 	/*******************************************************************************************
 	 * AJAX : TEST LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC
 	 *******************************************************************************************/
-	public static function actionPublicSpaceAccess()
+	public static function actionPublicSpacePassword()
 	{
-		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("publicSpace_idSpaceAccess")." AND BINARY `password`=".Db::param("publicSpacePassword"));//"BINARY"=>case sensitive
-		echo empty($passwordValid) ? "false" : "true";
+		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpaceAccess")." AND BINARY `password`=".Db::param("password"));//"BINARY"=>case sensitive
+		if(empty($passwordValid))  {echo "passwordError";}
 	}
 
 	/*******************************************************************************************
@@ -148,14 +148,14 @@ class CtrlOffline extends Ctrl
 					file_put_contents($imgPath, file_get_contents($gClientUser["picture"]));					//Enregistre l'image dans le fichier tmp
 					File::imageResize($imgPath,$objUser->pathImgThumb(),200);									//Redimensionne l'image
 				}
-				Ctrl::userAuthToken("create",$objUser->_id);													//Créé le token de connexion auto
+				self::userAuthToken("create",$objUser->_id);													//Créé le token de connexion auto
 				echo "userConnected";																			//Retour OK
 			}
 		}
 	}
 
 	/*******************************************************************************************
-	 * ACTION : INSTALL DE L'AGORA
+	 * ACTION : INSTALL DE L'ESPACE
 	 *******************************************************************************************/
 	public static function actionInstall()
 	{
@@ -163,20 +163,20 @@ class CtrlOffline extends Ctrl
 		static::$isMainPage=true;
 		$dbFile="app/ModOffline/db.sql";
 
-		////	Controle de version PHP  && Verif si l'application est déjà installée  &&  Vérif si le fichier "db.sql" est toujours disponible
+		////	Controle de version PHP  &&  Verif si l'application est déjà installée  &&  Vérif si le fichier "db.sql" est toujours disponible
 		Req::verifPhpVersion();
-		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && self::installDbControl(db_host,db_login,db_password,db_name)=="dbErrorAlreadyInstalled")
-			{self::noAccessExit(Txt::trad("INSTALL_dbErrorAlreadyInstalled"));}
+		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && DbInstall::dbControl(db_host,db_login,db_password,db_name)=="errorDbExist")
+			{self::noAccessExit(Txt::trad("INSTALL_errorDbExist"));}
 		elseif(is_file($dbFile)==false)
-			{self::noAccessExit(Txt::trad("INSTALL_dbErrorNoSqlFile"));}
+			{self::noAccessExit(Txt::trad("INSTALL_errorDbNoSqlFile"));}
 
-		////	Affiche/Valide le formulaire
+		////	Affiche ou Valide le formulaire
 		if(Req::isParam("formValidate")==false)  {static::displayPage("VueInstall.php");}
 		else
 		{
 			////	CONTROLES LES PARAMS D'ACCES A LA BDD
-			$installDbControl=self::installDbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
-			if($installDbControl!="dbAvailable" && $installDbControl!="dbToCreate")  {$result["notifError"]=Txt::trad("INSTALL_".$installDbControl);}
+			$dbControl=DbInstall::dbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
+			if(preg_match("/error/i",$dbControl))  {$result=Txt::trad("INSTALL_".$dbControl);}
 			////	CONTROLE OK : INSTALL
 			else
 			{
@@ -185,86 +185,38 @@ class CtrlOffline extends Ctrl
 				$spaceDiskLimit=File::getBytesSize(Req::param("spaceDiskLimit")."go");
 				File::updateConfigFile(["db_host"=>Req::param("db_host"), "db_login"=>Req::param("db_login"), "db_password"=>Req::param("db_password"), "db_name"=>Req::param("db_name"), "limite_nb_users"=>"10000", "limite_espace_disque"=>$spaceDiskLimit]);
 
-				////	CREE LA BASE DE DONNEES (AVEC CONTROLES D'ACCES)
-				if($installDbControl=="dbToCreate"){
-					$objPDO=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
-					$objPDO->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
+				////	CREE LA BASE DE DONNEES DU NOUVEL ESPACE  &&  PUIS ON S'Y CONNECTE !
+				if($dbControl=="dbAbsent"){
+					$pdoSpace=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
+					$pdoSpace->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
 				}
 				//Se connecte au sgbd && Importe la Bdd
-				$objPDO=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
+				$pdoSpace=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
 				$handle=fopen($dbFile,"r");
 				foreach(explode(";",fread($handle,filesize($dbFile))) as $tmpQuery){
-					if(strlen($tmpQuery)>5)  {$objPDO->query($tmpQuery);}
+					if(strlen($tmpQuery)>5)  {$pdoSpace->query($tmpQuery);}
 				}
 				//Supprime le fichier Sql après l'import
 				File::rm($dbFile);
 
-				////	INITIALISE LES TABLES DE LA BDD
-				//Init les données
-				$spaceName=Req::param("spaceName");
-				$spaceDescription=Txt::trad("INSTALL_spaceDescription");
-				$spaceDescriptionBis=Req::param("spaceDescription");
-				$spaceTimeZone=Req::param("timezone");
-				$spaceLang=Req::param("lang");
-				$spacePublic=(Req::param("spacePublic")==1)  ?  1  :  "NULL";
-				$adminLogin=Req::param("adminLogin");
-				$adminPassword=password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT);
-				$adminName=Req::param("adminName");
-				$adminFirstName=Req::param("adminFirstName");
-				$adminMail=Req::param("adminMail");
-				$newsDescription=Txt::trad("INSTALL_dataDashboardNews");
-
-/**************************!!!!		ATTENTION : TOUJOURS UTILISER "$objPDO->query()"	!!!!********************/
-				//Paramétrage général
-				$objPDO->query("UPDATE ap_agora SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescription).", version_agora=".$objPDO->quote(Req::appVersion()).", timezone=".$objPDO->quote($spaceTimeZone).", lang=".$objPDO->quote($spaceLang).", dateUpdateDb=NOW()");
-				//Paramétrage du 1er espace
-				$objPDO->query("UPDATE ap_space SET `name`=".$objPDO->quote($spaceName).", `description`=".$objPDO->quote($spaceDescriptionBis).", public=".$spacePublic." WHERE _id=1");
-				//User principal (admin général)
-				$objPDO->query("UPDATE ap_user SET `login`=".$objPDO->quote($adminLogin).", `password`=".$objPDO->quote($adminPassword).", `name`=".$objPDO->quote($adminName).", firstName=".$objPDO->quote($adminFirstName).", mail=".$objPDO->quote($adminMail)." WHERE _id=1");
-				//Renomme l'agenda de l'espace
-				$objPDO->query("UPDATE ap_calendar SET `title`=".$objPDO->quote($spaceName)." WHERE _id=1 AND type='ressource'");
-				//INSERT LA PREMIÈRE ACTUALITÉ
-				$objPDO->query("INSERT INTO ap_dashboardNews SET `description`=".$objPDO->quote($newsDescription).", _idUser=1, dateCrea=NOW()");
-				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='dashboardNews', _idObject=".(int)$objPDO->lastInsertId().", _idSpace=1, target='spaceUsers', accessRight=1");
-				//INSERT LE PREMIER SONDAGE
-				$objPDO->query("INSERT INTO ap_dashboardPoll SET _id=1, title=".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
-				$objPDO->query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, `rank`) VALUES ('5bd1903d3df9u8t',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".$objPDO->quote(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
-				$objPDO->query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, `target`, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
-				//INSERT LE PREMIER EVT SUR L'AGENDA COMMUN
-				$objPDO->query("INSERT INTO ap_calendarEvent SET title=".$objPDO->quote(Txt::trad("INSTALL_dataCalendarEvt")).", dateBegin=NOW(), dateEnd=NOW(), contentVisible='public', dateCrea=NOW(), _idUser=1");
-				$objPDO->query("INSERT INTO ap_calendarEventAffectation SET _idEvt=1, _idCal=1, confirmed=1");
-				//INSERT LE PREMIER SUJET DU FORUM
-				$objPDO->query("INSERT INTO ap_forumSubject SET title=".$objPDO->quote(Txt::trad("INSTALL_dataForumSubject1")).", description=".$objPDO->quote(Txt::trad("INSTALL_dataForumSubject2")).", dateCrea=NOW(), _idUser=1");
-				$objPDO->query("INSERT INTO ap_objectTarget SET objectType='forumSubject', _idObject=1, _idSpace=1, `target`='spaceUsers', accessRight='1.5'");
-/***************************************************************************************************************************/
+				////	INSTALL LES PARAMETRES DE BASE DE LA DB (nom, description, 1er user, etc)
+				$installParams["version_agora"]		=Req::appVersion();
+				$installParams["spaceName"]			=Req::param("spaceName");
+				$installParams["spaceDescription"]	=Req::param("spaceDescription");
+				$installParams["spaceTimeZone"]		=Req::param("timezone");
+				$installParams["spaceLang"]			=Req::param("lang");
+				$installParams["spacePublic"]		=(Req::param("spacePublic")==1)  ?  1  :  "NULL";
+				$installParams["adminName"]			=Req::param("adminName");
+				$installParams["adminFirstName"]	=Req::param("adminFirstName");
+				$installParams["adminMailLogin"]	=Req::param("adminMailLogin");
+				$installParams["adminPassword"]		=password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT);
+				DbInstall::initParams($pdoSpace, $installParams);
 
 				//REDIRECTION AVEC NOTIFICATION
-				$result["redirSuccess"]="index.php?disconnect=1&notify=INSTALL_installOk";
+				$result="installOK";
 			}
 			//RENVOI LE RESULTAT
-			echo json_encode($result);
+			echo $result;
 		}
-	}
-
-	/*******************************************************************************************
-	 * VERIFIE LA CONNEXION À LA DATABASE
-	 *******************************************************************************************/
-	public static function installDbControl($db_host, $db_login, $db_password, $db_name)
-	{
-		//Connection PDO
-		try{
-			//Vérif la connexion à la db
-			$objPDO=new PDO("mysql:host=".$db_host.";dbname=".$db_name.";charset=utf8;", $db_login, $db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
-			//Vérif si l'appli est déjà installée sur la db
-			$result=$objPDO->query("SHOW TABLES FROM `".$db_name."` WHERE `Tables_in_".$db_name."` LIKE 'gt_%' OR `Tables_in_".$db_name."` LIKE 'ap_%'");
-			if(count($result->fetchAll(PDO::FETCH_COLUMN,0))>0)  {return "dbErrorAlreadyInstalled";}//Erreur: L'application est déjà installée
-		}
-		//Erreur de connexion à la bdd
-		catch(PDOException $exception){
-			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbToCreate";}		//Erreur: Bdd non installée
-			else																{return "dbErrorConnect";}	//Erreur: Pas de connexion à la Bdd
-		}
-		//Pas d'erreur : Db disponible
-		return "dbAvailable";
 	}
 }

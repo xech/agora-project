@@ -16,28 +16,18 @@ class MdlTaskFolder extends MdlObjectFolder
 	const objectType="taskFolder";
 	const dbTable="ap_taskFolder";
 	const MdlObjectContent="MdlTask";
-	
+
 	/*******************************************************************************************
-	 * SURCHARGE : DETAILS COMPLEMENTAIRES DU DOSSIER -> SYNTHESE DES "ADVANCEMENT" ET "DATEBEGINEND()" DES TACHES DU DOSSIER
+	 * SURCHARGE :  POURCENTAGE DE PROGRESSION DANS LA TIMELINE
 	 *******************************************************************************************/
 	public function folderOtherDetails()
 	{
-		$textReturn=null;
-		$MdlObjectContent=static::MdlObjectContent;
-		$folderDetails=Db::getLine("SELECT ROUND(AVG(advancement),0) as advancementAverage, MIN(dateBegin) as dateBegin, MAX(dateEnd) as dateEnd FROM ".$MdlObjectContent::dbTable." WHERE _idContainer=".$this->_id);
-		//Avancement Moyen
-		if(!empty($folderDetails["advancementAverage"])){
-			$txtBar="<img src='app/img/task/advancement.png'> ".$folderDetails["advancementAverage"]." %";
-			$txtTooltip="<img src='app/img/task/advancement.png'> ".Txt::trad("TASK_advancementAverage")." : ".$folderDetails["advancementAverage"]." %";
-			$textReturn.=Tool::percentBar((int)$folderDetails["advancementAverage"], $txtBar, $txtTooltip, false, MdlTask::barWidth);
+		//Affiche la barre s'il ya une date au plus tôt et au plus tard sur l'ensemble des tâches du dossier
+		$tasks=Db::getLine("SELECT  MIN(dateBegin) as dateBeginMin,  MAX(dateEnd) as dateEndMax  FROM  ".MdlTask::dbTable."  WHERE  _idContainer=".$this->_id);
+		if(!empty($tasks["dateBeginMin"]) && !empty($tasks["dateEndMax"])){
+			$barLabel="<img src='app/img/task/date.png'> ".Txt::dateLabel($tasks["dateBeginMin"],"date",$tasks["dateEndMax"]);
+			$barTooltip=Txt::trad("TASK_folderDateBeginEnd")." : &nbsp; ".Txt::dateLabel($tasks["dateBeginMin"],"date",$tasks["dateEndMax"]);
+			return Tool::progressBar($barLabel, $barTooltip);//Pas de $percentProgress (cf. "isDelayed()" multiple)
 		}
-		//Synthese des "dateBeginEnd()" des tâches
-		if(!empty($folderDetails["dateBegin"]) && !empty($folderDetails["dateEnd"])){
-			$fillPercent=((time()-strtotime($folderDetails["dateBegin"])) / (strtotime($folderDetails["dateEnd"])-strtotime($folderDetails["dateBegin"]))) * 100;
-			$txtBar="<img src='app/img/task/date.png'> ".Txt::dateLabel($folderDetails["dateBegin"],"mini",$folderDetails["dateEnd"]);
-			$txtTooltip=Txt::dateLabel($folderDetails["dateBegin"],"normal",$folderDetails["dateEnd"]);
-			$textReturn.=Tool::percentBar($fillPercent, $txtBar, $txtTooltip, false, MdlTask::barWidth);
-		}
-		return $textReturn." &nbsp; &nbsp; ";
 	}
 }

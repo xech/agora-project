@@ -47,7 +47,7 @@
 	 *******************************************************************************************/
 	public function addContentRight()
 	{
-		if($this->isRootFolder())	{return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}//"true" si "isAdminSpace()" ou aucune limite pour les users lambda
+		if($this->isRootFolder())	{return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}//"true" si "isSpaceAdmin()" ou aucune limite pour les users lambda
 		else						{return parent::addContentRight();}
 	}
 
@@ -153,11 +153,6 @@
 	}
 
 	/*******************************************************************************************
-	 * DÉTAILS COMPLÉMENTAIRES SUR LE DOSSIER => À SURCHARGER!
-	 *******************************************************************************************/
-	public function folderOtherDetails(){}
-
-	/*******************************************************************************************
 	 * CHEMIN D'UN DOSSIER (FONCTION RÉCURSIVE)
 	 * $typeReturn= object | id | real | text | zip
 	 *******************************************************************************************/
@@ -235,4 +230,9 @@
 		////	Renvoie l'arborescence finale
 		return $curFolderTree;
 	}
+
+	/*******************************************************************************************
+	 * DÉTAILS COMPLÉMENTAIRES SUR LE DOSSIER => À SURCHARGER !
+	 *******************************************************************************************/
+	public function folderOtherDetails(){}
 }

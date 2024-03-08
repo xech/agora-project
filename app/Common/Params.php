@@ -25,3 +25,7 @@ define("PATH_WALLPAPER_CUSTOM", PATH_DATAS."wallpaper/");
 define("PATH_WALLPAPER_DEFAULT", "app/img/wallpaper/");
 define("WALLPAPER_DEFAULT_DB_PREFIX","default@@");//Préfixe en DB des wallpapers par défaut
 define("PATH_ICON_FOLDER", "app/img/folder/");
+
+////	INFOS DE TEMPS
+define("TIME_3YEARS", 94608000);
+define("TIME_COOKIES", (time()+TIME_3YEARS));

@@ -57,7 +57,7 @@ class CtrlMail extends Ctrl
 					$curObj->description=str_replace($oldFile["url"], CtrlObject::attachedFileDisplayUrl($_idNewFile,$oldFile["name"]), $curObj->description);				//Remplace le "attachedFileDisplayUrl()" dans le texte de l'éditeur
 				}
 				//Update le texte de l'éditeur  &&  recharge l'email (avec les nouveaux fichiers & co)
-				Db::query("UPDATE ".$curObj::dbTable." SET ".$curObj::htmlEditorField."=".Db::format($curObj->description)." WHERE _id=".$curObj->_id);
+				Db::query("UPDATE ".$curObj::dbTable." SET description=".Db::format($curObj->description)." WHERE _id=".$curObj->_id);
 				$curObj=Ctrl::getObjTarget($curObj->_typeId);
 			}
 			////	Envoi du mail
@@ -79,7 +79,7 @@ class CtrlMail extends Ctrl
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
 		////	Charge un ancien mail ou un nouveau mail  &&  Affiche la page
-		$vDatas["curMail"]=Req::isParam("oldMailTypeId")  ?  Ctrl::getObjTarget(Req::param("oldMailTypeId"))  :  Ctrl::getObj("mail");
+		$vDatas["curObj"]=Req::isParam("oldMailTypeId")  ?  Ctrl::getObjTarget(Req::param("oldMailTypeId"))  :  Ctrl::getObj("mail");
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 

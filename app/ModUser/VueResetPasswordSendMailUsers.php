@@ -3,9 +3,11 @@
 lightboxSetWidth(450);
 
 ////	Confirme l'envoi?
-function formControl(){
-	if(!confirm("<?= TXT::trad("USER_sendCoordsConfirm") ?>"))  {return false;}
-}
+$(function(){
+	$("form").submit(function(event){
+		if(!confirm("<?= TXT::trad("USER_sendCoordsConfirm") ?>"))  {return false;}
+	});
+});
 </script>
 
 <style>
@@ -13,7 +15,7 @@ function formControl(){
 </style>
 
 
-<form action="index.php" method="post" onsubmit="return formControl();" class="lightboxContent">
+<form action="index.php" method="post">
 	<div class="lightboxTitle"><?= Txt::trad("USER_sendCoordsTooltip") ?></div>
 	<?php
 	////	LISTE DES UTILISATEURS AVEC MAIL

@@ -6,9 +6,10 @@
 <link rel="stylesheet" href="app/js/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
 <?php } ?>
 
+
 <script>
 ////	Resize
-lightboxSetWidth(550);
+lightboxSetWidth(600);
 
 ////	INIT
 $(function(){
@@ -42,27 +43,27 @@ $(function(){
 	<?php } ?>
 });
 
-////	Contrôle du formulaire
-function formControl()
-{
-	//Ajout de fichier via Plupload
-	if($("#uploadMultiple").isVisible()){
-		//Aucun fichier sélectionné?
-		if($("#uploadMultiple").plupload("getFiles").length==0)  {notify("<?= Txt::trad("FILE_selectFile") ?>");  return false;}
-		//Controle global est OK : lance l'upload via Plupload (..qui valide ensuite le formulaire)
-		if(mainFormControl()){
-			$(".plupload_add,#uploadOptions>span").hide();//Masque le bouton d'ajout & les options d'upload (pas le block d'options)
-			$(".plupload_filelist_footer .plupload_file_status").show();//Affiche le % de progression
-			$("#uploadMultiple").plupload("start").on("complete",function(){  $("#filesForm")[0].submit();  });//Valide le formulaire à la fin des téléchargements
+////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+function objectFormControl(){
+	return new Promise((resolve)=>{
+		//// Ajout de fichier via Plupload
+		if($("#uploadMultiple").isVisible()){
+			if($("#uploadMultiple").plupload("getFiles").length==0){								//Vérif s'il y a au moins un fichier dans la liste
+				notify("<?= Txt::trad("FILE_selectFile") ?>");										//Notify si aucun fichier
+				resolve(false);																		//Renvoi false
+			}else{																					//Lance l'upload via Plupload
+				$(".plupload_add,#uploadOptions>span").hide();										//Masque le bouton d'ajout & les options d'upload (pas le block d'options)
+				$(".plupload_filelist_footer .plupload_file_status").show();						//Affiche le % de progression
+				$("#uploadMultiple").plupload("start").on("complete",function(){ resolve(true); });	//Renvoi true à la fin des uploads
+			}
 		}
-		//Retourne "false" : Plupload valide le formulaire via le "on("complete")" ci-dessus
-		return false;
-	}
-	//Ajout de fichier via un input "file" (envoi simple ou  nouvelle version de fichier)
-	else{
-		if($("[name='addFileSimple'],[name='addFileVersion']").isEmpty())  {notify("<?= Txt::trad("FILE_selectFile") ?>"); return false;}//Aucun fichier sélectionné?
-		return mainFormControl();//Controle final (champs obligatoires, etc)
-	}
+		//// Ajout de fichier via un input "file" (envoi simple ou nouvelle version de fichier)
+		else{
+			// Verif si un fichier a été sélectionné
+			if($("[name='addFileSimple'],[name='addFileVersion']").isEmpty())	{notify("<?= Txt::trad("FILE_selectFile") ?>");  resolve(false);}
+			else																{resolve(true);}
+		}
+	});
 }
 </script>
 
@@ -79,6 +80,7 @@ function formControl()
 .plupload_buttons .plupload_button	{text-transform:uppercase; padding:15px; font-weight:bold!important;}				/*Boutons principaux (Ajouter, Arreter, etc)*/
 .plupload_buttons .plupload_add 	{width:220px;}																		/*"Choisir les fichiers"*/
 .plupload_buttons .plupload_stop	{padding:5px; margin-bottom:5px;}													/*"Arrêter le téléchargement"*/
+.ui-widget-header					{border:none!important;	background:none!important;}									/*Annule le background par defaut de jQuery-UI !*/
 
 /*Options d'upload*/
 #uploadSimple, #uploadAdd			{padding:10px; border:1px solid #aaa; border-bottom:0px;}/*input d'upload simple : au dessus des options*/
@@ -91,7 +93,7 @@ function formControl()
 .plupload_filelist_header, .plupload_start, .plupload_progress_container, .plupload_filelist_footer .plupload_file_size, .plupload_filelist_footer .plupload_file_status  {display:none;}
 .plupload_filelist_footer .plupload_file_status  {position:absolute; bottom:13px; right:15px;}/*Repositionne le % de progression*/
 
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.plupload_droptext 	{display:none!important;}
 	.plupload_container	{height:180px; min-height:180px;}
@@ -99,9 +101,9 @@ function formControl()
 </style>
 
 
-<form action="index.php" method="post" onsubmit="return formControl()" id="filesForm" enctype="multipart/form-data" class="lightboxContent">
-	<!--TITRE RESPONSIVE-->
-	<?= $curObj->editRespTitle("FILE_addFile") ?>
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
+	<!--TITRE MOBILE-->
+	<?= $curObj->titleMobile("FILE_addFile") ?>
 
 	<!--NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)-->
 	<?php if(Req::isParam("addVersion")){ ?>
@@ -129,11 +131,11 @@ function formControl()
 			<label for="imageResizeInput"><?= Txt::trad("FILE_imgReduce") ?></label>
 		</span>
 		<span>
-			<span class="sLink" onclick="$('#inputDescription').slideToggle();"><?= Txt::trad("description") ?> <img src="app/img/description.png"></span>
+			<span onclick="$('#inputDescription').slideToggle();"><?= Txt::trad("description") ?> <img src="app/img/description.png"></span>
 			<textarea name="description" placeholder="<?= Txt::trad("description") ?>" id="inputDescription"></textarea>
 		</span>
 	</div>
 
-	<!--MENU COMMUN-->
-	<?= $curObj->menuEdit() ?>
+	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<?= $curObj->editMenuSubmit() ?>
 </form>

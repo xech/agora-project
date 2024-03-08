@@ -1,5 +1,6 @@
 <script>
-lightboxSetWidth(650);//Resize
+////	Resize
+lightboxSetWidth(700);
 </script>
 
 <style>
@@ -8,14 +9,14 @@ lightboxSetWidth(650);//Resize
 .vEventDate		{width:200px;}
 .vEventOptions	{width:50px;}
 
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.vEventDate		{width:80px;}
 }
 </style>
 
 
-<div class="lightboxContent">
+<div>
 	<div class="lightboxTitle"><?= Txt::trad("CALENDAR_evtAutor") ?></div>
 
 	<!--LISTE DES EVT-->
@@ -24,8 +25,8 @@ lightboxSetWidth(650);//Resize
 		<div class="vEventDate"><?= Txt::dateLabel($tmpEvent->dateBegin,"normal",$tmpEvent->dateEnd) ?></div>
 		<div><?= $tmpEvent->title ?></div>
 		<div class="vEventOptions">
-			<img src="app/img/edit.png" class="sLink" onclick="lightboxOpen('<?= $tmpEvent->getUrl("edit") ?>')">
-			<img src="app/img/delete.png" class="sLink" onclick="confirmDelete('<?= $tmpEvent->getUrl("delete") ?>')">
+			<img src="app/img/edit.png" onclick="lightboxOpen('<?= $tmpEvent->getUrl("edit") ?>')">
+			<img src="app/img/delete.png" onclick="confirmDelete('<?= $tmpEvent->getUrl("delete") ?>')">
 		</div>
 	</div>
 	<?php } ?>

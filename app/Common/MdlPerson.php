@@ -141,9 +141,9 @@ class MdlPerson extends MdlObject
 	public function getLabel($labelType=null)
 	{
 		if(empty($this->firstName) && empty($this->name))			{return "<i>".Txt::trad("deletedUser")."</i>";}					//Renvoie "Compte utilisateur supprimé"
-		elseif($labelType=="full")									{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType=="full" -> "Dr Boby SMITH"  (cf. profil utilisateur ou contact)
-		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType=="firstName" -> "Boby"  (cf. Messenger ou "MdlTask->responsiblePersons()")
-		else														{return $this->firstName." ".$this->name;}						//Par défaut -> "Boby SMITH"
+		elseif($labelType=="full")									{return $this->civility." ".$this->firstName." ".$this->name;}	//$labelType=="full" 		-> "Dr Boby SMITH"  (cf. profil utilisateur ou contact)
+		elseif($labelType=="firstName" && !empty($this->firstName))	{return $this->firstName;}										//$labelType=="firstName"	-> "Boby"
+		else														{return $this->firstName." ".$this->name;}						//Par défaut				-> "Boby SMITH"
 	}
 
 	/*******************************************************************************************
@@ -188,9 +188,7 @@ class MdlPerson extends MdlObject
 						$this->getFieldValue("comment",$displayMode);
 		}
 		//Ajoute la date de dernire connexion
-		if(static::objectType=="user" && Ctrl::$curUser->isAdminSpace() && $displayMode!="edit")  {$labels.=$this->getFieldValue("lastConnection",$displayMode);}
-		//Si besoin, enleve le dernier séparateur (pas de "trim()" car pas fiable dans ce cas)
-		if($displayMode=="line")	{$labels=substr($labels,0,strrpos($labels,"<img src='app/img/separator.png'>"));}
+		if(static::objectType=="user" && Ctrl::$curUser->isSpaceAdmin() && $displayMode!="edit")  {$labels.=$this->getFieldValue("lastConnection",$displayMode);}
 		//Renvoi le résultat
 		return $labels;
 	}
@@ -209,17 +207,17 @@ class MdlPerson extends MdlObject
 		}
 		//Mail : redirige vers le module mail (ou à défaut, l'outil de messagerie). "parent" pour rediriger aussi depuis un lightbox..
 		elseif($fieldName=="mail" && !empty($fieldValue)){
-			$mailtoUrl=(Ctrl::$curSpace->moduleEnabled("mail"))  ?  "javascript:windowParent.redir('?ctrl=mail&checkedMailto=".$this->$fieldName."');"  :  "mailto:".$this->$fieldName;
-			$fieldValue="<a href=\"".$mailtoUrl."\" title=\"".Txt::trad("sendMail")."\">".$this->$fieldName." &nbsp;<img src='app/img/person/mail.png'></a>";
+			$mailtoUrl=(Ctrl::$curSpace->moduleEnabled("mail"))  ?  "onclick=\"windowParent.redir('?ctrl=mail&checkedMailto=".$this->$fieldName."');\""  :  "href=\"mailto:".$this->$fieldName."\"";
+			$fieldValue="<a ".$mailtoUrl." title=\"".Txt::trad("sendMail")."\">".$this->$fieldName." &nbsp;<img src='app/img/person/mail.png'></a>";
 		}
-		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a href=\"javascript:lightboxOpen('?ctrl=misc&action=PersonsMap&objectsTypeId[".static::objectType."]=".$this->_id."');\" title=\"".Txt::trad("mapLocalize")."\">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
+		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a onclick=\"lightboxOpen('?ctrl=misc&action=PersonsMap&objectsTypeId[".static::objectType."]=".$this->_id."');\" title=\"".Txt::trad("mapLocalize")."\">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
 		elseif($fieldName=="lastConnection")					{$fieldValue=(!empty($fieldValue))  ?  Txt::trad("lastConnection2")." ".Txt::dateLabel($fieldValue,"date")  :  Txt::trad("lastConnectionEmpty");}//"Connecté le 20 mars" / "Pas encore connecté"
 		elseif($fieldName=="comment")							{$fieldValue=nl2br($fieldValue);}
 		//Retourne le champ dans son conteneur
 		if(!empty($fieldValue)){
 			if($displayMode=="block")		{return "<div class='objPersonDetail'>".$fieldValue."</div>";}
-			elseif($displayMode=="line")	{return "<div class='objPersonDetail'>".$fieldValue."</div> &nbsp;<img src='app/img/separator.png'>&nbsp;";}
-			else							{return "<div class='objField'><div class='fieldLabel'><img src='app/img/person/".$fieldName.".png'> ".Txt::trad($fieldName)."</div><div>".$fieldValue."</div></div>";}
+			elseif($displayMode=="line")	{return "<div class='objPersonDetail'>".$fieldValue."</div><img src='app/img/separator.png' class='objPersonDetailSeparator'>";}
+			else							{return "<div class='objField'><div><img src='app/img/person/".$fieldName.".png'> ".Txt::trad($fieldName)."</div><div>".$fieldValue."</div></div>";}
 		}
 	}
 
@@ -238,7 +236,7 @@ class MdlPerson extends MdlObject
 	public function getImgPath($defaultImg=false)
 	{
 		if($this->hasImg())			{return $this->pathImgThumb();}
-		elseif($defaultImg==true)	{return "app/img/user/userDefault.png";}//img par défaut
+		elseif($defaultImg==true)	{return "app/img/person/personDefault.png";}//img par défaut
 	}
 
 	/*******************************************************************************************
@@ -249,7 +247,7 @@ class MdlPerson extends MdlObject
 		$imgPath=$this->getImgPath($defaultImg);
 		if(!empty($imgPath)){
 			$personImg="<img src='".$imgPath."' class='personImg ".($smallImg==true?"personImgSmall":null)."'>";
-			if($openProfile==true)  {$personImg="<a href=\"javascript:lightboxOpen('".$this->getUrl("vue")."');\" title=\"".Txt::trad("displayProfil")."\">".$personImg."</a>";}
+			if($openProfile==true)  {$personImg="<a onclick=\"lightboxOpen('".$this->getUrl("vue")."');\" title=\"".Txt::trad("displayProfil")."\">".$personImg."</a>";}
 			return $personImg;
 		}
 	}

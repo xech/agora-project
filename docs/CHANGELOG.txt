@@ -4,6 +4,37 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
+VERSION 24.2.1
+###############
+Nouvelle option des tâches pour attribuer un état "A faire", "En cours", "Terminé", etc
+Nouvelle option pour réordonner les thèmes du forum et catégories d'événement
+Amélioration de la gestion des thèmes du forum et catégories d'événement (colorPicker, ergonomie)
+Amélioration du menu des "agendas disponibles"
+Amélioration de menu d'édition des événements de l'agenda
+Amélioration de l'affichage en "mode sombre"
+Optimisation du contrôle de l'édition des agendas partagés d'espace
+Optimisation des contrôles de l'installation et mise à jour de l'application (timeZone & Bdd)
+Optimisation de l'appel de l'éditeur TinyMce
+Optimisation des contrôles des formulaires principaux
+Mise à jour de PHPMailer en version 6.7.1
+Mise à jour de TinyMce en version v6.8.2
+Mise à jour de Jquery-UI en version v1.13.2
+-----
+New task option to assign a status "To do", "In progress", "Finished", etc.
+New option to reorder forum themes and event categories
+Improved management of forum themes and event categories, etc. (colorPicker & co)
+Improved "available calendars" menu
+Improved calendar events editing menu
+Improved "dark mode" display
+Optimization of the control of the edition of shared space calendars
+Optimization of application installation & update controls (timeZone & Bdd)
+Optimization of the TinyMce editor call
+Optimizing main form controls
+PHPMailer updated to v6.7.1
+TinyMce updated to v6.8.2
+Jquery-UI updated to v1.13.2
+
+
 VERSION 23.10.3
 ###############
 Amélioration du menu principal
@@ -40,7 +71,7 @@ Amélioration des contrôles de sécurité sur les fichiers uploadés
 Amélioration de la connexion auto via "userAuthToken"
 -----
 New option to copy/paste images directly in the TinyMce editor
-TinyMce updated to 6.6.0
+TinyMce updated to v6.6.0
 Improvement of the search engine and the presentation of results
 Fixed display of maps on Leaflet / OpenStreetmap (mapbox disabled)
 New "mailEnabled()" function to check that PHP "mail()" is enabled or that an SMTP setting has been specified
@@ -81,7 +112,7 @@ Optimisation de la fonction sendMail()
 Amélioration de l'affichage des dates de l'agenda
 Amélioration de l'ergonomie de la page de connexion
 Mise à jour de la fonction OAuth Google Identity
-Mise à jour de PHMailer en version 6.7.1
+Mise à jour de PHPMailer en version 6.7.1
 Mise à jour de l'éditeur TinyMce en version 6.3.1
 -----
 Optimization of the sendMail() function
@@ -89,8 +120,8 @@ Option to add recipients in notification emails
 Improved calendar dates display
 Improved login page
 OAuth Google Identity Update
-PHMailer updated to 6.7.1 version
-TinyMce updated to 6.3.1 version
+PHPMailer updated to version 6.7.1
+TinyMce updated to version 6.3.1 
 
 
 VERSION 22.12.0
@@ -98,14 +129,14 @@ VERSION 22.12.0
 Optimisation du download de fichiers
 Correction de la creation de vignette des .Pdf protégés par password
 Optimisation du menu principal et de la messagerie instantanée
-Mise à jour de PHMailer en version 6.6.5
+Mise à jour de PHPMailer en version 6.6.5
 Mise à jour de PlUpload en version 3.1.5
 -----
 Optimization of file downloading
 Fixed creation of thumbnail of .Pdf protected by password
 Optimization of the main menu and the instant messenger
-PHMailer updated to 6.6.5 version
-PlUpload updated to 3.1.5 version
+PHPMailer updated to version 6.6.5
+PlUpload updated to version 3.1.5 
 
 
 VERSION 22.9.2
@@ -172,7 +203,7 @@ Amélioration de la gestion des fonds d'écran
 Correction de l'import/export des agendas au format Ical
 Optimisations de "Txt::reduce()" et autres fonctions de base
 Mise à jour de l'éditeur TinyMce en version majeure 5.9.2
-Mise à jour de PHMailer en version 6.5.1
+Mise à jour de PHPMailer en version 6.5.1
 Mise à jour du Parser Ical en version 2.2.2
 ------
 New feature for adding and editing images directly from the TinyMce text teditor
@@ -181,9 +212,9 @@ Improved management of Newsletters with integration of images in the editor
 Improved wallpaper management
 Correction of the import/export of calendars in Ical format
 Optimizations of "Txt::reduce()" and other basic functions
-TinyMce updated to 5.9.2 major version
-PHMailer updated to 6.5.1 version
-Ical Parser updated to 2.2.2 version
+TinyMce updated to v 5.9.2
+PHPMailer updated to version 6.5.1
+Ical Parser updated to version 2.2.2
 
 
 VERSION 21.6
@@ -198,7 +229,7 @@ Correction d'affichage des caractères accentués dans les "plugins" (nouveauté
 Corrections et optimisations diverses : "Txt::clean()", "Txt::reduce()", etc.
 Nouveau droit pour les administrateurs d'espace pour gérer les affectations des utilisateurs
 Changement de mode de numérotation des versions d'AP
-Mise à jour de PHMailer en version 6.5.0
+Mise à jour de PHPMailer en version 6.5.0
 Mise à jour de Fancybox en version 3.5.7
 ------
 New general setting option for the default display of folders (Block / List)
@@ -211,8 +242,8 @@ Correction of display of accented characters in "plugins" (new, search, shortcut
 Various corrections and optimizations ("Txt::clean()", "Txt::reduce()", etc)
 New right for space administrators to manage user assignments
 Changing the numbering mode of AP versions
-PHMailer updated to 6.5.0 version
-Fancybox updated to 3.5.7 version
+PHPMailer updated to version 6.5.0
+Fancybox updated to version 3.5.7 
 
 
 VERSION 3.8.0 (2021-03)
@@ -276,7 +307,7 @@ Optimization and correction of email sending
 Optimization of the export of contacts/users .csv to Gmail
 Correction of wallpapers in the general settings
 Various corrections and optimizations
-PHPMailer update to 6.2 version
+PHPMailer update to version 6.2
 
 
 VERSION 3.7.3 (2020-10)
@@ -299,7 +330,7 @@ Improvement of "breadcrumb" menus in folder trees
 Fixed the search display on Firefox
 Translation corrections
 Documentation update
-PHPMailer update to 6.1.8 version
+PHPMailer update to version 6.1.8
 Jquery update to 3.5.1 version
 Various corrections and optimizations
 

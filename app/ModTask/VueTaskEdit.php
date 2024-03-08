@@ -1,87 +1,75 @@
 <script>
 ////	Resize
-lightboxSetWidth(750);
+lightboxSetWidth(700);
 
 ////	INIT
 $(function(){
-	////	Masque les heures si une date n'est pas sélectionnée
-	if($(".dateBegin").isEmpty())	{$(".timeBegin").hide();}
-	if($(".dateEnd").isEmpty())		{$(".timeEnd").hide();}
 	////	Donne une valeur aux inputs "select"
 	$("[name='advancement']").val("<?= $curObj->advancement ?>");
 	$("[name='priority']").val("<?= $curObj->priority ?>");
-	////	Change de priorité : modif l'icone
-	$("[name='priority']").change(function(){
-		var imgPriority="app/img/task/priority"+this.value+".png";
-		$("img[src*='priority']").attr("src",imgPriority);
-	});
 	////	Affiche le block des responsables s'il y en a de sélectionnés
-	if($(":checked[name='responsiblePersons[]']").length>0)	{$("#divResponsiblePersons").show();}
+	if($(":checked[name='responsiblePersons[]']").length>0)	{$("#fieldsetResponsiblePersons").show();}
 });
 </script>
 
 
 <style>
-[name='title']			{width:80%; margin-right:10px;}
-#blockDescription		{margin-top:20px; <?= empty($curObj->description)?"display:none;":null ?>}
-[name='description']	{width:100%; height:70px; <?= empty($curObj->description)?"display:none;":null ?>}
-.vTaskOption			{display:inline-block; margin:10px 10px 10px 0px;}
-img[src*='arrowRight']	{margin-left:5px; margin-right:5px;}
-img[src*='user/icon']	{height:20px;}
-#labelResponsiblePersons{cursor:pointer; line-height:25px;}
-#divResponsiblePersons	{display:none; overflow:auto; max-height:100px;}
-.divResponsiblePerson	{display:inline-block; width:32%; padding:3px;}
+.vTaskOptions				{display:inline-block; margin:20px 20px 0px 0px;}
+.vTaskOptionsButton			{height:40px;}
+.vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
+#fieldsetResponsiblePersons	{display:none; margin-top:10px; overflow:auto; max-height:300px;}
+.divResponsiblePerson		{display:inline-block; width:33%; padding:5px;}
+img[src*='arrowRight']		{margin:3px;}
 
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
+	.vTaskOptions			{display:block; margin:30px 0px 0px 0px;}
 	.divResponsiblePerson	{width:48%;}	
 }
 </style>
 
 
-<form action="index.php" method="post" onsubmit="return mainFormControl()" enctype="multipart/form-data" class="lightboxContent">
-	<!--TITRE RESPONSIVE-->
-	<?= $curObj->editRespTitle("TASK_addTask") ?>
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
+	<!--TITRE MOBILE-->
+	<?= $curObj->titleMobile("TASK_addTask") ?>
 
-	<!--TITRE & DESCRIPTION (EDITOR)-->
-	<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("title") ?>">
-	<img src="app/img/description.png" class="sLink" title="<?= Txt::trad("description") ?>" onclick="$('#blockDescription').slideToggle()">
-	<div id="blockDescription">
-		<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea>
+	<!--TITRE / DESCRIPTION (EDITOR)-->
+	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>">
+	<?= $curObj->editDescription() ?>
+
+	<!--<SELECT> DE LA COLONNE KANBAN-->
+	<div class="vTaskOptions">
+		<?= MdlTaskStatus::selectInput($curObj->_idStatus) ?>
 	</div>
-	<br><br>
 
 	<!--DATE DEBUT & FIN-->
-	<div class="vTaskOption">
-		<input type="text" name="dateBegin" class="dateBegin" autocomplete="off" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
-		<input type="text" name="timeBegin" class="timeBegin" autocomplete="off" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM",true) ?>" placeholder="H:m">
+	<div class="vTaskOptions">
+		<input type="text" name="dateBegin" class="dateBegin" autocomplete="off" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
 		<img src="app/img/arrowRight.png">
-		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" title="<?= Txt::trad("end") ?>">
-		<input type="text" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM",true) ?>" placeholder="H:m">
+		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" title="<?= Txt::trad("end") ?>">
 	</div>
 
 	<!--PRIORITE-->
-	<div class="vTaskOption">
+	<div class="vTaskOptions">
 		<select name="priority">
-			<option value=""><?= Txt::trad("TASK_priority")." : ".Txt::trad("no") ?></option>
-			<?php for($i=1;$i<=4;$i++)  {echo "<option value='".$i."'>".Txt::trad("TASK_priority")." ".Txt::trad("TASK_priority".$i)."</option>";} ?>
+			<option value=""><?= Txt::trad("TASK_priorityUndefined") ?></option>
+			<?php for($i=1;$i<=3;$i++)  {echo "<option value='".$i."'>".Txt::trad("TASK_priority")." ".Txt::trad("TASK_priority".$i)."</option>";} ?>
 		</select>
-		<img src="app/img/task/priority<?= $curObj->priority ?>.png">
 	</div>
-	
+
 	<!--AVANCEMENT-->
-	<div class="vTaskOption">
+	<div class="vTaskOptions">
 		<select name="advancement">
 			<option value=""><?= Txt::trad("TASK_advancement")." : ".Txt::trad("no") ?></option>
 			<?php for($i=0;$i<=100;$i+=10)  {echo "<option value='".$i."'>".Txt::trad("TASK_advancement")." : ".$i." %</option>";} ?>
 		</select>
 	</div>
-	
-	<!--RESPONSABLES-->
-	<label class="vTaskOption" id="labelResponsiblePersons" onclick="$('#divResponsiblePersons').slideToggle();">
-		<img src="app/img/user/icon.png"> <?= txt::trad("TASK_responsiblePersons") ?> <img src="app/img/arrowBottom.png">
-	</label>
-	<div id="divResponsiblePersons">
+
+	<!--ASSIGNATIONS / RESPONSABLES-->
+	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#fieldsetResponsiblePersons').slideToggle();">
+		<img src="app/img/user/icon.png"> <?= txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
+	</button>
+	<fieldset id="fieldsetResponsiblePersons">
 		<?php
 		//Affiche chaque responsable
 		foreach(Ctrl::$curSpace->getUsers() as $tmpUser)
@@ -93,8 +81,8 @@ img[src*='user/icon']	{height:20px;}
 				  </div>";
 		}
 		?>
-	</div>
-
-	<!--MENU COMMUN-->
-	<?= $curObj->menuEdit() ?>
+	</fieldset>
+	
+	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<?= $curObj->editMenuSubmit() ?>
 </form>

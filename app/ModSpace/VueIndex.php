@@ -9,7 +9,7 @@
 .vSpaceAffectation		{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.95em;}
 .vSpaceAffectation img	{max-height:18px;}
 
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.vSpaceAffectation	{width:48%;}
 }
@@ -18,7 +18,7 @@
 <div id="pageFull">
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
-			<div class="menuLine sLink" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>');" title="<?= Txt::trad("SPACE_moduleTooltip") ?>"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
+			<div class="menuLine" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>');" title="<?= Txt::trad("SPACE_moduleTooltip") ?>"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
 			<div class="infos"><?= Txt::trad("SPACE_moduleTooltip") ?></div>
@@ -30,7 +30,7 @@
 		foreach($spaceList as $tmpSpace)
 		{
 			////	CONTENEUR
-			echo $tmpSpace->divContainer().$tmpSpace->contextMenu();
+			echo $tmpSpace->objContainer().$tmpSpace->contextMenu();
 				////	NOM & DESCRIPTION & MODULES AFFECTES
 				echo $tmpSpace->name."<div class='vSpaceDescription' title=\"".Txt::tooltip($tmpSpace->description)."\">".Txt::reduce($tmpSpace->description,(Req::isMobile()?50:80))."</div>";
 				echo "<div class='vModules'>";
@@ -48,7 +48,7 @@
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$userRightAcces=$tmpSpace->accessRightUser($tmpUser);
 						if($tmpSpace->allUsersAffected() && $userRightAcces==1)	{continue;}//Pas d'affichage si simple user et tous les users sont affectés
-						echo "<div class='vSpaceAffectation sLink' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."');\"><img src='app/img/user/".($userRightAcces==2?'userAdminSpace.png':'user.png')."'> ".$tmpUser->getLabel()."</div>";
+						echo "<div class='vSpaceAffectation' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."');\"><img src='app/img/user/".($userRightAcces==2?'userAdminSpace.png':'user.png')."'> ".$tmpUser->getLabel()."</div>";
 					}
 				echo "</div>";
 			echo "</div>";

@@ -234,7 +234,7 @@ class File
 		$bytesSize=self::getBytesSize($size);
 		if($bytesSize>=self::sizeGo)		{$size=round(($bytesSize/self::sizeGo),2);	$tradLabel="gigaOctet";}
 		elseif($bytesSize>=self::sizeMo)	{$size=round(($bytesSize/self::sizeMo),1);	$tradLabel="megaOctet";}
-		else								{$size=round(($bytesSize/self::sizeKo),0);	$tradLabel="kiloOctet";}
+		else								{$size=ceil(($bytesSize/self::sizeKo));		$tradLabel="kiloOctet";}
 		return ($displayLabel==true)  ?  $size." ".Txt::trad($tradLabel)  :  $size;
 	}
 

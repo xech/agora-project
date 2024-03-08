@@ -1,29 +1,27 @@
 <script>
 ////	Resize
-lightboxSetWidth(680);
+lightboxSetWidth(700);
 
-////	INIT
+////	Init
 $(function(){
-	//Focus du champ (pas en responsive pour ne pas afficher le clavier virtuel)
+	////	Focus du champ (pas sur mobile pour pas afficher le clavier virtuel...)
 	if(!isMobile())  {$("[name='searchText']").focus();}
+
+	////	Recherche avancée
+	$("#advancedSearchLabel").on("click",function(){
+		$(".advancedSearchBlock").toggle();
+		if($("[name=advancedSearch]").val()==1)	{$("[name=advancedSearch]").val(0);}
+		else									{$("[name=advancedSearch]").val(1);}
+	});
+
+	////	Contrôle du formulaire
+	$("form").submit(function(){
+		//Vérif que les mots recherchés (au moins 3 caracteres alphanumeriques)  &&  Au moins un module et champ de recherche sont sélectionnés (cf. recherche avancée)
+		var searchText=$("[name=searchText]").val();
+		if(searchText.length<3 || /[\w]/.test(searchText)==false)													{notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
+		else if($("[name='searchModules[]']:checked").isEmpty() || $("[name='searchFields[]']:checked").isEmpty())	{notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
+	});
 });
-
-////	Contrôle du formulaire
-function formControl()
-{
-	//Vérif que les mots recherchés sont d'au moins 3 caracteres alphanumeriques  &&  Qu'au moins un module et champ de recherche sont sélectionnés (cf. recherche avancée)
-	var searchText=$("[name=searchText]").val();
-	if(searchText.length<3 || /[\w]/.test(searchText)==false)																{notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
-	else if($("input[name='searchModules[]']:checked").isEmpty() || $("input[name='searchFields[]']:checked").isEmpty())	{notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
-}
-
-////	Recherche avancée
-function displayAdvancedSearch()
-{
-	$(".advancedSearchBlock").toggle();
-	if($("[name=advancedSearch]").val()==1)	{$("[name=advancedSearch]").val(0);}
-	else									{$("[name=advancedSearch]").val(1);}
-}
 </script>
 
 
@@ -41,8 +39,9 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 .menuLine mark						{padding:2px;}/*mots de la recherche surlignés*/
 .menuLine .vContextMenu				{width:50px; vertical-align:top;}
 .vPluginNews						{display:none; padding:5px; background-color:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
+.emptyContainer						{margin-top:20px;}
 
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){	
 	#searchMainField			{text-align:center;}
 	input[name="searchText"]	{margin-bottom:15px;}
@@ -53,14 +52,14 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 
 
 <!--FORMULAIRE DE RECHERCHE-->
-<form action="index.php" method="post" OnSubmit="return formControl()" class="lightboxContent noConfirmClose">
+<form action="index.php" method="post">
 	<div class="lightboxTitle"><?= Txt::trad("searchOnSpace") ?></div>
 
 	<div id="searchMainField">
 		<?= Txt::trad("keywords") ?>
 		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>">
 		<?= Txt::submitButton("search",false) ?>
-		<label id="advancedSearchLabel" onclick="displayAdvancedSearch();" class="sLink"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></label>
+		<label id="advancedSearchLabel"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></label>
 		<input type="hidden" name="advancedSearch" value="<?= Req::param("advancedSearch") ?>">
 	</div>
 
@@ -142,7 +141,7 @@ if(Req::isParam("searchText"))
 		//// Affiche le plugin
 		echo '<div class="menuLine lineHover">
 				<div onclick"'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
-				<div onclick="'.$tmpObj->pluginJsLabel.'" class="sLink" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">'.$pluginLabel.'</div>
+				<div onclick="'.$tmpObj->pluginJsLabel.'" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">'.$pluginLabel.'</div>
 				<div class="vContextMenu">'.$tmpObj->contextMenu(["iconBurger"=>"inlineSmall"]).'</div>
 			  </div>';
 	}

@@ -1,6 +1,6 @@
 <?php
 /*
- * Classe de gestion d'une langue
+ * Classe de traduction
  */
 class Trad extends Txt
 {
@@ -29,16 +29,15 @@ class Trad extends Txt
 			"yes"=>"sí",
 			"no"=>"no",
 			"none"=>"no",
-			"noneFem"=>"no",
 			"or"=>"o",
 			"and"=>"y",
 			"goToPage"=>"Ir a la página",
 			"alphabetFilter"=>"Filtro alfabético",
 			"displayAll"=>"Mostrar todo",
-			"allCategory"=>"Cualquier categoría",
-			"show"=>"mostrar",
-			"hide"=>"ocultar",
+			"show"=>"Mostrar",
+			"hide"=>"Ocultar",
 			"byDefault"=>"Por defecto",
+			"changeOrder"=>"Mover a establecer el orden de presentación de los módulos",
 			"mapLocalize"=>"Localizar en el mapa",
 			"mapLocalizationFailure"=>"Falla de localización de la siguiente dirección",
 			"mapLocalizationFailure2"=>"Verifique que exista la dirección en www.google.com/maps o www.openstreetmap.org",
@@ -49,7 +48,6 @@ class Trad extends Txt
 			"folder"=>"carpeta",
 			"folders"=>"carpetas",
 			"close"=>"Cerrar",
-			"visibleAllSpaces"=>"Visible en todos los espacios",
 			"confirmCloseForm"=>"¿ Quieres cerrar el formulario ?",
 			"modifRecorded"=>"Los cambios fueron registrados",
 			"confirm"=>"¿ Confirmar ?",
@@ -74,9 +72,8 @@ class Trad extends Txt
 			////	Connexion
 			"specifyLoginPassword"=>"Gracias a especificar un nombre de usuario y contraseña",
 			"specifyLogin"=>"Gracias especificar un email/identificador (sin espacio)",
-			"specifyLoginMail"=>"Se recomienda utilizar un email como identificador de sesión",
-			"login"=>"Email / Identificador de conexión",
-			"loginPlaceholder"=>"Email / Identificador",
+			"mailLloginNotif"=>"Se recomienda utilizar un email como identificador de sesión",
+			"mailLlogin"=>"Email / Identificador de conexión",
 			"connect"=>"Conexión",
 			"connectAuto"=>"Recuérdame",
 			"connectAutoTooltip"=>"Recordar mi nombre de usuario y la contraseña para una conexión automática",
@@ -85,7 +82,7 @@ class Trad extends Txt
 			"connectSpaceSwitchConfirm"=>"¿ Está seguro de que desea abandonar este espacio para conectarse a otro espacio ?",
 			"guestAccess"=>"Iniciar sesión como invitado",
 			"guestAccessTooltip"=>"Iniciar sesión en un espacio como invitado",
-			"spacePassError"=>"Contraseña incorrecta",
+			"publicSpacePasswordError"=>"Contraseña incorrecta",
 			"disconnectSpace"=>"Cerrar sesión",
 			"disconnectSpaceConfirm"=>"¿ Confirmar desconexión del espacio ?",
 
@@ -96,7 +93,7 @@ class Trad extends Txt
 			"passwordToModify2"=>"Contraseña (cambiar si es necesario)",//Mail de création de compte
 			"passwordVerif"=>"Confirmar contraseña",
 			"passwordTooltip"=>"Dejar en blanco si desea mantener su contraseña",
-			"passwordInvalid"=>"Su contraseña debe tener al menos 6 caracteres con al menos 1 dígito y al menos 1 letra",
+			"passwordInvalid"=>"Su contraseña debe contener números, letras y al menos 6 caracteres",
 			"passwordConfirmError"=>"Your confirmation password is not valid",
 			"specifyPassword"=>"Gracias especificar una contraseña",
 			"resetPassword"=>"¿Información de inicio de sesión olvidada ?",
@@ -123,16 +120,19 @@ class Trad extends Txt
 			"changeFolder"=>"Mover a otro carpeta",
 			"showOnMap"=>"Mostrar en el mapa",
 			"showOnMapTooltip"=>"Ver en un mapa los contactos con dirección, código postal, ciudad",
-			"selectUser"=>"Gracias por seleccionar al menos un usuario",
-			"selectUsers"=>"Gracias por seleccionar por lo menos dos usuarios",
+			"notifSelectUser"=>"Gracias por seleccionar al menos un usuario",
+			"notifSelectUsers"=>"Gracias por seleccionar por lo menos dos usuarios",
 			"selectSpace"=>"Gracias por elegir al menos un espacio",
+			"visibleAllSpaces"=>"Visible en todos los espacios",/*cf. Categories, themes, etc*/
+			"visibleOnSpace"=>"Disponible en el espacio",/*"..Mon espace"*/
 
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", etc.)
 			"from"=>"de",
 			"at"=>"a",
 			"the"=>"el",
-			"begin"=>"inicio",
+			"begin"=>"Inicio",
 			"end"=>"Fin",
+			"beginEnd"=>"Inicio / Fin",
 			"days"=>"dias",
 			"day_1"=>"lunes",
 			"day_2"=>"Martes",
@@ -201,7 +201,7 @@ class Trad extends Txt
 			"tri_descendant"=>"Descendente",
 			
 			////	Options de suppression
-			"confirmDelete"=>"¿ Desea eliminar este elemento permanentemente ?",
+			"confirmDelete"=>"¿ Confirmar la eliminación permanente del elemento ?",
 			"confirmDeleteDbl"=>"¿ Esta acción es definitiva ¿confirmar de todos modos ?",
 			"confirmDeleteSelect"=>"¿ Desea eliminar estos elementos permanentemente ?",
 			"confirmDeleteSelectNb"=>"elementos seleccionados",//"55 éléments sélectionnés"
@@ -220,18 +220,21 @@ class Trad extends Txt
 			"modifBy"=>"Modificado por",
 			"objHistory"=>"histórico del elemento",
 			"all"=>"todos",
+			"all2"=>"todas",
 			"deletedUser"=>"cuenta de usuario eliminada",
 			"folderContent"=>"contenido",
 			"accessRead"=>"lectura",
 			"accessReadTooltip"=>"Acceso de lectura",
 			"accessWriteLimit"=>"escritura limitada",
-			"accessWriteLimitTooltip"=>"Acceso de escritura limitado: posibilidad de agregar -OBJCONTENT- en el -OBJLABEL-,<br> pero cada usuario solo puede modificar/borrar los -OBJCONTENT- que ha creado.",
+			"accessWriteLimitTooltip"=>"Acceso de escritura limitada: posibilidad de añadir -OBJCONTENT- en el -OBJLABEL-,<br> pero cada usuario solo puede modificar/borrar los -OBJCONTENT- que ha creado.",
 			"accessWrite"=>"escritura",
 			"accessWriteTooltip"=>"Acceso en escritura",
 			"accessWriteTooltipContainer"=>"Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los -OBJCONTENT- del -OBJLABEL-",
 			"accessAutorPrivilege"=>"Solo el autor y los administradores pueden cambiar los permisos de acceso o eliminar el -OBJLABEL-",
 			"accessRightsInherited"=>"Derechos de acceso heredados del -OBJLABEL-",
-			
+			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",//Ex: "Thème bidule -n'est accessible que sur l'espace- Machin"
+			"categoryNotifChangeOrder"=>"El orden de visualización ha sido cambiado.",
+
 			////	Libellé des objets
 			"OBJECTcontainer"=>"contenedor",
 			"OBJECTelement"=>"elemento",
@@ -257,13 +260,13 @@ class Trad extends Txt
 			"MAIL_hideRecipients"=>"Ocultar destinatarios",
 			"MAIL_hideRecipientsTooltip"=>"Poner todos los destinatarios en copia oculta. Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
 			"MAIL_addReplyTo"=>"pon mi correo en respuesta",
-			"MAIL_addReplyToTooltip"=>"Agregar mi correo electrónico en el campo ''Responder a''. Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
+			"MAIL_addReplyToTooltip"=>"Añadir mi correo electrónico en el campo ''Responder a''. Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
 			"MAIL_noFooter"=>"No firme el mensaje",
 			"MAIL_noFooterTooltip"=>"No firme el final del mensaje con el nombre del remitentey un enlace al espacio",
 			"MAIL_receptionNotif"=>"Confirmación de entrega",
 			"MAIL_receptionNotifTooltip"=>"Advertencia! algunos clientes de correo electrónico no soportan el recibo de entrega",
-			"MAIL_specificMails"=>"Agregar direcciones de correo electrónico",
-			"MAIL_specificMailsTooltip"=>"Agregar direcciones de correo electrónico no enumeradas en el espacio",
+			"MAIL_specificMails"=>"Añadir direcciones de correo electrónico",
+			"MAIL_specificMailsTooltip"=>"Añadir direcciones de correo electrónico no enumeradas en el espacio",
 			"MAIL_fileMaxSize"=>"Todos sus archivos adjuntos no deben exceder los 15 MB, algunos servicios de mensajería pueden rechazar correos electrónicos más allá de este límite. ¿ Enviar de todos modos ?",
 			"MAIL_sendButton"=>"Enviar correo electrónico",
 			"MAIL_sendBy"=>"Enviado por",//"Envoyé par" M. Trucmuche
@@ -281,7 +284,7 @@ class Trad extends Txt
 			"megaOctet"=>"MB",
 			"kiloOctet"=>"KB",
 			"rootFolder"=>"Carpeta raíz",
-			"rootFolderEditTooltip"=>"Abra la configuración del espacio para cambiar los derechos de acceso a la carpeta raíz",
+			"rootFolderTooltip"=>"Abra la configuración del espacio para cambiar los derechos de acceso a la carpeta raíz",
 			"addFolder"=>"añadir un directorio",
 			"download"=>"Descargar archivos",
 			"downloadFolder"=>"Descargar la carpeta",
@@ -376,13 +379,13 @@ class Trad extends Txt
 			"NOTIF_fileVersionForbidden"=>"Tipo de archivo no permitido",
 			"NOTIF_fileVersion"=>"Tipo de archivo diferente del original",
 			"NOTIF_folderMove"=>"No se puede mover la carpeta dentro de sí mismo..!",
-			"NOTIF_duplicateName"=>"Un archivo o carpeta con el mismo nombre ya existe",
+			"NOTIF_duplicateName"=>"Un elemento con el mismo nombre ya existe",
 			"NOTIF_fileName"=>"Un archivo con el mismo nombre ya existe (no ha sido reemplazado)",
 			"NOTIF_chmodDATAS"=>"El directorio ''DATAS'' no es accesible por escrito. Usted necesita dar un acceso de lectura y escritura para el propietario y el grupo (''chmod 775'').",
 			"NOTIF_usersNb"=>"No se puede añadir un nuevo usuario : se limita a ", // "...limité à" 10
 			
 			////	Header / Footer
-			"HEADER_displaySpace"=>"Espacios disponibles",
+			"HEADER_displaySpace"=>"espacios de trabajo",
 			"HEADER_displayAdmin"=>"Visualización de Administrador",
 			"HEADER_displayAdminEnabled"=>"Visualización de Administrador activada",
 			"HEADER_displayAdminInfo"=>"Esta opción le permite visualizar todos los elementos presentes en el espacio actual, incluso aquellos que no le están asignados.",
@@ -409,7 +412,7 @@ class Trad extends Txt
 			"MESSENGER_visioProposeToUsers"=>"Haga clic aquí para iniciar la videollamada con",//"..Will & Boby"
 			
 			////	Lancer une Visio
-			"VISIO_urlAdd"=>"Agregar una videoconferencia",
+			"VISIO_urlAdd"=>"Añadir una videoconferencia",
 			"VISIO_urlCopy"=>"Copia el enlace de la videoconferencia",
 			"VISIO_urlDelete"=>"Eliminar el enlace de la videoconferencia",
 			"VISIO_launch"=>"Iniciar la videollamada",
@@ -423,11 +426,10 @@ class Trad extends Txt
 			"VISIO_launchServerAlt"=>"Servidor secundario",
 			"VISIO_launchButton"=>"Iniciar la videollamada",
 
-			////	vueObjMenuEdit
+			////	VueObjEditMenuSubmit.php
 			"EDIT_notifNoSelection"=>"Debe seleccionar al menos una persona o un espacio",
 			"EDIT_notifNoPersoAccess"=>"¿ Usted no se ha asignado al elemento. validar todos lo mismo ?",
-			"EDIT_notifWriteAccess"=>"Debe haber al menos una persona o un espacio asignado para escribir",
-			"EDIT_parentFolderAccessError"=>"Recuerde verificar los derechos de acceso de la carpeta superior ''<i>--FOLDER_NAME--</i>'': si no está también asignada a ''<i>--TARGET_LABEL--</i>'', el archivo actual no será accesible para el.",
+			"EDIT_parentFolderAccessError"=>"Verifique los derechos de acceso de la carpeta principal <br><i>--FOLDER_NAME--</i><br><br> También debe haber un derecho de acceso para <br><i>--SPACE_LABEL--</ i> &nbsp;>&nbsp; <i>--TARGET_LABEL--</i><br><br> ¡De lo contrario no se podrá acceder a este archivo!",
 			"EDIT_accessRight"=>"Derechos de acceso",
 			"EDIT_accessRightContent"=>"Derechos de acceso al contenido",
 			"EDIT_spaceNoModule"=>"El módulo actual aún no se ha añadido a este espacio",
@@ -464,23 +466,24 @@ class Trad extends Txt
 			"INSTALL_dbName"=>"Nombre de la base de datos",
 			"INSTALL_dbLogin"=>"Nombre de Usuario",
 			"INSTALL_adminAgora"=>"Administrador del Ágora",
-			"INSTALL_dbErrorName"=>"Advertencia: el nombre de la base de datos debe contener solo caracteres alfanuméricos y guiones o guiones bajos",
-			"INSTALL_dbErrorConnect"=>"No identificación con la base de datos MariaDB/MySQL",
-			"INSTALL_dbErrorAlreadyInstalled"=>"La instalación ya se ha realizado en esta base de datos. Gracias simplemente eliminar la base de datos si se debe reiniciar la instalación.",
-			"INSTALL_dbErrorNoSqlFile"=>"No se puede acceder al archivo de instalación db.sql o se eliminó porque la instalación ya se realizó",
+			"INSTALL_errorDbNameFormat"=>"Advertencia: el nombre de la base de datos debe contener solo caracteres alfanuméricos y guiones o guiones bajos",
+			"INSTALL_errorDbConnection"=>"No identificación con la base de datos MariaDB/MySQL",
+			"INSTALL_errorDbExist"=>"Aplicación ya instalada: <a href='index.php'>haga clic aquí para acceder</a><br><br>Para reiniciar la instalación, recuerde eliminar la base de datos",
+			"INSTALL_errorDbNoSqlFile"=>"No se puede acceder al archivo de instalación db.sql o se eliminó porque la instalación ya se realizó",
 			"INSTALL_PhpOldVersion"=>"Agora-Project requiere una versión más reciente de PHP",
 			"INSTALL_confirmInstall"=>"¿ Confirmar instalación ?",
 			"INSTALL_installOk"=>"Agora-Project ha sido instalado !",
-			"INSTALL_spaceDescription"=>"Espacio para el intercambio y el trabajo colaborativo",
+			// Premiers enregistrements en DB
+			"INSTALL_agoraDescription"=>"Espacio para el intercambio y el trabajo colaborativo",
 			"INSTALL_dataDashboardNews"=>"<h3>¡Bienvenido a tu nuevo espacio para compartir!</h3>
-													<h4><img src='app/img/file/iconSmall.png'> Comparta sus archivos ahora en el administrador de archivos</h4>
-													<h4><img src='app/img/calendar/iconSmall.png'> Comparta sus calendarios comunes o su calendario personal</h4>
-													<h4><img src='app/img/dashboard/iconSmall.png'> Amplíe el suministro de noticias de su comunidad</h4>
-													<h4><img src='app/img/messenger.png'> Comunicarse a través del foro, mensajería instantánea o videoconferencias</h4>
-													<h4><img src='app/img/task/iconSmall.png'> Centraliza tus notas, proyectos y contactos</h4>
-													<h4><img src='app/img/mail/iconSmall.png'> Enviar boletines por correo electrónico</h4>
-													<h4><img src='app/img/postMessage.png'> <a href=\"javascript:lightboxOpen('?ctrl=user&action=SendInvitation')\">¡Haga clic aquí para enviar correos electrónicos de invitación y hacer crecer su comunidad!</a></h4>
-													<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>Para obtener más información, consulte la documentación oficial de Omnispace & Agora-Project</a></h4>",
+											<h4><img src='app/img/file/iconSmall.png'> Comparta sus archivos ahora en el administrador de archivos</h4>
+											<h4><img src='app/img/calendar/iconSmall.png'> Comparta sus calendarios comunes o su calendario personal</h4>
+											<h4><img src='app/img/dashboard/iconSmall.png'> Amplíe el suministro de noticias de su comunidad</h4>
+											<h4><img src='app/img/messenger.png'> Comunicarse a través del foro, mensajería instantánea o videoconferencias</h4>
+											<h4><img src='app/img/task/iconSmall.png'> Centraliza tus notas, proyectos y contactos</h4>
+											<h4><img src='app/img/mail/iconSmall.png'> Enviar boletines por correo electrónico</h4>
+											<h4><img src='app/img/postMessage.png'> <a onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\">¡Haga clic aquí para enviar correos electrónicos de invitación y hacer crecer su comunidad!</a></h4>
+											<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>Para obtener más información, consulte la documentación oficial de Omnispace & Agora-Project</a></h4>",
 			"INSTALL_dataDashboardPoll"=>"¿ Qué opinas de la herramienta de noticias ?",
 			"INSTALL_dataDashboardPollA"=>"Muy interesante !",
 			"INSTALL_dataDashboardPollB"=>"Interesante",
@@ -488,6 +491,10 @@ class Trad extends Txt
 			"INSTALL_dataCalendarEvt"=>"Bienvenido a Omnispace",
 			"INSTALL_dataForumSubject1"=>"Bienvenido al foro de Omnispace",
 			"INSTALL_dataForumSubject2"=>"Siéntase libre de compartir sus preguntas o discutir los temas que deseas.",
+			"INSTALL_dataTaskStatus1"=>"Por hacer",
+			"INSTALL_dataTaskStatus2"=>"En curso",
+			"INSTALL_dataTaskStatus3"=>"A validar",
+			"INSTALL_dataTaskStatus4"=>"Terminado",
 
 			////	MODULE_PARAMETRAGE
 			////
@@ -614,7 +621,6 @@ class Trad extends Txt
 			"SPACE_userAdminAccess"=>"Usuarios y administradores del espacio",
 			"SPACE_selectModule"=>"Debe seleccionar al menos un módulo",
 			"SPACE_spaceModules"=>"Módulos del espacio",
-			"SPACE_moduleRank"=>"Mover a establecer el orden de presentación de los módulos",
 			"SPACE_publicSpace"=>"Espacio público : acceso invitado",
 			"SPACE_publicSpaceTooltip"=>"Un espacio público está abierto a personas que no tengan cuenta de usuario (invitados). Podrán acceder al espacio desde la página de inicio. Se puede especificar una contraseña para proteger el acceso a este espacio público. Los módulos 'Emails' y 'Usuarios' no están disponibles para invitados.",
 			"SPACE_publicSpaceNotif"=>"Tu espacio es público: si contiene datos personales (teléfono, dirección, etc.) recuerda especificar una contraseña para cumplir con el RGPD: Reglamento General de Protección de Datos",
@@ -631,7 +637,7 @@ class Trad extends Txt
 			// Menu principal
 			"USER_headerModuleName"=>"Usuarios",
 			"USER_moduleDescription"=>"Usuarios del espacio",
-			"USER_option_allUsersAddGroup"=>"Los usuarios también pueden crear grupos",
+			"USER_option_allUsersAddGroup"=>"Los usuarios también pueden crear grupos",//OPTION!
 			//Index
 			"USER_spaceOrAllUsersTooltip"=>"Administrar usuarios del espacio actual / Administrar usuarios de todos los espacios (reservado para el administrador general)",
 			"USER_spaceUsers"=>"Usuarios del espacio corriente",
@@ -663,7 +669,7 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Editar mi perfil de usuario",
 			// Invitation
 			"USER_sendInvitation"=>"Enviar invitaciones por email",
-			"USER_sendInvitationTooltip"=>"Envía invitaciones por correo electrónico a tus contactos para unirte al espacio.<hr><img src='app/img/google.png' height=15> Si tienes una cuenta Gmail, también puedes enviar invitaciones a tus contactos Gmail.",
+			"USER_sendInvitationTooltip"=>"Envía invitaciones a tus contactos, para crear una cuenta de usuario y unirse al espacio de trabajo.<hr><img src='app/img/google.png' height=15> Si tienes una cuenta de Google, podrás enviar invitaciones a tus contactos de Gmail.",
 			"USER_mailInvitationObject"=>"Invitación de ", // ..Jean DUPOND
 			"USER_mailInvitationFromSpace"=>"le invita a ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Haga clic aquí para confirmar la invitación",
@@ -687,6 +693,7 @@ class Trad extends Txt
 			"USER_allUsersOnSpace"=>"Todos los usuarios del sitio ya están asignados a este espacio",
 			"USER_usersSpaceAffectation"=>"Asignar usuarios al espacio :",
 			"USER_usersSearchNoResult"=>"No hay usuarios para esta búsqueda",
+			"USER_usersSearchBack"=>"Atrás",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Idioma",
 			"USER_persoCalendarDisabled"=>"Calendario personal desactivado",
@@ -771,12 +778,13 @@ class Trad extends Txt
 			// Menu principal
 			"CALENDAR_headerModuleName"=>"Calendarios",
 			"CALENDAR_moduleDescription"=>"Calendarios personal y calendarios compartidos",
-			"CALENDAR_option_adminAddRessourceCalendar"=>"Sólo el administrador puede añadir calendarios de recursos",
-			"CALENDAR_option_adminAddCategory"=>"Sólo el administrador puede añadir categorías de eventos",
-			"CALENDAR_option_moduleDisabled"=>"Los usuarios que no hayan desactivado su calendario personal en su perfil de usuario seguirán viendo el módulo Calendario en la barra de menú.",
+			"CALENDAR_option_adminAddRessourceCalendar"=>"Sólo el administrador puede añadir calendarios de recursos",//OPTION!
+			"CALENDAR_option_adminAddCategory"=>"Sólo el administrador puede añadir categorías de eventos",//OPTION!
+			"CALENDAR_option_createSpaceCalendar"=>"Crear un calendario compartido para el espacio",//OPTION!
+			"CALENDAR_moduleAlwaysEnabledInfo"=>"Los usuarios que no hayan desactivado su calendario personal en su perfil de usuario seguirán viendo el módulo Calendario en la barra de menú.",
 			//Index
 			"CALENDAR_calsList"=>"Calendarios disponibles",
-			"CALENDAR_displayAllCals"=>"Ver todo los calendarios (administrador)",
+			"CALENDAR_calsListDisplayAll"=>"Ver todo los calendarios (administrador)",
 			"CALENDAR_hideAllCals"=>"Ocultar todo los calendarios",
 			"CALENDAR_printCalendars"=>"Imprimir el/los calendarios",
 			"CALENDAR_printCalendarsInfos"=>"imprimir la página en modo horizontal",
@@ -790,7 +798,6 @@ class Trad extends Txt
 			"CALENDAR_importIcalState"=>"Estado",
 			"CALENDAR_importIcalStatePresent"=>"Ya está presente",
 			"CALENDAR_importIcalStateImport"=>"a importar",
-			"CALENDAR_displayMode"=>"Visualización",
 			"CALENDAR_display_day"=>"Día",
 			"CALENDAR_display_4Days"=>"4 días",
 			"CALENDAR_display_workWeek"=>"Semana de trabajo",
@@ -814,12 +821,12 @@ class Trad extends Txt
 			"CALENDAR_deleteEvtDate"=>"¿ Eliminar sólo en esta fecha ?",
 			"CALENDAR_evtPrivate"=>"Évento privado",
 			"CALENDAR_evtAutor"=>"Eventos que he creado",
+			"CALENDAR_evtAutor2"=>"Mostrar solo eventos que he creado",
 			"CALENDAR_noEvt"=>"No hay eventos",
 			"CALENDAR_synthese"=>"Síntesis de los calendarios",
 			"CALENDAR_calendarsPercentBusy"=>"Calendarios ocupados",  // Agendas occupés : 2/5
 			"CALENDAR_noCalendarDisplayed"=>"No calendario",
 			// Evenement
-			"CALENDAR_category"=>"Categoría",
 			"CALENDAR_importanceNormal"=>"Importancia normal",
 			"CALENDAR_importanceHight"=>"Alta importancia",
 			"CALENDAR_visibilityPublic"=>"Visibilidad normal",
@@ -827,6 +834,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublicHide"=>"Visibilidad semi-privada",
 			"CALENDAR_visibilityTooltip"=>"<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento (sin los detailles) si el evento es accesible de lectura",
 			// Agenda/Evenement : edit
+			"CALENDAR_sharedCalendarDescription"=>"Calendario compartido del espacio",
 			"CALENDAR_noPeriodicity"=>"Una vez",
 			"CALENDAR_period_weekDay"=>"Cada semana",
 			"CALENDAR_period_month"=>"Cada mes",
@@ -837,37 +845,42 @@ class Trad extends Txt
 			"CALENDAR_addEvt"=>"Añadir un evento",
 			"CALENDAR_addEvtTooltip"=>"Añadir un evento",
 			"CALENDAR_addEvtTooltipBis"=>"Añadir el evento al calendario",
-			"CALENDAR_proposeEvtTooltip"=>"Proponer un evento al propietario del calendario",
-			"CALENDAR_proposeEvtTooltipBis"=>"Proponer el evento al propietario del calendario",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proponer el evento al propietario del calendario : calendario accesible solo en lectura",
-			"CALENDAR_inputProposed"=>"El evento será propuesto al propietario del calendario",
+			"CALENDAR_proposeEvtTooltip"=>"Proponer un evento al administrador del calendario",
+			"CALENDAR_proposeEvtTooltipBis"=>"Proponer el evento al administrador del calendario",
+			"CALENDAR_proposeEvtTooltipBis2"=>"Proponer el evento al administrador del calendario : el calendario solo es accesible para lectura",
+			"CALENDAR_inputProposed"=>"El evento será propuesto al administrador del calendario",
 			"CALENDAR_verifCalNb"=>"Gracias por seleccionar por lo menos un calendario",
 			"CALENDAR_noModifTooltip"=>"Edición prohibida porque no tiene acceso de escritura al calendario",
 			"CALENDAR_editLimit"=>"Usted no es el autor de el evento : sólo puedes editar las asignaciones a sus calendarios",
 			"CALENDAR_busyTimeslot"=>"La ranura ya está ocupado en este calendario :",
 			"CALENDAR_timeSlot"=>"Rango de tiempo de la pantalla ''semana''",
 			"CALENDAR_propositionNotif"=>"Notificar por correo electrónico de cada propuesta de evento",
-			"CALENDAR_propositionNotifTooltip"=>"Nota: Cada propuesta de evento es validada o invalidada por el propietario del calendario.",
+			"CALENDAR_propositionNotifTooltip"=>"Nota: Cada propuesta de evento es validada o invalidada por el administrador del calendario.",
 			"CALENDAR_propositionGuest"=>"Los invitados pueden proponer eventos",
 			"CALENDAR_propositionGuestTooltip"=>"Nota: Recuerde seleccionar 'todos los usuarios e invitados' en los derechos de acceso.",
 			"CALENDAR_propositionEmailSubject"=>"Nuevo evento propuesto por",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"Nuevo evento propuesto por --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accede a tu espacio para confirmar o cancelar esta propuesta",
-			// Categories
-			"CALENDAR_editCategories"=>"Administrar las categorías de eventos",
-			"CALENDAR_editCategoriesRight"=>"Cada categoría puede ser modificado por su autor o por el administrador general",
-			"CALENDAR_addCategory"=>"Añadir una categoría",
-			"CALENDAR_filterByCategory"=>"Ver los eventos por categoría",
+			// Categorie : Catégories d'événement
+			"CALENDAR_categoryCurrent"=>"Categoría mostrada",
+			"CALENDAR_categoryDisplayed"=>"Filtrar por categoría de evento",
+			"CALENDAR_categoryUndefined"=>"Sin categoría",
+			"CALENDAR_categoriesEditTitle"=>"Editar categorías de eventos",
+			"CALENDAR_categoriesEditInfo"=>"Cada categoría de evento puede ser modificada por su autor o por el administrador general",
+			"CALENDAR_categoriesAddButton"=>"Añadir una categoría de evento",
 
 			////	MODULE_FICHIER
 			////
 			// Menu principal
 			"FILE_headerModuleName"=>"Archivos",
 			"FILE_moduleDescription"=>"Administración de Archivos",
-			"FILE_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",
+			"FILE_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",//OPTION!
 			//Index
 			"FILE_addFile"=>"Añadir archivos",
 			"FILE_addFileAlert"=>"Los directorios del servidor no son accesible en escritura !  gracias de contactar el administrador",
 			"FILE_downloadSelection"=>"Descargar selección",
+			"FILE_fileDownload"=>"Descargar",
+			"FILE_fileSize"=>"Tamaño del archivo",
+			"FILE_imageSize"=>"Tamaño de la imagen",
 			"FILE_nbFileVersions"=>"Archivo versiones",//"55 versions du fichier"
 			"FILE_downloadsNb"=>"(descargado --NB_DOWNLOAD-- veces)",
 			"FILE_downloadedBy"=>"archivo subido por",//"..boby, will"
@@ -892,11 +905,13 @@ class Trad extends Txt
 			// Menu principal
 			"FORUM_headerModuleName"=>"Foro",
 			"FORUM_moduleDescription"=>"Foro",
-			"FORUM_option_adminAddSubject"=>"Sólo el administrador puede añadir sujetos",
-			"FORUM_option_allUsersAddTheme"=>"Los usuarios también pueden añadir temas",
+			"FORUM_option_adminAddSubject"=>"Sólo el administrador puede añadir sujetos",//OPTION!
+			"FORUM_option_adminAddTheme"=>"Sólo el administrador puede añadir temas",//OPTION!
 			// TRI
 			"SORT_dateLastMessage"=>"último mensaje",
 			//Index & Sujet
+			"FORUM_forumRoot"=>"Inicio del foro",
+			"FORUM_forumRootMobile"=>"Inicio",
 			"FORUM_subject"=>"sujeto",
 			"FORUM_subjects"=>"sujetos",
 			"FORUM_message"=>"mensaje",
@@ -913,24 +928,22 @@ class Trad extends Txt
 			"FORUM_notifyLastPost"=>"Notificar por e-mail",
 			"FORUM_notifyLastPostTooltip"=>"Deseo recibir una notificación por correo a cada nuevo mensaje",
 			// Sujet_edit  &  Message_edit
-			"FORUM_accessRightInfos"=>"Atención: el acceso a la lectura no permite participar en la discusión. Por lo tanto, prefiero el acceso de escritura limitado. El acceso de escritura debe reservarse para moderadores",
-			"FORUM_themeSpaceAccessInfo"=>"El tema está disponible en los espacios",
-			// Themes
-			"FORUM_subjectTheme"=>"Tema",
-			"FORUM_subjectThemes"=>"Temas",
-			"FORUM_forumRoot"=>"Inicio del foro",
-			"FORUM_forumRootResp"=>"Inicio",
-			"FORUM_noTheme"=>"Sin tema",
-			"FORUM_editThemes"=>"Gestión de los temas",
-			"FORUM_editThemesInfo"=>"Cada tema puede ser modificado por su autor o por el administrador general",
-			"FORUM_addTheme"=>"Añadir un tema",
+			"FORUM_notifOnlyReadAccess"=>"Si solo hay acceso de lectura, nadie puede contribuir al tema.",
+			"FORUM_notifWriteAccess"=>"El acceso de ''escritura'' está destinado a los moderadores :<br>Si es necesario, prefiera los derechos de ''escritura limitada''",
+			// Categorie : Themes
+			"FORUM_categoryThemes"=>"Temas",
+			"FORUM_categoryUndefined"=>"Sin tema",
+			"FORUM_categoriesEditTitle"=>"Gestión de los temas",
+			"FORUM_categoriesEditInfo"=>"Cada tema puede ser modificado por su autor o por el administrador general",
+			"FORUM_categoriesAddButton"=>"Añadir un tema",
 
 			////	MODULE_TACHE
 			////
 			// Menu principal
 			"TASK_headerModuleName"=>"Tareas",
 			"TASK_moduleDescription"=>"Tareas",
-			"TASK_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",
+			"TASK_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",//OPTION!
+			"TASK_option_adminAddStatus"=>"Sólo el administrador puede crear status Kanban",//OPTION!
 			// TRI
 			"SORT_priority"=>"Prioridad",
 			"SORT_advancement"=>"Progreso",
@@ -942,19 +955,25 @@ class Trad extends Txt
 			"TASK_advancement"=>"Progreso",
 			"TASK_advancementAverage"=>"Progreso promedio",
 			"TASK_priority"=>"Prioridad",
+			"TASK_priorityUndefined"=>"Prioridad indefinida",
 			"TASK_priority1"=>"Baja",
 			"TASK_priority2"=>"promedia",
 			"TASK_priority3"=>"alta",
-			"TASK_priority4"=>"Crítica",
-			"TASK_responsiblePersons"=>"Responsables",
+			"TASK_assignedTo"=>"Asignado a",
 			"TASK_advancementLate"=>"Progreso retrasado",
+			"TASK_folderDateBeginEnd"=>"Fecha de inicio más temprana / de fin más reciente",
+			//Categorie : Colonnes Kanban
+			"TASK_categoryUndefined"=>"Estado indefinido",
+			"TASK_categoriesEditTitle"=>"Editar estado de Kanban",
+			"TASK_categoriesEditInfo"=>"Cada estado puede ser modificado por su autor o por el administrador general.",
+			"TASK_categoriesAddButton"=>"Añadir un estado",
 
 			////	MODULE_CONTACT
 			////
 			// Menu principal
 			"CONTACT_headerModuleName"=>"Contactos",
 			"CONTACT_moduleDescription"=>"Directorio de contactos",
-			"CONTACT_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",
+			"CONTACT_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",//OPTION!
 			//Index
 			"CONTACT_addContact"=>"Añadir un contacto",
 			"CONTACT_noContact"=>"No hay contacto todavía",
@@ -967,7 +986,7 @@ class Trad extends Txt
 			// Menu principal
 			"LINK_headerModuleName"=>"Favoritos",
 			"LINK_moduleDescription"=>"Favoritos",
-			"LINK_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",
+			"LINK_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",//OPTION!
 			//Index
 			"LINK_addLink"=>"Añadir un enlace",
 			"LINK_noLink"=>"No hay enlaces por el momento",

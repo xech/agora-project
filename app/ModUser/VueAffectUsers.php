@@ -1,28 +1,29 @@
 <script>
 ////	Resize
-lightboxSetWidth(450);
+lightboxSetWidth(500);
 
-////	Confirme l'envoi?
-function formControl()
-{
-	//Controle les champs de recherche
-	if($("input[name^='searchFields']").isVisible())
-	{
-		var emptySearch=true;
-		//Vérifie si tous les champs de recherche sont vides
-		$("input[name^='searchFields']").each(function(){
-			if($(this).isEmpty()==false)	{emptySearch=false;}
-		});
-		//S'ils sont tous vides : erreur
-		if(emptySearch==true)	{notify("<?= Txt::trad("USER_searchPrecision") ?>"); return false;}
-	}
-	//Confirmer les affectations
-	else if($("input[name^='usersList']").isVisible() && !confirm("<?= Txt::trad("USER_userAffectConfirm") ?>"))  {return false;}
-}
+////	Controle du formulaire
+$(function(){
+	$("#mainForm").submit(function(){
+		////	Controle si au moins un champ de recherche est rempli
+		if($("input[name^='searchFields']").isVisible()){
+			var allFieldsEmpty=true;
+			$("input[name^='searchFields']").each(function(){
+				if($(this).isEmpty()==false)  {allFieldsEmpty=false;}
+			});
+			if(allFieldsEmpty==true)   {notify("<?= Txt::trad("USER_searchPrecision") ?>");  return false;}
+		}
+		////	Controle si au moins un utilisateur est sélectionné
+		else if($("input[name^='usersList']").isVisible()){
+			if($("input[name^='usersList']:checked").length==0)		 			{notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
+			else if(!confirm("<?= Txt::trad("USER_userAffectConfirm") ?>"))		{return false;}
+		}
+	});
+});
 </script>
 
 
-<form action="index.php" method="post" onsubmit="return formControl();" class="lightboxContent">
+<form action="index.php" method="post" id="mainForm">
 	<?php
 	//// Recherche
 	if(empty($usersList))
@@ -32,7 +33,7 @@ function formControl()
 		//liste des champs de recherche
 		foreach($searchFields as $tmpField){
 			echo "<div class='objField'>
-					<div class='fieldLabel'>".Txt::trad($tmpField)."</div>
+					<div>".Txt::trad($tmpField)."</div>
 					<div><input type='text' name='searchFields[".$tmpField."]' value=\"".(isset($searchFieldsValues[$tmpField])?$searchFieldsValues[$tmpField]:null)."\"></div>
 				  </div>";
 		}
@@ -43,8 +44,7 @@ function formControl()
 	else
 	{
 		//Titre du formulaire & Bouton "retour"
-		echo "<div class='lightboxTitle'>".Txt::trad("USER_usersSpaceAffectation")."</div>
-			  <button type='button' onclick=\"window.history.back();\" style='position:absolute;top:5px;right:5px;'>Back</button>";
+		echo "<div class='lightboxTitle'>".Txt::trad("USER_usersSpaceAffectation")."</div>";
 		//Liste les users à affecter
 		if(empty($usersList))  {echo Txt::trad("USER_usersSearchNoResult");}
 		else{
@@ -55,7 +55,8 @@ function formControl()
 					  </div>";
 			}
 			//Bouton de validation
-			echo Txt::submitButton();
+			echo Txt::submitButton("validate").
+				 "<button type='button' onclick=\"window.history.back();\" style='position:absolute;top:15px;right:10px;'>".Txt::trad("USER_usersSearchBack")."</button>";
 		}
 	}
 	?>

@@ -2,4 +2,4 @@ Mise à jour FancyBox v3.5.7
 
 - télécharger la dernière version 	-> https://github.com/fancyapps/fancybox
 - vérifier le dimensionnement, l'autoresize/update, l'affichage des menus : formulaire d'édition, photos, video, pdf, contact maps
-- Tester en responsive, sur Chrome, Firefox, Safari
+- Tester sur mobile, sur Chrome, Firefox, Safari

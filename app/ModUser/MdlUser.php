@@ -42,7 +42,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * VERIFIE S'IL S'AGIT D'UN ADMINISTRATEUR GÉNÉRAL
 	 *******************************************************************************************/
-	public function isAdminGeneral()
+	public function isGeneralAdmin()
 	{
 		return (!empty($this->generalAdmin));
 	}
@@ -50,7 +50,7 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * VERIFIE SI L'USER EST UN ADMINISTRATEUR DE L'ESPACE COURANT
 	 *******************************************************************************************/
-	public function isAdminSpace()
+	public function isSpaceAdmin()
 	{
 		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->accessRightUser($this)==2);}
 		return $this->_isAdminCurSpace;
@@ -99,7 +99,7 @@ class MdlUser extends MdlPerson
 		//Accès total  &&  Autre user que celui en cours  &&  Pas dernier adminGeneral
 		$deleteRight=false;
 		if(parent::fullRight() && $this->_id!=Ctrl::$curUser->_id){
-			if($this->isAdminGeneral()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>1)  {$deleteRight=true;}
+			if($this->isGeneralAdmin()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>1)  {$deleteRight=true;}
 		}
 		//Retourne le droit d'Accès
 		return $deleteRight;
@@ -110,7 +110,7 @@ class MdlUser extends MdlPerson
 	 *******************************************************************************************/
 	public function deleteFromCurSpaceRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() && Ctrl::$curSpace->allUsersAffected()==false);
+		return (Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
 	}
 
 	/*******************************************************************************************
@@ -118,7 +118,7 @@ class MdlUser extends MdlPerson
 	 *******************************************************************************************/
 	public function editAdminGeneralRight()
 	{
-		return (Ctrl::$curUser->isAdminGeneral() && Ctrl::$curUser->_id!=$this->_id);
+		return (Ctrl::$curUser->isGeneralAdmin() && Ctrl::$curUser->_id!=$this->_id);
 	}
 
 	/*******************************************************************************************
@@ -127,7 +127,7 @@ class MdlUser extends MdlPerson
 	public function sendInvitationRight($objSpace=null)
 	{
 		if($objSpace==null)	{$objSpace=Ctrl::$curSpace;}
-		return (Tool::mailEnabled() && ($this->isAdminSpace() || (!empty($objSpace->usersInvitation) && $this->isUser())));
+		return (Tool::mailEnabled() && ($this->isSpaceAdmin() || (!empty($objSpace->usersInvitation) && $this->isUser())));
 	}
 
 	/*******************************************************************************************
@@ -163,7 +163,7 @@ class MdlUser extends MdlPerson
 	{
 		//Initialise la liste des objets "space"
 		if($this->_userSpaces===null){
-			if($this->isAdminGeneral())	{$sqlQuery="SELECT * FROM ap_space ORDER BY name ASC";}//Admin général : tous les espaces
+			if($this->isGeneralAdmin())	{$sqlQuery="SELECT * FROM ap_space ORDER BY name ASC";}//Admin général : tous les espaces
 			elseif($this->isUser())		{$sqlQuery="SELECT DISTINCT T1.* FROM ap_space T1 LEFT JOIN ap_joinSpaceUser T2 ON T1._id=T2._idSpace WHERE T2._idUser=".$this->_id." OR T2.allUsers=1 ORDER BY name ASC";}//User lambda : espaces affectés
 			else						{$sqlQuery="SELECT * FROM ap_space WHERE public=1 ORDER BY name ASC";}//Guest : espaces publics
 			$this->_userSpaces=Db::getObjTab("space",$sqlQuery);
@@ -208,7 +208,7 @@ class MdlUser extends MdlPerson
 	 *******************************************************************************************/
 	public function deleteFromCurSpace($_idSpace)
 	{
-		if(Ctrl::$curUser->isAdminSpace()){
+		if(Ctrl::$curUser->isSpaceAdmin()){
 			Db::query("DELETE FROM ap_joinSpaceUser WHERE _idUser=".$this->_id." AND _idSpace=".(int)$_idSpace);
 			if(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".(int)$_idSpace." AND allUsers=1")>0)  {Ctrl::notify("USER_allUsersOnSpaceNotif");}
 		}
@@ -346,7 +346,7 @@ class MdlUser extends MdlPerson
 			$mailSubject=Txt::trad("USER_mailNotifObject")." ".ucfirst(Ctrl::$agora->name);//"Bienvenue sur Mon-espace"
 			$mailMessage=Txt::trad("USER_mailNotifContent")." <i>".Ctrl::$agora->name."</i> (".Req::getCurUrl(false).")<br><br>".//"Votre compte utilisateur vient d'être créé sur <i>Mon-espace</i>"
 						 "<a href=\"".Req::getCurUrl()."/index.php?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
-						 Txt::trad("login")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
+						 Txt::trad("mailLlogin")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
 						 Txt::trad("passwordToModify2")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
 						 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage);

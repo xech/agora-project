@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(550);
+lightboxSetWidth(600);
 
 ////	Confirmation de suppression de version
 function confirmDeleteVersion(dateCrea)
@@ -20,7 +20,7 @@ img[src*='delete']		{margin-left:20px;}
 </style>
 
 
-<div class="lightboxContent">
+<div>
 	<div class="lightboxTitle"><?= Txt::trad("FILE_versionsOf")." <i>".$curObj->name."</i>" ?></div>
 	<ol reversed>
 		<?php foreach($curObj->getVersions() as $tmpVersion){ ?>
@@ -32,7 +32,7 @@ img[src*='delete']		{margin-left:20px;}
 					Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel().'<img src="app/img/separator.png">'.
 					File::displaySize($tmpVersion["octetSize"]).'<br>'.
 					'<a href="'.$curObj->urlDownload($tmpVersion["dateCrea"]).'" target="_blank"><img src="app/img/download.png"> '.Txt::trad("download").'</a>'.
-					'<a href="javascript:confirmDeleteVersion(\''.urlencode($tmpVersion["dateCrea"]).'\')"><img src="app/img/delete.png"> '.Txt::trad("delete").'</a>';
+					'<a onclick="confirmDeleteVersion(\''.urlencode($tmpVersion["dateCrea"]).'\')"><img src="app/img/delete.png"> '.Txt::trad("delete").'</a>';
 					?>
 				</div>
 			</li>

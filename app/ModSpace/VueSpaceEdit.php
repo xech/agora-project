@@ -5,18 +5,18 @@ lightboxSetWidth(600);
 ////	INIT
 $(function(){
 	////	Option "espace public"
-	$("input[name='public']").change(function(){
-		$("#divPassword").toggle(this.checked);//Affiche l'option du password ?
-		if(this.checked && $("#divPassword input[name=password]").isEmpty())  {notify("<?= Txt::trad("SPACE_publicSpaceNotif") ?>");}	//Affiche la notif  "Si votre espace public contient des coordonnées perso.."
+	$("#publicSpace, #publicSpacePassword").on("change",function(){
+		$("#publicSpacePasswordDiv").toggle($("#publicSpace").prop("checked"));														//#publicSpace checked/unchecked : affiche/masque l'input du password 
+		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").isEmpty())  {$("#publicSpaceNotif").show().pulsate(2);}	//Affiche et Pulsate la notif sur la RGPD
 	}).trigger("change");//Init l'affichage
 
 	////	Option "Formulaire d'inscription en page de connexion"
-	$("input[name='userInscription']").change(function(){
+	$("input[name='userInscription']").on("change",function(){
 		$("#divUserInscriptionNotify").toggle(this.checked);//Affiche l'option de notif par email ?
 	}).trigger("change");//Init l'affichage
 
 	////	Sélectionne/Désélectionne un module
-	$("input[name='moduleList[]']").change(function(){
+	$("input[name='moduleList[]']").on("change",function(){
 		//Affiche/masque les options du module en cours
 		$("[name='moduleList[]']").each(function(){	 $(".moduleOptions"+$(this).attr("data-moduleName")).toggle(this.checked);  });
 		//Si le module "agenda" est désactivé : on affiche "Le module agenda reste toujours accessible.."
@@ -24,16 +24,17 @@ $(function(){
 	}).trigger("change");//Init l'affichage
 
 	////	Option "disablePolls" : active/désactive l'option "adminAddPoll"
-	$("input[value='disablePolls']").change(function(){ 
+	$("input[value='disablePolls']").on("change",function(){ 
 		$("input[value='adminAddPoll']").prop("disabled",this.checked);
 	}).trigger("change");//Init l'affichage
 
-	////	Initialise le tri des modules (".vModuleLineSort" pour déplacer à partir de cette cellule. "hightlight" pour afficher un module "fantome". "y" pour déplacer uniquement en vertical)
-	if(isMobile()==false)  {$("#modulesList").sortable({handle:".vModuleLineSort",placeholder:'highlight',axis:"y"}).disableSelection();}
+	////	Change l'ordre d'affichage des modules ("hightlight" : module fantome & "y" : déplacemnt vertical)
+	if(isMobile())	{$(".changeOrder").hide();}
+	else			{$("#modulesList").sortable({handle:".changeOrder",placeholder:"changeOrderShadow",axis:"y"});}
 
 	////	Sélectionne "allUsers" : toutes les checkboxes "user" sont alors "disabled" & "checked" (sinon on les réactive et uncheck)
-	$("input#allUsers").click(function(){
-		$(".spaceAffectInput[value$='_1']").prop("disabled",this.checked).prop("checked",this.checked);	//Switch le "disabled"+"Checked"
+	$("input#allUsers").on("click",function(){
+		$(".spaceAffectInput[value$='_1']").prop("disabled",this.checked).prop("checked",this.checked);	//checkboxes "lecture : "disabled"+"check" || "enabled"+"uncheck"
 		spaceAffectationsLabel();																		//Stylise les labels
 	});
 
@@ -41,97 +42,85 @@ $(function(){
 	spaceAffectations();
 });
 
-////	Contrôle du formulaire
-function formControl()
-{
-	//Controle le password (ne pas utiliser "isValidPassword()")
-	if($("input[name='public']").prop("checked") && $("#divPassword input[name=password]").isEmpty()==false && $("#divPassword input[name=password]").val().length<6)
-		{notify("<?= Txt::trad("passwordInvalid") ?>"); return false; }
-	//Controle le nb de modules cochés
-	if($("input[name='moduleList[]']:checked").length==0)  {notify("<?= Txt::trad("SPACE_selectModule") ?>"); return false; }
-	//Controle final (champs obligatoires, affectations/droits d'accès, etc)
-	return mainFormControl();
+////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+function objectFormControl(){
+	return new Promise((resolve)=>{
+		//// Controle le password et le nombre de modules sélectionnés
+		if($("#publicSpace").prop("checked")  &&  $("#publicSpacePassword").isEmpty()==false  &&  $("#publicSpacePassword").val().length < 6)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
+		if($("input[name='moduleList[]']:checked").isEmpty())																					{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
+		else																																	{resolve(true);}
+	});
 }
 </script>
 
 
 <style>
-textarea[name='description']			{margin-top:20px; <?= empty($curSpace->description)?"display:none;":null ?>}
-.vSpaceOption							{margin-bottom:20px;}
-.vSpaceOption>img						{max-width:18px;}
-#divPassword, #divUserInscriptionNotify	{margin:5px 0px 0px 30px;}
-.vWallpaper								{display:table; width:100%; margin-top:10px;}
-.vWallpaper>div							{display:table-cell;}
-.vWallpaper>div:first-of-type			{width:90px;}
-.vWallpaper img							{max-height:90px;}
+.inputTitleName							{width:70%;}
+.vSpaceOptions							{margin:20px 0px;}
+.vSpaceOptions>img						{max-width:18px;}
+#publicSpacePasswordDiv, #divUserInscriptionNotify	{margin:5px 0px 0px 30px;}
+#publicSpaceNotif						{display:none; margin:10px 0px; line-height:20px;}
 label[for='allUsers']					{font-size:1.15em;}
 
 /*modules*/
-#modulesFieldset						{padding:0px;}/*surcharge*/
 #modulesList							{list-style-type:none; margin:0px; padding:0px; width:100%;}
-#modulesList .ui-state-default			{border-top:none;}
-#modulesList li							{padding:8px 0px 8px 0px; background:<?= Ctrl::$agora->skin=="black"?"#222":"#f1f1f1" ?>; border-top:<?= Ctrl::$agora->skin=="black"?"#555":"#ddd" ?> 1px solid;}
-#modulesList li.highlight				{border:1px dashed #aaa; height:80px; }/*module "fantome" durant le déplacement*/
-.vModuleLine							{display:table; width:100%;}
-.vModuleLine>div						{display:table-cell; font-weight:bold; padding:4px;}
+.vModuleLine							{display:table; width:100%; margin:10px 0px; background:<?= Ctrl::$agora->skin=="black"?"#222":"#f1f1f1" ?>; border:<?= Ctrl::$agora->skin=="black"?"#555":"#ddd" ?> 1px solid;}
+.vModuleLine>div						{display:table-cell; font-weight:bold; padding:10px;}
 .vModuleLine img						{max-height:20px;}
 .vModuleLine img[src*='dependency']		{margin-left:8px;}
 .vModuleLineIcon						{vertical-align:middle; margin-left:5px;}
-.vModuleLineSort						{width:24px; cursor:move; background-image:url(app/img/reOrder.png); background-position:top 8px; background-repeat: no-repeat;}/*icone de tri*/
 div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut les options*/
 
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	.vModuleLineIcon, .vModuleLineSort	{display:none!important;}
+	.vModuleLineIcon	{display:none!important;}
 }
 </style>
 
 
-<form action="index.php" method="post" onsubmit="return formControl()" enctype="multipart/form-data" class="lightboxContent">
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 
-	<!--NOM/DESCRIPTION-->
-	<div class="vSpaceOption">
-		<input type="text" name="name" value="<?= $curSpace->name ?>" class="textBig" placeholder="<?= Txt::trad("name") ?>">
-		<img src="app/img/description.png" class="sLink" title="<?= Txt::trad("description") ?>" onclick="$('textarea[name=description]').slideToggle();">
-		<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curSpace->description ?></textarea>
-	</div>
+	<!--NOM / DESCRIPTION-->
+	<input type="text" name="name" value="<?= $curObj->name ?>" class="inputTitleName" placeholder="<?= Txt::trad("name") ?>">
+	<?= $curObj->editDescription() ?>
 
 	<!--ESPACE PUBLIC (avec password?)-->
-	<div class="vSpaceOption">
-		<img src="app/img/user/accessGuest.png"> <input type="checkbox" name="public" id="public" value="1" <?= (!empty($curSpace->public))?'checked':null ?>>
-		<label for="public" title="<?= Txt::trad("SPACE_publicSpaceTooltip") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
-		<div id="divPassword">
-			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; <input type="text" name="password" value="<?= $curSpace->password ?>">
+	<div class="vSpaceOptions">
+		<img src="app/img/user/accessGuest.png"> <input type="checkbox" name="public" id="publicSpace" value="1" <?= (!empty($curObj->public))?'checked':null ?>>
+		<label for="publicSpace" title="<?= Txt::trad("SPACE_publicSpaceTooltip") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
+		<div id="publicSpacePasswordDiv">
+			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; <input type="text" name="password" value="<?= $curObj->password ?>" id="publicSpacePassword">
+			<fieldset id="publicSpaceNotif"><?= Txt::trad("SPACE_publicSpaceNotif") ?></fieldset><!--Notif sur la RGPD-->
 		</div>
 	</div>
 
 	<!--INSCRIPTION A L'ESPACE-->
-	<div class="vSpaceOption">
-		<img src="app/img/edit.png"> <input type="checkbox" name="userInscription" id="userInscription" value="1" <?= (!empty($curSpace->userInscription))?'checked':null ?>>
+	<div class="vSpaceOptions">
+		<img src="app/img/edit.png"> <input type="checkbox" name="userInscription" id="userInscription" value="1" <?= (!empty($curObj->userInscription))?'checked':null ?>>
 		<label for="userInscription" title="<?= Txt::trad("userInscriptionEditTooltip") ?>"><?= Txt::trad("userInscriptionEdit") ?></label>
 		<div id="divUserInscriptionNotify" title="<?= Txt::trad("userInscriptionNotifTooltip") ?>">
 			<img src="app/img/dependency.png">
-			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curSpace->userInscriptionNotify))?'checked':null ?>>
+			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curObj->userInscriptionNotify))?'checked':null ?>>
 			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotif") ?></label>
 		</div>
 	</div>
 
 	<!--INVITATIONS PAR MAIL-->
-	<div class="vSpaceOption" title="<?= Txt::trad("SPACE_usersInvitationTooltip") ?>">
-		<img src="app/img/mail.png"> <input type="checkbox" name="usersInvitation" id="usersInvitation" value="1" <?= (!empty($curSpace->usersInvitation))?'checked':null ?>>
+	<div class="vSpaceOptions" title="<?= Txt::trad("SPACE_usersInvitationTooltip") ?>">
+		<img src="app/img/mail.png"> <input type="checkbox" name="usersInvitation" id="usersInvitation" value="1" <?= (!empty($curObj->usersInvitation))?'checked':null ?>>
 		<label for="usersInvitation"><?= Txt::trad("SPACE_usersInvitation") ?></label>
 	</div>
 
 	<!--WALLPAPER-->
-	<div class="vSpaceOption vWallpaper">
-		<div class="fieldLabel"><?= Txt::trad("wallpaper") ?></div>
-		<div><?= CtrlMisc::menuWallpaper($curSpace->wallpaper) ?></div>
+	<div class="vSpaceOptions">
+		<div><?= Txt::trad("wallpaper") ?></div>
+		<div><?= CtrlMisc::menuWallpaper($curObj->wallpaper) ?></div>
 	</div>
 
 	<!--MODULES DE L'ESPACE-->
-	<div class="lightboxBlockTitle"><?= Txt::trad("SPACE_spaceModules") ?></div>
-	<div class="lightboxBlock" id="modulesFieldset">
-		<ul id="modulesList">
+	<fieldset>
+		<legend><?= Txt::trad("SPACE_spaceModules") ?></legend>
+		<div id="modulesList">
 		<?php
 		////	AFFICHE CHAQUE MODULE ET SES OPTIONS
 		foreach($moduleList as $moduleName=>$tmpModule)
@@ -141,7 +130,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			foreach($tmpModule["ctrl"]::$moduleOptions as $optionName)
 			{
 				//Création d'agenda : uniquement pour un nouvel espace
-				if($optionName=="createSpaceCalendar" && $curSpace->isNew()==false)  {continue;}
+				if($optionName=="createSpaceCalendar" && $curObj->isNew()==false)  {continue;}
 				//Init l'affichage
 				$checkOption=(!empty($tmpModule["options"]) && stristr($tmpModule["options"],$optionName))  ?  "checked"  :  null;
 				if($optionName=="createSpaceCalendar")  {$checkOption="checked";}//"check" la création d'un agenda s'il s'agit d'un nouvel espace
@@ -155,27 +144,25 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 								</div>';
 			}
 			//Module Agenda : si le module est désactivé, on affiche "Le module agenda reste toujours accessible.."
-			if($moduleName=="calendar")  {$moduleOptions.='<div class="infos" id="moduleCalendarDisabled"><img src="app/img/info.png"> '.Txt::trad("CALENDAR_option_moduleDisabled").'</div>';}
+			if($moduleName=="calendar")  {$moduleOptions.='<div class="infos" id="moduleCalendarDisabled"><img src="app/img/info.png"> '.Txt::trad("CALENDAR_moduleAlwaysEnabledInfo").'</div>';}
 			//Affiche le module et ses options
-			echo '<li>
-					<div class="vModuleLine">
-						<div>
-							<input type="checkbox" name="moduleList[]" value="'.$moduleName.'" id="moduleInput-'.$moduleName.'" data-moduleName="'.$moduleName.'" '.(empty($tmpModule["disabled"])?"checked":null).'>
-							<label for="moduleInput-'.$moduleName.'" title="'.$tmpModule["description"].'">'.$tmpModule["label"].' <img src="app/img/'.$moduleName.'/icon.png" class="vModuleLineIcon"></label>
-							'.$moduleOptions.'
-						</div>
-						<div class="vModuleLineSort" title="'.Txt::trad("SPACE_moduleRank").'">&nbsp;</div>
+			echo '<div class="vModuleLine">
+					<div>
+						<input type="checkbox" name="moduleList[]" value="'.$moduleName.'" id="moduleInput-'.$moduleName.'" data-moduleName="'.$moduleName.'" '.(empty($tmpModule["disabled"])?"checked":null).'>
+						<label for="moduleInput-'.$moduleName.'" title="'.$tmpModule["description"].'">'.$tmpModule["label"].' <img src="app/img/'.$moduleName.'/icon.png" class="vModuleLineIcon"></label>
+						'.$moduleOptions.'
 					</div>
-				</li>';
+					<div class="changeOrder" title="'.Txt::trad("changeOrder").'"><img src="app/img/changeOrder.png"></div>
+				  </div>';
 		}
 		?>
-		</ul>
-	</div>
+		</div>
+	</fieldset>
 
 	<!--USERS DE L'ESPACE-->
-	<?php if(Ctrl::$curUser->isAdminSpace()){ ?>
-	<div class="lightboxBlockTitle" title="<?= Txt::trad("SPACE_adminTooltip") ?>"><?= Txt::trad("SPACE_userAdminAccess") ?> <img src="app/img/info.png"></div>
-	<div class="lightboxBlock usersFieldset">
+	<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?>
+	<fieldset>
+		<legend title="<?= Txt::trad("SPACE_adminTooltip") ?>"><img src="app/img/info.png"> <?= Txt::trad("SPACE_userAdminAccess") ?></legend>
 		<div class="spaceAffectLine">
 			<label>&nbsp;</label>
 			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
@@ -183,16 +170,16 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 		</div>
 		<div class="spaceAffectLine lineHover">
 			<label for="allUsers"><?= Txt::trad("SPACE_allUsers") ?></label>
-			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curSpace->allUsersAffected())?'checked':null ?>></div>
+			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curObj->allUsersAffected())?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>
 		<?php
 		//Affectations des utilisateurs
 		foreach($userList as $tmpUser)
 		{
-			$userChecked =($curSpace->userAffectation($tmpUser)==1) ? "checked" : null;	//Sélectionne la box "user"
-			$adminChecked=($curSpace->userAffectation($tmpUser)==2) ? "checked" : null;	//Sélectionne la box "admin"
-			$userDisabled=($curSpace->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
+			$userChecked =($curObj->userAffectation($tmpUser)==1) ? "checked" : null;	//Sélectionne la box "user"
+			$adminChecked=($curObj->userAffectation($tmpUser)==2) ? "checked" : null;	//Sélectionne la box "admin"
+			$userDisabled=($curObj->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
 			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpUser->_id.'">
 					<label class="spaceAffectLabel">'.$tmpUser->getLabel().'</label>
 					<div title="'.Txt::trad("SPACE_userTooltip").'"> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
@@ -200,9 +187,9 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 				  </div>';
 		}
 		?>
-	</div>
+	</fieldset>
 	<?php } ?>
 
-	<!--MENU COMMUN-->
-	<?= $curSpace->menuEdit() ?>
+	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<?= $curObj->editMenuSubmit() ?>
 </form>

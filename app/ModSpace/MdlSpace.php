@@ -46,7 +46,7 @@ class MdlSpace extends MdlObject
 	  *******************************************************************************************/
 	 public function deleteRight()
 	 {
-		 return (Ctrl::$curUser->isAdminGeneral() && $this->isCurSpace()==false);
+		 return (Ctrl::$curUser->isGeneralAdmin() && $this->isCurSpace()==false);
 	 }
 
 	/*****************************************************************************************************************
@@ -57,7 +57,7 @@ class MdlSpace extends MdlObject
 	{
 		if(empty($this->_usersAccessRight[$objUser->_id]))									//Droit d'accès déjà en "cache" ?
 		{
-			if($objUser->isAdminGeneral())	{$curRight=2;}									//Droit d'admin général (même si aucun affectation à l'espace)
+			if($objUser->isGeneralAdmin())	{$curRight=2;}									//Droit d'admin général (même si aucun affectation à l'espace)
 			elseif($objUser->isUser())		{$curRight=$this->userAffectation($objUser);}	//Droit d'affectation de l'user
 			else							{$curRight=$this->public;}						//Droit d'accès "guest" (espace public)
 			$this->_usersAccessRight[$objUser->_id]=(int)$curRight;							//Ajoute le droit d'accès en "cache"
@@ -191,9 +191,10 @@ class MdlSpace extends MdlObject
 			//Supprime les objets affectés uniquement à l'espace courant
 			$objectsOnlyInCurSpace=Db::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".$this->_id." AND concat(objectType,_idObject) NOT IN (select concat(objectType,_idObject) from ap_objectTarget where _idSpace!=".$this->_id." or _idSpace is null) ORDER BY objectType, _idObject");
 			foreach($objectsOnlyInCurSpace as $tmpObject){
-				//Charge l'objet et vérifie qu'il est bien supprimable (important : vérifie que c'est pas un dossier racine ou un agenda perso)
+				//Charge l'objet et le supprime (sauf les dossiers racine et agendas persos)
 				$tmpObj=Ctrl::getObj($tmpObject["objectType"],$tmpObject["_idObject"]);
-				if(is_object($tmpObj) && $tmpObj->isNew()==false && $tmpObj->isRootFolder()==false && $tmpObj::objectType!="calendar" && $tmpObj->type!="user")   {$tmpObj->delete();}
+				$isPersonalCalendar=($tmpObj::objectType=="calendar" && $tmpObj->isPersonalCalendar());
+				if(MdlObject::isObject($tmpObj) && $tmpObj->isRootFolder()==false && $isPersonalCalendar==false)  {$tmpObj->delete();}
 			}
 			//Supprime les affectations espace->modules, espace->users, espace->objets (pour les objets affectés à plusieurs espaces) et espace->invitations
 			Db::query("DELETE FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id);

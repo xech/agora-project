@@ -13,7 +13,7 @@ $(function(){
 			$("#wallpaperImg").show();												//Affiche le conteneur wallpaper
 			if(/<?= WALLPAPER_DEFAULT_DB_PREFIX ?>/i.test(this.value)==false && this.value.length>0)  {$("#wallpaperDelete").show();}//Ajoute l'option de suppression si c'est un Wallpaper "custom" (sans "DB_PREFIX")
 		}
-	}).click();//Paramétrage général : Trigger au chargement de la page pour afficher si besoin le "wallpaperDelete"
+	}).trigger("click");//Paramétrage général : Trigger au chargement de la page pour afficher si besoin le "wallpaperDelete"
 });
 
 ////	Suppression d'un Wallpaper
@@ -23,15 +23,17 @@ function wallpaperDelete()
 }
 </script>
 
+
 <style>
 #wallpaperMain					{display:table;}
-#wallpaperSelect, #wallpaperImg, #wallpaperAdd	{display:table-cell; padding-right:8px;}
-select[name='wallpaper']		{height:100px; max-width:180px;}
-#wallpaperImg img				{height:100px;}
+#wallpaperSelect, #wallpaperImg, #wallpaperAdd	{display:table-cell; padding-right:8px; scrollbar-width: 30px;}
+select[name='wallpaper']		{height:120px; max-width:180px;}
+#wallpaperImg img 				{height:120px; max-width:none;}/*surcharge ".objField img"*/
 #wallpaperAdd, #wallpaperDelete	{display:none;}
 #wallpaperDelete				{font-size:0.9em;}
 option[value='add']				{background-color:#800;color:#fff;}
 </style>
+
 
 <div id="wallpaperMain">
 	<div id="wallpaperSelect">
@@ -50,5 +52,5 @@ option[value='add']				{background-color:#800;color:#fff;}
 	</div>
 	<div id="wallpaperImg"><img src="<?= CtrlMisc::pathWallpaper($curWallpaper) ?>"></div>
 	<div id="wallpaperAdd"><input type="file" name="wallpaperFile" id="wallpaperFile"></div>
-	<?php if(Req::$curCtrl=="agora"){ ?><div id="wallpaperDelete" class="sLink" onclick="wallpaperDelete()"><img src="app/img/delete.png"><?= Txt::trad("AGORA_deleteWallpaper") ?></div><?php } ?>
+	<?php if(Req::$curCtrl=="agora"){ ?><div id="wallpaperDelete" onclick="wallpaperDelete()"><img src="app/img/delete.png"><?= Txt::trad("AGORA_deleteWallpaper") ?></div><?php } ?>
 </div>

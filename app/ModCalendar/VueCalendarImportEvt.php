@@ -2,18 +2,20 @@
 ////	Resize
 lightboxSetWidth("1300px");
 
-////	Contrôle du formulaire
-function formControl()
-{
-	//Fichier Import au format csv
-	if($("input[name='importFile']").exist()){
-		if($("input[name='importFile']").isEmpty())						{notify("<?= Txt::trad("specifyFile") ?>");	return false;}
-		else if(extension($("input[name='importFile']").val())!="ics")	{notify("<?= Txt::trad("fileExtension") ?> ICS");	return false;}
-	}
-	//Affiche l'icone "loading"
-	submitButtonLoading();
-}
+////	Controle du formulaire
+$(function(){
+	$("#mainForm").submit(function(){
+		//Fichier Import au format csv
+		if($("input[name='importFile']").exist()){
+			if($("input[name='importFile']").isEmpty())						{notify("<?= Txt::trad("specifyFile") ?>");	return false;}
+			else if(extension($("input[name='importFile']").val())!="ics")	{notify("<?= Txt::trad("fileExtension") ?> ICS");	return false;}
+		}
+		//Affiche l'icone "loading"
+		submitButtonLoading();
+	});
+});
 </script>
+
 
 <style>
 form						{text-align:center; padding:0px; margin:0px;}
@@ -30,7 +32,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 </style>
 
 
-<form action="index.php" method="post" enctype="multipart/form-data" onsubmit="return formControl()" class="lightboxContent">
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<div class="lightboxTitle"><?= Txt::trad("CALENDAR_importIcal").(!empty($eventList)?" : ".count($eventList)." elements":null) ?></div>
 	
 	<?php
@@ -45,7 +47,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 		////DEBUT DU TABLEAU + HEADER
 		echo '<table class="vTable">
 				<tr class="vTableHeader">
-					<td title="'.Txt::trad("selectSwitch").'"><img src="app/img/switch.png" class="sLink" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
+					<td title="'.Txt::trad("checkSmall").'"><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
 					<td>'.Txt::trad("CALENDAR_importIcalState").'</td>
 					<td>'.Txt::trad("begin").' - '.Txt::trad("end").'</td>
 					<td>'.Txt::trad("title").'</td>
@@ -81,6 +83,6 @@ form						{text-align:center; padding:0px; margin:0px;}
 	}
 	
 	////	VALIDATION DU FORM
-	echo Txt::submitButton();
+	echo Txt::submitButton("validate");
 	?>
 </form>

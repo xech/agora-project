@@ -13,7 +13,7 @@
 class CtrlForum extends Ctrl
 {
 	const moduleName="forum";
-	public static $moduleOptions=["adminAddSubject","allUsersAddTheme"];
+	public static $moduleOptions=["adminAddSubject","adminAddTheme"];
 	public static $MdlObjects=["MdlForumSubject","MdlForumMessage"];
 
 	/*******************************************************************************************
@@ -22,7 +22,7 @@ class CtrlForum extends Ctrl
 	public static function actionDefault()
 	{
 		//Init
-		$vDatas["themeList"]=MdlForumTheme::getThemes();
+		$vDatas["themeList"]=MdlForumTheme::getList();
 		$vDatas["editThemeMenu"]=false;
 		////	AFFICHE D'UN SUJET ET SES MESSAGES
 		$curSubject=Ctrl::getObjTarget();
@@ -34,21 +34,21 @@ class CtrlForum extends Ctrl
 			$vDatas["subjectMessages"]=$curSubject->getMessages();
 		}
 		////	AFFICHE LES THÈMES DE SUJET
-		elseif(!empty($vDatas["themeList"]) && Req::isParam("_idTheme")==false)
+		elseif(!empty($vDatas["themeList"]) && Req::isParam("_idThemeFilter")==false)
 		{
 			//Init
 			$vDatas["displayForum"]="themes";
 			if(MdlForumTheme::addRight())  {$vDatas["editThemeMenu"]=true;}
-			$vDatas["themeList"][]=new MdlForumTheme(["noTheme"=>true]);//Pseudo theme "sans theme"
+			$vDatas["themeList"][]=new MdlForumTheme(["_idThemeFilter"=>"noTheme"]);//Pseudo theme "sans theme"
 			//Liste des themes
 			foreach($vDatas["themeList"] as $tmpKey=>$tmpTheme)
 			{
 				//Nombre de sujets & Objet du dernier sujet
-				$sqlThemeFilter=(!empty($tmpTheme->_id)) ? "_idTheme=".$tmpTheme->_id : "_idTheme is NULL";//Theme normal / "sans theme"
+				$sqlThemeFilter=(!empty($tmpTheme->_id)) ? "_idTheme=".$tmpTheme->_id : "_idTheme is NULL";//Theme spécifique OU "sans theme"
 				$tmpTheme->subjectList=Db::getObjTab("forumSubject", "SELECT * FROM ap_forumSubject WHERE ".MdlForumSubject::sqlDisplay()." AND ".$sqlThemeFilter." ORDER BY dateCrea desc");
 				$tmpTheme->subjectsNb=count($tmpTheme->subjectList);
-				if($tmpTheme->noTheme==true && empty($tmpTheme->subjectsNb))	{unset($vDatas["themeList"][$tmpKey]);}//Enleve le theme "sans theme" s'il n'y a aucun sujet correspondant..
-				elseif($tmpTheme->subjectsNb>0)									{$tmpTheme->subjectLast=reset($tmpTheme->subjectList);}//reset: premier sujet de la liste (le + récent)
+				if(empty($tmpTheme->subjectsNb) && $tmpTheme->noTheme==true)	{unset($vDatas["themeList"][$tmpKey]);}					//Enleve le theme "sans theme" si ya aucun sujet correspondant
+				elseif($tmpTheme->subjectsNb>0)									{$tmpTheme->subjectLast=reset($tmpTheme->subjectList);}	//Pointe le premier sujet (le + récent)
 				//Nombre de messages & Date du dernier message : tous sujets confondus!
 				foreach($tmpTheme->subjectList as $tmpSubject)
 				{
@@ -67,9 +67,9 @@ class CtrlForum extends Ctrl
 			$vDatas["displayForum"]="subjects";
 			if(MdlForumTheme::addRight() && empty($vDatas["themeList"]))  {$vDatas["editThemeMenu"]=true;}
 			//Liste les sujets
-			if(Req::param("_idTheme")=="noTheme")	{$sqlThemeFilter="AND (_idTheme is NULL or _idTheme=0)";}		//sujets "sans theme"
-			elseif(Req::isParam("_idTheme"))			{$sqlThemeFilter="AND _idTheme=".Db::param("_idTheme");}	//sujets d'un theme précis
-			else										{$sqlThemeFilter=null;}											//tout les sujets
+			if(Req::param("_idThemeFilter")=="noTheme")		{$sqlThemeFilter="AND (_idTheme IS NULL OR _idTheme=0)";}		//sujets "sans theme"
+			elseif(Req::isParam("_idThemeFilter"))			{$sqlThemeFilter="AND _idTheme=".Db::param("_idThemeFilter");}	//sujets d'un theme spécifique
+			else											{$sqlThemeFilter=null;}											//tout les sujets
 			$sqlDisplayedSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".$sqlThemeFilter." ".MdlForumSubject::sqlSort();
 			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlDisplayedSubjects." ".MdlForumSubject::sqlPagination());
 			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlDisplayedSubjects));
@@ -78,9 +78,9 @@ class CtrlForum extends Ctrl
 		}
 		////	THEME COURANT POUR LE MENU PATH
 		if($vDatas["displayForum"]!="themes" && !empty($vDatas["themeList"])){
-			if(Req::param("_idTheme")=="noTheme" || (is_object($curSubject) && empty($curSubject->_idTheme)))	{$vDatas["curTheme"]=new MdlForumTheme(["noTheme"=>true]);}
-			elseif(is_object($curSubject) && !empty($curSubject->_idTheme))											{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}
-			elseif(Req::param("_idTheme"))																		{$vDatas["curTheme"]=self::getObj("forumTheme",Req::param("_idTheme"));}
+			if(is_object($curSubject) && !empty($curSubject->_idTheme))		{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}			//Theme du sujet courant
+			elseif(Req::param("_idThemeFilter")=="noTheme")					{$vDatas["curTheme"]=new MdlForumTheme(["_idThemeFilter"=>"noTheme"]);}			//Pseudo theme "sans theme"
+			elseif(Req::param("_idThemeFilter"))							{$vDatas["curTheme"]=self::getObj("forumTheme",Req::param("_idThemeFilter"));}	//Theme spécifique affiché
 		}
 		////	AFFICHAGE
 		static::displayPage("VueIndex.php",$vDatas);
@@ -133,36 +133,6 @@ class CtrlForum extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * VUE : EDITION DES THEMES DE SUJET
-	 *******************************************************************************************/
-	public static function actionForumThemeEdit()
-	{
-		////	Droit d'ajouter un theme?
-		if(MdlForumTheme::addRight()==false)  {static::lightboxClose();}
-		////	Validation de formulaire
-		if(Req::isParam("formValidate")){
-			$curObj=Ctrl::getObjTarget();
-			$curObj->editControl();
-			//Modif d'un theme
-			$_idSpaces=(!in_array("all",Req::param("spaceList")))  ?  Txt::tab2txt(Req::param("spaceList"))  :  null;
-			$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
-			//Ferme la page
-			static::lightboxClose();
-		}
-		////	Liste des themes (en 1er un nouveau theme "vierge")
-		$vDatas["themesList"]=array_merge([new MdlForumTheme()], MdlForumTheme::getThemes(true));
-		foreach($vDatas["themesList"] as $tmpKey=>$tmpTheme){
-			if($tmpTheme->editRight()==false)	{unset($vDatas["themesList"][$tmpKey]);}
-			else{
-				$tmpTheme->tmpId=$tmpTheme->_typeId;
-				$tmpTheme->createdBy=($tmpTheme->isNew()==false)  ?  Txt::trad("creation")." : ".$tmpTheme->autorLabel()  :  null;
-			}
-		}
-		////	Affiche la vue
-		static::displayPage("VueForumThemeEdit.php",$vDatas);
-	}
-
-	/*******************************************************************************************
 	 * VUE : EDITION D'UN SUJET
 	 *******************************************************************************************/
 	public static function actionForumSubjectEdit()
@@ -183,8 +153,8 @@ class CtrlForum extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		if(Req::isParam("_idTheme"))	{$curObj->_idTheme=Req::param("_idTheme");}
-		$vDatas["themesList"]=MdlForumTheme::getThemes();
+		if(Req::isParam("_idTheme"))  {$curObj->_idTheme=Req::param("_idTheme");}
+		$vDatas["themeList"]=MdlForumTheme::getList();
 		static::displayPage("VueForumSubjectEdit.php",$vDatas);
 	}
 

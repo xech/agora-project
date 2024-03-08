@@ -15,7 +15,7 @@ class DbUpdate extends Db
 	/********************************************************************************************
 	 * TESTE SI LE CHAMP D'UNE TABLE EXISTE : CRÉE SI BESOIN
 	 ********************************************************************************************/
-	private static function fieldExist($tableName, $fieldName, $createQuery=null)
+	public static function fieldExist($tableName, $fieldName, $createQuery=null)
 	{
 		$result=self::getCol("show columns from `".$tableName."` like '".$fieldName."'");
 		if(empty($result) && !empty($createQuery))  {self::query($createQuery);}
@@ -25,7 +25,7 @@ class DbUpdate extends Db
 	/********************************************************************************************
 	 * TESTE SI UNE TABLE EXISTE : CRÉE SI BESOIN
 	 ********************************************************************************************/
-	private static function tableExist($tableName, $createQuery=null)
+	public static function tableExist($tableName, $createQuery=null)
 	{
 		$result=self::getCol("show tables like '".$tableName."'");
 		if(empty($result) && !empty($createQuery))  {self::query($createQuery);}
@@ -35,7 +35,7 @@ class DbUpdate extends Db
 	/********************************************************************************************
 	 * MISE À JOUR DEMANDÉ PLUS RÉCENTE QUE LA "dbAppVersion" : UPDATE!
 	 ********************************************************************************************/
-	protected static function updateVersion($versionUpdate)
+	public static function updateVersion($versionUpdate)
 	{
 		return version_compare(Ctrl::$agora->version_agora, $versionUpdate, "<");
 	}
@@ -45,8 +45,36 @@ class DbUpdate extends Db
 	 ********************************************************************************************/
 	public static function lauchUpdate()
 	{
-		////	VERIF QUE LE NUMERO DE VERSION SOIT ACCESSIBLE  &&  VERIF SI L'APPLI DOIT ETRE MISE A JOUR EN DB
-		if(empty(Ctrl::$agora->version_agora))	{throw new Exception("Update error : Please update first to Agora-Project v3.8");}
+		////
+		////	VERSION 2 (SANS NUMERO DE VERSION EN DB) : UPDATE NECESSAIRE EN 3.8
+		////
+		if(empty(Ctrl::$agora->version_agora)){
+			throw new Exception("Update error : Please update Agora-Project to v3.8 first, before updating to the latest version -> https://github.com/xech/agora-project/releases/tag/3.8.0");
+		}
+		////
+		////	ESPACE FRAICHEMENT INSTALLÉ : ON CREE LES PREMIERS ENREGISTREMENTS (NEWS, AGENDA, ETC.)
+		////
+		elseif(self::getVal("SELECT count(*) FROM ap_user WHERE _id=1 AND lastConnection IS NULL")>0  &&  self::getVal("SELECT count(*) FROM ap_dashboardNews")==0)//Admin général pas encore connecté && première actu à créer
+		{
+			//Première actualité
+			$idNews=self::query("INSERT INTO ap_dashboardNews SET `description`=".self::format(Txt::trad("INSTALL_dataDashboardNews")).", _idUser=1, dateCrea=NOW()",  true);
+			self::query("INSERT INTO ap_objectTarget SET objectType='dashboardNews', _idObject=".(int)$idNews.", _idSpace=1, target='spaceUsers', accessRight=1");
+			//Agenda de l'espace principal (même nom que l'espace principal)  &&  Premier événement sur l'agenda partagé
+			$firstSpaceName=self::getVal("SELECT `name` FROM ap_space WHERE _id=1");
+			self::query("UPDATE ap_calendar SET `title`=".self::format($firstSpaceName).", description=".self::format(Txt::trad("CALENDAR_sharedCalendarDescription"))." WHERE _id=1 AND type='ressource'");
+			self::query("INSERT INTO ap_calendarEvent SET title=".self::format(Txt::trad("INSTALL_dataCalendarEvt")).", dateBegin=NOW(), dateEnd=NOW(), contentVisible='public', dateCrea=NOW(), _idUser=1");
+			self::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=1, _idCal=1, confirmed=1");
+			//Insert le premier sujet du forum
+			self::query("INSERT INTO ap_forumSubject SET title=".self::format(Txt::trad("INSTALL_dataForumSubject1")).", description=".self::format(Txt::trad("INSTALL_dataForumSubject2")).", dateCrea=NOW(), _idUser=1");
+			self::query("INSERT INTO ap_objectTarget SET objectType='forumSubject', _idObject=1, _idSpace=1, `target`='spaceUsers', accessRight='1.5'");
+			//Créé un exemple de sondage
+			MdlDashboardPoll::dbFirstRecord();
+			//Créé les colonnes kanban de base
+			MdlTaskStatus::dbFirstRecord();
+		}
+		////
+		////	VERSION DE L'APPLI SUPERIEURE A CELLE DE LA DB : MISE A JOUR DE LA DB !
+		////
 		elseif(version_compare(Ctrl::$agora->version_agora, Req::appVersion(), "<"))
 		{
 			////	VERIF LA VERSION DE PHP & L'ACCES AU FICHIER DE CONFIG
@@ -101,7 +129,7 @@ class DbUpdate extends Db
 					"gt_utilisateur_messenger"=>"ap_userMessengerMessage",
 					"gt_utilisateur_preferences"=>"ap_userPreference"
 				);
-				foreach($tabsRenamed as $tableNameOld=>$tableNameNew)	{Db::query("RENAME TABLE `".$tableNameOld."` TO `".$tableNameNew."`");}
+				foreach($tabsRenamed as $tableNameOld=>$tableNameNew)	{self::query("RENAME TABLE `".$tableNameOld."` TO `".$tableNameNew."`");}
 
 				////	MAJ DES CHAMPS DE TOUTES LES TABLES !
 				$tabFieldsRenamed=array(
@@ -222,8 +250,8 @@ class DbUpdate extends Db
 						elseif($isIdContainer)										{$fieldNewName=$primaryKey="_idContainer";}			//Champs de l'objet parent : "id_dossier"=>"_idContainer"
 						elseif(array_key_exists($fieldOldName,$tabFieldsRenamed))	{$fieldNewName=$tabFieldsRenamed[$fieldOldName];}	//Champ à renommer : "id_utilisateur"=>"_idUser"
 						//Renomme le champ et ajoute le "type" et "Extra"
-						$fieldProperties=$tmpField["Type"]." ".$tmpField["Extra"];//exple: "mediumint(8)"
-						if(strtolower($tmpField["Null"])=="no")  {$fieldProperties.=" NOT NULL";}//exple: "unsigned auto_increment"
+						$fieldProperties=$tmpField["Type"]." ".$tmpField["Extra"];
+						if(strtolower($tmpField["Null"])=="no")  {$fieldProperties.=" NOT NULL";}
 						if(preg_match("/tinytext/i",$tmpField["Type"]))  {$fieldProperties=str_ireplace("tinytext","varchar(255)",$fieldProperties);}//change le type "tinytext" en "varchar(255)"
 						self::query("ALTER TABLE `".$tableName."` CHANGE `".$fieldOldName."` `".$fieldNewName."` ".$fieldProperties);
 						//Ajoute un index pour ce champ?
@@ -247,8 +275,8 @@ class DbUpdate extends Db
 				self::query("UPDATE ap_agora SET skin='white' WHERE skin='blanc' OR skin is null");
 				self::query("UPDATE ap_agora SET timezone=REPLACE(timezone,'.',':')");//"-5.00" devient "-5:00"
 				//Supprime les doublons?
-				$nbRows=Db::getVal("select count(*) from ap_agora");
-				if($nbRows>1)	{Db::query("delete from ap_agora limit ".($nbRows-1));}
+				$nbRows=self::getVal("select count(*) from ap_agora");
+				if($nbRows>1)	{self::query("delete from ap_agora limit ".($nbRows-1));}
 
 				////	MAJ DES TRADS
 				self::query("UPDATE ap_agora SET lang='english' WHERE lang='nederlands' OR lang='italian'");
@@ -261,7 +289,7 @@ class DbUpdate extends Db
 					//Anciens wallpapers effacés
 					self::query("UPDATE ".$tmpTable." SET wallpaper=null WHERE wallpaper IN ('default@@4.jpg','default@@6.jpg','default@@7.jpg','default@@8.jpg','default@@9.jpg','default@@10.jpg','default@@11.jpg','default@@12.jpg','default@@15.jpg','default@@16.jpg','default@@17.jpg','default@@19.jpg','default@@20.jpg','default@@24.jpg')");
 					//Anciens wallpapers concervés
-					foreach($oldWallpaperConserved as $oldFile=>$newFile)	{self::query("UPDATE ".$tmpTable." SET wallpaper=".Db::format($newFile)." WHERE wallpaper=".Db::format($oldFile));}
+					foreach($oldWallpaperConserved as $oldFile=>$newFile)	{self::query("UPDATE ".$tmpTable." SET wallpaper=".self::format($newFile)." WHERE wallpaper=".self::format($oldFile));}
 				}
 
 				////	RENOMME DES MODULES DANS "ap_joinSpaceModule"
@@ -354,55 +382,55 @@ class DbUpdate extends Db
 				}
 
 				////	MAJ "ap_calendar" ET "ap_calendarEvent"
-				db::query("UPDATE ap_calendar SET type='user' WHERE type='utilisateur'");
-				foreach(Db::getTab("SELECT * FROM ap_calendarEvent WHERE periodValues is not null") as $tmpEvt){
+				self::query("UPDATE ap_calendar SET type='user' WHERE type='utilisateur'");
+				foreach(self::getTab("SELECT * FROM ap_calendarEvent WHERE periodValues is not null") as $tmpEvt){
 					$newTmpValues=[];
 					foreach(explode(",",$tmpEvt["periodValues"]) as $tmpVal)	{$newTmpValues[]=(int)$tmpVal;}
-					Db::query("UPDATE ap_calendarEvent SET periodValues=".Db::formatTab2txt($newTmpValues)." WHERE _id=".$tmpEvt["_id"]);
+					self::query("UPDATE ap_calendarEvent SET periodValues=".self::formatTab2txt($newTmpValues)." WHERE _id=".$tmpEvt["_id"]);
 				}
-				db::query("UPDATE ap_calendarEvent SET periodType='weekDay' WHERE periodType='jour_semaine'");
-				db::query("UPDATE ap_calendarEvent SET periodType='monthDay' WHERE periodType='jour_mois'");
-				db::query("UPDATE ap_calendarEvent SET periodType='month' WHERE periodType='mois'");
-				db::query("UPDATE ap_calendarEvent SET periodType='year' WHERE periodType='annee'");
+				self::query("UPDATE ap_calendarEvent SET periodType='weekDay' WHERE periodType='jour_semaine'");
+				self::query("UPDATE ap_calendarEvent SET periodType='monthDay' WHERE periodType='jour_mois'");
+				self::query("UPDATE ap_calendarEvent SET periodType='month' WHERE periodType='mois'");
+				self::query("UPDATE ap_calendarEvent SET periodType='year' WHERE periodType='annee'");
 
 				////	MAJ "ap_forumSubject"
-				foreach(db::getTab("SELECT * FROM ap_forumSubject WHERE usersConsultLastMessage is not null OR usersNotifyLastMessage is not null") as $tmpSubject){
+				foreach(self::getTab("SELECT * FROM ap_forumSubject WHERE usersConsultLastMessage is not null OR usersNotifyLastMessage is not null") as $tmpSubject){
 					if(!empty($tmpSubject["usersConsultLastMessage"]))	{$tmpSubject["usersConsultLastMessage"]=explode("uu",trim($tmpSubject["usersConsultLastMessage"],"u"));}
 					if(!empty($tmpSubject["usersNotifyLastMessage"]))	{$tmpSubject["usersNotifyLastMessage"]=explode("uu",trim($tmpSubject["usersNotifyLastMessage"],"u"));}
-					Db::query("UPDATE ap_forumSubject SET usersConsultLastMessage=".Db::formatTab2txt($tmpSubject["usersConsultLastMessage"]).", usersNotifyLastMessage=".Db::formatTab2txt($tmpSubject["usersNotifyLastMessage"])." WHERE _id=".Db::format($tmpSubject["_id"]));
+					self::query("UPDATE ap_forumSubject SET usersConsultLastMessage=".self::formatTab2txt($tmpSubject["usersConsultLastMessage"]).", usersNotifyLastMessage=".self::formatTab2txt($tmpSubject["usersNotifyLastMessage"])." WHERE _id=".self::format($tmpSubject["_id"]));
 				}
 
 				////	AJOUT DE CHAMPS DATE ET AUTEUR
 				foreach(array("ap_space","ap_user","ap_userGroup","ap_calendar","ap_calendarEventCategory","ap_forumTheme") as $tmpTable){
 					self::fieldExist($tmpTable, "dateCrea", "ALTER TABLE ".$tmpTable." ADD dateCrea DATETIME DEFAULT NULL");
-					self::fieldExist($tmpTable, "_idUser", "ALTER TABLE ".$tmpTable." ADD _idUser MEDIUMINT UNSIGNED DEFAULT NULL AFTER dateCrea");
+					self::fieldExist($tmpTable, "_idUser", "ALTER TABLE ".$tmpTable." ADD _idUser int DEFAULT NULL AFTER dateCrea");
 					self::fieldExist($tmpTable, "dateModif", "ALTER TABLE ".$tmpTable." ADD dateModif DATETIME DEFAULT NULL AFTER _idUser");
-					self::fieldExist($tmpTable, "_idUserModif", "ALTER TABLE ".$tmpTable." ADD _idUserModif MEDIUMINT UNSIGNED DEFAULT NULL AFTER dateModif");
+					self::fieldExist($tmpTable, "_idUserModif", "ALTER TABLE ".$tmpTable." ADD _idUserModif int DEFAULT NULL AFTER dateModif");
 				}
 
 				////	MAJ DES GROUPES
-				self::fieldExist("ap_userGroup", "_idSpace", "ALTER TABLE ap_userGroup ADD _idSpace MEDIUMINT UNSIGNED DEFAULT NULL AFTER title");//Créé le champ "_idSpace"
-				foreach(Db::getTab("SELECT * FROM ap_userGroup") as $tmpGroup)
+				self::fieldExist("ap_userGroup", "_idSpace", "ALTER TABLE ap_userGroup ADD _idSpace int DEFAULT NULL AFTER title");//Créé le champ "_idSpace"
+				foreach(self::getTab("SELECT * FROM ap_userGroup") as $tmpGroup)
 				{
 					//Users, Spaces et Affectations de l'ancien groupe
 					$groupUserIds=Txt::txt2tab($tmpGroup["_idUsers"]);
-					$groupSpaceIds=(empty($tmpGroup["_idSpaces"]) || $tmpGroup["_idSpaces"]=="all")  ?  Db::getCol("SELECT _id FROM ap_space")  :  Txt::txt2tab($tmpGroup["_idSpaces"]);
+					$groupSpaceIds=(empty($tmpGroup["_idSpaces"]) || $tmpGroup["_idSpaces"]=="all")  ?  self::getCol("SELECT _id FROM ap_space")  :  Txt::txt2tab($tmpGroup["_idSpaces"]);
 					//Recréé un groupe par espace et ses affectations
 					foreach($groupSpaceIds as $tmpIdSpace)
 					{
 						//Recréé le groupe pour l'espace
-						$allUsersInSpace=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace." AND allUsers=1")>0);//Tous les users du site sont affectés à l'espace?
-						$groupUserIdsNew=($allUsersInSpace==true)  ?  $groupUserIds  :  array_intersect($groupUserIds, Db::getCol("SELECT _idUser FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace));//On prends tous les users du groupe d'origine  OU  les users affectés au groupe d'origine ET à l'espace courant
-						$newGroupId=Db::query("INSERT INTO ap_userGroup SET _idUser=".Db::format($tmpGroup["_idUser"]).", title=".Db::format($tmpGroup["title"]).", _idSpace=".Db::format($tmpIdSpace).", _idUsers=".Db::format(Txt::tab2txt($groupUserIdsNew)).", dateCrea=".Db::format($tmpGroup["dateCrea"]), true);
+						$allUsersInSpace=(self::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace." AND allUsers=1")>0);//Tous les users du site sont affectés à l'espace?
+						$groupUserIdsNew=($allUsersInSpace==true)  ?  $groupUserIds  :  array_intersect($groupUserIds, self::getCol("SELECT _idUser FROM ap_joinSpaceUser WHERE _idSpace=".$tmpIdSpace));//On prends tous les users du groupe d'origine  OU  les users affectés au groupe d'origine ET à l'espace courant
+						$newGroupId=self::query("INSERT INTO ap_userGroup SET _idUser=".self::format($tmpGroup["_idUser"]).", title=".self::format($tmpGroup["title"]).", _idSpace=".self::format($tmpIdSpace).", _idUsers=".self::format(Txt::tab2txt($groupUserIdsNew)).", dateCrea=".self::format($tmpGroup["dateCrea"]), true);
 						//Recréé les jointures des objets affectés à l'ancien espace->groupe (avec l'id du nouveau groupe)
-						$groupOldAffectations=Db::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".Db::format($tmpIdSpace)." AND target='G".(int)$tmpGroup["_id"]."'");
+						$groupOldAffectations=self::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".self::format($tmpIdSpace)." AND target='G".(int)$tmpGroup["_id"]."'");
 						foreach($groupOldAffectations as $tmpAffect){
-							Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($tmpAffect["objectType"]).", _idObject=".Db::format($tmpAffect["_idObject"]).", _idSpace=".Db::format($tmpIdSpace).", target=".Db::format('G'.$newGroupId).", accessRight=".Db::format($tmpAffect["accessRight"]));
+							self::query("INSERT INTO ap_objectTarget SET objectType=".self::format($tmpAffect["objectType"]).", _idObject=".self::format($tmpAffect["_idObject"]).", _idSpace=".self::format($tmpIdSpace).", target=".self::format('G'.$newGroupId).", accessRight=".self::format($tmpAffect["accessRight"]));
 						}
 					}
 					//Supprime l'ancien groupe et les anciennes affectations
-					Db::query("DELETE FROM ap_userGroup WHERE _id=".(int)$tmpGroup["_id"]);
-					Db::query("DELETE FROM ap_objectTarget WHERE target='G".(int)$tmpGroup["_id"]."'");
+					self::query("DELETE FROM ap_userGroup WHERE _id=".(int)$tmpGroup["_id"]);
+					self::query("DELETE FROM ap_objectTarget WHERE target='G".(int)$tmpGroup["_id"]."'");
 				}
 
 				////	"DATAS/" : RENOMME LES SOUS-DOSSIERS DE "DATAS" && SUPPRIME LE DOSSIER "tmp" && CHMOD RECURSIF
@@ -419,7 +447,7 @@ class DbUpdate extends Db
 				if(is_dir($oldThumbDirPath))
 				{
 					//Liste les fichiers avec une vignette
-					foreach(Db::getObjTab("file","select * from ap_file where length(vignette)>0") as $tmpFile)
+					foreach(self::getObjTab("file","select * from ap_file where length(vignette)>0") as $tmpFile)
 					{
 						$thumbOk=false;
 						$oldThumbPath=$oldThumbDirPath.$tmpFile->vignette;
@@ -434,7 +462,7 @@ class DbUpdate extends Db
 				}
 
 				////	"DATAS/" : AJOUTE "thumb" AUX PHOTOS D'USERS ET CONTACTS
-				foreach(Db::getTab("SELECT * FROM ap_user WHERE LENGTH(picture)>0") as $tmpPerson)
+				foreach(self::getTab("SELECT * FROM ap_user WHERE LENGTH(picture)>0") as $tmpPerson)
 				{
 					$tmpPersonImg=PATH_MOD_USER.$tmpPerson["picture"];
 					if(is_file($tmpPersonImg)){
@@ -442,7 +470,7 @@ class DbUpdate extends Db
 						File::rm($tmpPersonImg);
 					}
 				}
-				foreach(Db::getTab("SELECT * FROM ap_contact WHERE LENGTH(picture)>0") as $tmpPerson)
+				foreach(self::getTab("SELECT * FROM ap_contact WHERE LENGTH(picture)>0") as $tmpPerson)
 				{
 					$tmpPersonImg=PATH_MOD_CONTACT.$tmpPerson["picture"];
 					if(is_file($tmpPersonImg)){
@@ -467,12 +495,12 @@ class DbUpdate extends Db
 				File::updateConfigFile(null,$deleteConst);
 
 				////	MAJ DU LOGO DU FOOTER (POUR CORRESPONDRE AU .htaccess)
-				$mainLogo=db::getVal("SELECT logo from ap_agora");
+				$mainLogo=self::getVal("SELECT logo from ap_agora");
 				if(!empty($mainLogo) && is_file(PATH_DATAS.$mainLogo))
 				{
 					$logoFileName="logo_thumb.".str_ireplace("jpeg","jpg",File::extension($mainLogo));
 					File::imageResize(PATH_DATAS.$mainLogo, PATH_DATAS.$logoFileName, 200, 80);
-					db::query("UPDATE ap_agora SET logo=".Db::format($logoFileName));
+					self::query("UPDATE ap_agora SET logo=".self::format($logoFileName));
 					File::rm(PATH_DATAS.$mainLogo);
 				}
 
@@ -495,15 +523,15 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.0.5"))
 			{
 				////	MODIF LES DROITS D'ACCÈS DU DOSSIER RACINE : DÉSORMAIS UNE OPTION DE CHAQUE ESPACE
-				foreach(Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType like '%Folder' AND _idObject='1' AND accessRight='1'") as $tmpRight)
+				foreach(self::getTab("SELECT * FROM ap_objectTarget WHERE objectType like '%Folder' AND _idObject='1' AND accessRight='1'") as $tmpRight)
 				{
 					//Options du module de l'espace : Ajoute l'option "seul les admin peuvent ajouter du contenu à la racine"
-					$sqlSpaceModuleOptions="_idSpace=".Db::format($tmpRight["_idSpace"])." AND moduleName=".Db::format(str_replace("Folder","",$tmpRight["objectType"]));
-					$spaceModuleOptions=Txt::txt2tab(Db::getVal("SELECT options FROM ap_joinSpaceModule WHERE ".$sqlSpaceModuleOptions));
+					$sqlSpaceModuleOptions="_idSpace=".self::format($tmpRight["_idSpace"])." AND moduleName=".self::format(str_replace("Folder","",$tmpRight["objectType"]));
+					$spaceModuleOptions=Txt::txt2tab(self::getVal("SELECT options FROM ap_joinSpaceModule WHERE ".$sqlSpaceModuleOptions));
 					$spaceModuleOptions[]="AdminRootFolderAddContent";
-					Db::query("UPDATE ap_joinSpaceModule SET options=".Db::format(Txt::tab2txt($spaceModuleOptions))." WHERE ".$sqlSpaceModuleOptions);
+					self::query("UPDATE ap_joinSpaceModule SET options=".self::format(Txt::tab2txt($spaceModuleOptions))." WHERE ".$sqlSpaceModuleOptions);
 					//Supprime l'ancien droit d'accès du dossier racine
-					Db::query("DELETE FROM ap_objectTarget WHERE _idSpace=".Db::format($tmpRight["_idSpace"])." AND objectType=".Db::format($tmpRight["objectType"])." AND _idObject='1' AND accessRight='1'");
+					self::query("DELETE FROM ap_objectTarget WHERE _idSpace=".self::format($tmpRight["_idSpace"])." AND objectType=".self::format($tmpRight["objectType"])." AND _idObject='1' AND accessRight='1'");
 				}
 			}
 
@@ -519,7 +547,7 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("3.1.9"))
 			{
-				self::query("ALTER TABLE ap_file CHANGE `downloadsNb` `downloadsNb` INT(10) UNSIGNED NOT NULL DEFAULT '0'");
+				self::query("ALTER TABLE ap_file CHANGE `downloadsNb` `downloadsNb` smallint NOT NULL DEFAULT '0'");
 			}
 
 			if(self::updateVersion("3.1.10"))
@@ -538,7 +566,7 @@ class DbUpdate extends Db
 				self::query("UPDATE ap_agora SET moduleLabelDisplay='hide' WHERE moduleLabelDisplay is null");
 				self::query("UPDATE ap_agora SET moduleLabelDisplay=null WHERE moduleLabelDisplay is not null AND moduleLabelDisplay NOT LIKE 'hide'");
 				//Fichiers joints : 'downloadsNb' doit avoir une valeur par défaut
-				self::query("ALTER TABLE ap_objectAttachedFile CHANGE `downloadsNb` `downloadsNb` INT(10) UNSIGNED NOT NULL DEFAULT '0'");
+				self::query("ALTER TABLE ap_objectAttachedFile CHANGE `downloadsNb` `downloadsNb` smallint NOT NULL DEFAULT '0'");
 				//Enleve la selection de couleur dans le messenger
 				if(self::fieldExist("ap_userMessengerMessage","color"))  {self::query("ALTER TABLE ap_userMessengerMessage DROP color");}
 				//Enleve la gestion de l'affichage des evts d'agenda
@@ -568,19 +596,19 @@ class DbUpdate extends Db
 				//Users/Contacts : Transfert de 'fax', 'website', 'skills', 'hobbies' dans le champ 'comment'
 				foreach(["ap_user","ap_contact"] as $tmpTable){
 					foreach(["fax","website","skills","hobbies"] as $tmpField){
-						Db::query("UPDATE ".$tmpTable." SET `comment`=CONCAT(comment, '\r\n-".$tmpField." : ', ".$tmpField.") WHERE comment IS NOT NULL");//'comment' n'est pas null : ajoute à la suite avec retour à la ligne
-						Db::query("UPDATE ".$tmpTable." SET `comment`=CONCAT('-".$tmpField." : ', ".$tmpField.") WHERE comment IS NULL");					//'comment' est null : ajoute directement les données
+						self::query("UPDATE ".$tmpTable." SET `comment`=CONCAT(comment, '\r\n-".$tmpField." : ', ".$tmpField.") WHERE comment IS NOT NULL");//'comment' n'est pas null : ajoute à la suite avec retour à la ligne
+						self::query("UPDATE ".$tmpTable." SET `comment`=CONCAT('-".$tmpField." : ', ".$tmpField.") WHERE comment IS NULL");					//'comment' est null : ajoute directement les données
 					}
 				}
 				//Simplifie la durée des logs : 15j devient 30j et 60j devient 120j
-				Db::query("UPDATE ap_agora SET logsTimeOut=30 WHERE logsTimeOut=15");
-				Db::query("UPDATE ap_agora SET logsTimeOut=120 WHERE logsTimeOut=60");
+				self::query("UPDATE ap_agora SET logsTimeOut=30 WHERE logsTimeOut=15");
+				self::query("UPDATE ap_agora SET logsTimeOut=120 WHERE logsTimeOut=60");
 				//Affectations "allSpaces" obsoletes : transfert sur chaque espace
-				$spaceList=Db::getCol("SELECT _id FROM ap_space");
-				foreach(Db::getTab("SELECT * FROM ap_objectTarget WHERE target='allSpaces'") as $tmpAffect){
-					foreach($spaceList as $tmpSpaceId)  {Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($tmpAffect["objectType"]).", _idObject=".(int)$tmpAffect["_idObject"].", _idSpace=".(int)$tmpSpaceId.", target='spaceUsers', accessRight=".Db::format($tmpAffect["accessRight"]));}
+				$spaceList=self::getCol("SELECT _id FROM ap_space");
+				foreach(self::getTab("SELECT * FROM ap_objectTarget WHERE target='allSpaces'") as $tmpAffect){
+					foreach($spaceList as $tmpSpaceId)  {self::query("INSERT INTO ap_objectTarget SET objectType=".self::format($tmpAffect["objectType"]).", _idObject=".(int)$tmpAffect["_idObject"].", _idSpace=".(int)$tmpSpaceId.", target='spaceUsers', accessRight=".self::format($tmpAffect["accessRight"]));}
 				}
-				Db::query("DELETE FROM ap_objectTarget WHERE target='allSpaces'");
+				self::query("DELETE FROM ap_objectTarget WHERE target='allSpaces'");
 			}
 
 			if(self::updateVersion("3.2.4"))
@@ -601,14 +629,14 @@ class DbUpdate extends Db
 			{
 				//Ajoute La table "ap_objectLike"
 				if(self::tableExist("ap_objectLike")==false){
-					self::query("CREATE TABLE ap_objectLike (objectType varchar(255) not null, _idObject mediumint(8) not null, _idUser mediumint(8) not null, value tinyint(1) not null) DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_objectLike (`objectType` varchar(255) not null, `_idObject` int not null, `_idUser` int not null, `value` tinyint not null) DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_objectLike ADD INDEX `indexes` (`objectType`(255), `_idObject`)");
 				}
 				//Ajoute la table "ap_objectComment"
 				if(self::tableExist("ap_objectComment")==false){
-					self::query("CREATE TABLE ap_objectComment	(_id mediumint(8) unsigned not null, objectType varchar(255) not null, _idObject mediumint(8) not null, _idUser mediumint(8) not null, dateCrea datetime not null, comment text not null) DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_objectComment	(_id int not null, objectType varchar(255) not null, _idObject int not null, _idUser int not null, dateCrea datetime not null, comment text not null) DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_objectComment ADD PRIMARY KEY (`_id`), ADD INDEX `indexes` (`_id`,`objectType`(255), `_idObject`)");
-					self::query("ALTER TABLE ap_objectComment MODIFY _id mediumint(8) unsigned NOT NULL AUTO_INCREMENT");
+					self::query("ALTER TABLE ap_objectComment MODIFY _id int NOT NULL AUTO_INCREMENT");
 				}
 				//Ajoute  "usersLike" et "usersComment" à la table "ap_agora"
 				if(self::fieldExist("ap_agora", "usersLike")==false){
@@ -673,39 +701,34 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_user","_idNewPassword"))  {self::query("ALTER TABLE ap_user DROP _idNewPassword");}
 				//Ajoute la table de sondage "ap_dashboardPoll"
 				if(self::tableExist("ap_dashboardPoll")==false){
-					self::query("CREATE TABLE ap_dashboardPoll (_id mediumint(8) unsigned NOT NULL,  title varchar(200) NOT NULL,  description varchar(2000) DEFAULT NULL,  dateEnd date DEFAULT NULL,  multipleResponses tinyint(1) unsigned DEFAULT NULL,  newsDisplay tinyint(1) unsigned DEFAULT NULL,  dateCrea datetime NOT NULL,  _idUser mediumint(8) unsigned NOT NULL,  dateModif datetime DEFAULT NULL,  _idUserModif mediumint(8) unsigned DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPoll (_id int NOT NULL,  title varchar(200) NOT NULL,  description varchar(2000) DEFAULT NULL,  dateEnd date DEFAULT NULL,  multipleResponses tinyint DEFAULT NULL,  newsDisplay tinyint DEFAULT NULL,  dateCrea datetime NOT NULL,  _idUser int NOT NULL,  dateModif datetime DEFAULT NULL,  _idUserModif int DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPoll ADD PRIMARY KEY (_id)");
-					self::query("ALTER TABLE ap_dashboardPoll MODIFY _id mediumint(8) unsigned NOT NULL AUTO_INCREMENT");
+					self::query("ALTER TABLE ap_dashboardPoll MODIFY _id int NOT NULL AUTO_INCREMENT");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponse"
 				if(self::tableExist("ap_dashboardPollResponse")==false){
-					self::query("CREATE TABLE ap_dashboardPollResponse (_id varchar(255) NOT NULL,  _idPoll mediumint(8) unsigned NOT NULL,  label varchar(500) NOT NULL,  `rank` tinyint(2) unsigned NOT NULL,  fileName varchar(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPollResponse (_id varchar(255) NOT NULL,  _idPoll int NOT NULL,  label varchar(500) NOT NULL,  `rank` tinyint NOT NULL,  fileName varchar(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPollResponse ADD PRIMARY KEY (_id(20))");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponseVote"
 				if(self::tableExist("ap_dashboardPollResponseVote")==false){
-					self::query("CREATE TABLE ap_dashboardPollResponseVote (_idUser mediumint(8) unsigned NOT NULL,  _idResponse varchar(255) NOT NULL,  _idPoll mediumint(8) unsigned NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPollResponseVote (_idUser int NOT NULL, _idResponse varchar(255) NOT NULL, _idPoll int NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPollResponseVote ADD PRIMARY KEY (_idUser,_idResponse(20))");
-					$createPollTable=true;
 				}
 				//Créé un exemple de sondage
-				if(!empty($createPollTable)){
-					self::query("INSERT INTO ap_dashboardPoll SET _id=1, title=".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
-					self::query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, `rank`) VALUES ('5bd1903d3df9u8t',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
-					self::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, target, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
-				}
+				MdlDashboardPoll::dbFirstRecord();
 				//Créé le dossier "DATAS/modDashboard"
 				if(!file_exists(PATH_MOD_DASHBOARD)){
 					$isCreated=mkdir(PATH_MOD_DASHBOARD);
 					if($isCreated==true)  {File::setChmod(PATH_MOD_DASHBOARD);}
 				}
 				//Modifie le nom de certaines options de module
-				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_utilisateurs_groupe','allUsersAddGroup')");
 				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_actualite_admin','adminAddNews')");
 				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_agenda_ressource_admin','adminAddRessourceCalendar')");
 				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_categorie_admin','adminAddCategory')");
 				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_sujet_admin','adminAddSubject')");
 				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_sujet_theme','allUsersAddTheme')");
+				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'ajout_utilisateurs_groupe','allUsersAddGroup')");
 				self::query("UPDATE ap_joinSpaceModule SET options=REPLACE(options,'AdminRootFolderAddContent','adminRootAddContent')");
 				//Rétablir le chemin des emoticones de tinymce
 				foreach(["ap_dashboardNews","ap_forumMessage","ap_forumSubject"] as $tmpTable)	{self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'tinymce_4.8.2','tinymce')");}
@@ -720,10 +743,10 @@ class DbUpdate extends Db
 				//Corrige l'accès aux emoticons sur AP v3.5.0 (tinyMce v4.8.2)
 				foreach(["ap_dashboardNews","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)  {self::query("UPDATE ".$tmpTable." SET description=REPLACE(description,'app/js/tinymce_4.8.2/','app/js/tinymce/')");}
 				//Corrige les traductions des sondages par défaut
-				self::query("UPDATE ap_dashboardPoll SET title=REPLACE(title,'What do you think of the new survey tool?',".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).")");
-				self::query("UPDATE ap_dashboardPollResponse SET label=REPLACE(label,'Essential !',".Db::format(Txt::trad("INSTALL_dataDashboardPollA"))."),  label=REPLACE(label,'Pretty interesting',".Db::format(Txt::trad("INSTALL_dataDashboardPollB"))."),  label=REPLACE(label,'Not very useful',".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).")");
+				self::query("UPDATE ap_dashboardPoll SET title=REPLACE(title,'What do you think of the new survey tool?',".self::format(Txt::trad("INSTALL_dataDashboardPoll")).")");
+				self::query("UPDATE ap_dashboardPollResponse SET label=REPLACE(label,'Essential !',".self::format(Txt::trad("INSTALL_dataDashboardPollA"))."),  label=REPLACE(label,'Pretty interesting',".self::format(Txt::trad("INSTALL_dataDashboardPollB"))."),  label=REPLACE(label,'Not very useful',".self::format(Txt::trad("INSTALL_dataDashboardPollC")).")");
 				//Affecte le sondage par défaut à tous les espaces disponibles
-				foreach(Db::getCol("SELECT _id FROM ap_space WHERE _id NOT IN (select _idSpace from ap_objectTarget where objectType='dashboardPoll' and _idObject=1)") as $_idSpace)  {self::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, target, accessRight) VALUES ('dashboardPoll', 1, ".(int)$_idSpace.", 'spaceUsers', 1)");}
+				foreach(self::getCol("SELECT _id FROM ap_space WHERE _id NOT IN (select _idSpace from ap_objectTarget where objectType='dashboardPoll' and _idObject=1)") as $_idSpace)  {self::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, target, accessRight) VALUES ('dashboardPoll', 1, ".(int)$_idSpace.", 'spaceUsers', 1)");}
 				//Suppression de l'ancien champ "personalCalendarsDisabled"
 				if(self::fieldExist("ap_agora","personalCalendarsDisabled"))  {self::query("ALTER TABLE ap_agora DROP personalCalendarsDisabled");}
 			}
@@ -735,7 +758,7 @@ class DbUpdate extends Db
 				//Fichiers : Ajoute un champ pour la liste des personnes ayant téléchargé un fichier
 				self::fieldExist("ap_file","downloadedBy",			"ALTER TABLE ap_file ADD downloadedBy varchar(10000) DEFAULT NULL AFTER downloadsNb");
 				//Sondage : Ajoute une option pour pouvoir afficher le résultat de chaque votant 
-				self::fieldExist("ap_dashboardPoll","publicVote",	"ALTER TABLE ap_dashboardPoll ADD publicVote tinyint(1) DEFAULT NULL AFTER newsDisplay");
+				self::fieldExist("ap_dashboardPoll","publicVote",	"ALTER TABLE ap_dashboardPoll ADD publicVote tinyint DEFAULT NULL AFTER newsDisplay");
 				//Suppression des affectations obsoletes aux dossiers racine (résiduelles)
 				self::query("DELETE FROM ap_objectTarget WHERE objectType IN ('fileFolder','contactFolder','taskFolder','linkFolder') AND _idObject='1'");
 			}
@@ -743,19 +766,19 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.7.0"))
 			{
 				//Durée par défaut des logs : 120 jours
-				Db::query("UPDATE ap_agora SET logsTimeOut=120 WHERE logsTimeOut=30");
+				self::query("UPDATE ap_agora SET logsTimeOut=120 WHERE logsTimeOut=30");
 				//Modifie la préférence d'affichage de l'agenda : "3days" devient "4days"
-				Db::query("UPDATE ap_userPreference SET value='4days' WHERE keyVal='calendarDisplayMode' AND value='3days'");
+				self::query("UPDATE ap_userPreference SET value='4days' WHERE keyVal='calendarDisplayMode' AND value='3days'");
 				//Augmente la taille max des commentaires des logs à 1000 caractères
-				Db::query("ALTER TABLE ap_log CHANGE `comment` `comment` VARCHAR(1000) DEFAULT NULL");
+				self::query("ALTER TABLE ap_log CHANGE `comment` `comment` VARCHAR(1000) DEFAULT NULL");
 			}
 
 			if(self::updateVersion("3.7.1"))
 			{
 				//Supprime les votes sur les anciens sondages "fantome"
-				Db::query("DELETE FROM ap_dashboardPollResponseVote WHERE _idPoll=0");
+				self::query("DELETE FROM ap_dashboardPollResponseVote WHERE _idPoll=0");
 				//Ajoute le support des 'emoji' dans les messages du messenger : cf. 'utf8mb4'
-				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_userMessengerMessage CHANGE `message` `message` TEXT CHARACTER SET utf8mb4");}
+				if(version_compare(PHP_VERSION,7,">="))  {self::query("ALTER TABLE ap_userMessengerMessage CHANGE `message` `message` TEXT CHARACTER SET utf8mb4");}
 			}
 
 			if(self::updateVersion("3.7.3.1"))
@@ -775,8 +798,8 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.8.0"))
 			{
 				//Espace :  Renomme le champ 'usersInscription' en 'userInscription'  &&  Ajoute l'option de notif mail à l'admin après chaque inscription d'un user
-				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` tinyint(1) DEFAULT NULL");}
-				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify tinyint(1) DEFAULT NULL AFTER userInscription");
+				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` tinyint DEFAULT NULL");}
+				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify tinyint DEFAULT NULL AFTER userInscription");
 				//Agenda :  Ajoute l'option de notification par email à chaque proposition d'événement  &&  Ajoute l'option de proposition d'événement pour les guests
 				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` varchar(1) DEFAULT NULL AFTER timeslot");
 				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` varchar(1) DEFAULT NULL AFTER propositionNotify");
@@ -798,7 +821,7 @@ class DbUpdate extends Db
 				//Ajoute l'url alternative des visios
 				self::fieldExist("ap_agora", "visioHostAlt", "ALTER TABLE ap_agora ADD `visioHostAlt` varchar(255) DEFAULT NULL AFTER visioHost");
 				//Renomme la table des emails envoyés
-				if(self::tableExist("ap_mailHistory"))  {Db::query("RENAME TABLE `ap_mailHistory` TO `ap_mail`");}
+				if(self::tableExist("ap_mailHistory"))  {self::query("RENAME TABLE `ap_mailHistory` TO `ap_mail`");}
 				//Renomme le champ "editObjId" en "editTypeId"
 				if(self::fieldExist("ap_userLivecouter","editObjId"))  {self::query("ALTER TABLE ap_userLivecouter CHANGE `editObjId` `editTypeId` TINYTEXT DEFAULT NULL");}
 				//Renomme le champ "draftTargetObjId" en "draftTypeId"
@@ -819,11 +842,11 @@ class DbUpdate extends Db
 				//Ré-Ajoute au besoin les champs "editorDraft" du Livecouter
 				self::fieldExist("ap_userLivecouter", "editorDraft", "ALTER TABLE ap_userLivecouter ADD editorDraft TEXT DEFAULT NULL");
 				self::fieldExist("ap_userLivecouter", "draftTypeId", "ALTER TABLE ap_userLivecouter ADD draftTypeId TINYTEXT DEFAULT NULL");
-				//Ajoute le support des emojis (cf. utf8mb4) dans les desriptions d'objets et le editorDraft
+				//Ajoute le support des emojis (cf. utf8mb4) dans les descriptions d'objets et le editorDraft
 				if(version_compare(PHP_VERSION,7,">=")){
 					foreach(["MdlCalendarEvent","MdlDashboardNews","MdlDashboardPoll","MdlForumMessage","MdlForumSubject","MdlMail","MdlTask"] as $objMdl)
-						{Db::query("ALTER TABLE ".$objMdl::dbTable." CHANGE `".$objMdl::htmlEditorField."` `".$objMdl::htmlEditorField."` TEXT CHARACTER SET utf8mb4");}
-					Db::query("ALTER TABLE ap_userLivecouter CHANGE `editorDraft` `editorDraft` TEXT CHARACTER SET utf8mb4");
+						{self::query("ALTER TABLE ".$objMdl::dbTable." CHANGE `description` `description` TEXT CHARACTER SET utf8mb4");}
+					self::query("ALTER TABLE ap_userLivecouter CHANGE `editorDraft` `editorDraft` TEXT CHARACTER SET utf8mb4");
 				}
 				//Remplace l'url d'affichage des images dans les descriptions TinyMce (cf. "actionAttachedFileDisplay()")
 				foreach(["ap_dashboardNews","ap_dashboardPoll","ap_calendarEvent","ap_forumSubject","ap_forumMessage","ap_task"] as $tmpTable)
@@ -841,7 +864,7 @@ class DbUpdate extends Db
 					}
 				}
 				//Commentaires des logs en utf8mb4
-				if(version_compare(PHP_VERSION,7,">="))  {Db::query("ALTER TABLE ap_log CHANGE `comment` `comment` TEXT CHARACTER SET utf8mb4");}
+				if(version_compare(PHP_VERSION,7,">="))  {self::query("ALTER TABLE ap_log CHANGE `comment` `comment` TEXT CHARACTER SET utf8mb4");}
 			}
 
 			if(self::updateVersion("23.2.3"))
@@ -855,26 +878,47 @@ class DbUpdate extends Db
 			{
 				//Ajoute la table pour la connexion auto via token
 				if(self::tableExist("ap_userAuthToken")==false)
-					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` mediumint(8) UNSIGNED NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
+					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` int NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
 			}
 
 			if(self::updateVersion("23.10.3"))
 			{
 				//Suppression d'anciens champs
-				if(self::fieldExist("ap_user","picture"))			{self::query("ALTER TABLE ap_user DROP picture");}
-				if(self::fieldExist("ap_user","passwordToken"))		{self::query("ALTER TABLE ap_user DROP passwordToken");}
-				if(self::fieldExist("ap_contact","picture"))		{self::query("ALTER TABLE ap_contact DROP picture");}
+				if(self::fieldExist("ap_user","picture"))			{self::query("ALTER TABLE `ap_user` DROP `picture`");}
+				if(self::fieldExist("ap_user","passwordToken"))		{self::query("ALTER TABLE `ap_user` DROP `passwordToken`");}
+				if(self::fieldExist("ap_contact","picture"))		{self::query("ALTER TABLE `ap_contact` DROP `picture`");}
 			}
-			////	MODIFIER :  DB.SQL  +  CHANGELOG.TXT  +  VERSION.TXT  !!
-			////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////////////////////
+
+			if(self::updateVersion("24.2.1"))
+			{
+				//Agendas d'espace : ajoute la description "Agenda partagé de l'espace"
+				foreach(self::getLine("SELECT `name` FROM ap_space") as $tmpSpaceName){
+					self::query("UPDATE `ap_calendar` SET `description`=CONCAT(".self::format(Txt::trad("CALENDAR_sharedCalendarDescription")).") WHERE `type`='ressource' AND `title`=".self::format($tmpSpaceName));
+				}
+				//Forum : par défaut tout le monde peut ajouter des thèmes (même logique que les categories d'evt). Remplace donc l'option permissive "allUsersAddTheme" par une option restrictive "adminAddTheme"
+				self::query("UPDATE `ap_joinSpaceModule` SET `options`=CONCAT('@@adminAddTheme@@') WHERE `moduleName`='forum' AND (`options` IS NULL OR `options` NOT LIKE '%allUsersAddTheme%')");	//Ajoute la nouvelle option
+				self::query("UPDATE `ap_joinSpaceModule` SET `options`=REPLACE(`options`,'@@allUsersAddTheme@@','') WHERE `moduleName`='forum' AND `options` LIKE '%allUsersAddTheme%'");			//PUIS supprime l'ancienne
+				//Task :  Modif la "priority" de "Critical" vers "High"  &&  Modif le type de "dateBegin"/"dateEnd" de "datetime" vers "date"
+				self::query("UPDATE `ap_task` SET `priority`='3' WHERE `priority`='4'");
+				self::query("ALTER TABLE `ap_task` CHANGE `dateBegin` `dateBegin` DATE NULL DEFAULT NULL");
+				self::query("ALTER TABLE `ap_task` CHANGE `dateEnd` `dateEnd` DATE NULL DEFAULT NULL");
+				//Task Kanban :  Créé le champ `_idStatus` dans la table "ap_task"  &&  Créé la table "ap_TaskStatus" des statuts/colonnes Kanban  &&   Créé les satuts/colonnes kanban de base
+				self::fieldExist(MdlTask::dbTable, "_idStatus",  "ALTER TABLE ".MdlTask::dbTable." ADD `_idStatus` int DEFAULT NULL AFTER `description`");
+				self::tableExist(MdlTaskStatus::dbTable,  "CREATE TABLE ".MdlTaskStatus::dbTable." (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NOW(),  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
+				MdlTaskStatus::dbFirstRecord();
+				//Catégories d'evt  &&  Themes du forum : créé le champ `rank`
+				self::fieldExist(MdlCalendarEventCategory::dbTable, "rank", "ALTER TABLE ".MdlCalendarEventCategory::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
+				self::fieldExist(MdlForumTheme::dbTable, "rank",  			"ALTER TABLE ".MdlForumTheme::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
+			}
+			////////////////////////////////////////	ATTENTION A MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			////////////////////////////////////////
+			////////////////////////////////////////
 
 
-			////	MAJ "dateUpdateDb" && "version_agora"
-			self::query("UPDATE ap_agora SET dateUpdateDb=".Db::dateNow().", version_agora='".Req::appVersion()."'");
-			////	OPTIMISE LES TABLES
+			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES
+			self::query("UPDATE ap_agora SET dateUpdateDb=".self::dateNow().", version_agora='".Req::appVersion()."'");
 			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
-			////	SUPPRIME $lockedUpdate ET SI BESOIN LE ".htaccess"
+			////	SUPPRIME $lockedUpdate ET SI BESOIN LE ".htaccess" DE FREE
 			File::rm($lockedUpdate);
 			if(preg_match("/free\.fr/i",$_SERVER['HTTP_HOST']))  {File::rm("app/.htaccess");}
 			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!

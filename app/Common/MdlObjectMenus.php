@@ -25,9 +25,9 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * BALISE OUVRANTE DU BLOCK DE L'OBJET :  CONTIENT L'ID DU MENU CONTEXTUEL (click droit && "initMenuContext()")  &&  L'URL D'ÉDITION (dblClick)
+	 * BALISE OUVRANTE DU BLOCK DE L'OBJET :  CONTIENT L'ID DU MENU CONTEXTUEL (click droit && "menuContextInit()")  &&  L'URL D'ÉDITION (dblClick)
 	 *******************************************************************************************/
-	public function divContainer($specificClass=null, $specificAttributes=null)
+	public function objContainer($specificClass=null, $specificAttributes=null)
 	{
 		if(static::isSelectable==true)	{$specificClass.=' isSelectable';}
 		if($this->editRight())			{$specificAttributes.=' data-urlEdit="'.$this->getUrl('edit').'"';}
@@ -55,7 +55,7 @@ trait MdlObjectMenus
 		if(static::objectType=="user")
 		{
 			////	RETOURNE "FALSE" SI ON EST PAS PROPRIO DE L'OBJET NI ADMIN D'ESPACE
-			if($this->isAutor()==false && Ctrl::$curUser->isAdminSpace()==false)  {return false;}
+			if($this->isAutor()==false && Ctrl::$curUser->isSpaceAdmin()==false)  {return false;}
 			////	MODIFIER L'OBJET  &  MODIF MESSENGER
 			if($this->editRight()){
 				$vDatas["editLabel"]=Txt::trad("USER_profilEdit");
@@ -72,13 +72,13 @@ trait MdlObjectMenus
 				$vDatas["deleteLabel"]=Txt::trad("USER_deleteDefinitely");
 			}
 			////	LISTE DES ESPACES DE L'UTILISATEUR
-			if(Ctrl::$curUser->isAdminGeneral()){
+			if(Ctrl::$curUser->isGeneralAdmin()){
 				$vDatas["userSpaceList"]=Txt::trad("USER_spaceList")." : ";
 				if(count($this->getSpaces())==0)	{$vDatas["userSpaceList"].=Txt::trad("USER_spaceNoAffectation");}
 				else								{ foreach($this->getSpaces() as $tmpSpace)  {$vDatas["userSpaceList"].="<br>".$tmpSpace->name;} }
 			}
 			////	AUTEUR/DATE DE CREATION
-			$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a> - ".$this->dateLabel();
+			$vDatas["autorDateCrea"]="<a onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a> - ".$this->dateLabel(true,"normal");
 		}
 		////	OBJET LAMBDA
 		else
@@ -108,12 +108,12 @@ trait MdlObjectMenus
 			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
 			$vDatas["isNewObject"]=(!empty($this->dateCrea)  &&  (strtotime($this->dateCrea) > (time()-86400)  ||  strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
 			//Auteur de l'objet (Guest?)
-			if($this->_idUser)		{$vDatas["autorDateCrea"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a>";}
+			if($this->_idUser)		{$vDatas["autorDateCrea"]="<a onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUser)->getUrl("vue")."');\">".$this->autorLabel()."</a>";}
 			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}
 			//Date de création de l'objet  &&  Précise si c'est un nouvel objet  &&  Précise l'auteur/date de modif
-			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel();}
+			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel(true,"normal");}
 			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div class='sAccessWrite'>".Txt::trad("objNew")." <img src='app/img/menuNewSmall.png'></div>";}
-			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a href=\"javascript:lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(true);}
+			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a onclick=\"lightboxOpen('".Ctrl::getObj("user",$this->_idUserModif)->getUrl("vue")."');\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(false,"normal");}
 
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
 			if($this->hasAccessRight() || $this->accessRightFromContainer())
@@ -140,7 +140,7 @@ trait MdlObjectMenus
 			{
 				$likeOptions=(Ctrl::$agora->usersLike=="likeOrNot")  ?  ["like","dontlike"]  :  ["like"];
 				foreach($likeOptions as $likeOption){
-					$likeMenuId="likeMenu_".$this->_typeId."_".$likeOption;//ID du menu. Exple: "likeMenu_news-55_dontlike". Cf. "usersLikeValidate()" dans le "common.js"
+					$likeMenuId="likeMenu_".$this->_typeId."_".$likeOption;//ID du menu. Ex: "likeMenu_news-55_dontlike". Cf. "usersLikeValidate()" dans le "common.js"
 					$likeMenuNb=count($this->getUsersLike($likeOption));
 					if(!empty($likeMenuNb))  {$vDatas["showMiscMenuClass"]="showMiscMenu";}
 					$vDatas["likeMenu"][$likeOption]=["menuId"=>$likeMenuId, "likeDontLikeNb"=>$likeMenuNb];
@@ -161,34 +161,51 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * VUE DES OBJETS : AFFICHE LE MENU CONTEXTUEL ET SI BESOIN LE BOUTON D'EDITION
+	 * VUE D'UN OBJET : AFFICHE LE MENU CONTEXTUEL + LE BOUTON D'EDITION (AVEC LE TITRE DE L'OBJET)
 	 *******************************************************************************************/
-	public function menuContextEdit()
+	public function inlineContextMenu()
 	{
 		$return=$this->contextMenu(["iconBurger"=>"inlineBig"]);
-		if($this->editRight())  {$return.="<img src='app/img/edit.png' onclick=\"lightboxOpen('".$this->getUrl("edit")."')\" class='sLink' title=\"".Txt::trad("modify")."\">";}
+		if($this->editRight())  {$return.='&nbsp; <img src="app/img/edit.png" onclick="lightboxOpen(\''.$this->getUrl('edit').'\')" title="'.Txt::trad("modify").'">';}
 		return '<span class="lightboxTitleMenu">'.$return.'</span>';
 	}
 
 	/*******************************************************************************************
-	 * VUE DES OBJETS & RESPONSIVE : TITRE "NOUVEL OBJET" ("nouveau fichier", "nouveau dossier", etc)
+	 * VUE : TITRE DE L'OBJET SUR MOBILE ("nouveau fichier", "nouveau dossier", etc)
 	 *******************************************************************************************/
-	public function editRespTitle($keyTrad)
+	public function titleMobile($keyTrad)
 	{
 		if(Req::isMobile() && $this->isNew())  {echo "<div class='lightboxTitle'>".Txt::trad($keyTrad)."</div>";}
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU D'ÉDITION (droits d'accès, fichiers joints, etc)
+	 * VUE : MENU D'ÉDITION DE LA DESCRIPTION, SI BESOIN AVEC L'EDITEUR TINYMCE
 	 *******************************************************************************************/
-	public function menuEdit()
+	public function editDescription($toggleButton=true)
+	{
+		//Init
+		$vDatas["curObj"]=$this;
+		$vDatas["toggleButton"]=$toggleButton;
+		//Sélectionne au besoin le "draftTypeId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editTypeId" car il est effacé dès qu'on sort de l'édition de l'objet...)
+		$sqlTypeId=Req::isParam("typeId")  ?  "draftTypeId=".Db::param("typeId")  :  "draftTypeId IS NULL";
+		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
+		//Affiche la vue
+		return Ctrl::getVue(Req::commonPath."VueObjEditDescription.php",$vDatas);
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU D'ÉDITION PRINCIPAL (droits d'accès, fichiers joints, etc)
+	 *******************************************************************************************/
+	public function editMenuSubmit()
 	{
 		////	Menu des droits d'accès
 		if($this->hasAccessRight())
 		{
-			////	Init & Label
+			////	Init & Labels
 			$vDatas["objMenuAccessRight"]=true;
 			$vDatas["objMenuAccessRightLabel"]=(static::isContainer())  ?  "<span title=\"".$this->tradObject("accessAutorPrivilege")."<hr>".$this->tradObject("accessWriteLimitTooltip")."\">".Txt::trad("EDIT_accessRightContent")." <img src='app/img/info.png'></span>"  :  Txt::trad("EDIT_accessRight");
+			$vDatas["accessWriteLimitTooltip"]=$this->tradObject("accessWriteLimitTooltip");
+			$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
 			////	Droits d'accès pour chaque espace ("targets")
 			$vDatas["accessRightSpaces"]=[];
 			foreach(Ctrl::$curUser->getSpaces() as $tmpSpace)
@@ -256,9 +273,7 @@ trait MdlObjectMenus
 		}
 		////	AFFICHE LA VUE
 		$vDatas["curObj"]=$this;
-		$vDatas["accessWriteLimitTooltip"]=$this->tradObject("accessWriteLimitTooltip");
-		$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
-		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
+		return Ctrl::getVue(Req::commonPath."VueObjEditMenuSubmit.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -298,13 +313,13 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : TRI SQL DES OBJETS (avec premier tri si besoin : news, subject, etc. Exple: "ORDER BY firstName asc")
+	 * STATIC SQL : TRI SQL DES OBJETS (avec premier tri si besoin : news, subject, etc. Ex: "ORDER BY firstName asc")
 	 *******************************************************************************************/
 	public static function sqlSort($firstSort=null)
 	{
 		//Init
 		$firstSort=(!empty($firstSort))  ?  $firstSort.", "  :  null;							//Pré-tri ? Exple pour les News: "une desc"
-		$sortTab=Txt::txt2tab(self::getSort(Ctrl::$curContainer));								//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Exple: ["name","asc"]
+		$sortTab=Txt::txt2tab(self::getSort(Ctrl::$curContainer));								//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Ex: ["name","asc"]
 		$fieldSort=($sortTab[0]=="extension") ? "SUBSTRING_INDEX(name,'.',-1)" : $sortTab[0];	//Tri par "extension" de fichier ?
 		//Renvoie le tri Sql
 		return "ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1];
@@ -329,15 +344,12 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public static function getDisplayMode($containerObj=null)
 	{
-		if(static::$displayMode===null)
-		{
-			//Affichage "block" sur mobile  OU  Récupère la préférence d'affichage
-			if(static::mobileOnlyDisplayBlock())	{static::$displayMode="block";}
-			else									{static::$displayMode=Ctrl::prefUser("displayMode_".static::prefDbKey($containerObj),"displayMode");}
-			//Sinon on prend l'affichage par défaut : du paramétrage général ("folderDisplayMode") OU du premier $displayModes du module
-			if(empty(static::$displayMode)){
-				if(!empty(Ctrl::$agora->folderDisplayMode) && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes))	{static::$displayMode=Ctrl::$agora->folderDisplayMode;}
-				else																											{static::$displayMode=static::$displayModes[0];}
+		if(static::$displayMode===null){
+			if(static::mobileOnlyDisplayBlock())	{static::$displayMode="block";}																								//Affichage "block" sur mobile
+			else									{static::$displayMode=Ctrl::prefUser("displayMode_".static::prefDbKey($containerObj),"displayMode");}						//Préférence d'affichage de l'user
+			if(empty(static::$displayMode)){																																	//Sinon on prend l'affichage par défaut :
+				if(Ctrl::$agora->folderDisplayMode && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes))	{static::$displayMode=Ctrl::$agora->folderDisplayMode;}	//Paramétrage général ("folderDisplayMode")
+				else																									{static::$displayMode=static::$displayModes[0];}		//Paramétrage du $displayModes du module
 			}
 		}
 		return static::$displayMode;
@@ -356,8 +368,7 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public static function menuDisplayMode($containerObj=null)
 	{
-		if(static::mobileOnlyDisplayBlock()==false)
-		{
+		if(static::mobileOnlyDisplayBlock()==false){
 			$vDatas["displayModes"]=static::$displayModes;
 			$vDatas["curDisplayMode"]=static::getDisplayMode($containerObj);
 			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
@@ -366,7 +377,7 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : FILTRAGE DE PAGINATION
+	 * STATIC SQL : FILTRE DE PAGINATION
 	 *******************************************************************************************/
 	public static function sqlPagination()
 	{
@@ -395,30 +406,5 @@ trait MdlObjectMenus
 			//Récupère le menu
 			return Ctrl::getVue(Req::commonPath."VueObjMenuPagination.php",$vDatas);
 		}
-	}
-
-	/*******************************************************************************************
-	 * MENU SPÉCIFIQUE D'AFFECTATION AUX ESPACES : THÈMES DE FORUM / CATEGORIES D'EVENEMENT
-	 *******************************************************************************************/
-	public function menuSpaceAffectation()
-	{
-		$vDatas["curObj"]=$this;
-		////	Liste des espaces
-		$vDatas["spaceList"]=Ctrl::$curUser->getSpaces();
-		//Pour chaque espace : check espace affecté (déjà affecté à l'objet OU nouvel objet + espace courant)
-		foreach($vDatas["spaceList"] as $tmpSpace){
-			$tmpSpace->checked=(in_array($tmpSpace->_id,$this->spaceIds) || ($this->isNew() && $tmpSpace->isCurSpace()))  ?  "checked"  :  null;
-		}
-		////	pseudo Espace "Tous les espaces"
-		if(Ctrl::$curUser->isAdminGeneral()){
-			$spaceAllSpaces=new MdlSpace();
-			$spaceAllSpaces->_id="all";
-			$spaceAllSpaces->name=Txt::trad("visibleAllSpaces");
-			$spaceAllSpaces->checked=(Ctrl::$curUser->isAdminGeneral() && $this->isNew()==false && empty($this->spaceIds))  ?  "checked"  :  null;//Check "tous les utilisateurs"?
-			array_unshift($vDatas["spaceList"],$spaceAllSpaces);
-		}
-		//Affiche le menu
-		$vDatas["displayMenu"]=(Ctrl::$curUser->isAdminGeneral() && count($vDatas["spaceList"])>1);
-		return Ctrl::getVue(Req::commonPath."VueObjMenuSpaceAffectation.php",$vDatas);
 	}
 }

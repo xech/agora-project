@@ -1,22 +1,21 @@
 <script>
-lightboxSetWidth(550);//Resize
+////	Resize
+lightboxSetWidth(700);
 </script>
 
 <style>
-.vTaskDetails		{text-align:center;}
-.percentBar			{margin:10px 15px 0px 0px;}/*Surcharge common.css*/
+.vStatusPriorityLabel	{display:inline-block; margin-left:20px; line-height:40px;}	/*Label du statut kanban et de la priorité*/
+.vTaskDetails			{text-align:center; margin:20px 0px;}						/*Ligne des détails*/
 </style>
 
-<div class="lightboxContent">
+<div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->menuContextEdit().$curObj->priority()." ".$curObj->title."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->inlineContextMenu().$curObj->title."<br>".$curObj->statusLabel().$curObj->priorityLabel()."</div>";
 
-	////	DESCRIPTION / PERSONNES RESPONSABLES / AVANCEMENT / DATES DEBUT & FIN / FICHIERS JOINTS
-	if(!empty($curObj->description))	{echo $curObj->description."<hr>";}
-	echo "<div class='vTaskDetails'>";
-		echo $curObj->responsiblePersons(true).$curObj->advancement(true).$curObj->dateBeginEnd(true);
-	echo "</div>";
-	echo $curObj->attachedFileMenu();
+	////	DESCRIPTION  +  PERS. RESPONSABLES / AVANCEMENT / DATES DEBUT & FIN + FICHIERS JOINTS
+	echo $curObj->description.
+		 "<div class='vTaskDetails'>".$curObj->responsiblePersons(true).$curObj->advancement(true).$curObj->dateBeginEnd(true)."</div>".
+		$curObj->attachedFileMenu();
 	?>
 </div>

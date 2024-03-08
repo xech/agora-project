@@ -53,7 +53,7 @@ class MdlUserGroup extends MdlObject
 	 *******************************************************************************************/
 	public function editRight()
 	{
-		return (parent::editRight() || Ctrl::$curUser->isAdminSpace());
+		return (parent::editRight() || Ctrl::$curUser->isSpaceAdmin());
 	}
 
 	/*******************************************************************************************
@@ -83,6 +83,6 @@ class MdlUserGroup extends MdlObject
 	 *******************************************************************************************/
 	public static function addRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddGroup")));
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddGroup")));
 	}
 }

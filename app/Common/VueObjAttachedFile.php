@@ -11,7 +11,7 @@ extFileMp3=["<?= implode('","',File::fileTypes("mp3")) ?>"];						//Extensions d
  *	SELECTION D'UN FICHIER DANS UN INPUT ".attachedFileInput"
  *******************************************************************************************/
 $(function(){
-	$(".attachedFileInput").change(function(){
+	$(".attachedFileInput").on("change",function(){
 		if(this.files && this.files[0].size < <?= File::uploadMaxFilesize() ?>){									//Vérif la taille du fichier
 			var cptFile=Math.round(this.name.replace("attachedFile",""));											//Récupère le compteur du fichier
 			$("#attachedFileDivAdd"+(cptFile+1)).fadeIn();															//Affiche l'input suivant
@@ -50,7 +50,7 @@ function attachedFileDelete(_id)
 ////	INPUTS DES FICHIERS À ATTACHER (si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
 echo '<div><img src="app/img/attachment.png"> '.Txt::trad("EDIT_attachedFileAdd").' :</div>';
 for($cptInputFile=1; $cptInputFile<=20; $cptInputFile++){
-	$insertOption=($curObj::htmlEditorField!=null)  ?  '<label onclick="attachedFileInsert('.$cptInputFile.')" id="attachedFileOption'.$cptInputFile.'" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
+	$insertOption=($curObj::descriptionEditor==true)  ?  '<label onclick="attachedFileInsert('.$cptInputFile.')" id="attachedFileOption'.$cptInputFile.'" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
 	echo '<div id="attachedFileDivAdd'.$cptInputFile.'" class="attachedFileDiv"><input type="file" name="attachedFile'.$cptInputFile.'" id="attachedFileInput'.$cptInputFile.'" class="attachedFileInput">'.$insertOption.'</div>';
 }
 
@@ -58,8 +58,8 @@ for($cptInputFile=1; $cptInputFile<=20; $cptInputFile++){
 if(count($curObj->attachedFileList())>0){
 	foreach($curObj->attachedFileList() as $tmpFile){
 		$fileOptions='<label onclick="attachedFileDelete('.$tmpFile["_id"].');" title="'.Txt::trad("delete").'"><img src="app/img/delete.png"></label>';
-		if($curObj::htmlEditorField!=null){
-			//Insertion de l'image/video/mp3 dans le texte  &&  Affichage d'une miniature de l'image
+		//Insertion de l'image/video/mp3 dans l'éditeur  &&  Affichage d'une miniature de l'image
+		if($curObj::descriptionEditor==true){
 			if(File::isType("attachedFileInsert",$tmpFile["name"]))		{$fileOptions.='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"></label>';}
 			if(File::isType("imageBrowser",$tmpFile["name"]))			{$fileOptions.=' &nbsp; <img src="'.$tmpFile["url"].'" class="attachedFileInsertImg">';}
 		}

@@ -111,7 +111,7 @@
     left: 50%;
     margin-left: -240px;			/**** MODIF : la moitié du width de .toast-container ****/
 }
-/*RESPONSIVE*/						/**** MODIF ****/
+/*MOBILE*/						/**** MODIF ****/
 @media screen and (max-width:600px){
 	.toast-position-top-center {
 		top: 100px;

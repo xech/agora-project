@@ -2,11 +2,11 @@
 ////	Resize
 <?php if($context=="move"){ ?>lightboxSetWidth(500);<?php } ?>
 
-////	Init l'affichage de l'arborescence (une fois la page completement chargée!)
+////	Init
 $(function(){
-	//Ids des dossiers du "path" courant
+	////	Ids des dossiers du "path" courant
 	curPathFolderIds=[<?= implode(",",Ctrl::$curContainer->folderPath("id")) ?>];
-	//Affiche chaque dossier de l'arborescence
+	////	Init l'affichage de l'arborescence
 	$(".vTreeFolder").each(function(){
 		//Init
 		var folderId=parseInt($(this).attr("data-folderId"));
@@ -20,6 +20,11 @@ $(function(){
 		var openIconSelector=".vTreeFolder[data-folderId='"+folderId+"'] .vIconOpen";
 		if($(".vTreeFolder[data-parentFolderId='"+folderId+"']").length>0)  {$(openIconSelector).css("visibility","visible");}//"visibility" et non "display" pour conserver les espaces
 		if($.inArray(folderId,curPathFolderIds)!==-1)  {$(openIconSelector).addClass("vIconOpened");}
+	});
+
+	////	Valide le formulaire de déplacement d'un objet dans l'arborescence
+	$("#folderTreeForm").submit(function(){
+		$(".vTreeFolder .vNewFolderId").each(function(){ $(this).prop("disabled",false); });
 	});
 });
 
@@ -44,19 +49,14 @@ function folderTreeDisplay(folderId, toggle)
 
 ////	Déplacement d'objet(s) dans un autre dossier
 function folderMove(newFolderId){
-	$(".vTreeFolderLabel").removeClass("sLinkSelect").removeClass("sLink").find(".vNewFolderId").prop("checked",false);							//Réinitialise le label et checkbox de tous les dossiers
-	$(".vTreeFolder[data-folderId='"+newFolderId+"'] .vTreeFolderLabel").addClass("sLinkSelect").find(".vNewFolderId").prop("checked",true);	//Check le dossier sélectionné
-}
-
-////	Réactive les inputs "newFolderId" à la validation du formulaire de changement de dossier
-function formControl(){
-	$(".vTreeFolder .vNewFolderId").each(function(){ $(this).prop("disabled",false); });
+	$(".vTreeFolderLabel").removeClass("linkSelect").find(".vNewFolderId").prop("checked",false);											//Réinitialise le label et checkbox de tous les dossiers
+	$(".vTreeFolder[data-folderId='"+newFolderId+"'] .vTreeFolderLabel").addClass("linkSelect").find(".vNewFolderId").prop("checked",true);	//Check le dossier sélectionné
 }
 </script>
 
 
 <style>
-#treeFolders						{padding:4px;}
+#treeFolders						{user-select:none; padding:4px;}
 .vTreeFolder						{display:none;}											/*dossier masqué par défaut*/
 .vTreeFolder>div					{display:table-cell; padding:3px; vertical-align:top;}	/*cellules du dossier */
 .vTreeFolderIcon					{white-space:nowrap;}									/*icone du dossier : pas de retour à la ligne*/
@@ -64,9 +64,9 @@ function formControl(){
 .vTreeFolder:first-child .vIconOpen	{display:none!important;}								/*dossier root : pas d'icone de d'ouverture du dossier*/
 .vIconOpened						{transform:rotate(40deg); filter:brightness(0);}
 
-/*RESPONSIVE*/
+/*MOBILE*/
 @media screen and (max-width:1023px){
-	#respMenuContent #treeFolders	{position:relative; overflow-y:scroll; max-height:140px;}/*Resp menu : "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
+	#menuMobileContent #treeFolders	{position:relative; overflow-y:scroll; max-height:140px;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
 }
 </style>
 
@@ -74,23 +74,23 @@ function formControl(){
 <div id="treeFolders">
 	<?php
 	////	DEPLACEMENT DE DOSSIER : AFFICHE LE FORMULAIRE
-	if($context=="move")  {echo '<form action="index.php" method="post" onsubmit="return formControl()" class="lightboxContent">';}
+	if($context=="move")  {echo '<form action="index.php" method="post" id="folderTreeForm">';}
 
 	////	AFFICHE CHAQUE DOSSIER DE L'ARBORESCENCE
 	foreach(Ctrl::$curRootFolder->folderTree() as $tmpFolder)
 	{
 		//Tooltip
-		if($tmpFolder->isRootFolder() && Ctrl::$curUser->isAdminSpace())		{$folderTooltip=Txt::trad("rootFolderEditTooltip");}
+		if($tmpFolder->isRootFolder() && Ctrl::$curUser->isSpaceAdmin())		{$folderTooltip=Txt::trad("rootFolderTooltip");}
 		elseif(strlen($tmpFolder->name)>70 || !empty($tmpFolder->description))	{$folderTooltip=$tmpFolder->name."<hr>".$tmpFolder->description;}
 		else																	{$folderTooltip=null;}
 		//Style && Actions Js && Input de changement de dossier conteneur (jamais le dossier courant!)
 		$isCurFolder=($tmpFolder->_id==Ctrl::$curContainer->_id);
-		$folderLabelClass=($isCurFolder==true)   ?  'sLinkSelect'  :  'sLink';
+		$folderLabelClass=($isCurFolder==true)   ?  'linkSelect'  :  null;
 		$folderLabelActionJs=($context=="nav")   ?  'redir(\''.$tmpFolder->getUrl().'\')'  :  'folderMove('.$tmpFolder->_id.')';
 		$folderLabelCheckbox=($context=="move" && $isCurFolder==false)  ?  '<input type="checkbox" name="newFolderId" class="vNewFolderId" value="'.$tmpFolder->_id.'" disabled>'  :  null;
 		//Affiche le dossier
 		echo '<div class="vTreeFolder" data-folderId="'.$tmpFolder->_id.'" data-parentFolderId="'.$tmpFolder->_idContainer.'" data-folderTreeLevel="'.$tmpFolder->treeLevel.'" title="'.Txt::tooltip($folderTooltip).'">
-				<div class="vTreeFolderIcon sLink" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRight.png" class="vIconOpen"><img src="app/img/folder/folderSmall.png"></div>
+				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRight.png" class="vIconOpen"><img src="app/img/folder/folderSmall.png"></div>
 				<div class="vTreeFolderLabel '.$folderLabelClass.'" onclick="'.$folderLabelActionJs.'">'.Txt::reduce($tmpFolder->name,80).$folderLabelCheckbox.'</div>
 			  </div>';
 	}

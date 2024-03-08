@@ -1,7 +1,7 @@
 <script>
 $(function(){
 	////	Affiche un nouveau champ "specificMails"
-	$("#specificMails").click(function(){
+	$("#specificMails").on("click",function(){
 		$(".specificMailsDiv:hidden:first").fadeIn();
 	});
 	////	Controle un champs "specificMails"

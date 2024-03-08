@@ -4,7 +4,7 @@ lightboxSetWidth(650);
 
 ////	Lance la visio
 $(function(){
-	$("button#launchVisio").click(function(){
+	$("button#launchVisio").on("click",function(){
 		////	Url de la visio : utilise le serveur alternatif ?
 		visioURL="<?= $visioURL ?>";
 		if($("#visioHostServer").exist() && $("#visioHostServer").val()=="alt")  {visioURL=visioURL.replace("<?= Ctrl::$agora->visioHost ?>","<?= Ctrl::$agora->visioHostAlt ?>");}
@@ -15,16 +15,16 @@ $(function(){
 </script>
 
 <style>
-.lightboxContent	{padding-top:40px; padding-bottom:30px; text-align:center; font-size:1.05em;}
-#launchVisio		{width:300px; height:60px; border-radius:5px; font-size:1.1em;}
-.visioInfos			{display:block; margin:30px;}
+#visioDiv		{padding:30px; text-align:center; font-size:1.05em;}
+#launchVisio	{width:300px; height:60px; border-radius:5px; font-size:1.1em;}
+.visioInfos		{display:block; margin:30px;}
 </style>
 
-<div class="lightboxContent">
+<div id="visioDiv">
 	<?php
 	////	Depuis le browser systeme d'Android : propose d'installer l'appli Jitsi 
 	if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))
-		{echo "<a href=\"javascript:window.open('android-app://org.jitsi.meet#omnispaceMobileApp_getFile')\" class='visioInfos'><img src='app/img/jitsi.png'> ".Txt::trad("VISIO_installJitsi")."</a>";}
+		{echo "<a onclick=\"window.open('android-app://org.jitsi.meet#omnispaceMobileApp_getFile')\" class='visioInfos'><img src='app/img/jitsi.png'> ".Txt::trad("VISIO_installJitsi")."</a>";}
 
 	////	Bouton de lancement && Infos sur la visio
 	echo "<button id='launchVisio'>".Txt::trad("VISIO_launchButton")." &nbsp; <img src='app/img/visioSmall.png'></button>

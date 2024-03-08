@@ -16,7 +16,7 @@ class MdlForumMessage extends MdlObject
 	const objectType="forumMessage";
 	const dbTable="ap_forumMessage";
 	const MdlObjectContainer="MdlForumSubject";
-	const htmlEditorField="description";
+	const descriptionEditor=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;

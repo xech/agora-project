@@ -3,7 +3,7 @@
 .menuSortAscDesc img	{cursor:pointer;}
 </style>
 
-<div class="menuLine sLink">
+<div class="menuLine">
 	<div class="menuIcon"><img src="app/img/sort.png"></div>
 	<div>
 		<span class="menuLaunch" for="menuSort<?= $menuSortId=Txt::uniqId() ?>"><?= Txt::trad("sortBy")." ".Txt::trad("SORT_".$curSortField) ?> <img src="app/img/sort<?= ucfirst($curSortAscDesc)?>.png"></span>
@@ -18,7 +18,7 @@
 				if(empty($fieldLast) || $fieldLast!=$fieldTmp)
 				{
 					//Init l'affichage de l'option
-					$classLabel	=($fieldTmp==$curSortField)  ?  "sLinkSelect"  :  "sLink";
+					$classLabel	=($fieldTmp==$curSortField)  ?  "linkSelect"  :  null;
 					$imgAsc		=($fieldTmp==$curSortField && $curSortAscDesc=="asc")   ?  "sortAscSelect.png"  :  "sortAsc.png";
 					$imgDesc	=($fieldTmp==$curSortField && $curSortAscDesc=="desc")  ?  "sortDescSelect.png"  :  "sortDesc.png";
 					$urlSort=Tool::getParamsUrl("sort").$addUrlParams."&sort=".$fieldTmp."@@";//Prépare l'url des redirections

@@ -1,47 +1,36 @@
 <script>
 ////	Resize
-lightboxSetWidth(<?= (isset($fileContent)) ? 750 : 550 ?>);
+lightboxSetWidth(600);
 
-////	INIT
-$(function(){
-	////	Validation du formulaire
-	$("#mainForm").submit(function(event){
-		//Pas de validation par défaut du formulaire
-		event.preventDefault();
-		//Controle si un autre fichier porte le même nom
-		$.ajax("?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>&controledName="+encodeURIComponent($("[name='name']").val()+$("[name='dotExtension']").val())).done(function(result){
-			//Retourne false si ya doublon. Mais si le controle principal est ok, on poste le formulaire et ferme la page
-			if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName"); ?>","warning");  return false;}
-			else if(mainFormControl())		{$.ajax({url:"index.php",data:$("#mainForm").serialize()}).done(function(){ lightboxClose(); });}
+////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+function objectFormControl(){
+	return new Promise((resolve)=>{
+		// vérif si un autre element porte le même nom
+		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>&controledName="+encodeURIComponent($("[name='name']").val()+$("[name='dotExtension']").val());
+		$.ajax(ajaxUrl).done(function(result){
+			if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}	//"Un autre element porte le même nom"
+			else							{resolve(true);}														//Sinon renvoie le résultat du controle principal
 		});
 	});
-});
+}
 </script>
 
+
 <style>
-[name='name']			{width:400px; max-width:80%;}
+[name='name']			{width:65%;}/*surcharge*/
 [name='dotExtension']	{width:40px!important;}
-[name='description']	{margin-top:10px;}
-.fileContentLabel		{margin-top:10px; font-style:italic;}
 [name='fileContent']	{height:200px;}
 [name='fileContentOld']	{display:none;}
 </style>
 
 
-<form id="mainForm" class="lightboxContent" enctype="multipart/form-data">
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 
 	<!--NOM & DESCRIPTION-->
-	<input type="text" name="name" value="<?= basename($curObj->name,strrchr($curObj->name,".")) ?>" class="textBig" placeholder="<?= Txt::trad("name") ?>">
+	<input type="text" name="name" value="<?= basename($curObj->name,strrchr($curObj->name,".")) ?>" placeholder="<?= Txt::trad("name") ?>">
 	<input type="text" name="dotExtension" value="<?= strrchr($curObj->name,".") ?>" readonly>
-	<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea>
-	<!--CONTENU MODIFIABLE : FICHIER TXT/HTML-->
-	<?php if(isset($fileContent)){ ?>
-		<div class="fileContentLabel"><?= Txt::trad("FILE_fileContent") ?>:</div>
-		<textarea name="fileContent"><?= $fileContent ?></textarea>
-		<textarea name="fileContentOld"><?= $fileContent ?></textarea>
-		<?php if(isset($initHtmlEditor))	{echo CtrlObject::htmlEditor("fileContent");} ?>
-	<?php } ?>
+	<?= $curObj->editDescription() ?>
 
-	<!--MENU COMMUN-->
-	<?= $curObj->menuEdit() ?>
+	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<?= $curObj->editMenuSubmit() ?>
 </form>

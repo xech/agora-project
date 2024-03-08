@@ -14,7 +14,7 @@ class CtrlTask extends Ctrl
 {
 	const moduleName="task";
 	public static $folderObjType="taskFolder";
-	public static $moduleOptions=["adminRootAddContent"];
+	public static $moduleOptions=["adminRootAddContent","adminAddStatus"];
 	public static $MdlObjects=["MdlTask","MdlTaskFolder"];
 
 	/*******************************************************************************************
@@ -22,6 +22,7 @@ class CtrlTask extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
+		////	RECUPERE LA LITE DES TÂCHES
 		$filterPriority=Req::param("filterPriority")>=1 ? "AND priority=".Db::param("filterPriority") : null;
 		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplay(self::$curContainer)." ".$filterPriority." ".MdlTask::sqlSort());
 		////	TIMELINE/GANTT
@@ -43,26 +44,30 @@ class CtrlTask extends Ctrl
 				$vDatas["timelineTasks"][]=$tmpTask;
 			}
 		}
-		//Prépare la timeline si il y en a une
+		//Timeline / Gantt (si besoin)
 		if(!empty($timelineBegin))
 		{
 			//Tri les tasks de la timeline par "dateBegin"
 			usort($vDatas["timelineTasks"],function($objA,$objB){
 				return (strtotime($objA->dateBegin)-strtotime($objB->dateBegin));
 			});
-			//60 jours mini pour la timeline (soit 5184000sec)
-			if(($timelineEnd-$timelineBegin) < 5184000)   {$timelineEnd=$timelineBegin+5184000;}
+			//Timeline sur 80 jours minimum
+			$timelineSeconds=86400 * 80;
+			if(($timelineEnd-$timelineBegin) < $timelineSeconds)   {$timelineEnd=$timelineBegin+$timelineSeconds;}
 			//Mois et Jours du header de la timeline
 			$tmpMonth=null;
 			for($dayTimeBegin=$timelineBegin; $dayTimeBegin<=$timelineEnd; $dayTimeBegin+=86400)
 			{
 				$newMonth=$tmpMonth!=date("m",$dayTimeBegin);
+				if($dayTimeBegin==$timelineBegin || date("j",$dayTimeBegin)==1)	{$vTimelineLeftBorder="vTimelineLeftBorder";}	//début de tableau / début de mois : bordure de gauche pour la cellule du jour
+				elseif(date("N",$dayTimeBegin)==1)								{$vTimelineLeftBorder="vTimelineLeftBorder2";}	//début de semaine : bordure de gauche plus fine
+				else															{$vTimelineLeftBorder=null;}
 				$vDatas["timelineDays"][]=array(
 					"curDate"=>date("Y-m-d",$dayTimeBegin),
 					"timeBegin"=>$dayTimeBegin,
 					"newMonthLabel"=>($newMonth==true ? ucfirst(Txt::formatime("MMMM y",$dayTimeBegin)) : null),
 					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
-					"vTimelineLeftBorder"=>(($dayTimeBegin==$timelineBegin || date("N",$dayTimeBegin)==1 || date("j",$dayTimeBegin)==1)  ?  "vTimelineLeftBorder"  :  null),//début de timeline/de mois/de semaine : affiche les pointillés
+					"vTimelineLeftBorder"=>$vTimelineLeftBorder,
 					"vTimelineToday"=>(date("Y-m-d",$dayTimeBegin)==date("Y-m-d")  ?  "vTimelineToday"  :  null),//Label d'aujourd'hui
 					"dayLabel"=>date("j",$dayTimeBegin),
 					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin,"dateFull")
@@ -98,7 +103,7 @@ class CtrlTask extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * VUE : DÉTAILS D'UNE TACHE
+	 * VUE : AFFICHAGE D'UNE TACHE
 	 *******************************************************************************************/
 	public static function actionVueTask()
 	{
@@ -119,9 +124,9 @@ class CtrlTask extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$dateBegin=Txt::formatDate(Req::param("dateBegin")." ".Req::param("timeBegin"), "inputDatetime", "dbDatetime");
-			$dateEnd=Txt::formatDate(Req::param("dateEnd")." ".Req::param("timeEnd"), "inputDatetime", "dbDatetime");
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", advancement=".Db::param("advancement").", priority=".Db::param("priority").", responsiblePersons=".Db::formatTab2txt(Req::param("responsiblePersons")));
+			$dateBegin=Txt::formatDate(Req::param("dateBegin"), "inputDate", "dbDate");
+			$dateEnd=Txt::formatDate(Req::param("dateEnd"), "inputDate", "dbDate");
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", _idStatus=".Db::param("_idStatus").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", advancement=".Db::param("advancement").", priority=".Db::param("priority").", responsiblePersons=".Db::formatTab2txt(Req::param("responsiblePersons")));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxClose();

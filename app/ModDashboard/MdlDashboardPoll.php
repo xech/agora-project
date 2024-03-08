@@ -15,7 +15,7 @@ class MdlDashboardPoll extends MdlObject
 	const moduleName="dashboard";
 	const objectType="dashboardPoll";
 	const dbTable="ap_dashboardPoll";
-	const htmlEditorField="description";
+	const descriptionEditor=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
@@ -27,6 +27,19 @@ class MdlDashboardPoll extends MdlObject
 	//Valeurs mises en cache
 	private $_responseList=null;
 	private $_votesNbTotal=null;
+
+	/********************************************************************************************
+	 * INSTALL/UPDATE : CRÉÉ UN PREMIER SONDAGE D'EXAMPLE
+	 ********************************************************************************************/
+	public static function dbFirstRecord()
+	{
+		//Créé les enregistrements si la table est vide
+		if(Db::getVal("SELECT count(*) FROM ".self::dbTable)==0){
+			Db::query("INSERT INTO ap_dashboardPoll SET _id=1, title=".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
+			Db::query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, `rank`) VALUES ('5bd1903d3df9u8t',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
+			Db::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, `target`, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
+		}
+	}
 
 	/**************************************************************************************************************************************************************
 	 * STATIC : SONDAGES À AFFICHER
@@ -62,7 +75,7 @@ class MdlDashboardPoll extends MdlObject
 	 *******************************************************************************************/
 	public static function addRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddPoll")==false));
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddPoll")==false));
 	}
 
 	/*******************************************************************************************
@@ -163,7 +176,7 @@ class MdlDashboardPoll extends MdlObject
 	 *******************************************************************************************/
 	public function vuePollResult()
 	{
-		$vDatas["objPoll"]=$this;
+		$vDatas["curObj"]=$this;
 		return Ctrl::getVue(Req::curModPath()."vuePollResult.php", $vDatas);
 	}
 
@@ -172,7 +185,7 @@ class MdlDashboardPoll extends MdlObject
 	 *******************************************************************************************/
 	public function vuePollForm($newsDisplay=false)
 	{
-		$vDatas["objPoll"]=$this;
+		$vDatas["curObj"]=$this;
 		$vDatas["newsDisplay"]=($newsDisplay==true)  ?  "newsDisplay"  :  null;
 		$vDatas["submitButtonTooltip"]=(!empty($this->publicVote))  ?  Txt::trad("DASHBOARD_publicVote")  :  Txt::trad("DASHBOARD_voteTooltip");
 		return Ctrl::getVue(Req::curModPath()."vuePollForm.php", $vDatas);
@@ -247,12 +260,12 @@ class MdlDashboardPoll extends MdlObject
 	public function contextMenu($options=null)
 	{
 		//// Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
-		$tooltipVotedBy=(Ctrl::$curUser->isAdminSpace())  ?  $this->votesUsers()  :  null;
+		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  $this->votesUsers()  :  null;
 		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>"<span class='cursorHelp' title=\"".Txt::tooltip($tooltipVotedBy)."\">".str_replace("--NB_VOTES--",$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb"))."</span>"];
 		//// Date de fin de vote  &&  Vote est public  &&  Export pdf du résultat d'un sondage
 		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dashboard/pollDateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
 		if(!empty($this->publicVote))			{$options["specificOptions"][]=["iconSrc"=>"eye.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"];}
-		if(Ctrl::$curUser->isAdminGeneral())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->_typeId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
+		if(Ctrl::$curUser->isGeneralAdmin())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->_typeId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
 		//// Retourne le menu contextuel
 		return parent::contextMenu($options);
 	}

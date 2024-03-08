@@ -20,7 +20,7 @@ class CtrlSpace extends Ctrl
 	public static function actionDefault()
 	{
 		//	Controle d'accès && Affiche la vue
-		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
+		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
 		$vDatas["spaceList"]=Db::getObjTab("space", "SELECT * FROM ap_space ".MdlSpace::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
@@ -31,46 +31,51 @@ class CtrlSpace extends Ctrl
 	public static function actionSpaceEdit()
 	{
 		//Init
-		$curSpace=Ctrl::getObjTarget();
-		$curSpace->editControl();
+		$curObj=Ctrl::getObjTarget();
+		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			////	Enregistre & recharge l'objet
-			$curSpace=$curSpace->createUpdate("name=".Db::param("name").", description=".Db::param("description").", public=".Db::param("public").", `password`=".Db::param("password").", userInscription=".Db::param("userInscription").", userInscriptionNotify=".Db::param("userInscriptionNotify").", usersInvitation=".Db::param("usersInvitation").", wallpaper=".Db::param("wallpaper"));
+			$oldSpaceName=($curObj->isNewlyCreated()==false)  ?  $curObj->name  :  null;
+			$curObj=$curObj->createUpdate("name=".Db::param("name").", description=".Db::param("description").", public=".Db::param("public").", `password`=".Db::param("password").", userInscription=".Db::param("userInscription").", userInscriptionNotify=".Db::param("userInscriptionNotify").", usersInvitation=".Db::param("usersInvitation").", wallpaper=".Db::param("wallpaper"));
 			////	Affectations des users
-			if(Ctrl::$curUser->isAdminSpace())
+			if(Ctrl::$curUser->isSpaceAdmin())
 			{
 				//Réinit les droits
-				Db::query("DELETE FROM ap_joinSpaceUser WHERE _idSpace=".$curSpace->_id);
+				Db::query("DELETE FROM ap_joinSpaceUser WHERE _idSpace=".$curObj->_id);
 				//Affectation "allUsers"
-				if(Req::isParam("allUsers"))  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curSpace->_id.", allUsers=1, accessRight=1");}
+				if(Req::isParam("allUsers"))  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curObj->_id.", allUsers=1, accessRight=1");}
 				//Enregistre les affectations de chaque user
 				if(Req::isParam("spaceAffect")){
 					foreach(Req::param("spaceAffect") as $curAffect){
 						$curAffect=explode("_",$curAffect);//"5_2" (user 5 et droit 2 d'admin) => "[5,2]"
-						Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curSpace->_id.", _idUser=".$curAffect[0].", accessRight=".$curAffect[1]);
+						Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$curObj->_id.", _idUser=".$curAffect[0].", accessRight=".$curAffect[1]);
 					}
 				}
 			}
 			////	Affectations des modules
-			Db::query("DELETE FROM ap_joinSpaceModule WHERE _idSpace=".$curSpace->_id);
+			Db::query("DELETE FROM ap_joinSpaceModule WHERE _idSpace=".$curObj->_id);
 			foreach(Req::param("moduleList") as $rank=>$moduleName){
 				$options=Txt::tab2txt(Req::param($moduleName."Options"));
-				Db::query("INSERT INTO ap_joinSpaceModule SET _idSpace=".$curSpace->_id.", moduleName=".Db::format($moduleName).", `rank`=".$rank.", options=".Db::format($options));
+				Db::query("INSERT INTO ap_joinSpaceModule SET _idSpace=".$curObj->_id.", moduleName=".Db::format($moduleName).", `rank`=".$rank.", options=".Db::format($options));
 			}
-			////	Creation de l'agenda d'espace (avec affectation par défaut : lecture pour les users de l'espace)
-			if($curSpace->isNewlyCreated() && in_array("calendar",Req::param("moduleList")) && Req::isParam("calendarOptions") && in_array("createSpaceCalendar",Req::param("calendarOptions"))){
-				$newCalendar=new MdlCalendar(0);
-				$newCalendar=$newCalendar->createUpdate("title=".Db::format($curSpace->name).", type='ressource'");
-				Db::query("INSERT INTO ap_objectTarget SET objectType='calendar', _idObject=".$newCalendar->_id.", _idSpace=".$curSpace->_id.", target='spaceUsers', accessRight='1.5'");
+			////	Nouvel espace : Creation de l'agenda partagé de l'espace (affectation par défaut : lecture pour les users de l'espace)
+			if($curObj->isNewlyCreated() && in_array("calendar",Req::param("moduleList")) && Req::isParam("calendarOptions") && in_array("createSpaceCalendar",Req::param("calendarOptions"))){
+				$newCalendar=new MdlCalendar();
+				$newCalendar=$newCalendar->createUpdate("title=".Db::format($curObj->name).", description=".Db::format(Txt::trad("CALENDAR_sharedCalendarDescription")).", type='ressource'");
+				Db::query("INSERT INTO ap_objectTarget SET objectType='calendar', _idObject=".$newCalendar->_id.", _idSpace=".$curObj->_id.", target='spaceUsers', accessRight='1.5'");
+			}
+			////	Modif d'espace : synchronise le nom de l'agenda partagé et ajoute au besoin "agenda partagé de l'espace"
+			elseif(!empty($oldSpaceName) && in_array("calendar",Req::param("moduleList"))){
+				Db::query("UPDATE ap_calendar SET title=".Db::format($curObj->name).", description=".Db::format(Txt::trad("CALENDAR_sharedCalendarDescription"))." WHERE title=".Db::format($oldSpaceName));
 			}
 			//Ferme la page
 			static::lightboxClose();
 		}
 		////	Liste de tous les users du site  &&  Liste de tous les modules disponibles
 		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);
-		$vDatas["moduleList"]=$curSpace->moduleList(false);
+		$vDatas["moduleList"]=$curObj->moduleList(false);
 		//Ajoute les modules désactivés
 		foreach(MdlSpace::availableModuleList() as $moduleName=>$tmpModule){
 			if(empty($vDatas["moduleList"][$moduleName])){
@@ -79,7 +84,7 @@ class CtrlSpace extends Ctrl
 			}
 		}
 		////	Affiche la vue
-		$vDatas["curSpace"]=$curSpace;
+		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueSpaceEdit.php",$vDatas);
 	}
 }

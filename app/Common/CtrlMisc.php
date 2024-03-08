@@ -34,10 +34,10 @@ class CtrlMisc extends Ctrl
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
 				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				//Supprime les livecounters des users déconnectés (+ de 7 jours)  &&  Les vieux messages du messenger (+ de 30 jours : cf. $trad["MESSENGER_nobody"])  &&  Les vieilles propositions de visio (+ de 2h)
+				//Supprime les livecounters des users déconnectés (> 7 jours)  &&  Supprime les vieux messages du messenger (> 30 jours -cf. trad("MESSENGER_nobody")- et les propositions de visio > 1 heure)
 				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-604800));
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-2592000));
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisioMessage%' AND `date` < ".intval(time()-7200));
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisio%' AND `date` < ".intval(time()-3600));
 				//Garde en session les users qui rendent visible leur messenger (cf. paramétrage dans "ap_userMessenger")
 				$idsUsersVisibles=[0];//Ajoute un pseudo user '0'
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsersVisibles[]=$tmpUser->_id;}
@@ -87,7 +87,7 @@ class CtrlMisc extends Ctrl
 					//Label/icone de l'auteur du message
 					$destList=Txt::txt2tab($message["_idUsers"]);
 					$autorObj=self::getObj("user",$message["_idUser"]);
-					if(Req::isMobile())				{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//Responsive :  "Will<br>11:00 "
+					if(Req::isMobile())				{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//sur mobile :  "Will<br>11:00 "
 					elseif($autorObj->hasImg())		{$dateAutor=date("H:i",$message["date"]).$autorObj->getImg(false,true);}			//Mode normal avec icone de l'user : "11:00 <img>"
 					else							{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
 					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}			//Ajoute si besoin l'icone de discussion à plusieurs
@@ -109,7 +109,7 @@ class CtrlMisc extends Ctrl
 			////	"PULSATE" LE AUTEURS DES MESSAGES QUI N'ONT PAS ENCORE ÉTÉ VU
 			$result["livecounterUsersPulsate"]=[];
 			foreach($_SESSION["messengerMessages"] as $message){
-				//Pas de pulsate si le message est trop ancien (on n'insiste pas: 120s max en mode normal ou 30s max en responsive)
+				//Pas de pulsate si le message est trop ancien (on n'insiste pas: 120s max en mode normal ou 30s max sur mobile)
 				$messageAge=time()-$message["date"];
 				if($messageAge>120 || (Req::isMobile() && $messageAge>30))  {continue;}
 				//"Pulsate" l'auteur s'il est connecté  &&  (s'il n'a pas encore été affiché || s'il a été affiché avant l'envoi du message)
@@ -275,7 +275,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * CONTROLE DU CAPTCHA (AJAX OU DIRECT)
+	 * AJAX OU DIRECT : CONTROLE DU CAPTCHA
 	 *******************************************************************************************/
 	public static function actionCaptchaControl()
 	{

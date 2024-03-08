@@ -33,8 +33,7 @@ abstract class Ctrl
 	public static function initCtrl()
 	{
 		////	Lance la session || Déconnexion & réinit la session
-		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Différente pour chaque espace/db
-		session_cache_limiter("nocache");
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Différent pour chaque db
 		session_start();
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
@@ -59,7 +58,7 @@ abstract class Ctrl
 		if(empty(self::$curTimezone))	{self::$curTimezone="Europe/Paris";}
 		date_default_timezone_set(self::$curTimezone);
 
-		////	Init complète du controleur
+		////	Init complète du controleur (sauf action Ajax)
 		if(static::$initCtrlFull==true)
 		{
 			////	Connection d'un user  &&  selection d'un espace !
@@ -67,7 +66,7 @@ abstract class Ctrl
 
 			////	Enregistre et charge le cookie pour "Req::isMobileApp()" (10ans)
 			if(Req::isParam("mobileAppli")){
-				setcookie("mobileAppli", "true", (time()+315360000));
+				setcookie("mobileAppli", "true", TIME_COOKIES);
 				$_COOKIE["mobileAppli"]="true";
 			}
 
@@ -78,7 +77,7 @@ abstract class Ctrl
 			}
 
 			////	Affichage administrateur demandé
-			if(self::$curUser->isAdminSpace() && Req::isParam("displayAdmin")){
+			if(self::$curUser->isSpaceAdmin() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");//Bool
 				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
 			}
@@ -141,7 +140,7 @@ abstract class Ctrl
 				self::$userJustConnected=true;
 				self::addLog("connexion");
 
-				//// Charge les preferences de l'user  &&  update "lastconnection"/"previousconnection"
+				//// Charge les preferences de l'user  &&  update "lastconnection" (connexion courante) + "previousconnection" (connexion précédente)
 				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
 				$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
 				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".self::$curUser->_id);
@@ -161,7 +160,7 @@ abstract class Ctrl
 			}
 		}
 
-		////	STATS DE CONNEXION DU HOST (tjs entre connexion & sélection d'espace)
+		////	STATS DE CONNEXION DU HOST (APRES AUTHENTIFICATION, MAIS AVANT SÉLECTION D'ESPACE ET REDIRECTION)
 		if(Req::isHost())  {Host::connectStatsHostInfos();}
 
 		////	SELECTION D'UN ESPACE  (Tester switch d'espace + connexion d'user sans espace affecté + connexion de guest avec switch d'espace + accès à un objet depuis notif mail)
@@ -218,20 +217,21 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function userAuthToken($action, $_idUser=null)
 	{
-		////	S'il existe déjà un cookie "userAuthToken" : supprime le token en bdd et du cookie 
+		////	S'il existe déjà un cookie "userAuthToken" : supprime le token en bdd correspondant au cookie 
 		if(!empty($_COOKIE["userAuthToken"])){
 			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
 			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));
 			setcookie("userAuthToken", "", -1);
 		}
-		////	Créé un nouveau token au format Bcrypt : enregistre le token en bdd et dans un cookie (un an)
+		////	(Re)Créé un nouveau token au format Bcrypt : enregistre le token en bdd et dans un cookie
 		if($action=="create"){
-			$newToken=password_hash(uniqid(),PASSWORD_DEFAULT);
-			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($newToken).", dateCrea=NOW()");
-			setcookie("userAuthToken", $_idUser."@@@".$newToken, (time()+31536000));
+			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);
+			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser);
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($userAuthToken).", dateCrea=NOW()");
+			setcookie("userAuthToken", $_idUser."@@@".$userAuthToken, TIME_COOKIES);
 		}
-		////	Supprime les cookies de l'ancienne méthode et les tokens obsolètes (+ d'un an)
-		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG",null,-1);  setcookie("AGORAP_PASS",null,-1);}
+		////	Supprime les cookies de l'ancienne méthode  &&  Supprime les tokens de plus d'un an
+		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG","",-1);  setcookie("AGORAP_PASS","",-1);}
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-31536000));
 	}
 
@@ -245,7 +245,7 @@ abstract class Ctrl
 		if(empty($prefParamKey))  {$prefParamKey=$prefDbKey;}
 		//Préférence passé en Get/Post ?
 		if(Req::isParam($prefParamKey))										{$prefParamVal=Req::param($prefParamKey);}
-		elseif($emptyValueEnabled==true && Req::isParam("formValidate"))	{$prefParamVal="";}//Enregistre une valeur vide? (ex: checkbox non cochée dans un formulaire)
+		elseif($emptyValueEnabled==true && Req::isParam("formValidate"))	{$prefParamVal="";}//Enregistre une valeur vide? (Ex: checkbox non cochée dans un formulaire)
 		//Enregistre si besoin la préférence  ("isset" pour aussi enregistrer les valeurs vides) 
 		if(isset($prefParamVal))
 		{
@@ -337,7 +337,7 @@ abstract class Ctrl
 			$moduleName=Req::$curCtrl;
 			$sqlObjectType=$sqlObjectId=null;
 			////	Element : ajoute les détails (nom, titre, chemin, etc)
-			if(is_object($curObj) && $curObj->isNew()==false)
+			if(MdlObject::isObject($curObj))
 			{
 				//init
 				$moduleName=$curObj::moduleName;

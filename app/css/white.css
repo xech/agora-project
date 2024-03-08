@@ -1,33 +1,27 @@
-/**SKIN BLANC**/
-
 /*Basic*/
-body, a, .sLink																					{color:#555;}
-input, textarea, select																			{color:#555; background:#fff;}
-#htmlLightbox																					{background:#fff;}
-a:hover, a:active, .sLink:hover, .sLinkSelect, label:hover, input:checked+label, .sAccessRead	{color:rgb(0, 104, 189);}	/*Liens + labels sélectionnés + accès utilisateur*/
-.sAccessWrite, .sAccessWriteLimit																{color:#900;}			/*Accès admin*/
-
-/*Pages principales Responsives (cf. 'VueStructure.php')*/
-@media screen and (max-width:1023px){
-	#htmlMainPage	{background:#fff url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
-}
+body, a, .sLink																										{color:#555;}
+#htmlLightbox																										{background:white;}
+input, textarea, select																								{color:#555;}
+.sAccessWrite, .sAccessWriteLimit																					{color:#900;}					/*Droit d'accès "Write" & "Write limit"*/
+a:hover, [onclick]:hover, .sLink:hover, .linkSelect, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(0, 104, 189);}		/*Liens principaux / label+checkbox / accès utilisateur*/
 
 /*Blocks d'objet & menus contextuels*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{background:#fff;}									/*blocks principaux*/
-.lineOdd:nth-child(odd), .selectContainer						{background:#f9f9f9;}								/*blocks principaux survolés & blocks d'objets impaires (cf. forum)*/
-.objContainerSelect, #objSelectMenu  							{background:#ddd!important;}						/*objets sélectionnés ("!important" pour surcharger les ":hover")*/
-.objLines .objContainer											{border-bottom:solid 1px #ccc; box-shadow:none;}	/*pas de "box-shadow" en affichage "objLines"*/
-.menuContext .menuLine:hover, .lineHover:hover, .lineSelect		{background:#eee!important;}						/*lignes survolées ou sélectionnées (cf. droit d'accès d'objets ou affectations d'evts)*/
-/*RESPONSIVE*/
+.objContainer, .miscContainer, .emptyContainer, .menuContext										{background:white;}				/*blocks principaux*/
+.lineOdd:nth-child(odd)																				{background:#f9f9f9;}				/*blocks principaux survolés & blocks d'objets impaires (cf. forum)*/
+.objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover	{background: #ddd!important;}		/*objets sélectionnés & lignes survolées (cf. droit d'accès & CO)*/
+.objLines .objContainer																				{border-bottom:solid 1px #ccc;}	/*pas de "box-shadow" en affichage "objLines"*/
+
+/*MOBILE*/
 @media screen and (max-width:1023px){
-	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:2px 2px 5px rgb(200,200,200);}/*cf. affichage de news et fichiers*/
+	#htmlMainPage	{background:#fff url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:0px 2px 5px rgb(200,200,200);}					/*cf. affichage de news et fichiers*/
 }
 
 /*Divers*/
-#headerBar											{background:linear-gradient(180deg,#fff,#f5f5f5,#fff); box-shadow:2px 2px 8px rgb(80,80,80);}	/*barre de menu principale*/
-hr													{background:linear-gradient(90deg,#eee,#ccc,#eee);}		/*barre de séparation*/
-div::-webkit-scrollbar								{background:#eee; width:15px;}									/*scrollbar: background et width*/
-div::-webkit-scrollbar-thumb						{background:#ccc;}												/*scrollbar: couleur de la barre*/
-.lightboxBlock, .lightboxBlockTitle, .objMenuLabel	{border:#bbb solid 1px;}										/*blocks des lightboxes et onglets du menu d'édition d'objets*/
-.objMenuLabel										{background:linear-gradient(180deg,#f5f5f5,#fff);}
-.lightboxBlockTitle									{border-bottom:#ddd solid 1px; background:#fafafa;}
+#headerBar								{background:linear-gradient(180deg,#f1f1f1,#fff,#f1f1f1); box-shadow:0px 2px 8px rgb(80,80,80);}	 /*barre de menu principale*/
+hr										{background:linear-gradient(90deg,#eee,#ccc,#eee);}												 	  /*barre de séparation*/
+div::-webkit-scrollbar					{background:#eee; width:15px;}																			 	 /*scrollbar: background et width*/
+div::-webkit-scrollbar-thumb			{background:#ccc;}																							 /*scrollbar: couleur de la barre*/
+fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px; }											/*fieldset & onglet "VueObjEditMenuSubmit.php"*/
+.fieldsetSub							{border:1px solid #ccc; border-radius:5px;}																 /*ex: "VueObjEditMenuSubmit.php"*/
+.objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#fafafa,#fff,#fff);}											  	  /*"VueObjEditMenuSubmit.php"*/

@@ -13,7 +13,7 @@
 class CtrlDashboard extends Ctrl
 {
 	const moduleName="dashboard";
-	public static $moduleOptions=["adminAddNews","disablePolls","adminAddPoll"];
+	public static $moduleOptions=["adminAddNews","adminAddPoll","disablePolls"];
 	public static $MdlObjects=["MdlDashboardNews"];
 
 	/*******************************************************************************************
@@ -85,14 +85,14 @@ class CtrlDashboard extends Ctrl
 		$pluginsList=[];
 		if($params["type"]=="search")
 		{
-			foreach(MdlDashboardNews::getPluginObjects($params) as $objNews)
+			foreach(MdlDashboardNews::getPluginObjects($params) as $curObj)
 			{
-				$objNews->pluginIcon=self::moduleName."/icon.png";
-				$objNews->pluginLabel=$objNews->description;
-				$objNews->pluginTooltip=$objNews->autorLabel(true,true);
-				$objNews->pluginJsIcon=null;
-				$objNews->pluginJsLabel=null;
-				$pluginsList[]=$objNews;
+				$curObj->pluginIcon=self::moduleName."/icon.png";
+				$curObj->pluginLabel=$curObj->description;
+				$curObj->pluginTooltip=$curObj->autorLabel(true,true);
+				$curObj->pluginJsIcon=null;
+				$curObj->pluginJsLabel=null;
+				$pluginsList[]=$curObj;
 			}
 		}
 		return $pluginsList;
@@ -104,19 +104,19 @@ class CtrlDashboard extends Ctrl
 	public static function actionDashboardNewsEdit()
 	{
 		//Init
-		$objNews=Ctrl::getObjTarget();
-		$objNews->editControl();
+		$curObj=Ctrl::getObjTarget();
+		$curObj->editControl();
 		if(MdlDashboardNews::addRight()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$objNews=$objNews->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","date").", dateOffline=".Db::param("dateOffline","date"));
+			$curObj=$curObj->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","date").", dateOffline=".Db::param("dateOffline","date"));
 			//Notif par mail & Ferme la page
-			$objNews->sendMailNotif();
+			$curObj->sendMailNotif();
 			static::lightboxClose();
 		}
 		////	Affiche la vue
-		$vDatas["objNews"]=$objNews;
+		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueDashboardNewsEdit.php",$vDatas);
 	}
 
@@ -126,15 +126,15 @@ class CtrlDashboard extends Ctrl
 	public static function actionDashboardPollEdit()
 	{
 		//Init
-		$objPoll=Ctrl::getObjTarget();
-		if($objPoll->isNew() && MdlDashboardPoll::addRight()==false)	{self::noAccessExit();}
-		else															{$objPoll->editControl();}
-		$pollIsVoted=($objPoll->votesNbTotal()>0);
+		$curObj=Ctrl::getObjTarget();
+		if($curObj->isNew() && MdlDashboardPoll::addRight()==false)	{self::noAccessExit();}
+		else														{$curObj->editControl();}
+		$pollIsVoted=($curObj->votesNbTotal()>0);
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$objPoll=$objPoll->createUpdate("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","date"));
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","date"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
 			if($pollIsVoted==false)
 			{
@@ -143,8 +143,8 @@ class CtrlDashboard extends Ctrl
 				//Récupère les réponses et éventuellement leur fichier associé ("_idResponse" comme clé)
 				$responses=Req::param("responses");
 				//Supprime si besoin les réponses effacées (modif du sondage)
-				foreach($objPoll->getResponses() as $tmpResponse){
-					if(empty($responses[$tmpResponse["_id"]]))  {$objPoll->deleteResponse($tmpResponse["_id"]);}
+				foreach($curObj->getResponses() as $tmpResponse){
+					if(empty($responses[$tmpResponse["_id"]]))  {$curObj->deleteResponse($tmpResponse["_id"]);}
 				}
 				//Ajoute/modifie les responses possibles
 				foreach($responses as $_idResponse=>$reponseLabel)
@@ -153,14 +153,14 @@ class CtrlDashboard extends Ctrl
 					{
 						//Enregistre en Bdd
 						$reponseRank=(empty($reponseRank)) ? 1 : ($reponseRank+1);
-						$sqlValues="_id=".Db::format($_idResponse).", _idPoll=".(int)$objPoll->_id.", label=".Db::format($reponseLabel).", `rank`=".(int)$reponseRank;
+						$sqlValues="_id=".Db::format($_idResponse).", _idPoll=".(int)$curObj->_id.", label=".Db::format($reponseLabel).", `rank`=".(int)$reponseRank;
 						Db::query("INSERT INTO ap_dashboardPollResponse SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 						//Enregistre si besoin le fichier de la réponse
 						if(!empty($_FILES["responsesFile".$_idResponse]))
 						{
 							$tmpFile=$_FILES["responsesFile".$_idResponse];
 							if(File::uploadControl($tmpFile)){
-								$responseFilePath=$objPoll->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
+								$responseFilePath=$curObj->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
 								move_uploaded_file($tmpFile["tmp_name"],$responseFilePath);
 								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1024);}//1024px max
 								Db::query("UPDATE ap_dashboardPollResponse SET fileName=".Db::format($tmpFile["name"])." WHERE _id=".Db::format($_idResponse));
@@ -171,14 +171,14 @@ class CtrlDashboard extends Ctrl
 			}
 			//Notif par mail & Ferme la page ("dashboardPoll=true" : cf. "dashboardOption()")
 			$pollVote="<ul style='padding-left:20px;'>";
-			foreach($objPoll->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
-			$pollVote.="</ul><a href='".$objPoll->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
-			$objPoll->sendMailNotif($pollVote);
+			foreach($curObj->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
+			$pollVote.="</ul><a href='".$curObj->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
+			$curObj->sendMailNotif($pollVote);
 			static::lightboxClose(null,"&dashboardPoll=true");
 		}
 		////	Affiche la vue
-		$vDatas["objPoll"]=$objPoll;
-		$vDatas["pollResponses"]=$objPoll->getResponses();
+		$vDatas["curObj"]=$curObj;
+		$vDatas["pollResponses"]=$curObj->getResponses();
 		$vDatas["pollIsVoted"]=$pollIsVoted;
 		static::displayPage("VueDashboardPollEdit.php",$vDatas);
 	}
@@ -189,17 +189,17 @@ class CtrlDashboard extends Ctrl
 	public static function actionPollVote()
 	{
 		//Récupère le sondage et Controle l'accès
-		$objPoll=Ctrl::getObjTarget();
-		$objPoll->readControl();
+		$curObj=Ctrl::getObjTarget();
+		$curObj->readControl();
 		//Enregistre le vote du sondage (..si aucun vote n'a déjà été fait par l'user courant)
-		if($objPoll->curUserHasVoted()==false && Req::isParam("pollResponse"))
+		if($curObj->curUserHasVoted()==false && Req::isParam("pollResponse"))
 		{
 			//Enregistre chaque réponse du vote ("pollResponse" est toujours un tableau et il peut y avoir plusieurs réponses)
 			foreach(Req::param("pollResponse") as $tmpResponse)
-				{Db::query("INSERT INTO ap_dashboardPollResponseVote SET _idUser=".Ctrl::$curUser->_id.", _idResponse=".Db::format($tmpResponse).", _idPoll=".$objPoll->_id);}
+				{Db::query("INSERT INTO ap_dashboardPollResponseVote SET _idUser=".Ctrl::$curUser->_id.", _idResponse=".Db::format($tmpResponse).", _idPoll=".$curObj->_id);}
 			//Récupère la vue des résultats et le renvoie en Json
-			$result["vuePollResult"]=$objPoll->vuePollResult();
-			$result["_idPoll"]=$objPoll->_id;
+			$result["vuePollResult"]=$curObj->vuePollResult();
+			$result["_idPoll"]=$curObj->_id;
 			echo json_encode($result);
 		}
 	}
@@ -210,11 +210,11 @@ class CtrlDashboard extends Ctrl
 	public static function actionResponseDownloadFile()
 	{
 		//Récupère le sondage et Controle l'accès
-		$objPoll=Ctrl::getObjTarget();
-		$objPoll->readControl();
+		$curObj=Ctrl::getObjTarget();
+		$curObj->readControl();
 		//Download le fichier de la réponse
-		$tmpResponse=$objPoll->getResponse(Req::param("_idResponse"));
-		$responseFilePath=$objPoll->responseFilePath($tmpResponse);
+		$tmpResponse=$curObj->getResponse(Req::param("_idResponse"));
+		$responseFilePath=$curObj->responseFilePath($tmpResponse);
 		if(is_file($responseFilePath))  {File::download($tmpResponse["fileName"],$responseFilePath);}
 	}
 
@@ -224,10 +224,10 @@ class CtrlDashboard extends Ctrl
 	public static function actionDeleteResponseFile()
 	{
 		//Récupère le sondage et Controle l'accès
-		$objPoll=Ctrl::getObjTarget();
-		$objPoll->editControl();
+		$curObj=Ctrl::getObjTarget();
+		$curObj->editControl();
 		//Supprime le fichier
-		$isDeleted=$objPoll->deleteReponseFile(Req::param("_idResponse"));
+		$isDeleted=$curObj->deleteReponseFile(Req::param("_idResponse"));
 		if($isDeleted==true)  {echo "true";}
 	}
 
@@ -237,15 +237,15 @@ class CtrlDashboard extends Ctrl
 	public static function actionExportPollResult()
 	{
 		////	RÉCUPÈRE LE SONDAGE ET CONTROLE L'ACCÈS
-		$objPoll=Ctrl::getObjTarget();
-		$objPoll->editControl();
+		$curObj=Ctrl::getObjTarget();
+		$curObj->editControl();
 
 		////	CREATION DU PDF ET INIT LES CELLULES DES TABLEAUX
 		require_once "app/misc/fpdf/fpdf.php";
 		$pdf=new FPDF();
 		$pdf->AddPage();
-		$percentBarWidthMax=180;//width max des barres de %
-		$percentBarHeight=5;//Height des barres de %
+		$progressBarWidthMax=180;//width max des barres de %
+		$progressBarHeight=5;//Height des barres de %
 		$pdf->SetFillColor(245, 245, 245);//Gris clair
 		$pdf->SetDrawColor(200);//Trait gris
 		$pdf->SetLineWidth(0.3);//Trait de 0.3px
@@ -253,33 +253,33 @@ class CtrlDashboard extends Ctrl
 		////	TITRE & DESCRIPTION DU SONDAGE & DATE DU RESULTAT
 		$pdf->Ln(15);
 		$pdf->SetFont("Arial","B",12);
-		$pdf->Write(5, utf8_decode($objPoll->title));
+		$pdf->Write(5, utf8_decode($curObj->title));
 		$pdf->SetFont("Arial",null,9);
 		$pdf->Write(5, "   ".utf8_decode(Txt::trad("DASHBOARD_exportPollDate")." ".date("d/m/Y")));
 		$pdf->Ln(10);
-		$pdf->Write(5, utf8_decode(strip_tags($objPoll->description)));
+		$pdf->Write(5, utf8_decode(strip_tags($curObj->description)));
 
 		////	RESULTAT DE CHAQUE REPONSES
-		foreach($objPoll->getResponses(true) as $tmpResponse)
+		foreach($curObj->getResponses(true) as $tmpResponse)
 		{
 			//Nombre et pourcentage des votes
-			$votesNb=$objPoll->votesNb($tmpResponse["_id"]);
+			$votesNb=$curObj->votesNb($tmpResponse["_id"]);
 			$votesNbLabel=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_answerVotesNb"));
-			$votesPercent=$objPoll->votesPercent($tmpResponse["_id"]);
-			$percentBarWidth=($votesPercent>0)  ?  round(($percentBarWidthMax/100) * $votesPercent)  :  7;
+			$votesPercent=$curObj->votesPercent($tmpResponse["_id"]);
+			$progressBarWidth=($votesPercent>0)  ?  round(($progressBarWidthMax/100) * $votesPercent)  :  7;
 			//Affiche la réponse : label + barre de % + users ayant voté la réponse
 			$pdf->Ln(12);
 			$pdf->SetFont("Arial","B",9);
 			$pdf->Write(5, utf8_decode($tmpResponse["label"]));//Label de la réponse
 			$pdf->Ln(7);
 			$pdf->SetFont("Arial",null,9);
-			$pdf->Cell($percentBarWidth, $percentBarHeight, utf8_decode($votesPercent." %  ".$votesNbLabel), "RLTB", 0, "L", 1);
-			if(!empty($votesNb) && !empty($objPoll->publicVote))   {$pdf->Ln(7);  $pdf->Write(5, utf8_decode($objPoll->votesUsers($tmpResponse["_id"])));}
+			$pdf->Cell($progressBarWidth, $progressBarHeight, utf8_decode($votesPercent." %  ".$votesNbLabel), "RLTB", 0, "L", 1);
+			if(!empty($votesNb) && !empty($curObj->publicVote))   {$pdf->Ln(7);  $pdf->Write(5, utf8_decode($curObj->votesUsers($tmpResponse["_id"])));}
 		}
 
 		////	FOOTER DU PDF  &&  DOWNLOAD DU FICHIER
 		$pdf->Image("app/img/logoLabel.png", 150, 270, null, null, null, utf8_decode(OMNISPACE_URL_LABEL));
-		$fileName=Txt::clean($objPoll->getLabel())."_".date("d-m-Y").".pdf";
+		$fileName=Txt::clean($curObj->getLabel())."_".date("d-m-Y").".pdf";
 		$pdf->Output($fileName, "D");
 	}
 }

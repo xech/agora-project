@@ -84,8 +84,8 @@ class CtrlContact extends Ctrl
 	{
 		////	Folder courant  &&  Controle d'accès
 		$curFolder=self::getObj("contactFolder",Req::param("_idContainer"));
-		if(Ctrl::$curUser->isAdminSpace()==false)  {static::lightboxClose();}
-		////	Validation de formulaire
+		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxClose();}
+		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//// Export de contacts
@@ -128,7 +128,7 @@ class CtrlContact extends Ctrl
 	 *******************************************************************************************/
 	public static function actionContactAddUser()
 	{
-		if(Ctrl::$curUser->isAdminGeneral())
+		if(Ctrl::$curUser->isGeneralAdmin())
 		{
 			//Init
 			$contactRef=Ctrl::getObjTarget();

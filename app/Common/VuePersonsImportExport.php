@@ -2,18 +2,20 @@
 ////	Resize
 lightboxSetWidth("<?= Req::isParam("actionImportExport")?"95%":"800" ?>");
 
-////	INIT
+////	Init
 $(function(){
 	////	Switch le formulaire d'import ou d'export
-	$("#selectImportExport").change(function(){
+	$("#selectImportExport").on("change",function(){
 		$("#importBlock").toggle(this.value=="import");//affiche/masque
 		$("#exportBlock").toggle(this.value=="export");//idem
 	});
+
 	////	Affiche les inputs d'import
-	$("#selectImportType").change(function(){
+	$("#selectImportType").on("change",function(){
 		$("#importCsvFile").toggle(this.value=="csv");//affiche/masque
 		$("#importLdapDn,#importLdapFilter").toggle(this.value=="ldap");//idem
 	});
+
 	////	Init l'affichage d'import d'users (à la fin)
 	<?php if(Req::isParam("actionImportExport")==false){ ?>
 		$("#importExportBlock,#importBlock").show();
@@ -22,11 +24,12 @@ $(function(){
 	<?php } ?>
 
 	////	Tableau d'import: init le background des lignes sélectionnées
-	$(".vPersonImportCheckbox").change(function(){
+	$(".vPersonImportCheckbox").on("change",function(){
 		$("#rowPerson"+this.value).toggleClass("lineSelect",this.checked);
 	}).trigger("change");//trigger pour init l'affichage
+
 	////	Tableau d'import: vérifie que le champ agora (<select>) n'est pas déjà sélectionné sur une autre colonne
-	$(".vAgoraFieldSelect").change(function(){
+	$(".vAgoraFieldSelect").on("change",function(){
 		curField=this.value;
 		curFieldCpt=$(this).attr("data-fieldCpt");
 		$(".vAgoraFieldSelect").each(function(){
@@ -37,23 +40,22 @@ $(function(){
 			}
 		});
 	});
-});
 
-////	Contrôle du formulaire
-function formControl()
-{
-	//Controle que le fichier d'import est au format csv
-	if($("#selectImportExport").isVisible() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
-		notify("<?= Txt::trad("fileExtension") ?> CSV");
-		return false;
-	}
-	//Controle le tableau d'import?
-	if($(".vPersonImportCheckbox").exist()){
-		//Le champ Agora "name" doit être sélectionné  &&  Au moins une personne doit être sélectionnée
-		if($(".vAgoraFieldSelect option[value=name]:checked").length==0)	{notify("<?= Txt::trad("importNotif1") ?>");  return false;}
-		if($(".vPersonImportCheckbox:checked").length==0)					{notify("<?= Txt::trad("importNotif2") ?>");  return false;}
-	}
-}
+	////	Contrôle du formulaire
+	$("form").submit(function(){
+		//Controle que le fichier d'import est au format csv
+		if($("#selectImportExport").isVisible() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
+			notify("<?= Txt::trad("fileExtension") ?> CSV");
+			return false;
+		}
+		//Controle le tableau d'import?
+		if($(".vPersonImportCheckbox").exist()){
+			//Le champ Agora "name" doit être sélectionné  &&  Au moins une personne doit être sélectionnée
+			if($(".vAgoraFieldSelect option[value=name]:checked").length==0)	{notify("<?= Txt::trad("importNotif1") ?>");  return false;}
+			if($(".vPersonImportCheckbox:checked").length==0)					{notify("<?= Txt::trad("importNotif2") ?>");  return false;}
+		}
+	});
+});
 </script>
 
 
@@ -72,7 +74,7 @@ form											{text-align:center;}
 </style>
 
 
-<form action="index.php" method="post" enctype="multipart/form-data" onsubmit="return formControl()" class="lightboxContent">
+<form action="index.php" method="post" enctype="multipart/form-data">
 	<!--SELECTION D'IMPORT/EXPORT-->
 	<span id="importExportBlock">
 		<select name="actionImportExport" id="selectImportExport">
@@ -145,7 +147,7 @@ form											{text-align:center;}
 				//HEADER DU TABLEAU : INPUT "SELECT" DES CHAMPS "AGORA"
 				echo "<tr>";
 					//Bouton "switch" la sélection des personnes importées
-					echo "<th><img src='app/img/switch.png' class='sLink' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" title=\"".Txt::trad("selectSwitch")."\"></th>";
+					echo "<th><img src='app/img/switch.png' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" title=\"".Txt::trad("checkSmall")."\"></th>";
 					//Pour chaque colonne, on affiche un input "select" avec chaque champ "agora" (type "csv_agora")
 					for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){
 						echo "<th><select name='agoraFields[".$fieldCpt."]' class='vAgoraFieldSelect' data-fieldCpt='".$fieldCpt."'><option></option>";	//Début du <select> et option vide (champ pas importé)
@@ -203,6 +205,6 @@ form											{text-align:center;}
 
 	////	TYPEID DU DOSSIER CONTENEUR (TYPE "CONTACT")  &&  BOUTON DE VALIDATION
 	if(Req::isParam("typeId"))  {echo '<input type="hidden" name="_idContainer" value="'.Ctrl::getObjTarget()->_id.'">';}
-	echo Txt::submitButton();
+	echo Txt::submitButton("validate");
 	?>
 </form>

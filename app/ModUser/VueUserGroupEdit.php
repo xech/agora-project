@@ -14,7 +14,7 @@ $(function(){
 		}
 		// Au moins 2 utilisateurs sélectionnés
 		if($(this).find("[name='userList[]']:checked").length<2){
-			notify("<?= Txt::trad("selectUsers") ?>");
+			notify("<?= Txt::trad("notifSelectUsers") ?>");
 			return false;
 		}
 	});
@@ -33,14 +33,14 @@ input[name='title']				{width:50%;}
 .vAutorSubmit>div:first-child	{font-style:italic; font-weight:normal;}
 .vAutorSubmit>div:last-child	{text-align:right;}
 .vAutorSubmit button			{width:120px; margin-right:10px;}
-/*RESPONSIVE FANCYBOX (440px)*/
+/*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.vAutorSubmit, .vAutorSubmit>div  {display:block; margin-top:20px;}
 	.userListUser	{width:48%; padding:5px;}
 }
 </style>
 
-<div class="lightboxContent">
+<div>
 	<div class="lightboxTitle">
 		<img src="app/img/user/userGroup.png"> <?= Txt::trad("USER_spaceGroups") ?> : <span id="labelSpaceName"><?= Ctrl::$curSpace->name ?></span>
 		<div class="lightboxTitleDetail"><img src="app/img/info.png"> <?= Txt::trad("USER_groupEditInfo") ?></div>
@@ -64,7 +64,7 @@ input[name='title']				{width:50%;}
 		}
 		//Affichage du formulaire
 		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
-		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' class='sLink' title=\"".Txt::trad("delete")."\" onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
+		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' title=\"".Txt::trad("delete")."\" onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
 		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>

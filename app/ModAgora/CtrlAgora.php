@@ -20,7 +20,7 @@ class CtrlAgora extends Ctrl
 	public static function actionDefault()
 	{
 		////	Controle d'accès
-		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
+		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -122,7 +122,7 @@ class CtrlAgora extends Ctrl
 	public static function actionGetBackup()
 	{
 		//Init
-		if(Ctrl::$curUser->isAdminGeneral()==false)  {self::noAccessExit();}
+		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
 		$dumpPath=Db::getDump();//Dump de la bdd!
 		////	Sauvegarde de tout
 		if(Req::param("typeBackup")=="all")

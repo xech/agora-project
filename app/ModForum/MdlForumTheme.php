@@ -10,11 +10,14 @@
 /*
  * MODELE DES THEMES DE SUJETS
  */
-class MdlForumTheme extends MdlObject
+class MdlForumTheme extends MdlObjectCategory
 {
 	const moduleName="forum";
 	const objectType="forumTheme";
 	const dbTable="ap_forumTheme";
+	const dbTableParent="ap_forumSubject";
+	const _idFieldName="_idTheme";
+	const optionAdminAddCategory="adminAddTheme";
 	public static $requiredFields=["title"];
 	public static $sortFields=["title@asc","title@desc"];
 
@@ -23,61 +26,18 @@ class MdlForumTheme extends MdlObject
 	 *******************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
+		//Appel du constructeur parent
 		parent::__construct($objIdOrValues);
-		//Espaces ou est visible le theme
-		$this->spaceIds=Txt::txt2tab($this->_idSpaces);
-		//Couleur par défaut : nouveau theme / Theme "undefined"
-		if(empty($this->color))  {$this->color="#900";}
-		//Id du theme pour les Urls
-		$this->idThemeUrl=($this->noTheme==true) ? "noTheme" : $this->_id;
+		//Spécifie "_idThemeFilter" si besoin (cf. "noTheme")
+		if(empty($this->_idThemeFilter))	{$this->_idThemeFilter=$this->_id;}
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE LE TITRE DU THEME AVEC UNE PASTILLE DE COULEUR
-	 *******************************************************************************************/
-	public function display()
+	* SURCHARGE : RETOURNE "SANS THEME" OU LE TITRE DU THEME
+	*******************************************************************************************/
+	public function getLabel()
 	{
-		if(!empty($this->title))		{return "<div class='themeColor' style=\"background:".$this->color."\">&nbsp;</div> ".$this->title;}
-		elseif($this->noTheme==true)	{return "<div class='themeColor' style='background:#444'>&nbsp;</div> <i>".Txt::trad("FORUM_noTheme")."</i>";}
-	}
-
-	/*******************************************************************************************
-	 * RETOURNE LES LIBELLÉS DES ESPACES AFFECTÉS AU THÈME
-	 *******************************************************************************************/
-	public function spaceLabels()
-	{
-		if(!empty($this->spaceIds)){
-			$spacesLabel=null;
-			foreach($this->spaceIds as $_idSpace)	{$spacesLabel.=", ".Ctrl::getObj("space",$_idSpace)->name;}
-			return trim($spacesLabel,",");
-		}
-	}
-
-	/*******************************************************************************************
-	 * LISTE DES THEMES DES SUJETS (FILTRE PAR ESPACE?)
-	 *******************************************************************************************/
-	public static function getThemes($editMode=false)
-	{
-		$sqlFilter=($editMode==true && Ctrl::$curUser->isAdminGeneral())  ?  null  :  " AND (_idSpaces is null OR _idSpaces LIKE '%@".Ctrl::$curSpace->_id."@%')";
-		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
-	}
-
-	/*******************************************************************************************
-	 * DROIT D'AJOUTER UN NOUVEAU THEME
-	 *******************************************************************************************/
-	public static function addRight()
-	{
-		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddTheme")));
-	}
-
-	/*******************************************************************************************
-	 * SURCHARGE : SUPPRESSION DE THEME
-	 *******************************************************************************************/
-	public function delete()
-	{
-		if($this->deleteRight()){
-			Db::query("UPDATE ap_forumSubject SET _idTheme=null WHERE _idTheme=".$this->_id);
-			parent::delete();
-		}
+		if($this->_idThemeFilter==="noTheme")	{return "<div class='categoryColor categoryColorAll'>&nbsp;</div> <i>".Txt::trad("FORUM_categoryUndefined")."</i>";}
+		else									{return parent::getLabel();}
 	}
 }

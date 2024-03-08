@@ -1,56 +1,59 @@
 <script>
-////	INIT
+////	Init
 $(function(){
-	// apparition en "fade" du formulaire
-	$(".miscContainer").fadeIn(500);
-	// On met le focus sur l'input du login (ou le password)
-    $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();
-	//Fait clignoter le "labelResetPassword" si une mauvaise authentification vient d'être faite
-	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::param("notify"))){ ?>
-		$("#labelResetPassword").addClass("sLinkSelect").pulsate(10);
+	////	Init l'affichage
+	$(".miscContainer").fadeIn(500);																//Affichage "fade" du formulaire de connexion
+    $("input[name='<?= empty($defaultLogin) ? "connectLogin" : "connectPassword" ?>']").focus();	//Focus sur l'input du login ou password
+	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::param("notify"))){ ?>	//Pulsate "resetPasswordLabel" si l'authentification est erronée
+		$("#resetPasswordLabel").addClass("linkSelect").pulsate(10);
 	<?php } ?>
-});
 
-////	Accès guest à un espace  (accès direct ou avec password)
-function publicSpaceAccess(_idSpaceAccess, hasPassword)
-{
-	var spaceSelected=(typeof _idSpaceAccess!="undefined" && typeof hasPassword!="undefined");																	//Sélection d'un espace dans la liste ?
-	if(spaceSelected==true && hasPassword===false)		{redir("?_idSpaceAccess="+_idSpaceAccess);}																//Accès direct sans password
-	else if(spaceSelected==true && hasPassword===true)	{$("#publicSpaceFormLabel").trigger("click");  $("#publicSpace_idSpaceAccess").val(_idSpaceAccess);}	//Affiche le formulaire de saisie du password
-	else if(spaceSelected==false){																																//Controle ajax du password
-		var publicSpace_idSpaceAccess=parseInt($("#publicSpace_idSpaceAccess").val());
-		var publicSpacePassword=encodeURIComponent($("#publicSpacePassword").val());
-		var publicSpaceObjUrl=encodeURIComponent($("#publicSpaceObjUrl").val());
-		$.ajax("?action=publicSpaceAccess&publicSpace_idSpaceAccess="+publicSpace_idSpaceAccess+"&publicSpacePassword="+publicSpacePassword).done(function(ajaxResult){
-			if(/true/i.test(ajaxResult))	{confirmCloseForm=false;  redir("?_idSpaceAccess="+publicSpace_idSpaceAccess+"&password="+publicSpacePassword+"&objUrl="+publicSpaceObjUrl);}
-			else							{notify("<?= Txt::trad("spacePassError") ?>");}
+	////	Contrôle du formulaire de connexion
+	$("#formConnect").submit(function(){
+		var connectLogin=$("[name=connectLogin]");
+		var connectPassword=$("[name=connectPassword]");
+		if(connectLogin.isEmpty() || connectLogin.val()==connectLogin.attr("placeholder") || connectPassword.isEmpty() || connectPassword.val()==connectPassword.attr("placeholder")){
+			notify("<?= Txt::trad("specifyLoginPassword") ?>");
+			return false;
+		}
+	});
+
+	////	Controle l'email de reset du password
+	$("#resetPasswordMailForm").submit(function(){
+		if($(this).find("[name='resetPasswordMail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
+	});
+
+	////	Formulaire de reset du password et Formulaire de validation d'invitation : controle des champs "password"
+	$("#resetPasswordModifForm, #invitationPasswordForm").submit(function(){
+		var newPassword		=$(this).find("[name='newPassword']").val();
+		var newPasswordVerif=$(this).find("[name='newPasswordVerif']").val();
+		if(!isValidUserPassword(newPassword))	{notify("<?= Txt::trad("passwordInvalid"); ?>");		return false;}//Password invalide
+		else if(newPassword!=newPasswordVerif)	{notify("<?= Txt::trad("passwordConfirmError") ?>");	return false;}//Passwords différents
+	});
+
+	////	Accès à un espace public : accès direct || affiche le formulaire du password
+	$(".publicSpaceLabel").click(function(){
+		if($(this).attr("data-hasPassword")==="true"){												//Accès avec password :
+			$("[name='_idSpaceAccess']").val($(this).attr("data-idSpace"));							//Enregistre le "_idSpaceAccess" dans l'input du form principal de connexion
+			$.fancybox.open({src:'#publicSpaceForm',type:'inline',buttons:['close'],modal:true});	//Affiche le formulaire du password ('modal' pour masquer les boutons par défaut)
+		}else{																						//Accès direct à l'espace :
+			var objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());						//Récupère "objUrl" du form principal de connexion
+			redir("?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+objUrlEncoded);		//Redir vers l'espace demandé!
+		}
+	});
+
+	////	Accès à un espace public : controle du password via Ajax
+	$("#publicSpaceForm").submit(function(event){
+		event.preventDefault();																												//Stop la validation du form
+		var _idSpaceAccess=$("[name='_idSpaceAccess']").val();																				//Récupère le "_idSpaceAccess" dans l'input du form principal de connexion
+		var objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());																	//Récupère "objUrl" du form principal de connexion
+		var password=encodeURIComponent($("#publicSpacePassword").val());																	//Récupère le password
+		$.ajax("?action=PublicSpacePassword&_idSpaceAccess="+_idSpaceAccess+"&password="+password).done(function(result){					//Controle Ajax du password
+			if(/passwordError/i.test(result))	{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}									//Notif d'erreur de password
+			else								{redir("?_idSpaceAccess="+_idSpaceAccess+"&password="+password+"&objUrl="+objUrlEncoded);}	//Redir vers l'espace demandé!
 		});
-	}
-}
-
-////	Controle l'email de reset du password
-function resetPasswordControlSend()
-{
-	if($("[name='resetPasswordMail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
-}
-
-////	Controle du formulaire de reset du password
-function resetPasswordControlNew()
-{
-	if(!isValidPassword($("[name='newPassword']").val()))						{notify("<?= Txt::trad("passwordInvalid"); ?>");		return false;}//Password invalide
-	if($("[name='newPassword']").val()!=$("[name='newPasswordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError") ?>");	return false;}//Passwords différents
-}
-
-////	Contrôle d'identification / connexion
-function controlConnect()
-{
-	var inputLogin=$("[name=connectLogin]");
-	var inputPassword=$("[name=connectPassword]");
-	if(inputLogin.isEmpty() || inputLogin.val()==inputLogin.attr("placeholder") || inputPassword.isEmpty() || inputPassword.val()==inputPassword.attr("placeholder")){
-		notify("<?= Txt::trad("specifyLoginPassword") ?>");
-		return false;
-	}
-}
+	});
+});
 </script>
 
 
@@ -58,14 +61,14 @@ function controlConnect()
 body										{--buttons-width:290px!important;}/*Variable: largeur des boutons et Inputs*/
 #headerBar>div								{padding:0px 20px;}/*surcharge*/
 #pageCenter									{margin-top:120px;}/*surcharge*/
-.miscContainer								{display:none; max-width:500px;/*pour le responsive*/ padding:30px 10px; margin:0px auto 0px auto; border-radius:5px; text-align:center;}/*surcharge*/
+.miscContainer								{display:none; max-width:500px;/*sur mobile*/ padding:30px 10px; margin:0px auto 0px auto; border-radius:5px; text-align:center;}/*surcharge*/
 .miscContainer hr							{margin:30px 0px;}
 #customLogo									{margin-bottom:40px;}
 #customLogo img								{max-width:100%; max-height:250px;}
 #formConnect input[type=text], #formConnect input[type=password], #formConnect button, .vMainButton	{width:var(--buttons-width); height:45px; border-radius:5px; margin-bottom:15px;}/*surcharge*/
 .vConnectOptions							{display:inline-table;}
 .vConnectOptions>div						{display:table-cell; padding:10px;}
-.vLightboxForm, #publicSpaceFormLabel		{display:none;}
+.vLightboxForm								{display:none;}
 .vLightboxForm input						{height:35px; margin:5px; width:230px;}
 .vLightboxForm button						{height:35px; margin:5px; width:150px;}
 .g_id_signin								{margin-left:auto; margin-right:auto; width:var(--buttons-width);}/*button gIdentity & Iframe*/
@@ -74,7 +77,7 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 #publicSpaceTab ul							{margin:0px;}
 #publicSpaceTab li							{list-style:circle; margin-bottom:15px;}
 
-/*RESPONSIVE*/
+/*MOBILE*/
 @media screen and (max-width:1023px){
 	#headerBar>div							{display:block; padding:4px; text-align:left!important; font-weight:normal;}/*surcharge*/
 	#pageCenter								{margin-top:70px;}/*surcharge*/
@@ -95,67 +98,63 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 		<!--LOGO CUSTOM-->
 		<?php if(Ctrl::$agora->pathLogoConnect())  {echo '<div id="customLogo"><img src="'.Ctrl::$agora->pathLogoConnect().'"></div>';} ?>
 
+
 		<!--FORMULAIRE PRINCIPAL DE CONNEXION-->
-		<form action="index.php" method="post" id="formConnect" class="noConfirmClose" onsubmit="return controlConnect()">
-			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("loginPlaceholder") ?>" title="<?= Txt::trad("loginPlaceholder") ?>">
-			<input type="password" name="connectPassword" value="<?= Req::param("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>">
-			<?php if(Req::isParam(["objUrl","_idSpaceAccess"])){ ?>
-				<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>">
-				<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">
-			<?php } ?>
+		<form action="index.php" method="post" id="formConnect">
+			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("mailLlogin") ?>" title="<?= Txt::trad("mailLlogin") ?>">
+			<input type="password" name="connectPassword" value="<?= Req::param("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>" title="<?= Txt::trad("password") ?>">
+			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>">					<!--accès direct à un objet via "getUrlExternal()"-->
+			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">	<!--idem-->
 			<button type="submit"><?= Txt::trad("connect") ?></button>
 			<div class="vConnectOptions">
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked><label for="boxRememberMe" title="<?= Txt::trad("connectAutoTooltip") ?>"><?= Txt::trad("connectAuto") ?></label></div>
-				<div><a data-fancybox="inline" data-src="#formResetPassword" id="labelResetPassword"><?= Txt::trad("resetPassword") ?></a></div>
+				<div><a data-fancybox="inline" data-src="#resetPasswordMailForm" id="resetPasswordLabel"><?= Txt::trad("resetPassword") ?></a></div><!--Afficher le form ci-dessous-->
 			</div>
 		</form>
 
-		<!--RESET DU PASSWORD : FORMULAIRE D'ENVOI DU MAIL-->
-		<form id="formResetPassword" class="vLightboxForm" action="index.php" method="post" onsubmit="return resetPasswordControlSend()">
+
+		<!--RESET DU PASSWORD : ENVOI DE L'EMAIL => 1ERE ETAPE-->
+		<form action="index.php" method="post" id="resetPasswordMailForm" class="vLightboxForm">
 			<?= Txt::trad("resetPassword2") ?><hr>
 			<input type="text" name="resetPasswordMail" placeholder="<?= Txt::trad("mail") ?>">
 			<input type="hidden" name="resetPasswordSendMail" value="1">
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
-		<!--RESET DU PASSWORD : FORMULAIRE DE MODIF DU PASSWORD => 2 ÈME ETAPE-->
+
+		<!--RESET DU PASSWORD : MODIF DU PASSWORD => 2EME ETAPE-->
 		<?php if(!empty($resetPasswordIdOk) && Req::isParam("newPassword")==false){ ?>
-			<div><a data-fancybox="inline" data-src="#formResetPasswordBis" id="formResetPasswordBisLabel"><?= Txt::trad("passwordModify") ?></a></div>
-			<form id="formResetPasswordBis" class="vLightboxForm" action="index.php" method="post" onsubmit="return resetPasswordControlNew()">
+			<div><a data-fancybox="inline" data-src="#resetPasswordModifForm" id="resetPasswordModifFormLabel"><?= Txt::trad("passwordModify") ?></a></div>
+			<form action="index.php" method="post" id="resetPasswordModifForm" class="vLightboxForm">
 				<?= Txt::trad("passwordModify") ?><hr>
-				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br>		<!--nouveau password-->
-				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">	<!--nouveau password : verif-->
-				<input type="hidden" name="resetPasswordMail" value="<?= Req::param("resetPasswordMail") ?>">	<!--vérif du reset-->
-				<input type="hidden" name="resetPasswordId" value="<?= Req::param("resetPasswordId") ?>">		<!--idem-->
-				<input type="hidden" name="connectLogin" value="<?= Req::param("resetPasswordMail") ?>">		<!--pré-remplissage du login après reset-->
+				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br>			<!--nouveau password-->
+				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">		<!--nouveau password : verif-->
+				<input type="hidden" name="resetPasswordMail" value="<?= Req::param("resetPasswordMail") ?>">		<!--pour le controle du reset-->
+				<input type="hidden" name="resetPasswordId" value="<?= Req::param("resetPasswordId") ?>">			<!--idem-->
+				<input type="hidden" name="connectLogin" value="<?= Req::param("resetPasswordMail") ?>">			<!--pour le pré-remplissage du champ login après validation du form-->
 				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
-			<script>
-			//Lance le fancybox dès l'affichage de la page
-			setTimeout(function(){ $("#formResetPasswordBisLabel").trigger("click"); },300);
-			</script>
+			<script> $(function(){ $("#resetPasswordModifFormLabel").trigger("click"); }); </script>				<!--Affiche au chargement de la page-->
 		<?php } ?>
+
 
 		<!--VALIDATION D'INVITATION : INIT DU PASSWORD-->
 		<?php if(Req::isParam("_idInvitation") && Req::isParam("newPassword")==false){ ?>
-			<div><a data-fancybox="inline" data-src="#formInvitPassword" id="formInvitPasswordLabel"><?= Txt::trad("USER_invitPassword") ?></a></div>
-			<form id="formInvitPassword" class="vLightboxForm" action="index.php" method="post" onsubmit="return resetPasswordControlNew()">
+			<div><a data-fancybox="inline" data-src="#invitationPasswordForm" id="invitationPasswordFormLabel"><?= Txt::trad("USER_invitPassword") ?></a></div>
+			<form action="index.php" method="post" id="invitationPasswordForm" class="vLightboxForm">
 				<?= Txt::trad("USER_invitPassword2") ?><hr>
-				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br><!--nouveau password-->
-				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">
-				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>"><!--pour récupérer l'invit-->
-				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">
+				<input type="password" name="newPassword" placeholder="<?= Txt::trad("password") ?>"><br>			<!--nouveau password-->
+				<input type="password" name="newPasswordVerif" placeholder="<?= Txt::trad("passwordVerif") ?>">		<!--nouveau password : verif-->
+				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>">				<!--pour le controle de l'invitation-->
+				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">									<!--idem-->
 				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
-			<script>
-			//Lance le fancybox dès l'affichage de la page
-			setTimeout(function(){ $("#formInvitPasswordLabel").trigger("click"); },300);
-			</script>
+			<script> $(function(){ $("#invitationPasswordFormLabel").trigger("click"); }); </script>				<!--Affiche au chargement de la page-->
 		<?php } ?>
+
 
 		<!--CONNEXION AVEC GOOGLE IDENTITY (https://developers.google.com/identity/gsi/web/guides/overview)-->
 		<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
-			<hr>
 			<script src="https://accounts.google.com/gsi/client" async defer></script>	<!--Charge la librairie Google Identity-->
 			<script src="app/js/jwt-decode.js"></script>								<!--Charge le décodeur JSON Web Token (JWT)-->
 			<script>
@@ -169,34 +168,33 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 				//notify("ID: "+jsonResponse.sub+"<br>Email: "+jsonResponse.email+"<br>Full Name: "+jsonResponse.name+"<br>Given Name: "+jsonResponse.given_name+"<br>Family Name: "+jsonResponse.family_name);
 			}
 			</script>
+			<hr>
 			<div id="g_id_onload" data-client_id="<?= Ctrl::$agora->gIdentityClientId ?>" data-callback="gIdentityResponse" data-auto_prompt="false"></div> <!--Div pour charger l'API ("data-auto_prompt" masque le popup)-->
 			<div class="g_id_signin" data-type="standard" data-shape="circle" data-size="large" data-width="290"></div>										<!--Bouton gIdentity (Iframe avec "data-width" idem "--buttons-width")-->
 		<?php }  ?>
 
-		<!--CONNEXION INVITE : LISTE DES ESPACES-->
+
+		<!--CONNEXION A UN ESPACE PUBLIC (INVITE)-->
 		<?php if(!empty($objPublicSpaces)){ ?>
 			<hr>
 			<div id="publicSpaceTab">
 				<div><img src="app/img/user/accessGuest.png"> <?= Txt::trad("guestAccess") ?> :</div>
 				<div><ul>
-				<?php foreach($objPublicSpaces as $tmpSpace)  {echo '<li class="sLink" onclick="publicSpaceAccess('.$tmpSpace->_id.','.($tmpSpace->password?'true':'false').')" title="'.Txt::trad("guestAccessTooltip").'">'.$tmpSpace->name.'</li>';} ?>
+				<?php foreach($objPublicSpaces as $tmpSpace)  {echo '<li class="publicSpaceLabel sLink" data-idSpace="'.$tmpSpace->_id.'" data-hasPassword="'.($tmpSpace->password?'true':'false').'" title="'.Txt::trad("guestAccessTooltip").'">'.$tmpSpace->name.'</li>';} ?>
 				</ul></div>
 			</div>
+			<form id="publicSpaceForm" class="vLightboxForm">
+				<input type="password" id="publicSpacePassword" placeholder="<?= Txt::trad("password") ?>">
+				<?= Txt::submitButton("validate",false) ?>
+			</form>
 		<?php }  ?>
 
-		<!--CONNEXION INVITE : PASSWORD DE L'ESPACE-->
-		<a data-fancybox="inline" data-src="#publicSpaceForm" id="publicSpaceFormLabel"><?= Txt::trad("password") ?></a><!--masqué par défaut, permet d'afficher le form ci-dessous dans la lightbox-->
-		<form id="publicSpaceForm" class="vLightboxForm">
-			<input type="hidden" name="_idSpaceAccess" id="publicSpace_idSpaceAccess">
-			<input type="hidden" name="objUrl" id="publicSpaceObjUrl" value="<?= Req::param("objUrl") ?>"><!--cf. accès à un element via "getUrlExternal()"-->
-			<input type="password" name="password" id="publicSpacePassword" placeholder="<?= Txt::trad("password") ?>">
-			<button type="button" class="submitButtonInline" onclick="publicSpaceAccess()"><?= Txt::trad("validate") ?></button>
-		</form>
 
 		<!--INSCRIPTION D'USER-->
 		<?php if(!empty($userInscription)){ ?>
 			<hr><button class="vMainButton" onclick="lightboxOpen('?action=userInscription')" title="<?= Txt::trad("userInscriptionTooltip") ?>"><img src="app/img/check.png"> <?= Txt::trad("userInscription") ?></button>
 		<?php }  ?>
+
 
 		<!--SWITCH D'ESPACE-->
 		<?php if(Req::isSpaceSwitch()){ ?>

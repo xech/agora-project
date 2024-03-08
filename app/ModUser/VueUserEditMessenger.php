@@ -4,14 +4,15 @@ lightboxSetWidth(600);
 
 ////	INIT
 $(function(){
-	//Affiche/masque la liste des utilisateurs
+	//// Affiche/masque la liste des utilisateurs
 	$("[name='messengerDisplay']").on("click",function(){
 		if(this.value=="some")	{$("#divSomeUsers").slideDown();}
 		else					{$("#divSomeUsers").slideUp();}
 	});
-	//Validation du formulaire : vérif
+
+	//// Validation du formulaire : vérif
 	$("form").submit(function(){
-		if($("#messengerDisplaySome").prop("checked") && $("input[id^=someUser]:checked").length==0)   {notify("<?= Txt::trad("selectUser") ?>");  return false;}
+		if($("#messengerDisplaySome").prop("checked") && $("input[id^=someUser]:checked").length==0)   {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	});
 });
 </script>
@@ -22,7 +23,7 @@ $(function(){
 .vDivSomeUser	{display:inline-block; width:50%; padding:5px;}
 </style>
 
-<form action="index.php" method="post" class="lightboxContent">
+<form action="index.php" method="post">
 	<div class="lightboxTitle"><?= ucfirst(Txt::trad("USER_livecounterVisibility")) ?></div>
 
 	<div class="vDivRadio">
@@ -49,6 +50,6 @@ $(function(){
 		</div>
 	</div>
 
-	<!--MENU COMMUN-->
-	<?= $curObj->menuEdit() ?>
+	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<?= $curObj->editMenuSubmit() ?>
 </form>

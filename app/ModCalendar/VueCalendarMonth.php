@@ -20,7 +20,7 @@
 .vCalMonthDayAddEvt:hover .vCalMonthImgAddEvt	{display:block; float:right;}					/*"Plus" d'ajout d'evt : affiche au survol du jour*/
 .vCalMonthDayCelebration						{color:#070; font-style:italic;}					/*Jour férié*/
 
-/*RESPONSIVE*/
+/*MOBILE*/
 @media screen and (max-width:1023px){
 	.vCalMonthDayLabel							{height:20px; font-size:0.9em!important; text-align:center;}
 	.vCalMonthDayLabel>div						{margin:2px 0px 0px 2px;}
@@ -91,19 +91,19 @@ function calendarDimensions()
 				//LABEL DU JOUR ET BOUTON "ADD"
 				echo "<div class='vCalMonthDayLabel'>
 						<div>".date("j",$tmpDay["timeBegin"])."</div><div class='vCalMonthDayCelebration'>".$tmpDay["celebrationDay"]."</div>
-						<img src='app/img/plus.png' class='vCalMonthImgAddEvt sLink' ".$addEvtLink." title=\"".Txt::tooltip($tmpCal->addEventLabel)."\">
+						<img src='app/img/plus.png' class='vCalMonthImgAddEvt' ".$addEvtLink." title=\"".Txt::tooltip($tmpCal->addEventLabel)."\">
 					  </div>";
 				//EVENEMENTS DU JOUR
 				foreach($tmpCal->eventList[$tmpDate] as $tmpEvt){
 					$divContainerAttr="data-catColor='".$tmpEvt->catColor."' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\"";
-					echo $tmpEvt->divContainer("vCalEvtBlock stopPropagation",$divContainerAttr).$tmpEvt->contextMenu.
+					echo $tmpEvt->objContainer("vCalEvtBlock",$divContainerAttr).$tmpEvt->contextMenu.
 							"<div class='vCalEvtLabel'>".$tmpEvt->dateTimeLabel.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$tmpEvt->importantIcon."</div>
 						 </div>";
 				}
 		echo "</div>";
 
 		////	FIN DE LIGNE DE LA SEMAINE && NUMERO DE FIN DE SEMAINE
-		if(date("N",$tmpDay["timeBegin"])==7)	{echo "<div class='vCalMonthWeekNb sLink' onClick=\"redir('?ctrl=calendar&displayMode=week&curTime=".$tmpDay["timeBegin"]."')\" title=\"".Txt::trad("CALENDAR_weekNb")." ".date("W",$tmpDay["timeBegin"])."\">".date("W",$tmpDay["timeBegin"])."</div></div>";}
+		if(date("N",$tmpDay["timeBegin"])==7)	{echo "<div class='vCalMonthWeekNb' onclick=\"redir('?ctrl=calendar&displayMode=week&curTime=".$tmpDay["timeBegin"]."')\" title=\"".Txt::trad("CALENDAR_weekNb")." ".date("W",$tmpDay["timeBegin"])."\">".date("W",$tmpDay["timeBegin"])."</div></div>";}
 	}
 	?>
 </div>

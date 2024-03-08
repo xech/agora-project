@@ -16,7 +16,7 @@ class MdlForumSubject extends MdlObject
 	const objectType="forumSubject";
 	const dbTable="ap_forumSubject";
 	const MdlObjectContent="MdlForumMessage";
-	const htmlEditorField="description";
+	const descriptionEditor=true;
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
@@ -81,7 +81,7 @@ class MdlForumSubject extends MdlObject
 	 *******************************************************************************************/
 	public static function addRight()
 	{
-		return (Ctrl::$curUser->isAdminSpace() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddSubject")==false));
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddSubject")==false));
 	}
 
 	/*******************************************************************************************
@@ -91,9 +91,9 @@ class MdlForumSubject extends MdlObject
 	{
 		//Url du theme : cf. "CtrlObject::actionDelete()"
 		if($display=="theme"){
-			if(!empty($this->_idTheme))					{return "?ctrl=".static::moduleName."&_idTheme=".$this->_idTheme;}	//theme spécifique
-			elseif(count(MdlForumTheme::getThemes())>0)	{return "?ctrl=".static::moduleName."&_idTheme=noTheme";}			//"sans theme"
-			else										{return "?ctrl=".static::moduleName;}								//accueil du forum
+			if(!empty($this->_idTheme))					{return "?ctrl=".static::moduleName."&_idThemeFilter=".$this->_idTheme;}	//theme spécifique
+			elseif(count(MdlForumTheme::getList())>0)	{return "?ctrl=".static::moduleName."&_idThemeFilter=noTheme";}				//Pseudo thème "sans theme"
+			else										{return "?ctrl=".static::moduleName;}										//accueil du forum
 		}
 		//Url "parent"
 		return parent::getUrl($display);
@@ -104,6 +104,8 @@ class MdlForumSubject extends MdlObject
 	 *******************************************************************************************/
 	public static function getUrlNew()
 	{
-		return parent::getUrlNew().(Req::isParam("_idTheme")?"&_idTheme=".Req::param("_idTheme"):null);
+		//"_idThemeFilter" du "CtrlForum::actionDefault()"  &&  "_idTheme" pour "CtrlForum::actionForumSubjectEdit()"
+		$_idTheme=Req::isParam("_idThemeFilter")  ?  "&_idTheme=".Req::param("_idThemeFilter")  :  null;
+		return parent::getUrlNew().$_idTheme;
 	}
 }

@@ -20,7 +20,7 @@ class CtrlLog extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		if(Ctrl::$curUser->isAdminSpace()==false)  {self::noAccessExit();}
+		if(Ctrl::$curUser->isSpaceAdmin()==false)  {self::noAccessExit();}
 		static::displayPage("VueIndex.php");
 	}
 
@@ -31,7 +31,7 @@ class CtrlLog extends Ctrl
 	{
 		$results=[];
 		//Filtre uniquement les logs de l'espace (simple admin d'espace et plus d'un espace disponible)
-		$sqlCurSpace=(Ctrl::$curUser->isAdminGeneral()==false && Db::getVal("select count(*) from ap_space")>1)  ?  "WHERE _idSpace=".Ctrl::$curSpace->_id  :  null;
+		$sqlCurSpace=(Ctrl::$curUser->isGeneralAdmin()==false && Db::getVal("select count(*) from ap_space")>1)  ?  "WHERE _idSpace=".Ctrl::$curSpace->_id  :  null;
 		//Renvoie la liste des logs 
 		foreach(Db::getTab("SELECT * FROM ap_log ".$sqlCurSpace." ORDER BY date desc") as $tmpLog)
 		{
@@ -88,7 +88,7 @@ class CtrlLog extends Ctrl
 	 *******************************************************************************************/
 	public static function actionLogsDownload()
 	{
-		if(Ctrl::$curUser->isAdminSpace()==false)  {self::noAccessExit();}
+		if(Ctrl::$curUser->isSpaceAdmin()==false)  {self::noAccessExit();}
 		//Init le fichier & Entete des logs
 		$fileContent=null;
 		foreach(CtrlLog::$fieldsList as $tmpFieldId)	{$fileContent.='"'.Txt::trad("LOG_".$tmpFieldId).'";';}

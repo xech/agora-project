@@ -1,21 +1,4 @@
-1. Telecharger la dernière version stable sur https://jqueryui.com/download/  : avec toutes les options précochées et en sélectionnant le thème "Smoothness" (celui par défaut?)
+VERSION COURANTE : jQuery 1.13.2
 
-2. Modifier les classes suivantes du fichier "jquery-ui.css" :
 
-	.ui-widget-header {
-		color: #222222;
-		font-weight: bold;
-	}
-
-	.ui-widget {
-		/*font-family: Verdana,Arial,sans-serif;*/
-		/*font-size: 1.1em;*/
-	}
-
-	html .ui-button.ui-state-disabled:hover,
-	html .ui-button.ui-state-disabled:active {
-		border: 1px solid #ddd;
-		background:linear-gradient(180deg,#fff,#f1f1f1);
-		font-weight: normal;
-		color: #555555;
-	}
+Telecharger la dernière version sur https://jqueryui.com/download/  =>  avec toutes les options précochées & le thème "Smoothness"

@@ -7,13 +7,13 @@
 
 <div id="pageFull">
 	<div id="pageModuleMenu">
+		<?= MdlLink::menuSelectObjects() ?>
 		<div id="pageModMenu" class="miscContainer">
 			<?php
-			////	MENU DE SELECTION MULTIPLE  &&  MENU D'AJOUT D'ELEMENTS
-			echo MdlLink::menuSelectObjects();
+			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
-					  <div class='menuLine sLink' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
+				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
+					  <div class='menuLine' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
 			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
@@ -31,11 +31,11 @@
 		foreach($linkList as $tmpLink)
 		{
 			$linkLabel=(!empty($tmpLink->description))  ?  "<span title=\"".Txt::tooltip($tmpLink->adress)."\">".$tmpLink->description."</span>"  :  "<span class='objLabelUrl'>".Txt::reduce($tmpLink->adress)."</span>";
-			echo $tmpLink->divContainer().$tmpLink->contextMenu().
+			echo $tmpLink->objContainer().$tmpLink->contextMenu().
 				"<div class='objContentScroll'>
 					<div class='objContent'>
 						<div class='objIcon objIconOpacity'><img src='app/img/link/iconOpacity.png'></div>
-						<div class='objLabel'><a href=\"".$tmpLink->adress."\" class='objLabelLink' target='_blank'><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</a></div>
+						<div class='objLabel' onclick=\"window.open('".$tmpLink->adress."')\"><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</div>
 						<div class='objAutorDate'>".$tmpLink->autorDateLabel()."</div>
 					</div>
 				</div>
@@ -43,7 +43,7 @@
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($linkList)){
-			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div class='sLink' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
 			echo "<div class='emptyContainer'>".Txt::trad("LINK_noLink").$addElement."</div>";
 		}
 		?>

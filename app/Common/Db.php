@@ -8,7 +8,7 @@
 
 
 /*
- * Classe de connexion à la bdd
+ * CLASSE DE CONNEXION À LA DB
  */
 class Db
 {
@@ -27,7 +27,7 @@ class Db
 			try{
 				//Utilise l'encodage "utf8mb4" pour les emojis sur mobile ("utf8" pour les versions inférieures à PHP 7 : cf. hosting Free.fr)
 				$dbCharset=(version_compare(PHP_VERSION,7,">="))  ?  "utf8mb4"  :  "utf8";
-				//Aucune bdd n'est spécifiée : dbInstall!  /  Sinon on établit une connexion
+				//Aucune DB n'est spécifiée : dbInstall!  /  Sinon on établit une connexion
 				if(!defined("db_name") || !db_name)	{throw new Exception("dbInstall_dbNameUndefined");}
 				else								{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=".$dbCharset, db_login, db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));}
 				//Pas de connexion, ni d'exception : dbInstall!
@@ -105,8 +105,8 @@ class Db
 	 *******************************************************************************************/
 	public static function dbVersion()
 	{
-		$dbVersion=self::getVal("select version()");												//Récupère la version complete (exple: "10.5.18-MariaDB")
-		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql")." ".strtok($dbVersion, "-");	//Renvoie "MariaDb" ou "Mysql" && le numero de version (texte avant le 1er "-". Exple: 10.5.18)
+		$dbVersion=self::getVal("select version()");												//Récupère la version complete (Ex: "10.5.18-MariaDB")
+		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql")." ".strtok($dbVersion, "-");	//Renvoie "MariaDb" ou "Mysql" && le numero de version (texte avant le 1er "-". Ex: 10.5.18)
 	}
 
 	/*******************************************************************************************
@@ -160,7 +160,7 @@ class Db
 	/***************************************************************************************************************************/
 
 	/*******************************************************************************************
-	 * SAUVEGARDE LA BDD
+	 * SAUVEGARDE LA DB
 	 *******************************************************************************************/
 	public static function getDump()
 	{

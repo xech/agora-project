@@ -15,9 +15,9 @@ $(function(){
 			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"],//Spécification obligatoires
 			scope:"https://www.googleapis.com/auth/contacts.readonly"//Type de données à récupérer
 		}).then(function(){
-			if(gapi.auth2.getAuthInstance().isSignedIn.get())  {gapi.auth2.getAuthInstance().signOut();}	//On se déconnecte par défaut, car si on est déjà connecté, le "listen()" suivant ne se lance pas
-			$("#gPeopleImportButton button").click(function(){ gapi.auth2.getAuthInstance().signIn(); });	//Clique sur "Importer les contacts" : lance en premier l'authentification via "signIn()"
-			gapi.auth2.getAuthInstance().isSignedIn.listen(gPeopleGetContacts);								//Une fois connecté (cf. "listen()"), on lance la récupération des contacts via "gPeopleGetContacts()"
+			if(gapi.auth2.getAuthInstance().isSignedIn.get())  {gapi.auth2.getAuthInstance().signOut();}		//On se déconnecte par défaut, car si on est déjà connecté, le "listen()" suivant ne se lance pas
+			$("#gPeopleImportButton button").on("click",function(){ gapi.auth2.getAuthInstance().signIn(); });	//Clique sur "Importer les contacts" : lance en premier l'authentification via "signIn()"
+			gapi.auth2.getAuthInstance().isSignedIn.listen(gPeopleGetContacts);									//Une fois connecté (cf. "listen()"), on lance la récupération des contacts via "gPeopleGetContacts()"
 		});
 	});
 
@@ -44,14 +44,14 @@ $(function(){
 								var mailTmp=		person.emailAddresses[0].value;
 								var givenNameTmp=	person.names[0].givenName;
 								var familyNameTmp=	person.names[0].familyName;
-								if(typeof familyNameTmp=="undefined")  {familyNameTmp="";}
+								if(typeof familyNameTmp==="undefined")  {familyNameTmp="";}
 								mailListToControl.push(mailTmp);
 								contactInputs+='<div class="contactLine" title="'+mailTmp+'" data-mail="'+mailTmp+'"><input type="checkbox" name="gPeopleContacts[]" value="'+givenNameTmp+'@@'+familyNameTmp+'@@'+mailTmp+'" id="contact'+cpt+'"> &nbsp; <label for="contact'+cpt+'">'+givenNameTmp+' '+familyNameTmp+'</label></div>';
 							}
 						}
 						//Affiche le formulaire avec chaque contact (inputs) et Masque l'autre formulaires a co
 						$("#gPeopleForm").prepend(contactInputs).show();
-						$("#mainForm,#gPeopleImportButton").hide();
+						$("#invitationForm,#gPeopleImportButton").hide();
 						//Controle ajax : désactive les mails déjà présents sur l'espace (après affichage des mails importés!)
 						$.ajax({url:"?ctrl=user&action=loginExists",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
@@ -81,25 +81,20 @@ $(function(){
 	////	Controle du formulaire multiple gPeople et le nombre de contacts sélectionnés
 	$("#gPeopleForm").submit(function(event){
 		if($("input[name='gPeopleContacts[]']:checked").length==0){
-			notify("<?= Txt::trad("selectUser"); ?>","warning");
-			event.preventDefault();//Pas de validation du formulaire
+			event.preventDefault();//Stop la validation du form
+			notify("<?= Txt::trad("notifSelectUser"); ?>","warning");
 		}
 	});
 
 	////	Contrôle du formulaire simple
-	$("#mainForm").submit(function(event){
-		//Le formulaire doit d'abord être controlé
-		if(typeof mainFormControled=="undefined")
-		{
-			//Pas de validation par défaut du formulaire
-			event.preventDefault();
-			//Verif les champs obligatoires et l'email
-			if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())  {notify("<?= Txt::trad("fillFieldsForm") ?>","warning");  return false;}
-			if($("input[name='mail']").isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
-			// Verif si le compte utilisateur existe déjà
-			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){
-				if(/true/i.test(resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}	//L'user existe déjà..
-				else							{mainFormControled=true;  $("#mainForm").submit();}							//Sinon on confirme le formulaire !
+	$("#invitationForm").submit(function(event){
+		if(typeof invitationFormControled==="undefined"){
+			event.preventDefault();//Stop la validation du form
+			if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())	{notify("<?= Txt::trad("fillFieldsForm") ?>","warning");  return false;}
+			if($("input[name='mail']").isMail()==false)										{notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
+			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){	// Verif si le compte utilisateur existe déjà
+				if(/true/i.test(resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}				//L'user existe déjà..
+				else							{invitationFormControled=true;  $("#invitationForm").submit();}							//Sinon on confirme le formulaire récursivement !
 			});
 		}
 	});
@@ -107,7 +102,7 @@ $(function(){
 </script>
 
 <style>
-#mainForm input, #mainForm textarea	{width:100%!important; margin-bottom:10px!important;}
+#invitationForm input, #invitationForm textarea	{width:100%!important; margin-bottom:10px!important;}
 .orLabel					{margin-top:40px; margin-bottom:40px;}/*surcharge*/
 #gPeopleImportButton		{text-align:center;}
 #gPeopleImportButton button	{height:45px!important; width:300px!important; margin-bottom:30px;}
@@ -121,11 +116,11 @@ $(function(){
 </style>
 
 
-<div class="lightboxContent">
+<div>
 	<div class="lightboxTitle"><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png" title="<?= Txt::trad("USER_sendInvitationTooltip") ?>"></div>
 
 	<!--INVITATION SIMPLE-->
-	<form id="mainForm">
+	<form id="invitationForm">
 		<!--ENVOI D'UNE INVITATION-->
 		<?php foreach($userFields as $tmpField){ ?><input type="text" name="<?= $tmpField ?>" placeholder="<?= Txt::trad($tmpField) ?>"><?php } ?>
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>
@@ -148,13 +143,13 @@ $(function(){
 	<?php if(!empty($invitationList)){ ?>
 	<div id="invitationList">
 		<hr id="invitationListHr">
-		<div class="sLink" onclick="$('#invitationListDiv').fadeToggle();"><img src="app/img/mail.png">&nbsp; <?= count($invitationList)." ".Txt::trad("USER_mailInvitationWait") ?></div>
+		<div onclick="$('#invitationListDiv').fadeToggle();"><img src="app/img/mail.png">&nbsp; <?= count($invitationList)." ".Txt::trad("USER_mailInvitationWait") ?></div>
 		<ul id="invitationListDiv">
 			<?php
 			//Invitations déjà envoyées
 			foreach($invitationList as $tmpInvitation){
 				$objSpace=Ctrl::getObj("space",$tmpInvitation["_idSpace"]);
-				$deleteInvitationImg="<img src='app/img/delete.png' class='sLink' style='height:20px' title=\"".txt::trad("delete")."\" onclick=\"confirmDelete('?ctrl=user&action=sendInvitation&deleteInvitation=true&_idInvitation=".$tmpInvitation["_idInvitation"]."')\" >";
+				$deleteInvitationImg="<img src='app/img/delete.png' style='height:20px' title=\"".txt::trad("delete")."\" onclick=\"confirmDelete('?ctrl=user&action=sendInvitation&deleteInvitation=true&_idInvitation=".$tmpInvitation["_idInvitation"]."')\" >";
 				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::dateLabel($tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowRight.png' style='height:8px'> ".$objSpace->name."</li>";
 			}
 			?>

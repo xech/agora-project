@@ -11,7 +11,7 @@ lightboxSetWidth(700);
 .vLogAction img	{max-height:16px;}
 .vNoLogs		{padding:15px; text-align:center;}
 
-/*RESPONSIVE*/
+/*MOBILE*/
 @media screen and (max-width:440px){
 	.vLogsRow		{display:block; margin-bottom:10px;}
 	.vLogsRow>div	{display:block; padding:3px;}
@@ -19,7 +19,7 @@ lightboxSetWidth(700);
 </style>
 
 
-<div class="lightboxContent">
+<div>
 	<div class="lightboxTitle"><?= Txt::trad("objHistory") ?></div>
 
 	<?php
