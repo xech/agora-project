@@ -7,6 +7,10 @@
 */
 
 
+/** Autorise la création dynamique de propriétés récupérées en bdd, dans "__construct()" **/
+#[\AllowDynamicProperties]
+
+
 /*
  * Classe principale des Objects
  */

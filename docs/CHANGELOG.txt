@@ -4,7 +4,7 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
-VERSION 24.2.1
+VERSION 24.2.3
 ###############
 Nouvelle option des tâches pour attribuer un état "A faire", "En cours", "Terminé", etc
 Nouvelle option pour réordonner les thèmes du forum et catégories d'événement
@@ -13,26 +13,28 @@ Amélioration du menu des "agendas disponibles"
 Amélioration de menu d'édition des événements de l'agenda
 Amélioration de l'affichage en "mode sombre"
 Optimisation du contrôle de l'édition des agendas partagés d'espace
-Optimisation des contrôles de l'installation et mise à jour de l'application (timeZone & Bdd)
+Optimisation des contrôles de l'installation et mise à jour de l'application (time Zone & Bdd)
 Optimisation de l'appel de l'éditeur TinyMce
 Optimisation des contrôles des formulaires principaux
+Optimisation pour PHP 8.3
 Mise à jour de PHPMailer en version 6.7.1
 Mise à jour de TinyMce en version v6.8.2
-Mise à jour de Jquery-UI en version v1.13.2
+Mise à jour de JQuery-UI en version v1.13.2
 -----
 New task option to assign a status "To do", "In progress", "Finished", etc.
 New option to reorder forum themes and event categories
-Improved management of forum themes and event categories, etc. (colorPicker & co)
+Improved management of forum themes and event categories, etc. (color Picker and co)
 Improved "available calendars" menu
 Improved calendar events editing menu
 Improved "dark mode" display
-Optimization of the control of the edition of shared space calendars
-Optimization of application installation & update controls (timeZone & Bdd)
+Optimization of editing control of shared space calendars
+Optimization of application installation & update controls (time Zone and DB)
 Optimization of the TinyMce editor call
 Optimizing main form controls
-PHPMailer updated to v6.7.1
+Optimizing for PHP 8.3
+PHP-Mailer updated to v6.7.1
 TinyMce updated to v6.8.2
-Jquery-UI updated to v1.13.2
+JQuery-UI updated to v1.13.2
 
 
 VERSION 23.10.3

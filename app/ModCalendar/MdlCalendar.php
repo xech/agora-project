@@ -294,8 +294,8 @@ class MdlCalendar extends MdlObject
 			elseif($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="C__".$tmpCal->$userSortField;}
 			else									{$tmpCal->sortField="D__".$tmpCal->$userSortField;}
 		}
-		//Tri les agendas via "self::sortCompareCalendars()"
-		usort($calendarsTab,["self","sortCompareCalendars"]);
+		//Tri les agendas via "MdlCalendar::sortCompareCalendars()"  (pas de "self::sortCompareCalendars()")
+		usort($calendarsTab,["MdlCalendar","sortCompareCalendars"]);
 		return $calendarsTab;
 	}
 	//// Comparaison binaire de caractere, mais insensible à la casse

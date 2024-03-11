@@ -399,7 +399,7 @@ CREATE TABLE `ap_taskStatus` (
   `description` text,
   `color` varchar(255) DEFAULT NULL,
   `rank` smallint DEFAULT NULL,
-  `dateCrea` datetime DEFAULT NOW(),
+  `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,

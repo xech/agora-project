@@ -81,10 +81,10 @@ class DbUpdate extends Db
 			Req::verifPhpVersion();
 			if(is_writable(PATH_DATAS."config.inc.php")==false)  {throw new Exception("Update error : Config.inc.php is not writable");}
 			////	VERROUILAGE DE LA MISE A JOUR
-			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
+			$lockedUpdate="UPDATE_LOCK.log";
 			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE MISE A JOUR");}
 			elseif((time()-filemtime($lockedUpdate))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
-			else											{throw new Exception("Update error : check Apache/PHP logs for details. If the issue is resolved : delete the '/DATAS/lockedUpdate.log' file.");}
+			else											{throw new Exception("Update error : check Apache/PHP logs for details. When the issue is resolved : delete the '".$lockedUpdate."' file.");}
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
 			@set_time_limit(120);//pas en safemode 
@@ -889,7 +889,7 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_contact","picture"))		{self::query("ALTER TABLE `ap_contact` DROP `picture`");}
 			}
 
-			if(self::updateVersion("24.2.1"))
+			if(self::updateVersion("24.2.3"))
 			{
 				//Agendas d'espace : ajoute la description "Agenda partagé de l'espace"
 				foreach(self::getLine("SELECT `name` FROM ap_space") as $tmpSpaceName){
@@ -903,8 +903,8 @@ class DbUpdate extends Db
 				self::query("ALTER TABLE `ap_task` CHANGE `dateBegin` `dateBegin` DATE NULL DEFAULT NULL");
 				self::query("ALTER TABLE `ap_task` CHANGE `dateEnd` `dateEnd` DATE NULL DEFAULT NULL");
 				//Task Kanban :  Créé le champ `_idStatus` dans la table "ap_task"  &&  Créé la table "ap_TaskStatus" des statuts/colonnes Kanban  &&   Créé les satuts/colonnes kanban de base
-				self::fieldExist(MdlTask::dbTable, "_idStatus",  "ALTER TABLE ".MdlTask::dbTable." ADD `_idStatus` int DEFAULT NULL AFTER `description`");
-				self::tableExist(MdlTaskStatus::dbTable,  "CREATE TABLE ".MdlTaskStatus::dbTable." (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NOW(),  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
+				self::fieldExist(MdlTask::dbTable, "_idStatus",  "ALTER TABLE ap_task ADD `_idStatus` int DEFAULT NULL AFTER `description`");
+				self::tableExist(MdlTaskStatus::dbTable,  "CREATE TABLE ap_taskStatus (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
 				MdlTaskStatus::dbFirstRecord();
 				//Catégories d'evt  &&  Themes du forum : créé le champ `rank`
 				self::fieldExist(MdlCalendarEventCategory::dbTable, "rank", "ALTER TABLE ".MdlCalendarEventCategory::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
