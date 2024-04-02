@@ -7,7 +7,7 @@ See the [project page](https://www.agora-project.net/?curTrad=english) for docum
 
 ## Installation guide
 
-1. Check that your web server has a PHP version 7.0 or later, if possible with the "Imagick" library (creation of thumbnails of images).
+1. Check that your web server has a PHP version 7.0 or later, "Imagick" library (creation of thumbnails of images).
 2. Download the latest version of Agora-Project, then unpack the archive on your computer.
 3. Go to your webserver (if necessary via FTP) and add the "app", "docs" and "DATAS" folders on your webserver.
 4. Then, Add the file "index.php" : as long as this file is not present, the app will not be accessible.
