@@ -21,66 +21,17 @@ class CtrlForum extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		//Init
-		$vDatas["themeList"]=MdlForumTheme::getList();
-		$vDatas["editThemeMenu"]=false;
-		////	AFFICHE D'UN SUJET ET SES MESSAGES
+		////	MESSAGES D'UN SUJET
 		$curSubject=Ctrl::getObjTarget();
-		if(is_object($curSubject) && $curSubject::objectType=="forumSubject")
-		{
-			$vDatas["displayForum"]="messages";
-			$curSubject->curUserConsultLastMessageMaj();//Met à jour si besoin la consultation du dernier message
+		if(is_object($curSubject) && $curSubject::objectType=="forumSubject"){
 			$vDatas["curSubject"]=$curSubject;
-			$vDatas["subjectMessages"]=$curSubject->getMessages();
+			$curSubject->usersConsultUpdate();
 		}
-		////	AFFICHE LES THÈMES DE SUJET
-		elseif(!empty($vDatas["themeList"]) && Req::isParam("_idThemeFilter")==false)
-		{
-			//Init
-			$vDatas["displayForum"]="themes";
-			if(MdlForumTheme::addRight())  {$vDatas["editThemeMenu"]=true;}
-			$vDatas["themeList"][]=new MdlForumTheme(["_idThemeFilter"=>"noTheme"]);//Pseudo theme "sans theme"
-			//Liste des themes
-			foreach($vDatas["themeList"] as $tmpKey=>$tmpTheme)
-			{
-				//Nombre de sujets & Objet du dernier sujet
-				$sqlThemeFilter=(!empty($tmpTheme->_id)) ? "_idTheme=".$tmpTheme->_id : "_idTheme is NULL";//Theme spécifique OU "sans theme"
-				$tmpTheme->subjectList=Db::getObjTab("forumSubject", "SELECT * FROM ap_forumSubject WHERE ".MdlForumSubject::sqlDisplay()." AND ".$sqlThemeFilter." ORDER BY dateCrea desc");
-				$tmpTheme->subjectsNb=count($tmpTheme->subjectList);
-				if(empty($tmpTheme->subjectsNb) && $tmpTheme->noTheme==true)	{unset($vDatas["themeList"][$tmpKey]);}					//Enleve le theme "sans theme" si ya aucun sujet correspondant
-				elseif($tmpTheme->subjectsNb>0)									{$tmpTheme->subjectLast=reset($tmpTheme->subjectList);}	//Pointe le premier sujet (le + récent)
-				//Nombre de messages & Date du dernier message : tous sujets confondus!
-				foreach($tmpTheme->subjectList as $tmpSubject)
-				{
-					$tmpSubject->getMessages(true);
-					if($tmpSubject->messagesNb>0){
-						$tmpTheme->messagesNb+=$tmpSubject->messagesNb;
-						if(empty($tmpTheme->timeLastPost) || $tmpSubject->timeLastPost>$tmpTheme->timeLastPost)  {$tmpTheme->messageLast=$tmpSubject->messageLast;  $tmpTheme->timeLastPost=$tmpSubject->timeLastPost;}
-					}
-				}
-			}
-		}
-		////	AFFICHE LES SUJETS (D'UN THEME SPECIFIQUE?)
-		else
-		{
-			//Init
-			$vDatas["displayForum"]="subjects";
-			if(MdlForumTheme::addRight() && empty($vDatas["themeList"]))  {$vDatas["editThemeMenu"]=true;}
-			//Liste les sujets
-			if(Req::param("_idThemeFilter")=="noTheme")		{$sqlThemeFilter="AND (_idTheme IS NULL OR _idTheme=0)";}		//sujets "sans theme"
-			elseif(Req::isParam("_idThemeFilter"))			{$sqlThemeFilter="AND _idTheme=".Db::param("_idThemeFilter");}	//sujets d'un theme spécifique
-			else											{$sqlThemeFilter=null;}											//tout les sujets
-			$sqlDisplayedSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".$sqlThemeFilter." ".MdlForumSubject::sqlSort();
-			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlDisplayedSubjects." ".MdlForumSubject::sqlPagination());
-			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlDisplayedSubjects));
-			//Pour chaque sujet : Nombre de messages & Dernier message
-			foreach($vDatas["subjectsDisplayed"] as $tmpSubject)  {$tmpSubject->getMessages(true);}
-		}
-		////	THEME COURANT POUR LE MENU PATH
-		if($vDatas["displayForum"]!="themes" && !empty($vDatas["themeList"])){
-			if(is_object($curSubject) && !empty($curSubject->_idTheme))		{$vDatas["curTheme"]=self::getObj("forumTheme",$curSubject->_idTheme);}			//Theme du sujet courant
-			elseif(Req::param("_idThemeFilter")=="noTheme")					{$vDatas["curTheme"]=new MdlForumTheme(["_idThemeFilter"=>"noTheme"]);}			//Pseudo theme "sans theme"
-			elseif(Req::param("_idThemeFilter"))							{$vDatas["curTheme"]=self::getObj("forumTheme",Req::param("_idThemeFilter"));}	//Theme spécifique affiché
+		////	LISTE DES SUJETS
+		else{
+			$sqlSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".MdlForumTheme::sqlCategoryFilter()." ".MdlForumSubject::sqlSort();
+			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlSubjects));
+			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlSubjects." ".MdlForumSubject::sqlPagination());
 		}
 		////	AFFICHAGE
 		static::displayPage("VueIndex.php",$vDatas);

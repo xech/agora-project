@@ -226,12 +226,12 @@ class Trad extends Txt
 			"accessRead"=>"Lecture",
 			"accessReadTooltip"=>"Accès en lecture",
 			"accessWriteLimit"=>"Ecriture limitée",
-			"accessWriteLimitTooltip"=>"Accès en écriture limité : chaque utilisateur ne peut modifier ou supprimer que les -OBJCONTENT-s qu'il a créé dans ce -OBJLABEL-.",
+			"accessWriteLimitTooltip"=>"Accès en écriture limité : chaque utilisateur ne peut modifier ou supprimer que les -OBJCONTENT-s qu'il a créé dans ce --OBJLABEL--.",
 			"accessWrite"=>"Ecriture",
 			"accessWriteTooltip"=>"Accès en écriture",
-			"accessWriteTooltipContainer"=>"Accès en écriture : possibilité de modifier ou supprimer tous les -OBJCONTENT-s du -OBJLABEL-",
-			"accessAutorPrivilege"=>"Seul l'auteur et les administrateurs peuvent modifier ou supprimer ce -OBJLABEL-",
-			"accessRightsInherited"=>"Droits d'accès hérités du -OBJLABEL- parent",
+			"accessWriteTooltipContainer"=>"Accès en écriture : possibilité de modifier ou supprimer tous les -OBJCONTENT-s du --OBJLABEL--",
+			"accessAutorPrivilege"=>"Seul l'auteur et les administrateurs peuvent modifier ou supprimer ce --OBJLABEL--",
+			"accessRightsInherited"=>"Droits d'accès hérités du --OBJLABEL-- parent",
 			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",//Ex: "Thème bidule -n'est accessible que sur l'espace- Machin"
 			"categoryNotifChangeOrder"=>"L'ordre d'affichage a bien été modifié",
 
@@ -275,8 +275,8 @@ class Trad extends Txt
 			"MAIL_notSend"=>"L'email n'a pas pu être envoyé",
 			"MAIL_notSendEverybody"=>"L'email n'a pas été envoyé à tous les destinataires : vérifiez si possible la validité des emails",
 			"MAIL_fromTheSpace"=>"depuis l'espace",//"depuis l'espace Bidule"
-			"MAIL_elemCreatedBy"=>"-OBJLABEL- créé par",//Dossier 'créé par' boby
-			"MAIL_elemModifiedBy"=>"-OBJLABEL- modifié par",//Dossier modifié par 'Boby'
+			"MAIL_elemCreatedBy"=>"--OBJLABEL-- créé par",//Dossier 'créé par' boby
+			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modifié par",//Dossier modifié par 'Boby'
 			"MAIL_elemAccessLink"=>"Cliquez ici pour y accéder sur votre espace",
 			
 			////	Dossier & fichier
@@ -400,7 +400,7 @@ class Trad extends Txt
 			"MESSENGER_messengerTitle"=>"Messages instantanés : cliquer sur le nom d'une personne pour discuter ou lancer une visioconférence",
 			"MESSENGER_messengerMultiUsers"=>"Discuter à plusieurs en sélectionnant mes interlocuteurs dans le volet de droite",
 			"MESSENGER_connected"=>"Connecté",
-			"MESSENGER_nobody"=>"Vous êtes pour l'instant seul a être connecté à l'espace <br> Note: vos anciennes discussions sont conservées durant 30 jours",
+			"MESSENGER_nobody"=>"Vous êtes actuellement la seule personne connectée à l'espace",
 			"MESSENGER_messageFrom"=>"Message de",
 			"MESSENGER_messageTo"=>"envoyé à",
 			"MESSENGER_chatWith"=>"Discuter avec",
@@ -442,7 +442,7 @@ class Trad extends Txt
 			"EDIT_showAllUsersAndSpaces"=>"Afficher tous les utilisateurs et espaces",
 			"EDIT_notifMail"=>"Notifier par email",
 			"EDIT_notifMail2"=>"Envoyer une notification par email",
-			"EDIT_notifMailTooltip"=>"Envoyer une notification par email aux personnes affectées à l'élément (-OBJLABEL-)",
+			"EDIT_notifMailTooltip"=>"Envoyer une notification par email aux personnes affectées à l'élément (--OBJLABEL--)",
 			"EDIT_notifMailTooltipCal"=>"<hr>Si vous affectez l'événement à des agendas personnels, alors la notification ne sera envoyée qu'aux propriétaires de ces agendas (accès en écriture).",
 			"EDIT_notifMailAddFiles"=>"Joindre le/les fichiers à la notification",
 			"EDIT_notifMailSelect"=>"Choisir les destinataires des notifications",
@@ -470,7 +470,7 @@ class Trad extends Txt
 			"INSTALL_errorDbConnection"=>"La connexion à la base de données a échoué : merci de vérifier les coordonnées de connexion",
 			"INSTALL_errorDbExist"=>"Application déjà installée : <a href='index.php'>cliquez ici pour y accéder</a><br><br>Pour relancer l'install, pensez à supprimer la BDD",
 			"INSTALL_errorDbNoSqlFile"=>"Le fichier d'installation db.sql n'est pas accessible ou a été supprimé car l'installation a déjà été effectuée",
-			"INSTALL_PhpOldVersion"=>"Agora-Project necessite une version plus recente de PHP",
+			"INSTALL_PhpOldVersion"=>"Agora-Project --CURRENT_VERSION-- necessite une version plus recente de PHP",
 			"INSTALL_confirmInstall"=>"Confirmer l'installation ?",
 			"INSTALL_installOk"=>"Agora-Project a bien été installé !",
 			// Premiers enregistrements en DB
@@ -772,7 +772,39 @@ class Trad extends Txt
 			"DASHBOARD_voteNoResponse"=>"Merci de sélectionner une réponse",
 			"DASHBOARD_exportPoll"=>"Télécharger le résultat du sondage en pdf",
 			"DASHBOARD_exportPollDate"=>"résultat du sondage en date du",
-		
+
+			////	MODULE_FICHIER
+			////
+			// Menu principal
+			"FILE_headerModuleName"=>"Fichiers",
+			"FILE_moduleDescription"=>"Gestionnaire de fichiers",
+			"FILE_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et fichiers à la racine",//OPTION!
+			//Index
+			"FILE_addFile"=>"Ajouter un fichier",
+			"FILE_addFileAlert"=>"Dossier du serveur inaccessible en écriture!  merci de contacter l'administrateur",
+			"FILE_downloadSelection"=>"télécharger la sélection",
+			"FILE_fileDownload"=>"Télécharger",
+			"FILE_fileSize"=>"Taille du fichier",
+			"FILE_imageSize"=>"Dimension de l'image",
+			"FILE_nbFileVersions"=>"versions du fichier",//"55 versions du fichier"
+			"FILE_downloadsNb"=>"(téléchargé --NB_DOWNLOAD-- fois)",
+			"FILE_downloadedBy"=>"fichier téléchargé par",//"..boby, will"
+			"FILE_addFileVersion"=>"Ajouter une nouvelle version du fichier",
+			"FILE_noFile"=>"Aucun fichier pour le moment",
+			// fichier_edit_ajouter  &  Fichier_edit
+			"FILE_fileSizeLimit"=>"Les fichiers ne doivent pas dépasser", // ...2 Mega Octets
+			"FILE_uploadSimple"=>"Envoi simple",
+			"FILE_uploadMultiple"=>"Envoi multiple",
+			"FILE_imgReduce"=>"Optimiser les images",
+			"FILE_updatedName"=>"Le nom du fichier est différent : celui de la nouvelle version sera donc conservé",
+			"FILE_fileSizeError"=>"Fichier trop volumineux",
+			"FILE_addMultipleFilesTooltip"=>"Appuyez sur la touche 'Ctrl' pour sélectionner plusieurs fichiers",
+			"FILE_selectFile"=>"Merci de sélectionner au moins un fichier",
+			"FILE_fileContent"=>"contenu",
+			// Versions_fichier
+			"FILE_versionsOf"=>"Versions de", // versions de fichier.gif
+			"FILE_confirmDeleteVersion"=>"Confirmer la suppression de cette version ?",
+
 			////	MODULE_AGENDA
 			////
 			// Menu principal
@@ -847,7 +879,7 @@ class Trad extends Txt
 			"CALENDAR_addEvtTooltipBis"=>"Ajouter l'événement à l'agenda",
 			"CALENDAR_proposeEvtTooltip"=>"Proposer un événement à l'administrateur de l'agenda",
 			"CALENDAR_proposeEvtTooltipBis"=>"Proposer l'événement à l'administrateur/propriétaire de cet agenda",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement à l'administrateur/propriétaire de cet agenda : l'agenda ne vous est accessible qu'en lecture",
+			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement à l'administrateur/propriétaire de cet agenda : l'agenda ne vous est accessible qu'en lecture !",
 			"CALENDAR_inputProposed"=>"L'événement sera d'abord proposé à l'administrateur/propriétaire de cet agenda, avant d'y être éventuellement ajouté",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_noModifTooltip"=>"Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)",
@@ -860,45 +892,14 @@ class Trad extends Txt
 			"CALENDAR_propositionGuestTooltip"=>"Pensez à sélectionnez 'tous les utilisateur et invités' dans les droits d'accès ci-dessous.",
 			"CALENDAR_propositionEmailSubject"=>"Nouvel événement proposé par",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"Nouvel événement proposé par --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accédez à votre espace pour confirmer ou annuler cette proposition",
-			// Categorie : Catégories d'événement  => ex. Txt::trad($tradModulePrefix."_categoriesEditTitle")
-			"CALENDAR_categoryCurrent"=>"Catégorie affichée",
-			"CALENDAR_categoryDisplayed"=>"Filtrer par catégorie d'événement",
-			"CALENDAR_categoryUndefined"=>"Sans catégorie",
-			"CALENDAR_categoriesEditTitle"=>"Editer les catégories d'événements",
-			"CALENDAR_categoriesEditInfo"=>"Chaque catégorie peut être modifiée par son auteur ou par l'admin général",
-			"CALENDAR_categoriesAddButton"=>"Ajouter une catégorie",
-			
-			////	MODULE_FICHIER
-			////
-			// Menu principal
-			"FILE_headerModuleName"=>"Fichiers",
-			"FILE_moduleDescription"=>"Gestionnaire de fichiers",
-			"FILE_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et fichiers à la racine",//OPTION!
-			//Index
-			"FILE_addFile"=>"Ajouter un fichier",
-			"FILE_addFileAlert"=>"Dossier du serveur inaccessible en écriture!  merci de contacter l'administrateur",
-			"FILE_downloadSelection"=>"télécharger la sélection",
-			"FILE_fileDownload"=>"Télécharger",
-			"FILE_fileSize"=>"Taille du fichier",
-			"FILE_imageSize"=>"Dimension de l'image",
-			"FILE_nbFileVersions"=>"versions du fichier",//"55 versions du fichier"
-			"FILE_downloadsNb"=>"(téléchargé --NB_DOWNLOAD-- fois)",
-			"FILE_downloadedBy"=>"fichier téléchargé par",//"..boby, will"
-			"FILE_addFileVersion"=>"Ajouter une nouvelle version du fichier",
-			"FILE_noFile"=>"Aucun fichier pour le moment",
-			// fichier_edit_ajouter  &  Fichier_edit
-			"FILE_fileSizeLimit"=>"Les fichiers ne doivent pas dépasser", // ...2 Mega Octets
-			"FILE_uploadSimple"=>"Envoi simple",
-			"FILE_uploadMultiple"=>"Envoi multiple",
-			"FILE_imgReduce"=>"Optimiser les images",
-			"FILE_updatedName"=>"Le nom du fichier est différent : celui de la nouvelle version sera donc conservé",
-			"FILE_fileSizeError"=>"Fichier trop volumineux",
-			"FILE_addMultipleFilesTooltip"=>"Appuyez sur la touche 'Ctrl' pour sélectionner plusieurs fichiers",
-			"FILE_selectFile"=>"Merci de sélectionner au moins un fichier",
-			"FILE_fileContent"=>"contenu",
-			// Versions_fichier
-			"FILE_versionsOf"=>"Versions de", // versions de fichier.gif
-			"FILE_confirmDeleteVersion"=>"Confirmer la suppression de cette version ?",
+			// Categorie : Catégories d'événement
+			"CALENDAR_categoryMenuLabel"=>"Catégories d'événement",
+			"CALENDAR_categoryMenuLabelTitle"=>"Filtrer les événements par catégories",
+			"CALENDAR_allCategories"=>"Toutes les catégories",
+			"CALENDAR_categoryUndefined"=>"Catégorie non définie",
+			"CALENDAR_categoryEditTitle"=>"Editer les catégories",
+			"CALENDAR_categoryEditInfo"=>"Chaque catégorie peut être modifiée par son auteur ou par l'admin général",
+			"CALENDAR_categoryEditAdd"=>"Ajouter une catégorie",
 
 			////	MODULE_FORUM
 			////
@@ -911,31 +912,31 @@ class Trad extends Txt
 			"SORT_dateLastMessage"=>"dernier message",
 			//Index & Sujet
 			"FORUM_forumRoot"=>"Accueil du forum",
-			"FORUM_forumRootMobile"=>"Accueil",
 			"FORUM_subject"=>"sujet",
 			"FORUM_subjects"=>"sujets",
 			"FORUM_message"=>"message",
 			"FORUM_messages"=>"messages",
-			"FORUM_lastSubject"=>"dernier sujet de",
-			"FORUM_lastMessage"=>"dernier message de",
+			"FORUM_lastMessage"=>"dernier de",
 			"FORUM_noSubject"=>"Aucun sujet pour le moment",
 			"FORUM_noMessage"=>"Aucun message pour le moment",
 			"FORUM_subjectBy"=>"Sujet de",
 			"FORUM_addSubject"=>"Créer un nouveau sujet",
 			"FORUM_displaySubject"=>"Voir le sujet",
-			"FORUM_addMessage"=>"Ajouter un nouveau message",
+			"FORUM_addMessage"=>"Ajouter un message",
 			"FORUM_quoteMessage"=>"Répondre en citant ce message",
 			"FORUM_notifyLastPost"=>"Me notifier à chaque message",
 			"FORUM_notifyLastPostTooltip"=>"M'envoyer un email de notification à chaque nouveau message",
 			// Sujet_edit  &  Message_edit
 			"FORUM_notifOnlyReadAccess"=>"Attention : s'il n'y que des accès en lecture, personne ne pourra contribuer au sujet...",
 			"FORUM_notifWriteAccess"=>"L'accès en ''Ecriture'' est destiné aux modérateurs du sujet :<br>Il est donc conseillé d'utiliser le droit en ''Ecriture limité''",
-			// Categorie : Themes  => ex. Txt::trad($tradModulePrefix."_categoriesEditTitle")
-			"FORUM_categoryThemes"=>"Thèmes",
-			"FORUM_categoryUndefined"=>"Sans thème",
-			"FORUM_categoriesEditTitle"=>"Editer les thèmes de sujet",
-			"FORUM_categoriesEditInfo"=>"Chaque theme peut être modifié par son auteur ou par l'admin général",
-			"FORUM_categoriesAddButton"=>"Ajouter un theme",
+			// Categorie : Themes
+			"FORUM_categoryMenuLabel"=>"Thèmes du forum",
+			"FORUM_categoryMenuLabelTitle"=>"Filtrer les sujets par thème",
+			"FORUM_allCategories"=>"Tous les thèmes",
+			"FORUM_categoryUndefined"=>"Thème non défini",
+			"FORUM_categoryEditTitle"=>"Editer les thèmes",
+			"FORUM_categoryEditInfo"=>"Chaque theme peut être modifié par son auteur ou par l'admin général",
+			"FORUM_categoryEditAdd"=>"Ajouter un theme",
 
 			////	MODULE_TACHE
 			////
@@ -962,11 +963,14 @@ class Trad extends Txt
 			"TASK_assignedTo"=>"Assigné à",
 			"TASK_advancementLate"=>"Avancement en retard",
 			"TASK_folderDateBeginEnd"=>"Debut au plus tôt / Fin au plus tard",
-			//Categorie : Statuts Kanban   => ex. Txt::trad($tradModulePrefix."_categoriesEditTitle")
+			//Categorie : Statuts Kanban
+			"TASK_categoryMenuLabel"=>"Statuts des tâches",
+			"TASK_categoryMenuLabelTitle"=>"Filtrer les tâches en fonction de leur statut",
+			"TASK_allCategories"=>"Tous les statuts",
 			"TASK_categoryUndefined"=>"Statut non défini",
-			"TASK_categoriesEditTitle"=>"Editer les statuts des tâches",
-			"TASK_categoriesEditInfo"=>"Chaque statut Kanban peut être modifié par son auteur ou par l'admin général",
-			"TASK_categoriesAddButton"=>"Ajouter un statut Kanban",
+			"TASK_categoryEditTitle"=>"Editer les statuts",
+			"TASK_categoryEditInfo"=>"Chaque statut Kanban peut être modifié par son auteur ou par l'admin général",
+			"TASK_categoryEditAdd"=>"Ajouter un statut Kanban",
 
 			////	MODULE_CONTACT
 			////

@@ -280,7 +280,7 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * AFFICHE UNE PAGE COMPLETE (ENSEMBLE DE VUES)
 	 *******************************************************************************************/
-	protected static function displayPage($fileMainVue, $vDatasMainVue=array())
+	public static function displayPage($fileMainVue, $vDatasMainVue=array())
 	{
 		////	PAGE PRINCIPALE : AFFICHE LE HEADER, WALLPAPER, ETC.
 		if(static::$isMainPage==true)
@@ -375,26 +375,20 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
 	 *******************************************************************************************/
-	public static function getObj($objTypeOrMdl, $objIdOrValues=null, $updateCache=false)
+	public static function getObj($objectType, $objIdOrValues=null, $updateCache=false)
 	{
-		//Récupère le modèle de l'objet (exple si on passe en paramètre uniquement le "type" de l'objet : "fileFolder" => "MdlFileFolder")
-		$MdlClass=(preg_match("/^Mdl/i",$objTypeOrMdl))  ?  $objTypeOrMdl  :  "Mdl".ucfirst($objTypeOrMdl);
-		//Retourne un nouvel objet OU un objet existant (déjà en cache?)
-		if(empty($objIdOrValues))	{return new $MdlClass();}
-		else
-		{
-			//Id de l'objet && clé de l'objet en cache
-			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;
-			$cacheKey=$MdlClass::objectType."-".$objId;
-			//Ajoute/Update l'objet en cache?
-			if(isset(self::$cacheObjects[$cacheKey])==false || $updateCache==true)  {self::$cacheObjects[$cacheKey]=new $MdlClass($objIdOrValues);}
-			//Retourne l'objet en cache
-			return self::$cacheObjects[$cacheKey];
+		$MdlClass="Mdl".ucfirst($objectType);																//Récupère le modèle de l'objet (ex: "fileFolder" => "MdlFileFolder")
+		if(empty($objIdOrValues))	{return new $MdlClass();}												//Retourne un nouvel objet OU un objet existant (déjà en cache?)
+		else{
+			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;													//Id de l'objet
+			$cacheKey=$MdlClass::objectType."-".$objId;																									//Clé de l'objet mis en cache
+			if(isset(self::$cacheObjects[$cacheKey])==false || $updateCache==true)  {self::$cacheObjects[$cacheKey]=new $MdlClass($objIdOrValues);}		//Ajoute ou Update l'objet en cache
+			return self::$cacheObjects[$cacheKey];																										//Retourne l'objet en cache
 		}
 	}
 
 	/*******************************************************************************************
-	 * RECUPÈRE L'OBJET PASSÉ EN GET/POST OU EN ARGUMENT (ex: "typeId=fileFolder-55")
+	 * RECUPÈRE L'OBJET PASSÉ EN GET/POST || EN ARGUMENT VIA $typeId (ex: "file-55")
 	 ******************************************************************************************/
 	public static function getObjTarget($typeId=null)
 	{
@@ -409,7 +403,7 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * RECUPÈRE LES OBJETS ENVOYÉS VIA GET/POST  (ex: objectsTypeId[file]=2-4-6)
+	 * RECUPÈRE LES OBJETS ENVOYÉS VIA GET/POST  (ex: objectsTypeId[file]=33-44-55)
 	 *******************************************************************************************/
 	public static function getObjectsTypeId($objTypeFilter=null)
 	{

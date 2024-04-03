@@ -10,14 +10,13 @@
 /*
  * MODELE DES CATEGORIES D'EVENEMENTS
  */
-class MdlCalendarEventCategory extends MdlObjectCategory
+class MdlCalendarCategory extends MdlCategory
 {
 	const moduleName="calendar";
-	const objectType="calendarEventCategory";
-	const dbTable="ap_calendarEventCategory";
-	const dbTableParent="ap_calendarEvent";
-	const _idFieldName="_idCat";
+	const objectType="calendarCategory";
+	const dbTable="ap_calendarCategory";
+	const dbParentTable="ap_calendarEvent";
+	const dbParentField="_idCat";
+	const tradPrefix="CALENDAR";
 	const optionAdminAddCategory="adminAddCategory";
-	public static $requiredFields=["title"];
-	public static $sortFields=["title@asc","title@desc"];
 }

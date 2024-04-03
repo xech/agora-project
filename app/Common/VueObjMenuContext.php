@@ -53,7 +53,7 @@ echo "<div id=\"".$curObj->uniqId("objMenu")."\" class='menuContext'>";
 	if(!empty($userSpaceList))				{echo "<hr><div class='menuLine'><div class='menuIcon'><img src='app/img/space.png'></div><div>".$userSpaceList."</div></div>";}
 
 	////	OBJET DOSSIER : CONTENU DU DOSSIER (nb d'elements & co)
-	if($curObj::isFolder==true)  {echo "<hr><div class='menuLine'><div class='menuContextTxtLeft'>".Txt::trad("folderContent")."</div><div>".$curObj->folderContentDescription()."</div></div>";}
+	if($curObj::isFolder==true)  {echo "<hr><div class='menuLine'><div class='menuContextTxtLeft'>".Txt::trad("folderContent")."</div><div>".$curObj->contentDescription()."</div></div>";}
 
 	////	AUTEUR ET DATE DE CREATION/MODIF
 	if(!empty($autorDateCrea)){

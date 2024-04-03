@@ -34,7 +34,7 @@ class CtrlMisc extends Ctrl
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
 				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				//Supprime les livecounters des users déconnectés (> 7 jours)  &&  Supprime les vieux messages du messenger (> 30 jours -cf. trad("MESSENGER_nobody")- et les propositions de visio > 1 heure)
+				//Supprime les livecounters des users déconnectés (> 7 jours)  &&  Supprime les vieux messages du messenger (messages > 30 jours + "launchVisio" > 1 heure)
 				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-604800));
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-2592000));
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisio%' AND `date` < ".intval(time()-3600));
@@ -62,7 +62,7 @@ class CtrlMisc extends Ctrl
 				foreach($_SESSION["livecounterUsers"] as $tmpUser)
 				{
 					//Image/Label des users du livecounter principal
-					$userImg=(Req::isMobile()==false && $tmpUser->hasImg())  ?  $tmpUser->getImg(false,true)  :  null;//Verif qu'on soit pas en mode mobile et si l'image existe
+					$userImg=(Req::isMobile()==false && $tmpUser->hasImg())  ?  $tmpUser->personImg(false,true)  :  null;//Verif qu'on soit pas en mode mobile et si l'image existe
 					$userTitle=$tmpUser->getLabel()." &nbsp;".$userImg;
 					$userFirstName=$tmpUser->getLabel("firstName");
 					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
@@ -88,7 +88,7 @@ class CtrlMisc extends Ctrl
 					$destList=Txt::txt2tab($message["_idUsers"]);
 					$autorObj=self::getObj("user",$message["_idUser"]);
 					if(Req::isMobile())				{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//sur mobile :  "Will<br>11:00 "
-					elseif($autorObj->hasImg())		{$dateAutor=date("H:i",$message["date"]).$autorObj->getImg(false,true);}			//Mode normal avec icone de l'user : "11:00 <img>"
+					elseif($autorObj->hasImg())		{$dateAutor=date("H:i",$message["date"]).$autorObj->personImg(false,true);}			//Mode normal avec icone de l'user : "11:00 <img>"
 					else							{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
 					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}			//Ajoute si besoin l'icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
@@ -299,7 +299,7 @@ class CtrlMisc extends Ctrl
 				$tmpAdress=trim($tmpPerson->adress.", ".$tmpPerson->postalCode." ".str_ireplace("cedex","",$tmpPerson->city)." ".$tmpPerson->country,  ", ");
 				$tmpLabel=$tmpPerson->getLabel()." <br> ".$tmpAdress;
 				if(!empty($tmpPerson->companyOrganization) || !empty($tmpPerson->function))  {$tmpLabel.="<br>".trim($tmpPerson->function." - ".$tmpPerson->companyOrganization, " - ");}
-				$tmpImg=($tmpPerson->hasImg())  ?  $tmpPerson->getImgPath()  :  "app/img/mapBig.png";
+				$tmpImg=($tmpPerson->hasImg())  ?  $tmpPerson->personImgPath()  :  "app/img/mapBig.png";
 				$adressList[]=["adress"=>$tmpAdress, "personLabel"=>$tmpLabel, "personImg"=>$tmpImg];
 			}
 		}

@@ -7,7 +7,6 @@ $(function(){
 	////	INIT L'AFFICHAGE DU FORMULAIRE
 	$("select[name='periodType']").val("<?= $curObj->periodType ?>");						//Prérempli la périodicité
 	$("select[name='contentVisible']").val("<?= $curObj->contentVisible ?>");				//Prérempli le "contentVisible"
-	$("select[name='_idCat']").val("<?= $curObj->_idCat ?>").trigger("change");				//"trigger" sur la catégorie pour changer la couleur de l'input
 	$("select[name='important']").val("<?= (int)$curObj->important ?>").trigger("change");	//"trigger" sur "important" pour changer la couleur de l'input
 	displayPeriodType();																	//Init les options de "périodicité"
 	timeSlotBusy();																			//Init les créneaux horaires occupés
@@ -252,10 +251,10 @@ input[name='guestMail']					{margin-left:20px;}
 			<?php
 			for($cpt=1; $cpt<=7; $cpt++){
 				$periodValueChecked=($curObj->periodType=="weekDay" && in_array($cpt,$tabPeriodValues))  ?  "checked"  :  null;
-				echo "<div>
-						<input type='checkbox' name='periodValues_weekDay[]' value='".$cpt."' id='periodValues_weekDay".$cpt."' ".$periodValueChecked." >
-						<label for='periodValues_weekDay".$cpt."'>".Txt::trad("day_".$cpt)."</label>
-					  </div>";
+				echo '<div>
+						<input type="checkbox" name="periodValues_weekDay[]" value="'.$cpt.'" id="periodValues_weekDay'.$cpt.'" '.$periodValueChecked.' >
+						<label for="periodValues_weekDay'.$cpt.'">'.Txt::trad("day_".$cpt).'</label>
+					  </div>';
 			}
 			?>
 		</div>
@@ -264,10 +263,10 @@ input[name='guestMail']					{margin-left:20px;}
 			<?php
 			for($cpt=1; $cpt<=12; $cpt++){
 				$periodValueChecked=($curObj->periodType=="month" && in_array($cpt,$tabPeriodValues))  ?  "checked"  :  null;
-				echo "<div>
-						<input type='checkbox' name='periodValues_month[]' value='".$cpt."' id='periodValues_month".$cpt."' ".$periodValueChecked." >
-						<label for='periodValues_month".$cpt."'>".Txt::trad("month_".$cpt)."</label>
-					  </div>";
+				echo '<div>
+						<input type="checkbox" name="periodValues_month[]" value="'.$cpt.'" id="periodValues_month'.$cpt.'" '.$periodValueChecked.' >
+						<label for="periodValues_month'.$cpt.'">'.Txt::trad("month_".$cpt).'</label>
+					  </div>';
 			}
 			?>
 		</div>
@@ -282,17 +281,17 @@ input[name='guestMail']					{margin-left:20px;}
 		<?php
 		////	Dates d'exceptions de périodicité (10 max)
 		for($cpt=1; $cpt<=10; $cpt++){
-			echo "<div id='periodExceptionDiv".$cpt."' class='periodExceptionDiv'>
-					<input type='text' name='periodDateExceptions[]' value=\"".(isset($periodDateExceptions[$cpt])?$periodDateExceptions[$cpt]:null)."\" class='dateInput' id='periodExceptionInput".$cpt."'>
-					<img src='app/img/delete.png' title=\"".Txt::trad("delete")."\" onclick=\"deletePeriodDateExceptions(".$cpt.");\">
-				  </div>";
+			echo '<div id="periodExceptionDiv'.$cpt.'" class="periodExceptionDiv">
+					<input type="text" name="periodDateExceptions[]" value="'.(isset($periodDateExceptions[$cpt])?$periodDateExceptions[$cpt]:null).'" class="dateInput" id="periodExceptionInput'.$cpt.'">
+					<img src="app/img/delete.png" title="'.Txt::trad("delete").'" onclick="deletePeriodDateExceptions('.$cpt.')">
+				  </div>';
 		}
 		?>
 	</fieldset>
 
 	<!--<SELECT> DE LA CATEGORIE-->
 	<div class="vEventOptionInline vEventOptionAdvanced">
-		<?= MdlCalendarEventCategory::selectInput($curObj->_idCategory) ?>
+		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
 	</div>
 
 	<!--IMPORTANT-->
@@ -328,45 +327,44 @@ input[name='guestMail']					{margin-left:20px;}
 	<fieldset id="eventAffectations">
 		<legend><?= Txt::trad("CALENDAR_calendarAffectations") ?></legend>
 		<?php
-		echo "<div id='calsAffectDiv'>";
+		echo '<div id="calsAffectDiv">';
 		////	AGENDAS DE RESSOURCES & AGENDAS PERSONNELS
 		foreach($affectationCalendars as $tmpCal)
 		{
-			//Nom de l'input
-			$calInputName=($tmpCal->inputType=="affectation")  ?  "affectationCalendars[]"  :  "propositionCalendars[]";
-			//Réinit l'affectation/proposition après validation du form?
-			$moreInputs=($tmpCal->reinitCalendarInput==true)  ?  "<input type='hidden' name='reinitCalendars[]' value=\"".$tmpCal->_id."\">"  :  null;
-			//Agenda d'user ou de ressource
-			if($tmpCal->type=="user")	{$calIcon="typeUser.png";		$calIdUser="data-idUser=\"".$tmpCal->_idUser."\"";}
-			else						{$calIcon="typeRessource.png";	$calIdUser=null;}
-			//Astérisque "*" sur les agendas non-modifiables || proposition d'evt possible
-			if($tmpCal->isDisabled!=null)				{$tmpCal->title.=" &#42;&#42;";}
-			elseif($tmpCal->inputType=="proposition")	{$tmpCal->title.=" &#42;";}
-			//Ajoute l'option de proposition d'événement (sauf pour l'agenda perso)
-			if($tmpCal->inputType=="affectation" && $tmpCal->isPersonalCalendar()==false){
+			//Nom de l'input  &&  Icone du label (Agenda d'user ou de ressource)
+			$inputName=($tmpCal->mainInput=="affectation")  ?  "affectationCalendars[]"  :  "propositionCalendars[]";
+			if($tmpCal->type=="user")	{$iconLabel="typeUser.png";			$dataIdUser='data-idUser="'.$tmpCal->_idUser.'"';}
+			else						{$iconLabel="typeRessource.png";	$dataIdUser=null;}
+			//Astérisque "**" sur les agendas non-modifiables || proposition d'evt possible
+			if($tmpCal->isDisabled!=null || $tmpCal->mainInput=="proposition")	{$tmpCal->title.=" &#42;&#42;";}
+			//Tooltip désactivé pour les "affectations" simple (pas les proposition)
+			$noTooltipClass=($tmpCal->mainInput=="affectation") 	?  'class="noTooltip"'  :  null;
+			//Réinit l'affectation/proposition après validation du form?  &&  Ajoute l'option de proposition d'événement ?
+			$moreInputs=($tmpCal->reinitCalendarInput==true)  ?  '<input type="hidden" name="reinitCalendars[]" value="'.$tmpCal->_id.'">'  :  null;
+			if($tmpCal->mainInput=="affectation" && $tmpCal->isPersonalCalendar()==false){
 				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'";  $propositionChecked="checked";  $tmpCal->isChecked=null;}	//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
 				else																				{$propositionShow=$propositionChecked=null;}															//Sinon on masque par défaut l'option de proposition
 				$moreInputs.="<div class='vCalAffectProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
 			}
 			//Affiche l'input d'affectation/proposition
-			echo "<div class='vCalAffectBlock lineHover'>
-					<input type='checkbox' name='".$calInputName."' value=\"".$tmpCal->_id."\" id=\"box".$tmpCal->_typeId."\" class='vCalendarInput' ".$tmpCal->isChecked." ".$tmpCal->isDisabled." ".$calIdUser.">
-					<label for=\"box".$tmpCal->_typeId."\" class='noTooltip' title=\"".Txt::tooltip($tmpCal->labelTooltip)."\"><img src=\"app/img/calendar/".$calIcon."\"> ".$tmpCal->title."</label>
-					".$moreInputs."
-				  </div>";
+			echo '<div class="vCalAffectBlock lineHover">
+					<input type="checkbox" name="'.$inputName.'" value="'.$tmpCal->_id.'" id="box'.$tmpCal->_typeId.'" class="vCalendarInput" '.$tmpCal->isChecked.' '.$tmpCal->isDisabled.' '.$dataIdUser.'>
+					<label for="box'.$tmpCal->_typeId.'" title="'.Txt::tooltip($tmpCal->labelTooltip).'" '.$noTooltipClass.'><img src="app/img/calendar/'.$iconLabel.'"> '.$tmpCal->title.'</label>
+					'.$moreInputs.'
+				  </div>';
 		}
 		////	SWITCH LA SELECTION OU SELECTIONNE UN GROUPE D'USERS
 		if(count($affectationCalendars)>2)
 		{
 			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis lineHover' onclick=\"$('.vCalendarInput:enabled').trigger('click')\"><label><img src='app/img/checkSmall.png'> ".Txt::trad("selectSwitch")."</label></div>";
 			foreach($curSpaceUserGroups as $tmpGroup){
-				echo "<div class='vCalAffectBlock vCalAffectBlockBis lineHover' title=\"".Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel."\">
-						<input type='checkbox' name=\"calUsersGroup[]\" value=\"".implode(",",$tmpGroup->userIds)."\" id='calUsersGroup".$tmpGroup->_typeId."' onchange=\"userGroupSelect(this,'#calsAffectDiv');\">
-						<label for='calUsersGroup".$tmpGroup->_typeId."'><img src='app/img/user/accessGroup.png'> ".$tmpGroup->title."</label>
-					  </div>";
+				echo '<div class="vCalAffectBlock vCalAffectBlockBis lineHover" title="'.Txt::trad("selectUnselect").' :<br>'.$tmpGroup->usersLabel.'">
+						<input type="checkbox" name="calUsersGroup[]" value="'.implode(",",$tmpGroup->userIds).'" id="calUsersGroup'.$tmpGroup->_typeId.'" onchange="userGroupSelect(this,\'#calsAffectDiv\')">
+						<label for="calUsersGroup'.$tmpGroup->_typeId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label>
+					  </div>';
 			}
 		}
-		echo "</div>";
+		echo '</div>';
 		?>
 		<!--CRENEAU HORAIRE OCCUPE?-->
 		<div id="timeSlotBusy" class="sAccessWriteLimit">
@@ -378,11 +376,11 @@ input[name='guestMail']					{margin-left:20px;}
 	<?php
 	////	MENU D'IDENTIFICATION DES GUESTS & CAPTCHA
 	if(Ctrl::$curUser->isUser()==false){
-		echo "<fieldset id='guestMenu'>
-				<input type='text' name='guest' placeholder=\"".Txt::trad("EDIT_guestName")."\">
-				<input type='text' name='guestMail' placeholder=\"".Txt::trad("EDIT_guestMail")."\" title=\"".Txt::trad("EDIT_guestMailTooltip")."\">
-				<hr>".CtrlMisc::menuCaptcha()."
-			  </fieldset>";
+		echo '<fieldset id="guestMenu">
+				<input type="text" name="guest" placeholder="'.Txt::trad("EDIT_guestName").'">
+				<input type="text" name="guestMail" placeholder="'.Txt::trad("EDIT_guestMail").'" title="'.Txt::trad("EDIT_guestMailTooltip").'">
+				<hr>'.CtrlMisc::menuCaptcha().'
+			  </fieldset>';
 	}
 
 	////	MENU COMMUN	(VALIDATION DU FORM UNIQUEMENT)

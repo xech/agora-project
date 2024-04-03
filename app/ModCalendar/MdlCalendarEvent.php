@@ -16,6 +16,7 @@ class MdlCalendarEvent extends MdlObject
 	const objectType="calendarEvent";
 	const dbTable="ap_calendarEvent";
 	const MdlObjectContainer="MdlCalendar";
+	const MdlCategory="MdlCalendarCategory";
 	const descriptionEditor=true;
 	const hasAttachedFiles=true;
 	const hasNotifMail=true;
@@ -23,6 +24,7 @@ class MdlCalendarEvent extends MdlObject
 	public static $searchFields=["title","description"];
 	private $_confirmedCalendars=null;
 	private $_propositionCalendars=null;
+	private $_mainCalendarObj=null;
 
 	/*******************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
@@ -30,11 +32,10 @@ class MdlCalendarEvent extends MdlObject
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Visibilité
+		//Couleur de l'evt (background & co) : en fonction de la categorie || Gris par défaut
+		$this->eventColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#444";
+		//Visibilité par défaut
 		if(empty($this->contentVisible))	{$this->contentVisible="public";}
-		//Categorie
-		if(!empty($this->_idCat))	{$this->objCategory=Ctrl::getObj("calendarEventCategory",$this->_idCat);	$this->catColor=$this->objCategory->color;}
-		else						{$this->objCategory=null;													$this->catColor="#444";}
 		//Masque le title/description si besoin
 		if($this->accessRight()<1){
 			$this->title="<i>".Txt::trad("CALENDAR_evtPrivate")."</i>";
@@ -65,10 +66,10 @@ class MdlCalendarEvent extends MdlObject
 				}
 				//Attribut le droit d'accès final
 				$tmpAccessRight=0;
-				if($allCalendarsFullAccess==true)								{$tmpAccessRight=3;}	//Que des agendas accessibles en écriture
-				elseif($tmpMaxRight>=2)											{$tmpAccessRight=2;}	//Un agenda (ou+) accessible en écriture
-				elseif($tmpMaxRight>=1 && $this->contentVisible=="public")		{$tmpAccessRight=1;}	//Un agenda (ou+) accessible en lecture ou ecriture limité
-				elseif($tmpMaxRight>=1 && $this->contentVisible=="public_cache"){$tmpAccessRight=0.5;}	//Idem mais "public_cache" : lecture plage horaire uniquement!
+				if($allCalendarsFullAccess==true)									{$tmpAccessRight=3;}	//Que des agendas accessibles en écriture
+				elseif($tmpMaxRight>=2)												{$tmpAccessRight=2;}	//Un agenda (ou+) accessible en écriture
+				elseif($tmpMaxRight>=1 && $this->contentVisible=="public")			{$tmpAccessRight=1;}	//Un agenda (ou+) accessible en lecture ou ecriture limité
+				elseif($tmpMaxRight>=1 && $this->contentVisible=="public_cache")	{$tmpAccessRight=0.5;}	//Idem mais "public_cache" : lecture plage horaire uniquement!
 				//Surcharge le droit d'accès?
 				if($tmpAccessRight > $this->_accessRight)	{$this->_accessRight=$tmpAccessRight;}
 			}
@@ -119,19 +120,19 @@ class MdlCalendarEvent extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
-	 * SURCHARGE : RECUPÈRE L'AGENDA PRINCIPAL DE L'ÉVÉNEMENT (AGENDA PERSO OU AGENDA AVEC LE DROIT D'ACCÈS LE PLUS ÉLEVÉ)
-	 *******************************************************************************************/
+	/***********************************************************************************************************************
+	 * SURCHARGE : RECUPÈRE L'AGENDA PRINCIPAL DE L'ÉVÉNEMENT  (agenda perso  ||  agenda avec le droit d'accès le + élevé)
+	 ***********************************************************************************************************************/
 	public function containerObj()
 	{
-		if($this->_containerObj===null){
-			$tmpAccessRight=0;
-			foreach($this->affectedCalendars() as $tmpCal){
-				if($tmpCal->isPersonalCalendar())							{$this->_containerObj=$tmpCal;	break;}
-				elseif($tmpAccessRight < $tmpCal->accessRight())	{$this->_containerObj=$tmpCal;	$tmpAccessRight=$tmpCal->accessRight();}
+		if($this->_mainCalendarObj===null){
+			$accessRightMax=0;																														//Init le droit d'accès le + élevé
+			foreach($this->affectedCalendars() as $tmpCal){																							//Parcours la liste des agendas où est affecté l'événement
+				if($tmpCal->isPersonalCalendar())					{$this->_mainCalendarObj=$tmpCal;	break;}										//Renvoie l'agenda perso && stop la boucle
+				elseif($accessRightMax < $tmpCal->accessRight())	{$this->_mainCalendarObj=$tmpCal;	$accessRightMax=$tmpCal->accessRight();}	//Sinon récupère l'agenda avec le droit d'accès le + élevé
 			}
 		}
-		return $this->_containerObj;
+		return $this->_mainCalendarObj;
 	}
 
 	/*******************************************************************************************

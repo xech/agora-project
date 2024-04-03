@@ -349,7 +349,7 @@ class CtrlUser extends Ctrl
 			foreach(Req::param("mailList") as $tmpMail){
 				if(MdlUser::loginExists($tmpMail))  {$result["mailListPresent"][]=$tmpMail;}
 			}
-			//Renvoi le résultat
+			//Retourne le résultat
 			echo json_encode($result);
 		}
 	}
@@ -395,7 +395,7 @@ class CtrlUser extends Ctrl
 				if(Ctrl::getObj("space",$tmpInscription["_idSpace"])->editRight())  {$_SESSION["userInscriptionValidate"][]=$tmpInscription;}//Ajoute l'inscription si l'user courant administre l'espace
 			};
 		}
-		//Renvoie le résultat
+		//Retourne le résultat
 		return $_SESSION["userInscriptionValidate"];
 	}
 

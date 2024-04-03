@@ -4,6 +4,19 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
+VERSION 24.4.1
+###############
+Nouvelle présentation du menu des Catégories d'événement, Themes du forum et Status des Tâches
+Nouvelle présentation du forum, plus épuré et ergonomique
+Optimisation pour PHP 8.3
+Version PHP 7.0 minimum au lieu de php 5.6
+-----
+New presentation of the menu for Event Categories, Forum Themes and Task Status
+New presentation of the forum, more refined and ergonomic
+Optimizing for PHP 8.3
+PHP version 7.0 minimum instead of php 5.6
+
+
 VERSION 24.2.3
 ###############
 Nouvelle option des tâches pour attribuer un état "A faire", "En cours", "Terminé", etc

@@ -50,7 +50,7 @@ a, [onclick], .sLink, .linkSelect, label	{cursor:pointer; text-decoration:none;}
 /*** DIV "CONTENEUR" DES OBJETS*/
 .objContainer, .miscContainer, .emptyContainer, .menuContext	{margin:0px 5px 5px 0px; box-sizing:border-box; box-shadow:2px 2px 8px rgb(80,80,80); transition:box-shadow 0.3s ease-in-out; border-radius:4px; background-repeat:no-repeat;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
 .objContainer:hover, .miscContainer:hover			{box-shadow:2px 2px 8px rgb(230,230,230);}
-.objContainer										{position:relative; padding:0px; padding-right:35px; height:100px; min-height:100px;}	/*"height"+"min-height" pour l'overflow" du "objContentScroll". "padding-right" pour l'affichage des "objMiscMenus"*/
+.objContainer										{position:relative; padding:0px; padding-right:35px; height:100px; min-height:100px;}/*"height"+"min-height" pour l'overflow" du "objContentScroll". "padding-right" pour l'affichage des "objMiscMenus"*/
 .miscContainer										{padding:15px;}																		/*cf. parametrage general, newsletter, etc.*/
 .emptyContainer										{padding:30px; text-align:center;}													/*Aucun contenu sur la page*/
 .emptyContainer div									{margin-top:20px;}																	/*Idem*/
@@ -61,6 +61,7 @@ a, [onclick], .sLink, .linkSelect, label	{cursor:pointer; text-decoration:none;}
 .objIcon img										{max-width:100%; max-height:100%;}													/*Icone d'objet*/
 .objIconOpacity img									{filter:opacity(0.2);}																/*Icones opaques link/task*/
 .objLabel											{padding-left:15px; overflow-wrap:break-word; text-overflow:ellipsis;}
+.dateLabel											{font-weight:normal; margin-top:5px;}												/*cf. "autorDateLabel()" : Date de créa/modif*/
 .objContainer.isSelectable							{cursor:url("../img/checkSmall.png"),default;}										/*Curseur des elements selectionnables*/
 /*DIPLAY "BLOCK"*/
 .objBlocks											{visibility:hidden;}																/*Affiché juste après le calcul du width des ".objContainer" en fonction de la résolution d'écran : cf. "common.js"*/
@@ -69,12 +70,11 @@ a, [onclick], .sLink, .linkSelect, label	{cursor:pointer; text-decoration:none;}
 .objBlocks .objIcon									{width:90px;}																		/*largeur réduite de la cellule de l'icone*/
 .objBlocks .objIconOpacity							{width:40px;}																		/*réduit la largeur ci-dessus pour les icones opaques link/task*/
 /*DIPLAY "LINE"*/
-.objLines .objContainer								{height:60px; min-height:60px; padding-right:60px; margin-bottom:0px; box-shadow:none;}	/*"padding-right": pour l'affichage des "objMiscMenus"*/
-.objLines .objIcon									{width:70px; padding-left:5px;}															/*Icone/image de l'objet (fichier, user, etc)*/
-.objLines .objIcon img								{max-height:55px;}																		/*max-height inférieur au ".objLines .objContainer" ci-dessus*/
-.objLines .objDetails, .objLines .objAutorDate		{text-align:right;}																		/*Auteur et date de créa/modif*/
-.objLines .objAutorDate								{width:150px!important;}																/*Idem*/
-.objLines .objAutorDateCrea							{font-weight:normal; margin-top:3px;}													/*"autorDateLabel()" : Auteur et date de créa/modif*/
+.objLines .objContainer								{height:60px; min-height:60px; padding-right:60px; margin-bottom:0px; box-shadow:none;}/*"padding-right": pour l'affichage des "objMiscMenus"*/
+.objLines .objIcon									{width:70px; padding-left:5px;}														/*Icone/image de l'objet (fichier, user, etc)*/
+.objLines .objIcon img								{max-height:55px;}																	/*max-height inférieur au ".objLines .objContainer" ci-dessus*/
+.objLines .objDetails, .objLines .objAutorDate		{text-align:right;}																	/*Auteur et date de créa/modif*/
+.objLines .objAutorDate								{width:150px!important;}															/*Idem*/
 /*MOBILE*/
 @media screen and (max-width:1023px){
 	.objContainer, .miscContainer, .emptyContainer	{width:100%; margin:0px 0px 8px 0px;}		  					/*tester affichage de news, fichiers et agendas*/
@@ -144,6 +144,7 @@ input[type=text]:focus, input[type=password]:focus, input[type=url]:hover, texta
 input[type=radio], input[type=checkbox]		{vertical-align:middle; margin:0px 3px;}/*pas de margin vertical*/
 input[type=text], input[type=password]		{max-width:100%;}
 input[type=file]							{height:auto;}
+::placeholder 								{font-weight:normal; padding-left:5px; color:#a5a5a5;}/*placeholder (texte par défaut) des inputs et textarea*/
 textarea									{width:100%; height:70px;}
 input:disabled								{opacity:0.6;}
 input:read-only, textarea:read-only			{background:#ddd!important;}
@@ -151,8 +152,6 @@ input:read-only, textarea:read-only			{background:#ddd!important;}
 .dateInput,.dateBegin,.dateEnd				{width:80px!important;}
 .timeBegin, .timeEnd						{width:45px!important;}
 .divPromptInputText							{text-align:center;}
-::-webkit-input-placeholder					{font-weight:normal; padding-left:5px; color:#999;}
-::-moz-placeholder							{font-weight:normal; padding-left:5px;}
 button										{background:linear-gradient(#fff,#eee); color:#555; padding:0px 10px; font-weight:bold; cursor:pointer; vertical-align:middle;}
 button:hover								{background:linear-gradient(#eee,#fff);}
 button:disabled, button[disabled]			{background:linear-gradient(#ccc,#aaa);}
@@ -218,7 +217,7 @@ form .objField								{margin:15px 0px;}
 .fancybox-slide--iframe .fancybox-content	{width:95%; height:98%; max-width:95%; max-height:98%; margin:0px; border-radius:10px; box-shadow:0px 0px 10px rgb(120,120,120);}/*Lightbox iframes*/
 .fancybox-iframe							{border-radius:4px;}/*"border-radius" aussi sur l'iframe!*/
 .fancybox-toolbar							{opacity:1!important; visibility:visible!important; border-left:solid 1px #777; border-bottom:solid 1px #777; border-bottom-left-radius:5px;}/*"opacity" et "visibility" pour tjs afficher le "close" et éviter le masquage auto (ex: maps des contact)*/
-.lightboxTitle								{position:relative; text-align:center; font-size:1.1em; padding:0px 20px 15px 40px; margin-bottom:30px; box-shadow:0px 7px 7px -7px rgba(0,0,0,0.7);}/*Padding pour pouvoir afficher le menu context à gauche (cf ".lightboxTitleMenu") et le bouton "close" sur mobile  && "box-shadow"=pseudo <hr>*/
+.lightboxTitle								{position:relative; text-align:center; font-size:1.1em; padding:10px; margin-bottom:40px; box-shadow:0px 7px 7px -7px rgba(100,100,100);}/*Padding pour pouvoir afficher le menu context à gauche (cf ".lightboxTitleMenu") et le bouton "close" sur mobile  && "box-shadow"=pseudo <hr>*/
 .lightboxTitleMenu							{position:absolute; top:-5px; left:-20px;}
 .lightboxTitleDetail						{font-size:0.9em; margin-top:15px;}
 .lightboxMenuEdit							{float:right; margin-right:-10px; margin-top:-10px;}/*Bouton pour éditer un élément*/
@@ -260,12 +259,12 @@ form .objField								{margin:15px 0px;}
 .changeOrderShadow				{opacity:0.5; border:1px dashed #999; height:100px;} 								/*Block "fantome" durant le changement*/
 .cursorHelp						{cursor:help;}
 .pathMenu						{display:table; padding:5px 10px; margin-bottom:10px;}
-.pathMenu img					{max-height:26px;}
+.pathMenu img					{max-height:30px;}
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
 .pathMenu>div.pathIconMenu		{cursor:pointer;}
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle; height:20px;}
-.categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:3px; margin-bottom:3px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
+.categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
 .categoryColorAll				{border:solid #bbb 2px;}
 .orLabel						{display:table; width:100%; margin:30px 0px;}
 .orLabel div					{display:table-cell; width:45%; text-align:center;}

@@ -19,7 +19,7 @@ $(function(){
 				//Charge les news suivantes (via ".get()" et non ".ajax")
 				if($("#contentNews").isVisible() && loadMoreNews==true)
 				{
-					$("#contentNews").append("<div class='infiniteScrollLoading'><img src='app/img/loading2.png'></div>");
+					$("#contentNews").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
 					$.get("?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
 						if(vueNewsList.length==0)  {loadMoreNews=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
@@ -34,7 +34,7 @@ $(function(){
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
 				if($("#contentPolls").isVisible() && loadMorePolls==true)
 				{
-					$("#contentPolls").append("<div class='infiniteScrollLoading'><img src='app/img/loading2.png'></div>");
+					$("#contentPolls").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
 					$.get("?ctrl=dashboard&action=GetMorePolls&pollsNotVoted=<?= Req::param("pollsNotVoted") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						{
@@ -122,7 +122,7 @@ function dashboardPollVote()
 
 /*Infinites scrolls : News / Sondages*/
 .infiniteScrollHidden					{display:none;}
-.infiniteScrollLoading					{text-align:center; padding:20px;}
+.infiniteScrollLoading					{text-align:center; padding:10px;}
 
 /*News*/
 .vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/

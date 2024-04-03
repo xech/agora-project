@@ -16,16 +16,16 @@
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
-			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
-			echo CtrlObject::folderTreeMenu().MdlLink::menuDisplayMode().MdlLink::menuSort();
-			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
+			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			echo MdlLinkFolder::menuTree().MdlLink::menuDisplayMode().MdlLink::menuSort().
+				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
 			?>
 		</div>
 	</div>
 	<div id="pageFullContent" class="<?= MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo CtrlObject::folderPathMenu(Txt::trad("LINK_addLink"),MdlLink::getUrlNew());
+		echo MdlFolder::menuPath(Txt::trad("LINK_addLink"),MdlLink::getUrlNew());
 		echo CtrlObject::vueFolders();
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)

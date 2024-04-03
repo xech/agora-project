@@ -212,7 +212,7 @@ function proposeVisio()
 #messengerMain								{z-index:30; bottom:0px!important; background:#111; padding:20px; padding-top:10px; width:850px; min-width:300px; border-radius:5px; border:0px;}
 #messengerMain td							{vertical-align:top;}
 #messengerBottomMargin						{height:60px;}/*marge du bas du messenger : pour afficher le livecounter ci-dessus qui s'y superpose (cf. "#livecounterMain td" ci-dessus)*/
-#messengerNobodyDiv							{position:relative; background:#333; padding:10px; margin:10px; line-height:30px; border-radius:10px;}
+#messengerNobodyDiv							{position:relative; background:#333; font-size:1.05em; padding:20px; margin:10px; line-height:30px; border-radius:10px;}
 #messengerNobodyDiv img[src*=messenger]		{position:absolute; top:-20px; left:-10px;}
 #livecounterMain							{z-index:31; bottom:5px!important; background:#333; padding:18px 30px; border-radius:5px;}
 #livecounterMain td							{vertical-align:middle;}

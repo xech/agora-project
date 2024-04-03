@@ -402,10 +402,10 @@ class DbUpdate extends Db
 
 				////	AJOUT DE CHAMPS DATE ET AUTEUR
 				foreach(array("ap_space","ap_user","ap_userGroup","ap_calendar","ap_calendarEventCategory","ap_forumTheme") as $tmpTable){
-					self::fieldExist($tmpTable, "dateCrea", "ALTER TABLE ".$tmpTable." ADD dateCrea DATETIME DEFAULT NULL");
-					self::fieldExist($tmpTable, "_idUser", "ALTER TABLE ".$tmpTable." ADD _idUser int DEFAULT NULL AFTER dateCrea");
-					self::fieldExist($tmpTable, "dateModif", "ALTER TABLE ".$tmpTable." ADD dateModif DATETIME DEFAULT NULL AFTER _idUser");
-					self::fieldExist($tmpTable, "_idUserModif", "ALTER TABLE ".$tmpTable." ADD _idUserModif int DEFAULT NULL AFTER dateModif");
+					self::fieldExist($tmpTable, "dateCrea",		"ALTER TABLE ".$tmpTable." ADD dateCrea DATETIME DEFAULT NULL");
+					self::fieldExist($tmpTable, "_idUser",		"ALTER TABLE ".$tmpTable." ADD _idUser int DEFAULT NULL AFTER dateCrea");
+					self::fieldExist($tmpTable, "dateModif",	"ALTER TABLE ".$tmpTable." ADD dateModif DATETIME DEFAULT NULL AFTER _idUser");
+					self::fieldExist($tmpTable, "_idUserModif",	"ALTER TABLE ".$tmpTable." ADD _idUserModif int DEFAULT NULL AFTER dateModif");
 				}
 
 				////	MAJ DES GROUPES
@@ -903,12 +903,18 @@ class DbUpdate extends Db
 				self::query("ALTER TABLE `ap_task` CHANGE `dateBegin` `dateBegin` DATE NULL DEFAULT NULL");
 				self::query("ALTER TABLE `ap_task` CHANGE `dateEnd` `dateEnd` DATE NULL DEFAULT NULL");
 				//Task Kanban :  Créé le champ `_idStatus` dans la table "ap_task"  &&  Créé la table "ap_TaskStatus" des statuts/colonnes Kanban  &&   Créé les satuts/colonnes kanban de base
-				self::fieldExist(MdlTask::dbTable, "_idStatus",  "ALTER TABLE ap_task ADD `_idStatus` int DEFAULT NULL AFTER `description`");
-				self::tableExist(MdlTaskStatus::dbTable,  "CREATE TABLE ap_taskStatus (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
+				self::fieldExist("ap_task", "_idStatus",  "ALTER TABLE `ap_task` ADD `_idStatus` int DEFAULT NULL AFTER `description`");
+				self::tableExist("ap_taskStatus",  "CREATE TABLE `ap_taskStatus` (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
 				MdlTaskStatus::dbFirstRecord();
 				//Catégories d'evt  &&  Themes du forum : créé le champ `rank`
-				self::fieldExist(MdlCalendarEventCategory::dbTable, "rank", "ALTER TABLE ".MdlCalendarEventCategory::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
-				self::fieldExist(MdlForumTheme::dbTable, "rank",  			"ALTER TABLE ".MdlForumTheme::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
+				self::fieldExist("ap_calendarEventCategory", "rank",	"ALTER TABLE `ap_calendarEventCategory` ADD `rank` smallint DEFAULT NULL AFTER `color`");
+				self::fieldExist("ap_forumTheme", "rank",  				"ALTER TABLE `ap_forumTheme` ADD `rank` smallint DEFAULT NULL AFTER `color`");
+			}
+
+			if(self::updateVersion("24.4.1"))
+			{
+				//Renomme la table des catégories d'événement
+				if(self::tableExist("ap_calendarEventCategory"))  {self::query("RENAME TABLE `ap_calendarEventCategory` TO `ap_calendarCategory`");}
 			}
 			////////////////////////////////////////	ATTENTION A MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////

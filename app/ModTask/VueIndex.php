@@ -7,10 +7,10 @@ $(function(){
 
 <style>
 /*LABEL/DETAILS DES TACHES*/
-.objBlocks .vStatusPriorityLabel	{display:block; margin-top:7px;}							/*Label du statut kanban et de la priorité*/
-.objLines  .vStatusPriorityLabel	{display:inline-block; margin-left:20px;}					/*Idem*/
-.objBlocks .vObjTaskDetails			{position:absolute; display:block; bottom:3px; right:20px;}	/*Détails des taches en affichage "block" : Icones avec "title"*/
-.objBlocks .objDetails img			{max-height:20px; margin-right:10px;}						/*Icones des détails*/
+.objBlocks .priorityLabel, .objBlocks .categoryLabel	{display:block; margin-top:7px;}							/*Label de la priorité et du statut (surcharges)*/
+.objLines  .priorityLabel, .objLines .categoryLabel		{display:inline-block; margin-left:20px;}					/*Idem*/
+.objBlocks .vObjTaskDetails								{position:absolute; display:block; bottom:3px; right:20px;}	/*Détails des taches en affichage "block" : Icones avec "title"*/
+.objBlocks .objDetails img								{max-height:20px; margin-right:10px;}						/*Icones des détails*/
 
 /*TIMELINE*/
 .vTimelineSeparator					{visibility:hidden; width:100%;}
@@ -45,11 +45,9 @@ $(function(){
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlTaskFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
-			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
-			echo CtrlObject::folderTreeMenu().MdlTask::menuDisplayMode().MdlTask::menuSort();
-			////	MENU DES COLONNES KANBAN
-			if(MdlTaskStatus::addRight())  {echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlTaskStatus::getUrlEditObjects()."');\"><div class='menuIcon'><img src='app/img/category.png'></div><div>".Txt::trad("TASK_categoriesEditTitle")."</div></div>";}
-			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
+			////	ARBORESCENCE  &  MENU DES STATUS KANBAN  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			echo MdlTaskFolder::menuTree().MdlTaskStatus::displayMenu().MdlTask::menuDisplayMode().MdlTask::menuSort().
+				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
 			?>
 		</div>
 	</div>
@@ -57,7 +55,7 @@ $(function(){
 	<div id="pageFullContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo CtrlObject::folderPathMenu(Txt::trad("TASK_addTask"),MdlTask::getUrlNew());
+		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew());
 		echo CtrlObject::vueFolders();
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask)
@@ -66,7 +64,7 @@ $(function(){
 					"<div class='objContentScroll'>
 						<div class='objContent'>
 							<div class='objIcon objIconOpacity'><img src='app/img/task/iconSmall.png'></div>
-							<div class='objLabel' onclick=\"lightboxOpen('".$tmpTask->getUrl("vue")."')\">".ucfirst($tmpTask->title).$tmpTask->statusLabel().$tmpTask->priorityLabel()."</div>
+							<div class='objLabel' onclick=\"lightboxOpen('".$tmpTask->getUrl("vue")."')\">".ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel()."</div>
 							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
 							<div class='objAutorDate'>".$tmpTask->autorDateLabel()."</div>
 						</div>

@@ -189,7 +189,7 @@ class MdlPerson extends MdlObject
 		}
 		//Ajoute la date de dernire connexion
 		if(static::objectType=="user" && Ctrl::$curUser->isSpaceAdmin() && $displayMode!="edit")  {$labels.=$this->getFieldValue("lastConnection",$displayMode);}
-		//Renvoi le résultat
+		//Retourne le résultat
 		return $labels;
 	}
 
@@ -215,9 +215,9 @@ class MdlPerson extends MdlObject
 		elseif($fieldName=="comment")							{$fieldValue=nl2br($fieldValue);}
 		//Retourne le champ dans son conteneur
 		if(!empty($fieldValue)){
-			if($displayMode=="block")		{return "<div class='objPersonDetail'>".$fieldValue."</div>";}
-			elseif($displayMode=="line")	{return "<div class='objPersonDetail'>".$fieldValue."</div><img src='app/img/separator.png' class='objPersonDetailSeparator'>";}
-			else							{return "<div class='objField'><div><img src='app/img/person/".$fieldName.".png'> ".Txt::trad($fieldName)."</div><div>".$fieldValue."</div></div>";}
+			if($displayMode=="block")		{return '<div class="objPersonDetail">'.$fieldValue.'</div>';}
+			elseif($displayMode=="line")	{return '<div class="objPersonDetail">'.$fieldValue.'</div><img src="app/img/separator.png" class="objPersonDetailSeparator">';}
+			else							{return '<div class="objField"><div><img src="app/img/person/'.$fieldName.'.png"> '.Txt::trad($fieldName).'</div><div>'.$fieldValue.'</div></div>';}
 		}
 	}
 
@@ -233,21 +233,21 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 * PATH DE L'IMAGE DE PROFIL
 	 *******************************************************************************************/
-	public function getImgPath($defaultImg=false)
+	public function personImgPath($defaultImg=false)
 	{
 		if($this->hasImg())			{return $this->pathImgThumb();}
-		elseif($defaultImg==true)	{return "app/img/person/personDefault.png";}//img par défaut
+		elseif($defaultImg==true)	{return 'app/img/person/personDefault.png';}//img par défaut affiché si demandé
 	}
 
 	/*******************************************************************************************
 	 * BALISE <IMG> DE L'IMAGE DU PROFIL
 	 *******************************************************************************************/
-	public function getImg($openProfile=false, $smallImg=false, $defaultImg=false)
+	public function personImg($openProfile=false, $smallImg=false, $defaultImg=false)
 	{
-		$imgPath=$this->getImgPath($defaultImg);
+		$imgPath=$this->personImgPath($defaultImg);
 		if(!empty($imgPath)){
-			$personImg="<img src='".$imgPath."' class='personImg ".($smallImg==true?"personImgSmall":null)."'>";
-			if($openProfile==true)  {$personImg="<a onclick=\"lightboxOpen('".$this->getUrl("vue")."');\" title=\"".Txt::trad("displayProfil")."\">".$personImg."</a>";}
+			$personImg='<img src="'.$imgPath.'" class="personImg '.($smallImg==true?"personImgSmall":null).'">';
+			if($openProfile==true)  {$personImg='<a onclick="lightboxOpen(\''.$this->getUrl("vue").'\')" title="'.Txt::trad("displayProfil").'">'.$personImg.'</a>';}
 			return $personImg;
 		}
 	}
@@ -258,14 +258,14 @@ class MdlPerson extends MdlObject
 	public function displayImgMenu()
 	{
 		////	Ajouter un fichier  OU  Fichier à conserver/modifier/supprimer
-		if($this->hasImg()!=true)	{return "<input type='file' name='personImgFile'><input type='hidden' name='personImgAction' value='change'>";}	
+		if($this->hasImg()!=true)	{return '<input type="file" name="personImgFile"><input type="hidden" name="personImgAction" value="change">';}	
 		else{
-			return "<select name='personImgAction' onchange=\"if(this.value=='change') {\$('[name=personImgFile]').fadeIn();} else {\$('[name=personImgFile]').fadeOut();}\">
-						<option>".Txt::trad("keepImg")."</option>
-						<option value='change'>".Txt::trad("changeImg")."</option>
-						<option value='delete'>".Txt::trad("delete")."</option>
+			return '<select name="personImgAction" onchange="if(this.value==\'change\') {$(\'.personImgFile\').fadeIn();} else {$(\'.personImgFile\').fadeOut();}">
+						<option>'.Txt::trad("keepImg").'</option>
+						<option value="change">'.Txt::trad("changeImg").'</option>
+						<option value="delete">'.Txt::trad("delete").'</option>
 					</select>
-					<input type='file' name='personImgFile' style='display:none;margin-top:10px;'>";
+					<input type="file" name="personImgFile" class="personImgFile" style="display:none;margin-top:10px;">';
 		}
 	}
 

@@ -141,8 +141,8 @@ function calendarDimensions(printCalendar)
 			foreach($periodDays as $tmpDay){
 				$dayLabelFormat=Req::isMobile() ? "ccc d" : "cccc d";//Jour de la semaine ("lun. 12" ou "lundi 12")
 				$classToday=(date("y-m-d",$tmpDay["timeBegin"])==date("y-m-d"))  ?  "vCalWeekHeaderDayToday"  :  null;
-				$celebrationDay=(!empty($tmpDay["celebrationDay"]))  ?  " <img src='app/img/calendar/celebrationDay.png' class='vCalWeekHeaderCelebrationDay' title=\"".Txt::tooltip($tmpDay["celebrationDay"])."\">"  :  null;
-				echo "<div class=\"vCalWeekHeaderDay ".$classToday."\">".ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"])).$celebrationDay."</div>";
+				$celebrationDay=(!empty($tmpDay["celebrationDay"]))  ?  '&nbsp;<img src="app/img/calendar/celebrationDay.png" class="vCalWeekHeaderCelebrationDay" title="'.Txt::tooltip($tmpDay["celebrationDay"]).'">'  :  null;
+				echo '<div class="vCalWeekHeaderDay '.$classToday.'">'.ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"])).$celebrationDay.'</div>';
 			}
 			?>
 			<div class="vCalWeekHeaderScroller">&nbsp;</div>
@@ -151,37 +151,37 @@ function calendarDimensions(printCalendar)
 
 	<?php
 	////	PARTIE SCROLLABLE DE L'AGENDA : EVENEMENTS & GRILLE DES HEURES/MINUTES
-	echo "<div class='vCalWeekScroller' id=\"calWeekScroller".$tmpCal->_typeId."\" data-timeSlotBegin=\"".$tmpCal->timeSlotBegin."\" data-timeSlotDuration=\"".round($tmpCal->timeSlotEnd-$tmpCal->timeSlotBegin)."\">";
+	echo '<div class="vCalWeekScroller" id="calWeekScroller'.$tmpCal->_typeId.'" data-timeSlotBegin="'.$tmpCal->timeSlotBegin.'" data-timeSlotDuration="'.round($tmpCal->timeSlotEnd-$tmpCal->timeSlotBegin).'">';
 
 		////	EVENEMENTS DE CHAQUE JOUR AFFICHÉ
 		foreach($tmpCal->eventList as $tmpDate=>$tmpDateEvts){
 			foreach($tmpDateEvts as $tmpEvt){
-				$divContainerAttr="onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\" data-dayDate=\"".$tmpDate."\" data-timeBegin=\"".$tmpEvt->timeBegin."\" data-timeEnd=\"".$tmpEvt->timeEnd."\" data-minutesFromDayBegin=\"".$tmpEvt->minutesFromDayBegin."\" data-durationMinutes=\"".$tmpEvt->durationMinutes."\" data-catColor=\"".$tmpEvt->catColor."\"";
-				echo $tmpEvt->objContainer("vCalEvtBlock",$divContainerAttr).$tmpEvt->contextMenu.
-						"<div class='vCalEvtLabel'>".$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon."</div>
-					 </div>";
+				$containerAttr='onclick="lightboxOpen(\''.$tmpEvt->getUrl("vue").'\')" data-dayDate="'.$tmpDate.'" data-timeBegin="'.$tmpEvt->timeBegin.'" data-timeEnd="'.$tmpEvt->timeEnd.'" data-minutesFromDayBegin="'.$tmpEvt->minutesFromDayBegin.'" data-durationMinutes="'.$tmpEvt->durationMinutes.'" data-eventColor="'.$tmpEvt->eventColor.'"';
+				echo $tmpEvt->objContainer("vCalEvtBlock",$containerAttr).$tmpEvt->contextMenu.
+						'<div class="vCalEvtLabel">'.$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon.'</div>
+					 </div>';
 			}
 		}
 
 		////	GRILLE DES HEURES/MINUTES
-		echo "<div class='vCalWeekTable'>";
+		echo '<div class="vCalWeekTable">';
 			for($tmpHour=0; $tmpHour<=23; $tmpHour++)
 			{
 				//CRÉNEAU HORS DU "TIMESLOT" DE L'AGENDA?
 				$tmpHourClass=($tmpHour<$tmpCal->timeSlotBegin || $tmpHour>$tmpCal->timeSlotEnd || $tmpHour==12 || $tmpHour==13)  ?  "vCalWeekHourOutTimeslot"  :  null;
 				//LIGNE DE L'HEURE COURANTE : LABEL DE L'HEURE + CELLULE DE L'HEURE POUR CHAQUE JOUR
-				echo "<div class='vCalWeekLine'>";
-					echo "<div class='vCalWeekHourLabel'>".$tmpHour."<span class='vCalWeekHourLabelZero'>:00</span></div>";//:00 pour les minutes
+				echo '<div class="vCalWeekLine">
+						<div class="vCalWeekHourLabel">'.$tmpHour.'<span class="vCalWeekHourLabelZero">:00</span></div>';//:00 pour les minutes
 					foreach($periodDays as $tmpDate=>$tmpDay)
 					{
 						//CELLULE DE L'HEURE
-						echo "<div class='vCalWeekCell ".$tmpHourClass."' data-dayDate=\"".$tmpDate."\">";
+						echo '<div class="vCalWeekCell '.$tmpHourClass.'" data-dayDate="'.$tmpDate.'">';
 						//AJOUT OU PROPOSITION D'EVT : CREE LE TABLEAU DE SELECTION D'UN CRENEAU HORAIRE PAR "DRAG & DROP" (SAUF SUR MOBILE)
 						if($tmpCal->addOrProposeEvt() && Req::isMobile()==false)
 						{
 							//Init le tableau
 							$cellDay=date("Ymd",$tmpDay["timeBegin"]);
-							echo "<div class='vCalWeekHourSubTable'>";
+							echo '<div class="vCalWeekHourSubTable">';
 								//DIVISE L'HEURE EN CELLULES DE 15 MN POUR L'AJOUT D'EVT (agenda en lecture seule: proposition d'evt)
 								foreach([0,1,2,3] as $quarterHour)
 								{
@@ -193,15 +193,15 @@ function calendarDimensions(printCalendar)
 									else												{$halfCellClass=null;}
 									$newEvtTitle=$tmpCal->addEventLabel." [".date("H:i",$cellTimeBegin)."]";
 									//Affiche la cellule de sélection
-									echo "<div class='vCalWeekHourCells'>
-											<div class=\"vCalWeekHourCell noTooltip ".$halfCellClass."\" title=\"".Txt::tooltip($newEvtTitle)."\" data-idCal=\"".$tmpCal->_id."\" data-cellTimeBegin=\"".$cellTimeBegin."\" data-cellTimeEnd=\"".$cellTimeEnd."\" data-cellDay=\"".$cellDay."\">&nbsp;</div>
-										  </div>";
+									echo '<div class="vCalWeekHourCells">
+											<div class="vCalWeekHourCell noTooltip '.$halfCellClass.'" title="'.Txt::tooltip($newEvtTitle).'" data-idCal="'.$tmpCal->_id.'" data-cellTimeBegin="'.$cellTimeBegin.'" data-cellTimeEnd="'.$cellTimeEnd.'" data-cellDay="'.$cellDay.'">&nbsp;</div>
+										  </div>';
 								}
-							echo "</div>";
+							echo '</div>';
 						}
-						echo "</div>";
+						echo '</div>';
 					}
-				echo "</div>";
+				echo '</div>';
 			}
 		?>
 		</div>

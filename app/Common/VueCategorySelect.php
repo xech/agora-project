@@ -1,7 +1,7 @@
 <script>
 ////	INIT
 $(function(){
-	//// Vérifie si la categorie est bien affectée aux espaces sélectionnés pour l'objet courant  :  cf. "VueObjEditMenuSubmit.php"  &  VueObjEditCategories.php"
+	//// Vérifie si la categorie est bien affectée aux espaces sélectionnés pour l'objet courant  :  cf. "VueObjEditMenuSubmit.php"  &  VueCategoryEdit.php"
 	if($("[name='objectRight[]']").exist()){											//Vérif si le tableau des droits d'accès est bien instancié
 		$("#selectCategory, [name='objectRight[]']").on("change",function(){			//Change de categorie  OU  Sélectionne un espace dans les droits d'accès
 			let catSelector="#selectCategory option:selected";							//Sélecteur de la catégorie choisie
@@ -25,8 +25,8 @@ $(function(){
 </script>
 
 
-<select name="<?= $_idFieldName; ?>" id="selectCategory">
-	<option value=""><?= $tradCategoryUndefined ?></option>
+<select name="<?= $dbParentField; ?>" id="selectCategory">
+	<option value=""><?= Txt::trad($tradPrefix."_categoryUndefined") ?></option>
 	<?php
 	////	Liste les categories disponibles
 	foreach($categoryList as $tmpCat){

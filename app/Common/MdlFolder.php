@@ -9,7 +9,7 @@
 /*
  * Classe des Objects "FOLDER"
  */
- class MdlObjectFolder extends MdlObject
+ class MdlFolder extends MdlObject
 {
 	const isFolder=true;
 	const isSelectable=true;
@@ -110,10 +110,10 @@
 	/*******************************************************************************************
 	 * CONTROLE SI UN DOSSIER SE TROUVE DANS L'ARBORECENCE DU DOSSIER COURANT
 	 *******************************************************************************************/
-	public function isInFolderTree($folderId)
+	public function isInCurrentTree($newFolder)
 	{
 		foreach($this->folderTree("all") as $tmpFolder){
-			if($folderId==$tmpFolder->_id)  {return true;}
+			if($newFolder->_id==$tmpFolder->_id)  {return true;}
 		}
 	}
 
@@ -128,7 +128,7 @@
 	/*******************************************************************************************
 	 * CONTENU D'UN DOSSIER  :  NOMBRE D'ELEMENTS + TAILLE DU DOSSIER (MODULE FICHIERS)
 	 *******************************************************************************************/
-	public function folderContentDescription()
+	public function contentDescription()
 	{
 		//Init la mise en cache
 		if($this->_contentDescription===null)
@@ -153,7 +153,7 @@
 	}
 
 	/*******************************************************************************************
-	 * CHEMIN D'UN DOSSIER (FONCTION RÉCURSIVE)
+	 * CHEMIN D'UN DOSSIER : FONCTION RÉCURSIVE
 	 * $typeReturn= object | id | real | text | zip
 	 *******************************************************************************************/
 	public function folderPath($typeReturn, $curFolder=null, $foldersList=array())
@@ -172,7 +172,7 @@
 			if($typeReturn=="object") 	{return $foldersList;}
 			//Retourne une liste d'identifiants de dossiers
 			if($typeReturn=="id"){
-				$foldersIds=array();
+				$foldersIds=[];
 				foreach($foldersList as $tmpFolder)  {$foldersIds[]=$tmpFolder->_id;}
 				return $foldersIds;
 			}
@@ -197,7 +197,7 @@
 	}
 
 	/*******************************************************************************************
-	 * ARBORESCENCE D'OBJETS DOSSIERS (fonc. récursive)
+	 * ARBORESCENCE D'OBJETS DOSSIERS : FONCTION RÉCURSIVE
 	 *******************************************************************************************/
 	public function folderTree($accessRightMin=1, $curFolder=null, $treeLevel=0)
 	{
@@ -229,6 +229,33 @@
 		}
 		////	Renvoie l'arborescence finale
 		return $curFolderTree;
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU DU CHEMIN DU DOSSIER COURANT
+	 *******************************************************************************************/
+	public static function menuPath($addElemLabel=null, $addElemUrl=null)
+	{
+		//Affiche le chemin d'un dossier  ET/OU  L'option d'ajout d'élement
+		if(Ctrl::$curContainer->isRootFolder()==false || !empty($addElemLabel)){
+			$vDatas["addElemLabel"]=$addElemLabel;
+			$vDatas["addElemUrl"]=$addElemUrl;
+			return Ctrl::getVue(Req::commonPath."VueFolderPath.php", $vDatas);
+		}
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU D'ARBORESCENCE DE DOSSIERS  ($context : "nav" / "move")
+	 *******************************************************************************************/
+	public static function menuTree($context="nav")
+	{
+		//Affiche l'arborescence (si ya pas que le dossier racine)
+		if(count(Ctrl::$curRootFolder->folderTree())>1){
+			$vDatas["context"]=$context;
+			$vueFolderTree=Req::commonPath."VueFolderTree.php";
+			if($context=="nav")		{return Ctrl::getVue($vueFolderTree,$vDatas);}		//"nav"	 : renvoie le menu de navigation de l'arborescence de dossiers
+			else					{CtrlObject::displayPage($vueFolderTree,$vDatas);}	//"move" : affiche uniquement le menu de selection d'un dossier pour y déplacer un element
+		}
 	}
 
 	/*******************************************************************************************

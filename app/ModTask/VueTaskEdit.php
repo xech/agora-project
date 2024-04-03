@@ -17,14 +17,14 @@ $(function(){
 .vTaskOptions				{display:inline-block; margin:20px 20px 0px 0px;}
 .vTaskOptionsButton			{height:40px;}
 .vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
-#fieldsetResponsiblePersons	{display:none; margin-top:10px; overflow:auto; max-height:300px;}
+#fieldsetResponsiblePersons	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
 .divResponsiblePerson		{display:inline-block; width:33%; padding:5px;}
 img[src*='arrowRight']		{margin:3px;}
 
 /*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.vTaskOptions			{display:block; margin:30px 0px 0px 0px;}
-	.divResponsiblePerson	{width:48%;}	
+	.divResponsiblePerson	{width:100%;}	
 }
 </style>
 

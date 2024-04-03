@@ -70,9 +70,9 @@ class MdlCalendar extends MdlObject
 	/***************************************************************************************************************************************************************
 	 * VERIF SI L'EVT SE TROUVE SUR LA PÉRIODE SELECTIONNEE (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)
 	 ***************************************************************************************************************************************************************/
-	public static function evtInTimeSlot($evtBegin, $evtEnd, $periodBegin, $periodEnd)
+	public static function eventInTimeSlot($eventTimeBegin, $eventTimeEnd, $periodTimeBegin, $periodTimeEnd)
 	{
-		return ( ($periodBegin<=$evtBegin && $evtBegin<=$periodEnd) || ($periodBegin<=$evtEnd && $evtEnd<=$periodEnd) || ($evtBegin<=$periodBegin && $periodEnd<=$evtEnd) );
+		return ( ($periodTimeBegin<=$eventTimeBegin && $eventTimeBegin<=$periodTimeEnd) || ($periodTimeBegin<=$eventTimeEnd && $eventTimeEnd<=$periodTimeEnd) || ($eventTimeBegin<=$periodTimeBegin && $periodTimeEnd<=$eventTimeEnd) );
 	}
 
 	/*******************************************************************************************
@@ -124,65 +124,66 @@ class MdlCalendar extends MdlObject
 	/*******************************************************************************************
 	 * EVENEMENTS CONFIRMÉS AFFECTÉS A L'AGENDA
 	 *******************************************************************************************/
-	public function evtList($periodTimeBegin=null, $periodTimeEnd=null, $accessRightMin=0.5, $orderByHourMinute=true, $pluginParams=null)
+	public function eventList($timeBegin=null, $timeEnd=null, $filterByCategory=true, $orderByHourMinute=true, $accessRightMin=0.5, $pluginParams=null)
 	{
 		//// Evénements sur un période donnée (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)  +  Evénements périodiques 
 		$sqlPeriod=null;
-		if(!empty($periodTimeBegin) && !empty($periodTimeEnd)){
-			$periodBegin=Db::format(date("Y-m-d 00:00",$periodTimeBegin));
-			$periodEnd  =Db::format(date("Y-m-d 23:59",$periodTimeEnd));
+		if(!empty($timeBegin) && !empty($timeEnd)){
+			$periodBegin=Db::format(date("Y-m-d 00:00",$timeBegin));
+			$periodEnd  =Db::format(date("Y-m-d 23:59",$timeEnd));
 			$sqlPeriod="AND ( (dateBegin between ".$periodBegin." and ".$periodEnd.") OR (dateEnd between ".$periodBegin." and ".$periodEnd.") OR (dateBegin <= ".$periodBegin." and ".$periodEnd." <= dateEnd) OR periodType is not null)";
 		}
 		//// Evénements confirmés et affectés à l'agenda
-		$sqlPlugins=(!empty($pluginParams))  ?  "AND ".MdlCalendarEvent::sqlPlugins($pluginParams)  :  null;//Sélection d'evt "plugins"
-		$sqlOrderBy=($orderByHourMinute==true)  ?  "DATE_FORMAT(dateBegin,'%H:%i') ASC"  :  "dateBegin ASC";//Tri par "H:m" (affiche juste une journée) || Tri par "dateBegin" (affiche une liste complete: "plugins")
-		$eventsList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlPeriod." ".$sqlPlugins." ORDER BY ".$sqlOrderBy);
+		$sqlCategory=($filterByCategory==true)  ?  MdlCalendarCategory::sqlCategoryFilter()  :  null;			//Filtre par catégorie 
+		$sqlPlugins=(!empty($pluginParams))  ?  "AND ".MdlCalendarEvent::sqlPlugins($pluginParams)  :  null;	//Sélection d'evt "plugins"
+		$sqlOrderBy=($orderByHourMinute==true)  ?  "DATE_FORMAT(dateBegin,'%H:%i') ASC"  :  "dateBegin ASC";	//Tri par "H:m" (affiche juste une journée) || Tri par "dateBegin" (affiche une liste complete: "plugins")
+		$eventsList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlPeriod." ".$sqlCategory." ".$sqlPlugins." ORDER BY ".$sqlOrderBy);
 		//// renvoie les evts en fonction du droit d'accès minimum 
-		$eventsReturned=[];
+		$eventList=[];
 		foreach($eventsList as $evtTmp){
-			if($evtTmp->accessRight()>=$accessRightMin)  {$eventsReturned[]=$evtTmp;}
+			if($evtTmp->accessRight()>=$accessRightMin)  {$eventList[]=$evtTmp;}
 		}
 		//// Renvoie les evenements
-		return $eventsReturned;
+		return $eventList;
 	}
 
 	/*********************************************************************************************************************************
-	 * FILTRE "$evtList" : RECUPERE LES EVENEMENTS DU JOUR + LES EVENEMENTS PERIODIQUES SUR LE JOUR (cf. $dayBegin/$dayEnd)
+	 * FILTRE LES EVENTS PASSES EN PARAMETRES, SUR UNE PERIODE DONNEE
 	 * Note : les evts périodiques sont clonés pour chaque occurence de l'evt
 	 *********************************************************************************************************************************/
-	public static function periodEvts($evtList, $dayBegin, $dayEnd)
+	public static function eventFilter($eventList, $timeBegin, $timeEnd)
 	{
-		$eventsReturned=[];
-		foreach($evtList as $tmpEvt)
+		$eventListFiltered=[];
+		foreach($eventList as $tmpEvt)
 		{
 			//// CLONE L'EVT POUR CHAQUE JOUR (cf. evt sur plusieurs jours ou périodique)  &&  TIME DU DEBUT/FIN DE L'EVT
 			$tmpEvt=clone $tmpEvt;
-			$evtBegin=strtotime($tmpEvt->dateBegin);
-			$evtEnd=strtotime($tmpEvt->dateEnd);
+			$eventTimeBegin=strtotime($tmpEvt->dateBegin);
+			$eventTimeEnd  =strtotime($tmpEvt->dateEnd);
 			//// AJOUTE LES EVT DU JOUR  ||  EVT PERIODIQUE/RÉCURRENT SUR LE JOUR
-			if(static::evtInTimeSlot($evtBegin,$evtEnd,$dayBegin,$dayEnd))  {$eventsReturned[]=$tmpEvt;}
+			if(static::eventInTimeSlot($eventTimeBegin,$eventTimeEnd,$timeBegin,$timeEnd))  {$eventListFiltered[]=$tmpEvt;}
 			elseif(!empty($tmpEvt->periodType))
 			{
 				//Evenement sur le jour =>  déjà commencé  &&  (pas de fin de périodicité || fin de périodicité pas encore arrivé)  &&  (pas de date d'exception || "dateBegin" absent des dates d'exception)
-				if($evtBegin<$dayBegin  &&  (empty($tmpEvt->periodDateEnd) || $dayEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$dayBegin)."/",$tmpEvt->periodDateExceptions)==false))
+				if($eventTimeBegin<$timeBegin  &&  (empty($tmpEvt->periodDateEnd) || $timeEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$timeBegin)."/",$tmpEvt->periodDateExceptions)==false))
 				{
 					//Récupère les valeurs de la périodicité : fonction du "periodType"
 					$periodValues=Txt::txt2tab($tmpEvt->periodValues);
 					//Vérifie si l'evt périodique est présent sur le jour courant : il oui, on prépare le reformatage de la date
 					$formatModified=$formatKept=null;
-					if($tmpEvt->periodType=="weekDay" && in_array(date("N",$dayBegin),$periodValues))												{$formatModified="Y-m-d";	$formatKept=" H:i";}	//jour de semaine
-					elseif($tmpEvt->periodType=="month" && in_array(date("m",$dayBegin),$periodValues) && date("d",$evtBegin)==date("d",$dayBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
-					elseif($tmpEvt->periodType=="year" && date("m-d",$evtBegin)==date("m-d",$dayBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
-					//Reformate pour que le début/fin de l'evt corresponde à la date courante && Ajoute enfin l'evt à $eventsReturned (vérif qu'il soit sur le créneau : cf. "actionTimeSlotBusy()")
+					if($tmpEvt->periodType=="weekDay" && in_array(date("N",$timeBegin),$periodValues))														{$formatModified="Y-m-d";	$formatKept=" H:i";}	//jour de semaine
+					elseif($tmpEvt->periodType=="month" && in_array(date("m",$timeBegin),$periodValues) && date("d",$eventTimeBegin)==date("d",$timeBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
+					elseif($tmpEvt->periodType=="year" && date("m-d",$eventTimeBegin)==date("m-d",$timeBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
+					//Reformate pour que le début/fin de l'evt corresponde à la date courante  &&  Ajoute enfin l'evt à $eventListFiltered (vérif qu'il soit sur le créneau : cf. "actionTimeSlotBusy()")
 					if(!empty($formatModified) && !empty($formatKept)){
-						$tmpEvt->dateBegin=date($formatModified,$dayBegin).date($formatKept,$evtBegin);
-						$tmpEvt->dateEnd  =date($formatModified,$dayEnd).date($formatKept,$evtEnd);
-						if(static::evtInTimeSlot(strtotime($tmpEvt->dateBegin),strtotime($tmpEvt->dateEnd),$dayBegin,$dayEnd))  {$eventsReturned[]=$tmpEvt;}
+						$tmpEvt->dateBegin=date($formatModified,$timeBegin).date($formatKept,$eventTimeBegin);
+						$tmpEvt->dateEnd  =date($formatModified,$timeEnd).date($formatKept,$eventTimeEnd);
+						if(static::eventInTimeSlot(strtotime($tmpEvt->dateBegin),strtotime($tmpEvt->dateEnd),$timeBegin,$timeEnd))  {$eventListFiltered[]=$tmpEvt;}
 					}
 				}
 			}
 		}
-		return $eventsReturned;
+		return $eventListFiltered;
 	}
 
 	/*******************************************************************************************
@@ -261,17 +262,17 @@ class MdlCalendar extends MdlObject
 				if($tmpCal->isPersonalCalendar())	{$displayedCalendars[]=$tmpCal;}
 			}
 		}
-		//// Supprime les evénements de plus de 3 ans (lancé en début de session)
+		//// Supprime les evénements de plus de 5 ans (lancé en début de session)
 		if(empty($_SESSION["calendarsCleanEvt"]))
 		{
 			//Période des evenements "old"
-			$time100YearsAgo=time()-(86400*365*100);
-			$time5YearsAgo=time()-(86400*365*5);
+			$time30YearsAgo=time()-(86400*365*30);
+			$time5YearsAgo =time()-(86400*365*5);
 			//Sélectionne les agendas avec "editContentRight()"
 			foreach($displayedCalendars as $tmpCal){
 				if($tmpCal->editContentRight()){
-					foreach($tmpCal->evtList($time100YearsAgo,$time5YearsAgo,2) as $tmpEvt){	//AccessRight>=2
-						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}				//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+					foreach($tmpCal->eventList($time30YearsAgo,$time5YearsAgo,false,false,2) as $tmpEvt){	//$filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=2
+						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}							//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
 					}
 				}
 			}

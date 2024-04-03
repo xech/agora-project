@@ -83,7 +83,7 @@ CREATE TABLE `ap_calendarEventAffectation` (
   KEY `indexes` (`_idCal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `ap_calendarEventCategory` (
+CREATE TABLE `ap_calendarCategory` (
   `_id` int NOT NULL AUTO_INCREMENT,
   `_idSpaces` text,
   `title` varchar(255) DEFAULT NULL,
@@ -573,7 +573,7 @@ INSERT INTO `ap_calendar` (`_id`, `type`, `_idUser`, `title`) VALUES
 (1,'ressource',1,NULL), 
 (2,'user',1,NULL);
 
-INSERT INTO `ap_calendarEventCategory` (`_id`, `color`, `title`) VALUES 
+INSERT INTO `ap_calendarCategory` (`_id`, `color`, `title`) VALUES 
 (1,'#770000','rendez-vous'), 
 (2,'#000077','reunion'), 
 (3,'#dd7700','vacances'), 

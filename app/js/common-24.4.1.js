@@ -699,7 +699,7 @@ function urlParam(paramName, url)
 	if(/(msie|trident)/i.test(window.navigator.userAgent)==false){			//Verif si le browser prend en charge "URL.SearchParams" (Safari aussi?)
 		if(typeof url==="undefined")  {url=window.location.href;}			//Pas d'Url en paramètre : récupère l'Url de la page courante
 		const urlParams=new URLSearchParams(url);							//Créé un objet 'URLSearchParams'
-		if(urlParams.has(paramName))  {return urlParams.get(paramName);}	//Renvoi le paramètre s'il existe	
+		if(urlParams.has(paramName))  {return urlParams.get(paramName);}	//Retourne le paramètre s'il existe	
 	}
 }
 

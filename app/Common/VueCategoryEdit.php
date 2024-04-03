@@ -49,40 +49,43 @@ function colorPickerChange(tmpColor, _typeId){
 
 
 <style>
-.lightboxTitle img							{margin:0px 15px;}
-.vCategoryInfos								{display:table; width:100%;}
-.vCategoryInfos>div							{display:table-cell;}
-.vCategoryLabel								{text-transform:uppercase;}
-.vCategoryLabelAdd							{text-align:center;}
-.vCategoryAutor								{text-transform:lowercase; margin-top:5px; opacity:0.8;}
-.vCategoryButtons							{width:120px; text-align:center; vertical-align:middle;}
-form										{display:none; margin:20px 10px 10px 10px; padding:10px;}/*masque par défaut*/
-form input[name='title']					{width:300px; max-width:80%; color:#fff;}
-form input[name='description']				{width:100%; margin-top:15px; margin-bottom:5px;}
-.vSpaceList									{margin-top:10px;}
-.vSpaceList>div								{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
-.vLabelAllSpaces							{font-style:italic;}
-.submitButtonMain							{margin-top:30px;}/*surcharge du button*/
+.lightboxTitle img					{margin:0px 15px;}
+.vCategoryMain						{display:table; width:100%;}
+.vCategoryMain>div					{display:table-cell;}
+.vCategoryLabel						{font-size:1.05em;}
+.vCategoryLabelAdd					{font-size:1.1em; text-align:center;}
+.vCategoryAutor						{text-transform:lowercase; margin-top:5px; opacity:0.8;}
+.vCategoryButtons					{width:100px; text-align:center; vertical-align:middle;}
+form								{display:none; margin:20px 10px 10px 10px; padding:10px;}/*masque par défaut*/
+form input[name='title']			{width:300px; max-width:80%; color:#fff;}
+form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
+.vSpaceList							{margin-top:10px;}
+.vSpaceList>div						{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
+.vLabelAllSpaces					{font-style:italic;}
+.submitButtonMain					{margin-top:30px;}/*surcharge du button*/
+.changeOrderShadow					{height:50px;}/*surcharge*/
 /*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
 	.vSpaceList>div 	{display:block; width:100%; margin:15px 0px;}
+	.vCategoryButtons	{font-size:0.9em;}
 }
 </style>
 
 
 <div>
 	<div class="lightboxTitle">
-		<img src="app/img/category.png"><?= Txt::trad($tradModulePrefix."_categoriesEditTitle") ?>
-		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_categoriesEditInfo") ?><img src="app/img/info.png"></div>
+		<img src="app/img/category.png"><?= Txt::trad($tradModulePrefix."_categoryEditTitle") ?>
+		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_categoryEditInfo") ?><img src="app/img/info.png"></div>
 	</div>
 	<div id="categoryList">
-		<?php foreach($objectList as $tmpObj){ ?>
+		<?php foreach($categoriesList as $tmpObj){ ?>
 		<fieldset>
-			<div class="vCategoryInfos">
+			<!--LABEL ET MENU DE LA CATEGORIE-->
+			<div class="vCategoryMain">
 				<?php if($tmpObj->isNew()){ ?>
-					<div class="vCategoryLabel vCategoryLabelAdd" onclick="$('#categoryForm<?= $tmpObj->_typeId ?>').toggle()"><a><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_categoriesAddButton") ?></div>
+					<div class="vCategoryLabelAdd" onclick="$('#categoryForm<?= $tmpObj->_typeId ?>').toggle()"><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_categoryEditAdd") ?></div>
 				<?php }else{ ?>
-					<div class="vCategoryLabel"><div><?= $tmpObj->getLabel() ?></div><div class="vCategoryAutor"><?= Txt::trad("createBy").' '.$tmpObj->autorLabel() ?></div></div>
+					<div class="vCategoryLabel" title="<?= $tmpObj->description ?>"><div><?= $tmpObj->getLabel() ?></div><div class="vCategoryAutor"><?= Txt::trad("createBy").' '.$tmpObj->autorLabel() ?></div></div>
 					<div class="vCategoryButtons" onclick="$('#categoryForm<?= $tmpObj->_typeId ?>').toggle()"><img src="app/img/edit.png"> <?= Txt::trad("modify") ?></div>
 					<div class="vCategoryButtons" onclick="confirmDelete('<?= $tmpObj->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></div>
 					<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
@@ -91,6 +94,7 @@ form input[name='description']				{width:100%; margin-top:15px; margin-bottom:5p
 					<?php } ?>
 				<?php } ?>
 			</div>
+			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
 			<form action="index.php" method="post" id="categoryForm<?= $tmpObj->_typeId ?>" class="fieldsetSub">
 				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_typeId ?>" placeholder="<?= Txt::trad("title") ?>" style="background-color:<?= $tmpObj->color ?>">
 				<img src="app/img/colorPicker.png" class="menuLaunch" for="colorPickerDiv<?= $tmpObj->_id ?>">
@@ -108,7 +112,7 @@ form input[name='description']				{width:100%; margin-top:15px; margin-bottom:5p
 					<?php
 					////	"VISIBLE TOUS LES ESPACES"
 					if(Ctrl::$curUser->isGeneralAdmin() || ($tmpObj->isNew()==false && empty($tmpObj->_idSpaces))){								//Affiche si : Admin général || Modif d'un user + case déjà cochée
-						$boxId='boxAllSpaces'.$tmpObj->_typeId;																					//Id de la checkbox
+						$boxId=uniqid();																										//Id de la checkbox
 						$boxChecked=empty($tmpObj->_idSpaces)  ?  "checked"  :  null;															//Aucun espace sélectionné en particulier : visible sur tous
 						$boxOnchange='onchange="if(this.checked) $(\'input[id^=boxSpace'.$tmpObj->_typeId.']\').prop(\'checked\',false)"';		//Déselectionne les boxes de tous les espaces
 						echo '<div>
@@ -118,12 +122,12 @@ form input[name='description']				{width:100%; margin-top:15px; margin-bottom:5p
 					}
 					////	LISTE DES ESPACES
 					foreach($spaceList as $tmpSpace){
-						$boxId='boxSpace'.$tmpObj->_typeId.$tmpSpace->_typeId;																	//Id de la checkbox
+						$boxId=uniqid();																										//Id de la checkbox
 						$boxChecked=($tmpObj->isNew()==false && in_array($tmpSpace->_id,$tmpObj->spaceIds))  ?  "checked"  :  null;				//Check si : Modif + case déjà cochée
 						$boxOnchange='onchange="if(this.checked) $(\'input[id=boxAllSpaces'.$tmpObj->_typeId.']\').prop(\'checked\',false)"';	//Déselectionne la boxe "Visible sur tous les espaces"
 						echo '<div>
 								<input type="checkbox" name="spaceList[]" value="'.$tmpSpace->_id.'" id="'.$boxId.'" '.$boxChecked.' '.$boxOnchange.'>
-								<label for="'.$boxId.'" title="'.Txt::trad("visibleOnSpace").' <i>'.$tmpSpace->name.'</i>">'.$tmpSpace->name.'</label>
+								<label for="'.$boxId.'" title="'.Txt::trad("visibleOnSpace").' : '.$tmpSpace->name.'">'.$tmpSpace->name.'</label>
 							</div>';
 					}
 					?>

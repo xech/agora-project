@@ -22,13 +22,14 @@ function objectFormControl(){
 
 
 <style>
-[name='title'], [name="_idTheme"]	{margin-bottom:30px!important;}
-[name='title']						{width:45%; margin-right:20px!important;}
-[name="_idTheme"]					{width:35%;}
+[name='title']			{width:45%;}
+[name="_idTheme"]		{min-width:200px; margin-left:30px;}
+.descriptionTextarea	{margin-top:30px!important;}/*surcharge*/
 
 /*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	[name='title'], [name="_idTheme"]	{width:90%;}
+	[name='title'], [name="_idTheme"]	{width:100%;}
+	[name="_idTheme"]					{margin-left:0px; margin-top:20px;}
 }
 </style>
 

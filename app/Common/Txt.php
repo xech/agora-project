@@ -60,7 +60,7 @@ class Txt
 	{
 		//charge les traductions?
 		self::loadTrads();
-		//renvoie le résultat
+		//retourne le résultat
 		return (isset(self::$trad[$keyLang]));
 	}
 
@@ -88,28 +88,32 @@ class Txt
 	 *******************************************************************************************/
 	public static function reduce($text, $maxCaracNb=200)
 	{
-		$text=html_entity_decode(@strip_tags($text));							//Enlève les tags html && Converti les caractères html accentués ("&egrave;" "&eacute;" etc)
-		$text=str_replace('&nbsp;', '', $text);									//Enlève les "&nbsp;" (pas pris en charge par "html_entity_decode()"..)
-		$text=preg_replace('!\s+!', ' ', $text);								//Supprime les espaces et retours à la ligne en excès
-		if(strlen($text)>$maxCaracNb){											//Vérifie que la taille du texte brut ne dépasse pas $maxCaracNb
-			$text=substr($text, 0, $maxCaracNb);								//Réduit le texte en fonction de $maxCaracNb
-			if($maxCaracNb>100)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot si $maxCaracNb>100 (sinon on réduit trop le texte)
-			$text=rtrim($text,",")."...";										//Ajoute "..." en fin de texte (enlève éventuellement la dernière virgule)
+		if(!empty($text)){
+			$text=strip_tags($text);												//Enlève les tags html
+			$text=html_entity_decode($text);										//Converti les caractères html (ex: '&egrave;' => 'é')
+			$text=str_replace('&nbsp;', ' ', $text);								//Supprime les "&nbsp;"
+			$text=preg_replace('!\s+!', ' ', $text);								//Supprime les espaces en trop
+			if(strlen($text) > $maxCaracNb){										//Vérifie que le texte ne dépasse pas $maxCaracNb
+				$text=substr($text, 0, $maxCaracNb);								//Réduit le texte
+				if($maxCaracNb>100)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot si $maxCaracNb>100 (sinon on réduit trop le texte)
+				$text=rtrim($text,",")."...";										//Ajoute "..." en fin de texte (enlève si besoin la dernière virgule)
+			}
+			$text=htmlentities($text);												//Re-converti les caractères html (ex: 'é' => '&egrave;')
+			return $text;															//Retourne le résultat
 		}
-		//Renvoi le résultat
-		return self::tooltip($text);
 	}
 
 	/********************************************************************************************
-	 * PREPARE L'AFFICHAGE D'UN TEXTE COMPLEXE DANS UN TOOLTIP/TITLE (DESCRIPTION & CO)
+	 * PREPARE L'AFFICHAGE D'UN TEXTE DANS UN TOOLTIP (attribut "title" d'une balise)
 	 ********************************************************************************************/
 	public static function tooltip($text)
 	{
 		if(!empty($text)){
-			$text=nl2br(str_replace('"','&quot;',$text));		//Remplace les quotes et retours à la ligne puis renvoie le résultat !
-			$text=strip_tags($text,"<img><br><span><hr><i>");	//Enlève les principale balises (sauf <img> <br>...)
+			$text=nl2br($text);									//Remplace les \n par des <br>
+			$text=strip_tags($text,"<br><img><span><hr><i>");	//Enlève les principale balises (sauf <br> <img>...)
+			$text=str_replace('"','&quot;',$text);				//Remplace les quotes
 			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}	//Place les urls dans une balise <a>
-			return $text;
+			return $text;										//Retourne le résultat
 		}
 	}
 
@@ -128,7 +132,7 @@ class Txt
 			$text=strtr($text, $accentedChars);
 		}
 		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
-		$acceptedChars=($scope=="max")  ?  ['.','-','_']  :  ['.','-','_',',',':',' ','\'','(',')','[',']','@'];
+		$acceptedChars=($scope=="max")  ?  ['.','-','_']  :  ['.','-','_',',',':',' ','\'','(',')','[',']','@'];									//Liste des caractères spéciaux conservés
 		foreach(preg_split('//u',$text) as $tmpChars){																								//pas de "str_split()" car ne reconnait pas les caractères accentués
 			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpChars) && !in_array($tmpChars,$acceptedChars))  {$text=str_replace($tmpChars,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
 		}
@@ -168,7 +172,7 @@ class Txt
 		if(is_object($dateFormat)){
 			$dateFormat->setPattern($pattern);				//Init le format/pattern de sortie
 			$dateLabel=$dateFormat->format($timestamp);		//Formate la date
-			return static::utf8Encode($dateLabel);			//Renvoie le résultat en utf-8
+			return static::utf8Encode($dateLabel);			//Retourne le résultat en utf-8
 		}
 		//Sinon renvoie au format "date()". Remplace le pattern utilisé par "IntlDateFormatter()" (https://www.php.net/manual/fr/datetime.format.php)
 		else{																							
@@ -215,17 +219,17 @@ class Txt
 				elseif($format=="date")						{$pattern="dd/MM/Y";}	//Date au format basique				-> Ex: "08/03/2050"
 
 				//Applique le formatage via la class "IntlDateFormatter()" avec la "lang" et "timezone" locale
-				if(!empty($pattern))	{$dateFormat->setPattern($pattern);}
-				if(!empty($timeBegin))	{$dateLabel.=$dateFormat->format($timeBegin);}																//Label de début
+				if(!empty($pattern))							{$dateFormat->setPattern($pattern);}
+				if(!empty($timeBegin) && empty($dateLabel))		{$dateLabel.=$dateFormat->format($timeBegin);}										//Label de début (sauf "aujourd'hui)
 				if(!empty($timeEnd)){																												//Label de fin :
-					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente 	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Différents jours : ajoute la fin 	-> même $pattern que le début
-					elseif(empty($timeBegin))					{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin, mais sans début		-> même $pattern que le début
+					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente	 -> Ex: "11:30-12:30"
+					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Différents jours : ajoute la fin -> même $pattern qu'au début
+					elseif(empty($timeBegin))					{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin, mais sans début	 -> même $pattern qu'au début
 				}
 
 				//Simplifie les heures pleines -> Ex: "12:00"->"12h"
 				if($format=="mini")  {$dateLabel=str_replace(":00", "h", $dateLabel);}
-				//Renvoie le résultat en utf-8
+				//Retourne le résultat en utf-8
 				return static::utf8Encode($dateLabel);
 			}
 			//Sinon renvoie au format "date()"

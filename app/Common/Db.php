@@ -125,7 +125,7 @@ class Db
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
 			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}
-			//Renvoie le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
+			//Retourne le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
 			return (stristr($options,"noquotes"))  ?  $text  :  self::objPDO()->quote($text);
 		}
 	}

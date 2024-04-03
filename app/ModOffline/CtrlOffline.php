@@ -110,7 +110,7 @@ class CtrlOffline extends Ctrl
 					}
 				}
 			}
-			//Renvoie le résultat
+			//Retourne le résultat
 			echo json_encode($result);
 		}
 		////	Affiche le formulaire
@@ -215,7 +215,7 @@ class CtrlOffline extends Ctrl
 				//REDIRECTION AVEC NOTIFICATION
 				$result="installOK";
 			}
-			//RENVOI LE RESULTAT
+			//RETOURNE LE RESULTAT
 			echo $result;
 		}
 	}

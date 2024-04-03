@@ -17,6 +17,7 @@ class MdlTask extends MdlObject
 	const objectType="task";
 	const dbTable="ap_task";
 	const MdlObjectContainer="MdlTaskFolder";
+	const MdlCategory="MdlTaskStatus";
 	const descriptionEditor=true;
 	const isFolderContent=true;
 	const isSelectable=true;
@@ -31,21 +32,12 @@ class MdlTask extends MdlObject
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc","priority@@asc","priority@@desc","advancement@@asc","advancement@@desc","dateBegin@@asc","dateBegin@@desc","dateEnd@@asc","dateEnd@@desc"];
 
 	/*******************************************************************************************
-	 * ICONE & LABEL "PRIORITY"
+	 * COULEUR & LABEL "PRIORITY"
 	 *******************************************************************************************/
 	public function priorityLabel()
 	{
 		if(!empty($this->priority))
-			{return '<div class="vStatusPriorityLabel"><img src="app/img/task/priority'.$this->priority.'.png">&nbsp; '.Txt::trad("TASK_priority").' '.Txt::trad("TASK_priority".$this->priority).'</div>';}
-	}
-
-	/*******************************************************************************************
-	 * LABEL DU STATUT DE LA TÂCHE
-	 *******************************************************************************************/
-	public function statusLabel()
-	{
-		if(!empty($this->_idStatus))
-			{return '<div class="vStatusPriorityLabel">'.Ctrl::getObj("taskStatus",$this->_idStatus)->getLabel().'</div>';}
+			{return '<span class="priorityLabel"><img src="app/img/task/priority'.$this->priority.'.png">&nbsp; '.Txt::trad("TASK_priority").' '.Txt::trad("TASK_priority".$this->priority).'</span>';}
 	}
 
 	/*******************************************************************************************
