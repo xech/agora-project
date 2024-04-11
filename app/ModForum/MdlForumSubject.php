@@ -42,11 +42,10 @@ class MdlForumSubject extends MdlObject
 	 *******************************************************************************************/
 	public function messagesInfos()
 	{
-		//Récupère le nombre de messages pour le sujet  &&  
+		//Récupère le nombre de messages pour le sujet
 		$messagesNb=Db::getVal("SELECT COUNT(*) FROM ap_forumMessage WHERE _idContainer=".$this->_id);
-		//Affiche 
+		//Affiche "Aucun message"  ||  Affiche le nb de messages et l'auteur du dernier message (ex: "55 Messages <br> Dernier de Boby, aujourd'hui")
 		if(empty($messagesNb))  {return Txt::trad("FORUM_noMessage");}
-		//Affiche le nb de messages et l'auteur du dernier message (ex: "55 Messages <br> Dernier de Boby, aujourd'hui")
 		else{
 			$lastMessageId=Db::getVal("SELECT MAX(_id) FROM ap_forumMessage WHERE _idContainer=".$this->_id);
 			$lastMessage=Ctrl::getObj("forumMessage", $lastMessageId);

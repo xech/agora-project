@@ -69,7 +69,7 @@ class Txt
 	 *******************************************************************************************/
 	public static function txt2tab($text)
 	{
-		return (!empty($text) && !is_array($text)) ? explode("@@",trim($text,"@@")) : array();
+		return (!empty($text) && !is_array($text))  ?  explode("@@",trim($text,"@@"))  :  array();
 	}
 	
 	/*******************************************************************************************
@@ -157,7 +157,7 @@ class Txt
 	{
 		if(static::$IntlDateFormatter===null){
 			if(extension_loaded("intl"))	{static::$IntlDateFormatter=new IntlDateFormatter(Txt::trad("DATELANG"), IntlDateFormatter::SHORT, IntlDateFormatter::SHORT);}
-			else 							{static::$IntlDateFormatter=false;}//L'extention PHP "intl" n'est pas instanciée (cf. perso.free & Co)
+			else 							{static::$IntlDateFormatter=false;}//extention PHP "intl" pas instanciée
 		}
 		return static::$IntlDateFormatter;
 	}

@@ -141,7 +141,8 @@ class CtrlObject extends Ctrl
 			$curObj->editControl();
 			$_idSpaces=(in_array("allSpaces",Req::param("spaceList")))  ?  null : Txt::tab2txt(Req::param("spaceList"));
 			$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
-			static::lightboxClose();
+			Ctrl::notify("modifRecorded","success");
+			header("Location: ?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&objectType=".$MdlObject::objectType);//Toujours recharger la page (mais sans "redir()")
 		}
 		////	Liste des objets à afficher (+ nouvel objet)  &&  Liste des espaces de l'user courant  &&  Préfixe des traduction
 		$vDatas["categoriesList"]=$MdlObject::getList("edit");
@@ -216,6 +217,14 @@ class CtrlObject extends Ctrl
 				echo json_encode($result);
 			}
 		}
+	}
+
+	/*******************************************************************************************
+	 * ACTION : ARBO D'UN DOSSIER A RETOURNER
+	 *******************************************************************************************/
+	public static function actionFolderTreeBack()
+	{
+		if(Req::isHost())  {Host::actionFolderTreeBack();}
 	}
 
 	/*******************************************************************************************

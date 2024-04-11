@@ -81,13 +81,13 @@ class DbUpdate extends Db
 			Req::verifPhpVersion();
 			if(is_writable(PATH_DATAS."config.inc.php")==false)  {throw new Exception("Update error : Config.inc.php is not writable");}
 			////	VERROUILAGE DE LA MISE A JOUR
-			$lockedUpdate="UPDATE_LOCK.log";
-			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE MISE A JOUR");}
+			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
+			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE LA MISE A JOUR");}
 			elseif((time()-filemtime($lockedUpdate))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
 			else											{throw new Exception("Update error : check Apache/PHP logs for details. When the issue is resolved : delete the '".$lockedUpdate."' file.");}
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
-			@set_time_limit(120);//pas en safemode 
+			@set_time_limit(120);//pas en safemode
 			self::getDump();
 
 			////	MAJ v3.0.0
@@ -911,7 +911,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_forumTheme", "rank",  				"ALTER TABLE `ap_forumTheme` ADD `rank` smallint DEFAULT NULL AFTER `color`");
 			}
 
-			if(self::updateVersion("24.4.1"))
+			if(self::updateVersion("24.4.3"))
 			{
 				//Renomme la table des catégories d'événement
 				if(self::tableExist("ap_calendarEventCategory"))  {self::query("RENAME TABLE `ap_calendarEventCategory` TO `ap_calendarCategory`");}
@@ -924,9 +924,8 @@ class DbUpdate extends Db
 			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES
 			self::query("UPDATE ap_agora SET dateUpdateDb=".self::dateNow().", version_agora='".Req::appVersion()."'");
 			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
-			////	SUPPRIME $lockedUpdate ET SI BESOIN LE ".htaccess" DE FREE
-			File::rm($lockedUpdate);
-			if(preg_match("/free\.fr/i",$_SERVER['HTTP_HOST']))  {File::rm("app/.htaccess");}
+			////	SUPPRIME $lockedUpdate
+			if(is_file($lockedUpdate))  {File::rm($lockedUpdate);}
 			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!
 			$_SESSION=[];
 			Ctrl::redir("?ctrl=offline");

@@ -23,10 +23,8 @@
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Espaces où l'objet est visible
-		$this->spaceIds=Txt::txt2tab($this->_idSpaces);
-		//Couleur par défaut
-		if(empty($this->color))  {$this->color="#777";}
+		$this->spaceIds=Txt::txt2tab($this->_idSpaces);	//Espaces où l'objet est visible
+		if(empty($this->color))  {$this->color="#777";}	//Couleur par défaut
 	}
 
 	/*******************************************************************************************
@@ -34,7 +32,7 @@
 	 *******************************************************************************************/
 	public function getLabel()
 	{
-		if($this->allCategories==true)	{return '<span class="categoryColor categoryColorAll">&nbsp;</span>'.Txt::trad(static::tradPrefix."_allCategories");}
+		if($this->allCategories==true)	{return '<span class="categoryColor categoryColorAll">&nbsp;</span>'.Txt::trad(static::tradPrefix."_categoryShowAll");}
 		else							{return '<span class="categoryColor" style="background:'.$this->color.'">&nbsp;</span>'.ucfirst($this->title);}
 	}
 
@@ -97,8 +95,9 @@
 		if(!empty($categoryList)){
 			$vDatas["tradPrefix"]=static::tradPrefix;
 			$vDatas["categoryList"]=$categoryList;
-			$vDatas["dbParentField"]=static::dbParentField;	//Champ de la catégorie, dans la table de l'objet parent : _idStatus, _idCategory, _idTheme, etc
-			$vDatas["_idCategory"]=$_idCategory;			//_id de la catégorie correspondant à l'objet modifié (idem)
+			$vDatas["dbParentField"]=static::dbParentField;		//Champ de la catégorie, dans la table de l'objet parent : _idStatus, _idCategory, _idTheme, etc
+			if(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  {$vDatas["_idCategory"]=$_SESSION["_idCategoryFilter"][static::objectType];}	//catégorie couramment affichée
+			else															{$vDatas["_idCategory"]=$_idCategory;}											//_id de la catégorie de l'objet modifié
 			return Ctrl::getVue(Req::commonPath."VueCategorySelect.php",$vDatas);
 		}
 	}

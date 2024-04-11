@@ -90,8 +90,8 @@ $(function(){
 		{
 			//// MENU "RETOUR VERS L'ACCUEIL"
 			echo '<div class="pathMenu miscContainer">
-					<div class="pathIconMenu" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.txt::trad("FORUM_forumRoot").'</div>
-					'.($curSubject->addContentRight() ? '<div class="pathIconMenu" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" title="'.Txt::trad("FORUM_addMessage").'"><img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
+					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.txt::trad("FORUM_forumRoot").'</div>
+					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" title="'.Txt::trad("FORUM_addMessage").'"><img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
 					</div>';
 
 			//// SUJET
@@ -130,7 +130,7 @@ $(function(){
 					</div>';
 			}
 			//REPONDRE AU SUJET (sur mobile on affiche le bouton du bas : "menuMobileAddButton")
-			if($curSubject->addContentRight())  {echo '<div class="objBottomMenu"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
+			if($curSubject->addContentRight() && Req::isMobile()==false)  {echo '<div class="objBottomMenu"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
 		}
 		?>
 	</div>

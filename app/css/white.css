@@ -24,5 +24,5 @@ hr										{background:linear-gradient(90deg,#eee,#ccc,#eee);}												 	  /
 fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px;}											/*fieldset & onglet "VueObjEditMenuSubmit.php"*/
 .fieldsetSub							{background:#ececec; border:1px solid #ccc; border-radius:5px;}											/*ex: "VueObjEditMenuSubmit.php"*/
 .objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#fafafa,#fff,#fff);}											  	  /*"VueObjEditMenuSubmit.php"*/
-.optionSelect, .optionUnselect:hover	{color:rgb(0,104,189); background:#eeeff7; border:solid 1px #ddd; border-radius:5px;}				  /*option/categorie sélectionnée*/
+.optionSelect, .optionUnselect:hover	{color:rgb(0,104,189); background:#eeefff; border:solid 1px #ddd; border-radius:5px;}				  /*option/categorie sélectionnée*/
 .optionUnselect							{border:solid 1px transparent;}

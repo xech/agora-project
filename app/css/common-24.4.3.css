@@ -32,8 +32,8 @@ a, [onclick], .sLink, .linkSelect, label	{cursor:pointer; text-decoration:none;}
 #pageFull											{width:100%;}													/*Affichage sur toute la largeur (Modules Files, Contacts, Tasks, Links, Users, etc)*/
 #pageCenter											{max-width:100%; margin-left:auto; margin-right:auto;}			/*Affichage Centrée (Modules Dashboard, Forum, Mail, Paramétrage, Logs, etc)*/
 #pageFullContent,#pageCenterContent,#pageModuleMenu	{display:table-cell; margin:0px; padding:0px;}
-#pageCenterContent									{width:850px;}													/*POas + de 850px : cf. affichage des News. tester l'affichage entre 1024px et 1366px*/
-#pageModuleMenu										{width:320px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche du module, flottant au besoin*/
+#pageCenterContent									{width:900px;}													/*Affichage des News, forum, etc. tester l'affichage entre 1024px et 1366px*/
+#pageModuleMenu										{width:330px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche du module, flottant au besoin*/
 /*MOBILE*/
 @media screen and (max-width:1023px){
 	#pageFull, #pageCenter							{margin-top:65px;}
@@ -261,7 +261,8 @@ form .objField								{margin:15px 0px;}
 .pathMenu						{display:table; padding:5px 10px; margin-bottom:10px;}
 .pathMenu img					{max-height:30px;}
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
-.pathMenu>div.pathIconMenu		{cursor:pointer;}
+.pathMenuHome					{width:auto;}
+.pathMenuAdd					{width:65px; padding-left:10px!important;}
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle; height:20px;}
 .categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
@@ -277,7 +278,6 @@ label, .objContainer, .miscContainer, #headerBar  {user-select:none;}/*pas de s�
 @media screen and (max-width:1023px){
 	#headerBar					{border-top:1px solid #ddd;}/*"border-top" pour séparer le menu des statusbars des mobiles*/
 	.pathMenu					{width:100%; max-width:100%; padding:5px;}
-	.pathMenu>div.pathIconMenu	{width:55px;}/*width ajusté des menus "top"/"Accueil" & co*/
 }
 /*PRINT*/
 @media print{

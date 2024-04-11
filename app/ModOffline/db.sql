@@ -562,12 +562,12 @@ INSERT INTO `ap_joinSpaceModule` (`_idSpace`, `moduleName`, `rank`) VALUES
 (1,'dashboard',1), 
 (1,'file',2), 
 (1,'calendar',3), 
-(1,'forum',4), 
-(1,'contact',5), 
-(1,'link',6), 
-(1,'task',7), 
-(1,'user',8), 
-(1,'mail',9);
+(1,'task',4), 
+(1,'forum',5), 
+(1,'contact',6), 
+(1,'link',7),
+(1,'mail',8),  
+(1,'user',9);
 
 INSERT INTO `ap_calendar` (`_id`, `type`, `_idUser`, `title`) VALUES 
 (1,'ressource',1,NULL), 

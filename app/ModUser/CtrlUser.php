@@ -271,7 +271,7 @@ class CtrlUser extends Ctrl
 		////	Valide le formulaire : envoi de plusieurs mails en série !
 		if(Req::isParam("formValidate") && Req::isParam("usersList")){
 			foreach(Req::param("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
-			if($isSendmail==true)  {Ctrl::notify(Txt::trad("MAIL_sendOk"),"success");}
+			if($isSendmail==true)  {Ctrl::notify("MAIL_sendOk","success");}
 			static::lightboxClose();
 		}
 		////	Affichage du formulaire

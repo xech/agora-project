@@ -481,7 +481,7 @@ class MdlObject
 		$newFolder=Ctrl::getObj($oldFolder::objectType, $newFolderId);
 		////	Objet pas dans une arbo? Droit d'accès pas ok? || dossier de destination inaccessible sur le disque? || Déplace un dossier à l'interieur de lui même?
 		if(static::isInArbo()==false || $this->accessRight()<2 || $newFolder->accessRight()<2 || (static::objectType=="fileFolder" && is_dir($newFolder->folderPath("real"))==false))	{Ctrl::notify(Txt::trad("inaccessibleElem")." : ".$this->name.$this->title);}
-		elseif(static::isFolder===true && $this->isInCurrentTree($newFolder))																													{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
+		elseif(static::isFolder===true && $this->isInCurrentTree($newFolder))																											{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
 		else
 		{
 			////	Change le dossier conteneur

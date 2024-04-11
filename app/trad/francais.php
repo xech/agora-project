@@ -388,7 +388,7 @@ class Trad extends Txt
 			"HEADER_displaySpace"=>"espaces de travail",
 			"HEADER_displayAdmin"=>"Affichage Administrateur",
 			"HEADER_displayAdminEnabled"=>"Affichage Administrateur activé",
-			"HEADER_displayAdminInfo"=>"Cette option permet d'afficher tous les éléments présents sur l'espace courant, même ceux qui ne vous sont pas attribués",
+			"HEADER_displayAdminInfo"=>"Cette option permet d'afficher également les éléments de l'espace qui ne vous sont pas attribués",
 			"HEADER_searchElem"=>"Rechercher sur l'espace",
 			"HEADER_documentation"=>"Guide d'utilisation",
 			"HEADER_shortcuts"=>"Raccourcis",
@@ -893,11 +893,10 @@ class Trad extends Txt
 			"CALENDAR_propositionEmailSubject"=>"Nouvel événement proposé par",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"Nouvel événement proposé par --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accédez à votre espace pour confirmer ou annuler cette proposition",
 			// Categorie : Catégories d'événement
-			"CALENDAR_categoryMenuLabel"=>"Catégories d'événement",
-			"CALENDAR_categoryMenuLabelTitle"=>"Filtrer les événements par catégories",
-			"CALENDAR_allCategories"=>"Toutes les catégories",
+			"CALENDAR_categoryMenuTooltip"=>"Afficher uniquement les événements avec la catégorie",
+			"CALENDAR_categoryShowAll"=>"Toutes les catégories",
 			"CALENDAR_categoryUndefined"=>"Catégorie non définie",
-			"CALENDAR_categoryEditTitle"=>"Editer les catégories",
+			"CALENDAR_categoryEditTitle"=>"Editer les catégories d'événement",
 			"CALENDAR_categoryEditInfo"=>"Chaque catégorie peut être modifiée par son auteur ou par l'admin général",
 			"CALENDAR_categoryEditAdd"=>"Ajouter une catégorie",
 
@@ -930,11 +929,10 @@ class Trad extends Txt
 			"FORUM_notifOnlyReadAccess"=>"Attention : s'il n'y que des accès en lecture, personne ne pourra contribuer au sujet...",
 			"FORUM_notifWriteAccess"=>"L'accès en ''Ecriture'' est destiné aux modérateurs du sujet :<br>Il est donc conseillé d'utiliser le droit en ''Ecriture limité''",
 			// Categorie : Themes
-			"FORUM_categoryMenuLabel"=>"Thèmes du forum",
-			"FORUM_categoryMenuLabelTitle"=>"Filtrer les sujets par thème",
-			"FORUM_allCategories"=>"Tous les thèmes",
+			"FORUM_categoryMenuTooltip"=>"Afficher uniquement les sujets avec le thème",
+			"FORUM_categoryShowAll"=>"Tous les thèmes",
 			"FORUM_categoryUndefined"=>"Thème non défini",
-			"FORUM_categoryEditTitle"=>"Editer les thèmes",
+			"FORUM_categoryEditTitle"=>"Editer les thèmes du forum",
 			"FORUM_categoryEditInfo"=>"Chaque theme peut être modifié par son auteur ou par l'admin général",
 			"FORUM_categoryEditAdd"=>"Ajouter un theme",
 
@@ -964,11 +962,10 @@ class Trad extends Txt
 			"TASK_advancementLate"=>"Avancement en retard",
 			"TASK_folderDateBeginEnd"=>"Debut au plus tôt / Fin au plus tard",
 			//Categorie : Statuts Kanban
-			"TASK_categoryMenuLabel"=>"Statuts des tâches",
-			"TASK_categoryMenuLabelTitle"=>"Filtrer les tâches en fonction de leur statut",
-			"TASK_allCategories"=>"Tous les statuts",
+			"TASK_categoryMenuTooltip"=>"Afficher uniquement les tâches avec le statut",
+			"TASK_categoryShowAll"=>"Tous les statuts",
 			"TASK_categoryUndefined"=>"Statut non défini",
-			"TASK_categoryEditTitle"=>"Editer les statuts",
+			"TASK_categoryEditTitle"=>"Editer les statuts des tâches",
 			"TASK_categoryEditInfo"=>"Chaque statut Kanban peut être modifié par son auteur ou par l'admin général",
 			"TASK_categoryEditAdd"=>"Ajouter un statut Kanban",
 
