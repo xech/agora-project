@@ -185,7 +185,7 @@ function mainFormControl()
 /*DROITS D'ACCÈS*/
 .vSpaceTable							{display:inline-table; user-select:none; max-width:600px; margin-bottom:30px;}
 .vSpaceTable>div						{display:table-row;}
-.vSpaceTable>div>div					{display:table-cell; padding:8px; text-align:center;}
+.vSpaceTable>div>div					{display:table-cell; padding:7px; text-align:center;}
 .vSpaceTable img						{max-height:18px;}
 .vSpaceHeader>div						{vertical-align:top; padding-bottom:10px!important;}
 .vSpaceHeader>.vSpaceLabel				{padding-left:10px!important; font-style:italic;}/*Nom de l'espace*/
@@ -271,7 +271,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			//Option du module "File" : "Joindre les fichiers à la notification"
 			if($curObj::objectType=="file")  {echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles"><label for="boxNotifMailAddFiles" title="'.Txt::trad("FILE_fileSizeLimit").' '.File::displaySize(File::mailMaxFilesSize).'">'.Txt::trad("EDIT_notifMailAddFiles").' <img src="app/img/attachment.png"></label></div>';}
 			// Options de base des emails (cf. Tool::sendMail()")
-			echo MdlObject::sendMailBasicOptions();
+			echo CtrlObject::sendMailBasicOptions();
 			//Option "Choisir les destinataires"
 			echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailSelect" id="boxNotifMailSelect" value="1" onclick="$(\'#notifMailSelectList\').slideToggle();">&nbsp; <label for="boxNotifMailSelect">'.Txt::trad("EDIT_notifMailSelect").' <img src="app/img/user/accessAll.png"></label></div>';
 			echo '<div id="notifMailSelectList">';
@@ -296,7 +296,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 	}
 	////	MENU DES FICHIERS JOINTS
 	if(!empty($objMenuAttachedFile)){
-		echo '<div class="objMenuOptions" id="objMenuAttachedFile">'.$curObj->attachedFile().'</div>';
+		echo '<div class="objMenuOptions" id="objMenuAttachedFile">'.CtrlObject::attachedFile($curObj).'</div>';
 	}
 	////	MENU DES SHORTCUT
 	if(!empty($objMenuShortcut)){

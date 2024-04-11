@@ -98,7 +98,7 @@ class MdlDashboardPoll extends MdlObject
 		if($orderByNbVotes==false || function_exists("array_column")==false)	{return $this->_responseList;}
 		else{
 			$responseList=$this->_responseList;
-			$columnToSort=array_column($this->_responseList,"nbVotes");//Colonne où porte le tri
+			$columnToSort=array_column($this->_responseList,"nbVotes");//Colonne où porte le tri : php 5.5 minimum
 			array_multisort($columnToSort,SORT_DESC,$responseList);//Tri le tableau
 			return $responseList;
 		}

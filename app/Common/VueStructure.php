@@ -120,7 +120,7 @@
 					<div id='menuMobileClose'><img src='app/img/closeMobile.png'></div>
 					<div id='menuMobileContent'> <div id='menuMobileOne'></div> <div id='menuMobileTwo'></div> </div>
 				  </div>
-				  <div id='menuMobileAddButton'><img src='app/img/plusBig.png'></div>";
+				  <div id='menuMobileAddButton'><img src='app/img/plusMobile.png'></div>";
 		}
 
 		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE

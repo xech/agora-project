@@ -226,12 +226,12 @@ class Trad extends Txt
 			"accessRead"=>"Read",
 			"accessReadTooltip"=>"Access in reading",
 			"accessWriteLimit"=>"limited writing",
-			"accessWriteLimitTooltip"=>"Limited write access: possibility to add -OBJCONTENT- in the --OBJLABEL--,<br> but each user can only modify/delete the -OBJCONTENT- he created.",
+			"accessWriteLimitTooltip"=>"Limited write access: possibility to add -OBJCONTENT- in the -OBJLABEL-,<br> but each user can only modify/delete the -OBJCONTENT- he created.",
 			"accessWrite"=>"write",
 			"accessWriteTooltip"=>"Access in writing",
-			"accessWriteTooltipContainer"=>"Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the --OBJLABEL--",
-			"accessAutorPrivilege"=>"Only the author and administrators can edit the access rights or delete the --OBJLABEL--",
-			"accessRightsInherited"=>"Access rights inherited from the --OBJLABEL--",
+			"accessWriteTooltipContainer"=>"Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the -OBJLABEL-",
+			"accessAutorPrivilege"=>"Only the author and administrators can edit the access rights or delete the -OBJLABEL-",
+			"accessRightsInherited"=>"Access rights inherited from the -OBJLABEL-",
 			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",//Ex: "Thème bidule -n'est accessible que sur l'espace- Machin"
 			"categoryNotifChangeOrder"=>"The display order has been changed",
 
@@ -275,8 +275,8 @@ class Trad extends Txt
 			"MAIL_notSend"=>"The email could not be sent",
 			"MAIL_notSendEverybody"=>"The email was not sent to all recipients: if possible check the validity of the emails",
 			"MAIL_fromTheSpace"=>"from the space",//"depuis l'espace Bidule"
-			"MAIL_elemCreatedBy"=>"--OBJLABEL-- created by",//boby
-			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modified by",//boby
+			"MAIL_elemCreatedBy"=>"-OBJLABEL- created by",//boby
+			"MAIL_elemModifiedBy"=>"-OBJLABEL- modified by",//boby
 			"MAIL_elemAccessLink"=>"Click here to access the element on your space",
 
 			////	Dossier & fichier
@@ -388,7 +388,7 @@ class Trad extends Txt
 			"HEADER_displaySpace"=>"workspaces",
 			"HEADER_displayAdmin"=>"Administrator view",
 			"HEADER_displayAdminEnabled"=>"Administrator view enabled",
-			"HEADER_displayAdminInfo"=>"This option also allows you to display elements of the space that are not assigned to you",
+			"HEADER_displayAdminInfo"=>"This option allows you to display all the elements present in the current space, even those which are not assigned to you",
 			"HEADER_searchElem"=>"Search in the space",
 			"HEADER_documentation"=>"Documentation",
 			"HEADER_shortcuts"=>"Shortcuts",
@@ -396,11 +396,11 @@ class Trad extends Txt
 
 			////	Messenger / Visio
 			"MESSENGER_headerModuleName"=>"Messages",
-			"MESSENGER_moduleDescription"=>"Instant messaging : Chat live or start a videoconference with people logged to the space",
+			"MESSENGER_moduleDescription"=>"Instant messaging : Chat live or start a videoconference with people connected to the space",
 			"MESSENGER_messengerTitle"=>"Instant messaging : click on a person's name to chat or start a video conference",
 			"MESSENGER_messengerMultiUsers"=>"Chat with others by selecting my interlocutors in the right pane",
 			"MESSENGER_connected"=>"Online",
-			"MESSENGER_nobody"=>"You are currently the only person logged to the space",
+			"MESSENGER_nobody"=>"You are currently the only user logged in on the space.<br> Note: your old discussions are kept for 30 days",
 			"MESSENGER_messageFrom"=>"Message from",
 			"MESSENGER_messageTo"=>"sent to",
 			"MESSENGER_chatWith"=>"Chat with",
@@ -442,7 +442,7 @@ class Trad extends Txt
 			"EDIT_showAllUsersAndSpaces"=>"Display all users and spaces",
 			"EDIT_notifMail"=>"Notify",
 			"EDIT_notifMail2"=>"Send a notification of creation/modification by email",
-			"EDIT_notifMailTooltip"=>"The notification will be sent to the people assigned to the item (--OBJLABEL--)",
+			"EDIT_notifMailTooltip"=>"The notification will be sent to the people assigned to the item (-OBJLABEL-)",
 			"EDIT_notifMailTooltipCal"=>"<hr>If you assign the event to personal calendars, then the notification will only be sent to the owners of these calendars (write access).",
 			"EDIT_notifMailAddFiles"=>"Attach files to the notification",
 			"EDIT_notifMailSelect"=>"Select the recipients of notifications",
@@ -470,7 +470,7 @@ class Trad extends Txt
 			"INSTALL_errorDbConnection"=>"The identification to the MariaDB/MySQL database failed",
 			"INSTALL_errorDbExist"=>"Application already installed: <a href='index.php'>click here to access it</a><br><br>To restart the installation, remember to delete the database",
 			"INSTALL_errorDbNoSqlFile"=>"The db.sql installation file is not accessible or has been deleted because the installation has already been performed",
-			"INSTALL_PhpOldVersion"=>"Agora-Project --CURRENT_VERSION-- requires a newer version of PHP",
+			"INSTALL_PhpOldVersion"=>"Agora-Project requires a newer version of PHP",
 			"INSTALL_confirmInstall"=>"Confirm the installation ?",
 			"INSTALL_installOk"=>"Agora-Project was installed correctly !",
 			// Premiers enregistrements en DB
@@ -773,38 +773,6 @@ class Trad extends Txt
 			"DASHBOARD_exportPoll"=>"Download the survey results in pdf",
 			"DASHBOARD_exportPollDate"=>"survey result as of",
 
-			////	MODULE_FICHIER
-			////
-			// Menu principal
-			"FILE_headerModuleName"=>"File manager",
-			"FILE_moduleDescription"=>"File manager",
-			"FILE_option_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",//OPTION!
-			//Index
-			"FILE_addFile"=>"Add files",
-			"FILE_addFileAlert"=>"Folder on the server not accessible in writing! thank you to contact the administrator",
-			"FILE_downloadSelection"=>"Download Selection",
-			"FILE_fileDownload"=>"Download",
-			"FILE_fileSize"=>"File size",
-			"FILE_imageSize"=>"Image size",
-			"FILE_nbFileVersions"=>"versions of the file",//"55 versions du fichier"
-			"FILE_downloadsNb"=>"(downloaded --NB_DOWNLOAD-- times)",
-			"FILE_downloadedBy"=>"file Downloaded by",//"..boby, will"
-			"FILE_addFileVersion"=>"add a new file version",
-			"FILE_noFile"=>"No file for the moment",
-			// Fichier_edit  &  Dossier_edit  &  fichier_edit_ajouter  &  Versions_fichier
-			"FILE_fileSizeLimit"=>"The files should not exceed", // ...2 Mega Octets
-			"FILE_uploadSimple"=>"Simple upload",
-			"FILE_uploadMultiple"=>"Multiple upload",
-			"FILE_imgReduce"=>"Optimize the image",
-			"FILE_updatedName"=>"The filename will be replaced by the new version",
-			"FILE_fileSizeError"=>"File is too large",
-			"FILE_addMultipleFilesTooltip"=>"Button 'Shift' or 'Ctrl' to select multiple files",
-			"FILE_selectFile"=>"Thank you to select at least a file",
-			"FILE_fileContent"=>"Content",
-			// Versions_fichier
-			"FILE_versionsOf"=>"Versions of", // versions de fichier.gif
-			"FILE_confirmDeleteVersion"=>"Confirm the removal of this version ?",
-
 			////	MODULE_AGENDA
 			////
 			// Menu principal
@@ -893,12 +861,44 @@ class Trad extends Txt
 			"CALENDAR_propositionEmailSubject"=>"New event proposed by",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"New event proposed by --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Access your space to confirm or cancel this proposal",
 			// Categorie : Catégories d'événement
-			"CALENDAR_categoryMenuTooltip"=>"Show only events with category",
-			"CALENDAR_categoryShowAll"=>"All categories",
+			"CALENDAR_categoryCurrent"=>"Category displayed",
+			"CALENDAR_categoryDisplayed"=>"Filter by event category",
 			"CALENDAR_categoryUndefined"=>"Without category",
-			"CALENDAR_categoryEditTitle"=>"Edit categories",
-			"CALENDAR_categoryEditInfo"=>"Each event category can be modified by its author or by the general administrator",
-			"CALENDAR_categoryEditAdd"=>"Add an event category",
+			"CALENDAR_categoriesEditTitle"=>"Edit event categories",
+			"CALENDAR_categoriesEditInfo"=>"Each event category can be modified by its author or by the general administrator",
+			"CALENDAR_categoriesAddButton"=>"Add an event category",
+
+			////	MODULE_FICHIER
+			////
+			// Menu principal
+			"FILE_headerModuleName"=>"File manager",
+			"FILE_moduleDescription"=>"File manager",
+			"FILE_option_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",//OPTION!
+			//Index
+			"FILE_addFile"=>"Add files",
+			"FILE_addFileAlert"=>"Folder on the server not accessible in writing! thank you to contact the administrator",
+			"FILE_downloadSelection"=>"Download Selection",
+			"FILE_fileDownload"=>"Download",
+			"FILE_fileSize"=>"File size",
+			"FILE_imageSize"=>"Image size",
+			"FILE_nbFileVersions"=>"versions of the file",//"55 versions du fichier"
+			"FILE_downloadsNb"=>"(downloaded --NB_DOWNLOAD-- times)",
+			"FILE_downloadedBy"=>"file Downloaded by",//"..boby, will"
+			"FILE_addFileVersion"=>"add a new file version",
+			"FILE_noFile"=>"No file for the moment",
+			// Fichier_edit  &  Dossier_edit  &  fichier_edit_ajouter  &  Versions_fichier
+			"FILE_fileSizeLimit"=>"The files should not exceed", // ...2 Mega Octets
+			"FILE_uploadSimple"=>"Simple upload",
+			"FILE_uploadMultiple"=>"Multiple upload",
+			"FILE_imgReduce"=>"Optimize the image",
+			"FILE_updatedName"=>"The filename will be replaced by the new version",
+			"FILE_fileSizeError"=>"File is too large",
+			"FILE_addMultipleFilesTooltip"=>"Button 'Shift' or 'Ctrl' to select multiple files",
+			"FILE_selectFile"=>"Thank you to select at least a file",
+			"FILE_fileContent"=>"Content",
+			// Versions_fichier
+			"FILE_versionsOf"=>"Versions of", // versions de fichier.gif
+			"FILE_confirmDeleteVersion"=>"Confirm the removal of this version ?",
 
 			////	MODULE_FORUM
 			////
@@ -911,11 +911,13 @@ class Trad extends Txt
 			"SORT_dateLastMessage"=>"Last message",
 			//Index & Sujet
 			"FORUM_forumRoot"=>"Forum Home",
+			"FORUM_forumRootMobile"=>"Home",
 			"FORUM_subject"=>"Topic",
 			"FORUM_subjects"=>"Topics",
 			"FORUM_message"=>"Message",
 			"FORUM_messages"=>"Messages",
-			"FORUM_lastMessage"=>"last from",
+			"FORUM_lastSubject"=>"Last topic from",
+			"FORUM_lastMessage"=>"Last message from",
 			"FORUM_noSubject"=>"No subject for the moment",
 			"FORUM_noMessage"=>"No message for the moment",
 			"FORUM_subjectBy"=>"Subjet by",
@@ -929,12 +931,11 @@ class Trad extends Txt
 			"FORUM_notifOnlyReadAccess"=>"If there is only read access, no one can contribute to the topic",
 			"FORUM_notifWriteAccess"=>"''Write'' access is intended for moderators :<br>Rather prefer the ''Limited Writing'' rights",
 			// Categorie : Themes
-			"FORUM_categoryMenuTooltip"=>"Show only topics with theme",
-			"FORUM_categoryShowAll"=>"All themes",
+			"FORUM_categoryThemes"=>"Themes",
 			"FORUM_categoryUndefined"=>"Without theme",
-			"FORUM_categoryEditTitle"=>"Edit themes",
-			"FORUM_categoryEditInfo"=>"Each theme can be modified by its author or the general administrator",
-			"FORUM_categoryEditAdd"=>"Add a theme",
+			"FORUM_categoriesEditTitle"=>"Manage themes",
+			"FORUM_categoriesEditInfo"=>"Each theme can be modified by its author or the general administrator",
+			"FORUM_categoriesAddButton"=>"Add a theme",
 
 			////	MODULE_TACHE
 			////
@@ -961,13 +962,11 @@ class Trad extends Txt
 			"TASK_assignedTo"=>"Assigned to",
 			"TASK_advancementLate"=>"Progress delayed",
 			"TASK_folderDateBeginEnd"=>"Earliest start date / latest end date",
-			//Categorie : Statuts Kanban
-			"TASK_categoryMenuTooltip"=>"Show only tasks with status",
-			"TASK_categoryShowAll"=>"All status",
+			//Categorie : Colonnes Kanban
 			"TASK_categoryUndefined"=>"Undefined status",
-			"TASK_categoryEditTitle"=>"Edit status",
-			"TASK_categoryEditInfo"=>"Each status can be modified by its author or by the general admin",
-			"TASK_categoryEditAdd"=>"Add a status",
+			"TASK_categoriesEditTitle"=>"Edit Kanban status",
+			"TASK_categoriesEditInfo"=>"Each status can be modified by its author or by the general admin",
+			"TASK_categoriesAddButton"=>"Add a status",
 
 			////	MODULE_CONTACT
 			////

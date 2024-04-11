@@ -10,7 +10,7 @@
 /*Cellules du jour*/
 .vCalMonthDayCell								{color:#222; border-top:solid 1px #ddd; border-right:solid 1px #ccc; border-bottom:solid 1px #fff; background-color:#fff;}/*background-color à préciser pour le style "black"*/
 .vCalMonthDayCell:hover, .vCalMonthToday		{background:#f9f9f9;}							/*Aujourd'hui ou jour survolé : bg du block*/
-.vCalMonthToday .vCalMonthDayLabel				{color:#c00; font-size:1.1em;}					/*Aujourd'hui survolé : style du label*/
+.vCalMonthToday .vCalMonthDayLabel				{color:#c00; font-size:1.2em;}					/*Aujourd'hui survolé : style du label*/
 .vCalMonthDayOtherMonth .vCalMonthDayLabel		{opacity:0.3;}									/*jour d'un mois passé/futur : style du label*/
 .vCalMonthDayPast .vCalEvtLabel					{opacity:0.7;}									/*jour passé : label de chaque événement (pas appliquer à tout le block)*/
 .vCalMonthDayLabel								{height:28px;}									/*ligne du label du jour*/
@@ -59,23 +59,24 @@ function calendarDimensions()
 
 
 <div class="vCalMonthMain">
-
-	<?php
-	////	HEADER DES JOURS
-	echo '<div>';
+	<!--HEADER DES JOURS-->
+	<div>
+		<?php
 		for($cmpDay=1; $cmpDay<=7; $cmpDay++){
 			$dayLabel=Txt::trad("day_".$cmpDay);
 			if(Req::isMobile())	{$dayLabel=substr($dayLabel,0,3).".";}
-			echo '<div class="vCalMonthDayHeader">'.$dayLabel.'</div>';
+			echo "<div class='vCalMonthDayHeader'>".$dayLabel."</div>";
 		}
-		echo '<div class="vCalMonthWeekNb">&nbsp;</div>
-	</div>';
+		?>
+		<div class="vCalMonthWeekNb">&nbsp;</div>
+	</div>
 
+	<?php
 	////	JOURS DU MOIS
 	foreach($periodDays as $tmpDate=>$tmpDay)
 	{
 		////	AJOUTE UN DEBUT DE LIGNE & LE NUMERO DE LA SEMAINE
-		if(date("N",$tmpDay["timeBegin"])==1)	{echo '<div class="vCalMonthDaysLine">';}
+		if(date("N",$tmpDay["timeBegin"])==1)	{echo "<div class='vCalMonthDaysLine'>";}
 
 		////	AFFICHE LE JOUR
 		$styleDayCell=$addEvtLink=null;
@@ -86,24 +87,23 @@ function calendarDimensions()
 		if($tmpDay["timeEnd"]<time())								{$styleDayCell.=" vCalMonthDayPast";}		//Jour déjà passé?
 		elseif(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d"))	{$styleDayCell.=" vCalMonthToday";}			//Aujourd'hui?
 		//Cellule du jour
-		echo '<div class="vCalMonthDayCell '.$styleDayCell.'">';
+		echo "<div class='vCalMonthDayCell ".$styleDayCell."'>";
 				//LABEL DU JOUR ET BOUTON "ADD"
-				echo '<div class="vCalMonthDayLabel">
-						<div>'.date("j",$tmpDay["timeBegin"]).'</div><div class="vCalMonthDayCelebration">'.$tmpDay["celebrationDay"].'</div>
-						<img src="app/img/plus.png" class="vCalMonthImgAddEvt" '.$addEvtLink.' title="'.Txt::tooltip($tmpCal->addEventLabel).'">
-					  </div>';
+				echo "<div class='vCalMonthDayLabel'>
+						<div>".date("j",$tmpDay["timeBegin"])."</div><div class='vCalMonthDayCelebration'>".$tmpDay["celebrationDay"]."</div>
+						<img src='app/img/plus.png' class='vCalMonthImgAddEvt' ".$addEvtLink." title=\"".Txt::tooltip($tmpCal->addEventLabel)."\">
+					  </div>";
 				//EVENEMENTS DU JOUR
 				foreach($tmpCal->eventList[$tmpDate] as $tmpEvt){
-					$containerAttr='data-eventColor="'.$tmpEvt->eventColor.'" onclick="lightboxOpen(\''.$tmpEvt->getUrl("vue").'\')"';
-					echo $tmpEvt->objContainer("vCalEvtBlock",$containerAttr).$tmpEvt->contextMenu.
-							'<div class="vCalEvtLabel">'.$tmpEvt->dateTimeLabel.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$tmpEvt->importantIcon.'</div>
-						 </div>';
+					$divContainerAttr="data-catColor='".$tmpEvt->catColor."' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\"";
+					echo $tmpEvt->objContainer("vCalEvtBlock",$divContainerAttr).$tmpEvt->contextMenu.
+							"<div class='vCalEvtLabel'>".$tmpEvt->dateTimeLabel.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$tmpEvt->importantIcon."</div>
+						 </div>";
 				}
-		echo '</div>';
+		echo "</div>";
 
 		////	FIN DE LIGNE DE LA SEMAINE && NUMERO DE FIN DE SEMAINE
-		if(date("N",$tmpDay["timeBegin"])==7)
-			{echo '<div class="vCalMonthWeekNb" onclick="redir(\'?ctrl=calendar&displayMode=week&curTime='.$tmpDay["timeBegin"].'\')" title="'.Txt::trad("CALENDAR_weekNb").' '.date("W",$tmpDay["timeBegin"]).'">'.date("W",$tmpDay["timeBegin"]).'</div></div>';}
+		if(date("N",$tmpDay["timeBegin"])==7)	{echo "<div class='vCalMonthWeekNb' onclick=\"redir('?ctrl=calendar&displayMode=week&curTime=".$tmpDay["timeBegin"]."')\" title=\"".Txt::trad("CALENDAR_weekNb")." ".date("W",$tmpDay["timeBegin"])."\">".date("W",$tmpDay["timeBegin"])."</div></div>";}
 	}
 	?>
 </div>

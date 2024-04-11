@@ -5,7 +5,7 @@ $(function(){
 	 *	INITIALISE LA VUE DE CHAQUE AGENDA
 	 *******************************************************************************************/
 	//Style des blocks d'événement
-	$(".vCalEvtBlock").each(function(){ $(this).css("background",$(this).attr("data-eventColor")); });
+	$(".vCalEvtBlock").each(function(){ $(this).css("background",$(this).attr("data-catColor")); });
 	//Synthese des agendas : Fixe la taille des cellule de jours
 	if($("#syntheseTable").exist()){
 		var syntheseDayWidth=Math.round(($("#syntheseLineHeader").width()-$("#syntheseLineHeader .vSyntheseLabel").width()) / $("#syntheseLineHeader .vSyntheseDay").length);
@@ -121,7 +121,7 @@ $(function(){
 @media screen and (max-width:1023px){
 	.vCalendarTitle, .vCalendarPeriodLabel 				{font-size:1em;}
 	.vCalendarTitleLabel								{margin-left:5px; margin-right:0px;}
-	.vCalendarTitle .personImgSmall						{display:none;}/*cf. "personImg()"*/
+	.vCalendarTitle .personImgSmall						{display:none;}/*cf. "getImg()"*/
 	.objMenuBurger, .objMenuBurgerInline				{margin:0px 5px;}
 	#calendarPrev, #calendarNext						{margin:0px 5px;}
 	.vCalendarDisplayMode>span							{margin-left:5px;}
@@ -147,13 +147,9 @@ $(function(){
 <div id="pageFull">
 	<div id="pageModuleMenu">
 		<div id="pageModMenu" class="miscContainer">
-			<?php	
+			<?php
 			////	PROPOSITIONS D'EVENEMENT A CONFIRMER ?
 			if(!empty($eventProposition))  {echo $eventProposition;}
-
-			////	AJOUTER / PROPOSER UN EVT : SI QU'UN SEUL AGENDA N'EST AFFICHÉ
-			if(count($displayedCalendars)==1 && $displayedCalendars[0]->addOrProposeEvt())
-				{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$displayedCalendars[0]->_id."')\" title=\"".Txt::tooltip($displayedCalendars[0]->title." : ".$displayedCalendars[0]->addEventLabel)."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CALENDAR_addEvt")."</div></div><hr>";}
 
 			////	AGENDAS VISIBLES
 			if(!empty($readableCalendars))
@@ -168,16 +164,33 @@ $(function(){
 								<label for=\"displayedCal".$tmpCal->_typeId."\" title=\"".Txt::tooltip($tmpCal->description)."\" class='noTooltip'>".$tmpCal->title."</label> ".(Req::isMobile()==false?$tmpCal->contextMenu(["iconBurger"=>"inlineSmall"]):null)."
 							 </div>";
 					}
+					// Bouton "Afficher" (cf. "submitButtonInline")  +  Input "curTime"
+					echo Txt::submitButton("show",false).'<input type="hidden" name="curTime" value="'.Req::param("curTime").'"/>';
 					//"Afficher tous les agendas" (Admin géneral)
 					if(Ctrl::$curUser->isGeneralAdmin() && $_SESSION["calsListDisplayAll"]==false)
 						{echo "<div id='calsListDisplayAll'><a onclick=\"redir('?ctrl=calendar&calsListDisplayAll=1')\" title=\"".Txt::trad("CALENDAR_calsListDisplayAll")."\"><img src='app/img/plusSmall.png'></a></div>";}
-					// Bouton "Afficher" (cf. "submitButtonInline")  +  Input "curTime"
-					echo Txt::submitButton("show",false).'<input type="hidden" name="curTime" value="'.Req::param("curTime").'"/>';
 				echo "</form><hr>";
 			}
 
-			////	MENU DES CATEGORIES
-			echo MdlCalendarCategory::displayMenu();
+			////	BOUTON POUR AJOUTER OU PROPOSER UN EVT : SI QU'UN SEUL AGENDA N'EST AFFICHÉ
+			if(count($displayedCalendars)==1 && $displayedCalendars[0]->addOrProposeEvt())
+				{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$displayedCalendars[0]->_id."')\" title=\"".Txt::tooltip($displayedCalendars[0]->title." : ".$displayedCalendars[0]->addEventLabel)."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CALENDAR_addEvt")."</div></div>";}
+
+			////	CATEGORIES D'EVT (FILTRE)
+			//Catégorie courante + menu des catégores disponible pour filtrer les résultats + Menu d'édition des catégories
+			$curCatLabel=Req::isParam("_idCatFilter")  ?  Ctrl::getObj("calendarEventCategory",Req::param("_idCatFilter"))->getLabel()  :  Txt::trad("all2");
+			$menuCategory="<div>".Txt::trad("CALENDAR_categoryDisplayed")." : </div>".
+						  "<div onclick=\"redir('?ctrl=calendar')\" ".(Req::isParam("_idCatFilter")?null:"class='linkSelect'")."> &nbsp; <div class='categoryColor categoryColorAll'>&nbsp;</div> ".Txt::trad("all2")."</div>";
+			foreach(MdlCalendarEventCategory::getList() as $tmpCategory)  {$menuCategory.="<div onclick=\"redir('?ctrl=calendar&_idCatFilter=".$tmpCategory->_id."')\" ".(Req::param("_idCatFilter")==$tmpCategory->_id?'class="linkSelect"':null)." title=\"".Txt::tooltip($tmpCategory->description)."\"> &nbsp; ".$tmpCategory->getLabel()."</div>";}
+			if(MdlCalendarEventCategory::addRight())  {$menuCategory.="<hr><div onclick=\"lightboxOpen('".MdlCalendarEventCategory::getUrlEditObjects()."');\"><img src='app/img/edit.png'> ".Txt::trad("CALENDAR_categoriesEditTitle")."</div>";}
+			//Affiche le menu
+			echo "<div class='menuLine'>
+					<div class='menuIcon'><img src='app/img/category.png'></div>
+					<div>
+						<div class='menuLaunch' for='menuCategory'>".Txt::trad("CALENDAR_categoryCurrent")." : ".$curCatLabel."</div>
+						<div id='menuCategory' class='menuContext'>".$menuCategory."</div>
+					</div>
+				  </div>";
 			?>
 
 			<!--CREER AGENDA PARTAGE-->
@@ -205,7 +218,7 @@ $(function(){
 			<?php } ?>
 
 			<!--CALENDRIER MOIS VIA LE DATEPICKER DE JQUERY-UI-->
-			<?= ($displayMode!="month") ? "<div id='datepickerCalendar'></div>" : null ?>
+			<?php if($displayMode!="month")  {echo "<div id='datepickerCalendar'></div>";} ?>
 		</div>
 	</div>
 
@@ -234,7 +247,7 @@ $(function(){
 							//Cellule des evts du jour
 							$syntheseDayCalWE=$syntheseDayEvts=null;
 							if(date("N",$tmpDay["timeBegin"])>5)	{$syntheseDayCalWE="vSyntheseDayCalWE";}
-							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$syntheseDayEvts.="<div class='vSyntheseDayEvt' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\" style=\"background-color:".$tmpEvt->eventColor."\">&nbsp;</div>";}
+							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$syntheseDayEvts.="<div class='vSyntheseDayEvt' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\" style=\"background-color:".$tmpEvt->catColor."\">&nbsp;</div>";}
 							echo "<div class='vSyntheseDay vSyntheseDayCal ".$syntheseDayCalWE."'>
 									<div class='vSyntheseDayEvts' title=\"".Txt::tooltip($tmpEvtTooltip)."\">".$syntheseDayEvts."</div>
 								  </div>";
@@ -257,6 +270,7 @@ $(function(){
 			</div>
 		<?php } ?>
 
+		
 		<!--AFFICHE CHAQUE AGENDA-->
 		<?php foreach($displayedCalendars as $tmpCal){ ?>
 		<div class="vCalendarBlock miscContainer" id="blockCal<?= $tmpCal->_typeId ?>">
@@ -267,16 +281,16 @@ $(function(){
 					//Menu contextuel de l'agenda (cf. ".objMenuBurger")  &&  Label de l'agenda  &&  Icone de l'user (agenda perso)
 					$tmpCalLabel=(Req::isMobile())  ?  Txt::reduce($tmpCal->title,20)  :  $tmpCal->title;
 					$tmpIconBurgerSize=(Req::isMobile())  ?  "inlineSmall"  :  "inlineBig";
-					$tmpCalIcon=($tmpCal->type=="user")  ?  Ctrl::getObj("user",$tmpCal->_idUser)->personImg(true,true)  :  null;
+					$tmpCalIcon=($tmpCal->type=="user")  ?  Ctrl::getObj("user",$tmpCal->_idUser)->getImg(true,true)  :  null;
 					echo $tmpCalIcon."<span class='vCalendarTitleLabel' title=\"".Txt::tooltip($tmpCal->description)."\">".$tmpCalLabel."</span>".$tmpCal->contextMenu(["iconBurger"=>$tmpIconBurgerSize]);
 					?>
 				</div>
 				<!--PERIODE AFFICHEE-->
 				<div class="vCalendarPeriod">
-					<img src="app/img/navPrev.png" id="calendarPrev" class="noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimePrev ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
+					<img src="app/img/navPrev.png" id="calendarPrev" class="noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimePrev.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodPrevious") ?>">
 					<span class="menuLaunch vCalendarPeriodLabel" for="calMonthPeriodMenu<?= $tmpCal->_typeId ?>"><?= ucfirst($labelMonth) ?></span>
 					<?php if(!empty($calMonthPeriodMenu))  {echo "<div class='menuContext' id='calMonthPeriodMenu".$tmpCal->_typeId."'><div id='calMonthPeriodMenuContainer'>".$calMonthPeriodMenu."</div></div>";} ?>
-					<img src="app/img/navNext.png"  id="calendarNext" class="noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimeNext ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
+					<img src="app/img/navNext.png"  id="calendarNext" class="noPrint" onclick="redir('?ctrl=calendar&curTime=<?= $urlTimeNext.$urlCatFilter ?>')" title="<?= Txt::trad("CALENDAR_periodNext") ?>">
 				</div>
 				<!--OPTION "AUJOURD'HUI"  &&  AFFICHAGE MONTH/WEEK/WORKWEEK/4DAYS/DAY-->
 				<div class="vCalendarDisplayMode">
@@ -296,6 +310,7 @@ $(function(){
 		</div>
 		<?php } ?>
 
+		
 		<!--AUCUN AGENDA-->
 		<?php if(empty($displayedCalendars))  {echo "<div class='emptyContainer'>".Txt::trad("CALENDAR_noCalendarDisplayed")."</div>";} ?>
 	</div>

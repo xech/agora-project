@@ -10,7 +10,7 @@
 /*
  * MODELE DES DOSSIERS DE LIENS/FAVORIS
  */
-class MdlLinkFolder extends MdlFolder
+class MdlLinkFolder extends MdlObjectFolder
 {
 	const moduleName="link";
 	const objectType="linkFolder";

@@ -83,7 +83,7 @@ CREATE TABLE `ap_calendarEventAffectation` (
   KEY `indexes` (`_idCal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `ap_calendarCategory` (
+CREATE TABLE `ap_calendarEventCategory` (
   `_id` int NOT NULL AUTO_INCREMENT,
   `_idSpaces` text,
   `title` varchar(255) DEFAULT NULL,
@@ -562,18 +562,18 @@ INSERT INTO `ap_joinSpaceModule` (`_idSpace`, `moduleName`, `rank`) VALUES
 (1,'dashboard',1), 
 (1,'file',2), 
 (1,'calendar',3), 
-(1,'task',4), 
-(1,'forum',5), 
-(1,'contact',6), 
-(1,'link',7),
-(1,'mail',8),  
-(1,'user',9);
+(1,'forum',4), 
+(1,'contact',5), 
+(1,'link',6), 
+(1,'task',7), 
+(1,'user',8), 
+(1,'mail',9);
 
 INSERT INTO `ap_calendar` (`_id`, `type`, `_idUser`, `title`) VALUES 
 (1,'ressource',1,NULL), 
 (2,'user',1,NULL);
 
-INSERT INTO `ap_calendarCategory` (`_id`, `color`, `title`) VALUES 
+INSERT INTO `ap_calendarEventCategory` (`_id`, `color`, `title`) VALUES 
 (1,'#770000','rendez-vous'), 
 (2,'#000077','reunion'), 
 (3,'#dd7700','vacances'), 

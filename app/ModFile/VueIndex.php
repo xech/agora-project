@@ -26,10 +26,9 @@
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlFileFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
-			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
-			echo MdlFileFolder::menuTree().MdlFile::menuDisplayMode().MdlFile::menuSort().
-				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
-			////	ESPACE DISQUE
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU  &  ESPACE DISQUE
+			echo CtrlObject::folderTreeMenu().MdlFile::menuDisplayMode().MdlFile::menuSort();
+			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
 			if(!empty($diskSpaceProgressBar))  {echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/diskSpace".($diskSpaceAlert==true?"Alert":null).".png'></div><div>".$diskSpaceProgressBar."</div></div>";}
 			?>
 		</div>
@@ -37,7 +36,7 @@
 	<div id="pageFullContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles());
+		echo CtrlObject::folderPathMenu(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles());
 		echo CtrlObject::vueFolders();
 		////	LISTE DES FICHIERS
 		$fileNameLength=MdlFile::getDisplayMode()=="line" ? 80 : 50;

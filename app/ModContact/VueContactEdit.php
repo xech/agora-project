@@ -10,7 +10,7 @@ lightboxSetWidth(600);
 	
 	<!--IMAGE-->
 	<div class="objField">
-		<div><?= $curObj->hasImg()  ?  "<div class='personLabelImg'>".$curObj->personImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("picture") ?></div>
+		<div><?= $curObj->hasImg()  ?  "<div class='personLabelImg'>".$curObj->getImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("picture") ?></div>
 		<div><?= $curObj->displayImgMenu() ?></div>
 	</div>
 

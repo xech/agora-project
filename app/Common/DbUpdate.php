@@ -81,13 +81,13 @@ class DbUpdate extends Db
 			Req::verifPhpVersion();
 			if(is_writable(PATH_DATAS."config.inc.php")==false)  {throw new Exception("Update error : Config.inc.php is not writable");}
 			////	VERROUILAGE DE LA MISE A JOUR
-			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
-			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE LA MISE A JOUR");}
+			$lockedUpdate="UPDATE_LOCK.log";
+			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE MISE A JOUR");}
 			elseif((time()-filemtime($lockedUpdate))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
 			else											{throw new Exception("Update error : check Apache/PHP logs for details. When the issue is resolved : delete the '".$lockedUpdate."' file.");}
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
-			@set_time_limit(120);//pas en safemode
+			@set_time_limit(120);//pas en safemode 
 			self::getDump();
 
 			////	MAJ v3.0.0
@@ -402,10 +402,10 @@ class DbUpdate extends Db
 
 				////	AJOUT DE CHAMPS DATE ET AUTEUR
 				foreach(array("ap_space","ap_user","ap_userGroup","ap_calendar","ap_calendarEventCategory","ap_forumTheme") as $tmpTable){
-					self::fieldExist($tmpTable, "dateCrea",		"ALTER TABLE ".$tmpTable." ADD dateCrea DATETIME DEFAULT NULL");
-					self::fieldExist($tmpTable, "_idUser",		"ALTER TABLE ".$tmpTable." ADD _idUser int DEFAULT NULL AFTER dateCrea");
-					self::fieldExist($tmpTable, "dateModif",	"ALTER TABLE ".$tmpTable." ADD dateModif DATETIME DEFAULT NULL AFTER _idUser");
-					self::fieldExist($tmpTable, "_idUserModif",	"ALTER TABLE ".$tmpTable." ADD _idUserModif int DEFAULT NULL AFTER dateModif");
+					self::fieldExist($tmpTable, "dateCrea", "ALTER TABLE ".$tmpTable." ADD dateCrea DATETIME DEFAULT NULL");
+					self::fieldExist($tmpTable, "_idUser", "ALTER TABLE ".$tmpTable." ADD _idUser int DEFAULT NULL AFTER dateCrea");
+					self::fieldExist($tmpTable, "dateModif", "ALTER TABLE ".$tmpTable." ADD dateModif DATETIME DEFAULT NULL AFTER _idUser");
+					self::fieldExist($tmpTable, "_idUserModif", "ALTER TABLE ".$tmpTable." ADD _idUserModif int DEFAULT NULL AFTER dateModif");
 				}
 
 				////	MAJ DES GROUPES
@@ -903,18 +903,12 @@ class DbUpdate extends Db
 				self::query("ALTER TABLE `ap_task` CHANGE `dateBegin` `dateBegin` DATE NULL DEFAULT NULL");
 				self::query("ALTER TABLE `ap_task` CHANGE `dateEnd` `dateEnd` DATE NULL DEFAULT NULL");
 				//Task Kanban :  Créé le champ `_idStatus` dans la table "ap_task"  &&  Créé la table "ap_TaskStatus" des statuts/colonnes Kanban  &&   Créé les satuts/colonnes kanban de base
-				self::fieldExist("ap_task", "_idStatus",  "ALTER TABLE `ap_task` ADD `_idStatus` int DEFAULT NULL AFTER `description`");
-				self::tableExist("ap_taskStatus",  "CREATE TABLE `ap_taskStatus` (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
+				self::fieldExist(MdlTask::dbTable, "_idStatus",  "ALTER TABLE ap_task ADD `_idStatus` int DEFAULT NULL AFTER `description`");
+				self::tableExist(MdlTaskStatus::dbTable,  "CREATE TABLE ap_taskStatus (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
 				MdlTaskStatus::dbFirstRecord();
 				//Catégories d'evt  &&  Themes du forum : créé le champ `rank`
-				self::fieldExist("ap_calendarEventCategory", "rank",	"ALTER TABLE `ap_calendarEventCategory` ADD `rank` smallint DEFAULT NULL AFTER `color`");
-				self::fieldExist("ap_forumTheme", "rank",  				"ALTER TABLE `ap_forumTheme` ADD `rank` smallint DEFAULT NULL AFTER `color`");
-			}
-
-			if(self::updateVersion("24.4.3"))
-			{
-				//Renomme la table des catégories d'événement
-				if(self::tableExist("ap_calendarEventCategory"))  {self::query("RENAME TABLE `ap_calendarEventCategory` TO `ap_calendarCategory`");}
+				self::fieldExist(MdlCalendarEventCategory::dbTable, "rank", "ALTER TABLE ".MdlCalendarEventCategory::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
+				self::fieldExist(MdlForumTheme::dbTable, "rank",  			"ALTER TABLE ".MdlForumTheme::dbTable." ADD `rank` smallint DEFAULT NULL AFTER `color`");
 			}
 			////////////////////////////////////////	ATTENTION A MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////
@@ -924,8 +918,9 @@ class DbUpdate extends Db
 			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES
 			self::query("UPDATE ap_agora SET dateUpdateDb=".self::dateNow().", version_agora='".Req::appVersion()."'");
 			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
-			////	SUPPRIME $lockedUpdate
-			if(is_file($lockedUpdate))  {File::rm($lockedUpdate);}
+			////	SUPPRIME $lockedUpdate ET SI BESOIN LE ".htaccess" DE FREE
+			File::rm($lockedUpdate);
+			if(preg_match("/free\.fr/i",$_SERVER['HTTP_HOST']))  {File::rm("app/.htaccess");}
 			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!
 			$_SESSION=[];
 			Ctrl::redir("?ctrl=offline");

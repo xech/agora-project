@@ -10,7 +10,7 @@
 /*
  * MODELE DES DOSSIERS DE TACHES
  */
-class MdlTaskFolder extends MdlFolder
+class MdlTaskFolder extends MdlObjectFolder
 {
 	const moduleName="task";
 	const objectType="taskFolder";

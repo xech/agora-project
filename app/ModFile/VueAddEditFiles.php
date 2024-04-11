@@ -50,11 +50,11 @@ function objectFormControl(){
 		if($("#uploadMultiple").isVisible()){
 			if($("#uploadMultiple").plupload("getFiles").length==0){								//Vérif s'il y a au moins un fichier dans la liste
 				notify("<?= Txt::trad("FILE_selectFile") ?>");										//Notify si aucun fichier
-				resolve(false);																		//Retourne false
+				resolve(false);																		//Renvoi false
 			}else{																					//Lance l'upload via Plupload
 				$(".plupload_add,#uploadOptions>span").hide();										//Masque le bouton d'ajout & les options d'upload (pas le block d'options)
 				$(".plupload_filelist_footer .plupload_file_status").show();						//Affiche le % de progression
-				$("#uploadMultiple").plupload("start").on("complete",function(){ resolve(true); });	//Retourne true à la fin des uploads
+				$("#uploadMultiple").plupload("start").on("complete",function(){ resolve(true); });	//Renvoi true à la fin des uploads
 			}
 		}
 		//// Ajout de fichier via un input "file" (envoi simple ou nouvelle version de fichier)

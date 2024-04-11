@@ -170,7 +170,7 @@ class Trad extends Txt
 			////	Validation des formulaires
 			"add"=>"Añadir",
 			"modify"=>"Editar",
-			"record"=>"Registrar",
+			"record"=>"Guardar cambios",
 			"modifyAndAccesRight"=>"Editar + derechos de acceso",
 			"validate"=>"Validar",
 			"send"=>"Enviar",
@@ -226,12 +226,12 @@ class Trad extends Txt
 			"accessRead"=>"lectura",
 			"accessReadTooltip"=>"Acceso de lectura",
 			"accessWriteLimit"=>"escritura limitada",
-			"accessWriteLimitTooltip"=>"Acceso de escritura limitada: posibilidad de añadir -OBJCONTENT- en el --OBJLABEL--,<br> pero cada usuario solo puede modificar/borrar los -OBJCONTENT- que ha creado.",
+			"accessWriteLimitTooltip"=>"Acceso de escritura limitada: posibilidad de añadir -OBJCONTENT- en el -OBJLABEL-,<br> pero cada usuario solo puede modificar/borrar los -OBJCONTENT- que ha creado.",
 			"accessWrite"=>"escritura",
 			"accessWriteTooltip"=>"Acceso en escritura",
-			"accessWriteTooltipContainer"=>"Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los -OBJCONTENT- del --OBJLABEL--",
-			"accessAutorPrivilege"=>"Solo el autor y los administradores pueden cambiar los permisos de acceso o eliminar el --OBJLABEL--",
-			"accessRightsInherited"=>"Derechos de acceso heredados del --OBJLABEL--",
+			"accessWriteTooltipContainer"=>"Acceso en escritura : possibilidad de añadir, modificar o suprimir todos los -OBJCONTENT- del -OBJLABEL-",
+			"accessAutorPrivilege"=>"Solo el autor y los administradores pueden cambiar los permisos de acceso o eliminar el -OBJLABEL-",
+			"accessRightsInherited"=>"Derechos de acceso heredados del -OBJLABEL-",
 			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",//Ex: "Thème bidule -n'est accessible que sur l'espace- Machin"
 			"categoryNotifChangeOrder"=>"El orden de visualización ha sido cambiado.",
 
@@ -275,8 +275,8 @@ class Trad extends Txt
 			"MAIL_notSend"=>"El correo electrónico no se pudo enviar",
 			"MAIL_notSendEverybody"=>"El correo electrónico no se envió a todos los destinatarios: si es posible, verifique la validez de los correos electrónicos",
 			"MAIL_fromTheSpace"=>"desde el espacio",//"depuis l'espace Bidule"
-			"MAIL_elemCreatedBy"=>"--OBJLABEL-- creado por",//boby
-			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificado por",//boby
+			"MAIL_elemCreatedBy"=>"-OBJLABEL- creado por",//boby
+			"MAIL_elemModifiedBy"=>"-OBJLABEL- modificado por",//boby
 			"MAIL_elemAccessLink"=>"Haga clic aquí para acceder al elemento en el espacio",
 
 			////	Dossier & fichier
@@ -388,7 +388,7 @@ class Trad extends Txt
 			"HEADER_displaySpace"=>"espacios de trabajo",
 			"HEADER_displayAdmin"=>"Visualización de Administrador",
 			"HEADER_displayAdminEnabled"=>"Visualización de Administrador activada",
-			"HEADER_displayAdminInfo"=>"Esta opción también le permite mostrar elementos del espacio que no están asignados a usted",
+			"HEADER_displayAdminInfo"=>"Esta opción le permite visualizar todos los elementos presentes en el espacio actual, incluso aquellos que no le están asignados.",
 			"HEADER_searchElem"=>"Buscar en el espacio",
 			"HEADER_documentation"=>"Documentación",
 			"HEADER_shortcuts"=>"Acceso directo",
@@ -400,7 +400,7 @@ class Trad extends Txt
 			"MESSENGER_messengerTitle"=>"Mensajería instantánea : haga clic en el nombre de una persona para chatear o iniciar una videoconferencia",
 			"MESSENGER_messengerMultiUsers"=>"Chatear con otros seleccionando mis interlocutores en el panel derecho",
 			"MESSENGER_connected"=>"Conectado",
-			"MESSENGER_nobody"=>"Actualmente eres la única persona conectada al espacio.",
+			"MESSENGER_nobody"=>"Actualmente eres el único usuario que inició sesión en el espacio.<br> Nota: sus conversaciones anteriores se guardan durante 30 días",
 			"MESSENGER_messageFrom"=>"Mensaje de",
 			"MESSENGER_messageTo"=>"enviado a",
 			"MESSENGER_chatWith"=>"Chatear con",
@@ -442,7 +442,7 @@ class Trad extends Txt
 			"EDIT_showAllUsersAndSpaces"=>"Mostrar todos los usuarios y espacios",
 			"EDIT_notifMail"=>"Notificar",
 			"EDIT_notifMail2"=>"Enviar una notificación de creación/cambio por email",
-			"EDIT_notifMailTooltip"=>"La notificación se enviará a las personas asignadas al elemento (--OBJLABEL--)",
+			"EDIT_notifMailTooltip"=>"La notificación se enviará a las personas asignadas al elemento (-OBJLABEL-)",
 			"EDIT_notifMailTooltipCal"=>"<hr>Si asigna el evento a calendarios personales, la notificación solo se enviará a los propietarios de estos calendarios (acceso de escritura).",
 			"EDIT_notifMailAddFiles"=>"Adjuntar archivos a la notificación",
 			"EDIT_notifMailSelect"=>"Seleccionar los destinatarios de las notificaciones",
@@ -470,7 +470,7 @@ class Trad extends Txt
 			"INSTALL_errorDbConnection"=>"No identificación con la base de datos MariaDB/MySQL",
 			"INSTALL_errorDbExist"=>"Aplicación ya instalada: <a href='index.php'>haga clic aquí para acceder</a><br><br>Para reiniciar la instalación, recuerde eliminar la base de datos",
 			"INSTALL_errorDbNoSqlFile"=>"No se puede acceder al archivo de instalación db.sql o se eliminó porque la instalación ya se realizó",
-			"INSTALL_PhpOldVersion"=>"Agora-Project --CURRENT_VERSION-- requiere una versión más reciente de PHP",
+			"INSTALL_PhpOldVersion"=>"Agora-Project requiere una versión más reciente de PHP",
 			"INSTALL_confirmInstall"=>"¿ Confirmar instalación ?",
 			"INSTALL_installOk"=>"Agora-Project ha sido instalado !",
 			// Premiers enregistrements en DB
@@ -773,38 +773,6 @@ class Trad extends Txt
 			"DASHBOARD_exportPoll"=>"Descarga los resultados de la encuesta en pdf",
 			"DASHBOARD_exportPollDate"=>"resultado de la encuesta al",
 
-			////	MODULE_FICHIER
-			////
-			// Menu principal
-			"FILE_headerModuleName"=>"Archivos",
-			"FILE_moduleDescription"=>"Administración de Archivos",
-			"FILE_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",//OPTION!
-			//Index
-			"FILE_addFile"=>"Añadir archivos",
-			"FILE_addFileAlert"=>"Los directorios del servidor no son accesible en escritura !  gracias de contactar el administrador",
-			"FILE_downloadSelection"=>"Descargar selección",
-			"FILE_fileDownload"=>"Descargar",
-			"FILE_fileSize"=>"Tamaño del archivo",
-			"FILE_imageSize"=>"Tamaño de la imagen",
-			"FILE_nbFileVersions"=>"Archivo versiones",//"55 versions du fichier"
-			"FILE_downloadsNb"=>"(descargado --NB_DOWNLOAD-- veces)",
-			"FILE_downloadedBy"=>"archivo subido por",//"..boby, will"
-			"FILE_addFileVersion"=>"Añadir nueva versión del archivo",
-			"FILE_noFile"=>"No hay archivo en este momento",
-			// fichier_edit_ajouter  &  Fichier_edit
-			"FILE_fileSizeLimit"=>"Los archivos no deben exceder", // ...2 Mega Octets
-			"FILE_uploadSimple"=>"Formulario simple",
-			"FILE_uploadMultiple"=>"Formulario multiple",
-			"FILE_imgReduce"=>"Optimizar la imagen",
-			"FILE_updatedName"=>"El nombre del archivo será reemplazado por la nueva versión",
-			"FILE_fileSizeError"=>"Archivo demasiado grande",
-			"FILE_addMultipleFilesTooltip"=>"Pulse 'Maj' o 'Ctrl' para seleccionar varios archivos",
-			"FILE_selectFile"=>"Gracias por elegir al menos un archivo",
-			"FILE_fileContent"=>"contenido",
-			// Versions_fichier
-			"FILE_versionsOf"=>"Versiones de", // versions de fichier.gif
-			"FILE_confirmDeleteVersion"=>"¿ Confirme la eliminación de esta versión ?",
-
 			////	MODULE_AGENDA
 			////
 			// Menu principal
@@ -893,12 +861,44 @@ class Trad extends Txt
 			"CALENDAR_propositionEmailSubject"=>"Nuevo evento propuesto por",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"Nuevo evento propuesto por --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accede a tu espacio para confirmar o cancelar esta propuesta",
 			// Categorie : Catégories d'événement
-			"CALENDAR_categoryMenuTooltip"=>"Mostrar solo eventos con categoría",
-			"CALENDAR_categoryShowAll"=>"Toda las categorías",
+			"CALENDAR_categoryCurrent"=>"Categoría mostrada",
+			"CALENDAR_categoryDisplayed"=>"Filtrar por categoría de evento",
 			"CALENDAR_categoryUndefined"=>"Sin categoría",
-			"CALENDAR_categoryEditTitle"=>"Editar las categorías",
-			"CALENDAR_categoryEditInfo"=>"Cada categoría de evento puede ser modificada por su autor o por el administrador general",
-			"CALENDAR_categoryEditAdd"=>"Añadir una categoría de evento",
+			"CALENDAR_categoriesEditTitle"=>"Editar categorías de eventos",
+			"CALENDAR_categoriesEditInfo"=>"Cada categoría de evento puede ser modificada por su autor o por el administrador general",
+			"CALENDAR_categoriesAddButton"=>"Añadir una categoría de evento",
+
+			////	MODULE_FICHIER
+			////
+			// Menu principal
+			"FILE_headerModuleName"=>"Archivos",
+			"FILE_moduleDescription"=>"Administración de Archivos",
+			"FILE_option_adminRootAddContent"=>"Sólo el administrador puede añadir elementos en el directorio raíz",//OPTION!
+			//Index
+			"FILE_addFile"=>"Añadir archivos",
+			"FILE_addFileAlert"=>"Los directorios del servidor no son accesible en escritura !  gracias de contactar el administrador",
+			"FILE_downloadSelection"=>"Descargar selección",
+			"FILE_fileDownload"=>"Descargar",
+			"FILE_fileSize"=>"Tamaño del archivo",
+			"FILE_imageSize"=>"Tamaño de la imagen",
+			"FILE_nbFileVersions"=>"Archivo versiones",//"55 versions du fichier"
+			"FILE_downloadsNb"=>"(descargado --NB_DOWNLOAD-- veces)",
+			"FILE_downloadedBy"=>"archivo subido por",//"..boby, will"
+			"FILE_addFileVersion"=>"Añadir nueva versión del archivo",
+			"FILE_noFile"=>"No hay archivo en este momento",
+			// fichier_edit_ajouter  &  Fichier_edit
+			"FILE_fileSizeLimit"=>"Los archivos no deben exceder", // ...2 Mega Octets
+			"FILE_uploadSimple"=>"Formulario simple",
+			"FILE_uploadMultiple"=>"Formulario multiple",
+			"FILE_imgReduce"=>"Optimizar la imagen",
+			"FILE_updatedName"=>"El nombre del archivo será reemplazado por la nueva versión",
+			"FILE_fileSizeError"=>"Archivo demasiado grande",
+			"FILE_addMultipleFilesTooltip"=>"Pulse 'Maj' o 'Ctrl' para seleccionar varios archivos",
+			"FILE_selectFile"=>"Gracias por elegir al menos un archivo",
+			"FILE_fileContent"=>"contenido",
+			// Versions_fichier
+			"FILE_versionsOf"=>"Versiones de", // versions de fichier.gif
+			"FILE_confirmDeleteVersion"=>"¿ Confirme la eliminación de esta versión ?",
 
 			////	MODULE_FORUM
 			////
@@ -911,11 +911,13 @@ class Trad extends Txt
 			"SORT_dateLastMessage"=>"último mensaje",
 			//Index & Sujet
 			"FORUM_forumRoot"=>"Inicio del foro",
+			"FORUM_forumRootMobile"=>"Inicio",
 			"FORUM_subject"=>"sujeto",
 			"FORUM_subjects"=>"sujetos",
 			"FORUM_message"=>"mensaje",
 			"FORUM_messages"=>"mensajes",
-			"FORUM_lastMessage"=>"ultimo de",
+			"FORUM_lastSubject"=>"último sujetos de",
+			"FORUM_lastMessage"=>"último mensaje de",
 			"FORUM_noSubject"=>"Sin sujeto por el momento",
 			"FORUM_noMessage"=>"Sin mensaje por el momento",
 			"FORUM_subjectBy"=>"sujeto de",
@@ -929,12 +931,11 @@ class Trad extends Txt
 			"FORUM_notifOnlyReadAccess"=>"Si solo hay acceso de lectura, nadie puede contribuir al tema.",
 			"FORUM_notifWriteAccess"=>"El acceso de ''escritura'' está destinado a los moderadores :<br>Si es necesario, prefiera los derechos de ''escritura limitada''",
 			// Categorie : Themes
-			"FORUM_categoryMenuTooltip"=>"Mostrar solo sujetos con tema",
-			"FORUM_categoryShowAll"=>"Todo los temas",
+			"FORUM_categoryThemes"=>"Temas",
 			"FORUM_categoryUndefined"=>"Sin tema",
-			"FORUM_categoryEditTitle"=>"Editar los temas",
-			"FORUM_categoryEditInfo"=>"Cada tema puede ser modificado por su autor o por el administrador general",
-			"FORUM_categoryEditAdd"=>"Añadir un tema",
+			"FORUM_categoriesEditTitle"=>"Gestión de los temas",
+			"FORUM_categoriesEditInfo"=>"Cada tema puede ser modificado por su autor o por el administrador general",
+			"FORUM_categoriesAddButton"=>"Añadir un tema",
 
 			////	MODULE_TACHE
 			////
@@ -961,13 +962,11 @@ class Trad extends Txt
 			"TASK_assignedTo"=>"Asignado a",
 			"TASK_advancementLate"=>"Progreso retrasado",
 			"TASK_folderDateBeginEnd"=>"Fecha de inicio más temprana / de fin más reciente",
-			//Categorie : Statuts Kanban
-			"TASK_categoryMenuTooltip"=>"Mostrar solo tareas con estado",
-			"TASK_categoryShowAll"=>"Todos los estados",
+			//Categorie : Colonnes Kanban
 			"TASK_categoryUndefined"=>"Estado indefinido",
-			"TASK_categoryEditTitle"=>"Editar los estados",
-			"TASK_categoryEditInfo"=>"Cada estado puede ser modificado por su autor o por el administrador general.",
-			"TASK_categoryEditAdd"=>"Añadir un estado",
+			"TASK_categoriesEditTitle"=>"Editar estado de Kanban",
+			"TASK_categoriesEditInfo"=>"Cada estado puede ser modificado por su autor o por el administrador general.",
+			"TASK_categoriesAddButton"=>"Añadir un estado",
 
 			////	MODULE_CONTACT
 			////

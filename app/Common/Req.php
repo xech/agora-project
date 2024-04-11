@@ -85,7 +85,7 @@ class Req
 				rename(glob('app/css/common-*.css')[0], 'app/css/common-'.self::$_appVersion.'.css');
 			}
 		}
-		//Retourne le numéro de version
+		//Renvoi le numéro de version
 		return self::$_appVersion;
 	}
 
@@ -96,9 +96,9 @@ class Req
 	{
 		//Keys au format "array"
 		if(!is_array($keys))  {$keys=[$keys];}
-		//Return false si un des parametres n'est pas spécifié  OU  Sa valeur est vide (mais pas "0")
+		//Return false si un des parametres n'est pas spécifié OU que sa valeur est vide
 		foreach($keys as $key){
-			if(!isset(self::$_getPostParams[$key]) || (empty(self::$_getPostParams[$key]) && self::$_getPostParams[$key]!=="0"))  {return false;}
+			if(!isset(self::$_getPostParams[$key]) || empty(self::$_getPostParams[$key]))  {return false;}
 		}
 		//"True" si toutes les valeurs sont OK
 		return true;
@@ -242,9 +242,9 @@ class Req
 	 ********************************************************************************************/
 	public static function verifPhpVersion()
 	{
-		$versionPhpMinimum="7.0";
+		$versionPhpMinimum="5.6";
 		if(version_compare(PHP_VERSION,$versionPhpMinimum,"<=")){
-			echo "<h2><img src='app/img/important.png'> ".str_replace("--CURRENT_VERSION--",static::appVersion(),Txt::trad("INSTALL_PhpOldVersion"))." : ".$versionPhpMinimum." minimum &nbsp; -> current version : ".PHP_VERSION."</h2>";
+			echo "<h2><img src='app/img/important.png'> ".Txt::trad("INSTALL_PhpOldVersion")." : ".$versionPhpMinimum." minimum &nbsp; (current version : ".PHP_VERSION.")</h2>";
 			exit;
 		}
 	}

@@ -10,7 +10,7 @@
 /*
  * MODELE DES DOSSIERS DE FICHIERS
  */
-class MdlFileFolder extends MdlFolder
+class MdlFileFolder extends MdlObjectFolder
 {
 	const moduleName="file";
 	const objectType="fileFolder";

@@ -38,7 +38,6 @@ use SimpleJWT\InvalidTokenException;
 use SimpleJWT\JWT as SimpleJWT;
 use SimpleJWT\Keys\KeyFactory;
 use SimpleJWT\Keys\KeySet;
-use TypeError;
 use UnexpectedValueException;
 
 /**
@@ -312,9 +311,11 @@ class AccessToken
         $cacheItem = $this->cache->getItem($cacheKey);
         $certs = $cacheItem ? $cacheItem->get() : null;
 
-        $expireTime = null;
+        $gotNewCerts = false;
         if (!$certs) {
-            list($certs, $expireTime) = $this->retrieveCertsFromLocation($location, $options);
+            $certs = $this->retrieveCertsFromLocation($location, $options);
+
+            $gotNewCerts = true;
         }
 
         if (!isset($certs['keys'])) {
@@ -330,8 +331,8 @@ class AccessToken
 
         // Push caching off until after verifying certs are in a valid format.
         // Don't want to cache bad data.
-        if ($expireTime) {
-            $cacheItem->expiresAt(new DateTime($expireTime));
+        if ($gotNewCerts) {
+            $cacheItem->expiresAt(new DateTime('+1 hour'));
             $cacheItem->set($certs);
             $this->cache->save($cacheItem);
         }
@@ -344,14 +345,13 @@ class AccessToken
      *
      * @param string $url location
      * @param array<mixed> $options [optional] Configuration options.
-     * @return array{array<mixed>, string}
+     * @return array<mixed> certificates
      * @throws InvalidArgumentException If certs could not be retrieved from a local file.
      * @throws RuntimeException If certs could not be retrieved from a remote location.
      */
     private function retrieveCertsFromLocation($url, array $options = [])
     {
         // If we're retrieving a local file, just grab it.
-        $expireTime = '+1 hour';
         if (strpos($url, 'http') !== 0) {
             if (!file_exists($url)) {
                 throw new InvalidArgumentException(sprintf(
@@ -360,28 +360,14 @@ class AccessToken
                 ));
             }
 
-            return [
-                json_decode((string) file_get_contents($url), true),
-                $expireTime
-            ];
+            return json_decode((string) file_get_contents($url), true);
         }
 
         $httpHandler = $this->httpHandler;
         $response = $httpHandler(new Request('GET', $url), $options);
 
         if ($response->getStatusCode() == 200) {
-            if ($cacheControl = $response->getHeaderLine('Cache-Control')) {
-                array_map(function ($value) use (&$expireTime) {
-                    list($key, $value) = explode('=', $value) + [null, null];
-                    if (trim($key) == 'max-age') {
-                        $expireTime = '+' . $value . ' seconds';
-                    }
-                }, explode(',', $cacheControl));
-            }
-            return [
-                json_decode((string) $response->getBody(), true),
-                $expireTime
-            ];
+            return json_decode((string) $response->getBody(), true);
         }
 
         throw new RuntimeException(sprintf(
@@ -400,10 +386,6 @@ class AccessToken
         }
     }
 
-    /**
-     * @return string
-     * @throws TypeError If the key cannot be initialized to a string.
-     */
     private function loadPhpsecPublicKey(string $modulus, string $exponent): string
     {
         if (class_exists(RSA::class) && class_exists(BigInteger2::class)) {
@@ -426,11 +408,7 @@ class AccessToken
                 $exponent
             ]), 256),
         ]);
-        $formattedPublicKey = $key->toString('PKCS8');
-        if (!is_string($formattedPublicKey)) {
-            throw new TypeError('Failed to initialize the key');
-        }
-        return $formattedPublicKey;
+        return $key->toString('PKCS8');
     }
 
     /**

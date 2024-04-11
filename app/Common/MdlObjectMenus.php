@@ -21,7 +21,7 @@ trait MdlObjectMenus
 	public function uniqId($prefix)
 	{
 		if(empty($this->objUniqId))  {$this->objUniqId=Txt::uniqId();}	//Un seul ID par instance de l'objet (tester avec les événements récurrents de l'agenda)
-		return $prefix.$this->objUniqId;								//Retourne l'id avec un prefix : "objContainer" / "objMenu" / "objCheckbox" / "objAttachment"
+		return $prefix.$this->objUniqId;								//Renvoi l'id avec un prefix : "objContainer" / "objMenu" / "objCheckbox" / "objAttachment"
 	}
 
 	/*******************************************************************************************
@@ -183,6 +183,7 @@ trait MdlObjectMenus
 	 *******************************************************************************************/
 	public function editDescription($toggleButton=true)
 	{
+		//Init
 		$vDatas["curObj"]=$this;
 		$vDatas["toggleButton"]=$toggleButton;
 		//Sélectionne au besoin le "draftTypeId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editTypeId" car il est effacé dès qu'on sort de l'édition de l'objet...)
@@ -190,15 +191,6 @@ trait MdlObjectMenus
 		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
 		//Affiche la vue
 		return Ctrl::getVue(Req::commonPath."VueObjEditDescription.php",$vDatas);
-	}
-
-	/*******************************************************************************************************************************************
-	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "VueObjEditMenuSubmit.php")
-	 *******************************************************************************************************************************************/
-	public function attachedFile()
-	{
-		$vDatas["curObj"]=$this;
-		return Ctrl::getVue(Req::commonPath."VueObjAttachedFile.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -320,9 +312,9 @@ trait MdlObjectMenus
 		return $objectsSort;
 	}
 
-	/*****************************************************************************************************************************
+	/*******************************************************************************************
 	 * STATIC SQL : TRI SQL DES OBJETS (avec premier tri si besoin : news, subject, etc. Ex: "ORDER BY firstName asc")
-	 *****************************************************************************************************************************/
+	 *******************************************************************************************/
 	public static function sqlSort($firstSort=null)
 	{
 		//Init
@@ -364,7 +356,15 @@ trait MdlObjectMenus
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU DU MODE D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModes)
+	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
+	 *******************************************************************************************/
+	public static function mobileOnlyDisplayBlock()
+	{
+		return (Req::isMobile() && in_array("block",static::$displayModes));
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModes)
 	 *******************************************************************************************/
 	public static function menuDisplayMode($containerObj=null)
 	{
@@ -374,14 +374,6 @@ trait MdlObjectMenus
 			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
 			return Ctrl::getVue(Req::commonPath."VueObjMenuDisplayMode.php",$vDatas);
 		}
-	}
-
-	/*******************************************************************************************
-	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
-	 *******************************************************************************************/
-	public static function mobileOnlyDisplayBlock()
-	{
-		return (Req::isMobile() && in_array("block",static::$displayModes));
 	}
 
 	/*******************************************************************************************
@@ -414,13 +406,5 @@ trait MdlObjectMenus
 			//Récupère le menu
 			return Ctrl::getVue(Req::commonPath."VueObjMenuPagination.php",$vDatas);
 		}
-	}
-
-	/*******************************************************************************************
-	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
-	 *******************************************************************************************/
-	public static function sendMailBasicOptions()
-	{
-		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
 	}
 }

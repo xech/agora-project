@@ -18,7 +18,7 @@ use Psr\Http\Message\StreamInterface;
  */
 final class PumpStream implements StreamInterface
 {
-    /** @var callable(int): (string|false|null)|null */
+    /** @var callable|null */
     private $source;
 
     /** @var int|null */
@@ -163,9 +163,9 @@ final class PumpStream implements StreamInterface
 
     private function pump(int $length): void
     {
-        if ($this->source !== null) {
+        if ($this->source) {
             do {
-                $data = ($this->source)($length);
+                $data = call_user_func($this->source, $length);
                 if ($data === false || $data === null) {
                     $this->source = null;
 

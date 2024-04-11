@@ -66,7 +66,7 @@
 			echo $tmpUser->objContainer("objPerson").$tmpUser->contextMenu().
 				"<div class='objContentScroll'>
 					<div class='objContent'>
-						<div class='objIcon'>".$tmpUser->personImg(true,false,true)."</div>
+						<div class='objIcon'>".$tmpUser->getImg(true,false,true)."</div>
 						<div class='objLabel' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."')\">
 							".$tmpUser->getLabel("full").$adminIcon."
 							<div class='objPersonDetails'>".$tmpUser->getFieldsValues(MdlUser::getDisplayMode())."</div>

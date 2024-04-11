@@ -19,7 +19,7 @@ lightboxSetWidth(600);
 	
 	////	IMPORTANT / CATEGORIE
 	if($curObj->important)	{echo "<hr><div class='vEventDetails'><img src='app/img/important.png'> &nbsp; ".Txt::trad("CALENDAR_importanceHight")."</div>";}
-	if($curObj->_idCat)		{echo "<hr><div class='vEventDetails'>".$curObj->categoryLabel()."</div>";}
+	if($labelCategory)		{echo "<hr><div class='vEventDetails'>".$labelCategory."</div>";}
 
 	////	AFFECTATIONS AUX AGENDAS / VISIBILITE SPECIALE / VISIOCONFERENCE / DESCRIPTION / FICHIERS JOINTS
 	if(Ctrl::$curUser->isUser())		{echo "<hr><div class='vEventDetails'><img src='app/img/calendar/iconSmall.png'>&nbsp; ".$curObj->affectedCalendarsLabel()."</div>";}

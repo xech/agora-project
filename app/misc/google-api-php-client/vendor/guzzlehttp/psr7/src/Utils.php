@@ -14,18 +14,18 @@ final class Utils
     /**
      * Remove the items given by the keys, case insensitively from the data.
      *
-     * @param (string|int)[] $keys
+     * @param string[] $keys
      */
     public static function caselessRemove(array $keys, array $data): array
     {
         $result = [];
 
         foreach ($keys as &$key) {
-            $key = strtolower((string) $key);
+            $key = strtolower($key);
         }
 
         foreach ($data as $k => $v) {
-            if (!in_array(strtolower((string) $k), $keys)) {
+            if (!is_string($k) || !in_array(strtolower($k), $keys)) {
                 $result[$k] = $v;
             }
         }

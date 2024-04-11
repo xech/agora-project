@@ -104,7 +104,7 @@ class CtrlAgora extends Ctrl
 				File::updateConfigFile(array("limite_espace_disque"=>$limite_espace_disque));
 			}
 			////	Notif & Relance la page
-			Ctrl::notify("modifRecorded","success");
+			Ctrl::notify(Txt::trad("modifRecorded"));
 			self::redir("index.php?ctrl=".Req::$curCtrl);
 		}
 		////	Supprime un wallpaper?

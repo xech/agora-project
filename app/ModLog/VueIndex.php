@@ -7,7 +7,7 @@ $(function(){
 	//Construction du tableau de donnees
 	oTable=$("#tableLogs").dataTable({
         "iDisplayLength": 100,			//nb de lignes par page par défaut
-        "aLengthMenu": [100,300],		//menu d'affichage du nb de lignes par page
+        "aLengthMenu": [100,300],	//menu d'affichage du nb de lignes par page
         "aaSorting": [[0,"desc"]],		//indique sur quelle colonne se fait le tri par défaut
         "oLanguage":{					//Traduction diverses dans le menu
             "sLengthMenu": "_MENU_ logs",										//Menu select du nb de lignes par page

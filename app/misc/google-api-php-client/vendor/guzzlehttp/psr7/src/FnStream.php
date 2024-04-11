@@ -54,7 +54,7 @@ final class FnStream implements StreamInterface
     public function __destruct()
     {
         if (isset($this->_fn_close)) {
-            ($this->_fn_close)();
+            call_user_func($this->_fn_close);
         }
     }
 
@@ -93,8 +93,7 @@ final class FnStream implements StreamInterface
     public function __toString(): string
     {
         try {
-            /** @var string */
-            return ($this->_fn___toString)();
+            return call_user_func($this->_fn___toString);
         } catch (\Throwable $e) {
             if (\PHP_VERSION_ID >= 70400) {
                 throw $e;
@@ -107,67 +106,67 @@ final class FnStream implements StreamInterface
 
     public function close(): void
     {
-        ($this->_fn_close)();
+        call_user_func($this->_fn_close);
     }
 
     public function detach()
     {
-        return ($this->_fn_detach)();
+        return call_user_func($this->_fn_detach);
     }
 
     public function getSize(): ?int
     {
-        return ($this->_fn_getSize)();
+        return call_user_func($this->_fn_getSize);
     }
 
     public function tell(): int
     {
-        return ($this->_fn_tell)();
+        return call_user_func($this->_fn_tell);
     }
 
     public function eof(): bool
     {
-        return ($this->_fn_eof)();
+        return call_user_func($this->_fn_eof);
     }
 
     public function isSeekable(): bool
     {
-        return ($this->_fn_isSeekable)();
+        return call_user_func($this->_fn_isSeekable);
     }
 
     public function rewind(): void
     {
-        ($this->_fn_rewind)();
+        call_user_func($this->_fn_rewind);
     }
 
     public function seek($offset, $whence = SEEK_SET): void
     {
-        ($this->_fn_seek)($offset, $whence);
+        call_user_func($this->_fn_seek, $offset, $whence);
     }
 
     public function isWritable(): bool
     {
-        return ($this->_fn_isWritable)();
+        return call_user_func($this->_fn_isWritable);
     }
 
     public function write($string): int
     {
-        return ($this->_fn_write)($string);
+        return call_user_func($this->_fn_write, $string);
     }
 
     public function isReadable(): bool
     {
-        return ($this->_fn_isReadable)();
+        return call_user_func($this->_fn_isReadable);
     }
 
     public function read($length): string
     {
-        return ($this->_fn_read)($length);
+        return call_user_func($this->_fn_read, $length);
     }
 
     public function getContents(): string
     {
-        return ($this->_fn_getContents)();
+        return call_user_func($this->_fn_getContents);
     }
 
     /**
@@ -175,6 +174,6 @@ final class FnStream implements StreamInterface
      */
     public function getMetadata($key = null)
     {
-        return ($this->_fn_getMetadata)($key);
+        return call_user_func($this->_fn_getMetadata, $key);
     }
 }

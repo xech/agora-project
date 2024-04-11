@@ -21,16 +21,16 @@ function contactAddUser(typeId)
 				if(Ctrl::$curUser->isSpaceAdmin())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_contact")."</div></div>";}
 				echo "<hr>";
 			}
-			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
-			echo MdlContactFolder::menuTree().MdlContact::menuDisplayMode().MdlContact::menuSort().
-				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			echo CtrlObject::folderTreeMenu().MdlContact::menuDisplayMode().MdlContact::menuSort();
+			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->folderContentDescription()."</div></div>";
 			?>
 		</div>
 	</div>
 	<div id="pageFullContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());
+		echo CtrlObject::folderPathMenu(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());
 		echo CtrlObject::vueFolders();
 		////	LISTE DES CONTACTS
 		foreach($contactList as $tmpContact)
@@ -38,7 +38,7 @@ function contactAddUser(typeId)
 			echo $tmpContact->objContainer("objPerson").$tmpContact->contextMenu().
 				"<div class='objContentScroll'>
 					<div class='objContent'>
-						<div class='objIcon'>".$tmpContact->personImg(true,false,true)."</div>
+						<div class='objIcon'>".$tmpContact->getImg(true,false,true)."</div>
 						<div class='objLabel' onclick=\"lightboxOpen('".$tmpContact->getUrl("vue")."')\">
 							".$tmpContact->getLabel("full")."
 							<div class='objPersonDetails'>".$tmpContact->getFieldsValues(MdlContact::getDisplayMode())."</div>

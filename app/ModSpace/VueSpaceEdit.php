@@ -60,7 +60,7 @@ function objectFormControl(){
 .vSpaceOptions>img						{max-width:18px;}
 #publicSpacePasswordDiv, #divUserInscriptionNotify	{margin:5px 0px 0px 30px;}
 #publicSpaceNotif						{display:none; margin:10px 0px; line-height:20px;}
-label[for='allUsers']					{font-size:1.1em;}
+label[for='allUsers']					{font-size:1.15em;}
 
 /*modules*/
 #modulesList							{list-style-type:none; margin:0px; padding:0px; width:100%;}

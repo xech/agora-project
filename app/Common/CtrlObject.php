@@ -75,7 +75,34 @@ class CtrlObject extends Ctrl
 			static::lightboxClose();
 		}
 		//Affiche le menu de déplacement de dossier
-		MdlFolder::menuTree("move");
+		self::folderTreeMenu("move");
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU D'ARBORESCENCE DE DOSSIERS ($context: "nav" / "move")
+	 *******************************************************************************************/
+	public static function folderTreeMenu($context="nav")
+	{
+		//Affiche l'arborescence (si ya pas que le dossier racine)
+		if(count(Ctrl::$curRootFolder->folderTree())>1){
+			$vDatas["context"]=$context;
+			$vueFolderTree=Req::commonPath."VueObjFolderTree.php";
+			if($context=="nav")	{return Ctrl::getVue($vueFolderTree,$vDatas);}//"nav"	: renvoie le menu de navigation de l'arborescence de dossiers
+			else				{static::displayPage($vueFolderTree,$vDatas);}//"move"	: affiche uniquement le menu de selection d'un dossier pour y déplacer un element
+		}
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU DU CHEMIN DU DOSSIER COURANT
+	 *******************************************************************************************/
+	public static function folderPathMenu($addElemLabel=null, $addElemUrl=null)
+	{
+		//Affiche le chemin d'un dossier  ET/OU  L'option d'ajout d'élement
+		if(Ctrl::$curContainer->isRootFolder()==false || !empty($addElemLabel)){
+			$vDatas["addElemLabel"]=$addElemLabel;
+			$vDatas["addElemUrl"]=$addElemUrl;
+			return Ctrl::getVue(Req::commonPath."VueObjFolderPath.php", $vDatas);
+		}
 	}
 
 	/*******************************************************************************************
@@ -92,7 +119,7 @@ class CtrlObject extends Ctrl
 			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
 			else{
 				$vDatas["objContainerClass"]=$curFolder::moduleName=="contact" ? "objPerson" : null;
-				self::$vueFolders=Ctrl::getVue(Req::commonPath."VueFolders.php",$vDatas);
+				self::$vueFolders=Ctrl::getVue(Req::commonPath."VueObjFolders.php",$vDatas);
 			}
 		}
 		return self::$vueFolders;
@@ -123,7 +150,7 @@ class CtrlObject extends Ctrl
 		else
 		{
 			$vDatas["curObj"]=$curObj;
-			static::displayPage(Req::commonPath."VueFolderEdit.php",$vDatas);
+			static::displayPage(Req::commonPath."VueObjEditFolder.php",$vDatas);
 		}
 	}
 
@@ -141,15 +168,14 @@ class CtrlObject extends Ctrl
 			$curObj->editControl();
 			$_idSpaces=(in_array("allSpaces",Req::param("spaceList")))  ?  null : Txt::tab2txt(Req::param("spaceList"));
 			$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
-			Ctrl::notify("modifRecorded","success");
-			header("Location: ?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&objectType=".$MdlObject::objectType);//Toujours recharger la page (mais sans "redir()")
+			static::lightboxClose();
 		}
 		////	Liste des objets à afficher (+ nouvel objet)  &&  Liste des espaces de l'user courant  &&  Préfixe des traduction
-		$vDatas["categoriesList"]=$MdlObject::getList("edit");
+		$vDatas["objectList"]=array_merge($MdlObject::getList(true), [new $MdlObject()]);
 		$vDatas["spaceList"]=Ctrl::$curUser->getSpaces();
 		$vDatas["tradModulePrefix"]=strtoupper($MdlObject::moduleName);
 		////	Affiche la vue
-		static::displayPage(Req::commonPath."VueCategoryEdit.php",$vDatas);
+		static::displayPage(Req::commonPath."VueObjEditCategories.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -220,11 +246,20 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION : ARBO D'UN DOSSIER A RETOURNER
+	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
 	 *******************************************************************************************/
-	public static function actionFolderTreeBack()
+	public static function sendMailBasicOptions()
 	{
-		if(Req::isHost())  {Host::actionFolderTreeBack();}
+		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
+	}
+
+	/*******************************************************************************************************************************************
+	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "editDescription()")
+	 *******************************************************************************************************************************************/
+	public static function attachedFile($curObj=null)
+	{
+		$vDatas["curObj"]=$curObj;
+		return self::getVue(Req::commonPath."VueObjAttachedFile.php",$vDatas);
 	}
 
 	/*******************************************************************************************

@@ -96,11 +96,6 @@ class GCECredentials extends CredentialsLoader implements
     const PROJECT_ID_URI_PATH = 'v1/project/project-id';
 
     /**
-     * The metadata path of the project ID.
-     */
-    const UNIVERSE_DOMAIN_URI_PATH = 'v1/universe/universe_domain';
-
-    /**
      * The header whose presence indicates GCE presence.
      */
     const FLAVOR_HEADER = 'Metadata-Flavor';
@@ -175,11 +170,6 @@ class GCECredentials extends CredentialsLoader implements
     private $serviceAccountIdentity;
 
     /**
-     * @var string
-     */
-    private ?string $universeDomain;
-
-    /**
      * @param Iam $iam [optional] An IAM instance.
      * @param string|string[] $scope [optional] the scope of the access request,
      *        expressed either as an array or as a space-delimited string.
@@ -188,16 +178,13 @@ class GCECredentials extends CredentialsLoader implements
      *   charges associated with the request.
      * @param string $serviceAccountIdentity [optional] Specify a service
      *   account identity name to use instead of "default".
-     * @param string $universeDomain [optional] Specify a universe domain to use
-     *   instead of fetching one from the metadata server.
      */
     public function __construct(
         Iam $iam = null,
         $scope = null,
         $targetAudience = null,
         $quotaProject = null,
-        $serviceAccountIdentity = null,
-        string $universeDomain = null
+        $serviceAccountIdentity = null
     ) {
         $this->iam = $iam;
 
@@ -225,7 +212,6 @@ class GCECredentials extends CredentialsLoader implements
         $this->tokenUri = $tokenUri;
         $this->quotaProject = $quotaProject;
         $this->serviceAccountIdentity = $serviceAccountIdentity;
-        $this->universeDomain = $universeDomain;
     }
 
     /**
@@ -306,18 +292,6 @@ class GCECredentials extends CredentialsLoader implements
         $base = 'http://' . self::METADATA_IP . '/computeMetadata/';
 
         return $base . self::PROJECT_ID_URI_PATH;
-    }
-
-    /**
-     * The full uri for accessing the default universe domain.
-     *
-     * @return string
-     */
-    private static function getUniverseDomainUri()
-    {
-        $base = 'http://' . self::METADATA_IP . '/computeMetadata/';
-
-        return $base . self::UNIVERSE_DOMAIN_URI_PATH;
     }
 
     /**
@@ -424,7 +398,7 @@ class GCECredentials extends CredentialsLoader implements
         $response = $this->getFromMetadata($httpHandler, $this->tokenUri);
 
         if ($this->targetAudience) {
-            return $this->lastReceivedToken = ['id_token' => $response];
+            return ['id_token' => $response];
         }
 
         if (null === $json = json_decode($response, true)) {
@@ -448,18 +422,14 @@ class GCECredentials extends CredentialsLoader implements
     }
 
     /**
-     * @return array<mixed>|null
+     * @return array{access_token:string,expires_at:int}|null
      */
     public function getLastReceivedToken()
     {
         if ($this->lastReceivedToken) {
-            if (array_key_exists('id_token', $this->lastReceivedToken)) {
-                return $this->lastReceivedToken;
-            }
-
             return [
                 'access_token' => $this->lastReceivedToken['access_token'],
-                'expires_at' => $this->lastReceivedToken['expires_at']
+                'expires_at' => $this->lastReceivedToken['expires_at'],
             ];
         }
 
@@ -528,50 +498,6 @@ class GCECredentials extends CredentialsLoader implements
 
         $this->projectId = $this->getFromMetadata($httpHandler, self::getProjectIdUri());
         return $this->projectId;
-    }
-
-    /**
-     * Fetch the default universe domain from the metadata server.
-     *
-     * @param callable $httpHandler Callback which delivers psr7 request
-     * @return string
-     */
-    public function getUniverseDomain(callable $httpHandler = null): string
-    {
-        if (null !== $this->universeDomain) {
-            return $this->universeDomain;
-        }
-
-        $httpHandler = $httpHandler
-            ?: HttpHandlerFactory::build(HttpClientCache::getHttpClient());
-
-        if (!$this->hasCheckedOnGce) {
-            $this->isOnGce = self::onGce($httpHandler);
-            $this->hasCheckedOnGce = true;
-        }
-
-        try {
-            $this->universeDomain = $this->getFromMetadata(
-                $httpHandler,
-                self::getUniverseDomainUri()
-            );
-        } catch (ClientException $e) {
-            // If the metadata server exists, but returns a 404 for the universe domain, the auth
-            // libraries should safely assume this is an older metadata server running in GCU, and
-            // should return the default universe domain.
-            if (!$e->hasResponse() || 404 != $e->getResponse()->getStatusCode()) {
-                throw $e;
-            }
-            $this->universeDomain = self::DEFAULT_UNIVERSE_DOMAIN;
-        }
-
-        // We expect in some cases the metadata server will return an empty string for the universe
-        // domain. In this case, the auth library MUST return the default universe domain.
-        if ('' === $this->universeDomain) {
-            $this->universeDomain = self::DEFAULT_UNIVERSE_DOMAIN;
-        }
-
-        return $this->universeDomain;
     }
 
     /**

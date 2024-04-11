@@ -10,7 +10,7 @@
 /*
  * MODELE DES DOSSIERS DE CONTACTS
  */
-class MdlContactFolder extends MdlFolder
+class MdlContactFolder extends MdlObjectFolder
 {
 	const moduleName="contact";
 	const objectType="contactFolder";

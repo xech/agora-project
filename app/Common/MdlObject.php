@@ -7,7 +7,7 @@
 */
 
 
-/** Autorise la création dynamique des propriétés, récupérées en bdd (cf. "__construct()") **/
+/** Autorise la création dynamique de propriétés récupérées en bdd, dans "__construct()" **/
 #[\AllowDynamicProperties]
 
 
@@ -19,31 +19,31 @@ class MdlObject
 	//Utilise les classes des menus ("trait")
 	use MdlObjectMenus;
 
-	//Propriétés de base de l'objet
+	//Propriétés de base
 	const moduleName=null;
 	const objectType=null;
 	const dbTable=null;
-	//Propriétés des catégories / conteneurs / contenus
-	const MdlCategory=null;						//Objet catégorie rattaché à l'objet courant	(Ex: "MdlForumTheme", "MdlCalendarCategory", "MdlTaskStatus"...)
-	const MdlObjectContainer=null;				//Objet conteneur rattaché à l'objet courant	(Ex: "MdlFileFolder", "MdlTaskFolder", "MdlCalendar"...)
-	const MdlObjectContent=null;				//Objets contenu rattachés à l'objet courant	(Ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
-	const isFolder=false;						//L'Objet courant est un dossier
-	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier
-	protected static $_hasAccessRight=null;		//pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
-	//Propriétés d'affichage et d'édition
-	const isSelectable=false;					//Sélection multiple : arborescence le plus souvent
-	const hasShortcut=false;					//Création de raccourcis sur l'objet
-	const hasNotifMail=false;					//Envoyer des notifs d'édition par mail
-	const hasAttachedFiles=false;				//Ajouter des pièces jointes
-	const hasUsersLike=false;					//Like sur l'objet
-	const hasUsersComment=false;				//Ajout de commentaires sur l'objet
-	const descriptionEditor=false;				//Editeur html dans la description
-	public static $displayModes=[];				//Type d'affichage : ligne/block le plus souvent
-	public static $requiredFields=[];			//Champs obligatoires pour valider l'édition d'un objet
-	public static $searchFields=[];				//Champs de recherche
-	public static $sortFields=[];				//Champs/Options de tri des résulats
+	//Propriétés de dépendance
+	const MdlObjectContent=null;					//Objet contenu par l'objet courant : objets enfants
+	const MdlObjectContainer=null;					//Objet contenant l'objet courant : objet parent
+	const isFolder=false;							//Objet de type dossier
+	const isFolderContent=false;					//Contenu d'un dossier (fichier, contact, etc)
+	protected static $_hasAccessRight=null;			//pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
+	//Propriétés d'affichage et d'édition (d'IHM)
+	const isSelectable=false;						//Sélection multiple : arborescence le plus souvent
+	const hasShortcut=false;						//Création de raccourcis sur l'objet
+	const hasNotifMail=false;						//Envoyer des notifs d'édition par mail
+	const hasAttachedFiles=false;					//Ajouter des pièces jointes
+	const hasUsersLike=false;						//Like sur l'objet
+	const hasUsersComment=false;					//Ajout de commentaires sur l'objet
+	const descriptionEditor=false;					//Editeur html dans la description
+	public static $displayModes=[];					//Type d'affichage : ligne/block le plus souvent
+	public static $requiredFields=[];				//Champs obligatoires pour valider l'édition d'un objet
+	public static $searchFields=[];					//Champs de recherche
+	public static $sortFields=[];					//Champs/Options de tri des résulats
 	//Valeurs mises en cache
 	private $_accessRight=null;
+	private $_containerObj=null;
 	private $_affectations=null;
 	private $_attachedFiles=null;
 	private $_attachedFilesMenu=null;
@@ -153,43 +153,24 @@ class MdlObject
 		return (Ctrl::$curUser->isUser() && $this->_idUser==Ctrl::$curUser->_id);
 	}
 
-	/******************************************************************************************
+	/*******************************************************************************************
 	 * VERIF : OBJET CRÉÉ À L'INSTANT ? (pour les mails de notif and co)
-	*******************************************************************************************/
+	****************************************************************************************** */
 	public function isNewlyCreated(){
 		return ($this->isNew()==false && time()-strtotime($this->dateCrea)<5);
 	}
 
-	/***************************************************************************************************************************
-	 * RECUPÈRE L'OBJET "CONTENEUR" DE L'OBJET COURANT  (file, contact, task, link, subjectMessage ..et FOLDERS)
-	 **************************************************************************************************************************/
+	/*******************************************************************************************
+	 * RECUPÈRE L'OBJET CONTENEUR DE L'OBJET COURANT  (file/contact/task/link/subjectMessage/FOLDERS)
+	 * Surchargé pour les "calendarEvent" car affectés à plusieurs agendas: donc renvoie plusieurs objets !
+	 ******************************************************************************************/
 	public function containerObj()
 	{
-		if(!empty($this->_idContainer)){
-			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;	//Modèle du dossier courant  ||  Modèle de l'objet parent
-			return Ctrl::getObj($MdlObjectContainer::objectType, $this->_idContainer);
+		if($this->_containerObj===null && !empty($this->_idContainer)){
+			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;//Récup le modèle du dossier courant || Récup le modèle de l'objet parent
+			$this->_containerObj=Ctrl::getObj($MdlObjectContainer,$this->_idContainer);
 		}
-	}
-
-	/***************************************************************************************************************************
-	 * RECUPÈRE L'OBJET "CATEGORY" DE L'OBJET COURANT  (theme du forum / categorie des événements / status des tâches / etc)
-	 **************************************************************************************************************************/
-	public function categoryObj()
-	{
-		if(static::MdlCategory!==null){
-			$MdlCategory=static::MdlCategory;																				//Objet "catégory" rattaché à l'objet courant
-			$dbCategoryField=$MdlCategory::dbParentField;																	//Champ correspondant à l'id de la catégorie (_idCat, idTheme, _idStatus, etc)
-			if(!empty($this->$dbCategoryField))  {return Ctrl::getObj($MdlCategory::objectType, $this->$dbCategoryField);}	//Renvoie l'objet catégory
-		}
-	}
-
-	/******************************************************************************************
-	 * RECUPÈRE LE LABEL DE LA CATEGORIE L'OBJET
-	 ******************************************************************************************/
-	public function categoryLabel()
-	{
-		$categoryObj=$this->categoryObj();
-		if(is_object($categoryObj))  {return '<span class="categoryLabel">'.$categoryObj->getLabel().'</span>';}
+		return $this->_containerObj;
 	}
 
 	/*******************************************************************************************
@@ -390,7 +371,7 @@ class MdlObject
 		elseif(!empty($this->description))	{$tmpLabel=$this->description;}	//Ex: sujet/message du forum (sans titre)
 		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//Ex: link
 		else								{$tmpLabel=null;}
-		//Retourne un résultat "clean"
+		//Renvoi un résultat "clean"
 		return Txt::reduce($tmpLabel,50);
 	}
 
@@ -481,7 +462,7 @@ class MdlObject
 		$newFolder=Ctrl::getObj($oldFolder::objectType, $newFolderId);
 		////	Objet pas dans une arbo? Droit d'accès pas ok? || dossier de destination inaccessible sur le disque? || Déplace un dossier à l'interieur de lui même?
 		if(static::isInArbo()==false || $this->accessRight()<2 || $newFolder->accessRight()<2 || (static::objectType=="fileFolder" && is_dir($newFolder->folderPath("real"))==false))	{Ctrl::notify(Txt::trad("inaccessibleElem")." : ".$this->name.$this->title);}
-		elseif(static::isFolder===true && $this->isInCurrentTree($newFolder))																											{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
+		elseif(static::isFolder && $this->isInFolderTree($newFolderId))																													{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
 		else
 		{
 			////	Change le dossier conteneur
@@ -536,7 +517,7 @@ class MdlObject
 			elseif($affect["targetType"]=="group")					{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["target_id"])->userIds);}			//Ajoute les users du groupe
 			elseif($affect["targetType"]=="user")					{$userIds[]=$affect["target_id"];}																	//Ajoute l'user
 		}
-		//Retourne la liste des users
+		//Renvoi la liste des users
 		return array_unique($userIds);
 	}
 
@@ -761,21 +742,21 @@ class MdlObject
 	/*******************************************************************************************
 	 * AUTEUR DE L' OBJET + DATE DE CRÉATION OU MODIFICATION
 	 *******************************************************************************************/
-	public function autorDateLabel($showPersonImg=false)
+	public function autorDateLabel($withAutorIcon=false)
 	{
-		$personImg=($showPersonImg==true)  ?  Ctrl::getObj("user",$this->_idUser)->personImg(true,true)  :  null;
-		return  $personImg." ".$this->autorLabel()."<div class='dateLabel'>".$this->dateLabel(false)."</div>";
+		$autorIcon=($withAutorIcon==true)  ?  Ctrl::getObj("user",$this->_idUser)->getImg(true,true)  :  null;
+		return $autorIcon." ".$this->autorLabel()."<div class='objAutorDateCrea'>".$this->dateLabel(false)."</div>";
 	}
 
 	/*******************************************************************************************
-	 * LIBELLE DE L'OBJET (CHANGE --OBJLABEL-- & CO)
+	 * LIBELLE DE L'OBJET (CHANGE -OBJLABEL- & CO)
 	 *******************************************************************************************/
 	public function tradObject($tradKey)
 	{
 		//// Traduction principale
 		$trad=Txt::trad($tradKey);
 		//// Remplace le label principal de l'objet (ex: "news", "fichier", "dossier")
-		$trad=str_replace("--OBJLABEL--", Txt::trad("OBJECT".static::objectType), $trad);
+		$trad=str_replace("-OBJLABEL-", Txt::trad("OBJECT".static::objectType), $trad);
 		//// Remplace le label du contenu de l'objet (ex: "fichier" si l'objet courant est un dossier)
 		if(static::isContainer()){
 			$MdlObjectContent=static::MdlObjectContent;
@@ -924,7 +905,7 @@ class MdlObject
 		//Mise en cache
 		if($this->_usersComment===null)
 			{$this->_usersComment=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);}
-		//Retourne les résultats
+		//Renvoi les résultats
 		return $this->_usersComment;
 	}
 
