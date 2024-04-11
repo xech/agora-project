@@ -16,7 +16,7 @@ See the [project page](https://www.agora-project.net/?curTrad=english) for docum
 7. If you can, modify the "php.ini" file of your web server and modify the "post_max_size" and "upload_max_filesize" parameters to increase the size of the uploaded files.
 
 
-## Screenshots 
+## Screenshots
 <p align="center">
 
   <b>File manager</b><br><br>
