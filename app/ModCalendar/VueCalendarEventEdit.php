@@ -89,15 +89,14 @@ $(function(){
 function displayPeriodType()
 {
 	//Réinitialise les options de périodicité & Affiche au besoin l'options sélectionnée
-	$("#periodTypeLabel, #periodOptions, #periodOption_weekDay, #periodOption_month, #periodDateEnd, #periodDateExceptions").hide();
-	if($("[name='periodType']").isEmpty()==false)  {$("#periodTypeLabel,#periodOptions, #periodDateEnd, #periodDateExceptions, #periodOption_"+$("[name='periodType']").val()).fadeIn();}
+	$("#periodOptions, #periodTypeLabel, #periodOption_weekDay, #periodOption_month, #periodDateEnd, #periodDateExceptions").hide();
+	if($("[name='periodType']").isEmpty()==false)  {$("#periodOptions, #periodTypeLabel, #periodDateEnd, #periodDateExceptions, #periodOption_"+$("[name='periodType']").val()).fadeIn();}
+	//Affiche les détails de périodicité (ex: "Tous les mois, le 15")
+	if($("[name='periodType']").val()=="weekDay")		{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_weekDay") ?>");}																//"Toutes les semaines"
+	else if($("[name='periodType']").val()=="month")	{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_month").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2));}	//"Tous les mois, le 22"
+	else if($("[name='periodType']").val()=="year")		{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_year").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,5));}	//"Tous les ans, le 15/10"
 	//Pré-check si besoin tous les mois
 	if($("[name='periodType']").val()=="month" && $("[name*='periodValues_month']:checked").length==0)  {$("input[name*='periodValues_month']").prop("checked","true");}
-	//Affiche les détails de périodicité (ex: "le 15 du mois")
-	var periodTypeLabelTmp="";
-	if($("[name='periodType']").val()=="month")		{periodTypeLabelTmp="<?= Txt::trad("CALENDAR_period_month").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2);}//"Tous les mois, le 22"
-	else if($("[name='periodType']").val()=="year")	{periodTypeLabelTmp="<?= Txt::trad("CALENDAR_period_year").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,5);}//"Tous les ans, le 15/10"
-	$("#periodTypeLabel").html(periodTypeLabelTmp);
 	//Masque les exceptions de périodicité vides
 	$(".periodExceptionDiv").each(function(){
 		if($("#"+this.id.replace("Div","Input")).isEmpty())  {$(this).hide();}
@@ -167,11 +166,12 @@ function objectFormControl()
 
 
 <style>
-.vEventOptionInline	{display:inline-block; margin:20px 30px 0px 0px;}
+/*GENERAL*/
+legend			 						{font-size:1.05em;}
+.vEventOptionInline						{display:inline-block; margin:20px 30px 0px 0px;}
 
 /*PÉRIODICITÉ*/
-#periodTypeLabel, #periodOptions							{display:none;}
-#periodTypeLabel											{margin-bottom:10px; text-decoration:underline;}/*Ex: "Tous les 22 du mois"*/
+#periodOptions					 							{display:none; margin-top:20px; margin-bottom:10px;}
 #periodOption_weekDay, #periodOption_month					{text-align:left; vertical-align:middle;}/*checkboxes des jours ou des mois*/
 #periodOption_weekDay>div, #periodOption_month>div			{display:inline-block; width:25%; padding:0px 10px 10px 0px;}
 #periodDateEnd, #periodDateExceptions, .periodExceptionDiv	{display:inline-block; margin:10px 5px; line-height:35px;}
@@ -232,6 +232,11 @@ input[name='guestMail']					{margin-left:20px;}
 		<input type="text" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" placeholder="H:m">
 	</div>
 
+	<!--<SELECT> DE LA CATEGORIE-->
+	<div class="vEventOptionInline vEventOptionAdvanced">
+		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
+	</div>
+
 	<!--PERIODICITE-->
 	<div class="vEventOptionInline vEventOptionAdvanced">
 		<select name="periodType">
@@ -245,7 +250,7 @@ input[name='guestMail']					{margin-left:20px;}
 	<!--PERIODICITE : DIV DES OPTIONS-->
 	<fieldset class="vEventOptionAdvanced" id="periodOptions">
 		<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
-		<div id="periodTypeLabel">&nbsp;</div>
+		<legend id="periodTypeLabel">&nbsp;</legend>
 		<!--PERIODICITE: JOURS DE LA SEMAINE-->
 		<div id="periodOption_weekDay">
 			<?php
@@ -288,11 +293,6 @@ input[name='guestMail']					{margin-left:20px;}
 		}
 		?>
 	</fieldset>
-
-	<!--<SELECT> DE LA CATEGORIE-->
-	<div class="vEventOptionInline vEventOptionAdvanced">
-		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
-	</div>
 
 	<!--IMPORTANT-->
 	<div class="vEventOptionInline vEventOptionAdvanced">

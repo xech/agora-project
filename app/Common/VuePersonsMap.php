@@ -1,4 +1,9 @@
 
+<style>
+#htmlLightbox body	{padding:0px!important;}/*Surcharge*/
+</style>
+
+
 <!--CONTENEUR DE LA CARTE-->
 <img src="app/img/loading.png" style="position:absolute;bottom:50px;right:50px;z-index:50;">
 <div id="mapid"></div>
@@ -84,7 +89,7 @@ function displayAdress(adressKey)
 			if(getAdressKeyNext(adressKey))  {displayAdress(getAdressKeyNext(adressKey));}
 			else{
 				gMap.fitBounds(bounds);
-				if(gMap.getZoom()>15)  {gMap.setZoom(15);}//Dézoom si besoin
+				setTimeout(function(){ gMap.setZoom(14); },200);//Dézoom juste après le "fitBounds"
 				$("img[src*=loading]").hide();
 			}
 		});
