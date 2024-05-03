@@ -66,7 +66,7 @@ function folderMove(newFolderId){
 
 /*MOBILE*/
 @media screen and (max-width:1023px){
-	#menuMobileContent #treeFolders	{position:relative; overflow-y:scroll; max-height:140px;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
+	#menuMobileContent #treeFolders	{position:relative; max-height:200px; overflow-y:auto;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
 }
 </style>
 

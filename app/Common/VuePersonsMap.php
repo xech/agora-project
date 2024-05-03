@@ -97,7 +97,7 @@ function displayAdress(adressKey)
 			//// "Adresse non trouvé"  OU  Adresse trouvée et placée sur la carte
 			if(result.length==0)  {notify("<?= Txt::trad("mapLocalizationFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapLocalizationFailure2") ?>");}
 			else{
-				//Debug si besoin
+				//DEBUG
 				//notify(tmpAdress.adress+"<br>->"+result[0].display_name+"<br>->"+result[0].lat+"<br>->"+result[0].lon);
 				//Init la liste des markers
 				if(typeof markersList=="undefined")  {markersList=[];}

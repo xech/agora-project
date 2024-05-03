@@ -24,12 +24,12 @@ $(function(){
 	////	Affiche le formulaire d'édition des catégories
 	$(".vCategoryEdit").on("click",function(){																//Click sur le bouton "modifier" ou "ajouter"
 		let selectFieldset="#"+$(this).closest("fieldset").attr("id");										//Sélecteur du fieldset de la catégorie (balise parent via "closest")
-		let selectButtons=selectFieldset+" .vCategoryDelete, "+selectFieldset+" .changeOrder";				//Sélecteur des boutons delete/changeOrder
+		let selectHeaders=selectFieldset+" .vCategoryMain>div:not(.vCategoryEdit)";							//Sélecteur du header : libellé principal & boutons (sauf "modifier")
 		if($(selectFieldset+" form").is(":visible")){														//Si le formulaire est déjà visible :
-			$(selectButtons).show();																		//Affiche les boutons delete/changeOrder
+			$(selectHeaders).show();																		//Affiche les boutons delete/changeOrder
 			$(selectFieldset+" form").slideUp();															//Masque le formulaire
 		}else{																								//Si le formulaire n'est pas visible :
-			$(selectButtons).hide(); 																		//Masque les boutons delete/changeOrder
+			$(selectHeaders).hide(); 																		//Masque les boutons delete/changeOrder
 			$(selectFieldset+" form").slideDown().find("input[name='title']").focus();						//Affiche le formulaire + Focus sur le champ "title"
 			$("fieldset").not(selectFieldset).has("form:visible").find(".vCategoryEdit").trigger("click");	//Ferme les formulaires ouverts sur d'autres catégories (via trigger .vCategoryEdit)
 		}
@@ -76,12 +76,12 @@ fieldset							{margin-top:35px;}/*surcharge*/
 .vCategoryMain>div					{display:table-cell;}
 .vCategoryLabel						{font-size:1.05em;}
 .vCategoryAutor						{text-transform:lowercase; margin-top:5px; opacity:0.8;}
-.vCategoryModif, .vCategoryDelete	{width:100px; text-align:center; vertical-align:middle;}
+.vCategoryModif, .vCategoryDelete	{width:1%; white-space:nowrap; padding:0px 10px; text-align:right; vertical-align:middle;}/*Width ajusté au contenu via 'nowrap'*/
 .vCategoryAdd						{font-size:1.1em; text-align:center;}
-form								{display:none; margin:30px 0px 0px 0px; padding:10px;}/*masque par défaut*/
+form								{display:none; margin-top:25px;}/*masque par défaut*/
 form input[name='title']			{width:300px; max-width:80%; color:#fff; margin-right:5px;}
 form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
-.vSpaceList							{margin-top:10px;}
+.vSpaceList							{margin-top:10px; max-height:150px; overflow-y:auto;}
 .vSpaceList>div						{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
 .vLabelAllSpaces					{font-style:italic;}
 .submitButtonMain					{margin-top:30px;}/*surcharge du button*/
@@ -97,7 +97,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 <div>
 	<div class="lightboxTitle">
 		<img src="app/img/category.png"><?= Txt::trad($tradModulePrefix."_categoryEditTitle") ?>
-		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_categoryEditInfo") ?><img src="app/img/info.png"></div>
+		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_categoryEditInfo") ?></div>
 	</div>
 	<div id="categoryList">
 		<?php foreach($categoriesList as $tmpObj){ ?>
@@ -120,7 +120,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 				<?php } ?>
 			</div>
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
-			<form action="index.php" method="post" class="fieldsetSub">
+			<form action="index.php" method="post">
 				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_id ?>" placeholder="<?= Txt::trad("title") ?>" style="background-color:<?= $tmpObj->color ?>">
 				<img src="app/img/colorPicker.png" class="menuLaunch" for="colorPickerDiv<?= $tmpObj->_id ?>">
 				<div class="colorPicker menuContext" id="colorPickerDiv<?= $tmpObj->_id ?>">
@@ -151,7 +151,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 						echo '<div>
 								<input type="checkbox" name="spaceList[]" value="'.$tmpSpace->_id.'" id="'.$boxId.'" '.$boxChecked.'>
 								<label for="'.$boxId.'" title="'.Txt::trad("visibleOnSpace").' : '.$tmpSpace->name.'">'.$tmpSpace->name.'</label>
-							</div>';
+							  </div>';
 					}
 					?>
 				</div>

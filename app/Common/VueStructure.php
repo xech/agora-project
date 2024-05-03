@@ -86,17 +86,17 @@
 
 		/*MOBILE  (cf. "common.js")*/
 		@media screen and (max-width:1023px){
-			#pageFooterHtml, #pageFooterIcon		{visibility:hidden;}/*pas de "display:none" pour laisser de la marge avec le contenu de la page pour le Messenger/Livecounter et le "menuMobileAddButton"*/
+			#pageFooterHtml, #pageFooterIcon			{visibility:hidden;}/*pas de "display:none" pour laisser de la marge avec le contenu de la page pour le Messenger/Livecounter et le "menuMobileAddButton"*/
 			#menuMobileMain, #menuMobileBg				{position:fixed; top:0px; right:0px; height:100%;}
 			#menuMobileBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
-			#menuMobileMain							{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
+			#menuMobileMain								{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
 			#menuMobileMain #menuMobileClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
 			#menuMobileMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
 			#menuMobileMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
-			#menuMobileMain hr						{margin:10px 0px;}/*surcharge*/
-			#menuMobileTwo							{display:none; margin-top:10px; border-radius:5px;}
+			#menuMobileMain hr							{margin:10px 0px;}/*surcharge*/
+			#menuMobileTwo								{display:none; margin-top:10px; border-radius:5px;}
 			#menuMobileTwo, .vHeaderModuleCurrent		{<?= @Ctrl::$agora->skin=="black" ? "background:#444!important;border:solid 1px #555;" : "background:#eee!important;border:solid 1px #ddd;" ?>}
-			#menuMobileAddButton							{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
+			#menuMobileAddButton						{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
 		}
 
 		/*IMPRESSION*/
@@ -120,7 +120,7 @@
 					<div id='menuMobileClose'><img src='app/img/closeMobile.png'></div>
 					<div id='menuMobileContent'> <div id='menuMobileOne'></div> <div id='menuMobileTwo'></div> </div>
 				  </div>
-				  <div id='menuMobileAddButton'><img src='app/img/plusMobile.png'></div>";
+				  <div id='menuMobileAddButton'><img src='app/img/plusBig.png'></div>";
 		}
 
 		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE

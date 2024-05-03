@@ -33,12 +33,12 @@ $(function(){
 
 	////	Accès à un espace public : accès direct || affiche le formulaire du password
 	$(".publicSpaceLabel").click(function(){
-		if($(this).attr("data-hasPassword")==="true"){												//Accès avec password :
-			$("[name='_idSpaceAccess']").val($(this).attr("data-idSpace"));							//Enregistre le "_idSpaceAccess" dans l'input du form principal de connexion
-			$.fancybox.open({src:'#publicSpaceForm',type:'inline',buttons:['close'],modal:true});	//Affiche le formulaire du password ('modal' pour masquer les boutons par défaut)
-		}else{																						//Accès direct à l'espace :
-			var objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());						//Récupère "objUrl" du form principal de connexion
-			redir("?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+objUrlEncoded);		//Redir vers l'espace demandé!
+		if($(this).attr("data-hasPassword")==="true"){													//Accès avec password :
+			$("[name='_idSpaceAccess']").val($(this).attr("data-idSpace"));								//Enregistre le "_idSpaceAccess" dans l'input du form principal de connexion
+			$.fancybox.open({src:'#publicSpaceForm',type:'inline',buttons:['close'],modal:true});		//Affiche le formulaire du password ('modal' pour masquer les boutons par défaut)
+		}else{																							//Accès direct à l'espace :
+			var objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());							//Récupère "objUrl" du form principal de connexion
+			redir("index.php?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+objUrlEncoded);	//Redir vers l'espace demandé!
 		}
 	});
 
@@ -50,7 +50,7 @@ $(function(){
 		var password=encodeURIComponent($("#publicSpacePassword").val());																	//Récupère le password
 		$.ajax("?action=PublicSpacePassword&_idSpaceAccess="+_idSpaceAccess+"&password="+password).done(function(result){					//Controle Ajax du password
 			if(/passwordError/i.test(result))	{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}									//Notif d'erreur de password
-			else								{redir("?_idSpaceAccess="+_idSpaceAccess+"&password="+password+"&objUrl="+objUrlEncoded);}	//Redir vers l'espace demandé!
+			else								{redir("index.php?_idSpaceAccess="+_idSpaceAccess+"&password="+password+"&objUrl="+objUrlEncoded);}	//Redir vers l'espace demandé!
 		});
 	});
 });
@@ -165,7 +165,7 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 					if(/userConnected/i.test(ajaxResult))	{redir("index.php");}														//User connecté : recharge la page courante
 					else									{notify(jsonResponse.email+" <?= Txt::trad("gIdentityUserUnknown") ?>");}	//Notif d'erreur
 				});
-				//notify("ID: "+jsonResponse.sub+"<br>Email: "+jsonResponse.email+"<br>Full Name: "+jsonResponse.name+"<br>Given Name: "+jsonResponse.given_name+"<br>Family Name: "+jsonResponse.family_name);
+				////notify("ID: "+jsonResponse.sub+"<br>Email: "+jsonResponse.email+"<br>Full Name: "+jsonResponse.name+"<br>Given Name: "+jsonResponse.given_name+"<br>Family Name: "+jsonResponse.family_name);
 			}
 			</script>
 			<hr>

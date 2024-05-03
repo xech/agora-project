@@ -2,26 +2,27 @@
 body, a, .sLink																										{color:#555;}
 #htmlLightbox																										{background:white;}
 input, textarea, select																								{color:#555;}
-.sAccessWrite, .sAccessWriteLimit																					{color:#900;}					/*Droit d'accès "Write" & "Write limit"*/
-a:hover, [onclick]:hover, .sLink:hover, .linkSelect, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(0, 104, 189);}		/*Liens principaux / label+checkbox / accès utilisateur*/
+.sAccessWrite, .sAccessWriteLimit																					{color:#900;}				/*Droit d'accès "Write" & "Write limit"*/
+a:hover, [onclick]:hover, .sLink:hover, .linkSelect, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(0,104,189);}	/*Liens principaux / label+checkbox / accès utilisateur*/
 
 /*Blocks d'objet & menus contextuels*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext										{background:white;}				/*blocks principaux*/
-.lineOdd:nth-child(odd)																				{background:#f9f9f9;}				/*blocks principaux survolés & blocks d'objets impaires (cf. forum)*/
-.objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover	{background: #ddd!important;}		/*objets sélectionnés & lignes survolées (cf. droit d'accès & CO)*/
-.objLines .objContainer																				{border-bottom:solid 1px #ccc;}	/*pas de "box-shadow" en affichage "objLines"*/
+.objContainer, .miscContainer, .emptyContainer, .menuContext										{background:white;}						/*blocks principaux*/
+.objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover	{background: #ddd!important;}				/*objets sélectionnés & lignes survolées (cf. droit d'accès & CO)*/
+.objLines .objContainer																				{border-bottom:solid 1px #ccc;}			/*pas de "box-shadow" en affichage "objLines"*/
 
 /*MOBILE*/
 @media screen and (max-width:1023px){
 	#htmlMainPage	{background:#fff url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
-	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:0px 2px 5px rgb(200,200,200);}					/*cf. affichage de news et fichiers*/
+	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:0px 2px 5px rgb(200,200,200);}											/*cf. affichage de news et fichiers*/
 }
 
 /*Divers*/
 #headerBar								{background:linear-gradient(180deg,#f1f1f1,#fff,#f1f1f1); box-shadow:0px 2px 8px rgb(80,80,80);}	 /*barre de menu principale*/
 hr										{background:linear-gradient(90deg,#eee,#ccc,#eee);}												 	  /*barre de séparation*/
-div::-webkit-scrollbar					{background:#eee; width:15px;}																			 	 /*scrollbar: background et width*/
-div::-webkit-scrollbar-thumb			{background:#ccc;}																							 /*scrollbar: couleur de la barre*/
-fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px; }											/*fieldset & onglet "VueObjEditMenuSubmit.php"*/
-.fieldsetSub							{border:1px solid #ccc; border-radius:5px;}																 /*ex: "VueObjEditMenuSubmit.php"*/
+fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px;}											/*fieldset & onglet "VueObjEditMenuSubmit.php"*/
+.fieldsetSub							{background:#ececec; border:1px solid #ccc; border-radius:5px;}											/*ex: "VueObjEditMenuSubmit.php"*/
 .objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#fafafa,#fff,#fff);}											  	  /*"VueObjEditMenuSubmit.php"*/
+.optionSelect, .optionUnselect:hover	{color:rgb(0,104,189); background:#eeefff; border:solid 1px #ddd; border-radius:5px;}				  /*option/categorie sélectionnée*/
+.optionUnselect							{border:solid 1px transparent;}
+::-webkit-scrollbar						{background:#eee; width:12px;}																			/*scrollbar: background et width*/
+::-webkit-scrollbar-thumb				{background:#bbb;}																						/*scrollbar: couleur de la barre*/

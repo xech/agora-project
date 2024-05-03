@@ -25,7 +25,7 @@ class Db
 		if(self::$_objPDO===null){
 			//Connection PDO
 			try{
-				//Utilise l'encodage "utf8mb4" pour les emojis sur mobile ("utf8" pour les versions inférieures à PHP 7 : cf. hosting Free.fr)
+				//Utilise l'encodage "utf8mb4" pour les emojis sur mobile ("utf8" pour les versions inférieures à PHP 7)
 				$dbCharset=(version_compare(PHP_VERSION,7,">="))  ?  "utf8mb4"  :  "utf8";
 				//Aucune DB n'est spécifiée : dbInstall!  /  Sinon on établit une connexion
 				if(!defined("db_name") || !db_name)	{throw new Exception("dbInstall_dbNameUndefined");}
@@ -125,7 +125,7 @@ class Db
 			//Formate une date provenant d'un datepicker + timepicker?
 			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
 			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}
-			//Renvoie le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
+			//Retourne le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
 			return (stristr($options,"noquotes"))  ?  $text  :  self::objPDO()->quote($text);
 		}
 	}

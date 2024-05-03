@@ -169,11 +169,11 @@ $(function(){
 					<div>
 					<?php
 					// Options de base des emails (cf. Tool::sendMail()")
-					echo CtrlObject::sendMailBasicOptions();
+					echo MdlObject::sendMailBasicOptions();
 					//// "Ajouter une visioconférence"
 					if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" title="'.Txt::trad("VISIO_urlMail").'"><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").' <img src="app/img/plusSmall.png"></div>';}
 					//// "joindre des fichiers"
-					echo CtrlObject::attachedFile($curObj);
+					echo $curObj->attachedFile();
 					?>
 					</div>
 					<div>

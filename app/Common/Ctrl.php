@@ -106,6 +106,7 @@ abstract class Ctrl
 		$connectViaForm		=Req::isParam(["connectLogin","connectPassword"]);
 		$connectViaToken	=(!empty($_COOKIE["userAuthToken"]));
 		$connectViaCookieOld=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]));
+
 		////	CONNEXION D'UN USER
 		if(self::$curUser->isUser()==false && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true || $connectViaCookieOld==true))
 		{
@@ -124,7 +125,8 @@ abstract class Ctrl
 			elseif($connectViaToken==true){
 				$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
 				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
-				if(!empty($tmpUser))  {$userAuthentified=true;}
+				if(!empty($tmpUser))	{$userAuthentified=true;}
+				else					{self::userAuthToken("delete");}
 			}
 			////	CONNEXION AUTO VIA L'ANCIENNE METHODE (obsolete depuis v23.4 mais retro-compatible : cookies supprimés dès que $userAuthentified=true)
 			elseif($connectViaCookieOld==true){
@@ -154,8 +156,8 @@ abstract class Ctrl
 			}
 			////	USER NON-AUTHENTIFIÉ
 			else{
-				//// Notif d'erreur de credentials || notif de token obsolete
-				self::notify($connectViaForm==true?"NOTIF_identification":"NOTIF_identificationToken");
+				//// Notif d'erreur de credentials
+				if($connectViaForm==true)  {self::notify("NOTIF_identification");}
 				self::redir("index.php?disconnect=1");
 			}
 		}
@@ -211,24 +213,30 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * CREE/SUPPRIME LE TOKEN DE CONNEXION AUTOMATIQUE
-	 * @param string $action "create" or "delete"
-	 * @param int $_idUser with "create" $action
+	 * SUPPRIME/CREE LE TOKEN DE CONNEXION AUTOMATIQUE
+	 * $action :  "delete"  ||  "create" avec $_idUser
 	 *******************************************************************************************/
 	public static function userAuthToken($action, $_idUser=null)
 	{
-		////	S'il existe déjà un cookie "userAuthToken" : supprime le token en bdd correspondant au cookie 
+		////	S'il existe déjà un cookie : supprime le token correspondant en bdd
 		if(!empty($_COOKIE["userAuthToken"])){
-			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
-			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));
-			setcookie("userAuthToken", "", -1);
+			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);											//Récupère le token du cookie
+			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));		//Supprime le token correspondant dans la bdd
+			setcookie("userAuthToken", "", time()-TIME_COOKIES);											//Supprime le cookie
+			unset($_COOKIE["userAuthToken"]);																//Idem
 		}
-		////	(Re)Créé un nouveau token au format Bcrypt : enregistre le token en bdd et dans un cookie
-		if($action=="create"){
-			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);
-			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser);
-			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($userAuthToken).", dateCrea=NOW()");
-			setcookie("userAuthToken", $_idUser."@@@".$userAuthToken, TIME_COOKIES);
+		////	Créé un nouveau token au format : enregistre le token en bdd et dans un cookie
+		if($action=="create" && !empty($_idUser))
+		{
+			require_once('app/misc/Browser.php');																				//Charge la classe "Browser()"
+			$browserObj=new Browser();																							//Récup les infos du browser
+			$browserId=(is_object($browserObj))  ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  :  null;			//Identifie le browser et l'OS
+			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);															//Créé un nouveau Token avec l'algo Bcrypt
+			$cookieToken=$_idUser."@@@".$userAuthToken;																			//Créé le token du cookie
+			setcookie("userAuthToken", $cookieToken, TIME_COOKIES);																//Enregistre le cookie
+			$_COOKIE["userAuthToken"]=$cookieToken;																				//Charge le cookie
+			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));			//Supprime en bdd les anciens tokens
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", browserId=".Db::format($browserId).", userAuthToken=".Db::format($userAuthToken).", dateCrea=NOW()");	//Enregistre le token en bdd !
 		}
 		////	Supprime les cookies de l'ancienne méthode  &&  Supprime les tokens de plus d'un an
 		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG","",-1);  setcookie("AGORAP_PASS","",-1);}
@@ -280,7 +288,7 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * AFFICHE UNE PAGE COMPLETE (ENSEMBLE DE VUES)
 	 *******************************************************************************************/
-	protected static function displayPage($fileMainVue, $vDatasMainVue=array())
+	public static function displayPage($fileMainVue, $vDatasMainVue=array())
 	{
 		////	PAGE PRINCIPALE : AFFICHE LE HEADER, WALLPAPER, ETC.
 		if(static::$isMainPage==true)
@@ -375,26 +383,20 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * RECUPÈRE UN OBJET (vérifie s'il est déjà en cache)
 	 *******************************************************************************************/
-	public static function getObj($objTypeOrMdl, $objIdOrValues=null, $updateCache=false)
+	public static function getObj($objectType, $objIdOrValues=null, $updateCache=false)
 	{
-		//Récupère le modèle de l'objet (exple si on passe en paramètre uniquement le "type" de l'objet : "fileFolder" => "MdlFileFolder")
-		$MdlClass=(preg_match("/^Mdl/i",$objTypeOrMdl))  ?  $objTypeOrMdl  :  "Mdl".ucfirst($objTypeOrMdl);
-		//Retourne un nouvel objet OU un objet existant (déjà en cache?)
-		if(empty($objIdOrValues))	{return new $MdlClass();}
-		else
-		{
-			//Id de l'objet && clé de l'objet en cache
-			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;
-			$cacheKey=$MdlClass::objectType."-".$objId;
-			//Ajoute/Update l'objet en cache?
-			if(isset(self::$cacheObjects[$cacheKey])==false || $updateCache==true)  {self::$cacheObjects[$cacheKey]=new $MdlClass($objIdOrValues);}
-			//Retourne l'objet en cache
-			return self::$cacheObjects[$cacheKey];
+		$MdlClass="Mdl".ucfirst($objectType);																//Récupère le modèle de l'objet (ex: "fileFolder" => "MdlFileFolder")
+		if(empty($objIdOrValues))	{return new $MdlClass();}												//Retourne un nouvel objet OU un objet existant (déjà en cache?)
+		else{
+			$objId=(!empty($objIdOrValues["_id"]))  ?  $objIdOrValues["_id"]  :  (int)$objIdOrValues;													//Id de l'objet
+			$cacheKey=$MdlClass::objectType."-".$objId;																									//Clé de l'objet mis en cache
+			if(isset(self::$cacheObjects[$cacheKey])==false || $updateCache==true)  {self::$cacheObjects[$cacheKey]=new $MdlClass($objIdOrValues);}		//Ajoute ou Update l'objet en cache
+			return self::$cacheObjects[$cacheKey];																										//Retourne l'objet en cache
 		}
 	}
 
 	/*******************************************************************************************
-	 * RECUPÈRE L'OBJET PASSÉ EN GET/POST OU EN ARGUMENT (ex: "typeId=fileFolder-55")
+	 * RECUPÈRE L'OBJET PASSÉ EN GET/POST || EN ARGUMENT VIA $typeId (ex: "file-55")
 	 ******************************************************************************************/
 	public static function getObjTarget($typeId=null)
 	{
@@ -409,7 +411,7 @@ abstract class Ctrl
 	}
 
 	/*******************************************************************************************
-	 * RECUPÈRE LES OBJETS ENVOYÉS VIA GET/POST  (ex: objectsTypeId[file]=2-4-6)
+	 * RECUPÈRE LES OBJETS ENVOYÉS VIA GET/POST  (ex: objectsTypeId[file]=33-44-55)
 	 *******************************************************************************************/
 	public static function getObjectsTypeId($objTypeFilter=null)
 	{
@@ -430,12 +432,14 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * REDIRIGE VERS L'ADRESSE DEMANDÉE : REDIRECTION SIMPLE OU SUR LA PAGE PRINCIPALE (IFRAME)
 	 *******************************************************************************************/
-	public static function redir($urlRedir)
+	public static function redir($redirUrl, $urlNotify=true)
 	{
-		$redirUrl=$urlRedir.self::urlNotify();																	//Ajoute si besoin les notifs
-		if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redirection simple
-		else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redirection de la page principale depuis une Iframe (ex: après édit/suppr d'un objet)
-		exit;																									//Fin de script
+		if(!empty($redirUrl)){
+			if($urlNotify==true)  {$redirUrl.=self::urlNotify();}													//Ajoute les notifs
+			if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redirection simple
+			else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redirection de la page principale depuis une Iframe (ex: après édit/suppr d'un objet)
+			exit;																									//Fin de script
+		}
 	}
 
 	/*******************************************************************************************

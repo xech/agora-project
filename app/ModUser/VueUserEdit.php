@@ -56,7 +56,7 @@ select[name="connectionSpace"]			{width:100%}
 
 	<!--IMAGE-->
 	<div class="objField">
-		<div><?= $curObj->hasImg()  ?  "<div class='personLabelImg'>".$curObj->getImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
+		<div><?= $curObj->hasImg()  ?  "<div class='personLabelImg'>".$curObj->personImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
 		<div><?= $curObj->displayImgMenu() ?></div>
 	</div>
 	<hr>
@@ -66,8 +66,8 @@ select[name="connectionSpace"]			{width:100%}
 	<div class="objField"><div class="vFieldConnexion"><?= Txt::trad("mailLlogin") ?></div><div><input type="text" name="login" value="<?= $curObj->login ?>"></div></div>
 	<div class="objField" id="passwordModifLabel"><div><a onclick="$('#passwordModifNotif,#passwordInput,#passwordInput2').show();$(this).hide();"><?= Txt::trad("passwordModify") ?> <img src="app/img/arrowBottom.png"></a></div></div>
 	<fieldset id="passwordModifNotif"><?= Txt::trad("passwordTooltip") ?></fieldset>
-	<div class="objField" id="passwordInput"><div class="vFieldConnexion"><abbr><?= Txt::trad("password") ?></abbr></div><div><input type="password" name="password"></div></div>
-	<div class="objField" id="passwordInput2"><div class="vFieldConnexion"><abbr><?= Txt::trad("passwordVerif") ?></abbr></div><div><input type="password" name="passwordVerif"></div></div>
+	<div class="objField" id="passwordInput"><div class="vFieldConnexion"><abbr><?= Txt::trad("password") ?></abbr></div><div><input type="password" name="password" autocomplete="off"></div></div>
+	<div class="objField" id="passwordInput2"><div class="vFieldConnexion"><abbr><?= Txt::trad("passwordVerif") ?></abbr></div><div><input type="password" name="passwordVerif" autocomplete="off"></div></div>
 	<hr>
 
 	<!-- CHAMPS PRINCIPAUX !-->

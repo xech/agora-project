@@ -1,3 +1,13 @@
+### 2.9.3 (2024-04-12)
+
+  * Fixed PHP 8.4 deprecation warnings (#1874)
+
+### 2.9.2 (2023-10-27)
+
+  * Fixed display_errors parsing in ErrorHandler which did not support string values (#1804)
+  * Fixed bug where the previous error handler would not be restored in some cases where StreamHandler fails (#1815)
+  * Fixed normalization error when normalizing incomplete classes (#1833)
+
 ### 2.9.1 (2023-02-06)
 
   * Fixed Logger not being serializable anymore (#1792)

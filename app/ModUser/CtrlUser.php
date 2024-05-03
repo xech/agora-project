@@ -271,7 +271,7 @@ class CtrlUser extends Ctrl
 		////	Valide le formulaire : envoi de plusieurs mails en série !
 		if(Req::isParam("formValidate") && Req::isParam("usersList")){
 			foreach(Req::param("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
-			if($isSendmail==true)  {Ctrl::notify(Txt::trad("MAIL_sendOk"),"success");}
+			if($isSendmail==true)  {Ctrl::notify("MAIL_sendOk","success");}
 			static::lightboxClose();
 		}
 		////	Affichage du formulaire
@@ -349,7 +349,7 @@ class CtrlUser extends Ctrl
 			foreach(Req::param("mailList") as $tmpMail){
 				if(MdlUser::loginExists($tmpMail))  {$result["mailListPresent"][]=$tmpMail;}
 			}
-			//Renvoi le résultat
+			//Retourne le résultat
 			echo json_encode($result);
 		}
 	}
@@ -395,7 +395,7 @@ class CtrlUser extends Ctrl
 				if(Ctrl::getObj("space",$tmpInscription["_idSpace"])->editRight())  {$_SESSION["userInscriptionValidate"][]=$tmpInscription;}//Ajoute l'inscription si l'user courant administre l'espace
 			};
 		}
-		//Renvoie le résultat
+		//Retourne le résultat
 		return $_SESSION["userInscriptionValidate"];
 	}
 
