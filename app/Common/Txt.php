@@ -15,7 +15,7 @@ class Txt
 	protected static $trad=[];
 	protected static $detectEncoding=null;
 	protected static $IntlDateFormatter=null;
-	public static $tradList=["francais","english","espanol"];
+	public static $tradList=["francais","english","espanol","portuguese"];
 
 	/*******************************************************************************************
 	 * CHARGE LES TRADUCTIONS
@@ -32,6 +32,7 @@ class Txt
 			elseif(empty($_SESSION["curTrad"])){																															//Trad en fonction du browser
 				if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^en-US/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))		{$_SESSION["curTrad"]="english";}
 				elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^es-ES/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="espanol";}
+				elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^pt-BR/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="portuguese";}
 				elseif(empty($_SESSION["curTrad"]))																			{$_SESSION["curTrad"]="francais";}
 			}
 			//Charge les trads (classe & methode)
