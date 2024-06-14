@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -358,7 +358,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * GENÈRE UNE ARCHIVE ZIP
+	 * GENÈRE UNE ARCHIVE ZIP A PARTIR D'UN TABLEAU DE FICHIERS
 	 *******************************************************************************************/
 	public static function downloadArchive($filesList, $archiveName)
 	{
@@ -382,16 +382,15 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/**********************************************************************************************************************************
 	 * CONTROLE LE DOWNLOAD D'UNE GROSSE ARCHIVE (SAV & CO) : CONTROLE DE L'HORAIRE POUR NE PAS SATURER LE SERVEUR EN HEURE DE POINTE
-	 *******************************************************************************************/
+	 **********************************************************************************************************************************/
 	public static function archiveSizeControl($archiveSize)
 	{
-		$archiveSizeControl=true;
-		$limitSize=(self::sizeGo*2);	//2Go max (tester avec un 'top' du systeme)
+		$limitSize=(self::sizeGo*2);	//2Go max en heure de pointe
 		$disabledBegin=9;				//debut plage horaire de limitation
-		$disabledEnd=18;				//fin plage horaire de limitation
-		if($archiveSizeControl==true && date("G") > $disabledBegin && date("G") < $disabledEnd && (int)$archiveSize > $limitSize){
+		$disabledEnd  =18;				//fin plage horaire de limitation
+		if(date("G") > $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > $limitSize){
 			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::displaySize($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
 			Ctrl::notify($alertLabel, "warning");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")

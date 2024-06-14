@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -52,7 +52,7 @@ class CtrlUser extends Ctrl
 				$tmpObj->pluginIcon="user/user.png";
 				$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 				$tmpObj->pluginTooltip=$tmpObj->pluginLabel;
-				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel="lightboxOpen('".$tmpObj->getUrl("vue")."');";
+				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel=$tmpObj->openVue();
 				$pluginsList[]=$tmpObj;
 			}
 			return $pluginsList;
@@ -125,9 +125,9 @@ class CtrlUser extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
-	 * DÉSAFFECTATION D'UN USER À UN ESPACE (ou de plusieurs users : cf. "VueObjMenuSelection" et "objectsTypeId()")
-	 *******************************************************************************************/
+	/*********************************************************************************************************************
+	 * DÉSAFFECTATION D'UN USER À UN ESPACE (ou de plusieurs users : cf. "VueObjMenuSelect" et "objectsTypeId()")
+	 *********************************************************************************************************************/
 	public static function actionDeleteFromCurSpace()
 	{
 		$urlRedir=null;

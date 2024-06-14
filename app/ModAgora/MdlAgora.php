@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -48,8 +48,8 @@ class MdlAgora extends MdlObject
 	public function visioUrl()
 	{
 		if(!empty($this->visioHost)){
-			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");													//$roomId de 10 caractères aléatoires
-			return $this->visioHost."/".(Req::isHost()?"visio-room":"omnispace-room")."-".substr($roomId,0,10);	//Url avec un préfixe + $roomId
+			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");													//$roomId de 8 caractères aléatoires
+			return $this->visioHost."/".(Req::isHost()?"visio-room":"omnispace-room")."-".substr($roomId,0,8);	//Url avec un préfixe + $roomId
 		}
 	}
 

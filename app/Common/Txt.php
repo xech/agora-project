@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -112,7 +112,7 @@ class Txt
 			$text=nl2br($text);									//Remplace les \n par des <br>
 			$text=strip_tags($text,"<br><img><span><hr><i>");	//Enlève les principale balises (sauf <br> <img>...)
 			$text=str_replace('"','&quot;',$text);				//Remplace les quotes
-			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}	//Place les urls dans une balise <a>
+			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}//Créé un hyperlien : tester avec le tooltip des "link" !
 			return $text;										//Retourne le résultat
 		}
 	}
@@ -175,56 +175,56 @@ class Txt
 			return static::utf8Encode($dateLabel);			//Retourne le résultat en utf-8
 		}
 		//Sinon renvoie au format "date()". Remplace le pattern utilisé par "IntlDateFormatter()" (https://www.php.net/manual/fr/datetime.format.php)
-		else{																							
+		else{
 			$pattern=str_replace(["yyyy","MMMM","MMM","cccc","ccc"], ["Y","F","M","l","D"], $pattern);
 			return date($pattern,$timestamp);
 		}
 	}
 
-	/***************************************************************************************************************************************************************************
+	/**************************************************************************************************************************************************************************************
 	 * AFFICHAGE D'UNE DATE ET HEURE
 	 * $timeBegin & $timeEnd =>  Timestamp unix  ||  format DateTime en Bdd
-	 * $format 				 =>  "normal" -> "lun. 8 mars 2050 9:05"  ||  "mini" -> "8 mar. 2050" ou "9:05"  ||  "dateFull" -> "lun. 8 mars 2050"  ||  "date" -> "8/03/2050"
-	 * Note : les "task" peuvent avoir un $dateBegin null et un $dateEnd non null (cf. "MdlTask::dateBeginEnd()")
-	 ***************************************************************************************************************************************************************************/
-	public static function dateLabel($timeBegin=null, $format="normal", $timeEnd=null)
+	 * $format 				 =>  "basic" -> "lun. 8 septembre 2050 9:05"  ||  "mini" -> "8 sept. 2050" ou "9:05"  ||  "dateFull" -> "lun. 8 septembre 2050"  ||  "dateMini" -> "8/09/2050"
+	 * Note : les objets "task" peuvent avoir une $dateEnd, mais sans $timeBegin
+	 **************************************************************************************************************************************************************************************/
+	public static function dateLabel($timeBegin=null, $format="basic", $timeEnd=null)
 	{
 		//Controles de base
 		if((!empty($timeBegin) || !empty($timeEnd)))
 		{
-			//Convertit si besoin en timestamp
+			//Convertit en timestamp
 			if(!empty($timeBegin) && !is_numeric($timeBegin))	{$timeBegin=strtotime($timeBegin);}
 			if(!empty($timeEnd) && !is_numeric($timeEnd))		{$timeEnd=strtotime($timeEnd);}
 
-			//Récupère l'objet "IntlDateFormatter" && Vérif si l'objet est instancié
+			//Init "IntlDateFormatter"
 			$dateFormat=self::IntlDateFormatterObj();
 			if(is_object($dateFormat))
 			{
-				//Jours ou heures de debut/fin différents
+				//Vérif si le jour et/ou l'heure de debut/fin sont différents
 				$diffDays=$diffHours=false;
 				if(!empty($timeBegin) && !empty($timeEnd)){
-					if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))	{$diffDays=true;}
-					if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))	{$diffHours=true;}
+					if(date("ymd",$timeBegin)!=date("ymd",$timeEnd))  {$diffDays=true;}
+					if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))  {$diffHours=true;}
 				}
 
-				//Formatage du jour/mois => patterns sur https://unicode-org.github.io/icu/userguide/format_parse/datetime/
-				$dateLabel=$pattern=null;																														//Init le label et le pattern
-				if(($format=="normal" || $format=="dateFull") && empty($timeEnd) && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (pas dans le $pattern !)
-				elseif($format=="normal" || $format=="dateFull")															{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 mars"
-				elseif($format=="mini" && $diffDays==true)																	{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
-				//Formatage année (si différente de l'année courante)
-				if($format!="mini" &&  ((!empty($timeBegin) && date("y",$timeBegin)!=date("y")) || (!empty($timeEnd) && date("y",$timeEnd)!=date("y"))))  {$pattern.=" Y";}
-				//Formatage heure:minute || date
-				if(preg_match("/date/i",$format)==false)	{$pattern.=" H:mm";}	//Heure sur 24h	(pas "date"/"dateFull)	-> Ex: "9:05" ou "23:23"
-				elseif($format=="date")						{$pattern="dd/MM/Y";}	//Date au format basique				-> Ex: "08/03/2050"
+				//Prépare le formatage du $dateLabel via "setPattern()"  (cf. https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
+				$dateLabel=$pattern="";																														//Init le label et le pattern du formatage (pas de "null")
+				if(($format=="basic" || $format=="dateFull") && empty($timeEnd) && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (ne pas mettre dans le $pattern)
+				elseif($format=="basic" || $format=="dateFull")															{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 juillet"
+				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
+				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique			-> Ex: "08/03/2050"
+				//Ajoute l'année si différente de l'année courante (Ex: "8 juin 2001")  &&  Ajoute l'heure si on affiche pas que la date (Ex: "9:05")
+				if($format!="dateMini"  &&  ( (!empty($timeBegin) && date("y",$timeBegin)!=date("y"))  ||  (!empty($timeEnd) && date("y",$timeEnd)!=date("y")) ))   {$pattern.=" Y";}
+				if(!preg_match("/date/i",$format))   {$pattern.=" H:mm";}
+				//Instancie toujours le pattern via la class "IntlDateFormatter()", avec la "lang" et "timezone" locale
+				$dateFormat->setPattern($pattern);
 
-				//Applique le formatage via la class "IntlDateFormatter()" avec la "lang" et "timezone" locale
-				if(!empty($pattern))							{$dateFormat->setPattern($pattern);}
-				if(!empty($timeBegin) && empty($dateLabel))		{$dateLabel.=$dateFormat->format($timeBegin);}										//Label de début (sauf "aujourd'hui)
+				//Formate le label de début et/ou de fin
+				if(!empty($timeBegin))							{$dateLabel.=$dateFormat->format($timeBegin);}										//Label de début
 				if(!empty($timeEnd)){																												//Label de fin :
-					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente	 -> Ex: "11:30-12:30"
-					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Différents jours : ajoute la fin -> même $pattern qu'au début
-					elseif(empty($timeBegin))					{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin, mais sans début	 -> même $pattern qu'au début
+					if($diffDays==false && $diffHours==true)	{$dateFormat->setPattern("H:mm");  $dateLabel.="-".$dateFormat->format($timeEnd);}	//- Même jour mais heure différente	-> Ex: "11:30-12:30"
+					elseif($diffDays==true)						{$dateLabel.=" <img src='app/img/arrowRight.png'> ".$dateFormat->format($timeEnd);}	//- Jours différents 				-> même $pattern que $timeBegin
+					elseif(empty($timeBegin))					{$dateLabel.=Txt::trad("end")." : ".$dateFormat->format($timeEnd);}					//- Date de fin, mais sans début	-> idem
 				}
 
 				//Simplifie les heures pleines -> Ex: "12:00"->"12h"
@@ -232,7 +232,7 @@ class Txt
 				//Retourne le résultat en utf-8
 				return static::utf8Encode($dateLabel);
 			}
-			//Sinon renvoie au format "date()"
+			//Si "IntlDateFormatter" ne peut être instancié, on renvoie au format "date()"
 			else{
 				return (preg_match("/date/i",$format))  ?  date("d/m/y",$timeBegin)  :  date("d/m/y H:i",$timeBegin);
 			}
@@ -262,17 +262,34 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * INPUTS HIDDEN (Ctrl, Action, TypeId, etc)  &&  BOUTON SUBMIT DU FORMULAIRE
+	 * BOUTON SUBMIT DU FORMULAIRE  &&  INPUTS HIDDEN (Ctrl, Action, TypeId, etc)
 	 *******************************************************************************************/
-	public static function submitButton($tradButton="record", $isMainButton=true)
+	public static function submitButton($keyTrad="record", $isMainButton=true)
 	{
-		return '<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
+		return '<div class="'.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
+					<button type="submit">'.(self::isTrad($keyTrad)?self::trad($keyTrad):$keyTrad).' <img src="app/img/loading.png" class="submitButtonLoading"></button>
+				</div>
+				<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
 				<input type="hidden" name="action" value="'.Req::$curAction.'">
-				<input type="hidden" name="formValidate" value="1">
-				'.(Req::isParam("typeId")?'<input type="hidden" name="typeId" value="'.Req::param("typeId").'">':null).'
-				<div class="'.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
-					<button type="submit">'.(self::isTrad($tradButton)?self::trad($tradButton):$tradButton).' <img src="app/img/loading.png" class="submitButtonLoading"></button>
-				</div>';
+				<input type="hidden" name="formValidate" value="1">'.
+				(Req::isParam("typeId") ? '<input type="hidden" name="typeId" value="'.Req::param("typeId").'">' : null);
+	}
+
+	/*******************************************************************************************
+	 * LISTE DES BOUTONS "RADIO" D'UN INPUT
+	 * Chaque element de $tabRadios doit avoir une "value" + "trad"  ("img" optionnel)
+	 *******************************************************************************************/
+	public static function radioButtons($inputName, $curValue, $tabRadios)
+	{
+		$radioButtons=null;
+		foreach($tabRadios as $tmpRadio){
+			$inputId=$inputName.'_'.$tmpRadio["value"];
+			$inputChecked=($curValue==$tmpRadio["value"])  ?  "checked"  :  null;
+			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'">'  :  null;
+			$radioButtons.='<input type="radio" name="'.$inputName.'" value="'.$tmpRadio["value"].'" id="'.$inputId.'" '.$inputChecked.'>
+							<label for="'.$inputId.'">'.$inputImg.Txt::trad($tmpRadio["trad"]).'</label>';
+		}
+		return $radioButtons;
 	}
 
 	/*******************************************************************************************

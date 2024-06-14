@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -18,7 +18,6 @@ abstract class Ctrl
 	public static $agora, $curUser, $curSpace;
 	public static $isMainPage=false;			//Page principale ou Iframe
 	public static $userJustConnected=false;		//Controle si l'user vient de s'identifier / connecter
-	public static $isMenuSelectObjects=false;	//Menu de sélection d'objets affiché ?
 	public static $curContainer=null;			//Conteneur courant : dossier / sujet / agenda
 	public static $curRootFolder=null;			//Dossier root du module courant
 	public static $curTimezone=null;			//Timezone courante
@@ -64,8 +63,8 @@ abstract class Ctrl
 			////	Connection d'un user  &&  selection d'un espace !
 			self::userConnectionSpaceSelection();
 
-			////	Enregistre et charge le cookie pour "Req::isMobileApp()" (10ans)
-			if(Req::isParam("mobileAppli")){
+			////	Enregistre le cookie pour 30 jours : cf."Req::isMobileApp()"
+			if(!empty($_GET["mobileAppli"])){
 				setcookie("mobileAppli", "true", TIME_COOKIES);
 				$_COOKIE["mobileAppli"]="true";
 			}
@@ -81,7 +80,7 @@ abstract class Ctrl
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");//Bool
 				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
 			}
-	
+
 			////	Affichage des utilisateurs ("space"=espace courant || "all"=tous)  &&  Charge l'objet courant
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
 			if(Req::isParam("typeId"))				{$curObj=self::getObjTarget();}						//Objet passé en GET

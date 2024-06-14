@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -41,7 +41,7 @@ class CtrlFile extends Ctrl
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
 			//// Lien du label/nom du fichier : Download direct
-			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpFile->urlDownload()."');\"";
+			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpFile->urlDownload()."')\"";
 			//// Lien de l'icone/vignette du fichier : Display ou Download
 			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDisplay()."\" data-fancybox='images'";}	//Affiche l'image dans la fancybox
 			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink="onclick=\"redir('".$tmpFile->urlDisplay()."')\"";}				//Download le pdf si isMobileApp
@@ -82,7 +82,7 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')){windowParent.redir('".$tmpObj->urlDownload()."');}";
+			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpObj->urlDownload()."')";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;

@@ -84,8 +84,8 @@ h3								{margin-top:20px; font-style:italic;}
 					</div>
 				</div>
 				<div class="objField"><div><?= Txt::trad("AGORA_diskSpaceLimit") ?></div><div><input type="text" name="spaceDiskLimit" value="10" id="spaceDiskLimit"> <?= Txt::trad("gigaOctet") ?></div></div>
-				<div class="objField"><div><?= Txt::trad("AGORA_spaceName") ?></div><div><input type="text" name="spaceName"></div></div>
-				<div class="objField"><div><?= Txt::trad("description") ?></div><div><textarea name="spaceDescription"></textarea></div></div>
+				<div class="objField"><div><?= Txt::trad("AGORA_name") ?></div><div><input type="text" name="spaceName"></div></div>
+				<div class="objField"><div><?= Txt::trad("AGORA_description") ?></div><div><textarea name="spaceDescription"></textarea></div></div>
 				<div class="objField">
 					<div><?= Txt::trad("SPACE_publicSpace") ?></div>
 					<select name="spacePublic">

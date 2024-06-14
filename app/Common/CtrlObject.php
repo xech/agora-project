@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -42,10 +42,9 @@ class CtrlObject extends Ctrl
 		{
 			//Enregistre l'Url de redirection après le delete
 			if(empty($redirUrl)){
-				if($tmpObj::isFolder==true)						{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
-				elseif($tmpObj::isContainerContent())			{$redirUrl=$tmpObj->getUrl();}					//Suppr un contenu (content) : affiche le "container"
-				elseif($tmpObj::objectType=="forumSubject")		{$redirUrl=$tmpObj->getUrl("theme");}			//Suppr un sujet du forum : "getUrl()" surchargé
-				else											{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
+				if($tmpObj::isFolder==true)				{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
+				elseif($tmpObj::isContainerContent())	{$redirUrl=$tmpObj->getUrl();}					//Suppr un contenu (content) : affiche le "container"
+				else									{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
 			}
 			//Enregistre si on doit mettre à jour le "datasFolderSize()"
 			if($tmpObj::moduleName=="file")  {$updateDatasFolderSize=true;}
@@ -91,7 +90,7 @@ class CtrlObject extends Ctrl
 			//Aucun dossier / Liste des dossiers
 			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
 			else{
-				$vDatas["objContainerClass"]=$curFolder::moduleName=="contact" ? "objPerson" : null;
+				$vDatas["containerClass"]=$curFolder::moduleName=="contact" ? "objPerson" : null;
 				self::$vueFolders=Ctrl::getVue(Req::commonPath."VueFolders.php",$vDatas);
 			}
 		}
@@ -267,51 +266,44 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * AJAX : VALIDE/INVALIDE UN LIKE
+	 * AJAX : SWITH LE "LIKE" DE L'USER COURANT
 	 *******************************************************************************************/
-	public static function actionUsersLikeValidate()
+	public static function actionUsersLike()
 	{
-		//Vérifs de base
-		if(Ctrl::$curUser->isUser() && Req::isParam("typeId"))
-		{
-			//Init
-			$curObj=self::getObjTarget();
-			//Applique la nouvelle valeur / le changement de valeur
-			$newValue=(Req::param("likeValue")=="like")  ?  1  :  0;
-			$sqlValueUser="WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." AND _idUser=".Ctrl::$curUser->_id;
-			$oldValue=Db::getVal("SELECT value FROM ap_objectLike ".$sqlValueUser);			//recup l'ancienne valeur
-			if($oldValue!=null)  {Db::query("DELETE FROM ap_objectLike ".$sqlValueUser);}	//reinit la valeur?
-			if($oldValue==null || $newValue!=$oldValue)  {Db::query("INSERT INTO ap_objectLike SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".Ctrl::$curUser->_id.", value=".$newValue);}//Ajoute la nouvelle valeur si elle change
-			//Nb et liste des personnes qui likes / dontlike
-			$ajaxResult["nbLikes"]=count($curObj->getUsersLike("like"));
-			$ajaxResult["nbDontlikes"]=count($curObj->getUsersLike("dontlike"));
-			$ajaxResult["usersLikeList"]=$curObj->getUsersLikeTooltip("like");
-			$ajaxResult["usersDontlikeList"]=$curObj->getUsersLikeTooltip("dontlike");
-			echo json_encode($ajaxResult);
+		if(Ctrl::$curUser->isUser() && Req::isParam("typeId")){																		//Vérif de base
+			$curObj=self::getObjTarget();																							//Objet courant
+			$sqlObjectLike="objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." AND _idUser=".Ctrl::$curUser->_id;	//Selecteur SQL
+			$curUserLiked=Db::getVal("SELECT count(*) FROM ap_objectLike WHERE ".$sqlObjectLike);									//Vérif si l'user courant à "liké" l'objet
+			if(!empty($curUserLiked))	{Db::query("DELETE FROM ap_objectLike WHERE ".$sqlObjectLike);}								//Supprime le like de l'user courant ("switch" le like)
+			else						{Db::query("INSERT INTO ap_objectLike SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".Ctrl::$curUser->_id);}//Ajoute le like de l'user courant
+			$result["likeNb"]=count($curObj->getUsersLike());																		//Nb de likes de l'objet
+			$result["likeTooltip"]=$curObj->usersLikeTooltip();																		//Tooltip des likes de l'objet
+			echo json_encode($result);																								//Renvoie le résultat encodé
 		}
 	}
 
 	/*******************************************************************************************
 	 * ACTION : AFFICHE LES COMMENTAIRES D'UN OBJET
 	 *******************************************************************************************/
-	public static function actionComments()
+	public static function actionUsersComment()
 	{
 		////	Charge l'element
 		$curObj=Ctrl::getObjTarget();
 		$curObj->readControl();
-		////	Ajoute / Modif / Supprime un commentaire
-		if(Req::isParam(["formValidate","comment"]) && Req::param("actionComment")=="add")
-			{Db::query("INSERT INTO ap_objectComment SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".self::$curUser->_id.", dateCrea=".Db::dateNow().", `comment`=".Db::param("comment"));}
+		////	Ajoute un commentaire
+		if(Req::isParam(["formValidate","comment"]) && Req::param("actionComment")=="add"){
+			Db::query("INSERT INTO ap_objectComment SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".self::$curUser->_id.", dateCrea=".Db::dateNow().", `comment`=".Db::param("comment"));
+		}
+		////	Modif / Supprime un commentaire
 		elseif(Req::isParam("idComment") && MdlObject::userCommentEditRight(Req::param("idComment"))){
-			$sqlSelectComment="_id=".Db::param("idComment")." AND objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id;
-			if(Req::param("actionComment")=="delete")	{Db::query("DELETE FROM ap_objectComment WHERE ".$sqlSelectComment);}
-			elseif(Req::param("actionComment")=="modif")	{Db::query("UPDATE ap_objectComment SET `comment`=".Db::param("comment")." WHERE ".$sqlSelectComment);}
+			$sqlSelect=" WHERE _id=".Db::param("idComment")." AND objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id;
+			if(Req::param("actionComment")=="modif")		{Db::query("UPDATE ap_objectComment SET `comment`=".Db::param("comment")." ".$sqlSelect);}
+			elseif(Req::param("actionComment")=="delete")	{Db::query("DELETE FROM ap_objectComment ".$sqlSelect);}
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["updateCircleNb"]=Req::isParam("actionComment");
 		$vDatas["commentList"]=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY dateCrea DESC");
-		$vDatas["commentsTitle"]=count($vDatas["commentList"])." ".Txt::trad(count($vDatas["commentList"])>1?"AGORA_usersComments":"AGORA_usersComment");
+		$vDatas["commentsTitle"]=count($vDatas["commentList"])." ".(count($vDatas["commentList"])>1 ? Txt::trad("AGORA_usersComments") :  Txt::trad("AGORA_usersComment"));
 		static::displayPage(Req::commonPath."VueObjComments.php",$vDatas);
 	}
 }

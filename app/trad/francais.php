@@ -21,6 +21,8 @@ class Trad extends Txt
 			"DOCFILE"=>"docs/DOCUMENTATION_FR.pdf",
 
 			////	Divers
+			"mainMenu"=>"Menu principal",
+			"menuOptions"=>"Menu des options disponibles",
 			"fillFieldsForm"=>"Merci de remplir les champs du formulaire",
 			"requiredFields"=>"Champ obligatoire",
 			"inaccessibleElem"=>"L'élément demandé n'est pas accessible",
@@ -48,7 +50,7 @@ class Trad extends Txt
 			"folder"=>"dossier",
 			"folders"=>"dossiers",
 			"close"=>"Fermer",
-			"confirmCloseForm"=>"Fermer le formulaire ?",
+			"confirmCloseForm"=>"Fermer le formulaire sans enregistrer ?",
 			"modifRecorded"=>"Les modifications ont bien été enregistrées",
 			"confirm"=>"Confirmer ?",
 			"comment"=>"Commentaire",
@@ -107,8 +109,8 @@ class Trad extends Txt
 
 			////	Type d'affichage
 			"displayMode"=>"Affichage",
-			"displayMode_line"=>"Liste",
-			"displayMode_block"=>"Bloc",
+			"displayMode_line"=>"Lignes",
+			"displayMode_block"=>"Blocs",
 			
 			////	Sélectionner / Déselectionner tous les éléments
 			"select"=>"Sélectionner",
@@ -206,13 +208,13 @@ class Trad extends Txt
 			"confirmDeleteSelect"=>"Voulez-vous supprimer définitivement les éléments sélectionnés ?",
 			"confirmDeleteSelectNb"=>"éléments sélectionnés",//"55 éléments sélectionnés"
 			"confirmDeleteFolderAccess"=>"Certains sous-dossiers ne vous sont pas accessibles, car affectés à d'autres utilisateurs : confirmer tout de même ?",
-			"notifyBigFolderDelete"=>"La suppression des --NB_FOLDERS-- dossiers peut prendre un certain temps : merci de patienter un instant avant la fin du processus!",
+			"notifyBigFolderDelete"=>"La suppression des --NB_FOLDERS-- dossiers peut prendre un certain temps : merci de patienter un instant avant la fin du processus",
 			"delete"=>"Supprimer",
 			"notDeletedElements"=>"Certains éléments n'ont pas été supprimé car vous n'avez pas les droits d'accès nécessaires",
 
 			////	Visibilité d'un Objet : auteur et droits d'accès
 			"autor"=>"Auteur",
-			"postBy"=>"Posté par",
+			"postBy"=>"par",
 			"guest"=>"invité",
 			"creation"=>"Création",
 			"modification"=>"Modification",
@@ -258,13 +260,13 @@ class Trad extends Txt
 			////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
 			"MAIL_hello"=>"Bonjour",
 			"MAIL_hideRecipients"=>"Masquer les destinataires",
-			"MAIL_hideRecipientsTooltip"=>"Mettre tous les destinataires en copie caché. Attention car avec cette option votre email peut arriver en spam dans certaines messageries",
+			"MAIL_hideRecipientsTooltip"=>"Mettre tous les destinataires en copie caché",
 			"MAIL_addReplyTo"=>"Mettre mon email en réponse",
-			"MAIL_addReplyToTooltip"=>"Ajouter mon email dans le champ ''Répondre à''. Attention car avec cette option votre email peut arriver en spam dans certaines messageries",
+			"MAIL_addReplyToTooltip"=>"Ajouter mon email dans le champ ''Répondre à'' <br>Notez qu'avec cette option votre email peut arriver dans le dossier spam de certaines messageries",
 			"MAIL_noFooter"=>"Ne pas signer le message",
-			"MAIL_noFooterTooltip"=>"Ne pas signer la fin du message avec le nom de l'expéditeur et un lien vers l'espace",
+			"MAIL_noFooterTooltip"=>"Ne pas signer la fin du message : nom de l'expéditeur et lien vers l'espace",
 			"MAIL_receptionNotif"=>"Accusé de reception",
-			"MAIL_receptionNotifTooltip"=>"Demander un accusé de réception à l'ouverture de l'email. Notez que certaines messageries ne prennent pas en charge cette fonctionnalité",
+			"MAIL_receptionNotifTooltip"=>"Demander un accusé de réception à l'ouverture de l'email <br>Notez que certaines messageries ne prennent pas en charge cette fonctionnalité",
 			"MAIL_specificMails"=>"Ajouter des adresses email",
 			"MAIL_specificMailsTooltip"=>"Ajouter des adresses email non répertoriées sur l'espace",
 			"MAIL_fileMaxSize"=>"L'ensemble de vos pièces jointes ne devraient pas dépasser 15 Mo, Certaines messageries pouvant refuser les emails au delà de cette limite. Envoyer tout de même ?",
@@ -464,7 +466,7 @@ class Trad extends Txt
 			"INSTALL_dbHost"=>"Serveur MariaDB ou MySql (Hostname)",
 			"INSTALL_dbName"=>"Nom de la Base de Données",
 			"INSTALL_dbLogin"=>"Nom d'utilisateur",
-			"INSTALL_adminAgora"=>"Administrateur de l'Agora",
+			"INSTALL_adminAgora"=>"Administrateur principal",
 			"INSTALL_errorDbNameFormat"=>"Attention : le nom de la base de donnée doit comporter de préférence uniquement des caractères alphanumériques, tirets ou underscores",
 			"INSTALL_errorDbConnection"=>"La connexion à la base de données a échoué : merci de vérifier les coordonnées de connexion",
 			"INSTALL_errorDbExist"=>"Application déjà installée : <a href='index.php'>cliquez ici pour y accéder</a><br><br>Pour relancer l'install, pensez à supprimer la BDD",
@@ -513,11 +515,16 @@ class Trad extends Txt
 			"AGORA_mapApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
 			"AGORA_confirmModif"=>"Confirmez-vous les modifications ?",
-			"AGORA_name"=>"Nom de l'espace principal / du site",
-			"AGORA_footerHtml"=>"Texte en bas de page",
+			"AGORA_name"=>"Nom de l'espace principal",
+			"AGORA_nameTooltip"=>"Nom affiché en page de connexion, dans les emails, etc.",
+			"AGORA_description"=>"Description en page de connexion",
+			"AGORA_footerHtml"=>"Texte en bas à gauche de chaque page",
+			"AGORA_logo"=>"Logo en bas à droite de chaque page",
+			"AGORA_logoUrl"=>"URL",
+			"AGORA_logoConnect"=>"Logo en page de connexion",
+			"AGORA_logoConnectTooltip"=>"Logo affiché en tête du formulaire de connexion",
 			"AGORA_lang"=>"Langue par défaut",
 			"AGORA_timezone"=>"Fuseau horaire",
-			"AGORA_spaceName"=>"Nom de l'espace principal",
 			"AGORA_diskSpaceLimit"=>"Espace disque pour les fichiers",
 			"AGORA_logsTimeOut"=>"Conservation de l'historique d'événements (logs)",
 			"AGORA_logsTimeOutTooltip"=>"La durée de conservation de l'historique des événements concerne l'ajout ou la modif des éléments. Les logs de suppression sont conservés 1 an minimum.",
@@ -528,33 +535,28 @@ class Trad extends Txt
 			"AGORA_skin"=>"Couleur de l'interface",
 			"AGORA_black"=>"Mode sombre",
 			"AGORA_white"=>"Mode clair",
+			"AGORA_userMailDisplay"=>"Adresses email des utilisateurs visibles par tous",
+			"AGORA_userMailDisplayTooltip"=>"Afficher/Masquer l'email dans le profil de chaque utilisateur, les notifications par mail, etc.<br>Note : l'administrateur principal pourra toujours consulter l'email de chaque utilisateur",
+			"AGORA_moduleLabelDisplay"=>"Nom des modules dans la barre de menu",
+			"AGORA_folderDisplayMode"=>"Affichage par défaut des dossiers",
 			"AGORA_wallpaperLogoError"=>"Le fond d'écran et le logo doivent être au format .jpg ou .png",
 			"AGORA_deleteWallpaper"=>"Supprimer le fond d'écran",
-			"AGORA_logo"=>"Logo en bas de page",
-			"AGORA_logoUrl"=>"URL",
-			"AGORA_logoConnect"=>"Logo en page de connexion",
-			"AGORA_logoConnectTooltip"=>"Logo affiché en page de connexion, en tête du formulaire",
-			"AGORA_usersCommentLabel"=>"Les utilisateurs peuvent commenter les éléments",
+			"AGORA_usersCommentLabel"=>"Bouton ''commenter'' sur les éléments",
 			"AGORA_usersComment"=>"commentaire",
 			"AGORA_usersComments"=>"commentaires",
-			"AGORA_usersLikeLabel"=>"Les utilisateurs peuvent <i>Aimer</i> les éléments",
-			"AGORA_usersLike_likeSimple"=>"J'aime simple",
-			"AGORA_usersLike_likeOrNot"=>"J'aime / J'aime pas",
-			"AGORA_usersLike_like"=>"J'aime!",
-			"AGORA_usersLike_dontlike"=>"Je n'aime pas",
+			"AGORA_usersLikeLabel"=>"Bouton ''J'aime'' sur les éléments",
+			"AGORA_usersLike"=>"J'aime !",
 			"AGORA_mapTool"=>"Outil de cartographie",
 			"AGORA_mapToolTooltip"=>"Outil de cartographie pour voir les utilisateurs et contacts sur une carte",
 			"AGORA_mapApiKey"=>"API Key pour la catographie Google Map",
 			"AGORA_mapApiKeyTooltip"=>"Parametrage obligatoire pour l'outil de cartographie Google Map : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
-			"AGORA_gIdentity"=>"Connexion via Google (option)",
-			"AGORA_gIdentityTooltip"=>"Les utilisateurs peuvent se connecter via leur compte Google : le compte utilisateur doit alors avoir un identifiant avec une adresse <i>@gmail.com</i>",
+			"AGORA_gIdentity"=>"Option de connexion via Google",
+			"AGORA_gIdentityTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
 			"AGORA_gIdentityClientId"=>"API Key pour la connexion via Google",
 			"AGORA_gIdentityClientIdTooltip"=>"Une 'API Key' est nécessaire pour la connexion via Google. Plus d'infos sur <a href='https://developers.google.com/identity/sign-in/web' target='_blank'>https://developers.google.com/identity/sign-in/web</a>",
 			"AGORA_gPeopleApiKey"=>"API KEY pour importer les contacts Google",
 			"AGORA_gPeopleApiKeyTooltip"=>"Une 'API Key' est nécessaire pour la récupération des contacts Google / Gmail. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>",
-			"AGORA_messengerDisabled"=>"Messagerie instantanée activée",
-			"AGORA_moduleLabelDisplay"=>"Afficher le nom des modules dans la barre de menu",
-			"AGORA_folderDisplayMode"=>"Affichage par défaut des dossiers",
+			"AGORA_messengerDisplay"=>"Messagerie instantanée",
 			"AGORA_personsSort"=>"Trier les utilisateurs et contacts par",
 			//SMTP
 			"AGORA_smtpLabel"=>"Connexion SMTP & sendMail",
@@ -636,9 +638,9 @@ class Trad extends Txt
 			// Menu principal
 			"USER_headerModuleName"=>"Utilisateurs",
 			"USER_moduleDescription"=>"Utilisateurs de l'espace",
-			"USER_option_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",//OPTION!
+			"USER_option_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",//OPTION
 			//Index
-			"USER_spaceOrAllUsersTooltip"=>"Gérer les utilisateurs de l'espace affiché / Gérer les utilisateurs de tous les espaces (réservé à l'administrateur général)",
+			"USER_spaceOrAllUsersTooltip"=>"Gérer les utilisateurs de l'espace affiché / Gérer les utilisateurs de tous les espaces (réservé à l'administrateur principal)",
 			"USER_spaceUsers"=>"Gérer les utilisateurs de l'espace courant",
 			"USER_allUsers"=>"Gérer tous les utilisateurs",
 			"USER_deleteDefinitely"=>"Supprimer définitivement",
@@ -660,8 +662,8 @@ class Trad extends Txt
 			"USER_noUser"=>"Aucun utilisateur affecté à cet espace pour le moment",
 			"USER_spaceList"=>"Espaces de l'utilisateur",
 			"USER_spaceNoAffectation"=>"aucun espace",
-			"USER_adminGeneral"=>"Administrateur général",
-			"USER_adminGeneralTooltip"=>"Attention : le droit d'accès ''administrateur général'' donne de nombreux privilèges et responsabilités, notament pour pouvoir éditer tous les éléments (agendas, dossiers, fichiers, etc), ainsi que tous les utilisateurs et espaces. Il est donc conseillé d'attribuer ce privilège à 2 ou 3 personnes maximum.<br><br>Pour des privilèges plus restreints, choississez plutôt le droit d'accès ''administrateur d'espace'' (cf. menu principal > ''Paramétrer l'espace'')",
+			"USER_adminGeneral"=>"Administrateur principal",
+			"USER_adminGeneralTooltip"=>"Attention : le droit d'accès ''Administrateur principal'' donne de nombreux privilèges et responsabilités, notament pour pouvoir éditer tous les éléments (agendas, dossiers, fichiers, etc), ainsi que tous les utilisateurs et espaces. Il est donc conseillé d'attribuer ce privilège à 2 ou 3 personnes maximum.<br><br>Pour des privilèges plus restreints, choississez plutôt le droit d'accès ''administrateur d'espace'' (cf. menu principal > ''Paramétrer l'espace'')",
 			"USER_adminSpace"=>"Administrateur de l'espace",
 			"USER_userSpace"=>"Utilisateur de l'espace",
 			"USER_profilEdit"=>"Modifier le profil utilisateur",
@@ -718,9 +720,9 @@ class Trad extends Txt
 			// Menu principal + options du module
 			"DASHBOARD_headerModuleName"=>"News",
 			"DASHBOARD_moduleDescription"=>"Actualités, Sondages et Nouveaux éléments",
-			"DASHBOARD_option_adminAddNews"=>"Seul l'administrateur peut créer des actualités",//OPTION!
-			"DASHBOARD_option_disablePolls"=>"Désactiver les sondages",//OPTION!
-			"DASHBOARD_option_adminAddPoll"=>"Seul l'administrateur peut créer des sondages",//OPTION!
+			"DASHBOARD_option_adminAddNews"=>"Seul l'administrateur peut créer des actualités",//OPTION
+			"DASHBOARD_option_disablePolls"=>"Désactiver les sondages",//OPTION
+			"DASHBOARD_option_adminAddPoll"=>"Seul l'administrateur peut créer des sondages",//OPTION
 			//Index
 			"DASHBOARD_menuNews"=>"Actualités",
 			"DASHBOARD_menuPolls"=>"Sondages",
@@ -777,7 +779,7 @@ class Trad extends Txt
 			// Menu principal
 			"FILE_headerModuleName"=>"Fichiers",
 			"FILE_moduleDescription"=>"Gestionnaire de fichiers",
-			"FILE_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et fichiers à la racine",//OPTION!
+			"FILE_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et fichiers à la racine",//OPTION
 			//Index
 			"FILE_addFile"=>"Ajouter un fichier",
 			"FILE_addFileAlert"=>"Dossier du serveur inaccessible en écriture!  merci de contacter l'administrateur",
@@ -809,9 +811,9 @@ class Trad extends Txt
 			// Menu principal
 			"CALENDAR_headerModuleName"=>"Agenda",
 			"CALENDAR_moduleDescription"=>"Agendas partagés et personnels",
-			"CALENDAR_option_adminAddRessourceCalendar"=>"Seul l'administrateur peut créer des agendas partagés",//OPTION!
-			"CALENDAR_option_adminAddCategory"=>"Seul l'administrateur peut créer des categories d'événement",//OPTION!
-			"CALENDAR_option_createSpaceCalendar"=>"Créer un agenda partagé pour l'espace",//OPTION!
+			"CALENDAR_option_adminAddRessourceCalendar"=>"Seul l'administrateur peut créer des agendas partagés",//OPTION
+			"CALENDAR_option_adminAddCategory"=>"Seul l'administrateur peut créer des categories d'événement",//OPTION
+			"CALENDAR_option_createSpaceCalendar"=>"Créer un agenda partagé pour l'espace",//OPTION
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Les utilisateurs n'ayant pas désactivé leur agenda personnel dans leur profil utilisateur verront toujours le module Agenda dans la barre de menu",
 			//Index
 			"CALENDAR_calsList"=>"Agendas disponibles",
@@ -894,6 +896,7 @@ class Trad extends Txt
 			// Categorie : Catégories d'événement
 			"CALENDAR_categoryMenuTooltip"=>"Afficher uniquement les événements avec la catégorie",
 			"CALENDAR_categoryShowAll"=>"Toutes les catégories",
+			"CALENDAR_categoryShowAllTooltip"=>"Afficher toutes les catégories",
 			"CALENDAR_categoryUndefined"=>"Catégorie non définie",
 			"CALENDAR_categoryEditTitle"=>"Editer les catégories d'événement",
 			"CALENDAR_categoryEditInfo"=>"Chaque catégorie peut être modifiée par son auteur ou par l'admin général",
@@ -904,8 +907,8 @@ class Trad extends Txt
 			// Menu principal
 			"FORUM_headerModuleName"=>"Forum",
 			"FORUM_moduleDescription"=>"Forum de discussion",
-			"FORUM_option_adminAddSubject"=>"Seul l'administrateur peut créer des sujets",//OPTION!
-			"FORUM_option_adminAddTheme"=>"Seul l'administrateur peut créer des thèmes",//OPTION!
+			"FORUM_option_adminAddSubject"=>"Seul l'administrateur peut créer des sujets",//OPTION
+			"FORUM_option_adminAddTheme"=>"Seul l'administrateur peut créer des thèmes",//OPTION
 			// TRI
 			"SORT_dateLastMessage"=>"dernier message",
 			//Index & Sujet
@@ -914,14 +917,14 @@ class Trad extends Txt
 			"FORUM_subjects"=>"sujets",
 			"FORUM_message"=>"message",
 			"FORUM_messages"=>"messages",
-			"FORUM_lastMessage"=>"dernier de",
+			"FORUM_lastMessageFrom"=>"dernier de",
 			"FORUM_noSubject"=>"Aucun sujet pour le moment",
-			"FORUM_noMessage"=>"Aucun message pour le moment",
 			"FORUM_subjectBy"=>"Sujet de",
 			"FORUM_addSubject"=>"Créer un nouveau sujet",
 			"FORUM_displaySubject"=>"Voir le sujet",
 			"FORUM_addMessage"=>"Ajouter un message",
-			"FORUM_quoteMessage"=>"Répondre en citant ce message",
+			"FORUM_quoteMessage"=>"Répondre",
+			"FORUM_quoteMessageInfo"=>"Répondre en citant ce message",
 			"FORUM_notifyLastPost"=>"Me notifier à chaque message",
 			"FORUM_notifyLastPostTooltip"=>"M'envoyer un email de notification à chaque nouveau message",
 			// Sujet_edit  &  Message_edit
@@ -930,6 +933,7 @@ class Trad extends Txt
 			// Categorie : Themes
 			"FORUM_categoryMenuTooltip"=>"Afficher uniquement les sujets avec le thème",
 			"FORUM_categoryShowAll"=>"Tous les thèmes",
+			"FORUM_categoryShowAllTooltip"=>"Afficher tous les thèmes",
 			"FORUM_categoryUndefined"=>"Thème non défini",
 			"FORUM_categoryEditTitle"=>"Editer les thèmes du forum",
 			"FORUM_categoryEditInfo"=>"Chaque theme peut être modifié par son auteur ou par l'admin général",
@@ -940,8 +944,8 @@ class Trad extends Txt
 			// Menu principal
 			"TASK_headerModuleName"=>"Tâches",
 			"TASK_moduleDescription"=>"Tâches / Notes",
-			"TASK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et tâches à la racine",//OPTION!
-			"TASK_option_adminAddStatus"=>"Seul l'administrateur peut créer des statuts de tâches",//OPTION!
+			"TASK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et tâches à la racine",//OPTION
+			"TASK_option_adminAddStatus"=>"Seul l'administrateur peut créer des statuts de tâches",//OPTION
 			// TRI
 			"SORT_priority"=>"Priorité",
 			"SORT_advancement"=>"Avancement",
@@ -963,6 +967,7 @@ class Trad extends Txt
 			//Categorie : Statuts Kanban
 			"TASK_categoryMenuTooltip"=>"Afficher uniquement les tâches avec le statut",
 			"TASK_categoryShowAll"=>"Tous les statuts",
+			"TASK_categoryShowAllTooltip"=>"Afficher tous les statuts",
 			"TASK_categoryUndefined"=>"Statut non défini",
 			"TASK_categoryEditTitle"=>"Editer les statuts des tâches",
 			"TASK_categoryEditInfo"=>"Chaque statut Kanban peut être modifié par son auteur ou par l'admin général",
@@ -973,7 +978,7 @@ class Trad extends Txt
 			// Menu principal
 			"CONTACT_headerModuleName"=>"Contacts",
 			"CONTACT_moduleDescription"=>"Annuaire de contacts",
-			"CONTACT_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et contacts à la racine",//OPTION!
+			"CONTACT_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et contacts à la racine",//OPTION
 			//Index
 			"CONTACT_addContact"=>"Créer un nouveau contact",
 			"CONTACT_noContact"=>"Aucun contact pour le moment",
@@ -986,7 +991,7 @@ class Trad extends Txt
 			// Menu principal
 			"LINK_headerModuleName"=>"Liens",
 			"LINK_moduleDescription"=>"Liens Internet et sites Internet favoris",
-			"LINK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et liens à la racine",//OPTION!
+			"LINK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et liens à la racine",//OPTION
 			//Index
 			"LINK_addLink"=>"Créer un nouveau lien",
 			"LINK_noLink"=>"Aucun lien pour le moment",

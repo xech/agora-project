@@ -19,17 +19,15 @@ $(function(){
 </style>
 
 
-<!--Option "Masquer les destinataires"-->
+<!--Options "Masquer les destinataires"  &&  "Ne pas signer le message"-->
 <div title="<?= Txt::trad("MAIL_hideRecipientsTooltip") ?>"><img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="hideRecipients" id="hideRecipients">&nbsp; <label for="hideRecipients"><?= Txt::trad("MAIL_hideRecipients") ?></label></div>
+<div title="<?= Txt::trad("MAIL_noFooterTooltip") ?>"><img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="noFooter" id="noFooter">&nbsp; <label for="noFooter"><?= Txt::trad("MAIL_noFooter") ?></label></div>
 
-<!--Options "Mettre mon email en réponse" && "Accusé de reception"-->
+<!--Options "Mettre mon email en réponse"  &&  "Accusé de reception"-->
 <?php if(!empty(Ctrl::$curUser->mail)){ ?>
 	<div title="<?= Txt::trad("MAIL_addReplyToTooltip") ?>"><img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="addReplyTo" id="addReplyTo">&nbsp; <label for="addReplyTo"><?= Txt::trad("MAIL_addReplyTo") ?></label></div>
 	<div title="<?= Txt::trad("MAIL_receptionNotifTooltip") ?>"><img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="receptionNotif" id="receptionNotif">&nbsp; <label for="receptionNotif"><?= Txt::trad("MAIL_receptionNotif") ?></label></div>
 <?php } ?>
-
-<!--Option "Ne pas signer le message"-->
-<div title="<?= Txt::trad("MAIL_noFooterTooltip") ?>"><img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="noFooter" id="noFooter">&nbsp; <label for="noFooter"><?= Txt::trad("MAIL_noFooter") ?></label></div>
 
 <!--Option "Ajouter des adresses email"-->
 <div id="specificMails" class="sLink" title="<?= Txt::trad("MAIL_specificMailsTooltip") ?>"><img src="app/img/dependency.png"><img src="app/img/arobase.png">&nbsp; <?= Txt::trad("MAIL_specificMails") ?> <img src="app/img/plusSmall.png"></div>

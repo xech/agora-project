@@ -1,15 +1,15 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
 
-/********************************************************************************************
+/*****************************************************************************************************************
  * AUTOLOADER DES CLASSES DE BASE ET DES CONTROLEURS (pas des classes des modèles : chargées par le controleur!)
- ********************************************************************************************/
+ *****************************************************************************************************************/
 function agoraAutoloader($className)
 {
 	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}								//Ex: "app/common/Txt.php"
@@ -36,35 +36,29 @@ class Req
 	 ********************************************************************************************/
 	function __construct()
 	{
-		//Fusionne GET+POST & filtre les XSS
-		self::$_getPostParams=array_merge($_GET,$_POST);
-		foreach(self::$_getPostParams as $tmpKey=>$tmpVal)
-		{
-			//Filtre la valeur du parametre OU Filtre le tableau de valeurs du parametre
-			if(is_array($tmpVal)==false)  {self::$_getPostParams[$tmpKey]=self::paramFilter($tmpKey,$tmpVal);}
+		////	Enregistre et filtre les parametres GET/POST
+		foreach(array_merge($_GET,$_POST) as $tmpKey=>$tmpVal){
+			if(is_array($tmpVal)==false)  {self::$_getPostParams[$tmpKey]=self::paramFilter($tmpKey,$tmpVal);}//Valeur simple
 			else{
-				foreach($tmpVal as $tmpSubKey=>$tmpSubVal)	{self::$_getPostParams[$tmpKey][$tmpSubKey]=self::paramFilter($tmpSubKey,$tmpSubVal);}
+				foreach($tmpVal as $tmpKey2=>$tmpVal2)	{self::$_getPostParams[$tmpKey][$tmpKey2]=self::paramFilter($tmpKey,$tmpVal2);}//Tableau de valeurs : tjs avec $tmpKey dans le paramFilter()
 			}
-			//S'il s'agit d'un ancien paramètre (cf. liens des notif mail d'édition d'objet) : on ajoute le nouveau paramètre équivalent pour assurer la continuité (à partir de la v21.10)
-			if($tmpKey=="targetObjId")			{self::$_getPostParams["typeId"]=self::$_getPostParams["targetObjId"];}
-			elseif($tmpKey=="targetObjUrl")		{self::$_getPostParams["objUrl"]=self::$_getPostParams["targetObjUrl"];}
 		}
-		//Classe du controleur courant & Methode de l'action courante
+		////	Classe du controleur courant & Methode de l'action courante
 		self::$curCtrl=(self::isParam("ctrl")) ? self::param("ctrl") : "offline";
 		self::$curAction=(self::isParam("action")) ? self::param("action") : "default";
 		$curCtrlClass="Ctrl".ucfirst(self::$curCtrl);
 		$curActionMethod="action".ucfirst(self::$curAction);
-		//Init le temps d'execution & charge les Params + Config
+		////	Init le temps d'execution & charge les Params + Config
 		define("TPS_EXEC_BEGIN",microtime(true));
 		require_once self::commonPath."Params.php";
 		require_once PATH_DATAS."config.inc.php";
-		//Lance l'action demandée
+		////	Lance l'action demandée
 		try{
 			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}																			//Lance le controleur principal (sauf si Install AP)
 			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}												//Lance le controleur spécifique
 			else												{throw new Exception("Page introuvable : Action '".$curActionMethod."'");  exit;}	//Lance une Exception
 		}
-		//Gestion des exceptions
+		////	Gestion des exceptions
 		catch(Exception $error){
 			$this->displayExeption($error);
 		}
@@ -116,26 +110,26 @@ class Req
 		}
 	}
 
-	/********************************************************************************************
+	/*******************************************************************************************************************
 	 * FILTRE UN PARAMETRE (PRÉSERVE DES INSERTION XSS)
-	 ********************************************************************************************/
-	public static function paramFilter($tmpKey, $value)
+	 * Tester dans une News  &&  Lien de visio dans le messenger  &&  --index.php?notify=<svg/onload=alert(/test/)>--
+	 *******************************************************************************************************************/
+	public static function paramFilter($tmpKey, $text)
 	{
-		//Verif qu'il s'agit d'une string et non pas un tableau ou autre
-		if(is_string($value))
-		{
-			//Enlève le javascript
-			$value=preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $value);
-			if(preg_match("/^footerHtml$/i",$tmpKey)==false || Req::isHost()==false)  {$value=preg_replace('#<script(.*?)>(.*?)</script>#is', '', $value);}
-			//Enleve les balises html pour les parametres qui ne proviennent pas de l'éditeur tinyMce (sauf <p><div><span>...). Tester avec les News et avec l'url "index.php?ctrl=dashboard&notify=<svg/onload=alert(/myXss/)>"
-			if(preg_match("/^(description|message|editorDraft|footerHtml)$/i",$tmpKey)==false)  {$value=strip_tags($value,"<p><div><span><a><button><img><br><hr>");}
+		if(is_string($text)){																	//Verif qu'il s'agit d'un texte
+			$text=preg_replace('/\bon\w+=\S+(?=.*>)/i', '', $text);								//Enlève le javascript inline
+			$text=preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);				//Enlève les tags javascript
+			if(!preg_match("/^(notify|description|editorDraft|message|objUrl)$/i",$tmpKey)){	//Filtre les tags/entités html (sauf notify, tinyMce, messenger, objUrl)
+				$text=strip_tags($text);
+				$text=htmlspecialchars($text);
+			}
 		}
-		return $value;
+		return $text;
 	}
 
-	/********************************************************************************************
+	/*******************************************************************************************************************************
 	 * PATH D'UNE CLASS DANS MODULE  (La 2ème partie du nom de classe contient le nom du module. Ex: "MdlFileFolder" => "File")
-	 ********************************************************************************************/
+	 *******************************************************************************************************************************/
 	public static function modClassPath($className)
 	{
 		$majWords=preg_split("/(?=[A-Z])/",trim($className));//'MdlFileFolder' => array('','Mdl','File','Folder') => 'app/ModFile'
@@ -171,6 +165,14 @@ class Req
 		return defined("HOST_DOMAINE");
 	}
 
+	/*******************************************************************************************
+	 * VÉRIF SI ON EST SUR LINUX
+	 *******************************************************************************************/
+	public static function isLinux()
+	{
+		return preg_match("/linux/i", PHP_OS);
+	}
+
 	/********************************************************************************************
 	 * VÉRIFIE SI ON EST EN MODE 'DEV' ('DEBIAN' OU IP LOCALE POUR IONIC DEVAPP)
 	 ********************************************************************************************/
@@ -193,8 +195,28 @@ class Req
 	 ********************************************************************************************/
 	public static function isMobileApp()
 	{
-		return (!empty($_COOKIE["mobileAppli"]));
+		return (!empty($_COOKIE["mobileAppli"]) && preg_match("/(android|iphone|ipad)/i",$_SERVER['HTTP_USER_AGENT']));
 	}
+
+	/***************************************************************************************************************************/
+	/*******************************************	SPECIFIC METHODS	********************************************************/
+	/***************************************************************************************************************************/
+
+	/********************************************************************************************
+	 * AFFICHE UNE ERREUR D'EXECUTION
+	 ********************************************************************************************/
+    private function displayExeption(Exception $exception)
+	{
+		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
+		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)
+			{Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+		//Affiche le message et lien "Retour"
+        echo '<h3 style="text-align:center;margin-top:50px;font-size:24px">
+				<img src="app/img/important.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
+				<br><br><a href="?ctrl=offline">Retour</a>
+			  </h3>';
+		exit;
+    }
 
 	/********************************************************************************************
 	 * SWITCH D'ESPACE : BOUTON DE RETOUR AU MENU DE RECHERCHE (APP MOBILE OU HOST)
@@ -211,23 +233,6 @@ class Req
 	{
 		return OMNISPACE_URL_PUBLIC."/index.php?ctrl=offline&action=connectSpace&connectSpaceSwitch=true";
 	}
-
-	/***************************************************************************************************************************/
-	/*******************************************	SPECIFIC METHODS	********************************************************/
-	/***************************************************************************************************************************/
-
-	/********************************************************************************************
-	 * AFFICHE UNE ERREUR D'EXECUTION
-	 ********************************************************************************************/
-    private function displayExeption(Exception $exception)
-	{
-		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
-		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)  {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
-		//Affiche le message et si besoin un lien "Retour"
-        echo "<h3 style='text-align:center;margin-top:50px;font-size:24px;'><img src='app/img/important.png' style='vertical-align:middle;margin-right:20px;'>".$exception->getMessage();
-		if(preg_match("/error/i",$exception->getMessage())==false)  {echo "<br><br><a href='?ctrl=offline'>Retour</a></h3>";}
-		exit;
-    }
 
 	/********************************************************************************************
 	 * VÉRIF SI L'APPLI EST EN COUR D'INSTALL

@@ -56,7 +56,7 @@ function folderMove(newFolderId){
 
 
 <style>
-#treeFolders						{user-select:none; padding:4px;}
+#treeFolders						{user-select:none; -webkit-user-select:none; padding:4px;}
 .vTreeFolder						{display:none;}											/*dossier masqué par défaut*/
 .vTreeFolder>div					{display:table-cell; padding:3px; vertical-align:top;}	/*cellules du dossier */
 .vTreeFolderIcon					{white-space:nowrap;}									/*icone du dossier : pas de retour à la ligne*/

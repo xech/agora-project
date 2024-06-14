@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -65,11 +65,12 @@ class MdlTask extends MdlObject
 				$barTooltip.=$tmpUser->getLabel().", ";				//prenoms + noms
 				$barLabel  .=$tmpUser->getLabel("firstName").", ";	//prenoms uniqument
 			}
+			$barLabel=trim($barLabel,", ");
 			$barTooltip=trim($barTooltip,", ");
 			//// Affichage "icone" ou "progressBar"
 			if($isVueTask==false && static::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".Txt::tooltip($barTooltip)."\"><img src='app/img/user/iconSmall.png'></span>";}
 			else{
-				$barLabel=Txt::reduce(trim($barLabel,", "),40);
+				if($isVueTask==false)  {$barLabel=Txt::reduce($barLabel,40);}
 				return Tool::progressBar("<img src='app/img/user/iconSmall.png'> ".$barLabel, $barTooltip);
 			}
 		}
@@ -103,8 +104,8 @@ class MdlTask extends MdlObject
 			elseif(!empty($this->dateEnd))							{$barTooltip=null;}//Txt::trad("end") récup via "dateLabel()" ci-dessus
 			$barTooltip.=$barLabel."<br>".$this->isDelayed(true);
 			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return "<img src='app/img/task/date.png' class='cursorHelp' title=\"".$barTooltip."\">";}
-			else														{return Tool::progressBar("<img src='app/img/task/date.png'> ".$barLabel, $barTooltip, $this->timeProgressPercent(), $this->isDelayed());}
+			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<img src="app/img/task/date.png" class="cursorHelp" title="'.Txt::tooltip($barTooltip).'">';}
+			else														{return Tool::progressBar('<img src="app/img/task/date.png"> '.$barLabel, $barTooltip, $this->timeProgressPercent(), $this->isDelayed());}
 		}
 	}
 
@@ -116,7 +117,7 @@ class MdlTask extends MdlObject
 		//Vérif si ya une date de début  ET  une date de fin
 		if(!empty($this->dateBegin) && !empty($this->dateEnd)){
 			$barLabel="&nbsp;";//jamais vide
-			$barTooltip=$this->title."<hr>".Txt::trad("beginEnd")." : ".Txt::dateLabel($this->dateBegin,"date",$this->dateEnd);
+			$barTooltip=$this->title."<hr>".Txt::trad("beginEnd")." : ".Txt::dateLabel($this->dateBegin,"dateMini",$this->dateEnd);
 			//Avancement de la tâche
 			if(!empty($this->advancement)){
 

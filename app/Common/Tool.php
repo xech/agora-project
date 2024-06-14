@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -70,11 +70,11 @@ class Tool
 			//Controles de base
 			if(in_array("noTimeControl",$options)==false && (time()-@$_SESSION["sendMailTime"])<10)	{echo "please wait 10 sec."; exit;}	//Temps minimum entre chaque mail
 			else																					{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
-			if(empty($_SESSION["sendMailCounter"][date("Y-m-d-H")]))	{$_SESSION["sendMailCounter"][date("Y-m-d-H")]=1;}		//Init le compteur de nb max de mail/heure
-			elseif($_SESSION["sendMailCounter"][date("Y-m-d-H")]>=30)	{echo "30 mails/h max"; exit;}							//- quota dépassé
-			else														{$_SESSION["sendMailCounter"][date("Y-m-d-H")]++;}		//- incrémente le compteur
-			if(Req::isHost())  {Host::sendMailControl($message);}																//Controle des spambots
-			$fromUserWithMail=(isset(Ctrl::$curUser) && Ctrl::$curUser->isUser() && !empty(Ctrl::$curUser->mail));				//Verif que l'expediteur est un user authentifié avec un email
+			if(empty($_SESSION["sendMailCounter"][date("Y-m-d-H")]))	{$_SESSION["sendMailCounter"][date("Y-m-d-H")]=1;}				//Init le compteur de nb max de mail/heure
+			elseif($_SESSION["sendMailCounter"][date("Y-m-d-H")]>100)	{echo "100 mails maximum par heure et par personne"; exit;}		//- quota dépassé
+			else														{$_SESSION["sendMailCounter"][date("Y-m-d-H")]++;}				//- incrémente le compteur
+			if(Req::isHost())  {Host::sendMailControl($message);}																		//Controle des spambots
+			$fromUserWithMail=(isset(Ctrl::$curUser) && Ctrl::$curUser->isUser() && !empty(Ctrl::$curUser->mail));						//Verif que l'expediteur est un user authentifié avec un email
 			//Ajoute si besoin l'email de l'user en replyTo ou pour une demande de notif de lecture
 			if($fromUserWithMail==true){
 				if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute si besoin un "ReplyTo" avec son email (tjs en option: cf. score des antispams)

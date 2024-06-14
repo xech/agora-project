@@ -2,37 +2,31 @@
 ////	INIT
 $(function(){
 	/*******************************************************************************************
-	 *	INITIALISE LA VUE DE CHAQUE AGENDA
-	 *******************************************************************************************/
-	//Style des blocks d'événement
-	$(".vCalEvtBlock").each(function(){ $(this).css("background",$(this).attr("data-eventColor")); });
-	//Synthese des agendas : Fixe la taille des cellule de jours
-	if($("#syntheseTable").exist()){
-		var syntheseDayWidth=Math.round(($("#syntheseLineHeader").width()-$("#syntheseLineHeader .vSyntheseLabel").width()) / $("#syntheseLineHeader .vSyntheseDay").length);
-		$(".vSyntheseDay").css("width",syntheseDayWidth);
-	}
-
-	/*******************************************************************************************
-	 *	PUIS AFFICHE CHAQUE AGENDA (Timeout car "availableContentHeight()" prend en compte le "#livecounterMain" chargé via Ajax)
+	 *	AFFICHE LES AGENDAS (Timeout : cf. "#livecounterMain" chargé via Ajax)
 	 *******************************************************************************************/
 	setTimeout(function(){
-		//Les agendas prennent toute la hauteur et largeur disponible
-		var calendarHeight=(availableContentHeight() - parseInt($(".vCalendarBlock").css("margin-bottom")));
-		var calendarWidth=$("#pageFullContent").width();
-		$(".vCalendarBlock").outerHeight(calendarHeight).outerWidth(calendarWidth);
-		$(".vCalendarVue").each(function(){
-			var calObjId=$(this).attr("data-typeId");
-			var calContentHeight=$("#blockCal"+calObjId).innerHeight() - $("#headerCal"+calObjId).outerHeight(true);
-			$(this).css("height",calContentHeight+"px");
+		//Synthese des agendas : taille des cellules de jours
+		if($("#syntheseTable").exist()){
+			var syntheseDayWidth=Math.round(($("#syntheseLineHeader").width()-$("#syntheseLineHeader .vSyntheseLabel").width()) / $("#syntheseLineHeader .vSyntheseDay").length);
+			$(".vSyntheseDay").css("width",syntheseDayWidth);
+		}
+		//Agendas sur toute la hauteur/largeur disponible de la page
+		let livecounterHeight=($("#livecounterMain").isVisible())  ?  $("#livecounterMain").outerHeight()  :  0;
+		$(".vCalendarBlock").outerHeight( $(window).height() - $("#pageFullContent").offset().top - livecounterHeight - 10 );
+		//Agendas month/week sur toute la hauteur/largeur de ".vCalendarVue"
+		$(".vCalendarVue").outerHeight( $(".vCalendarBlock").outerHeight() - $(".vCalendarHeader").outerHeight() );
+		//Applique le "background-color" à tout le "vCalendarBlock" de chaque événement
+		$(".vCalEvtBlock").each(function(){
+			$(this).css("background",$(this).attr("data-eventColor"));
 		});
-		//Affichage de la vue week/month !
+		//Affiche les vues week/month
 		calendarDimensions();
 		//Ré-affiche les agendas après calcul
 		$(".vCalendarBlock").css("visibility","visible");
-	},350);//Timeout de 350ms (cf. "mainPageDisplay()" et le "margin-bottom" du "#pageFull" en fonction du livecounter)
+	},250);
 
 	/*******************************************************************************************
-	 *	INIT LE DATEPICKER JQUERY-UI DANS LE MENU DU MODULE
+	 *	DATEPICKER DU MENU DU MODULE (JQUERY-UI)
 	 *******************************************************************************************/
 	$("#datepickerCalendar").datepicker({
 		defaultDate:"<?= date("Y-m-d",$curTime) ?>",	//cf. "dateFormat" ci-après
@@ -64,8 +58,11 @@ $(function(){
 
 
 <style>
-/*Footer & Menus du module*/
-#pageFooterIcon img					{display:none;}
+/*masque le footer*/
+#pageFooterHtml, #pageFooterIcon	{display:none;}
+#pageFull							{margin-bottom:0px;}
+
+/*Menus du module*/
 #calsList							{max-height:500px; overflow-y:auto; padding:5px;}
 #calsListLabel 						{margin-bottom:10px;}
 #calsList .calsListCalendar			{line-height:25px;}/*Label de chaque agenda*/
@@ -97,15 +94,15 @@ $(function(){
 .vSyntheseDayCal.vSyntheseDayCalWE	{background:#ccc;}
 
 /*Agendas*/
-.vCalendarBlock						{margin-top:25px; padding:0px; min-height:300px; visibility:hidden;}
-.vCalendarBlock:first-child			{margin-top:0px;}
+.vCalendarBlock						{min-height:500px; visibility:hidden; padding:0px;}
+.vCalendarBlock:not(:first-child)	{margin-top:25px;}
 .vCalendarHeader					{display:table; width:100%;}
 .vCalendarHeader>div				{display:table-cell; width:33%; padding:12px; vertical-align:middle;}
 .vCalendarDisplayMode				{text-align:right;}
 .vCalendarDisplayMode>span			{margin-left:15px;}
 .vCalendarDisplayModeLabel			{margin-left:5px;}
 .vCalendarTitle, .vCalendarPeriodLabel  {font-size:1.1em;}
-.vCalendarTitleLabel				{margin-left:10px;}
+.vCalendarTitle .personImgSmall		{margin-left:10px;}
 .vCalendarPeriod					{text-align:center;}
 #calendarPrev,#calendarNext			{margin:0px 10px 0px 10px;}
 [id^=calMonthPeriodMenu]			{width:250px; overflow:visible;}
@@ -120,8 +117,7 @@ $(function(){
 /*MOBILE*/
 @media screen and (max-width:1023px){
 	.vCalendarTitle, .vCalendarPeriodLabel 				{font-size:1em;}
-	.vCalendarTitleLabel								{margin-left:5px; margin-right:0px;}
-	.vCalendarTitle .personImgSmall						{display:none;}/*cf. "personImg()"*/
+	.vCalendarTitle .personImgSmall						{display:none;}
 	.objMenuBurger, .objMenuBurgerInline				{margin:0px 5px;}
 	#calendarPrev, #calendarNext						{margin:0px 5px;}
 	.vCalendarDisplayMode>span							{margin-left:5px;}
@@ -222,7 +218,7 @@ $(function(){
 					<!--AFFICHE CHAQUE AGENDA-->
 					<?php foreach($displayedCalendars as $tmpCal){ ?>
 					<div class="vSyntheseLine">
-						<div class="vSyntheseLabel" onclick="$('#blockCal<?= $tmpCal->_typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
+						<div class="vSyntheseLabel" onclick="$('#calendarBlock<?= $tmpCal->_typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<!--CELLULES DE CHAQUE JOUR DE L'AGENDA-->
 						<?php
 						foreach($periodSynthese as $tmpDay)
@@ -234,7 +230,7 @@ $(function(){
 							//Cellule des evts du jour
 							$syntheseDayCalWE=$syntheseDayEvts=null;
 							if(date("N",$tmpDay["timeBegin"])>5)	{$syntheseDayCalWE="vSyntheseDayCalWE";}
-							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$syntheseDayEvts.="<div class='vSyntheseDayEvt' onclick=\"lightboxOpen('".$tmpEvt->getUrl("vue")."')\" style=\"background-color:".$tmpEvt->eventColor."\">&nbsp;</div>";}
+							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$syntheseDayEvts.="<div class='vSyntheseDayEvt' onclick=\"".$tmpEvt->openVue()."\" style=\"background-color:".$tmpEvt->eventColor."\">&nbsp;</div>";}
 							echo "<div class='vSyntheseDay vSyntheseDayCal ".$syntheseDayCalWE."'>
 									<div class='vSyntheseDayEvts' title=\"".Txt::tooltip($tmpEvtTooltip)."\">".$syntheseDayEvts."</div>
 								  </div>";
@@ -259,16 +255,15 @@ $(function(){
 
 		<!--AFFICHE CHAQUE AGENDA-->
 		<?php foreach($displayedCalendars as $tmpCal){ ?>
-		<div class="vCalendarBlock miscContainer" id="blockCal<?= $tmpCal->_typeId ?>">
-			<div class="vCalendarHeader" id="headerCal<?= $tmpCal->_typeId ?>">
+		<div class="vCalendarBlock miscContainer" id="calendarBlock<?= $tmpCal->_typeId ?>">
+			<div class="vCalendarHeader">
 				<!--TITRE DE L'AGENDA-->
 				<div class="vCalendarTitle">
 					<?php
 					//Menu contextuel de l'agenda (cf. ".objMenuBurger")  &&  Label de l'agenda  &&  Icone de l'user (agenda perso)
 					$tmpCalLabel=(Req::isMobile())  ?  Txt::reduce($tmpCal->title,20)  :  $tmpCal->title;
-					$tmpIconBurgerSize=(Req::isMobile())  ?  "inlineSmall"  :  "inlineBig";
 					$tmpCalIcon=($tmpCal->type=="user")  ?  Ctrl::getObj("user",$tmpCal->_idUser)->personImg(true,true)  :  null;
-					echo $tmpCalIcon."<span class='vCalendarTitleLabel' title=\"".Txt::tooltip($tmpCal->description)."\">".$tmpCalLabel."</span>".$tmpCal->contextMenu(["iconBurger"=>$tmpIconBurgerSize]);
+					echo $tmpCal->contextMenu(["iconBurger"=>"inlineBig"]).'<span title="'.Txt::tooltip($tmpCal->description).'">'.$tmpCalLabel.'</span>'.$tmpCalIcon;
 					?>
 				</div>
 				<!--PERIODE AFFICHEE-->

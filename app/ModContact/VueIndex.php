@@ -11,7 +11,7 @@ function contactAddUser(typeId)
 
 <div id="pageFull">
 	<div id="pageModuleMenu">
-		<?= MdlContact::menuSelectObjects() ?>
+		<?= MdlContact::menuSelect() ?>
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
@@ -35,11 +35,11 @@ function contactAddUser(typeId)
 		////	LISTE DES CONTACTS
 		foreach($contactList as $tmpContact)
 		{
-			echo $tmpContact->objContainer("objPerson").$tmpContact->contextMenu().
-				"<div class='objContentScroll'>
+			echo $tmpContact->divContainerContextMenu("objPerson").
+				"<div class='objContainerScroll'>
 					<div class='objContent'>
 						<div class='objIcon'>".$tmpContact->personImg(true,false,true)."</div>
-						<div class='objLabel' onclick=\"lightboxOpen('".$tmpContact->getUrl("vue")."')\">
+						<div class='objLabel' onclick=\"".$tmpContact->openVue()."\">
 							".$tmpContact->getLabel("full")."
 							<div class='objPersonDetails'>".$tmpContact->getFieldsValues(MdlContact::getDisplayMode())."</div>
 						</div>

@@ -7,7 +7,7 @@
 
 <div id="pageFull">
 	<div id="pageModuleMenu">
-		<?= MdlLink::menuSelectObjects() ?>
+		<?= MdlLink::menuSelect() ?>
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
@@ -30,9 +30,9 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{
-			$linkLabel=(!empty($tmpLink->description))  ?  "<span title=\"".Txt::tooltip($tmpLink->adress)."\">".$tmpLink->description."</span>"  :  "<span class='objLabelUrl'>".Txt::reduce($tmpLink->adress)."</span>";
-			echo $tmpLink->objContainer().$tmpLink->contextMenu().
-				"<div class='objContentScroll'>
+			$linkLabel=(!empty($tmpLink->description))  ?  '<span title="'.Txt::tooltip($tmpLink->adress).'">'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
+			echo $tmpLink->divContainerContextMenu().
+				"<div class='objContainerScroll'>
 					<div class='objContent'>
 						<div class='objIcon objIconOpacity'><img src='app/img/link/iconOpacity.png'></div>
 						<div class='objLabel' onclick=\"window.open('".$tmpLink->adress."')\"><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</div>

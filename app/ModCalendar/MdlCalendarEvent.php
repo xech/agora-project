@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -189,19 +189,21 @@ class MdlCalendarEvent extends MdlObject
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
+		//// Pas de menu context en mode mobile && affichage principal "floatSmall"
+		if(Req::isMobile() && $options["iconBurger"]=="floatSmall")  {return false;}
 		//// Evt dans plusieurs agendas
-		if(count($this->affectedCalendars())>1){
-			//Remplace "supprimer" par "Supprimer dans tous les agendas"
-			$options["deleteLabel"]=Txt::trad("CALENDAR_deleteEvtCals");
-			//Si l'agenda "courant" peut être édité : ajoute "Supprimer uniquement dans cet agenda"
-			if(!empty($options["_idCal"]) && Ctrl::getObj("calendar",$options["_idCal"])->editRight())  {$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&_idCalDeleteOn=".$options["_idCal"]."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtCal")];}
+		if(count($this->affectedCalendars())>1){														
+			$options["deleteLabel"]=Txt::trad("CALENDAR_deleteEvtCals");								//"Supprimer dans tous les agendas"	(au lieu de "supprimer")
+			if(!empty($options["_idCal"]) && Ctrl::getObj("calendar",$options["_idCal"])->editRight())	//"Supprimer uniquement dans cet agenda"
+				{$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&_idCalDeleteOn=".$options["_idCal"]."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtCal")];}
 		}
-		//// Evt périodique et date spécifiée : ajoute "Supprimer uniquement à cette date"
-		if(!empty($options["curDateTime"]) && !empty($this->periodType) && $this->fullRight())  {$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date("Y-m-d",$options["curDateTime"])."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtDate")];}
-		//// Liste des agendas où est affecté l'evenement
-		$options["specificLabels"][]=["label"=>$this->affectedCalendarsLabel()];
-		//// Renvoie le menu surchargé
-		return parent::contextMenu($options);
+		//// Evt périodique : ajoute "Supprimer uniquement à cette date"
+		if(!empty($this->periodType) && !empty($options["curDateTime"]) && $this->fullRight())			
+			{$options["specificOptions"][]=["actionJs"=>"confirmDelete('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date("Y-m-d",$options["curDateTime"])."')", "iconSrc"=>"delete.png", "label"=>Txt::trad("CALENDAR_deleteEvtDate")];}
+		//// Label des agendas où est affecté l'evenement
+		$options["specificLabels"][]=["label"=>$this->affectedCalendarsLabel()];			
+		//// Renvoie le menu
+		return parent::contextMenu($options);															
 	}
 
 	/*********************************************************************************************************************************************

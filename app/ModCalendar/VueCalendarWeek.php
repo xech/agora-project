@@ -15,45 +15,47 @@ function calendarDimensions(printCalendar)
 		if(timeSlotHours<5  || (timeSlotHours>14 && isMobile()))  {timeSlotHours=14;}									//timeslot minimum (par défaut) et maximum (mobile) : en heures
 		var calWeekLineHeight=Math.round(weekScrollerHeight / timeSlotHours)-1;											//enleve la bordure des lignes
 		if(calWeekLineHeight<35 || printCalendar===true)  {calWeekLineHeight=35;}										//hauteur minimum des lignes d'heure
-		$(".vCalWeekLine,.vCalWeekHourSubTable",curCalId).outerHeight(calWeekLineHeight);								//Applique la Hauteur à chaque ligne!
+		$(".vCalWeekLine,.vCalWeekHourSubTable",curCalId).outerHeight(calWeekLineHeight);								//Applique la Hauteur à chaque ligne
 
 		////	LARGEUR/HAUTEUR DE CHAQUE JOUR
 		var nbDaysDisplayed=$(curCalId+" .vCalWeekLine:first-child .vCalWeekCell").length;								//Nombre de jours affichés (sur la première ligne)
-		var weekCellWidth=Math.round( ($(this).innerWidth() - $(".vCalWeekHourLabel").innerWidth()) / nbDaysDisplayed);	//Largeur de chaque jours
-		$(curCalId+" .vCalWeekCell, .vCalWeekHeaderDay").css("width",weekCellWidth+"px");								//Applique la largeur
-		weekCellHeight=$(curCalId+" .vCalWeekLine:first-child .vCalWeekCell").outerHeight(true);						//Récupère la hauteur des jours
+		var weekCellHeight=$(curCalId+" .vCalWeekLine:first-child .vCalWeekCell").outerHeight(true);					//Hauteur des jours
+		var weekCellWidth=Math.round( ($(this).innerWidth() - $(".vCalWeekHourLabel").innerWidth()) / nbDaysDisplayed);	//Largeur des jours
+		$(curCalId+" .vCalWeekCell, .vCalWeekHeaderDay").css("width",weekCellWidth);									//Applique la largeur
 
 		////	AFFICHE CHAQUE ÉVÉNEMENT
 		hearlierEvtTop=null;
-		$(curCalId+" .vCalEvtBlock").each(function(){
-			//Largeur, Position left et top
-			var curDaySelector=curCalId+" .vCalWeekLine:first-child [data-dayDate='"+$(this).attr("data-dayDate")+"']";
-			var evtPosLeft=$(curDaySelector).position().left;
-			var evtWidth=$(curDaySelector).outerWidth()-1;
-			//L'evt précédent se trouve sur le même créneau horaire : on décale l'evt courant OU on split les 2 evt
-			if(typeof lastEvtDaySelector!=="undefined" && lastEvtDaySelector==curDaySelector)
-			{
-				var lastEvtSameTimeSlot=($(this).attr("data-timeBegin") < $(lastEvtId).attr("data-timeEnd"));					//Les événements se chevauchent (Evt courant commence avant la fin de l'evt précédent)
-				var lastEvtSameBegin=(parseInt($(this).attr("data-timeBegin") - $(lastEvtId).attr("data-timeBegin")) < 800);	//Evt précédent commence avec moins de 15mn d'écart
-				if(lastEvtSameTimeSlot==true || lastEvtSameBegin==true){
-					var leftMargin=(lastEvtSameBegin==true)  ?  Math.round(weekCellWidth/2)  :  40;								//Meme début : evt splité en 2 || Evts se chevauchent : décale l'evt de 40px à droite 
-					var evtPosLeft=evtPosLeft + leftMargin;																		//Ajoute de la marge à gauche de l'evt courant (décale donc l'evt à droite)
-					var evtWidth=weekCellWidth - leftMargin - 2;																//On réduit ensuite la largeur de l'evt pour pas dépasser de la colonne du jour
-					$(this).css("border","solid 1px #888");																		//Ajoute une bordure pour mieux différencier les 2 evts
-					if(lastEvtSameBegin==true)  {$(lastEvtId).outerWidth(Math.round(weekCellWidth/2));}							//Evt splité : réduit la largeur de l'evt précédent
+		setTimeout(function(){
+			$(curCalId+" .vCalEvtBlock").each(function(){
+				//Largeur, Position left et top
+				var curDaySelector=curCalId+" .vCalWeekLine:first-child [data-dayDate='"+$(this).attr("data-dayDate")+"']";
+				var evtPosLeft=$(curDaySelector).position().left;
+				var evtWidth=$(curDaySelector).outerWidth()-1;
+				//L'evt précédent se trouve sur le même créneau horaire : on décale l'evt courant OU on split les 2 evt
+				if(typeof lastEvtDaySelector!=="undefined" && lastEvtDaySelector==curDaySelector)
+				{
+					var lastEvtSameTimeSlot=($(this).attr("data-timeBegin") < $(lastEvtId).attr("data-timeEnd"));					//Les événements se chevauchent (Evt courant commence avant la fin de l'evt précédent)
+					var lastEvtSameBegin=(parseInt($(this).attr("data-timeBegin") - $(lastEvtId).attr("data-timeBegin")) < 800);	//Evt précédent commence avec moins de 15mn d'écart
+					if(lastEvtSameTimeSlot==true || lastEvtSameBegin==true){
+						var leftMargin=(lastEvtSameBegin==true)  ?  Math.round(weekCellWidth/2)  :  40;								//Meme début : evt splité en 2 || Evts se chevauchent : décale l'evt de 40px à droite 
+						var evtPosLeft=evtPosLeft + leftMargin;																		//Ajoute de la marge à gauche de l'evt courant (décale donc l'evt à droite)
+						var evtWidth=weekCellWidth - leftMargin - 2;																//On réduit ensuite la largeur de l'evt pour pas dépasser de la colonne du jour
+						$(this).css("border","solid 1px #888");																		//Ajoute une bordure pour mieux différencier les 2 evts
+						if(lastEvtSameBegin==true)  {$(lastEvtId).outerWidth(Math.round(weekCellWidth/2));}							//Evt splité : réduit la largeur de l'evt précédent
+					}
 				}
-			}
-			//Position et dimension de l'Evt
-			var minutesFromDayBegin=parseInt($(this).attr("data-minutesFromDayBegin"));											//Nombre de minute depuis le début du jour
-			var evtPosTop=Math.round((weekCellHeight/60) * minutesFromDayBegin);												//Position Top de l'evt
-			var evtHeight=Math.round((weekCellHeight/60) * parseInt($(this).attr("data-durationMinutes")) );					//Hauteur de l'evt
-			var evtHeight=(evtHeight<25) ? 25 : (evtHeight-1);																	//Height de 25px minimum || Height avec 1px de marge entre chaque evt
-			$(this).css("top",evtPosTop).css("left",evtPosLeft).outerWidth(evtWidth).outerHeight(evtHeight);					//Applique la position et dimensions de l'evt
-			//Infos pour l'evt suivant
-			if(minutesFromDayBegin>0 && (hearlierEvtTop===null || evtPosTop<hearlierEvtTop))  {hearlierEvtTop=evtPosTop;}		//Scrolltop de l'agenda en fonction de l'evt le plus tôt
-			lastEvtDaySelector=curDaySelector;																					//Selecteur Jquery de l'evt
-			lastEvtId="#"+this.id;																								//_id de l'evt
-		});
+				//Position et dimension de l'Evt
+				var minutesFromDayBegin=parseInt($(this).attr("data-minutesFromDayBegin"));											//Nombre de minute depuis le début du jour
+				var evtPosTop=Math.round((weekCellHeight/60) * minutesFromDayBegin);												//Position Top de l'evt
+				var evtHeight=Math.round((weekCellHeight/60) * parseInt($(this).attr("data-durationMinutes")) );					//Hauteur de l'evt
+				var evtHeight=(evtHeight<25) ? 25 : (evtHeight-1);																	//Height de 25px minimum || Height avec 1px de marge entre chaque evt
+				$(this).css("top",evtPosTop).css("left",evtPosLeft).outerWidth(evtWidth).outerHeight(evtHeight);					//Applique la position et dimensions de l'evt
+				//Infos pour l'evt suivant
+				if(minutesFromDayBegin>0 && (hearlierEvtTop===null || evtPosTop<hearlierEvtTop))  {hearlierEvtTop=evtPosTop;}		//Scrolltop de l'agenda en fonction de l'evt le plus tôt
+				lastEvtDaySelector=curDaySelector;																					//Selecteur Jquery de l'evt
+				lastEvtId="#"+this.id;																								//_id de l'evt
+			});
+		},100);
 
 		////	PLACE L'AGENDA (SCROLL) AU DÉBUT DE LA PLAGE HORAIRE OU SUR L'ÉVÉNEMENT DONT L'HEURE EST LA PLUS TÔT DE LA SEMAINE
 		var scrollTopTimeSlot=weekCellHeight * parseInt($(this).attr("data-timeSlotBegin"));
@@ -156,9 +158,9 @@ function calendarDimensions(printCalendar)
 		////	EVENEMENTS DE CHAQUE JOUR AFFICHÉ
 		foreach($tmpCal->eventList as $tmpDate=>$tmpDateEvts){
 			foreach($tmpDateEvts as $tmpEvt){
-				$containerAttr='onclick="lightboxOpen(\''.$tmpEvt->getUrl("vue").'\')" data-dayDate="'.$tmpDate.'" data-timeBegin="'.$tmpEvt->timeBegin.'" data-timeEnd="'.$tmpEvt->timeEnd.'" data-minutesFromDayBegin="'.$tmpEvt->minutesFromDayBegin.'" data-durationMinutes="'.$tmpEvt->durationMinutes.'" data-eventColor="'.$tmpEvt->eventColor.'"';
-				echo $tmpEvt->objContainer("vCalEvtBlock",$containerAttr).$tmpEvt->contextMenu.
-						'<div class="vCalEvtLabel">'.$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon.'</div>
+				$tmpEvt->containerAttributes.=' data-dayDate="'.$tmpDate.'" data-timeBegin="'.$tmpEvt->timeBegin.'" data-timeEnd="'.$tmpEvt->timeEnd.'" data-minutesFromDayBegin="'.$tmpEvt->minutesFromDayBegin.'" data-durationMinutes="'.$tmpEvt->durationMinutes.'"';
+				echo $tmpEvt->divContainerContextMenu("vCalEvtBlock", $tmpEvt->containerAttributes, $tmpEvt->contextMenuOptions).
+						'<div class="vCalEvtLabel" onclick="'.$tmpEvt->openVue().'">'.$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon.'</div>
 					 </div>';
 			}
 		}

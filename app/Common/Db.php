@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -112,21 +112,21 @@ class Db
 	/*******************************************************************************************
 	 * FORMATE UNE VALEUR DANS UNE REQUETE (insert,update,etc)
 	 *******************************************************************************************/
-	public static function format($text, $options="")
+	public static function format($value, $options="")
 	{
-		$text=trim((string)$text);			//cast en "string"
+		$value=trim((string)$value);		//cast en "string"
 		$options=trim((string)$options);	//idem
-		if(empty($text))  {return "NULL";}
+		if(empty($value))  {return "NULL";}
 		else{
 			//Filtre le résultat
-			if(stristr($options,"float"))							{$text=str_replace(",",".",$text);}		//Valeur flottante : remplace les virgules par des points
-			if(stristr($options,"url") && !stristr($text,"http"))	{$text="http://".$text;}				//Ajoute "http://" devant les Urls
-			if(stristr($options,"sqlLike"))							{$text="%".$text."%";}					//Délimite $text par des "%" (cf. "sqlPlugins()" de type "search")
+			if(stristr($options,"float"))							{$value=str_replace(",",".",$value);}	//Valeur flottante : remplace les virgules par des points
+			if(stristr($options,"url") && !stristr($value,"http"))	{$value="http://".$value;}				//Ajoute "http://" devant les Urls
+			if(stristr($options,"sqlLike"))							{$value="%".$value."%";}				//Délimite $value par des "%" (cf. "sqlPlugins()" de type "search")
 			//Formate une date provenant d'un datepicker + timepicker?
-			if(stristr($options,"datetime"))	{$text=Txt::formatDate($text,"inputDatetime","dbDatetime");}
-			elseif(stristr($options,"date"))	{$text=Txt::formatDate($text,"inputDate","dbDate");}
+			if(stristr($options,"datetime"))	{$value=Txt::formatDate($value,"inputDatetime","dbDatetime");}
+			elseif(stristr($options,"date"))	{$value=Txt::formatDate($value,"inputDate","dbDate");}
 			//Retourne le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
-			return (stristr($options,"noquotes"))  ?  $text  :  self::objPDO()->quote($text);
+			return (stristr($options,"noquotes"))  ?  $value  :  self::objPDO()->quote($value);
 		}
 	}
 
@@ -164,31 +164,36 @@ class Db
 	 *******************************************************************************************/
 	public static function getDump()
 	{
-		//Path
 		$dumpPath=PATH_DATAS."BackupDatabase_".db_name.".sql";
-		//Via "exec()" OU Via un script
-		if(Req::isHost())  {exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);}
-		else
-		{
+		//Récupère le dump via "exec()"
+		if(Req::isLinux()){
+			exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);
+		}
+		//Créé un dump
+		else{
 			// Recupere chaque table
-			$tabDump=[];
+			$dumpTxt="";
 			foreach(self::getCol("SHOW TABLES FROM `".db_name."`") as $tableName)
 			{
 				// Structure de la table
-				$createTable=self::getLine("SHOW CREATE TABLE ".$tableName);
-				$tabDump[]=str_replace(array("\r","\n"),"",$createTable["Create Table"]).";";
+				$sqlTmp=self::getLine("SHOW CREATE TABLE `".$tableName."`");
+				$dumpTxt.=$sqlTmp["Create Table"].";\r\n\r\n";
 				// Contenu de la table
-				foreach(self::getTab("SELECT * FROM ".$tableName) as $record){
-					$tmpInsert="INSERT INTO ".$tableName." VALUES(";
-					foreach($record as $fieldRecord)	{$tmpInsert.=($fieldRecord=="") ? "NULL," : self::objPDO()->quote($fieldRecord).",";}//pas de "empty()" car doit enregistrer aussi "0"
-					$tabDump[]=trim($tmpInsert,",").");";
+				foreach(self::getTab("SELECT * FROM `".$tableName."`") as $tmpRecord){
+					$dumpTxt.="INSERT INTO `".$tableName."` VALUES(";
+					foreach($tmpRecord as $tmpField){
+						$dumpTxt.=(is_null($tmpField))  ?  "NULL,"  :  self::objPDO()->quote($tmpField).",";//Tjs utiliser "is_null"
+					}
+					$dumpTxt=trim($dumpTxt,",");
+					$dumpTxt.=");\r\n\r\n";
 				}
 			}
 			// Transforme le tableau en texte,  Enregistre le fichier sql,  Retourne le chemin du fichier
 			$fp=fopen($dumpPath, "w");
-			fwrite($fp, implode("\n", $tabDump));
+			fwrite($fp, $dumpTxt);
 			fclose($fp);
 		}
+		//Retourne le path du dump
 		return $dumpPath;
 	}
 }

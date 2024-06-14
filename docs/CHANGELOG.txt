@@ -4,6 +4,27 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
+VERSION 24.6.0
+###############
+Nouvelle option du paramétrage général pour afficher/masquer l'email des utilisateurs
+Amélioration du menu de paramétrage général
+Amélioration de la présentation des sujets et messages du forum
+Optimisation des menus "like" et "commentaire"
+Optimisation des contrôles d'accès en page de connexion
+Amélioration du filtre XSS GET/POST
+Corrections et optimisations diverses
+Mise à jour de TinyMce en v7.1.2
+-----
+New general settings option to show/hide user email
+Improved general settings menu
+Improved presentation of forum topics and messages
+Optimization of the "like" and "comment" menus
+Optimization of access controls on the login page
+Improved XSS GET/POST filter
+Various fixes and optimizations
+TinyMce updated to v7.1.2
+
+
 VERSION 24.4.5
 ###############
 Nouveau menu d'affichage des Catégories d'événement, Themes du forum et Status des Tâches
@@ -36,9 +57,9 @@ Optimisation des contrôles de l'installation et mise à jour de l'application (
 Optimisation de l'appel de l'éditeur TinyMce
 Optimisation des contrôles des formulaires principaux
 Optimisation pour PHP 8.3
-Mise à jour de PHPMailer en version 6.7.1
-Mise à jour de TinyMce en version v6.8.2
-Mise à jour de JQuery-UI en version v1.13.2
+Mise à jour de PHPMailer en v6.7.1
+Mise à jour de TinyMce en v6.8.2
+Mise à jour de JQuery-UI en v1.13.2
 -----
 New task option to assign a status "To do", "In progress", "Finished", etc.
 New option to reorder forum themes and event categories
@@ -133,8 +154,8 @@ Optimisation de la fonction sendMail()
 Amélioration de l'affichage des dates de l'agenda
 Amélioration de l'ergonomie de la page de connexion
 Mise à jour de la fonction OAuth Google Identity
-Mise à jour de PHPMailer en version 6.7.1
-Mise à jour de l'éditeur TinyMce en version 6.3.1
+Mise à jour de PHPMailer en v6.7.1
+Mise à jour de l'éditeur TinyMce en v6.3.1
 -----
 Optimization of the sendMail() function
 Option to add recipients in notification emails
@@ -150,8 +171,8 @@ VERSION 22.12.0
 Optimisation du download de fichiers
 Correction de la creation de vignette des .Pdf protégés par password
 Optimisation du menu principal et de la messagerie instantanée
-Mise à jour de PHPMailer en version 6.6.5
-Mise à jour de PlUpload en version 3.1.5
+Mise à jour de PHPMailer en v6.6.5
+Mise à jour de PlUpload en v3.1.5
 -----
 Optimization of file downloading
 Fixed creation of thumbnail of .Pdf protected by password
@@ -223,9 +244,9 @@ Amélioration de la gestion des Newsletters avec intégration d'images dans l'é
 Amélioration de la gestion des fonds d'écran
 Correction de l'import/export des agendas au format Ical
 Optimisations de "Txt::reduce()" et autres fonctions de base
-Mise à jour de l'éditeur TinyMce en version majeure 5.9.2
-Mise à jour de PHPMailer en version 6.5.1
-Mise à jour du Parser Ical en version 2.2.2
+Mise à jour de l'éditeur TinyMce en v5.9.2
+Mise à jour de PHPMailer en v6.5.1
+Mise à jour du Parser Ical en v2.2.2
 ------
 New feature for adding and editing images directly from the TinyMce text teditor
 New general configuration option : alternative visio url (Jitsi)
@@ -250,8 +271,8 @@ Correction d'affichage des caractères accentués dans les "plugins" (nouveauté
 Corrections et optimisations diverses : "Txt::clean()", "Txt::reduce()", etc.
 Nouveau droit pour les administrateurs d'espace pour gérer les affectations des utilisateurs
 Changement de mode de numérotation des versions d'AP
-Mise à jour de PHPMailer en version 6.5.0
-Mise à jour de Fancybox en version 3.5.7
+Mise à jour de PHPMailer en v6.5.0
+Mise à jour de Fancybox en v3.5.7
 ------
 New general setting option for the default display of folders (Block / List)
 New option to add attached files to surveys
@@ -285,10 +306,10 @@ Correction des visioconférences sur mobile/appli
 Correction de la cartographie via OpenStreeMap
 Correction de l'import des contacts CSV dans le dossier racine
 Corrections et optimisations diverses
-Mise à jour du Jquery en version 3.6.0
-Mise à jour de TinyMce en version 4.9.11
-Mise à jour du TimePicker Jquery en version 1.13.16
-Mise à jour du Tooltipster Jquery en version 4.2.8
+Mise à jour du Jquery en v3.6.0
+Mise à jour de TinyMce en v4.9.11
+Mise à jour du TimePicker Jquery en v1.13.16
+Mise à jour du Tooltipster Jquery en v4.2.8
 ------
 New option to add a videoconferencing to newsletters
 New option to retrieve/resend old newsletters (from history)
@@ -320,7 +341,7 @@ Optimisation et correction de l'envoi des mails
 Optimisation de l'export de contacts/users .csv vers Gmail
 Correction de la sélection du fond d'écran dans le paramétrage général
 Corrections et optimisations diverses
-Mise à jour de PHPMailer en version 6.2
+Mise à jour de PHPMailer en v6.2
 ------
 New option to add a videoconference in the events of the calendar module
 New option "Add 'Reply to'" in the "Email" module
@@ -340,8 +361,8 @@ Amélioration des menus "fil d'Ariane" dans les arborescences de dossiers
 Correction de l'affichage de la recherche sur Firefox
 Corrections de traduction
 Mise à jour de la documentation
-Mise à jour de PHPMailer en version 6.1.8
-Mise à jour de Jquery en version 3.5.1
+Mise à jour de PHPMailer en v6.1.8
+Mise à jour de Jquery en v3.5.1
 Corrections et optimisations diverses
 ------
 Responsive display optimizations
@@ -536,7 +557,7 @@ Amélioration des controles de sortie de formulaires en cours d'édition
 Ajout du fichier "Changelog.txt" dans le module "Parametrage général"
 Correction d'import/export de fichier .ical : événements périodiques
 Corrections et optimisations diverses
-Mise à jour JQuery en version 3.3.1
+Mise à jour JQuery en v3.3.1
 
 
 VERSION 3.4.2.1 (04-2018)
@@ -594,7 +615,7 @@ Ajout des icones de dossier personalisables
 Amélioration de l'affichage des événements semaine/mois
 Meilleure ergonomie pour l'ajout de fichiers
 Ajout de nouveaux wallpapers
-Upgrade de Tooltipster en version 4.0
+Upgrade de Tooltipster en v4.0
 Correction diverses sur la version Mobile
 Correction de lecture de mp3 et videos (parametrage player & fancybox)
 Correction des imports d'evenements via fichier .ical (evenements "jours complet" et décalages de Timezones)
@@ -660,7 +681,7 @@ Correction d'affichage des agendas réservés aux admins (icone "+")
 Correction de l'invertion des selections d'agenda dans l'édition d'un événenement
 Correction de l'affichage des player video Mp4/Webm
 Mise à jour DataTable 1.10.13 pour le module "Logs"
-Mise à jour PlUpload en version 2.3.1
+Mise à jour PlUpload en v2.3.1
 
 
 VERSION 3.2.2  (02-2017)
@@ -670,9 +691,9 @@ Paramétrage général : Option de configuration SMTP et Option de logo en page 
 Agenda : ajout de l'affichage sur 3 jours
 Amélioration de l'affichage des Agendas imprimés
 Suppression auto des propositions d’événements passés et non confirmées
-Mise à jour PHPmailer en version 5.2.22
-Mise à jour TinyMce en version 4.5.2
-Mise à jour PlUpload en version 2.2.1
+Mise à jour PHPmailer en v5.2.22
+Mise à jour TinyMce en v4.5.2
+Mise à jour PlUpload en v2.2.1
 
 
 VERSION 3.2.1  (12-2016)
@@ -754,7 +775,7 @@ VERSION 3.1.4 (04-2016)
 #######################
 Ajout des vignettes d'images dans les lightboxes d'images
 Ajout de la fonction "tout sélectionner" dans le menu du module newsletter
-Mise à jour de l'éditeur TinyMce en version 4.3.10
+Mise à jour de l'éditeur TinyMce en v4.3.10
 Amélioration de la présentation du forum
 Corrections diverses
 

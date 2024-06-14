@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -171,7 +171,7 @@ class MdlFile extends MdlObject
 			$tooltipDownloadedBy="title=\"".Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "))."\"";
 		}
 		//// "TÉLÉCHARGER LE FICHIER" + TOOLTIP "FICHIER TÉLÉCHARGÉ X FOIS"  &&  "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
-		$options["specificOptions"][]=["actionJs"=>"window.open('".$this->urlDownload()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
+		$options["specificOptions"][]=["actionJs"=>"redir('".$this->urlDownload()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
 		if(count($this->getVersions())>1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
 		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->_typeId)."')"];}
 		return parent::contextMenu($options);

@@ -1,5 +1,5 @@
 <?php if($curObj::descriptionEditor==true){ ?>
-	<script type="text/javascript" src="app/js/tinymce_6.8.2/tinymce.min.js"></script>
+	<script type="text/javascript" src="app/js/tinymce_7.1.2/tinymce.min.js"></script>
 	<script>
 	/*******************************************************************************************
 	 ***********************			INIT L'EDITEUR TINYMCE			************************
@@ -8,6 +8,7 @@
 		tinymce.init({
 			////	parametrage général
 			selector: "textarea[name='description']",		//Selecteur du textarea
+			placeholder: "<?= Txt::trad("description") ?>",	//Placeholder du textarea (text par défaut)
 			language:"<?= Txt::trad("EDITORLANG") ?>",		//Langue du menu de l'éditeur
 			skin: 'tinymce-5',								//ancien skin + clair
 			width: "100%",									//Largeur de l'éditeur
@@ -20,7 +21,7 @@
 			contextmenu: false,								//Désactive le menu contextuel de l'éditeur : cf. "browser_spellcheck" ci-dessus
 			images_upload_handler: imageUploadHandler,		//Gestion du Drag/Drop d'image
 			font_size_formats:"11px 13px 16px 20px 24px 28px 32px",	//Liste des "fontsize" : cf. "content_style" ci-dessus pour le "font-size" par défaut
-			content_style:"body{margin:10px;font-size:13px;font-family:Arial,Helvetica,sans-serif;}  p{margin:0px;padding:3px;}  .attachedFileTag{max-width:100%;}",//Style dans l'éditeur : idem "app/css/common.css" !
+			content_style:"body {margin:10px;font-size:13px; font-family:Arial,Helvetica,sans-serif;}  p {margin:3px;}  .attachedFileTag {max-width:100%!important;}  .mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {font-weight:normal; padding-left:5px; color:#aaa;}",//Style du texte dans l'éditeur : idem "body" dans "common.css" + Style du placeholder de l'éditeur
 			////	Charge les plugins et options de la "toolbar" (autres plugins dispos : code print preview hr anchor pagebreak wordcount fullscreen insertdatetime)
 			plugins: "autoresize lists advlist link autolink image charmap emoticons visualchars media nonbreaking table",
 			toolbar1: (isMobile()  ?  "undo redo | emoticons addMediaFileButton | editorDraft"	:  "undo redo | copy paste removeformat | table charmap media emoticons link addMediaFileButton | editorDraft"),
@@ -176,4 +177,4 @@
 <?php if($toggleButton==true){ ?>
 	<div class="descriptionToggle" onclick="$('.descriptionTextarea').slideToggle()"><img src="app/img/description.png"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label></div>
 <?php } ?>
-<div class="descriptionTextarea"><textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea></div>
+<div class="descriptionTextarea"><textarea name="description"><?= $curObj->description ?></textarea></div>

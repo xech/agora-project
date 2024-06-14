@@ -19,7 +19,7 @@ $(function(){
 			}
 		});
 	}
-	//// Puis init la couleur de la catégorie
+	//// Puis init la catégorie
 	if($("#selectCategory option[value='<?= $_idCategory; ?>']").exist())  {$("#selectCategory").val("<?= $_idCategory; ?>").trigger("change");}
 });
 </script>

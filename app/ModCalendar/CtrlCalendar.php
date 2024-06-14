@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -116,7 +116,8 @@ class CtrlCalendar extends Ctrl
 					$tmpEvt->timeBegin=strtotime($tmpEvt->dateBegin);																					//"time" du début de journée
 					$tmpEvt->timeEnd=strtotime($tmpEvt->dateEnd);																						//"time" de fin de journée
 					$tmpEvt->dateTimeLabel=(Req::isMobile())  ?  null  :  Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd)."&nbsp; ";			//label "DateTime" de l'evt
-					$tmpEvt->contextMenu=(Req::isMobile())  ?  null  :  $tmpEvt->contextMenu(["iconBurger"=>"floatSmall","_idCal"=>$tmpCal->_id]);		//Menu contextuel
+					$tmpEvt->containerAttributes='data-eventColor="'.$tmpEvt->eventColor.'"';															//Attributs de l'evt : "eventColor" + d'autres en affichage "week"
+					$tmpEvt->contextMenuOptions=["iconBurger"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];		//Options du menu contextuel (cf. "divContainerContextMenu()")
 					$tmpEvt->importantIcon=(!empty($tmpEvt->important))  ?  "&nbsp;<img src='app/img/important.png'>"  :  null;							//Icone "important"
 					if($displayMode!="month"){																											//Affichage semaine/jour:
 						$tmpEvt->minutesFromDayBegin=($tmpDay["timeBegin"]<$tmpEvt->timeBegin) ?  (($tmpEvt->timeBegin-$tmpDay["timeBegin"])/60)  : 0;	//Heure/Minutes de début d'affichage ("0" s'il commence avant le jour)
@@ -192,10 +193,10 @@ class CtrlCalendar extends Ctrl
 					if(empty($pluginsList[$tmpEvt->_typeId]) && count($pluginsList)<200)
 					{
 						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
-						$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
-						$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
+						$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
+						$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
 						$tmpEvt->pluginJsIcon="windowParent.redir('".$tmpEvt->getUrl()."');";//Affiche l'evt dans son principal agenda (cf "getUrl()" surchargée)
-						$tmpEvt->pluginJsLabel="lightboxOpen('".$tmpEvt->getUrl("vue")."');";//Affiche l'evt en détail
+						$tmpEvt->pluginJsLabel=$tmpEvt->openVue();//Affiche l'evt en détail
 						$pluginsList[$tmpEvt->_typeId]=$tmpEvt;
 					}
 				}
@@ -279,7 +280,7 @@ class CtrlCalendar extends Ctrl
 			}
 			////	NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
 			if(!empty($propositionIdUsers)){
-				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd);
+				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
 				Tool::sendMail($propositionIdUsers, $mailSubject, $mailMessage, ["noNotify"]);
@@ -287,7 +288,7 @@ class CtrlCalendar extends Ctrl
 			////	NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
 			if(Req::isParam("notifMail") && $curObj->fullRight())
 			{
-				$objLabel=Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
+				$objLabel=Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
 				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title).".ics"]];
 				$curObj->sendMailNotif($objLabel, $icsFile);
@@ -350,7 +351,7 @@ class CtrlCalendar extends Ctrl
 				$eventListControled=$tmpCal->eventList($timeBegin, $timeEnd, false, false, 0);
 				foreach(MdlCalendar::eventFilter($eventListControled,$timeBegin,$timeEnd) as $tmpEvt){
 					if($tmpEvt->_id!=Req::param("_evtId")){//Sauf l'evt en cours d'édition (si modif)
-						$calendarBusyTimeSlots.=" &nbsp; &nbsp; <img src='app/img/arrowRight.png'> ".Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)." ";
+						$calendarBusyTimeSlots.=" &nbsp; &nbsp; <img src='app/img/arrowRight.png'> ".Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)." ";
 						$calendarBusy=true;
 					}
 				}
@@ -408,7 +409,7 @@ class CtrlCalendar extends Ctrl
 			if(!empty($notifMail)){
 				$mailSubject=Req::isParam("isConfirmed")  ?  Txt::trad("CALENDAR_evtProposedConfirmMail")." ".Ctrl::$curUser->getLabel()  :  Txt::trad("CALENDAR_evtProposedDeclineMail");
 				$mailMessage=$mailSubject." : <br><br>".
-							 $curEvt->title." : ".Txt::dateLabel($curEvt->dateBegin,"normal",$curEvt->dateEnd)."<br><br>".
+							 $curEvt->title." : ".Txt::dateLabel($curEvt->dateBegin,"basic",$curEvt->dateEnd)."<br><br>".
 							 ucfirst(Txt::trad("OBJECTcalendar"))." : ".$curCal->title;
 				Tool::sendMail($notifMail, $mailSubject, $mailMessage, ["noNotify"]);
 			}
@@ -438,12 +439,12 @@ class CtrlCalendar extends Ctrl
 			}
 			if(!empty($periodValues))	{$vDatas["labelPeriod"].=" : ".trim($periodValues, ", ");}
 			//Périodicité : fin
-			if(!empty($curObj->periodDateEnd))	{$vDatas["labelPeriod"].="<br>".Txt::trad("CALENDAR_periodDateEnd")." : ".Txt::dateLabel($curObj->periodDateEnd,"date");}
+			if(!empty($curObj->periodDateEnd))	{$vDatas["labelPeriod"].="<br>".Txt::trad("CALENDAR_periodDateEnd")." : ".Txt::dateLabel($curObj->periodDateEnd,"dateMini");}
 			//Périodicité : exceptions
 			if(!empty($curObj->periodDateExceptions)){
 				$vDatas["labelPeriod"].="<br>".Txt::trad("CALENDAR_periodException")." : ";
 				$periodDateExceptions=array_filter(Txt::txt2tab($curObj->periodDateExceptions));//"array_filter" pour enlever les valeurs vides
-				foreach($periodDateExceptions as $tmpVal)	{$vDatas["labelPeriod"].=Txt::dateLabel($tmpVal,"date").", ";}
+				foreach($periodDateExceptions as $tmpVal)	{$vDatas["labelPeriod"].=Txt::dateLabel($tmpVal,"dateMini").", ";}
 				$vDatas["labelPeriod"]=trim($vDatas["labelPeriod"], ", ");
 			}
 		}
@@ -490,8 +491,8 @@ class CtrlCalendar extends Ctrl
 							$tmpEvt["dbDateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTEND"]));
 							if(strlen($tmpEvt["DTEND"])==8)  {$tmpEvt["dbDateEnd"]=date("Y-m-d H:i",(strtotime($tmpEvt["DTEND"])-86400));}//Les événements "jour" sont importés avec un jour de trop (cf. exports depuis G-Calendar)
 						}
-						$tmpEvt["dbTitle"]=nl2br($tmpEvt["SUMMARY"]);
-						if(!empty($tmpEvt["DESCRIPTION"]))  {$tmpEvt["dbDescription"]=nl2br($tmpEvt["DESCRIPTION"]);}
+						$tmpEvt["dbTitle"]=Txt::clean($tmpEvt["SUMMARY"]);
+						if(!empty($tmpEvt["DESCRIPTION"]))  {$tmpEvt["dbDescription"]=Txt::clean($tmpEvt["DESCRIPTION"]);}
 						//// Evenement périodique
 						if(!empty($tmpEvt["RRULE"]))
 						{

@@ -18,17 +18,17 @@ $(function(){
 
 
 <style>
-form						{text-align:center; padding:0px; margin:0px;}
-.vTable						{width:98%;}
-.vTable td					{text-align:left; vertical-align:top; padding:5px;}
-.vTable img					{vertical-align:middle;}
-.vTable tr:hover			{background:#eee;}
-.vTable tr:first-child td	{background:#ddd; text-align:center;}/*Titre des colonnes*/
-.vTable tr td:first-child	{width:40px;}				/*checkbox*/
-.vTable tr td:nth-child(2)	{width:40px; cursor:help;}	/*isPresent*/
-.vTable tr td:nth-child(3)	{width:250px;}				/*date*/
-.vTable tr td:nth-child(4)	{width:400px;}				/*titre*/
-.vTable tr td:nth-child(5)	{font-weight:normal;}		/*description*/
+form							{padding:0px; margin:0px;}
+.vTable							{width:98%;}
+.vTable img						{vertical-align:middle;}
+.vTableHeader					{text-align:center;}			/*Titre des colonnes*/
+.vTable td						{padding:5px;}					
+.vTable tr td:first-child		{width:40px;}					/*checkbox*/
+.vTable tr td:nth-child(2)		{width:40px; cursor:help;}		/*isPresent*/
+.vTable tr td:nth-child(3)		{width:250px;}					/*date*/
+.vTable tr td:nth-child(4)		{width:400px;}					/*titre*/
+.vTable tr td:nth-child(5)		{font-weight:normal;}			/*description*/
+.lineHover:has(input:checked)	{background-color:<?= Ctrl::$agora->skin=="black"?"#333":"#ddd" ?>;}
 </style>
 
 
@@ -47,7 +47,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 		////DEBUT DU TABLEAU + HEADER
 		echo '<table class="vTable">
 				<tr class="vTableHeader">
-					<td title="'.Txt::trad("checkSmall").'"><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
+					<td title="'.Txt::trad("selectSwitch").'"><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
 					<td>'.Txt::trad("CALENDAR_importIcalState").'</td>
 					<td>'.Txt::trad("begin").' - '.Txt::trad("end").'</td>
 					<td>'.Txt::trad("title").'</td>
@@ -61,7 +61,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 				if($tmpEvt["isPresent"]==true)	{$evtCheck=null;		$isPresentImg="dotR.png";	$isPresentTrad="CALENDAR_importIcalStatePresent";}
 				else							{$evtCheck="checked";	$isPresentImg="dotG.png";	$isPresentTrad="CALENDAR_importIcalStateImport";}
 				//Afiche l'evt
-				echo '<tr>
+				echo '<tr class="lineHover">
 						<td>
 							<input type="checkbox"	name="eventList['.$cptEvt.'][checked]"			value="1" id="'.$evtBoxId.'" '.$evtCheck.'>
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbDateBegin]"		value="'.$tmpEvt["dbDateBegin"].'">
@@ -73,7 +73,7 @@ form						{text-align:center; padding:0px; margin:0px;}
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodDateEnd]"	value="'.$tmpEvt["dbPeriodDateEnd"].'">
 						</td>
 						<td><img src="app/img/'.$isPresentImg.'" title="'.Txt::trad($isPresentTrad).'"></td>
-						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"normal",$tmpEvt["dbDateEnd"]).'</td>
+						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"basic",$tmpEvt["dbDateEnd"]).'</td>
 						<td><label for="'.$evtBoxId.'">'.$tmpEvt["dbTitle"].'</label></td>
 						<td>'.Txt::reduce($tmpEvt["dbDescription"],120).'</td>
 					</tr>';

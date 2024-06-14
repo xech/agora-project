@@ -21,8 +21,8 @@ lightboxSetWidth(700);
 
 	<!--LISTE DES EVT-->
 	<?php foreach($myEvents as $tmpEvent){ ?>
-	<div class="vEventLine lineHover" title="<?= Txt::dateLabel($tmpEvent->dateBegin,"normal",$tmpEvent->dateEnd) ?><br><?= $tmpEvent->description ?>">
-		<div class="vEventDate"><?= Txt::dateLabel($tmpEvent->dateBegin,"normal",$tmpEvent->dateEnd) ?></div>
+	<div class="vEventLine lineHover" title="<?= Txt::dateLabel($tmpEvent->dateBegin,"basic",$tmpEvent->dateEnd) ?><br><?= $tmpEvent->description ?>">
+		<div class="vEventDate"><?= Txt::dateLabel($tmpEvent->dateBegin,"basic",$tmpEvent->dateEnd) ?></div>
 		<div><?= $tmpEvent->title ?></div>
 		<div class="vEventOptions">
 			<img src="app/img/edit.png" onclick="lightboxOpen('<?= $tmpEvent->getUrl("edit") ?>')">

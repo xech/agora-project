@@ -121,33 +121,34 @@ $(function(){
 						if($tmpContainer::objectType=="space"){
 							foreach(MdlUserGroup::getGroups($tmpContainer) as $tmpGroup){
 								$tmpBoxId=$tmpContainer->_typeId.$tmpGroup->_typeId;
-								$tmpGroupsFields.="<div title=\"".Txt::tooltip($tmpGroup->usersLabel)."\"><input type='checkbox' name=\"groupList[]\" value=\"".$tmpGroup->_typeId."\" id=\"".$tmpBoxId."\"> <label for=\"".$tmpBoxId."\"><img src='app/img/user/accessGroup.png'> ".$tmpGroup->title."</label></div>";
+								$tmpGroupsFields.='<div title="'.Txt::tooltip($tmpGroup->usersLabel).'"><input type="checkbox" name="groupList[]" value="'.$tmpGroup->_typeId.'" id="'.$tmpBoxId.'"> <label for="'.$tmpBoxId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label></div>';
 							}
 						}
 						////	PERSONNES DU CONTENEUR (prépare l'affichage)
 						foreach($tmpContainer->personList as $tmpPerson)
 						{
-							if(empty($tmpPerson->mail))  {continue;}														//zap les personnes sans mails
+							if(empty($tmpPerson->mail))  {continue;}														//zap les personnes sans mail
 							if(Req::param("checkedMailto")==$tmpPerson->mail && empty($personsChecked[$tmpPerson->mail])){	//Préselectionne le mail
 								$tmpPerson->mailChecked="checked";															//Checkbox "checked"
 								$personsChecked[$tmpPerson->mail]=$tmpPerson->mail;											//Indique qu'il est déjà sélectionné
 								$mailsMenuClass="vMailsMenuDisplay";														//Affiche le menu (si besoin)
 							}
 							$tmpBoxId=$tmpContainer->_typeId.$tmpPerson->_typeId;
-							$tmpPersonsFields.="<div title=\"".Txt::tooltip($tmpPerson->mail)."\"><input type='checkbox' name=\"personList[]\" value=\"".$tmpPerson->_typeId."\" id=\"".$tmpBoxId."\" ".$tmpPerson->mailChecked."> <label for=\"".$tmpBoxId."\">".$tmpPerson->getLabel()."</label></div>";
+							$userMailTooltip=($tmpPerson->userMailDisplay())  ?  'title="'.Txt::tooltip($tmpPerson->mail).'"'  :  null;
+							$tmpPersonsFields.='<div '.$userMailTooltip.'><input type="checkbox" name="personList[]" value="'.$tmpPerson->_typeId.'" id="'.$tmpBoxId.'" '.$tmpPerson->mailChecked.'> <label for="'.$tmpBoxId.'">'.$tmpPerson->getLabel().'</label></div>';
 							$cptPerson++;
 						}
 						////	BOUTON SWITCH LA SELECTION (5 pers. minimum)
 						if(count($tmpContainer->personList)>=5)
-							{$tmpSwitchOption="<div onclick=\"$('#mailsContainer".$tmpContainer->_typeId." input[name^=personList]').trigger('click');\"><img src='app/img/checkSmall.png'> ".Txt::trad("selectSwitch")."</div>";}
+							{$tmpSwitchOption='<div onclick="$(\'#mailsContainer'.$tmpContainer->_typeId.' input[name^=personList]\').trigger(\'click\')"><img src="app/img/checkSmall.png"> '.Txt::trad("selectSwitch").'</div>';}
 						////	AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
-						echo "<div class='vMailsBlock' ".($tmpContainer::isFolder==true?"data-folderTreeLevel='".$tmpContainer->treeLevel."'":null).">
-								<div class='vMailsLabel sLink' data-typeId=\"".$tmpContainer->_typeId."\">
-									<div><img src=\"app/img/mail/".($tmpContainer::objectType=="space"?"user":"contact").".png\"></div>
-									<div>".$tmpContainer->name." <img src='app/img/arrowBottom.png'></div>
+						echo '<div class="vMailsBlock" '.($tmpContainer::isFolder==true?'data-folderTreeLevel="'.$tmpContainer->treeLevel.'"':null).'>
+								<div class="vMailsLabel sLink" data-typeId="'.$tmpContainer->_typeId.'">
+									<div><img src="app/img/mail/'.($tmpContainer::objectType=='space'?'user':'contact').'.png"></div>
+									<div>'.$tmpContainer->name.' <img src="app/img/arrowBottom.png"></div>
 								</div>
-								<div class='vMailsMenu ".$mailsMenuClass."' id=\"mailsContainer".$tmpContainer->_typeId."\">".$tmpGroupsFields.$tmpPersonsFields.$tmpSwitchOption."</div>
-							</div>";
+								<div class="vMailsMenu '.$mailsMenuClass.'" id="mailsContainer'.$tmpContainer->_typeId.'">'.$tmpGroupsFields.$tmpPersonsFields.$tmpSwitchOption.'</div>
+							</div>';
 					}
 					?>
 				</div>
@@ -167,14 +168,14 @@ $(function(){
 				<!--OPTIONS DU MAIL-->
 				<div id="mailOptions">
 					<div>
-					<?php
-					// Options de base des emails (cf. Tool::sendMail()")
-					echo MdlObject::sendMailBasicOptions();
-					//// "Ajouter une visioconférence"
-					if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" title="'.Txt::trad("VISIO_urlMail").'"><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").' <img src="app/img/plusSmall.png"></div>';}
-					//// "joindre des fichiers"
-					echo $curObj->attachedFile();
-					?>
+						<?php
+						// Options de base des emails (cf. Tool::sendMail()")
+						echo MdlObject::sendMailBasicOptions();
+						//// "Ajouter une visioconférence"
+						if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" title="'.Txt::trad("VISIO_urlMail").'"><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").' <img src="app/img/plusSmall.png"></div>';}
+						//// "joindre des fichiers"
+						echo $curObj->attachedFile();
+						?>
 					</div>
 					<div>
 						<?php

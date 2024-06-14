@@ -7,25 +7,25 @@ $(function(){
 
 <style>
 /*LABEL/DETAILS DES TACHES*/
-.objBlocks .priorityLabel, .objBlocks .categoryLabel	{display:block; margin-top:7px;}							/*Label de la priorité et du statut (surcharges)*/
-.objLines  .priorityLabel, .objLines .categoryLabel		{display:inline-block; margin-left:20px;}					/*Idem*/
-.objBlocks .vObjTaskDetails								{position:absolute; display:block; bottom:3px; right:20px;}	/*Détails des taches en affichage "block" : Icones avec "title"*/
-.objBlocks .objDetails img								{max-height:20px; margin-right:10px;}						/*Icones des détails*/
+.objBlocks .priorityLabel, .objBlocks .categoryLabel	{display:block; margin-top:7px;}											/*Label de la priorité et du statut (surcharges)*/
+.objLines  .priorityLabel, .objLines .categoryLabel		{display:inline-block; margin-left:20px;}									/*Idem*/
+.objBlocks .objDetails.vObjTaskDetails					{display:inline-block!important; position:absolute; left:50px; bottom:5px;}	/*Surcharge : détails des taches en affichage "block"*/
+.objBlocks .objDetails img								{max-height:20px; margin-right:10px;}										/*Icones des détails*/
 
 /*TIMELINE*/
 .vTimelineSeparator					{visibility:hidden; width:100%;}
 .vTimelineMain						{margin-top:20px; padding:0px; padding-top:10px;}
-.vTimelineMain						{display:none; overflow-x:auto;}								/*masqué par défaut pour le calcul du width des ".objContainer" via "common.js"*/
+.vTimelineMain						{display:none; overflow-x:auto;}				/*masqué par défaut pour le calcul du width des ".objContainer" via "common.js"*/
 .vTimelineMain table				{border-collapse:collapse;}
 .vTimelineMain td					{vertical-align:middle; white-space:nowrap;}
-.vTimelineMonths					{padding-bottom:8px;}	/*Label des mois*/
+.vTimelineMonths					{padding-bottom:8px;}							/*Label des mois*/
 .vTimelineDays						{padding-left:3px; cursor:help;}
-.vTimelineTitle						{padding:0px 10px;}		/*Label de la tâche*/
-.vTimelineMain td:not(:first-child)	{min-width:25px;}		/*Cell des jours !!*/
+.vTimelineTitle						{padding:0px 10px;}								/*Label de la tâche*/
+.vTimelineMain td:not(:first-child)	{min-width:25px;}								/*Cell des jours !!*/
 .vTimelineLeftBorder				{border-left:#ccc solid 1px;}
 .vTimelineLeftBorder2				{border-left:#eee solid 1px;}
 .vTimelineToday						{color:#c00; font-size:1.1em}
-.vTimelineMain .progressBar			{width:100%; text-align:left; padding:0px 3px;}/*surcharge : 100% de width en fonction de la durée de la tâche (cf. "colspan" des cellules)*/
+.vTimelineMain .progressBar			{width:100%; text-align:left; padding:0px 3px;}	/*surcharge : 100% de width en fonction de la durée de la tâche (cf. "colspan" des cellules)*/
 
 /*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
@@ -36,7 +36,7 @@ $(function(){
 
 <div id="pageFull">
 	<div id="pageModuleMenu">
-		<?= MdlTask::menuSelectObjects() ?>
+		<?= MdlTask::menuSelect() ?>
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
@@ -60,11 +60,11 @@ $(function(){
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask)
 		{
-			echo $tmpTask->objContainer().$tmpTask->contextMenu().
-					"<div class='objContentScroll'>
+			echo $tmpTask->divContainerContextMenu().
+					"<div class='objContainerScroll'>
 						<div class='objContent'>
 							<div class='objIcon objIconOpacity'><img src='app/img/task/iconSmall.png'></div>
-							<div class='objLabel' onclick=\"lightboxOpen('".$tmpTask->getUrl("vue")."')\">".ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel()."</div>
+							<div class='objLabel' onclick=\"".$tmpTask->openVue()."\">".ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel()."</div>
 							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
 							<div class='objAutorDate'>".$tmpTask->autorDateLabel()."</div>
 						</div>
@@ -104,7 +104,7 @@ $(function(){
 								$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".$tmpCellColspan." >".$tmpCellLabel."</td>";}
 						}
 						//Affiche toute la timeline de la tâche courante
-						echo "<tr class='lineHover' onclick=\"lightboxOpen('".$tmpTask->getUrl("vue")."')\">
+						echo "<tr class='lineHover' onclick=\"".$tmpTask->openVue()."\">
 								<td class='vTimelineTitle' title=\"".Txt::tooltip($tmpTask->title)."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?30:50))."</td>".
 								$tmpTaskCells.
 							"</tr>";

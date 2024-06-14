@@ -125,21 +125,22 @@ function dashboardPollVote()
 .infiniteScrollLoading					{text-align:center; padding:10px;}
 
 /*News*/
-.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/
+.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}	/*surcharge de .objContainer : height adapté au contenu*/
 .vNewsDescription						{font-weight:normal;}
-.vNewsDescription a						{text-decoration:underline;}/*idem editeur*/
-.vNewsDetail							{margin-top:20px; text-align:center;}
-.vNewsDetail>div						{display:inline-block; margin:0px 10px;}
-.vNewsTopNews							{color:#c40;}
-.calEventProposition					{margin:10px;}/*propositions d'événements*/
-.vNewsDescription h3					{text-align:center;}							/*News par défaut : cf. "INSTALL_dataDashboardNews"*/
-.vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}	/*Idem : images de chaque ligne*/
-.vNewsDescription h3, .vNewsDescription h4:nth-last-child(3)	{margin-bottom:25px;}	/*Idem : première ligne + avant-avant dernière ligne + dernière ligne*/
+.vNewsDescription a						{text-decoration:underline;}								/*idem editeur*/
+.vNewsDetail							{margin-top:20px; text-align:center;}						/*Détails centrés*/
+.vNewsDetail>div						{display:inline-block; margin:0px 15px; line-height:20px;}	/*"line-height" idem à la taille des img ci-dessous*/
+.vNewsDetail img						{max-height:20px;}											/*Icones des details (à la une, etc)*/
+.vNewsTopNews							{color:#a40;}												/*texte "Actualité à la une"*/
+.calEventProposition					{margin:10px;}												/*propositions d'événements*/
+.vNewsDescription h3					{text-align:center;}										/*News par défaut : cf. "INSTALL_dataDashboardNews"*/
+.vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}				/*Idem : images de chaque ligne*/
+.vNewsDescription h3, .vNewsDescription h4:nth-last-child(3)	{margin-bottom:25px;}				/*Idem : première ligne + avant-avant dernière ligne + dernière ligne*/
 /*MOBILE*/
 @media screen and (max-width:1023px){
-	.vNewsDescription h3		{font-size:1.5em;}				/*New par défaut*/
-	.vNewsDescription h4>img	{margin-bottom:5px;}			/*Idem : images de chaque ligne*/
-	.vNewsDetail>div			{display:block; margin:8px;}
+	.vNewsDescription h3				{font-size:1.5em;}		/*New par défaut*/
+	.vNewsDescription h4>img			{margin-bottom:5px;}	/*Idem : images de chaque ligne*/
+	.vNewsDetail>div					{margin:5px;}
 }
 
 /*Sondages*/
@@ -189,7 +190,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			echo "<div id='modMenuNews'>";
 				//// Ajoute une news / Affiche les news "Offline"  /  Tri des news
 				if(MdlDashboardNews::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
-				if(!empty($offlineNewsNb))			{echo '<div class="menuLine '.($_SESSION["offlineNewsShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&offlineNewsShow='.($_SESSION["offlineNewsShow"]==true?'false':'true').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").($_SESSION["offlineNewsShow"]==true?'&nbsp; <img src="app/img/checkSmall.png">':null).'</div></div>';}
+				echo '<div class="menuLine '.($_SESSION["offlineNewsShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&offlineNewsShow='.($_SESSION["offlineNewsShow"]==true?'false':'true').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").($_SESSION["offlineNewsShow"]==true?'&nbsp; <img src="app/img/checkSmall.png">':null).'</div></div>';
 				echo MdlDashboardNews::menuSort();
 				//// Affichage des sondages (option "newsDisplay")
 				if(Req::isMobile()==false && !empty($pollsListNewsDisplay)){
@@ -246,7 +247,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		////	LISTE DES ACTUALITES
 		////
 		echo "<div id='contentNews'>";
-			////	Premières news avant de "infinite scroll"  (Ou sinon "Aucun contenu")
+			//// Premières news avant de "infinite scroll"  (Ou sinon "Aucun contenu")
 			if(!empty($vueNewsListInitial))  {echo $vueNewsListInitial;}
 			else{
 				$addElement=(MdlDashboardNews::addRight())  ?  "<div onclick=\"lightboxOpen('".MdlDashboardNews::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("DASHBOARD_addNews")."</div>"  :  null;
@@ -259,8 +260,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		if($isPolls==true)
 		{
 			echo "<div id='contentPolls'>";
-			////	Premiers sondages avant "infinite scroll"  (Ou sinon "Aucun contenu")
-			if(!empty($vuePollsListInitial))	{echo $vuePollsListInitial;}
+			//// Premiers sondages avant "infinite scroll"  (Ou sinon "Aucun contenu")
+			if(!empty($vuePollsListInitial))  {echo $vuePollsListInitial;}
 			else{
 				$addElement=(MdlDashboardPoll::addRight())  ?  "<div onclick=\"lightboxOpen('".MdlDashboardPoll::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("DASHBOARD_addPoll")."</div>"  :  null;
 				echo "<div class='emptyContainer'>".Txt::trad("DASHBOARD_noPoll").$addElement."</div>";
@@ -268,12 +269,11 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			echo "</div>";
 		}
 		
-		////	LISTE DES NOUVEAUX ELEMENTS (plugins)
+		////	NOUVEAUX ELEMENTS DE CHAQUE MODULES (CF. PLUGINS)
 		////
 		if($showNewElems==true)
 		{
 			echo "<div id='contentElems'><div class='miscContainer'>";
-			//// NOUVEAUX ELEMENTS DE CHAQUE MODULES (cf. plugins)
 			foreach($pluginsList as $tmpObj)
 			{
 				//// Affiche le libellé du module
@@ -288,7 +288,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				else
 				{
 					//Date de création et Auteur
-					if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("creation")." : ".Txt::dateLabel($tmpObj->dateCrea,"date")."<hr>".$tmpObj->autorLabel(true,true);}
+					if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("creation")." : ".Txt::dateLabel($tmpObj->dateCrea,"dateMini")."<hr>".$tmpObj->autorLabel(true,true);}
 					//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
 					$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
 					//Affiche le plugin
@@ -298,7 +298,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 						  </div>";
 				}
 			}
-			////"Aucune nouveauté sur cette période"
+			//// "Aucune nouveauté sur cette période"
 			if(empty($pluginsList))  {echo "<div class='emptyContainer'>".Txt::trad("DASHBOARD_pluginEmpty")."</div>";}
 			echo "</div></div>";
 		}

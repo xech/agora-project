@@ -11,10 +11,10 @@ lightboxSetWidth(600);
 <div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->inlineContextMenu().$curObj->title."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->lightboxTitleMenu().$curObj->title."</div>";
 
 	////	DATE / PERIODICITE
-	echo "<div class='vEventDetails'><img src='app/img/calendar/clock.png'> &nbsp; ".Txt::dateLabel($curObj->dateBegin,"normal",$curObj->dateEnd)."</div>";
+	echo "<div class='vEventDetails'><img src='app/img/calendar/clock.png'> &nbsp; ".Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd)."</div>";
 	if(!empty($labelPeriod))	{echo "<hr><div class='vEventDetails'>".$labelPeriod."</div>";}
 	
 	////	IMPORTANT / CATEGORIE

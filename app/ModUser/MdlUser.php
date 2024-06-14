@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -135,16 +135,16 @@ class MdlUser extends MdlPerson
 	 *******************************************************************************************/
 	public function messengerEnabled()
 	{
-		if(empty($_SESSION["curUserMessengerEnabled"]))  {$_SESSION["curUserMessengerEnabled"]=($this->messengerAvailable() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
+		if(empty($_SESSION["curUserMessengerEnabled"]))  {$_SESSION["curUserMessengerEnabled"]=(self::messengerDisplay() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
 		return $_SESSION["curUserMessengerEnabled"];
 	}
 
 	/*******************************************************************************************
-	 * MESSENGER DISPONIBLE POUR L'USER COURANT (ET PARAMETRABLE) ?
+	 * AFFICHAGE DU MESSENGER POUR LES USERS ?
 	 *******************************************************************************************/
-	public function messengerAvailable()
+	public static function messengerDisplay()
 	{
-		return ($this->isUser() && empty(Ctrl::$agora->messengerDisabled));
+		return (Ctrl::$curUser->isUser() && !empty(Ctrl::$agora->messengerDisplay));
 	}
 
 	/*******************************************************************************************

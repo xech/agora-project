@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -41,10 +41,11 @@ class CtrlAgora extends Ctrl
 				gIdentity=".Db::param("gIdentity").",
 				gIdentityClientId=".Db::param("gIdentityClientId").",
 				gPeopleApiKey=".Db::param("gPeopleApiKey").",
-				messengerDisabled=".Db::param("messengerDisabled").",
+				messengerDisplay=".Db::param("messengerDisplay").",
 				moduleLabelDisplay=".Db::param("moduleLabelDisplay").",
 				folderDisplayMode=".Db::param("folderDisplayMode").",
 				personsSort=".Db::param("personsSort").",
+				userMailDisplay=".Db::param("userMailDisplay").",
 				logsTimeOut=".Db::param("logsTimeOut").",
 				visioHost=".Db::param("visioHost").",
 				visioHostAlt=".Db::param("visioHostAlt").",
@@ -121,38 +122,40 @@ class CtrlAgora extends Ctrl
 	 *******************************************************************************************/
 	public static function actionGetBackup()
 	{
-		//Init
+		////	Contole d'accès et Backup la Bdd
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
-		$dumpPath=Db::getDump();//Dump de la bdd!
+		$dumpPath=Db::getDump();
 		////	Sauvegarde de tout
 		if(Req::param("typeBackup")=="all")
 		{
-			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille
-			ini_set("max_execution_time","1200");//20mn max
+			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille de l'archive
+			ini_set("max_execution_time","600");//10mn max
 			$archiveName="BackupAgora_".date("Y-m-d");
-			////	Sauvegarde via "shell_exec()"
-			if(Req::isHost())
-			{
+			//// Sauvegarde via "pathDatasFilesList()"
+			if(Req::isLinux()==false){
+				File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");
+			}
+			//// Sauvegarde via "shell_exec()"
+			else{
 				$archiveTmpPath=tempnam(File::getTempDir(),"backupAgora".uniqid());
 				shell_exec("cd ".PATH_DATAS."; tar -cf ".$archiveTmpPath." *");//-c=creation -f=nom du dossier source
 				if(is_file($archiveTmpPath)){
 					File::download($archiveName.".tar", $archiveTmpPath, null, false);
 					File::rm($archiveTmpPath);
-					$isArchive=true;
 				}
 			}
-			////	Sinon sauvegarde via "downloadArchive()"
-			if(empty($isArchive))  {File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");}
 		}
 		////	Sauvegarde uniquement la Bdd
 		else{
 			$filesList=[ ["realPath"=>$dumpPath, "zipPath"=>str_replace(PATH_DATAS,"",$dumpPath)] ];
 			File::downloadArchive($filesList, "BackupAgoraBdd_".date("Y-m-d").".zip");
 		}
+		////	Supprime le dump de la Bdd
+		File::rm($dumpPath);
 	}
 
 	/*******************************************************************************************
-	 * ARBORESCENCE DU PATH_DATAS (avec "realPath" / "zipPath" / "emptyFolderZipPath". Fonction recursive!)
+	 * RECUPERE UN TABLEAU DE L'ARBORESCNCE DE FICHIERS DE PATH_DATAS (fonction recursive)
 	 *******************************************************************************************/
 	public static function pathDatasFilesList($tmpPath=null)
 	{
@@ -163,13 +166,13 @@ class CtrlAgora extends Ctrl
 		//Liste les fichiers du path courant
 		foreach(scandir($tmpPath) as $tmpFileName)
 		{
-			$tmpFileRealPath=$tmpPath."/".$tmpFileName;
-			$tmpFileZipPath=str_replace(PATH_DATAS,"",$tmpFileRealPath);
+			$tmpRealPath=$tmpPath."/".$tmpFileName;
+			$tmpZipPath=str_replace(PATH_DATAS,"",$tmpRealPath);
 			//Ajoute un fichier/dossier
-			if(is_file($tmpFileRealPath))	{$filesList[]=["realPath"=>$tmpFileRealPath, "zipPath"=>$tmpFileZipPath];}
-			elseif(in_array($tmpFileName,['.','..'])==false && is_dir($tmpFileRealPath)){
-				$filesList[]=["emptyFolderZipPath"=>$tmpFileZipPath];
-				$filesList=array_merge($filesList,self::pathDatasFilesList($tmpFileRealPath));//lancement récursif
+			if(is_file($tmpRealPath))	{$filesList[]=["realPath"=>$tmpRealPath, "zipPath"=>$tmpZipPath];}
+			elseif(is_dir($tmpRealPath) && $tmpFileName!='.' && $tmpFileName!='..'){
+				$filesList[]=["emptyFolderZipPath"=>$tmpZipPath];
+				$filesList=array_merge($filesList,self::pathDatasFilesList($tmpRealPath));//lancement récursif
 			}
 		}
 		// Retourne le résultat final

@@ -18,7 +18,7 @@
 .vCalMonthDayCell:hover .vCalMonthDayLabel		{color:#c00;}									/*jour survolé : ligne du label*/
 .vCalMonthImgAddEvt								{display:none;}									/*"Plus" d'ajout d'evt : masqué par défaut*/
 .vCalMonthDayAddEvt:hover .vCalMonthImgAddEvt	{display:block; float:right;}					/*"Plus" d'ajout d'evt : affiche au survol du jour*/
-.vCalMonthDayCelebration						{color:#070; font-style:italic;}					/*Jour férié*/
+.vCalMonthDayCelebration						{color:#070; font-style:italic;}				/*Jour férié*/
 
 /*MOBILE*/
 @media screen and (max-width:1023px){
@@ -45,10 +45,10 @@ function calendarDimensions()
 {
 	//largeur/hauteur des jours
 	$(".vCalMonthDayHeader,.vCalMonthDayCell").css("width", Math.round(($(".vCalMonthMain").width()-$(".vCalMonthWeekNb").width()) / 7));
-	var lineHeight=Math.round($(".vCalMonthMain:first").height() / $(".vCalMonthMain:first .vCalMonthDaysLine").length)-4;//-4 pour prendre en compte le border
+	var lineHeight=Math.round($(".vCalMonthMain:first").height() / $(".vCalMonthMain:first .vCalMonthDaysLine").length)-5;//-5 du "border"
 	$(".vCalMonthDaysLine").css("height", lineHeight+"px");
 
-	//Redimentionne "vCalendarBlock" si la hauteur réelle est supérieure à "availableContentHeight()"
+	//Redimentionne chaque "vCalendarBlock"
 	$(".vCalendarBlock").each(function(){
 		var realHeight=$(this).find(".vCalendarHeader").height() + $(this).find(".vCalMonthMain").height() -2;
 		if($(this).innerHeight()<realHeight)	{$(this).css("height",realHeight);}
@@ -59,7 +59,6 @@ function calendarDimensions()
 
 
 <div class="vCalMonthMain">
-
 	<?php
 	////	HEADER DES JOURS
 	echo '<div>';
@@ -87,18 +86,17 @@ function calendarDimensions()
 		elseif(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d"))	{$styleDayCell.=" vCalMonthToday";}			//Aujourd'hui?
 		//Cellule du jour
 		echo '<div class="vCalMonthDayCell '.$styleDayCell.'">';
-				//LABEL DU JOUR ET BOUTON "ADD"
-				echo '<div class="vCalMonthDayLabel">
-						<div>'.date("j",$tmpDay["timeBegin"]).'</div><div class="vCalMonthDayCelebration">'.$tmpDay["celebrationDay"].'</div>
-						<img src="app/img/plus.png" class="vCalMonthImgAddEvt" '.$addEvtLink.' title="'.Txt::tooltip($tmpCal->addEventLabel).'">
-					  </div>';
-				//EVENEMENTS DU JOUR
-				foreach($tmpCal->eventList[$tmpDate] as $tmpEvt){
-					$containerAttr='data-eventColor="'.$tmpEvt->eventColor.'" onclick="lightboxOpen(\''.$tmpEvt->getUrl("vue").'\')"';
-					echo $tmpEvt->objContainer("vCalEvtBlock",$containerAttr).$tmpEvt->contextMenu.
-							'<div class="vCalEvtLabel">'.$tmpEvt->dateTimeLabel.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$tmpEvt->importantIcon.'</div>
-						 </div>';
-				}
+			//LABEL DU JOUR ET BOUTON "ADD"
+			echo '<div class="vCalMonthDayLabel">
+					<div>'.date("j",$tmpDay["timeBegin"]).'</div><div class="vCalMonthDayCelebration">'.$tmpDay["celebrationDay"].'</div>
+					<img src="app/img/plus.png" class="vCalMonthImgAddEvt" '.$addEvtLink.' title="'.Txt::tooltip($tmpCal->addEventLabel).'">
+					</div>';
+			//EVENEMENTS DU JOUR
+			foreach($tmpCal->eventList[$tmpDate] as $tmpEvt){
+				echo $tmpEvt->divContainerContextMenu("vCalEvtBlock", $tmpEvt->containerAttributes,  $tmpEvt->contextMenuOptions).
+						'<div class="vCalEvtLabel" onclick="'.$tmpEvt->openVue().'">'.$tmpEvt->dateTimeLabel.Txt::reduce($tmpEvt->title,(Req::isMobile()?20:45)).$tmpEvt->importantIcon.'</div>
+					</div>';
+			}
 		echo '</div>';
 
 		////	FIN DE LIGNE DE LA SEMAINE && NUMERO DE FIN DE SEMAINE

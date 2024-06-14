@@ -2,7 +2,7 @@
 ////	SUR MOBILE : PULSATE DU MENU
 if(isMobile()){
 	if($("#mainMenuElems").exist()) {$("#mainMenuElems").pulsate();}		//Pulsate le menu des nouveaux élément dans le "DashboardNews"
-	else							{$("#headerModuleMobile").pulsate(3);}	//Pulsate l'icone du module dans le "vueheadermenu.php
+	else							{$("#headerMobileModule").pulsate();}	//Pulsate l'icone du module dans le "VueHeaderMenu.php"
 }
 
 ////	CONFIRMATION / ANNULATION DE PROPOSITION D'ÉVÉNEMENT (via "jquery-confirm")
@@ -59,7 +59,7 @@ foreach($eventPropositions as $cpt=>$tmpProposition)
 		$curCalTitle=$tmpCal->title;//retient le titre courant
 	}
 	////	Affiche la proposition d'événement dans un tooltip
-	$confirmDetails=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"normal",$tmpEvt->dateEnd)."<hr>".
+	$confirmDetails=htmlspecialchars($tmpEvt->title)." : ".Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)."<hr>".
 					Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
 					ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
 	if($tmpEvt->description)  {$confirmDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}

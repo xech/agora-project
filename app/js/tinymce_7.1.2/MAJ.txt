@@ -1,0 +1,6 @@
+Mise à jour TinyMCE Version 7.1.2
+
+- Télécharger la dernière version "Community" de prod.	-> https://www.tiny.cloud/get-tiny/self-hosted/
+- Télécharger les traductions "fr_FR" + "es"			-> https://www.tiny.cloud/download/language-packages/
+- Modifier le path vers "tinymce.min.js" dans "VueObjEditDescription.php" : le nom du dossier correspond au numéro de version de tinymce (update le cache des browsers)
+=> vérifier le fonctionnement général et du plugin "autoresize"

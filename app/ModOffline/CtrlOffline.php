@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -161,7 +161,7 @@ class CtrlOffline extends Ctrl
 	{
 		////	Init
 		static::$isMainPage=true;
-		$dbFile="app/ModOffline/db.sql";
+		$dbFile="app/misc/db.sql";
 
 		////	Controle de version PHP  &&  Verif si l'application est déjà installée  &&  Vérif si le fichier "db.sql" est toujours disponible
 		Req::verifPhpVersion();

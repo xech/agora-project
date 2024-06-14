@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -84,11 +84,11 @@ class DbUpdate extends Db
 			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
 			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE LA MISE A JOUR");}
 			elseif((time()-filemtime($lockedUpdate))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
-			else											{throw new Exception("Update error : check Apache/PHP logs for details. When the issue is resolved : delete the '".$lockedUpdate."' file.");}
+			else											{throw new Exception("Update error : check Apache/PHP logs for details<br><br>When the issue is resolved : delete the '".$lockedUpdate."' file");}
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
 			@set_time_limit(120);//pas en safemode
-			self::getDump();
+			$dumpPath=self::getDump();
 
 			////	MAJ v3.0.0
 			if(self::updateVersion("3.0.0"))
@@ -813,7 +813,7 @@ class DbUpdate extends Db
 			if(self::updateVersion("21.6"))
 			{
 				//Ajoute le mode d'affichage par défaut des objets (liste/block)
-				self::fieldExist("ap_agora", "folderDisplayMode", "ALTER TABLE ap_agora ADD `folderDisplayMode` varchar(255) DEFAULT NULL AFTER moduleLabelDisplay");
+				self::fieldExist("ap_agora", "folderDisplayMode", "ALTER TABLE ap_agora ADD `folderDisplayMode` varchar(255) DEFAULT 'block' AFTER moduleLabelDisplay");
 			}
 
 			if(self::updateVersion("21.10"))
@@ -918,16 +918,43 @@ class DbUpdate extends Db
 				//Ajoute le champ "browserId" des tokens de connexion auto
 				self::fieldExist("ap_userAuthToken", "browserId", "ALTER TABLE `ap_userAuthToken` ADD `browserId` varchar(255) AFTER `userAuthToken`");
 			}
+
+			if(self::updateVersion("24.6.0"))
+			{
+				//Ajoute le champ "userMailDisplay" pour pouvoir masquer l'emails des users
+				self::fieldExist("ap_agora", "userMailDisplay", "ALTER TABLE `ap_agora` ADD `userMailDisplay` TINYINT DEFAULT '1' AFTER `personsSort`");
+				//Change le champ "moduleLabelDisplay" en booleen
+				self::query("UPDATE `ap_agora` SET `moduleLabelDisplay`='1'  WHERE `moduleLabelDisplay` IS NULL OR `moduleLabelDisplay`=''");
+				self::query("UPDATE `ap_agora` SET `moduleLabelDisplay`=null WHERE `moduleLabelDisplay`='hide'");
+				self::query("ALTER TABLE `ap_agora` CHANGE `moduleLabelDisplay` `moduleLabelDisplay` TINYINT DEFAULT '1'");
+				//Change le champ "messengerDisabled" en "messengerDisplay" ..et inverse donc la valeur booleenne
+				$messengerDisplay=(empty(Ctrl::$agora->messengerDisabled))  ?  "1"  :  null;
+				self::query("ALTER TABLE `ap_agora` CHANGE `messengerDisabled` `messengerDisplay` TINYINT DEFAULT '1'");
+				self::query("UPDATE `ap_agora` SET `messengerDisplay`=".self::format($messengerDisplay));
+				//Réinit les valeurs par défaut de "skin" et "folderDisplayMode"
+				self::query("UPDATE `ap_agora` SET `skin`='white' WHERE `skin` IS NULL");
+				self::query("UPDATE `ap_agora` SET `folderDisplayMode`='block' WHERE `folderDisplayMode` IS NULL");
+				//Modif l'option "ap_agora">"usersLike" en booleen (anciennes valeurs possibles : "likeSimple" ou "likeOrNot")
+				$usersLike=(!empty(Ctrl::$agora->usersLike))  ?  "1"  :  null;
+				self::query("UPDATE `ap_agora` SET `usersLike`=".self::format($usersLike));
+				self::query("ALTER TABLE `ap_agora` CHANGE `usersLike` `usersLike` TINYINT DEFAULT NULL");
+				//Supprime les enregistrements "dontlike" (value!='1') puis supprime le champ "value"
+				self::query("DELETE FROM `ap_objectLike` WHERE `value`!='1'");
+				if(self::fieldExist("ap_objectLike","value"))  {self::query("ALTER TABLE `ap_objectLike` DROP `value`");}
+			}
 			////////////////////////////////////////	ATTENTION A MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////
 			////////////////////////////////////////
 
 
 			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES
-			self::query("UPDATE ap_agora SET dateUpdateDb=".self::dateNow().", version_agora='".Req::appVersion()."'");
+			self::query("UPDATE `ap_agora` SET `dateUpdateDb`=".self::dateNow().", `version_agora`='".Req::appVersion()."'");
 			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
-			////	SUPPRIME $lockedUpdate
-			if(is_file($lockedUpdate))  {File::rm($lockedUpdate);}
+			////	UPDATE OK : ON SUPPRIME $lockedUpdate et $dumpPath 
+			if(is_file($lockedUpdate)){
+				File::rm($lockedUpdate);
+				File::rm($dumpPath);
+			}
 			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!
 			$_SESSION=[];
 			Ctrl::redir("?ctrl=offline");

@@ -88,7 +88,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 			<div><?= Txt::trad("listModules") ?></div>
 			<div>
 				<?php
-				foreach(self::$curSpace->moduleList() as $tmpModule){
+				foreach(Ctrl::$curSpace->moduleList() as $tmpModule){
 					if(method_exists($tmpModule["ctrl"],"getPlugins")){
 						$moduleChecked=(Req::isParam("searchModules")==false || in_array($tmpModule["moduleName"],Req::param("searchModules")))  ?  "checked='checked'"  :  "";
 						$moduleInputId="searchModules".$tmpModule["moduleName"];

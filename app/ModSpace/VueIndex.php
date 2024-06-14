@@ -30,7 +30,7 @@
 		foreach($spaceList as $tmpSpace)
 		{
 			////	CONTENEUR
-			echo $tmpSpace->objContainer().$tmpSpace->contextMenu();
+			echo $tmpSpace->divContainerContextMenu();
 				////	NOM & DESCRIPTION & MODULES AFFECTES
 				echo $tmpSpace->name."<div class='vSpaceDescription' title=\"".Txt::tooltip($tmpSpace->description)."\">".Txt::reduce($tmpSpace->description,(Req::isMobile()?50:80))."</div>";
 				echo "<div class='vModules'>";
@@ -48,7 +48,7 @@
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$userRightAcces=$tmpSpace->accessRightUser($tmpUser);
 						if($tmpSpace->allUsersAffected() && $userRightAcces==1)	{continue;}//Pas d'affichage si simple user et tous les users sont affectés
-						echo "<div class='vSpaceAffectation' onclick=\"lightboxOpen('".$tmpUser->getUrl("vue")."');\"><img src='app/img/user/".($userRightAcces==2?'userAdminSpace.png':'user.png')."'> ".$tmpUser->getLabel()."</div>";
+						echo "<div class='vSpaceAffectation' onclick=\"".$tmpUser->openVue()."\"><img src='app/img/user/".($userRightAcces==2?'userAdminSpace.png':'user.png')."'> ".$tmpUser->getLabel()."</div>";
 					}
 				echo "</div>";
 			echo "</div>";

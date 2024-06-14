@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -66,14 +66,15 @@ class CtrlMisc extends Ctrl
 					$userTitle=$tmpUser->getLabel()." &nbsp;".$userImg;
 					$userFirstName=$tmpUser->getLabel("firstName");
 					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
-					$_SESSION["livecounterMainHtml"].="<label class='vLivecounterUser' id='livecounterUser".$tmpUser->_id."' onclick='messengerDisplay(".$tmpUser->_id.");' title=\"".Txt::trad("MESSENGER_chatWith")." ".$userTitle."\">".$userImg.$userFirstName."</label>";
-					$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'>
-															<input type='checkbox' name='messengerUsers[]' value='".$tmpUser->_id."' id='messengerUserCheckbox".$tmpUser->_id."' class='messengerUserCheckbox' data-user-label=\"".$userFirstName."\" data-user-label-visio=\"".Txt::clean(trim($userFirstName),"max")."\">
-															<label for='messengerUserCheckbox".$tmpUser->_id."' title=\"".Txt::trad("select")." ".$userTitle."\">".$userImg.$userFirstName."</label>
-													   </div>";
+					$_SESSION["livecounterMainHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" title="'.Txt::trad("MESSENGER_chatWith").' '.Txt::tooltip($userTitle).'">'.$userImg.$userFirstName.'</label>';
+					$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser">
+															<input type="checkbox" name="messengerUsers[]" value="'.$tmpUser->_id.'" id="messengerUserCheckbox'.$tmpUser->_id.'" class="messengerUserCheckbox" data-user-label="'.$userFirstName.'" data-user-label-visio="'.Txt::clean(trim($userFirstName),"max").'">
+															<label for="messengerUserCheckbox'.$tmpUser->_id.'" title="'.Txt::trad("select").' '.Txt::tooltip($userTitle).'">'.$userImg.$userFirstName.'</label>
+													   </div>';
 				}
 				//Ajoute "inverser la sélection" si ya + de 5 users
-				if(count($_SESSION["livecounterUsers"])>5)	{$_SESSION["livecounterFormHtml"].="<div class='vMessengerUser'><label onclick=\"$('label[for^=messengerUserCheckbox]').trigger('click');\"><img src='app/img/checkSmall.png'> &nbsp; ".Txt::trad("selectSwitch")."</label></div>";}
+				if(count($_SESSION["livecounterUsers"])>5)
+					{$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser"><label onclick="$(\'label[for^=messengerUserCheckbox]\').trigger(\'click\')"><img src="app/img/checkSmall.png"> &nbsp; '.Txt::trad("selectSwitch").'</label></div>';}
 			}
 
 			////	LISTE DES MESSAGES DU MESSENGER  &&  DES "PULSATES"
@@ -99,10 +100,10 @@ class CtrlMisc extends Ctrl
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Le message est bien affecté à un user connnecté : on retire la class "vMessengerOldMessage" 
 					}
 					//Affichage du message
-					$_SESSION["messengerMessagesHtml"].="<table class='vMessengerMessage ".$oldMessageClass."' title=\"".Txt::tooltip(rtrim($messageTitle,", "))."\" data-idUsers=\"".$message["_idUsers"]."\"><tr>
-															<td class='vMessengerMessageDateAutor'>".$dateAutor."</td>
-															<td data-idAutor=\"".$autorObj->_id."\">".$message["message"]."</td>
-														 </tr></table>";
+					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" title="'.Txt::tooltip(rtrim($messageTitle,", ")).'" data-idUsers="'.$message["_idUsers"].'"><tr>
+															<td class="vMessengerMessageDateAutor">'.$dateAutor.'</td>
+															<td data-idAutor="'.$autorObj->_id.'">'.$message["message"].'</td>
+														 </tr></table>';
 				}
 			}
 

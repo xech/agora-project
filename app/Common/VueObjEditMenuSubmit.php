@@ -169,7 +169,7 @@ function mainFormControl()
 <style>
 /*OPTIONS D'EDITION (cf. white.css & black.css) */
 #objMenuTabs							{margin-top:35px; margin-bottom:-35px; display:table; width:100%; max-width:100%;}
-.objMenuTab								{user-select:none; display:table-cell; width:auto; padding:10px 5px; opacity:0.75; text-align:center; cursor:pointer; border-radius:5px 5px 0px 0px;}
+.objMenuTab								{user-select:none; -webkit-user-select:none; display:table-cell; width:auto; padding:10px 5px; opacity:0.75; text-align:center; cursor:pointer; border-radius:5px 5px 0px 0px;}
 .objMenuTabSelect						{opacity:1; border-bottom:none;}
 .objMenuTab img							{margin-right:10px;}
 .objMenuTab[for='objMenuAccessRight']	{min-width:150px;}/*onglet des droits d'accès*/
@@ -183,7 +183,7 @@ function mainFormControl()
 }
 
 /*DROITS D'ACCÈS*/
-.vSpaceTable							{display:inline-table; user-select:none; max-width:600px; margin-bottom:30px;}
+.vSpaceTable							{display:inline-table; user-select:none; -webkit-user-select:none; max-width:600px; margin-bottom:30px;}
 .vSpaceTable>div						{display:table-row;}
 .vSpaceTable>div>div					{display:table-cell; padding:8px; text-align:center;}
 .vSpaceTable img						{max-height:18px;}
@@ -280,14 +280,15 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 					echo '<div title="'.Txt::trad("selectUnselect").' : '.$tmpGroup->usersLabel.'">
 							<input type="checkbox" name="notifUsersGroup[]" value="'.implode(",",$tmpGroup->userIds).'" id="notifUsersGroup'.$tmpGroup->_typeId.'" onchange="userGroupSelect(this,\'#notifMailSelectList\');">
 							<label for="notifUsersGroup'.$tmpGroup->_typeId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label>
-							</div>';
+						  </div>';
 				}
 				//Liste de tous les users : affiche par défaut uniquement ceux l'espace courant
 				foreach($notifMailUsers as $tmpUser){
+					$userMailTooltip=($tmpUser->userMailDisplay())  ?  'title="'.Txt::tooltip($tmpUser->mail).'"'  :  null;
 					echo '<div id="divNotifMailUser'.$tmpUser->_id.'" '.(!in_array($tmpUser->_id,$curSpaceUsersIds)?'style="display:none"':null).'>
 							<input type="checkbox" name="notifMailUsers[]" value="'.$tmpUser->_id.'" id="boxNotif'.$tmpUser->_typeId.'" data-idUser="'.$tmpUser->_id.'">
-							<label for="boxNotif'.$tmpUser->_typeId.'" title="'.$tmpUser->mail.'">'.$tmpUser->getLabel().'</label>
-							</div>';
+							<label for="boxNotif'.$tmpUser->_typeId.'" '.$userMailTooltip.'>'.$tmpUser->getLabel().'</label>
+						  </div>';
 				}
 				//"Afficher tous les utilisateurs" des tous les espaces
 				if(count($notifMailUsers)>count($curSpaceUsersIds))  {echo '<div onclick="$(\'[id^=divNotifMailUser]\').fadeIn();$(this).fadeOut();"><img src="app/img/arrowBottom.png"> '.Txt::trad("EDIT_showAllUsers").'</div>';}

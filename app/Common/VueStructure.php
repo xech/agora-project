@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="<?= Txt::trad("CURLANG") ?>" id="<?= Ctrl::$isMainPage==true?'htmlMainPage':'htmlLightbox' ?>">
 	<head>
-		<!-- AGORA-PROJECT :: UNDER THE GENERAL PUBLIC LICENSE V2 :: http://www.gnu.org -->
+		<!-- AGORA-PROJECT :: UNDER THE GENERAL PUBLIC LICENSE V2 :: https://www.gnu.org -->
 		<meta charset="UTF-8">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 		<meta http-equiv="content-language" content="<?= Txt::trad("CURLANG") ?>">
@@ -49,11 +49,10 @@
 
 		////	Au chargement de la page
 		$(function(){
+			////	Affichage des notifications
 			<?php
-			////	Affiche si besoin des notifications
 			foreach(Ctrl::$notify as $tmpNotif){
-				if(Txt::isTrad($tmpNotif["message"]))	{$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}
-				else									{$tmpNotif["message"]=str_replace(["\"","'"],["&quot;","&apos;"],strip_tags($tmpNotif["message"],"<br>"));}//Evite les XSS : tester avec  &notify[]=<i>test<%2fi>")%3balert(1)%2f%2f
+				if(Txt::isTrad($tmpNotif["message"]))  {$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}
 				echo 'notify("'.$tmpNotif["message"].'", "'.$tmpNotif["type"].'");';
 			}
 			?>
@@ -77,12 +76,12 @@
 		}
 
 		/*FOOTER*/
-		#pageFooterHtml, #pageFooterIcon			{position:fixed; bottom:0px; z-index:20; display:inline-block; font-weight:normal;}/*pas de margin*/
-		#pageFooterHtml								{padding:15px; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
-		#pageFooterIcon								{right:2px; bottom:3px;}
-		#pageFooterIcon img							{max-height:65px; max-width:200px;}
-		#pageFooterSpecial							{display:inline-block; margin:0px 0px -7px -7px; background-color:rgba(0,0,0,0.7); border-radius:5px; padding:8px; color:#c00; font-weight:bold;}/*host*/
-		#menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masquer par défaut les principaux elements sur mobile*/
+		#pageFooterHtml, #pageFooterIcon	{position:fixed; z-index:20;}
+		#pageFooterHtml						{bottom:15px; left:15px; font-weight:normal; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
+		#pageFooterIcon						{bottom:5px; right:5px;}
+		#pageFooterIcon img					{max-height:70px; max-width:200px;}
+		#pageFooterSpecial					{display:inline-block; margin:0px 0px -7px -7px; background-color:rgba(0,0,0,0.7); border-radius:5px; padding:8px; color:#c00; font-weight:bold;}/*host*/
+		#menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masque par défaut les principaux elements sur mobile*/
 
 		/*MOBILE  (cf. "common.js")*/
 		@media screen and (max-width:1023px){
@@ -91,7 +90,7 @@
 			#menuMobileBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
 			#menuMobileMain								{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
 			#menuMobileMain #menuMobileClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
-			#menuMobileMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace ou users)*/
+			#menuMobileMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace et users)*/
 			#menuMobileMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
 			#menuMobileMain hr							{margin:10px 0px;}/*surcharge*/
 			#menuMobileTwo								{display:none; margin-top:10px; border-radius:5px;}
@@ -113,25 +112,27 @@
 		if(!empty($mainContent))	{echo $mainContent;}
 		if(!empty($messenger))		{echo $messenger;}
 
-		////	MENU MOBILE (cf. common.js : peut fusionner 2 menus. Ex: liste des modules & menu context du module)  &&  ICONE "PLUS" POUR AJOUTER UN ELEMENT
+		////	MENU MOBILE (cf. common.js)  &&  "menuMobileAddButton" POUR AJOUTER UN ELEMENT
 		if(Req::isMobile()){
-			echo "<div id='menuMobileBg'></div>
-				  <div id='menuMobileMain'>
-					<div id='menuMobileClose'><img src='app/img/closeMobile.png'></div>
-					<div id='menuMobileContent'> <div id='menuMobileOne'></div> <div id='menuMobileTwo'></div> </div>
-				  </div>
-				  <div id='menuMobileAddButton'><img src='app/img/plusBig.png'></div>";
+		?>
+			<div id="menuMobileBg"></div>
+				<div id="menuMobileMain">
+					<div id="menuMobileClose"><img src="app/img/closeMobile.png"></div>
+					<div id="menuMobileContent"><div id="menuMobileOne"></div><div id="menuMobileTwo"></div></div>
+				</div>
+			<div id="menuMobileAddButton"><img src="app/img/plusBig.png"></div>
+		<?php
 		}
 
 		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
 			//Mise à jour récente : notification "footerHtml" spécifique pour l'admin
 			if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
-				{Ctrl::$agora->footerHtml="<span id='footerHtmlUpdate' onclick=\"lightboxOpen('docs/CHANGELOG.txt')\" style='cursor:pointer'>Updated to version ".Req::appVersion()."</span><script>$('#footerHtmlUpdate').pulsate();</script>";}
+				{Ctrl::$agora->footerHtml='<span id="footerHtmlUpdate" onclick="lightboxOpen(\'docs/CHANGELOG.txt\')" style="cursor:pointer">Updated to version '.Req::appVersion().'</span><script>$("#footerHtmlUpdate").pulsate(2);</script>';}
 			//Affiche le footer
-			$pageFooterIconTooltip="".OMNISPACE_URL_LABEL." - ".Txt::trad("FOOTER_pageGenerated")." ".round((microtime(true)-TPS_EXEC_BEGIN),3)." secondes";
-			echo "<div id='pageFooterHtml'>".Ctrl::$agora->footerHtml."</div>
-				  <div id='pageFooterIcon'><a href=\"".$pathLogoUrl."\" target='_blank' title=\"".Txt::tooltip($pageFooterIconTooltip)."\"><img src=\"".Ctrl::$agora->pathLogoFooter()."\"></a></div>";
+			$pageFooterIconTooltip=OMNISPACE_URL_LABEL.' - '.Txt::trad("FOOTER_pageGenerated").' '.round((microtime(true)-TPS_EXEC_BEGIN),3).' secondes';
+			echo '<div id="pageFooterHtml">'.Ctrl::$agora->footerHtml.'</div>
+				  <div id="pageFooterIcon"><a href="'.$pathLogoUrl.'" target="_blank" title="'.Txt::tooltip($pageFooterIconTooltip).'"><img src="'.Ctrl::$agora->pathLogoFooter().'"></a></div>';
 		}
 		?>
 	</body>

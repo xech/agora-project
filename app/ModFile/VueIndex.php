@@ -17,7 +17,7 @@
 
 <div id="pageFull">
 	<div id="pageModuleMenu">
-		<?= MdlFile::menuSelectObjects() ?>
+		<?= MdlFile::menuSelect() ?>
 		<div id="pageModMenu" class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
@@ -44,7 +44,7 @@
 		foreach($filesList as $tmpFile)
 		{
 			//"iconTooltip" sur le <div> pour afficher correctement le tooltip && "iconLink" sur l'image pour pouvoir "select" le fichier
-			echo $tmpFile->objContainer($tmpFile->hasThumbClass).$tmpFile->contextMenu().
+			echo $tmpFile->divContainerContextMenu($tmpFile->hasThumbClass).
 				"<div class=\"objContent objFiles ".$tmpFile->thumbClass."\">
 					<div class='objIcon' title=\"".Txt::tooltip($tmpFile->iconTooltip)."\"><img src=\"".$tmpFile->typeIcon()."\" ".$tmpFile->iconLink."></div>
 					<div class='objLabel'><span title=\"".Txt::tooltip($tmpFile->labelTooltip)."\" ".$tmpFile->labelLink.">".Txt::reduce($tmpFile->name,$fileNameLength).$tmpFile->versionsMenu("icon")."</span></div>

@@ -278,7 +278,7 @@ function proposeVisio()
 	<tr>
 		<td class="cursorHelp" title="<?= Txt::trad("MESSENGER_messengerTitle") ?>"><img src="app/img/messenger.png"><span id="livecounterConnectedLabel"><?= Txt::trad("MESSENGER_connected") ?><img src="app/img/arrowRight.png"></span></td>
 		<td id="livecounterUsers"></td>
-		<td id="messengerMultiUsersIcon" onclick="messengerDisplay('all');" title="<?= Txt::trad("MESSENGER_messengerMultiUsers") ?>"><img src="app/img/user/iconSmall.png"></td>
+		<td id="messengerMultiUsersIcon" onclick="messengerDisplay('all')" title="<?= Txt::trad("MESSENGER_messengerMultiUsers") ?>"><img src="app/img/user/iconSmall.png"></td>
 	</tr>
 </table>
 
@@ -286,7 +286,7 @@ function proposeVisio()
 <form id="messengerForm">
 	<table id="messengerMain">
 		<tr>
-			<td id="messengerMove" colspan="2"><img src="app/img/closeMessenger.png" id="messengerClose" onclick="messengerDisplay('none');" title="<?= Txt::trad("close") ?>"></td>
+			<td id="messengerMove" colspan="2"><img src="app/img/closeMessenger.png" id="messengerClose" onclick="messengerDisplay('none')" title="<?= Txt::trad("close") ?>"></td>
 		</tr>
 		<tr>
 			<td id="messengerMessagesCell" class="vMessengerContent"><div id="messengerMessagesAjax" class="vMessengerScroll">&nbsp;</div></td>	<!--LISTE DES MESSAGES-->

@@ -1,8 +1,8 @@
 <?php
 /**
-* This file is part of the Agora-Project Software package.
+* This file is part of the Agora-Project Software package
 *
-* @copyright (c) Agora-Project Limited <https://www.agora-project.net>
+* @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License, version 2 (GPL-2.0)
 */
 
@@ -24,14 +24,17 @@ class CtrlForum extends Ctrl
 		////	MESSAGES D'UN SUJET
 		$curSubject=Ctrl::getObjTarget();
 		if(is_object($curSubject) && $curSubject::objectType=="forumSubject"){
-			$vDatas["curSubject"]=$curSubject;
 			$curSubject->usersConsultUpdate();
+			$vDatas["curSubject"]=$curSubject;
+			$vDatas["subjectList"]=[$curSubject];
+			$vDatas["forumDisplay"]="suject";
 		}
 		////	LISTE DES SUJETS
 		else{
 			$sqlSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".MdlForumTheme::sqlCategoryFilter()." ".MdlForumSubject::sqlSort();
 			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlSubjects));
-			$vDatas["subjectsDisplayed"]=Db::getObjTab("forumSubject", $sqlSubjects." ".MdlForumSubject::sqlPagination());
+			$vDatas["subjectList"]=Db::getObjTab("forumSubject", $sqlSubjects." ".MdlForumSubject::sqlPagination());
+			$vDatas["forumDisplay"]="subjectList";
 		}
 		////	AFFICHAGE
 		static::displayPage("VueIndex.php",$vDatas);
