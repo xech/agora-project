@@ -15,7 +15,7 @@ class Txt
 	protected static $trad=[];
 	protected static $detectEncoding=null;
 	protected static $IntlDateFormatter=null;
-	public static $tradList=["francais","english","espanol"];
+	public static $tradList=["francais","english","espanol","portugues"];
 
 	/*******************************************************************************************
 	 * CHARGE LES TRADUCTIONS
@@ -25,14 +25,17 @@ class Txt
 		//Charge les trads si besoin (et garde en session)
 		if(empty(self::$trad))
 		{
-			//Sélectionne la traduction
-			if(Req::isParam("curTrad") && preg_match("/^[A-Z]+$/i",Req::param("curTrad")))									{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
-			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))													{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad en fonction de l'user
-			elseif(!empty(Ctrl::$agora->lang))																				{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad en fonction de l'espace
-			elseif(empty($_SESSION["curTrad"])){																															//Trad en fonction du browser
-				if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^en-US/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))		{$_SESSION["curTrad"]="english";}
-				elseif(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && preg_match("/^es-ES/i",$_SERVER["HTTP_ACCEPT_LANGUAGE"]))	{$_SESSION["curTrad"]="espanol";}
-				elseif(empty($_SESSION["curTrad"]))																			{$_SESSION["curTrad"]="francais";}
+			//Sélectionne la traduction de l'appli
+			if(Req::isParam("curTrad") && preg_match("/^[A-Z]+$/i",Req::param("curTrad")))	{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
+			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))					{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad de la config de l'user
+			elseif(!empty(Ctrl::$agora->lang))												{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad de la config générale
+			elseif(empty($_SESSION["curTrad"])){																							//Trad en fonction du browser
+				$browserTrad=(!empty($_SERVER["HTTP_ACCEPT_LANGUAGE"]))  ?  $_SERVER["HTTP_ACCEPT_LANGUAGE"]  :  null;
+				if(preg_match("/^fr/i",$browserTrad))		{$_SESSION["curTrad"]="francais";}
+				elseif(preg_match("/^en/i",$browserTrad))	{$_SESSION["curTrad"]="english";}
+				elseif(preg_match("/^es/i",$browserTrad))	{$_SESSION["curTrad"]="espanol";}
+				elseif(preg_match("/^pt/i",$browserTrad))	{$_SESSION["curTrad"]="portugues";}
+				else										{$_SESSION["curTrad"]="francais";}
 			}
 			//Charge les trads (classe & methode)
 			if(in_array($_SESSION["curTrad"],self::$tradList))  {require_once "app/trad/".$_SESSION["curTrad"].".php";}
@@ -50,7 +53,7 @@ class Txt
 		//renvoie la trad / le $keyTrad
 		if(self::isTrad($keyTrad) && $addSlashes==false)	{return self::$trad[$keyTrad];}
 		elseif(self::isTrad($keyTrad) && $addSlashes==true)	{return addslashes(self::$trad[$keyTrad]);}
-		else												{return $keyTrad."*";}
+		else												{return $keyTrad;}
 	}
 
 	/*******************************************************************************************
@@ -117,12 +120,13 @@ class Txt
 		}
 	}
 
-	/********************************************************************************************
+	/*********************************************************************************************************************
 	 * SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
-	 * $scope="min" pour les noms de fichier ou la recherche :	"L'ÉTÉ (!)"  ->  "l'été (_)"
-	 * $scope="max" pour les identifiants ou les noms en bdd :	"L'ÉTÉ (!)"  ->  "l_ete_"
-	 ********************************************************************************************/
-	public static function clean($text, $scope="min", $replaceBy="_")
+	 * $scope="min" 	-> parametres de fichier Ical, etc :			"l'été &amp; (!?)"  ->  "l'été & (!?)"
+	 * $scope="normal"	-> noms de fichier, recherche d'objets, etc :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
+	 * $scope="max"		-> identifiants, noms en bdd, etc :			"l'été &amp; (!?)"  ->  "l_ete_"
+	 *********************************************************************************************************************/
+	public static function clean($text, $scope="normal", $replaceBy="_")
 	{
 		//Editeur TinyMce && injection XSS : enleve les balises html via "strip_tags()" && décode les caractères html (&quot; &amp; etc) via "html_entity_decode()"
 		$text=html_entity_decode(strip_tags($text));
@@ -132,7 +136,9 @@ class Txt
 			$text=strtr($text, $accentedChars);
 		}
 		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
-		$acceptedChars=($scope=="max")  ?  ['.','-','_']  :  ['.','-','_',',',':',' ','\'','(',')','[',']','@'];									//Liste des caractères spéciaux conservés
+		$acceptedChars=['.','-','_'];																												//Caractères spéciaux conservés : scope "max"
+		if($scope!="max")	{$acceptedChars=array_merge($acceptedChars, ["'",',',' ','(',')','[',']']);}											//Idem : scope "normal" et "min"
+		if($scope=="min")	{$acceptedChars=array_merge($acceptedChars, ['"','/','\\','*',':','<','>','@','&','?','!','#']);}						//Idem : scope "min"
 		foreach(preg_split('//u',$text) as $tmpChars){																								//pas de "str_split()" car ne reconnait pas les caractères accentués
 			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpChars) && !in_array($tmpChars,$acceptedChars))  {$text=str_replace($tmpChars,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
 		}
@@ -267,50 +273,12 @@ class Txt
 	public static function submitButton($keyTrad="record", $isMainButton=true)
 	{
 		return '<div class="'.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
-					<button type="submit">'.(self::isTrad($keyTrad)?self::trad($keyTrad):$keyTrad).' <img src="app/img/loading.png" class="submitButtonLoading"></button>
+					<button type="submit">'.self::trad($keyTrad).' <img src="app/img/loading.png" class="submitButtonLoading"></button>
 				</div>
 				<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
 				<input type="hidden" name="action" value="'.Req::$curAction.'">
 				<input type="hidden" name="formValidate" value="1">'.
 				(Req::isParam("typeId") ? '<input type="hidden" name="typeId" value="'.Req::param("typeId").'">' : null);
-	}
-
-	/*******************************************************************************************
-	 * LISTE DES BOUTONS "RADIO" D'UN INPUT
-	 * Chaque element de $tabRadios doit avoir une "value" + "trad"  ("img" optionnel)
-	 *******************************************************************************************/
-	public static function radioButtons($inputName, $curValue, $tabRadios)
-	{
-		$radioButtons=null;
-		foreach($tabRadios as $tmpRadio){
-			$inputId=$inputName.'_'.$tmpRadio["value"];
-			$inputChecked=($curValue==$tmpRadio["value"])  ?  "checked"  :  null;
-			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'">'  :  null;
-			$radioButtons.='<input type="radio" name="'.$inputName.'" value="'.$tmpRadio["value"].'" id="'.$inputId.'" '.$inputChecked.'>
-							<label for="'.$inputId.'">'.$inputImg.Txt::trad($tmpRadio["trad"]).'</label>';
-		}
-		return $radioButtons;
-	}
-
-	/*******************************************************************************************
-	 * MENU DE SÉLECTION DE LA LANGUE
-	 *******************************************************************************************/
-	public static function menuTrad($typeConfig, $selectedLang=null)
-	{
-		// Langue "francais" par défaut
-		if(empty($selectedLang))	{$selectedLang="francais";}
-		//Ouvre le dossier des langues & init le "Onchange"
-		$onchange=($typeConfig=="install")  ?  "redir('?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&curTrad='+this.value);"  :  "$('.menuTradIcon').attr('src','app/trad/'+this.value+'.png');";
-		// Affichage
-		$menuLangOptions=null;
-		foreach(scandir("app/trad/") as $tmpFileLang){
-			if(strstr($tmpFileLang,".php")){
-				$tmpLang=str_replace(".php","",$tmpFileLang);
-				$tmpLabel=($typeConfig=="user" && $tmpLang==Ctrl::$agora->lang)  ?  $tmpLang." (".Txt::trad("byDefault").")"  :  $tmpLang;
-				$menuLangOptions.= "<option value=\"".$tmpLang."\" ".($tmpLang==$selectedLang?"selected":null)."> ".$tmpLabel."</option>";
-			}
-		}
-		return "<select name='lang' onchange=\"".$onchange."\">".$menuLangOptions."</select> &nbsp; <img src='app/trad/".$selectedLang.".png' class='menuTradIcon'>";
 	}
 
 	/*******************************************************************************************

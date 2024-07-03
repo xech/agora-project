@@ -83,7 +83,7 @@ select[name="connectionSpace"]			{width:100%}
 	<?php } ?>
 
 	<!--LANGUE DE L'USER-->
-	<div class="objField"><div><img src="app/img/country.png"><?= Txt::trad("USER_langs") ?></div><div><?= Txt::menuTrad("user",$curObj->lang) ?></div></div>
+	<div class="objField"><div><img src="app/img/country.png"><?= Txt::trad("USER_langs") ?></div><div><?= MdlUser::selectTrad("user",$curObj->lang) ?></div></div>
 
 	<!--NOTIFICATION DE CREATION  && ADMIN GENERAL  &&  AGENDA PERSO DESACTIVE-->
 	<hr>

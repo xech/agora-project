@@ -469,7 +469,7 @@ class CtrlCalendar extends Ctrl
 			if(isset($_FILES["importFile"]) && is_file($_FILES["importFile"]["tmp_name"]))
 			{
 				//// Importe les événements via le Parser Ical.php
-				require 'ICal.php';
+				require 'ICalParser.php';
 				$ical=new ICal($_FILES["importFile"]["tmp_name"]);
 				//// Formate les evenements à importer
 				if(empty($ical->cal["VEVENT"]))  {Ctrl::notify("Ical import error");}
@@ -491,8 +491,8 @@ class CtrlCalendar extends Ctrl
 							$tmpEvt["dbDateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTEND"]));
 							if(strlen($tmpEvt["DTEND"])==8)  {$tmpEvt["dbDateEnd"]=date("Y-m-d H:i",(strtotime($tmpEvt["DTEND"])-86400));}//Les événements "jour" sont importés avec un jour de trop (cf. exports depuis G-Calendar)
 						}
-						$tmpEvt["dbTitle"]=Txt::clean($tmpEvt["SUMMARY"]);
-						if(!empty($tmpEvt["DESCRIPTION"]))  {$tmpEvt["dbDescription"]=Txt::clean($tmpEvt["DESCRIPTION"]);}
+						$tmpEvt["dbTitle"]=Txt::clean($tmpEvt["SUMMARY"],"min");
+						if(!empty($tmpEvt["DESCRIPTION"]))  {$tmpEvt["dbDescription"]=Txt::clean($tmpEvt["DESCRIPTION"],"min");}
 						//// Evenement périodique
 						if(!empty($tmpEvt["RRULE"]))
 						{
@@ -565,18 +565,18 @@ class CtrlCalendar extends Ctrl
 		self::getIcal($objCalendar);
 	}
 
-	/********************************************************************************************
-	 * CRÉATION DU FICHIER .ICAL : TEST VIA https://icalendar.org/validator.html
-	 ********************************************************************************************/
+	/****************************************************************************************************************
+	 * EXPORT .ICAL :
+	 * Tester affichage Thunderbird / Outlook / Google Calendar  &&  tester https://icalendar.org/validator.html
+	 ****************************************************************************************************************/
 	public static function getIcal($curObj, $tmpFile=false)
 	{
 		////	Init les retours à la ligne
-		$newLine="\r\n";
+		$NL="\r\n";
 		////	Evenement spécifié : récupère l'agenda principal
 		if($curObj::objectType=="calendarEvent"){
 			$eventList=[$curObj];
 			$objCalendar=$curObj->containerObj();
-			$icalCalname=null;
 		}
 		////	Agenda spécifié : récupère ses événements
 		elseif($curObj::objectType=="calendar"){
@@ -584,78 +584,86 @@ class CtrlCalendar extends Ctrl
 			$periodEnd=time()+(86400*365*5);//Time + 5 ans
 			$eventList=$curObj->eventList($periodBegin,$periodEnd,false,false,1);//$filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=1
 			$objCalendar=$curObj;
-			$icalCalname="X-WR-CALNAME:".$objCalendar->title.$newLine;
 		}else{return false;}
 
-		////	Prépare le fichier Ical
-		$ical=	"BEGIN:VCALENDAR".$newLine.
-				"METHOD:PUBLISH".$newLine.
-				"VERSION:2.0".$newLine.
-				$icalCalname.
-				"PRODID:-//Agora-Project//".self::$agora->name."//EN".$newLine.
-				"X-WR-TIMEZONE:".self::$curTimezone.$newLine.
-				"CALSCALE:GREGORIAN".$newLine.
-				"BEGIN:VTIMEZONE".$newLine.
-				"TZID:".self::$curTimezone.$newLine.
-				"X-LIC-LOCATION:".self::$curTimezone.$newLine.
-				"BEGIN:DAYLIGHT".$newLine.
-				"TZOFFSETFROM:".self::icalHour().$newLine.
-				"TZOFFSETTO:".self::icalHour(1).$newLine.
-				"TZNAME:CEST".$newLine.
-				"DTSTART:19700329T020000".$newLine.
-				"RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3".$newLine.
-				"END:DAYLIGHT".$newLine.
-				"BEGIN:STANDARD".$newLine.
-				"TZOFFSETFROM:".self::icalHour(1).$newLine.
-				"TZOFFSETTO:".self::icalHour().$newLine.
-				"TZNAME:CET".$newLine.
-				"DTSTART:19701020T030000".$newLine.
-				"RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10".$newLine.
-				"END:STANDARD".$newLine.
-				"END:VTIMEZONE".$newLine;
-		//Ajoute chaque evenement (plusieurs fois si l'evt est périodique)
+		////	Entête du fichier Ical
+		$ical=  'BEGIN:VCALENDAR'.$NL.
+				'VERSION:2.0'.$NL.
+				'PRODID:-//Omnispace.fr//Omnispace Calendar//EN'.$NL.
+				'CALSCALE:GREGORIAN'.$NL.
+				'METHOD:PUBLISH'.$NL.
+				'X-WR-CALNAME:'.Txt::clean($objCalendar->title).$NL.
+				'X-WR-TIMEZONE:'.self::$curTimezone.$NL.
+				'BEGIN:VTIMEZONE'.$NL.
+				'TZID:'.self::$curTimezone.$NL.
+				'X-LIC-LOCATION:'.self::$curTimezone.$NL.
+				"BEGIN:DAYLIGHT".$NL.
+				"TZOFFSETFROM:".self::icalHour().$NL.
+				"TZOFFSETTO:".self::icalHour(1).$NL.
+				"TZNAME:CEST".$NL.
+				"DTSTART:19700329T020000".$NL.
+				"RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3".$NL.
+				"END:DAYLIGHT".$NL.
+				"BEGIN:STANDARD".$NL.
+				"TZOFFSETFROM:".self::icalHour(1).$NL.
+				"TZOFFSETTO:".self::icalHour().$NL.
+				"TZNAME:CET".$NL.
+				"DTSTART:19701020T030000".$NL.
+				"RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10".$NL.
+				"END:STANDARD".$NL.
+				"END:VTIMEZONE".$NL;
+
+		////	Ajoute chaque evenement (plusieurs fois si l'evt est périodique)
 		foreach($eventList as $tmpEvt)
 		{
-			//Init
-			$icalPeriod=$periodDateEnd=$icalCategories=null;
-			if($tmpEvt->periodDateEnd)  {$periodDateEnd=";UNTIL=".self::icalDate($tmpEvt->periodDateEnd);}
-			//Périodicité (année/jour/mois)
-			if($tmpEvt->periodType=="year"){
-				$icalPeriod="RRULE:FREQ=YEARLY;INTERVAL=1".$periodDateEnd.$newLine;
-			}elseif($tmpEvt->periodType=="weekDay" && !empty($tmpEvt->periodValues)){
-				$tmpEvtPeriodValues=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));
-				$icalPeriod="RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=".implode(",",$tmpEvtPeriodValues).$periodDateEnd.$newLine;
-			}elseif($tmpEvt->periodType=="month"){
-				$icalPeriod="RRULE:FREQ=MONTHLY;INTERVAL=1".$periodDateEnd.$newLine;
-			}
-			//Categories de l'agenda
-			if(!empty($tmpEvt->_idCat))  {$icalCategories="CATEGORIES:".Ctrl::getObj("calendarCategory",$tmpEvt->_idCat)->title.$newLine;}
-			//Description
-			$icalDescription=$tmpEvt->description;																	//Description principale
-			if(count($tmpEvt->affectedCalendars())>0)  {$icalDescription.=" - ".$tmpEvt->affectedCalendarsLabel();}	//Ajoute les agendas où l'evt est affecté
-			if(!empty($tmpEvt->periodValues)){																		//Ajoute la périodicité
-				$icalDescription.=" - ".Txt::trad("CALENDAR_period_".$tmpEvt->periodType)." : ";
-				foreach(Txt::txt2tab($tmpEvt->periodValues) as $tmpVal){
-					if($tmpEvt->periodType=="weekDay")		{$icalDescription.=Txt::trad("day_".$tmpVal).", ";}
-					elseif($tmpEvt->periodType=="month")	{$icalDescription.=Txt::trad("month_".$tmpVal).", ";}
+			//// Init
+			$evtModified=$evtPeriod=$evtDescription=$icalCategories=null;
+			//// Date dernière modif
+			if(!empty($tmpEvt->dateModif))  {$evtModified='LAST-MODIFIED:'.self::icalDate($tmpEvt->dateModif).$NL;}
+			//// Categories de l'agenda
+			if(!empty($tmpEvt->_idCat))  {$icalCategories='CATEGORIES:'.Ctrl::getObj("calendarCategory",$tmpEvt->_idCat)->title.$NL;}
+			//// Périodicité : année / mois / jour + fin de périodicité
+			if(!empty($tmpEvt->periodType)){
+				if($tmpEvt->periodType=="year")			{$evtPeriod='RRULE:FREQ=YEARLY;INTERVAL=1';}
+				elseif($tmpEvt->periodType=="month")	{$evtPeriod='RRULE:FREQ=MONTHLY;INTERVAL=1';}
+				elseif($tmpEvt->periodType=="weekDay"){
+					$tmpEvtBYDAY=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));
+					$evtPeriod='RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY='.implode(',',$tmpEvtBYDAY);
 				}
+				if(!empty($tmpEvt->periodDateEnd))  {$evtPeriod.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}
+				$evtPeriod.=$NL;
 			}
-			$icalDescription="DESCRIPTION:".Txt::clean($icalDescription).$newLine;//Description nettoyé (tester import sur thunderbird & ical Validator)
-			//Ajoute l'evenement
-			$ical.= "BEGIN:VEVENT".$newLine.
-					"CREATED:".self::icalDate($tmpEvt->dateCrea).$newLine.
-					"UID:".$tmpEvt->md5Id().$newLine.
-					"DTEND;TZID=".self::icalDate($tmpEvt->dateEnd,true).$newLine.
-					"SUMMARY:".$tmpEvt->title.$newLine.
-					"LAST-MODIFIED:".self::icalDate($tmpEvt->dateModif).$newLine.
-					"DTSTAMP:".self::icalDate(date("Y-m-d H:i")).$newLine.
-					"DTSTART;TZID=".self::icalDate($tmpEvt->dateBegin,true).$newLine.
-					"DTEND;TZID=".self::icalDate($tmpEvt->dateEnd,true).$newLine.
-					$icalPeriod.$icalCategories.$icalDescription.
-					"SEQUENCE:0".$newLine.
-					"END:VEVENT".$newLine;
+			//// Description
+			if(!empty($tmpEvt->description)){
+				$evtDescription=$tmpEvt->description;																	//Description principale
+				if(count($tmpEvt->affectedCalendars())>0)  {$evtDescription.=" - ".$tmpEvt->affectedCalendarsLabel();}	//Ajoute les agendas où l'evt est affecté
+				if(!empty($tmpEvt->periodValues)){																		//Ajoute la périodicité
+					$evtDescription.=" - ".Txt::trad("CALENDAR_period_".$tmpEvt->periodType)." : ";
+					foreach(Txt::txt2tab($tmpEvt->periodValues) as $tmpVal){
+						if($tmpEvt->periodType=="weekDay")		{$evtDescription.=Txt::trad("day_".$tmpVal).", ";}
+						elseif($tmpEvt->periodType=="month")	{$evtDescription.=Txt::trad("month_".$tmpVal).", ";}
+					}
+				}
+				$evtDescription="DESCRIPTION:".Txt::clean($evtDescription,"min").$NL;
+			}
+			//// Ajoute l'evenement !
+			$ical.= 'BEGIN:VEVENT'.$NL.
+					'UID:'.$tmpEvt->md5Id().$NL.
+					'SEQUENCE:0'.$NL.
+					'STATUS:CONFIRMED'.$NL.
+					"CREATED:".self::icalDate($tmpEvt->dateCrea).$NL.
+					$evtModified.
+					"DTSTAMP:".self::icalDate(date("Y-m-d H:i")).$NL.
+					'DTSTART;TZID='.self::icalDate($tmpEvt->dateBegin,true).$NL.
+					$evtPeriod.
+					'DTEND;TZID='.self::icalDate($tmpEvt->dateEnd,true).$NL.
+					'SUMMARY:'.Txt::clean($tmpEvt->title,"min").$NL.
+					$evtDescription.
+					$icalCategories.
+					'END:VEVENT'.$NL;
 		}
-		//Fin du ical
+
+		////	Fin du fichier ical
 		$ical.="END:VCALENDAR";
 
 		////	Enregistre un fichier Ical temporaire et on renvoie son "Path"
@@ -668,35 +676,36 @@ class CtrlCalendar extends Ctrl
 		}
 		////	Affiche directement le fichier .Ical
 		else{
+			$icsFilename='Calendar_'.Txt::clean($objCalendar->title,"max").'_export-'.date("d-m-Y").'.ics';
 			header("Content-type: text/calendar; charset=utf-8");
-			header("Content-Disposition: inline; filename=".Txt::clean($objCalendar->title)."_".date("d-m-Y").".ics");
+			header("Content-Disposition: inline; filename=".$icsFilename);
 			echo $ical;
 		}
 	}
 
 	/********************************************************************************************
-	 * EXPORT .ICAL : FORMATE L'HEURE
-	 ********************************************************************************************/
-	public static function icalHour($timeLag=0)
-	{
-		// Exemple avec "-5:30"
-		$hourTimezone=Tool::$tabTimezones[self::$curTimezone];
-		$valueSign=(substr($hourTimezone,0,1)=="-") ? '-' : '+';				//"-"
-		$hourAbsoluteVal=str_replace(['-','+'],'',substr($hourTimezone,0,-3));	//"5"
-		$hourAbsoluteVal+=$timeLag;												//Si $timeLag=2 -> "7"
-		if($hourAbsoluteVal<10)	{$hourAbsoluteVal="0".$hourAbsoluteVal;}		//"05"
-		$minutes=substr($hourTimezone,-2);										//"30"
-		return $valueSign.$hourAbsoluteVal.$minutes;//Retourne "-0530"
-	}
-
-	/********************************************************************************************
 	 * EXPORT .ICAL : FORMATE LA DATE
 	 ********************************************************************************************/
-	public static function icalDate($dateTime, $timezone=false)
+	public static function icalDate($dateTime, $addTimezone=false)
 	{
 		if(!empty($dateTime)){
-			$dateTime=date("Ymd",strtotime($dateTime))."T".date("Hi",strtotime($dateTime))."00";//Ex: "20151231T235900Z"
-			return ($timezone==true) ? self::$curTimezone.":".$dateTime : str_replace("T000000Z","T235900Z",$dateTime."Z");
+			$timestamp=strtotime($dateTime);
+			$icalDate=date("Ymd",$timestamp).'T'.date("His",$timestamp);		//exple:  20301231T235959
+			if($addTimezone==true)	{return self::$curTimezone.':'.$icalDate;}	//exple:  Europe/Paris:20301231T235959
+			else					{return $icalDate.'Z';}						//exple:  20301231T235959Z
 		}
+	}
+	
+	/********************************************************************************************
+	 * EXPORT .ICAL : FORMATE L'HEURE
+	 ********************************************************************************************/
+	public static function icalHour($hourDiff=0)
+	{
+		$hourTimezone=Tool::$tabTimezones[self::$curTimezone];			//Récupère par exemple "-5:00"
+		$sign=(substr($hourTimezone,0,1)=="-")  ?  '-'  :  '+';			//"-"
+		$hourAbs=intval(str_replace(['-','+',':00'],'',$hourTimezone));	//"5"
+		$hourAbs+=$hourDiff;											//Ajoute X heure à la $hourTimezone de référence
+		if($hourAbs<10)	{$hourAbs="0".$hourAbs;}						//"05"
+		return $sign.$hourAbs."0000";									//Retourne "-050000"
 	}
 }

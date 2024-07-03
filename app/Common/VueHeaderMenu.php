@@ -7,10 +7,11 @@
 #headerBurgerLogo						{margin-left:10px;}
 #headerMenuLeft img[src*=arrowRight]	{margin:0px 4px 0px 8px;}
 #headerBar>#headerMenuContext			{display:none;}/*surcharge "#headerBar>div" avec "display:table-cell"*/
-#headerMenuContext>div					{display:table; margin:0px;}
-#headerMenuContext>div>div				{display:table-cell; padding:0px; padding-right:10px!important;}
-#headerMenuContextOmnispace				{text-align:center; margin-top:15px;}/*Logo Omnispace*/
-#headerMenuContextRight					{border-left:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
+#headerMenuContextTab					{display:table;}
+#headerMenuContextTab>div				{display:table-cell;}
+#headerMenuContextTabRight				{border-left:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
+#headerMenuContextOmnispace				{text-align:center;}
+#headerMenuContextOmnispace img			{margin-top:10px;}
 .vSwitchSpace>div:first-child			{text-align:right!important;}/*icone "arrow*/
 .vSwitchSpace img[src*=edit]			{visibility:hidden; float:right; cursor:pointer; margin-left:15px; height:20px; transform:scaleX(-1);}/*"scaleX" : inverse l'image*/
 .vSwitchSpace:hover img[src*=edit]		{visibility:visible;}/*"scaleX" : inverse l'image*/
@@ -30,9 +31,8 @@
 	#headerSpaceLabel						{max-width:200px; text-transform:lowercase;}
 	#headerSpaceLabel:first-letter			{text-transform:uppercase;}
 	#headerBurgerLogo						{margin-left:5px;}
-	#headerMenuContext>div, #headerMenuContext>div>div  {display:block; padding-right:0px!important; border:0px;}
-	#headerMenuContextRight					{border:0px;}
-	#headerMenuContextOmnispace				{display:none;}
+	#headerMenuContextTab, #headerMenuContextTab>div, #headerMenuContextTab>div>div  {display:block;}
+	#headerMenuContextTabRight				{border:0px;}
 	/*MENU DES MODULES (intégré dans le "#menuMobileOne" de VueStructure.php)*/
 	#headerModuleTab						{display:none;}										/*liste des modules masqués dans la barre de menu..*/
 	.vHeaderModule							{display:inline-block; width:48%; text-align:left;}	/*..puis copiés dans le menu mobile*/
@@ -50,7 +50,7 @@
 		echo '<img src="app/img/'.(Req::isMobile()?'logoMobile':'logo').'.png" id="headerMainLogo">';
 		////	VALIDATION D'INSCRIPTION D'USER
 		if($userInscriptionValidate==true && Req::isMobile()==false)
-			{echo '<span class="pulsate"><img src="app/img/check.png"> '.Txt::trad("userInscriptionPulsate").'</span><img src="app/img/arrowRightBig.png">';}
+			{echo '<span class="pulsate"><img src="app/img/user/subscribe.png">&nbsp; '.Txt::trad("userInscriptionPulsate").'</span><img src="app/img/arrowRightBig.png">';}
 		////	LABEL DE L'USER COURANT  +  DE L'ESPACE COURANT  +  ICONE BURGER
 		if(Ctrl::$curUser->isUser() && Req::isMobile()==false)
 			{echo '<div id="headerUserLabel">'.Ctrl::$curUser->getLabel().'</div><img src="app/img/arrowRightBig.png">';}
@@ -60,18 +60,18 @@
 
 	<!--MENU CONTEXT PRINCIPAL-->
 	<div class="menuContext" id="headerMenuContext">
-		<div>
+		<div id="headerMenuContextTab">
+			<!--MENU DE GAUCHE-->
 			<div>
 				<?php
 				////	RECHERCHER SUR L'ESPACE (GUESTS & USERS)
 				echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=misc&action=Search\')"><div class="menuIcon"><img src="app/img/search.png"></div><div>'.Txt::trad("HEADER_searchElem").'</div></div>';
-				////	CONNEXION DE GUEST
+				////	CONNEXION DE GUEST  OU  MENU DES USERS
 				if(Ctrl::$curUser->isUser()==false)  {echo '<div class="menuLine" onclick="redir(\'?disconnect=1\')"><div class="menuIcon"><img src="app/img/logout.png"></div><div>'.Txt::trad("connect").'</div></div>';}
-				////	MENU DES USERS
 				else
 				{
 					////	VALIDE L'INSCRIPTION D'USERS  +  ENVOI D'INVITATION  +  DOCUMENTATION PDF
-					if($userInscriptionValidate==true)			{echo '<div class="menuLine pulsate" onclick="lightboxOpen(\'?ctrl=user&action=UserInscriptionValidate\')" title="'.Txt::trad("userInscriptionValidateTooltip").'"><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("userInscriptionValidate").'</div></div>';}
+					if($userInscriptionValidate==true)			{echo '<div class="menuLine pulsate" onclick="lightboxOpen(\'?ctrl=user&action=UserInscriptionValidate\')" title="'.Txt::trad("userInscriptionValidateTooltip").'"><div class="menuIcon"><img src="app/img/user/subscribe.png"></div><div>'.Txt::trad("userInscriptionValidate").'</div></div>';}
 					if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" title="'.Txt::trad("USER_sendInvitationTooltip").'"><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
 					$docLink=(Req::isMobileApp())  ?  'redir(\'?ctrl=misc&action=ExternalGetFile&DOCFILE='.urlencode(Txt::trad("DOCFILE")).'\')'  :  'lightboxOpen(\''.Txt::trad("DOCFILE").'\')';
 					echo '<div class="menuLine" onclick="'.$docLink.'"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Txt::trad("HEADER_documentation").'</div></div>';
@@ -99,38 +99,40 @@
 					if(Req::isSpaceSwitch())  {echo '<div class="menuLine" onclick="if(confirm(\''.Txt::trad("connectSpaceSwitchConfirm",true).'\')) redir(\''.Req::connectSpaceSwitchUrl().'\')"><div class="menuIcon"><img src="app/img/login.png"></div><div>'.Txt::trad("connectSpaceSwitch").'</div></div>';}
 					echo '<div class="menuLine" onclick="if(confirm(\''.Txt::trad("disconnectSpaceConfirm",true).'\')) redir(\'?disconnect=1\')"><div class="menuIcon"><img src="app/img/logout.png"></div><div>'.Txt::trad("disconnectSpace").'</div></div>';
 				}
-				////	LOGO OMNISPACE (GUESTS & USERS)
-				echo '<hr><div id="headerMenuContextOmnispace" onclick="window.open(\''.OMNISPACE_URL_PUBLIC.'\')" title="'.OMNISPACE_URL_LABEL.'"><img src="app/img/logoLabel.png"></div>';
+				////	SEPARATEUR EN MODE "MOBILE"
+				if(Req::isMobile())  {echo "<hr>";}
 				?>
 			</div>
-			<div id="headerMenuContextRight">
-				<?php
-				////	PANNEAU DE DROITE : ESPACES DISPONIBLES  +  RACCOURCIS
-				if($showSpaceList==true || !empty($pluginsShortcut))
-				{
-					////	ESPACES DISPONIBLES
-					if($showSpaceList==true){
-						echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/space.png"></div><div>'.Txt::trad("HEADER_displaySpace").' :</div></div>';
-						foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
-							$iconSpaceEdit=($tmpSpace->editRight())  ?  '<img src="app/img/edit.png" onclick="lightboxOpen(\''.$tmpSpace->getUrl("edit").'\')" title="'.Txt::trad("SPACE_config").'">'  :  null;
-							echo '<div class="menuLine vSwitchSpace '.($tmpSpace->isCurSpace()?'linkSelect':null).'"><div class="menuIcon"><img src="app/img/arrowRightBig.png"></div><div><span onclick="redir(\'?_idSpaceAccess='.$tmpSpace->_id.'\')" title="'.Txt::tooltip($tmpSpace->description).'">'.$tmpSpace->name.'</span>'.$iconSpaceEdit.'</div></div>';
-						}
-					}
-					////	Affiche les plugins "shortcut" ("reduce()" pour réduire la taille du texte et des tags html, surtout sur le label principal)
-					if(!empty($pluginsShortcut)){
-						if($showSpaceList==true)  {echo '<hr>';}
-						echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/shortcut.png"></div><div>'.Txt::trad("HEADER_shortcuts").' :</div></div>';
-						foreach($pluginsShortcut as $tmpObj){
-							echo '<div class="menuLine" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">
-									<div onclick="'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
-									<div onclick="'.$tmpObj->pluginJsLabel.'">'.$tmpObj->pluginLabel.'</div>
-								  </div>';
-						}
+			<!--MENU DE DROITE-->
+			<?php
+			if($showSpaceList==true || !empty($pluginsShortcut))
+			{
+				echo '<div id="headerMenuContextTabRight">';
+				////	ESPACES DISPONIBLES
+				if($showSpaceList==true){
+					echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/space.png"></div><div>'.Txt::trad("HEADER_displaySpace").' :</div></div>';
+					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
+						$iconSpaceEdit=($tmpSpace->editRight())  ?  '<img src="app/img/edit.png" onclick="lightboxOpen(\''.$tmpSpace->getUrl("edit").'\')" title="'.Txt::trad("SPACE_config").'">'  :  null;
+						echo '<div class="menuLine vSwitchSpace '.($tmpSpace->isCurSpace()?'linkSelect':null).'"><div class="menuIcon"><img src="app/img/arrowRightBig.png"></div><div><span onclick="redir(\'?_idSpaceAccess='.$tmpSpace->_id.'\')" title="'.Txt::tooltip($tmpSpace->description).'">'.$tmpSpace->name.'</span>'.$iconSpaceEdit.'</div></div>';
 					}
 				}
-				?>
-			</div>
+				////	Affiche les plugins "shortcut" ("reduce()" pour réduire la taille du texte et des tags html, surtout sur le label principal)
+				if(!empty($pluginsShortcut)){
+					if($showSpaceList==true)  {echo '<hr>';}
+					echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/shortcut.png"></div><div>'.Txt::trad("HEADER_shortcuts").' :</div></div>';
+					foreach($pluginsShortcut as $tmpObj){
+						echo '<div class="menuLine" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">
+								<div onclick="'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
+								<div onclick="'.$tmpObj->pluginJsLabel.'">'.$tmpObj->pluginLabel.'</div>
+							</div>';
+					}
+				}
+				echo '</div>';
+			}
+			?>
 		</div>
+		<!--LOGO PRINCIPAL-->
+		<div id="headerMenuContextOmnispace" onclick="window.open('<?= OMNISPACE_URL_PUBLIC ?>')" title="<?= OMNISPACE_URL_LABEL ?>"><hr><img src="app/img/logoLabel.png"></div>
 	</div>
 
 	<!--MODULES DISPONIBLES-->

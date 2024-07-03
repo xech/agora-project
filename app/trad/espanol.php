@@ -258,6 +258,10 @@ class Trad extends Txt
 			"OBJECTuser"=>"usuario",
 
 			////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
+			"MAIL_sendOk"=>"¡ E-Mail ha sido enviado!",						//ne pas modifier la cle de la trad ! (cf. "Tool::sendMail()")
+			"MAIL_sendNotOk"=>"El correo electrónico no se pudo enviar..",	//Idem
+			"MAIL_recipients"=>"destinatarios",								//Idem
+			"MAIL_attachedFileError"=>"El archivo no se agregó al correo electrónico porque es demasiado grande",//Idem
 			"MAIL_hello"=>"Hola",
 			"MAIL_hideRecipients"=>"Ocultar destinatarios",
 			"MAIL_hideRecipientsTooltip"=>"Poner todos los destinatarios en copia oculta. Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
@@ -272,10 +276,7 @@ class Trad extends Txt
 			"MAIL_fileMaxSize"=>"Todos sus archivos adjuntos no deben exceder los 15 MB, algunos servicios de mensajería pueden rechazar correos electrónicos más allá de este límite. ¿ Enviar de todos modos ?",
 			"MAIL_sendButton"=>"Enviar correo electrónico",
 			"MAIL_sendBy"=>"Enviado por",//"Envoyé par" M. Trucmuche
-			"MAIL_sendOk"=>"El correo electrónico ha sido enviado !",
 			"MAIL_sendNotif"=>"El correo electrónico de notificación ha sido enviado !",
-			"MAIL_notSend"=>"El correo electrónico no se pudo enviar",
-			"MAIL_notSendEverybody"=>"El correo electrónico no se envió a todos los destinatarios: si es posible, verifique la validez de los correos electrónicos",
 			"MAIL_fromTheSpace"=>"desde el espacio",//"depuis l'espace Bidule"
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- creado por",//boby
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificado por",//boby
@@ -671,8 +672,8 @@ class Trad extends Txt
 			// Invitation
 			"USER_sendInvitation"=>"Enviar invitaciones por email",
 			"USER_sendInvitationTooltip"=>"Envía invitaciones a tus contactos, para crear una cuenta de usuario y unirse al espacio de trabajo.<hr><img src='app/img/google.png' height=15> Si tienes una cuenta de Google, podrás enviar invitaciones a tus contactos de Gmail.",
-			"USER_mailInvitationObject"=>"Invitación de ", // ..Jean DUPOND
-			"USER_mailInvitationFromSpace"=>"le invita a ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
+			"USER_mailInvitationObject"=>"Invitación de", // ..Jean DUPOND
+			"USER_mailInvitationFromSpace"=>"le invita al espacio ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Haga clic aquí para confirmar la invitación",
 			"USER_mailInvitationWait"=>"Invitaciones a confirmar",
 			"USER_exired_idInvitation"=>"La enlace de su invitación ha caducado",
@@ -824,8 +825,8 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Añadir un calendario compartido",
 			"CALENDAR_addSharedCalendarTooltip"=>"Añadir un calendario compartido : para reservar une habitación, vehiculo, vídeo, etc.",
 			"CALENDAR_exportIcal"=>"Exportar los eventos (iCal)",
-			"CALENDAR_icalUrl"=>"Copie el enlace/url para ver el calendario en una aplicación externa",
-			"CALENDAR_icalUrlCopy"=>"Permite la lectura de los eventos del calendario en formato Ical, a través de una aplicación externa como Microsoft Outlook, Google Calendar, Mozilla Thunderbird, etc.",
+			"CALENDAR_icalUrl"=>"Copie el enlace (url) para mostrar el calendario desde un calendario externo",
+			"CALENDAR_icalUrlCopy"=>"Permite el acceso de lectura al calendario desde un calendario externo como Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importar los eventos (iCal)",
 			"CALENDAR_ignoreOldEvt"=>"No importe eventos de más de un año",
 			"CALENDAR_importIcalState"=>"Estado",
@@ -854,7 +855,7 @@ class Trad extends Txt
 			"CALENDAR_deleteEvtDate"=>"¿ Eliminar sólo en esta fecha ?",
 			"CALENDAR_evtPrivate"=>"Évento privado",
 			"CALENDAR_evtAutor"=>"Eventos que he creado",
-			"CALENDAR_evtAutor2"=>"Mostrar solo eventos que he creado",
+			"CALENDAR_evtAutorInfo"=>"Mostrar solo eventos que he creado",
 			"CALENDAR_noEvt"=>"No hay eventos",
 			"CALENDAR_synthese"=>"Síntesis de los calendarios",
 			"CALENDAR_calendarsPercentBusy"=>"Calendarios ocupados",  // Agendas occupés : 2/5
@@ -1013,8 +1014,6 @@ class Trad extends Txt
 			"MAIL_resend"=>"Reenviar este correo electrónico",
 			"MAIL_resendInfo"=>"Recupere el contenido de este correo electrónico e intégrelo directamente en el editor para un nuevo envío",
 			"MAIL_historyEmpty"=>"No correo electrónico",
-			"MAIL_recipients"=>"Destinatarios",
-			"MAIL_attachedFileError"=>"El archivo no se agregó al correo electrónico porque es demasiado grande",
 		);
 	}
 
@@ -1035,14 +1034,8 @@ class Trad extends Txt
 			$dateList[$date]="Lunes de Pascua";
 		}
 
-		//Fêtes fixes	$dateList[$year."-01-01"]="Día de Año Nuevo";
-		$dateList[$year."-01-06"]="Epifanía";
-		$dateList[$year."-05-01"]="Día del Trabajo";
-		$dateList[$year."-08-15"]="Asunción";
-		$dateList[$year."-10-12"]="Día de la Hispanidad";
-		$dateList[$year."-11-01"]="Toussaint";
-		$dateList[$year."-12-06"]="Día de la Constitución";
-		$dateList[$year."-12-08"]="Inmaculada Concepción";
+		//Fêtes fixes
+		$dateList[$year."-01-01"]="Año Nuevo";
 		$dateList[$year."-12-25"]="Navidad";
 
 		//Retourne le résultat

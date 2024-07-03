@@ -166,7 +166,7 @@ class Db
 	{
 		$dumpPath=PATH_DATAS."BackupDatabase_".db_name.".sql";
 		//Récupère le dump via "exec()"
-		if(Req::isLinux()){
+		if(Req::isLinux() && function_exists('exec')){
 			exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);
 		}
 		//Créé un dump

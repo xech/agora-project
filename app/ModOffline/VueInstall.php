@@ -23,12 +23,10 @@ $(function(){
 		if($("[name='adminPassword']").val()!=$("[name='adminPasswordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError"); ?>","warning");  return false;}
 		//Formulaire validé et confirmé : "Post" via Ajax
 		if(confirm("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
-			submitButtonLoading();																												//Affiche l'icone "loading"
-			$.ajax({url:"index.php",data:$(this).serialize()}).done(function(result){															//Valide le formulaire
-				if(typeof result!="undefined"){																									//Verif si ya un retour
-					if(/installOK/i.test(result))	{setTimeout(function(){redir("index.php?disconnect=1&notify=INSTALL_installOk");},3000);}	//Redir en page d'accueil si install OK (tjs avec "test()" et "setTimeout()" !)
-					else							{notify(result,"warning");  $(".submitButtonLoading").hide()}								//Sinon Affiche un message d'erreur et masque le "loading"
-				}
+			submitButtonLoading();																											//Affiche l'icone "loading"
+			$.ajax({url:"index.php",data:$(this).serialize()}).done(function(result){														//Valide le formulaire
+				if(/installOk/i.test(result))	{setTimeout(function(){ redir("index.php?disconnect=1&notify=INSTALL_installOk"); },5000);}	//Redir en page d'accueil si install OK (tjs avec"setTimeout()" !)
+				else if(result)					{notify(result,"warning");  $(".submitButtonLoading").hide()}								//Sinon Affiche un message d'erreur et masque le "loading"
 			});
 		}
 	});
@@ -59,7 +57,7 @@ h3								{margin-top:20px; font-style:italic;}
 				<!--HEADER-->
 				<div class="vHeader"><h1><img src="app/img/install.png"> Install <img src="app/img/logoLabel.png"></h1></div>
 				<!--LANGUE-->
-				<div class="objField"><div><?= Txt::trad("USER_langs") ?></div><div><?= Txt::menuTrad("install",Req::param("curTrad")) ?></div></div>
+				<div class="objField"><div><?= Txt::trad("USER_langs") ?></div><div><?= MdlAgora::selectTrad("install",Req::param("curTrad")) ?></div></div>
 				<!--CONFIG DB-->
 				<h3><?= Txt::trad("INSTALL_dbConnect") ?></h3>
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbHost") ?></div><div><input type="text" name="db_host"></div></div>
@@ -89,7 +87,7 @@ h3								{margin-top:20px; font-style:italic;}
 				<div class="objField">
 					<div><?= Txt::trad("SPACE_publicSpace") ?></div>
 					<select name="spacePublic">
-						<option value="0"><?= Txt::trad("no") ?></option>
+						<option><?= Txt::trad("no") ?></option>
 						<option value="1"><?= Txt::trad("yes") ?></option>
 					</select>
 				</div>

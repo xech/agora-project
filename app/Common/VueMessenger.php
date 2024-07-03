@@ -192,11 +192,11 @@ function proposeVisio()
 	if($(".messengerUserCheckbox:checked").length==0)  {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	else if(confirm(visioButtonLabel+" ?"))
 	{
-		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";														//Init la liste des destinaires avec l'user courant
-		visioURL="<?= Ctrl::$agora->visioUrl()."-".Txt::clean(trim(Ctrl::$curUser->getLabel("firstName")),"max") ?>";	//Init l'Url de la visio avec l'user courant
-		$(".messengerUserCheckbox:checked").each(function(){															//Label de chaque user sélectionné :
-			visioUsers+=" & "+$(this).attr("data-user-label");															//- ajoute dans la liste des destinaires
-			visioURL+="-"+$(this).attr("data-user-label-visio");														//- ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "roomId"
+		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";												//Init la liste des destinaires avec l'user courant
+		visioURL="<?= Ctrl::$agora->visioUrl()."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";	//Init l'Url de la visio avec l'user courant
+		$(".messengerUserCheckbox:checked").each(function(){													//Label de chaque user sélectionné :
+			visioUsers+=" & "+$(this).attr("data-user-label");													//- ajoute dans la liste des destinaires
+			visioURL+="-"+$(this).attr("data-user-label-visio");												//- ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "roomId"
 		});
 		var visioMessage="<?= Txt::trad("MESSENGER_visioProposeToUsers") ?> "+visioUsers+"<img src='app/img/visioSmall.png'>";					//Message "Cliquez ici pour lancer la visioconférence : Will & Boby"
 		$("#messengerMessageForm").val("<a href=\"javascript:launchVisio('"+visioURL+"')\" class='launchVisioMessage'>"+visioMessage+"</a>");	//Post le message dans le messenger avec le "launchVisio()" : tester le lien car filtré via "Db::format()" & CO !

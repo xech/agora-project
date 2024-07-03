@@ -91,8 +91,8 @@ class Trad extends Txt
 			////	Password : connexion d'user / edition d'user / reset du password
 			"password"=>"Mot de passe",
 			"passwordModify"=>"Modifier le mot de passe",
-			"passwordToModify"=>"Mot de passe temporaire (à modifier à la connexion)",//Mail d'envoi d'invitation
-			"passwordToModify2"=>"Mot de passe (à modifier si besoin)",//Mail de création de compte
+			"passwordToModify"=>"Mot de passe temporaire (à modifier en page de connexion)",		//Mail d'envoi d'invitation
+			"passwordToModify2"=>"Mot de passe (à modifier si besoin sur votre profil utilisateur)",//Mail de création de user
 			"passwordVerif"=>"Confirmer mot de passe",
 			"passwordTooltip"=>"Merci de remplir les champs uniquement si vous souhaitez changer de mot de passe",
 			"passwordInvalid"=>"Votre mot de passe doit comporter des chiffres, lettres et au moins 6 caractères",
@@ -257,7 +257,11 @@ class Trad extends Txt
 			"OBJECTtaskFolder"=>"dossier",
 			"OBJECTuser"=>"utilisateur",
 
-			////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
+			////	Envoi d'un email
+			"MAIL_sendOk"=>"L'email a bien été envoyé",				//ne pas modifier la cle de la trad ! (cf. "Tool::sendMail()")
+			"MAIL_sendNotOk"=>"L'email n'a pas pu être envoyé...",	//Idem
+			"MAIL_recipients"=>"Destinataires",						//Idem
+			"MAIL_attachedFileError"=>"Le fichier n'a pas été ajouté à l'email car il est trop volumineux",//Idem
 			"MAIL_hello"=>"Bonjour",
 			"MAIL_hideRecipients"=>"Masquer les destinataires",
 			"MAIL_hideRecipientsTooltip"=>"Mettre tous les destinataires en copie caché",
@@ -272,10 +276,7 @@ class Trad extends Txt
 			"MAIL_fileMaxSize"=>"L'ensemble de vos pièces jointes ne devraient pas dépasser 15 Mo, Certaines messageries pouvant refuser les emails au delà de cette limite. Envoyer tout de même ?",
 			"MAIL_sendButton"=>"Envoyer l'email",
 			"MAIL_sendBy"=>"Envoyé par",//"Envoyé par" M. Trucmuche
-			"MAIL_sendOk"=>"L'email a bien été envoyé",
 			"MAIL_sendNotif"=>"L'email de notification a bien été envoyé",
-			"MAIL_notSend"=>"L'email n'a pas pu être envoyé",
-			"MAIL_notSendEverybody"=>"L'email n'a pas été envoyé à tous les destinataires : vérifiez si possible la validité des emails",
 			"MAIL_fromTheSpace"=>"depuis l'espace",//"depuis l'espace Bidule"
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- créé par",//Dossier 'créé par' boby
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modifié par",//Dossier modifié par 'Boby'
@@ -514,7 +515,7 @@ class Trad extends Txt
 			"AGORA_visioHostInvalid"=>"L'adresse web du serveur de visioconférence est invalide : elle doit commencer par 'https'",
 			"AGORA_mapApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
-			"AGORA_confirmModif"=>"Confirmez-vous les modifications ?",
+			"AGORA_confirmModif"=>"Confirmer les modifications ?",
 			"AGORA_name"=>"Nom de l'espace principal",
 			"AGORA_nameTooltip"=>"Nom affiché en page de connexion, dans les emails, etc.",
 			"AGORA_description"=>"Description en page de connexion",
@@ -548,7 +549,7 @@ class Trad extends Txt
 			"AGORA_usersLike"=>"J'aime !",
 			"AGORA_mapTool"=>"Outil de cartographie",
 			"AGORA_mapToolTooltip"=>"Outil de cartographie pour voir les utilisateurs et contacts sur une carte",
-			"AGORA_mapApiKey"=>"API Key pour la catographie Google Map",
+			"AGORA_mapApiKey"=>"API Key pour la cartographie Google Map",
 			"AGORA_mapApiKeyTooltip"=>"Parametrage obligatoire pour l'outil de cartographie Google Map : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
 			"AGORA_gIdentity"=>"Option de connexion via Google",
 			"AGORA_gIdentityTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
@@ -608,7 +609,7 @@ class Trad extends Txt
 
 			////	MODULE_ESPACE
 			////
-			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (cf. ''sous-espace'')",
+			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces,<br>appelés également ''sous-espace''",
 			"SPACE_manageAllSpaces"=>"Gérer les espaces de travail",
 			"SPACE_config"=>"Paramétrer l'espace",//.."mon espace"
 			//Index
@@ -671,8 +672,8 @@ class Trad extends Txt
 			// Invitations
 			"USER_sendInvitation"=>"Envoyer des invitations par email",
 			"USER_sendInvitationTooltip"=>"Envoyer des invitations à vos contacts, pour créer un compte utilisateur et rejoindre l'espace de travail.<hr><img src='app/img/google.png' height=15> Vous pouvez également envoyer des invitations à vos contacts Gmail",
-			"USER_mailInvitationObject"=>"Invitation de ", // ..Jean DUPOND
-			"USER_mailInvitationFromSpace"=>"vous invite sur ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
+			"USER_mailInvitationObject"=>"Invitation de", // ..Jean DUPOND
+			"USER_mailInvitationFromSpace"=>"vous invite sur l'espace", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Cliquez ici pour confirmer l'invitation",
 			"USER_mailInvitationWait"=>"Invitation(s) en attente de confirmation",
 			"USER_exired_idInvitation"=>"Le lien de votre invitation a expiré...",
@@ -706,7 +707,7 @@ class Trad extends Txt
 			"USER_mailNotifObject"=>"Bienvenue sur ",  //.."mon-espace"
 			"USER_mailNotifContent"=>"Votre compte utilisateur vient d'être créé sur",  //.."mon-espace"
 			"USER_mailNotifContent2"=>"Connectez-vous ici avec les coordonnées suivantes",
-			"USER_mailNotifContent3"=>"Merci de conserver précieusement cet email dans vos archives.",
+			"USER_mailNotifContent3"=>"Pensez à conserver cet email dans vos archives",
 			// Edition du Livecounter / Messenger / Visio
 			"USER_messengerEdit"=>"Paramétrer ma messagerie instantanée",
 			"USER_messengerEdit2"=>"Paramétrer la messagerie instantanée",
@@ -824,8 +825,8 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Créer un agenda partagé",
 			"CALENDAR_addSharedCalendarTooltip"=>"Créer un agenda partagé : pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.",
 			"CALENDAR_exportIcal"=>"Exporter les événements au format iCal",
-			"CALENDAR_icalUrl"=>"Copier le lien/url pour consulter l'agenda depuis une appli externe",
-			"CALENDAR_icalUrlCopy"=>"Permet une lecture des événements de l'agenda depuis une application externe tel que Microsoft Outlook, Google Calendar, Mozilla Thunderbird, etc.",
+			"CALENDAR_icalUrl"=>"Copier le lien (url) pour afficher l'agenda depuis un agenda externe",
+			"CALENDAR_icalUrlCopy"=>"Permet un accès en lecture aux événements de l'agenda depuis un agenda externe tel que Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importer des événements au format iCal",
 			"CALENDAR_ignoreOldEvt"=>"Ne pas importer les événements de plus d'un an",
 			"CALENDAR_importIcalState"=>"Etat",
@@ -1013,10 +1014,7 @@ class Trad extends Txt
 			"MAIL_resend"=>"Renvoyer l'email",
 			"MAIL_resendInfo"=>"Récupérer le contenu de cet email et l'intégrer directement dans l'éditeur pour un nouvel envoi",
 			"MAIL_historyEmpty"=>"Aucun email pour le moment",
-			"MAIL_recipients"=>"Destinataires de l'email",
-			"MAIL_attachedFileError"=>"Le fichier n'a pas été ajouté à l'email car il est trop volumineux",
 		);
-
 	}
 
 	/*

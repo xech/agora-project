@@ -258,6 +258,10 @@ class Trad extends Txt
 			"OBJECTuser"=>"user",
 			
 			////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
+			"MAIL_sendOk"=>"The email was well sent!",			//ne pas modifier la cle de la trad ! (cf. "Tool::sendMail()")
+			"MAIL_sendNotOk"=>"The email could not be sent...",	//idem
+			"MAIL_recipients"=>"Recipients",					//Idem
+			"MAIL_attachedFileError"=>"The file was not added to the email because it is too large",//Idem
 			"MAIL_hello"=>"Hello",
 			"MAIL_hideRecipients"=>"Hide recipients",
 			"MAIL_hideRecipientsTooltip"=>"Put all recipients in hidden copy. Note that with this option your email may arrive in spam in some mailboxes",
@@ -272,10 +276,7 @@ class Trad extends Txt
 			"MAIL_fileMaxSize"=>"All of your attachments should not exceed 15 MB, some messaging services may refuse emails beyond this limit. Send anyway?",
 			"MAIL_sendButton"=>"Send email",
 			"MAIL_sendBy"=>"Sent by",//"Envoyé par" Mr trucmuche
-			"MAIL_sendOk"=>"The email was sent !",
 			"MAIL_sendNotif"=>"The notification email was sent !",
-			"MAIL_notSend"=>"The email could not be sent",
-			"MAIL_notSendEverybody"=>"The email was not sent to all recipients: if possible check the validity of the emails",
 			"MAIL_fromTheSpace"=>"from the space",//"depuis l'espace Bidule"
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- created by",//boby
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modified by",//boby
@@ -435,8 +436,8 @@ class Trad extends Txt
 			"EDIT_accessRightContent"=>"Access rights to the content",
 			"EDIT_spaceNoModule"=>"The current module has not yet been added to this space",
 			"EDIT_allUsers"=>"All users",
-			"EDIT_allUsersAndGuests"=>"All users and guests",
 			"EDIT_allUsersTooltip"=>"All the users of the space <i>--SPACENAME--</i>",
+			"EDIT_allUsersAndGuests"=>"All users and guests",
 			"EDIT_allUsersAndGuestsTooltip"=>"All the users of the space <i>--SPACENAME--</i> and guests but with a read only access (guests : people who do not have a user account)",
 			"EDIT_adminSpace"=>"Administrator of this space:<br>write access to all the elements of this space",
 			"EDIT_showAllUsers"=>"Display all users",
@@ -671,8 +672,8 @@ class Trad extends Txt
 			// Invitation
 			"USER_sendInvitation"=>"Send invitations by email",
 			"USER_sendInvitationTooltip"=>"Send invitations to your contacts, to create a user account and join the workspace.<hr><img src='app/img/google.png' height=15> If you have a Google account, you will be able to send invitations to your Gmail contacts.",
-			"USER_mailInvitationObject"=>"Invitation of ", // ..Jean DUPOND
-			"USER_mailInvitationFromSpace"=>"invites you to join ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
+			"USER_mailInvitationObject"=>"Invitation of", // ..Jean DUPOND
+			"USER_mailInvitationFromSpace"=>"invites you to join the space", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Click here to confirm the invitation",
 			"USER_mailInvitationWait"=>"Invitations not confirmed yet",
 			"USER_exired_idInvitation"=>"The weblink for your invitation has expired ...",
@@ -824,8 +825,8 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Add a chared calendar",
 			"CALENDAR_addSharedCalendarTooltip"=>"Add a chared calendar :<br>for the reservations of a room, vehicle, videoprojector, etc",
 			"CALENDAR_exportIcal"=>"Export the events (iCal)",
-			"CALENDAR_icalUrl"=>"Copy the link/url to view the calendar on an external app",
-			"CALENDAR_icalUrlCopy"=>"Allows reading of calendar events via an external application such as Microsoft Outlook, Google Calendar, Mozilla Thunderbird, etc.",
+			"CALENDAR_icalUrl"=>"Copy the link (url) to display the calendar from an external calendar",
+			"CALENDAR_icalUrlCopy"=>"Allows read access to the calendar from an external calendar such as Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Import the events (iCal)",
 			"CALENDAR_ignoreOldEvt"=>"Do not import events older than one year",
 			"CALENDAR_importIcalState"=>"State",
@@ -854,7 +855,7 @@ class Trad extends Txt
 			"CALENDAR_deleteEvtDate"=>"Delete only for this date ?",
 			"CALENDAR_evtPrivate"=>"Private event",
 			"CALENDAR_evtAutor"=>"Events which I created",
-			"CALENDAR_evtAutor2"=>"Show only events I created",
+			"CALENDAR_evtAutorInfo"=>"Show only events I created",
 			"CALENDAR_noEvt"=>"No event",
 			"CALENDAR_synthese"=>"Calendars synthesis",
 			"CALENDAR_calendarsPercentBusy"=>"Busy calendars",
@@ -1013,8 +1014,6 @@ class Trad extends Txt
 			"MAIL_resend"=>"Resend this email",
 			"MAIL_resendInfo"=>"Retrieve the content of this email and integrate it directly into the editor for a new sending",
 			"MAIL_historyEmpty"=>"No email",
-			"MAIL_recipients"=>"Recipients",
-			"MAIL_attachedFileError"=>"The file was not added to the email because it is too large",
 		);
 	}
 

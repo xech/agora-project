@@ -4,25 +4,33 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
-VERSION 24.6.0
+VERSION 24.6.2
 ###############
 Nouvelle option du paramétrage général pour afficher/masquer l'email des utilisateurs
 Amélioration du menu de paramétrage général
 Amélioration de la présentation des sujets et messages du forum
+Amélioration du menu de validation des inscriptions d'utilisateurs
 Optimisation des menus "like" et "commentaire"
 Optimisation des contrôles d'accès en page de connexion
+Optimisation de la fonction "Txt::clean()"
+Correction de l'export de fichier Ical via URL
 Amélioration du filtre XSS GET/POST
-Corrections et optimisations diverses
+Nouvelle traduction portugaise de l'application
 Mise à jour de TinyMce en v7.1.2
+Mise à jour de la librairie Ical pour l'import des agendas
 -----
 New general settings option to show/hide user email
 Improved general settings menu
 Improved presentation of forum topics and messages
+Improved user registration validation menu
 Optimization of the "like" and "comment" menus
 Optimization of access controls on the login page
+Optimization of the fonction "Txt::clean()"
+Fixed Ical file export via URL
 Improved XSS GET/POST filter
-Various fixes and optimizations
+New Portuguese translation of the application
 TinyMce updated to v7.1.2
+Updating the Ical library for importing calendars
 
 
 VERSION 24.4.5

@@ -277,12 +277,16 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************
-	 * L'OBJET AFFICHÉ EST-IL SELECTIONNABLE ?
+	 * VUE : MENU DE SÉLECTION D'OBJETS
 	 *******************************************************************************************/
-	public function isSelectable()
+	public static function menuSelect()
 	{
-		//Menu de sélection d'objets affiché  +  l'objet n'est pas le conteneur/dossier courant (cf. ".pathMenu")
-		return (static::menuSelectDisplay()  &&  (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$this->_typeId));
+		if(static::menuSelectDisplay()){
+			$vDatas["folderMoveOption"]=(is_object(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1 && Ctrl::$curContainer->editContentRight());//Si ya plus d'un dossiers dans l'arbo + qu'on peut éditer le contenu
+			$vDatas["deleteOption"]=((is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ||  (Req::$curCtrl=="forum" && Ctrl::$curUser->isUser())  ||  (Req::$curCtrl=="user" && Ctrl::$curUser->isGeneralAdmin()));
+			$vDatas["deleteFromSpaceOption"]=(Req::$curCtrl=="user" && Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
+			return Ctrl::getVue(Req::commonPath."VueObjMenuSelect.php",$vDatas);
+		}
 	}
 
 	/*******************************************************************************************
@@ -295,16 +299,26 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU DE SÉLECTION D'OBJETS
+	 * L'OBJET AFFICHÉ EST-IL SELECTIONNABLE ?
 	 *******************************************************************************************/
-	public static function menuSelect()
+	public function isSelectable()
 	{
-		if(static::menuSelectDisplay()){
-			$vDatas["folderMoveOption"]=(is_object(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1 && Ctrl::$curContainer->editContentRight());//Si ya plus d'un dossiers dans l'arbo + qu'on peut éditer le contenu
-			$vDatas["deleteOption"]=((is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ||  (Req::$curCtrl=="forum" && Ctrl::$curUser->isUser())  ||  (Req::$curCtrl=="user" && Ctrl::$curUser->isGeneralAdmin()));
-			$vDatas["deleteFromSpaceOption"]=(Req::$curCtrl=="user" && Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
-			return Ctrl::getVue(Req::commonPath."VueObjMenuSelect.php",$vDatas);
-		}
+		//Menu de sélection d'objets affiché  +  l'objet n'est pas le conteneur/dossier courant (cf. ".pathMenu")
+		return (static::menuSelectDisplay()  &&  (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$this->_typeId));
+	}
+
+	/*******************************************************************************************
+	 * VUE : MENU DE TRI D'UN TYPE D'OBJET
+	 *******************************************************************************************/
+	public static function menuSort($containerObj=null, $addUrlParams=null)
+	{
+		$vDatas["sortFields"]=static::$sortFields;
+		$vDatas["curSort"]=self::getSort($containerObj);
+		$curSortTab=Txt::txt2tab($vDatas["curSort"]);
+		$vDatas["curSortField"]=$curSortTab[0];
+		$vDatas["curSortAscDesc"]=$curSortTab[1];
+		$vDatas["addUrlParams"]=$addUrlParams;
+		return Ctrl::getVue(Req::commonPath."VueObjMenuSort.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -334,41 +348,11 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU DE TRI D'UN TYPE D'OBJET
-	 *******************************************************************************************/
-	public static function menuSort($containerObj=null, $addUrlParams=null)
-	{
-		$vDatas["sortFields"]=static::$sortFields;
-		$vDatas["curSort"]=self::getSort($containerObj);
-		$curSortTab=Txt::txt2tab($vDatas["curSort"]);
-		$vDatas["curSortField"]=$curSortTab[0];
-		$vDatas["curSortAscDesc"]=$curSortTab[1];
-		$vDatas["addUrlParams"]=$addUrlParams;
-		return Ctrl::getVue(Req::commonPath."VueObjMenuSort.php",$vDatas);
-	}
-
-	/*******************************************************************************************
-	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DES OBJETS DE LA PAGE
-	 *******************************************************************************************/
-	public static function getDisplayMode($containerObj=null)
-	{
-		if(static::$displayMode===null){
-			if(static::mobileOnlyDisplayBlock())	{static::$displayMode="block";}																								//Affichage "block" sur mobile
-			else									{static::$displayMode=Ctrl::prefUser("displayMode_".static::prefDbKey($containerObj),"displayMode");}						//Préférence d'affichage de l'user
-			if(empty(static::$displayMode)){																																	//Sinon on prend l'affichage par défaut :
-				if(Ctrl::$agora->folderDisplayMode && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes))	{static::$displayMode=Ctrl::$agora->folderDisplayMode;}	//Paramétrage général ("folderDisplayMode")
-				else																									{static::$displayMode=static::$displayModes[0];}		//Paramétrage du $displayModes du module
-			}
-		}
-		return static::$displayMode;
-	}
-
-	/*******************************************************************************************
 	 * VUE : MENU DU MODE D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModes)
 	 *******************************************************************************************/
 	public static function menuDisplayMode($containerObj=null)
 	{
-		if(static::mobileOnlyDisplayBlock()==false){
+		if(static::isMobileDisplayBlock()==false){
 			$vDatas["displayModes"]=static::$displayModes;
 			$vDatas["curDisplayMode"]=static::getDisplayMode($containerObj);
 			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
@@ -377,20 +361,27 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************
-	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
+	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DES OBJETS DE LA PAGE
 	 *******************************************************************************************/
-	public static function mobileOnlyDisplayBlock()
+	public static function getDisplayMode($containerObj=null)
 	{
-		return (Req::isMobile() && in_array("block",static::$displayModes));
+		if(static::$displayMode===null){
+			if(static::isMobileDisplayBlock())	{static::$displayMode="block";}																			//Affichage "block" sur mobile
+			else								{static::$displayMode=Ctrl::prefUser("displayMode_".static::prefDbKey($containerObj),"displayMode");}	//Ou préférence d'affichage de l'user
+			if(empty(static::$displayMode)){																											//Ou affichage par défaut :
+				if(Ctrl::$agora->folderDisplayMode && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes))	{static::$displayMode=Ctrl::$agora->folderDisplayMode;}	//"folderDisplayMode" du Paramétrage général
+				else																									{static::$displayMode=static::$displayModes[0];}		//Premier $displayModes disponible
+			}
+		}
+		return static::$displayMode;
 	}
 
 	/*******************************************************************************************
-	 * STATIC SQL : FILTRE DE PAGINATION
+	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
 	 *******************************************************************************************/
-	public static function sqlPagination()
+	public static function isMobileDisplayBlock()
 	{
-		$offset=Req::isParam("pageNb")  ?  ((Req::param("pageNb")-1)*static::$pageNbObjects)  :  "0";
-		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
+		return (Req::isMobile() && in_array("block",static::$displayModes));
 	}
 
 	/*******************************************************************************************
@@ -414,6 +405,53 @@ trait MdlObjectMenu
 			//Récupère le menu
 			return Ctrl::getVue(Req::commonPath."VueObjMenuPagination.php",$vDatas);
 		}
+	}
+
+	/*******************************************************************************************
+	 * STATIC SQL : FILTRE DE PAGINATION
+	 *******************************************************************************************/
+	public static function sqlPagination()
+	{
+		$offset=Req::isParam("pageNb")  ?  ((Req::param("pageNb")-1)*static::$pageNbObjects)  :  "0";
+		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
+	}
+
+	/*******************************************************************************************
+	 * MENU DE SÉLECTION DE LA LANGUE
+	 *******************************************************************************************/
+	public static function selectTrad($typeConfig, $selectedLang=null)
+	{
+		// Langue "francais" par défaut
+		if(empty($selectedLang))	{$selectedLang="francais";}
+		//Ouvre le dossier des langues & init le "Onchange"
+		$onchange=($typeConfig=="install")  ?  "redir('?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&curTrad='+this.value);"  :  "$('.menuTradIcon').attr('src','app/trad/'+this.value+'.png');";
+		// Affichage
+		$menuLangOptions=null;
+		foreach(scandir("app/trad/") as $tmpFileLang){
+			if(strstr($tmpFileLang,".php")){
+				$tmpLang=str_replace(".php","",$tmpFileLang);
+				$tmpLabel=($typeConfig=="user" && $tmpLang==Ctrl::$agora->lang)  ?  $tmpLang." (".Txt::trad("byDefault").")"  :  $tmpLang;
+				$menuLangOptions.= '<option value="'.$tmpLang.'" '.($tmpLang==$selectedLang?'selected':null).'> '.$tmpLabel.'</option>';
+			}
+		}
+		return '<select name="lang" onchange="'.$onchange.'">'.$menuLangOptions.'</select> &nbsp; <img src="app/trad/'.$selectedLang.'.png" class="menuTradIcon">';
+	}
+
+	/*******************************************************************************************
+	 * LISTE DES BOUTONS "RADIO" D'UN INPUT
+	 * Chaque element de $tabRadios doit avoir une "value" + "trad"  ("img" optionnel)
+	 *******************************************************************************************/
+	public static function radioButtons($inputName, $curValue, $tabRadios)
+	{
+		$radioButtons=null;
+		foreach($tabRadios as $tmpRadio){
+			$inputId=$inputName.'_'.$tmpRadio["value"];
+			$inputChecked=($curValue==$tmpRadio["value"])  ?  "checked"  :  null;
+			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'">'  :  null;
+			$radioButtons.='<input type="radio" name="'.$inputName.'" value="'.$tmpRadio["value"].'" id="'.$inputId.'" '.$inputChecked.'>
+							<label for="'.$inputId.'">'.$inputImg.Txt::trad($tmpRadio["trad"]).'</label>';
+		}
+		return $radioButtons;
 	}
 
 	/*******************************************************************************************

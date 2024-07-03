@@ -139,14 +139,14 @@ class Tool
 			if(in_array("noNotify",$options)==false){																											//Affiche une notification si l'email a été envoyé ou pas 
 				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");										//Affiche si besoin "L'email de notification a bien été envoyé"
 				if($sendReturn==true)				{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
-				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo,"max"));}										//Erreurs dans l'envoi de l'email
+				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}										//Erreurs dans l'envoi de l'email
 				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																//Mail non envoyé
 			}
 			return $sendReturn;//tjs renvoyer
 		}
 		////	Exception PHPMailer
 		catch (Exception $error){
-			Ctrl::notify(Txt::trad("MAIL_notSend")."<br><br>Mailer Error :<br>".Txt::clean($mail->ErrorInfo));
+			Ctrl::notify(Txt::trad("MAIL_sendNotOk")."<br><br>Mailer Error :<br>".Txt::clean($mail->ErrorInfo));
 		}
 	}
 

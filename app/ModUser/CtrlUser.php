@@ -307,14 +307,14 @@ class CtrlUser extends Ctrl
 					$_idInvitation=Txt::uniqId();
 					$password=Txt::uniqId(8);
 					$confirmUrl=Req::getCurUrl()."/index.php?ctrl=offline&disconnect=1&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
-					//Envoi du mail d'invitation.  "Invitation de Jean DUPOND"  =>  "Jean DUPOND vous invite à rejoindre l'espace Mon Espace..."
-					$mailSubject=Txt::trad("USER_mailInvitationObject")." ".Ctrl::$curUser->getLabel();
-					$mailMessage="<b>".Ctrl::$curUser->getLabel()." ".Txt::trad("USER_mailInvitationFromSpace")." ".Ctrl::$curSpace->name." :</b>
-								  <br><br>".Txt::trad("mailLlogin")." : <b>".$invitationTmp["mail"]."</b>
-								  <br>".Txt::trad("passwordToModify")." : <b>".$password."</b>
-								  <br><br><a href=\"".$confirmUrl."\" target=\"_blank\"><u><b>".Txt::trad("USER_mailInvitationConfirm")."</u></b></a>"; // Confirmer l'invitation ?
-					if(Req::isParam("comment"))  {$mailMessage.="<br><br>".Txt::trad("comment").":<br>".Req::param("comment");}
-					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage, ["noTimeControl"]);//"noTimeControl" pour l'envoi de mails en série
+					//Envoi du mail d'invitation
+					$mailSubject=Txt::trad("USER_mailInvitationObject").' '.Ctrl::$curUser->getLabel();														//"Invitation de Jean DUPOND"
+					$mailMessage='<b>'.Ctrl::$curUser->getLabel().' '.Txt::trad("USER_mailInvitationFromSpace").' <i>'.Ctrl::$curSpace->name.' :</i></b>'.	//"Jean DUPOND vous invite sur l'espace 'Espace Bidule'"
+								 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$invitationTmp["mail"].'</b>'.													//"Email / Identifiant de connexion : truc@bidule.com"
+								 '<br>'.Txt::trad("passwordToModify").' : <b>'.$password.'</b>'.															//"Mot de passe temporaire (à modifier en page de connexion) : XXXXX"
+								 '<br><br><a href="'.$confirmUrl.'" target="_blank"><u><b>'.Txt::trad("USER_mailInvitationConfirm").'</u></b></a>'; 		//"Cliquez ici pour confirmer l'invitation"
+					if(Req::isParam("comment"))  {$mailMessage.='<br><br>'.Txt::trad("comment").':<br>'.Req::param("comment");}								//"Mon commentaire..."
+					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage, ["noTimeControl"]);										//"noTimeControl" pour l'envoi de mails en série
 					//On ajoute l'invitation temporaire
 					if($isSendMail==true)  {Db::query("INSERT INTO ap_invitation SET _idInvitation=".Db::format($_idInvitation).", _idSpace=".(int)Ctrl::$curSpace->_id.", name=".Db::format($invitationTmp["name"]).", firstName=".Db::format($invitationTmp["firstName"]).", mail=".Db::format($invitationTmp["mail"]).", `password`=".Db::format($password).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);}
 				}
@@ -407,24 +407,24 @@ class CtrlUser extends Ctrl
 		//Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
 		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
 		//Validation du formulaire
-		if(Req::isParam("formValidate") && Req::isParam("inscriptionValidate"))
+		if(Req::isParam(["formValidate","inscriptionValidate"]))
 		{
 			//Traite chaque inscription
 			foreach(Req::param("inscriptionValidate") as $idInscription)
 			{
 				//Récupère l'inscription
 				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".Db::format($idInscription));
-				//Invalide l'inscription et envoie une notif ("Votre compte n'a pas été validé sur ''Mon_Espace''")
-				if(Req::isParam("submitInvalidate")){
-					$mailSubject=$mailMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getCurUrl(false).")";
-					Tool::sendMail($tmpInscription["mail"], $mailSubject, $mailMessage);
-				}
-				//Valide l'inscription
-				else{
+				//Valide l'inscription (pas de "submitInvalidate")
+				if(Req::isParam("submitInvalidate")==false){
 					$curObj=new MdlUser();
 					$sqlProperties="name=".Db::format($tmpInscription["name"]).", firstName=".Db::format($tmpInscription["firstName"]).", mail=".Db::format($tmpInscription["mail"]);
 					$curObj=$curObj->createUpdate($sqlProperties, $tmpInscription["mail"], $tmpInscription["password"], $tmpInscription["_idSpace"]);//Ajoute login/password pour les controles standards
 					if(is_object($curObj))  {$curObj->newUserCoordsSendMail($tmpInscription["password"]);}//Notif si l'user a bien été créé
+				}
+				//Invalide l'inscription et demande d'envoie la notif "Votre compte n'a pas été validé.."
+				elseif(Req::isParam(["submitInvalidate","inscriptionNotify"])){
+					$mailSubject=$mailMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getCurUrl(false).")";
+					Tool::sendMail($tmpInscription["mail"], $mailSubject, $mailMessage);
 				}
 				//Supprime l'inscription
 				Db::query("DELETE FROM ap_userInscription WHERE _id=".(int)$idInscription);

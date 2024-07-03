@@ -116,10 +116,11 @@ class Req
 	 *******************************************************************************************************************/
 	public static function paramFilter($tmpKey, $text)
 	{
-		if(is_string($text)){																	//Verif qu'il s'agit d'un texte
-			$text=preg_replace('/\bon\w+=\S+(?=.*>)/i', '', $text);								//Enlève le javascript inline
-			$text=preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);				//Enlève les tags javascript
-			if(!preg_match("/^(notify|description|editorDraft|message|objUrl)$/i",$tmpKey)){	//Filtre les tags/entités html (sauf notify, tinyMce, messenger, objUrl)
+		if(is_string($text)){																//Verif qu'il s'agit d'un texte
+			$text=preg_replace('/\bon\w+=\S+(?=.*>)/i', '', $text);							//Enlève le javascript inline
+			$text=preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);			//Enlève les tags javascript
+			if(preg_match("/notify/i",$tmpKey))   {$text=strip_tags($text,"<br>");}			//Filtre les "notify"
+			elseif(!preg_match("/^(description|editorDraft|message|objUrl)$/i",$tmpKey)){	//Filtre les tags/entités html (sauf tinyMce, messenger, objUrl avec "urlencode()")
 				$text=strip_tags($text);
 				$text=htmlspecialchars($text);
 			}

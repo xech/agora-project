@@ -177,8 +177,8 @@ legend										{padding:5px 10px;}
 /*** INPUTS D'EDITION D'OBJET : EDIT D'USER, DE CONTACT, DE PARAMETRAGE GENERAL...*/
 .objField									{display:table; width:100%; margin:10px 0px;}
 form .objField								{margin:15px 0px;}
-.objField>div								{display:table-cell; width:50%; line-height:25px; vertical-align:top;}/*"line-height" aligne les labels avec les inputs*/
-.objField img								{max-width:22px; margin-right:8px;}
+.objField>div								{display:table-cell; width:50%; line-height:25px; vertical-align:top;}/*"line-height" aligne verticalement les labels avec les inputs*/
+.objField img								{max-width:30px; margin-right:8px;}
 .objField input[type=text]					{width:100%;}
 .objField input[type=checkbox]				{margin-right:10px;}
 .objField .personImg						{max-width:100%; max-height:150px;}
@@ -265,7 +265,7 @@ form .objField								{margin:15px 0px;}
 .pathMenuHome					{width:auto;}
 .pathMenuAdd					{width:65px; padding-left:10px!important;}
 .hide							{display:none;}
-.menuTradIcon					{vertical-align:middle; height:20px;}
+.menuTradIcon					{vertical-align:middle;}
 .categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
 .categoryColorAll				{border:solid #bbb 2px;}
 .orLabel						{display:table; width:100%; margin:30px 0px;}

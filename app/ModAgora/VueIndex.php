@@ -154,7 +154,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 				<?php
 					$tabRadios=[ ["value"=>"white","trad"=>"AGORA_white"], ["value"=>"black","trad"=>"AGORA_black"] ];
-					echo Txt::radioButtons("skin", Ctrl::$agora->skin, $tabRadios);
+					echo MdlAgora::radioButtons("skin", Ctrl::$agora->skin, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -165,7 +165,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"block","trad"=>"displayMode_block","img"=>"displayBlock.png"], ["value"=>"line","trad"=>"displayMode_line","img"=>"displayLine.png"] ];
-					echo Txt::radioButtons("folderDisplayMode", Ctrl::$agora->folderDisplayMode, $tabRadios);
+					echo MdlAgora::radioButtons("folderDisplayMode", Ctrl::$agora->folderDisplayMode, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -176,7 +176,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
-					echo Txt::radioButtons("moduleLabelDisplay", Ctrl::$agora->moduleLabelDisplay, $tabRadios);
+					echo MdlAgora::radioButtons("moduleLabelDisplay", Ctrl::$agora->moduleLabelDisplay, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -187,7 +187,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
-					echo Txt::radioButtons("messengerDisplay", Ctrl::$agora->messengerDisplay, $tabRadios);
+					echo MdlAgora::radioButtons("messengerDisplay", Ctrl::$agora->messengerDisplay, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -198,7 +198,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
-					echo Txt::radioButtons("usersLike", Ctrl::$agora->usersLike, $tabRadios);
+					echo MdlAgora::radioButtons("usersLike", Ctrl::$agora->usersLike, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -209,7 +209,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
-					echo Txt::radioButtons("usersComment", Ctrl::$agora->usersComment, $tabRadios);
+					echo MdlAgora::radioButtons("usersComment", Ctrl::$agora->usersComment, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -220,7 +220,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
-					echo Txt::radioButtons("userMailDisplay", Ctrl::$agora->userMailDisplay, $tabRadios);
+					echo MdlAgora::radioButtons("userMailDisplay", Ctrl::$agora->userMailDisplay, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -231,7 +231,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"firstName","trad"=>"firstName"], ["value"=>"name","trad"=>"name"] ];
-					echo Txt::radioButtons("personsSort", Ctrl::$agora->personsSort, $tabRadios);
+					echo MdlAgora::radioButtons("personsSort", Ctrl::$agora->personsSort, $tabRadios);
 					?>
 				</div>
 			</div>
@@ -241,7 +241,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 			<!--LANG-->
 			<div class="objField">
 				<div><img src="app/img/earth.png"><?= Txt::trad("AGORA_lang") ?></div>
-				<div><?= Txt::menuTrad("agora",Ctrl::$agora->lang) ?></div>
+				<div><?= MdlAgora::selectTrad("agora",Ctrl::$agora->lang) ?></div>
 			</div>
 
 			<!--TIMEZONE-->
@@ -318,7 +318,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
-					echo Txt::radioButtons("gIdentity", Ctrl::$agora->gIdentity, $tabRadios);
+					echo MdlAgora::radioButtons("gIdentity", Ctrl::$agora->gIdentity, $tabRadios);
 					?>
 				</div>
 			</div>

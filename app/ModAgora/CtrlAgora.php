@@ -118,7 +118,7 @@ class CtrlAgora extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * RECUPERE UNE SAUVEGARDE
+	 * RECUPERE UNE SAUVEGARDE  DUMP / COMPLETE
 	 *******************************************************************************************/
 	public static function actionGetBackup()
 	{
@@ -131,18 +131,18 @@ class CtrlAgora extends Ctrl
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille de l'archive
 			ini_set("max_execution_time","600");//10mn max
 			$archiveName="BackupAgora_".date("Y-m-d");
-			//// Sauvegarde via "pathDatasFilesList()"
-			if(Req::isLinux()==false){
-				File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");
-			}
 			//// Sauvegarde via "shell_exec()"
-			else{
+			if(Req::isLinux() && function_exists('shell_exec')){
 				$archiveTmpPath=tempnam(File::getTempDir(),"backupAgora".uniqid());
-				shell_exec("cd ".PATH_DATAS."; tar -cf ".$archiveTmpPath." *");//-c=creation -f=nom du dossier source
+				shell_exec("cd ".PATH_DATAS."; tar -cf ".$archiveTmpPath." *");//-c=creation -f=nom du dossier
 				if(is_file($archiveTmpPath)){
 					File::download($archiveName.".tar", $archiveTmpPath, null, false);
 					File::rm($archiveTmpPath);
 				}
+			}
+			//// Sauvegarde via "pathDatasFilesList()"
+			else{
+				File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");
 			}
 		}
 		////	Sauvegarde uniquement la Bdd

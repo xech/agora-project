@@ -5,7 +5,7 @@ lightboxSetWidth(500);
 ////	Sélectionner au moins une demande d'inscription
 $(function(){
 	$("form").submit(function(){
-		if($(this).find("[name='inscriptionValidate[]']:checked").length==0)   {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
+		if($("[name='inscriptionValidate[]']:checked").length==0)   {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	});
 });
 </script>
@@ -15,28 +15,36 @@ $(function(){
 .vInscription								{padding:10px;}
 .vInscription label							{margin-right:10px;}
 .vInscriptionMessage, .vInscriptionSpace	{margin-top:8px; margin-left:30px; font-weight:normal; }
-.vInscriptionMessage:empty					{display:none;}
-.submitButtonMain							{margin:30px 0px;}/*surcharge*/
-.submitButtonMain button					{width:350px; height:50px;}/*surcharge*/
+.submitButtonMain							{margin:30px 0px 10px 0px;}	/*surcharge*/
+.submitButtonMain button					{width:400px; height:60px;}	/*idem*/
 .submitButtonMain button img				{margin-right:10px;}
+#divInscriptionNotify						{text-align:center;}
 </style>
 
 
 <form action="index.php" method="post">
 	<div class="lightboxTitle"><?= Txt::trad("userInscriptionValidateTooltip") ?></div>
+	<!--LISTES DES INSCRIPTIONS D'USERS-->
+	<?php foreach(CtrlUser::userInscriptionValidate() as $tmpInsc){ ?>
+		<fieldset>
+			<input type="checkbox" name="inscriptionValidate[]" value="<?= $tmpInsc["_id"] ?>" id="inputInscription<?= $tmpInsc["_id"] ?>">
+			<label for="inputInscription<?= $tmpInsc["_id"] ?>"><?= $tmpInsc["name"].' '.$tmpInsc["firstName"].' - '.$tmpInsc["mail"].' <img src="app/img/arrowRightBig.png"> '.Txt::dateLabel($tmpInsc["date"]) ?></label>
+			<ul>
+				<li><?= ucfirst(Txt::trad("SPACE_space")).' : '.Ctrl::getObj("space",$tmpInsc["_idSpace"])->getLabel() ?></li>
+				<?= !empty($tmpInsc["message"]) ?  '<li>'.Txt::trad("description").' : '.$tmpInsc["message"].'</li>'  : null ?>
+			</ul>
+		</fieldset>
 	<?php
-	//// LISTE DES INSCRIPTIONS D'USERS
-	foreach(CtrlUser::userInscriptionValidate() as $tmpInsc){
-		echo "<div class='vInscription lineHover'>
-				<input type='checkbox' name='inscriptionValidate[]' value=\"".$tmpInsc["_id"]."\" id='inputInscription".$tmpInsc["_id"]."'>
-				<label for='inputInscription".$tmpInsc["_id"]."'>".Txt::dateLabel($tmpInsc["date"])." : ".$tmpInsc["name"]." ".$tmpInsc["firstName"]." - ".$tmpInsc["mail"]."</label>
-				<div class='vInscriptionSpace'><img src='app/img/arrowRight.png'> ".ucfirst(Txt::trad("SPACE_space"))." <b>".Ctrl::getObj("space",$tmpInsc["_idSpace"])->getLabel()."</b></div>
-				<div class='vInscriptionMessage'><img src='app/img/arrowRight.png'> ".Txt::trad("description")." : ".$tmpInsc["message"]."</div>
-			 </div>";
 	}
-
-	//// BOUTON DE VALIDATION & BOUTON D'INVALIDATION
+	////	 BOUTON DE VALIDATION
 	echo Txt::submitButton("<img src='app/img/check.png'>".Txt::trad("userInscriptionSelectValidate"));
-	echo "<div class='submitButtonMain' id='buttonInvalidate'><button type='submit' name='submitInvalidate' value='true'><img src='app/img/delete.png'>".Txt::trad("userInscriptionSelectInvalidate")."</button></div>";
 	?>
+	<!--BOUTON D'INVALIDATION  &&  OPTION D'ENVOI DE NOTIFICATION PAR EMAIL-->
+	<div class="submitButtonMain" id="buttonInvalidate">
+		<button type="submit" name="submitInvalidate" value="true"><img src="app/img/delete.png"><?= Txt::trad("userInscriptionSelectInvalidate") ?></button>
+	</div>
+	 <div id="divInscriptionNotify">
+		<input type="checkbox" name="inscriptionNotify" value="true" id="inputInscriptionNotify">
+		<label for="inputInscriptionNotify"><?= Txt::trad("EDIT_notifMail2") ?></label>
+	</div>
 </form>

@@ -53,13 +53,11 @@ class CtrlOffline extends Ctrl
 		////	Confirmation d'invitation
 		elseif(Req::isParam(["_idInvitation","mail"]))
 		{
-			//Infos de l'invitation
+			//// Infos de l'invitation
 			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::param("_idInvitation")." AND mail=".Db::param("mail"));
-			//Invitation expiré ?
-			if(empty($tmpInvit))	{Ctrl::notify("USER_exired_idInvitation");}
-			//Valide l'invitation avec le "newPassword" et créé le nouvel utilisateur
-			elseif(Req::isParam("newPassword") && MdlUser::usersQuotaOk())
-			{
+			//// Invitation expiré  ||  Valide l'invitation avec le "newPassword" : créé le nouvel utilisateur
+			if(empty($tmpInvit))  {Ctrl::notify("USER_exired_idInvitation");}
+			elseif(Req::isParam("newPassword") && MdlUser::usersQuotaOk()){
 				$newUser=new MdlUser();
 				$sqlProperties="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
 				$newUser=$newUser->createUpdate($sqlProperties, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
@@ -89,17 +87,18 @@ class CtrlOffline extends Ctrl
 		////	Valide le formulaire via Ajax
 		if(Req::isParam("formValidate"))
 		{
-			//Verifie si le login/mail existe déjà  &&  Vérifie le Captcha
-			if(MdlUser::loginExists(Req::param("mail")))	{$result["notifError"]=Txt::trad("USER_loginExists");}
-			elseif(CtrlMisc::actionCaptchaControl()==false)	{$result["notifError"]=Txt::trad("captchaError");}
-			//Enregistre l'user et renvoi l'url avec le message de succès
-			else{
-				Db::query("INSERT INTO ap_userInscription SET _idSpace=".Db::param("_idSpace").", name=".Db::param("name").", firstName=".Db::param("firstName").", mail=".Db::param("mail").", `password`=".Db::param("password").", message=".Db::param("message").", `date`=".Db::dateNow());
-				$result["redirSuccess"]="index.php?notify=userInscriptionRecorded";
-				//Envoie une notif aux admins de l'espace?
+			//// Verif l'existance du login/mail  ||  Vérif le Captcha  ||  Enregistre l'inscription
+			if(MdlUser::loginExists(Req::param("mail")))	{$result=Txt::trad("USER_loginExists");}
+			elseif(CtrlMisc::actionCaptchaControl()==false)	{$result=Txt::trad("captchaError");}
+			else
+			{
+				//// Enregistre en DB
+				$result="inscriptionOK";
+				$password=Txt::uniqId(8);
+				Db::query("INSERT INTO ap_userInscription SET `_idSpace`=".Db::param("_idSpace").", `name`=".Db::param("name").", `firstName`=".Db::param("firstName").", `mail`=".Db::param("mail").", `password`=".Db::format($password).", `message`=".Db::param("message").", `date`=".Db::dateNow());
+				//// Envoie un mail de notif aux admins de l'espace ?
 				$curSpace=Ctrl::getObj("space",Req::param("_idSpace"));
-				if(!empty($curSpace->userInscriptionNotify))
-				{
+				if(!empty($curSpace->userInscriptionNotify)){
 					$adminMails=[];
 					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->accessRightUser($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
 					if(!empty($adminMails)){
@@ -110,12 +109,11 @@ class CtrlOffline extends Ctrl
 					}
 				}
 			}
-			//Retourne le résultat
-			echo json_encode($result);
+			//// Retourne le résultat
+			echo $result;
 		}
 		////	Affiche le formulaire
-		else
-		{
+		else{
 			$vDatas["objSpacesInscription"]=Db::getObjTab("space", "SELECT * FROM ap_space WHERE userInscription=1");
 			static::displayPage("VueUserInscription.php",$vDatas);
 		}
@@ -163,16 +161,15 @@ class CtrlOffline extends Ctrl
 		static::$isMainPage=true;
 		$dbFile="app/misc/db.sql";
 
-		////	Controle de version PHP  &&  Verif si l'application est déjà installée  &&  Vérif si le fichier "db.sql" est toujours disponible
+		////	CONTROLES :  Version PHP  &&  Install déjà réalisée  &&  Accès à "db.sql"
 		Req::verifPhpVersion();
 		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && DbInstall::dbControl(db_host,db_login,db_password,db_name)=="errorDbExist")
 			{self::noAccessExit(Txt::trad("INSTALL_errorDbExist"));}
 		elseif(is_file($dbFile)==false)
 			{self::noAccessExit(Txt::trad("INSTALL_errorDbNoSqlFile"));}
 
-		////	Affiche ou Valide le formulaire
-		if(Req::isParam("formValidate")==false)  {static::displayPage("VueInstall.php");}
-		else
+		////	VALIDE LE FORMULAIRE
+		if(Req::isParam("formValidate"))
 		{
 			////	CONTROLES LES PARAMS D'ACCES A LA BDD
 			$dbControl=DbInstall::dbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
@@ -197,26 +194,30 @@ class CtrlOffline extends Ctrl
 					if(strlen($tmpQuery)>5)  {$pdoSpace->query($tmpQuery);}
 				}
 				//Supprime le fichier Sql après l'import
-				File::rm($dbFile);
+				//File::rm($dbFile);
 
 				////	INSTALL LES PARAMETRES DE BASE DE LA DB (nom, description, 1er user, etc)
-				$installParams["version_agora"]		=Req::appVersion();
-				$installParams["spaceName"]			=Req::param("spaceName");
-				$installParams["spaceDescription"]	=Req::param("spaceDescription");
-				$installParams["spaceTimeZone"]		=Req::param("timezone");
-				$installParams["spaceLang"]			=Req::param("lang");
-				$installParams["spacePublic"]		=(Req::param("spacePublic")==1)  ?  1  :  "NULL";
-				$installParams["adminName"]			=Req::param("adminName");
-				$installParams["adminFirstName"]	=Req::param("adminFirstName");
-				$installParams["adminMailLogin"]	=Req::param("adminMailLogin");
-				$installParams["adminPassword"]		=password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT);
+				$installParams=[
+					"version_agora"=>		Req::appVersion(),
+					"spaceName"=>			Req::param("spaceName"),
+					"spaceDescription"=>	Req::param("spaceDescription"),
+					"spaceTimeZone"=>		Req::param("timezone"),
+					"spaceLang"=>			Req::param("lang"),
+					"spacePublic"=>			Req::param("spacePublic"),
+					"adminName"=>			Req::param("adminName"),
+					"adminFirstName"=>		Req::param("adminFirstName"),
+					"adminMailLogin"=>		Req::param("adminMailLogin"),
+					"adminPassword"=>		password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT)
+				];
 				DbInstall::initParams($pdoSpace, $installParams);
 
 				//REDIRECTION AVEC NOTIFICATION
-				$result="installOK";
+				$result="installOk";
 			}
 			//RETOURNE LE RESULTAT
 			echo $result;
 		}
+		////	AFFICHE LE FORMULAIRE !!
+		else {static::displayPage("VueInstall.php");}
 	}
 }

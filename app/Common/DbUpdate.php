@@ -81,10 +81,10 @@ class DbUpdate extends Db
 			Req::verifPhpVersion();
 			if(is_writable(PATH_DATAS."config.inc.php")==false)  {throw new Exception("Update error : Config.inc.php is not writable");}
 			////	VERROUILAGE DE LA MISE A JOUR
-			$lockedUpdate=PATH_DATAS."lockedUpdate.log";
-			if(is_file($lockedUpdate)==false)				{file_put_contents($lockedUpdate,"LOCKED UPDATE - VERROUILAGE DE LA MISE A JOUR");}
-			elseif((time()-filemtime($lockedUpdate))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
-			else											{throw new Exception("Update error : check Apache/PHP logs for details<br><br>When the issue is resolved : delete the '".$lockedUpdate."' file");}
+			$updateLock=PATH_DATAS."UPDATE_LOCK.log";
+			if(is_file($updateLock)==false)				{file_put_contents($updateLock,"LOCKED UPDATE - VERROUILAGE DE LA MISE A JOUR");}
+			elseif((time()-filemtime($updateLock))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
+			else										{throw new Exception("Update error : check Apache/PHP logs for details<br><br>When the issue is resolved : delete the '".$updateLock."' file");}
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
 			@set_time_limit(120);//pas en safemode
@@ -919,18 +919,20 @@ class DbUpdate extends Db
 				self::fieldExist("ap_userAuthToken", "browserId", "ALTER TABLE `ap_userAuthToken` ADD `browserId` varchar(255) AFTER `userAuthToken`");
 			}
 
-			if(self::updateVersion("24.6.0"))
+			if(self::updateVersion("24.6.2"))
 			{
 				//Ajoute le champ "userMailDisplay" pour pouvoir masquer l'emails des users
 				self::fieldExist("ap_agora", "userMailDisplay", "ALTER TABLE `ap_agora` ADD `userMailDisplay` TINYINT DEFAULT '1' AFTER `personsSort`");
-				//Change le champ "moduleLabelDisplay" en booleen
-				self::query("UPDATE `ap_agora` SET `moduleLabelDisplay`='1'  WHERE `moduleLabelDisplay` IS NULL OR `moduleLabelDisplay`=''");
-				self::query("UPDATE `ap_agora` SET `moduleLabelDisplay`=null WHERE `moduleLabelDisplay`='hide'");
+				//Change le type du champ "moduleLabelDisplay" en booleen ..et inverse la valeur booleenne
+				$moduleLabelDisplay=(Ctrl::$agora->moduleLabelDisplay=="hide")  ?  null  :  "1";
 				self::query("ALTER TABLE `ap_agora` CHANGE `moduleLabelDisplay` `moduleLabelDisplay` TINYINT DEFAULT '1'");
-				//Change le champ "messengerDisabled" en "messengerDisplay" ..et inverse donc la valeur booleenne
-				$messengerDisplay=(empty(Ctrl::$agora->messengerDisabled))  ?  "1"  :  null;
-				self::query("ALTER TABLE `ap_agora` CHANGE `messengerDisabled` `messengerDisplay` TINYINT DEFAULT '1'");
-				self::query("UPDATE `ap_agora` SET `messengerDisplay`=".self::format($messengerDisplay));
+				self::query("UPDATE `ap_agora` SET `moduleLabelDisplay`=".self::format($moduleLabelDisplay));
+				//Change le nom du champ "messengerDisabled" en "messengerDisplay" ..et inverse la valeur booleenne
+				if(self::fieldExist("ap_agora","messengerDisabled")){
+					$messengerDisplay=(empty(Ctrl::$agora->messengerDisabled))  ?  "1"  :  null;
+					self::query("ALTER TABLE `ap_agora` CHANGE `messengerDisabled` `messengerDisplay` TINYINT DEFAULT '1'");
+					self::query("UPDATE `ap_agora` SET `messengerDisplay`=".self::format($messengerDisplay));
+				}
 				//Réinit les valeurs par défaut de "skin" et "folderDisplayMode"
 				self::query("UPDATE `ap_agora` SET `skin`='white' WHERE `skin` IS NULL");
 				self::query("UPDATE `ap_agora` SET `folderDisplayMode`='block' WHERE `folderDisplayMode` IS NULL");
@@ -939,8 +941,10 @@ class DbUpdate extends Db
 				self::query("UPDATE `ap_agora` SET `usersLike`=".self::format($usersLike));
 				self::query("ALTER TABLE `ap_agora` CHANGE `usersLike` `usersLike` TINYINT DEFAULT NULL");
 				//Supprime les enregistrements "dontlike" (value!='1') puis supprime le champ "value"
-				self::query("DELETE FROM `ap_objectLike` WHERE `value`!='1'");
-				if(self::fieldExist("ap_objectLike","value"))  {self::query("ALTER TABLE `ap_objectLike` DROP `value`");}
+				if(self::fieldExist("ap_objectLike","value")){
+					self::query("DELETE FROM `ap_objectLike` WHERE `value`!='1'");
+					self::query("ALTER TABLE `ap_objectLike` DROP `value`");
+				}
 			}
 			////////////////////////////////////////	ATTENTION A MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////
@@ -950,9 +954,9 @@ class DbUpdate extends Db
 			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES
 			self::query("UPDATE `ap_agora` SET `dateUpdateDb`=".self::dateNow().", `version_agora`='".Req::appVersion()."'");
 			foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName)  {self::query("OPTIMIZE TABLE `".$tableName."`");}
-			////	UPDATE OK : ON SUPPRIME $lockedUpdate et $dumpPath 
-			if(is_file($lockedUpdate)){
-				File::rm($lockedUpdate);
+			////	UPDATE OK : ON SUPPRIME $updateLock et $dumpPath 
+			if(is_file($updateLock)){
+				File::rm($updateLock);
 				File::rm($dumpPath);
 			}
 			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!

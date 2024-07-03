@@ -44,12 +44,12 @@ $(function(){
 
 	////	Accès à un espace public : controle du password via Ajax
 	$("#publicSpaceForm").submit(function(event){
-		event.preventDefault();																												//Stop la validation du form
-		var _idSpaceAccess=$("[name='_idSpaceAccess']").val();																				//Récupère le "_idSpaceAccess" dans l'input du form principal de connexion
-		var objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());																	//Récupère "objUrl" du form principal de connexion
-		var password=encodeURIComponent($("#publicSpacePassword").val());																	//Récupère le password
-		$.ajax("?action=PublicSpacePassword&_idSpaceAccess="+_idSpaceAccess+"&password="+password).done(function(result){					//Controle Ajax du password
-			if(/passwordError/i.test(result))	{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}									//Notif d'erreur de password
+		event.preventDefault();																														//Stop la validation du form
+		var _idSpaceAccess=$("[name='_idSpaceAccess']").val();																						//Récupère le "_idSpaceAccess" dans l'input du form principal de connexion
+		var objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());																			//Récupère "objUrl" du form principal de connexion
+		var password=encodeURIComponent($("#publicSpacePassword").val());																			//Récupère le password
+		$.ajax("?action=PublicSpacePassword&_idSpaceAccess="+_idSpaceAccess+"&password="+password).done(function(result){							//Controle Ajax du password
+			if(/passwordError/i.test(result))	{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}											//Notif d'erreur de password
 			else								{redir("index.php?_idSpaceAccess="+_idSpaceAccess+"&password="+password+"&objUrl="+objUrlEncoded);}	//Redir vers l'espace demandé!
 		});
 	});
@@ -58,7 +58,8 @@ $(function(){
 
 
 <style>
-body										{--buttons-width:290px!important;}/*Variable: largeur des boutons et Inputs*/
+body										{--buttons-width:300px!important;}/*Variable: largeur des boutons et Inputs*/
+button>img									{margin-right:10px;}
 #headerBar>div								{padding:0px 20px;}/*surcharge*/
 #pageCenter									{margin-top:120px;}/*surcharge*/
 .miscContainer								{display:none; max-width:500px;/*sur mobile*/ padding:30px 10px; margin:0px auto 0px auto; border-radius:5px; text-align:center;}/*surcharge*/
@@ -73,16 +74,15 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 .vLightboxForm button						{height:35px; margin:5px; width:150px;}
 .g_id_signin								{margin-left:auto; margin-right:auto; width:var(--buttons-width);}/*button gIdentity & Iframe*/
 #publicSpaceTab								{display:inline-table; margin-left:auto; margin-right:auto;} 
-#publicSpaceTab>div							{display:table-cell; text-align:left; font-size:1.05em;} 
+#publicSpaceTab>div							{display:table-cell; line-height:30px;} 
 #publicSpaceTab ul							{margin:0px;}
-#publicSpaceTab li							{list-style:circle; margin-bottom:15px;}
 
 /*MOBILE*/
 @media screen and (max-width:1023px){
 	#headerBar>div							{display:block; padding:4px; text-align:left!important; font-weight:normal;}/*surcharge*/
 	#pageCenter								{margin-top:70px;}/*surcharge*/
 	.miscContainer							{width:100%!important;}
-	#publicSpaceTab, #publicSpaceTab>div	{display:block; margin-bottom:15px;} 
+	#publicSpaceTab>div						{display:table-row;} 
 }
 </style>
 
@@ -178,9 +178,11 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 		<?php if(!empty($objPublicSpaces)){ ?>
 			<hr>
 			<div id="publicSpaceTab">
-				<div><img src="app/img/user/accessGuest.png"> <?= Txt::trad("guestAccess") ?> :</div>
+				<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> :</div>
 				<div><ul>
-				<?php foreach($objPublicSpaces as $tmpSpace)  {echo '<li class="publicSpaceLabel sLink" data-idSpace="'.$tmpSpace->_id.'" data-hasPassword="'.($tmpSpace->password?'true':'false').'" title="'.Txt::trad("guestAccessTooltip").'">'.$tmpSpace->name.'</li>';} ?>
+				<?php foreach($objPublicSpaces as $tmpSpace){ ?>
+					<li class="publicSpaceLabel sLink" data-idSpace="<?= $tmpSpace->_id ?>" data-hasPassword="<?= $tmpSpace->password?'true':'false' ?>" title="<?= Txt::trad("guestAccessTooltip") ?>"><?= $tmpSpace->name ?></li>
+				<?php } ?>
 				</ul></div>
 			</div>
 			<form id="publicSpaceForm" class="vLightboxForm">
@@ -192,13 +194,13 @@ body										{--buttons-width:290px!important;}/*Variable: largeur des boutons 
 
 		<!--INSCRIPTION D'USER-->
 		<?php if(!empty($userInscription)){ ?>
-			<hr><button class="vMainButton" onclick="lightboxOpen('?action=userInscription')" title="<?= Txt::trad("userInscriptionTooltip") ?>"><img src="app/img/check.png"> <?= Txt::trad("userInscription") ?></button>
+			<hr><button class="vMainButton" onclick="lightboxOpen('?action=userInscription')" title="<?= Txt::trad("userInscriptionTooltip") ?>"><img src="app/img/user/subscribe.png"><?= Txt::trad("userInscription") ?></button>
 		<?php }  ?>
 
 
 		<!--SWITCH D'ESPACE-->
 		<?php if(Req::isSpaceSwitch()){ ?>
-			<hr><button class="vMainButton" onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/login.png"> <?= Txt::trad("connectSpaceSwitch") ?></button>
+			<hr><button class="vMainButton" onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/login.png"><?= Txt::trad("connectSpaceSwitch") ?></button>
 		<?php }  ?>
 
 	</div>

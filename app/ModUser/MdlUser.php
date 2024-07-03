@@ -40,7 +40,7 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * VERIFIE S'IL S'AGIT D'UN ADMINISTRATEUR GÉNÉRAL
+	 * VERIFIE SI L'USER EST UN ADMINISTRATEUR GÉNÉRAL
 	 *******************************************************************************************/
 	public function isGeneralAdmin()
 	{
@@ -341,14 +341,14 @@ class MdlUser extends MdlPerson
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
 		//Email non spécifié / Envoi du mail de reset de password
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
-		else
-		{
-			$mailSubject=Txt::trad("USER_mailNotifObject")." ".ucfirst(Ctrl::$agora->name);//"Bienvenue sur Mon-espace"
-			$mailMessage=Txt::trad("USER_mailNotifContent")." <i>".Ctrl::$agora->name."</i> (".Req::getCurUrl(false).")<br><br>".//"Votre compte utilisateur vient d'être créé sur <i>Mon-espace</i>"
-						 "<a href=\"".Req::getCurUrl()."/index.php?login=".$this->login."\" target='_blank'>".Txt::trad("USER_mailNotifContent2")."</a> :<br><br>".//"Connectez-vous ici avec les coordonnées suivantes" (lien vers l'espace)
-						 Txt::trad("mailLlogin")." : <b>".$this->login."</b><br>".//"Login : Mon-login"
-						 Txt::trad("passwordToModify2")." : <b>".$clearPassword."</b><br><br>".//"Mot de passe (à modifier au besoin)"
-						 Txt::trad("USER_mailNotifContent3");//"Merci de conserver cet e-mail dans vos archives"
+		else{
+			$connectUrl=Req::getCurUrl()."/index.php?login=".$this->login;													//Url vers l'espace
+			$mailSubject=Txt::trad("USER_mailNotifObject").' '.ucfirst(Ctrl::$agora->name);									//"Bienvenue sur Mon-espace"
+			$mailMessage=Txt::trad("USER_mailNotifContent").' <i>'.Ctrl::$agora->name.' - '.Req::getCurUrl(false).'</i>'.	//"Votre compte utilisateur vient d'être créé sur 'Mon espace - www.mon-espace.net'"
+						 '<br><br><a href="'.$connectUrl.'" target="_blank">'.Txt::trad("USER_mailNotifContent2").'</a> :'.	//"Connectez-vous ici avec les coordonnées suivantes"
+						 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$this->login.'</b>'.									//"Login : Mon-login"
+						 '<br>'.Txt::trad("passwordToModify2")." : <b>".$clearPassword.'</b>'.								//"Mot de passe (à modifier si besoin sur votre profil utilisateur)"
+						 '<br><br>'.Txt::trad("USER_mailNotifContent3");													//"Pensez à conserver cet email dans vos archives"
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage);
 		}
 	}

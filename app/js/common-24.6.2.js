@@ -496,12 +496,16 @@ function closeFormConfirmed()
 }
 
 /**************************************************************************************************
- * AFFICHE L'ICONE DE "LOADING" DANS LE BUTTON DE SUBMIT && "DISABLE" LE BUTTON
+ * BUTTON SUBMIT : AFFICHE L'ICONE "LOADING"  &&  "DISABLE" DURANT 5 SEC.
  **************************************************************************************************/
 function submitButtonLoading()
 {
 	$(".submitButtonLoading").css("visibility","visible");
-	$(".submitButtonMain button, .submitButtonInline button").css("background","#f5f5f5").prop("disabled",true);
+	$("form button").css("background","#eee").prop("disabled",true);//"#eee" : couleur du "submitButtonLoading"
+	setTimeout(function(){
+		$(".submitButtonLoading").css("visibility","hidden");
+		$("form button").css("background","initial").prop("disabled",false);
+	}, 5000);
 }
 
 /**************************************************************************************************
