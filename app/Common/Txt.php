@@ -124,7 +124,7 @@ class Txt
 	 * SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
 	 * $scope="min" 	-> parametres de fichier Ical, etc :			"l'été &amp; (!?)"  ->  "l'été & (!?)"
 	 * $scope="normal"	-> noms de fichier, recherche d'objets, etc :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
-	 * $scope="max"		-> identifiants, noms en bdd, etc :			"l'été &amp; (!?)"  ->  "l_ete_"
+	 * $scope="max"		-> identifiants, noms en bdd, etc :				"l'été &amp; (!?)"  ->  "l_ete_"
 	 *********************************************************************************************************************/
 	public static function clean($text, $scope="normal", $replaceBy="_")
 	{
@@ -138,7 +138,7 @@ class Txt
 		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
 		$acceptedChars=['.','-','_'];																												//Caractères spéciaux conservés : scope "max"
 		if($scope!="max")	{$acceptedChars=array_merge($acceptedChars, ["'",',',' ','(',')','[',']']);}											//Idem : scope "normal" et "min"
-		if($scope=="min")	{$acceptedChars=array_merge($acceptedChars, ['"','/','\\','*',':','<','>','@','&','?','!','#']);}						//Idem : scope "min"
+		if($scope=="min")	{$acceptedChars=array_merge($acceptedChars, ['"','/','\\','*',':','<','>','@','&','?','!','#']);  $replaceBy=" ";}		//Idem : scope "min"  +  change le $replaceBy par des espaces
 		foreach(preg_split('//u',$text) as $tmpChars){																								//pas de "str_split()" car ne reconnait pas les caractères accentués
 			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpChars) && !in_array($tmpChars,$acceptedChars))  {$text=str_replace($tmpChars,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
 		}
@@ -216,7 +216,7 @@ class Txt
 				//Prépare le formatage du $dateLabel via "setPattern()"  (cf. https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
 				$dateLabel=$pattern="";																														//Init le label et le pattern du formatage (pas de "null")
 				if(($format=="basic" || $format=="dateFull") && empty($timeEnd) && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (ne pas mettre dans le $pattern)
-				elseif($format=="basic" || $format=="dateFull")															{$pattern="eee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 juillet"
+				elseif($format=="basic" || $format=="dateFull")															{$pattern="eeee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 juillet"
 				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
 				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique			-> Ex: "08/03/2050"
 				//Ajoute l'année si différente de l'année courante (Ex: "8 juin 2001")  &&  Ajoute l'heure si on affiche pas que la date (Ex: "9:05")

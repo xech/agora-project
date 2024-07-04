@@ -169,18 +169,49 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * TEXTE DES AGENDAS OÙ L'EVENEMENT EST AFFECTÉ + CEUX OU IL EST EN ATTENTE DE CONFIRMATION
+	 * LABEL DES AGENDAS OÙ L'EVENEMENT EST AFFECTÉ + CEUX OU IL EST EN ATTENTE DE CONFIRMATION
 	 *******************************************************************************************/
 	public function affectedCalendarsLabel()
 	{
-		if(Ctrl::$curUser->isUser())
-		{
+		if(Ctrl::$curUser->isUser()){
 			$calendarsConfirmed=$calendarsProposed=null;
 			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", <i>".$objCalendar->title."</i>";}
 			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsProposed.=", <i>".$objCalendar->title."</i>";}
 			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." ".trim($calendarsConfirmed,",")."<br>";}
 			if(!empty($calendarsProposed))	{$calendarsProposed=Txt::trad("CALENDAR_evtAffectToConfirm")." ".trim($calendarsProposed,",");}
 			return $calendarsConfirmed.$calendarsProposed;
+		}
+	}
+
+	/*******************************************************************************************
+	 * LABEL DE LA PERIODICITE DE L'EVENEMENT
+	 *******************************************************************************************/
+	public function periodLabel()
+	{
+		if(!empty($this->periodType))
+		{
+			//// Type de périodicité : jour / mois / année
+			$periodLabel=Txt::trad("CALENDAR_period_".$this->periodType);									//Exple: "Toutes les semaines"
+			if(!empty($this->periodValues)){																//"weekDay" et "month" uniquement
+				$periodLabel.=" : ";
+				foreach(Txt::txt2tab($this->periodValues) as $tmpVal){
+					if($this->periodType=="weekDay")	{$periodLabel.=Txt::trad("day_".$tmpVal).", ";}		//Exple : "lundi, mardi, mercredi"
+					elseif($this->periodType=="month")	{$periodLabel.=Txt::trad("month_".$tmpVal).", ";}	//Exple : "janvier, février, mars"
+				}
+				$periodLabel=trim($periodLabel,", ");
+			}
+			//// Fin de périodicité
+			if(!empty($this->periodDateEnd))
+				{$periodLabel.=" &nbsp; &rarr; ".Txt::trad("CALENDAR_periodDateEnd")." : ".Txt::dateLabel($this->periodDateEnd,"dateFull");}
+			//// Exceptions de périodicité
+			if(!empty($this->periodDateExceptions)){
+				$periodLabel.="<br><br>".Txt::trad("CALENDAR_periodException")." : ";
+				$periodDateExceptions=array_filter(Txt::txt2tab($this->periodDateExceptions));//"array_filter" enlève les valeurs vides
+				foreach($periodDateExceptions as $tmpVal)  {$periodLabel.=Txt::dateLabel($tmpVal,"dateFull").", ";}
+				$periodLabel=trim($periodLabel, ", ");
+			}
+			//// Renvoi le résultat
+			return $periodLabel;
 		}
 	}
 

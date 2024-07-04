@@ -919,7 +919,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_userAuthToken", "browserId", "ALTER TABLE `ap_userAuthToken` ADD `browserId` varchar(255) AFTER `userAuthToken`");
 			}
 
-			if(self::updateVersion("24.6.2"))
+			if(self::updateVersion("24.6.3"))
 			{
 				//Ajoute le champ "userMailDisplay" pour pouvoir masquer l'emails des users
 				self::fieldExist("ap_agora", "userMailDisplay", "ALTER TABLE `ap_agora` ADD `userMailDisplay` TINYINT DEFAULT '1' AFTER `personsSort`");
