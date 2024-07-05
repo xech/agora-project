@@ -4,7 +4,7 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
-VERSION 24.6.3
+VERSION 24.6.4
 ###############
 Nouvelle option du paramétrage général pour afficher/masquer l'email des utilisateurs
 Amélioration du menu de paramétrage général
