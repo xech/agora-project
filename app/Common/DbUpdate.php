@@ -919,19 +919,19 @@ class DbUpdate extends Db
 				self::fieldExist("ap_userAuthToken", "browserId", "ALTER TABLE `ap_userAuthToken` ADD `browserId` varchar(255) AFTER `userAuthToken`");
 			}
 
-			if(self::updateVersion("24.6.3"))
+			if(self::updateVersion("24.6.4"))
 			{
 				//Ajoute le champ "userMailDisplay" pour pouvoir masquer l'emails des users
 				self::fieldExist("ap_agora", "userMailDisplay", "ALTER TABLE `ap_agora` ADD `userMailDisplay` TINYINT DEFAULT '1' AFTER `personsSort`");
-				//Change le type du champ "moduleLabelDisplay" en booleen ..et inverse la valeur booleenne
+				//Champ "moduleLabelDisplay" : inverse la valeur en booleen  &&  Change le type du champ en booleen
 				$moduleLabelDisplay=(Ctrl::$agora->moduleLabelDisplay=="hide")  ?  null  :  "1";
-				self::query("ALTER TABLE `ap_agora` CHANGE `moduleLabelDisplay` `moduleLabelDisplay` TINYINT DEFAULT '1'");
 				self::query("UPDATE `ap_agora` SET `moduleLabelDisplay`=".self::format($moduleLabelDisplay));
-				//Change le nom du champ "messengerDisabled" en "messengerDisplay" ..et inverse la valeur booleenne
+				self::query("ALTER TABLE `ap_agora` CHANGE `moduleLabelDisplay` `moduleLabelDisplay` TINYINT DEFAULT '1'");
+				//Inverse la valeur booleenne  &&  renomme le champ "messengerDisabled" en "messengerDisplay"
 				if(self::fieldExist("ap_agora","messengerDisabled")){
-					$messengerDisplay=(empty(Ctrl::$agora->messengerDisabled))  ?  "1"  :  null;
+					$messengerDisplay=(!empty(Ctrl::$agora->messengerDisabled))  ?  null  :  "1";
+					self::query("UPDATE `ap_agora` SET `messengerDisabled`=".self::format($messengerDisplay));
 					self::query("ALTER TABLE `ap_agora` CHANGE `messengerDisabled` `messengerDisplay` TINYINT DEFAULT '1'");
-					self::query("UPDATE `ap_agora` SET `messengerDisplay`=".self::format($messengerDisplay));
 				}
 				//Réinit les valeurs par défaut de "skin" et "folderDisplayMode"
 				self::query("UPDATE `ap_agora` SET `skin`='white' WHERE `skin` IS NULL");

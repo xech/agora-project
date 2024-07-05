@@ -596,7 +596,7 @@ class CtrlCalendar extends Ctrl
 			foreach($eventList as $tmpEvt)
 			{
 				//// Init
-				$evtDescription=$evtCategory=$evtPeriod=null;
+				$evtDescription=$evtCategory=$evtPeriod=$evtPeriodExcept=null;
 				//// Description
 				if(!empty($tmpEvt->description)){
 					$evtDescription=Txt::clean($tmpEvt->description,"min");											//Description de l'evt
@@ -606,16 +606,21 @@ class CtrlCalendar extends Ctrl
 				//// Categorie de l'agenda
 				if(!empty($tmpEvt->_idCat))
 					{$evtCategory='CATEGORIES:'.Ctrl::getObj("calendarCategory",$tmpEvt->_idCat)->title.$RL;}
-				//// Périodicité : année / mois / jour + fin de périodicité
+				//// Périodicité / répétition
 				if(!empty($tmpEvt->periodType)){
-					if($tmpEvt->periodType=="year")			{$evtPeriod='RRULE:FREQ=YEARLY;INTERVAL=1';}
-					elseif($tmpEvt->periodType=="month")	{$evtPeriod='RRULE:FREQ=MONTHLY;INTERVAL=1';}
-					elseif($tmpEvt->periodType=="weekDay"){
-						$tmpEvtBYDAY=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));
+					if($tmpEvt->periodType=="year")			{$evtPeriod='RRULE:FREQ=YEARLY;INTERVAL=1';}										//Chaque année
+					elseif($tmpEvt->periodType=="month")	{$evtPeriod='RRULE:FREQ=MONTHLY;INTERVAL=1';}										//Chaque mois
+					elseif($tmpEvt->periodType=="weekDay"){																						//Chaque semaine
+						$tmpEvtBYDAY=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));	//Jours de la semaine
 						$evtPeriod='RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY='.implode(',',$tmpEvtBYDAY);
 					}
-					if(!empty($tmpEvt->periodDateEnd))  {$evtPeriod.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}//Ajoute "23:59:59" sinon on obtient "00:00:00"
+					if(!empty($tmpEvt->periodDateEnd))  {$evtPeriod.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}//"23:59:59" pour pas avoir "00:00:00"
 					$evtPeriod.=$RL;
+				}
+				//// Exceptions de périodicité
+				if(!empty($tmpEvt->periodDateExceptions)){
+					$periodDateExceptions=Txt::txt2tab(str_replace('-','',$tmpEvt->periodDateExceptions));//2024-07-14 => 20240714
+					$evtPeriodExcept.="EXDATE;VALUE=DATE:".implode(',',$periodDateExceptions).$RL;
 				}
 				//// Ajoute l'evenement !
 				$ical.= 'BEGIN:VEVENT'.$RL.
@@ -628,7 +633,7 @@ class CtrlCalendar extends Ctrl
 						'DTSTART;TZID='.self::icalDate($tmpEvt->dateBegin,true).$RL.
 						'DTEND;TZID='.self::icalDate($tmpEvt->dateEnd,true).$RL.
 						'SUMMARY:'.Txt::clean($tmpEvt->title,"min").$RL.
-						$evtDescription.$evtCategory.$evtPeriod.
+						$evtDescription.$evtCategory.$evtPeriod.$evtPeriodExcept.
 						'END:VEVENT'.$RL;
 			}
 

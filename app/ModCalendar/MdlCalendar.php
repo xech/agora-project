@@ -160,7 +160,7 @@ class MdlCalendar extends MdlObject
 			$tmpEvt=clone $tmpEvt;
 			$eventTimeBegin=strtotime($tmpEvt->dateBegin);
 			$eventTimeEnd  =strtotime($tmpEvt->dateEnd);
-			//// AJOUTE LES EVT DU JOUR  ||  EVT PERIODIQUE/RÉCURRENT SUR LE JOUR
+			//// AJOUTE LES EVT DU JOUR  ||  EVT PERIODIQUE SUR LE JOUR
 			if(static::eventInTimeSlot($eventTimeBegin,$eventTimeEnd,$timeBegin,$timeEnd))  {$eventListFiltered[]=$tmpEvt;}
 			elseif(!empty($tmpEvt->periodType))
 			{
