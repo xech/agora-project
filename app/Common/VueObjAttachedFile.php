@@ -41,7 +41,7 @@ function attachedFileDelete(_id)
 <style>
 .attachedFileDiv					{margin-top:5px;}											/*Div des inputs et des fichiers déjà enregistré*/
 .attachedFileDiv label				{margin-left:10px;}											/*options "insérer dans le texte" et "supprimer"*/
-[id^=attachedFileDivList]:hover		{background-color:#eee;}									/*Survol chaque fichier déjà enregistré (cf. padding)*/
+[id^=attachedFileDivList]:hover		{background:#eee;}											/*Survol chaque fichier déjà enregistré (cf. padding)*/
 [id^=attachedFileDivAdd]:not(#attachedFileDivAdd1), [id^=attachedFileOption]  {display:none;}	/*Masque tous les inputs, sauf le premier input  &&  Masque les boutons "insérer dans le texte" des inputs*/
 </style>
 

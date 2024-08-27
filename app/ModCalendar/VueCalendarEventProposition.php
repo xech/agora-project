@@ -35,11 +35,11 @@ function eventPropositionConfirm(_idCal, _idEvt, eventPropositionDivId)
 </script>
 
 <style>
-.calEventProposition			{padding:8px; background-color:rgb(248, 236, 227); border-radius:5px;}
+.calEventProposition			{padding:8px; background:rgb(248, 236, 227); border-radius:5px;}
 .calEventProposition>img		{float:right; margin:0px; margin-left:3px; max-width:18px;}
 .calEventProposition>label		{display:block; margin:0px; padding:10px;}
 .calEventProposition li			{margin:0px; margin-left:20px; padding:3px; cursor:pointer;}
-.calEventProposition li:hover	{background-color:#fff;}
+.calEventProposition li:hover	{background:white;}
 </style>
 
 

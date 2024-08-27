@@ -6,7 +6,7 @@ $(function(){
 	////	"Infinite scroll" : Affichage progressif des news et sondages
 	$(window).scroll(function(){
 		//Timeout pour ne pas charger durant le scroll
-		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout ..et de requête ajax!
+		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout !
 		scrollTimeout=setTimeout(function(){
 			//Lance l'infinite scroll quand on arrive en fin de page  (hauteur de page < (scrollTop + hauteur de fenêtre + 20px))
 			if($(document).height() < ($(window).scrollTop() + $(window).height() + 20))
@@ -160,7 +160,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResponseFile img					{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
 .vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
 .vPollsContainer button					{width:220px!important;}/*surcharge*/
-.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:5px; background-color:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
+.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:5px; background:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
 .vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
 .vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
 .vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}

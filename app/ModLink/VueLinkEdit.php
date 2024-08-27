@@ -4,7 +4,7 @@ lightboxSetWidth(700);
 </script>
 
 <style>
-input[name='adress']	{width:99%; height:25px;}
+input[name='adress']	{width:100%;}
 </style>
 
 

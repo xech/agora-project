@@ -36,6 +36,8 @@ class CtrlCalendar extends Ctrl
 		////	TEMPS DE RÉFÉRENCE  &  JOURS FÉRIÉS
 		$vDatas["curTime"]=$curTime=Req::isParam("curTime") ? Req::param("curTime") : time();
 		$vDatas["celebrationDays"]=Trad::celebrationDays(date("Y",$curTime));
+		////	TIMEOUT POUR LANCER "calendarDimensions()" SI LE LIVECOUNTER EST AFFICHE
+		$vDatas["calendarDimensionsTimeout"]=(!empty($_SESSION["livecounterUsers"]))  ?  250  :  50;
 
 		////	AFFICHAGE : PREPARE LES TIMES/DATES
 		//AFFICHAGE MOIS
@@ -73,8 +75,8 @@ class CtrlCalendar extends Ctrl
 
 		////	LABEL DU MOIS AFFICHÉ : AFFICHAGE MOBILE OU  NORMAL
 		$monthTime=$vDatas["timeBegin"];//Début de période comme référence
-		if(Req::isMobile())	{$vDatas["labelMonth"]=(date("Y")==date("Y",$monthTime))  ?  Txt::formatime("MMMM",$monthTime)  :  Txt::formatime("MMM y",$monthTime);}//"Janvier" OU "Janv. 2018" (si affiche une autre année)
-		else				{$vDatas["labelMonth"]=(date("Ym",$vDatas["timeBegin"])==date("Ym",$vDatas["timeEnd"]))  ?  Txt::formatime("MMMM y",$monthTime)  :  Txt::formatime("MMMM y",$vDatas["timeBegin"])." / ".Txt::formatime("MMMM y",$vDatas["timeEnd"]);}//"Janvier 2020" OU "Janvier 2020 / fevrier 2020" (si on affiche une semaine sur 2 mois)
+		if(Req::isMobile())	{$vDatas["calendarPeriodLabel"]=(date("Y")==date("Y",$monthTime))  ?  Txt::formatime("MMMM",$monthTime)  :  Txt::formatime("MMM y",$monthTime);}//"Janvier" OU "Janv. 2018" (si affiche une autre année)
+		else				{$vDatas["calendarPeriodLabel"]=(date("Ym",$vDatas["timeBegin"])==date("Ym",$vDatas["timeEnd"]))  ?  Txt::formatime("MMMM y",$monthTime)  :  Txt::formatime("MMMM y",$vDatas["timeBegin"])." / ".Txt::formatime("MMMM y",$vDatas["timeEnd"]);}//"Janvier 2020" OU "Janvier 2020 / fevrier 2020" (si on affiche une semaine sur 2 mois)
 		////	MENU DES ANNÉES & MOIS
 		$vDatas["calMonthPeriodMenu"]=null;
 		for($tmpMonth=1; $tmpMonth<=12; $tmpMonth++){
@@ -111,22 +113,27 @@ class CtrlCalendar extends Ctrl
 			{
 				//EVENEMENTS DU JOUR COURANT
 				$tmpCal->eventList[$tmpDay["date"]]=[];
-				$tmpDayEvts=MdlCalendar::eventFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);								//Récupère uniquement les events de la journée
+				$tmpDayEvts=MdlCalendar::eventFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);								//Récupère uniquement les evts de la journée
 				foreach($tmpDayEvts as $tmpEvt){																										//Parcourt chaque événement :
 					$tmpEvt->timeBegin=strtotime($tmpEvt->dateBegin);																					//"time" du début de journée
 					$tmpEvt->timeEnd=strtotime($tmpEvt->dateEnd);																						//"time" de fin de journée
-					$tmpEvt->dateTimeLabel=(Req::isMobile())  ?  null  :  Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd)."&nbsp; ";			//label "DateTime" de l'evt
+					$tmpEvt->titleTooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"basic",$tmpEvt->timeEnd);							//Tooltip avec title et date détaillée
+					if(Req::isMobile()==false){																											//Ajoute au title l'heure de début (sauf mobile)
+						if($displayMode=="month")	{$tmpEvt->Title=Txt::dateLabel($tmpEvt->timeBegin,"mini")." &nbsp;".$tmpEvt->title;}				//- affichage Month (ex: "14h Mon titre")
+						else						{$tmpEvt->title=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd);}	//- affichage "Week (ex: "Mon Titre <br> 14h - 15h")
+					}
+					$tmpEvt->containerClass=($tmpEvt->timeBegin<$tmpDay["timeBegin"])  ?  "vEventBlock vEventBlockPast"  :  "vEventBlock";				//"vEventBlockPast" s'il commence avant le jour
 					$tmpEvt->containerAttributes='data-eventColor="'.$tmpEvt->eventColor.'"';															//Attributs de l'evt : "eventColor" + d'autres en affichage "week"
-					$tmpEvt->contextMenuOptions=["iconBurger"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];		//Options du menu contextuel (cf. "divContainerContextMenu()")
+					$tmpEvt->contextMenuOptions=["launcherIcon"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];	//Options du menu contextuel (cf. "divContainerContextMenu()")
 					$tmpEvt->importantIcon=(!empty($tmpEvt->important))  ?  "&nbsp;<img src='app/img/important.png'>"  :  null;							//Icone "important"
 					if($displayMode!="month"){																											//Affichage semaine/jour:
-						$tmpEvt->minutesFromDayBegin=($tmpDay["timeBegin"]<$tmpEvt->timeBegin) ?  (($tmpEvt->timeBegin-$tmpDay["timeBegin"])/60)  : 0;	//Heure/Minutes de début d'affichage ("0" s'il commence avant le jour)
+						$tmpEvt->timeFromDayBegin=($tmpDay["timeBegin"]<$tmpEvt->timeBegin) ?  ($tmpEvt->timeBegin-$tmpDay["timeBegin"])  : 0;			//Time depuis le début du jour ("0" si l'evt commence avant le jour)
 						$evtTmpDayBefore=($tmpEvt->timeBegin < $tmpDay["timeBegin"]);																	//-Evt commence avant le jour courant ?
 						$evtTmpDayAfter=($tmpEvt->timeEnd > $tmpDay["timeEnd"]);																		//-Evt termine après le jour courant?
-						if($evtTmpDayBefore==true && $evtTmpDayAfter==true)	{$tmpEvt->durationMinutes=24*60;}											//-Affiche toute la journée
-						elseif($evtTmpDayBefore==true)						{$tmpEvt->durationMinutes=($tmpEvt->timeEnd- $tmpDay["timeBegin"])/60;}		//-Affiche l'evt depuis 0h00 du jour courant
-						elseif($evtTmpDayAfter==true)						{$tmpEvt->durationMinutes=($tmpDay["timeEnd"] - $tmpEvt->timeBegin)/60;}	//-Affiche l'evt jusqu'à 23h59 du jour courant
-						else												{$tmpEvt->durationMinutes=($tmpEvt->timeEnd - $tmpEvt->timeBegin)/60;}		//-Affichage normal (au cour de la journée)
+						if($evtTmpDayBefore==true && $evtTmpDayAfter==true)	{$tmpEvt->timeDuration=24*3600;}											//-Affiche toute la journée
+						elseif($evtTmpDayBefore==true)						{$tmpEvt->timeDuration=($tmpEvt->timeEnd- $tmpDay["timeBegin"]);}			//-Affiche l'evt à partir de 0h00
+						elseif($evtTmpDayAfter==true)						{$tmpEvt->timeDuration=($tmpDay["timeEnd"] - $tmpEvt->timeBegin);}			//-Affiche l'evt jusqu'à 23h59
+						else												{$tmpEvt->timeDuration=($tmpEvt->timeEnd - $tmpEvt->timeBegin);}			//-Affichage normal
 					}
 					$tmpCal->eventList[$tmpDate][]=$tmpEvt;																								//Ajoute l'evt à la liste !
 				}
@@ -152,7 +159,7 @@ class CtrlCalendar extends Ctrl
 					if(!empty($tmpDay["calsEvts"][$tmpCal->_id]))  {$nbCalsWithEvt++;}																	//Incrémente $nbCalsWithEvt ?
 				}
 				$tmpDay["nbCalsWithEvt"]=(!empty($nbCalsWithEvt))  ?  Txt::dateLabel($tmpDate,"dateFull")." :<br>".Txt::trad("CALENDAR_calendarsPercentBusy")." : ".$nbCalsWithEvt." sur ".count($tmpDay["calsEvts"])  :  null;//Tooltip de synthese si au moins un agenda possède un événement à cette date
-				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;																					//Ajoute le jour de la synthese
+				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;																							//Ajoute le jour de la synthese
 			}
 		}
 		////	LANCE L'AFFICHAGE
@@ -245,7 +252,7 @@ class CtrlCalendar extends Ctrl
 				//Prépare les dates
 				$dateBegin=Txt::formatDate(Req::param("dateBegin")." ".Req::param("timeBegin"), "inputDatetime", "dbDatetime");
 				$dateEnd=Txt::formatDate(Req::param("dateEnd")." ".Req::param("timeEnd"), "inputDatetime", "dbDatetime");
-				//Périodicité
+				//Périodicité / répétition de l'evt
 				$periodDateEnd=$periodValues=$periodDateExceptions=null;
 				if(Req::isParam("periodType")){
 					$periodDateEnd=Txt::formatDate(Req::param("periodDateEnd"), "inputDate", "dbDate");

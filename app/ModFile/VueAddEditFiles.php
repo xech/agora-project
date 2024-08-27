@@ -70,23 +70,21 @@ function objectFormControl(){
 
 <style>
 /*Surcharge de Plupload*/
-.plupload_container					{height:200px; min-height:200px; border-radius:3px 3px 0px 0px; border-bottom:0px;}	/*conteneur principal*/
-.plupload_wrapper					{min-width:100%!important; max-width:100%!important;}								/*Evite le scroll horizontal*/
-.plupload_header					{display:none;}																		/*Masque le header par défaut*/
-.plupload_content					{top:0px; height:135px}																/*Repositionne et redimentionne la liste des fichiers (cf. ".plupload_header" masqué)*/
-.plupload_droptext					{color:#aaa; font-size:1.1em; overflow:hidden;}										/*"Glisser les fichiers ici". "overflow" pour Firefox*/
-.plupload_cell, .plupload_buttons	{width:100%; text-align:center;}													/*conteneur des boutons principaux*/
-.plupload_buttons					{padding-bottom:30px;}																/*idem*/
-.plupload_buttons .plupload_button	{text-transform:uppercase; padding:15px; font-weight:bold!important;}				/*Boutons principaux (Ajouter, Arreter, etc)*/
-.plupload_buttons .plupload_add 	{width:220px;}																		/*"Choisir les fichiers"*/
-.plupload_buttons .plupload_stop	{padding:5px; margin-bottom:5px;}													/*"Arrêter le téléchargement"*/
-.ui-widget-header					{border:none!important;	background:none!important;}									/*Annule le background par defaut de jQuery-UI !*/
+.plupload_container					{height:200px; min-height:200px;}															/*conteneur principal*/
+.plupload_wrapper					{min-width:100%!important; max-width:100%!important;}										/*Evite le scroll horizontal*/
+.plupload_header					{display:none;}																				/*Masque le header par défaut*/
+.plupload_content					{top:0px; height:170px}																		/*Liste des fichiers (cf. ".plupload_header" masqué)*/
+.plupload_droptext					{color:#aaa; font-size:1.1em;}																/*"Glisser les fichiers ici". "overflow" pour Firefox*/
+.plupload_cell, .plupload_buttons	{width:100%; text-align:center;}															/*conteneur des boutons principaux*/
+.plupload_buttons .plupload_button	{padding:15px; width:250px; font-size:1.1em; font-weight:bold; text-transform:uppercase;}	/*Bouton "Choisir les fichiers" /  "Arreter"*/
+.ui-widget-header					{border:none!important;	background:none!important;}											/*Annule le background par defaut de jQuery-UI !*/
+.ui-resizable-handle				{display:none!important;}
 
-/*Options d'upload*/
-#uploadSimple, #uploadAdd			{padding:10px; border:1px solid #aaa; border-bottom:0px;}/*input d'upload simple : au dessus des options*/
-#uploadOptions						{padding:8px; text-align:center; border:1px solid #aaa; border-top:0px; border-radius:0px 0px 3px 3px;}
-#uploadOptions>span					{margin-left:20px;}/*Options d'upload*/
-#inputDescription					{margin-top:15px;}
+/*Sélection de fichiers*/
+#uploadSimple, #uploadAdd, .plupload_container			{padding:10px; border:1px solid #aaa; border-bottom:0px; border-radius:3px 3px 0px 0px;}									/*Block des fichiers (partie haute)*/
+#uploadOptions											{padding:8px; padding-top:25px; text-align:center; border:1px solid #aaa; border-top:0px; border-radius:0px 0px 3px 3px;}	/*Block des options (partie basse)*/
+#uploadOptions>span										{margin-left:20px;}/*Options d'upload*/
+#inputDescription										{margin-top:15px;}
 #uploadSimple, #imageResizeOption, #inputDescription	{display:none;}
 
 /*Masque les elements inutiles de Plupload (header, progress, etc.)*/

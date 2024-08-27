@@ -28,7 +28,7 @@ form							{padding:0px; margin:0px;}
 .vTable tr td:nth-child(3)		{width:250px;}					/*date*/
 .vTable tr td:nth-child(4)		{width:400px;}					/*titre*/
 .vTable tr td:nth-child(5)		{font-weight:normal;}			/*description*/
-.lineHover:has(input:checked)	{background-color:<?= Ctrl::$agora->skin=="black"?"#333":"#ddd" ?>;}
+.lineHover:has(input:checked)	{background:<?= Ctrl::$agora->skin=="black"?"#333":"#ddd" ?>;}
 </style>
 
 

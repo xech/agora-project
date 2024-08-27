@@ -90,10 +90,25 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * VERIF : OBJECT EN COURS DE CRÉATION ET AVEC UN _ID==0 ?
+	 * VERIF : OBJECT EN COURS DE CRÉATION -> _id à 0 
 	 *******************************************************************************************/
 	public function isNew(){
 		return empty($this->_id);
+	}
+
+	/******************************************************************************************
+	 * VERIF : OBJET ENREGISTRÉ À L'INSTANT EN BDD  (cf. mails de notif)
+	*******************************************************************************************/
+	public function isNewRecord(){
+		return ($this->isNew()==false && time()-strtotime($this->dateCrea)<5);
+	}
+
+	/******************************************************************************************
+	 * VERIF : OBJET CRÉÉ RECEMMENT -> DANS LES 24 HEURES OU DEPUIS LA PRÉCÉDENTE CONNEXION
+	*******************************************************************************************/
+	public function isRecent(){
+		$timeDateCrea=strtotime($this->dateCrea);
+		return (!empty($this->dateCrea)  &&  ($timeDateCrea > (time()-86400)  ||  $timeDateCrea > Ctrl::$curUser->previousConnection));
 	}
 
 	/*******************************************************************************************
@@ -152,13 +167,6 @@ class MdlObject
 	 *******************************************************************************************/
 	public function isAutor(){
 		return (Ctrl::$curUser->isUser() && $this->_idUser==Ctrl::$curUser->_id);
-	}
-
-	/******************************************************************************************
-	 * VERIF : OBJET CRÉÉ À L'INSTANT ? (pour les mails de notif and co)
-	*******************************************************************************************/
-	public function isNewlyCreated(){
-		return ($this->isNew()==false && time()-strtotime($this->dateCrea)<5);
 	}
 
 	/***************************************************************************************************************************
@@ -596,7 +604,7 @@ class MdlObject
 		if(Req::isParam("notifMail") || !empty($addUserIds))
 		{
 			////	Sujet : "Fichier créé par boby SMITH"
-			$tradCreaModif=($this->isNew() || $this->isNewlyCreated())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par" / "News modifiée par"
+			$tradCreaModif=($this->isNew() || $this->isNewRecord())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par" / "News modifiée par"
 			$subject=ucfirst($this->tradObject($tradCreaModif))." ".Ctrl::$curUser->getLabel();
 			////	Message : Label principal de l'objet et si besoin description de l'objet
 			if(!empty($messageSpecific))	{$messageObj="<div><b>".$messageSpecific."</b></div>";}	//ex: nom des fichiers uploadés, etc 
@@ -609,7 +617,7 @@ class MdlObject
 			$messageObj=str_replace("<img ", "<img style='max-width:100%!important;cursor:initial' ", $messageObj);
 			////	Message : Corps du mail (pas de balise <style> car souvent supprimés par les clients mail)
 			$message="<div style='margin:20px 0px'>".$subject." :</div>
-					  <div style='margin:20px 0px;padding:10px;max-width:1024px;background-color:#eee;color:#333;border:1px solid #bbb;border-radius:3px;'>".$messageObj."</div>
+					  <div style='margin:20px 0px;padding:10px;max-width:1024px;background:#eee;color:#333;border:1px solid #bbb;border-radius:3px;'>".$messageObj."</div>
 					  <a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";
 			////	Destinataires de la notif : Users spécifiques OU Users affectées à l'objet (lecture ou+)
 			$mailUserIds=[];
@@ -625,7 +633,7 @@ class MdlObject
 				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";										//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
 				if(Req::isParam("mailOptions"))  		{$options=array_merge($options,Req::param("mailOptions"));}		//Options sélectionnées par l'user
 				if(static::descriptionEditor==true)		{$message=$this->attachedFileImageCid($message);}				//Affiche si besoin les images en pièce jointe dans le corps du mail
-				if(Req::isDevServer())  				{$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}		//Evite le spam en DEV (cf. "getUrlExternal()")
+				///if(Req::isDevServer())  				{$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}//Cf. "getUrlExternal()" en DEV
 				$attachedFiles=$this->attachedFileList();																//Fichiers joints de l'objet
 				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}							//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
 				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);								//Envoie l'email

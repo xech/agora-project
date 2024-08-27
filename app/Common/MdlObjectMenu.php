@@ -36,23 +36,21 @@ trait MdlObjectMenu
 				$this->contextMenu($contextMenuOptions);
 	}
 
-	/*******************************************************************************************************************************************************************
+	/*****************************************************************************************************************************************************************************************************
 	 * VUE : MENU CONTEXTUEL (édition, droit d'accès, etc)
-	 * $options["iconBurger"] (text)		: Icone "burger" du launcher => "floatBig" (par défaut) / "floatSmall" / "inlineBig" / "inlineSmall"
-	 * $options["deleteLabel"] (text)		: Label spécifique de suppression
-	 * $options["specificOptions"] (Array)	: Boutons à ajouter au menu : chaque bouton a les propriétés suivante  ["actionJs"=>"?ctrl=file&action=monAction", "iconSrc"=>"app/img/plus.png", "label"=>"mon option", "tooltip"=>"mon tooltip"]
-	 * $options["specificLabels"] (Array)	: Texte à afficher (ex: "affectedCalendarsLabel()" pour afficher les agendas affectés à un evenement)
-	 *******************************************************************************************************************************************************************/
+	 * $options["launcherIcon"]		: "floatBig" (par défaut) / "floatSmall" / "inlineBig" / "inlineSmall"
+	 * $options["deleteLabel"]		: Label spécifique de suppression
+	 * $options["specificOptions"]	: Boutons à ajouter au menu, chaque bouton ayant les propriétés  ["actionJs"=>"onclick=xxx", "iconSrc"=>"option.png", "label"=>"mon label", "tooltip"=>"mon tooltip"]
+	 * $options["specificLabels"]	: Texte à afficher (exple: agendas affectés à un evenement)
+	 *****************************************************************************************************************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		////	RETOURNE "FALSE" SI GUESTS
+		////	PAS DE MENU POUR LES GUESTS
 		if(Ctrl::$curUser->isUser()==false)  {return false;}
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
 		$vDatas["objMenuId"]=$this->uniqId("objMenu");
-		$vDatas["iconBurger"]=(!empty($options["iconBurger"]))  ?  $options["iconBurger"]  :  "floatBig";
-		$vDatas["specificOptions"]=(!empty($options["specificOptions"]))  ?  $options["specificOptions"]  :  array();
-		$vDatas["specificLabels"]=(!empty($options["specificLabels"]))  ?  $options["specificLabels"]  :  array();
+		$vDatas["options"]=$options;
 
 		////	OBJET USER
 		if(static::objectType=="user")
@@ -103,20 +101,16 @@ trait MdlObjectMenu
 				if(static::isContainer())		{$labelConfirmDbl="labelConfirmDeleteDbl";}													//Suppression de conteneur : double confirmation du "VueStructure.php"
 				if(static::isFolder==true)		{$ajaxControlUrl="'?ctrl=object&action=folderDeleteControl&typeId=".$this->_typeId."'";}	//Suppression de dossier : controle d'accès via Ajax
 				//Ajoute l'option
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."',".$labelConfirmDbl.",".$ajaxControlUrl.",'".$this->uniqId("objLabel")."')";
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."', ".$labelConfirmDbl.", ".$ajaxControlUrl.", '".$this->uniqId("objLabel")."')";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	AUTEUR/DATE DE CREATION/MODIF
-			//Init les labels  &&  vérif si c'est un nouvel objet (créé dans les 24 heures ou depuis la précédente connexion)
 			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
-			$vDatas["isNewObject"]=(!empty($this->dateCrea)  &&  (strtotime($this->dateCrea) > (time()-86400)  ||  strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
-			//Auteur de l'objet (Guest?)
-			if($this->_idUser)		{$vDatas["autorDateCrea"]="<a onclick=\"".Ctrl::getObj("user",$this->_idUser)->openVue()."\">".$this->autorLabel()."</a>";}
-			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}
-			//Date de création de l'objet  &&  Précise si c'est un nouvel objet  &&  Précise l'auteur/date de modif
-			if($this->dateCrea)					{$vDatas["autorDateCrea"].=" - ".$this->dateLabel();}
-			if($vDatas["isNewObject"]==true)	{$vDatas["autorDateCrea"].="<div class='sAccessWrite'>".Txt::trad("objNew")." <img src='app/img/menuNewSmall.png'></div>";}
-			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]="<a onclick=\"".Ctrl::getObj("user",$this->_idUserModif)->openVue()."\">".$this->autorLabel(false)."</a> - ".$this->dateLabel(false);}
+			if($this->_idUser)		{$vDatas["autorDateCrea"]='<a onclick="'.Ctrl::getObj("user",$this->_idUser)->openVue().'">'.$this->autorLabel().'</a>';}	//Auteur de l'objet : user
+			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}																				//Guest
+			if($this->dateCrea)		{$vDatas["autorDateCrea"].=' - '.$this->dateLabel();}																		//Ajoute la Date de création de l'objet
+			//Précise l'auteur/date de modif
+			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]='<a onclick="'.Ctrl::getObj("user",$this->_idUserModif)->openVue().'">'.$this->autorLabel(false).'</a> - '.$this->dateLabel(false);}
 
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
 			if($this->hasAccessRight() || $this->accessRightFromContainer())
@@ -147,7 +141,7 @@ trait MdlObjectMenu
 	 *******************************************************************************************/
 	public function lightboxTitleMenu()
 	{
-		$return=$this->contextMenu(["iconBurger"=>"inlineBig"]);
+		$return=$this->contextMenu(["launcherIcon"=>"inlineBig"]);
 		if($this->editRight())  {$return.='&nbsp; <img src="app/img/edit.png" onclick="lightboxOpen(\''.$this->getUrl('edit').'\')" title="'.Txt::trad("modify").'">';}
 		return '<span class="lightboxTitleMenu">'.$return.'</span>';
 	}
@@ -170,13 +164,14 @@ trait MdlObjectMenu
 		//Sélectionne au besoin le "draftTypeId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editTypeId" car il est effacé dès qu'on sort de l'édition de l'objet...)
 		$sqlTypeId=Req::isParam("typeId")  ?  "draftTypeId=".Db::param("typeId")  :  "draftTypeId IS NULL";
 		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
+		$vDatas["editorCode"]=Ctrl::$curUser->isGeneralAdmin() ? 'code': null;
 		//Affiche la vue
 		return Ctrl::getVue(Req::commonPath."VueObjEditDescription.php",$vDatas);
 	}
 
-	/*******************************************************************************************************************************************
+	/*******************************************************************************************
 	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "VueObjEditMenuSubmit.php")
-	 *******************************************************************************************************************************************/
+	 *******************************************************************************************/
 	public function attachedFile()
 	{
 		$vDatas["curObj"]=$this;

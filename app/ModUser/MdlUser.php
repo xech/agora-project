@@ -122,8 +122,8 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * L'USER COURANT PEUT ENVOYER DES INVITATIONS (SUR UN ESPACE DONNÉ) ?
-	****************************************************************************************** */
+	 * VERIF SI L'USER COURANT PEUT ENVOYER DES INVITATIONS
+	********************************************************************************************/
 	public function sendInvitationRight($objSpace=null)
 	{
 		if($objSpace==null)	{$objSpace=Ctrl::$curSpace;}
@@ -131,20 +131,21 @@ class MdlUser extends MdlPerson
 	}
 
 	/*******************************************************************************************
-	 * MESSENGER ACTIVÉ POUR L'USER COURANT (CF. PARAMETRAGE "actionUserEditMessenger()") ?
+	 * VERIF SI LE MESSENGER EST ACTIVÉ POUR L'USER COURANT (Cf. "actionUserEditMessenger()")
 	 *******************************************************************************************/
 	public function messengerEnabled()
 	{
-		if(empty($_SESSION["curUserMessengerEnabled"]))  {$_SESSION["curUserMessengerEnabled"]=(self::messengerDisplay() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
+		if(empty($_SESSION["curUserMessengerEnabled"]))
+			{$_SESSION["curUserMessengerEnabled"]=(self::agoraMessengerEnabled() && Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$this->_id)>0);}
 		return $_SESSION["curUserMessengerEnabled"];
 	}
 
 	/*******************************************************************************************
-	 * AFFICHAGE DU MESSENGER POUR LES USERS ?
+	 * VERIF SI LE MESSENGER EST ACTIVÉ DANS LE PARAM. GENERAL ET QUE L'USER N'EST PAS UN GUEST
 	 *******************************************************************************************/
-	public static function messengerDisplay()
+	public static function agoraMessengerEnabled()
 	{
-		return (Ctrl::$curUser->isUser() && !empty(Ctrl::$agora->messengerDisplay));
+		return (!empty(Ctrl::$agora->messengerDisplay) && Ctrl::$curUser->isUser());
 	}
 
 	/*******************************************************************************************
@@ -283,7 +284,7 @@ class MdlUser extends MdlPerson
 		if(!empty($passwordClear))  {$sqlProperties.=", `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT));}
 		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
 		$reloadedObj=parent::createUpdate($sqlProperties);
-		if($reloadedObj->isNewlyCreated()){
+		if($reloadedObj->isNewRecord()){
 			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");//Affecte l'user à tout le monde sur le messenger
 			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");//créé l'agenda, même si l'agenda est désactivé par défaut
 			if(!empty($spaceId)){

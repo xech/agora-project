@@ -1,0 +1,4 @@
+VERSION COURANTE : 1.14.1
+
+Telecharger la dernière version :	https://github.com/jonthornton/jquery-timepicker
+Modifier le path dans "/app/Common/VueStructure.php"

@@ -13,7 +13,7 @@ $(function(){
 	<?php if($curObj->containerObj()->isRootFolder()==false){ ?>
 	$("[id^=objectRightBox]").on("change",function(){
 		if($(this).prop("checked")){
-			var ajaxUrl="?ctrl=object&action=AccessRightParentFolder&typeId=<?= $curObj->containerObj()->_typeId ?>&objectRight="+$(this).val();
+			var ajaxUrl="?ctrl=object&action=AccessRightParentFolder&typeId=<?= $curObj->containerObj()->_typeId ?>&objectRight="+this.value;
 			$.ajax({url:ajaxUrl,dataType:"json"}).done(function(result){
 				if(result.errorMessage)  {notify(result.errorMessage);}
 			});

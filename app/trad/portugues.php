@@ -156,7 +156,7 @@ class Trad extends Txt
 			"month_11"=>"Novembro",
 			"month_12"=>"Dezembro",
 			"today"=>"Hoje",
-			"beginEndError"=>"A data final não pode ser antes da data de início",
+			"beginEndError"=>"A data de início deve preceder a data de fim",
 			"dateFormatError"=>"A data deve estar no formato dd/mm/aaaa",
 			
 			////	Menus d'édition des objets et editeur tinyMce
@@ -804,7 +804,7 @@ class Trad extends Txt
 			"FILE_selectFile"=>"Por favor, escolha pelo menos um arquivo",
 			"FILE_fileContent"=>"conteúdo",
 			// Versions_fichier
-			"FILE_versionsOf"=>"Versões de", // versions de fichier.gif
+			"FILE_versionsOf"=>"Versões de", // versions de fichier
 			"FILE_confirmDeleteVersion"=>"Confirma a eliminação desta versão?",
 
 			////	MODULE_AGENDA

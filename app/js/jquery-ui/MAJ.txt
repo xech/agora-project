@@ -1,4 +1,0 @@
-VERSION COURANTE : jQuery 1.13.2
-
-
-Telecharger la dernière version sur https://jqueryui.com/download/  =>  avec toutes les options précochées & le thème "Smoothness"

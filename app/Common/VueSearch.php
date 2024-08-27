@@ -38,7 +38,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 .menuLine							{padding:5px;}
 .menuLine mark						{padding:2px;}/*mots de la recherche surlignés*/
 .menuLine .vContextMenu				{width:50px; vertical-align:top;}
-.vPluginNews						{display:none; padding:5px; background-color:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
+.vPluginNews						{display:none; padding:5px; background:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
 .emptyContainer						{margin-top:20px;}
 
 /*MOBILE FANCYBOX (440px)*/
@@ -142,7 +142,7 @@ if(Req::isParam("searchText"))
 		echo '<div class="menuLine lineHover">
 				<div onclick"'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
 				<div onclick="'.$tmpObj->pluginJsLabel.'" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">'.$pluginLabel.'</div>
-				<div class="vContextMenu">'.$tmpObj->contextMenu(["iconBurger"=>"inlineSmall"]).'</div>
+				<div class="vContextMenu">'.$tmpObj->contextMenu(["launcherIcon"=>"inlineSmall"]).'</div>
 			  </div>';
 	}
 	//Aucun résultat à afficher

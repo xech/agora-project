@@ -1,5 +1,5 @@
 <style>
-.vMenuCategory	{padding:2px;}
+.vMenuCategory	{padding:1px;}
 </style>
 
 

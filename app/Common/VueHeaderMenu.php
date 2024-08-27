@@ -19,7 +19,7 @@
 #headerModuleTab						{display:inline-table; height:100%;}
 .vHeaderModule							{display:table-cell; text-align:center; vertical-align:middle; cursor:pointer;}
 .vHeaderModuleButton					{margin:0px 3px; padding:3px; border:solid 1px transparent; border-radius:5px;}/*bouton du module (par défaut border transparent de 1px)*/
-.vHeaderModuleButton:hover,.vHeaderModuleCurrent  {<?= Ctrl::$agora->skin=="black"?"background:#444;border:solid 1px #777;":"background:#fff;border:solid 1px #ccc;"?>}/*module courant*/
+.vHeaderModuleButton:hover,.vHeaderModuleCurrent  {<?= Ctrl::$agora->skin=="black"?"background:#444;border:solid 1px #777;":"background:white;border:solid 1px #ccc;"?>}/*module courant*/
 .vHeaderModuleLabel						{<?= (Req::isMobile() || !empty(Ctrl::$agora->moduleLabelDisplay)) ? "display:inline-block;min-width:45px;" : "display:none" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
 
 /*MOBILE*/
@@ -28,8 +28,7 @@
 	#headerMenuLeft							{padding-left:38px; line-height:35px;}/*"padding-left" en fonction du width du "logo.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; font-size:1.08em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
 	#headerMainLogo							{top:10px; left:2px;}
-	#headerSpaceLabel						{max-width:200px; text-transform:lowercase;}
-	#headerSpaceLabel:first-letter			{text-transform:uppercase;}
+	#headerSpaceLabel						{max-width:180px; text-transform:lowercase;}
 	#headerBurgerLogo						{margin-left:5px;}
 	#headerMenuContextTab, #headerMenuContextTab>div, #headerMenuContextTab>div>div  {display:block;}
 	#headerMenuContextTabRight				{border:0px;}
@@ -78,7 +77,7 @@
 					////	MODIF DU PROFIL ET MESSENGER DE L'USER
 					echo '<hr>';
 					echo '<div class="menuLine" onclick="lightboxOpen(\''.Ctrl::$curUser->getUrl("edit").'\')"><div class="menuIcon"><img src="app/img/edit.png"></div><div>'.Txt::trad("USER_myProfilEdit").' &nbsp;'.Ctrl::$curUser->personImg(false,true).'</div></div>';
-					if(MdlUser::messengerDisplay())  {echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=UserEditMessenger&typeId='.Ctrl::$curUser->_typeId.'\')" title="'.Txt::trad("USER_livecounterVisibility").'"><div class="menuIcon"><img src="app/img/messengerSmall.png"></div><div>'.Txt::trad("USER_messengerEdit").'</div></div>';}
+					if(MdlUser::agoraMessengerEnabled())  {echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=UserEditMessenger&typeId='.Ctrl::$curUser->_typeId.'\')" title="'.Txt::trad("USER_livecounterVisibility").'"><div class="menuIcon"><img src="app/img/messengerSmall.png"></div><div>'.Txt::trad("USER_messengerEdit").'</div></div>';}
 					////	ADMIN D'ESPACE :  PARAMETRAGE DE L'ESPACE COURANT  +   MODULE "LOGS"  +   AFFICHAGE "ADMINISTRATEUR"
 					if(Ctrl::$curUser->isSpaceAdmin()){
 						echo '<hr>';

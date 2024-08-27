@@ -1,11 +1,13 @@
 /*Basic*/
-body, a, .sLink																										{color:#ccc;}
-#htmlLightbox																										{background:#222;}
-input, textarea, select																								{background:#333; color:#ccc; border:1px solid #555!important;}
-.sAccessWrite, .sAccessWriteLimit																					{color:#f88;}				/*Droit d'accès "Write" & "Write limit"*/
-a:hover, [onclick]:hover, .sLink:hover, .linkSelect, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(173,211,255);}	/*Liens principaux / label+checkbox / accès utilisateur*/
+body, a, .sLink																						{color:#ccc;}
+#htmlLightbox																						{background:#222;}
+input, textarea, select																				{background:#333; color:#ccc; border:1px solid #555!important;}
+
+/*Liens principaux / label+checkbox / accès utilisateur..*/
+a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLaunch:hover, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(173,211,255);}
 
 /*Blocks d'objet & menus contextuels*/
+.sAccessWrite, .sAccessWriteLimit																	{color:#f88;}								/*Droit d'accès "Write" & "Write limit"*/
 .objContainer, .miscContainer, .emptyContainer, .menuContext										{background:#222;}							/*blocks principaux*/
 .objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover	{background:#444!important;}				/*objets sélectionnés & lignes survolées (cf. droit d'accès & CO)*/
 .objLines .objContainer																				{border-bottom:solid 1px #555;}			/*pas de "box-shadow" en affichage "objLines"*/
@@ -18,11 +20,11 @@ a:hover, [onclick]:hover, .sLink:hover, .linkSelect, button:hover, label:hover, 
 
 /*Divers*/
 #headerBar								{background:linear-gradient(180deg,#111,#222,#111); box-shadow:0px 2px 8px rgb(80,80,80);}		/*barre de menu principale*/
-hr										{background:linear-gradient(90deg,#555,#999,#555);}												/*barre de séparation*/
-fieldset, .objMenuTab, .objMenuOptions	{background:#333; border:1px solid #444; border-radius:5px;}										/*fieldset & "VueObjEditMenuSubmit.php"*/
-.fieldsetSub							{background:#444; border:1px solid #414141; border-radius:5px;}									/*"VueObjEditMenuSubmit.php"*/
-.objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#333,#222);}														/*"VueObjEditMenuSubmit.php"*/
-.optionSelect, .optionUnselect:hover	{color:rgb(173,211,255); background:#333; border:solid 1px #555; border-radius:5px;}				/*option/categorie sélectionnée*/
+hr										{background:linear-gradient(90deg,#555,#999,#555);}													/*barre de séparation*/
+fieldset, .objMenuTab, .objMenuOptions	{background:#333; border:1px solid #444; border-radius:5px;}											/*fieldset & "VueObjEditMenuSubmit.php"*/
+.fieldsetSub							{background:#444; border:1px solid #414141; border-radius:5px;}										/*"VueObjEditMenuSubmit.php"*/
+.objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#333,#222);}															/*"VueObjEditMenuSubmit.php"*/
+.optionSelect, .optionUnselect:hover	{color:rgb(173,211,255); background:#333; border:solid 1px #555; border-radius:5px;}					/*option/categorie sélectionnée*/
 .optionUnselect							{border:solid 1px transparent;}
-::-webkit-scrollbar						{background:#333; width:12px;}																		/*scrollbar: background et width*/
-::-webkit-scrollbar-thumb				{background:#888;}																					/*scrollbar: couleur de la barre*/
+::-webkit-scrollbar						{background:#333; width:12px;}																			/*scrollbar: background et width*/
+::-webkit-scrollbar-thumb				{background:#888;}																						/*scrollbar: couleur de la barre*/

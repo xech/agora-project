@@ -5,7 +5,6 @@
 		<meta charset="UTF-8">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 		<meta http-equiv="content-language" content="<?= Txt::trad("CURLANG") ?>">
-		<meta http-equiv="X-UA-Compatible" content="IE=Edge"><!--IE : mode de compatibilité via Edge-->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"><!--Pas de zoom sur mobile-->
 		<link rel="icon" type="image/png" href="app/img/favicon.png">
 		<!--REFERENCEMENT-->
@@ -15,9 +14,9 @@
 		<meta name="application-url" content="https://www.agora-project.net">
 		<!-- JQUERY & JQUERY-UI -->
 		<script src="app/js/jquery-3.7.1.min.js"></script>
-		<script src="app/js/jquery-ui/jquery-ui.min.js"></script>
-		<script src="app/js/jquery-ui/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
-		<link rel="stylesheet" href="app/js/jquery-ui/jquery-ui.css">
+		<script src="app/js/jquery-ui_1.14.0/jquery-ui.min.js"></script>
+		<script src="app/js/jquery-ui_1.14.0/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
+		<link rel="stylesheet" href="app/js/jquery-ui_1.14.0/jquery-ui.css">
 		<!-- JQUERY PLUGINS -->
 		<script src="app/js/fancybox/dist/jquery.fancybox.min.js"></script>
 		<link  href="app/js/fancybox/dist/jquery.fancybox.css" rel="stylesheet">
@@ -28,8 +27,8 @@
 		<link rel="stylesheet" type="text/css" href="app/js/toastmessage/toastmessage.css">
 		<script src="app/js/jquery-confirm/jquery-confirm.min.js"></script>
 		<link rel="stylesheet" href="app/js/jquery-confirm/jquery-confirm.min.css">
-		<script src="app/js/timepicker/jquery.timepicker.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="app/js/timepicker/jquery.timepicker.css">
+		<script src="app/js/timepicker_1.14.1/jquery.timepicker.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="app/js/timepicker_1.14.1/jquery.timepicker.css">
 		<!-- JAVASCRIPT & CSS PRINCIPAUX (TOUJOURS À LA FIN!)-->
 		<script src="app/js/common-<?= Req::appVersion() ?>.js"></script>
 		<link href="app/css/common-<?= Req::appVersion() ?>.css" rel="stylesheet" type="text/css">
@@ -39,13 +38,14 @@
 		////	Parametres de base et labels de "common.js"
 		isMainPage=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
 		windowParent=(isMainPage==true) ? window : window.parent;//Accès à la page principale via common.js
-		confirmCloseForm=false;//Confirmation de fermeture de formulaire (Ex: édition d'objet)
-		labelConfirmCloseForm		="<?= Txt::trad("confirmCloseForm") ?>";
-		labelConfirmDelete			="<?= Txt::trad("confirmDelete") ?>";
-		labelConfirmDeleteDbl		="<?= Txt::trad("confirmDeleteDbl") ?>";
-		labelDateBeginEndControl	="<?= Txt::trad("beginEndError") ?>";
-		labelUploadMaxFilesize		="<?= File::uploadMaxFilesize("error") ?>";
-		valueUploadMaxFilesize		=<?= File::uploadMaxFilesize() ?>;
+		confirmCloseForm		=false;//Confirmation de fermeture de formulaire (Ex: édition d'objet)
+		labelConfirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
+		labelConfirmDelete		="<?= Txt::trad("confirmDelete") ?>";
+		labelConfirmDeleteDbl	="<?= Txt::trad("confirmDeleteDbl") ?>";
+		labelBeginEndError		="<?= Txt::trad("beginEndError") ?>";
+		labelDateFormatError	="<?= Txt::trad("dateFormatError") ?>";
+		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
+		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
 
 		////	Au chargement de la page
 		$(function(){
@@ -80,15 +80,15 @@
 		#pageFooterHtml						{bottom:15px; left:15px; font-weight:normal; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
 		#pageFooterIcon						{bottom:5px; right:5px;}
 		#pageFooterIcon img					{max-height:70px; max-width:200px;}
-		#pageFooterSpecial					{display:inline-block; margin:0px 0px -7px -7px; background-color:rgba(0,0,0,0.7); border-radius:5px; padding:8px; color:#c00; font-weight:bold;}/*host*/
+		#pageFooterSpecial					{display:inline-block; margin:0px 0px -7px -7px; background:rgba(0,0,0,0.7); border-radius:5px; padding:8px; color:#c00; font-weight:bold;}/*host*/
 		#menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masque par défaut les principaux elements sur mobile*/
 
 		/*MOBILE  (cf. "common.js")*/
 		@media screen and (max-width:1023px){
 			#pageFooterHtml, #pageFooterIcon			{visibility:hidden;}/*pas de "display:none" pour laisser de la marge avec le contenu de la page pour le Messenger/Livecounter et le "menuMobileAddButton"*/
 			#menuMobileMain, #menuMobileBg				{position:fixed; top:0px; right:0px; height:100%;}
-			#menuMobileBg								{z-index:100; width:100%; background-color:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
-			#menuMobileMain								{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:#fff;border:solid 1px #ddd;' ?>}
+			#menuMobileBg								{z-index:100; width:100%; background:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
+			#menuMobileMain								{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:white;border:solid 1px #ddd;' ?>}
 			#menuMobileMain #menuMobileClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
 			#menuMobileMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace et users)*/
 			#menuMobileMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/

@@ -1,5 +1,5 @@
 <?php if($curObj::descriptionEditor==true){ ?>
-	<script type="text/javascript" src="app/js/tinymce_7.1.2/tinymce.min.js"></script>
+	<script type="text/javascript" src="app/js/tinymce_7.3.0/tinymce.min.js"></script>
 	<script>
 	/*******************************************************************************************
 	 ***********************			INIT L'EDITEUR TINYMCE			************************
@@ -23,8 +23,8 @@
 			font_size_formats:"11px 13px 16px 20px 24px 28px 32px",	//Liste des "fontsize" : cf. "content_style" ci-dessus pour le "font-size" par défaut
 			content_style:"body {margin:10px;font-size:13px; font-family:Arial,Helvetica,sans-serif;}  p {margin:3px;}  .attachedFileTag {max-width:100%!important;}  .mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {font-weight:normal; padding-left:5px; color:#aaa;}",//Style du texte dans l'éditeur : idem "body" dans "common.css" + Style du placeholder de l'éditeur
 			////	Charge les plugins et options de la "toolbar" (autres plugins dispos : code print preview hr anchor pagebreak wordcount fullscreen insertdatetime)
-			plugins: "autoresize lists advlist link autolink image charmap emoticons visualchars media nonbreaking table",
-			toolbar1: (isMobile()  ?  "undo redo | emoticons addMediaFileButton | editorDraft"	:  "undo redo | copy paste removeformat | table charmap media emoticons link addMediaFileButton | editorDraft"),
+			plugins: "autoresize lists advlist link autolink image charmap emoticons visualchars media nonbreaking table <?= $editorCode ?>",
+			toolbar1: (isMobile()  ?  "undo redo | emoticons addMediaFileButton | editorDraft"	:  "undo redo | copy paste removeformat | table charmap <?= $editorCode ?> media emoticons link addMediaFileButton | editorDraft"),
 			toolbar2: (isMobile()  ?  "fontsize | bold underline forecolor bullist"				:  "bold italic underline strikethrough forecolor | fontsize | alignleft aligncenter alignright alignjustify | bullist numlist"),
 			////	Chargement de l'éditeur : parametrages spécifiques
 			setup: function(editor){

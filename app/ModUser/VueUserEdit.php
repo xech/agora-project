@@ -28,7 +28,7 @@ function objectFormControl(){
 		if($("[name='password']").isEmpty())  {notify("<?= Txt::trad("specifyPassword"); ?>","warning");  resolve(false);}
 		<?php } ?>
 		//Vérif le password et sa confirmation
-		if($("[name='password']").isEmpty()==false){
+		if($("[name='password']").isNotEmpty()){
 			if(isValidUserPassword($("[name='password']").val())==false)			{notify("<?= Txt::trad("passwordInvalid") ?>","warning");		resolve(false);}
 			if($("[name='password']").val()!=$("[name='passwordVerif']").val())		{notify("<?= Txt::trad("passwordConfirmError") ?>","warning");	resolve(false);}
 		}

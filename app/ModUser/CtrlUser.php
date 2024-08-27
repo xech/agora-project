@@ -108,7 +108,7 @@ class CtrlUser extends Ctrl
 					}
 				}
 				//Affectation par défaut à l'espace courant  => si nouvel objet sans affectation définies & affichage "espace" & pour un espace dans lequel tous les users ne sont pas affectés
-				if($curObj->isNewlyCreated() && Req::isParam("spaceAffect")==false && $_SESSION["displayUsers"]=="space" && self::$curSpace->allUsersAffected()==false)
+				if($curObj->isNewRecord() && Req::isParam("spaceAffect")==false && $_SESSION["displayUsers"]=="space" && self::$curSpace->allUsersAffected()==false)
 					{Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".Ctrl::$curSpace->_id.", _idUser=".$curObj->_id.", accessRight=1");}
 				//Notification par mail de création d'user
 				if(Req::isParam("notifMail") && Req::isParam("mail"))  {$curObj->newUserCoordsSendMail(Req::param("password"));}

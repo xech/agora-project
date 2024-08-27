@@ -31,7 +31,7 @@ select[name='wallpaper']		{height:120px; max-width:180px;}
 #wallpaperImg img 				{height:120px; max-width:none;}/*surcharge ".objField img"*/
 #wallpaperAdd, #wallpaperDelete	{display:none;}
 #wallpaperDelete				{font-size:0.9em;}
-option[value='add']				{background-color:#800;color:#fff;}
+option[value='add']				{background:#800;color:white;}
 </style>
 
 

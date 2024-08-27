@@ -37,7 +37,7 @@ class CtrlSpace extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			////	Enregistre & recharge l'objet
-			$oldSpaceName=($curObj->isNewlyCreated()==false)  ?  $curObj->name  :  null;
+			$oldSpaceName=($curObj->isNewRecord()==false)  ?  $curObj->name  :  null;
 			$curObj=$curObj->createUpdate("name=".Db::param("name").", description=".Db::param("description").", public=".Db::param("public").", `password`=".Db::param("password").", userInscription=".Db::param("userInscription").", userInscriptionNotify=".Db::param("userInscriptionNotify").", usersInvitation=".Db::param("usersInvitation").", wallpaper=".Db::param("wallpaper"));
 			////	Affectations des users
 			if(Ctrl::$curUser->isSpaceAdmin())
@@ -61,7 +61,7 @@ class CtrlSpace extends Ctrl
 				Db::query("INSERT INTO ap_joinSpaceModule SET _idSpace=".$curObj->_id.", moduleName=".Db::format($moduleName).", `rank`=".$rank.", options=".Db::format($options));
 			}
 			////	Nouvel espace : Creation de l'agenda partagé de l'espace (affectation par défaut : lecture pour les users de l'espace)
-			if($curObj->isNewlyCreated() && in_array("calendar",Req::param("moduleList")) && Req::isParam("calendarOptions") && in_array("createSpaceCalendar",Req::param("calendarOptions"))){
+			if($curObj->isNewRecord() && in_array("calendar",Req::param("moduleList")) && Req::isParam("calendarOptions") && in_array("createSpaceCalendar",Req::param("calendarOptions"))){
 				$newCalendar=new MdlCalendar();
 				$newCalendar=$newCalendar->createUpdate("title=".Db::format($curObj->name).", description=".Db::format(Txt::trad("CALENDAR_sharedCalendarDescription")).", type='ressource'");
 				Db::query("INSERT INTO ap_objectTarget SET objectType='calendar', _idObject=".$newCalendar->_id.", _idSpace=".$curObj->_id.", target='spaceUsers', accessRight='1.5'");

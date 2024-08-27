@@ -1,211 +1,174 @@
 <?php if($tmpCal->isFirstCal==true){ ?>
 <script>
-////	GÈRE L'AFFICHAGE DE LA VUE "WEEK" (cf. "VueIndex.php")
+/*******************************************************************************************
+ *	DIMENSIONNE LES AGENDAS
+ *******************************************************************************************/
 function calendarDimensions(printCalendar)
 {
-	////	CALCULE LA HAUTEUR D'AFFICHAGE DU SCROLLER DES AGENDAS
-	weekScrollerHeight=Math.round($(".vCalWeekMain").innerHeight() - $(".vCalWeekHeader").outerHeight(true));
-	$(".vCalWeekScroller").css("height",weekScrollerHeight).show();//calcul du height, puis on affiche
+	////	HAUTEUR DES AGENDAS (SCROLLER) ET DES LIGNES D'HEURE
+	$(".vWeekScroller").outerHeight( Math.floor($(".vWeekMain").height()-$(".vWeekHeader").height()) );		//Height du .vWeekScroller des agendas (partie visible et scrollable des agendas)
+	let timeSlotDisplayed=(printCalendar==true) ? 24 : 12;													//Plage horaire affichée sur 12h ou 24h
+	let weekCellHeight=Math.floor($(".vWeekScroller").height() / timeSlotDisplayed);						//Height des .vWeekCell, en fonction du .vWeekScroller et la plage horaire affichée
+	if(weekCellHeight<25 || printCalendar==true)  {weekCellHeight=25;}										//Height minimum des heures (cf. mobile & "print()")
+	$(".vWeekCell").outerHeight(weekCellHeight,true);														//Height des heures (avec margins)
+	$(".vWeekQuarter").outerHeight( Math.floor($(".vWeekCell").height()/4) );								//Height des 1/4 d'heures sélectionnables
+	let hourHeightRef=weekCellHeight-1;																		//Height de référence : -1px de margin-bottom (les margins du .vWeekCell sont fusionnées via "border-collapse")
 
-	////	LANCE L'AFFICHAGE DE CHAQUE AGENDA
-	$(".vCalWeekScroller").each(function(){
-		////	HAUTEUR DES LIGNES D'HEURE  (le créneau horaire de l'agenda doit faire la hauteur du "weekScrollerHeight")
-		var curCalId="#"+this.id;																						//ID de l'Agenda courant
-		var timeSlotHours=parseInt($(this).attr("data-timeSlotDuration")) +1;											//+1 : nb d'heures sur la plage horaire ("TimeSlot")
-		if(timeSlotHours<5  || (timeSlotHours>14 && isMobile()))  {timeSlotHours=14;}									//timeslot minimum (par défaut) et maximum (mobile) : en heures
-		var calWeekLineHeight=Math.round(weekScrollerHeight / timeSlotHours)-1;											//enleve la bordure des lignes
-		if(calWeekLineHeight<35 || printCalendar===true)  {calWeekLineHeight=35;}										//hauteur minimum des lignes d'heure
-		$(".vCalWeekLine,.vCalWeekHourSubTable",curCalId).outerHeight(calWeekLineHeight);								//Applique la Hauteur à chaque ligne
+	////	LARGEUR DES JOURS (COLONNES)
+	let weekCellWidth=Math.floor( ($(".vWeekScroller").width() - $(".vWeekHourLabel").width()) / <?= count($periodDays) ?>);
+	$(".vWeekHeaderDay, .vWeekCell").outerWidth(weekCellWidth,true);//Width du label des jours et cellules des heures (avec margins)
 
-		////	LARGEUR/HAUTEUR DE CHAQUE JOUR
-		var nbDaysDisplayed=$(curCalId+" .vCalWeekLine:first-child .vCalWeekCell").length;								//Nombre de jours affichés (sur la première ligne)
-		var weekCellHeight=$(curCalId+" .vCalWeekLine:first-child .vCalWeekCell").outerHeight(true);					//Hauteur des jours
-		var weekCellWidth=Math.round( ($(this).innerWidth() - $(".vCalWeekHourLabel").innerWidth()) / nbDaysDisplayed);	//Largeur des jours
-		$(curCalId+" .vCalWeekCell, .vCalWeekHeaderDay").css("width",weekCellWidth);									//Applique la largeur
-
-		////	AFFICHE CHAQUE ÉVÉNEMENT
-		hearlierEvtTop=null;
-		setTimeout(function(){
-			$(curCalId+" .vCalEvtBlock").each(function(){
-				//Largeur, Position left et top
-				var curDaySelector=curCalId+" .vCalWeekLine:first-child [data-dayDate='"+$(this).attr("data-dayDate")+"']";
-				var evtPosLeft=$(curDaySelector).position().left;
-				var evtWidth=$(curDaySelector).outerWidth()-1;
-				//L'evt précédent se trouve sur le même créneau horaire : on décale l'evt courant OU on split les 2 evt
-				if(typeof lastEvtDaySelector!=="undefined" && lastEvtDaySelector==curDaySelector)
-				{
-					var lastEvtSameTimeSlot=($(this).attr("data-timeBegin") < $(lastEvtId).attr("data-timeEnd"));					//Les événements se chevauchent (Evt courant commence avant la fin de l'evt précédent)
-					var lastEvtSameBegin=(parseInt($(this).attr("data-timeBegin") - $(lastEvtId).attr("data-timeBegin")) < 800);	//Evt précédent commence avec moins de 15mn d'écart
-					if(lastEvtSameTimeSlot==true || lastEvtSameBegin==true){
-						var leftMargin=(lastEvtSameBegin==true)  ?  Math.round(weekCellWidth/2)  :  40;								//Meme début : evt splité en 2 || Evts se chevauchent : décale l'evt de 40px à droite 
-						var evtPosLeft=evtPosLeft + leftMargin;																		//Ajoute de la marge à gauche de l'evt courant (décale donc l'evt à droite)
-						var evtWidth=weekCellWidth - leftMargin - 2;																//On réduit ensuite la largeur de l'evt pour pas dépasser de la colonne du jour
-						$(this).css("border","solid 1px #888");																		//Ajoute une bordure pour mieux différencier les 2 evts
-						if(lastEvtSameBegin==true)  {$(lastEvtId).outerWidth(Math.round(weekCellWidth/2));}							//Evt splité : réduit la largeur de l'evt précédent
-					}
+	////	AFFICHE CHAQUE ÉVÉNEMENT DE CHAQUE AGENDA
+	$(".vWeekScroller").each(function(){
+		$(this).find(".vEventBlock").each(function(){
+			//// Infos sur la colonne du jour
+			let daySelector=".vWeekTable tr:first .vWeekCell[data-dayDate='"+$(this).attr("data-dayDate")+"']";				//Selecteur de la colonne du jour de l'evt (heure 0:00)
+			let evtPosLeft=$(daySelector).position().left;																	//Position Left de l'evt en fonction de la colonne du jour
+			let evtWidth=$(daySelector).width();																			//Width de l'evt en fonction de la colonne du jour (sans margins)
+			//// Evt précédent sur le même timeslot : décale/split les evts
+			if(typeof prevEvtDaySelector!="undefined"  &&  prevEvtDaySelector==daySelector  &&  $(this).attr("data-timeBegin") < $(prevEvtId).attr("data-timeEnd")){
+				if(($(this).attr("data-timeBegin") - $(prevEvtId).attr("data-timeBegin")) >= 1800){							//Plus de 30mn de diff entre le début de chaque evts : on décale l'evt courant
+					var rightShift=isMobile() ? 15 : 30;																	//- Décale l'evt de 30px
+					$(this).css("border","solid 1px #888");																	//- Ajoute une bordure pour différencier les 2 evts
+				}else{																										//Moins de 30mn de diff : on split chaque evts en 2
+					var rightShift=Math.floor(evtWidth/2);																	//- Décale l'evt de 50%
+					$(prevEvtId).outerWidth(rightShift,true);																//- Width de l'evt précédent (avec margins) réduit de moitié
 				}
-				//Position et dimension de l'Evt
-				var minutesFromDayBegin=parseInt($(this).attr("data-minutesFromDayBegin"));											//Nombre de minute depuis le début du jour
-				var evtPosTop=Math.round((weekCellHeight/60) * minutesFromDayBegin);												//Position Top de l'evt
-				var evtHeight=Math.round((weekCellHeight/60) * parseInt($(this).attr("data-durationMinutes")) );					//Hauteur de l'evt
-				var evtHeight=(evtHeight<25) ? 25 : (evtHeight-1);																	//Height de 25px minimum || Height avec 1px de marge entre chaque evt
-				$(this).css("top",evtPosTop).css("left",evtPosLeft).outerWidth(evtWidth).outerHeight(evtHeight);					//Applique la position et dimensions de l'evt
-				//Infos pour l'evt suivant
-				if(minutesFromDayBegin>0 && (hearlierEvtTop===null || evtPosTop<hearlierEvtTop))  {hearlierEvtTop=evtPosTop;}		//Scrolltop de l'agenda en fonction de l'evt le plus tôt
-				lastEvtDaySelector=curDaySelector;																					//Selecteur Jquery de l'evt
-				lastEvtId="#"+this.id;																								//_id de l'evt
-			});
-		},100);
-
-		////	PLACE L'AGENDA (SCROLL) AU DÉBUT DE LA PLAGE HORAIRE OU SUR L'ÉVÉNEMENT DONT L'HEURE EST LA PLUS TÔT DE LA SEMAINE
-		var scrollTopTimeSlot=weekCellHeight * parseInt($(this).attr("data-timeSlotBegin"));
-		var scrollTopCalWeek=(hearlierEvtTop!==null && hearlierEvtTop<scrollTopTimeSlot)  ?  hearlierEvtTop  :  scrollTopTimeSlot;
-		$(this).scrollTop(scrollTopCalWeek);
-	});
-	////	AFFICHE ENFIN TOUS LES AGENDAS!
-	$(".vCalWeekMain").css("visibility","visible");
-
-	////	SÉLECTION DE CRÉNEAU HORAIRE POUR L'AJOUT D'UN EVT (SAUF MOBILE)
-	if(isMobile()==false)
-	{
-		//Init
-		cellMouseDown=null;
-		//// mousedown/mouseup/mousemove une cellule horaire
-		$(".vCalWeekHourCell").on("mousedown mousemove mouseup",function(event){
-			//Début de la sélection
-			if(event.type=="mousedown"){
-				cellMouseDown=true;														//La cellule est sélectionnée
-				cellTimeBegin=parseInt($(this).attr("data-cellTimeBegin"));				//Time du début de sélection
-				cellTimeEnd=parseInt($(this).attr("data-cellTimeEnd"));					//Time de fin de sélection
-				cellDay=$(this).attr("data-cellDay");									//Jour sélectionné
+				evtPosLeft+=rightShift;																						//Décale l'evt sur la droite
+				evtWidth-=rightShift;																						//Réduit la largeur de l'evt pour rester dans la colonne du jour
 			}
-			//Sélectionne le Timeslot (verif qu'on reste sur le même jour..)
-			else if(event.type=="mousemove" && cellMouseDown==true && cellDay==$(this).attr("data-cellDay")){
-				cellTimeEnd=parseInt($(this).attr("data-cellTimeEnd"));					//Time de fin de sélection mis à jour
-				$(".vCalWeekHourCell[data-cellDay='"+cellDay+"']").each(function(){		//Ajoute ou enlève la class des cellules sélectionnées : entre "cellTimeBegin" et "cellTimeEnd"
-					(cellTimeBegin<=parseInt($(this).attr("data-cellTimeBegin")) && parseInt($(this).attr("data-cellTimeEnd"))<cellTimeEnd)  ?  $(this).addClass("vCalWeekHourCellSelect")  :  $(this).removeClass("vCalWeekHourCellSelect");
+			//// Position et dimension de l'Evt
+			let timeFromDayBegin=parseInt($(this).attr("data-timeFromDayBegin"));											//Time de l'evt depuis le début du jour
+			let evtPosTop=Math.round((hourHeightRef/3600) * timeFromDayBegin);												//Position Top de l'evt
+			let evtHeight=Math.round((hourHeightRef/3600) * parseInt($(this).attr("data-timeDuration")) );					//Hauteur de l'evt
+			$(this).css("top",evtPosTop).css("left",evtPosLeft).outerWidth(evtWidth,true).outerHeight(evtHeight,true);		//Applique la position et dimensions de l'evt (avec margins)
+			$(this).find(".vEventLabel").outerHeight($(this).height());														//Applique la hauteur au label (pas de css "height:inherit")
+			//// Infos pour l'evt suivant
+			prevEvtId="#"+this.id;																							//Id de l'evt
+			prevEvtDaySelector=daySelector;																					//Selecteur de l'evt
+			if(timeFromDayBegin>0 && (typeof hearlierEvtTop=="undefined" || evtPosTop<hearlierEvtTop))  {hearlierEvtTop=evtPosTop;}//Scrolltop de l'agenda en fonction de l'evt le plus tôt
+		});
+		////	SCROLL L'AGENDA : AU DÉBUT DE LA PLAGE HORAIRE || SUR L'ÉVÉNEMENT LE PLUS TÔT DE LA SEMAINE
+		let calScrollTop=Math.floor(hourHeightRef * parseInt($(this).attr("data-timeSlotBegin")));
+		if(typeof hearlierEvtTop!="undefined" && hearlierEvtTop<calScrollTop)  {calScrollTop=hearlierEvtTop;}
+		$(this).scrollTop(calScrollTop);
+	});
+}
+
+/******************************************************************************************
+ *	AJOUT D'UN EVT EN SELECTIONNANT UN CRÉNEAU HORAIRE (SAUF MOBILE)
+ ******************************************************************************************/
+$(function(){
+	if(isMobile()==false){
+		//// Sélectionne une cellule .vWeekQuarter
+		let isMouseDown=quarterTimeBegin=quarterTimeEnd=null;
+		$(".vWeekQuarter").on("mousedown mousemove mouseup",function(event){
+			if(event.type=="mousedown"){																			//// Début de sélection : init les valeurs
+				isMouseDown=true;																					//Cellule sélectionnée
+				quarterDate=$(this).attr("data-dayDate");															//Jour sélectionné
+				quarterTimeBegin=parseInt($(this).attr("data-timeBegin"));											//Time du début de sélection
+				quarterTimeEnd=parseInt($(this).attr("data-timeEnd"));												//Time de fin de sélection
+			}
+			else if(event.type=="mousemove" && isMouseDown==true && quarterDate==$(this).attr("data-dayDate")){		//// Continue la sélection sur le même jour
+				quarterTimeEnd=parseInt($(this).attr("data-timeEnd"));												//Update le Time de fin de sélection
+				$(".vWeekQuarter[data-dayDate='"+quarterDate+"']").each(function(){									//Sélectionne/déselectionne les cellules .vWeekQuarter du jour (descend/monte la souris)
+					if(quarterTimeBegin <= parseInt($(this).attr("data-timeBegin"))  &&  parseInt($(this).attr("data-timeEnd")) < quarterTimeEnd)	{$(this).addClass("vWeekQuarterSelect");}
+					else																															{$(this).removeClass("vWeekQuarterSelect");}
 				});
 			}
-			//Fin de la sélection : ouvre l'édition d'un nouvel événement !
-			else if(event.type=="mouseup" && cellTimeBegin<cellTimeEnd){
-				lightboxOpen("<?= MdlCalendarEvent::getUrlNew() ?>&_idCal="+$(this).attr("data-idCal")+"&newEvtTimeBegin="+cellTimeBegin+"&newEvtTimeEnd="+cellTimeEnd);
-				$(".vCalWeekHourCell").removeClass("vCalWeekHourCellSelect");			//Enlève la class de sélection à toutes les cellules
-				cellMouseDown=cellTimeBegin=cellTimeEnd=null;							//Réinit les valeurs de sélection
+			else if(event.type=="mouseup" && quarterTimeBegin < quarterTimeEnd){									//// Fin de la sélection : ouvre l'édition d'un nouvel événement !
+				lightboxOpen("<?= MdlCalendarEvent::getUrlNew() ?>&_idCal="+$(this).attr("data-idCal")+"&newEvtTimeBegin="+quarterTimeBegin+"&newEvtTimeEnd="+quarterTimeEnd);
+				$(".vWeekQuarter").removeClass("vWeekQuarterSelect");												//Réinit la sélection
+				isMouseDown=quarterTimeBegin=quarterTimeEnd=null;													//Réinit les valeurs (à la fin)
 			}
 		});
 	}
-}
+});
 </script>
 
 <style>
-.vCalWeekMain													{height:100%; visibility:hidden;}
-.vCalWeekScroller												{display:none; position:relative; overflow-y:scroll; overflow-x:hidden;}/*masqué par défaut puis affiché après calcul des dimensions (cf. "calendarDimensions" ci-dessus)*/
-.vCalWeekHeader, .vCalWeekTable, .vCalWeekHourSubTable			{display:table; width:100%;}
-.vCalWeekHeaderLine, .vCalWeekLine, .vCalWeekHourCells			{display:table-row;}
-.vCalWeekHeaderLine>div, .vCalWeekLine>div, .vCalWeekHourCell	{display:table-cell;}
-.vCalWeekHeaderLine>div											{text-align:center; vertical-align:bottom;}
-.vCalWeekHeaderScroller											{width:15px!important;}/*width du scroller dans le header*/
-.vCalWeekHourLabel												{width:35px!important; max-width:35px!important; text-align:right; color:#aaa; font-size:0.9em!important;}
-.vCalWeekCell													{background:#fff; border-top:solid 1px #ddd; border-bottom:solid 1px #fff; border-left:solid 1px #ddd;}
-.vCalWeekHourCell												{height:25%; line-height:5px;}/*"line-height" pour contenir la hauteur des heures sur les petites résolutions*/
-.vCalWeekHourCellCurrent										{border-top:solid 1px #f00;}
-.vCalWeekHourOutTimeslot, .vCalWeekHourCellPastTime				{background:#fafafa;}
-.vCalWeekHourCell:hover, .vCalWeekHourCellSelect				{background:#eee;}
-.vCalWeekHeaderDayToday											{font-size:1.1em; color:#c00;}
-.vCalEvtBlock													{position:absolute;}
+.vWeekMain									{height:100%;}
+.vWeekScroller								{position:relative; overflow-y:scroll; overflow-x:hidden;}			/*Partie visible de l'agenda*/
+.vWeekHeader, .vWeekTable					{width:100%; border-collapse:collapse;}								/*Tableau du libellé des jour et de la grille des heures*/
+.vWeekHeader td, .vWeekTable td				{padding:0px; text-align:center;}									/*Tableau du libellé des jour et de la grille des heures*/
+.vWeekHeaderToday							{font-size:1.15em; color:#c00;}										/*Libellé d'aujourd'hui*/
+.vWeekHeaderScrollbar						{width:15px;}														/*Width "fantome" de la scrollbar de .vWeekScroller*/
+.vWeekHourLabel								{width:35px; vertical-align:top; color:#aaa; font-size:0.9em;}		/*Libellé des heures, à gauche du tableau*/
+.vWeekCell									{font-size:0.1em; <?= Ctrl::$agora->skin=="white" ? "background:white;border:1px solid #dededf;" : "background:black;border:1px solid #333;" ?>}/*Cellule des heures*/
+.vWeekHourNotTimeslot						{background:<?= Ctrl::$agora->skin=="white"?"#fafafa" : "#222" ?>}	/*Heures en dehors du Timeslot*/
+.vWeekQuarter:hover, .vWeekQuarterSelect	{background:<?= Ctrl::$agora->skin=="white"?"#eee" : "#333" ?>;}	/*Quarts d'heure survolés/sélectionnés*/
+.vWeekQuarterRedLine						{border-top:solid 1px #f00;}										/*Heure courante : ligne rouge*/
+.vEventBlock								{position:absolute; min-height:20px; padding:4px;}					/*Hauteur minimum de 20px (exple: evt d'un quart d'heure)*/
 
 /*MOBILE*/
 @media screen and (max-width:1023px){
-	.vCalWeekHourLabel										{width:18px!important; max-width:18px!important; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
-	.vCalWeekHeaderDay										{font-size:0.9em!important;}
-	.vCalWeekHeaderCelebrationDay, .vCalWeekHourLabelZero	{display:none;}
-	.vCalEvtBlock .vCalEvtLabel								{text-transform:lowercase; font-size:0.8em;}
+	.vWeekHourLabel				{width:18px!important; max-width:18px!important; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
+	.vWeekHeaderDay				{font-size:0.85em!important;}
+	.vWeekHeaderCelebrationDay	{display:none;}
+	.vEventLabel				{line-height:13px;}
 }
 
 /* IMPRESSION */
 @media print{
-	.vCalWeekLine .vCalWeekCell:last-child	{border-right:solid 1px #ddd!important;}
-	.vCalWeekLine:last-child .vCalWeekCell	{border-bottom:solid 1px #ddd!important;}
-	.vCalWeekScroller						{overflow:visible!important;}
-	.vCalWeekHourCell						{display:none!important;}
-	.vCalEvtBlock							{border:solid 1px #ddd!important;}
+	.vWeekScroller				{height:80%!important; max-height:80%!important;}
+	.vWeekScroller				{overflow:visible!important;}
+	.vWeekQuarter				{display:none!important;}
 }
 </style>
 <?php } ?>
 
 
-<div class="vCalWeekMain">
+<div class="vWeekMain">
 	<!--HEADER DES JOURS : FIXE-->
-	<div class="vCalWeekHeader">
-		<div class="vCalWeekHeaderLine">
-			<div class="vCalWeekHourLabel">&nbsp;</div>
+	<table class="vWeekHeader">
+		<tr>
+			<td class="vWeekHourLabel">&nbsp;</td>
 			<?php
 			foreach($periodDays as $tmpDay){
 				$dayLabelFormat=Req::isMobile() ? "ccc d" : "cccc d";//Jour de la semaine ("lun. 12" ou "lundi 12")
-				$classToday=(date("y-m-d",$tmpDay["timeBegin"])==date("y-m-d"))  ?  "vCalWeekHeaderDayToday"  :  null;
-				$celebrationDay=(!empty($tmpDay["celebrationDay"]))  ?  '&nbsp;<img src="app/img/calendar/celebrationDay.png" class="vCalWeekHeaderCelebrationDay" title="'.Txt::tooltip($tmpDay["celebrationDay"]).'">'  :  null;
-				echo '<div class="vCalWeekHeaderDay '.$classToday.'">'.ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"])).$celebrationDay.'</div>';
+				$classToday=(date("y-m-d",$tmpDay["timeBegin"])==date("y-m-d"))  ?  "vWeekHeaderToday"  :  null;
+				$celebrationDay=(!empty($tmpDay["celebrationDay"]))  ?  '&nbsp;<img src="app/img/calendar/celebrationDay.png" class="vWeekHeaderCelebrationDay" title="'.Txt::tooltip($tmpDay["celebrationDay"]).'">'  :  null;
+				echo '<td class="vWeekHeaderDay '.$classToday.'">'.ucfirst(Txt::formatime($dayLabelFormat,$tmpDay["timeBegin"])).$celebrationDay.'</td>';
 			}
 			?>
-			<div class="vCalWeekHeaderScroller">&nbsp;</div>
-		</div>
-	</div>
+			<td class="vWeekHeaderScrollbar">&nbsp;</td>
+		</tr>
+	</table>
 
-	<?php
-	////	PARTIE SCROLLABLE DE L'AGENDA : EVENEMENTS & GRILLE DES HEURES/MINUTES
-	echo '<div class="vCalWeekScroller" id="calWeekScroller'.$tmpCal->_typeId.'" data-timeSlotBegin="'.$tmpCal->timeSlotBegin.'" data-timeSlotDuration="'.round($tmpCal->timeSlotEnd-$tmpCal->timeSlotBegin).'">';
+	<!--AGENDA SCROLLABLE : GRILLE DES HEURES & EVENEMENTS-->
+	<div class="vWeekScroller" data-timeSlotBegin="<?= $tmpCal->timeSlotBegin ?>">
+		<?php
+		echo '<table class="vWeekTable">';
+			for($tmpHour=0; $tmpHour<24; $tmpHour++){
+				$weekHourLabel=$tmpHour.(Req::isMobile()?null:':00');
+				$weekCellClass=($tmpHour < $tmpCal->timeSlotBegin || $tmpCal->timeSlotEnd <= $tmpHour || $tmpHour==12 || $tmpHour==13)  ?  "vWeekHourNotTimeslot"  :  null;
+				echo '<tr>
+						<td class="vWeekHourLabel">'.$weekHourLabel.'</td>';													//Label des heures : colonne de gauche
+						foreach($periodDays as $tmpDate=>$tmpDay){																//Boucle sur le nombre de jours affichés
+							echo '<td class="vWeekCell '.$weekCellClass.'" data-dayDate="'.$tmpDate.'">';						//Cellule principale des heures
+								for($quarter=0; $quarter<4; $quarter++){														//Boucle sur les 1/4 d'heure
+									$timeBegin=$tmpDay["timeBegin"]+(3600*$tmpHour)+(900*$quarter);								//Timestamp du début
+									$timeEnd=$timeBegin+900;																	//Timestamp de fin
+									$classRedLine=($timeBegin < time() && time() < $timeEnd) ? "vWeekQuarterRedLine" : null;	//Quart d'heure en cours : ligne rouge
+									$quarterTooltip=$tmpCal->addEventLabel." : ".date("H:i",$timeBegin);						//Tooltip : exple "Ajouter un evt à 12:00"
+									//Affiche la cellule de sélection
+									echo '<div class="vWeekQuarter noTooltip '.$classRedLine.'" title="'.Txt::tooltip($quarterTooltip).'" data-dayDate="'.$tmpDate.'" data-timeBegin="'.$timeBegin.'" data-timeEnd="'.$timeEnd.'" data-idCal="'.$tmpCal->_id.'">&nbsp;</div>';
+								}
+							echo '</td>';
+						}
+				echo '</tr>';
+			}
+		echo '</table>';
 
-		////	EVENEMENTS DE CHAQUE JOUR AFFICHÉ
+		////	EVENEMENTS DE LA SEMAINE (".vEventBlock")
 		foreach($tmpCal->eventList as $tmpDate=>$tmpDateEvts){
 			foreach($tmpDateEvts as $tmpEvt){
-				$tmpEvt->containerAttributes.=' data-dayDate="'.$tmpDate.'" data-timeBegin="'.$tmpEvt->timeBegin.'" data-timeEnd="'.$tmpEvt->timeEnd.'" data-minutesFromDayBegin="'.$tmpEvt->minutesFromDayBegin.'" data-durationMinutes="'.$tmpEvt->durationMinutes.'"';
-				echo $tmpEvt->divContainerContextMenu("vCalEvtBlock", $tmpEvt->containerAttributes, $tmpEvt->contextMenuOptions).
-						'<div class="vCalEvtLabel" onclick="'.$tmpEvt->openVue().'">'.$tmpEvt->dateTimeLabel.$tmpEvt->title.$tmpEvt->importantIcon.'</div>
+				$tmpEvt->containerAttributes.=' data-dayDate="'.$tmpDate.'" data-timeBegin="'.$tmpEvt->timeBegin.'" data-timeEnd="'.$tmpEvt->timeEnd.'" data-timeFromDayBegin="'.$tmpEvt->timeFromDayBegin.'" data-timeDuration="'.$tmpEvt->timeDuration.'"';
+				echo $tmpEvt->divContainerContextMenu($tmpEvt->containerClass, $tmpEvt->containerAttributes, $tmpEvt->contextMenuOptions).
+						'<div class="vEventLabel" onclick="'.$tmpEvt->openVue().'" title="'.$tmpEvt->titleTooltip.'">'.$tmpEvt->title.$tmpEvt->importantIcon.'</div>
 					 </div>';
 			}
 		}
-
-		////	GRILLE DES HEURES/MINUTES
-		echo '<div class="vCalWeekTable">';
-			for($tmpHour=0; $tmpHour<=23; $tmpHour++)
-			{
-				//CRÉNEAU HORS DU "TIMESLOT" DE L'AGENDA?
-				$tmpHourClass=($tmpHour<$tmpCal->timeSlotBegin || $tmpHour>$tmpCal->timeSlotEnd || $tmpHour==12 || $tmpHour==13)  ?  "vCalWeekHourOutTimeslot"  :  null;
-				//LIGNE DE L'HEURE COURANTE : LABEL DE L'HEURE + CELLULE DE L'HEURE POUR CHAQUE JOUR
-				echo '<div class="vCalWeekLine">
-						<div class="vCalWeekHourLabel">'.$tmpHour.'<span class="vCalWeekHourLabelZero">:00</span></div>';//:00 pour les minutes
-					foreach($periodDays as $tmpDate=>$tmpDay)
-					{
-						//CELLULE DE L'HEURE
-						echo '<div class="vCalWeekCell '.$tmpHourClass.'" data-dayDate="'.$tmpDate.'">';
-						//AJOUT OU PROPOSITION D'EVT : CREE LE TABLEAU DE SELECTION D'UN CRENEAU HORAIRE PAR "DRAG & DROP" (SAUF SUR MOBILE)
-						if($tmpCal->addOrProposeEvt() && Req::isMobile()==false)
-						{
-							//Init le tableau
-							$cellDay=date("Ymd",$tmpDay["timeBegin"]);
-							echo '<div class="vCalWeekHourSubTable">';
-								//DIVISE L'HEURE EN CELLULES DE 15 MN POUR L'AJOUT D'EVT (agenda en lecture seule: proposition d'evt)
-								foreach([0,1,2,3] as $quarterHour)
-								{
-									//Init
-									$cellTimeBegin=$tmpDay["timeBegin"]+(3600*$tmpHour)+(900*$quarterHour);
-									$cellTimeEnd=$cellTimeBegin+900;	
-									if(time()>$cellTimeBegin && time()<$cellTimeEnd)	{$halfCellClass="vCalWeekHourCellCurrent";}
-									elseif($cellTimeBegin<time())						{$halfCellClass="vCalWeekHourCellPastTime";}
-									else												{$halfCellClass=null;}
-									$newEvtTitle=$tmpCal->addEventLabel." [".date("H:i",$cellTimeBegin)."]";
-									//Affiche la cellule de sélection
-									echo '<div class="vCalWeekHourCells">
-											<div class="vCalWeekHourCell noTooltip '.$halfCellClass.'" title="'.Txt::tooltip($newEvtTitle).'" data-idCal="'.$tmpCal->_id.'" data-cellTimeBegin="'.$cellTimeBegin.'" data-cellTimeEnd="'.$cellTimeEnd.'" data-cellDay="'.$cellDay.'">&nbsp;</div>
-										  </div>';
-								}
-							echo '</div>';
-						}
-						echo '</div>';
-					}
-				echo '</div>';
-			}
 		?>
-		</div>
 	</div>
 </div>

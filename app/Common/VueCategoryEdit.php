@@ -79,7 +79,7 @@ fieldset							{margin-top:35px;}/*surcharge*/
 .vCategoryModif, .vCategoryDelete	{width:1%; white-space:nowrap; padding:0px 10px; text-align:right; vertical-align:middle;}/*Width ajusté au contenu via 'nowrap'*/
 .vCategoryAdd						{font-size:1.1em; text-align:center;}
 form								{display:none; margin-top:25px;}/*masque par défaut*/
-form input[name='title']			{width:300px; max-width:80%; color:#fff; margin-right:5px;}
+form input[name='title']			{width:300px; max-width:80%; color:white; margin-right:5px;}
 form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
 .vSpaceList							{margin-top:10px; max-height:150px; overflow-y:auto;}
 .vSpaceList>div						{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
@@ -121,7 +121,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 			</div>
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
 			<form action="index.php" method="post">
-				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_id ?>" placeholder="<?= Txt::trad("title") ?>" style="background-color:<?= $tmpObj->color ?>">
+				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_id ?>" placeholder="<?= Txt::trad("title") ?>" style="background:<?= $tmpObj->color ?>">
 				<img src="app/img/colorPicker.png" class="menuLaunch" for="colorPickerDiv<?= $tmpObj->_id ?>">
 				<div class="colorPicker menuContext" id="colorPickerDiv<?= $tmpObj->_id ?>">
 					<div id="colorPickerMenu<?= $tmpObj->_id ?>"></div>

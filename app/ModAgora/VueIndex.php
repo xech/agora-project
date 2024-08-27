@@ -30,11 +30,11 @@ $(function(){
 		if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
 		//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gIdentityClientId
 		<?php if(Req::isHost()==false){ ?>
-		if(isNaN($("#limite_espace_disque").val()))   																		{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
-		if($("input[name='visioHost']").isEmpty()==false && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
-		if($("input[name='visioHostAlt']").isEmpty()==false && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
-		if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())								{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
-		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())						{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>");  return false;}	//Idem
+		if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
+		if($("input[name='visioHost']").isNotEmpty() && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
+		if($("input[name='visioHostAlt']").isNotEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
+		if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
+		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>");  return false;}	//Idem
 		<?php } ?>
 		return confirm("<?= Txt::trad("AGORA_confirmModif") ?>");
 	});

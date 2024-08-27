@@ -56,7 +56,7 @@ $(function(){
 		//// Fichiers joints : la taille ne doit pas dépasser 15Mo
 		var filesSize=0;
 		$(".attachedFileInput").each(function(){
-			if($(this).isEmpty()==false){
+			if($(this).isNotEmpty()){
 				filesSize+=this.files[0].size;
 				if(filesSize > (15 * 1048576))  {validForm=confirm("<?= Txt::trad("MAIL_fileMaxSize") ?>");}
 			}

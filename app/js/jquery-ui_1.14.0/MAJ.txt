@@ -1,0 +1,7 @@
+VERSION COURANTE : 1.14.0
+
+
+Telecharger la dernière version  avec toutes les options :	https://jqueryui.com/download/
+Récupérer les traductions :									https://github.com/jquery/jquery-ui/tree/main/ui/i18n
+Modifier le path dans "/app/Common/VueStructure.php"
+Tester le datepicker de l'agenda et le dragdrop du messenger

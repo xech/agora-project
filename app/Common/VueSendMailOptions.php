@@ -6,7 +6,7 @@ $(function(){
 	});
 	////	Controle un champs "specificMails"
 	$("input[name='specificMails[]']").blur(function(){
-		if($(this).isEmpty()==false && $(this).isMail()==false)  {$(this).focus();  notify("<?= Txt::trad("mailInvalid") ?> : "+this.value);}
+		if($(this).isNotEmpty() && $(this).isMail()==false)  {$(this).focus();  notify("<?= Txt::trad("mailInvalid") ?> : "+this.value);}
 	});
 });
 </script>

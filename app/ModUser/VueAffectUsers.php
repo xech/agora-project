@@ -9,7 +9,7 @@ $(function(){
 		if($("input[name^='searchFields']").isVisible()){
 			var allFieldsEmpty=true;
 			$("input[name^='searchFields']").each(function(){
-				if($(this).isEmpty()==false)  {allFieldsEmpty=false;}
+				if($(this).isNotEmpty())  {allFieldsEmpty=false;}
 			});
 			if(allFieldsEmpty==true)   {notify("<?= Txt::trad("USER_searchPrecision") ?>");  return false;}
 		}

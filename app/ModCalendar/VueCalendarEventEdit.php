@@ -22,7 +22,7 @@ $(function(){
 		$(this).parents(".vCalAffectBlock").addClass("lineSelect");
 	});
 
-	////	CHANGE DE DATE/HEURE/PÉRIODICITÉ (sauf pour les guests) :  Controle si les créneaux horaires sont déjà occupés  &  Affiche si besoin les details de périodicité
+	////	CHANGE DE DATE/HEURE/PÉRIODICITÉ : CONTROLE SI LES CRÉNEAUX HORAIRES SONT DÉJÀ OCCUPÉS  &  AFFICHE AU BESOIN LES DETAILS DE PÉRIODICITÉ
 	<?php if(Ctrl::$curUser->isUser()){ ?>
 	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").on("change",function(){ timeSlotBusy(); });
 	$("[name='periodType'],[name='dateBegin']").on("change",function(){ displayPeriodType(); });
@@ -63,7 +63,7 @@ $(function(){
 	////	SELECTION D'AGENDA : CHECK/UNCKECK L'INPUT PRINCIPAL D'UN AGENDA VIA SON LABEL
 	$(".vCalendarInput").on("change",function(){
 		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
-		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout
+		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout !
 		timeoutPropose=setTimeout(function(thisInput){
 			if(/proposition/i.test(thisInput.name) && $(thisInput).prop("checked"))  {notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
 		},500,this);//Affiche avec un timeout (cf. sélection d'un groupe d'users). Transmet l'input courant en paramètre via "this"
@@ -90,7 +90,7 @@ function displayPeriodType()
 {
 	//Réinitialise les options de périodicité & Affiche au besoin l'options sélectionnée
 	$("#periodOptions, #periodTypeLabel, #periodOption_weekDay, #periodOption_month, #periodDateEnd, #periodDateExceptions").hide();
-	if($("[name='periodType']").isEmpty()==false)  {$("#periodOptions, #periodTypeLabel, #periodDateEnd, #periodDateExceptions, #periodOption_"+$("[name='periodType']").val()).fadeIn();}
+	if($("[name='periodType']").isNotEmpty())  {$("#periodOptions, #periodTypeLabel, #periodDateEnd, #periodDateExceptions, #periodOption_"+$("[name='periodType']").val()).fadeIn();}
 	//Affiche les détails de périodicité (ex: "Tous les mois, le 15")
 	if($("[name='periodType']").val()=="weekDay")		{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_weekDay") ?>");}																//"Toutes les semaines"
 	else if($("[name='periodType']").val()=="month")	{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_month").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2));}	//"Tous les mois, le 22"
@@ -108,22 +108,19 @@ function displayPeriodType()
 function deletePeriodDateExceptions(exceptionCpt)
 {
 	var inputSelector="#periodExceptionInput"+exceptionCpt;
-	if($(inputSelector).isEmpty() || ($(inputSelector).isEmpty()==false && confirm("<?= Txt::trad("delete") ?>?"))){
+	if($(inputSelector).isEmpty() || ($(inputSelector).isNotEmpty() && confirm("<?= Txt::trad("delete") ?>?"))){
 		$(inputSelector).val("");
 		$("#periodExceptionDiv"+exceptionCpt).hide();
 	}
 }
 
 
-////	CONTROLE OCCUPATION CRÉNEAUX HORAIRES DES AGENDAS SÉLECTIONNÉS : EN AJAX
+////	CONTROLE L'OCCUPATION DES CRÉNEAUX HORAIRES DES AGENDAS SÉLECTIONNÉS (AJAX)
 function timeSlotBusy()
 {
-	//Lance la requête ajax, avec un "timeout"
-	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout ..et de requête ajax!
+	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout !
 	timeoutTimeSlotBusy=setTimeout(function(){
-		//Prépare la requete de controle Ajax, avec la liste des Agendas sélectionnés : affectations accessibles en écriture
-		if($("[name='dateBegin']").isEmpty()==false && $("[name='dateEnd']").isEmpty()==false)
-		{
+		if($("[name='dateBegin']").isNotEmpty() && $("[name='dateEnd']").isNotEmpty() && $("[name='dateBegin']").val()==$("[name='dateEnd']").val()){
 			//Init l'url, avec le créneau horaire et les agendas concernés
 			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy"+
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
@@ -168,7 +165,11 @@ function objectFormControl()
 <style>
 /*GENERAL*/
 legend			 						{font-size:1.05em;}
-.vEventOptionInline						{display:inline-block; margin:20px 30px 0px 0px;}
+.vEventOptionInline						{display:inline-block; margin:25px 25px 0px 0px;}
+@media screen and (max-width:440px){
+	.vEventOptionInline					{margin:30px 20px 0px 0px;}
+	input:read-only						{background:#eee!important;}/*sélection des dates & times*/
+}
 
 /*PÉRIODICITÉ*/
 #periodOptions					 							{display:none; margin-top:20px; margin-bottom:10px;}
@@ -206,11 +207,11 @@ input[name='calUsersGroup[]']			{display:none;}
 #guestMenu								{text-align:center;}
 input[name='guestMail']					{margin-left:20px;}
 
-/*DÉTAILS SUR L'AFFECTATION*/
+/*AFFICHAGE DU "timeSlotBusy()"*/
 #timeSlotBusy							{display:none;}
 .vTimeSlotBusyTable						{display:table; margin-top:6px;}
-.vTimeSlotBusyRow						{display:table-row;}/*cf. "actionTimeSlotBusy()"*/
-.vTimeSlotBusyCell						{display:table-cell; padding:4px; vertical-align:middle;}/*idem*/
+.vTimeSlotBusyRow						{display:table-row;}
+.vTimeSlotBusyCell						{display:table-cell; min-width:120px; padding:4px; vertical-align:middle;}
 </style>
 
 

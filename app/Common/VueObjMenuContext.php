@@ -1,9 +1,11 @@
 <?php
-////	 ICONE "BURGER" : LAUNCHER DU MENU CONTEXT
-$iconBurgerImg=(!empty($isNewObject))  ?  "menuNew"  :  "menu";									//Objet nouveau/ancien
-if(stristr($iconBurger,"small"))  {$iconBurgerImg.="Small";}									//Petite icone
-$iconBurgerClass=(stristr($iconBurger,"inline"))  ?  "objMenuBurgerInline"  :  "objMenuBurger";	//Affichage "inline" ou "float" (position absolute à droite)
-echo '<img src="app/img/'.$iconBurgerImg.'.png" for="'.$objMenuId.'" class="menuLaunch '.$iconBurgerClass.'" title="'.Txt::trad("menuOptions").'">';
+////	 LAUNCHER DU MENU CONTEXTUEL
+$launcherIcon=(empty($options["launcherIcon"]))  ?  "floatBig"  :  $options["launcherIcon"];			//"floatBig" (par défaut) / "floatSmall" / "inlineBig" / "inlineSmall"
+$burgerIcon=($curObj->isRecent())  ?  "menuNew"  :  "menu";												//Init l'icone "burger" du launcher : "menuNew.png" / "menu.png"
+if(stristr($launcherIcon,"small"))	{$burgerIcon.="Small";}												//Ajoute "small" pour un p'tit "burger"
+$launcherClass=(stristr($launcherIcon,"inline"))  ?  "objMenuContextInline"  :  "objMenuContextFloat";	//Affichage "inline" ou "float" (position absolute à droite)
+$launcherLabel=(!empty($options["launcherLabel"]))  ?  ' &nbsp;'.$options["launcherLabel"]  :  null;	//Label spécifique avec tooltip si besoin (cf. Label des agendas)
+echo '<span for="'.$objMenuId.'" class="menuLaunch '.$launcherClass.'"><img src="app/img/'.$burgerIcon.'.png" class="objMenuContextBurger" title="'.Txt::trad("menuOptions").'">'.$launcherLabel.'</span>';
 
 
 ////	MENU CONTEXTUEL
@@ -31,20 +33,24 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	if(!empty($getUrlExternal))  {echo '<div class="menuLine" title="'.Txt::trad("copyUrlTooltip").'" onclick="$(this).find(\'input\').show().select();document.execCommand(\'copy\');$(this).find(\'input\').hide();notify(\''.Txt::trad("copyUrlConfirmed",true).'\')"><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'<input type="text" value="'.$getUrlExternal.'" style="display:none"></div></div>';}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
-	foreach($specificOptions as $tmpOption){
-		$actionJsTmp=(!empty($tmpOption["actionJs"])) ?  'onclick="'.$tmpOption["actionJs"].'"'  :  null;
-		$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  'title="'.Txt::tooltip($tmpOption["tooltip"]).'"'  :  null;
-		$menuIconTmp=(!empty($tmpOption["iconSrc"]))  ?  '<div class="menuIcon"><img src="app/img/'.$tmpOption["iconSrc"].'"></div>'  :  null;
-		echo '<div class="menuLine" '.$actionJsTmp.' '.$tooltipTmp.'>'.$menuIconTmp.'<div>'.$tmpOption["label"].'</div></div>';
+	if(!empty($options["specificOptions"])){
+		foreach($options["specificOptions"] as $tmpOption){
+			$actionJsTmp=(!empty($tmpOption["actionJs"])) ?  'onclick="'.$tmpOption["actionJs"].'"'  :  null;
+			$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  'title="'.Txt::tooltip($tmpOption["tooltip"]).'"'  :  null;
+			$menuIconTmp=(!empty($tmpOption["iconSrc"]))  ?  '<div class="menuIcon"><img src="app/img/'.$tmpOption["iconSrc"].'"></div>'  :  null;
+			echo '<div class="menuLine" '.$actionJsTmp.' '.$tooltipTmp.'>'.$menuIconTmp.'<div>'.$tmpOption["label"].'</div></div>';
+		}
 	}
 
-	////	SUPPRIMER L'OBJET (afficher en dernier)
+	////	SUPPRIMER L'OBJET (dernière option)
 	if(!empty($deleteLabel))  {echo '<div class="menuLine" onclick="'.$confirmDeleteJs.'"><div class="menuIcon"><img src="app/img/delete.png"></div><div>'.$deleteLabel.'</div></div>';}
 
 	////	LABELS SPECIFIQUES (Ex: "Agenda affecté à Bob, Will")
-	foreach($specificLabels as $tmpLabel){
-		$tooltipTmp =(!empty($tmpLabel["tooltip"]))  ?  'title="'.Txt::tooltip($tmpLabel["tooltip"]).'"'  :  null;
-		echo '<hr><div class="menuLine menuContextSpecificLabels" '.$tooltipTmp.'>'.$tmpLabel["label"].'</div>';
+	if(!empty($options["specificLabels"])){
+		foreach($options["specificLabels"] as $tmpLabel){
+			$tooltipTmp =(!empty($tmpLabel["tooltip"]))  ?  'title="'.Txt::tooltip($tmpLabel["tooltip"]).'"'  :  null;
+			echo '<hr><div class="menuLine menuContextSpecificLabels" '.$tooltipTmp.'>'.$tmpLabel["label"].'</div>';
+		}
 	}
 
 	////	OBJET USER : EDIT DU MESSENGER / SUPPRIMER DE L'ESPACE / ESPACES AFFECTES A L'USER
@@ -60,6 +66,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 		echo '<hr>';
 		if(!empty($autorDateCrea))	{echo '<div class="menuLine"><div class="menuContextTxtLeft">'.Txt::trad("createBy").'</div><div>'.$autorDateCrea.'</div></div>';}
 		if(!empty($autorDateModif))	{echo '<div class="menuLine"><div class="menuContextTxtLeft">'.Txt::trad("modifBy").'</div><div>'.$autorDateModif.'</div></div>';}
+		if($curObj->isRecent())		{echo '<div class="menuLine"><div class="menuContextTxtLeft">&nbsp;</div><div>'.Txt::trad("objNew").' &nbsp;<img src="app/img/menuNewSmall.png"></div></div>';}
 	}
 
 	////	AFFECTATIONS ET DROITS D'ACCES
@@ -77,7 +84,7 @@ echo '</div>';
 
 
 ////	MENU BURGER PRINCIPAL : LIKES / COMMENTAIRES / FICHIERS JOINTS / ACCÈS PERSO
-if($iconBurger=="floatBig")
+if($launcherIcon=="floatBig")
 {
 	echo '<div class="objMiscMenus">';
 		//MENU DES COMMENTAIRES

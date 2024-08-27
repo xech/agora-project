@@ -1,7 +1,0 @@
-Récupérer la dernière version sur https://github.com/jonthornton/jquery-timepicker
-
-activer meme si "readonly" actif (cf. affichage mobile)
-=>  dans  "jquery.timepicker.min.js"  supprimer  "!i.prop("readonly")&&"
-
-Agrandir l'affichage à 300px (pas plus : cf. nouvel evt d'un guest)
-=> dans  "jquery.timepicker.css"  modifier ".ui-timepicker-wrapper"  et mettre  "max-height:220px;"

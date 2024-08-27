@@ -128,7 +128,7 @@ class CtrlForum extends Ctrl
 			//MAJ "dateLastMessage" & "usersConsultLastMessage" du sujet conteneur
 			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE _id=".$curObj->_idContainer);
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")
-			if($curObj->isNewlyCreated()==false)	{$notifUserIds=null;}
+			if($curObj->isNewRecord()==false)	{$notifUserIds=null;}
 			else{
 				$notifUserIds=array_diff(Txt::txt2tab($curObj->containerObj()->usersNotifyLastMessage), [Ctrl::$curUser->_id]);	//Users qui on demandé une notif (enlève l'auteur courant)
 				$notifUserIds=array_intersect($notifUserIds, $curObj->containerObj()->affectedUserIds());						//Enlève les users qui ne sont plus affectés au sujet

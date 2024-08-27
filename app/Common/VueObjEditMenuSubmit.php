@@ -136,16 +136,8 @@ function mainFormControl()
 	if(notifRequiredFields.length>0)  {notify("<?= Txt::trad("requiredFields") ?> : "+notifRequiredFields);}
 
 	////	Controle le formatage des mails
-	if($("input[name='mail']").isEmpty()==false && $("input[name='mail']").isMail()==false)
+	if($("input[name='mail']").isNotEmpty() && $("input[name='mail']").isMail()==false)
 		{validForm=false;  notify("<?= Txt::trad("mailInvalid"); ?>");}
-
-	////	Controle le formatage des dates
-	$(".dateInput,.dateBegin,.dateEnd").each(function(){
-		if(this.value.length>0){
-			var dateMatch=/^\d{2}\/\d{2}\/\d{4}$/.exec(this.value);
-			if(dateMatch==null)   {validForm=false;  notify("<?= Txt::trad("dateFormatError") ?>");}
-		}
-	});
 
 	////	Controle les affectations
 	if($("input[name='objectRight[]']").exist()){

@@ -32,10 +32,10 @@ class MdlCalendarEvent extends MdlObject
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Couleur de l'evt (background & co) : en fonction de la categorie || Gris par défaut
+		//Couleur du background de l'evt, en fonction de la categorie (gris par défaut)
 		$this->eventColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#444";
 		//Visibilité par défaut
-		if(empty($this->contentVisible))	{$this->contentVisible="public";}
+		if(empty($this->contentVisible))  {$this->contentVisible="public";}
 		//Masque le title/description si besoin
 		if($this->accessRight()<1){
 			$this->title="<i>".Txt::trad("CALENDAR_evtPrivate")."</i>";
@@ -194,7 +194,7 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * LABEL DE LA PERIODICITE DE L'EVENEMENT
+	 * LABEL DE LA PERIODICITE / REPETITION DE L'EVENEMENT
 	 *******************************************************************************************/
 	public function periodLabel()
 	{
@@ -231,7 +231,7 @@ class MdlCalendarEvent extends MdlObject
 	public function contextMenu($options=null)
 	{
 		//// Pas de menu context en mode mobile && affichage principal "floatSmall"
-		if(Req::isMobile() && $options["iconBurger"]=="floatSmall")  {return false;}
+		if(Req::isMobile() && $options["launcherIcon"]=="floatSmall")  {return false;}
 		//// Evt dans plusieurs agendas
 		if(count($this->affectedCalendars())>1){														
 			$options["deleteLabel"]=Txt::trad("CALENDAR_deleteEvtCals");								//"Supprimer dans tous les agendas"	(au lieu de "supprimer")

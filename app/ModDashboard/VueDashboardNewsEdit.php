@@ -2,17 +2,17 @@
 ////	Resize
 lightboxSetWidth(850);
 
-////	INIT
+////	Archive la news s'il ya une date de mise en ligne
 $(function(){
-	////	Archive la news si ya une date de mise en ligne (futur)
 	$(".dateBegin").on("change",function(){
-		//date d'aujourd'hui en ms
-		var dateBegin=this.value.split("/");
-		var timeBegin=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]);//attention au format : mois/jour/annee
-		//Date "online" spécifié && supérieure à aujourd'hui &&  "offline" pas sélectionné
-		if($(".dateBegin").isEmpty()==false && Date.now() < timeBegin.valueOf() && $("[name='offline']").prop("checked")==false){
-			notify("<?= Txt::trad("DASHBOARD_dateOnlineNotif") ?>");
-			$("[name='offline']").trigger("click");
+		if(this.value.length>0){
+			var dateBegin=this.value.split("/");
+			var timeBegin=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]);//Format "MM/dd/yyy"
+			//Date "online" supérieure à aujourd'hui : passe si besoin l'actu en "offline"
+			if(Date.now() < timeBegin.valueOf() && $("[name='offline']").prop("checked")==false){
+				$("[name='offline']").trigger("click");
+				notify("<?= Txt::trad("DASHBOARD_dateOnlineNotif") ?>");
+			}
 		}
 	});
 });

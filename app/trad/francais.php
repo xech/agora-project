@@ -156,7 +156,7 @@ class Trad extends Txt
 			"month_11"=>"novembre",
 			"month_12"=>"décembre",
 			"today"=>"aujourd'hui",
-			"beginEndError"=>"La date de fin ne peut pas être antérieure à la date de début",
+			"beginEndError"=>"La date de fin ne peut précéder la date de début",
 			"dateFormatError"=>"La date doit être au format jj/mm/AAAA",
 			
 			////	Menus d'édition des objets et editeur tinyMce
@@ -455,7 +455,7 @@ class Trad extends Txt
 			"EDIT_attachedFile"=>"Fichiers joints",
 			"EDIT_attachedFileAdd"=>"Joindre des fichiers",
 			"EDIT_attachedFileInsert"=>"Insérer dans le texte",
-			"EDIT_attachedFileInsertTooltip"=>"Insérer l'image dans le texte de l'éditeur (format .jpeg/.png/.gif/.mp4)",
+			"EDIT_attachedFileInsertTooltip"=>"Insérer l'image dans le texte de l'éditeur (format .jpeg/.png/.mp4)",
 			"EDIT_guestName"=>"Votre Nom / Pseudo",
 			"EDIT_guestNameNotif"=>"Merci de préciser un nom ou un pseudo",
 			"EDIT_guestMail"=>"Votre email",
@@ -804,7 +804,7 @@ class Trad extends Txt
 			"FILE_selectFile"=>"Merci de sélectionner au moins un fichier",
 			"FILE_fileContent"=>"contenu",
 			// Versions_fichier
-			"FILE_versionsOf"=>"Versions de", // versions de fichier.gif
+			"FILE_versionsOf"=>"Versions de", // versions de fichier
 			"FILE_confirmDeleteVersion"=>"Confirmer la suppression de cette version ?",
 
 			////	MODULE_AGENDA
@@ -825,7 +825,7 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Créer un agenda partagé",
 			"CALENDAR_addSharedCalendarTooltip"=>"Créer un agenda partagé : pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.",
 			"CALENDAR_exportIcal"=>"Exporter les événements au format iCal",
-			"CALENDAR_icalUrl"=>"Copier l'adresse web (URL) pour afficher l'agenda depuis un agenda externe",
+			"CALENDAR_icalUrl"=>"Copier l'adresse web (URL) pour afficher <br>l'agenda depuis un agenda externe",
 			"CALENDAR_icalUrlCopy"=>"Permet un accès en lecture à l'agenda depuis un agenda externe : Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importer des événements au format iCal",
 			"CALENDAR_ignoreOldEvt"=>"Ne pas importer les événements de plus d'un an",
@@ -880,13 +880,13 @@ class Trad extends Txt
 			"CALENDAR_addEvtTooltip"=>"Ajouter un événement à l'agenda",
 			"CALENDAR_addEvtTooltipBis"=>"Ajouter l'événement à l'agenda",
 			"CALENDAR_proposeEvtTooltip"=>"Proposer un événement à l'administrateur de l'agenda",
-			"CALENDAR_proposeEvtTooltipBis"=>"Proposer l'événement à l'administrateur/propriétaire de cet agenda",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement à l'administrateur/propriétaire de cet agenda : l'agenda ne vous est accessible qu'en lecture !",
-			"CALENDAR_inputProposed"=>"L'événement sera d'abord proposé à l'administrateur/propriétaire de cet agenda, avant d'y être éventuellement ajouté",
+			"CALENDAR_proposeEvtTooltipBis"=>"Proposer l'événement au propriétaire de cet agenda",
+			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement au propriétaire de cet agenda, car l'agenda ne vous est accessible qu'en lecture !",
+			"CALENDAR_inputProposed"=>"L'événement sera proposé au propriétaire de cet agenda, avant d'y être éventuellement ajouté",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_noModifTooltip"=>"Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)",
 			"CALENDAR_editLimit"=>"Vous n'êtes pas l'auteur de l'événement : Vous ne pouvez donc gérer que les affectations à vos agendas",
-			"CALENDAR_busyTimeslot"=>"Créneau est déjà occupé sur l'agenda suivant :",
+			"CALENDAR_busyTimeslot"=>"Créneau déjà occupé sur l'agenda :",
 			"CALENDAR_timeSlot"=>"Plage horaire pour l'affichage \"semaine\"",
 			"CALENDAR_propositionNotif"=>"Me notifier par email à chaque propositions d'événement",
 			"CALENDAR_propositionNotifTooltip"=>"Chaque proposition d'événement sera validé ou invalidé par l'administrateur de l'agenda.",
