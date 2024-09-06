@@ -87,7 +87,7 @@ h3								{margin-top:20px; font-style:italic;}
 				<div class="objField">
 					<div><?= Txt::trad("SPACE_publicSpace") ?></div>
 					<select name="spacePublic">
-						<option><?= Txt::trad("no") ?></option>
+						<option value="0"><?= Txt::trad("no") ?></option>
 						<option value="1"><?= Txt::trad("yes") ?></option>
 					</select>
 				</div>

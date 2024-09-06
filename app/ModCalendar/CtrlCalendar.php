@@ -36,8 +36,6 @@ class CtrlCalendar extends Ctrl
 		////	TEMPS DE RÉFÉRENCE  &  JOURS FÉRIÉS
 		$vDatas["curTime"]=$curTime=Req::isParam("curTime") ? Req::param("curTime") : time();
 		$vDatas["celebrationDays"]=Trad::celebrationDays(date("Y",$curTime));
-		////	TIMEOUT POUR LANCER "calendarDimensions()" SI LE LIVECOUNTER EST AFFICHE
-		$vDatas["calendarDimensionsTimeout"]=(!empty($_SESSION["livecounterUsers"]))  ?  250  :  50;
 
 		////	AFFICHAGE : PREPARE LES TIMES/DATES
 		//AFFICHAGE MOIS
@@ -108,7 +106,7 @@ class CtrlCalendar extends Ctrl
 			else								{$tmpCal->addEventLabel=null;}
 			//EVENEMENTS POUR CHAQUE JOUR
 			$tmpCal->eventList=[];
-			$tmpCal->eventListDisplayed=$tmpCal->eventList($displayedTimeBegin,$displayedTimeEnd);//Events de la période affichée
+			$tmpCal->eventListDisplayed=$tmpCal->eventList($displayedTimeBegin,$displayedTimeEnd);//Evts de la période affichée
 			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay)
 			{
 				//EVENEMENTS DU JOUR COURANT
@@ -119,10 +117,10 @@ class CtrlCalendar extends Ctrl
 					$tmpEvt->timeEnd=strtotime($tmpEvt->dateEnd);																						//"time" de fin de journée
 					$tmpEvt->titleTooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"basic",$tmpEvt->timeEnd);							//Tooltip avec title et date détaillée
 					if(Req::isMobile()==false){																											//Ajoute au title l'heure de début (sauf mobile)
-						if($displayMode=="month")	{$tmpEvt->Title=Txt::dateLabel($tmpEvt->timeBegin,"mini")." &nbsp;".$tmpEvt->title;}				//- affichage Month (ex: "14h Mon titre")
+						if($displayMode=="month")	{$tmpEvt->title=Txt::dateLabel($tmpEvt->timeBegin,"mini")." &nbsp;".$tmpEvt->title;}				//- affichage Month (ex: "14h Mon titre")
 						else						{$tmpEvt->title=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd);}	//- affichage "Week (ex: "Mon Titre <br> 14h - 15h")
 					}
-					$tmpEvt->containerClass=($tmpEvt->timeBegin<$tmpDay["timeBegin"])  ?  "vEventBlock vEventBlockPast"  :  "vEventBlock";				//"vEventBlockPast" s'il commence avant le jour
+					$tmpEvt->containerClass=($tmpEvt->timeEnd < strtotime(date("Y-m-d")))  ?  "vEventBlock vEventBlockPast"  :  "vEventBlock";			//"vEventBlockPast" s'il commence avant aujourd'hui
 					$tmpEvt->containerAttributes='data-eventColor="'.$tmpEvt->eventColor.'"';															//Attributs de l'evt : "eventColor" + d'autres en affichage "week"
 					$tmpEvt->contextMenuOptions=["launcherIcon"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];	//Options du menu contextuel (cf. "divContainerContextMenu()")
 					$tmpEvt->importantIcon=(!empty($tmpEvt->important))  ?  "&nbsp;<img src='app/img/important.png'>"  :  null;							//Icone "important"
@@ -137,6 +135,10 @@ class CtrlCalendar extends Ctrl
 					}
 					$tmpCal->eventList[$tmpDate][]=$tmpEvt;																								//Ajoute l'evt à la liste !
 				}
+				//Tri les evts par timeFromDayBegin (pour qu'ils se chevauchent bien s'ils sont sur le même "timeslot". Note: ne pas utiliser z-index !)
+				usort($tmpCal->eventList[$tmpDate],function($objA,$objB){
+					return ($objA->timeFromDayBegin - $objB->timeFromDayBegin);
+				});
 			}
 			//Récupère la vue
 			$tmpCal->isFirstCal=($cptCal==0);
@@ -147,19 +149,14 @@ class CtrlCalendar extends Ctrl
 		}
 
 		////	SYNTHESE DES AGENDAS (SI + D'UN AGENDA)
-		if(count($vDatas["displayedCalendars"])>1 && !Req::isMobile())
-		{
-			$vDatas["periodSynthese"]=[];																												//Jours à afficher pour la synthese
-			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay){																						//Parcour chaque jour de la période affichée
-				if($displayMode=="month" && date("m",$tmpDay["timeBegin"])!=date("m",$curTime))  {continue;}											//affichage "month" & jour d'un autre mois : passe le jour
-				$tmpDay["calsEvts"]=[];																													//Evts du jour
-				$nbCalsWithEvt=0;																														//Nb de calendriers ayant un event
-				foreach($vDatas["displayedCalendars"] as $tmpCal){																						//Evts de chaque agenda :
-					$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::eventFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);	//Récupère uniquement les events de la journée
-					if(!empty($tmpDay["calsEvts"][$tmpCal->_id]))  {$nbCalsWithEvt++;}																	//Incrémente $nbCalsWithEvt ?
-				}
-				$tmpDay["nbCalsWithEvt"]=(!empty($nbCalsWithEvt))  ?  Txt::dateLabel($tmpDate,"dateFull")." :<br>".Txt::trad("CALENDAR_calendarsPercentBusy")." : ".$nbCalsWithEvt." sur ".count($tmpDay["calsEvts"])  :  null;//Tooltip de synthese si au moins un agenda possède un événement à cette date
-				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;																							//Ajoute le jour de la synthese
+		if(count($vDatas["displayedCalendars"])>1 && !Req::isMobile()){
+			$vDatas["periodSynthese"]=[];																		//Jours à afficher pour la synthese
+			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay){												//Parcour chaque jour de la période affichée
+				if($displayMode=="month" && date("m",$tmpDay["timeBegin"])!=date("m",$curTime))  {continue;}	//Jour du mois précédant/suivant : passe
+				$tmpDay["calsEvts"]=[];																			//Evts du jour
+				foreach($vDatas["displayedCalendars"] as $tmpCal)												//Evts de chaque agenda : uniquement les events de la journée
+					{$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::eventFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);}
+				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;													//Ajoute le jour de la synthese
 			}
 		}
 		////	LANCE L'AFFICHAGE
@@ -606,9 +603,9 @@ class CtrlCalendar extends Ctrl
 				$evtDescription=$evtCategory=$evtPeriod=$evtPeriodExcept=null;
 				//// Description
 				if(!empty($tmpEvt->description)){
-					$evtDescription=Txt::clean($tmpEvt->description,"min");											//Description de l'evt
-					if($tmpEvt->periodLabel())  {$evtDescription.="\\n".Txt::clean($tmpEvt->periodLabel(),"min");}	//Périodicité avec "\n" explicite
-					$evtDescription="DESCRIPTION:".wordwrap($evtDescription, 60, $RL."  ").$RL;						//Description avec 60 caractères max par ligne
+					$evtDescription=Txt::clean($tmpEvt->description,"min");														//Anlève les balises etc. (attention : peut renvoyer une chaine vide!)
+					if($tmpEvt->periodLabel())	{$evtDescription.="\\n".Txt::clean($tmpEvt->periodLabel(),"min");}				//Détails de périodicité dans la description ("\n" explicite)
+					if(!empty($evtDescription))  {$evtDescription="DESCRIPTION:".wordwrap($evtDescription, 60, $RL."  ").$RL;}	//Ajoute la description pas vide
 				}
 				//// Categorie de l'agenda
 				if(!empty($tmpEvt->_idCat))
@@ -617,12 +614,14 @@ class CtrlCalendar extends Ctrl
 				if(!empty($tmpEvt->periodType)){
 					if($tmpEvt->periodType=="year")			{$evtPeriod='RRULE:FREQ=YEARLY;INTERVAL=1';}										//Chaque année
 					elseif($tmpEvt->periodType=="month")	{$evtPeriod='RRULE:FREQ=MONTHLY;INTERVAL=1';}										//Chaque mois
-					elseif($tmpEvt->periodType=="weekDay"){																						//Chaque semaine
+					elseif($tmpEvt->periodType=="weekDay" && !empty($tmpEvt->periodValues)){													//Chaque semaine
 						$tmpEvtBYDAY=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));	//Jours de la semaine
-						$evtPeriod='RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY='.implode(',',$tmpEvtBYDAY);
+						$evtPeriod='RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY='.implode(',',$tmpEvtBYDAY);												//Ajoute le "RRULE"
 					}
-					if(!empty($tmpEvt->periodDateEnd))  {$evtPeriod.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}//"23:59:59" pour pas avoir "00:00:00"
-					$evtPeriod.=$RL;
+					if(!empty($evtPeriod)){
+						if(!empty($tmpEvt->periodDateEnd))  {$evtPeriod.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}			//Ajoute si besoin la date de fin (avec l'heure à 23:59:59)
+						$evtPeriod.=$RL;																										//Fin de ligne du "RRULE"
+					}	
 				}
 				//// Exceptions de périodicité
 				if(!empty($tmpEvt->periodDateExceptions)){

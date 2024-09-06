@@ -128,7 +128,7 @@
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
 			//Mise à jour récente : notification "footerHtml" spécifique pour l'admin
 			if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
-				{Ctrl::$agora->footerHtml='<span id="footerHtmlUpdate" onclick="lightboxOpen(\'docs/CHANGELOG.txt\')" style="cursor:pointer">Updated to version '.Req::appVersion().'</span><script>$("#footerHtmlUpdate").pulsate(2);</script>';}
+				{Ctrl::$agora->footerHtml='<span id="footerHtmlUpdate" onclick="lightboxOpen(\'docs/CHANGELOG.txt\')" style="cursor:pointer">Updated version : '.Req::appVersion().'</span>';}
 			//Affiche le footer
 			$pageFooterIconTooltip=OMNISPACE_URL_LABEL.' - '.Txt::trad("FOOTER_pageGenerated").' '.round((microtime(true)-TPS_EXEC_BEGIN),3).' secondes';
 			echo '<div id="pageFooterHtml">'.Ctrl::$agora->footerHtml.'</div>

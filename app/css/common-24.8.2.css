@@ -86,21 +86,21 @@ a, [onclick], .sLink, .linkSelect, .menuLaunch, label	{cursor:pointer; text-deco
 }
 
 /*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
-.objMenuContextFloat							{position:absolute; z-index:10; top:7px; right:4px;}								/*Launcher du menu contextuel : Icone "burger" (par défaut)*/
-.objContainer:not(:hover) .objMenuContextFloat	{opacity:0.75;}																		/*Launcher opaque par défaut (pas moins de 0.75 : cf. images du module fichier)*/
-.objContainer:not(:hover) .hideMiscMenu			{display:none;}																		/*Masque les .hideMiscMenu, sauf au survol du ".objContainer"*/
-.objMenuContextInline							{position:relative;}																/*Menu context "inline" : menu des lightbox d'evt/task/etc OU "menuPath"*/
-.objContainer.isSelectable						{cursor:url("../img/checkSmall.png"),default;}										/*Curseur des elements selectionnables*/
-.objSelectCheckbox								{display:none;}																		/*input hidden de sélection/désélection d'objet*/
-.objMiscMenus									{position:absolute; z-index:10; top:40px; right:5px; text-align:right; width:35px;}	/*Affichage vertical des MenuContext + Likes + Comments + Files + persoAccess (cf. "padding-right" des ".objContainer")*/
-.objLines .objMiscMenus							{width:100px;}																		/*Affichage horizontal (cf. "padding-right" de ".objLines .objContainer")*/
-.objMiscMenuDiv									{display:inline-block; margin-bottom:5px; margin-left:8px;}							/*'margin-left' pour l'affichage sur une ligne (.objLines)*/
+.objMenuContextFloat							{position:absolute; top:7px; right:4px;}										/*Launcher du menu context : Icone "burger" par défaut*/
+.objContainer:not(:hover) .objMenuContextFloat	{opacity:0.75;}																	/*Launcher opaque par défaut (pas moins de 0.75 : cf. images du module fichier)*/
+.objContainer:not(:hover) .hideMiscMenu			{display:none;}																	/*Masque les .hideMiscMenu, sauf au survol du ".objContainer"*/
+.objMenuContextInline							{position:relative;}															/*Menu context "inline" : menu des lightbox d'evt/task/etc OU "menuPath"*/
+.objContainer.isSelectable						{cursor:url("../img/checkSmall.png"),default;}									/*Curseur des elements selectionnables*/
+.objSelectCheckbox								{display:none;}																	/*input hidden de sélection/désélection d'objet*/
+.objMiscMenus									{position:absolute; top:40px; right:5px; text-align:right; width:35px;}			/*Affichage vertical des MenuContext + Likes + Comments + Files + persoAccess (cf. "padding-right" des ".objContainer")*/
+.objLines .objMiscMenus							{width:100px;}																	/*Affichage horizontal (cf. "padding-right" de ".objLines .objContainer")*/
+.objMiscMenuDiv									{display:inline-block; margin-bottom:5px; margin-left:8px;}						/*'margin-left' pour l'affichage sur une ligne (.objLines)*/
 .menuCircle										{display:inline-block; position:relative; margin-top:4px; margin-right:-10px; background:#db930c; color:white; border-radius:50%; text-align:center; width:14px; height:14px; line-height:14px; font-size:9px;}/*Nb de likes, comments, etc*/
-.menuCircle:empty								{display:none;}																		/*masque par défaut le Nb de likes, comments, etc*/
-.attachedFileMenu								{display:flex; margin:5px;}															/*Fichiers joints à l'objet*/
-.attachedFileMenu img							{margin-right:5px;}																	/*idem*/
-.attachedFileTag								{max-width:100%; height:auto;}														/*cf. "attachedFileInsert()". Tester l'affichage d'une image en mobileApp*/
-.attachedFileInsertImg							{max-width:50px!important; max-height:50px!important;}								/*Liste des images dans le menu d'edition*/
+.menuCircle:empty								{display:none;}																	/*masque par défaut le Nb de likes, comments, etc*/
+.attachedFileMenu								{display:flex; margin:5px;}														/*Fichiers joints à l'objet*/
+.attachedFileMenu img							{margin-right:5px;}																/*idem*/
+.attachedFileTag								{max-width:100%; height:auto;}													/*cf. "attachedFileInsert()". Tester l'affichage d'une image en mobileApp*/
+.attachedFileInsertImg							{max-width:50px!important; max-height:50px!important;}							/*Liste des images dans le menu d'edition*/
 /*MOBILE*/
 @media screen and (max-width:1023px){
 	.objMenuContextFloat	{opacity:1!important;}										/*Icones affichées sans opacité*/

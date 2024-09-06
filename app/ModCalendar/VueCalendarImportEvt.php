@@ -18,11 +18,11 @@ $(function(){
 
 
 <style>
-form							{padding:0px; margin:0px;}
+form							{padding:0px; margin:0px; text-align:center;}
 .vTable							{width:98%;}
 .vTable img						{vertical-align:middle;}
 .vTableHeader					{text-align:center;}			/*Titre des colonnes*/
-.vTable td						{padding:5px;}					
+.vTable td						{padding:5px;}					/*Cellules du tableau*/
 .vTable tr td:first-child		{width:40px;}					/*checkbox*/
 .vTable tr td:nth-child(2)		{width:40px; cursor:help;}		/*isPresent*/
 .vTable tr td:nth-child(3)		{width:250px;}					/*date*/

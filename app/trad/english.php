@@ -857,7 +857,6 @@ class Trad extends Txt
 			"CALENDAR_evtAutor"=>"Events which I created",
 			"CALENDAR_evtAutorInfo"=>"Show only events I created",
 			"CALENDAR_noEvt"=>"No event",
-			"CALENDAR_synthese"=>"Calendars synthesis",
 			"CALENDAR_calendarsPercentBusy"=>"Busy calendars",
 			"CALENDAR_noCalendarDisplayed"=>"No calendars displayed",
 			// Evenement
@@ -866,7 +865,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublic"=>"Normal visibility",
 			"CALENDAR_visibilityPrivate"=>"Private visibility",
 			"CALENDAR_visibilityPublicHide"=>"Semi-private visibility",
-			"CALENDAR_visibilityTooltip"=>"<u>private visibility</ u>: visible only to those whose event is accessible in writing <br><br> <u>semi-private visibility</u> : Only the time slot is displayed (without title and details) if the event is read-only",
+			"CALENDAR_visibilityTooltip"=>"<u>private visibility</ u>: visible only to those whose event is accessible in writing <br><br> <u>semi-private visibility</u> : Only the timeslot is displayed if the event is read-only",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Shared calendar of the space",
 			"CALENDAR_noPeriodicity"=>"Only once",

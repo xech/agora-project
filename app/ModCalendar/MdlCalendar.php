@@ -70,9 +70,9 @@ class MdlCalendar extends MdlObject
 	/***************************************************************************************************************************************************************
 	 * VERIF SI L'EVT SE TROUVE SUR LA PÉRIODE SELECTIONNEE (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)
 	 ***************************************************************************************************************************************************************/
-	public static function eventInTimeSlot($eventTimeBegin, $eventTimeEnd, $periodTimeBegin, $periodTimeEnd)
+	public static function eventInTimeSlot($evtTimeBegin, $evtTimeEnd, $periodTimeBegin, $periodTimeEnd)
 	{
-		return ( ($periodTimeBegin<=$eventTimeBegin && $eventTimeBegin<=$periodTimeEnd) || ($periodTimeBegin<=$eventTimeEnd && $eventTimeEnd<=$periodTimeEnd) || ($eventTimeBegin<=$periodTimeBegin && $periodTimeEnd<=$eventTimeEnd) );
+		return ( ($periodTimeBegin<=$evtTimeBegin && $evtTimeBegin<=$periodTimeEnd) || ($periodTimeBegin<=$evtTimeEnd && $evtTimeEnd<=$periodTimeEnd) || ($evtTimeBegin<=$periodTimeBegin && $periodTimeEnd<=$evtTimeEnd) );
 	}
 
 	/*******************************************************************************************
@@ -156,28 +156,26 @@ class MdlCalendar extends MdlObject
 		$eventListFiltered=[];
 		foreach($eventList as $tmpEvt)
 		{
-			//// CLONE L'EVT POUR CHAQUE JOUR (cf. evt sur plusieurs jours ou périodique)  &&  TIME DU DEBUT/FIN DE L'EVT
+			////	CLONE L'EVT POUR CHAQUE JOUR (cf. evt sur plusieurs jours ou périodique)  &&  TIME DU DEBUT/FIN DE L'EVT
 			$tmpEvt=clone $tmpEvt;
-			$eventTimeBegin=strtotime($tmpEvt->dateBegin);
-			$eventTimeEnd  =strtotime($tmpEvt->dateEnd);
-			//// AJOUTE LES EVT DU JOUR  ||  EVT PERIODIQUE SUR LE JOUR
-			if(static::eventInTimeSlot($eventTimeBegin,$eventTimeEnd,$timeBegin,$timeEnd))  {$eventListFiltered[]=$tmpEvt;}
-			elseif(!empty($tmpEvt->periodType))
-			{
+			$evtTimeBegin=strtotime($tmpEvt->dateBegin);
+			$evtTimeEnd  =strtotime($tmpEvt->dateEnd);
+			////	EVT DU JOUR  ||  EVT PERIODIQUE SUR LE JOUR
+			if(static::eventInTimeSlot($evtTimeBegin, $evtTimeEnd, $timeBegin, $timeEnd))   {$eventListFiltered[]=$tmpEvt;}
+			elseif(!empty($tmpEvt->periodType)){
 				//Evenement sur le jour =>  déjà commencé  &&  (pas de fin de périodicité || fin de périodicité pas encore arrivé)  &&  (pas de date d'exception || "dateBegin" absent des dates d'exception)
-				if($eventTimeBegin<$timeBegin  &&  (empty($tmpEvt->periodDateEnd) || $timeEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$timeBegin)."/",$tmpEvt->periodDateExceptions)==false))
-				{
+				if($evtTimeBegin<$timeBegin  &&  (empty($tmpEvt->periodDateEnd) || $timeEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$timeBegin)."/",$tmpEvt->periodDateExceptions)==false)){
 					//Récupère les valeurs de la périodicité : fonction du "periodType"
 					$periodValues=Txt::txt2tab($tmpEvt->periodValues);
 					//Vérifie si l'evt périodique est présent sur le jour courant : il oui, on prépare le reformatage de la date
 					$formatModified=$formatKept=null;
 					if($tmpEvt->periodType=="weekDay" && in_array(date("N",$timeBegin),$periodValues))														{$formatModified="Y-m-d";	$formatKept=" H:i";}	//jour de semaine
-					elseif($tmpEvt->periodType=="month" && in_array(date("m",$timeBegin),$periodValues) && date("d",$eventTimeBegin)==date("d",$timeBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
-					elseif($tmpEvt->periodType=="year" && date("m-d",$eventTimeBegin)==date("m-d",$timeBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
+					elseif($tmpEvt->periodType=="month" && in_array(date("m",$timeBegin),$periodValues) && date("d",$evtTimeBegin)==date("d",$timeBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
+					elseif($tmpEvt->periodType=="year" && date("m-d",$evtTimeBegin)==date("m-d",$timeBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
 					//Reformate pour que le début/fin de l'evt corresponde à la date courante  &&  Ajoute enfin l'evt à $eventListFiltered (vérif qu'il soit sur le créneau : cf. "actionTimeSlotBusy()")
 					if(!empty($formatModified) && !empty($formatKept)){
-						$tmpEvt->dateBegin=date($formatModified,$timeBegin).date($formatKept,$eventTimeBegin);
-						$tmpEvt->dateEnd  =date($formatModified,$timeEnd).date($formatKept,$eventTimeEnd);
+						$tmpEvt->dateBegin=date($formatModified,$timeBegin).date($formatKept,$evtTimeBegin);
+						$tmpEvt->dateEnd  =date($formatModified,$timeEnd).date($formatKept,$evtTimeEnd);
 						if(static::eventInTimeSlot(strtotime($tmpEvt->dateBegin),strtotime($tmpEvt->dateEnd),$timeBegin,$timeEnd))  {$eventListFiltered[]=$tmpEvt;}
 					}
 				}
@@ -282,26 +280,22 @@ class MdlCalendar extends MdlObject
 		return $displayedCalendars;
 	}
 
-	/**********************************************************************************************************************************************
-	 * LISTE D'AGENDAS TRIÉS :  AGENDA DE L'ESPACE COURANT  >  AGENDAS DE RESSOURCE  >  AGENDA DE L'USER COURANT  >  AUTRES AGENDAS D'USERS
-	 **********************************************************************************************************************************************/
-	public static function sortCalendars($calendarsTab)
+	/********************************************************************************************************************
+	 * LISTE D'AGENDAS TRIÉS :  AGENDA DE L'ESPACE COURANT  >  AGENDAS DE RESSOURCE  >  AGENDA PERSO  >  AGENDA D'USERS
+	 ********************************************************************************************************************/
+	public static function sortCalendars($calendarList)
 	{
-		//Prépare le tri en fonction du champs spécifique "sortField"
-		$userSortField=(Ctrl::$agora->personsSort=="name")  ?  "userName"  :  "userFirstName";//Tri des agendas persos en fonction du nom ou du prénom (cf. "__construct()" ci-dessus)
-		foreach($calendarsTab as $tmpCal){
-			if($tmpCal->isSpacelCalendar())			{$tmpCal->sortField="A__".$tmpCal->$userSortField;}
+		foreach($calendarList as $tmpCal){
+			if($tmpCal->isSpacelCalendar())			{$tmpCal->sortField="A__".$tmpCal->title;}
 			elseif($tmpCal->type=="ressource")		{$tmpCal->sortField="B__".$tmpCal->title;}
-			elseif($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="C__".$tmpCal->$userSortField;}
-			else									{$tmpCal->sortField="D__".$tmpCal->$userSortField;}
+			elseif($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="C__".$tmpCal->title;}
+			else									{$tmpCal->sortField="D__".$tmpCal->title;}
 		}
-		//Tri les agendas via "MdlCalendar::sortCompareCalendars()"  (pas de "self::sortCompareCalendars()")
-		usort($calendarsTab,["MdlCalendar","sortCompareCalendars"]);
-		return $calendarsTab;
-	}
-	//// Comparaison binaire de caractere, mais insensible à la casse
-	public static function sortCompareCalendars($obj1, $obj2){
-		return strcasecmp($obj1->sortField, $obj2->sortField);
+		//Tri alphabetique sur le "sortField"
+		usort($calendarList,function($objA,$objB){
+			return strcmp($objA->sortField, $objB->sortField);
+		});
+		return $calendarList;
 	}
 
 	/*******************************************************************************************

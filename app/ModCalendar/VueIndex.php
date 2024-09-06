@@ -13,9 +13,9 @@ $(function(){
 		$(".vCalendarBlock").outerHeight( $(window).height() - $("#pageFullContent").offset().top - marginBottom);				//Agendas sur toute la hauteur de la page
 		$(".vMonthMain,.vWeekMain").outerHeight( $(".vCalendarBlock").height() - $(".vCalendarHeader").outerHeight(true) );		//Vues des agendas week/month sur toute la hauteur du ".vCalendarBlock"
 		$(".vEventBlock").each(function(){  $(this).css("background",$(this).attr("data-eventColor"));  });						//Applique le "background-color" à chaque événement
-		calendarDimensions();																									//Calcul les dimensions de vues week / month !
+		calendarDisplay();																										//Calcul les dimensions de vues week / month !
 		$(".vCalendarBlock").hide().css("visibility","visible").fadeIn(50);														//Affiche enfin les agendas (masqués par défaut)
-	},<?= $calendarDimensionsTimeout ?>);																						//Timeout pour lancer "calendarDimensions()", le tps d'afficher le livecounter
+	},<?= empty($_SESSION["livecounterUsers"]) ? 50 : 250 ?>);																	//Timeout pour lancer "calendarDisplay()", le tps d'afficher le livecounterUsers
 
 	/*******************************************************************************************
 	 *	DATEPICKER DU MENU DU MODULE (JQUERY-UI)
@@ -74,23 +74,21 @@ $(function(){
 /*Synthese des agendas*/
 #syntheseBlock.miscContainer			{padding:8px!important; margin-bottom:20px;}/*surcharge*/
 #syntheseTable							{display:table; width:100%;}
-#syntheseLineHeader, .vSyntheseLine, .vSyntheseLineFooter	{display:table-row;}
+#syntheseLineHeader, .vSyntheseLine		{display:table-row;}
 .vSyntheseDayCurDay						{color:#c00;}
 .vSyntheseLabel							{display:table-cell; width:160px; padding:2px; padding-left:5px; vertical-align:middle;}
 .vSyntheseLine:hover .vSyntheseLabel	{color:#c00;}
-.vSyntheseLineFooter .vSyntheseLabel	{font-style:italic;}
 .vSyntheseDay							{display:table-cell; vertical-align:middle; text-align:center; height:22px;}
 .vSyntheseDayEvts						{display:table; width:100%; height:100%;}
 .vSyntheseDayEvt						{display:table-cell; border-left:transparent;}
 .vSyntheseDayEvts:hover					{opacity:0.5;}
-.vSyntheseLineFooter .vSyntheseDayEvt	{cursor:help;}
 .vSyntheseDayEvtTooltip					{text-align:left;}
 .vSyntheseDayEvtTooltip	ul				{margin:0px; margin-top:5px; padding-left:10px;}
 .vSyntheseDayCal						{background:#ddd; border:dotted 1px #eee;}
 .vSyntheseDayCal.vSyntheseDayCalWE		{background:#ccc;}
 
 /*Agendas*/
-.vCalendarBlock							{min-height:500px; padding:0px; visibility:hidden;}/*agenda masqué par défaut  : cf. "calendarDimensions()"*/
+.vCalendarBlock							{min-height:500px; padding:0px; visibility:hidden;}/*agenda masqué par défaut  : cf. "calendarDisplay()"*/
 .vCalendarBlock:not(:last-child)		{margin-bottom:50px;}
 .vCalendarHeader						{display:table; width:100%;}
 .vCalendarHeader>div					{display:table-cell; width:33%; padding:8px; padding-bottom:12px; vertical-align:middle;}
@@ -105,11 +103,11 @@ $(function(){
 .vCalendarDisplayToday					{margin-right:10px;}
 
 /*Evenements*/
-.vEventBlock							{margin:0px; box-shadow:1px 1px 2px #555; border-radius:5px; cursor:pointer;}/*Pas de "overflow:hidden" sinon on masque le menuContext*/
+.vEventBlock							{margin:0px; padding:4px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:5px; cursor:pointer;}/*"padding-right" pour le menu "burger" (pas de "overflow:hidden" sinon on masque le menuContext)*/
 .vEventBlock .objMenuContextFloat		{top:3px; right:3px;}/*Surchage le menu "burger"*/
 .vEventBlock .objMenuContextFloat img	{height:17px; width:15px;}/*idem*/
 .vEventBlockPast:not(:hover)			{opacity:0.6;}/*événements passés opacifiés (cf. "CtrlCalendar"). Pas s'il sont survolés, pour pouvoir afficher les menuContext*/
-.vEventLabel							{overflow:hidden; padding-right:18px; font-size:0.95em; font-weight:normal; color:white!important;}/*"padding-right" pour le menu "burger"*/
+.vEventLabel							{overflow:hidden; font-size:0.95em; font-weight:normal; color:white!important;}
 .vEventLabel img						{max-height:12px;}
 
 /*MOBILE*/
@@ -120,19 +118,21 @@ $(function(){
 	.vCalendarPeriodLabel				{margin:0px 5px;}
 	.vCalendarDisplayMode button		{padding:7px;}
 	.vCalendarTitle .personImgSmall, .vCalendarDisplayMode img, .vCalendarDisplayToday, #calsListDisplayAll	{display:none!important;}
-	.vEventBlock						{padding:2px; overflow:hidden;}
-	.vEventLabel						{text-transform:lowercase; padding-right:0px; font-size:0.8em; line-height:0.9em;}/*"padding-right" pas d'affichage du menu "burger"*/
+	.vEventBlock						{overflow:hidden; padding:2px;}/*pas de "padding-right" car menu "burger" masqué*/
+	.vEventLabel						{text-transform:lowercase; font-size:0.8em; line-height:0.9em;}
 }
 
 /* IMPRESSION */
 @media print{
-	@page								{size:landscape;}
-	.vCalendarBlock						{margin:0px; box-shadow:none;}
-	.vCalendarBlock:not(:last-child)	{page-break-after:always;}/*saut de page après chaque agenda (sauf le dernier de la liste)*/
-	.vCalendarHeader					{margin:15px 0px;}
-	.vCalendarPeriod					{text-align:left;}
-	.vEventBlock						{background:white!important; overflow:hidden;}
-	.vEventLabel						{color:black!important;}
+	@page									{size:landscape;}
+	.vMonthMain, .vWeekMain, .vWeekScroller	{height:80%!important; max-height:80%!important;}
+	.vCalendarBlock							{margin:0px; box-shadow:none;}
+	.vCalendarBlock:not(:last-child)		{page-break-after:always;}/*saut de page après chaque agenda (sauf le dernier de la liste)*/
+	.vCalendarHeader						{margin:15px 0px;}
+	.vCalendarPeriod						{text-align:left;}
+	.vEventBlock							{background:white!important; overflow:hidden;}
+	.vEventBlockPast						{opacity:1!important;}
+	.vEventLabel							{color:black!important;}
 }
 </style>
 
@@ -185,7 +185,7 @@ $(function(){
 
 			<!--IMPRIMER LA PAGE-->
 			<?php if(Req::isMobile()==false){ ?>
-			<div class="menuLine" onclick="calendarDimensions(true);print();" title="<?= Txt::trad("CALENDAR_printCalendarsInfos") ?>">
+			<div class="menuLine" onclick="calendarDisplay(true);print();" title="<?= Txt::trad("CALENDAR_printCalendarsInfos") ?>">
 				<div class="menuIcon"><img src="app/img/print.png"></div>
 				<div><?= Txt::trad("CALENDAR_printCalendars") ?></div>
 			</div>
@@ -207,18 +207,16 @@ $(function(){
 						<div class="vSyntheseLabel">&nbsp;</div>
 						<?php foreach($periodSynthese as $tmpDay)  {echo "<div class=\"vSyntheseDay ".(date("Y-m-d",$tmpDay["timeBegin"])==date("Y-m-d")?"vSyntheseDayCurDay":null)."\">".(int)date("d",$tmpDay["timeBegin"])."</div>";} ?>
 					</div>
-					<!--AFFICHE CHAQUE AGENDA-->
+					<!--AFFICHE CHAQUE AGENDA : LIBELLE & CHAQUE JOUR DE L'AGENDA-->
 					<?php foreach($displayedCalendars as $tmpCal){ ?>
 					<div class="vSyntheseLine">
 						<div class="vSyntheseLabel" onclick="$('#calendarBlock<?= $tmpCal->_typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
-						<!--CELLULES DE CHAQUE JOUR DE L'AGENDA-->
 						<?php
-						foreach($periodSynthese as $tmpDay)
-						{
+						foreach($periodSynthese as $tmpDay){
 							//Tooltip des evts du jour
-							$tmpEvtTooltip="<div class='vSyntheseDayEvtTooltip'>".$tmpCal->title." : ".Txt::dateLabel($tmpDay["timeBegin"],"dateFull")."<ul>";
-							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.="<br><img src='app/img/arrowRight.png'> ".Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd)." : ".Txt::reduce($tmpEvt->title,60);}
-							$tmpEvtTooltip.="</ul></div>";
+							$tmpEvtTooltip='<div class=\'vSyntheseDayEvtTooltip\'>'.$tmpCal->title.' <img src=\'app/img/arrowRight.png\'> '.Txt::dateLabel($tmpDay["timeBegin"],"dateFull");
+							foreach($tmpDay["calsEvts"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.='<br>'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,60);}
+							$tmpEvtTooltip.='</div>';
 							//Cellule des evts du jour
 							$syntheseDayCalWE=$syntheseDayEvts=null;
 							if(date("N",$tmpDay["timeBegin"])>5)	{$syntheseDayCalWE="vSyntheseDayCalWE";}
@@ -230,17 +228,6 @@ $(function(){
 						?>
 					</div>
 					<?php } ?>
-					<!--LIGNE DE SYNTHESE DES AGENDAS-->
-					<div class="vSyntheseLineFooter">
-						<div class="vSyntheseLabel"><?= Txt::trad("CALENDAR_synthese") ?></div>
-						<?php foreach($periodSynthese as $tmpDay){ ?>
-						<div class="vSyntheseDay vSyntheseDayCal <?= date("N",$tmpDay["timeBegin"])>5?"vSyntheseDayCalWE":null ?>">
-							<div class="vSyntheseDayEvts">
-								<?php if(!empty($tmpDay["nbCalsWithEvt"])){ ?><div class="vSyntheseDayEvt" style="background-color:#777" title="<div class='vSyntheseDayEvtTooltip'><?= $tmpDay["nbCalsWithEvt"]."</div>" ?>">&nbsp;</div><?php } ?>	
-							</div>
-						</div>
-						<?php } ?>
-					</div>
 				</div>
 			</div>
 		<?php } ?>

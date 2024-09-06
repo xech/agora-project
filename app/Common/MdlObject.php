@@ -107,8 +107,7 @@ class MdlObject
 	 * VERIF : OBJET CRÉÉ RECEMMENT -> DANS LES 24 HEURES OU DEPUIS LA PRÉCÉDENTE CONNEXION
 	*******************************************************************************************/
 	public function isRecent(){
-		$timeDateCrea=strtotime($this->dateCrea);
-		return (!empty($this->dateCrea)  &&  ($timeDateCrea > (time()-86400)  ||  $timeDateCrea > Ctrl::$curUser->previousConnection));
+		return (!empty($this->dateCrea)  &&  (strtotime($this->dateCrea) > (time()-86400) || strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
 	}
 
 	/*******************************************************************************************
@@ -118,9 +117,9 @@ class MdlObject
 		return (static::MdlObjectContent!==null);
 	}
 
-	/*******************************************************************************************
+	/****************************************************************************************************************************
 	 * VERIF : OBJET "CONTENT" DANS UN "CONTAINER" ?  (file/contact/task/link/forumMessage/calendarEvent ...mais pas les FOLDERS!)
-	 *******************************************************************************************/
+	 ****************************************************************************************************************************/
 	public static function isContainerContent(){
 		return (static::MdlObjectContainer!==null);
 	}
@@ -140,7 +139,7 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * VERIF : L'OBJET EST UN "CONTENT" DANS LE DOSSIER RACINE ? (avec ses propres droits d'accès) ?
+	 * VERIF : L'OBJET EST UN "CONTENT" DANS LE DOSSIER RACINE, AVEC SES PROPRES DROITS D'ACCÈS ?
 	 *******************************************************************************************/
 	public function isRootFolderContent(){
 		return (static::isFolderContent==true && $this->_idContainer==1);

@@ -857,7 +857,6 @@ class Trad extends Txt
 			"CALENDAR_evtAutor"=>"Eventos que he creado",
 			"CALENDAR_evtAutorInfo"=>"Mostrar solo eventos que he creado",
 			"CALENDAR_noEvt"=>"No hay eventos",
-			"CALENDAR_synthese"=>"Síntesis de los calendarios",
 			"CALENDAR_calendarsPercentBusy"=>"Calendarios ocupados",  // Agendas occupés : 2/5
 			"CALENDAR_noCalendarDisplayed"=>"No calendario",
 			// Evenement
@@ -866,7 +865,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublic"=>"Visibilidad normal",
 			"CALENDAR_visibilityPrivate"=>"Visibilidad privada",
 			"CALENDAR_visibilityPublicHide"=>"Visibilidad semi-privada",
-			"CALENDAR_visibilityTooltip"=>"<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento (sin los detailles) si el evento es accesible de lectura",
+			"CALENDAR_visibilityTooltip"=>"<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento si el evento es accesible de lectura",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Calendario compartido del espacio",
 			"CALENDAR_noPeriodicity"=>"Una vez",

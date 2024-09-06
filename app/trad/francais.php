@@ -857,7 +857,6 @@ class Trad extends Txt
 			"CALENDAR_evtAutor"=>"Événements que j'ai créés",
 			"CALENDAR_evtAutorInfo"=>"Afficher uniquement les événements que j'ai créés",
 			"CALENDAR_noEvt"=>"Aucun événement",
-			"CALENDAR_synthese"=>"Synthèse des agendas",
 			"CALENDAR_calendarsPercentBusy"=>"Agendas occupés",  // Agendas occupés : 2/5
 			"CALENDAR_noCalendarDisplayed"=>"Aucun agenda affiché",
 			// Evenement
@@ -866,7 +865,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublic"=>"Visibilité normale",
 			"CALENDAR_visibilityPrivate"=>"Visibilité privée",
 			"CALENDAR_visibilityPublicHide"=>"Visibilité semi-privée",
-			"CALENDAR_visibilityTooltip"=>"<u>visibilité privée</u> : événement uniquement visible par son auteur<br><br><u>visibilité semi-privée</u> : seule la plage horaire de l'événement est visible par les personnes n'ayant qu'un accès en lecture (titre et détails de l'événement masqués)",
+			"CALENDAR_visibilityTooltip"=>"<u>visibilité privée</u> : événement uniquement visible par son auteur<br><br><u>visibilité semi-privée</u> : seule la plage horaire de l'événement sera visible pour ceux qui n'ont qu'un accès en lecture",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Agenda partagé de l'espace",
 			"CALENDAR_noPeriodicity"=>"Une seule fois",
