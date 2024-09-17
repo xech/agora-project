@@ -3,14 +3,14 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 #################################
 
-VERSION 24.8.2
+VERSION 24.8.3
 ###############
 Amélioration de l'ergonomie et performances d'affichage des agendas
 Meilleure prise en charge de l'affichage des agendas en mode sombre
 Optimisation de l'affichage pour les événements se chevauchant
 Amélioration de l'option "Imprimer l'agenda"
-Amélioration des controles et affichages des dates/heures dans l'édition des événements
-Correction d'accès aux espaces pour les guests
+Amélioration des contrôles et affichages des dates/heures dans l'édition des événements
+Correction d'accès aux espaces pour les invités
 Mise à jour de TinyMce en v7.3.0
 Mise à jour de JQuery-UI en v1.14.0
 Mise à jour de Jquery.timepicker en v1.14.1

@@ -145,12 +145,13 @@ input[type=radio], input[type=checkbox]		{vertical-align:middle; margin:0px 3px;
 input[type=checkbox]						{width:15px; height:15px;}
 input[type=file]							{height:auto;}
 input:read-only, textarea:read-only			{background:#ddd!important;}
-::placeholder 								{font-weight:normal; padding-left:5px; color:#aaa;}/*placeholder des inputs et textarea (texte par défaut)*/
+::placeholder 								{font-weight:normal; padding-left:5px; color:#aaa;}/*placeholder (texte par défaut) des inputs et textarea*/
 textarea									{width:100%; height:70px;}
 .tox-tinymce								{box-shadow:0px 0px 4px #b4b4b4!important; border:#bbb 1px solid!important; border-radius:5px!important;}/*Conteneur de l'éditeur TinyMCE*/
-.inputTitleName								{width:80%;}/*Input "title" ou "name" d'un objet. "margin-right" pour le bouton ".descriptionToggle"*/
-.dateInput,.dateBegin,.dateEnd				{width:80px!important;}
-.timeBegin, .timeEnd						{width:45px!important;}
+.inputTitleName								{width:80%;}/*Title ou Name d'un objet*/
+.dateInput, .dateBegin, .dateEnd			{width:80px;}/*Datepicker*/
+input[type=time]							{width:70px;}/*Timepicker (.timeBegin et .timeEnd)*/
+input[type=time]::-webkit-calendar-picker-indicator	{margin:0px; filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);}/*icone "horloge"*/
 .divPromptInputText							{text-align:center;}
 button										{background:linear-gradient(white,#eee); color:#555; border-radius:5px; padding:0px 10px; font-weight:bold; cursor:pointer; vertical-align:middle;}
 button:hover								{background:linear-gradient(#eee,white);}
@@ -172,6 +173,8 @@ legend										{padding:5px 10px;}
 	fieldset								{padding:5px;}
 	textarea								{height:50px;}
 	.inputTitleName							{width:100%;}
+	.dateInput, .dateBegin, .dateEnd		{width:100px;}/*Datepicker plus large !*/
+	input[type=time]						{width:90px;}/*Idem*/
 }
 
 /*** INPUTS D'EDITION D'OBJET : EDIT D'USER, DE CONTACT, DE PARAMETRAGE GENERAL...*/
@@ -217,7 +220,7 @@ form .objField								{margin:15px 0px;}
 .fancybox-slide--iframe .fancybox-content	{width:95%; height:98%; max-width:95%; max-height:98%; margin:0px; border-radius:10px; box-shadow:0px 0px 10px #787878;}/*Lightbox iframes*/
 .fancybox-iframe							{border-radius:4px;}/*"border-radius" aussi sur l'iframe!*/
 .fancybox-toolbar							{opacity:1!important; visibility:visible!important; border-left:solid 1px #777; border-bottom:solid 1px #777; border-bottom-left-radius:5px;}/*"opacity" et "visibility" pour tjs afficher le "close" et éviter le masquage auto (ex: maps des contact)*/
-.lightboxTitle								{position:relative; padding-bottom:15px; margin-bottom:25px; text-align:center; font-size:1.1em; box-shadow:0px 7px 7px -7px #646464;}/*"box-shadow"=pseudo <hr>*/
+.lightboxTitle								{position:relative; padding-bottom:15px; margin-bottom:30px; text-align:center; font-size:1.1em; box-shadow:0px 7px 7px -7px #646464;}/*"box-shadow"=pseudo <hr>*/
 .lightboxTitle:has(.lightboxTitleMenu)		{padding-left:40px;}/*laisse la place au .lightboxTitleMenu et .menuContext*/
 .lightboxTitleMenu							{position:absolute; font-size:0.9em; top:-5px; left:-10px;}/*"font-size" : "1.1" => "0.9"*/
 .lightboxTitleDetail						{font-size:0.9em; margin-top:15px;}
@@ -239,13 +242,15 @@ form .objField								{margin:15px 0px;}
 .tooltipster-box					{box-shadow:0px 0px 5px 3px rgba(50,50,50,0.5)!important;}		/*TOOLTIPSTER ("title")*/
 .tooltipster-content				{color:#555!important; padding:15px!important;}								
 .ui-datepicker						{width:300px; max-width:98%; box-shadow:0px 0px 8px #888;}		/*JQUERY-UI DATEPICKER*/
-.ui-datepicker-header				{background-color:transparent; border:none;}
-.ui-datepicker .ui-state-default	{padding:5px;}													/*Cellules des jours*/
+.ui-datepicker-header				{background-color:transparent; border:none;}/*label du mois*/
+.ui-datepicker .ui-state-default	{padding:10px; text-align:center; border:0px;}/*Cellules des jours*/
+.ui-datepicker .ui-state-highlight	{background:#cde; color:black;}/*Aujourd'hui*/
+.ui-datepicker .ui-state-active		{background:#007fff; color:white;}/*Jour sélectionné*/
 .jconfirm-title						{line-height:25px;}												/*JQUERY CONFIRM*/
 .jconfirm-buttons button			{margin:10px!important;}
 .jconfirm-buttons .btn-green		{background:#25a55b!important;}
-.ui-timepicker-wrapper				{max-height:350px;}												/*JQUERY TIMEPICKER : taille du pseudo <select>*/
-.ui-timepicker-list li 				{padding:8px 15px;}
+.ui-timepicker-wrapper				{max-height:400px;}												/*JQUERY TIMEPICKER : taille du pseudo <select>*/
+.ui-timepicker-list li 				{padding:7px 20px;}
 @media screen and (max-width:440px){
 	.jconfirm-box				{min-width:350px;}								/*JQUERYCONFIRM : taille de la box*/
 	.jconfirm-title				{font-size:20px;}								/*idem : titre*/

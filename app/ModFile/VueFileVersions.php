@@ -30,7 +30,7 @@ img[src*='delete']		{margin-left:20px;}
 					<?php
 					echo Txt::dateLabel($tmpVersion["dateCrea"]).'<img src="app/img/separator.png">'.
 					Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel().'<img src="app/img/separator.png">'.
-					File::displaySize($tmpVersion["octetSize"]).'<br>'.
+					File::sizeLabel($tmpVersion["octetSize"]).'<br>'.
 					'<a href="'.$curObj->urlDownload($tmpVersion["dateCrea"]).'" target="_blank"><img src="app/img/download.png"> '.Txt::trad("download").'</a>'.
 					'<a onclick="confirmDeleteVersion(\''.urlencode($tmpVersion["dateCrea"]).'\')"><img src="app/img/delete.png"> '.Txt::trad("delete").'</a>';
 					?>

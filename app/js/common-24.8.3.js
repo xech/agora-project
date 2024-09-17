@@ -153,44 +153,38 @@ $(function(){
 $(function(){
 	////	Formulaire "#mainForm" modifié : passe "confirmCloseForm" à "true" pour la confirmation de fermeture ("windowParent" pour cibler les "form" de lightbox)
 	setTimeout(function(){
-		$("#mainForm,.confirmCloseForm").find("input,select,textarea").on("input change keyup",function(){ windowParent.confirmCloseForm=true; });
+		$("#mainForm").find("input,select,textarea").on("input change keyup",function(){ windowParent.confirmCloseForm=true; });
 	},1000);//1 sec. après l'initialisation des controles du formulaire
 
-	////	Datepicker : Init
-	$(".dateInput, .dateBegin, .dateEnd").datepicker({
-		dateFormat:"dd/mm/yy",
-		firstDay:1,
-		showOtherMonths:true,
-		selectOtherMonths:true,
-		onSelect:function(){
-			$(this).trigger("change");																	//Trigger pour lancer le Controle du DateTime ci-dessous
-			if($(this).hasClass("dateBegin"))  {dateBeginRef=$(this).datepicker("getDate").getTime();}	//PUIS on update la dateBegin de référence (en millisecondes)
-		}
-	});
-
-	////	Datepicker : Readonly sur mobile  &&  Init dateBeginRef
-	if(isMobile())	{$(".dateInput, .dateBegin, .dateEnd").prop("readonly",true);}
-	if($(".dateBegin").isNotEmpty())  {var dateBeginRef=$(".dateBegin").datepicker("getDate").getTime();}
-
-	////	Timepicker : Init
-	if(jQuery().timepicker){																			//Vérif que le plugin "timepicker" est bien chargé
-		$(".timeBegin, .timeEnd").timepicker({timeFormat:"H:i", step:15}).on("change",function(){		//Step de 15mn
-			if(/^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false){									//Controle le format de l'heure
-				notify("Time format error");
-				$(this).val("").pulsate(3);
-			}
-		});
+	////	Init les Datepicker & Timepicker (Vérif que les plugins sont chargés)
+	if(jQuery().datepicker){
+		$(".dateInput, .dateBegin, .dateEnd").datepicker({dateFormat:"dd/mm/yy", firstDay:1, showOtherMonths:true, selectOtherMonths:true});
+		if(isMobile())	{$(".dateInput, .dateBegin, .dateEnd").prop("readonly",true);}//Readonly sur mobile
 	}
+	if(jQuery().timepicker){
+		$(".timeBegin, .timeEnd").timepicker({timeFormat:"H:i", step:15, "orientation":(isMobile()?"rb":"lb")});
+	}
+
+	////	Init dateBeginRef + timeBeginRef (en millisecondes!)
+	if($(".dateBegin").isNotEmpty())  {var dateBeginRef=$(".dateBegin").datepicker("getDate").getTime();}
+	if($(".timeBegin").isNotEmpty())  {var timeBeginRef=$(".timeBegin").timepicker("getTime").getTime();}
 
 	////	Datepicker/Timepicker : Controle du DateTime
 	$(".dateBegin, .dateEnd, .timeBegin, .timeEnd").on("change",function(){
-		//// Controle des dates
-		if( ($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"))  &&  $(this).isNotEmpty()  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)   {notify(labelDateFormatError);}
-		//// Si la date de début est avancée, la date de fin est avancée d'autant
+		//// Controle le format des dates et heures
+		if( ($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"))  &&  $(this).isNotEmpty()  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)  	 {notify(labelDateFormatError);}
+		if( ($(this).hasClass("timeBegin") || $(this).hasClass("timeEnd"))  &&  $(this).isNotEmpty()  &&  /^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false)   {notify(labelTimeFormatError);}
+		//// Si la .dateBegin est avancée, la .dateEnd est avancée d'autant
 		if($(this).hasClass("dateBegin")){
-			let beginDiffTime=($(".dateBegin").datepicker("getDate").getTime() - dateBeginRef);						//Différence entre l'ancienne et la nouvelle dateBegin (en millisecondes!)
-			let endNewDate=new Date(($(".dateEnd").datepicker("getDate").getTime() + beginDiffTime));				//Ajuste la nouvelle Date de fin en fonction de beginDiffTime
-			$(".dateEnd").datepicker("setDate",endNewDate).pulsate(1);
+			let beginDiffTime=($(".dateBegin").datepicker("getDate").getTime() - dateBeginRef);						//Différence entre l'ancienne et la nouvelle .dateBegin (en millisecondes!)
+			let dateEndNew=new Date(($(".dateEnd").datepicker("getDate").getTime() + beginDiffTime));				//Calcule la .dateEnd en fonction de la nouvelle .dateBegin
+			$(".dateEnd").datepicker("setDate",dateEndNew).pulsate(1);												//Applique la nouvelle .dateEnd avec un "pulsate"
+		}
+		//// Si le .timeBegin est avancé, le .timeEnd est avancé d'autant
+		if($(this).hasClass("timeBegin") && $(".dateBegin").val()==$(".dateEnd").val()){							//Verif que .dateBegin == .dateEnd
+			let beginDiffTime=($(".timeBegin").timepicker("getTime").getTime() - timeBeginRef);						//Différence entre l'ancien et la nouveau .timeBegin (en millisecondes!)
+			let timeEndNew=new Date(($(".timeEnd").timepicker("getTime").getTime() + beginDiffTime));				//Calcule le .timeEnd en fonction du nouveau .timeBegin
+			$(".timeEnd").timepicker("setTime",timeEndNew).pulsate(1);												//Applique le nouveau .timeEnd avec un "pulsate"
 		}
 		//// Verif que le datetime de début soit avant celui de fin
 		let dateBegin=$(".dateBegin").val().split("/");																//Date de début au format "dd/MM/yyyy"
@@ -204,6 +198,9 @@ $(function(){
 				$(".timeEnd").val($(".timeBegin").val());															//Time de fin = idem début 
 			},500);																									//Timeout car modif après l'action du Timepicker
 		}
+		//// PUIS update dateBeginRef + timeBeginRef (en millisecondes!)
+		if($(".dateBegin").isNotEmpty())  {dateBeginRef=$(".dateBegin").datepicker("getDate").getTime();}
+		if($(".timeBegin").isNotEmpty())  {timeBeginRef=$(".timeBegin").timepicker("getTime").getTime();}
 	});
 
 	////	Controle la taille des fichiers des inputs "file"

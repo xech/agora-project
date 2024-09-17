@@ -115,34 +115,32 @@ class File
 	 ************************************************************************************************************************************/
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		////	Old mobileApp sous Cordova : annule le download pour ne pas bloquer InAppBrowser, et lancer le download via le browser system (InAppBrowser et le browser system utilisent les mêmes cookies: "isMobileApp()" renvoie donc toujours "true")
-		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false)  {echo "<script>  setTimeout(function(){ window.history.back(); },1000);  </script>";}
+		////	Old mobileApp sous Cordova (annule le download pour ne pas bloquer InAppBrowser)
+		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false){
+			echo "<script> setTimeout(function(){ window.history.back(); },1000); </script>";
+			exit;
+		}
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
-		elseif(!empty($fileContent) || is_file($filePath))
+		if(!empty($fileContent) || is_file($filePath))
 		{
 			////	Augmente la duree du script (sauf safemode)
 			@set_time_limit(120);
 			////	Headers
-			header("Content-Type: application/octet-stream");
-			header("Cache-Control: no-store");
-			header("Content-Transfer-Encoding: Binary"); 
-			header("Content-Disposition: attachment; filename=\"".Txt::clean($fileName)."\"");
+			header('Content-Type: application/octet-stream');
+			header('Cache-Control: no-store');
+			header('Content-Transfer-Encoding: Binary'); 
+			header('Content-Disposition: attachment; filename="'.Txt::clean($fileName).'"');
 			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}
 			////	Fichier généré à la volée (ex: csv des logs)
 			if(!empty($fileContent)){
 				echo $fileContent;
 			}
-			////	Download d'un fichier > 20Mo par tranche de 1Mo, pour pas bloquer la navigation durant le download (tester en prod!)
-			elseif(filesize($filePath) > (self::sizeMo*20)){
+			////	Download d'un fichier > 50Mo par tranche de 1Mo (evite de bloquer la navigation durant le download)
+			elseif(filesize($filePath) > (self::sizeMo*50)){
 				session_write_close();
 				$handle=fopen($filePath,"rb");
-				while(!feof($handle)){
-					print fread($handle,self::sizeMo);
-					flush();
-					ob_flush();
-				}
+				while(!feof($handle))  {echo fread($handle,self::sizeMo);}
 				fclose($handle);
-				ob_end_clean();
 			}
 			////	Download direct du fichier
 			else{
@@ -181,21 +179,16 @@ class File
 	public static function folderSize($folderPath)
 	{
 		$folderSize=0;
-		$folderPath=rtrim($folderPath,"/");//"trimer" uniquement la fin du chemin
-		// Récupère la taille d'un dossier
-		if(is_dir($folderPath))
-		{
-			// Parcourt le dossier courant -> récupère la taille des fichiers / lance récursivement "folderSize()"
-			foreach(scandir($folderPath) as $tmpFileName)
-			{
-				if(in_array($tmpFileName,['.','..'])==false){
-					$filePath=$folderPath."/".$tmpFileName;
-					if(is_file($filePath))		{$folderSize+=filesize($filePath);}
-					elseif(is_dir($filePath))	{$folderSize+=self::folderSize($filePath);}
+		$folderPath=rtrim($folderPath,"/");														//trim() la fin du path
+		if(is_dir($folderPath)){																//Verif qu'il s'agisse d'un dossier
+			foreach(scandir($folderPath) as $tmpFileName){										//Parcourt le dossier
+				if(in_array($tmpFileName,['.','..'])==false){									//Passe les dossiers "up"
+					$filePath=$folderPath."/".$tmpFileName;										//Path du fichier/dossier
+					if(is_file($filePath))		{$folderSize+=filesize($filePath);}				//incrémente la taille du dossier
+					elseif(is_dir($filePath))	{$folderSize+=self::folderSize($filePath);}		//lance récursivement "folderSize()"
 				}
 			}
 		}
-		// Retourne le résultat
 		return $folderSize;
 	}
 
@@ -204,8 +197,8 @@ class File
 	 *******************************************************************************************/
 	public static function datasFolderSize($refresh=false)
 	{
-		//Durée de la valeur gardée en cache : 10mn
-		$timeout=600;
+		//Durée de la valeur gardée en cache : 5mn
+		$timeout=300;
 		// Récupère la taille de "PATH_DATAS" (si refresh, ou pas encore définie en session, ou si valeur expiré) 
 		if($refresh==true || empty($_SESSION["datasFolderSize"]) || (time()-$_SESSION["datasFolderSizeTimeout"])>$timeout){
 			$_SESSION["datasFolderSize"]=self::folderSize(PATH_DATAS);
@@ -216,7 +209,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE UNE VALEUR EN OCTETS, À PARTIR D'UNE VALEUR EN Go/Mo/Ko	(ex: 10Mo)
+	 * RETOURNE UNE VALEUR EN OCTETS À PARTIR D'UNE VALEUR EN Go/Mo/Ko (inverse de "sizeLabel()")
 	 *******************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
@@ -226,10 +219,10 @@ class File
 		else										{return $sizeText;}
 	}
 
-	/*******************************************************************************************
-	 * RETOURNE LA TAILLE D'UN FICHIER/DOSSIER À PARTIR D'UNE VALEUR EN OCTETS ..OU D'UN TEXTE (ex: 10Mo)
-	 *******************************************************************************************/
-	public static function displaySize($size, $displayLabel=true)
+	/*********************************************************************************************************************
+	 * RETOURNE LA TAILLE D'UN FICHIER/DOSSIER À PARTIR D'UNE VALEUR EN OCTETS OU D'UN TEXTE (inverse de "getBytesSize()")
+	 *********************************************************************************************************************/
+	public static function sizeLabel($size, $displayLabel=true)
 	{
 		$bytesSize=self::getBytesSize($size);
 		if($bytesSize>=self::sizeGo)		{$size=round(($bytesSize/self::sizeGo),2);	$tradLabel="gigaOctet";}
@@ -244,8 +237,8 @@ class File
 	public static function uploadMaxFilesize($message=false)
 	{
 		$upload_max_filesize=(int)self::getBytesSize(ini_get("upload_max_filesize"));
-		if($message=="error")	{return Txt::trad("FILE_fileSizeError")." :<br>".Txt::trad("FILE_fileSizeLimit")." ".self::displaySize($upload_max_filesize);}
-		if($message=="info")	{return Txt::trad("FILE_fileSizeLimit")." ".self::displaySize($upload_max_filesize);}
+		if($message=="error")	{return Txt::trad("FILE_fileSizeError")." :<br>".Txt::trad("FILE_fileSizeLimit")." ".self::sizeLabel($upload_max_filesize);}
+		if($message=="info")	{return Txt::trad("FILE_fileSizeLimit")." ".self::sizeLabel($upload_max_filesize);}
 		else					{return $upload_max_filesize;}
 	}
 
@@ -391,7 +384,7 @@ class File
 		$disabledBegin=9;				//debut plage horaire de limitation
 		$disabledEnd  =18;				//fin plage horaire de limitation
 		if(date("G") > $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > $limitSize){
-			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::displaySize($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
+			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
 			Ctrl::notify($alertLabel, "warning");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
 		}

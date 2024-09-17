@@ -161,7 +161,7 @@ abstract class Ctrl
 			}
 		}
 
-		////	STATS DE CONNEXION DU HOST (APRES AUTHENTIFICATION, MAIS AVANT SÉLECTION D'ESPACE ET REDIRECTION)
+		////	STATS DE CONNEXION DU HOST (APRES AUTHENTIFICATION & AVANT SÉLECTION D'ESPACE AVEC REDIRECTION)
 		if(Req::isHost())  {Host::connectStatsHostInfos();}
 
 		////	SELECTION D'UN ESPACE  (Tester switch d'espace + connexion d'user sans espace affecté + connexion de guest avec switch d'espace + accès à un objet depuis notif mail)

@@ -158,6 +158,7 @@ class Trad extends Txt
 			"today"=>"Today",
 			"beginEndError"=>"Start date must precede end date",
 			"dateFormatError"=>"The date must be in the format dd/mm/YYYY",
+			"timeFormatError"=>"The time must be in the format HH:mm",
 			
 			////	Menus d'édition des objets et editeur tinyMce
 			"title"=>"Title",
@@ -862,10 +863,10 @@ class Trad extends Txt
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Normal importance",
 			"CALENDAR_importanceHight"=>"High importance",
-			"CALENDAR_visibilityPublic"=>"Normal visibility",
-			"CALENDAR_visibilityPrivate"=>"Private visibility",
-			"CALENDAR_visibilityPublicHide"=>"Semi-private visibility",
-			"CALENDAR_visibilityTooltip"=>"<u>private visibility</ u>: visible only to those whose event is accessible in writing <br><br> <u>semi-private visibility</u> : Only the timeslot is displayed if the event is read-only",
+			"CALENDAR_visibilityPublic"=>"Normal display",
+			"CALENDAR_visibilityPublicHide"=>"Time slot display",
+			"CALENDAR_visibilityPrivate"=>"Private display",
+			"CALENDAR_visibilityTooltip"=>"For people with read-only access to the calendar: <br>- Time slot display : show only the time slot occupied by the event and hide the details<br>- Private display: do not display the event",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Shared calendar of the space",
 			"CALENDAR_noPeriodicity"=>"Only once",

@@ -189,12 +189,12 @@ class MdlCalendar extends MdlObject
 	 *******************************************************************************************/
 	public static function readableCalendars()
 	{
-		//Agendas de ressource && Agendas personnels (pas "Disabled") && Agenda de l'user
+		//Agendas de ressource  &&  Agendas personnels (enabled)  &&  Agenda de l'user
 		if(self::$_readableCalendars===null){
 			$sqlDisplay=self::sqlDisplay();
 			$ressourceCals	=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplay);
 			$persoCals		=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (".$sqlDisplay." OR _idUser=".Ctrl::$curUser->_id.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
-			self::$_readableCalendars=self::sortCalendars( array_merge($ressourceCals,$persoCals) );//Tri les agendas
+			self::$_readableCalendars=self::sortCalendars(array_merge($ressourceCals,$persoCals));//Agendas triés via "sortCalendars()"
 		}
 		return self::$_readableCalendars;
 	}
@@ -222,13 +222,13 @@ class MdlCalendar extends MdlObject
 		{
 			//Agendas accessibles en lecture
 			self::$_affectationCalendars=self::readableCalendars();
-			//Ajoute les agendas persos des users de l'espace, mais inaccessibles en lecture ("guest" non concernés) : cf. propositions d'événement
+			//Ajoute les agendas persos inaccessibles en lecture, pour les propositions d'événement (sauf "guest")
 			if(Ctrl::$curUser->isUser()){
 				$otherPersoCalendars=Db::getObjTab("calendar", "SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND _idUser IN (".Ctrl::$curSpace->getUsers("idsSql").") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
 				foreach($otherPersoCalendars as $tmpCal){
 					if(!in_array($tmpCal,self::$_affectationCalendars))  {self::$_affectationCalendars[]=$tmpCal;}//Ajoute l'agenda?
 				}
-				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);//Tri les agendas
+				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);//Liste des agendas triée
 			}
 		}
 		return self::$_affectationCalendars;
@@ -239,38 +239,27 @@ class MdlCalendar extends MdlObject
 	 *******************************************************************************************/
 	public static function displayedCalendars($readableCalendars)
 	{
-		//// Init les agendas
 		$displayedCalendars=[];
-		//// Récupère d'abord les agendas enregistrés en préférence (pas forcément dans les $readableCalendars de l'espace courant !)
+		//// Récupère chaque agenda enregistré en préférence
 		$prefCalendars=Txt::txt2tab(Ctrl::prefUser("displayedCalendars"));
 		if(!empty($prefCalendars)){
 			foreach($readableCalendars as $tmpCal){
 				if(in_array($tmpCal->_id,$prefCalendars))  {$displayedCalendars[]=$tmpCal;}
 			}
 		}
-		//// Tjs aucun agenda : récupère l'agenda partagé de l'espace
+		//// Si aucun agenda en pref, on récupère l'agenda partagé de l'espace (en 1er) ou l'agenda perso de l'user courant
 		if(empty($displayedCalendars)){
 			foreach($readableCalendars as $tmpCal){
-				if($tmpCal->isSpacelCalendar())  {$displayedCalendars[]=$tmpCal;}
-			}
-		}
-		//// Tjs aucun agenda : récupère l'agenda perso de l'user courant
-		if(empty($displayedCalendars)){
-			foreach($readableCalendars as $tmpCal){
-				if($tmpCal->isPersonalCalendar())	{$displayedCalendars[]=$tmpCal;}
+				if($tmpCal->isSpacelCalendar() || $tmpCal->isPersonalCalendar())  {$displayedCalendars[]=$tmpCal;  break;}
 			}
 		}
 		//// Supprime les evénements de plus de 5 ans (lancé en début de session)
-		if(empty($_SESSION["calendarsCleanEvt"]))
-		{
-			//Période des evenements "old"
-			$time30YearsAgo=time()-(86400*365*30);
-			$time5YearsAgo =time()-(86400*365*5);
-			//Sélectionne les agendas avec "editContentRight()"
-			foreach($displayedCalendars as $tmpCal){
-				if($tmpCal->editContentRight()){
-					foreach($tmpCal->eventList($time30YearsAgo,$time5YearsAgo,false,false,2) as $tmpEvt){	//$filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=2
-						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}							//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+		if(empty($_SESSION["calendarsCleanEvt"])){
+			$time5YearsAgo =time()-(86400*365*5);													//Time 5ans
+			foreach($displayedCalendars as $tmpCal){												//Sélectionne les agendas avec "editContentRight()"
+				if($tmpCal->editContentRight()){													//Vérif si l'agenda est accessible en écriture
+					foreach($tmpCal->eventList(time(),$time5YearsAgo,false,false,2) as $tmpEvt){	//$filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=2
+						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}					//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
 					}
 				}
 			}

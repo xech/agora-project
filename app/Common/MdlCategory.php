@@ -80,8 +80,8 @@
 	{
 		$vDatas["tradPrefix"]=static::tradPrefix;
 		$vDatas["categoryList"]=static::getList();
-		$vDatas["_idCategoryFilter"]=$_SESSION["_idCategoryFilter"][static::objectType];
-		if(static::addRight())	{$vDatas["urlEditObjects"]="?ctrl=object&action=EditCategories&objectType=".static::objectType;}
+		$vDatas["_idCategoryFilter"]=(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  ?  $_SESSION["_idCategoryFilter"][static::objectType]  :  null;	//catégorie affichée
+		if(static::addRight())	{$vDatas["urlEditObjects"]="?ctrl=object&action=EditCategories&objectType=".static::objectType;}									
 		return Ctrl::getVue(Req::commonPath."VueCategoryMenu.php",$vDatas);
 	}
 
@@ -96,8 +96,7 @@
 			$vDatas["tradPrefix"]=static::tradPrefix;
 			$vDatas["categoryList"]=$categoryList;
 			$vDatas["dbParentField"]=static::dbParentField;		//Champ de la catégorie, dans la table de l'objet parent : _idStatus, _idCategory, _idTheme, etc
-			if(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  {$vDatas["_idCategory"]=$_SESSION["_idCategoryFilter"][static::objectType];}	//catégorie couramment affichée
-			else															{$vDatas["_idCategory"]=$_idCategory;}											//_id de la catégorie de l'objet modifié
+			$vDatas["_idCategory"]=(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  ?  $_SESSION["_idCategoryFilter"][static::objectType]  :  $_idCategory;	//cat. affichée  || cat. de l'objet édité
 			return Ctrl::getVue(Req::commonPath."VueCategorySelect.php",$vDatas);
 		}
 	}

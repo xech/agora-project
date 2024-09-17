@@ -48,7 +48,7 @@
 				"<div class=\"objContent objFiles ".$tmpFile->thumbClass."\">
 					<div class='objIcon' title=\"".Txt::tooltip($tmpFile->iconTooltip)."\"><img src=\"".$tmpFile->typeIcon()."\" ".$tmpFile->iconLink."></div>
 					<div class='objLabel'><span title=\"".Txt::tooltip($tmpFile->labelTooltip)."\" ".$tmpFile->labelLink.">".Txt::reduce($tmpFile->name,$fileNameLength).$tmpFile->versionsMenu("icon")."</span></div>
-					<div class='objDetails'>".File::displaySize($tmpFile->octetSize)."</div>
+					<div class='objDetails'>".File::sizeLabel($tmpFile->octetSize)."</div>
 					<div class='objAutorDate'>".$tmpFile->autorDateLabel()."</div>
 				</div>
 			</div>";

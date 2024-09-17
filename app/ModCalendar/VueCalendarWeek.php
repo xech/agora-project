@@ -23,31 +23,32 @@ function calendarDisplay(printCalendar)
 		let calScrollTop=Math.floor(hourHeightRef * $(this).attr("data-timeSlotBegin"));											//ScrollTop de l'agenda en fonction de la plage horaire affichée (timeslot)
 		$(this).find(".vEventBlock").each(function(){																				//Affichage de chaque Evt :
 			let dayDate=$(this).attr("data-dayDate");																				//Date de l'evt
-			let daySelector=".vWeekCell[data-dayDate='"+dayDate+"']:first";															//Selecteur de la première cellule d'heure du jour (0:00) pour récupérer ses dimensions
+			let daySelector=".vWeekCell[data-dayDate='"+dayDate+"']:first";															//Selecteur de la 1ere cellule d'heure du jour (0:00) pour récupérer ses dimensions
 			let evtPosLeft=$(daySelector).position().left;																			//Position Left de l'evt en fonction de la colonne du jour
 			let evtWidth=$(daySelector).width();																					//Width de l'evt en fonction de la colonne du jour (sans margins)
 			let timeFromDayBegin=$(this).attr("data-timeFromDayBegin");																//Time du début de l'evt depuis le début du jour
 			let sameBeginSelector=".vEventBlock[data-dayDate='"+dayDate+"'][data-timeFromDayBegin='"+timeFromDayBegin+"']";			//Selecteur des evts qui commencent en même temps
-			let hasEvtBefore=(typeof prevEvtId!="undefined" && $(prevEvtId).attr("data-dayDate")==$(this).attr("data-dayDate"));	//Verif s'il ya un précédent evt sur le même jour
+			let hasEvtBefore=(typeof prevEvtId!="undefined" && $(prevEvtId).attr("data-dayDate")==$(this).attr("data-dayDate"));	//Verif s'il ya un précédent evt le même jour
 			//// D'autres evts commencent en même temps : split l'evt
 			if($(calSelector).find(sameBeginSelector).length > 1){
 				evtWidth=Math.floor(evtWidth / $(calSelector).find(sameBeginSelector).length);										//Largeur en fonction du nb d'evt à afficher cote à cote
 				evtPosLeft+=Math.floor(evtWidth * $(calSelector).find(sameBeginSelector).index(this));								//Décale l'evt en fonction de son rang (index) parmi les autres evts
 			}
-			//// Evt chevauchant un autre evt ou Evt englobé dans un autre : décale l'evt (tester les 2 cas sur le même jour)
-			else if(hasEvtBefore==true && ($(this).attr("data-timeBegin") < timeEndDayMax || $(this).attr("data-timeEnd") < timeEndDayMax)){
+			//// Evt chevauchant un autre evt OU Evt englobé dans un autre : décale l'evt (tester les 2 cas sur le même jour)
+			else if(hasEvtBefore==true  &&  ($(this).attr("data-timeBegin") < timeEndDayMax || $(this).attr("data-timeEnd") < timeEndDayMax)){
 				evtWidth-=15;																										//Réduit la largeur de l'evt (pas + de 15px!)
 				evtPosLeft+=15;																										//Décale d'autant sur la droite
 				$(this).css("border","solid 1px #777");																				//Ajoute une bordure pour différencier les 2 evts
 			}
-			//// Position et dimensions de l'evt
+			//// Position / dimensions de l'evt
 			let evtPosTop=Math.round((hourHeightRef/3600) * timeFromDayBegin);														//Calcule la position top
 			let evtHeight=Math.round((hourHeightRef/3600) * $(this).attr("data-timeDuration"));										//Calcule la hauteur
 			$(this).css("left",evtPosLeft).css("top",evtPosTop).outerWidth(evtWidth,true).outerHeight(evtHeight,true);				//Applique la position et dimensions (avec margins)
 			$(this).find(".vEventLabel").outerHeight($(this).height());																//Applique la hauteur au label (pas de css "height:inherit")
+			//// Update de variables
 			if(timeFromDayBegin > 0 && evtPosTop < calScrollTop)  {calScrollTop=evtPosTop;}											//Scrolltop de l'agenda ajusté en fonction de l'evt le plus tôt
-			prevEvtId="#"+this.id;																									//Id de l'evt
-			if(hasEvtBefore==false || $(this).attr("data-timeEnd") > timeEndDayMax)  {timeEndDayMax=$(this).attr("data-timeEnd");}	//Init/update timeEndDayMax si : 1er evt du jour || le timeEnd de l'evt est supérieur
+			if(hasEvtBefore==false || $(this).attr("data-timeEnd") > timeEndDayMax)  {timeEndDayMax=$(this).attr("data-timeEnd");}	//Init/update si 1er evt du jour OU timeEnd de l'evt est supérieur
+			prevEvtId="#"+this.id;																									//Update prevEvtId pour l'evt suivant
 		});
 		////	SCROLL L'AGENDA (DÉBUT DE PLAGE HORAIRE || EVT AU PLUS TÔT DE LA SEMAINE)
 		$(this).scrollTop(calScrollTop);

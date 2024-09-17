@@ -44,6 +44,7 @@
 		labelConfirmDeleteDbl	="<?= Txt::trad("confirmDeleteDbl") ?>";
 		labelBeginEndError		="<?= Txt::trad("beginEndError") ?>";
 		labelDateFormatError	="<?= Txt::trad("dateFormatError") ?>";
+		labelTimeFormatError	="<?= Txt::trad("timeFormatError") ?>";
 		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
 		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
 

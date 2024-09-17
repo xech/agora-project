@@ -44,7 +44,7 @@ $(function(){
 	/*******************************************************************************************
 	 *	CONTROLE FINAL DU FORMULAIRE (TESTER AVEC INSERTION D'IMAGE)
 	*******************************************************************************************/
-	$("#sendMailForm").submit(function(){
+	$("#mainForm").submit(function(){
 		//// Init
 		var validForm=true;
 		//// Sélection d'une personne, d'un titre et d'un description
@@ -100,7 +100,7 @@ $(function(){
 </style>
 
 
-<form action="index.php" method="post" id="sendMailForm" class="confirmCloseForm" enctype="multipart/form-data">
+<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<div id="pageCenter">
 		<div id="pageModuleMenu">
 			<div id="pageModMenu" class="miscContainer">

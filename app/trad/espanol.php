@@ -158,6 +158,7 @@ class Trad extends Txt
 			"today"=>"hoy",
 			"beginEndError"=>"La fecha de inicio debe ser anterior a la fecha de finalización.",
 			"dateFormatError"=>"La fecha debe estar en el formato dd/mm/AAAA",
+			"timeFormatError"=>"La hora debe estar en el formato HH:mm",
 
 			////	Menus d'édition des objets et editeur tinyMce
 			"title"=>"Título",
@@ -863,9 +864,9 @@ class Trad extends Txt
 			"CALENDAR_importanceNormal"=>"Importancia normal",
 			"CALENDAR_importanceHight"=>"Alta importancia",
 			"CALENDAR_visibilityPublic"=>"Visibilidad normal",
+			"CALENDAR_visibilityPublicHide"=>"Visibilidad de franja horaria",
 			"CALENDAR_visibilityPrivate"=>"Visibilidad privada",
-			"CALENDAR_visibilityPublicHide"=>"Visibilidad semi-privada",
-			"CALENDAR_visibilityTooltip"=>"<u>Visibilidad privada</u> : evento visible sólo si el evento es accesible en escritura <br><br> <u>Visibilidad semi-privada</u> : solo muestrar el período del evento si el evento es accesible de lectura",
+			"CALENDAR_visibilityTooltip"=>"Para personas que solo tienen acceso de lectura al calendario: <br>- Visibilidad de franja horaria : muestra solo la franja horaria ocupada por el evento y oculta los detalles<br>- Visualización privada: no muestra el evento",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Calendario compartido del espacio",
 			"CALENDAR_noPeriodicity"=>"Una vez",

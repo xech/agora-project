@@ -91,7 +91,7 @@
 						echo '<div class="menuLine" onclick="redir(\'?ctrl=user&displayUsers=all\')"><div class="menuIcon"><img src="app/img/user/icon.png"></div><div>'.Txt::trad("USER_allUsers").'</div></div>';
 						echo '<div class="menuLine" onclick="redir(\'?ctrl=space\')" title="'.Txt::trad("SPACE_moduleTooltip").'"><div class="menuIcon"><img src="app/img/settingsSpaces.png"></div><div>'.Txt::trad("SPACE_manageAllSpaces").'</div></div>';
 						echo '<div class="menuLine" onclick="redir(\'?ctrl=agora\')"><div class="menuIcon"><img src="app/img/settingsGeneral.png"></div><div>'.Txt::trad("AGORA_generalSettings").'</div></div>';
-						echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/diskSpace'.($diskSpaceAlert==true?'Alert':null).'.png"></div><div>'.Txt::trad("diskSpaceUsed").' : '.$diskSpacePercent.'% '.Txt::trad("from").' '.File::displaySize(limite_espace_disque).'</div></div>';
+						echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/diskSpace'.($diskSpaceAlert==true?'Alert':null).'.png"></div><div>'.Txt::trad("diskSpaceUsed").' : '.$diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque).'</div></div>';
 					}
 					////	  SWITCH D'ESPACE  +  DECONNEXION DE L'ESPACE PRINCIPAL
 					echo '<hr>';

@@ -14,7 +14,7 @@ $(function(){
 		$(".vMonthMain,.vWeekMain").outerHeight( $(".vCalendarBlock").height() - $(".vCalendarHeader").outerHeight(true) );		//Vues des agendas week/month sur toute la hauteur du ".vCalendarBlock"
 		$(".vEventBlock").each(function(){  $(this).css("background",$(this).attr("data-eventColor"));  });						//Applique le "background-color" à chaque événement
 		calendarDisplay();																										//Calcul les dimensions de vues week / month !
-		$(".vCalendarBlock").hide().css("visibility","visible").fadeIn(50);														//Affiche enfin les agendas (masqués par défaut)
+		$(".vCalendarBlock").hide().css("visibility","visible").show();															//Affiche enfin les agendas (masqués par défaut)
 	},<?= empty($_SESSION["livecounterUsers"]) ? 50 : 250 ?>);																	//Timeout pour lancer "calendarDisplay()", le tps d'afficher le livecounterUsers
 
 	/*******************************************************************************************
@@ -70,6 +70,7 @@ $(function(){
 #datepickerCalendar						{margin-top:20px; margin-bottom:10px;}
 .ui-datepicker							{box-shadow:none;}/*Datepicker*/
 .ui-datepicker thead					{display:none;}/*pas de libellé des jours*/
+.ui-datepicker .ui-state-default		{padding:7px;}/*Cellules des jours*/
 
 /*Synthese des agendas*/
 #syntheseBlock.miscContainer			{padding:8px!important; margin-bottom:20px;}/*surcharge*/
@@ -146,7 +147,7 @@ $(function(){
 			if(!empty($eventProposition))  {echo $eventProposition;}
 
 			////	AJOUTER UN EVT
-			if($displayedCalendars[0]->addOrProposeEvt())
+			if(count($displayedCalendars)==1 && $displayedCalendars[0]->addOrProposeEvt())
 				{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlCalendarEvent::getUrlNew()."&_idCal=".$displayedCalendars[0]->_id."')\" title=\"".Txt::tooltip($displayedCalendars[0]->title." : ".$displayedCalendars[0]->addEventLabel)."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CALENDAR_addEvt")."</div></div><hr>";}
 
 			////	LISTE DES AGENDAS DISPONIBLES

@@ -268,7 +268,7 @@ class MdlPerson extends MdlObject
 		if($this->hasImg()!=true)	{return '<input type="file" name="personImgFile"><input type="hidden" name="personImgAction" value="change">';}	
 		else{
 			return '<select name="personImgAction" onchange="if(this.value==\'change\') {$(\'.personImgFile\').fadeIn();} else {$(\'.personImgFile\').fadeOut();}">
-						<option>'.Txt::trad("keepImg").'</option>
+						<option value="">'.Txt::trad("keepImg").'</option>
 						<option value="change">'.Txt::trad("changeImg").'</option>
 						<option value="delete">'.Txt::trad("delete").'</option>
 					</select>

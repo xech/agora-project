@@ -32,7 +32,7 @@ class CtrlFile extends Ctrl
 			$folderSize=File::folderSize(PATH_MOD_FILE);
 			$barFillPercent=ceil(($folderSize/limite_espace_disque)*100);
 			$barLabel=Txt::trad("diskSpaceUsed")." : ".$barFillPercent."%";
-			$barTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::displaySize($folderSize)." ".Txt::trad("from")." ".File::displaySize(limite_espace_disque);
+			$barTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::sizeLabel($folderSize)." ".Txt::trad("from")." ".File::sizeLabel(limite_espace_disque);
 			$vDatas["diskSpaceAlert"]=($barFillPercent>70);
 			$vDatas["diskSpaceProgressBar"]=Tool::progressBar($barLabel, $barTooltip, $barFillPercent, $vDatas["diskSpaceAlert"]);
 		}
@@ -58,7 +58,7 @@ class CtrlFile extends Ctrl
 				}
 			}
 			//// Tooltip
-			$tooltipTxt="<i>".$tmpFile->name."</i><hr>".Txt::trad("FILE_fileSize")." : ".File::displaySize($tmpFile->octetSize);										//Nom & taille du fichier
+			$tooltipTxt="<i>".$tmpFile->name."</i><hr>".Txt::trad("FILE_fileSize")." : ".File::sizeLabel($tmpFile->octetSize);										//Nom & taille du fichier
 			if(!empty($tmpFile->imageSize))		{$tooltipTxt.="<hr>".Txt::trad("FILE_imageSize")." : ".$tmpFile->imageSize;}											//Taille de l'image
 			if(!empty($tmpFile->description))	{$tooltipTxt.="<hr>".$tmpFile->description;}																			//Description du fichier
 			$tmpFile->labelTooltip=$tmpFile->iconTooltip="<img src='app/img/download.png'> ".Txt::trad("FILE_fileDownload")." ".$tooltipTxt;							//Tooltip de download
@@ -271,7 +271,7 @@ class CtrlFile extends Ctrl
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
 		$vDatas["tmpFolderName"]="tmpUploadFolder".uniqid(mt_rand());
-		$vDatas["uploadMaxFilesize"]=File::displaySize(File::uploadMaxFilesize());
+		$vDatas["uploadMaxFilesize"]=File::sizeLabel(File::uploadMaxFilesize());
 		static::displayPage("VueAddEditFiles.php",$vDatas);
 	}
 

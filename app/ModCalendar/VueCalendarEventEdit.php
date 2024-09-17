@@ -166,8 +166,11 @@ function objectFormControl()
 /*GENERAL*/
 legend			 						{font-size:1.05em;}
 .vEventOptionInline						{display:inline-block; margin:25px 25px 0px 0px;}
+.beginEndLabel							{display:none}
+#beginEndSeparator						{margin:0px 5px;}
 @media screen and (max-width:440px){
-	.vEventOptionInline					{margin:30px 20px 0px 0px;}
+	#beginEndSeparator					{visibility:hidden; display:block;}
+	.beginEndLabel						{display:inline-block; width:50px;}
 	input:read-only						{background:#eee!important;}/*sélection des dates & times*/
 }
 
@@ -199,6 +202,7 @@ legend			 						{font-size:1.05em;}
 input[name='calUsersGroup[]']			{display:none;}
 /*MOBILE*/
 @media screen and (max-width:440px){
+	#calsAffectDiv						{max-height:500px;}
 	.vCalAffectBlock					{width:96%;}
 	.vCalAffectBlock label				{padding:8px 3px 8px 3px;}
 }
@@ -226,11 +230,13 @@ input[name='guestMail']					{margin-left:20px;}
 
 	<!--DATE DEBUT & FIN-->
 	<div class="vEventOptionInline" id="eventDates">
-		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>">
-		<input type="text" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" placeholder="H:m">
-		&nbsp;<img src="app/img/arrowRight.png">&nbsp; 
-		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>">
-		<input type="text" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" placeholder="H:m">
+		<span class="beginEndLabel"><?= Txt::trad("begin") ?></span>
+		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" title="<?= Txt::trad("begin") ?>">
+		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>">
+		<span id="beginEndSeparator"><img src="app/img/arrowRight.png"></span>
+		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
+		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" title="<?= Txt::trad("end") ?>">
+		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>">
 	</div>
 
 	<!--<SELECT> DE LA CATEGORIE-->
@@ -307,8 +313,8 @@ input[name='guestMail']					{margin-left:20px;}
 	<div class="vEventOptionInline vEventOptionAdvanced">
 		<select name="contentVisible" title="<?= Txt::trad("CALENDAR_visibilityTooltip") ?>">
 			<option value="public"><?= Txt::trad("CALENDAR_visibilityPublic") ?></option>
-			<option value="prive"><?= Txt::trad("CALENDAR_visibilityPrivate") ?></option>
 			<option value="public_cache"><?= Txt::trad("CALENDAR_visibilityPublicHide") ?></option>
+			<option value="prive"><?= Txt::trad("CALENDAR_visibilityPrivate") ?></option>
 		</select>
 	</div>
 

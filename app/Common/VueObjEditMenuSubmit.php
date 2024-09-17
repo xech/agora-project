@@ -261,7 +261,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		echo '<input type="checkbox" name="notifMail" id="boxNotifMail" value="1" onChange="$(\'#notifMailOptions\').slideToggle();"> <label for="boxNotifMail" title="'.$notifMailTooltip.'">'.Txt::trad("EDIT_notifMail2").'</label>';
 		echo '<div id="notifMailOptions">';
 			//Option du module "File" : "Joindre les fichiers à la notification"
-			if($curObj::objectType=="file")  {echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles"><label for="boxNotifMailAddFiles" title="'.Txt::trad("FILE_fileSizeLimit").' '.File::displaySize(File::mailMaxFilesSize).'">'.Txt::trad("EDIT_notifMailAddFiles").' <img src="app/img/attachment.png"></label></div>';}
+			if($curObj::objectType=="file")  {echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles"><label for="boxNotifMailAddFiles" title="'.Txt::trad("FILE_fileSizeLimit").' '.File::sizeLabel(File::mailMaxFilesSize).'">'.Txt::trad("EDIT_notifMailAddFiles").' <img src="app/img/attachment.png"></label></div>';}
 			// Options de base des emails (cf. Tool::sendMail()")
 			echo MdlObject::sendMailBasicOptions();
 			//Option "Choisir les destinataires"

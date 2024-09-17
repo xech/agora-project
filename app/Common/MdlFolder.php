@@ -144,7 +144,7 @@
 			if(!empty($nbElems)){
 				if(!empty($this->_contentDescription))	{$this->_contentDescription.=" - ";}
 				$this->_contentDescription.=$nbElems." ".Txt::trad($nbElems>1?"elements":"element");
-				if(static::objectType=="fileFolder")	{$this->_contentDescription.=" - ".File::displaySize(Db::getVal("SELECT SUM(octetSize) FROM ".$MdlObjectContent::dbTable." WHERE _idContainer=".$this->_id));}
+				if(static::objectType=="fileFolder")	{$this->_contentDescription.=" - ".File::sizeLabel(Db::getVal("SELECT SUM(octetSize) FROM ".$MdlObjectContent::dbTable." WHERE _idContainer=".$this->_id));}
 			}
 			////	Aucun element..
 			if(empty($this->_contentDescription))	{$this->_contentDescription="0 ".Txt::trad("element");}

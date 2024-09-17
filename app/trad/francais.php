@@ -158,6 +158,7 @@ class Trad extends Txt
 			"today"=>"aujourd'hui",
 			"beginEndError"=>"La date de fin ne peut précéder la date de début",
 			"dateFormatError"=>"La date doit être au format jj/mm/AAAA",
+			"timeFormatError"=>"L'heure doit être au format HH:mm",
 			
 			////	Menus d'édition des objets et editeur tinyMce
 			"title"=>"Titre",
@@ -862,10 +863,10 @@ class Trad extends Txt
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Importance normale",
 			"CALENDAR_importanceHight"=>"Importance haute",
-			"CALENDAR_visibilityPublic"=>"Visibilité normale",
-			"CALENDAR_visibilityPrivate"=>"Visibilité privée",
-			"CALENDAR_visibilityPublicHide"=>"Visibilité semi-privée",
-			"CALENDAR_visibilityTooltip"=>"<u>visibilité privée</u> : événement uniquement visible par son auteur<br><br><u>visibilité semi-privée</u> : seule la plage horaire de l'événement sera visible pour ceux qui n'ont qu'un accès en lecture",
+			"CALENDAR_visibilityPublic"=>"Affichage normal",
+			"CALENDAR_visibilityPublicHide"=>"Affichage de la plage horaire",
+			"CALENDAR_visibilityPrivate"=>"Affichage privé",
+			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda : <br>- Affichage de la plage horaire : uniquement la plage horaire occupée par l'événement et masquer les détails<br>- Affichage privé : ne pas afficher l'événement",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Agenda partagé de l'espace",
 			"CALENDAR_noPeriodicity"=>"Une seule fois",
@@ -880,8 +881,8 @@ class Trad extends Txt
 			"CALENDAR_addEvtTooltipBis"=>"Ajouter l'événement à l'agenda",
 			"CALENDAR_proposeEvtTooltip"=>"Proposer un événement à l'administrateur de l'agenda",
 			"CALENDAR_proposeEvtTooltipBis"=>"Proposer l'événement au propriétaire de cet agenda",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement au propriétaire de cet agenda, car l'agenda ne vous est accessible qu'en lecture !",
-			"CALENDAR_inputProposed"=>"L'événement sera proposé au propriétaire de cet agenda, avant d'y être éventuellement ajouté",
+			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement au propriétaire de cet agenda, car il ne m'est accessible qu'en lecture",
+			"CALENDAR_inputProposed"=>"L'événement sera proposé au propriétaire de cet agenda, avant validation pour y être ajouté",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_noModifTooltip"=>"Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)",
 			"CALENDAR_editLimit"=>"Vous n'êtes pas l'auteur de l'événement : Vous ne pouvez donc gérer que les affectations à vos agendas",
