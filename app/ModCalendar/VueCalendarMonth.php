@@ -39,7 +39,7 @@ function calendarDisplay()
 .vMonthDayCell:hover .vMonthAddEvt		{display:block;}													/*-> affiche au survol du jour*/
 
 /*evenements*/
-.vEventBlock							{width:0px; height:22px; min-height:22px; margin-bottom:2px;}		/*width à 0px par défaut, puis calculé via calendarDisplay()*/
+.vEventBlock							{width:0px; height:20px; min-height:20px; margin-bottom:2px;}		/*width à 0px par défaut, puis calculé via calendarDisplay()*/
 .vEventLabel							{white-space:nowrap; text-overflow:ellipsis;}						/*Sur une seule ligne, ellipsis pour afficher '...' si le texte dépasse*/
 
 /*MOBILE*/

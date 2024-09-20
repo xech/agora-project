@@ -355,7 +355,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * MODIF L'URL DE DOWNLOAD DE FICHIER DEPUIS LA MOBILEAPP & CO
+	 * MODIF L'URL DE DOWNLOAD DE FICHIER DEPUIS LA MOBILEAPP & NOTIF MAIL
 	 *******************************************************************************************/
 	public static function urlGetFile($downloadUrl, $fileName)
 	{
@@ -365,9 +365,9 @@ class CtrlMisc extends Ctrl
 		return $downloadUrl."&nameMd5=".md5($fileName)."&extension=.".File::extension($fileName);							//Retourne l'url avec un controle d'accès "nameMd5" +  Extension pour controler l'action (cf. "main.dart" de l'appli)
 	}
 
-	/*******************************************************************************************
-	 * ACTION : DOWNLOAD DEPUIS L'EXTERIEUR : MOBILEAPP & CO  (cf. "self::urlGetFile()")
-	 *******************************************************************************************/
+	/**********************************************************************************************************
+	 * ACTION : DOWNLOAD DEPUIS L'EXTERIEUR : MOBILEAPP & NOTIF MAIL  (cf. "self::urlGetFile()" ci-dessus)
+	 **********************************************************************************************************/
 	public static function actionExternalGetFile()
 	{
 		if(Req::isParam("DOCFILE") && preg_match("/^docs\//i",Req::param("DOCFILE")) && is_file(Req::param("DOCFILE")))	{File::download(Req::param("DOCFILE"),Req::param("DOCFILE"));}	//"documentation.pdf" (cf. "VueHeaderMenu.php")

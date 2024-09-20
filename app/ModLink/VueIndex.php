@@ -35,7 +35,7 @@
 				"<div class='objContainerScroll'>
 					<div class='objContent'>
 						<div class='objIcon objIconOpacity'><img src='app/img/link/iconOpacity.png'></div>
-						<div class='objLabel' onclick=\"window.open('".$tmpLink->adress."')\"><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</div>
+						<div class='objLabel' onclick=\"window.open('".$tmpLink->adress.(Req::isMobileApp()?'#fromMobileApp':null)."')\"><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</div>
 						<div class='objAutorDate'>".$tmpLink->autorDateLabel()."</div>
 					</div>
 				</div>
