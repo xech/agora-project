@@ -15,7 +15,7 @@
 			////	MENU "USERS DE L'ESPACE"/"TOUS LES USERS"
 			if($menuDisplayUsers==true){
 				echo "<div id='displayUsersDiv'>
-						<select name='displayUsers' class='linkSelect' onChange=\"redir('?ctrl=user&displayUsers='+this.value)\" title=\"".Txt::trad("USER_spaceOrAllUsersTooltip")."\">
+						<select name='displayUsers' class='linkSelect' onChange=\"redir('?ctrl=user&displayUsers='+this.value)\" ".Txt::tooltip("USER_spaceOrAllUsersTooltip").">
 							<option value='space'>".Txt::trad("USER_spaceUsers")."</option>
 							<option value='all' ".($_SESSION["displayUsers"]=='all'?'selected':null).">".Txt::trad("USER_allUsers")."</option>
 						</select>
@@ -25,19 +25,19 @@
 			if($_SESSION["displayUsers"]=="space" && (!empty($userGroups) || MdlUserGroup::addRight()))
 			{
 				$menuGroups=Txt::trad("USER_spaceGroups");
-				if(MdlUserGroup::addRight())  {$menuGroups.="&nbsp; <img src='app/img/edit.png' title=\"".Txt::trad("USER_spaceGroupsEdit")."\" onclick=\"lightboxOpen('?ctrl=user&action=UserGroupEdit');\">";}
-				foreach($userGroups as $tmpGroup)  {$menuGroups.="<div class='vGroupLabel' title=\"".Txt::tooltip($tmpGroup->usersLabel)."\"><img src='app/img/user/accessGroup.png'> ".$tmpGroup->title."</div>";}
+				if(MdlUserGroup::addRight())  {$menuGroups.="&nbsp; <img src='app/img/edit.png' ".Txt::tooltip("USER_spaceGroupsEdit")." onclick=\"lightboxOpen('?ctrl=user&action=UserGroupEdit');\">";}
+				foreach($userGroups as $tmpGroup)  {$menuGroups.="<div class='vGroupLabel' ".Txt::tooltip($tmpGroup->usersLabel)."><img src='app/img/user/accessGroup.png'> ".$tmpGroup->title."</div>";}
 				echo "<div class='menuLine'>
 						<div class='menuIcon'><img src='app/img/user/userGroup.png'></div>
 						<div>".$menuGroups."</div>
 					  </div><hr>";
 			}
 			////	AJOUTER UN UTILISATEUR  /  AFFECTER UN USER EXISTANT A L'ESPACE  /  ENVOYER DES INVITATIONS  /  IMPORTER DES UTILISATEURS  /  ENVOI DES COORDONNEES DE CONNEXION
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" title=\"".Txt::trad($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
-			if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" title=\"".Txt::trad("USER_addExistUserTitle")."\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
-			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\" title=\"".Txt::trad("USER_sendInvitationTooltip")."\"><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" ".Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
+			if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" ".Txt::tooltip("USER_addExistUserTitle")."><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
+			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\" ".Txt::tooltip("USER_sendInvitationTooltip")."><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
 			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_user")."</div></div>";}
-			if(Ctrl::$curUser->isGeneralAdmin())		{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=ResetPasswordSendMailUsers');\" title=\"".Txt::trad("USER_sendCoordsTooltip")."\"><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
+			if(Ctrl::$curUser->isGeneralAdmin())		{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=ResetPasswordSendMailUsers');\" ".Txt::tooltip("USER_sendCoordsTooltip")."><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
 			////	TYPE D'AFFICHAGE / TRI D'AFFICHAGE
 			echo "<hr>".MdlUser::menuDisplayMode().MdlUser::menuSort();
 			////	FILTRAGE ALPHABET
@@ -59,14 +59,14 @@
 		foreach($displayedUsers as $tmpUser)
 		{
 			//Icone "admin general" OU Icone"admin space"
-			if($tmpUser->isGeneralAdmin())		{$adminIcon='<img src="app/img/user/userAdminGeneral.png" title="'.Txt::trad("USER_adminGeneral").'" class="vAdminIcon">';}
-			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" title="'.Txt::trad("USER_adminSpace").'" class="vAdminIcon">';}
+			if($tmpUser->isGeneralAdmin())		{$adminIcon='<img src="app/img/user/userAdminGeneral.png" '.Txt::tooltip("USER_adminGeneral").' class="vAdminIcon">';}
+			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}
 			else								{$adminIcon=null;}
 			//Affiche le block
 			echo $tmpUser->divContainerContextMenu("objPerson").
 				"<div class='objContainerScroll'>
 					<div class='objContent'>
-						<div class='objIcon'>".$tmpUser->personImg(true,false,true)."</div>
+						<div class='objIcon'>".$tmpUser->profileImg(true,false,true)."</div>
 						<div class='objLabel' onclick=\"".$tmpUser->openVue()."\">
 							".$tmpUser->getLabel("full").$adminIcon."
 							<div class='objPersonDetails'>".$tmpUser->getFieldsValues(MdlUser::getDisplayMode())."</div>

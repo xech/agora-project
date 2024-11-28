@@ -12,7 +12,7 @@
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
+				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
@@ -30,16 +30,16 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{
-			$linkLabel=(!empty($tmpLink->description))  ?  '<span title="'.Txt::tooltip($tmpLink->adress).'">'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
+			$linkLabel=(!empty($tmpLink->description))  ?  '<span '.Txt::tooltip($tmpLink->adress).'>'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
 			echo $tmpLink->divContainerContextMenu().
-				"<div class='objContainerScroll'>
-					<div class='objContent'>
-						<div class='objIcon objIconOpacity'><img src='app/img/link/iconOpacity.png'></div>
-						<div class='objLabel' onclick=\"window.open('".$tmpLink->adress.(Req::isMobileApp()?'#fromMobileApp':null)."')\"><img src=\"https://www.google.com/s2/favicons?domain=".$tmpLink->adress."\">".$linkLabel."</div>
-						<div class='objAutorDate'>".$tmpLink->autorDateLabel()."</div>
+				'<div class="objContainerScroll">
+					<div class="objContent">
+						<div class="objIcon objIconOpacity"><img src="app/img/link/iconOpacity.png"></div>
+						<div class="objLabel" onclick="window.open(\''.$tmpLink->adress.(Req::isMobileApp()?"#fromMobileApp":null).'\')"><img src="https://www.google.com/s2/favicons?domain='.$tmpLink->adress.'">'.$linkLabel.'</div>
+						<div class="objAutorDate">'.$tmpLink->autorDateLabel().'</div>
 					</div>
 				</div>
-			</div>";
+			</div>';
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($linkList)){

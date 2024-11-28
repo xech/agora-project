@@ -1,11 +1,11 @@
 <?php
 ////	 LAUNCHER DU MENU CONTEXTUEL
-$launcherIcon=(empty($options["launcherIcon"]))  ?  "floatBig"  :  $options["launcherIcon"];			//"floatBig" (par défaut) / "floatSmall" / "inlineBig" / "inlineSmall"
-$burgerIcon=($curObj->isRecent())  ?  "menuNew"  :  "menu";												//Init l'icone "burger" du launcher : "menuNew.png" / "menu.png"
-if(stristr($launcherIcon,"small"))	{$burgerIcon.="Small";}												//Ajoute "small" pour un p'tit "burger"
-$launcherClass=(stristr($launcherIcon,"inline"))  ?  "objMenuContextInline"  :  "objMenuContextFloat";	//Affichage "inline" ou "float" (position absolute à droite)
-$launcherLabel=(!empty($options["launcherLabel"]))  ?  ' &nbsp;'.$options["launcherLabel"]  :  null;	//Label spécifique avec tooltip si besoin (cf. Label des agendas)
-echo '<span for="'.$objMenuId.'" class="menuLaunch '.$launcherClass.'"><img src="app/img/'.$burgerIcon.'.png" class="objMenuContextBurger" title="'.Txt::trad("menuOptions").'">'.$launcherLabel.'</span>';
+$launcherIcon=(empty($options["launcherIcon"]))  ?  "floatBig"  :  $options["launcherIcon"];	//Options du menu burger :  "floatBig" (défault)  /  "floatSmall"  /  "inlineBig"  /  "inlineSmall"
+$burgerIcon=($curObj->isRecent())  ?  "menuNew"  :  "menu";										//Nouvel objet : "menuNew"
+if(stristr($launcherIcon,"small"))	{$burgerIcon.="Small";}										//Taille du menu burger : "small" / "Big"
+$launcherFloat=(stristr($launcherIcon,"float"))  ?  "objMenuContextFloat"  :  null;				//Menu burger "float" : position absolute à droite
+$launcherLabel=(!empty($options["launcherLabel"]))  ?  $options["launcherLabel"]  :  null;		//Text/label ajouté au menu burger (cf. agendas)
+echo '<span for="'.$objMenuId.'" class="menuLaunch '.$launcherFloat.'"><img src="app/img/'.$burgerIcon.'.png" '.Txt::tooltip("menuOptions").'> '.$launcherLabel.'</span>';
 
 
 ////	MENU CONTEXTUEL
@@ -30,13 +30,13 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	if(!empty($logUrl))  {echo '<div class="menuLine" onclick="lightboxOpen(\''.$logUrl.'\')"><div class="menuIcon"><img src="app/img/log.png"></div><div>'.Txt::trad("objHistory").'</div></div>';}
 
 	////	COPIER L'ADRESSE/URL D'ACCES (affiche puis masque l'input pour pouvoir être copié..)
-	if(!empty($getUrlExternal))  {echo '<div class="menuLine" title="'.Txt::trad("copyUrlTooltip").'" onclick="$(this).find(\'input\').show().select();document.execCommand(\'copy\');$(this).find(\'input\').hide();notify(\''.Txt::trad("copyUrlConfirmed",true).'\')"><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'<input type="text" value="'.$getUrlExternal.'" style="display:none"></div></div>';}
+	if(!empty($getUrlExternal))  {echo '<div class="menuLine" '.Txt::tooltip("copyUrlTooltip").' onclick="$(this).find(\'input\').show().select();document.execCommand(\'copy\');$(this).find(\'input\').hide();notify(\''.Txt::trad("copyUrlConfirmed",true).'\')"><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'<input type="text" value="'.$getUrlExternal.'" style="display:none"></div></div>';}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	if(!empty($options["specificOptions"])){
 		foreach($options["specificOptions"] as $tmpOption){
 			$actionJsTmp=(!empty($tmpOption["actionJs"])) ?  'onclick="'.$tmpOption["actionJs"].'"'  :  null;
-			$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  'title="'.Txt::tooltip($tmpOption["tooltip"]).'"'  :  null;
+			$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  Txt::tooltip($tmpOption["tooltip"])  :  null;
 			$menuIconTmp=(!empty($tmpOption["iconSrc"]))  ?  '<div class="menuIcon"><img src="app/img/'.$tmpOption["iconSrc"].'"></div>'  :  null;
 			echo '<div class="menuLine" '.$actionJsTmp.' '.$tooltipTmp.'>'.$menuIconTmp.'<div>'.$tmpOption["label"].'</div></div>';
 		}
@@ -48,7 +48,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	////	LABELS SPECIFIQUES (Ex: "Agenda affecté à Bob, Will")
 	if(!empty($options["specificLabels"])){
 		foreach($options["specificLabels"] as $tmpLabel){
-			$tooltipTmp =(!empty($tmpLabel["tooltip"]))  ?  'title="'.Txt::tooltip($tmpLabel["tooltip"]).'"'  :  null;
+			$tooltipTmp =(!empty($tmpLabel["tooltip"]))  ?  Txt::tooltip($tmpLabel["tooltip"])  :  null;
 			echo '<hr><div class="menuLine menuContextSpecificLabels" '.$tooltipTmp.'>'.$tmpLabel["label"].'</div>';
 		}
 	}
@@ -72,9 +72,9 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	////	AFFECTATIONS ET DROITS D'ACCES
 	if(!empty($affectLabels)){
 		echo '<hr>';
-		if(!empty($affectLabels["2"]))		{echo '<div class="menuLine sAccessWrite" title="'.Txt::tooltip($affectTooltips["2"]).'"><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessWrite").'</abbr></div><div>'.$affectLabels["2"].'</div></div>';}
-		if(!empty($affectLabels["1.5"]))	{echo '<div class="menuLine sAccessWriteLimit" title="'.Txt::tooltip($affectTooltips["1.5"]).'"><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessWriteLimit").'</abbr></div><div>'.$affectLabels["1.5"].'</div></div>';}
-		if(!empty($affectLabels["1"]))		{echo '<div class="menuLine sAccessRead" title="'.Txt::tooltip($affectTooltips["1"]).'"><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessRead").'</abbr></div><div>'.$affectLabels["1"].'</div></div>';}
+		if(!empty($affectLabels["2"]))		{echo '<div class="menuLine sAccessWrite" '.Txt::tooltip($affectTooltips["2"]).'><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessWrite").'</abbr></div><div>'.$affectLabels["2"].'</div></div>';}
+		if(!empty($affectLabels["1.5"]))	{echo '<div class="menuLine sAccessWriteLimit" '.Txt::tooltip($affectTooltips["1.5"]).'><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessWriteLimit").'</abbr></div><div>'.$affectLabels["1.5"].'</div></div>';}
+		if(!empty($affectLabels["1"]))		{echo '<div class="menuLine sAccessRead" '.Txt::tooltip($affectTooltips["1"]).'><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessRead").'</abbr></div><div>'.$affectLabels["1"].'</div></div>';}
 	}
 
 	////	LISTE DES FICHIERS JOINTS
@@ -92,7 +92,7 @@ if($launcherIcon=="floatBig")
 			$commentNb=count($curObj->getUsersComment());
 			$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." : ".Txt::trad("commentAdd");
 			$commentOnclick="lightboxOpen('?ctrl=object&action=UsersComment&typeId=".$curObj->_typeId."')";
-			echo '<div class="objMiscMenuDiv '.(empty($commentNb)?"hideMiscMenu":null).'" id="usersComment_'.$curObj->_typeId.'" onclick="'.$commentOnclick.'" title="'.Txt::tooltip($commentTooltip).'">
+			echo '<div class="objMiscMenuDiv '.(empty($commentNb)?"hideMiscMenu":null).'" id="usersComment_'.$curObj->_typeId.'" onclick="'.$commentOnclick.'" '.Txt::tooltip($commentTooltip).'>
 					<div class="menuCircle">'.(!empty($commentNb)?$commentNb:null).'</div>
 					<img src="app/img/usersComment.png">
 				  </div>';
@@ -101,7 +101,7 @@ if($launcherIcon=="floatBig")
 		if($curObj->hasUsersLike()){
 			$likeNb=count($curObj->getUsersLike());
 			$likeOnclick="usersLikeUpdate('".$curObj->_typeId."')";
-			echo '<div class="objMiscMenuDiv '.(empty($likeNb)?"hideMiscMenu":null).'" id="usersLike_'.$curObj->_typeId.'" onclick="'.$likeOnclick.'" title="'.Txt::tooltip($curObj->usersLikeTooltip()).'">
+			echo '<div class="objMiscMenuDiv '.(empty($likeNb)?"hideMiscMenu":null).'" id="usersLike_'.$curObj->_typeId.'" onclick="'.$likeOnclick.'" '.Txt::tooltip($curObj->usersLikeTooltip()).'>
 					<div class="menuCircle">'.(!empty($likeNb)?$likeNb:null).'</div>
 					<img src="app/img/usersLike.png">
 				  </div>';
@@ -113,6 +113,6 @@ if($launcherIcon=="floatBig")
 		}
 		//ICONE D'ACCÈS PERSO
 		if(!empty($isPersoAccess))
-			{echo '<div class="objMiscMenuDiv"><img src="app/img/user/accessUser.png" title="'.Txt::trad("personalAccess").'"></div>';}
+			{echo '<div class="objMiscMenuDiv"><img src="app/img/user/accessUser.png" '.Txt::tooltip("personalAccess").'></div>';}
 	echo '</div>';
 }

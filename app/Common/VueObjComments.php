@@ -18,7 +18,7 @@ $(function(){
 	<?php } ?>
 
 	////	Focus du champ (pas sur mobile pour ne pas afficher le clavier virtuel)
-	if(!isMobile())  {$(".vCommentAddTextarea").focus();}
+	$(".vCommentAddTextarea").focusAlt();
 });
 </script>
 

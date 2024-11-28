@@ -44,7 +44,7 @@ img[src*='arrowRight']		{margin:3px;}
 
 	<!--DATE DEBUT & FIN-->
 	<div class="vTaskOptions">
-		<input type="text" name="dateBegin" class="dateBegin" autocomplete="off" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
+		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
 		<img src="app/img/arrowRight.png">
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" title="<?= Txt::trad("end") ?>">
 	</div>
@@ -67,7 +67,7 @@ img[src*='arrowRight']		{margin:3px;}
 
 	<!--ASSIGNATIONS / RESPONSABLES-->
 	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#fieldsetResponsiblePersons').slideToggle();">
-		<img src="app/img/user/icon.png"> <?= txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
+		<img src="app/img/user/icon.png"> <?= Txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
 	</button>
 	<fieldset id="fieldsetResponsiblePersons">
 		<?php

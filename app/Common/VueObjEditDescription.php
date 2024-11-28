@@ -28,9 +28,9 @@
 			toolbar2: (isMobile()  ?  "fontsize | bold underline forecolor bullist"				:  "bold italic underline strikethrough forecolor | fontsize | alignleft aligncenter alignright alignjustify | bullist numlist"),
 			////	Chargement de l'éditeur : parametrages spécifiques
 			setup: function(editor){
-				////	Met le focus dans l'éditeur (sauf si ya deja un focus OU sur mobile, pour pas afficher le clavier virtuel)
+				////	Met le focus dans l'éditeur (verif si ya deja un focus ou on est sur mobile)
 				editor.on("init",function(){
-					if($("input:focus").length==0 && !isMobile())  {editor.focus();}
+					if($("input:focus").length==0 && isTouchDevice()==false)  {editor.focus();}
 				});
 				////	Modif le contenu de l'éditeur
 				editor.on("change keyup",function(){

@@ -64,7 +64,7 @@ class Tool
 
 			////	Expediteur
 			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
-			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "ne_pas_repondre@".$serverName;//Email du paramétrage général OU du domaine courant (ex: "ne_pas_repondre@mondomaine.net")
+			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "nepasrepondre@".$serverName;	//Email du paramétrage général OU du domaine courant (ex: "nepasrepondre@mondomaine.net")
 			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);				//Nom de l'expediteur (Ex: "monespace.fr")
 			$mail->SetFrom($setFromMail, $setFromName);																			//"SetFrom" fixe (cf. score des antispams)
 			//Controles de base
@@ -257,6 +257,6 @@ class Tool
 		//Style du background
 		$barStyle=(!empty($barFillPercent))  ?  'style="background-image:url(app/img/'.$barImg.'.png);background-size:'.(int)$barFillPercent.'% 100%;"'  :  null;
 		// Renvoie la progressBar
-		return '<div class="progressBar" title="'.Txt::tooltip($barTooltip).'" '.$barStyle.'>'.$barLabel.'</div>';
+		return '<div class="progressBar" '.Txt::tooltip($barTooltip).' '.$barStyle.'>'.$barLabel.'</div>';
 	}
 }

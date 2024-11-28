@@ -152,7 +152,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 						<label for="moduleInput-'.$moduleName.'" title="'.$tmpModule["description"].'">'.$tmpModule["label"].' <img src="app/img/'.$moduleName.'/icon.png" class="vModuleLineIcon"></label>
 						'.$moduleOptions.'
 					</div>
-					<div class="changeOrder" title="'.Txt::trad("changeOrder").'"><img src="app/img/changeOrder.png"></div>
+					<div class="changeOrder" '.Txt::tooltip("changeOrder").'><img src="app/img/changeOrder.png"></div>
 				  </div>';
 		}
 		?>
@@ -182,8 +182,8 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			$userDisabled=($curObj->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
 			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpUser->_id.'">
 					<label class="spaceAffectLabel">'.$tmpUser->getLabel().'</label>
-					<div title="'.Txt::trad("SPACE_userTooltip").'"> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
-					<div title="'.Txt::trad("SPACE_adminTooltip").'"><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>
+					<div '.Txt::tooltip("SPACE_userTooltip").'> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
+					<div '.Txt::tooltip("SPACE_adminTooltip").'><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>
 				  </div>';
 		}
 		?>

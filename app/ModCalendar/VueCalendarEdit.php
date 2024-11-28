@@ -24,8 +24,8 @@ function objectFormControl(){
 
 
 <style>
-.inputTitleName			{width:75%;}
-.vCalendarOption		{margin-top:20px;}
+.inputTitleName			{width:75%;}/*surcharge*/
+.vCalOption				{margin-top:20px;}
 #divPropositionGuest	{<?= $hidePropositionGuest==true ? "display:none" : null ?>}
 </style>
 
@@ -43,16 +43,16 @@ function objectFormControl(){
 	$timeSlotBegin=$timeSlotEnd=null;
 	for($h=1; $h<24; $h++)  {$timeSlotBegin.="<option value='".$h."' ".($curObj->timeSlotBegin==$h?"selected":null).">".$h."h</option>";}
 	for($h=1; $h<24; $h++)  {$timeSlotEnd  .="<option value='".$h."' ".($curObj->timeSlotEnd==$h?"selected":null).">".$h."h</option>";}
-	echo "<div class='vCalendarOption'>".Txt::trad("CALENDAR_timeSlot")." : <select name='timeSlotBegin'>".$timeSlotBegin."</select> &nbsp; ".Txt::trad("at")." &nbsp; <select name='timeSlotEnd'>".$timeSlotEnd."</select></div>";
+	echo "<div class='vCalOption'>".Txt::trad("CALENDAR_timeSlot")." : <select name='timeSlotBegin'>".$timeSlotBegin."</select> &nbsp; ".Txt::trad("at")." &nbsp; <select name='timeSlotEnd'>".$timeSlotEnd."</select></div>";
 
 	////	OPTION DE NOTIFICATION PAR EMAIL À CHAQUE PROPOSITION D'ÉVÉNEMENT
-	echo "<div class='vCalendarOption' title=\"".Txt::trad("CALENDAR_propositionNotifTooltip")."\">
+	echo "<div class='vCalOption' ".Txt::tooltip("CALENDAR_propositionNotifTooltip").">
 			<input type='checkbox' name='propositionNotify' value='1' ".(!empty($curObj->propositionNotify)?'checked':null)." id='inputPropositionNotify'>
 			<label for='inputPropositionNotify'>".Txt::trad("CALENDAR_propositionNotif")." <img src='app/img/mail.png'></label>
 		  </div>";
 
 	////	OPTION DE PROPOSITION D'ÉVÉNEMENT POUR LES GUESTS
-	echo "<div class='vCalendarOption' id='divPropositionGuest' title=\"".Txt::trad("CALENDAR_propositionGuestTooltip")."\">
+	echo "<div class='vCalOption' id='divPropositionGuest' ".Txt::tooltip("CALENDAR_propositionGuestTooltip").">
 			<input type='checkbox' name='propositionGuest' value='1' ".(!empty($curObj->propositionGuest)?'checked':null)." id='inputPropositionGuest'>
 			<label for='inputPropositionGuest'>".Txt::trad("CALENDAR_propositionGuest")." <img src='app/img/user/accessGuest.png'></label>
 		  </div>";

@@ -185,7 +185,7 @@ class MdlUser extends MdlPerson
 	{
 		if($this->deleteRight())
 		{
-			if($this->hasImg())  {unlink($this->pathImgThumb());}
+			if($this->profileImgExist())  {unlink($this->pathImgThumb());}
 			// Suppression des tables de jointures et tables annexes
 			Db::query("DELETE FROM ap_joinSpaceUser			WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_objectTarget			WHERE target=".Db::format("U".$this->_id));

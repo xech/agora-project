@@ -451,12 +451,12 @@ class DbUpdate extends Db
 					{
 						$thumbOk=false;
 						$oldThumbPath=$oldThumbDirPath.$tmpFile->vignette;
-						$newThumbPath=$tmpFile->getThumbPath();
+						$newThumbPath=$tmpFile->thumbPath();
 						$containerPathTmp=$tmpFile->containerObj()->folderPath("real");
 						//Déplace la vignette?
-						if(strlen($newThumbPath)>0 && is_file($oldThumbPath) && is_dir($containerPathTmp))	{$thumbOk=rename($oldThumbPath,$newThumbPath);}
+						if(strlen($newThumbPath)>0 && is_file($oldThumbPath) && is_dir($containerPathTmp))  {$thumbOk=rename($oldThumbPath,$newThumbPath);}
 						//Recréé la vignette?
-						if($thumbOk==false && is_file($tmpFile->filePath()))	{$tmpFile->createThumb();}
+						if($thumbOk==false && is_file($tmpFile->filePath()))  {$tmpFile->thumbEdit();}
 					}
 					File::rm($oldThumbDirPath);//Supprime l'ancien dossier des vignettes
 				}
@@ -946,7 +946,14 @@ class DbUpdate extends Db
 					self::query("ALTER TABLE `ap_objectLike` DROP `value`");
 				}
 			}
-			////////////////////////////////////////	ATTENTION A MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+			if(self::updateVersion("24.11.1"))
+			{
+				//Modifie la préférence d'affichage de l'agenda : "4Days" devient "3Days" et "workWeek"/"day" sont remplacés par "week"
+				self::query("UPDATE `ap_userPreference` SET value='3Days' WHERE keyVal='calendarDisplayMode' AND value='4Days'");
+				self::query("UPDATE `ap_userPreference` SET value='week'  WHERE keyVal='calendarDisplayMode' AND (value='workWeek' OR value='day')");
+			}
+			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////
 			////////////////////////////////////////
 

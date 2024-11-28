@@ -24,10 +24,10 @@ $(function(){
 						if(vueNewsList.length==0)  {loadMoreNews=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
 							$("#contentNews").append(vueNewsList);	//Affiche les news
-							$(".vNewsContainer").fadeIn(500);	//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
-							mainPageDisplay(false);				//Update les tooltips/lightbox
-							menuContextInit();					//Maj les menus contextuels des news
-							newsOffset++;						//Update le compteur
+							$(".vNewsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
+							mainPageDisplay();						//Update les tooltips/lightbox
+							menuContextDisplay();					//Maj les menus contextuels des news
+							newsOffset++;							//Update le compteur
 						}
 					});
 				}
@@ -39,11 +39,11 @@ $(function(){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						{
 							$("#contentPolls").append(vuePollsList);//Affiche les sondages
-							$(".vPollsContainer").fadeIn(500);	//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
-							mainPageDisplay(false);				//Update les tooltips/lightbox
-							menuContextInit();					//Maj les menus contextuels des sondages
-							dashboardPollVote();				//Update le "trigger" de vote des sondages
-							pollsOffset++;						//Update le compteur
+							$(".vPollsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
+							mainPageDisplay();						//Update les tooltips/lightbox
+							menuContextDisplay();					//Maj les menus contextuels des sondages
+							dashboardPollVote();					//Update le "trigger" de vote des sondages
+							pollsOffset++;							//Update le compteur
 						}
 					});
 				}
@@ -96,7 +96,7 @@ function dashboardPollVote()
 			$.ajax({url:"?ctrl=dashboard&action=pollVote",data:$(this).serialize(),dataType:"json"}).done(function(result){
 				if(result.vuePollResult.length>0){
 					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le formulaire par le résultat du sondage  (+ au besoin le "newsDisplay")
-					mainPageDisplay(false);											//Update les tooltips/lightbox de "vuePollResult"
+					mainPageDisplay();												//Update les tooltips/lightbox de "vuePollResult"
 				}
 			});
 		}
@@ -116,7 +116,7 @@ function dashboardPollVote()
 #tabMenuElems.linkSelect ~ hr			{margin-left:<?= $isPolls==true?66:50 ?>%;}
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	#tabMenus.miscContainer	{padding:8px;}/*surcharge*/
 }
 
@@ -137,14 +137,13 @@ function dashboardPollVote()
 .vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}				/*Idem : images de chaque ligne*/
 .vNewsDescription h3, .vNewsDescription h4:nth-last-child(3)	{margin-bottom:25px;}				/*Idem : première ligne + avant-avant dernière ligne + dernière ligne*/
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	.vNewsDescription h3				{font-size:1.5em;}		/*New par défaut*/
 	.vNewsDescription h4>img			{margin-bottom:5px;}	/*Idem : images de chaque ligne*/
 	.vNewsDetail>div					{margin:5px;}
 }
 
 /*Sondages*/
-#pageModMenu hr							{margin:20px 0px;}/*Menu context de gauche*/
 #pageModMenu .vPollsTitle				{margin:20px 0px; font-size:1.05em;}
 #pageModMenu .vPollsContainer ul		{padding-left:10px!important;}
 #pageModMenu .submitButtonMain			{margin-top:10px;}
@@ -166,7 +165,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
 .vPollsResultBar100						{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	.vPollsContainer ul		{padding-left:0px!important;}
 	.vPollsDetails>div		{display:block; margin:8px;}
 }
@@ -189,12 +188,13 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			////
 			echo "<div id='modMenuNews'>";
 				//// Ajoute une news / Affiche les news "Offline"  /  Tri des news
-				if(MdlDashboardNews::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
-				echo '<div class="menuLine '.($_SESSION["offlineNewsShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&offlineNewsShow='.($_SESSION["offlineNewsShow"]==true?'false':'true').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").($_SESSION["offlineNewsShow"]==true?'&nbsp; <img src="app/img/checkSmall.png">':null).'</div></div>';
-				echo MdlDashboardNews::menuSort();
+				if(MdlDashboardNews::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
+				echo '<div class="menuLine '.(!empty($_SESSION["offlineNews"])?'optionSelect':'option').'" onclick="redir(\'?ctrl=dashboard&offlineNews='.(empty($_SESSION["offlineNews"])?'true':'false').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").'</div></div>'.
+					  '<hr>'.MdlDashboardNews::menuSort();
 				//// Affichage des sondages (option "newsDisplay")
 				if(Req::isMobile()==false && !empty($pollsListNewsDisplay)){
-					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll)  {echo "<hr><div class='vPollsContainer'><div class='vPollsTitle' title=\"".Txt::tooltip($tmpPoll->description)."\">".$tmpPoll->title."</div><div class=\"vPollContent".$tmpPoll->_id."\">".$tmpPoll->vuePollForm(true)."</div></div>";}
+					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll)
+						{echo '<hr><div class="vPollsContainer"><div class="vPollsTitle" '.Txt::tooltip($tmpPoll->description).'>'.$tmpPoll->title.'</div><div class="vPollContent'.$tmpPoll->_id.'">'.$tmpPoll->vuePollForm(true).'</div></div>';}
 				}
 			echo "</div>";
 
@@ -204,8 +204,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			{
 				echo "<div id='modMenuPolls'>";
 					//Ajoute un sondage  /  Voir uniquement les sondages à voter  /  Tri des sondages 
-					if(MdlDashboardPoll::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
-					if(!empty($pollsVotedNb))			{echo '<div class="menuLine '.($_SESSION["pollsVotedShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&dashboardPoll=true&pollsVotedShow='.($_SESSION["pollsVotedShow"]==true?'false':'true').'\')" title="'.$pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb").'"><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("DASHBOARD_pollsVoted").($_SESSION["pollsVotedShow"]==true?'&nbsp; <img src="app/img/checkSmall.png">':null).'</div></div>';}
+					if(MdlDashboardPoll::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
+					if(!empty($pollsVotedNb))			{echo '<div class="menuLine '.($_SESSION["pollsVotedShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&dashboardPoll=true&pollsVotedShow='.($_SESSION["pollsVotedShow"]==true?'false':'true').'\')" '.Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")).'><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("DASHBOARD_pollsVoted").($_SESSION["pollsVotedShow"]==true?'&nbsp; <img src="app/img/checkSmall.png">':null).'</div></div>';}
 					echo MdlDashboardPoll::menuSort(null,"&dashboardPoll=true");
 				echo "</div>";
 			}
@@ -219,7 +219,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				{
 					$selectedPeriod=($pluginPeriod==$periodValue)  ?  "checked='checked'"  :  null;
 					$titlePeriod=($periodValue=="day")  ?  Txt::trad("today")  :  Txt::trad("DASHBOARD_pluginsTooltip2")." ".date("d/m/Y",$tmpPeriod["timeBegin"])." ".Txt::trad("and")." ".date("d/m/Y",$tmpPeriod["timeEnd"]);
-					echo "<div title=\"".Txt::trad("DASHBOARD_pluginsTooltip")." ".$titlePeriod."\">
+					echo "<div ".Txt::tooltip(Txt::trad("DASHBOARD_pluginsTooltip")." ".$titlePeriod).">
 							<input name='pluginPeriod' type='radio' id='radioPeriod".$periodValue."' ".$selectedPeriod." onclick=\"redir('?ctrl=dashboard&pluginPeriod=".$periodValue."')\">
 							<label for='radioPeriod".$periodValue."'>".Txt::trad("DASHBOARD_plugins_".$periodValue)."</label>
 						  </div>";
@@ -238,7 +238,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		{
 			echo "<div id='tabMenus' class='miscContainer'>";
 				echo "<a onclick=\"dashboardOption('News')\" id='tabMenuNews'>".Txt::trad("DASHBOARD_menuNews")."</a>";
-				if($isPolls==true)  {echo "<a onclick=\"dashboardOption('Polls')\" id='tabMenuPolls'>".Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?"<div class='menuCircle' title=\"".Txt::trad("DASHBOARD_pollsNotVoted")." : ".count($pollsListNewsDisplay)."\">".count($pollsListNewsDisplay)."</div>":null)."</a>";}
+				if($isPolls==true)  {echo "<a onclick=\"dashboardOption('Polls')\" id='tabMenuPolls'>".Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?"<div class='menuCircle' ".Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted")." : ".count($pollsListNewsDisplay)).">".count($pollsListNewsDisplay)."</div>":null)."</a>";}
 				echo "<a onclick=\"dashboardOption('Elems')\" id='tabMenuElems'>".Txt::trad("DASHBOARD_menuElems").(!empty($pluginsList)?"<div class='menuCircle'>".count($pluginsList)."</div>":null)."</a>";
 				echo "<hr>";//Barre de surlignage (après les menus!)
 			echo "</div>";
@@ -273,7 +273,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		////
 		if($showNewElems==true)
 		{
-			echo "<div id='contentElems'><div class='miscContainer'>";
+			echo '<div id="contentElems"><div class="miscContainer">';
 			foreach($pluginsList as $tmpObj)
 			{
 				//// Affiche le libellé du module
@@ -281,21 +281,20 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObjModuleName){
 					if(!empty($tmpModuleName))  {echo "<hr>";}	//Affiche un séparateur
 					$tmpModuleName=$tmpObjModuleName;			//Enregistre le nom du module courant
-					echo "<div class='vContentElemsModuleLabel'><img src='app/img/".$tmpModuleName."/icon.png'>".Txt::trad(strtoupper($tmpModuleName)."_headerModuleName")."</div>";
+					echo '<div class="vContentElemsModuleLabel"><img src="app/img/'.$tmpModuleName.'/icon.png">'.Txt::trad(strtoupper($tmpModuleName).'_headerModuleName').'</div>';
 				}
 				//// Plugin Spécifique (ex: proposition d'evt)  ||  Plugin lambda
 				if(isset($tmpObj->pluginSpecificMenu))  {echo $tmpObj->pluginSpecificMenu;}
-				else
-				{
+				else{
 					//Date de création et Auteur
 					if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("creation")." : ".Txt::dateLabel($tmpObj->dateCrea,"dateMini")."<hr>".$tmpObj->autorLabel(true,true);}
 					//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
 					$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
 					//Affiche le plugin
-					echo "<div class='menuLine objHover'>
-							<div title=\"".Txt::tooltip($tmpObj->pluginTooltipIcon)."\" onclick=\"".$tmpObj->pluginJsIcon."\" class='menuIcon'><img src='app/img/".$tmpObj->pluginIcon."'></div>
-							<div title=\"".Txt::tooltip($tmpObj->pluginTooltip)."\" onclick=\"".$tmpObj->pluginJsLabel."\">".$tmpObj->pluginLabel."</div>
-						  </div>";
+					echo '<div class="menuLine lineHover">
+							<div onclick="'.$tmpObj->pluginJsIcon.'" '.Txt::tooltip($tmpObj->pluginTooltipIcon).' class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
+							<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$tmpObj->pluginLabel.'</div>
+						  </div>';
 				}
 			}
 			//// "Aucune nouveauté sur cette période"

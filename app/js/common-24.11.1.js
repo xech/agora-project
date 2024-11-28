@@ -38,10 +38,18 @@ $.fn.pulsate=function(pTimes){
 	if(typeof pTimes=="undefined")  {var pTimes=4;}
 	this.effect("pulsate",{times:parseInt(pTimes)},parseInt(pTimes*1000));
 };
-////	Focus sur un champ surligné en rouge (ajoute .focusRed durant 10 secondes)
-$.fn.focusRed=function(){
-	this.addClass("focusRed").focus();
-	setTimeout(()=>{ this.removeClass("focusRed"); },10000);
+////	Focus alternatif à la fin du texte
+$.fn.focusAlt=function(){
+	if(isTouchDevice()==false &&  (this.is("input[type='text']") || this.is("input[type='password']") || this.is("textarea"))){	//Pas sur device tactile (cf. clavier virtuel)  &&  uniquement sur input text/password/textarea
+		this.focus();																											//Focus sur l'input
+		this[0].setSelectionRange(this[0].value.length,this[0].value.length);													//Place le curseur en fin de texte
+	}
+};
+////	Focus et pulsate via css  (.focusPulsate durant 20 secondes)
+$.fn.focusPulsate=function(){
+	this.addClass("focusPulsate").focusAlt();
+	let focusInput=this;
+	setTimeout(function(){  $(focusInput).removeClass("focusPulsate");  },20000);
 };
 ////	Renvoie la hauteur totale des élements sélectionnées (marge comprise)
 $.fn.totalHeight=function(){
@@ -56,41 +64,41 @@ $.fn.scrollTo=function(){
 };
 
 /**************************************************************************************************
- * DOCUMENT READY : ENREGISTRE LE "windowWidth" DE LA PAGE (RECUPERE COTE SERVEUR)
+ * DOCUMENT READY : ENREGISTRE LE "windowWidth" DE LA PAGE (cf. "isMobile()")
  **************************************************************************************************/
 $(function(){
 	if(isMainPage==true){
-		let forceReload=(isTouchDevice() && /windowWidth/i.test(document.cookie)==false);	//Cookie "windowWidth" absent sur un appareil tactile : lance un premier reload (cf. affichage des "menuMobile")
-		windowWidthReload(forceReload);														//Init le cookie "windowWidth"
-		window.onresize=function(){	windowWidthReload(false); };							//Redimensionne la page (width/Height)
-		screen.orientation.onchange=function(e){ windowWidthReload(false); };				//Change l'orientation de la page
+		pageWidthLast=$(window).width();												//Init pageWidthLast
+		if(/windowWidth/i.test(document.cookie)==false)  {windowWidthRecord(true);}		//Lance un 1er "windowWidthRecord()" si le cookie "windowWidth" n'existe pas
+		window.onresize=function(){	 windowWidthRecord(false);  };						//Redimensionne la page
+		screen.orientation.onchange=function(){  windowWidthRecord(false);  };			//Change l'orientation de la page
 	}
 });
-////	Enregistre le "windowWidth" dans un cookie et reload la page si besoin (timeout le temps d'avoir le width final : cf. "onresize"/"onorientationchange")
-function windowWidthReload(forceReload){
-	if(typeof resizeTimeout!="undefined")  {clearTimeout(resizeTimeout);}//Pas de cumul de Timeout !
-	resizeTimeout=setTimeout(function(){
-		let pageReload=(forceReload==true || (typeof pageWidthLast!="undefined" && Math.abs($(window).width()-pageWidthLast)>30));	//Reload uniquement si le width a été modifé d'au moins 30px (pas de reload avec l'apparition/disparition de l'ascenseur)
-		pageWidthLast=$(window).width();																							//Enregistre/Update le width courant pour le controle ci-dessus
-		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=Lax";							//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
-		if(pageReload==true && confirmCloseForm==false)  {location.reload();}														//Reload la page ...sauf si on affiche un formulaire (lightbox ou pas)
-	},500);
+////	Enregistre le "windowWidth" dans un cookie et reload la page si besoin
+function windowWidthRecord(firstRecord){
+	let timeoutTime=(firstRecord==true) ? 5 : 500;															//Timeout de 500 ms pour avoir le width final après "onresize" ou "orientation.onchange"
+	if(typeof resizeTimeout!="undefined")  {clearTimeout(resizeTimeout);}									//Pas de cumule des setTimeout
+	resizeTimeout=setTimeout(function(){																	//Lance le Timeout
+		let pageReload=(firstRecord==true || Math.abs($(window).width()-pageWidthLast)>25);					//Reload uniquement si le width a été modifé d'au moins 25px (pas si affichage/masquage d'ascenseur)
+		pageWidthLast=$(window).width();																	//Update pageWidthLast
+		document.cookie="windowWidth="+$(window).width()+";expires=01 Jan 2050 00:00:00 GMT;samesite=lax";	//Enregistre/Update le width dans un cookie permanent ("samesite" obligatoire pour les browsers)
+		if(pageReload==true && confirmCloseForm==false)  {location.reload();}								//Reload la page (sauf si ya un formulaire)
+	},timeoutTime);
 }
 
 /**************************************************************************************************
  * DOCUMENT READY : LANCE LES FONCTIONS DE BASE
  **************************************************************************************************/
 $(function(){
-	mainPageDisplay(true);	//Title via Tooltipster / Gallerie d'image via LightBox / largeur des blocks d'objet / etc.
-	menuContextInit();		//Initialise les menus contextuels
+	mainPageDisplay();		//Title via Tooltipster / Gallerie d'image via LightBox / largeur des blocks d'objet / etc.
+	menuContextDisplay();	//Initialise les menus contextuels
 });
 
 /**************************************************************************************************
  * DOCUMENT READY : SURCHARGE CERTAINES FONCTION JQUERY AVEC "lightboxResize()"
 **************************************************************************************************/
 $(function(){
-	if(isMainPage!==true)
-	{
+	if(isMainPage!==true){
 		var fadeInBASIC=$.fn.fadeIn;
 		var showBASIC=$.fn.show;
 		var toggleBASIC=$.fn.toggle;
@@ -159,10 +167,14 @@ $(function(){
 	////	Init les Datepicker & Timepicker (Vérif que les plugins sont chargés)
 	if(jQuery().datepicker){
 		$(".dateInput, .dateBegin, .dateEnd").datepicker({dateFormat:"dd/mm/yy", firstDay:1, showOtherMonths:true, selectOtherMonths:true});
-		if(isMobile())	{$(".dateInput, .dateBegin, .dateEnd").prop("readonly",true);}//Readonly sur mobile
+		if(isMobile())  {$(".dateInput, .dateBegin, .dateEnd").prop("readonly",true);}//Input "readonly" sur mobile
 	}
 	if(jQuery().timepicker){
-		$(".timeBegin, .timeEnd").timepicker({timeFormat:"H:i", step:15, "orientation":(isMobile()?"rb":"lb")});
+		{$(".timeBegin, .timeEnd").timepicker({timeFormat:"H:i", step:15, "orientation":(isMobile()?"rb":"lb")});}
+		//Masque le timepicker sur Iphone/Ipad car utilise le timePicker system (Note : "macintosh" correspond aux Ipads récents). Ne pas désactiver complètement "timepicker()" : cf.  controles ci-dessous
+		if(navigator.maxTouchPoints > 1 && /(iphone|ipad|macintosh)/i.test(navigator.userAgent)){
+			$(".timeBegin, .timeEnd").on("showTimepicker",function(){  $(".timeBegin, .timeEnd").timepicker("hide");  });
+		}
 	}
 
 	////	Init dateBeginRef + timeBeginRef (en millisecondes!)
@@ -174,13 +186,13 @@ $(function(){
 		//// Controle le format des dates et heures
 		if( ($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"))  &&  $(this).isNotEmpty()  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)  	 {notify(labelDateFormatError);}
 		if( ($(this).hasClass("timeBegin") || $(this).hasClass("timeEnd"))  &&  $(this).isNotEmpty()  &&  /^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false)   {notify(labelTimeFormatError);}
-		//// Si la .dateBegin est avancée, la .dateEnd est avancée d'autant
+		//// Si la .dateBegin est avancée/reculée, la .dateEnd est avancée d'autant
 		if($(this).hasClass("dateBegin")){
 			let beginDiffTime=($(".dateBegin").datepicker("getDate").getTime() - dateBeginRef);						//Différence entre l'ancienne et la nouvelle .dateBegin (en millisecondes!)
 			let dateEndNew=new Date(($(".dateEnd").datepicker("getDate").getTime() + beginDiffTime));				//Calcule la .dateEnd en fonction de la nouvelle .dateBegin
 			$(".dateEnd").datepicker("setDate",dateEndNew).pulsate(1);												//Applique la nouvelle .dateEnd avec un "pulsate"
 		}
-		//// Si le .timeBegin est avancé, le .timeEnd est avancé d'autant
+		//// Si le .timeBegin est avancé/reculé, le .timeEnd est avancé d'autant
 		if($(this).hasClass("timeBegin") && $(".dateBegin").val()==$(".dateEnd").val()){							//Verif que .dateBegin == .dateEnd
 			let beginDiffTime=($(".timeBegin").timepicker("getTime").getTime() - timeBeginRef);						//Différence entre l'ancien et la nouveau .timeBegin (en millisecondes!)
 			let timeEndNew=new Date(($(".timeEnd").timepicker("getTime").getTime() + beginDiffTime));				//Calcule le .timeEnd en fonction du nouveau .timeBegin
@@ -190,13 +202,13 @@ $(function(){
 		let dateBegin=$(".dateBegin").val().split("/");																//Date de début au format "dd/MM/yyyy"
 		let dateEnd	 =$(".dateEnd").val().split("/");																//Date de fin
 		let datetimeBegin	=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]+" "+$(".timeBegin").val());	//Objet Date de début au format "MM/dd/yyyy HH:mm"
-		let datetimeEnd		=new Date(dateEnd[1]+"/"+dateEnd[0]+"/"+dateEnd[2]+" "+$(".timeBegin").val());			//Objet Date de fin
+		let datetimeEnd		=new Date(dateEnd[1]+"/"+dateEnd[0]+"/"+dateEnd[2]+" "+$(".timeEnd").val());			//Objet Date de fin
 		if(datetimeBegin > datetimeEnd){
 			setTimeout(function(){
 				notify(labelBeginEndError);																			//Notif "La date de début doit précéder la date de fin"
 				$(".dateEnd").val($(".dateBegin").val());															//Date de fin = idem début 
 				$(".timeEnd").val($(".timeBegin").val());															//Time de fin = idem début 
-			},500);																									//Timeout car modif après l'action du Timepicker
+			},300);																									//Timeout car modif après l'action du Timepicker
 		}
 		//// PUIS update dateBeginRef + timeBeginRef (en millisecondes!)
 		if($(".dateBegin").isNotEmpty())  {dateBeginRef=$(".dateBegin").datepicker("getDate").getTime();}
@@ -222,18 +234,18 @@ $(function(){
 		else						{$(this).css("background-color","white").css("color","#000");}
 	});
 
-	////	Pas d'autocomplétion sur TOUS les inputs des formulaires (password, dateBegin, etc) !
-	$("form input:not([name*='connectLogin'])").attr("autocomplete","off");
+	////	Pas d'autocomplétion pour les inputs (sauf certains)
+	$("form input:not(.isAutocomplete)").attr("autocomplete","off");
 });
 
 /**************************************************************************************************
  * DOCUMENT READY : INITIALISE L'AFFICHAGE DES PAGES PRINCIPALES
  * => Menu flottant / Largeur des blocks d'objet / Clic sur les blocks d'objet / Etc.
  **************************************************************************************************/
-function mainPageDisplay(firstLoad)
+function mainPageDisplay()
 {
 	////	Affiche les "Title" avec Tooltipster
-	tooltipsterOptions={theme:"tooltipster-shadow",contentAsHTML:true,delay:400};				//Variable globale : Theme, Affichage Html, Delais d'affichage/masquage rapide
+	tooltipsterOptions={theme:"tooltipster-shadow",contentAsHTML:true};							//Variable globale : Theme, Affichage Html
 	$("[title]").not(".noTooltip,[title=''],[title*='http']").tooltipster(tooltipsterOptions);	//Applique le tooltipster (sauf si "noTooltip" est spécifié, ou le tooltip contient une URL, ou le title est vide)
 	$("[title*='http']").tooltipster($.extend(tooltipsterOptions,{interactive:true}));			//Ajoute "interactive" pour les "title" contenant des liens "http" (cf. description & co). On créé une autre instance car "interactive" peut interférer avec les "menuContext"
 
@@ -243,8 +255,7 @@ function mainPageDisplay(firstLoad)
 	$("[data-fancybox='inline']").fancybox({touch:false,arrows:false,infobar:false,smallBtn:false,buttons:['close']});//Pas de navigation entre les elements "inline" ("touch","arrow","infobar"). Pas de "smallBtn" close, mais plutôt celui en haut à droite.
 
 	////	Initialise toute la page : largeur des blocks d'objet, Footer, etc.
-	if(firstLoad===true)
-	{
+	if(typeof mainPageAlreadyLoaded=="undefined"){
 		////	Calcule la largeur des objets ".objContainer" (Affichage "block" uniquement. Calculé en fonction de la largeur de la page : après loading ou resize de la page)
 		if($(".objBlocks .objContainer").length>0)
 		{
@@ -267,13 +278,15 @@ function mainPageDisplay(firstLoad)
 		//...affiche à nouveau après l'éventuel calcul ci-dessus : ".objBlocks" masqués par défaut via "common.css"!
 		$(".objBlocks").css("visibility","visible");
 	}
+	////	Spécifie que le chargement a déjà été fait
+	mainPageAlreadyLoaded=true;
 }
 
 /**************************************************************************************************
  * DOCUMENT READY : INITIALISE LES MENUS CONTEXTUELS
  * chaque launcher (icone/texte/block d'objet) doit avoir la propriété "for" correspondant à l'ID du menu  &&  une class "menuLaunch" (sauf pour les launcher de block d'objet) 
  **************************************************************************************************/
-function menuContextInit()
+function menuContextDisplay()
 {
 	////	MENU MOBILE (width<=1024)
 	if(isMobile()){
@@ -293,7 +306,7 @@ function menuContextInit()
 		});
 		document.addEventListener("touchmove",function(event){															//Lance le swipe d'affichage du menuContext :
 			if(Math.abs(swipeStartY-event.touches[0].clientY) < 50  &&  typeof isCalendarSwipe=="undefined"){			//Swipe < 50px d'amplitude verticale + Pas d'affichage de Calendar (swipe surchargé)
-				if((event.touches[0].clientX - swipeStartX) > 10)  {menuMobileClose(event.touches[0].clientX);}			//Masque le menu : swipe > 10px vers la droite
+				if((event.touches[0].clientX - swipeStartX) > 10)   {menuMobileClose(event.touches[0].clientX);}		//Masque le menu : swipe > 10px vers la droite
 				else if((swipeStartX - event.touches[0].clientX) > 50  &&  $(window).width()-swipeStartX < 150){		//Affiche le menu : swipe > 50px vers la gauche et à 150px max du bord de page
 					if($("#headerModuleTab").exist())			{menuMobileShow("headerModuleTab","pageModMenu");}		//Affiche la liste des modules
 					else if($("#headerContextMenu").exist())	{menuMobileShow("headerContextMenu","pageModMenu");}	//Ou affiche le menu principal de la page
@@ -374,19 +387,19 @@ function menuMobileClose(swipeStartXCurrent)
 }
 
 /**************************************************************************************************
- * NAVIGATION EN MODE "MOBILE" SI LE WIDTH EST INFÉRIEUR À 1024PX  (IDEM Req.php && && Common.css)
+ * AFFICHAGE MOBILE / RESPONSIVE SI WIDTH <= 1024PX  (Idem CSS et Req.php)
  **************************************************************************************************/
 function isMobile()
 {
-	return (windowParent.document.body.clientWidth<1024);
+	return (windowParent.document.body.clientWidth<=1024);
 }
 
 /**************************************************************************************************
- * VÉRIFIE SI ON EST SUR UN APPAREIL TACTILE (Android/Ipad/Iphone ..ou Ipad OS : cf. "Macintosh")
+ * AFFICHAGE SUR DEVICE TACTILE
  **************************************************************************************************/
 function isTouchDevice()
 {
-	return (navigator.maxTouchPoints>2 && /android|iphone|ipad|Macintosh/i.test(navigator.userAgent));
+	return (navigator.maxTouchPoints > 1);
 }
 
 /**************************************************************************************************
@@ -535,7 +548,7 @@ function lightboxResize()
 {
 	if(isMainPage!=true && windowParent.$(".fancybox-iframe").isVisible()){																//Verif si le lightbox est affiché
 		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}											//Pas de cumule des setTimeout (cf. multiples show(), fadeIn() à l'affichage du lightbox)
-		lightboxResizeTimeout=setTimeout(function(){																					//Lance le resize avec un timeout 300ms minimum (cf. "$.fx.speeds._default=100")
+		lightboxResizeTimeout=setTimeout(function(){																					//Lance le resize avec un timeout 250ms minimum (cf. "$.fx.speeds._default=100")
 			if(typeof lightboxHeightOld=="undefined" || lightboxHeightOld < windowParent.$(".fancybox-iframe").contents().height()){	//Verif : 1er affichage du lightbox ou "fadeIn()" ou modif du tinymce
 				windowParent.$.fancybox.getInstance().update();																			//Resize du lightbox!
 				lightboxHeightOld=windowParent.$(".fancybox-iframe").contents().height();												//Enregistre la taille du contenu du lightbox (après update)

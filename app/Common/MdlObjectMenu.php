@@ -26,7 +26,7 @@ trait MdlObjectMenu
 
 	/*******************************************************************************************************************************
 	 * DIV PRINCIPAL (".objContainer")  &&  MENU CONTEXTUEL
-	 *"data-urlEdit" : url d'édition via "dblClick"  &&  "objMenu" : id du menu contextuel via click droit et "menuContextInit()"
+	 *"data-urlEdit" : url d'édition via "dblClick"  &&  "objMenu" : id du menu contextuel via click droit et "menuContextDisplay()"
 	 *******************************************************************************************************************************/
 	public function divContainerContextMenu($containerClass=null, $containerAttributes=null, $contextMenuOptions=null)
 	{
@@ -141,8 +141,8 @@ trait MdlObjectMenu
 	 *******************************************************************************************/
 	public function lightboxTitleMenu()
 	{
-		$return=$this->contextMenu(["launcherIcon"=>"inlineBig"]);
-		if($this->editRight())  {$return.='&nbsp; <img src="app/img/edit.png" onclick="lightboxOpen(\''.$this->getUrl('edit').'\')" title="'.Txt::trad("modify").'">';}
+		$return=$this->contextMenu(["launcherIcon"=>"inlineBig"]);/*menu burger inline*/
+		if($this->editRight())  {$return.='<img src="app/img/edit.png" onclick="lightboxOpen(\''.$this->getUrl('edit').'\')" '.Txt::tooltip("modify").'>';}
 		return '<span class="lightboxTitleMenu">'.$return.'</span>';
 	}
 
@@ -321,12 +321,9 @@ trait MdlObjectMenu
 	 *******************************************************************************************/
 	private static function getSort($containerObj=null)
 	{
-		//Récupère la préférence en Bdd ou params GET/POST
-		$objectsSort=Ctrl::prefUser("sort_".static::prefDbKey($containerObj), "sort");
-		//Tri par défaut si aucune préférence n'est précisé ou le tri sélectionné n'est pas dispo pour l'objet courant 
-		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))  {$objectsSort=static::$sortFields[0];}
-		//renvoie le tri
-		return $objectsSort;
+		$objectsSort=Ctrl::prefUser("sort_".static::prefDbKey($containerObj), "sort");									//Récupère la préférence en Bdd ou params GET/POST
+		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))  {$objectsSort=static::$sortFields[0];}	//Tri par défaut si aucune préf. n'existe OU Tri sélectionné indisponible pour l'objet courant 
+		return $objectsSort;																							//Renvoie le tri
 	}
 
 	/*****************************************************************************************************************************
@@ -334,12 +331,10 @@ trait MdlObjectMenu
 	 *****************************************************************************************************************************/
 	public static function sqlSort($firstSort=null)
 	{
-		//Init
-		$firstSort=(!empty($firstSort))  ?  $firstSort.", "  :  null;							//Pré-tri ? Exple pour les News: "une desc"
-		$sortTab=Txt::txt2tab(self::getSort(Ctrl::$curContainer));								//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Ex: ["name","asc"]
-		$fieldSort=($sortTab[0]=="extension") ? "SUBSTRING_INDEX(name,'.',-1)" : $sortTab[0];	//Tri par "extension" de fichier ?
-		//Renvoie le tri Sql
-		return "ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1];
+		$firstSort=(!empty($firstSort))  ?  $firstSort.", "  :  null;											//Pré-tri ? Exple pour les News: "une desc"
+		$sortTab=Txt::txt2tab(self::getSort(Ctrl::$curContainer));												//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Ex: ["name","asc"]
+		$fieldSort=($sortTab[0]=="extension")  ?  "SUBSTRING_INDEX(`name`,'.',-1)"  :  '`'.$sortTab[0].'`';		//Tri par type de fichier  : récupère son extension pour le tri 
+		return " ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1]." ";										//Renvoie le tri Sql (avec des espaces avant/après!)
 	}
 
 	/*******************************************************************************************

@@ -23,7 +23,7 @@ class CtrlTask extends Ctrl
 	public static function actionDefault()
 	{
 		////	LISTE DES TÂCHES
-		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplay(self::$curContainer)." ".MdlTaskStatus::sqlCategoryFilter()." ".MdlTask::sqlSort());
+		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplay(self::$curContainer).MdlTaskStatus::sqlCategoryFilter().MdlTask::sqlSort());
 		////	TIMELINE/GANTT
 		$timelineBegin=$timelineEnd=null;
 		$vDatas["timelineTasks"]=$vDatas["timelineDays"]=[];

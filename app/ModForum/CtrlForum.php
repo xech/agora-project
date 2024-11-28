@@ -31,7 +31,7 @@ class CtrlForum extends Ctrl
 		}
 		////	LISTE DES SUJETS
 		else{
-			$sqlSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay()." ".MdlForumTheme::sqlCategoryFilter()." ".MdlForumSubject::sqlSort();
+			$sqlSubjects="SELECT * FROM ".MdlForumSubject::dbTable." WHERE ".MdlForumSubject::sqlDisplay().MdlForumTheme::sqlCategoryFilter().MdlForumSubject::sqlSort();
 			$vDatas["subjectsTotalNb"]=count(Db::getTab($sqlSubjects));
 			$vDatas["subjectList"]=Db::getObjTab("forumSubject", $sqlSubjects." ".MdlForumSubject::sqlPagination());
 			$vDatas["forumDisplay"]="subjectList";

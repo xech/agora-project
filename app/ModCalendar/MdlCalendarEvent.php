@@ -155,7 +155,7 @@ class MdlCalendarEvent extends MdlObject
 		//Surcharge : Affiche l'evt à la bonne date et si besoin dans l'agenda principal
 		else{
 			//Url du module à la bonne date 
-			$url="?ctrl=".static::moduleName."&curTime=".strtotime($this->dateBegin);
+			$url="?ctrl=calendar&curTime=".strtotime($this->dateBegin);
 			//Spécifie si besoin l'agenda principal (affichage de "plugin", url accès direct.. mais inutile après un delete d'evt, sinon on perd la liste des agendas en cours d'affichage)
 			if(Req::$curAction!="delete" && $this->containerObj())  {$url.="&displayedCalendars[]=".$this->containerObj()->_id;}
 			return $url;

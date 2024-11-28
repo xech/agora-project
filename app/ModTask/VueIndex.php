@@ -1,7 +1,9 @@
 <script>
-////	INIT : LARGEUR DE LA TIMELINE (GANTT)
 $(function(){
-	$(".vTimelineMain").width($("#pageFullContent").width()).show();/*masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"*/
+	/***************************************************************************************************************************
+	 * 	LARGEUR DE LA TIMELINE (GANTT) masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"
+	 ***************************************************************************************************************************/
+	$(".vTimelineMain").width($("#pageFullContent").width()).show();
 });
 </script>
 
@@ -41,7 +43,7 @@ $(function(){
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("TASK_addTask")."</div></div>
+				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("TASK_addTask")."</div></div>
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlTaskFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
@@ -81,35 +83,35 @@ $(function(){
 		if(!empty($timelineBegin))
 		{
 			//// INIT LA TIMELINE
-			echo "<hr class='vTimelineSeparator'>
-				  <div class='vTimelineMain miscContainer'><table>";
+			echo '<hr class="vTimelineSeparator">
+				  <div class="vTimelineMain miscContainer"><table>';
 					//// HEADER MOIS & JOURS
 					$timelineHeaderMonths=$timelineHeaderDays=null;
 					foreach($timelineDays as $tmpDay){
-						if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.="<td class='vTimelineMonths' colspan='".$tmpDay["newMonthColspan"]."'>".$tmpDay["newMonthLabel"]."</td>";}
-						$timelineHeaderDays.="<td class='vTimelineDays ".$tmpDay["vTimelineToday"]." ".$tmpDay["vTimelineLeftBorder"]."' title=\"".$tmpDay["dayLabelTitle"]."\">".$tmpDay["dayLabel"]."</td>";
+						if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.='<td class="vTimelineMonths" colspan="'.$tmpDay["newMonthColspan"].'">'.$tmpDay["newMonthLabel"].'</td>';}
+						$timelineHeaderDays.='<td class="vTimelineDays '.$tmpDay["vTimelineToday"].' '.$tmpDay["vTimelineLeftBorder"].'" '.Txt::tooltip($tmpDay["dayLabelTitle"]).'>'.$tmpDay["dayLabel"].'</td>';
 					}
-					echo "<tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderMonths."</tr>
-						  <tr><td class='vTimelineTitle'>&nbsp;</td>".$timelineHeaderDays."</tr>";
+					echo '<tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderMonths.'</tr>
+						  <tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderDays.'</tr>';
 					//// TIMELINE DE CHAQUE TACHE
 					foreach($timelineTasks as $tmpTask)
 					{
-						$tmpTaskCells="";
+						$tmpTaskCells=null;
 						//Affiche chaque jour de la timeline pour la tâche courante (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
 						foreach($timelineDays as $tmpDay){
 							$isTaskBegin=($tmpTask->dateBegin==$tmpDay["curDate"]);//La tâche commence la cellule du jour affichée ($tmpDay)
 							if($isTaskBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"]){
 								$tmpCellColspan=($isTaskBegin==true)  ?  "colspan='".$tmpTask->timelineColspan."'"  :  null;
 								$tmpCellLabel  =($isTaskBegin==true)  ?  $tmpTask->timelineGanttBar()  :  "&nbsp;";
-								$tmpTaskCells.="<td class=\"vTimelineTaskDays ".$tmpDay["vTimelineLeftBorder"]."\" ".$tmpCellColspan." >".$tmpCellLabel."</td>";}
+								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["vTimelineLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}
 						}
 						//Affiche toute la timeline de la tâche courante
-						echo "<tr class='lineHover' onclick=\"".$tmpTask->openVue()."\">
-								<td class='vTimelineTitle' title=\"".Txt::tooltip($tmpTask->title)."\">".Txt::reduce($tmpTask->title,(Req::isMobile()?30:50))."</td>".
+						echo '<tr class="lineHover" onclick="'.$tmpTask->openVue().'">
+								<td class="vTimelineTitle" '.Txt::tooltip($tmpTask->title).'>'.Txt::reduce($tmpTask->title,(Req::isMobile()?30:50)).'</td>'.
 								$tmpTaskCells.
-							"</tr>";
+							'</tr>';
 					}
-			echo "</table></div>";
+			echo '</table></div>';
 		}
 		?>
 	</div>

@@ -68,7 +68,7 @@ class MdlTask extends MdlObject
 			$barLabel=trim($barLabel,", ");
 			$barTooltip=trim($barTooltip,", ");
 			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".Txt::tooltip($barTooltip)."\"><img src='app/img/user/iconSmall.png'></span>";}
+			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<span class="cursorHelp" '.Txt::tooltip($barTooltip).'><img src="app/img/user/iconSmall.png"></span>';}
 			else{
 				if($isVueTask==false)  {$barLabel=Txt::reduce($barLabel,40);}
 				return Tool::progressBar("<img src='app/img/user/iconSmall.png'> ".$barLabel, $barTooltip);
@@ -85,7 +85,7 @@ class MdlTask extends MdlObject
 			$advancementIcon="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'>";
 			$barTooltip=Txt::trad("TASK_advancement")." : ".$this->advancement." %"." <br>".$this->isDelayed(true);
 			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return "<span class='cursorHelp' title=\"".Txt::tooltip($barTooltip)."\">".$advancementIcon."</span>";}
+			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<span class="cursorHelp" '.Txt::tooltip($barTooltip).'>'.$advancementIcon.'</span>';}
 			else														{return Tool::progressBar($advancementIcon." ".Txt::trad("TASK_advancement")." ".$this->advancement."%", $barTooltip, $this->advancement, $this->isDelayed());}
 		}
 	}
@@ -104,7 +104,7 @@ class MdlTask extends MdlObject
 			elseif(!empty($this->dateEnd))							{$barTooltip=null;}//Txt::trad("end") récup via "dateLabel()" ci-dessus
 			$barTooltip.=$barLabel."<br>".$this->isDelayed(true);
 			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<img src="app/img/task/date.png" class="cursorHelp" title="'.Txt::tooltip($barTooltip).'">';}
+			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<img src="app/img/task/date.png" class="cursorHelp" '.Txt::tooltip($barTooltip).'>';}
 			else														{return Tool::progressBar('<img src="app/img/task/date.png"> '.$barLabel, $barTooltip, $this->timeProgressPercent(), $this->isDelayed());}
 		}
 	}

@@ -9,7 +9,7 @@ $(function(){
 		//Vérif la présence du titre
 		if($(this).find("[name='title']").isEmpty()){
 			notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("title") ?>");
-			$(this).find("[name='title']").focusRed();
+			$(this).find("[name='title']").focusPulsate();
 			return false;
 		}
 		// Au moins 2 utilisateurs sélectionnés
@@ -46,7 +46,7 @@ input[name='title']				{width:50%;}
 		<div class="lightboxTitleDetail"><img src="app/img/info.png"> <?= Txt::trad("USER_groupEditInfo") ?></div>
 	</div>
 	<div class="lightboxAddElem">
-		<button onclick="$('form:first-of-type').slideToggle();$('form:first-of-type [name=title]').focus();"><img src="app/img/plus.png"> <?= Txt::trad("USER_addGroup") ?></button>	
+		<button onclick="$('form:first-of-type').slideToggle().find('[name=title]').focusAlt()"><img src="app/img/plus.png"> <?= Txt::trad("USER_addGroup") ?></button>	
 	</div>
 	<?php
 	////	LISTE LES GROUPES D'UTILISATEURS
@@ -64,7 +64,7 @@ input[name='title']				{width:50%;}
 		}
 		//Affichage du formulaire
 		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
-		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' title=\"".Txt::trad("delete")."\" onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
+		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
 		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>

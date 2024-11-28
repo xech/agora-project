@@ -1,7 +1,8 @@
 <script>
-////	INIT
 $(function(){
-	//// Vérifie si la categorie est bien affectée aux espaces sélectionnés pour l'objet courant  :  cf. "VueObjEditMenuSubmit.php"  &  VueCategoryEdit.php"
+	/********************************************************************************************************************************************************
+	 *	VÉRIFIE SI LA CATEGORIE EST BIEN AFFECTÉE AUX ESPACES SÉLECTIONNÉS POUR L'OBJET COURANT  (cf. "VueObjEditMenuSubmit.php"  &  VueCategoryEdit.php")
+	 ********************************************************************************************************************************************************/
 	if($("[name='objectRight[]']").exist()){											//Vérif si le tableau des droits d'accès est bien instancié
 		$("#selectCategory, [name='objectRight[]']").on("change",function(){			//Change de categorie  OU  Sélectionne un espace dans les droits d'accès
 			let catSelector="#selectCategory option:selected";							//Sélecteur de la catégorie choisie
@@ -12,7 +13,7 @@ $(function(){
 					if(catSpaceIds.split(",").indexOf(_idSpaceTmp)==-1){
 						let notifyText="<i>"+$(catSelector).text()+"</i> <?= Txt::trad("categoryNotifSpaceAccess") ?> <br><i>"+$(catSelector).attr("data-spacesLabel")+"</i>";
 						notify(notifyText, "warning");									//Notif si l'espace n'est pas affecté à la catégorie sélectionnée (ex: "Catégorie truc n'est accessible que sur l'espace Bidule")
-						$("#selectCategory").focusRed();								//Focus sur le champ de la categorie
+						$("#selectCategory").focusPulsate();							//Focus sur le champ de la categorie
 						return false;													//Arrête la boucle
 					}
 				});

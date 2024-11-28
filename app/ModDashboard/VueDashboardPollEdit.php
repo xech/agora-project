@@ -39,7 +39,7 @@ function objectFormControl(){
 .vPollResponseDiv div.responseFile		{padding:10px;}
 .vPollResponseDiv div.responseFileHide	{display:none;}
 .vPollResponseHidden					{display:none;}
-#responseAdd							{margin:15px 30px 0px 10px;}
+#responseAdd							{margin-top:15px;}
 form .infos								{margin:0px; margin-bottom:20px;}
 .pollOptions							{margin-top:15px;}
 </style>
@@ -67,18 +67,18 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		$respId			=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["_id"]  :  Txt::uniqId();	//Identifiant unique de la réponse (15 caracteres, pas moins)
 		$respValue		=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["label"]  :  null;			//Valeur/libellé de la réponse
 		if(empty($respTmp["fileName"]))	{$respFileHide="responseFileHide";	$respFileContent="<input type='file' name=\"responsesFile".$respId."\">";}
-		else							{$respFileHide=null;				$respFileContent="<div id='respFileName".$respId."'><a href=\"".$respTmp["fileUrlDownload"]."\" title=\"".Txt::trad("download")."\"><img src='app/img/attachment.png'> ".$respTmp["fileName"]."</a> &nbsp; <img src='app/img/delete.png' title=\"".Txt::trad("delete")."\" onclick=\"deleteResponseFile('".$respId."');\">";}
+		else							{$respFileHide=null;				$respFileContent="<div id='respFileName".$respId."'><a href=\"".$respTmp["fileUrlDownload"]."\" ".Txt::tooltip("download")."><img src='app/img/attachment.png'> ".$respTmp["fileName"]."</a> &nbsp; <img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"deleteResponseFile('".$respId."');\">";}
 		//Affiche la réponse
 		echo "<div class='vPollResponseDiv ".$respClass."'>
 				<input type='text' name=\"responses[".$respId."]\" value=\"".$respValue."\" placeholder=\"".Txt::trad("DASHBOARD_responseNb").($tmpKey+1)."\">
-				<img src='app/img/attachment.png' onclick=\"$('#responseFile".$respId."').slideToggle();\" title=\"".Txt::trad("EDIT_attachedFileAdd")."\">
+				<img src='app/img/attachment.png' onclick=\"$('#responseFile".$respId."').slideToggle();\" ".Txt::tooltip("EDIT_attachedFileAdd").">
 				<div id='responseFile".$respId."' class='responseFile ".$respFileHide."'>".$respFileContent."</div>
 			  </div>";
 	}
 	?>
 
 	<!--SONDAGE PAS ENCORE VOTÉ : AJOUTER UNE REPONSE-->
-	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn();$('.vPollResponseDiv input:visible:last').focus();"><img src="app/img/plusSmall.png"> <?= Txt::trad("DASHBOARD_addResponse") ?></div><?php } ?>
+	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_addResponse") ?>&nbsp; <img src="app/img/plusSmall.png"></div><?php } ?>
 
 	<!--REPONSES MULTIPLES  &&  VOTE PUBLIC  &&  AFFICHAGE AVEC LES NEWS ("checked" par défaut)  &&  DATE DE FIN-->
 	<br><br>

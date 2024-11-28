@@ -15,7 +15,7 @@ lightboxSetWidth(500);
 	echo "<div class='lightboxTitle'>".$curObj->lightboxTitleMenu().$curObj->getLabel("full")."</div>";
 
 	////	IMAGE & DETAILS DE l'USER
-	echo "<div class='personLabelImg'>".$curObj->personImg()."</div>";
+	echo "<div class='personLabelImg'>".$curObj->profileImg()."</div>";
 	echo "<div class='personVueFields'>".$curObj->getFieldsValues("profile")."</div>";
 
 	////	GROUPES D'UTILISATEURS

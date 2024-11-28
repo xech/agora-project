@@ -57,7 +57,7 @@ function messengerUpdate()
 
 		//// Finalise l'affichage
 		if(result.messengerUpdate==true || result.livecounterUpdate==true)  {messengerDisplayUser();}							//Affiche uniquement les messages d'un user OU les messages de tous les users
-		if(result.livecounterMainHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainPageDisplay(false);}				//Update les tooltips/lightbox (toujours à la fin)
+		if(result.livecounterMainHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainPageDisplay();}					//Update les tooltips/lightbox (toujours à la fin)
 		messengerCheckedUsers=result.messengerCheckedUsers;																		//Update la liste des users "checked" (après post d'un message dans une discussion à plusieurs)
 
 		//// Pulsate & alerte sonore des users ayant posté un nouveau message
@@ -108,7 +108,7 @@ function messengerDisplay(messengerDisplayModeNew)
 		var placeholderLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_addMessageToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_addMessageTo") ?> "+labelUserDisplayed;	//Placeholer de l'input text
 		visioButtonLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_visioProposeToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_visioProposeTo") ?> "+labelUserDisplayed;	//Title du bouton de visio (variable globale)
 		$("#messengerMessageForm").attr("placeholder",placeholderLabel);						//Placeholer de l'input text : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
-		if(isTouchDevice()==false)  {$("#messengerMessageForm").focus();}						//Affichage normal : focus sur l'input
+		$("#messengerMessageForm").focusAlt();													//Focus sur l'input
 		$("#launchVisioButton.tooltipstered").tooltipster("destroy");							//Bouton de visio : Réinitialise si besoin le "tooltipster" avant update ci-après
 		$("#launchVisioButton").attr("title",visioButtonLabel).tooltipster(tooltipsterOptions);	//Bouton de visio : title "Proposer une visio à Bob" / "Proposer une visio aux personnes sélectionnées"
 
@@ -177,9 +177,9 @@ function messengerPost(event)
 	if($(".messengerUserCheckbox:checked").length==0)	{notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	// Poste le message via Ajax
 	$.ajax({url:"?ctrl=misc&action=messengerPost",data:$("#messengerForm").serialize(),type:"POST"}).done(function(){
-		$("#messengerMessageForm").val("");						//Réinit l'input text
-		if(!isMobile())  {$("#messengerMessageForm").focus();}	//Focus à nouveau sur l'input
-		messengerUpdate();										//Update les messages pour afficher le post
+		$("#messengerMessageForm").val("");		//Réinit l'input text
+		$("#messengerMessageForm").focusAlt();	//Focus à nouveau sur l'input
+		messengerUpdate();						//Update les messages pour afficher le post
 	});
 }
 
@@ -254,7 +254,7 @@ function proposeVisio()
 .launchVisioMessage img[src*='visioSmall']	{margin-left:10px;}
 
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	#livecounterMain						{padding:10px; bottom:-5px!important; font-size:1.1em;}
 	#livecounterConnectedLabel				{display:none;}						/*masque le "Connecté :"*/
 	.vLivecounterUser						{display:inline-flex;}				/*tester l'affichage sur mobile avec 10 personnes (cf. 'display:inline-flex')*/

@@ -63,7 +63,7 @@ foreach($eventPropositions as $cpt=>$tmpProposition)
 					Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorLabel()."<hr>".
 					ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title;
 	if($tmpEvt->description)  {$confirmDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}
-	echo '<li id="eventPropositionDiv'.$tmpEvt->_id.'" data-confirmDetails="'.Txt::tooltip($confirmDetails).'" onclick="eventPropositionConfirm('.$tmpCal->_id.','.$tmpEvt->_id.',this.id)">'.$tmpEvt->title.'</li>';
+	echo '<li id="eventPropositionDiv'.$tmpEvt->_id.'" data-confirmDetails="'.Txt::tooltip($confirmDetails,false).'" onclick="eventPropositionConfirm('.$tmpCal->_id.','.$tmpEvt->_id.',this.id)">'.$tmpEvt->title.'</li>';
 }
 
 ////	Fin du block "List"

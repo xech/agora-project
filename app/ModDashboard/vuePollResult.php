@@ -15,11 +15,11 @@
 		elseif($votesPercent>0)	{$pollsResultBarColor="vPollsResultBar50";}
 		else					{$pollsResultBarColor="vPollsResultBar0";}
 		//Affiche
-		echo "<li title=\"".Txt::tooltip($responseTitle)."\">
-				<label>".$tmpResponse["label"].$curObj->responseFileDiv($tmpResponse)."</label>
-				<div class='vPollsResultBarContainer'><div class='vPollsResultBar ".$pollsResultBarId." ".$pollsResultBarColor."'>".$votesPercent."%</div></div>
-				<script> $(\".".$pollsResultBarId."\").animate({width:'".$votesPercent."%'},500);</script>
-			  </li>";
+		echo '<li '.Txt::tooltip($responseTitle).'>
+				<label>'.$tmpResponse["label"].$curObj->responseFileDiv($tmpResponse).'</label>
+				<div class="vPollsResultBarContainer"><div class="vPollsResultBar '.$pollsResultBarId.' '.$pollsResultBarColor.'">'.$votesPercent.'%</div></div>
+				<script> $(".'.$pollsResultBarId.'").animate({width:"'.$votesPercent.'%"},300); </script>
+			  </li>';
 	}
 	?>
 </ul>

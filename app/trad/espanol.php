@@ -18,7 +18,6 @@ class Trad extends Txt
 			"CURLANG"=>"es",
 			"DATELANG"=>"es_ES",
 			"EDITORLANG"=>"es",
-			"DOCFILE"=>"docs/DOCUMENTATION_EN.pdf",
 
 			////	Divers
 			"mainMenu"=>"Menú principal",
@@ -77,13 +76,13 @@ class Trad extends Txt
 			"mailLloginNotif"=>"Se recomienda utilizar un email como identificador de sesión",
 			"mailLlogin"=>"Email / Identificador de conexión",
 			"connect"=>"Conexión",
-			"connectAuto"=>"Recuérdame",
-			"connectAutoTooltip"=>"Recordar mi nombre de usuario y la contraseña para una conexión automática",
+			"connectAuto"=>"Mantente conectado",
+			"connectAutoTooltip"=>"Recordar mis datos de inicio de sesión para la conexión automática",
 			"gIdentityUserUnknown"=>"no está registrado en el espacio",
 			"connectSpaceSwitch"=>"Conectarse a otro espacio",
 			"connectSpaceSwitchConfirm"=>"¿ Está seguro de que desea abandonar este espacio para conectarse a otro espacio ?",
 			"guestAccess"=>"Iniciar sesión como invitado",
-			"guestAccessTooltip"=>"Iniciar sesión en un espacio como invitado",
+			"guestAccessTooltip"=>"Iniciar sesión en este espacio como invitado",
 			"publicSpacePasswordError"=>"Contraseña incorrecta",
 			"disconnectSpace"=>"Cerrar sesión",
 			"disconnectSpaceConfirm"=>"¿ Confirmar desconexión del espacio ?",
@@ -295,6 +294,7 @@ class Trad extends Txt
 			"diskSpaceUsed"=>"Espacio utilizado",
 			"diskSpaceUsedModFile"=>"Espacio utilizado para los Archivos",
 			"downloadAlert"=>"Su archivo es demasiado grande para descargarlo durante el día (--ARCHIVE_SIZE--). Reinicie la descarga después de las",//"19h"
+			"downloadBackToApp"=>"Volver a la aplicación",
 			
 			////	Infos sur une personne
 			"civility"=>"Civilidad",
@@ -418,16 +418,15 @@ class Trad extends Txt
 			"VISIO_urlAdd"=>"Añadir una videoconferencia",
 			"VISIO_urlCopy"=>"Copia el enlace de la videoconferencia",
 			"VISIO_urlDelete"=>"Eliminar el enlace de la videoconferencia",
-			"VISIO_launch"=>"Iniciar la videollamada",
-			"VISIO_launchFromEvent"=>"Iniciar la videoconferencia de este evento",
 			"VISIO_urlMail"=>"Agregue un enlace al final del texto para comenzar una nueva videoconferencia",
+			"VISIO_launch"=>"Iniciar la videoconferencias",
+			"VISIO_launchJitsi"=>"Iniciar videoconferencias <br>con la aplicación Jitsi",
+			"VISIO_launchFromEvent"=>"Iniciar la videoconferencia de este evento",
 			"VISIO_launchTooltip"=>"Recuerde permitir el acceso a su cámara web y micrófono",
 			"VISIO_launchTooltip2"=>"Haga clic aquí si tiene problemas para iniciar la videoconferencia",
-			"VISIO_installJitsi"=>"Instale la aplicación gratuita Jitsi para iniciar sus videoconferencias",
 			"VISIO_launchServerTooltip"=>"Elija el servidor secundario si el servidor principal no funciona correctamente.<br>Tus contactos deberán seleccionar el mismo servidor de video.",
 			"VISIO_launchServerMain"=>"Servidor principal",
 			"VISIO_launchServerAlt"=>"Servidor secundario",
-			"VISIO_launchButton"=>"Iniciar la videollamada",
 
 			////	VueObjEditMenuSubmit.php
 			"EDIT_notifNoSelection"=>"Debe seleccionar al menos una persona o un espacio",
@@ -502,11 +501,10 @@ class Trad extends Txt
 			////	MODULE_PARAMETRAGE
 			////
 			"AGORA_generalSettings"=>"Administración general",
-			"AGORA_versions"=>"Versiones",
-			"AGORA_dateUpdate"=>"actualización el",
 			"AGORA_Changelog"=>"Ver el registro de versión",
-			"AGORA_funcMailDisabled"=>"La función PHP para enviar correos electrónicos está deshabilitada.",
-			"AGORA_funcImgDisabled"=>"La biblioteca PHP GD2 para la manipulación de imágenes está deshabilitada",
+			"AGORA_phpMailDisabled"=>"Función PHP Mail deshabilitada",
+			"AGORA_phpLdapDisabled"=>"Función PHP LDAP deshabilitada",
+			"AGORA_phpGD2Disabled"=> "Función PHP GD2 deshabilitada",
 			"AGORA_backupFull"=>"Copia de seguridad completa",
 			"AGORA_backupFullTooltip"=>"Recupere la copia de seguridad completa del espacio: todos los archivos y la base de datos",
 			"AGORA_backupDb"=>"Hacer una copia de seguridad de la base de datos",
@@ -584,7 +582,6 @@ class Trad extends Txt
 			"AGORA_ldapDn"=>"DN del grupo de usuarios (Distinguished Name)",
 			"AGORA_ldapDnTooltip"=>"DN del grupo de usuarios : ubicación de los usuarios en el directorio. Ejemplo ''ou=mon-groupe,dc=mon-entreprise,dc=com''",
 			"importLdapFilterTooltip"=>"Filtro de búsqueda LDAP (cf. https://www.php.net/manual/function.ldap-search.php). Ejemplo ''(cn=*)'' o ''(&(samaccountname=MONLOGIN)(cn=*))''",
-			"AGORA_ldapDisabled"=>"El módulo PHP para conectarse a un servidor LDAP no está instalado",
 			"AGORA_ldapConnectError"=>"Error de conexión del servidor LDAP !",
 
 			////	MODULE_LOG
@@ -736,6 +733,7 @@ class Trad extends Txt
 			"DASHBOARD_addPoll"=>"Añadir una encuesta",
 			"DASHBOARD_pollsVoted"=>"Mostrar solo encuestas votadas",
 			"DASHBOARD_pollsVotedNb"=>"encuestas por las que ya he votado",//"55 sondages..déjà voté"
+			"DASHBOARD_pollsNotVoted"=>"encuestas no votadas",//55 sondages non votés
 			"DASHBOARD_vote"=>"Votar y ver los resultados !",
 			"DASHBOARD_voteTooltip"=>"Los votos son anónimos : nadie sabrá su elección de voto",
 			"DASHBOARD_answerVotesNb"=>"Votada --NB_VOTES-- veces",//55 votes (sur la réponse)
@@ -819,7 +817,6 @@ class Trad extends Txt
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Los usuarios que no hayan desactivado su calendario personal en su perfil de usuario seguirán viendo el módulo Calendario en la barra de menú.",
 			//Index
 			"CALENDAR_calsList"=>"Calendarios disponibles",
-			"CALENDAR_calsListDisplayAll"=>"Ver todo los calendarios (administrador)",
 			"CALENDAR_hideAllCals"=>"Ocultar todo los calendarios",
 			"CALENDAR_printCalendars"=>"Imprimir el/los calendarios",
 			"CALENDAR_printCalendarsInfos"=>"imprimir la página en modo horizontal",
@@ -833,12 +830,11 @@ class Trad extends Txt
 			"CALENDAR_importIcalState"=>"Estado",
 			"CALENDAR_importIcalStatePresent"=>"Ya está presente",
 			"CALENDAR_importIcalStateImport"=>"a importar",
-			"CALENDAR_display_day"=>"Día",
-			"CALENDAR_display_4Days"=>"4 días",
-			"CALENDAR_display_workWeek"=>"Semana de trabajo",
+			"CALENDAR_display_3Days"=>"3 días",
+			"CALENDAR_display_7Days"=>"7 días",
 			"CALENDAR_display_week"=>"Semana",
 			"CALENDAR_display_month"=>"Mes",
-			"CALENDAR_weekNb"=>"Ver la semana n°", //...5
+			"CALENDAR_yearWeekNum"=>"Ver la semana n°", //...5
 			"CALENDAR_periodNext"=>"Período siguiente",
 			"CALENDAR_periodPrevious"=>"Período anterior",
 			"CALENDAR_evtAffects"=>"En el calendario de",

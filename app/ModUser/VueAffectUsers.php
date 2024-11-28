@@ -25,38 +25,33 @@ $(function(){
 
 <form action="index.php" method="post" id="mainForm">
 	<?php
-	//// Recherche
-	if(empty($usersList))
-	{
-		//Titre du formulaire
-		echo "<div class='lightboxTitle'>".Txt::trad("USER_userSearch")."</div>";
-		//liste des champs de recherche
+	////	Recherche d'users
+	if(empty($usersList)){
+		//Titre & champs de recherche
+		echo '<div class="lightboxTitle">'.Txt::trad("USER_userSearch").'</div>';
 		foreach($searchFields as $tmpField){
-			echo "<div class='objField'>
-					<div>".Txt::trad($tmpField)."</div>
-					<div><input type='text' name='searchFields[".$tmpField."]' value=\"".(isset($searchFieldsValues[$tmpField])?$searchFieldsValues[$tmpField]:null)."\"></div>
-				  </div>";
+			echo '<div class="objField">
+					<div>'.Txt::trad($tmpField).'</div>
+					<div><input type="text" name="searchFields['.$tmpField.']" value="'.(isset($searchFieldsValues[$tmpField])?$searchFieldsValues[$tmpField]:null).'"></div>
+				  </div>';
 		}
-		//Bouton de validation
 		echo Txt::submitButton("search");
 	}
 	//// Affectation
 	else
 	{
 		//Titre du formulaire & Bouton "retour"
-		echo "<div class='lightboxTitle'>".Txt::trad("USER_usersSpaceAffectation")."</div>";
+		echo '<div class="lightboxTitle">'.Txt::trad("USER_usersSpaceAffectation").'</div>';
 		//Liste les users à affecter
 		if(empty($usersList))  {echo Txt::trad("USER_usersSearchNoResult");}
 		else{
 			foreach($usersList as $tmpUser){
-				echo "<div class='objField' title=\"".Txt::tooltip($tmpUser->mail)."\">
-						<input type='checkbox' name='usersList[]' value='".$tmpUser->_id."' id='userId".$tmpUser->_id."'>
-						<label for='userId".$tmpUser->_id."'>".$tmpUser->getLabel()."</label>
-					  </div>";
+				echo '<div class="objField" '.Txt::tooltip($tmpUser->mail).'>
+						<input type="checkbox" name="usersList[]" value="'.$tmpUser->_id.'" id="userId'.$tmpUser->_id.'">
+						<label for="userId'.$tmpUser->_id.'">'.$tmpUser->getLabel().'</label>
+					  </div>';
 			}
-			//Bouton de validation
-			echo Txt::submitButton("validate").
-				 "<button type='button' onclick=\"window.history.back();\" style='position:absolute;top:15px;right:10px;'>".Txt::trad("USER_usersSearchBack")."</button>";
+			echo Txt::submitButton("validate").'<button type="button" onclick="window.history.back()" style="position:absolute;bottom:8px;right:8px;">'.Txt::trad("USER_usersSearchBack").'</button>';
 		}
 	}
 	?>

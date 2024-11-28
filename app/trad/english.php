@@ -18,7 +18,6 @@ class Trad extends Txt
 			"CURLANG"=>"en",
 			"DATELANG"=>"en_GB",
 			"EDITORLANG"=>"en_GB",
-			"DOCFILE"=>"docs/DOCUMENTATION_EN.pdf",
 
 			////	Divers
 			"mainMenu"=>"Main menu",
@@ -77,12 +76,12 @@ class Trad extends Txt
 			"mailLloginNotif"=>"It is recommended to use an email as a login ID.",
 			"mailLlogin"=>"Email / Login",
 			"connect"=>"Log In",
-			"connectAuto"=>"Remember me",
-			"connectAutoTooltip"=>"Save my login and password to automatically connect",
+			"connectAuto"=>"Stay connected",
+			"connectAutoTooltip"=>"Remember my credentials for automatic connection",
 			"gIdentityUserUnknown"=>"is not registered on the space",
 			"connectSpaceSwitch"=>"Connect to another space",
 			"connectSpaceSwitchConfirm"=>"Are you sure you want to leave this space to connect to another space ?",
-			"guestAccess"=>"Login as guest",
+			"guestAccess"=>"Guest Login",
 			"guestAccessTooltip"=>"Log in to this space as a guest",
 			"publicSpacePasswordError"=>"Wrong password",
 			"disconnectSpace"=>"Log out",
@@ -295,6 +294,7 @@ class Trad extends Txt
 			"diskSpaceUsed"=>"Disk space used",
 			"diskSpaceUsedModFile"=>"Disk space used for the File manager",
 			"downloadAlert"=>"Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download after",//"19h"
+			"downloadBackToApp"=>"Back to the application",
 			
 			////	Infos sur une personne
 			"civility"=>"Title",
@@ -418,16 +418,15 @@ class Trad extends Txt
 			"VISIO_urlAdd"=>"Add a videoconference",
 			"VISIO_urlCopy"=>"Copy the videoconference link",
 			"VISIO_urlDelete"=>"Remove the video conference link",
-			"VISIO_launch"=>"Start the videoconference",
-			"VISIO_launchFromEvent"=>"Start the videoconference of this event",
 			"VISIO_urlMail"=>"Add a link at the end of the text to start a new videoconference",
+			"VISIO_launch"=>"Start the videoconference",
+			"VISIO_launchJitsi"=>"Start videoconference <br>with the Jitsi app",
+			"VISIO_launchFromEvent"=>"Start the videoconference of this event",
 			"VISIO_launchTooltip"=>"Remember to allow access to your webcam and microphone",
 			"VISIO_launchTooltip2"=>"Click here if you have problems launching the videoconference",
-			"VISIO_installJitsi"=>"Install the free Jitsi application to launch your videoconferences",
 			"VISIO_launchServerTooltip"=>"Choose the secondary server if the primary server is not functioning properly.<br>Your contacts will have to select the same video server.",
 			"VISIO_launchServerMain"=>"Main server",
 			"VISIO_launchServerAlt"=>"Secondary server",
-			"VISIO_launchButton"=>"Start the videoconference",
 
 			////	VueObjEditMenuSubmit.php
 			"EDIT_notifNoSelection"=>"You must select at least a person or a space",
@@ -502,11 +501,10 @@ class Trad extends Txt
 			////	MODULE_PARAMETRAGE
 			////
 			"AGORA_generalSettings"=>"General Settings",
-			"AGORA_versions"=>"Versions",
-			"AGORA_dateUpdate"=>"Updated on",
 			"AGORA_Changelog"=>"View the version log",
-			"AGORA_funcMailDisabled"=>"The PHP function to send emails is disabled",
-			"AGORA_funcImgDisabled"=>"The PHP GD2 library for image manipulation is disabled",
+			"AGORA_phpMailDisabled"=>"PHP Mail function disabled",
+			"AGORA_phpLdapDisabled"=>"PHP LDAP function disabled",
+			"AGORA_phpGD2Disabled"=> "PHP GD2 function disabled",
 			"AGORA_backupFull"=>"Full backup",
 			"AGORA_backupFullTooltip"=>"Recover the full backup of the space: all the files as well as the database",
 			"AGORA_backupDb"=>"Back up the database",
@@ -584,7 +582,6 @@ class Trad extends Txt
 			"AGORA_ldapDn"=>"DN of the group (Distinguished Name)",
 			"AGORA_ldapDnTooltip"=>"DN of the group : location of users in the directory. Example ''ou=mon-groupe,dc=mon-entreprise,dc=com''",
 			"importLdapFilterTooltip"=>"LDAP search filter (cf. https://www.php.net/manual/function.ldap-search.php). Example ''(cn=*)'' or ''(&(samaccountname=MONLOGIN)(cn=*))''",
-			"AGORA_ldapDisabled"=>"The PHP module for connecting to an LDAP server is not installed",
 			"AGORA_ldapConnectError"=>"LDAP server connection error !",
 
 			////	MODULE_LOG
@@ -736,6 +733,7 @@ class Trad extends Txt
 			"DASHBOARD_addPoll"=>"Add a poll",
 			"DASHBOARD_pollsVoted"=>"Show only voted polls",
 			"DASHBOARD_pollsVotedNb"=>"polls I've already voted for",//"55 sondages..déjà voté"
+			"DASHBOARD_pollsNotVoted"=>"unvoted polls",//55 sondages non votés
 			"DASHBOARD_vote"=>"Vote and see the results !",
 			"DASHBOARD_voteTooltip"=>"The votes are anonymous : nobody will know your choice of vote",
 			"DASHBOARD_answerVotesNb"=>"Voté --NB_VOTES-- times",
@@ -819,7 +817,6 @@ class Trad extends Txt
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar",
 			//Index
 			"CALENDAR_calsList"=>"Available calendars",
-			"CALENDAR_calsListDisplayAll"=>"Show all calendars (for administrators)",
 			"CALENDAR_hideAllCals"=>"Hide all calendars",
 			"CALENDAR_printCalendars"=>"Print calendar(s)",
 			"CALENDAR_printCalendarsInfos"=>"Print in landscape mode",
@@ -833,12 +830,11 @@ class Trad extends Txt
 			"CALENDAR_importIcalState"=>"State",
 			"CALENDAR_importIcalStatePresent"=>"Already present",
 			"CALENDAR_importIcalStateImport"=>"To import",
-			"CALENDAR_display_day"=>"Day",
-			"CALENDAR_display_4Days"=>"4 days",
-			"CALENDAR_display_workWeek"=>"Working week",
+			"CALENDAR_display_3Days"=>"3 days",
+			"CALENDAR_display_7Days"=>"7 days",
 			"CALENDAR_display_week"=>"Week",
 			"CALENDAR_display_month"=>"Month",
-			"CALENDAR_weekNb"=>"See the week n°",
+			"CALENDAR_yearWeekNum"=>"See the week n°",
 			"CALENDAR_periodNext"=>"Next period",
 			"CALENDAR_periodPrevious"=>"Preceding period",
 			"CALENDAR_evtAffects"=>"In the calendar of",

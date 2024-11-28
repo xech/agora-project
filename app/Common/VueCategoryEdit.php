@@ -30,7 +30,7 @@ $(function(){
 			$(selectFieldset+" form").slideUp();															//Masque le formulaire
 		}else{																								//Si le formulaire n'est pas visible :
 			$(selectHeaders).hide(); 																		//Masque les boutons delete/changeOrder
-			$(selectFieldset+" form").slideDown().find("input[name='title']").focus();						//Affiche le formulaire + Focus sur le champ "title"
+			$(selectFieldset+" form").slideDown().find("input[name='title']").focusAlt();					//Affiche le formulaire + Focus sur le champ "title"
 			$("fieldset").not(selectFieldset).has("form:visible").find(".vCategoryEdit").trigger("click");	//Ferme les formulaires ouverts sur d'autres catégories (via trigger .vCategoryEdit)
 		}
 	});
@@ -46,7 +46,7 @@ $(function(){
 	$("form").submit(function(){
 		//Vérif la présence du titre
 		if($(this).find("input[name='title']").isEmpty()){
-			$(this).find("input[name='title']").focusRed();
+			$(this).find("input[name='title']").focusPulsate();
 			notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("title") ?>");
 			return false;
 		}
@@ -150,7 +150,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 						$boxChecked=in_array($tmpSpace->_id,$tmpObj->spaceIds)  ?  "checked"  :  null;
 						echo '<div>
 								<input type="checkbox" name="spaceList[]" value="'.$tmpSpace->_id.'" id="'.$boxId.'" '.$boxChecked.'>
-								<label for="'.$boxId.'" title="'.Txt::trad("visibleOnSpace").' : '.$tmpSpace->name.'">'.$tmpSpace->name.'</label>
+								<label for="'.$boxId.'" '.Txt::tooltip(Txt::trad("visibleOnSpace").' : '.$tmpSpace->name).'>'.$tmpSpace->name.'</label>
 							  </div>';
 					}
 					?>

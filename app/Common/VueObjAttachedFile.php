@@ -50,17 +50,17 @@ function attachedFileDelete(_id)
 ////	INPUTS DES FICHIERS À ATTACHER (si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
 echo '<div><img src="app/img/attachment.png"> '.Txt::trad("EDIT_attachedFileAdd").' :</div>';
 for($cptInputFile=1; $cptInputFile<=20; $cptInputFile++){
-	$insertOption=($curObj::descriptionEditor==true)  ?  '<label onclick="attachedFileInsert('.$cptInputFile.')" id="attachedFileOption'.$cptInputFile.'" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
+	$insertOption=($curObj::descriptionEditor==true)  ?  '<label onclick="attachedFileInsert('.$cptInputFile.')" id="attachedFileOption'.$cptInputFile.'" '.Txt::tooltip("EDIT_attachedFileInsertTooltip").'><img src="app/img/attachedFileInsert.png"> '.Txt::trad("EDIT_attachedFileInsert").'</label>'  :  null;
 	echo '<div id="attachedFileDivAdd'.$cptInputFile.'" class="attachedFileDiv"><input type="file" name="attachedFile'.$cptInputFile.'" id="attachedFileInput'.$cptInputFile.'" class="attachedFileInput">'.$insertOption.'</div>';
 }
 
 ////	LISTE DES FICHIERS JOINTS DEJA ATTACHÉS A UN OBJET (affiche si besoin l'option "insérer dans le texte" pour l'éditeur tinyMce)
 if(count($curObj->attachedFileList())>0){
 	foreach($curObj->attachedFileList() as $tmpFile){
-		$fileOptions='<label onclick="attachedFileDelete('.$tmpFile["_id"].');" title="'.Txt::trad("delete").'"><img src="app/img/delete.png"></label>';
+		$fileOptions='<label onclick="attachedFileDelete('.$tmpFile["_id"].');" '.Txt::tooltip("delete").'><img src="app/img/delete.png"></label>';
 		//Insertion de l'image/video/mp3 dans l'éditeur  &&  Affichage d'une miniature de l'image
 		if($curObj::descriptionEditor==true){
-			if(File::isType("attachedFileInsert",$tmpFile["name"]))		{$fileOptions.='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" title="'.Txt::trad("EDIT_attachedFileInsertTooltip").'"></label>';}
+			if(File::isType("attachedFileInsert",$tmpFile["name"]))		{$fileOptions.='<label onclick="attachedFileInsert('.$tmpFile["_id"].',\''.$tmpFile["url"].'\')"><img src="app/img/attachedFileInsert.png" '.Txt::tooltip("EDIT_attachedFileInsertTooltip").'></label>';}
 			if(File::isType("imageBrowser",$tmpFile["name"]))			{$fileOptions.=' &nbsp; <img src="'.$tmpFile["url"].'" class="attachedFileInsertImg">';}
 		}
 		echo '<hr><div id="attachedFileDivList'.$tmpFile["_id"].'" class="attachedFileDiv"><img src="app/img/attachment.png"> '.$tmpFile["name"].$fileOptions.'</div>';

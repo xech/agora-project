@@ -16,7 +16,7 @@ function contactAddUser(typeId)
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
+				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
 				if(Ctrl::$curUser->isSpaceAdmin())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_contact")."</div></div>";}
 				echo "<hr>";
@@ -38,7 +38,7 @@ function contactAddUser(typeId)
 			echo $tmpContact->divContainerContextMenu("objPerson").
 				"<div class='objContainerScroll'>
 					<div class='objContent'>
-						<div class='objIcon'>".$tmpContact->personImg(true,false,true)."</div>
+						<div class='objIcon'>".$tmpContact->profileImg(true,false,true)."</div>
 						<div class='objLabel' onclick=\"".$tmpContact->openVue()."\">
 							".$tmpContact->getLabel("full")."
 							<div class='objPersonDetails'>".$tmpContact->getFieldsValues(MdlContact::getDisplayMode())."</div>

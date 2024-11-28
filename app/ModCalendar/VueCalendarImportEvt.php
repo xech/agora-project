@@ -47,7 +47,7 @@ form							{padding:0px; margin:0px; text-align:center;}
 		////DEBUT DU TABLEAU + HEADER
 		echo '<table class="vTable">
 				<tr class="vTableHeader">
-					<td title="'.Txt::trad("selectSwitch").'"><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
+					<td '.Txt::tooltip("selectSwitch").'><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
 					<td>'.Txt::trad("CALENDAR_importIcalState").'</td>
 					<td>'.Txt::trad("begin").' - '.Txt::trad("end").'</td>
 					<td>'.Txt::trad("title").'</td>
@@ -72,7 +72,7 @@ form							{padding:0px; margin:0px; text-align:center;}
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodValues]"	value="'.$tmpEvt["dbPeriodValues"].'">
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodDateEnd]"	value="'.$tmpEvt["dbPeriodDateEnd"].'">
 						</td>
-						<td><img src="app/img/'.$isPresentImg.'" title="'.Txt::trad($isPresentTrad).'"></td>
+						<td><img src="app/img/'.$isPresentImg.'" '.Txt::tooltip($isPresentTrad).'></td>
 						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"basic",$tmpEvt["dbDateEnd"]).'</td>
 						<td><label for="'.$evtBoxId.'">'.$tmpEvt["dbTitle"].'</label></td>
 						<td>'.Txt::reduce($tmpEvt["dbDescription"],120).'</td>

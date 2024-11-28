@@ -16,7 +16,7 @@ class MdlPerson extends MdlObject
 	public static $requiredFields=["name","firstName","login"];
 	public static $searchFields=["name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment"];
 	//Valeurs en cache
-	private $_hasImg=null;
+	private $_profileImg=null;
 	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
 	public static $csvFormats=array(
 		//AGORA
@@ -215,9 +215,9 @@ class MdlPerson extends MdlObject
 		//Mail : redirige vers le module mail (ou à défaut, l'outil de messagerie). "parent" pour rediriger aussi depuis un lightbox..
 		elseif($fieldName=="mail" && !empty($fieldValue)){
 			$mailtoUrl=(Ctrl::$curSpace->moduleEnabled("mail"))  ?  "onclick=\"windowParent.redir('?ctrl=mail&checkedMailto=".$this->$fieldName."');\""  :  "href=\"mailto:".$this->$fieldName."\"";
-			$fieldValue="<a ".$mailtoUrl." title=\"".Txt::trad("sendMail")."\">".$this->$fieldName." &nbsp;<img src='app/img/person/mail.png'></a>";
+			$fieldValue="<a ".$mailtoUrl." ".Txt::tooltip("sendMail").">".$this->$fieldName." &nbsp;<img src='app/img/person/mail.png'></a>";
 		}
-		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a onclick=\"lightboxOpen('?ctrl=misc&action=PersonsMap&objectsTypeId[".static::objectType."]=".$this->_id."');\" title=\"".Txt::trad("mapLocalize")."\">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
+		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a onclick=\"lightboxOpen('?ctrl=misc&action=PersonsMap&objectsTypeId[".static::objectType."]=".$this->_id."');\" ".Txt::tooltip("mapLocalize").">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
 		elseif($fieldName=="lastConnection")					{$fieldValue=(!empty($fieldValue))  ?  Txt::trad("lastConnection2")." ".Txt::dateLabel($fieldValue,"dateMini")  :  Txt::trad("lastConnectionEmpty");}//"Connecté le 20 mars" / "Pas encore connecté"
 		elseif($fieldName=="comment")							{$fieldValue=nl2br($fieldValue);}
 		//Retourne le champ dans son conteneur
@@ -229,65 +229,65 @@ class MdlPerson extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * LA PERSONNE POSSÈDE UNE IMAGE DE PROFIL ?
+	 * IMAGE DE PROFIL : VERIF L'EXISTENCE
 	 *******************************************************************************************/
-	public function hasImg()
+	public function profileImgExist()
 	{
-		if($this->_hasImg===null)  {$this->_hasImg=is_file($this->pathImgThumb());}
-		return $this->_hasImg;
+		if($this->_profileImg===null)  {$this->_profileImg=is_file($this->pathImgThumb());}
+		return $this->_profileImg;
 	}
 
 	/*******************************************************************************************
-	 * PATH DE L'IMAGE DE PROFIL
+	 * IMAGE DE PROFIL : PATH
 	 *******************************************************************************************/
-	public function personImgPath($defaultImg=false)
+	public function profileImgPath($defaultImg=false)
 	{
-		if($this->hasImg())			{return $this->pathImgThumb();}
-		elseif($defaultImg==true)	{return 'app/img/person/personDefault.png';}//img par défaut affiché si demandé
+		if($this->profileImgExist())	{return $this->pathImgThumb().($this->dateModif?"?time=".strtotime($this->dateModif):null);}	//Img avec un "time" pour updater si besoin le cache du browser
+		elseif($defaultImg==true)		{return 'app/img/person/personDefault.png';}													//Img par défaut (si demandé)
 	}
 
 	/*******************************************************************************************
-	 * BALISE <IMG> DE L'IMAGE DU PROFIL
+	 *  IMAGE DU PROFIL : BALISE <IMG>
 	 *******************************************************************************************/
-	public function personImg($openProfile=false, $smallImg=false, $defaultImg=false)
+	public function profileImg($openProfile=false, $smallImg=false, $defaultImg=false)
 	{
-		$imgPath=$this->personImgPath($defaultImg);
+		$imgPath=$this->profileImgPath($defaultImg);
 		if(!empty($imgPath)){
 			$personImg='<img src="'.$imgPath.'" class="personImg '.($smallImg==true?"personImgSmall":null).'">';
-			if($openProfile==true)  {$personImg='<a onclick="'.$this->openVue().'" title="'.Txt::trad("displayProfil").'">'.$personImg.'</a>';}
+			if($openProfile==true)  {$personImg='<a onclick="'.$this->openVue().'" '.Txt::tooltip("displayProfil").'>'.$personImg.'</a>';}
 			return $personImg;
 		}
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE LE MENU DE GESTION DE L'IMAGE DU PROFIL
+	 * IMAGE DU PROFIL : MENU D'EDITION
 	 *******************************************************************************************/
-	public function displayImgMenu()
+	public function profileImgMenu()
 	{
 		////	Ajouter un fichier  OU  Fichier à conserver/modifier/supprimer
-		if($this->hasImg()!=true)	{return '<input type="file" name="personImgFile"><input type="hidden" name="personImgAction" value="change">';}	
+		if($this->profileImgExist()!=true)	{return '<input type="file" name="profileImgFile"><input type="hidden" name="profileImgAction" value="change">';}	
 		else{
-			return '<select name="personImgAction" onchange="if(this.value==\'change\') {$(\'.personImgFile\').fadeIn();} else {$(\'.personImgFile\').fadeOut();}">
+			return '<select name="profileImgAction" onchange="if(this.value==\'change\') {$(\'.profileImgFile\').fadeIn();} else {$(\'.profileImgFile\').fadeOut();}">
 						<option value="">'.Txt::trad("keepImg").'</option>
 						<option value="change">'.Txt::trad("changeImg").'</option>
 						<option value="delete">'.Txt::trad("delete").'</option>
 					</select>
-					<input type="file" name="personImgFile" class="personImgFile" style="display:none;margin-top:10px;">';
+					<input type="file" name="profileImgFile" class="profileImgFile" style="display:none;margin-top:10px;">';
 		}
 	}
 
 	/*******************************************************************************************
-	 * ENREGISTRE/SUPPRIME L'IMAGE DU PROFIL
+	 * IMAGE DU PROFIL : ENREGISTRE / SUPPRIME (cf. "profileImgMenu()")
 	 *******************************************************************************************/
-	public function editImg()
+	public function profileImgRecord()
 	{
-		if(Req::isParam("personImgAction"))
+		if(Req::isParam("profileImgAction"))
 		{
 			// Supprime
-			if(Req::param("personImgAction")=="delete")	{unlink($this->pathImgThumb());}
+			if(Req::param("profileImgAction")=="delete")	{unlink($this->pathImgThumb());}
 			// Ajoute / change
-			if(Req::param("personImgAction")=="change" && !empty($_FILES["personImgFile"]) && File::isType("imageResize",$_FILES["personImgFile"]["name"])){
-				move_uploaded_file($_FILES["personImgFile"]["tmp_name"], $this->pathImgThumb());
+			if(Req::param("profileImgAction")=="change" && !empty($_FILES["profileImgFile"]) && File::isType("imageResize",$_FILES["profileImgFile"]["name"])){
+				move_uploaded_file($_FILES["profileImgFile"]["tmp_name"], $this->pathImgThumb());
 				File::imageResize($this->pathImgThumb(),$this->pathImgThumb(),200);
 			}
 		}

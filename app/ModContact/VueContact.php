@@ -8,7 +8,7 @@ lightboxSetWidth(600);//Resize
 	echo "<div class='lightboxTitle'>".$curObj->lightboxTitleMenu().$curObj->getLabel("full")."</div>";
 	
 	////	IMAGE & DETAILS DU CONTACT
-	echo "<div class='personLabelImg'>".$curObj->personImg()."</div>
+	echo "<div class='personLabelImg'>".$curObj->profileImg()."</div>
 		  <div class='personVueFields'>".$curObj->getFieldsValues("profile")."</div>".
 		  $curObj->attachedFileMenu();
 	?>

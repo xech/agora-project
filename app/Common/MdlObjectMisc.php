@@ -61,17 +61,14 @@ trait MdlObjectMisc
 	 *********************************************************************************************************************************/
 	public function attachedFileMenu($separator="<hr>")
 	{
-		//Mise en cache
-		if($this->_attachedFilesMenu===null)
-		{
+		if($this->_attachedFilesMenu===null){
 			$this->_attachedFilesMenu="";
-			//Affiche le menu avec chaque fichiers
-			if(count($this->attachedFileList())>0)
-			{
+			if(count($this->attachedFileList())>0){
+				//Affiche le menu pour chaque fichier
 				foreach($this->attachedFileList() as $tmpFile){
-					$getFileUrl="?ctrl=object&action=AttachedFileDownload&_id=".$tmpFile["_id"];
-					if(Req::isMobileApp())  {$getFileUrl=CtrlMisc::urlGetFile($getFileUrl,$tmpFile["name"]);}//Download externe via mobileApp : modif l'url pour switcher sur "ctrl=misc"
-					$this->_attachedFilesMenu.="<div class='attachedFileMenu' title=\"".Txt::trad("download")."\" onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$getFileUrl."');\"><img src='app/img/attachment.png'> ".$tmpFile["name"]."</div>";
+					$urlDownload='?ctrl=object&action=AttachedFileDownload&_id='.$tmpFile["_id"];
+					if(Req::isMobileApp())  {$urlDownload=CtrlMisc::urlExternalGetFile($urlDownload,$tmpFile["name"]);}//Download depuis l'exterieur : switch sur "ctrl=misc"
+					$this->_attachedFilesMenu.='<div class="attachedFileMenu" '.Txt::tooltip("download").' onclick="if(confirm(\''.Txt::trad("download",true).' ?\')) redir(\''.$urlDownload.'\')"><img src="app/img/attachment.png"> '.$tmpFile["name"].'</div>';
 				}
 			}
 		}

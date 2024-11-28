@@ -147,7 +147,7 @@ form											{text-align:center;}
 				//HEADER DU TABLEAU : INPUT "SELECT" DES CHAMPS "AGORA"
 				echo "<tr>";
 					//Bouton "switch" la sélection des personnes importées
-					echo "<th><img src='app/img/switch.png' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" title=\"".Txt::trad("selectSwitch")."\"></th>";
+					echo "<th><img src='app/img/switch.png' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" ".Txt::tooltip("selectSwitch")."></th>";
 					//Pour chaque colonne, on affiche un input "select" avec chaque champ "agora" (type "csv_agora")
 					for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){
 						echo "<th><select name='agoraFields[".$fieldCpt."]' class='vAgoraFieldSelect' data-fieldCpt='".$fieldCpt."'><option></option>";	//Début du <select> et option vide (champ pas importé)
@@ -183,7 +183,7 @@ form											{text-align:center;}
 			if($curObjClass::objectType=="user")
 			{
 				echo '<div class="vImportUserOptions">';
-					echo '<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser"><label for="notifCreaUser" title="'.Txt::trad("USER_sendCoordsTooltip2").'">'.Txt::trad("USER_sendCoords").'</label><hr>';
+					echo '<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser"><label for="notifCreaUser" '.Txt::tooltip("USER_sendCoordsTooltip2").'>'.Txt::trad("USER_sendCoords").'</label><hr>';
 					echo "<div>".Txt::trad("USER_spaceList")." :</div>";
 					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
 						if($tmpSpace->accessRight()==2){

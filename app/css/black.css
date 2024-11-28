@@ -3,8 +3,10 @@ body, a, .sLink																						{color:#ccc;}
 #htmlLightbox																						{background:#222;}
 input, textarea, select																				{background:#333; color:#ccc; border:1px solid #555!important;}
 
-/*Liens principaux / label+checkbox / accès utilisateur..*/
+/*Liens principaux / label+checkbox / accès utilisateur  &  Option sélectionnée*/
 a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLaunch:hover, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(173,211,255);}
+.option							{border:solid 1px transparent;}
+.option:hover, .optionSelect	{color:rgb(173,211,255); background:#333; border:solid 1px #555; border-radius:5px;}
 
 /*Blocks d'objet & menus contextuels*/
 .sAccessWrite, .sAccessWriteLimit																	{color:#f88;}								/*Droit d'accès "Write" & "Write limit"*/
@@ -13,9 +15,9 @@ a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLaunch:hover, button:h
 .objLines .objContainer																				{border-bottom:solid 1px #555;}			/*pas de "box-shadow" en affichage "objLines"*/
 
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	#htmlMainPage	{background:#333 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
-	.objContainer, .miscContainer, .emptyContainer	{width:100%; box-shadow:0px 2px 5px rgb(100,100,100);}										/*cf. affichage de news et fichiers*/
+	.objContainer, .miscContainer, .emptyContainer	{box-shadow:0px 2px 6px #555;}
 }
 
 /*Divers*/
@@ -24,7 +26,5 @@ hr										{background:linear-gradient(90deg,#555,#999,#555);}													/*ba
 fieldset, .objMenuTab, .objMenuOptions	{background:#333; border:1px solid #444; border-radius:5px;}											/*fieldset & "VueObjEditMenuSubmit.php"*/
 .fieldsetSub							{background:#444; border:1px solid #414141; border-radius:5px;}										/*"VueObjEditMenuSubmit.php"*/
 .objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#333,#222);}															/*"VueObjEditMenuSubmit.php"*/
-.optionSelect, .optionUnselect:hover	{color:rgb(173,211,255); background:#333; border:solid 1px #555; border-radius:5px;}					/*option/categorie sélectionnée*/
-.optionUnselect							{border:solid 1px transparent;}
 ::-webkit-scrollbar						{background:#333; width:12px;}																			/*scrollbar: background et width*/
 ::-webkit-scrollbar-thumb				{background:#888;}																						/*scrollbar: couleur de la barre*/

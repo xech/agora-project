@@ -3,6 +3,28 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 #################################
 
+
+VERSION 24.11.1
+###############
+Nouvel affichage des agendas sur 7 jours consécutifs (en + de "semaine")
+Amélioration de l'impression des agendas mois/semaine
+Optimisation des modes d'affichage des agendas sur mobile
+Meilleure gestion du téléchargement de fichier sur l'application mobile
+Amélioration du menu de lancement des visioconférences
+Amélioration du menu de connexion / d'authentification
+Correction d'affichage avec l'application IPad
+Correction d'affichage des agendas semaine sur Mac Safari
+-----
+New display of calendars over 7 consecutive days (in addition to "week")
+Better management of printing month/week calendars
+Optimization of calendar display modes on mobile
+Improved management of file download on mobile App
+Improvement of the launch menu of videoconferences
+Improved login/authentication menu
+Fixed display with the IPad application
+Fixed display of weekly calendars on Mac Safari
+
+
 VERSION 24.8.3
 ###############
 Amélioration de l'ergonomie et performances d'affichage des agendas

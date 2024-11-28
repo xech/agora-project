@@ -8,8 +8,8 @@
 foreach($categoryList as $tmpCat){
 	$categoryTooltip=(!empty($tmpCat->_id))  ?  Txt::trad($tradPrefix."_categoryMenuTooltip").' &nbsp; '.$tmpCat->getLabel().'<br>'.$tmpCat->description  :  Txt::trad($tradPrefix."_categoryShowAllTooltip");
 ?>
-<div class="menuLine vMenuCategory" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&_idCategoryFilter=<?= $tmpCat->_id ?>')" title="<?= Txt::tooltip($categoryTooltip) ?>">
-	<div class="<?= $_idCategoryFilter==$tmpCat->_id?'optionSelect':'optionUnselect' ?>"><?= $tmpCat->getLabel() ?></div>
+<div class="menuLine vMenuCategory" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&_idCategoryFilter=<?= $tmpCat->_id ?>')" <?= Txt::tooltip($categoryTooltip) ?>>
+	<div class="<?= $_idCategoryFilter==$tmpCat->_id?'optionSelect':'option' ?>"><?= $tmpCat->getLabel() ?></div>
 </div>
 <?php } ?>
 

@@ -115,11 +115,6 @@ class File
 	 ************************************************************************************************************************************/
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
-		////	Old mobileApp sous Cordova (annule le download pour ne pas bloquer InAppBrowser)
-		if(Req::isMobileApp() && Req::isParam("fromMobileApp")==false){
-			echo "<script> setTimeout(function(){ window.history.back(); },1000); </script>";
-			exit;
-		}
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
 		if(!empty($fileContent) || is_file($filePath))
 		{
@@ -152,7 +147,7 @@ class File
 	}
 
 	/*******************************************************************************************
-	 * AFFICHE UN FICHIER DANS LE BROWSER (masque le path reel du fichier img/pdf/etc)
+	 * AFFICHE UN FICHIER DANS LE BROWSER (MASQUE LE PATH REEL DU FICHIER IMG/PDF/ETC)
 	 *******************************************************************************************/
 	public static function display($filePath)
 	{
@@ -213,9 +208,9 @@ class File
 	 *******************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
-		if(preg_match("/(g|go)$/i",$sizeText))		{return str_ireplace(["go","g"],"",$sizeText) * self::sizeGo;}
-		elseif(preg_match("/(m|mo)$/i",$sizeText))	{return str_ireplace(["mo","m"],"",$sizeText) * self::sizeMo;}
-		elseif(preg_match("/(k|ko)$/i",$sizeText))	{return str_ireplace(["ko","k"],"",$sizeText) * self::sizeKo;}
+		if(preg_match("/(g|go)$/i",$sizeText))		{return floatval(str_ireplace(["go","g"],"",$sizeText)) * self::sizeGo;}
+		elseif(preg_match("/(m|mo)$/i",$sizeText))	{return floatval(str_ireplace(["mo","m"],"",$sizeText)) * self::sizeMo;}
+		elseif(preg_match("/(k|ko)$/i",$sizeText))	{return floatval(str_ireplace(["ko","k"],"",$sizeText)) * self::sizeKo;}
 		else										{return $sizeText;}
 	}
 
@@ -474,5 +469,13 @@ class File
 				fclose($fp);
 			}
 		}
+	}
+
+	/*******************************************************************************************
+	 * PATH DE LA DOCUMENTATION PDF (FRANÇAISE / ANGLAISE)
+	 *******************************************************************************************/
+	public static function docFile()
+	{
+		return 'docs/DOCUMENTATION_'.(Txt::trad("CURLANG")=='fr'?'FR':'EN').'.pdf?displayFile=true';//"displayFile" : url d'affichage dans l'appli mobile
 	}
 }

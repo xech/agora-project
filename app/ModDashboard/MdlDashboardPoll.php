@@ -235,8 +235,8 @@ class MdlDashboardPoll extends MdlObject
 		//Il y a un fichier ?
 		if(!empty($tmpResponse["fileName"])){
 			//Image avec un lien pour l'afficher OU Nom du fichier avec un lien de téléchargement
-			if(File::isType("imageBrowser",$tmpResponse["fileName"]))	{$responseFileDiv="<a href=\"".$this->responseFilePath($tmpResponse)."\" data-fancybox='images' title=\"".Txt::tooltip($tmpResponse["fileName"])."\"><img src=\"".$this->responseFilePath($tmpResponse)."\"></a>";}
-			else														{$responseFileDiv="<a href=\"".$tmpResponse["fileUrlDownload"]."\" title=\"".Txt::trad("download")."\"><img src='app/img/attachment.png'> ".$tmpResponse["fileName"]."</a>";}
+			if(File::isType("imageBrowser",$tmpResponse["fileName"]))	{$responseFileDiv='<a href="'.$this->responseFilePath($tmpResponse).'" data-fancybox="images" '.Txt::tooltip($tmpResponse["fileName"]).'><img src="'.$this->responseFilePath($tmpResponse).'"></a>';}
+			else														{$responseFileDiv='<a href="'.$tmpResponse["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$tmpResponse["fileName"].'</a>';}
 			return "<div class='vPollsResponseFile'>".$responseFileDiv."</div>";
 		}
 	}
@@ -261,7 +261,7 @@ class MdlDashboardPoll extends MdlObject
 	{
 		//// Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
 		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  $this->votesUsers()  :  null;
-		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>"<span class='cursorHelp' title=\"".Txt::tooltip($tooltipVotedBy)."\">".str_replace("--NB_VOTES--",$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb"))."</span>"];
+		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>'<span class="cursorHelp" '.Txt::tooltip($tooltipVotedBy).'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb")).'</span>'];
 		//// Date de fin de vote  &&  Vote est public  &&  Export pdf du résultat d'un sondage
 		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dashboard/pollDateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
 		if(!empty($this->publicVote))			{$options["specificOptions"][]=["iconSrc"=>"eye.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"];}

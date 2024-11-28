@@ -1,12 +1,11 @@
 <script>
-////	Init la page
 $(function(){
-	//Change de wallpaper
+	/*******************************************************************************************
+	 *	CHANGE DE WALLPAPER
+	 *******************************************************************************************/
 	$("select[name='wallpaper']").on("change click",function(){
-		//Réinit les valeurs
-		$("#wallpaperImg,#wallpaperAdd,#wallpaperDelete").hide();
-		//Input pour "Ajouter" un Wallpaper  OU  Affiche la vignette du wallpaper courant
-		if(this.value=="add")  {$("#wallpaperAdd").show();}
+		$("#wallpaperImg,#wallpaperAdd,#wallpaperDelete").hide();					//Réinit les valeurs
+		if(this.value=="add")  {$("#wallpaperAdd").show();}							//Input pour "Ajouter" un Wallpaper  OU  Affiche la vignette du wallpaper courant
 		else{
 			var filePath=$('option[value="'+this.value+'"]').attr('data-filePath');	//Path du wallpaper courant
 			$("#wallpaperImg img").attr("src",filePath);							//Modifie le "src" du wallpaper
@@ -16,13 +15,14 @@ $(function(){
 	}).trigger("click");//Paramétrage général : Trigger au chargement de la page pour afficher si besoin le "wallpaperDelete"
 });
 
-////	Suppression d'un Wallpaper
+/*******************************************************************************************
+ *	SUPPRESSION D'UN WALLPAPER
+*******************************************************************************************/
 function wallpaperDelete()
 {
 	confirmDelete("?ctrl=<?= Req::$curCtrl ?>&action=<?= Req::$curAction ?>&deleteCustomWallpaper="+$("select[name='wallpaper']").val());
 }
 </script>
-
 
 <style>
 #wallpaperMain					{display:table;}

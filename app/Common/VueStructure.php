@@ -37,6 +37,7 @@
 		<script>
 		////	Parametres de base et labels de "common.js"
 		isMainPage=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
+		isMobileApp=<?= Req::isMobileApp()==true ? "true" : "false" ?>;
 		windowParent=(isMainPage==true) ? window : window.parent;//Accès à la page principale via common.js
 		confirmCloseForm		=false;//Confirmation de fermeture de formulaire (Ex: édition d'objet)
 		labelConfirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
@@ -59,7 +60,7 @@
 			?>
 			////	Mobile : Affiche le bouton en bas de page pour ajouter un nouvel element
 			if(isMobile()){
-				var addElemButton=$("#pageModMenu img[src*='plus.png']").first().parents(".menuLine");//Sélectionne le div ".menuLine" du premier bouton "Ajouter"
+				var addElemButton=$("#pageModMenu img[src*='plus']").first().parents(".menuLine");//Sélectionne le div ".menuLine" du premier bouton "Ajouter"
 				if(addElemButton.exist())  {$("#menuMobileAddButton").attr("onclick",addElemButton.attr("onclick")).show();}//Ajoute l'attribut "onclick", puis affiche ce bouton
 			}
 		});
@@ -85,23 +86,18 @@
 		#menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masque par défaut les principaux elements sur mobile*/
 
 		/*MOBILE  (cf. "common.js")*/
-		@media screen and (max-width:1023px){
+		@media screen and (max-width:1024px){
 			#pageFooterHtml, #pageFooterIcon			{visibility:hidden;}/*pas de "display:none" pour laisser de la marge avec le contenu de la page pour le Messenger/Livecounter et le "menuMobileAddButton"*/
-			#menuMobileMain, #menuMobileBg				{position:fixed; top:0px; right:0px; height:100%;}
-			#menuMobileBg								{z-index:100; width:100%; background:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
-			#menuMobileMain								{z-index:101; max-width:360px!important; overflow:auto; padding:10px; padding-top:30px; font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:white;border:solid 1px #ddd;' ?>}
-			#menuMobileMain #menuMobileClose			{position:absolute; top:7px; right:7px;}/*tester avec la mobileApp*/
-			#menuMobileMain .menuLine					{padding:3px;}/*uniformise la présentation (cf. menu espace et users)*/
-			#menuMobileMain .menuLine>div:first-child	{padding-right:10px;}/*idem*/
+			/*Menu mobile : cf. "common.js"*/
+			#menuMobileMain, #menuMobileBg				{position:fixed; top:0px; right:0px; width:100%; height:100%;}
+			#menuMobileBg								{z-index:100; background:rgba(0,0,0,0.7);}/*z-index à 100 : idem ".menuContext"*/
+			#menuMobileMain								{z-index:101; max-width:440px;/*idem css*/ overflow:auto; padding:10px; padding-top:35px;/*cf. #menuMobileClose*/ font-size:1.05em!important; <?= @Ctrl::$agora->skin=='black'?'background:#333;border:solid 1px #444;':'background:white;border:solid 1px #ddd;' ?>}
+			#menuMobileMain #menuMobileClose			{position:absolute; top:10px; right:10px;}
+			#menuMobileMain .menuLine>div				{padding:10px 5px;}/*surcharge*/
 			#menuMobileMain hr							{margin:10px 0px;}/*surcharge*/
 			#menuMobileTwo								{display:none; margin-top:10px; border-radius:5px;}
 			#menuMobileTwo, .vHeaderModuleCurrent		{<?= @Ctrl::$agora->skin=="black" ? "background:#444!important;border:solid 1px #555;" : "background:#eee!important;border:solid 1px #ddd;" ?>}
-			#menuMobileAddButton						{z-index:20; position:fixed; bottom:5px; right:5px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
-		}
-
-		/*IMPRESSION*/
-		@media print{
-			[id^='pageFooter']	{display:none!important;}
+			#menuMobileAddButton						{z-index:20; position:fixed; bottom:10px; right:10px; filter:drop-shadow(0px 2px 4px #ccc);}/*Bouton d'ajout d'elem. "z-index" identique aux menus contextuels*/
 		}
 		</style>
 	</head>
@@ -118,7 +114,7 @@
 		?>
 			<div id="menuMobileBg"></div>
 				<div id="menuMobileMain">
-					<div id="menuMobileClose"><img src="app/img/closeMobile.png"></div>
+					<div id="menuMobileClose"><img src="app/img/mobileClose.png"></div>
 					<div id="menuMobileContent"><div id="menuMobileOne"></div><div id="menuMobileTwo"></div></div>
 				</div>
 			<div id="menuMobileAddButton"><img src="app/img/plusBig.png"></div>
@@ -127,13 +123,9 @@
 
 		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE
 		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
-			//Mise à jour récente : notification "footerHtml" spécifique pour l'admin
-			if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curUser->previousConnection<strtotime(Ctrl::$agora->dateUpdateDb))
-				{Ctrl::$agora->footerHtml='<span id="footerHtmlUpdate" onclick="lightboxOpen(\'docs/CHANGELOG.txt\')" style="cursor:pointer">Updated version : '.Req::appVersion().'</span>';}
-			//Affiche le footer
 			$pageFooterIconTooltip=OMNISPACE_URL_LABEL.' - '.Txt::trad("FOOTER_pageGenerated").' '.round((microtime(true)-TPS_EXEC_BEGIN),3).' secondes';
 			echo '<div id="pageFooterHtml">'.Ctrl::$agora->footerHtml.'</div>
-				  <div id="pageFooterIcon"><a href="'.$pathLogoUrl.'" target="_blank" title="'.Txt::tooltip($pageFooterIconTooltip).'"><img src="'.Ctrl::$agora->pathLogoFooter().'"></a></div>';
+				  <div id="pageFooterIcon"><a href="'.$pathLogoUrl.'" target="_blank" '.Txt::tooltip($pageFooterIconTooltip).'><img src="'.Ctrl::$agora->pathLogoFooter().'"></a></div>';
 		}
 		?>
 	</body>

@@ -11,9 +11,7 @@ $(function(){
 	/*******************************************************************************************
 	 *	PRÉSELECTIONNE LE TITRE DU MAIL
 	 *******************************************************************************************/
-	if(isMobile()==false){
-		$("[name='title']").focus();
-	}
+	$("[name='title']").focusAlt();
 
 	/*******************************************************************************************
 	 *	INIT L'AFFICHAGE DE L'ARBORESCENCE DE CONTACTS
@@ -71,28 +69,26 @@ $(function(){
 
 <style>
 /*Menu "Historique" & "Destinataires"*/
-#historyLabel								{border-bottom:solid 1px #bbb; margin-bottom:20px;}
-#historyLabel, #recipientLabel				{text-align:center; padding:10px;}
-#recipientLabel img							{max-height:22x;}
-.vMailsBlock								{margin:0px 10px 15px 10px;}
-.vMailsLabel 								{display:table;}
-.vMailsLabel>div 							{display:table-cell; vertical-align:middle;}
-.vMailsLabel img							{max-width:24px; margin-right:8px;}
-.vMailsMenu									{padding-left:5px!important; display:none;}
-.vMailsMenu.vMailsMenuDisplay				{display:block;}
-.vMailsMenu>div								{padding:7px;}
+#historyLabel						{border-bottom:solid 1px #bbb; margin-bottom:20px;}
+#historyLabel, #recipientLabel		{text-align:center; padding:10px;}
+#recipientLabel img					{max-height:22x;}
+.vMailsBlock						{margin:0px 10px 15px 10px;}
+.vMailsLabel 						{display:table;}
+.vMailsLabel>div 					{display:table-cell; vertical-align:middle;}
+.vMailsLabel img					{max-width:24px; margin-right:8px;}
+.vMailsMenu							{padding-left:5px!important; display:none;}
+.vMailsMenu.vMailsMenuDisplay		{display:block;}
+.vMailsMenu>div						{padding:7px;}
 /*formulaire principal*/
-#mailContainer								{padding:10px;}
-#mailContainer [name='title']				{width:100%; height:35px; margin-bottom:20px;}
-#mailOptions								{display:table; width:100%; margin-top:20px;}
-#mailOptions>div							{display:table-cell;}/*options et bouton "Envoyer"*/
-#mailOptions>div>div						{margin:10px;}/*lignes des options*/
-#mailOptions img[src*=dependency]			{display:none;}
-#visioUrlAdd img[src*=plusSmall]			{display:none;}
-#visioUrlAdd:hover img[src*=plusSmall]		{display:inline;}
-.submitButtonMain button					{width:220px; height:50px;}
+#mailContainer						{padding:10px;}
+#mailContainer [name='title']		{width:100%; height:35px; margin-bottom:20px;}
+#mailOptions						{display:table; width:100%; margin-top:20px;}
+#mailOptions>div					{display:table-cell;}/*options et bouton "Envoyer"*/
+#mailOptions>div>div				{margin:10px;}/*lignes des options*/
+#mailOptions img[src*=dependency]	{display:none;}
+.submitButtonMain button			{width:220px; height:50px;}
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
 	#mailOptions, #mailOptions>div	{display:inline-block;}
@@ -121,7 +117,7 @@ $(function(){
 						if($tmpContainer::objectType=="space"){
 							foreach(MdlUserGroup::getGroups($tmpContainer) as $tmpGroup){
 								$tmpBoxId=$tmpContainer->_typeId.$tmpGroup->_typeId;
-								$tmpGroupsFields.='<div title="'.Txt::tooltip($tmpGroup->usersLabel).'"><input type="checkbox" name="groupList[]" value="'.$tmpGroup->_typeId.'" id="'.$tmpBoxId.'"> <label for="'.$tmpBoxId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label></div>';
+								$tmpGroupsFields.='<div '.Txt::tooltip($tmpGroup->usersLabel).'><input type="checkbox" name="groupList[]" value="'.$tmpGroup->_typeId.'" id="'.$tmpBoxId.'"> <label for="'.$tmpBoxId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label></div>';
 							}
 						}
 						////	PERSONNES DU CONTENEUR (prépare l'affichage)
@@ -134,7 +130,7 @@ $(function(){
 								$mailsMenuClass="vMailsMenuDisplay";														//Affiche le menu (si besoin)
 							}
 							$tmpBoxId=$tmpContainer->_typeId.$tmpPerson->_typeId;
-							$userMailTooltip=($tmpPerson->userMailDisplay())  ?  'title="'.Txt::tooltip($tmpPerson->mail).'"'  :  null;
+							$userMailTooltip=($tmpPerson->userMailDisplay())  ?  Txt::tooltip($tmpPerson->mail)  :  null;
 							$tmpPersonsFields.='<div '.$userMailTooltip.'><input type="checkbox" name="personList[]" value="'.$tmpPerson->_typeId.'" id="'.$tmpBoxId.'" '.$tmpPerson->mailChecked.'> <label for="'.$tmpBoxId.'">'.$tmpPerson->getLabel().'</label></div>';
 							$cptPerson++;
 						}
@@ -159,7 +155,7 @@ $(function(){
 			<div id="mailContainer" class="miscContainer">
 
 				<!--TITRE / DESCRIPTION-->
-				<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= txt::trad("MAIL_title") ?>">
+				<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("MAIL_title") ?>">
 				<?= $curObj->editDescription(false) ?>
 
 				<!--MOBILE : LISTE DES DESTINATAIRES-->
@@ -169,18 +165,16 @@ $(function(){
 				<div id="mailOptions">
 					<div>
 						<?php
-						// Options de base des emails (cf. Tool::sendMail()")
+						//// Options de base des emails (cf. Tool::sendMail()")  &&  "Ajouter une visioconférence"  &&  "joindre des fichiers"
 						echo MdlObject::sendMailBasicOptions();
-						//// "Ajouter une visioconférence"
-						if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" title="'.Txt::trad("VISIO_urlMail").'"><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").' <img src="app/img/plusSmall.png"></div>';}
-						//// "joindre des fichiers"
+						if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" '.Txt::tooltip("VISIO_urlMail").'><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").'</div>';}
 						echo $curObj->attachedFile();
 						?>
 					</div>
 					<div>
 						<?php
 						//// Ancien email rappelé via "oldMailTypeId"  &  Bouton"Submit"
-						if(Req::isParam("oldMailTypeId"))  {echo "<input type='hidden' name='oldMailTypeId' value=\"".Req::param("oldMailTypeId")."\">";}
+						if(Req::isParam("oldMailTypeId"))  {echo '<input type="hidden" name="oldMailTypeId" value="'.Req::param("oldMailTypeId").'">';}
 						echo Txt::submitButton("<img src='app/img/postMessage.png'> ".Txt::trad("MAIL_sendButton"));
 						?>
 					</div>

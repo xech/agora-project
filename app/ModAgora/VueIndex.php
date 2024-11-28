@@ -1,13 +1,24 @@
 <script>
 $(function(){
-	////	Logo en page de connexion
+	/*******************************************************************************************
+ 	*	RECUP UN BACKUP
+	*******************************************************************************************/
+	$(".vBackupButton").on("click",function(){
+		if(confirm("<?= Txt::trad("AGORA_backupConfirm") ?>"))  {redir("?ctrl=agora&action=getBackup&typeBackup="+$(this).attr("data-typeBackup"));}
+	});
+
+	/*******************************************************************************************
+	 *	LOGO EN PAGE DE CONNEXION
+	 *******************************************************************************************/
 	$("#logoConnectSelect").on("change",function(){
 		$("#logoConnectImg,#logoConnectFile").hide();
 		if(this.value=="<?= Ctrl::$agora->logoConnect ?>")	{$("#logoConnectImg").show();}			//Affiche le logo spécifique
 		else if(this.value=="modify")						{$("#logoConnectFile").show();}			//Affiche l'input "file"
 	}).trigger("change");
 
-	////	Logo du footer
+	/*******************************************************************************************
+	 *	LOGO DU FOOTER
+	 *******************************************************************************************/
 	$("#logoSelect").on("change",function(){
 		$("#logoImg,#logoFile,#logoUrl").hide();
 		if(this.value=="<?= Ctrl::$agora->logo ?>")	{$("#logoImg").show();}		//Affiche le logo spécifique / par défaut
@@ -15,16 +26,22 @@ $(function(){
 		if(this.value!="")												{$("#logoUrl").show();}		//Affiche l'input "url" du logo
 	}).trigger("change");
 
-	////	Vérif le type du fichier
+	/*******************************************************************************************
+	 *	VÉRIF LE TYPE DU FICHIER
+	 *******************************************************************************************/
 	$("#logoFile,#logoConnectFile,#wallpaperFile").on("change",function(){
 		if(/\.(jpg|jpeg|png)/i.test(this.value)==false)  {notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
-	////	Affiche du "mapApiKeyDiv" si "mapTool"=="gmap"  &&   Affiche du "gIdentityClientId" si "gIdentity" est activé  ("trigger()" initie l'affichage)
+	/**************************************************************************************************************************************************
+	 *	AFFICHE DU "MAPAPIKEYDIV" SI "MAPTOOL"=="GMAP"  &&   AFFICHE DU "GIDENTITYCLIENTID" SI "GIDENTITY" EST ACTIVÉ  ("TRIGGER()" INITIE L'AFFICHAGE)
+	 ***************************************************************************************************************************************************/
 	$("select[name='mapTool']").on("change",function(){  this.value=="gmap" ? $("#mapApiKeyDiv").fadeIn() : $("#mapApiKeyDiv").fadeOut();  }).trigger("change");
 	$("select[name='gIdentity']").on("change",function(){  this.value=="1" ? $("#gIdentityClientIdDiv").fadeIn() : $("#gIdentityClientIdDiv").fadeOut();  }).trigger("change");
 
-	////	Controle du formulaire
+	/*******************************************************************************************
+	 *	CONTROLE DU FORMULAIRE
+	 *******************************************************************************************/
 	$("#mainForm").submit(function(){
 		//Contrôle le nom de l'espace
 		if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
@@ -41,47 +58,38 @@ $(function(){
 });
 </script>
 
-
 <style>
 /*Menu context de gauche*/
-#pageModuleMenu .miscContainer	{text-align:center;}/*surcharge*/
-#pageModuleMenu button			{width:90%;}
-#pageModuleMenu button img		{max-height:25px; margin-left:10px;}
-#agoraInfos div					{line-height:35px;}
-#backupForm button				{margin:10px 0; width:100%; height:50px; text-align:left;}
+.vAgoraVersion				{text-align:center; margin-top:10px;}
+#pageModuleMenu button		{width:100%; margin-top:20px; height:45px; text-align:left;}
+#pageModuleMenu img			{max-height:25px; margin-right:10px;}
+#pageModuleMenu hr			{margin:20px 0px;}
 
 /*Formulaire principal*/
-.objField>div					{padding:4px 0px 4px 0px;}/*surcharge*/
-input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + label*/
-#logoImg, #logoConnectImg		{margin:0px 10px; max-width:80px; max-height:40px;}/*surcharge ".objField img"*/
-#logoUrl						{margin-top:10px;}
-#limite_espace_disque			{width:40px;}
-#smtpConfig, #ldapConfig		{padding:10px; margin-bottom:20px;}
+.objField>div				{padding:4px 0px 4px 0px;}/*surcharge*/
+input[type='radio']+label	{margin-right:20px;}/*espace entre chaque input + label*/
+#logoImg, #logoConnectImg	{margin:0px 10px; max-width:80px; max-height:40px;}/*surcharge ".objField img"*/
+#logoUrl					{margin-top:10px;}
+#limite_espace_disque		{width:40px;}
+#smtpConfig, #ldapConfig	{padding:10px; margin-bottom:20px;}
 </style>
 
 
 <div id="pageCenter">
 
 	<div id="pageModuleMenu">
-		<!--VERSIONS D'AGORA / PHP / MYSQL  &&  FONCTIONS PHP DÉSACTIVÉES-->
-		<div class="miscContainer" id="agoraInfos">
-			<div>Agora-Project / Omnispace version <?= Req::appVersion() ?></div>
-			<div><?= Txt::trad("AGORA_dateUpdate")." ".Txt::dateLabel(Ctrl::$agora->dateUpdateDb,"dateMini") ?></div>
-			<div><a onclick="lightboxOpen('docs/CHANGELOG.txt')"><button><?= Txt::trad("AGORA_Changelog") ?></button></a></div>
-			<div>PHP <?= str_replace(strstr(phpversion(),"-"),"",phpversion()) ?> &nbsp;&nbsp; <?= Db::dbVersion() ?></div>
-			<?php if(!function_exists("mail")){ ?><div ><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcMailDisabled") ?></div><?php } ?>
-			<?php if(!function_exists("imagecreatetruecolor")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_funcImgDisabled") ?></div><?php } ?>
-			<?php if(!function_exists("ldap_connect")){ ?><div><img src="app/img/delete.png"> <?= Txt::trad("AGORA_ldapDisabled") ?></div><?php } ?>
+		<!--VERSIONS D'AGORA  &&  FONCTIONS PHP DÉSACTIVÉES  &&  OPTIONS DE BACKUP-->
+		<div class="miscContainer">
+			<div class="vAgoraVersion" title="PHP <?= phpversion().' - '.Db::dbVersion()?>">Agora-Project <?= Req::appVersion()?></div>
+			<button onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/info.png"><?= Txt::trad("AGORA_Changelog") ?></button>
+			<?php if(Req::isMobile()==false){ ?>
+				<button class="vBackupButton" data-typeBackup="all" title="<?= Txt::trad("AGORA_backupFullTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
+				<button class="vBackupButton" data-typeBackup="db"  title="<?= Txt::trad("AGORA_backupDbTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
+			<?php } ?>
+			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
+			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
+			<?php if(!function_exists("ldap_connect")){ ?>			<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpLdapDisabled") ?><?php } ?>
 		</div>
-		<!--OPTIONS DE BACKUP-->
-		<?php if(Req::isMobile()==false){ ?>
-		<form action="index.php" method="post" id="backupForm" class="miscContainer" onsubmit="return confirm('<?= Txt::trad('AGORA_backupConfirm',true) ?>')">
-			<button type="submit" name="typeBackup" value="all" title="<?= Txt::trad("AGORA_backupFullTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
-			<button type="submit" name="typeBackup" value="db" title="<?= Txt::trad("AGORA_backupDbTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
-			<input type="hidden" name="ctrl" value="agora">
-			<input type="hidden" name="action" value="getBackup">
-		</form>
-		<?php } ?>
 	</div>
 
 	<div id="pageCenterContent">
@@ -236,7 +244,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				</div>
 			</div>
 
-<hr><!--SEPARATEUR-->
+		<hr>
 
 			<!--LANG-->
 			<div class="objField">
@@ -279,7 +287,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 			</div>
 			<?php } ?>
 
-<hr><!--SEPARATEUR-->
+		<hr>
 
 			<!--SERVEURS JITSI (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>

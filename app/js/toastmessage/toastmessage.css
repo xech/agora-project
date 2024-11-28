@@ -1,6 +1,6 @@
 .toast-container {
-	width:480px; max-width:98%;	/**** MODIF ****/
-	z-index: 1000000;			/**** MODIF ****/
+	width:500px; max-width:98%;     /**** MODIF ****/
+	z-index: 1000000;               /**** MODIF ****/
 }
 
 * html .toast-container {
@@ -14,11 +14,11 @@
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	color: #eee;
-	padding: 30px;					/**** MODIF ****/
-	padding-left: 0px;				/**** MODIF ****/
-	font-family: Arial,Helvetica,Tahoma,Sans-Serif;	/**** MODIF ****/
-	font-size: 13px;				/**** MODIF ****/
-	border: 2px solid #555;			/**** MODIF ****/
+	padding: 30px;					                     /**** MODIF ****/
+	padding-left: 0px;				                    /**** MODIF ****/
+	font-family: Arial,Helvetica,Tahoma,Sans-Serif;	    /**** MODIF ****/
+	font-size: 13px;				                    /**** MODIF ****/
+	border: 2px solid #555;			               /**** MODIF ****/
 	display: block;
 	position: relative;
 	margin: 0 0 12px 0;
@@ -111,7 +111,7 @@
     left: 50%;
     margin-left: -240px;			/**** MODIF : la moitié du width de .toast-container ****/
 }
-/*MOBILE*/						/**** MODIF ****/
+/*MOBILE*/						    /**** MODIF ****/
 @media screen and (max-width:600px){
 	.toast-position-top-center {
 		top: 100px;

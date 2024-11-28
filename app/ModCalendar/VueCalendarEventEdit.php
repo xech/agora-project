@@ -13,12 +13,12 @@ $(function(){
 
 	<?php
 	////	GUEST OU USER PAS AUTEUR DE L'EVT
-	if(Ctrl::$curUser->isUser()==false)	{echo '$(".vEventOptionAdvanced,#eventAffectations").hide();';}//Guest : masque les options avancées et l'affectation aux agendas (mais garde en "background")
-	elseif($curObj->fullRight()==false)	{echo '$(".vEventOptionAdvanced,.inputTitleName,.descriptionToggle,.descriptionTextarea,#eventDates").hide();';}//User pas auteur de l'evt : masque les principaux champs, sauf les affectations aux agendas
+	if(Ctrl::$curUser->isUser()==false)	{echo '$(".vEvtOptionAdvanced,#eventAffectations").hide();';}//Guest : masque les options avancées et l'affectation aux agendas (mais garde en "background")
+	elseif($curObj->fullRight()==false)	{echo '$(".vEvtOptionAdvanced,.inputTitleName,.descriptionToggle,.descriptionTextarea,#eventDates").hide();';}//User pas auteur de l'evt : masque les principaux champs, sauf les affectations aux agendas
 	?>
 
 	////	INIT LE SURLIGNAGE DES AGENDAS PRÉSÉLECTIONNÉS
-	$(".vCalendarInput:checked").each(function(){
+	$(".vCalInput:checked").each(function(){
 		$(this).parents(".vCalAffectBlock").addClass("lineSelect");
 	});
 
@@ -61,7 +61,7 @@ $(function(){
 	});
 
 	////	SELECTION D'AGENDA : CHECK/UNCKECK L'INPUT PRINCIPAL D'UN AGENDA VIA SON LABEL
-	$(".vCalendarInput").on("change",function(){
+	$(".vCalInput").on("change",function(){
 		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
 		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout !
 		timeoutPropose=setTimeout(function(thisInput){
@@ -71,15 +71,15 @@ $(function(){
 		if(this.checked)	{$(this).parents(".vCalAffectBlock").addClass("lineSelect").find(".vCalAffectProposition").show();}
 		else				{$(this).parents(".vCalAffectBlock").removeClass("lineSelect").find(".vCalAffectProposition").hide();}
 		//"uncheck" si besoin l'option de proposition
-		$(this).parents(".vCalAffectBlock").find(".vCalendarInputProposition").prop("checked",false);
+		$(this).parents(".vCalAffectBlock").find(".vCalInputProposition").prop("checked",false);
 		//Controle d'occupation du créneau horaire de chaque agenda sélectionné
 		timeSlotBusy();
 	});
 
 	////	CHECK/UNCHECK L'OPTION DE PROPOSITION POUR UN AGENDA
-	$(".vCalendarInputProposition").on("change",function(){
+	$(".vCalInputProposition").on("change",function(){
 		//"checked" : décoche l'affectation principale et affiche la notif "l'événement sera proposé..."   ||   "unchecked" : masque l'option de proposition et enlève le surlignage de la ligne (retour à l'état initial)
-		if(this.checked)	{$(this).parents(".vCalAffectBlock").find(".vCalendarInput").prop("checked",false);  notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
+		if(this.checked)	{$(this).parents(".vCalAffectBlock").find(".vCalInput").prop("checked",false);  notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
 		else				{$(this).parents(".vCalAffectBlock").removeClass("lineSelect").find(".vCalAffectProposition").hide();}
 	});
 });
@@ -126,7 +126,7 @@ function timeSlotBusy()
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
 						"&_evtId=<?= $curObj->_id ?>&objectsTypeId[calendar]=";
-						$(".vCalendarInput:checked,.vCalendarInputProposition:checked").each(function(){  ajaxUrl+=this.value+"-";  });
+						$(".vCalInput:checked,.vCalInputProposition:checked").each(function(){  ajaxUrl+=this.value+"-";  });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
 				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".vTimeSlotBusyTable").html(txtResult); }
@@ -142,7 +142,7 @@ function objectFormControl()
 {
 	return new Promise((resolve)=>{
 		//// Controle le nombre d'affectations aux agendas
-		if($(".vCalendarInput:checked,.vCalendarInputProposition:checked").isEmpty())
+		if($(".vCalInput:checked,.vCalInputProposition:checked").isEmpty())
 			{notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");  resolve(false);}
 		//// Controle des "guests"
 		if($("input[name='guest']").exist()){
@@ -165,7 +165,7 @@ function objectFormControl()
 <style>
 /*GENERAL*/
 legend			 						{font-size:1.05em;}
-.vEventOptionInline						{display:inline-block; margin:25px 25px 0px 0px;}
+.vEvtOptionInline						{display:inline-block; margin:25px 25px 0px 0px;}
 .beginEndLabel							{display:none}
 #beginEndSeparator						{margin:0px 5px;}
 @media screen and (max-width:440px){
@@ -193,7 +193,7 @@ legend			 						{font-size:1.05em;}
 #calsAffectDiv							{max-height:200px; overflow-y:auto;}
 #calsAffectDiv hr						{margin:3px;}
 .vCalAffectBlock						{display:inline-block; width:32%; margin:2px; margin-right:5px; border-radius:3px;}
-.vCalAffectBlock .vCalendarInput		{display:none;}
+.vCalAffectBlock .vCalInput				{display:none;}
 .vCalAffectBlock label					{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
 .vCalAffectBlock img					{max-height:18px;}
 .vCalAffectBlockBis label				{width:100%;}
@@ -229,23 +229,23 @@ input[name='guestMail']					{margin-left:20px;}
 	<?= $curObj->editDescription() ?>
 
 	<!--DATE DEBUT & FIN-->
-	<div class="vEventOptionInline" id="eventDates">
+	<div class="vEvtOptionInline" id="eventDates">
 		<span class="beginEndLabel"><?= Txt::trad("begin") ?></span>
-		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" title="<?= Txt::trad("begin") ?>">
-		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>">
+		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("begin") ?>>
+		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("begin") ?>>
 		<span id="beginEndSeparator"><img src="app/img/arrowRight.png"></span>
 		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
-		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" title="<?= Txt::trad("end") ?>">
-		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>">
+		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("end") ?>>
+		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("end") ?>>
 	</div>
 
 	<!--<SELECT> DE LA CATEGORIE-->
-	<div class="vEventOptionInline vEventOptionAdvanced">
+	<div class="vEvtOptionInline vEvtOptionAdvanced">
 		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
 	</div>
 
 	<!--PERIODICITE-->
-	<div class="vEventOptionInline vEventOptionAdvanced">
+	<div class="vEvtOptionInline vEvtOptionAdvanced">
 		<select name="periodType">
 			<option value=""><?= Txt::trad("CALENDAR_noPeriodicity") ?></option>
 			<option value="weekDay"><?= Txt::trad("CALENDAR_period_weekDay") ?></option>
@@ -255,7 +255,7 @@ input[name='guestMail']					{margin-left:20px;}
 	</div>
 
 	<!--PERIODICITE : DIV DES OPTIONS-->
-	<fieldset class="vEventOptionAdvanced" id="periodOptions">
+	<fieldset class="vEvtOptionAdvanced" id="periodOptions">
 		<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
 		<legend id="periodTypeLabel">&nbsp;</legend>
 		<!--PERIODICITE: JOURS DE LA SEMAINE-->
@@ -295,14 +295,14 @@ input[name='guestMail']					{margin-left:20px;}
 		for($cpt=1; $cpt<=10; $cpt++){
 			echo '<div id="periodExceptionDiv'.$cpt.'" class="periodExceptionDiv">
 					<input type="text" name="periodDateExceptions[]" value="'.(isset($periodDateExceptions[$cpt])?$periodDateExceptions[$cpt]:null).'" class="dateInput" id="periodExceptionInput'.$cpt.'">
-					<img src="app/img/delete.png" title="'.Txt::trad("delete").'" onclick="deletePeriodDateExceptions('.$cpt.')">
+					<img src="app/img/delete.png" onclick="deletePeriodDateExceptions('.$cpt.')" '.Txt::tooltip("delete").'>
 				  </div>';
 		}
 		?>
 	</fieldset>
 
 	<!--IMPORTANT-->
-	<div class="vEventOptionInline vEventOptionAdvanced">
+	<div class="vEvtOptionInline vEvtOptionAdvanced">
 		<select name="important">
 			<option value="0"><?= Txt::trad("CALENDAR_importanceNormal") ?></option>
 			<option value="1" data-color="#900"><?= Txt::trad("CALENDAR_importanceHight") ?></option>
@@ -310,8 +310,8 @@ input[name='guestMail']					{margin-left:20px;}
 	</div>
 
 	<!--VISIBILITE-->
-	<div class="vEventOptionInline vEventOptionAdvanced">
-		<select name="contentVisible" title="<?= Txt::trad("CALENDAR_visibilityTooltip") ?>">
+	<div class="vEvtOptionInline vEvtOptionAdvanced">
+		<select name="contentVisible" <?= Txt::tooltip("CALENDAR_visibilityTooltip") ?>>
 			<option value="public"><?= Txt::trad("CALENDAR_visibilityPublic") ?></option>
 			<option value="public_cache"><?= Txt::trad("CALENDAR_visibilityPublicHide") ?></option>
 			<option value="prive"><?= Txt::trad("CALENDAR_visibilityPrivate") ?></option>
@@ -320,12 +320,12 @@ input[name='guestMail']					{margin-left:20px;}
 
 	<!--VISIOCONFERENCE-->
 	<?php if(Ctrl::$agora->visioEnabled()){ ?>
-	<div class="vEventOptionInline vEventOptionAdvanced">
+	<div class="vEvtOptionInline vEvtOptionAdvanced">
 		<span id="visioUrlAdd" class="sLink"><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
 		<span id="visioOptions">
-			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" class="sLink" title="<?= Txt::trad("VISIO_launchFromEvent") ?>" readonly>
-			<img src="app/img/copy.png" id="visioUrlCopy" class="sLink" title="<?= Txt::trad("VISIO_urlCopy") ?>">
-			<img src="app/img/delete.png" id="visioUrlDelete" class="sLink" title="<?= Txt::trad("VISIO_urlDelete") ?>">
+			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" class="sLink" <?= Txt::tooltip("VISIO_launchFromEvent") ?> readonly>
+			<img src="app/img/copy.png" id="visioUrlCopy" class="sLink" <?= Txt::tooltip("VISIO_urlCopy") ?>>
+			<img src="app/img/delete.png" id="visioUrlDelete" class="sLink" <?= Txt::tooltip("VISIO_urlDelete") ?>>
 		</span>
 	</div>
 	<?php } ?>
@@ -344,28 +344,26 @@ input[name='guestMail']					{margin-left:20px;}
 			else						{$iconLabel="typeRessource.png";	$dataIdUser=null;}
 			//Astérisque "**" sur les agendas non-modifiables || proposition d'evt possible
 			if($tmpCal->isDisabled!=null || $tmpCal->mainInput=="proposition")	{$tmpCal->title.=" &#42;&#42;";}
-			//Tooltip désactivé pour les "affectations" simple (pas les proposition)
-			$noTooltipClass=($tmpCal->mainInput=="affectation") 	?  'class="noTooltip"'  :  null;
 			//Réinit l'affectation/proposition après validation du form?  &&  Ajoute l'option de proposition d'événement ?
 			$moreInputs=($tmpCal->reinitCalendarInput==true)  ?  '<input type="hidden" name="reinitCalendars[]" value="'.$tmpCal->_id.'">'  :  null;
 			if($tmpCal->mainInput=="affectation" && $tmpCal->isPersonalCalendar()==false){
 				if($curObj->isNew()==false && in_array($tmpCal,$curObj->affectedCalendars(false)))  {$propositionShow="style='display:block;'";  $propositionChecked="checked";  $tmpCal->isChecked=null;}	//Proposition pré-sélectionnée : on l'affiche et décoche l'input principal
 				else																				{$propositionShow=$propositionChecked=null;}															//Sinon on masque par défaut l'option de proposition
-				$moreInputs.="<div class='vCalAffectProposition' ".$propositionShow." title=\"".Txt::trad("CALENDAR_proposeEvtTooltipBis")."\"><input type='checkbox' name='propositionCalendars[]' value=\"".$tmpCal->_id."\" ".$propositionChecked." class='vCalendarInputProposition'><img src='app/img/calendar/propose.png'></div>";
+				$moreInputs.='<div class="vCalAffectProposition" '.$propositionShow.' '.Txt::tooltip("CALENDAR_proposeEvtTooltipBis").'><input type="checkbox" name="propositionCalendars[]" value="'.$tmpCal->_id.'" '.$propositionChecked.' class="vCalInputProposition"><img src="app/img/calendar/propose.png"></div>';
 			}
 			//Affiche l'input d'affectation/proposition
 			echo '<div class="vCalAffectBlock lineHover">
-					<input type="checkbox" name="'.$inputName.'" value="'.$tmpCal->_id.'" id="box'.$tmpCal->_typeId.'" class="vCalendarInput" '.$tmpCal->isChecked.' '.$tmpCal->isDisabled.' '.$dataIdUser.'>
-					<label for="box'.$tmpCal->_typeId.'" title="'.Txt::tooltip($tmpCal->labelTooltip).'" '.$noTooltipClass.'><img src="app/img/calendar/'.$iconLabel.'"> '.$tmpCal->title.'</label>
+					<input type="checkbox" name="'.$inputName.'" value="'.$tmpCal->_id.'" id="box'.$tmpCal->_typeId.'" class="vCalInput" '.$tmpCal->isChecked.' '.$tmpCal->isDisabled.' '.$dataIdUser.'>
+					<label for="box'.$tmpCal->_typeId.'" class="noTooltip" '.Txt::tooltip($tmpCal->labelTooltip).'><img src="app/img/calendar/'.$iconLabel.'"> '.$tmpCal->title.'</label>
 					'.$moreInputs.'
 				  </div>';
 		}
 		////	SWITCH LA SELECTION OU SELECTIONNE UN GROUPE D'USERS
 		if(count($affectationCalendars)>2)
 		{
-			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis lineHover' onclick=\"$('.vCalendarInput:enabled').trigger('click')\"><label><img src='app/img/checkSmall.png'> ".Txt::trad("selectSwitch")."</label></div>";
+			echo "<hr><div class='vCalAffectBlock vCalAffectBlockBis lineHover' onclick=\"$('.vCalInput:enabled').trigger('click')\"><label><img src='app/img/checkSmall.png'> ".Txt::trad("selectSwitch")."</label></div>";
 			foreach($curSpaceUserGroups as $tmpGroup){
-				echo '<div class="vCalAffectBlock vCalAffectBlockBis lineHover" title="'.Txt::trad("selectUnselect").' :<br>'.$tmpGroup->usersLabel.'">
+				echo '<div class="vCalAffectBlock vCalAffectBlockBis lineHover" '.Txt::tooltip(Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel).'>
 						<input type="checkbox" name="calUsersGroup[]" value="'.implode(",",$tmpGroup->userIds).'" id="calUsersGroup'.$tmpGroup->_typeId.'" onchange="userGroupSelect(this,\'#calsAffectDiv\')">
 						<label for="calUsersGroup'.$tmpGroup->_typeId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label>
 					  </div>';
@@ -385,7 +383,7 @@ input[name='guestMail']					{margin-left:20px;}
 	if(Ctrl::$curUser->isUser()==false){
 		echo '<fieldset id="guestMenu">
 				<input type="text" name="guest" placeholder="'.Txt::trad("EDIT_guestName").'">
-				<input type="text" name="guestMail" placeholder="'.Txt::trad("EDIT_guestMail").'" title="'.Txt::trad("EDIT_guestMailTooltip").'">
+				<input type="text" name="guestMail" placeholder="'.Txt::trad("EDIT_guestMail").'" '.Txt::tooltip("EDIT_guestMailTooltip").'>
 				<hr>'.CtrlMisc::menuCaptcha().'
 			  </fieldset>';
 	}

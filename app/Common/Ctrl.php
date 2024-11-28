@@ -51,8 +51,8 @@ abstract class Ctrl
 		self::$curUser=self::getObj("user",$_idUser);
 		self::$curSpace=self::getObj("space",$_idSpace);
 
-		////	Cache control Etag (complète le .htaccess)  &&  Init le fuseau horaire
-		header("Etag: ".md5(Req::appVersion()));
+		////	Header ETag pour le controle du cache des serveurs/browsers  &&  Init le fuseau horaire
+		header('ETag: "'.md5(Req::appVersion()).'"');
 		self::$curTimezone=array_search(self::$agora->timezone,Tool::$tabTimezones);
 		if(empty(self::$curTimezone))	{self::$curTimezone="Europe/Paris";}
 		date_default_timezone_set(self::$curTimezone);
@@ -63,21 +63,22 @@ abstract class Ctrl
 			////	Connection d'un user  &&  selection d'un espace !
 			self::userConnectionSpaceSelection();
 
-			////	Enregistre le cookie pour 30 jours : cf."Req::isMobileApp()"
+			////	Enregistre le cookie pour "Req::isMobileApp()"
 			if(!empty($_GET["mobileAppli"])){
 				setcookie("mobileAppli", "true", TIME_COOKIES);
 				$_COOKIE["mobileAppli"]="true";
 			}
 
-			////	Affiche une page principale  &&  Controle d'accès au module (sauf module spécifique)
+			////	Affiche une page principale  &&  Controle d'accès au module (sauf modules sans affectation spécifique)
 			if(Req::$curAction=="default"){
 				static::$isMainPage=true;
-				if(!in_array(Req::$curCtrl,["agora","log","offline","space","user"])  &&  !array_key_exists(Req::$curCtrl,self::$curSpace->moduleList()))  {self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
+				if(!in_array(Req::$curCtrl,["agora","log","offline","space","user"])  &&  !array_key_exists(Req::$curCtrl,self::$curSpace->moduleList()))
+					{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
 			}
 
-			////	Affichage administrateur demandé
+			////	Init/Switch l'affichage administrateur
 			if(self::$curUser->isSpaceAdmin() && Req::isParam("displayAdmin")){
-				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");//Bool
+				$_SESSION["displayAdmin"]=(bool)(Req::param("displayAdmin")=="true");
 				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
 			}
 
@@ -219,14 +220,13 @@ abstract class Ctrl
 	{
 		////	S'il existe déjà un cookie : supprime le token correspondant en bdd
 		if(!empty($_COOKIE["userAuthToken"])){
-			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);											//Récupère le token du cookie
-			Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));		//Supprime le token correspondant dans la bdd
-			setcookie("userAuthToken", "", time()-TIME_COOKIES);											//Supprime le cookie
-			unset($_COOKIE["userAuthToken"]);																//Idem
+			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);																		//Récupère le token du cookie
+			if(!empty($cookieToken[1]))  {Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));}	//Supprime le token correspondant dans la bdd
+			setcookie("userAuthToken", "", time()-TIME_COOKIES);																		//Supprime le cookie
+			unset($_COOKIE["userAuthToken"]);																							//Idem
 		}
 		////	Créé un nouveau token au format : enregistre le token en bdd et dans un cookie
-		if($action=="create" && !empty($_idUser))
-		{
+		if($action=="create" && !empty($_idUser)){
 			require_once('app/misc/Browser.php');																				//Charge la classe "Browser()"
 			$browserObj=new Browser();																							//Récup les infos du browser
 			$browserId=(is_object($browserObj))  ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  :  null;			//Identifie le browser et l'OS
@@ -297,8 +297,8 @@ abstract class Ctrl
 			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			//// HEADERMENU & MESSENGER
-			if(static::moduleName!="offline")
+			//// HEADERMENU & MESSENGER (sauf si ctrl externe)
+			if(!in_array(Req::$curCtrl,["offline","misc"]))
 			{
 				//Espace Disk
 				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);

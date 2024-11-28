@@ -1,23 +1,26 @@
 <script>
-////	INIT
 $(function(){
-	////	Init la timezone
+	/**********************************************************************************************************
+	 *	INIT LA TIMEZONE
+	 **********************************************************************************************************/
 	var curTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	curTimezone=curTimezone.replace("Europe/Berlin","Europe/Paris");
 	$("select option[data-tzName='"+curTimezone+"']").prop("selected", true);
 
-	////	Validation du formulaire
+	/**********************************************************************************************************
+	 *	VALIDATION DU FORMULAIRE
+	 **********************************************************************************************************/
 	$("#installForm").submit(function(event){
 		//Stop la validation du form
 		event.preventDefault();
 		//Vérifie que tous les champs sont remplis (sauf password, qui peut être vide)
 		var installEmptyField=false;
 		$("input,select,textarea").not("[name='db_password']").each(function(){
-			if($(this).isEmpty())   {$(this).focusRed();  installEmptyField=true;}
+			if($(this).isEmpty())   {$(this).focusPulsate();  installEmptyField=true;}
 		});
 		if(installEmptyField==true)   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
 		//Controle le nom de la DB & le mail & le password
-		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   				{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>","warning");  $("[name='db_name']").focusRed();  return false;}
+		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   				{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>","warning");  $("[name='db_name']").focusPulsate();  return false;}
 		if($("[name='adminMailLogin']").isMail()==false)  								{notify("<?= Txt::trad("mailInvalid"); ?>","warning");  return false;}
 		if(isValidUserPassword($("[name='adminPassword']").val())==false)				{notify("<?= Txt::trad("passwordInvalid") ?>","warning");	return false;}
 		if($("[name='adminPassword']").val()!=$("[name='adminPasswordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError"); ?>","warning");  return false;}
@@ -32,7 +35,6 @@ $(function(){
 	});
 });
 </script>
-
 
 <style>
 #pageCenter						{padding-top:20px; padding-bottom:30px;}/*surcharge*/

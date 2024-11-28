@@ -1,7 +1,8 @@
 <script>
-////	INIT
 $(function(){
-	//Active ou désactive l'envoi de notifications email pour les nouveaux messages d'un sujet
+	/**********************************************************************************************************
+	 *	ACTIVE/DÉSACTIVE LES NOTIFICATIONS PAR MAIL DES NOUVEAUX MESSAGES
+	**********************************************************************************************************/
 	$("#notifyLastMessage").on("click",function(){
 		$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= $curSubject->_typeId ?>").done(function(result){
 			$("#notifyLastMessage").toggleClass("optionSelect",(result=="addUser"));
@@ -9,7 +10,6 @@ $(function(){
 	});
 });
 </script>
-
 
 <style>
 /*Affichage des sujets & messages*/
@@ -29,7 +29,7 @@ $(function(){
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	.vMessages					{border-radius:5px;}
 	.vDetails, .vDetails>div	{display:block;}
 	.vDetails>div:last-child	{text-align:left; margin-top:15px;}
@@ -44,13 +44,13 @@ $(function(){
 		<?php
 		////	LISTE DES SUJETS :  AJOUT DE SUJET  &  MENU DES THEMES  &  TRI D'AFFICHAGE  &  NB DE SUJETS
 		if($forumDisplay=="subjectList"){
-			if(MdlForumSubject::addRight())  {echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlForumSubject::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addSubject").'</div></div><hr>';}
+			if(MdlForumSubject::addRight())  {echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlForumSubject::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("FORUM_addSubject").'</div></div><hr>';}
 			echo MdlForumTheme::displayMenu().MdlForumSubject::menuSort().'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.$subjectsTotalNb.' '.Txt::trad($subjectsTotalNb>1?"FORUM_subjects":"FORUM_subject").'</div></div>';
 		}
 		////	SUJET & MESSAGES ASSOCIES :  AJOUT DE MESSAGE  &  NOTIF PAR MAIL  &  TRI D'AFFICHAGE  &  NB DE MESSAGES
 		else{
-			if($curSubject->addContentRight())  {echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
-			if(!empty(Ctrl::$curUser->mail))  	{echo '<div class="menuLine sLink '.($curSubject->curUserNotifyLastMessage()?'optionSelect':'optionUnselect').'" id="notifyLastMessage" title="'.Txt::trad("FORUM_notifyLastPostTooltip").'"><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("FORUM_notifyLastPost").'</div></div>';}
+			if($curSubject->addContentRight())  {echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
+			if(!empty(Ctrl::$curUser->mail))  	{echo '<div class="menuLine sLink '.($curSubject->curUserNotifyLastMessage()?'optionSelect':'option').'" id="notifyLastMessage" '.Txt::tooltip("FORUM_notifyLastPostTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("FORUM_notifyLastPost").'</div></div>';}
 			echo "<hr>".MdlForumMessage::menuSort();
 		}
 		?>
@@ -63,8 +63,8 @@ $(function(){
 		if($forumDisplay=="suject")
 		{
 			echo '<div class="pathMenu miscContainer">
-					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.txt::trad("FORUM_forumRoot").'</div>
-					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" title="'.Txt::trad("FORUM_addMessage").'"><img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
+					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.Txt::trad("FORUM_forumRoot").'</div>
+					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
 					</div>';
 		}
 
@@ -73,7 +73,7 @@ $(function(){
 		{
 			$newSubjectClass=$subjectLastMessage=$subjectLink=null;
 			if($forumDisplay=="subjectList"){
-				$subjectLink='onclick="redir(\'?ctrl=forum&typeId='.$tmpSubject->_typeId.'\')" title="'.Txt::trad("FORUM_displaySubject").'"';			//Lien vers le sujet et ses messages
+				$subjectLink='onclick="redir(\'?ctrl=forum&typeId='.$tmpSubject->_typeId.'\')" '.Txt::tooltip("FORUM_displaySubject");					//Lien vers le sujet et ses messages
 				$tmpSubject->description=Txt::reduce($tmpSubject->description,400);																		//Réduction de la description
 				if($tmpSubject->alreadyConsulted()==false)  {$newSubjectClass="linkSelect";}															//Nouveau sujet en surbrillance
 				$messagesNb=Db::getVal("SELECT COUNT(*) FROM ap_forumMessage WHERE _idContainer=".$tmpSubject->_id);									//Nb de messages pour le sujet
@@ -111,7 +111,7 @@ $(function(){
 					$quotedMessageObj=Ctrl::getObj("forumMessage",$tmpMessage->_idMessageParent);
 					$quotedMessage='<fieldset class="vMessageQuoted"><img src="app/img/forum/quote.png" class="vMessageQuotedImg">'.$quotedMessageObj->title.'<div class="vDescription">'.$quotedMessageObj->description.'</div></fieldset>';
 				}
-				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" title="'.Txt::trad("FORUM_quoteMessageInfo").'">'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.png"> </div>'  :  null;
+				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" '.Txt::tooltip("FORUM_quoteMessageInfo").'>'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.png"> </div>'  :  null;
 				//Affichage
 				echo $tmpMessage->divContainerContextMenu("vMessages").
 						'<div class="objContent">

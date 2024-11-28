@@ -34,18 +34,17 @@ class MdlDashboardNews extends MdlObject
 		// Archive/désarchive automatiquement les news
 		if(empty($_SESSION["dashboardNewsUpdated"])){
 			Db::query("UPDATE ".static::dbTable."  SET offline=1     WHERE dateOffline is not null  AND UNIX_TIMESTAMP(dateOffline)<".time());
-			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline is not null   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline is null or UNIX_TIMESTAMP(dateOffline)>".time().")");
+			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline is not null   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline IS NULL OR UNIX_TIMESTAMP(dateOffline)>".time().")");
 			$_SESSION["dashboardNewsUpdated"]=true;
 		}
 		// Init/Switch l'affichage des news archivées
-		if(empty($_SESSION["offlineNewsShow"]) || Req::isParam("offlineNewsShow"))  {$_SESSION["offlineNewsShow"]=(bool)(Req::param("offlineNewsShow")=="true");}
-		// Nb de news archivées
+		if(Req::isParam("offlineNews"))  {$_SESSION["offlineNews"]=(bool)(Req::param("offlineNews")=="true");}
+		// Nb de news archivées  &&  News pour l'affichage "infinite scroll"
 		if($mode=="offlineNewsNb")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplay()." AND offline=1");}
-		// News pour l'affichage "infinite scroll"
 		else{
-			$sqlOffline=($_SESSION["offlineNewsShow"]==true)  ?  "AND offline=1"  :  "AND offline is null";
+			$sqlOffline=(empty($_SESSION["offlineNews"]))  ?  "AND offline IS NULL"  :  "AND offline='1'";
 			$sqlLimit="LIMIT 10 OFFSET ".((int)$newsOffset * 10);//"infinite scroll" par blocs de 10
-			return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("une desc")." ".$sqlLimit);
+			return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlDisplay()." ".$sqlOffline." ".static::sqlSort("`une` DESC")." ".$sqlLimit);
 		}
 	}
 

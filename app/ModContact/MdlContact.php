@@ -40,7 +40,7 @@ class MdlContact extends MdlPerson
 	public function delete()
 	{
 		if($this->deleteRight()){
-			if($this->hasImg())  {unlink($this->pathImgThumb());}
+			if($this->profileImgExist())  {unlink($this->pathImgThumb());}
 			parent::delete();
 		}
 	}
@@ -52,7 +52,7 @@ class MdlContact extends MdlPerson
 	{
 		//"Créer un utilisateur sur cet espace" : admin général uniquement!
 		if(Ctrl::$curUser->isGeneralAdmin())
-			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_typeId."')", "iconSrc"=>"plus.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];}
+			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_typeId."')", "iconSrc"=>"plusSmall.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];}
 		return parent::contextMenu($options);
 	}
 }

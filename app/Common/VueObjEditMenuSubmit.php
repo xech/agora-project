@@ -1,7 +1,8 @@
 <script>
-////	INIT
 $(function(){
-	////	CLICK SUR UN ONGLET DU MENU PRINCIPAL (".objMenuTab" doit avoir un "for" correspondant à au div du menu)
+	/**********************************************************************************************************
+	 *	CLICK SUR UN ONGLET DU MENU PRINCIPAL (".objMenuTab" doit avoir un "for" correspondant à au div du menu)
+	 **********************************************************************************************************/
 	$(".objMenuTab").on("click",function(){
 		$(this).addClass("objMenuTabSelect");			//Sélectionne l'onglet
 		$("#"+$(this).attr("for")).fadeIn();			//Affiche le menu associé
@@ -10,10 +11,12 @@ $(function(){
 			$("#"+$(this).attr("for")).hide();			//Masque le menu associé
 		});
 	});
-	//// INIT : PAR DEFAUT, SELECTIONNE LE PREMIER ONGLET
+	//// Par defaut, selectionne le premier onglet
 	$(".objMenuTab:first-child").trigger("click");
 
-	////	AFFECTATIONS : CLICK LE LABEL D'UNE AFFECTATION
+	/**********************************************************************************************************
+	 *	AFFECTATIONS : CLICK LE LABEL D'UNE AFFECTATION
+	 **********************************************************************************************************/
 	$(".vSpaceTable:visible .vSpaceLabel").on("click",function(){
 		//Init
 		var boxRead		 ="#objectRightBox_"+this.id+"_1";
@@ -29,14 +32,18 @@ $(function(){
 		else					{$("[id^=objectRightBox_"+this.id+"]").prop("checked",false).trigger("change");}
 	});
 
-	////	AFFECTATIONS : CLICK LA CHECKBOX D'UNE AFFECTATION
+	/**********************************************************************************************************
+	 *	AFFECTATIONS : CLICK LA CHECKBOX D'UNE AFFECTATION
+	 **********************************************************************************************************/
 	$(".vSpaceTable:visible [id^=objectRightBox]").on("change",function(){
 		var targetId=this.value.slice(0, this.value.lastIndexOf("_"));				//exple "1_U2_1.5" => "1_U2"
 		$("[id^=objectRightBox_"+targetId+"]").not(this).prop("checked",false);		//"uncheck" les autres checkbox du "target"
 		labelRightStyle();															//Style des labels
 	});
 
-	////	AFFECTATIONS : CLICK SUR "AFFICHER TOUS LES UTILISATEURS [ET ESPACES]"
+	/**********************************************************************************************************
+	 *	AFFECTATIONS : CLICK SUR "AFFICHER TOUS LES UTILISATEURS [ET ESPACES]"
+	 **********************************************************************************************************/
 	$("#showAllUsers").on("click",function(){
 		$(".vSpaceTargetHide").removeClass("vSpaceTargetHide");		//Affiche tous les users et espaces masqués
 		$(".vSpaceTable").addClass("fieldsetSub");					//Affiche un block distinct pour chaque espace (gris foncé)
@@ -44,34 +51,36 @@ $(function(){
 		labelRightStyle();											//Style des labels
 		lightboxResize();											//Resize le lightbox
 	});
-	//// INIT : AFFICHE LE MENU SI BESOIN
+	//// Affiche le menu si besoin
 	$("#showAllUsers").toggle($(".vSpaceTargetHide").exist());
 
-
-	////	INIT AFFECTATIONS : PAR DEFAUT, MASQUE TOUS LES ESPACES SANS AUCUNE AFFECTATION
+	/**********************************************************************************************************
+	 *	INIT AFFECTATIONS : PAR DEFAUT, MASQUE TOUS LES ESPACES SANS AUCUNE AFFECTATION
+	 **********************************************************************************************************/
 	$(".vSpaceTable").each(function(){
 		if($(this).find("[name='objectRight[]']:checked").length==0)  {$(this).addClass("vSpaceTargetHide");}
 	});
-
-	////	INIT AFFECTATIONS : SI L'OBJET N'EST PAS UN CONTENEUR -> MASQUE ET DÉSACTIVE LES DROITS EN ECRITURE LIMITÉ ("boxWriteLimit")
+	
+	/*************************************************************************************************************************************
+	 *	INIT AFFECTATIONS : SI L'OBJET N'EST PAS UN CONTENEUR -> MASQUE ET DÉSACTIVE LES DROITS EN ECRITURE LIMITÉ ("boxWriteLimit")
+	 *************************************************************************************************************************************/
 	<?php if($curObj::isContainer()==false){ ?>
 		$(".vSpaceWriteLimit").hide();
 		$("[name='objectRight[]'][value$='_1.5']").prop("disabled",true);
 	<?php } ?>
 
-	////	INIT COMMUN : FOCUS SUR LE PREMIER CHAMP OBLIGATOIRE
+	/**********************************************************************************************************
+	 *	INIT COMMUN : FOCUS SUR LE PREMIER CHAMP OBLIGATOIRE
+	 **********************************************************************************************************/
 	<?php if(!empty($curObj::$requiredFields)){ ?>
-		if(!isMobile()){																//Pas de focus sur mobile : sinon affiche le clavier virtuel..
-			const inputSelector=$("input[name='<?=$curObj::$requiredFields[0] ?>']");	//Selecteur de l'input
-			const originalValue=inputSelector.val();									//Valeur originale de l'input
-			inputSelector.val("").focus().val(originalValue);							//Focus sur la fin du texte (remet la valeur de l'input APRES le focus)
-		}
+		$("input[name='<?= $curObj::$requiredFields[0] ?>']").focusAlt();
 	<?php } ?>
 });
 
 
-////	STYLISE LES LABELS ET CONTROLE LES DROITS D'ACCÈS
-////
+/**********************************************************************************************************
+ *	STYLISE LES LABELS ET CONTROLE LES DROITS D'ACCÈS
+ **********************************************************************************************************/
 function labelRightStyle()
 {
 	////	Réinitialise les class des lignes et labels
@@ -90,11 +99,12 @@ function labelRightStyle()
 		if($("#showAllUsers").isVisible()==false)  {$("#targetLine"+targetLabelId).addClass("lineSelect");}
 	});
 }
-//// INIT LE STYLE DES LABELS
+//// Init le style des labels
 $(function(){ labelRightStyle(); });
 
-////	LANCE LE CONTROLE D'UN FORMULAIRE
-////
+/**********************************************************************************************************
+ *	LANCE LE CONTROLE D'UN FORMULAIRE
+ **********************************************************************************************************/
 $(function(){
 	$("#mainForm").submit(function(event){
 		////	Lance les controles s'ils n'ont pas encore été effectués
@@ -116,19 +126,20 @@ $(function(){
 	});
 });
 
-////	CONTROLE PRINCIPAL DU FORMULAIRE
-////
+/**********************************************************************************************************
+ *	CONTROLE PRINCIPAL DU FORMULAIRE
+ **********************************************************************************************************/
 function mainFormControl()
 {
 	////	Init
 	var validForm=true;
 	var notifRequiredFields="";
 
-	////	Verif les champs obligatoires ("focusRed()" et notif sur les champs vide)
+	////	Verif les champs obligatoires ("focusPulsate()" et notif sur les champs vide)
 	<?php
 	foreach($curObj::$requiredFields as $tmpField){
 		$isEmptyField=($tmpField=="description" && $curObj::descriptionEditor==true)  ?  'isEmptyEditor()'  :  '$("[name='.$tmpField.']").isEmpty()';
-		echo 'if('.$isEmptyField.' && $("[name='.$tmpField.']").exist())   {validForm=false;  $("[name='.$tmpField.']").focusRed();  notifRequiredFields+="<br>'.Txt::trad($tmpField).'";}';
+		echo 'if('.$isEmptyField.' && $("[name='.$tmpField.']").exist())   {validForm=false;  $("[name='.$tmpField.']").focusPulsate();  notifRequiredFields+="<br>'.Txt::trad($tmpField).'";}';
 	}
 	?>
 
@@ -224,10 +235,10 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			//BLOCK + TABLEAU + ENTETE DE L'ESPACE (nom de l'espace + entete des droits d'acces)
 			echo '<div class="vSpaceTable">
 						<div class="vSpaceHeader">
-							<div class="vSpaceLabel" title="'.$tmpSpace->name.'<br>'.$tmpSpace->description.'">'.Txt::reduce($tmpSpace->name,40).'</div>
-							<div class="vSpaceRead" title="'.Txt::trad("accessReadTooltip").'">'.Txt::trad("accessRead").'</div>
-							<div class="vSpaceWriteLimit" title="'.$accessWriteLimitTooltip.'">'.Txt::trad("accessWriteLimit").'</div>
-							<div class="vSpaceWrite" title="'.Txt::trad("accessWriteTooltip").'">'.Txt::trad("accessWrite").'</div>
+							<div class="vSpaceLabel" '.Txt::tooltip($tmpSpace->name."<br>".$tmpSpace->description).'>'.Txt::reduce($tmpSpace->name,40).'</div>
+							<div class="vSpaceRead" '.Txt::tooltip("accessReadTooltip").'>'.Txt::trad("accessRead").'</div>
+							<div class="vSpaceWriteLimit" '.Txt::tooltip($accessWriteLimitTooltip).'>'.Txt::trad("accessWriteLimit").'</div>
+							<div class="vSpaceWrite" '.Txt::tooltip("accessWriteTooltip").'>'.Txt::trad("accessWrite").'</div>
 						</div>';
 			//TARGETS DE L'ESPACE (id des checkboxes deja dans "boxProp"!)
 			foreach($tmpSpace->targetLines as $targetLine)
@@ -236,10 +247,10 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 				$targetIconAdmin=(!empty($targetLine["onlyFullAccess"]))  ?  "vSpaceTargetIconAdmin"  :  null;														//Icone d'un admin de l'espace?
 				$targetIcon=(!empty($targetLine["icon"]))  ?  '<img src="app/img/'.$targetLine["icon"].'" class="vSpaceTargetIcon '.$targetIconAdmin.'">'  : null;	//Icone spécifiée pour la target?
 				echo '<div class="lineHover '.$targetHide.'" id="targetLine'.$targetLine["targetId"].'">
-						<div class="vSpaceLabel" id="'.$targetLine["targetId"].'" title="'.$targetLine["tooltip"].'">'.$targetIcon.$targetLine["label"].'</div>
-						<div class="vSpaceRead" title="'.Txt::trad("accessReadTooltip").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1"].'></div>
-						<div class="vSpaceWriteLimit" title="'.$accessWriteLimitTooltip.'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1.5"].'></div>
-						<div class="vSpaceWrite" title="'.Txt::trad("accessWriteTooltip").'"><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["2"].'></div>
+						<div class="vSpaceLabel" id="'.$targetLine["targetId"].'" '.Txt::tooltip($targetLine["tooltip"]).'>'.$targetIcon.$targetLine["label"].'</div>
+						<div class="vSpaceRead" '.Txt::tooltip("accessReadTooltip").'><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1"].'></div>
+						<div class="vSpaceWriteLimit" '.Txt::tooltip($accessWriteLimitTooltip).'><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["1.5"].'></div>
+						<div class="vSpaceWrite" '.Txt::tooltip("accessWriteTooltip").'><input type="checkbox" name="objectRight[]" '.$targetLine["boxProp"]["2"].'></div>
 					  </div>';
 			}
 			//Fin du block principal "vSpaceTable"
@@ -247,7 +258,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		}
 		//Menu "Afficher tous les utilisateurs [et espaces]"  &&  Menu "Etendre les droits aux sous-dossiers"
 		echo '<div id="showAllUsers">'.(count($accessRightSpaces)==1?Txt::trad("EDIT_showAllUsers"):Txt::trad("EDIT_showAllUsersAndSpaces")).' <img src="app/img/arrowBottom.png"></div>';
-		if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1"><label for="extendToSubfolders" title="'.Txt::trad("EDIT_accessRightSubFoldersTooltip").'">'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(4);</script>';}
+		if(!empty($extendToSubfolders))  {echo '<div id="extendToSubfoldersDiv"><hr><input type="checkbox" name="extendToSubfolders" id="extendToSubfolders" value="1"><label for="extendToSubfolders" '.Txt::tooltip("EDIT_accessRightSubFoldersTooltip").'>'.Txt::trad("EDIT_accessRightSubFolders").'</label></div><script>$("#extendToSubfoldersDiv").pulsate(4);</script>';}
 		//Fin du "objMenuAccessRight"
 		echo '</div>';
 	}
@@ -258,10 +269,10 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		//CHECKBOX PRINCIPALE & BLOCK DES OPTIONS
 		$notifMailTooltip=$curObj->tradObject("EDIT_notifMailTooltip");
 		if($curObj::objectType=="calendarEvent")  {$notifMailTooltip.=Txt::trad("EDIT_notifMailTooltipCal");}//"la notification ne sera envoyée qu'aux propriétaires de ces agendas"
-		echo '<input type="checkbox" name="notifMail" id="boxNotifMail" value="1" onChange="$(\'#notifMailOptions\').slideToggle();"> <label for="boxNotifMail" title="'.$notifMailTooltip.'">'.Txt::trad("EDIT_notifMail2").'</label>';
+		echo '<input type="checkbox" name="notifMail" id="boxNotifMail" value="1" onChange="$(\'#notifMailOptions\').slideToggle();"> <label for="boxNotifMail" '.Txt::tooltip($notifMailTooltip).'>'.Txt::trad("EDIT_notifMail2").'</label>';
 		echo '<div id="notifMailOptions">';
 			//Option du module "File" : "Joindre les fichiers à la notification"
-			if($curObj::objectType=="file")  {echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles"><label for="boxNotifMailAddFiles" title="'.Txt::trad("FILE_fileSizeLimit").' '.File::sizeLabel(File::mailMaxFilesSize).'">'.Txt::trad("EDIT_notifMailAddFiles").' <img src="app/img/attachment.png"></label></div>';}
+			if($curObj::objectType=="file")  {echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles"><label for="boxNotifMailAddFiles" '.Txt::tooltip(Txt::trad("FILE_fileSizeLimit")." ".File::sizeLabel(File::mailMaxFilesSize)).'>'.Txt::trad("EDIT_notifMailAddFiles").' <img src="app/img/attachment.png"></label></div>';}
 			// Options de base des emails (cf. Tool::sendMail()")
 			echo MdlObject::sendMailBasicOptions();
 			//Option "Choisir les destinataires"
@@ -269,14 +280,14 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			echo '<div id="notifMailSelectList">';
 				//Groupe d'users de l'espace courant
 				foreach($curSpaceUserGroups as $tmpGroup){
-					echo '<div title="'.Txt::trad("selectUnselect").' : '.$tmpGroup->usersLabel.'">
+					echo '<div '.Txt::tooltip(Txt::trad("selectUnselect")." : ".$tmpGroup->usersLabel).'>
 							<input type="checkbox" name="notifUsersGroup[]" value="'.implode(",",$tmpGroup->userIds).'" id="notifUsersGroup'.$tmpGroup->_typeId.'" onchange="userGroupSelect(this,\'#notifMailSelectList\');">
 							<label for="notifUsersGroup'.$tmpGroup->_typeId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label>
 						  </div>';
 				}
 				//Liste de tous les users : affiche par défaut uniquement ceux l'espace courant
 				foreach($notifMailUsers as $tmpUser){
-					$userMailTooltip=($tmpUser->userMailDisplay())  ?  'title="'.Txt::tooltip($tmpUser->mail).'"'  :  null;
+					$userMailTooltip=($tmpUser->userMailDisplay())  ?  Txt::tooltip($tmpUser->mail)  :  null;
 					echo '<div id="divNotifMailUser'.$tmpUser->_id.'" '.(!in_array($tmpUser->_id,$curSpaceUsersIds)?'style="display:none"':null).'>
 							<input type="checkbox" name="notifMailUsers[]" value="'.$tmpUser->_id.'" id="boxNotif'.$tmpUser->_typeId.'" data-idUser="'.$tmpUser->_id.'">
 							<label for="boxNotif'.$tmpUser->_typeId.'" '.$userMailTooltip.'>'.$tmpUser->getLabel().'</label>

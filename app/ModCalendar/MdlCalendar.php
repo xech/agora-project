@@ -20,8 +20,7 @@ class MdlCalendar extends MdlObject
 	protected static $_hasAccessRight=true;
 	public static $requiredFields=["title"];
 	public static $searchFields=["title","description"];
-	public static $displayModes=["month","week","workWeek","4Days","day"];	//Modes d'affichage des agendas
-	public static $forceDeleteRight=false;									//Force la suppression de l'agenda pour les agendas persos : cf. "MdlCalendar::deleteRight()"
+	public static $forceDeleteRight=false;//Force la suppression d'agenda perso : cf. "deleteRight()"
 	//Valeurs mises en cache
 	private static $_readableCalendars=null;
 	private static $_myCalendars=null;
@@ -122,66 +121,63 @@ class MdlCalendar extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * EVENEMENTS CONFIRMÉS AFFECTÉS A L'AGENDA
+	 * LISTE D'EVENEMENTS SUR UNE PERIODE DONNÉE (et "confirmed")
 	 *******************************************************************************************/
-	public function eventList($timeBegin=null, $timeEnd=null, $filterByCategory=true, $orderByHourMinute=true, $accessRightMin=0.5, $pluginParams=null)
+	public function eventList($timeBegin, $timeEnd, $accessRightMin, $categoryFilter=false, $pluginParams=null)
 	{
-		//// Evénements sur un période donnée (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)  +  Evénements périodiques 
-		$sqlPeriod=null;
+		////	EVÉNEMENTS SUR UN PÉRIODE DONNÉE (début de l'evt dans la période || fin de l'evt dans la période || evt avant et après la période)  +  Evénements périodiques 
+		$sqlSelection=null;
 		if(!empty($timeBegin) && !empty($timeEnd)){
 			$periodBegin=Db::format(date("Y-m-d 00:00",$timeBegin));
 			$periodEnd  =Db::format(date("Y-m-d 23:59",$timeEnd));
-			$sqlPeriod="AND ( (dateBegin between ".$periodBegin." and ".$periodEnd.") OR (dateEnd between ".$periodBegin." and ".$periodEnd.") OR (dateBegin <= ".$periodBegin." and ".$periodEnd." <= dateEnd) OR periodType is not null)";
+			$sqlSelection.=" AND ( (dateBegin between ".$periodBegin." and ".$periodEnd.") OR (dateEnd between ".$periodBegin." and ".$periodEnd.") OR (dateBegin <= ".$periodBegin." and ".$periodEnd." <= dateEnd) OR periodType is not null)";
 		}
-		//// Evénements confirmés et affectés à l'agenda
-		$sqlCategory=($filterByCategory==true)  ?  MdlCalendarCategory::sqlCategoryFilter()  :  null;			//Filtre par catégorie 
-		$sqlPlugins=(!empty($pluginParams))  ?  "AND ".MdlCalendarEvent::sqlPlugins($pluginParams)  :  null;	//Sélection d'evt "plugins"
-		$sqlOrderBy=($orderByHourMinute==true)  ?  "DATE_FORMAT(dateBegin,'%H:%i') ASC"  :  "dateBegin ASC";	//Tri par "H:m" (affiche juste une journée) || Tri par "dateBegin" (affiche une liste complete: "plugins")
-		$eventsList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlPeriod." ".$sqlCategory." ".$sqlPlugins." ORDER BY ".$sqlOrderBy);
-		//// renvoie les evts en fonction du droit d'accès minimum 
-		$eventList=[];
-		foreach($eventsList as $evtTmp){
-			if($evtTmp->accessRight()>=$accessRightMin)  {$eventList[]=$evtTmp;}
+		////	EVÉNEMENTS CONFIRMÉS ET AFFECTÉS À L'AGENDA
+		if($categoryFilter==true)	{$sqlSelection.=MdlCalendarCategory::sqlCategoryFilter();}				//Filtre par catégorie 
+		if(!empty($pluginParams))	{$sqlSelection.=" AND ".MdlCalendarEvent::sqlPlugins($pluginParams);}	//Sélection d'evt "plugins" (Search/Dashboard/Shortcut)
+		$sqlSelection.=" ORDER BY dateBegin ASC, dateEnd DESC ";											//Second tri par "dateEnd DESC" car si 2 evts on le même dateBegin, on place le + long en 1er (cf. display "week")
+		$eventList=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1) ".$sqlSelection);
+		////	FILTRE LES EVÉNEMENTS EN FONCTION DU DROIT D'ACCÈS MINIMUM  (0.5=créneau horaire, 1=lecture, 2=écriture)
+		foreach($eventList as $key=>$evtTmp){
+			if($evtTmp->accessRight()<$accessRightMin)  {unset($eventList[$key]);}
 		}
-		//// Renvoie les evenements
+		////	RENVOIE LES EVENEMENTS
 		return $eventList;
 	}
 
 	/*********************************************************************************************************************************
-	 * FILTRE LES EVENTS PASSES EN PARAMETRES, SUR UNE PERIODE DONNEE
+	 * FILTRE LES EVENTS PASSES EN PARAMETRES, SUR UNE JOURNEE DONNEE
 	 * Note : les evts périodiques sont clonés pour chaque occurence de l'evt
 	 *********************************************************************************************************************************/
-	public static function eventFilter($eventList, $timeBegin, $timeEnd)
+	public static function eventsFilter($eventList, $timeBegin, $timeEnd)
 	{
-		$eventListFiltered=[];
+		$eventsFilter=[];
 		foreach($eventList as $tmpEvt)
 		{
 			////	CLONE L'EVT POUR CHAQUE JOUR (cf. evt sur plusieurs jours ou périodique)  &&  TIME DU DEBUT/FIN DE L'EVT
 			$tmpEvt=clone $tmpEvt;
 			$evtTimeBegin=strtotime($tmpEvt->dateBegin);
 			$evtTimeEnd  =strtotime($tmpEvt->dateEnd);
-			////	EVT DU JOUR  ||  EVT PERIODIQUE SUR LE JOUR
-			if(static::eventInTimeSlot($evtTimeBegin, $evtTimeEnd, $timeBegin, $timeEnd))   {$eventListFiltered[]=$tmpEvt;}
-			elseif(!empty($tmpEvt->periodType)){
-				//Evenement sur le jour =>  déjà commencé  &&  (pas de fin de périodicité || fin de périodicité pas encore arrivé)  &&  (pas de date d'exception || "dateBegin" absent des dates d'exception)
-				if($evtTimeBegin<$timeBegin  &&  (empty($tmpEvt->periodDateEnd) || $timeEnd<=strtotime($tmpEvt->periodDateEnd." 23:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$timeBegin)."/",$tmpEvt->periodDateExceptions)==false)){
-					//Récupère les valeurs de la périodicité : fonction du "periodType"
-					$periodValues=Txt::txt2tab($tmpEvt->periodValues);
-					//Vérifie si l'evt périodique est présent sur le jour courant : il oui, on prépare le reformatage de la date
-					$formatModified=$formatKept=null;
-					if($tmpEvt->periodType=="weekDay" && in_array(date("N",$timeBegin),$periodValues))														{$formatModified="Y-m-d";	$formatKept=" H:i";}	//jour de semaine
-					elseif($tmpEvt->periodType=="month" && in_array(date("m",$timeBegin),$periodValues) && date("d",$evtTimeBegin)==date("d",$timeBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
-					elseif($tmpEvt->periodType=="year" && date("m-d",$evtTimeBegin)==date("m-d",$timeBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
-					//Reformate pour que le début/fin de l'evt corresponde à la date courante  &&  Ajoute enfin l'evt à $eventListFiltered (vérif qu'il soit sur le créneau : cf. "actionTimeSlotBusy()")
-					if(!empty($formatModified) && !empty($formatKept)){
-						$tmpEvt->dateBegin=date($formatModified,$timeBegin).date($formatKept,$evtTimeBegin);
-						$tmpEvt->dateEnd  =date($formatModified,$timeEnd).date($formatKept,$evtTimeEnd);
-						if(static::eventInTimeSlot(strtotime($tmpEvt->dateBegin),strtotime($tmpEvt->dateEnd),$timeBegin,$timeEnd))  {$eventListFiltered[]=$tmpEvt;}
-					}
+			////	EVT DU JOUR
+			if(static::eventInTimeSlot($evtTimeBegin, $evtTimeEnd, $timeBegin, $timeEnd))   {$eventsFilter[]=$tmpEvt;}
+			////	EVT PERIODIQUE SUR LE JOUR =>  déjà commencé  &&  (pas de fin de périodicité || fin de périodicité pas encore arrivé)  &&  (pas de date d'exception || "dateBegin" absent des dates d'exception)
+			elseif(!empty($tmpEvt->periodType)  &&  $evtTimeBegin<$timeBegin  &&  (empty($tmpEvt->periodDateEnd) || $timeEnd<=strtotime($tmpEvt->periodDateEnd." 23:59:59"))  &&  (empty($tmpEvt->periodDateExceptions) || preg_match("/".date("Y-m-d",$timeBegin)."/",$tmpEvt->periodDateExceptions)==false)){
+				//Récupère les valeurs de la périodicité : fonction du "periodType"
+				$periodValues=Txt::txt2tab($tmpEvt->periodValues);
+				//Vérifie si l'evt périodique est présent sur le jour courant : il oui, on prépare le reformatage de la date
+				$formatModified=$formatKept=null;
+				if($tmpEvt->periodType=="weekDay" && in_array(date("N",$timeBegin),$periodValues))														{$formatModified="Y-m-d";	$formatKept=" H:i";}	//jour de semaine
+				elseif($tmpEvt->periodType=="month" && in_array(date("m",$timeBegin),$periodValues) && date("d",$evtTimeBegin)==date("d",$timeBegin))	{$formatModified="Y-m";		$formatKept="-d H:i";}	//jour du mois
+				elseif($tmpEvt->periodType=="year" && date("m-d",$evtTimeBegin)==date("m-d",$timeBegin))												{$formatModified="Y";		$formatKept="-m-d H:i";}//jour de l'année
+				//Reformate pour que le début/fin de l'evt corresponde à la date courante  &&  Ajoute enfin l'evt à $eventsFilter (vérif qu'il soit sur le créneau : cf. "actionTimeSlotBusy()")
+				if(!empty($formatModified) && !empty($formatKept)){
+					$tmpEvt->dateBegin=date($formatModified,$timeBegin).date($formatKept,$evtTimeBegin);
+					$tmpEvt->dateEnd  =date($formatModified,$timeEnd).date($formatKept,$evtTimeEnd);
+					if(static::eventInTimeSlot(strtotime($tmpEvt->dateBegin),strtotime($tmpEvt->dateEnd),$timeBegin,$timeEnd))  {$eventsFilter[]=$tmpEvt;}
 				}
 			}
 		}
-		return $eventListFiltered;
+		return $eventsFilter;
 	}
 
 	/*******************************************************************************************
@@ -255,11 +251,11 @@ class MdlCalendar extends MdlObject
 		}
 		//// Supprime les evénements de plus de 5 ans (lancé en début de session)
 		if(empty($_SESSION["calendarsCleanEvt"])){
-			$time5YearsAgo =time()-(86400*365*5);													//Time 5ans
-			foreach($displayedCalendars as $tmpCal){												//Sélectionne les agendas avec "editContentRight()"
-				if($tmpCal->editContentRight()){													//Vérif si l'agenda est accessible en écriture
-					foreach($tmpCal->eventList(time(),$time5YearsAgo,false,false,2) as $tmpEvt){	//$filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=2
-						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}					//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+			$time5YearsAgo =time()-(86400*365*5);										//Time 5ans
+			foreach($displayedCalendars as $tmpCal){									//Sélectionne les agendas avec "editContentRight()"
+				if($tmpCal->editContentRight()){										//Vérif si l'agenda est accessible en écriture
+					foreach($tmpCal->eventList(time(),$time5YearsAgo,2) as $tmpEvt){	//Params : $accessRightMin=2
+						if($tmpEvt->isOldEvt($time5YearsAgo))  {$tmpEvt->delete();}		//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
 					}
 				}
 			}
@@ -292,19 +288,18 @@ class MdlCalendar extends MdlObject
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//Accès en écriture au contenu : Importe des evts au format ICAL (cf. "CtrlCalendar::actionImportEvents()")
-		if($this->editContentRight()){
-			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"calendar/icalImport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
-		}
-		//Accès en lecture : Download les evts au format ICAL (cf. "CtrlCalendar::actionExportEvents()")  &&  Lien externe de download des evts au format ICAL ("CtrlMisc::actionDisplayIcal()")
-		if($this->readRight())
-		{
-			//Download des evts
-			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"calendar/icalExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
-			//Lien externe de download
+		////	Accès en lecture
+		if($this->readRight()){
+			////	Adresse web de partage
 			$actionJsTmp="$('#urlIcal".$this->_typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->_typeId."').hide(); notify('".Txt::trad("copyUrlConfirmed",true)."');";
 			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_typeId."' value=\"".Req::getCurUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->_typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
-			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"calendar/icalExportLink.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
+			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"link.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
+			////	Export Ical des evts
+			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
+		}
+		//// Import Ical des evts
+		if($this->editContentRight()){
+			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
 		}
 		//Renvoie le menu surchargé
 		return parent::contextMenu($options);

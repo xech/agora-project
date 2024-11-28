@@ -4,8 +4,8 @@ lightboxSetWidth(700);
 
 ////	Init
 $(function(){
-	////	Focus du champ (pas sur mobile pour pas afficher le clavier virtuel...)
-	if(!isMobile())  {$("[name='searchText']").focus();}
+	////	Focus du champ de recherche
+	$("[name='searchText']").focusAlt();
 
 	////	Recherche avancée
 	$("#advancedSearchLabel").on("click",function(){
@@ -107,7 +107,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 				foreach($searchFields as $fieldName=>$fieldParams){
 					$fieldTitle=Txt::trad("listFieldsElems")." :<br>".$fieldParams["title"];
 					$fieldInputId="searchFields".$fieldName;
-					echo "<div class='vAdvancedSearchOption' title=\"".Txt::tooltip($fieldTitle)."\"><input type='checkbox' name=\"searchFields[]\" value=\"".$fieldName."\" id='".$fieldInputId."' ".$fieldParams["checked"]."><label for='".$fieldInputId."'>".Txt::trad($fieldName)."</label></div>";
+					echo "<div class='vAdvancedSearchOption' ".Txt::tooltip($fieldTitle)."><input type='checkbox' name=\"searchFields[]\" value=\"".$fieldName."\" id='".$fieldInputId."' ".$fieldParams["checked"]."><label for='".$fieldInputId."'>".Txt::trad($fieldName)."</label></div>";
 				}
 				?>
 			</div>
@@ -135,13 +135,12 @@ if(Req::isParam("searchText"))
 						  <div class='vPluginNews' id='pluginNews".$tmpObj->_id."'>".$tmpObj->description."</div>";
 		}
 		//// Surligne le texte ou les mots recherchés
-		$searchText=html_entity_decode(Req::param("searchText"));																					//Décode les accents de l'éditeur (&agrave; &egrave; etc)
-		$pluginLabel=str_replace($searchText, "<mark>".$searchText."</mark>", $pluginLabel);														//Surligne l'expression exacte
-		foreach(explode(" ",$searchText) as $tmpWord)  {$pluginLabel=str_replace(" ".$tmpWord." ", " <mark>".$tmpWord."</mark> ", $pluginLabel);}	//Surligne chaque mot recherché (garder les espaces)
+		$searchText=html_entity_decode(Req::param("searchText"));											//Décode les accents de l'éditeur (&agrave; &egrave; etc)
+		$pluginLabel=preg_replace("/".$searchText."/i", "<mark>".$searchText."</mark>", $pluginLabel);		//Surligne l'expression exacte en gardant la casse (pas avec "str_ireplace")
 		//// Affiche le plugin
 		echo '<div class="menuLine lineHover">
 				<div onclick"'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
-				<div onclick="'.$tmpObj->pluginJsLabel.'" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">'.$pluginLabel.'</div>
+				<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$pluginLabel.'</div>
 				<div class="vContextMenu">'.$tmpObj->contextMenu(["launcherIcon"=>"inlineSmall"]).'</div>
 			  </div>';
 	}

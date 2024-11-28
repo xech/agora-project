@@ -2,7 +2,9 @@
 <script type="text/javascript" src="app/js/datatables/jquery.dataTables.min.js"></script>
 
 <script>
-////	INIT : Parametrage de DataTables
+/**********************************************************************************************************
+ *	PARAMETRAGE DE DATATABLES
+**********************************************************************************************************/
 $(function(){
 	//Construction du tableau de donnees
 	oTable=$("#tableLogs").dataTable({
@@ -32,13 +34,13 @@ $(function(){
 </script>
 
 <style>
-#pageCenterContent	{padding:10px;}
-thead th			{text-align:left;}
-#tableLogs			{font-size:0.9em;}
-#tableLogs td		{text-align:left; padding:3px;}
-#tableLogs th		{text-align:left; padding:8px; padding-left:3px;}
-#tableLogs tbody	{color:#333;}/*text toujours en noir*/
-#logsDownload		{padding:5px; text-align:center;}
+#pageCenterContent			{padding:10px;}
+thead th					{text-align:left;}
+#tableLogs					{font-size:0.9em;}
+#tableLogs td				{text-align:left; padding:3px;}
+#tableLogs th				{text-align:left; padding:8px; padding-left:3px;}
+#tableLogs tbody			{color:#333;}/*text toujours en noir*/
+#logsDownload				{padding:5px; text-align:center;}
 tfoot select, tfoot input	{width:100px;}
 [name=search_comment]		{width:450px;}
 .dataTables_filter input	{width:200px;}/*champ "recherche"*/

@@ -62,14 +62,14 @@ class CtrlMisc extends Ctrl
 				foreach($_SESSION["livecounterUsers"] as $tmpUser)
 				{
 					//Image/Label des users du livecounter principal
-					$userImg=(Req::isMobile()==false && $tmpUser->hasImg())  ?  $tmpUser->personImg(false,true)  :  null;//Verif qu'on soit pas en mode mobile et si l'image existe
+					$userImg=(Req::isMobile()==false && $tmpUser->profileImgExist())  ?  $tmpUser->profileImg(false,true)  :  null;//Verif qu'on soit pas en mode mobile et si l'image existe
 					$userTitle=$tmpUser->getLabel()." &nbsp;".$userImg;
 					$userFirstName=$tmpUser->getLabel("firstName");
 					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
-					$_SESSION["livecounterMainHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" title="'.Txt::trad("MESSENGER_chatWith").' '.Txt::tooltip($userTitle).'">'.$userImg.$userFirstName.'</label>';
+					$_SESSION["livecounterMainHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" '.Txt::tooltip(Txt::trad("MESSENGER_chatWith")." ".$userTitle).'>'.$userImg.$userFirstName.'</label>';
 					$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser">
 															<input type="checkbox" name="messengerUsers[]" value="'.$tmpUser->_id.'" id="messengerUserCheckbox'.$tmpUser->_id.'" class="messengerUserCheckbox" data-user-label="'.$userFirstName.'" data-user-label-visio="'.Txt::clean(trim($userFirstName),"max").'">
-															<label for="messengerUserCheckbox'.$tmpUser->_id.'" title="'.Txt::trad("select").' '.Txt::tooltip($userTitle).'">'.$userImg.$userFirstName.'</label>
+															<label for="messengerUserCheckbox'.$tmpUser->_id.'" '.Txt::tooltip(Txt::trad("select")." ".$userTitle).'>'.$userImg.$userFirstName.'</label>
 													   </div>';
 				}
 				//Ajoute "inverser la sélection" si ya + de 5 users
@@ -89,7 +89,7 @@ class CtrlMisc extends Ctrl
 					$destList=Txt::txt2tab($message["_idUsers"]);
 					$autorObj=self::getObj("user",$message["_idUser"]);
 					if(Req::isMobile())				{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//sur mobile :  "Will<br>11:00 "
-					elseif($autorObj->hasImg())		{$dateAutor=date("H:i",$message["date"]).$autorObj->personImg(false,true);}			//Mode normal avec icone de l'user : "11:00 <img>"
+					elseif($autorObj->profileImgExist())		{$dateAutor=date("H:i",$message["date"]).$autorObj->profileImg(false,true);}			//Mode normal avec icone de l'user : "11:00 <img>"
 					else							{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
 					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}			//Ajoute si besoin l'icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
@@ -100,7 +100,7 @@ class CtrlMisc extends Ctrl
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Le message est bien affecté à un user connnecté : on retire la class "vMessengerOldMessage" 
 					}
 					//Affichage du message
-					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" title="'.Txt::tooltip(rtrim($messageTitle,", ")).'" data-idUsers="'.$message["_idUsers"].'"><tr>
+					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" data-idUsers="'.$message["_idUsers"].'" '.Txt::tooltip(rtrim($messageTitle,", ")).'><tr>
 															<td class="vMessengerMessageDateAutor">'.$dateAutor.'</td>
 															<td data-idAutor="'.$autorObj->_id.'">'.$message["message"].'</td>
 														 </tr></table>';
@@ -207,15 +207,12 @@ class CtrlMisc extends Ctrl
 	 *******************************************************************************************/
 	public static function actionLaunchVisio()
 	{
-		//// Init l'Url
-		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));
-		//// Appli Android > lance la visio depuis l'appli Jitsi
-		if(stristr($_SERVER['HTTP_USER_AGENT'],"Android"))  {$vDatas["visioURL"]="org.jitsi.meet://".str_replace("https://","",$vDatas["visioURL"]);}
-		//// Lance un lien externe depuis l'appli mobile (cf. "VueLaunchVisio.php" & controle via "getFile" de l'appli mobile)
-		if(Req::isMobileApp())			{$vDatas["visioURL"].="#omnispaceMobileApp_getFile";}
-		//// Ajoute si besoin le nom de l'user dans l'Url
-		if(is_object(Ctrl::$curUser))	{$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}
-		//// Affiche la vue
+		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));																// Url de la visioconf
+		if(is_object(Ctrl::$curUser))  {$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	// Ajoute le nom de l'user courant dans l'Url
+		if(Req::isMobileApp()){																								// Appli mobile
+			$vDatas["visioURL"].="#frommobileapp_getfile";																	// - Lance la visio via le browser system (cf. contrôle de l'Url via "main.dart")
+			$vDatas["visioURLJitsi"]="org.jitsi.meet://".str_replace("https://","",$vDatas["visioURL"]);					// - Lance la visio depuis l'appli Jitsi (bouton secondaire)
+		}
 		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
 
@@ -300,7 +297,7 @@ class CtrlMisc extends Ctrl
 				$tmpAdress=trim($tmpPerson->adress.", ".$tmpPerson->postalCode." ".str_ireplace("cedex","",$tmpPerson->city)." ".$tmpPerson->country,  ", ");
 				$tmpLabel=$tmpPerson->getLabel()." <br> ".$tmpAdress;
 				if(!empty($tmpPerson->companyOrganization) || !empty($tmpPerson->function))  {$tmpLabel.="<br>".trim($tmpPerson->function." - ".$tmpPerson->companyOrganization, " - ");}
-				$tmpImg=($tmpPerson->hasImg())  ?  $tmpPerson->personImgPath()  :  "app/img/mapBig.png";
+				$tmpImg=($tmpPerson->profileImgExist())  ?  $tmpPerson->profileImgPath()  :  "app/img/mapBig.png";
 				$adressList[]=["adress"=>$tmpAdress, "personLabel"=>$tmpLabel, "personImg"=>$tmpImg];
 			}
 		}
@@ -354,24 +351,36 @@ class CtrlMisc extends Ctrl
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 
-	/*******************************************************************************************
-	 * MODIF L'URL DE DOWNLOAD DE FICHIER DEPUIS LA MOBILEAPP & NOTIF MAIL
-	 *******************************************************************************************/
-	public static function urlGetFile($downloadUrl, $fileName)
+	/**********************************************************************************************************************************************
+	 * URL : DOWNLOAD DEPUIS L'EXTERIEUR, VIA MOBILEAPP OU NOTIF MAIL
+	 * exple:	"?ctrl=file&action=GetFile&typeId=file-1"
+	 * 		=>  "?ctrl=misc&action=ExternalGetFile&typeId=file-1&ctrlBis=file&nameMd5=184dfd315adbbed13729076606b1afac&fileName=Documentation.pdf"
+	 **********************************************************************************************************************************************/
+	public static function urlExternalGetFile($urlDownload, $fileName)
 	{
-		$downloadUrl.=stristr($downloadUrl,"ctrl=object")  ?  "&fileType=attachedFile"  :  "&fileType=modFile";				//Fichier joint ou fichier du module "File" => tjs ajouter en premier !
-		$downloadUrl=str_ireplace(["ctrl=file","ctrl=object"],"ctrl=misc",$downloadUrl);									//Switch sur le controleur "misc" (cf. "$initCtrlFull=false" du controleur principal)
-		$downloadUrl=str_ireplace(["action=GetFile","action=AttachedFileDownload"],"action=ExternalGetFile",$downloadUrl);	//Switch sur l'action "GetFileExternal()"  (cf. Methode suivante)
-		return $downloadUrl."&nameMd5=".md5($fileName)."&extension=.".File::extension($fileName);							//Retourne l'url avec un controle d'accès "nameMd5" +  Extension pour controler l'action (cf. "main.dart" de l'appli)
+		$ctrlBis=stristr($urlDownload,"ctrl=file")  ?  "file"  :  "object";														//Défini d'abord le controleur secondaire : "file" ou "object" ("attachedFile")
+		$urlDownload=str_ireplace(["ctrl=file","ctrl=object"], "ctrl=misc", $urlDownload);										//Puis switch sur le controleur "misc" (cf. "$initCtrlFull=false")
+		$urlDownload=str_ireplace(["action=GetFile","action=AttachedFileDownload"], "action=ExternalGetFile", $urlDownload);	//Puis switch sur l'action "ExternalGetFile"
+		return $urlDownload."&ctrlBis=".$ctrlBis."&nameMd5=".md5($fileName)."&fileName=".urldecode($fileName);					//Retourne l'url avec le nom du fichier et le "nameMd5" pour le controle d'accès
 	}
 
-	/**********************************************************************************************************
-	 * ACTION : DOWNLOAD DEPUIS L'EXTERIEUR : MOBILEAPP & NOTIF MAIL  (cf. "self::urlGetFile()" ci-dessus)
-	 **********************************************************************************************************/
+	/*********************************************************************************************************************************
+	 * ACTION : DOWNLOAD DEPUIS L'EXTERIEUR, VIA MOBILEAPP OU NOTIF MAIL  (cf. contrôle de l'Url via "main.dart")
+	 *********************************************************************************************************************************/
 	public static function actionExternalGetFile()
 	{
-		if(Req::isParam("DOCFILE") && preg_match("/^docs\//i",Req::param("DOCFILE")) && is_file(Req::param("DOCFILE")))	{File::download(Req::param("DOCFILE"),Req::param("DOCFILE"));}	//"documentation.pdf" (cf. "VueHeaderMenu.php")
-		elseif(Req::param("fileType")=="attachedFile")																	{CtrlObject::actionAttachedFileDownload();}						//Download un fichier joint
-		elseif(Req::isParam("typeId"))																					{CtrlFile::actionGetFile();}									//Download un fichier du "ModFile"
+		////	Download/Affiche le fichier (pdf/img/video)
+		if(Req::isParam("launchDownload") || Req::isParam("displayFile")){
+			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionGetFile();}					//Download un fichier du ModFile
+			else								{CtrlObject::actionAttachedFileDownload();}		//Download le fichier joint d'un objet
+		}
+		////	Affiche le bouton de download depuis le browser system
+		else{
+			static::$isMainPage=true;
+			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";	//Url de download du fichier ("launchDownload" pour lancer le download ci-dessus)
+			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']))	{$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";}
+			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT']))				{$vDatas["appUrl"]="http://play.google.com/store/apps/details?id=fr.omnispace.www";}
+			static::displayPage(Req::commonPath."VueExternalGetFile.php", $vDatas);
+		}
 	}
 }

@@ -22,7 +22,7 @@ class CtrlLink extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplay(self::$curContainer)." ".MdlLink::sqlSort());
+		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplay(self::$curContainer).MdlLink::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 

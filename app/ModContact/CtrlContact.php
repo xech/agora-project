@@ -22,7 +22,7 @@ class CtrlContact extends Ctrl
 	 *******************************************************************************************/
 	public static function actionDefault()
 	{
-		$vDatas["contactList"]=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplay(self::$curContainer)." ".MdlContact::sqlSort());
+		$vDatas["contactList"]=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE ".MdlContact::sqlDisplay(self::$curContainer).MdlContact::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
@@ -68,7 +68,7 @@ class CtrlContact extends Ctrl
 			//Enregistre & recharge l'objet
 			$curObj=$curObj->createUpdate("civility=".Db::param("civility").", name=".Db::param("name").", firstName=".Db::param("firstName").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment"));
 			//Ajoute/supprime l'image / Notifie par mail & Ferme la page
-			$curObj->editImg();
+			$curObj->profileImgRecord();
 			$curObj->sendMailNotif($curObj->getLabel());
 			static::lightboxClose();
 		}

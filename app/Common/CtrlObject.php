@@ -86,7 +86,7 @@ class CtrlObject extends Ctrl
 		{
 			//Récupère le dossier courant et les dossiers qu'il contient
 			$curFolder=Ctrl::$curContainer;
-			$vDatas["foldersList"]=Db::getObjTab($curFolder::objectType, "SELECT * FROM ".$curFolder::dbTable." WHERE ".$curFolder::sqlDisplay($curFolder)." ".$curFolder::sqlSort());
+			$vDatas["foldersList"]=Db::getObjTab($curFolder::objectType, "SELECT * FROM ".$curFolder::dbTable." WHERE ".$curFolder::sqlDisplay($curFolder).$curFolder::sqlSort());
 			//Aucun dossier / Liste des dossiers
 			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
 			else{
@@ -231,6 +231,7 @@ class CtrlObject extends Ctrl
 	 *******************************************************************************************/
 	public static function actionAttachedFileDownload()
 	{
+		//Récupère le fichier et controle le droit d'accès ("nameMd5" : cf. "actionExternalGetFile()")
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
 		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))   {File::download($curFile["name"],$curFile["path"]);}
 	}
@@ -240,8 +241,9 @@ class CtrlObject extends Ctrl
 	 *******************************************************************************************/
 	 public static function actionAttachedFileDisplay()
 	{
+		//Récupère le fichier et controle le droit d'accès
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))   {File::display($curFile["path"]);}
+		if(is_file($curFile["path"]) && $curFile["containerObj"]->readRight())  {File::display($curFile["path"]);}
 	}
 
 	/*******************************************************************************************

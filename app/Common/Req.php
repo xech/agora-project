@@ -183,20 +183,20 @@ class Req
 	}
 
 	/********************************************************************************************
-	 * NAVIGATION EN MODE "MOBILE" SI LE WIDTH EST INFÉRIEUR À 1024PX  (IDEM Common.js && Common.css)
+	 * AFFICHAGE MOBILE/RESPONSIVE SI WIDTH <= 1024PX  (Idem CSS et Common.js)
 	 ********************************************************************************************/
 	public static function isMobile()
 	{
-		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<1024);}
+		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1024);}
 		return self::$_isMobile;
 	}
 
 	/********************************************************************************************
-	 * NAVIGATION SUR APP MOBILE (HOSTED && SELF-HOSTED)
+	 * NAVIGATION DEPUIS L'APPLI MOBILE, QUELQUESOIT LA RESOLUTION  (Macintosh: Ipad récents)
 	 ********************************************************************************************/
 	public static function isMobileApp()
 	{
-		return (!empty($_COOKIE["mobileAppli"]) && preg_match("/(android|iphone|ipad)/i",$_SERVER['HTTP_USER_AGENT']));
+		return (!empty($_COOKIE["mobileAppli"]) && preg_match("/(android|iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']));
 	}
 
 	/***************************************************************************************************************************/
@@ -208,10 +208,9 @@ class Req
 	 ********************************************************************************************/
     private function displayExeption(Exception $exception)
 	{
-		//Install à réaliser et pas de hosting : redirige vers le formulaire d'install
-		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)
-			{Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
-		//Affiche le message et lien "Retour"
+		////	Install à réaliser et pas de hosting : redirige vers le formulaire d'install
+		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)   {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+		////	Affiche le message et lien "Retour"
         echo '<h3 style="text-align:center;margin-top:50px;font-size:24px">
 				<img src="app/img/important.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
 				<br><br><a href="?ctrl=offline">Retour</a>

@@ -23,13 +23,13 @@
 					$imgDesc	=($fieldTmp==$curSortField && $curSortAscDesc=="desc")  ?  "sortDescSelect.png"  :  "sortDesc.png";
 					$urlSort=Tool::getParamsUrl("sort").$addUrlParams."&sort=".$fieldTmp."@@";//Prépare l'url des redirections
 					//Affiche l'option : Champ avec les images "Asc" et "Desc"
-					echo "<div class='menuLine'>
-							<div class='".$classLabel."' onclick=\"redir('".$urlSort.(stristr($curSort,'asc')?'desc':'asc')."')\">".Txt::trad("sortBy2")." ".Txt::trad("SORT_".$fieldTmp)."</div>
-							<div class='menuSortAscDesc'>
-								<img src='app/img/".$imgAsc."' title=\"".Txt::trad("tri_ascendant")."\" onclick=\"redir('".$urlSort."asc')\">
-								<img src='app/img/".$imgDesc."' title=\"".Txt::trad("tri_descendant")."\" onclick=\"redir('".$urlSort."desc')\">
+					echo '<div class="menuLine">
+							<div class="'.$classLabel.'" onclick="redir(\''.$urlSort.($curSortAscDesc=="asc"?"desc":"asc").'\')">'.Txt::trad("sortBy2").' '.Txt::trad("SORT_".$fieldTmp).'</div>
+							<div class="menuSortAscDesc">
+								<img src="app/img/'.$imgAsc.'" '.Txt::tooltip("tri_ascendant").' onclick="redir(\''.$urlSort.'asc\')">
+								<img src="app/img/'.$imgDesc.'" '.Txt::tooltip("tri_descendant").' onclick="redir(\''.$urlSort.'desc\')">
 							</div>
-						</div>";
+						</div>';
 				}
 				//Retient le dernier "field" listé
 				$fieldLast=$fieldTmp;

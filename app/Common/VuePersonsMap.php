@@ -19,7 +19,9 @@
 
 
 <script>
-////	INIT LA CARTE ET MARQUE LES ADRESSES
+/**********************************************************************************************************
+ *	INIT LA CARTE ET MARQUE LES ADRESSES
+ **********************************************************************************************************/
 $(function(){
 	//// Init l'affichage
 	mapTool="<?= $mapTool ?>";//"gmap" ou "leaflet"
@@ -42,21 +44,21 @@ $(function(){
 	displayAdress();
 });
 
-////	GEOCODE ET MARQUE CHAQUE ADRESSE SUR LA CARTE
+/**********************************************************************************************************
+ *	GEOCODE ET MARQUE CHAQUE ADRESSE SUR LA CARTE
+ **********************************************************************************************************/
 function displayAdress(adressKey)
 {
-	//// Init l'affichage
+	//// Init
 	if(typeof adressKey=="undefined")  {adressKey=0;}
 	var tmpAdress=adressList[adressKey];
 
-	//// Carte Google Map
-	if(mapTool=="gmap")
-	{
+	//// GOOGLE MAP
+	if(mapTool=="gmap"){
 		//// Géocode et marque chaque adresse
 		geocoder.geocode({"address":tmpAdress.adress}, function(results,status){
 			//// Géolocalisation OK : ajoute le marker
-			if(status==google.maps.GeocoderStatus.OK)
-			{
+			if(status==google.maps.GeocoderStatus.OK){
 				//Ajoute les coordonnées
 				tmpAdress.lat=results[0].geometry.location.lat();
 				tmpAdress.lng=results[0].geometry.location.lng();
@@ -94,9 +96,8 @@ function displayAdress(adressKey)
 			}
 		});
 	}
-	//// Carte Leaflet/Openstreetmap
-	else
-	{
+	//// OPENSTREETMAP
+	else{
 		//// Géocode et marque chaque adresse
 		$.ajax({url:"https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(tmpAdress.adress), dataType:"json"}).done(function(result){
 			//// "Adresse non trouvé"  OU  Adresse trouvée et placée sur la carte
@@ -122,7 +123,9 @@ function displayAdress(adressKey)
 	}
 }
 
-////	RETOURNE LA 'KEY' DE L'ADRESSE SUIVANTE S'IL Y EN A
+/**********************************************************************************************************
+ *	RETOURNE LA 'KEY' DE L'ADRESSE SUIVANTE S'IL Y EN A
+ **********************************************************************************************************/
 function getAdressKeyNext(adressKey)
 {
 	var adressKeyNext=parseInt(adressKey+1);

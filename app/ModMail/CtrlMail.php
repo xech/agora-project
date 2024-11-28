@@ -75,7 +75,7 @@ class CtrlMail extends Ctrl
 		}
 		////	Arborescence des dossiers de contacts (du dossier "root")
 		foreach(Ctrl::getObj("contactFolder",1)->folderTree() as $tmpContainer){
-			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplay($tmpContainer)." ".MdlContact::sqlSort());
+			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplay($tmpContainer).MdlContact::sqlSort());
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
 		////	Charge un ancien mail ou un nouveau mail  &&  Affiche la page

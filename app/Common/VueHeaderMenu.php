@@ -23,7 +23,7 @@
 .vHeaderModuleLabel						{<?= (Req::isMobile() || !empty(Ctrl::$agora->moduleLabelDisplay)) ? "display:inline-block;min-width:45px;" : "display:none" ?>}/*'inline-block' et 'min-width' pour un affichage homogène du label sous les icones (tester à 1300px..)*/
 
 /*MOBILE*/
-@media screen and (max-width:1023px){
+@media screen and (max-width:1024px){
 	/*MENU PRINCIPAL*/
 	#headerMenuLeft							{padding-left:38px; line-height:35px;}/*"padding-left" en fonction du width du "logo.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; font-size:1.08em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
@@ -40,10 +40,10 @@
 </style>
 
 
-<div id="headerBar" class="noPrint">
+<div id="headerBar">
 
 	<!--LOGO + LABEL DE L'USER ET L'ESPACE COURANT-->
-	<div id="headerMenuLeft" class="menuLaunch" for="headerMenuContext"  title="<?= Txt::trad("mainMenu") ?>">
+	<div id="headerMenuLeft" class="menuLaunch" for="headerMenuContext"  <?= Txt::tooltip("mainMenu") ?>>
 		<?php
 		////	LOGO PRINCIPAL
 		echo '<img src="app/img/'.(Req::isMobile()?'logoMobile':'logo').'.png" id="headerMainLogo">';
@@ -70,33 +70,33 @@
 				else
 				{
 					////	VALIDE L'INSCRIPTION D'USERS  +  ENVOI D'INVITATION  +  DOCUMENTATION PDF
-					if($userInscriptionValidate==true)			{echo '<div class="menuLine pulsate" onclick="lightboxOpen(\'?ctrl=user&action=UserInscriptionValidate\')" title="'.Txt::trad("userInscriptionValidateTooltip").'"><div class="menuIcon"><img src="app/img/user/subscribe.png"></div><div>'.Txt::trad("userInscriptionValidate").'</div></div>';}
-					if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" title="'.Txt::trad("USER_sendInvitationTooltip").'"><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
-					$docLink=(Req::isMobileApp())  ?  'redir(\'?ctrl=misc&action=ExternalGetFile&DOCFILE='.urlencode(Txt::trad("DOCFILE")).'\')'  :  'lightboxOpen(\''.Txt::trad("DOCFILE").'\')';
+					if($userInscriptionValidate==true)			{echo '<div class="menuLine pulsate" onclick="lightboxOpen(\'?ctrl=user&action=UserInscriptionValidate\')" '.Txt::tooltip("userInscriptionValidateTooltip").'><div class="menuIcon"><img src="app/img/user/subscribe.png"></div><div>'.Txt::trad("userInscriptionValidate").'</div></div>';}
+					if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
+					$docLink=(Req::isMobileApp())  ?  "redir('".File::docFile()."')"  :  "lightboxOpen('".File::docFile()."')";
 					echo '<div class="menuLine" onclick="'.$docLink.'"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Txt::trad("HEADER_documentation").'</div></div>';
 					////	MODIF DU PROFIL ET MESSENGER DE L'USER
 					echo '<hr>';
-					echo '<div class="menuLine" onclick="lightboxOpen(\''.Ctrl::$curUser->getUrl("edit").'\')"><div class="menuIcon"><img src="app/img/edit.png"></div><div>'.Txt::trad("USER_myProfilEdit").' &nbsp;'.Ctrl::$curUser->personImg(false,true).'</div></div>';
-					if(MdlUser::agoraMessengerEnabled())  {echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=UserEditMessenger&typeId='.Ctrl::$curUser->_typeId.'\')" title="'.Txt::trad("USER_livecounterVisibility").'"><div class="menuIcon"><img src="app/img/messengerSmall.png"></div><div>'.Txt::trad("USER_messengerEdit").'</div></div>';}
+					echo '<div class="menuLine" onclick="lightboxOpen(\''.Ctrl::$curUser->getUrl("edit").'\')"><div class="menuIcon"><img src="app/img/edit.png"></div><div>'.Txt::trad("USER_myProfilEdit").' &nbsp;'.Ctrl::$curUser->profileImg(false,true).'</div></div>';
+					if(MdlUser::agoraMessengerEnabled())  {echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=UserEditMessenger&typeId='.Ctrl::$curUser->_typeId.'\')" '.Txt::tooltip("USER_livecounterVisibility").'><div class="menuIcon"><img src="app/img/messengerSmall.png"></div><div>'.Txt::trad("USER_messengerEdit").'</div></div>';}
 					////	ADMIN D'ESPACE :  PARAMETRAGE DE L'ESPACE COURANT  +   MODULE "LOGS"  +   AFFICHAGE "ADMINISTRATEUR"
 					if(Ctrl::$curUser->isSpaceAdmin()){
 						echo '<hr>';
 						echo '<div class="menuLine" onclick="lightboxOpen(\''.Ctrl::$curSpace->getUrl("edit").'\')"><div class="menuIcon"><img src="app/img/settings.png"></div><div>'.Txt::trad("SPACE_config").' <i>'.Txt::reduce(Ctrl::$curSpace->name,35).'</i></div></div>';
 						echo '<div class="menuLine" onclick="redir(\'?ctrl=log\')"><div class="menuIcon"><img src="app/img/log.png"></div><div>'.Txt::trad("LOG_moduleDescription").'</div></div>';
-						echo '<div class="menuLine '.(!empty($_SESSION["displayAdmin"])?'linkSelect':null).'" onclick="redir(\'?ctrl='.Req::$curCtrl.'&displayAdmin='.(empty($_SESSION["displayAdmin"])?'true':'false').'\')" title="'.Txt::trad("HEADER_displayAdminInfo").'"><div class="menuIcon"><img src="app/img/eye.png"></div><div>'.Txt::trad("HEADER_displayAdmin").'</div></div>';
+						echo '<div class="menuLine '.(!empty($_SESSION["displayAdmin"])?'optionSelect':'option').'" onclick="redir(\'?ctrl='.Req::$curCtrl.'&displayAdmin='.(empty($_SESSION["displayAdmin"])?'true':'false').'\')" '.Txt::tooltip("HEADER_displayAdminInfo").'><div class="menuIcon"><img src="app/img/eye.png"></div><div>'.Txt::trad("HEADER_displayAdmin").'</div></div>';
 					}
 					////	 ADMIN GENERAL :  EDIT TOUS LES USERS  +  EDIT TOUS LES ESPACES  +  PARAMETRAGE GENERAL  +  ESPACE DISQUE UTILISE
 					if(Ctrl::$curUser->isGeneralAdmin()){
 						echo '<hr>';
 						echo '<div class="menuLine" onclick="redir(\'?ctrl=user&displayUsers=all\')"><div class="menuIcon"><img src="app/img/user/icon.png"></div><div>'.Txt::trad("USER_allUsers").'</div></div>';
-						echo '<div class="menuLine" onclick="redir(\'?ctrl=space\')" title="'.Txt::trad("SPACE_moduleTooltip").'"><div class="menuIcon"><img src="app/img/settingsSpaces.png"></div><div>'.Txt::trad("SPACE_manageAllSpaces").'</div></div>';
+						echo '<div class="menuLine" onclick="redir(\'?ctrl=space\')" '.Txt::tooltip("SPACE_moduleTooltip").'><div class="menuIcon"><img src="app/img/settingsSpaces.png"></div><div>'.Txt::trad("SPACE_manageAllSpaces").'</div></div>';
 						echo '<div class="menuLine" onclick="redir(\'?ctrl=agora\')"><div class="menuIcon"><img src="app/img/settingsGeneral.png"></div><div>'.Txt::trad("AGORA_generalSettings").'</div></div>';
 						echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/diskSpace'.($diskSpaceAlert==true?'Alert':null).'.png"></div><div>'.Txt::trad("diskSpaceUsed").' : '.$diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque).'</div></div>';
 					}
 					////	  SWITCH D'ESPACE  +  DECONNEXION DE L'ESPACE PRINCIPAL
 					echo '<hr>';
-					if(Req::isSpaceSwitch())  {echo '<div class="menuLine" onclick="if(confirm(\''.Txt::trad("connectSpaceSwitchConfirm",true).'\')) redir(\''.Req::connectSpaceSwitchUrl().'\')"><div class="menuIcon"><img src="app/img/login.png"></div><div>'.Txt::trad("connectSpaceSwitch").'</div></div>';}
 					echo '<div class="menuLine" onclick="if(confirm(\''.Txt::trad("disconnectSpaceConfirm",true).'\')) redir(\'?disconnect=1\')"><div class="menuIcon"><img src="app/img/logout.png"></div><div>'.Txt::trad("disconnectSpace").'</div></div>';
+					if(Req::isSpaceSwitch())  {echo '<hr><div class="menuLine" onclick="if(confirm(\''.Txt::trad("connectSpaceSwitchConfirm",true).'\')) redir(\''.Req::connectSpaceSwitchUrl().'\')"><div class="menuIcon"><img src="app/img/switch.png"></div><div>'.Txt::trad("connectSpaceSwitch").'</div></div>';}
 				}
 				////	SEPARATEUR EN MODE "MOBILE"
 				if(Req::isMobile())  {echo "<hr>";}
@@ -111,8 +111,8 @@
 				if($showSpaceList==true){
 					echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/space.png"></div><div>'.Txt::trad("HEADER_displaySpace").' :</div></div>';
 					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
-						$iconSpaceEdit=($tmpSpace->editRight())  ?  '<img src="app/img/edit.png" onclick="lightboxOpen(\''.$tmpSpace->getUrl("edit").'\')" title="'.Txt::trad("SPACE_config").'">'  :  null;
-						echo '<div class="menuLine vSwitchSpace '.($tmpSpace->isCurSpace()?'linkSelect':null).'"><div class="menuIcon"><img src="app/img/arrowRightBig.png"></div><div><span onclick="redir(\'?_idSpaceAccess='.$tmpSpace->_id.'\')" title="'.Txt::tooltip($tmpSpace->description).'">'.$tmpSpace->name.'</span>'.$iconSpaceEdit.'</div></div>';
+						$iconSpaceEdit=($tmpSpace->editRight())  ?  '<img src="app/img/edit.png" onclick="lightboxOpen(\''.$tmpSpace->getUrl("edit").'\')" '.Txt::tooltip("SPACE_config").'>'  :  null;
+						echo '<div class="menuLine vSwitchSpace '.($tmpSpace->isCurSpace()?'linkSelect':null).'"><div class="menuIcon"><img src="app/img/arrowRightBig.png"></div><div><span onclick="redir(\'?_idSpaceAccess='.$tmpSpace->_id.'\')" '.Txt::tooltip($tmpSpace->description).'>'.$tmpSpace->name.'</span>'.$iconSpaceEdit.'</div></div>';
 					}
 				}
 				////	Affiche les plugins "shortcut" ("reduce()" pour réduire la taille du texte et des tags html, surtout sur le label principal)
@@ -120,7 +120,7 @@
 					if($showSpaceList==true)  {echo '<hr>';}
 					echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/shortcut.png"></div><div>'.Txt::trad("HEADER_shortcuts").' :</div></div>';
 					foreach($pluginsShortcut as $tmpObj){
-						echo '<div class="menuLine" title="'.Txt::tooltip($tmpObj->pluginTooltip).'">
+						echo '<div class="menuLine" '.Txt::tooltip($tmpObj->pluginTooltip).'>
 								<div onclick="'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
 								<div onclick="'.$tmpObj->pluginJsLabel.'">'.$tmpObj->pluginLabel.'</div>
 							</div>';
@@ -131,7 +131,7 @@
 			?>
 		</div>
 		<!--LOGO PRINCIPAL-->
-		<div id="headerMenuContextOmnispace" onclick="window.open('<?= OMNISPACE_URL_PUBLIC ?>')" title="<?= OMNISPACE_URL_LABEL ?>"><hr><img src="app/img/logoLabel.png"></div>
+		<div id="headerMenuContextOmnispace" onclick="window.open('<?= OMNISPACE_URL_PUBLIC ?>')" <?= Txt::tooltip(OMNISPACE_URL_LABEL) ?> ><hr><img src="app/img/logoLabel.png"></div>
 	</div>
 
 	<!--MODULES DISPONIBLES-->
@@ -144,7 +144,7 @@
 				//Affiche le module courant
 				$tmpModCurClass=($tmpMod["isCurModule"]==true)  ?  "vHeaderModuleCurrent"  :  null;
 				$tmpModIcon=(Req::isMobile() || !empty(Ctrl::$agora->moduleLabelDisplay))  ?  "iconSmall.png"  :  "icon.png";
-				echo '<div class="vHeaderModule" onclick="redir(\''.$tmpMod["url"].'\')" title="'.Txt::tooltip($tmpMod["description"]).'">
+				echo '<div class="vHeaderModule" onclick="redir(\''.$tmpMod["url"].'\')" '.Txt::tooltip($tmpMod["description"]).'>
 						<div class="vHeaderModuleButton '.$tmpModCurClass.'"><img src="app/img/'.$tmpMod["moduleName"].'/'.$tmpModIcon.'"> <span class="vHeaderModuleLabel">'.$tmpMod["label"].'</span></div>
 					  </div>';
 				//Sur mobile, on retient le label du module courant
@@ -152,7 +152,7 @@
 			}
 			////	AFFICHAGE DU MESSENGER : cf. "VueMessenger.php"
 			if(Ctrl::$curUser->messengerEnabled()){
-				echo '<div class="vHeaderModule" onclick="messengerDisplay(\'all\')" title="'.Txt::trad("MESSENGER_moduleDescription").'">
+				echo '<div class="vHeaderModule" onclick="messengerDisplay(\'all\')" '.Txt::tooltip("MESSENGER_moduleDescription").'>
 						<div class="vHeaderModuleButton" id="headerModuleButtonMessenger"><img src="app/img/messenger.png"> <span class="vHeaderModuleLabel">'.Txt::trad("MESSENGER_headerModuleName").'</span></div>
 					  </div>';
 			}

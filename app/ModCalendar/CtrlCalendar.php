@@ -23,109 +23,84 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************/
 	public static function actionDefault()
 	{
-		////	MENU DE PROPOSITION D'EVENEMENT A CONFIRMER
-		$vDatas["eventProposition"]=self::eventProposition();
-		////	AGENDAS VISIBLE POUR L'USER (OU TOUS LES AGENDAS : "affectationCalendars()" SI ADMIN GENERAL)  &&  AGENDAS AFFICHES  &&  EVT PROPOSÉS
-		if(empty($_SESSION["calsListDisplayAll"]) || Req::isParam("calsListDisplayAll"))   {$_SESSION["calsListDisplayAll"]=(Req::param("calsListDisplayAll")==1 && Ctrl::$curUser->isGeneralAdmin());}
-		$vDatas["readableCalendars"]=($_SESSION["calsListDisplayAll"]==true)  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::readableCalendars();
-		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["readableCalendars"]);
-		////	MODE D'AFFICHAGE (cf. MdlCalendar::$displayModes : month, week, workWeek, 4Days, day)
-		$displayMode=self::prefUser("calendarDisplayMode","displayMode");
-		if(empty($displayMode))  {$displayMode=(Req::isMobile()) ? "4Days" : "month";}//Affichage par défaut
-		$vDatas["displayMode"]=$displayMode;
-		////	TEMPS DE RÉFÉRENCE  &  JOURS FÉRIÉS
-		$vDatas["curTime"]=$curTime=Req::isParam("curTime") ? Req::param("curTime") : time();
-		$vDatas["celebrationDays"]=Trad::celebrationDays(date("Y",$curTime));
+		////	INIT : PROPOSITION D'EVT / LISTE D'AGENDAS / MODE D'AFFICHAGE / TPS DE REFERENCE / JOURS FERIES
+		$vDatas["eventProposition"]=self::eventProposition();																							//Proposition d'evenement a confirmer
+		$vDatas["readableCalendars"]=(!empty($_SESSION["displayAdmin"]))  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::readableCalendars();	//Agendas visibles : "readable" / "affectation" ("displayAdmin")
+		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["readableCalendars"]);													//Agendas affichés
+		$smallDisplay=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=600);																	//Affichage réduit (600px de width max)
+		$displayMode=self::prefUser("calendarDisplayMode","displayMode");																				//Mode d'affichage en preference
+		if(empty($displayMode))  {$displayMode="month";}																								//Sinon "month" par défaut
+		if($smallDisplay==true && preg_match("/(week|7Days)/i",$displayMode))	{$displayMode="3Days";}													//Affichage réduit : switch de "week"/"7Days" à "3Days"
+		elseif($smallDisplay==false && $displayMode=="3Days")					{$displayMode="week";}													//Affichage normal : switch de "3Days" à "week"
+		$vDatas["displayMode"]=$displayMode;																											//Affichage courant
+		$vDatas["displayModeList"]=($smallDisplay==true)  ?  ["month","3Days"]  :  ["month","week","7Days"];											//Affichages disponibles
+		$vDatas["curTime"]=$curTime=Req::isParam("curTime")  ?  Req::param("curTime")  :  time();														//Temps de référence
+		$vDatas["celebrationDays"]=Trad::celebrationDays(date("Y",$curTime));																			//Jours Fériés
 
-		////	AFFICHAGE : PREPARE LES TIMES/DATES
-		//AFFICHAGE MOIS
-		if($displayMode=="month"){
-			$vDatas["timeBegin"]	=strtotime(date("Y-m",$curTime)."-01 00:00");
-			$vDatas["timeEnd"]		=strtotime(date("Y-m",$curTime)."-".date("t",$curTime)." 23:59");
-			$vDatas["urlTimePrev"]	=strtotime("-1 month",$curTime);
-			$vDatas["urlTimeNext"]	=strtotime("+1 month",$curTime);
-			$displayedTimeBegin		=strtotime("-".(date("N",$vDatas["timeBegin"])-1)." days", $vDatas["timeBegin"]);//Commence par un lundi (ex: si le mois commence un mercredi, on affiche le lundi/mardi du mois précédent)
-			$displayedTimeEnd		=strtotime("+".(7-date("N",$vDatas["timeEnd"]))." days", $vDatas["timeEnd"]);	//Termine par un dimanche
-		}
-		//AFFICHAGE SEMAINE / SEMAINE DE TRAVAIL
-		elseif(preg_match("/week/i",$displayMode)){
-			$weekTimeBegin=strtotime("-".(date("N",$curTime)-1)." days",$curTime);//lundi=0 => dimanche=6
-			$weekTimeEnd=($displayMode=="week") ? strtotime("+6 days",$weekTimeBegin) : strtotime("+4 days",$weekTimeBegin);
-			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$weekTimeBegin)." 00:00");
-			$vDatas["timeEnd"]		=strtotime(date("Y-m-d",$weekTimeEnd)." 23:59");
-			$vDatas["urlTimePrev"]	=strtotime("-1 week",$curTime);
-			$vDatas["urlTimeNext"]	=strtotime("+1 week",$curTime);
-		}
-		//AFFICHAGE 4 PROCHAINS JOURS
-		elseif($displayMode=="4Days"){
-			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$curTime)." 00:00");
-			$vDatas["timeEnd"]		=$vDatas["timeBegin"]+345599;//345599 = 4 jours moins une seconde
-			$vDatas["urlTimePrev"]	=strtotime("-4 day",$curTime);
-			$vDatas["urlTimeNext"]	=strtotime("+4 day",$curTime);
-		}
-		//AFFICHAGE JOUR
-		elseif($displayMode=="day"){
-			$vDatas["timeBegin"]	=strtotime(date("Y-m-d",$curTime)." 00:00");
-			$vDatas["timeEnd"]		=strtotime(date("Y-m-d",$curTime)." 23:59");
-			$vDatas["urlTimePrev"]	=strtotime("-1 day",$curTime);
-			$vDatas["urlTimeNext"]	=strtotime("+1 day",$curTime);
-		}
+		////	DEBUT/FIN DE PERIODE : EN FONCTION DE $displayMode
+		if($displayMode=="month")	{$strBegin="first day of this month 00:00:00";	$strEnd="last day of this month 23:59:59";	$strPrev="-1 month";	$strNext="+1 month";}
+		if($displayMode=="week")	{$strBegin="monday this week 00:00:00";			$strEnd="sunday this week 23:59:59";		$strPrev="-1 week";		$strNext="+1 week";}
+		if($displayMode=="7Days")	{$strBegin="today 00:00:00";					$strEnd="+6 day 23:59:59";					$strPrev="-7 day";		$strNext="+7 day";}
+		if($displayMode=="3Days")	{$strBegin="today 00:00:00";					$strEnd="+2 day 23:59:59";					$strPrev="-3 day";		$strNext="+3 day";}
+		$timeBegin			=strtotime($strBegin,$curTime);		//Début de période affichée
+		$timeEnd			=strtotime($strEnd,  $curTime);		//Fin de période affichée
+		$vDatas["timePrev"]	=strtotime($strPrev, $timeBegin);	//Période précédente (tjs prendre $timeBegin en référence!)
+		$vDatas["timeNext"]	=strtotime($strNext, $timeBegin);	//Période suivante (idem)
 
-		////	LABEL DU MOIS AFFICHÉ : AFFICHAGE MOBILE OU  NORMAL
-		$monthTime=$vDatas["timeBegin"];//Début de période comme référence
-		if(Req::isMobile())	{$vDatas["calendarPeriodLabel"]=(date("Y")==date("Y",$monthTime))  ?  Txt::formatime("MMMM",$monthTime)  :  Txt::formatime("MMM y",$monthTime);}//"Janvier" OU "Janv. 2018" (si affiche une autre année)
-		else				{$vDatas["calendarPeriodLabel"]=(date("Ym",$vDatas["timeBegin"])==date("Ym",$vDatas["timeEnd"]))  ?  Txt::formatime("MMMM y",$monthTime)  :  Txt::formatime("MMMM y",$vDatas["timeBegin"])." / ".Txt::formatime("MMMM y",$vDatas["timeEnd"]);}//"Janvier 2020" OU "Janvier 2020 / fevrier 2020" (si on affiche une semaine sur 2 mois)
-		////	MENU DES ANNÉES & MOIS
+		////	LABEL DU MOIS AFFICHÉ  &&  MENU DES ANNÉES/MOIS
+		if(date("Ym",$timeBegin)!=date("Ym",$timeEnd))	{$vDatas["monthLabel"]=Txt::formatime("MMM", $timeBegin)."/".Txt::formatime("MMM yy", $timeEnd);}	//"Fev./Mar. 50"	: semaine à cheval sur 2 mois
+		elseif(Req::isMobile())							{$vDatas["monthLabel"]=Txt::formatime("MMM yy", $timeBegin);}										//"Fev. 50"			: format mobile
+		else											{$vDatas["monthLabel"]=Txt::formatime("MMMM yyyy", $timeBegin);}									//"Fevrier 2050"	: format par défaut
 		$vDatas["calMonthPeriodMenu"]=null;
-		for($tmpMonth=1; $tmpMonth<=12; $tmpMonth++){
-			$tmpMonthTime=strtotime(date("Y",$curTime)."-".($tmpMonth>9?$tmpMonth:"0".$tmpMonth)."-01");
-			$vDatas["calMonthPeriodMenu"].="<a onclick=\"redir('?ctrl=calendar&curTime=".$tmpMonthTime."')\" ".(date("Y-m",$curTime)==date("Y-m",$tmpMonthTime)?"class='linkSelect'":null).">".Txt::formatime("MMMM",$tmpMonthTime)."</a>";
+		for($monthNb=1; $monthNb<=12; $monthNb++){
+			$monthTime=strtotime(date('Y',$curTime).'/'.$monthNb.'/1');
+			$vDatas["calMonthPeriodMenu"].='<a onclick="redir(\'?ctrl=calendar&curTime='.$monthTime.'\')" class="'.(date('Y-m',$curTime)==date('Y-m',$monthTime)?'optionSelect':'option').'">'.Txt::formatime("MMMM",$monthTime).'</a>';
 		}
-		$vDatas["calMonthPeriodMenu"].="<hr>";
-		for($tmpYear=date("Y")-3; $tmpYear<=date("Y")+5; $tmpYear++){
-			$tmpYearTime=strtotime($tmpYear."-".date("m",$curTime)."-01");
-			$vDatas["calMonthPeriodMenu"].="<a onclick=\"redir('?ctrl=calendar&curTime=".$tmpYearTime."')\" ".(date("Y",$curTime)==$tmpYear?"class='linkSelect'":null).">".$tmpYear."</a>";
+		$vDatas["calMonthPeriodMenu"].='<hr>';
+		for($yearNb=date('Y')-2; $yearNb<=date('Y')+3; $yearNb++){
+			$yearTime=strtotime($yearNb.'-'.date('m',$curTime).'-01');
+			$vDatas["calMonthPeriodMenu"].='<a onclick="redir(\'?ctrl=calendar&curTime='.$yearTime.'\')" class="'.(date('Y',$curTime)==$yearNb?'optionSelect':'option').'">'.$yearNb.'</a>';
 		}
-		////	LISTE DES JOURS À AFFICHER (43200sec de décalage : cf. heures d'été/hiver)
+
+		////	LISTE DES JOURS À AFFICHER
+		if($displayMode=="month")	{$timeBeginDisplay=strtotime("monday this week 00:00:00",$timeBegin);	$timeEndDisplay=strtotime("sunday this week 23:59:59",$timeEnd);}//Lundi de 1ere semaine du mois / Dimanche de dernière semaine du mois
+		else						{$timeBeginDisplay=$timeBegin;	$timeEndDisplay=$timeEnd;}
 		$vDatas["periodDays"]=[];
-		if(empty($displayedTimeBegin))	{$displayedTimeBegin=$vDatas["timeBegin"];  $displayedTimeEnd=$vDatas["timeEnd"];}
-		for($timeDay=$displayedTimeBegin+43200; $timeDay<=$displayedTimeEnd; $timeDay+=86400){
-			$tmpDay["date"]=date("Y-m-d",$timeDay);													//Date
-			$tmpDay["timeBegin"]=strtotime(date("Y-m-d",$timeDay)." 00:00");						//Timestamp de début
-			$tmpDay["timeEnd"]=strtotime(date("Y-m-d",$timeDay)." 23:59");							//Timestamp de fin
-			$tmpDay["celebrationDay"]=(array_key_exists(date("Y-m-d",$timeDay),$vDatas["celebrationDays"]))  ?  $vDatas["celebrationDays"][date("Y-m-d",$timeDay)]  :  null;//Libelle d'un jour ferie ?
-			$vDatas["periodDays"][$tmpDay["date"]]=$tmpDay;//Ajoute le jour à la liste
+		for($timeDay=$timeBeginDisplay; $timeDay<=$timeEndDisplay; $timeDay+=86400){																	//Liste des jours de la période
+			$tmpDay["date"]=date("Y-m-d",$timeDay);																										//Date
+			$tmpDay["timeBegin"]=strtotime("today 00:00:00", $timeDay);																					//Timestamp de début
+			$tmpDay["timeEnd"]	=strtotime("today 23:59:59", $timeDay);																					//Timestamp de fin
+			$tmpDay["celebrationDay"]=(isset($vDatas["celebrationDays"][$tmpDay["date"]]))  ?  $vDatas["celebrationDays"][$tmpDay["date"]]  :  null;	//Jour ferie
+			$vDatas["periodDays"][$tmpDay["date"]]=$tmpDay;																								//Ajoute le jour à la liste
 		}
 
 		////	RECUPERE LA VUE DE CHAQUE AGENDA ("VueCalendarMonth.php" / "VueCalendarWeek.php")  &&   LA LISTE DES EVENEMENTS
 		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal)
 		{
-			//Label d'ajout d'événement OU de proposition d'événement
+			//// LABEL D'AJOUT D'ÉVÉNEMENT / PROPOSITION D'ÉVÉNEMENT
 			if($tmpCal->addContentRight())		{$tmpCal->addEventLabel=Txt::trad("CALENDAR_addEvtTooltip");}
 			elseif($tmpCal->addOrProposeEvt())	{$tmpCal->addEventLabel=Txt::trad("CALENDAR_proposeEvtTooltip");}
 			else								{$tmpCal->addEventLabel=null;}
-			//EVENEMENTS POUR CHAQUE JOUR
+			//// EVENEMENTS POUR CHAQUE JOUR
 			$tmpCal->eventList=[];
-			$tmpCal->eventListDisplayed=$tmpCal->eventList($displayedTimeBegin,$displayedTimeEnd);//Evts de la période affichée
-			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay)
-			{
-				//EVENEMENTS DU JOUR COURANT
-				$tmpCal->eventList[$tmpDay["date"]]=[];
-				$tmpDayEvts=MdlCalendar::eventFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);								//Récupère uniquement les evts de la journée
+			$tmpCal->eventListDisplayed=$tmpCal->eventList($timeBeginDisplay, $timeEndDisplay, 0.5, true);//Evts sur toute la période affichée. Params : $accessRightMin=0.5, $categoryFilter=true
+			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay){
+				$tmpCal->eventList[$tmpDate]=[];
+				$tmpDayEvts=MdlCalendar::eventsFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);								//Récupère uniquement les evts de la journée
 				foreach($tmpDayEvts as $tmpEvt){																										//Parcourt chaque événement :
 					$tmpEvt->timeBegin=strtotime($tmpEvt->dateBegin);																					//"time" du début de journée
-					$tmpEvt->timeEnd=strtotime($tmpEvt->dateEnd);																						//"time" de fin de journée
-					$tmpEvt->titleTooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"basic",$tmpEvt->timeEnd);							//Tooltip avec title et date détaillée
-					if(Req::isMobile()==false){																											//Ajoute au title l'heure de début (sauf mobile)
+					$tmpEvt->timeEnd  =strtotime($tmpEvt->dateEnd);																						//"time" de fin de journée
+					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"basic",$tmpEvt->timeEnd);									//Tooltip avec title et date détaillée
+					if(Req::isMobile()==false){																											//Ajoute au title l'heure de début (sauf sur mobile)
 						if($displayMode=="month")	{$tmpEvt->title=Txt::dateLabel($tmpEvt->timeBegin,"mini")." &nbsp;".$tmpEvt->title;}				//- affichage Month (ex: "14h Mon titre")
-						else						{$tmpEvt->title=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd);}	//- affichage "Week (ex: "Mon Titre <br> 14h - 15h")
+						else						{$tmpEvt->title=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd);}	//- affichage Week  (ex: "Mon Titre <br> 14h - 15h")
 					}
-					$tmpEvt->containerClass=($tmpEvt->timeEnd < strtotime(date("Y-m-d")))  ?  "vEventBlock vEventBlockPast"  :  "vEventBlock";			//"vEventBlockPast" s'il commence avant aujourd'hui
-					$tmpEvt->containerAttributes='data-eventColor="'.$tmpEvt->eventColor.'"';															//Attributs de l'evt : "eventColor" + d'autres en affichage "week"
+					if(!empty($tmpEvt->important))  {$tmpEvt->title.='<img src="app/img/important.png" class="vEvtImportant">';}						//Ajoute au title l'icone "important"
+					$tmpEvt->containerClass=($tmpEvt->timeEnd < strtotime(date("Y-m-d")))  ?  "vEvtBlock vEvtBlockPast"  :  "vEvtBlock";				//"vEvtBlockPast" s'il commence avant aujourd'hui
+					$tmpEvt->containerAttributes='style="background-color:'.$tmpEvt->eventColor.'"';													//Couleur de l'evt appliqué au .vEvtBlock
 					$tmpEvt->contextMenuOptions=["launcherIcon"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];	//Options du menu contextuel (cf. "divContainerContextMenu()")
-					$tmpEvt->importantIcon=(!empty($tmpEvt->important))  ?  "&nbsp;<img src='app/img/important.png'>"  :  null;							//Icone "important"
-					if($displayMode!="month"){																											//Affichage semaine/jour:
-						$tmpEvt->timeFromDayBegin=($tmpDay["timeBegin"]<$tmpEvt->timeBegin) ?  ($tmpEvt->timeBegin-$tmpDay["timeBegin"])  : 0;			//Time depuis le début du jour ("0" si l'evt commence avant le jour)
+					if($displayMode!="month"){																											//Affichage "week"/"3Days"/etc :
+						$tmpEvt->timeFromDayBegin=($tmpDay["timeBegin"]<$tmpEvt->timeBegin) ?  ($tmpEvt->timeBegin-$tmpDay["timeBegin"])  : 0;			//-Time depuis le début du jour ("0" si l'evt commence avant le jour)
 						$evtTmpDayBefore=($tmpEvt->timeBegin < $tmpDay["timeBegin"]);																	//-Evt commence avant le jour courant ?
 						$evtTmpDayAfter=($tmpEvt->timeEnd > $tmpDay["timeEnd"]);																		//-Evt termine après le jour courant?
 						if($evtTmpDayBefore==true && $evtTmpDayAfter==true)	{$tmpEvt->timeDuration=24*3600;}											//-Affiche toute la journée
@@ -135,31 +110,38 @@ class CtrlCalendar extends Ctrl
 					}
 					$tmpCal->eventList[$tmpDate][]=$tmpEvt;																								//Ajoute l'evt à la liste !
 				}
-				//Tri les evts par timeFromDayBegin (pour qu'ils se chevauchent bien s'ils sont sur le même "timeslot". Note: ne pas utiliser z-index !)
-				usort($tmpCal->eventList[$tmpDate],function($objA,$objB){
-					return ($objA->timeFromDayBegin - $objB->timeFromDayBegin);
-				});
+				////	Tri des evts en affichage "Month" (par HeureMinute) ou "Week" (par timeFromDayBegin, cf. evts qui se chevauchent sur le même "timeslot")
+				if($displayMode=="month"){
+					usort($tmpCal->eventList[$tmpDate],function($objA,$objB){
+						return (date("Hi",$objA->timeBegin) - date("Hi",$objB->timeBegin));
+					});
+				}else{
+					usort($tmpCal->eventList[$tmpDate],function($objA,$objB){
+						return ($objA->timeFromDayBegin - $objB->timeFromDayBegin);
+					});
+				}
 			}
-			//Récupère la vue
+			//// RÉCUPÈRE ENFIN LA VUE DE L'AGENDA
 			$tmpCal->isFirstCal=($cptCal==0);
 			$vCalDatas=$vDatas;
 			$vCalDatas["tmpCal"]=$tmpCal;
-			$calendarVue=($displayMode=="month")?"VueCalendarMonth.php":"VueCalendarWeek.php";
+			$calendarVue=($displayMode=="month") ? "VueCalendarMonth.php" : "VueCalendarWeek.php";
 			$tmpCal->calendarVue=self::getVue(Req::curModPath().$calendarVue, $vCalDatas);
 		}
 
 		////	SYNTHESE DES AGENDAS (SI + D'UN AGENDA)
-		if(count($vDatas["displayedCalendars"])>1 && !Req::isMobile()){
-			$vDatas["periodSynthese"]=[];																		//Jours à afficher pour la synthese
-			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay){												//Parcour chaque jour de la période affichée
-				if($displayMode=="month" && date("m",$tmpDay["timeBegin"])!=date("m",$curTime))  {continue;}	//Jour du mois précédant/suivant : passe
-				$tmpDay["calsEvts"]=[];																			//Evts du jour
-				foreach($vDatas["displayedCalendars"] as $tmpCal)												//Evts de chaque agenda : uniquement les events de la journée
-					{$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::eventFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);}
-				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;													//Ajoute le jour de la synthese
+		if(count($vDatas["displayedCalendars"])>1 && Req::isMobile()==false){
+			$vDatas["periodSynthese"]=[];																												//Jours à afficher pour la synthese
+			foreach($vDatas["periodDays"] as $tmpDate=>$tmpDay){																						//Parcour chaque jour de la période affichée
+				if($displayMode=="month" && date("m",$tmpDay["timeBegin"])!=date("m",$curTime))  {continue;}											//Jour du mois précédant/suivant : passe
+				$tmpDay["calsEvts"]=[];																													//Init les evts du jour
+				foreach($vDatas["displayedCalendars"] as $tmpCal)																						//Parcourt chaque agenda
+					{$tmpDay["calsEvts"][$tmpCal->_id]=MdlCalendar::eventsFilter($tmpCal->eventListDisplayed,$tmpDay["timeBegin"],$tmpDay["timeEnd"]);}	//-> Récupère uniquement les evts de la journée
+				$vDatas["periodSynthese"][$tmpDate]=$tmpDay;																							//Ajoute le jour de la synthese
 			}
 		}
-		////	LANCE L'AFFICHAGE
+	
+		////	AFFICHE LA VUE
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
@@ -190,12 +172,10 @@ class CtrlCalendar extends Ctrl
 			//// Parcourt chaque agenda visible : ajoute les événements de l'agenda
 			foreach(MdlCalendar::readableCalendars() as $tmpCal)
 			{
-				////  $filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=1  & $pluginParams
-				foreach($tmpCal->eventList(null,null,false,false,1,$params) as $tmpEvt)
-				{
+				////  Params : $timeBegin=null, $timeEnd=null, $accessRightMin=1, $categoryFilter=false, $pluginParams=$params
+				foreach($tmpCal->eventList(null,null,1,false,$params) as $tmpEvt){
 					//// Vérif si l'evt n'a pas déjà été ajouté (car peut être affecté à plusieurs agendas) && se limite à 200 evt max (cf. affichage des nouveaux evt après import de fichier Ical)
-					if(empty($pluginsList[$tmpEvt->_typeId]) && count($pluginsList)<200)
-					{
+					if(empty($pluginsList[$tmpEvt->_typeId]) && count($pluginsList)<200){
 						$tmpEvt->pluginIcon=self::moduleName."/icon.png";
 						$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
 						$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
@@ -243,7 +223,7 @@ class CtrlCalendar extends Ctrl
 		////	VALIDE LE FORMULAIRE
 		if(Req::isParam("formValidate"))
 		{
-			////	EDITE LES PRINCIPAUX CHAMPS DE L'ÉVÉNEMENT (titre, timeBegin..)
+			//// EDITE LES PRINCIPAUX CHAMPS DE L'ÉVÉNEMENT (titre, timeBegin..)
 			if($curObj->fullRight())
 			{
 				//Prépare les dates
@@ -264,11 +244,11 @@ class CtrlCalendar extends Ctrl
 				//Enregistre & recharge l'objet
 				$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", _idCat=".Db::param("_idCat").", important=".Db::param("important").", contentVisible=".Db::param("contentVisible").", visioUrl=".Db::param("visioUrl").", periodType=".Db::param("periodType").", periodValues=".Db::format($periodValues).", periodDateEnd=".Db::format($periodDateEnd).", periodDateExceptions=".Db::formatTab2txt($periodDateExceptions).", guest=".Db::param("guest").", guestMail=".Db::param("guestMail"));
 			}
-			////	RÉINITIALISE SI BESOIN LES AFFECTATIONS/PROPOSITIONS AUX AGENDAS
+			//// RÉINITIALISE SI BESOIN LES AFFECTATIONS/PROPOSITIONS AUX AGENDAS
 			if(Req::isParam("reinitCalendars")){
 				foreach(Req::param("reinitCalendars") as $idCal)  {$curObj->deleteAffectation($idCal,true);}
 			}
-			////	ATTRIBUE LES NOUVELLES AFFECTATIONS/PROPOSITIONS AUX AGENDAS
+			//// ATTRIBUE LES NOUVELLES AFFECTATIONS/PROPOSITIONS AUX AGENDAS
 			$affectationCals=(array)Req::param("affectationCalendars");
 			$propositionCals=(array)Req::param("propositionCalendars");
 			$propositionIdUsers=[];
@@ -282,14 +262,14 @@ class CtrlCalendar extends Ctrl
 					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$propositionIdUsers=array_merge($propositionIdUsers,$tmpCal->affectedUserIds(true));}	//Proposition : ajoute les proprios de l'agenda pour la notif mail
 				}
 			}
-			////	NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
+			//// NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
 			if(!empty($propositionIdUsers)){
 				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
 				Tool::sendMail($propositionIdUsers, $mailSubject, $mailMessage, ["noNotify"]);
 			}
-			////	NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
+			//// NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
 			if(Req::isParam("notifMail") && $curObj->fullRight())
 			{
 				$objLabel=Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
@@ -301,15 +281,15 @@ class CtrlCalendar extends Ctrl
 			//Ferme la page
 			static::lightboxClose();
 		}
-		////	AFFICHE LA VUE
-		////	Liste des agendas pour les affectations
+		////	AFFICHE LE FORMULAIRE
+		//// Liste des agendas pour les affectations
 		$vDatas["affectationCalendars"]=MdlCalendar::affectationCalendars();
 		//Evt créé par un autre user : ajoute si besoin les agendas inaccessibles pour l'user courant mais quand même affectés à l'événement
 		if($curObj->isNew()==false && $curObj->isAutor()==false){
 			$vDatas["affectationCalendars"]=array_merge($vDatas["affectationCalendars"], $curObj->affectedCalendars("all"));
 			$vDatas["affectationCalendars"]=MdlCalendar::sortCalendars(array_unique($vDatas["affectationCalendars"],SORT_REGULAR));//"SORT_REGULAR" pour les objets
 		}
-		////	Prépare l'affichage de chaque agenda
+		//// Prépare l'affichage de chaque agenda
 		foreach($vDatas["affectationCalendars"] as $tmpCal){
 			//Ajoute quelques propriétés à l'agenda
 			$tmpCal->mainInput=($tmpCal->addContentRight() || in_array($tmpCal,$curObj->affectedCalendars()))  ?  "affectation"  :  "proposition";	//Input principal : "affectation" || "proposition" pour l'agenda
@@ -323,12 +303,12 @@ class CtrlCalendar extends Ctrl
 			//Ajoute la description de l'agenda ?
 			if(!empty($tmpCal->description))  			{$tmpCal->labelTooltip.=" (".$tmpCal->description.")";}						
 		}
-		////	Nouvel evt : dates par défaut
+		//// Nouvel evt : dates par défaut
 		if($curObj->isNew()){
 			$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	?  date("Y-m-d H:i",Req::param("newEvtTimeBegin"))	:  date("Y-m-d H:00",time()+3600);							//date du jour, avec la prochaine heure courante
 			$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	?  date("Y-m-d H:i",Req::param("newEvtTimeEnd"))	:  date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);	//une heure après l'heure de début
 		}
-		////	AFFICHE LA PAGE
+		//// Affiche la vue
 		$vDatas["curObj"]=$curObj;
 		$vDatas["tabPeriodValues"]=Txt::txt2tab($curObj->periodValues);
 		foreach(Txt::txt2tab($curObj->periodDateExceptions) as $keyTmp=>$tmpException)	{$vDatas["periodDateExceptions"][$keyTmp+1]=Txt::formatDate($tmpException,"dbDate","inputDate");}
@@ -351,9 +331,9 @@ class CtrlCalendar extends Ctrl
 			foreach(self::getObjectsTypeId() as $tmpCal)
 			{
 				$calendarBusy=$calendarBusyTimeSlots=null;
-				//Evts de l'agenda sur la période sélectionné =>  $filterByCategory=false  & $orderByHourMinute=false  & $accessRightMin=0
-				$eventListControled=$tmpCal->eventList($timeBegin, $timeEnd, false, false, 0);
-				foreach(MdlCalendar::eventFilter($eventListControled,$timeBegin,$timeEnd) as $tmpEvt){
+				//Evts de l'agenda sur la période sélectionné. Params : $accessRightMin=0
+				$eventListControled=$tmpCal->eventList($timeBegin, $timeEnd, 0);
+				foreach(MdlCalendar::eventsFilter($eventListControled,$timeBegin,$timeEnd) as $tmpEvt){
 					if($tmpEvt->_id!=Req::param("_evtId")){//Sauf l'evt en cours d'édition (si modif)
 						$calendarBusyTimeSlots.=" &nbsp; &nbsp; <img src='app/img/arrowRight.png'> ".Txt::dateLabel($tmpEvt->dateBegin,"basic",$tmpEvt->dateEnd)." ";
 						$calendarBusy=true;
@@ -561,9 +541,9 @@ class CtrlCalendar extends Ctrl
 		}
 		////	Agenda spécifié : récupère ses événements
 		elseif($curObj::objectType=="calendar"){
-			$periodBegin=time()-(86400*365);//Time - 1 an
-			$periodEnd=time()+(86400*365*5);//Time + 5 ans
-			$eventList=$curObj->eventList($periodBegin,$periodEnd,false,false);//$filterByCategory=false + $orderByHourMinute=false
+			$timeBegin=time()-(86400*365);//Time - 1 an
+			$timeEnd=time()+(86400*365*5);//Time + 5 ans
+			$eventList=$curObj->eventList($timeBegin, $timeEnd, 1);//Params : $accessRightMin=1
 			$objCalendar=$curObj;
 		}
 

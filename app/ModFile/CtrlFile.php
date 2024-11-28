@@ -37,7 +37,7 @@ class CtrlFile extends Ctrl
 			$vDatas["diskSpaceProgressBar"]=Tool::progressBar($barLabel, $barTooltip, $barFillPercent, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
-		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer)." ".MdlFile::sqlSort());
+		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer).MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
 		{
 			//// Lien du label/nom du fichier : Download direct
@@ -49,7 +49,7 @@ class CtrlFile extends Ctrl
 			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."')\"";}		//Affiche la video/mp3 dans une Lightbox
 			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}											//Download direct
 			//// Vignette d'image/pdf
-			if($tmpFile->hasThumb()){
+			if($tmpFile->thumbExist()){
 				$tmpFile->hasThumbClass="hasThumb";					//Ajoute la classe "hasThumb"
 				if(File::isType("imageBrowser",$tmpFile->name)){	//Fichier image : ajoute la résolution et la "thumbClass" en fonction de l'orientation
 					list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
@@ -95,16 +95,13 @@ class CtrlFile extends Ctrl
 	{
 		if(Req::isParam("typeId"))
 		{
-			//Récupère le fichier et controle le droit d'accès
+			//Récupère le fichier et controle le droit d'accès ("nameMd5" : cf. "actionExternalGetFile()")
 			$curFile=self::getObjTarget();
-			if($curFile->readRight()  ||  md5($curFile->name)==Req::param("nameMd5"))
-			{
-				//Affichage du fichier dans le browser
-				if(Req::isParam("display"))  {File::display($curFile->filePath());}
-				//Download direct du fichier
-				else
-				{
-					//Ajout l'user courant à "downloadedBy"
+			if($curFile->readRight()  ||  md5($curFile->name)==Req::param("nameMd5")){
+				//Affiche dans le browser ou l'appli (pdf/img/video)  OU  Download direct du fichier
+				if(Req::isParam("displayFile"))   {File::display($curFile->filePath());}
+				else{
+					//Ajoute l'user courant à "downloadedBy"
 					$sqlDownloadedBy=null;
 					if(Ctrl::$curUser->isUser()){
 						$curFile->downloadedBy=array_unique(array_merge([Ctrl::$curUser->_id], Txt::txt2tab($curFile->downloadedBy)));//"array_unique()" car l'user courant peut avoir déjà téléchargé le fichier
@@ -244,8 +241,8 @@ class CtrlFile extends Ctrl
 					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($tmpFile["size"]).", description=".Db::param("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
 					copy($tmpFile["tmp_name"], $tmpObj->filePath());//copie dans le dossier final, après avoir enregistré la version en Bdd !
 					File::setChmod($tmpObj->filePath());
-					////	Creation de vignette && Optimise si besoin l'image (1920px max)
-					$tmpObj->createThumb();
+					////	Créé ou update la vignette && Optimise si besoin l'image (1920px max)
+					$tmpObj->thumbEdit();
 					if(File::isType("imageResize",$tmpFile["name"]) && Req::isParam("imageResize")){
 						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1920);
 						clearstatcache();//Pour mettre à jour le "filesize()"

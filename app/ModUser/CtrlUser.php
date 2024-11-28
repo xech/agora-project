@@ -25,14 +25,14 @@ class CtrlUser extends Ctrl
 		if(Req::isParam("displayUsers"))	{$_SESSION["displayUsers"]=(Req::param("displayUsers")=="all" && self::$curUser->isGeneralAdmin()) ? "all" : "space";}
 		//Filtre Alphabet : avec la première lettre du nom
 		$sqlDisplay=MdlUser::sqlDisplay();
-		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(name,1)) as initiale FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ORDER BY initiale");
-		$sqlAlphabetFilter=(Req::isParam("alphabet") && preg_match("/^[A-Z]+$/i",Req::param("alphabet")))  ?  "AND name LIKE '".Req::param("alphabet")."%'"  :  null;
+		$vDatas["alphabetList"]=Db::getCol("SELECT DISTINCT UPPER(LEFT(`name`,1)) as `initiale` FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ORDER BY `initiale`");
+		$sqlAlphabetFilter=(Req::isParam("alphabet") && preg_match("/^[A-Z]+$/i",Req::param("alphabet")))  ?  "AND `name` LIKE '".Req::param("alphabet")."%'"  :  null;
 		//Utilisateurs et menus
 		$sqlDisplayedUsers="SELECT * FROM ".MdlUser::dbTable." WHERE ".$sqlDisplay." ".$sqlAlphabetFilter." ".MdlUser::sqlSort();
 		$vDatas["displayedUsers"]=Db::getObjTab("user", $sqlDisplayedUsers." ".MdlUser::sqlPagination());
 		$vDatas["usersTotalNb"]=count(Db::getTab($sqlDisplayedUsers));
 		$vDatas["usersTotalNbLabel"]=$vDatas["usersTotalNb"]." ".Txt::trad("USER_users");
-		if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected())	{$vDatas["usersTotalNbLabel"]="<span class='abbr' title=\"".Txt::trad("USER_allUsersOnSpace")."\">".$vDatas["usersTotalNbLabel"]."</span>";}
+		if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected())	{$vDatas["usersTotalNbLabel"]="<span class='abbr' ".Txt::tooltip("USER_allUsersOnSpace").">".$vDatas["usersTotalNbLabel"]."</span>";}
 		$vDatas["menuDisplayUsers"]=(Ctrl::$curUser->isGeneralAdmin() && ($_SESSION["displayUsers"]=="all" || count(Ctrl::$curUser->getSpaces())>1));
 		$vDatas["userGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 		//Affiche la page
@@ -93,7 +93,7 @@ class CtrlUser extends Ctrl
 			if(MdlObject::isObject($curObj))
 			{
 				//Ajoute/Modifie/Supprime l'image
-				$curObj->editImg();
+				$curObj->profileImgRecord();
 				//Affectations aux espaces
 				if(Ctrl::$curUser->isGeneralAdmin())
 				{
@@ -180,7 +180,7 @@ class CtrlUser extends Ctrl
 		{
 			//// Export de users
 			if(Req::param("actionImportExport")=="export"){
-				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." ".MdlUser::sqlSort());
+				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay().MdlUser::sqlSort());
 				MdlUser::exportPersons($userList, Req::param("exportType"));
 			}
 			//// Import de users

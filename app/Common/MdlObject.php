@@ -30,7 +30,7 @@ class MdlObject
 	const MdlObjectContent=null;				//Objets contenu rattachés à l'objet courant	(Ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
 	const isFolder=false;						//L'Objet courant est un dossier
 	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier
-	protected static $_hasAccessRight=null;		//pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
+	protected static $_hasAccessRight=null;		//Pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
 	//Propriétés d'affichage et d'édition
 	const isSelectable=false;					//Menu de sélection multiple d'objet
 	const hasShortcut=false;					//Création de raccourcis sur l'objet
@@ -523,8 +523,8 @@ class MdlObject
 					rename($oldFolder->folderPath("real").$tmpFileVersion["realName"], $newFolder->folderPath("real").$tmpFileVersion["realName"]);
 				}
 				//Déplace la vignette
-				if($this->hasThumb()){
-					rename($oldFolder->folderPath("real").$this->getThumbName(), $newFolder->folderPath("real").$this->getThumbName());
+				if($this->thumbExist()){
+					rename($oldFolder->folderPath("real").$this->thumbName(), $newFolder->folderPath("real").$this->thumbName());
 				}
 			}
 			////	Déplace un dossier sur le disque (du chemin actuel : $this,  vers le nouveau chemin : $reloadedObj)
@@ -659,27 +659,27 @@ class MdlObject
 		return static::$_sqlTargets;
 	}
 
-	/*******************************************************************************************
-	 * STATIC SQL : OBJETS A AFFICHER EN FONCTION DES DROITS D'ACCÈS DE L'USER COURANT
-	 *******************************************************************************************/
-	public static function sqlDisplay($containerObj=null, $keyId="_id")
+	/**************************************************************************************************
+	 * STATIC SQL : OBJETS A AFFICHER EN FONCTION DU CONTENEUR ET DES DROITS D'ACCÈS DE L'USER COURANT
+	 **************************************************************************************************/
+	public static function sqlDisplay($containerObj=null, $_idKey="_id")
 	{
 		////	Init les conditions et sélectionne si besoin un conteneur
 		$conditions=(is_object($containerObj))  ?  ["_idContainer=".$containerObj->_id]  :  [];
-		////	Selection en fonction des droits d'acces dans "ap_objectTarget" (cf. "hasAccessRight()") :  Objets avec des droits d'accès || Objets d'une arbo (de toute l'arbo si sélection de "plugin" || Objets à la racine)
+		////	Selection en fonction des droits d'acces (cf. "ap_objectTarget" et $_hasAccessRight)   ||  Selectionne les objets d'une arbo (toute l'arbo si $containerObj==null ou isRootFolder()==true)
 		if(static::$_hasAccessRight==true  ||  (static::isFolderContent==true && ($containerObj==null || $containerObj->isRootFolder()))){
-			$sqlTargets=(!empty($_SESSION["displayAdmin"]))  ?  null  :  "and `target` in (".static::sqlAffectations().")";//Sélectionne tous les objets de l'espace ("null")  ||  Sélection en fonction des affectations
-			$conditions[]=$keyId." IN (select _idObject as ".$keyId." from ap_objectTarget where objectType='".static::objectType."' and _idSpace=".Ctrl::$curSpace->_id."  ".$sqlTargets.")";
+			$sqlTargets=(empty($_SESSION["displayAdmin"]))  ?  "and `target` in (".static::sqlAffectations().")"  :  null;//Sélection en fonction des droits d'acces || Sélectionne tout si "displayAdmin==true"
+			$conditions[]=$_idKey." IN (select _idObject as ".$_idKey." from ap_objectTarget where objectType='".static::objectType."' and _idSpace=".Ctrl::$curSpace->_id." ".$sqlTargets.")";
 		}
-		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (retourne aucune erreur ni objet)
-		$returnSql=(!empty($conditions))  ?  "(".implode(' AND ',$conditions).")"  :  $keyId." IS NULL";
-		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a acces (dossiers/sujets..)
+		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (pour pas retourner d'objet ni d'erreur sql)
+		$sqlDisplay=(!empty($conditions))  ?  "(".implode(" AND ",$conditions).")"  :  $_idKey." IS NULL";
+		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a accès (dossiers/sujets..)
 		if($containerObj==null && static::isContainerContent()){
 			$MdlObjectContainer=static::MdlObjectContainer;
-			$returnSql="(".$returnSql." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $keyId
+			$sqlDisplay="(".$sqlDisplay." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
 		}
-		////	Renvoi le résultat
-		return $returnSql;
+		////	Renvoi le résultat (avec des espaces avant/après!)
+		return " ".$sqlDisplay." ";
 	}
 
 	/*******************************************************************************************
@@ -709,10 +709,10 @@ class MdlObject
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/*************************************************************************************************************************************************
 	 * STATIC SQL : SELECTIONNE LES OBJETS EN FONCTION DU TYPE DE PLUGIN
 	 * $params["type"] =>  "dashboard" : cree dans la periode selectionné  ||  "shortcut" : ayant un raccourci  ||  "search" : issus d'une recherche
-	 *******************************************************************************************/
+	 *************************************************************************************************************************************************/
 	public static function sqlPlugins($params)
 	{
 		if($params["type"]=="dashboard")	{return "dateCrea BETWEEN ".Db::format($params["dateTimeBegin"])." AND ".Db::format($params["dateTimeEnd"]);}
@@ -726,7 +726,7 @@ class MdlObject
 			if($params["searchMode"]=="exactPhrase"){
 				foreach($objSearchFields as $tmpField){																											//Recherche sur chaque champ de l'objet
 					$searchText=($tmpField=="description" && static::descriptionEditor==true) ?  htmlentities($params["searchText"])  :  $params["searchText"];	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-					$returnSql.="`".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";																//"sqlLike" délimite le texte avec "%"  &&  "OR" pour rechercher sur le champ suivant
+					$returnSql.=" `".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";																//"sqlLike" délimite le texte avec "%"  &&  "OR" pour rechercher sur le champ suivant
 				}
 			}
 			////	Recherche "n'importe quel mot"  ||  Recherche "Tous les mots"
@@ -739,15 +739,15 @@ class MdlObject
 						$tmpWord=($tmpField=="description" && static::descriptionEditor==true)  ?  htmlentities($tmpWord)  :  $tmpWord;	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
 						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;								//"sqlLike" délimite le texte avec "%"  
 					}	
-					$returnSql.="(".trim($sqlWords,$operatorWords).") OR ";																//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
+					$returnSql.=" (".trim($sqlWords,$operatorWords).") OR ";															//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
 				}
 			}
 			////	Supprime le dernier opérateur "OR" entre chaque champ de recherche
-			$returnSql="(".trim($returnSql," OR ").")";
+			$returnSql=" (".trim($returnSql," OR ").") ";
 			////	Filtre en fonction de la date de creation
 			if($params["creationDate"]!="all"){
 				$timeCreationDate=time() - (86400 * $params["creationDate"]);
-				$returnSql.=" AND dateCrea >= '".date("Y-m-d 00:00",$timeCreationDate)."'";
+				$returnSql.=" AND dateCrea >= '".date("Y-m-d 00:00",$timeCreationDate)."' ";
 			}
 			////	Retourne le résultat
 			return $returnSql;
@@ -779,7 +779,7 @@ class MdlObject
 	 *******************************************************************************************/
 	public function autorDateLabel($showPersonImg=false)
 	{
-		$personImg=($showPersonImg==true)  ?  Ctrl::getObj("user",$this->_idUser)->personImg(true,true)." &nbsp;"  :  null;
+		$personImg=($showPersonImg==true)  ?  Ctrl::getObj("user",$this->_idUser)->profileImg(true,true)." &nbsp;"  :  null;
 		return  $personImg.$this->autorLabel().' <img src="app/img/arrowRightBig.png"> <span>'.$this->dateLabel().'</span>';
 	}
 

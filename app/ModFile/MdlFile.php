@@ -75,69 +75,74 @@ class MdlFile extends MdlObject
 	 *******************************************************************************************/
 	public function urlDownload($dateCrea=null)
 	{
-		$returndUrl="?ctrl=file&action=GetFile&typeId=".$this->_typeId;							//Url de base
-		if(!empty($dateCrea))	{$returndUrl.="&dateCrea=".urlencode($dateCrea);}				//Sélectionne une version spécifique
-		if(Req::isMobileApp())	{$returndUrl=CtrlMisc::urlGetFile($returndUrl,$this->name);}	//Download externe via mobileApp : modif l'url pour switcher sur "ctrl=misc"
-		return $returndUrl;																		//Retourne l'Url
+		$urlDownload="?ctrl=file&action=GetFile&typeId=".$this->_typeId;								//Url de base
+		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}						//Download une version spécifique
+		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlExternalGetFile($urlDownload,$this->name);}	//Download depuis l'exterieur : switch sur "ctrl=misc"
+		return $urlDownload;																			//Retourne l'Url
 	}
 
 	/*******************************************************************************************
-	 * URL D'AFFICHAGE DANS LE BROWSER (IMG/PDF/ETC)
+	 * URL D'AFFICHAGE DANS LE BROWSER OU L'APPLI MOBILE (PDF/IMG/VIDEO)
 	 *******************************************************************************************/
 	public function urlDisplay()
 	{
-		return $this->urlDownload()."&display=true";
+		return $this->urlDownload()."&displayFile=true";
 	}
 
 	/*******************************************************************************************
-	 * NOM DE LA VIGNETTE DU FICHIER
+	 * VIGNETTE DU FICHIER : NOM REEL
 	 *******************************************************************************************/
-	public function getThumbName()
+	public function thumbName()
 	{
 		return $this->_id."_thumb.jpg";
 	}
 
 	/*******************************************************************************************
-	 * CHEMIN DE LA VIGNETTE JPG D'UNE IMAGE OU D'UN PDF (créé ou à créer)
+	 * VIGNETTE DU FICHIER : PDF & IMAGICK ACTIVÉ
 	 *******************************************************************************************/
-	public function getThumbPath()
+	public function thumbPdfEnabled()
 	{
-		if($this->_tumbPath===null){
-			if(File::isType("imageResize",$this->name) || (File::isType("pdf",$this->name) && extension_loaded("imagick")))	{$this->_tumbPath=$this->containerObj()->folderPath("real").$this->getThumbName();}
-			else																											{$this->_tumbPath="";}
-		}
-		return $this->_tumbPath;
+		return (File::isType("pdf",$this->name) && extension_loaded("imagick"));
 	}
 
 	/*******************************************************************************************
-	 * VERIFIE S'IL EXISTE UNE VIGNETTE POUR LE FICHIER
+	 * VIGNETTE DU FICHIER : VERIFIE L'EXISTENCE
 	 *******************************************************************************************/
-	public function hasThumb()
+	public function thumbExist()
 	{
-		if($this->_hasTumb===null)
-			{$this->_hasTumb=(strlen($this->getThumbPath()) && is_file($this->getThumbPath()));}
+		if($this->_hasTumb===null)  {$this->_hasTumb=(strlen($this->thumbPath()) && is_file($this->thumbPath()));}
 		return $this->_hasTumb;
 	}
 
 	/*******************************************************************************************
-	 * CRÉATION/MAJ LA VIGNETTE DU FICHIER (Image / Pdf)
+	 * VIGNETTE DU FICHIER : PATH REEL
 	 *******************************************************************************************/
-	public function createThumb()
+	public function thumbPath()
+	{
+		if($this->_tumbPath===null)  {$this->_tumbPath=(File::isType("imageResize",$this->name) || $this->thumbPdfEnabled())  ?  $this->containerObj()->folderPath("real").$this->thumbName()  :  "";}
+		return $this->_tumbPath;
+	}
+
+	/*******************************************************************************************
+	 * VIGNETTE DU FICHIER : CRÉE OU UPDATE
+	 *******************************************************************************************/
+	public function thumbEdit()
 	{
 		//Fichier de moins de 15Mo?
 		if(filesize($this->filePath()) < (File::sizeMo*15))
 		{
-			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->getThumbPath(),300,300,90);}
-			elseif(File::isType("pdf",$this->name) && extension_loaded("imagick"))
+			//Vignette d'image ou de Pdf
+			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->thumbPath(),300,300,90);}
+			elseif($this->thumbPdfEnabled())
 			{
 				try {
 					$imgTmp=new Imagick();
 					$imgTmp->readimage($this->filePath()."[0]"); 
 					$imgTmp=$imgTmp->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);//Pour pas avoir de background noir
-					$imgTmp->writeImage($this->getThumbPath());
+					$imgTmp->writeImage($this->thumbPath());
 					$imgTmp->clear();
 					$imgTmp->destroy();
-					return File::imageResize($this->getThumbPath(),$this->getThumbPath(),300);
+					return File::imageResize($this->thumbPath(),$this->thumbPath(),300);
 				} catch (Exception $error){
 					Ctrl::notify($this->getLabel()." : Création de vignette non permise / Thumbnail creation not allowed");	//Les .pdf avec password renvoient un "Failed to read the file [..]"
 					//Ctrl::notify($error->getMessage());																	//Message d'erreur complet renvoyé par le serveur
@@ -154,8 +159,8 @@ class MdlFile extends MdlObject
 		$nbVersions=count($this->getVersions());
 		if($nbVersions>1){
 			$nbVersionsTitle=$nbVersions." ".Txt::trad("FILE_nbFileVersions");
-			$displayLabelIcon=($displayType=="label") ? $nbVersionsTitle : "<img src='app/img/file/versions.png'>";
-			return "<a onclick=\"lightboxOpen('?ctrl=file&action=FileVersions&typeId=".$this->_typeId."')\" class=\"vVersionsMenu\" title=\"".Txt::tooltip($nbVersionsTitle)."\">".$displayLabelIcon."</a>";
+			$displayLabelIcon=($displayType=="label")  ?  $nbVersionsTitle  :  "<img src='app/img/file/versions.png'>";
+			return '<a class="vVersionsMenu" onclick="lightboxOpen(\'?ctrl=file&action=FileVersions&typeId='.$this->_typeId.'\')" '.Txt::tooltip($nbVersionsTitle).'>'.$displayLabelIcon.'</a>';
 		}
 	}
 
@@ -168,12 +173,12 @@ class MdlFile extends MdlObject
 		$tooltipDownloadedBy=null;
 		if(Ctrl::$curUser->isSpaceAdmin() && !empty($this->downloadedBy)){
 			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
-			$tooltipDownloadedBy="title=\"".Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "))."\"";
+			$tooltipDownloadedBy=Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "));
 		}
 		//// "TÉLÉCHARGER LE FICHIER" + TOOLTIP "FICHIER TÉLÉCHARGÉ X FOIS"  &&  "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
-		$options["specificOptions"][]=["actionJs"=>"redir('".$this->urlDownload()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download")." &nbsp;<span class='cursorHelp' ".$tooltipDownloadedBy.">".str_replace("--NB_DOWNLOAD--",$this->downloadsNb,Txt::trad("FILE_downloadsNb"))."</span>"];
+		$options["specificOptions"][]=["actionJs"=>"redir('".$this->urlDownload()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download").' &nbsp;<span class="cursorHelp" '.$tooltipDownloadedBy.'>'.str_replace('--NB_DOWNLOAD--',$this->downloadsNb,Txt::trad("FILE_downloadsNb")).'</span>'];
 		if(count($this->getVersions())>1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
-		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plus.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->_typeId)."')"];}
+		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plusSmall.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->_typeId)."')"];}
 		return parent::contextMenu($options);
 	}
 
@@ -183,7 +188,7 @@ class MdlFile extends MdlObject
 	public function typeIcon()
 	{
 		$pathFileTypes="app/img/file/fileType/";
-		if($this->hasThumb())								{return $this->getThumbPath();}
+		if($this->thumbExist())								{return $this->thumbPath();}
 		elseif(File::isType("pdf",$this->name))				{return $pathFileTypes."pdf.png";}
 		elseif(File::isType("textEditor",$this->name))		{return $pathFileTypes."textEditor.png";}
 		elseif(File::isType("text",$this->name))			{return $pathFileTypes."text.png";}
@@ -218,24 +223,25 @@ class MdlFile extends MdlObject
 				////	Récupère toutes les versions du fichier
 				$versionList=$this->getVersions();
 				////	Si on supprime la dernière version d'un fichier : update les propriétés principales du fichier (nom/taille/etc) avec celles l'avant dernière version
-				if($deleteVersion==$versionList[0]["dateCrea"] && isset($versionList[1]))  {Db::query("UPDATE ap_file SET name=".Db::format($versionList[1]["name"]).", octetSize=".Db::format($versionList[1]["octetSize"]).", dateModif=".Db::format($versionList[1]["dateCrea"]).", _idUserModif=".$versionList[1]["_idUser"]." WHERE _id=".$this->_id);}
+				if($deleteVersion==$versionList[0]["dateCrea"] && isset($versionList[1]))
+					{Db::query("UPDATE ap_file SET name=".Db::format($versionList[1]["name"]).", octetSize=".Db::format($versionList[1]["octetSize"]).", dateModif=".Db::format($versionList[1]["dateCrea"]).", _idUserModif=".$versionList[1]["_idUser"]." WHERE _id=".$this->_id);}
 				////	Supprime les versions demandées du fichier : sur le disque puis dans la table "ap_fileVersion"
 				foreach($versionList as $tmpVersion){
 					if($deleteVersion=="all" || $deleteVersion==$tmpVersion["dateCrea"]){
 						$tmpFilePath=$this->filePath($tmpVersion["dateCrea"]);
-						if(is_file($tmpFilePath))  {File::rm($tmpFilePath);}//Toujours controler via "is_file()"!!
+						if(is_file($tmpFilePath))  {File::rm($tmpFilePath);}//Toujours controler via "is_file()" !
 						Db::query("DELETE FROM ap_fileVersion WHERE _idFile=".$this->_id." AND realName=".Db::format($tmpVersion["realName"]));
 					}
 				}
 				////	Supprime toutes les versions OU la dernière version du fichier : efface auquel cas la vignette, puis efface définitivement le fichier
 				if($deleteVersion=="all" || count($versionList)==1){
-					if($this->hasThumb())  {File::rm($this->getThumbPath());}
+					if($this->thumbExist())  {File::rm($this->thumbPath());}
 					parent::delete();
 				}
-				////	Sinon si ya une vignette du fichier : on recharge la liste des versions et update la vignette
-				elseif($this->hasThumb()){
+				////	Si ya une vignette du fichier : on recharge la liste des versions et update la vignette
+				elseif($this->thumbExist()){
 					$this->getVersions(true);
-					$this->createThumb();
+					$this->thumbEdit();
 				}
 			}
 		}

@@ -18,7 +18,6 @@ class Trad extends Txt
 			"CURLANG"=>"fr",
 			"DATELANG"=>"fr_FR",
 			"EDITORLANG"=>"fr_FR",
-			"DOCFILE"=>"docs/DOCUMENTATION_FR.pdf",
 
 			////	Divers
 			"mainMenu"=>"Menu principal",
@@ -58,8 +57,8 @@ class Trad extends Txt
 			"optional"=>"(optionnel)",
 			"objNew"=>"Elément créé récemment",
 			"personalAccess"=>"Accès personnel",
-			"copyUrl"=>"Copier l'adresse web de l'élément (URL)",
-			"copyUrlTooltip"=>"Permet un accès externe à l'élément : depuis une actualité, un email, un message du forum, un blog, etc.",
+			"copyUrl"=>"Copier l'adresse web de partage",
+			"copyUrlTooltip"=>"L'adresse de partage (URL) permet un accès externe depuis un email, un blog, etc.",
 			"copyUrlConfirmed"=>"L'adresse web a bien été copiée.",
 			"cancel"=>"Annuler",
 
@@ -77,8 +76,8 @@ class Trad extends Txt
 			"mailLloginNotif"=>"Il est conseillé d'utiliser un email comme identifiant de connexion",//idem
 			"mailLlogin"=>"Email / Identifiant de connexion",
 			"connect"=>"Connexion",
-			"connectAuto"=>"Se souvenir de moi",
-			"connectAutoTooltip"=>"Retenir mon identifiant / mot de passe pour une connexion automatique",
+			"connectAuto"=>"Rester connecté",
+			"connectAutoTooltip"=>"Mémoriser mes identifiants pour une connexion automatique",
 			"gIdentityUserUnknown"=>"n'est pas enregistré sur l'espace",//"boby.smith@gmail.com" n'est pas enregistré sur l'espace
 			"connectSpaceSwitch"=>"Me connecter à un autre espace",
 			"connectSpaceSwitchConfirm"=>"Confirmer la déconnexion pour vous connecter à un autre espace ?",
@@ -295,6 +294,7 @@ class Trad extends Txt
 			"diskSpaceUsed"=>"Espace disque utilisé",
 			"diskSpaceUsedModFile"=>"Espace disque utilisé sur le module fichier",
 			"downloadAlert"=>"Votre archive est trop volumineuse pour être téléchargée en journée (--ARCHIVE_SIZE--). Merci de relancer le download après",//"19h"
+			"downloadBackToApp"=>"Retour à l'application",
 
 			////	Infos sur une personne
 			"civility"=>"Civilité",
@@ -339,8 +339,8 @@ class Trad extends Txt
 			"noResults"=>"Aucun résultat",
 
 			////	Inscription d'utilisateur
-			"userInscription"=>"m'inscrire sur l'espace",
-			"userInscriptionTooltip"=>"Créer un nouveau compte utilisateur, qui sera par la suite validé par un administrateur. Une notification par email vous sera dès lors envoyée.",
+			"userInscription"=>"M'inscrire à cet espace",
+			"userInscriptionTooltip"=>"Envoyer une demande d'inscription pour obtenir un compte utilisateur.<br>Une fois validé par un administrateur, une confirmation vous sera envoyée par email.",
 			"userInscriptionSpace"=>"M'inscrire sur l'espace",//.."trucmuche"
 			"userInscriptionRecorded"=>"votre inscription a bien été enregistrée : elle sera validée dès que possible par l'administrateur de l'espace",
 			"userInscriptionEmailSubject"=>"Nouvelle inscription sur l'espace",//"Mon espace"
@@ -408,7 +408,7 @@ class Trad extends Txt
 			"MESSENGER_messageTo"=>"envoyé à",
 			"MESSENGER_chatWith"=>"Discuter avec",
 			"MESSENGER_addMessageToSelection"=>"Mon message aux personnes selectionnées",
-			"MESSENGER_addMessageTo"=>"Mon message à",
+			"MESSENGER_addMessageTo"=>"Message à",
 			"MESSENGER_addMessageNotif"=>"Merci de spécifier un message",
 			"MESSENGER_visioProposeTo"=>"Proposer une visioconférence à",//..boby
 			"MESSENGER_visioProposeToSelection"=>"Proposer une visioconférence aux personnes sélectionnées",
@@ -418,16 +418,15 @@ class Trad extends Txt
 			"VISIO_urlAdd"=>"Ajouter une visioconférence",
 			"VISIO_urlCopy"=>"Copier le lien de la visioconférence",
 			"VISIO_urlDelete"=>"Supprimer le lien de la visioconférence",
-			"VISIO_launch"=>"Lancer la visioconférence",
-			"VISIO_launchFromEvent"=>"Lancer la visioconférence de l'événement",
 			"VISIO_urlMail"=>"Ajouter un lien pour lancer une nouvelle visiofonférence",
+			"VISIO_launch"=>"Lancer la visioconférence",
+			"VISIO_launchJitsi"=>"Lancer la visioconférence <br>avec l'application Jitsi",
+			"VISIO_launchFromEvent"=>"Lancer la visioconférence de l'événement",
 			"VISIO_launchTooltip"=>"Pensez à autoriser l'accès à votre webcam et microphone !",
-			"VISIO_launchTooltip2"=>"Problèmes de caméra ou de micro au lancement de votre visioconférence ? Suivez le guide <img src='app/img/pdf.png'>",
-			"VISIO_installJitsi"=>"Installez gratuitement l'application Jitsi pour lancer vos visioconférences",
-			"VISIO_launchServerTooltip"=>"Choisissez le serveur secondaire si le serveur principal ne fonctionne pas comme souhaité :<br>Notez que vos interlocuteurs devront sélectionner le même serveur de visioconférence que vous.",
+			"VISIO_launchTooltip2"=>"Problèmes de caméra ou de micro avec votre visioconférence ? Suivez le guide <img src='app/img/pdf.png'>",
+			"VISIO_launchServerTooltip"=>"Choisissez le serveur secondaire si le serveur principal ne fonctionne pas correctement :<br>Important : vos interlocuteurs devront sélectionner le même serveur que vous.",
 			"VISIO_launchServerMain"=>"Serveur de visio principal",
 			"VISIO_launchServerAlt"=>"Serveur de visio secondaire",
-			"VISIO_launchButton"=>"Lancer la visioconférence",
 
 			////	VueObjEditMenuSubmit.php
 			"EDIT_notifNoSelection"=>"Vous devez sélectionner au moins une personne ou un espace",
@@ -502,11 +501,10 @@ class Trad extends Txt
 			////	MODULE_PARAMETRAGE DE L'AGORA
 			////
 			"AGORA_generalSettings"=>"Paramétrage général",
-			"AGORA_versions"=>"Versions",
-			"AGORA_dateUpdate"=>"mis à jour le",
 			"AGORA_Changelog"=>"Voir le journal des versions",
-			"AGORA_funcMailDisabled"=>"La fonction PHP pour envoyer des emails est désactivée",
-			"AGORA_funcImgDisabled"=>"La librairie PHP GD2 pour la manipulation d'images est désactivée",
+			"AGORA_phpMailDisabled"=>"Fonction PHP Mail désactivée",
+			"AGORA_phpLdapDisabled"=>"Fonction PHP LDAP désactivée",
+			"AGORA_phpGD2Disabled"=> "Fonction PHP GD2 désactivée",
 			"AGORA_backupFull"=>"Sauvegarde complète",
 			"AGORA_backupFullTooltip"=>"Récupérer la sauvegarde complète de l'espace : ensemble des fichiers ainsi que la base de données",
 			"AGORA_backupDb"=>"Sauvegarder la base de données",
@@ -584,7 +582,6 @@ class Trad extends Txt
 			"AGORA_ldapDn"=>"DN du groupe d'utilisateurs (Distinguished Name)",
 			"AGORA_ldapDnTooltip"=>"DN du groupe d'utilisateurs : emplacement des utilisateurs dans l'annuaire. Exemple ''ou=mon-groupe,dc=mon-entreprise,dc=com''",
 			"importLdapFilterTooltip"=>"Filtre de recherche LDAP (cf. https://www.php.net/manual/function.ldap-search.php). Exemple ''(cn=*)'' ou ''(&(samaccountname=MONLOGIN)(cn=*))''",
-			"AGORA_ldapDisabled"=>"Le module PHP de connexion à un serveur LDAP n'est pas installé",
 			"AGORA_ldapConnectError"=>"Erreur de connexion au serveur LDAP !",
 
 			////	MODULE_LOG
@@ -610,7 +607,7 @@ class Trad extends Txt
 
 			////	MODULE_ESPACE
 			////
-			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces,<br>appelés également ''sous-espace''",
+			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (alias ''sous-espace'')",
 			"SPACE_manageAllSpaces"=>"Gérer les espaces de travail",
 			"SPACE_config"=>"Paramétrer l'espace",//.."mon espace"
 			//Index
@@ -633,7 +630,7 @@ class Trad extends Txt
 			"SPACE_user"=>"Utilisateur",
 			"SPACE_userTooltip"=>"Accès normal à l'espace",
 			"SPACE_admin"=>"Administrateur",
-			"SPACE_adminTooltip"=>"L'administrateur d'un espace est un utilisateur pouvant éditer ou supprimer tous les élements présents sur l'espace. Il peut également paramétrer l'espace, créer de nouveaux comptes utilisateurs, créer des groupes d'utilisateurs, envoyer des invitations par mail pour ajouter de nouveaux utilisateurs, etc.",
+			"SPACE_adminTooltip"=>"L'administrateur peut éditer/supprimer tous les élements présents sur l'espace.<br>Il peut également paramétrer l'espace, créer de nouveaux utilisateurs ou groupes d'utilisateurs, envoyer des invitations par mail, etc.",
 
 			////	MODULE_UTILISATEUR
 			////
@@ -665,7 +662,7 @@ class Trad extends Txt
 			"USER_spaceList"=>"Espaces de l'utilisateur",
 			"USER_spaceNoAffectation"=>"aucun espace",
 			"USER_adminGeneral"=>"Administrateur principal",
-			"USER_adminGeneralTooltip"=>"Attention : le droit d'accès ''Administrateur principal'' donne de nombreux privilèges et responsabilités, notament pour pouvoir éditer tous les éléments (agendas, dossiers, fichiers, etc), ainsi que tous les utilisateurs et espaces. Il est donc conseillé d'attribuer ce privilège à 2 ou 3 personnes maximum.<br><br>Pour des privilèges plus restreints, choississez plutôt le droit d'accès ''administrateur d'espace'' (cf. menu principal > ''Paramétrer l'espace'')",
+			"USER_adminGeneralTooltip"=>"Attention : l'Administrateur principal peut éditer/supprimer tous les éléments de l'espace (dossiers, fichiers, agendas, etc) ainsi que tous les utilisateurs et espaces !<br>Il est donc conseillé d'attribuer ce privilège à 2 ou 3 personnes maximum.<br><br>Pour des privilèges plus restreints, choississez le droit ''Administrateur'' (ci-dessous)",
 			"USER_adminSpace"=>"Administrateur de l'espace",
 			"USER_userSpace"=>"Utilisateur de l'espace",
 			"USER_profilEdit"=>"Modifier le profil utilisateur",
@@ -700,7 +697,7 @@ class Trad extends Txt
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Langue",
 			"USER_persoCalendarDisabled"=>"Agenda personnel désactivé",
-			"USER_persoCalendarDisabledTooltip"=>"Un agenda personnel est attribué par défaut à chaque utilisateur (affiché même si le module ''Agenda'' n'est pas activé sur l'espace). Cochez cette option pour désactiver l'agenda personnel de cet utilisateur.",
+			"USER_persoCalendarDisabledTooltip"=>"Cocher cette option pour désactiver l'agenda personnel de l'utilisateur.<br><br> Note : un agenda personnel est attribué par défaut à chaque utilisateur. Il reste toujours accessible, quelquesoit l'espace affiché.",
 			"USER_connectionSpace"=>"Espace affiché à la connexion",
 			"USER_loginExists"=>"L'identifiant / email existe déjà. Merci d'en spécifier un autre",
 			"USER_mailPresentInAccount"=>"un compte utilisateur existe déjà avec cette adresse email",
@@ -730,12 +727,13 @@ class Trad extends Txt
 			"DASHBOARD_menuPolls"=>"Sondages",
 			"DASHBOARD_menuElems"=>"Nouveautés",
 			"DASHBOARD_addNews"=>"Créer une nouvelle actualité",
-			"DASHBOARD_offlineNews"=>"Voir les actualités archivées",
+			"DASHBOARD_offlineNews"=>"Afficher les actualités archivées",
 			"DASHBOARD_offlineNewsNb"=>"actualités archivées",//"55 actualités archivées"
 			"DASHBOARD_noNews"=>"Aucune actualité pour le moment",
 			"DASHBOARD_addPoll"=>"Créer un nouveau sondage",
 			"DASHBOARD_pollsVoted"=>"Voir uniquement les sondages votés",
 			"DASHBOARD_pollsVotedNb"=>"sondages pour lesquels j'ai déjà voté",//"55 sondages..déjà voté"
+			"DASHBOARD_pollsNotVoted"=>"sondages non votés",//55 sondages non votés
 			"DASHBOARD_vote"=>"Voter et voir les résultats !",
 			"DASHBOARD_voteTooltip"=>"Le vote est anonyme : personne n'aura connaissance de votre choix",
 			"DASHBOARD_answerVotesNb"=>"Voté --NB_VOTES-- fois",
@@ -819,26 +817,24 @@ class Trad extends Txt
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Les utilisateurs n'ayant pas désactivé leur agenda personnel dans leur profil utilisateur verront toujours le module Agenda dans la barre de menu",
 			//Index
 			"CALENDAR_calsList"=>"Agendas disponibles",
-			"CALENDAR_calsListDisplayAll"=>"Afficher tous les agendas (réservé aux administrateurs)",
 			"CALENDAR_hideAllCals"=>"Masquer tous les agendas",
 			"CALENDAR_printCalendars"=>"Imprimer l'agenda",
 			"CALENDAR_printCalendarsInfos"=>"Imprimez la page en mode paysage",
 			"CALENDAR_addSharedCalendar"=>"Créer un agenda partagé",
 			"CALENDAR_addSharedCalendarTooltip"=>"Créer un agenda partagé : pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.",
 			"CALENDAR_exportIcal"=>"Exporter les événements au format iCal",
-			"CALENDAR_icalUrl"=>"Copier l'adresse web (URL) pour afficher <br>l'agenda depuis un agenda externe",
-			"CALENDAR_icalUrlCopy"=>"Permet un accès en lecture à l'agenda depuis un agenda externe : Thunderbird, Outlook, Google Calendar, etc.",
+			"CALENDAR_icalUrl"=>"Copier l'adresse web de l'agenda :<br>pour le consulter via une appli externe",
+			"CALENDAR_icalUrlCopy"=>"Permet un accès à l'agenda depuis une appli externe (en lecture seule) : Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importer des événements au format iCal",
 			"CALENDAR_ignoreOldEvt"=>"Ne pas importer les événements de plus d'un an",
 			"CALENDAR_importIcalState"=>"Etat",
 			"CALENDAR_importIcalStatePresent"=>"Déjà présent",
 			"CALENDAR_importIcalStateImport"=>"A importer",
-			"CALENDAR_display_day"=>"Jour",
-			"CALENDAR_display_4Days"=>"4 jours",
-			"CALENDAR_display_workWeek"=>"Semaine ouvrée",
+			"CALENDAR_display_3Days"=>"3 jours",
+			"CALENDAR_display_7Days"=>"7 jours",
 			"CALENDAR_display_week"=>"Semaine",
 			"CALENDAR_display_month"=>"Mois",
-			"CALENDAR_weekNb"=>"Voir la semaine n°", //...5
+			"CALENDAR_yearWeekNum"=>"Voir la semaine n°", //...5
 			"CALENDAR_periodNext"=>"Période suivante",
 			"CALENDAR_periodPrevious"=>"Période précédente",
 			"CALENDAR_evtAffects"=>"Dans l'agenda de",
@@ -866,7 +862,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublic"=>"Affichage normal",
 			"CALENDAR_visibilityPublicHide"=>"Affichage de la plage horaire",
 			"CALENDAR_visibilityPrivate"=>"Affichage privé",
-			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda : <br>- Affichage de la plage horaire : uniquement la plage horaire occupée par l'événement et masquer les détails<br>- Affichage privé : ne pas afficher l'événement",
+			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda et l'événement : <br>- Affichage de la plage horaire : montrer uniquement le créneau occupé et masquer les détails<br>- Affichage privé : ne pas afficher l'événement",
 			// Agenda/Evenement : edit
 			"CALENDAR_sharedCalendarDescription"=>"Agenda partagé de l'espace",
 			"CALENDAR_noPeriodicity"=>"Une seule fois",
@@ -879,9 +875,9 @@ class Trad extends Txt
 			"CALENDAR_addEvt"=>"Créer un nouvel événement",
 			"CALENDAR_addEvtTooltip"=>"Ajouter un événement à l'agenda",
 			"CALENDAR_addEvtTooltipBis"=>"Ajouter l'événement à l'agenda",
-			"CALENDAR_proposeEvtTooltip"=>"Proposer un événement à l'administrateur de l'agenda",
+			"CALENDAR_proposeEvtTooltip"=>"Proposer un événement au propriétaire de l'agenda",
 			"CALENDAR_proposeEvtTooltipBis"=>"Proposer l'événement au propriétaire de cet agenda",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement au propriétaire de cet agenda, car il ne m'est accessible qu'en lecture",
+			"CALENDAR_proposeEvtTooltipBis2"=>"Proposer l'événement : cet agenda ne m'est accessible qu'en lecture",
 			"CALENDAR_inputProposed"=>"L'événement sera proposé au propriétaire de cet agenda, avant validation pour y être ajouté",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_noModifTooltip"=>"Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)",

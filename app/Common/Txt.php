@@ -107,16 +107,17 @@ class Txt
 	}
 
 	/********************************************************************************************
-	 * PREPARE L'AFFICHAGE D'UN TEXTE DANS UN TOOLTIP (attribut "title" d'une balise)
+	 * AFFICHE UN TITLE / TOOLTIP DANS UNE BALISE
 	 ********************************************************************************************/
-	public static function tooltip($text)
+	public static function tooltip($text, $titleAttr=true)
 	{
 		if(!empty($text)){
-			$text=nl2br($text);									//Remplace les \n par des <br>
-			$text=strip_tags($text,"<br><img><span><hr><i>");	//Enlève les principale balises (sauf <br> <img>...)
-			$text=str_replace('"','&quot;',$text);				//Remplace les quotes
-			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}//Créé un hyperlien : tester avec le tooltip des "link" !
-			return $text;										//Retourne le résultat
+			if(self::isTrad($text))  {$text=self::$trad[$text];}			//Récupère si besoin une traduction
+			$text=nl2br($text);												//Remplace \n par <br>
+			$text=strip_tags($text,"<br><img><span><hr><i>");				//Enlève les balises (sauf <br><img><span><hr><i>)
+			$text=str_replace('"','&quot;',$text);							//Remplace les doubles quotes
+			if(stristr($text,"http"))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}//Créé un hyperlien (tester dans le modLink)
+			return ($titleAttr==true)  ?  'title="'.$text.'"'  :  $text;	//Retourne le résultat : avec ou sans `title=`
 		}
 	}
 
@@ -190,7 +191,7 @@ class Txt
 	/**************************************************************************************************************************************************************************************
 	 * AFFICHAGE D'UNE DATE ET HEURE
 	 * $timeBegin & $timeEnd =>  Timestamp unix  ||  format DateTime en Bdd
-	 * $format 				 =>  "basic" -> "lun. 8 septembre 2050 9:05"  ||  "mini" -> "8 sept. 2050" ou "9:05"  ||  "dateFull" -> "lun. 8 septembre 2050"  ||  "dateMini" -> "8/09/2050"
+	 * $format 				 =>  "basic" -> "lun. 8 fev. 2050 9:05"  ||  "mini" -> "8 fev. 2050" ou "9:05"  ||  "dateFull" -> "lun. 8 fev. 2050"  ||  "dateMini" -> "08/02/2050"
 	 * Note : les objets "task" peuvent avoir une $dateEnd, mais sans $timeBegin
 	 **************************************************************************************************************************************************************************************/
 	public static function dateLabel($timeBegin=null, $format="basic", $timeEnd=null)
@@ -216,9 +217,9 @@ class Txt
 				//Prépare le formatage du $dateLabel via "setPattern()"  (cf. https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
 				$dateLabel=$pattern="";																														//Init le label et le pattern du formatage (pas de "null")
 				if(($format=="basic" || $format=="dateFull") && empty($timeEnd) && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (ne pas mettre dans le $pattern)
-				elseif($format=="basic" || $format=="dateFull")															{$pattern="eeee d MMMM";}			//jour réduit, jour du mois et mois	-> Ex: "lun. 8 juillet"
-				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 mar."
-				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique			-> Ex: "08/03/2050"
+				elseif($format=="basic" || $format=="dateFull")															{$pattern="eee d MMM";}				//jour réduit, jour du mois et mois	-> Ex: "lun. 8 fev."
+				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 fev."
+				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique			-> Ex: "08/02/2050"
 				//Ajoute l'année si différente de l'année courante (Ex: "8 juin 2001")  &&  Ajoute l'heure si on affiche pas que la date (Ex: "9:05")
 				if($format!="dateMini"  &&  ( (!empty($timeBegin) && date("y",$timeBegin)!=date("y"))  ||  (!empty($timeEnd) && date("y",$timeEnd)!=date("y")) ))   {$pattern.=" Y";}
 				if(!preg_match("/date/i",$format))   {$pattern.=" H:mm";}

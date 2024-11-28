@@ -41,9 +41,9 @@ class CtrlDashboard extends Ctrl
 			$vDatas["pluginPeriod"]=self::prefUser("pluginPeriod");
 			if(in_array($vDatas["pluginPeriod"],["day","week","month","previousConnection"])==false)  {$vDatas["pluginPeriod"]="week";}
 			//Periode "jour"/"semaine"/"month"/"previousConnection"
-			$vDatas["pluginPeriodOptions"]["day"]  =["timeBegin"=>strtotime(date("Y-m-d 00:00:00")),				"timeEnd"=>strtotime(date("Y-m-d 23:59:59"))];
-			$vDatas["pluginPeriodOptions"]["week"] =["timeBegin"=>strtotime("Monday this week 00:00:00"),			"timeEnd"=>strtotime("Sunday this week 23:59:59")];
-			$vDatas["pluginPeriodOptions"]["month"]=["timeBegin"=>strtotime("First day of this month 00:00:00"),	"timeEnd"=>strtotime("Last day of this month 23:59:59")];
+			$vDatas["pluginPeriodOptions"]["day"]  =["timeBegin"=>strtotime("today 00:00:00"),						"timeEnd"=>strtotime("today 23:59:59")];
+			$vDatas["pluginPeriodOptions"]["week"] =["timeBegin"=>strtotime("monday this week 00:00:00"),			"timeEnd"=>strtotime("sunday this week 23:59:59")];
+			$vDatas["pluginPeriodOptions"]["month"]=["timeBegin"=>strtotime("first day of this month 00:00:00"),	"timeEnd"=>strtotime("last day of this month 23:59:59")];
 			if(!empty(Ctrl::$curUser->previousConnection))  {$vDatas["pluginPeriodOptions"]["previousConnection"]=["timeBegin"=>Ctrl::$curUser->previousConnection,"timeEnd"=>time()];}
 			//Récupère les résultats via le "getPlugins()" de chaque module (vérif si la methode existe)
 			$vDatas["pluginsList"]=[];
