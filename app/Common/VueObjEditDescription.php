@@ -7,19 +7,19 @@
 	$(function(){
 		tinymce.init({
 			////	parametrage général
-			selector: "textarea[name='description']",		//Selecteur du textarea
-			placeholder: "<?= Txt::trad("description") ?>",	//Placeholder du textarea (text par défaut)
-			language:"<?= Txt::trad("EDITORLANG") ?>",		//Langue du menu de l'éditeur
-			skin: 'tinymce-5',								//ancien skin + clair
-			width: "100%",									//Largeur de l'éditeur
-			min_height:(isMainPage==true?350:250),			//Hauteur par défaut de l'éditeur
-			convert_urls: false,							//Urls des liens : ne pas les convertir en "relatives"
-			menubar: false,									//Pas de "menubar" en haut de l'éditeur (menu déroulant)
-			statusbar: false,								//Pas de "statusbar" en bas de l'éditeur
-			allow_script_urls: true,						//Autorise l'ajout de js dans les hrefs ("lightboxOpen()" & co)
-			browser_spellcheck: true,						//Correcteur orthographique du browser activé
-			contextmenu: false,								//Désactive le menu contextuel de l'éditeur : cf. "browser_spellcheck" ci-dessus
-			images_upload_handler: imageUploadHandler,		//Gestion du Drag/Drop d'image
+			selector: "textarea[name='description']",			//Selecteur du textarea
+			placeholder: "<?= Txt::trad("description") ?>",		//Placeholder du textarea (text par défaut)
+			language:"<?= Txt::trad("EDITORLANG") ?>",			//Langue du menu de l'éditeur
+			skin: 'tinymce-5',									//ancien skin + clair
+			width: "100%",										//Largeur de l'éditeur
+			min_height:(<?= $toggleButton==true?150:300 ?>),	//Hauteur par défaut de l'éditeur
+			convert_urls: false,								//Urls des liens : ne pas les convertir en "relatives"
+			menubar: false,										//Pas de "menubar" en haut de l'éditeur (menu déroulant)
+			statusbar: false,									//Pas de "statusbar" en bas de l'éditeur
+			allow_script_urls: true,							//Autorise l'ajout de js dans les hrefs ("lightboxOpen()" & co)
+			browser_spellcheck: true,							//Correcteur orthographique du browser activé
+			contextmenu: false,									//Désactive le menu contextuel de l'éditeur : cf. "browser_spellcheck" ci-dessus
+			images_upload_handler: imageUploadHandler,			//Gestion du Drag/Drop d'image
 			font_size_formats:"11px 13px 16px 20px 24px 28px 32px",	//Liste des "fontsize" : cf. "content_style" ci-dessus pour le "font-size" par défaut
 			content_style:"body {margin:10px;font-size:13px; font-family:Arial,Helvetica,sans-serif;}  p {margin:3px;}  .attachedFileTag {max-width:100%!important;}  .mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {font-weight:normal; padding-left:5px; color:#aaa;}",//Style du texte dans l'éditeur : idem "body" dans "common.css" + Style du placeholder de l'éditeur
 			////	Charge les plugins et options de la "toolbar" (autres plugins dispos : code print preview hr anchor pagebreak wordcount fullscreen insertdatetime)

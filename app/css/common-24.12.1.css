@@ -13,7 +13,7 @@ audio						{min-width:350px;}																								/*balise des lecteurs audio
 a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
 /*MOBILE*/
 @media screen and (max-width:440px){
-	body					{font-size:1.1em;}
+	body					{font-size:16px;}
 	#htmlLightbox body		{padding:15px; padding-top:30px;}/*margin-top: cf. bouton close*/
 }
 
@@ -98,8 +98,8 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 /*** MENUS DES MODULES & MENUS CONTEXTUELS*/
 .menuLine									{display:table; width:100%;}
 .menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
-.menuIcon									{width:40px; vertical-align:top!important;}
-.menuIcon img								{max-width:30px!important; max-height:26px!important;}
+.menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
+.menuIcon img								{max-width:30px!important; max-height:30px!important;}
 #pageModMenu								{padding:8px;}																		/*surcharge .miscContainer*/
 #pageFull #pageModMenu						{border-radius:0px 4px 4px 0px; padding-left:12px;}									/*Menus des modules en affichage full (arborescence)*/
 .menuLaunch									{display:inline-block;}																/*launcher du menu contextuel*/
@@ -124,7 +124,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 .objBottomMenu a							{margin-left:5px; margin-right:5px;}
 
 /*** INPUTS*/
-input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #b4b4b4; transition:box-shadow 0.4s ease-in-out; box-sizing:border-box; min-height:33px!important; padding:4px; margin:0px; border:#aaa 1px solid; border-radius:2px; outline:none; font-family:inherit; font-size:inherit; font-weight:normal;}/*Attention: sans "box-sizing" le padding/border sera pas pris en compte dans le height des "input", contrairement aux "button" and co*/
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #b4b4b4; transition:box-shadow 0.4s ease-in-out; box-sizing:border-box; min-height:30px!important; padding:3px; margin:0px; border:#aaa 1px solid; border-radius:2px; outline:none; font-family:inherit; font-size:inherit; font-weight:normal;}/*Attention: sans "box-sizing" le padding/border sera pas pris en compte dans le height des "input", contrairement aux "button" and co*/
 input:hover:not([type=radio],[type=checkbox]), textarea:hover		{box-shadow:0px 0px 4px #505050;}
 input:focus:not([type=radio],[type=checkbox]), textarea:focus		{box-shadow:0px 0px 4px #0064c8; border:#bbd 1px solid;}
 input:disabled								{opacity:0.6;}
@@ -150,7 +150,7 @@ button:disabled, button[disabled]			{background:linear-gradient(#ccc,#aaa);}
 .submitButtonMain button					{min-width:180px; min-height:45px;}							/*bouton principal*/
 .submitButtonMain .submitButtonLoading		{max-width:40px; margin-right:-40px;}						/*icone "loading" du button principal*/
 .submitButtonInline							{display:inline-block;}										/*div du button inline : form de recherche & co*/
-.submitButtonInline	button					{min-width:100px; min-height:33px;}							/*height idem input[type=text]*/
+.submitButtonInline	button					{min-width:100px; min-height:30px;}							/*height idem input[type=text]*/
 .submitButtonInline .submitButtonLoading	{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
 .submitButtonLoading						{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
 select option								{font-size:1.15em;}
@@ -166,7 +166,7 @@ legend										{padding:5px 10px;}
 }
 
 /*** INPUTS D'EDITION D'OBJET : EDIT D'USER, DE CONTACT, DE PARAMETRAGE GENERAL...*/
-.objField									{display:table; width:100%; margin:15px 0px;}
+.objField									{display:table; width:100%; padding:10px 0px;}
 .objField>div								{display:table-cell; width:50%; line-height:25px; vertical-align:top;}/*"line-height" aligne verticalement les labels avec les inputs*/
 .objField img								{max-width:30px; margin-right:8px;}
 .objField input[type=text]					{width:100%;}

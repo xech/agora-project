@@ -22,12 +22,12 @@ form							{padding:0px; margin:0px; text-align:center;}
 .vTable							{width:98%;}
 .vTable img						{vertical-align:middle;}
 .vTableHeader					{text-align:center;}			/*Titre des colonnes*/
+tr:not(.vTableHeader)			{text-align:left;}				/*Ligne des evts*/
 .vTable td						{padding:5px;}					/*Cellules du tableau*/
 .vTable tr td:first-child		{width:40px;}					/*checkbox*/
-.vTable tr td:nth-child(2)		{width:40px; cursor:help;}		/*isPresent*/
-.vTable tr td:nth-child(3)		{width:250px;}					/*date*/
+.vTable tr td:nth-child(2)		{width:60px; cursor:help;}		/*isPresent*/
+.vTable tr td:nth-child(3)		{width:280px;}					/*date*/
 .vTable tr td:nth-child(4)		{width:400px;}					/*titre*/
-.vTable tr td:nth-child(5)		{font-weight:normal;}			/*description*/
 .lineHover:has(input:checked)	{background:<?= Ctrl::$agora->skin=="black"?"#333":"#ddd" ?>;}
 </style>
 
@@ -44,23 +44,20 @@ form							{padding:0px; margin:0px; text-align:center;}
 	////	AFFICHAGE DES EVENEMENTS A IMPORTER
 	else
 	{
-		////DEBUT DU TABLEAU + HEADER
+		//// DEBUT DU TABLEAU + HEADER
 		echo '<table class="vTable">
 				<tr class="vTableHeader">
 					<td '.Txt::tooltip("selectSwitch").'><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
-					<td>'.Txt::trad("CALENDAR_importIcalState").'</td>
+					<td>'.Txt::trad("CALENDAR_importIcalPresent").'</td>
 					<td>'.Txt::trad("begin").' - '.Txt::trad("end").'</td>
 					<td>'.Txt::trad("title").'</td>
 					<td>'.Txt::trad("description").'</td>
 				</tr>';
-			////LISTE D'EVENEMENTS
-			foreach($eventList as $cptEvt=>$tmpEvt)
-			{
-				//Prépare l'affichage
+			//// LISTE D'EVENEMENTS
+			foreach($eventList as $cptEvt=>$tmpEvt){
 				$evtBoxId="boxEvent".$cptEvt;
-				if($tmpEvt["isPresent"]==true)	{$evtCheck=null;		$isPresentImg="dotR.png";	$isPresentTrad="CALENDAR_importIcalStatePresent";}
-				else							{$evtCheck="checked";	$isPresentImg="dotG.png";	$isPresentTrad="CALENDAR_importIcalStateImport";}
-				//Afiche l'evt
+				$evtCheck=empty($tmpEvt["isPresent"])  ?  "checked"  :  null;
+				$evtCheckLabel=empty($tmpEvt["isPresent"])  ?  Txt::trad('no')  :  '<i>'.Txt::trad('yes').'</i>';
 				echo '<tr class="lineHover">
 						<td>
 							<input type="checkbox"	name="eventList['.$cptEvt.'][checked]"			value="1" id="'.$evtBoxId.'" '.$evtCheck.'>
@@ -72,13 +69,13 @@ form							{padding:0px; margin:0px; text-align:center;}
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodValues]"	value="'.$tmpEvt["dbPeriodValues"].'">
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodDateEnd]"	value="'.$tmpEvt["dbPeriodDateEnd"].'">
 						</td>
-						<td><img src="app/img/'.$isPresentImg.'" '.Txt::tooltip($isPresentTrad).'></td>
+						<td '.Txt::tooltip("CALENDAR_importIcalPresentInfo").'>'.$evtCheckLabel.'</td>
 						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"basic",$tmpEvt["dbDateEnd"]).'</td>
 						<td><label for="'.$evtBoxId.'">'.$tmpEvt["dbTitle"].'</label></td>
 						<td>'.Txt::reduce($tmpEvt["dbDescription"],120).'</td>
 					</tr>';
 			}
-		////FIN DU TABLEAU
+		//// FIN DU TABLEAU
 		echo '</table>';
 	}
 	

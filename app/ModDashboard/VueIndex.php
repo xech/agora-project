@@ -188,7 +188,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			////
 			echo "<div id='modMenuNews'>";
 				//// Ajoute une news / Affiche les news "Offline"  /  Tri des news
-				if(MdlDashboardNews::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
+				if(MdlDashboardNews::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
 				echo '<div class="menuLine '.(!empty($_SESSION["offlineNews"])?'optionSelect':'option').'" onclick="redir(\'?ctrl=dashboard&offlineNews='.(empty($_SESSION["offlineNews"])?'true':'false').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").'</div></div>'.
 					  '<hr>'.MdlDashboardNews::menuSort();
 				//// Affichage des sondages (option "newsDisplay")
@@ -204,7 +204,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			{
 				echo "<div id='modMenuPolls'>";
 					//Ajoute un sondage  /  Voir uniquement les sondages à voter  /  Tri des sondages 
-					if(MdlDashboardPoll::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
+					if(MdlDashboardPoll::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
 					if(!empty($pollsVotedNb))			{echo '<div class="menuLine '.($_SESSION["pollsVotedShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&dashboardPoll=true&pollsVotedShow='.($_SESSION["pollsVotedShow"]==true?'false':'true').'\')" '.Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")).'><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("DASHBOARD_pollsVoted").($_SESSION["pollsVotedShow"]==true?'&nbsp; <img src="app/img/checkSmall.png">':null).'</div></div>';}
 					echo MdlDashboardPoll::menuSort(null,"&dashboardPoll=true");
 				echo "</div>";

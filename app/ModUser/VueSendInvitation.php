@@ -7,11 +7,11 @@ lightboxSetWidth(500);
 ////	INIT
 $(function(){
 	<?php if(Ctrl::$agora->gPeopleEnabled()){ ?>
-	////	Charge l'import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js  &&  https://developers.google.com/people/api/rest/v1/people.connections/list
+	////	Charge l'import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js?hl=fr
 	gapi.load("client:auth2", function(){
 		gapi.client.init({
 			apiKey:"<?= Ctrl::$agora->gPeopleApiKey ?>",//"gPeopleApiKey" de l'API "People
-			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",//"gIdentityClientId" du Google Projet
+			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",//"gIdentityClientId" du Projet
 			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"],//Spécification obligatoires
 			scope:"https://www.googleapis.com/auth/contacts.readonly"//Type de données à récupérer
 		}).then(function(){

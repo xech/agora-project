@@ -15,7 +15,7 @@ class Txt
 	protected static $trad=[];
 	protected static $detectEncoding=null;
 	protected static $IntlDateFormatter=null;
-	public static $tradList=["francais","english","espanol","portugues"];
+	public static $tradList=["francais","english","espanol","portugues","italiano"];
 
 	/*******************************************************************************************
 	 * CHARGE LES TRADUCTIONS
@@ -35,6 +35,7 @@ class Txt
 				elseif(preg_match("/^en/i",$browserTrad))	{$_SESSION["curTrad"]="english";}
 				elseif(preg_match("/^es/i",$browserTrad))	{$_SESSION["curTrad"]="espanol";}
 				elseif(preg_match("/^pt/i",$browserTrad))	{$_SESSION["curTrad"]="portugues";}
+				elseif(preg_match("/^it/i",$browserTrad))	{$_SESSION["curTrad"]="italiano";}
 				else										{$_SESSION["curTrad"]="francais";}
 			}
 			//Charge les trads (classe & methode)
@@ -188,12 +189,12 @@ class Txt
 		}
 	}
 
-	/**************************************************************************************************************************************************************************************
+	/***************************************************************************************************************************************************************************************************
 	 * AFFICHAGE D'UNE DATE ET HEURE
 	 * $timeBegin & $timeEnd =>  Timestamp unix  ||  format DateTime en Bdd
-	 * $format 				 =>  "basic" -> "lun. 8 fev. 2050 9:05"  ||  "mini" -> "8 fev. 2050" ou "9:05"  ||  "dateFull" -> "lun. 8 fev. 2050"  ||  "dateMini" -> "08/02/2050"
+	 * $format 				 =>  "basic" -> "lun. 8 fev. 2050 9:05"  ||  "mini" -> "9:05" ("8 fev. 2050 9:05" si diff dates)   ||  "dateFull" -> "lun. 8 fev. 2050"  ||  "dateMini" -> "08/02/2050"
 	 * Note : les objets "task" peuvent avoir une $dateEnd, mais sans $timeBegin
-	 **************************************************************************************************************************************************************************************/
+	 ***************************************************************************************************************************************************************************************************/
 	public static function dateLabel($timeBegin=null, $format="basic", $timeEnd=null)
 	{
 		//Controles de base
@@ -217,11 +218,11 @@ class Txt
 				//Prépare le formatage du $dateLabel via "setPattern()"  (cf. https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
 				$dateLabel=$pattern="";																														//Init le label et le pattern du formatage (pas de "null")
 				if(($format=="basic" || $format=="dateFull") && empty($timeEnd) && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (ne pas mettre dans le $pattern)
-				elseif($format=="basic" || $format=="dateFull")															{$pattern="eee d MMM";}				//jour réduit, jour du mois et mois	-> Ex: "lun. 8 fev."
-				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour du mois et mois réduit		-> Ex: "8 fev."
-				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique			-> Ex: "08/02/2050"
+				elseif($format=="basic" || $format=="dateFull")															{$pattern="eee d MMMM";}			//jour et mois réduit		-> Ex: "lun. 8 fevrier"
+				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour mois réduit			-> Ex: "8 fev."
+				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique	-> Ex: "08/02/2050"
 				//Ajoute l'année si différente de l'année courante (Ex: "8 juin 2001")  &&  Ajoute l'heure si on affiche pas que la date (Ex: "9:05")
-				if($format!="dateMini"  &&  ( (!empty($timeBegin) && date("y",$timeBegin)!=date("y"))  ||  (!empty($timeEnd) && date("y",$timeEnd)!=date("y")) ))   {$pattern.=" Y";}
+				if(!preg_match("/mini/i",$format) &&  ( (!empty($timeBegin) && date("y",$timeBegin)!=date("y"))  ||  (!empty($timeEnd) && date("y",$timeEnd)!=date("y")) ))   {$pattern.=" Y";}
 				if(!preg_match("/date/i",$format))   {$pattern.=" H:mm";}
 				//Instancie toujours le pattern via la class "IntlDateFormatter()", avec la "lang" et "timezone" locale
 				$dateFormat->setPattern($pattern);

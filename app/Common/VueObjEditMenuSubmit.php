@@ -176,14 +176,8 @@ function mainFormControl()
 .objMenuTabSelect						{opacity:1; border-bottom:none;}
 .objMenuTab img							{margin-right:10px;}
 .objMenuTab[for='objMenuAccessRight']	{min-width:150px;}/*onglet des droits d'accès*/
-.objMenuOptions							{margin-top:35px; border-top:0px; border-radius:0px 0px 5px 5px; text-align:left; padding:30px 20px;}
+.objMenuOptions							{margin-top:35px; padding:25px; border-top:0px; border-radius:0px 0px 5px 5px; text-align:left;}
 #objMenuAccessRight						{text-align:center;}/*Tableau des droits d'accès*/
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
-	.objMenuTab[for='objMenuAccessRight']	{min-width:100px;}/*onglet des droits d'accès*/
-	.objMenuTab img							{display:none;}
-	.objMenuOptions							{padding:20px 5px;}
-}
 
 /*DROITS D'ACCÈS*/
 .vSpaceTable							{display:inline-table; user-select:none; -webkit-user-select:none; max-width:600px; margin-bottom:30px;}
@@ -194,22 +188,26 @@ function mainFormControl()
 .vSpaceHeader>.vSpaceLabel				{padding-left:10px!important; font-style:italic;}/*Nom de l'espace*/
 .vSpaceLabel							{width:280px; text-align:left!important; cursor:pointer;}
 .vSpaceRead, .vSpaceWrite 				{width:80px;}/*colonne des checkboxes*/
-.vSpaceWriteLimit						{width:110px;}/*idem*/
+.vSpaceWriteLimit						{width:120px;}/*idem*/
 .vSpaceTargetIcon						{margin-right:8px;}
 .vSpaceTargetHide						{display:none!important;}/*Par défaut : masque les users décochés de l'espace courant*/
 #showAllUsers, #extendToSubfoldersDiv	{cursor:pointer; margin-bottom:10px;}
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
-	.vSpaceLabel								{font-size:0.95em;}/*Nom de l'espace et label des "targets"*/
-	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit	{width:55px;}/*colonne des checkboxes*/
-	.vSpaceTable img, .vSpaceTargetIcon			{display:none;}
-}
 
 /*MENU DES NOTIFICATIONS PAR MAIL*/
-#notifMailUsersPlus, #notifMailSelectList, #notifMailOptions	{display:none;}
-#notifMailSelectList											{padding-left:10px; border-radius:3px;}
-#notifMailSelectList>div										{display:inline-block; width:33%; min-width:210px; padding:3px;}
-#notifMailOptions>div											{margin-left:10px; margin-top:8px;}
+#notifMailOptions>div					{padding-left:15px; padding-top:12px;}
+#notifMailOptions>div input				{margin-right:10px;}/*surcharge "VueSendMailOptions.php"*/
+#notifMailSelectList					{padding-left:10px; border-radius:3px;}
+#notifMailSelectList>div				{display:inline-block; width:50%; padding:7px;}
+#notifMailUsersPlus, #notifMailSelectList, #notifMailOptions  {display:none;}
+
+/*MOBILE FANCYBOX (440px)*/
+@media screen and (max-width:440px){
+	.objMenuTab[for='objMenuAccessRight']					{min-width:100px;}/*onglet des droits d'accès*/
+	.objMenuOptions											{padding:25px 8px;}
+	.vSpaceTable											{font-size:0.9em;}/*Nom de l'espace et label des "targets"*/
+	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}/*colonne des checkboxes*/
+	.objMenuTab img, .vSpaceTable img, .vSpaceTargetIcon	{display:none;}
+}
 </style>
 
 
@@ -276,8 +274,8 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			// Options de base des emails (cf. Tool::sendMail()")
 			echo MdlObject::sendMailBasicOptions();
 			//Option "Choisir les destinataires"
-			echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailSelect" id="boxNotifMailSelect" value="1" onclick="$(\'#notifMailSelectList\').slideToggle();">&nbsp; <label for="boxNotifMailSelect">'.Txt::trad("EDIT_notifMailSelect").' <img src="app/img/user/accessAll.png"></label></div>';
-			echo '<div id="notifMailSelectList">';
+			echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailSelect" id="boxNotifMailSelect" value="1" onclick="$(\'#notifMailSelectList\').slideToggle();"><label for="boxNotifMailSelect">'.Txt::trad("EDIT_notifMailSelect").' <img src="app/img/user/accessAll.png"></label></div>';
+			echo '<div id="notifMailSelectList" class="fieldsetSub">';
 				//Groupe d'users de l'espace courant
 				foreach($curSpaceUserGroups as $tmpGroup){
 					echo '<div '.Txt::tooltip(Txt::trad("selectUnselect")." : ".$tmpGroup->usersLabel).'>

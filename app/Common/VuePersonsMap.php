@@ -1,8 +1,6 @@
-
 <style>
 #htmlLightbox body	{padding:0px!important;}/*Surcharge*/
 </style>
-
 
 <!--CONTENEUR DE LA CARTE-->
 <img src="app/img/loading.png" style="position:absolute;bottom:50px;right:50px;z-index:50;">
@@ -59,7 +57,7 @@ function displayAdress(adressKey)
 		geocoder.geocode({"address":tmpAdress.adress}, function(results,status){
 			//// Géolocalisation OK : ajoute le marker
 			if(status==google.maps.GeocoderStatus.OK){
-				//Ajoute les coordonnées
+				// Ajoute les coordonnées
 				tmpAdress.lat=results[0].geometry.location.lat();
 				tmpAdress.lng=results[0].geometry.location.lng();
 				// Image du marker (url + position de la photo par rapport au point du marker = centre/bottom + dimension de la photo)
@@ -75,7 +73,7 @@ function displayAdress(adressKey)
 						StreetView.setPosition(new google.maps.LatLng(tmpAdress.lat,tmpAdress.lng));
 					},200);
 				});
-				//Ajoute le marker pour délimiter la carte (bounds)
+				// Ajoute le marker pour délimiter la carte (bounds)
 				bounds.extend(new google.maps.LatLng(tmpAdress.lat,tmpAdress.lng));
 			}
 			//..Erreur "OVER_QUERY_LIMIT" (Quota par seconde dépassé) : relance l'affichage de l'adresse avec un délais d'1 seconde

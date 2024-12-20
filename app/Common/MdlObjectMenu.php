@@ -419,7 +419,7 @@ trait MdlObjectMenu
 		$menuLangOptions=null;
 		foreach(scandir("app/trad/") as $tmpFileLang){
 			if(strstr($tmpFileLang,".php")){
-				$tmpLang=str_replace(".php","",$tmpFileLang);
+				$tmpLang=trim(str_replace(".php","",$tmpFileLang));
 				$tmpLabel=($typeConfig=="user" && $tmpLang==Ctrl::$agora->lang)  ?  $tmpLang." (".Txt::trad("byDefault").")"  :  $tmpLang;
 				$menuLangOptions.= '<option value="'.$tmpLang.'" '.($tmpLang==$selectedLang?'selected':null).'> '.$tmpLabel.'</option>';
 			}

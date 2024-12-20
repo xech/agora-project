@@ -23,7 +23,7 @@ $(function(){
 #newsOptions			{margin-top:22px; text-align:center;}
 #newsOptions>div		{display:inline-block; margin-right:20px; margin-top:15px;}
 #newsOptions img		{vertical-align:bottom;}
-.dateBegin, .dateEnd	{width:160px!important;}/*surcharge*/
+.dateBegin, .dateEnd	{width:160px!important;}/*surcharge pour afficher les placeholders*/
 .dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.9em;}/*Taille du "placeholder"*/
 /*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){

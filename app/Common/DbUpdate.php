@@ -801,7 +801,7 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` tinyint DEFAULT NULL");}
 				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify tinyint DEFAULT NULL AFTER userInscription");
 				//Agenda :  Ajoute l'option de notification par email à chaque proposition d'événement  &&  Ajoute l'option de proposition d'événement pour les guests
-				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` varchar(1) DEFAULT NULL AFTER timeslot");
+				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` varchar(1) DEFAULT NULL AFTER timeSlot");
 				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` varchar(1) DEFAULT NULL AFTER propositionNotify");
 				//Agenda et proposition d'evenement d'un guest :  Ajoute un champ "guestMail" pour les notifications par mail de validation/invalidation d'evt
 				self::fieldExist("ap_calendarEvent", "guestMail", "ALTER TABLE ap_calendarEvent ADD `guestMail` varchar(255) DEFAULT NULL AFTER guest");
@@ -947,7 +947,7 @@ class DbUpdate extends Db
 				}
 			}
 
-			if(self::updateVersion("24.11.1"))
+			if(self::updateVersion("24.11.2"))
 			{
 				//Modifie la préférence d'affichage de l'agenda : "4Days" devient "3Days" et "workWeek"/"day" sont remplacés par "week"
 				self::query("UPDATE `ap_userPreference` SET value='3Days' WHERE keyVal='calendarDisplayMode' AND value='4Days'");

@@ -26,7 +26,7 @@
 @media screen and (max-width:1024px){
 	/*MENU PRINCIPAL*/
 	#headerMenuLeft							{padding-left:38px; line-height:35px;}/*"padding-left" en fonction du width du "logo.png"*/
-	#headerMenuLeft, #headerMobileModule	{display:block; font-size:1.08em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
+	#headerMenuLeft, #headerMobileModule	{display:block; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
 	#headerMainLogo							{top:10px; left:2px;}
 	#headerSpaceLabel						{max-width:180px; text-transform:lowercase;}
 	#headerBurgerLogo						{margin-left:5px;}

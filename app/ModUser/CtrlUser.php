@@ -239,13 +239,13 @@ class CtrlUser extends Ctrl
 				$sqlSearch=null;
 				foreach(Req::param("searchFields") as $fieldName=>$fieldVal){
 					if(!empty($fieldVal)){
-						$sqlSearch.="OR ".$fieldName." LIKE '%".Db::format($fieldVal,"noquotes")."%' ";
+						$sqlSearch.=" OR ".$fieldName." LIKE ".Db::format($fieldVal,"sqlLike");
 						$vDatas["searchFieldsValues"][$fieldName]=$fieldVal;
 					}
 				}
 				//Users pouvant être affectés à l'espace courant
 				if(!empty($sqlSearch)){
-					$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE _id NOT IN (".Ctrl::$curSpace->getUsers("idsSql").") AND (".trim($sqlSearch,"OR").")");
+					$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE _id NOT IN (".Ctrl::$curSpace->getUsers("idsSql").") AND (".trim($sqlSearch," OR ").")");
 				}
 			}
 			////	Affecte les users sélectionnés

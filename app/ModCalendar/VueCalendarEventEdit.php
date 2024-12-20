@@ -125,15 +125,15 @@ function timeSlotBusy()
 			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy"+
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
-						"&_evtId=<?= $curObj->_id ?>&objectsTypeId[calendar]=";
-						$(".vCalInput:checked,.vCalInputProposition:checked").each(function(){  ajaxUrl+=this.value+"-";  });
-			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
+						"&_evtId=<?= $curObj->_id ?>";
+			$(".vCalInput:checked,.vCalInputProposition:checked").each(function(){  ajaxUrl+="&calendarIds[]="+this.value;  });
+			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé ("mainPageDisplay()" pour les tooltips)
 			$.ajax(ajaxUrl).done(function(txtResult){
-				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".vTimeSlotBusyTable").html(txtResult); }
+				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainPageDisplay();}
 				else					{$("#timeSlotBusy").hide();}
 			});
 		}
-	}, 1000);
+	}, 1500);
 }
 
 
@@ -164,58 +164,55 @@ function objectFormControl()
 
 <style>
 /*GENERAL*/
-legend			 						{font-size:1.05em;}
-.vEvtOptionInline						{display:inline-block; margin:25px 25px 0px 0px;}
-.beginEndLabel							{display:none}
-#beginEndSeparator						{margin:0px 5px;}
-@media screen and (max-width:440px){
-	#beginEndSeparator					{visibility:hidden; display:block;}
-	.beginEndLabel						{display:inline-block; width:50px;}
-	input:read-only						{background:#eee!important;}/*sélection des dates & times*/
-}
+legend			 							{font-size:1.05em;}
+.vEvtOptionInline							{display:inline-block; margin:25px 25px 0px 0px;}
+.beginEndLabel								{display:none}
+#beginEndSeparator							{margin:0px 5px;}
 
 /*PÉRIODICITÉ*/
 #periodOptions					 							{display:none; margin-top:20px; margin-bottom:10px;}
 #periodOption_weekDay, #periodOption_month					{text-align:left; vertical-align:middle;}/*checkboxes des jours ou des mois*/
-#periodOption_weekDay>div, #periodOption_month>div			{display:inline-block; width:25%; padding:0px 10px 10px 0px;}
-#periodDateEnd, #periodDateExceptions, .periodExceptionDiv	{display:inline-block; margin:10px 5px; line-height:35px;}
-/*MOBILE*/
-@media screen and (max-width:440px){
-	#periodOption_weekDay>div, #periodOption_month>div		{width:33%;}
-}
+#periodOption_weekDay>div, #periodOption_month>div			{display:inline-block; width:14%; padding:8px;}
+#periodDateEnd, #periodDateExceptions, .periodExceptionDiv	{padding:8px;}
+#periodDateExceptions, .periodExceptionDiv					{display:inline-block;}
 
 /*VISIOCONFERENCE*/
-#visioUrlAdd							{line-height:35px;}
-#visioUrlInput							{width:280px; font-size:0.95em;}
+#visioUrlAdd								{line-height:35px;}
+#visioUrlInput								{width:280px; font-size:0.95em;}
 <?= empty($curObj->visioUrl) ? "#visioOptions{display:none;}" : "#visioUrlAdd{display:none;}" ?>/*masque "Ajouter une visio"  ||  masque l'input de la visio*/
 
 /*AFFECTATION AUX AGENDAS*/
-#calsAffectDiv							{max-height:200px; overflow-y:auto;}
-#calsAffectDiv hr						{margin:3px;}
-.vCalAffectBlock						{display:inline-block; width:32%; margin:2px; margin-right:5px; border-radius:3px;}
-.vCalAffectBlock .vCalInput				{display:none;}
-.vCalAffectBlock label					{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
-.vCalAffectBlock img					{max-height:18px;}
-.vCalAffectBlockBis label				{width:100%;}
-.vCalAffectProposition					{display:none; float:right; height:25px; padding:3px; background:#e5e5e5;}
-.vCalAffectProposition input			{margin-right:5px;}
-input[name='calUsersGroup[]']			{display:none;}
-/*MOBILE*/
-@media screen and (max-width:440px){
-	#calsAffectDiv						{max-height:500px;}
-	.vCalAffectBlock					{width:96%;}
-	.vCalAffectBlock label				{padding:8px 3px 8px 3px;}
-}
+#eventAffectations hr						{margin:5px;}/*surcharge*/
+#calsAffectDiv								{max-height:200px; overflow-y:auto;}
+.vCalAffectBlock							{display:inline-block; width:32%; margin:2px; margin-right:5px; border-radius:3px;}
+.vCalAffectBlock .vCalInput					{display:none;}
+.vCalAffectBlock label						{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
+.vCalAffectBlock img						{max-height:18px;}
+.vCalAffectBlockBis label					{width:100%;}
+.vCalAffectProposition						{display:none; float:right; height:25px; padding:3px; background:#e5e5e5;}
+.vCalAffectProposition input				{margin-right:5px;}
+input[name='calUsersGroup[]']				{display:none;}
 
 /*GUESTS*/
-#guestMenu								{text-align:center;}
-input[name='guestMail']					{margin-left:20px;}
+#guestMenu									{text-align:center;}
+input[name='guestMail']						{margin-left:20px;}
 
 /*AFFICHAGE DU "timeSlotBusy()"*/
-#timeSlotBusy							{display:none;}
-.vTimeSlotBusyTable						{display:table; margin-top:6px;}
-.vTimeSlotBusyRow						{display:table-row;}
-.vTimeSlotBusyCell						{display:table-cell; min-width:120px; padding:4px; vertical-align:middle;}
+#timeSlotBusy								{display:none;}
+.timeSlotBusyContent table					{margin-top:10px;}
+.timeSlotBusyContent table td:first-child	{min-width:120px; vertical-align:top;}
+.timeSlotBusyContent span					{margin-right:20px; display:inline-block}
+
+/*MOBILE*/
+@media screen and (max-width:440px){
+	#beginEndSeparator									{visibility:hidden; display:block;}
+	.beginEndLabel										{display:inline-block; width:50px;}
+	input:read-only										{background:#eee!important;}/*sélection des dates & times*/
+	#periodOption_weekDay>div, #periodOption_month>div	{width:33%; padding:8px 4px; font-size:0.9em;}
+	#calsAffectDiv										{max-height:500px;}
+	.vCalAffectBlock									{width:96%;}
+	.vCalAffectBlock label								{padding:8px 3px 8px 3px;}
+}
 </style>
 
 
@@ -257,7 +254,7 @@ input[name='guestMail']					{margin-left:20px;}
 	<!--PERIODICITE : DIV DES OPTIONS-->
 	<fieldset class="vEvtOptionAdvanced" id="periodOptions">
 		<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
-		<legend id="periodTypeLabel">&nbsp;</legend>
+		<legend><img src="app/img/calendar/repeat.png"> <span id="periodTypeLabel"></span></legend>
 		<!--PERIODICITE: JOURS DE LA SEMAINE-->
 		<div id="periodOption_weekDay">
 			<?php
@@ -372,9 +369,9 @@ input[name='guestMail']					{margin-left:20px;}
 		echo '</div>';
 		?>
 		<!--CRENEAU HORAIRE OCCUPE?-->
-		<div id="timeSlotBusy" class="sAccessWriteLimit">
-			<hr><?= Txt::trad("CALENDAR_busyTimeslot") ?>
-			<div class="vTimeSlotBusyTable"></div>
+		<div id="timeSlotBusy" class="sAccessWrite">
+			<hr><?= Txt::trad("CALENDAR_busyTimeSlot") ?>
+			<div class="timeSlotBusyContent"></div>
 		</div>
 	</fieldset>
 

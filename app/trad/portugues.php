@@ -498,7 +498,7 @@ class Trad extends Txt
 			"INSTALL_dataTaskStatus3"=>"A validar",
 			"INSTALL_dataTaskStatus4"=>"Concluído",
 
-			////	MODULE_PARAMETRAGE
+			////	MOD : AGORA
 			////
 			"AGORA_generalSettings"=>"Administração Geral",
 			"AGORA_Changelog"=>"Ver registro da versão",
@@ -584,7 +584,7 @@ class Trad extends Txt
 			"importLdapFilterTooltip"=>"Filtro de pesquisa LDAP (cf. https://www.php.net/manual/function.ldap-search.php). Exemplo ''(cn=*)'' ou ''(&(samaccountname=MONLOGIN)(cn=*))''",
 			"AGORA_ldapConnectError"=>"Erro de conexão do servidor LDAP!",
 
-			////	MODULE_LOG
+			////	MOD : LOG
 			////
 			"LOG_moduleDescription"=>"Logs - Registro de eventos",
 			"LOG_path"=>"Caminho",
@@ -605,7 +605,7 @@ class Trad extends Txt
 			"LOG_delete"=>"Eliminar",//action
 			"LOG_modif"=>"Alterar",//action
 
-			////	MODULE_ESPACE
+			////	MOD : SPACE
 			////
 			"SPACE_moduleTooltip"=>"O espaço principal pode ser subdividido em vários espaços (consulte ''subespaço'')",
 			"SPACE_manageAllSpaces"=>"Administrar todos os espaços",
@@ -632,7 +632,7 @@ class Trad extends Txt
 			"SPACE_admin"=>"Administrador",
 			"SPACE_adminTooltip"=>"O administrador de um espaço é um usuário que pode editar ou eliminar todos os itens presentes no espaço. Você também pode configurar o espaço, criar novas contas de usuário, criar grupos de usuários, enviar e-mail para adicionar novos usuários, etc.",
 
-			////	MODULE_UTILISATEUR
+			////	MOD : USER
 			////
 			// Menu principal
 			"USER_headerModuleName"=>"Usuários",
@@ -714,7 +714,7 @@ class Trad extends Txt
 			"USER_livecounterDisabled"=>"Esconder minha presença quando estou conectado: mensagens / vídeo desativado",
 			"USER_livecounterSomeUsers"=>"Apenas certos usuários podem me ver quando estou conectado",
 
-			////	MODULE_TABLEAU BORD
+			////	MOD : DASHBOARD
 			////
 			// Menu principal + options du module
 			"DASHBOARD_headerModuleName"=>"Notícias",
@@ -774,7 +774,7 @@ class Trad extends Txt
 			"DASHBOARD_exportPoll"=>"Baixar os resultados da pesquisa em PDF",
 			"DASHBOARD_exportPollDate"=>"resultado da pesquisa para",
 
-			////	MODULE_FICHIER
+			////	MOD : FILE
 			////
 			// Menu principal
 			"FILE_headerModuleName"=>"Arquivos",
@@ -806,7 +806,7 @@ class Trad extends Txt
 			"FILE_versionsOf"=>"Versões de", // versions de fichier
 			"FILE_confirmDeleteVersion"=>"Confirma a eliminação desta versão?",
 
-			////	MODULE_AGENDA
+			////	MOD : CALENDAR
 			////
 			// Menu principal
 			"CALENDAR_headerModuleName"=>"Calendários",
@@ -827,9 +827,8 @@ class Trad extends Txt
 			"CALENDAR_icalUrlCopy"=>"Permite o acesso de leitura ao calendário a partir de um calendário externo, como o Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importar eventos (iCal)",
 			"CALENDAR_ignoreOldEvt"=>"Não importe eventos com mais de um ano",
-			"CALENDAR_importIcalState"=>"Estado",
-			"CALENDAR_importIcalStatePresent"=>"Já está presente",
-			"CALENDAR_importIcalStateImport"=>"a importar",
+			"CALENDAR_importIcalPresent"=>"Já está presente?",
+  			"CALENDAR_importIcalPresentInfo"=>"Evento já presente no calendário ?",
 			"CALENDAR_display_3Days"=>"3 dias",
 			"CALENDAR_display_7Days"=>"7 dias",
 			"CALENDAR_display_week"=>"Semana",
@@ -869,7 +868,7 @@ class Trad extends Txt
 			"CALENDAR_period_weekDay"=>"Cada semana",
 			"CALENDAR_period_month"=>"Cada mês",
 			"CALENDAR_period_year"=>"Cada ano",
-			"CALENDAR_periodDateEnd"=>"Fim da periodicidade",
+			"CALENDAR_periodDateEnd"=>"Até",
 			"CALENDAR_periodException"=>"Exceção da periodicidade",
 			"CALENDAR_calendarAffectations"=>"Atribuição a calendários",
 			"CALENDAR_addEvt"=>"Adicionar um evento",
@@ -882,7 +881,7 @@ class Trad extends Txt
 			"CALENDAR_verifCalNb"=>"Por favor, selecione pelo menos um calendário",
 			"CALENDAR_noModifTooltip"=>"Edição proibida porque não tem acesso de escrita ao calendário",
 			"CALENDAR_editLimit"=>"Você não é o autor do evento: você só pode editar as tarefas em seus calendários",
-			"CALENDAR_busyTimeslot"=>"A vaga já está ocupada neste calendário:",
+			"CALENDAR_busyTimeSlot"=>"A vaga já está ocupada neste calendário:",
 			"CALENDAR_timeSlot"=>"Intervalo de tempo da tela ''semana''",
 			"CALENDAR_propositionNotif"=>"Notificar por e-mail de cada proposta de evento",
 			"CALENDAR_propositionNotifTooltip"=>"Nota: Cada proposta de evento é validada ou invalidada pelo administrador do calendário.",
@@ -890,7 +889,7 @@ class Trad extends Txt
 			"CALENDAR_propositionGuestTooltip"=>"Nota: Lembre-se de selecionar 'todos os usuários e convidados' em direitos de acesso.",
 			"CALENDAR_propositionE-mailSubject"=>"Novo evento proposto por",//.."boby SMITH"
 			"CALENDAR_propositionE-mailMessage"=>"Novo evento proposto por --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Acesse seu espaço para confirmar ou cancelar esta proposta",
-			// Categorie : Catégories d'événement
+			// Category : Catégories d'événement
 			"CALENDAR_categoryMenuTooltip"=>"Mostrar somente eventos com categoria",
 			"CALENDAR_categoryShowAll"=>"Todas as categorias",
 			"CALENDAR_categoryShowAllTooltip"=>"Mostrar todas as categorias",
@@ -899,14 +898,13 @@ class Trad extends Txt
 			"CALENDAR_categoryEditInfo"=>"Cada categoria de evento pode ser modificada por seu autor ou pelo administrador geral",
 			"CALENDAR_categoryEditAdd"=>"Adicionar uma categoria de evento",
 
-			////	MODULE_FORUM
+			////	MOD : FORUM
 			////
 			// Menu principal
 			"FORUM_headerModuleName"=>"Fórum",
 			"FORUM_moduleDescription"=>"Fórum",
 			"FORUM_option_adminAddSubject"=>"Somente o administrador pode adicionar assuntos",//OPTION!
 			"FORUM_option_adminAddTheme"=>"Somente o administrador pode adicionar tópicos",//OPTION!
-			// TRI
 			"SORT_dateLastMessage"=>"última mensagem",
 			//Index & Sujet
 			"FORUM_forumRoot"=>"Início do fórum",
@@ -927,7 +925,7 @@ class Trad extends Txt
 			// Sujet_edit  &  Message_edit
 			"FORUM_notifOnlyReadAccess"=>"Se houver apenas acesso à leitura, ninguém poderá contribuir com o assunto.",
 			"FORUM_notifWriteAccess"=>"O acesso de ''escrita'' é destinado aos moderadores:<br>Se for necessário, prefira os direitos de ''escrita limitada''",
-			// Categorie : Themes
+			// Category : Themes
 			"FORUM_categoryMenuTooltip"=>"Mostrar apenas assuntos com tópico",
 			"FORUM_categoryShowAll"=>"Todo os tópicos",
 			"FORUM_categoryShowAllTooltip"=>"Mostrar todos os temas",
@@ -936,14 +934,13 @@ class Trad extends Txt
 			"FORUM_categoryEditInfo"=>"Cada tópico pode ser modificado pelo seu autor ou pelo administrador geral",
 			"FORUM_categoryEditAdd"=>"Adicionar um tópico",
 
-			////	MODULE_TACHE
+			////	MOD : TASK
 			////
 			// Menu principal
 			"TASK_headerModuleName"=>"Tarefas",
 			"TASK_moduleDescription"=>"Tarefas",
 			"TASK_option_adminRootAddContent"=>"Somente o administrador pode adicionar itens no diretório raiz",//OPTION!
 			"TASK_option_adminAddStatus"=>"Somente o administrador pode criar status Kanban",//OPTION!
-			// TRI
 			"SORT_priority"=>"Prioridade",
 			"SORT_advancement"=>"Progresso",
 			"SORT_dateBegin"=>"Data de início",
@@ -970,7 +967,7 @@ class Trad extends Txt
 			"TASK_categoryEditInfo"=>"Cada estado pode ser modificado pelo seu autor ou pelo administrador geral.",
 			"TASK_categoryEditAdd"=>"Adicionar um estado",
 
-			////	MODULE_CONTACT
+			////	MOD : CONTACT
 			////
 			// Menu principal
 			"CONTACT_headerModuleName"=>"Contatos",
@@ -983,7 +980,7 @@ class Trad extends Txt
 			"CONTACT_createUserConfirm"=>"Criar um usuário neste espaço com este contato?",
 			"CONTACT_createUserConfirmed"=>"O usuário foi criado",
 
-			////	MODULE_LIEN
+			////	MOD : LINK
 			////
 			// Menu principal
 			"LINK_headerModuleName"=>"Favoritos",
@@ -995,7 +992,7 @@ class Trad extends Txt
 			// lien_edit & dossier_edit
 			"LINK_adress"=>"Endereço Web",
 
-			////	MODULE_MAIL
+			////	MOD : MAIL
 			////
 			// Menu principal
 			"MAIL_headerModuleName"=>"E-mails",
@@ -1014,27 +1011,26 @@ class Trad extends Txt
 	}
 
 	/*
-	 * Jours Fériés de l'année (sur quatre chiffre)
+	 * Jours Fériés de l'année
 	 */
-	public static function celebrationDays($year)
+	public static function publicHolidays($year)
 	{
-		// Init
-		$dateList=[];
-
-		//Fêtes mobiles (si la fonction de récup' de paques existe)
-		if(function_exists("easter_date"))
-		{
-			$daySecondes=86400;
-			$paquesTime=easter_date($year);
-			$date=date("Y-m-d", $paquesTime+$daySecondes);
-			$dateList[$date]="Terça de Páscoa";
-		}
-
-		//Fêtes fixes
-		$dateList[$year."-01-01"]="Día de Año Nuevo";
+		$dateList[$year."-01-01"]="Ano Novo";
+		$dateList[$year."-04-25"]="Dia da Liberdade";
+		$dateList[$year."-05-01"]="Dia do Trabalhador";
+		$dateList[$year."-06-10"]="Dia de Portugal";
+		$dateList[$year."-08-15"]="Assunção de Nossa Senhora";
+		$dateList[$year."-10-05"]="Implantação da República";
+		$dateList[$year."-11-01"]="Dia de Todos-os-Santos";
+		$dateList[$year."-12-01"]="Restauração da Independência";
+		$dateList[$year."-12-08"]="Imaculada Conceição";
 		$dateList[$year."-12-25"]="Natal";
-
-		//Retourne le résultat
+		if(function_exists("easter_date")){
+			$easterTime=easter_date($year);
+			$dateList[date("Y-m-d",$easterTime-(86400*2))]	="Sexta-feira Santa";
+			$dateList[date("Y-m-d",$easterTime)]			="Domingo de Páscoa";
+			$dateList[date("Y-m-d",$easterTime+(86400*60))]	="Corpo de Deus";
+		}
 		return $dateList;
 	}
 }

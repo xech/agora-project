@@ -77,7 +77,7 @@ $(function(){
 ////	Enregistre le "windowWidth" dans un cookie et reload la page si besoin
 function windowWidthRecord(firstRecord){
 	let timeoutTime=(firstRecord==true) ? 5 : 500;															//Timeout de 500 ms pour avoir le width final après "onresize" ou "orientation.onchange"
-	if(typeof resizeTimeout!="undefined")  {clearTimeout(resizeTimeout);}									//Pas de cumule des setTimeout
+	if(typeof resizeTimeout!="undefined")  {clearTimeout(resizeTimeout);}									//Pas de cumul de Timeout !
 	resizeTimeout=setTimeout(function(){																	//Lance le Timeout
 		let pageReload=(firstRecord==true || Math.abs($(window).width()-pageWidthLast)>25);					//Reload uniquement si le width a été modifé d'au moins 25px (pas si affichage/masquage d'ascenseur)
 		pageWidthLast=$(window).width();																	//Update pageWidthLast
@@ -305,7 +305,7 @@ function menuContextDisplay()
 			if(parseInt($("#menuMobileMain").css("right"))<0)  {$("#menuMobileMain").css("right","0px");}				//Replace si besoin le #menuMobileMain
 		});
 		document.addEventListener("touchmove",function(event){															//Lance le swipe d'affichage du menuContext :
-			if(Math.abs(swipeStartY-event.touches[0].clientY) < 50  &&  typeof isCalendarSwipe=="undefined"){			//Swipe < 50px d'amplitude verticale + Pas d'affichage de Calendar (swipe surchargé)
+			if(Math.abs(swipeStartY-event.touches[0].clientY) < 50  &&  typeof menuContextSwipeDisabled=="undefined"){	//Swipe < 50px d'amplitude verticale + Pas d'affichage de Calendar (swipe surchargé)
 				if((event.touches[0].clientX - swipeStartX) > 10)   {menuMobileClose(event.touches[0].clientX);}		//Masque le menu : swipe > 10px vers la droite
 				else if((swipeStartX - event.touches[0].clientX) > 50  &&  $(window).width()-swipeStartX < 150){		//Affiche le menu : swipe > 50px vers la gauche et à 150px max du bord de page
 					if($("#headerModuleTab").exist())			{menuMobileShow("headerModuleTab","pageModMenu");}		//Affiche la liste des modules
@@ -547,7 +547,7 @@ function lightboxSetWidth(iframeBodyWidth)
 function lightboxResize()
 {
 	if(isMainPage!=true && windowParent.$(".fancybox-iframe").isVisible()){																//Verif si le lightbox est affiché
-		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}											//Pas de cumule des setTimeout (cf. multiples show(), fadeIn() à l'affichage du lightbox)
+		if(typeof lightboxResizeTimeout!="undefined")  {clearTimeout(lightboxResizeTimeout);}											//Pas de cumul de Timeout ! (cf. multiples show(), fadeIn(), etc)
 		lightboxResizeTimeout=setTimeout(function(){																					//Lance le resize avec un timeout 250ms minimum (cf. "$.fx.speeds._default=100")
 			if(typeof lightboxHeightOld=="undefined" || lightboxHeightOld < windowParent.$(".fancybox-iframe").contents().height()){	//Verif : 1er affichage du lightbox ou "fadeIn()" ou modif du tinymce
 				windowParent.$.fancybox.getInstance().update();																			//Resize du lightbox!

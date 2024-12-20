@@ -57,9 +57,9 @@ class Trad extends Txt
 			"optional"=>"(optionnel)",
 			"objNew"=>"Elément créé récemment",
 			"personalAccess"=>"Accès personnel",
-			"copyUrl"=>"Copier l'adresse web de partage",
-			"copyUrlTooltip"=>"L'adresse de partage (URL) permet un accès externe depuis un email, un blog, etc.",
-			"copyUrlConfirmed"=>"L'adresse web a bien été copiée.",
+			"copyUrl"=>"Copier l'adresse de partage",
+			"copyUrlTooltip"=>"Permet d'accéder à l'élément depuis un email, un blog, etc.",
+			"copyUrlConfirmed"=>"L'adresse a bien été copiée",
 			"cancel"=>"Annuler",
 
 			////	images
@@ -258,10 +258,10 @@ class Trad extends Txt
 			"OBJECTuser"=>"utilisateur",
 
 			////	Envoi d'un email
-			"MAIL_sendOk"=>"L'email a bien été envoyé",				//ne pas modifier la cle de la trad ! (cf. "Tool::sendMail()")
-			"MAIL_sendNotOk"=>"L'email n'a pas pu être envoyé...",	//Idem
-			"MAIL_recipients"=>"Destinataires",						//Idem
-			"MAIL_attachedFileError"=>"Le fichier n'a pas été ajouté à l'email car il est trop volumineux",//Idem
+			"MAIL_sendOk"=>"L'email a bien été envoyé",
+			"MAIL_sendNotOk"=>"L'email n'a pas pu être envoyé",
+			"MAIL_recipients"=>"Destinataires",
+			"MAIL_attachedFileError"=>"Le fichier n'a pas été ajouté à l'email car il est trop volumineux",
 			"MAIL_hello"=>"Bonjour",
 			"MAIL_hideRecipients"=>"Masquer les destinataires",
 			"MAIL_hideRecipientsTooltip"=>"Mettre tous les destinataires en copie caché",
@@ -498,7 +498,7 @@ class Trad extends Txt
 			"INSTALL_dataTaskStatus3"=>"A valider",
 			"INSTALL_dataTaskStatus4"=>"Terminé",
 
-			////	MODULE_PARAMETRAGE DE L'AGORA
+			////	MOD : AGORA
 			////
 			"AGORA_generalSettings"=>"Paramétrage général",
 			"AGORA_Changelog"=>"Voir le journal des versions",
@@ -511,7 +511,7 @@ class Trad extends Txt
 			"AGORA_backupDbTooltip"=>"Récupérer uniquement la sauvegarde de la base de données de l'espace",
 			"AGORA_backupConfirm"=>"Cette opération peut durer de nombreuses minutes : confirmer le téléchargement ?",
 			"AGORA_diskSpaceInvalid"=>"L'espace disque pour les fichiers doit être un entier",
-			"AGORA_visioHostInvalid"=>"L'adresse web du serveur de visioconférence est invalide : elle doit commencer par 'https'",
+			"AGORA_visioHostInvalid"=>"L'adresse du serveur de visioconférence est invalide : elle doit commencer par 'https'",
 			"AGORA_mapApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
 			"AGORA_confirmModif"=>"Confirmer les modifications ?",
@@ -533,8 +533,8 @@ class Trad extends Txt
 			"AGORA_visioHostAlt"=>"Serveur de visioconférence alternatif",
 			"AGORA_visioHostAltTooltip"=>"Url du serveur de visioconférence alternatif : en cas d'indisponibilité du serveur Jitsi principal",
 			"AGORA_skin"=>"Couleur de l'interface",
-			"AGORA_black"=>"Mode sombre",
-			"AGORA_white"=>"Mode clair",
+			"AGORA_black"=>"Affichage sombre",
+			"AGORA_white"=>"Affichage clair",
 			"AGORA_userMailDisplay"=>"Adresses email des utilisateurs visibles par tous",
 			"AGORA_userMailDisplayTooltip"=>"Afficher/Masquer l'email dans le profil de chaque utilisateur, les notifications par mail, etc.<br>Note : l'administrateur principal pourra toujours consulter l'email de chaque utilisateur",
 			"AGORA_moduleLabelDisplay"=>"Nom des modules dans la barre de menu",
@@ -584,7 +584,7 @@ class Trad extends Txt
 			"importLdapFilterTooltip"=>"Filtre de recherche LDAP (cf. https://www.php.net/manual/function.ldap-search.php). Exemple ''(cn=*)'' ou ''(&(samaccountname=MONLOGIN)(cn=*))''",
 			"AGORA_ldapConnectError"=>"Erreur de connexion au serveur LDAP !",
 
-			////	MODULE_LOG
+			////	MOD : LOG
 			////
 			"LOG_moduleDescription"=>"Historique des événements (logs)",
 			"LOG_path"=>"Chemin",
@@ -605,18 +605,18 @@ class Trad extends Txt
 			"LOG_delete"=>"suppression",//action
 			"LOG_modif"=>"modification",//action
 
-			////	MODULE_ESPACE
+			////	MOD : SPACE
 			////
 			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (alias ''sous-espace'')",
 			"SPACE_manageAllSpaces"=>"Gérer les espaces de travail",
 			"SPACE_config"=>"Paramétrer l'espace",//.."mon espace"
 			//Index
-			"SPACE_confirmDeleteDbl"=>"Notez que seules les données affectées uniquement à cet espace seront effacées. Cependant si vous souhaitez les conserver, pensez d'abord à les réaffecter à un autre espace. Confirmez tout de même la suppression de cet espace ?",
+			"SPACE_confirmDeleteDbl"=>"Attention : cette action est définitive. Notez que seules les données de cet espace seront effacées. Confirmez tout de même la suppression ?",
 			"SPACE_space"=>"espace",
 			"SPACE_spaces"=>"espaces",
 			"SPACE_accessRightUndefined"=>"A définir !",
 			"SPACE_modules"=>"Modules",
-			"SPACE_addSpace"=>"Créer un nouvel espace",
+			"SPACE_addSpace"=>"Créer un espace",
 			//Edit
 			"SPACE_userAdminAccess"=>"Utilisateurs et Administrateurs de l'espace",
 			"SPACE_selectModule"=>"Vous devez sélectionner au moins un module",
@@ -632,12 +632,12 @@ class Trad extends Txt
 			"SPACE_admin"=>"Administrateur",
 			"SPACE_adminTooltip"=>"L'administrateur peut éditer/supprimer tous les élements présents sur l'espace.<br>Il peut également paramétrer l'espace, créer de nouveaux utilisateurs ou groupes d'utilisateurs, envoyer des invitations par mail, etc.",
 
-			////	MODULE_UTILISATEUR
+			////	MOD : USER
 			////
 			// Menu principal
 			"USER_headerModuleName"=>"Utilisateurs",
 			"USER_moduleDescription"=>"Utilisateurs de l'espace",
-			"USER_option_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",//OPTION
+			"USER_option_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",
 			//Index
 			"USER_spaceOrAllUsersTooltip"=>"Gérer les utilisateurs de l'espace affiché / Gérer les utilisateurs de tous les espaces (réservé à l'administrateur principal)",
 			"USER_spaceUsers"=>"Gérer les utilisateurs de l'espace courant",
@@ -650,7 +650,7 @@ class Trad extends Txt
 			"USER_users"=>"utilisateurs",
 			"USER_addExistUser"=>"Ajouter un utilisateur existant",
 			"USER_addExistUserTitle"=>"Ajouter à l'espace courant un utilisateur déjà existant (affecter à l'espace courant)",
-			"USER_addUser"=>"Créer un nouvel utilisateur",
+			"USER_addUser"=>"Créer un utilisateur",
 			"USER_addUserSite"=>"Créer un utilisateur : affecté par défaut à aucun espace !",
 			"USER_addUserSpace"=>"Créer un utilisateur pour l'espace courant",
 			"USER_sendCoords"=>"Envoyer des identifiants",
@@ -714,15 +714,15 @@ class Trad extends Txt
 			"USER_livecounterDisabled"=>"Masquer ma présence lorsque je suis connecté : messagerie/visio désactivées",
 			"USER_livecounterSomeUsers"=>"Seul certains utilisateurs peuvent me voir lorsque je suis connecté",
 
-			////	MODULE_TABLEAU BORD
+			////	MOD : DASHBOARD
 			////
 			// Menu principal + options du module
 			"DASHBOARD_headerModuleName"=>"News",
 			"DASHBOARD_moduleDescription"=>"Actualités, Sondages et Nouveaux éléments",
-			"DASHBOARD_option_adminAddNews"=>"Seul l'administrateur peut créer des actualités",//OPTION
-			"DASHBOARD_option_disablePolls"=>"Désactiver les sondages",//OPTION
-			"DASHBOARD_option_adminAddPoll"=>"Seul l'administrateur peut créer des sondages",//OPTION
-			//Index
+			"DASHBOARD_option_adminAddNews"=>"Seul l'administrateur peut créer des actualités",
+			"DASHBOARD_option_disablePolls"=>"Désactiver les sondages",
+			"DASHBOARD_option_adminAddPoll"=>"Seul l'administrateur peut créer des sondages",
+			// Index
 			"DASHBOARD_menuNews"=>"Actualités",
 			"DASHBOARD_menuPolls"=>"Sondages",
 			"DASHBOARD_menuElems"=>"Nouveautés",
@@ -774,13 +774,13 @@ class Trad extends Txt
 			"DASHBOARD_exportPoll"=>"Télécharger le résultat du sondage en pdf",
 			"DASHBOARD_exportPollDate"=>"résultat du sondage en date du",
 
-			////	MODULE_FICHIER
+			////	MOD : FILE
 			////
 			// Menu principal
 			"FILE_headerModuleName"=>"Fichiers",
 			"FILE_moduleDescription"=>"Gestionnaire de fichiers",
-			"FILE_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et fichiers à la racine",//OPTION
-			//Index
+			"FILE_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et fichiers à la racine",
+			// Index
 			"FILE_addFile"=>"Ajouter un fichier",
 			"FILE_addFileAlert"=>"Dossier du serveur inaccessible en écriture!  merci de contacter l'administrateur",
 			"FILE_downloadSelection"=>"télécharger la sélection",
@@ -792,7 +792,7 @@ class Trad extends Txt
 			"FILE_downloadedBy"=>"fichier téléchargé par",//"..boby, will"
 			"FILE_addFileVersion"=>"Ajouter une nouvelle version du fichier",
 			"FILE_noFile"=>"Aucun fichier pour le moment",
-			// fichier_edit_ajouter  &  Fichier_edit
+			// Edit
 			"FILE_fileSizeLimit"=>"Les fichiers ne doivent pas dépasser", // ...2 Mega Octets
 			"FILE_uploadSimple"=>"Envoi simple",
 			"FILE_uploadMultiple"=>"Envoi multiple",
@@ -802,20 +802,20 @@ class Trad extends Txt
 			"FILE_addMultipleFilesTooltip"=>"Appuyez sur la touche 'Ctrl' pour sélectionner plusieurs fichiers",
 			"FILE_selectFile"=>"Merci de sélectionner au moins un fichier",
 			"FILE_fileContent"=>"contenu",
-			// Versions_fichier
+			// Versions
 			"FILE_versionsOf"=>"Versions de", // versions de fichier
 			"FILE_confirmDeleteVersion"=>"Confirmer la suppression de cette version ?",
 
-			////	MODULE_AGENDA
+			////	MOD : CALENDAR
 			////
 			// Menu principal
 			"CALENDAR_headerModuleName"=>"Agenda",
 			"CALENDAR_moduleDescription"=>"Agendas partagés et personnels",
-			"CALENDAR_option_adminAddRessourceCalendar"=>"Seul l'administrateur peut créer des agendas partagés",//OPTION
-			"CALENDAR_option_adminAddCategory"=>"Seul l'administrateur peut créer des categories d'événement",//OPTION
-			"CALENDAR_option_createSpaceCalendar"=>"Créer un agenda partagé pour l'espace",//OPTION
+			"CALENDAR_option_adminAddRessourceCalendar"=>"Seul l'administrateur peut créer des agendas partagés",
+			"CALENDAR_option_adminAddCategory"=>"Seul l'administrateur peut créer des categories d'événement",
+			"CALENDAR_option_createSpaceCalendar"=>"Créer un agenda partagé pour l'espace",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Les utilisateurs n'ayant pas désactivé leur agenda personnel dans leur profil utilisateur verront toujours le module Agenda dans la barre de menu",
-			//Index
+			// Index
 			"CALENDAR_calsList"=>"Agendas disponibles",
 			"CALENDAR_hideAllCals"=>"Masquer tous les agendas",
 			"CALENDAR_printCalendars"=>"Imprimer l'agenda",
@@ -823,13 +823,12 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Créer un agenda partagé",
 			"CALENDAR_addSharedCalendarTooltip"=>"Créer un agenda partagé : pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.",
 			"CALENDAR_exportIcal"=>"Exporter les événements au format iCal",
-			"CALENDAR_icalUrl"=>"Copier l'adresse web de l'agenda :<br>pour le consulter via une appli externe",
-			"CALENDAR_icalUrlCopy"=>"Permet un accès à l'agenda depuis une appli externe (en lecture seule) : Thunderbird, Outlook, Google Calendar, etc.",
+			"CALENDAR_icalUrl"=>"Copier l'adresse de l'agenda :<br>Pour le consulter via une appli externe",
+			"CALENDAR_icalUrlCopy"=>"Permet un accès à l'agenda depuis une appli externe (lecture seule) :<br>depuis Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importer des événements au format iCal",
 			"CALENDAR_ignoreOldEvt"=>"Ne pas importer les événements de plus d'un an",
-			"CALENDAR_importIcalState"=>"Etat",
-			"CALENDAR_importIcalStatePresent"=>"Déjà présent",
-			"CALENDAR_importIcalStateImport"=>"A importer",
+			"CALENDAR_importIcalPresent"=>"Déjà présent ?",
+			"CALENDAR_importIcalPresentInfo"=>"Evenement déjà présent dans l'agenda ?",
 			"CALENDAR_display_3Days"=>"3 jours",
 			"CALENDAR_display_7Days"=>"7 jours",
 			"CALENDAR_display_week"=>"Semaine",
@@ -854,7 +853,7 @@ class Trad extends Txt
 			"CALENDAR_evtAutor"=>"Événements que j'ai créés",
 			"CALENDAR_evtAutorInfo"=>"Afficher uniquement les événements que j'ai créés",
 			"CALENDAR_noEvt"=>"Aucun événement",
-			"CALENDAR_calendarsPercentBusy"=>"Agendas occupés",  // Agendas occupés : 2/5
+			"CALENDAR_calendarsPercentBusy"=>"Agendas occupés",
 			"CALENDAR_noCalendarDisplayed"=>"Aucun agenda affiché",
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Importance normale",
@@ -863,16 +862,16 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublicHide"=>"Affichage de la plage horaire",
 			"CALENDAR_visibilityPrivate"=>"Affichage privé",
 			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda et l'événement : <br>- Affichage de la plage horaire : montrer uniquement le créneau occupé et masquer les détails<br>- Affichage privé : ne pas afficher l'événement",
-			// Agenda/Evenement : edit
+			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Agenda partagé de l'espace",
 			"CALENDAR_noPeriodicity"=>"Une seule fois",
 			"CALENDAR_period_weekDay"=>"Toutes les semaines",
 			"CALENDAR_period_month"=>"Tous les mois",
 			"CALENDAR_period_year"=>"Tous les ans",
-			"CALENDAR_periodDateEnd"=>"Fin de répétition",
+			"CALENDAR_periodDateEnd"=>"Jusqu'au",
 			"CALENDAR_periodException"=>"Exception de répétition",
 			"CALENDAR_calendarAffectations"=>"Affectation aux agendas",
-			"CALENDAR_addEvt"=>"Créer un nouvel événement",
+			"CALENDAR_addEvt"=>"Créer un événement",
 			"CALENDAR_addEvtTooltip"=>"Ajouter un événement à l'agenda",
 			"CALENDAR_addEvtTooltipBis"=>"Ajouter l'événement à l'agenda",
 			"CALENDAR_proposeEvtTooltip"=>"Proposer un événement au propriétaire de l'agenda",
@@ -882,7 +881,7 @@ class Trad extends Txt
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_noModifTooltip"=>"Modification non autorisé (vous n'avez pas accès en écriture à cet agenda)",
 			"CALENDAR_editLimit"=>"Vous n'êtes pas l'auteur de l'événement : Vous ne pouvez donc gérer que les affectations à vos agendas",
-			"CALENDAR_busyTimeslot"=>"Créneau déjà occupé sur l'agenda :",
+			"CALENDAR_busyTimeSlot"=>"Créneau déjà occupé sur l'agenda :",
 			"CALENDAR_timeSlot"=>"Plage horaire pour l'affichage \"semaine\"",
 			"CALENDAR_propositionNotif"=>"Me notifier par email à chaque propositions d'événement",
 			"CALENDAR_propositionNotifTooltip"=>"Chaque proposition d'événement sera validé ou invalidé par l'administrateur de l'agenda.",
@@ -890,7 +889,7 @@ class Trad extends Txt
 			"CALENDAR_propositionGuestTooltip"=>"Pensez à sélectionnez 'tous les utilisateur et invités' dans les droits d'accès ci-dessous.",
 			"CALENDAR_propositionEmailSubject"=>"Nouvel événement proposé par",//.."boby SMITH"
 			"CALENDAR_propositionEmailMessage"=>"Nouvel événement proposé par --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accédez à votre espace pour confirmer ou annuler cette proposition",
-			// Categorie : Catégories d'événement
+			// Category : Catégories d'événement
 			"CALENDAR_categoryMenuTooltip"=>"Afficher uniquement les événements avec la catégorie",
 			"CALENDAR_categoryShowAll"=>"Toutes les catégories",
 			"CALENDAR_categoryShowAllTooltip"=>"Afficher toutes les catégories",
@@ -899,14 +898,13 @@ class Trad extends Txt
 			"CALENDAR_categoryEditInfo"=>"Chaque catégorie peut être modifiée par son auteur ou par l'admin général",
 			"CALENDAR_categoryEditAdd"=>"Ajouter une catégorie",
 
-			////	MODULE_FORUM
+			////	MOD : FORUM
 			////
 			// Menu principal
 			"FORUM_headerModuleName"=>"Forum",
 			"FORUM_moduleDescription"=>"Forum de discussion",
-			"FORUM_option_adminAddSubject"=>"Seul l'administrateur peut créer des sujets",//OPTION
-			"FORUM_option_adminAddTheme"=>"Seul l'administrateur peut créer des thèmes",//OPTION
-			// TRI
+			"FORUM_option_adminAddSubject"=>"Seul l'administrateur peut créer des sujets",
+			"FORUM_option_adminAddTheme"=>"Seul l'administrateur peut créer des thèmes",
 			"SORT_dateLastMessage"=>"dernier message",
 			//Index & Sujet
 			"FORUM_forumRoot"=>"Accueil du forum",
@@ -924,10 +922,10 @@ class Trad extends Txt
 			"FORUM_quoteMessageInfo"=>"Répondre en citant ce message",
 			"FORUM_notifyLastPost"=>"Me notifier à chaque message",
 			"FORUM_notifyLastPostTooltip"=>"M'envoyer un email de notification à chaque nouveau message",
-			// Sujet_edit  &  Message_edit
+			// Edit
 			"FORUM_notifOnlyReadAccess"=>"Attention : s'il n'y que des accès en lecture, personne ne pourra contribuer au sujet...",
 			"FORUM_notifWriteAccess"=>"L'accès en ''Ecriture'' est destiné aux modérateurs du sujet :<br>Il est donc conseillé d'utiliser le droit en ''Ecriture limité''",
-			// Categorie : Themes
+			// Category : Themes
 			"FORUM_categoryMenuTooltip"=>"Afficher uniquement les sujets avec le thème",
 			"FORUM_categoryShowAll"=>"Tous les thèmes",
 			"FORUM_categoryShowAllTooltip"=>"Afficher tous les thèmes",
@@ -936,14 +934,13 @@ class Trad extends Txt
 			"FORUM_categoryEditInfo"=>"Chaque theme peut être modifié par son auteur ou par l'admin général",
 			"FORUM_categoryEditAdd"=>"Ajouter un theme",
 
-			////	MODULE_TACHE
+			////	MOD : TASK
 			////
 			// Menu principal
 			"TASK_headerModuleName"=>"Tâches",
 			"TASK_moduleDescription"=>"Tâches / Notes",
-			"TASK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et tâches à la racine",//OPTION
-			"TASK_option_adminAddStatus"=>"Seul l'administrateur peut créer des statuts de tâches",//OPTION
-			// TRI
+			"TASK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et tâches à la racine",
+			"TASK_option_adminAddStatus"=>"Seul l'administrateur peut créer des statuts de tâches",
 			"SORT_priority"=>"Priorité",
 			"SORT_advancement"=>"Avancement",
 			"SORT_dateBegin"=>"Date de debut",
@@ -970,12 +967,12 @@ class Trad extends Txt
 			"TASK_categoryEditInfo"=>"Chaque statut Kanban peut être modifié par son auteur ou par l'admin général",
 			"TASK_categoryEditAdd"=>"Ajouter un statut Kanban",
 
-			////	MODULE_CONTACT
+			////	MOD : CONTACT
 			////
 			// Menu principal
 			"CONTACT_headerModuleName"=>"Contacts",
 			"CONTACT_moduleDescription"=>"Annuaire de contacts",
-			"CONTACT_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et contacts à la racine",//OPTION
+			"CONTACT_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et contacts à la racine",
 			//Index
 			"CONTACT_addContact"=>"Créer un nouveau contact",
 			"CONTACT_noContact"=>"Aucun contact pour le moment",
@@ -983,19 +980,19 @@ class Trad extends Txt
 			"CONTACT_createUserConfirm"=>"Créer un utilisateur sur cet espace à partir de ce contact ?",
 			"CONTACT_createUserConfirmed"=>"L'utilisateur a été créé",
 
-			////	MODULE_LIEN
+			////	MOD : LINK
 			////
 			// Menu principal
 			"LINK_headerModuleName"=>"Liens",
 			"LINK_moduleDescription"=>"Liens Internet et sites Internet favoris",
-			"LINK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et liens à la racine",//OPTION
+			"LINK_option_adminRootAddContent"=>"Seul l'administrateur peut créer des dossiers et liens à la racine",
 			//Index
 			"LINK_addLink"=>"Créer un nouveau lien",
 			"LINK_noLink"=>"Aucun lien pour le moment",
-			// lien_edit & dossier_edit
+			//Edit
 			"LINK_adress"=>"Adresse web",
 
-			////	MODULE_MAIL
+			////	MOD : MAIL
 			////
 			// Menu principal
 			"MAIL_headerModuleName"=>"Email",
@@ -1004,7 +1001,7 @@ class Trad extends Txt
 			"MAIL_specifyMail"=>"Merci de spécifier au moins un destinataire",
 			"MAIL_title"=>"Sujet de l'email",
 			"MAIL_description"=>"Message de l'email",
-			// Historique Email
+			// Historique
 			"MAIL_historyTitle"=>"Historique des emails envoyés",
 			"MAIL_delete"=>"Supprimer l'email",
 			"MAIL_resend"=>"Renvoyer l'email",
@@ -1014,37 +1011,26 @@ class Trad extends Txt
 	}
 
 	/*
-	 * Jours Fériés de l'année (sur quatre chiffre)
+	 * Jours Fériés de l'année
 	 */
-	public static function celebrationDays($year)
+	public static function publicHolidays($year)
 	{
-		// Init
-		$dateList=[];
-
-		//Fêtes mobiles (si la fonction de récup' de paques existe)
-		if(function_exists("easter_date"))
-		{
-			$daySecondes=86400;
-			$paquesTime=easter_date($year);
-			$date=date("Y-m-d", $paquesTime+$daySecondes);
-			$dateList[$date]="Lundi de pâques";
-			$date=date("Y-m-d", $paquesTime+($daySecondes*39));
-			$dateList[$date]="Jeudi de l'ascension";
-			$date=date("Y-m-d", $paquesTime+($daySecondes*50));
-			$dateList[$date]="Lundi de pentecôte";
-		}
-
-		//Fêtes fixes
 		$dateList[$year."-01-01"]="Jour de l'an";
-		$dateList[$year."-05-01"]="Fête du travail";
-		$dateList[$year."-05-08"]="Armistice 39-45";
+		$dateList[$year."-05-01"]="Fête du Travail";
+		$dateList[$year."-05-08"]="Fête de la Victoire";
 		$dateList[$year."-07-14"]="Fête nationale";
 		$dateList[$year."-08-15"]="Assomption";
 		$dateList[$year."-11-01"]="Toussaint";
-		$dateList[$year."-11-11"]="Armistice 14-18";
+		$dateList[$year."-11-11"]="Armistice";
 		$dateList[$year."-12-25"]="Noël";
-
-		//Retourne le résultat
+		if(function_exists("easter_date")){
+			$easterTime=easter_date($year);
+			$dateList[date("Y-m-d",$easterTime)]			="Pâques";
+			$dateList[date("Y-m-d",$easterTime+86400)]		="Lundi de Pâques";
+			$dateList[date("Y-m-d",$easterTime+(86400*39))]	="Jeudi de l'Ascension";
+			$dateList[date("Y-m-d",$easterTime+(86400*49))]	="Pentecôte";
+			$dateList[date("Y-m-d",$easterTime+(86400*50))]	="Lundi de pentecôte";
+		}
 		return $dateList;
 	}
 }

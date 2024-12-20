@@ -715,11 +715,12 @@ class MdlObject
 	 *************************************************************************************************************************************************/
 	public static function sqlPlugins($params)
 	{
+		////	PLUGINS DASHBOARD / SHORTCUT / SEARCH
 		if($params["type"]=="dashboard")	{return "dateCrea BETWEEN ".Db::format($params["dateTimeBegin"])." AND ".Db::format($params["dateTimeEnd"]);}
 		elseif($params["type"]=="shortcut")	{return "shortcut=1";}
 		elseif($params["type"]=="search")
 		{
-			////	Init la requete SQL  &&  La liste des champs de recherche (tous ou uniquement ceux demandés)
+			////	Init la requete SQL et Les champs de recherche (tous ou uniquement ceux demandés)
 			$returnSql=null;
 			$objSearchFields=(!empty($params["searchFields"]))  ?  array_intersect(static::$searchFields,$params["searchFields"])  :  static::$searchFields;
 			////	Recherche "l'expression exacte"

@@ -36,13 +36,13 @@ $(function(){
 	 *******************************************************************************************/
 	if(isMobile()){
 		////	SWIPE GAUCHE/DROITE : AFFICHE LA PERIODE PRECEDENTE/SUIVANTE
-		isCalendarSwipe=true;																					//"surcharge" le swipe via "menuContextDisplay()" (utilise "swipeStartX" and Co)
+		menuContextSwipeDisabled=true;																			//Désactive l'affichage du menuContext via swipe "menuContextDisplay()"
 		document.addEventListener("touchmove",function(event){													//Lance le swipe de navigation
 			if(Math.abs(swipeStartY-event.touches[0].clientY) < 50 && $("#menuMobileMain").isVisible()==false){	//Swipe < 50px d'amplitude verticale && Menu contextuel pas affiché
 				if((event.touches[0].clientX - swipeStartX) > 100)		{var buttonPeriod=".vCalPrev";}			//Swipe de 100px à gauche : affiche la période précédente (150px ou+ du bord de page : pour pas interférer avec "menuMobileDisplay()" > cf. "swipeWidth")
 				else if((swipeStartX - event.touches[0].clientX) > 100)	{var buttonPeriod=".vCalNext";}			//Swipe de 100px à droite : affiche la période suivante
 				$(buttonPeriod).effect("pulsate",{times:1},1000);												//Fait clignoter le bouton de changement de période 
-				if(typeof calendarSwipeTimeout!="undefined")  {clearTimeout(calendarSwipeTimeout);}				//Pas de cumule des setTimeout avant la fin du "touchmove"
+				if(typeof calendarSwipeTimeout!="undefined")  {clearTimeout(calendarSwipeTimeout);}				//Pas de cumul de Timeout ! (attendre la fin du "touchmove")
 				calendarSwipeTimeout=setTimeout(function(){  $(buttonPeriod).trigger("click");  },100);			//Trigger "Click" sur ce bouton, avec un timeOut
 			}
 		});
@@ -62,7 +62,7 @@ $(function(){
 #livecounterMain					{max-height:60px; padding:5px 40px!important;}
 
 /*Menu du module (gauche)*/
-#calsList							{max-height:500px; overflow-y:auto; padding:5px;}
+#calsList							{max-height:400px; overflow-y:auto; padding:5px;}
 #calsListLabel 						{margin-bottom:10px;}
 #calsList .calsListCalendar			{line-height:25px;}/*Label de chaque agenda*/
 #calsList .menuLaunch				{display:none;}/*menu context de chaque agenda*/
@@ -84,7 +84,7 @@ $(function(){
 .vSyntheseDay						{display:table-cell; vertical-align:middle; text-align:center; height:22px;}
 .vSyntheseDayEvts					{display:table; width:100%; height:100%;}
 .vSyntheseDayEvt					{display:table-cell; border-left:transparent;}
-.vSyntheseDayEvts:hover				{opacity:0.5;}
+.vSyntheseDayEvts:hover				{opacity:0.8;}
 .vSyntheseDayEvtTooltip				{text-align:left;}
 .vSyntheseDayEvtTooltip	ul			{margin:0px; margin-top:5px; padding-left:10px;}
 .vSyntheseDayCal					{background:#ddd; border:dotted 1px #eee;}
@@ -102,12 +102,13 @@ $(function(){
 .vCalDisplayMode					{text-align:right;}
 .vCalDisplayMode button				{border-radius:5px;}
 .vCalDisplayToday					{margin-right:10px;}/*Afficher aujourd'hui*/
-.vCalLabelWeekDays					{height:20px; padding:3px; text-align:center;}
-.vCalLabelToday						{font-size:1.15em; background-color:#ddd; color:#07f; border-radius:5px 5px 0px 0px;}/*Libellé d'aujourd'hui (Affichage "week" : Header  /  Affichage "month" : Cell du jour)*/
+.vCalLabelWeekDays					{height:25px; padding:4px; text-align:center;}
+.vCalLabelToday						{color:#05c;}															/*Aujourd'hui*/
+.vCalLabelToday .vCalLabelDayNb		{background-color:#07d; color:white; border-radius:50%; padding:7px;}	/*Pastille du numéro du jour du mois*/
 
 /*Evenements*/
-.vEvtBlock							{margin:0px; padding-right:20px!important; box-shadow:1px 1px 2px #555; border-radius:5px; cursor:pointer;}/*padding-right pour le menu burger (pas de "overflow:hidden"!)*/
-.vEvtBlockPast:not(:hover)			{filter:brightness(90%) opacity(<?= $displayMode=="month"?"75%":"85%" ?>);}/*événements passés opacifiés (sauf si survolé : cf. menu context)*/
+.vEvtBlock							{margin:0px; padding-right:20px!important; box-shadow:1px 1px 2px #555; border-radius:5px!important; cursor:pointer;}/*padding-right pour le menu burger (pas de "overflow:hidden"!)*/
+.vEvtBlockPast:not(:hover)			{opacity:0.9;}/*événements passés opacifiés (sauf si survolé : cf. menu context)*/
 .vEvtLabel							{overflow:hidden; font-size:0.95em; font-weight:normal; color:white!important;}
 .vEvtLabel img						{max-height:12px;}
 .vEvtImportant						{margin-left:5px;}
@@ -121,12 +122,13 @@ $(function(){
 	.vCalTitleLabel, .vCalMonthLabel{margin:0px 3px;}
 	.vCalTitleLabel					{vertical-align:middle; max-width:150px; display:inline-block; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalTitleLabel::first-letter	{text-transform:uppercase}
-	.vCalDisplayMode button			{padding:10px 7px;}
-	.vCalDisplayToday				{margin-top:15px;}
+	.vCalDisplayMode button			{padding:10px 8px;}
+	.vCalDisplayToday				{margin-top:20px; padding:12px 20px;}/*Afficher aujourd'hui*/
+	.vCalLabelToday .vCalLabelDayNb	{padding:4px;}	/*Pastille du numéro du jour du mois*/
 	.vCalLabelWeekDays, .vEvtLabel	{font-size:0.85em;}
-	.vEvtBlock						{overflow:hidden;}
+	.vEvtBlock						{overflow:hidden; border-radius:3px!important;}
 	.vEvtLabel						{text-transform:lowercase; white-space:normal;}/*longs mots sur plusieurs lignes*/
-	.vCalTitle .personImgSmall, .vCalDisplayMode img 	{display:none!important;}
+	.vCalTitle .personImgSmall, .vCalDisplayMode img, .vPublicHoliday 	{display:none!important;}
 }
 
 /* IMPRESSION */
@@ -155,7 +157,7 @@ $(function(){
 
 			////	AJOUTER UN EVT
 			if(count($displayedCalendars)==1 && $displayedCalendars[0]->addOrProposeEvt())
-				{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$displayedCalendars[0]->_id.'\')" '.Txt::tooltip($displayedCalendars[0]->title." : ".$displayedCalendars[0]->addEventLabel).'><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("CALENDAR_addEvt").'</div></div><hr>';}
+				{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$displayedCalendars[0]->_id.'\')" '.Txt::tooltip($displayedCalendars[0]->title." : ".$displayedCalendars[0]->addEventLabel).'><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("CALENDAR_addEvt").'</div></div><hr>';}
 
 			////	LISTE DES AGENDAS DISPONIBLES
 			if(!empty($readableCalendars)){

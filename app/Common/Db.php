@@ -110,23 +110,18 @@ class Db
 	}
 
 	/*******************************************************************************************
-	 * FORMATE UNE VALEUR DANS UNE REQUETE (insert,update,etc)
+	 * FORMATE UNE VALEUR DANS UNE REQUETE (insert/update/etc)
 	 *******************************************************************************************/
-	public static function format($value, $options="")
+	public static function format($value, $options=null)
 	{
-		$value=trim((string)$value);		//cast en "string"
-		$options=trim((string)$options);	//idem
-		if(empty($value))  {return "NULL";}
+		$value	=trim((string)$value);																						//cast la valeur en "string"
+		$options=trim((string)$options);																					//cast les options en "string"
+		if(empty($value))  {return "NULL";}																					//Retourne "NULL"
 		else{
-			//Filtre le résultat
-			if(stristr($options,"float"))							{$value=str_replace(",",".",$value);}	//Valeur flottante : remplace les virgules par des points
-			if(stristr($options,"url") && !stristr($value,"http"))	{$value="http://".$value;}				//Ajoute "http://" devant les Urls
-			if(stristr($options,"sqlLike"))							{$value="%".$value."%";}				//Délimite $value par des "%" (cf. "sqlPlugins()" de type "search")
-			//Formate une date provenant d'un datepicker + timepicker?
-			if(stristr($options,"datetime"))	{$value=Txt::formatDate($value,"inputDatetime","dbDatetime");}
-			elseif(stristr($options,"date"))	{$value=Txt::formatDate($value,"inputDate","dbDate");}
-			//Retourne le résultat filtré par pdo (trim, addslashes, délimite par des quotes, etc)
-			return (stristr($options,"noquotes"))  ?  $value  :  self::objPDO()->quote($value);
+			if(stristr($options,"url") && !stristr($value,"http"))	{$value="http://".$value;}								//URL : ajoute "http://"
+			if(stristr($options,"sqlLike"))							{$value="%".$value."%";}								//Recheche via "LIKE" : délimite $value par des "%" ("sqlPlugins()" and co)
+			if(stristr($options,"inputDate"))						{$value=Txt::formatDate($value,"inputDate","dbDate");}	//Formate la date d'un datepicker
+			return self::objPDO()->quote($value);																			//Retourne le résultat filtré par pdo (addslashes, quotes, etc)
 		}
 	}
 
@@ -188,7 +183,7 @@ class Db
 					$dumpTxt.=");\r\n\r\n";
 				}
 			}
-			// Transforme le tableau en texte,  Enregistre le fichier sql,  Retourne le chemin du fichier
+			// Enregistre le fichier sql
 			$fp=fopen($dumpPath, "w");
 			fwrite($fp, $dumpTxt);
 			fclose($fp);

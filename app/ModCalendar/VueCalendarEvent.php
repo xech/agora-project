@@ -18,7 +18,7 @@ lightboxSetWidth(600);
 
 	////	DATE / PERIODICITE / CATEGORIE
 	echo '<div class="vEvtDetails"><img src="app/img/calendar/clock.png">'.Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd).'</div>';
-	if(!empty($labelPeriod))			{echo '<hr><div class="vEvtDetails"><img src="app/img/reload.png">'.$labelPeriod.'</div>';}
+	if(!empty($labelPeriod))			{echo '<hr><div class="vEvtDetails"><img src="app/img/calendar/repeat.png">'.$labelPeriod.'</div>';}
 	if($curObj->_idCat)					{echo '<hr><div class="vEvtDetails">'.$curObj->categoryLabel().'</div>';}
 
 	////	AFFECTATIONS AUX AGENDAS / IMPORTANT / VISIBILITE SPECIALE

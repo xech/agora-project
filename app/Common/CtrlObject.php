@@ -219,11 +219,12 @@ class CtrlObject extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * ACTION : ARBO D'UN DOSSIER A RETOURNER
+	 * ACTION : BACKUP A RETOURNER
 	 *******************************************************************************************/
-	public static function actionFolderTreeBack()
+	public static function actionClientBackup()
 	{
-		if(Req::isHost())  {Host::actionFolderTreeBack();}
+		$actionName=Req::param("actionName");
+		if(Req::isHost())  {Host::$actionName();}
 	}
 
 	/*******************************************************************************************

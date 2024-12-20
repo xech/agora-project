@@ -110,7 +110,7 @@ class CtrlDashboard extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","date").", dateOffline=".Db::param("dateOffline","date"));
+			$curObj=$curObj->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","inputDate").", dateOffline=".Db::param("dateOffline","inputDate"));
 			//Notif par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxClose();
@@ -134,7 +134,7 @@ class CtrlDashboard extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","date"));
+			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","inputDate"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
 			if($pollIsVoted==false)
 			{

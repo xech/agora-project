@@ -32,6 +32,11 @@ class MdlCalendarEvent extends MdlObject
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
+		//Timestamp du dateBegin / dateEnd
+		if($this->dateBegin && $this->dateEnd){
+			$this->timeBegin=strtotime($this->dateBegin);
+			$this->timeEnd=strtotime($this->dateEnd);
+		}
 		//Couleur du background de l'evt, en fonction de la categorie (gris par défaut)
 		$this->eventColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#444";
 		//Visibilité par défaut
@@ -52,7 +57,7 @@ class MdlCalendarEvent extends MdlObject
 		//Init la mise en cache
 		if($this->_accessRight===null)
 		{
-			////	DROIT D'ACCES TOTAL
+			////	DROIT D'ACCES TOTAL (auteur de l'evt/admin)
 			$this->_accessRight=parent::accessRight();
 			////	SINON DROIT EN FONCTION DES AGENDAS AUQUELS L'ÉVÉNEMENT EST AFFECTÉ
 			if($this->_accessRight<3)
@@ -203,7 +208,7 @@ class MdlCalendarEvent extends MdlObject
 			//// Type de périodicité : jour / mois / année
 			$periodLabel=Txt::trad("CALENDAR_period_".$this->periodType);									//Exple: "Toutes les semaines"
 			if(!empty($this->periodValues)){																//"weekDay" et "month" uniquement
-				$periodLabel.=" : ";
+				$periodLabel.=' : ';
 				foreach(Txt::txt2tab($this->periodValues) as $tmpVal){
 					if($this->periodType=="weekDay")	{$periodLabel.=Txt::trad("day_".$tmpVal).", ";}		//Exple : "lundi, mardi, mercredi"
 					elseif($this->periodType=="month")	{$periodLabel.=Txt::trad("month_".$tmpVal).", ";}	//Exple : "janvier, février, mars"
@@ -212,12 +217,12 @@ class MdlCalendarEvent extends MdlObject
 			}
 			//// Fin de périodicité
 			if(!empty($this->periodDateEnd))
-				{$periodLabel.=" &nbsp; &rarr; ".Txt::trad("CALENDAR_periodDateEnd")." : ".Txt::dateLabel($this->periodDateEnd,"dateFull");}
+				{$periodLabel.=' &nbsp; &rarr; '.Txt::trad("CALENDAR_periodDateEnd").' '.ucfirst(Txt::dateLabel($this->periodDateEnd,"dateFull"));}
 			//// Exceptions de périodicité
 			if(!empty($this->periodDateExceptions)){
-				$periodLabel.="<br><br>".Txt::trad("CALENDAR_periodException")." : ";
+				$periodLabel.='<br><br><img src="app/img/calendar/repeatException.png"> '.Txt::trad("CALENDAR_periodException").' : ';
 				$periodDateExceptions=array_filter(Txt::txt2tab($this->periodDateExceptions));//"array_filter" enlève les valeurs vides
-				foreach($periodDateExceptions as $tmpVal)  {$periodLabel.=Txt::dateLabel($tmpVal,"dateFull").", ";}
+				foreach($periodDateExceptions as $tmpVal)  {$periodLabel.=ucfirst(Txt::dateLabel($tmpVal,"dateFull")).", ";}
 				$periodLabel=trim($periodLabel, ", ");
 			}
 			//// Renvoi le résultat

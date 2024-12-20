@@ -22,15 +22,15 @@
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("FILE_addFile")."</div></div>
-					  <div class='menuLine' onclick=\"lightboxOpen('".MdlFileFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
-					  <hr>";
+				echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlFile::urlAddFiles().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FILE_addFile").'</div></div>
+					  <div class="menuLine" onclick="lightboxOpen(\''.MdlFileFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div>'.Txt::trad("addFolder").'</div></div>
+					  <hr>';
 			}
 			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlFileFolder::menuTree().MdlFile::menuDisplayMode().MdlFile::menuSort().
-				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
+				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			////	ESPACE DISQUE
-			if(!empty($diskSpaceProgressBar))  {echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/diskSpace".($diskSpaceAlert==true?"Alert":null).".png'></div><div>".$diskSpaceProgressBar."</div></div>";}
+			if(!empty($diskSpaceProgressBar))  {echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/diskSpace'.($diskSpaceAlert==true?"Alert":null).'.png"></div><div>'.$diskSpaceProgressBar.'</div></div>';}
 			?>
 		</div>
 	</div>
@@ -39,24 +39,22 @@
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles());
 		echo CtrlObject::vueFolders();
-		////	LISTE DES FICHIERS
+		////	LISTE DES FICHIERS  ("iconTooltip" tjs dans le "<div>" && "iconLink" sur l'image pour pouvoir "select" le fichier)
 		$fileNameLength=MdlFile::getDisplayMode()=="line" ? 80 : 50;
-		foreach($filesList as $tmpFile)
-		{
-			//"iconTooltip" sur le <div> pour afficher correctement le tooltip && "iconLink" sur l'image pour pouvoir "select" le fichier
+		foreach($filesList as $tmpFile){
 			echo $tmpFile->divContainerContextMenu($tmpFile->hasThumbClass).
-				"<div class=\"objContent objFiles ".$tmpFile->thumbClass."\">
-					<div class='objIcon' ".Txt::tooltip($tmpFile->iconTooltip)."><img src=\"".$tmpFile->typeIcon()."\" ".$tmpFile->iconLink."></div>
-					<div class='objLabel'><span ".Txt::tooltip($tmpFile->labelTooltip)." ".$tmpFile->labelLink.">".Txt::reduce($tmpFile->name,$fileNameLength).$tmpFile->versionsMenu("icon")."</span></div>
-					<div class='objDetails'>".File::sizeLabel($tmpFile->octetSize)."</div>
-					<div class='objAutorDate'>".$tmpFile->autorDateLabel()."</div>
+				'<div class="objContent objFiles '.$tmpFile->thumbClass.'">
+					<div class="objIcon" '.Txt::tooltip($tmpFile->iconTooltip).'><img src="'.$tmpFile->typeIcon().'" '.$tmpFile->iconLink.'></div>
+					<div class="objLabel"><span '.Txt::tooltip($tmpFile->labelTooltip).' '.$tmpFile->labelLink.'>'.Txt::reduce($tmpFile->name,$fileNameLength).$tmpFile->versionsMenu("icon").'</span></div>
+					<div class="objDetails">'.File::sizeLabel($tmpFile->octetSize).'</div>
+					<div class="objAutorDate">'.$tmpFile->autorDateLabel().'</div>
 				</div>
-			</div>";
+			</div>';
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($filesList)){
-			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlFile::urlAddFiles()."')\"><img src='app/img/plus.png'> ".Txt::trad("FILE_addFile")."</div>"  :  null;
-			echo "<div class='emptyContainer'>".Txt::trad("FILE_noFile").$addElement."</div>";
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlFile::urlAddFiles().'\')"><img src="app/img/plus.png"> '.Txt::trad("FILE_addFile").'</div>'  :  null;
+			echo '<div class="emptyContainer">'.Txt::trad("FILE_noFile").$addElement.'</div>';
 		}
 		?>
 	</div>
