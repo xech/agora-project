@@ -141,7 +141,7 @@ class CtrlOffline extends Ctrl
 			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($gClientUser["email"]));		//Verif si un user existe déjà avec le même email
 			if(!empty($tmpUser)){																				//Données récupérées?
 				$objUser=Ctrl::getObj("user",$tmpUser);															//Charge l'objet "user"
-				if($objUser->profileImgExist()==false && !empty($gClientUser["picture"])){								//Enregistre l'image du profil Google de l'user ?
+				if($objUser->profileImgExist()==false && !empty($gClientUser["picture"])){						//Enregistre l'image du profil Google de l'user ?
 					$imgPath=File::getTempDir()."/".uniqid().".png";											//Path de l'image temporaire
 					file_put_contents($imgPath, file_get_contents($gClientUser["picture"]));					//Enregistre l'image dans le fichier tmp
 					File::imageResize($imgPath,$objUser->pathImgThumb(),200);									//Redimensionne l'image

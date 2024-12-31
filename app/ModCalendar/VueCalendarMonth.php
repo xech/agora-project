@@ -32,7 +32,7 @@ function calendarDisplay(isPrint)
 .vMonthDayCell:hover .vMonthDayLabel		{color:#c00;}																/*jour survolé : ligne du label*/
 
 /*evenements*/
-.vEvtBlock									{width:0px; height:18px; min-height:18px; padding:3px; margin-bottom:2px;}	/*Width calculé via calendarDisplay()*/
+.vEvtBlock									{width:0px; height:20px; min-height:20px; padding:3px; margin-bottom:2px;}	/*Width calculé via calendarDisplay()*/
 .vEvtBlock .objMenuContextFloat				{top:2px; right:2px;}														/*Surchage le menu "burger"*/
 .vEvtLabel									{white-space:nowrap;}														/*Sur une seule ligne*/
 

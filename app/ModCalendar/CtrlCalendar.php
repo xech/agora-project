@@ -33,15 +33,16 @@ class CtrlCalendar extends Ctrl
 		if($smallDisplay==true && preg_match("/(week|7Days)/i",$displayMode))	{$displayMode="3Days";}													//Affichage réduit : switch de "week"/"7Days" à "3Days"
 		elseif($smallDisplay==false && $displayMode=="3Days")					{$displayMode="week";}													//Affichage normal : switch de "3Days" à "week"
 		$vDatas["displayMode"]=$displayMode;																											//Affichage courant
-		$vDatas["displayModeList"]=($smallDisplay==true)  ?  ["month","3Days"]  :  ["month","week","7Days"];											//Affichages disponibles
+		$vDatas["displayModeList"]=($smallDisplay==true)  ?  ["month","3Days"]  :  ["month","week","workWeek","7Days"];									//Affichages disponibles
 		$vDatas["curTime"]=$curTime=Req::isParam("curTime")  ?  Req::param("curTime")  :  time();														//Temps de référence
 		$vDatas["publicHolidays"]=Trad::publicHolidays(date("Y",$curTime));																				//Jours Fériés
 
 		////	DEBUT/FIN DE PERIODE : EN FONCTION DE $displayMode
-		if($displayMode=="month")	{$strBegin="first day of this month 00:00:00";	$strEnd="last day of this month 23:59:59";	$strPrev="-1 month";	$strNext="+1 month";}
-		if($displayMode=="week")	{$strBegin="monday this week 00:00:00";			$strEnd="sunday this week 23:59:59";		$strPrev="-1 week";		$strNext="+1 week";}
-		if($displayMode=="7Days")	{$strBegin="today 00:00:00";					$strEnd="+6 day 23:59:59";					$strPrev="-7 day";		$strNext="+7 day";}
-		if($displayMode=="3Days")	{$strBegin="today 00:00:00";					$strEnd="+2 day 23:59:59";					$strPrev="-3 day";		$strNext="+3 day";}
+		if($displayMode=="month")			{$strBegin="first day of this month 00:00:00";	$strEnd="last day of this month 23:59:59";	$strPrev="-1 month";	$strNext="+1 month";}
+		elseif($displayMode=="week")		{$strBegin="monday this week 00:00:00";			$strEnd="sunday this week 23:59:59";		$strPrev="-1 week";		$strNext="+1 week";}
+		elseif($displayMode=="workWeek")	{$strBegin="monday this week 00:00:00";			$strEnd="friday this week 23:59:59";		$strPrev="-1 week";		$strNext="+1 week";}
+		elseif($displayMode=="7Days")		{$strBegin="today 00:00:00";					$strEnd="+6 day 23:59:59";					$strPrev="-7 day";		$strNext="+7 day";}
+		elseif($displayMode=="3Days")		{$strBegin="today 00:00:00";					$strEnd="+2 day 23:59:59";					$strPrev="-3 day";		$strNext="+3 day";}
 		$timeBegin			=strtotime($strBegin,$curTime);		//Début de période affichée
 		$timeEnd			=strtotime($strEnd,  $curTime);		//Fin de période affichée
 		$vDatas["timePrev"]	=strtotime($strPrev, $timeBegin);	//Période précédente (tjs prendre $timeBegin en référence!)
@@ -94,7 +95,7 @@ class CtrlCalendar extends Ctrl
 						else						{$tmpEvt->title=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd);}	//- affichage Week  (ex: "Mon Titre <br> 14h - 15h")
 					}
 					if(!empty($tmpEvt->important))  {$tmpEvt->title.='<img src="app/img/important.png" class="vEvtImportant">';}						//Ajoute au title l'icone "important"
-					$tmpEvt->containerClass=($tmpEvt->timeEnd < strtotime(date("Y-m-d")))  ?  "vEvtBlock vEvtBlockPast"  :  "vEvtBlock";				//"vEvtBlockPast" s'il commence avant aujourd'hui
+					$tmpEvt->containerClass=($tmpEvt->timeEnd < strtotime(date("Y-m-d H:i")))  ?  "vEvtBlock vEvtBlockPast"  :  "vEvtBlock";			//"vEvtBlockPast" s'il commence avant aujourd'hui
 					$tmpEvt->containerAttributes='style="background-color:'.$tmpEvt->eventColor.'"';													//Couleur de l'evt appliqué au .vEvtBlock
 					$tmpEvt->contextMenuOptions=["launcherIcon"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];	//Options du menu contextuel (cf. "divContainerContextMenu()")
 					if($displayMode!="month"){																											//Affichage "week"/"3Days"/etc :

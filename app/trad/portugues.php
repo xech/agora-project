@@ -390,8 +390,8 @@ class Trad extends Txt
 			////	Header / Footer
 			"HEADER_displaySpace"=>"Espaços de trabalho",
 			"HEADER_displayAdmin"=>"Visualização de Administrador",
-			"HEADER_displayAdminEnabled"=>"Visualização de Administrador ativada",
 			"HEADER_displayAdminInfo"=>"Esta opção também lhe permite mostrar itens de espaço que não são atribuídos a você",
+			"HEADER_displayAdminEnabled"=>"Visualização de Administrador ativada",
 			"HEADER_searchElem"=>"Buscar no espaço",
 			"HEADER_documentation"=>"Documentação",
 			"HEADER_shortcuts"=>"Acesso direto",
@@ -512,7 +512,7 @@ class Trad extends Txt
 			"AGORA_backupConfirm"=>"Esta operação pode levar alguns minutos: continuar o download?",
 			"AGORA_diskSpaceInvalid"=>"O espaço do disco para arquivos deve ser um número inteiro",
 			"AGORA_visioHostInvalid"=>"O endereço da web do seu servidor de videoconferência não é válido: você deve começar com 'https'",
-			"AGORA_mapApiKeyInvalid"=>"Se escolher Google Map como ferramenta de mapa, deve especificar uma 'API Key'",
+			"AGORA_gApiKeyInvalid"=>"Se escolher Google Map como ferramenta de mapa, deve especificar uma 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Se você escolher a conexão opcional através do Google, deve especificar uma 'API Key' para o Google SignIn",
 			"AGORA_confirmModif"=>"Confirmar alterações ?",
 			"AGORA_name"=>"Nome do espaço principal",
@@ -548,14 +548,12 @@ class Trad extends Txt
 			"AGORA_usersLike"=>"Eu gosto !",
 			"AGORA_mapTool"=>"Ferramenta de mapeamento",
 			"AGORA_mapToolTooltip"=>"Ferramenta de mapeamento para exibir usuários e contatos em um mapa",
-			"AGORA_mapApiKey"=>"Chave de API para catografia de mapas do Google",
-			"AGORA_mapApiKeyTooltip"=>"Configuração obrigatória para a ferramenta de mapeamento do Google Map : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
+			"AGORA_gApiKey"=>"Chave API da Google para Maps e importação de contactos",
+			"NOW_gApiKeyTooltip"=>"Configuração para Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
 			"AGORA_gIdentity"=>"Opção de login via Google",
 			"AGORA_gIdentityTooltip"=>"Usuários com um identificador com endereço <i>@gmail.com</i> também poderão se conectar por meio de sua conta do Google",
 			"AGORA_gIdentityClientId"=>"Chave API para login via Google",
 			"AGORA_gIdentityClientIdTooltip"=>"É necessária uma 'chave API' para conexão via Google. Mais informações em <a href='https://developers.google.com/identity/sign-in/web' target='_blank'>https://developers.google.com/identity/sign-in/web</a>",
-			"AGORA_gPeopleApiKey"=>"API KEY para importar contatos do Google",
-			"AGORA_gPeopleApiKeyTooltip"=>"Uma 'chave API' é necessária para recuperação de contatos do Google/Gmail. Mais informações em <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>",
 			"AGORA_messengerDisplay"=>"Mensagem instantânea",
 			"AGORA_personsSort"=>"Classifique usuários e contatos por",
 			//SMTP
@@ -669,7 +667,7 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Editar meu perfil de usuário",
 			// Invitation
 			"USER_sendInvitation"=>"Envie convites por e-mail",
-			"USER_sendInvitationTooltip"=>"Envie convites aos seus contatos para criar uma conta de usuário e ingressar no espaço de trabalho.<hr><img src='app/img/google.png' height=15> Se você tiver uma conta do Google, poderá enviar convites para seus contatos do Gmail.",
+			"USER_sendInvitationTooltip"=>"Envie os convites por e-mail para aderir ao espaço atual. Assim que um convite é validado, é automaticamente criada uma conta de utilizador para a pessoa em questão",
 			"USER_mailInvitationObject"=>"Convite de", // ..Jean DUPOND
 			"USER_mailInvitationFromSpace"=>"convida você para ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Clique aqui para confirmar o convite",
@@ -832,6 +830,7 @@ class Trad extends Txt
 			"CALENDAR_display_3Days"=>"3 dias",
 			"CALENDAR_display_7Days"=>"7 dias",
 			"CALENDAR_display_week"=>"Semana",
+			"CALENDAR_display_workWeek"=>"Semana de trabalho",
 			"CALENDAR_display_month"=>"Mês",
 			"CALENDAR_yearWeekNum"=>"Ver a semana n°", //...5
 			"CALENDAR_periodNext"=>"Período seguinte",

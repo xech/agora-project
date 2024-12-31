@@ -70,18 +70,10 @@ class MdlAgora extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * GOOGLE CONTACTS/INVITATIONS : VERIF S'IL EST ACTIVÉ
-	 *******************************************************************************************/
-	public function gPeopleEnabled()
-	{
-		return (Req::isMobileApp()==false && !empty($this->gIdentityClientId) && !empty($this->gPeopleApiKey));
-	}
-
-	/*******************************************************************************************
 	 * GOOGLE MAP : VERIF S'IL EST ACTIVÉ
 	 *******************************************************************************************/
 	public function gMapsEnabled()
 	{
-		return (!empty($this->mapApiKey) && $this->mapTool=="gmap");
+		return (!empty($this->gApiKey) && $this->mapTool=="gmap");
 	}
 }

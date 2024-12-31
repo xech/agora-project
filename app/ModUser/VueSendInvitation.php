@@ -1,4 +1,4 @@
-<?php if(Ctrl::$agora->gPeopleEnabled()){ ?><script src="https://apis.google.com/js/api.js"></script><?php } ?>
+<?php if(Ctrl::$agora->gIdentityEnabled()){ ?><script src="https://apis.google.com/js/api.js"></script><?php } ?>
 
 <script>
 ////	Resize
@@ -6,17 +6,17 @@ lightboxSetWidth(500);
 
 ////	INIT
 $(function(){
-	<?php if(Ctrl::$agora->gPeopleEnabled()){ ?>
-	////	Charge l'import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js?hl=fr
-	gapi.load("client:auth2", function(){
+	<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
+	////	Import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js?hl=fr
+	gapi.load("client", function(){
 		gapi.client.init({
-			apiKey:"<?= Ctrl::$agora->gPeopleApiKey ?>",//"gPeopleApiKey" de l'API "People
-			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",//"gIdentityClientId" du Projet
-			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"],//Spécification obligatoires
-			scope:"https://www.googleapis.com/auth/contacts.readonly"//Type de données à récupérer
+			apiKey:"<?= Ctrl::$agora->gApiKey ?>",																//Clé de l'Api People
+			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",													//"gIdentityClientId" de OAuth
+			scope:"https://www.googleapis.com/auth/contacts.readonly",											//Type de données à récupérer
+			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"]						//Spécification obligatoires
 		}).then(function(){
-			if(gapi.auth2.getAuthInstance().isSignedIn.get())  {gapi.auth2.getAuthInstance().signOut();}		//On se déconnecte par défaut, car si on est déjà connecté, le "listen()" suivant ne se lance pas
-			$("#gPeopleImportButton button").on("click",function(){ gapi.auth2.getAuthInstance().signIn(); });	//Clique sur "Importer les contacts" : lance en premier l'authentification via "signIn()"
+			if(gapi.auth2.getAuthInstance().isSignedIn.get())  {gapi.auth2.getAuthInstance().signOut();}		//On se déconnecte par défaut, car si on est déjà connecté le "listen()" suivant ne se lance pas
+			$("#gPeopleImportButton button").on("click",function(){ gapi.auth2.getAuthInstance().signIn(); });	//Clique sur "Importer mes contacts" : lance en premier l'authentification via "signIn()"
 			gapi.auth2.getAuthInstance().isSignedIn.listen(gPeopleGetContacts);									//Une fois connecté (cf. "listen()"), on lance la récupération des contacts via "gPeopleGetContacts()"
 		});
 	});
@@ -24,35 +24,34 @@ $(function(){
 	////	Affiche la liste des personne, appelé via l'API "People"
 	function gPeopleGetContacts()
 	{
-		//Si on est bien connecté : lance la récupération
+		// Lance la récupération si on est bien connecté
 		if(gapi.auth2.getAuthInstance().isSignedIn.get())
 		{
-			//Récupère et affiche chaque contacts : "pageSize" = nb maximum d'users à afficher, "sortOrder" = Tri des résultats, "personFields" = champs à récupérer
+			// Récupère et affiche chaque contacts  ("pageSize" = nb max de contacts récupérés)
 			gapi.client.people.people.connections.list({resourceName:"people/me", pageSize:100, sortOrder:"FIRST_NAME_ASCENDING", personFields:"names,emailAddresses"}).then(
 				function(response){
-					//Affiche les contacts
+					// Récupère les contacts
 					if(response.result.connections && response.result.connections.length>0)
 					{
-						//Init
 						var mailListToControl=[];
 						var contactInputs="";
-						//Ajoute chaque contact au formulaire d'invitation
-						for(var cpt=0; cpt<response.result.connections.length; cpt++)
-						{
+						//Récupère et affiche les contacts à importer
+						for(var cpt=0; cpt<response.result.connections.length; cpt++){
 							var person=response.result.connections[cpt];
 							if(person.names && person.names.length>0 && person.emailAddresses && person.emailAddresses.length>0){
-								var mailTmp=		person.emailAddresses[0].value;
-								var givenNameTmp=	person.names[0].givenName;
-								var familyNameTmp=	person.names[0].familyName;
-								if(typeof familyNameTmp==="undefined")  {familyNameTmp="";}
+								var givenNameTmp	=(person.names[0].givenName)  ? person.names[0].givenName  :  "";
+								var familyNameTmp	=(person.names[0].familyName) ? person.names[0].familyName  :  "";
+								if(!givenNameTmp && !familyNameTmp)  {givenNameTmp=person.names[0].displayName;}
+								var mailTmp			=person.emailAddresses[0].value;
 								mailListToControl.push(mailTmp);
 								contactInputs+='<div class="contactLine" title="'+mailTmp+'" data-mail="'+mailTmp+'"><input type="checkbox" name="gPeopleContacts[]" value="'+givenNameTmp+'@@'+familyNameTmp+'@@'+mailTmp+'" id="contact'+cpt+'"> &nbsp; <label for="contact'+cpt+'">'+givenNameTmp+' '+familyNameTmp+'</label></div>';
 							}
 						}
-						//Affiche le formulaire avec chaque contact (inputs) et Masque l'autre formulaires a co
-						$("#gPeopleForm").prepend(contactInputs).show();
-						$("#invitationForm,#gPeopleImportButton").hide();
-						//Controle ajax : désactive les mails déjà présents sur l'espace (après affichage des mails importés!)
+						// Affiche les contacts !
+						$("#gPeopleForm").prepend(contactInputs).show();	//Affiche les inputs des contacts importés
+						$("#invitationForm, #gPeopleImportButton").hide();	//Masque le formulaire principal
+						mainPageDisplay();									//Update les tooltips/lightbox
+						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts!)
 						$.ajax({url:"?ctrl=user&action=loginExists",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
 								for(var cpt=0; cpt<resultJson.mailListPresent.length; cpt++){
@@ -63,7 +62,7 @@ $(function(){
 								}
 							}
 						});
-						//Sélection d'un utilisateur : controle le quota dispo et affiche un message s'il est dépassé
+						//Sélection d'un utilisateur : controle le nb restant de comptes utilisateur et affiche un message s'il est dépassé
 						$("input[name='gPeopleContacts[]']").on("click",function(){
 							var usersQuotaRemaining=<?= MdlUser::usersQuotaRemaining() ?>;
 							if($("input[name='gPeopleContacts[]']:checked").length > usersQuotaRemaining){
@@ -102,17 +101,16 @@ $(function(){
 </script>
 
 <style>
-#invitationForm input, #invitationForm textarea	{width:100%!important; margin-bottom:10px!important;}
-.orLabel					{margin-top:40px; margin-bottom:40px;}/*surcharge*/
-#gPeopleImportButton		{text-align:center;}
-#gPeopleImportButton button	{height:45px!important; width:300px!important; margin-bottom:30px;}
-#gPeopleForm				{display:none;}
-#gPeopleForm .contactLine	{display:inline-block!important; width:50%; margin-bottom:10px;}
-#gPeopleForm textarea		{margin-top:15px;}
-#invitationListHr			{margin-top:30px;}
-#invitationListDiv			{display:none;}
-#invitationListDiv li		{margin:10px;}
-.submitButtonMain			{padding:0px; padding-top:10px;}/*surcharge*/
+#invitationForm input, #invitationForm textarea	{width:100%; margin-bottom:10px;}
+.orLabel										{margin:40px 0px;}/*surcharge*/
+#gPeopleImportButton							{text-align:center;}
+#gPeopleImportButton button						{height:50px; width:350px; margin-bottom:30px;}
+#gPeopleForm, #invitationListDiv				{display:none;}
+#gPeopleForm .contactLine						{display:inline-block; width:50%; margin-bottom:10px;}
+#gPeopleForm textarea							{margin-top:15px;}
+#invitationListHr								{margin-top:30px;}
+#invitationListDiv li							{margin:10px;}
+.submitButtonMain								{padding:0px; padding-top:10px;}/*surcharge*/
 </style>
 
 
@@ -128,10 +126,10 @@ $(function(){
 	</form>
 
 	<!--INVITATION AVEC IMPORT DES CONTACTS GMAIL-->
-	<?php if(Ctrl::$agora->gPeopleEnabled()){ ?>
+	<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
 	<div id="gPeopleImportButton">
 		<div class="orLabel"><div><hr></div><div><?= Txt::trad("or") ?></div><div><hr></div></div>
-		<button><img src="app/img/google.png"> <?= Txt::trad("USER_gPeopleImport") ?></button>
+		<button><img src="app/img/google.png">&nbsp; <?= Txt::trad("USER_gPeopleImport") ?></button>
 	</div>
 	<form id="gPeopleForm">
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>

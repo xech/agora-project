@@ -949,9 +949,16 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("24.11.2"))
 			{
-				//Modifie la préférence d'affichage de l'agenda : "4Days" devient "3Days" et "workWeek"/"day" sont remplacés par "week"
+				//Modifie la préférence d'affichage de l'agenda : "4Days" -> "3Days" et "day" -> "week"
 				self::query("UPDATE `ap_userPreference` SET value='3Days' WHERE keyVal='calendarDisplayMode' AND value='4Days'");
-				self::query("UPDATE `ap_userPreference` SET value='week'  WHERE keyVal='calendarDisplayMode' AND (value='workWeek' OR value='day')");
+				self::query("UPDATE `ap_userPreference` SET value='week'  WHERE keyVal='calendarDisplayMode' AND value='day'");
+			}
+
+			if(self::updateVersion("25.1.0"))
+			{
+				//"gPeopleApiKey" & "mapApiKey" fusionnés avec "gApiKey"
+				if(self::fieldExist("ap_agora","gPeopleApiKey"))	{self::query("ALTER TABLE `ap_agora` DROP `gPeopleApiKey`");}
+				if(self::fieldExist("ap_agora", "mapApiKey"))		{self::query("ALTER TABLE `ap_agora` CHANGE `mapApiKey` `gApiKey` VARCHAR(255) DEFAULT NULL");}
 			}
 			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////

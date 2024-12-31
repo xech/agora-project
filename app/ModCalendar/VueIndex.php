@@ -57,61 +57,63 @@ $(function(){
 
 <style>
 /*Réduit la taille du footer + du livecounter principal*/
-#pageFooterHtml, #pageFooterIcon	{display:none;}
-#pageFull							{margin-bottom:0px;}
-#livecounterMain					{max-height:60px; padding:5px 40px!important;}
+#pageFooterHtml, #pageFooterIcon		{display:none;}
+#pageFull								{margin-bottom:0px;}
+#livecounterMain						{max-height:60px; padding:5px 40px!important;}
 
 /*Menu du module (gauche)*/
-#calsList							{max-height:400px; overflow-y:auto; padding:5px;}
-#calsListLabel 						{margin-bottom:10px;}
-#calsList .calsListCalendar			{line-height:25px;}/*Label de chaque agenda*/
-#calsList .menuLaunch				{display:none;}/*menu context de chaque agenda*/
-#calsList>div:hover .menuLaunch		{display:inline; margin-left:5px;}/*idem*/
-#calsList .submitButtonInline		{display:none; margin-top:15px;}/*bouton d'affichage des agendas*/
-#menuCategory>div					{margin:10px 0px;}
-#menuCategory>div .linkSelect		{font-style:italic;}
-#datepickerCalendar					{margin-top:20px; margin-bottom:10px;}
-.ui-datepicker						{box-shadow:none;}/*Datepicker*/
-.ui-datepicker thead				{display:none;}/*pas de libellé des jours*/
-.ui-datepicker .ui-state-default	{padding:7px;}/*Cellules des jours*/
+#calsList								{max-height:400px; overflow-y:auto; padding:5px;}
+#calsListLabel 							{margin-bottom:10px;}
+#calsList .calsListCalendar				{line-height:25px;}/*Label de chaque agenda*/
+#calsList .menuLaunch					{display:none;}/*menu context de chaque agenda*/
+#calsList>div:hover .menuLaunch			{display:inline; margin-left:5px;}/*idem*/
+#calsList .submitButtonInline			{display:none; margin-top:15px;}/*bouton d'affichage des agendas*/
+#displayAdminCals						{display:inline; float:right; height:18px;}
+#calsList:not(:hover) #displayAdminCals {visibility:hidden;}
+#menuCategory>div						{margin:10px 0px;}
+#menuCategory>div .linkSelect			{font-style:italic;}
+#datepickerCalendar						{margin-top:20px; margin-bottom:10px;}
+.ui-datepicker							{box-shadow:none;}/*Datepicker*/
+.ui-datepicker thead					{display:none;}/*pas de libellé des jours*/
+.ui-datepicker .ui-state-default		{padding:7px;}/*Cellules des jours*/
 
 /*Synthese des agendas*/
-#syntheseBlock.miscContainer		{padding:8px!important; margin-bottom:20px;}/*surcharge*/
-#syntheseTable						{display:table; width:100%;}
-#syntheseHeader, .vSyntheseLine		{display:table-row;}
-.vSyntheseDayCurDay					{color:#c00;}
-.vSyntheseLabel						{display:table-cell; width:100px; white-space:nowrap; padding-right:10px; vertical-align:middle;}
-.vSyntheseDay						{display:table-cell; vertical-align:middle; text-align:center; height:22px;}
-.vSyntheseDayEvts					{display:table; width:100%; height:100%;}
-.vSyntheseDayEvt					{display:table-cell; border-left:transparent;}
-.vSyntheseDayEvts:hover				{opacity:0.8;}
-.vSyntheseDayEvtTooltip				{text-align:left;}
-.vSyntheseDayEvtTooltip	ul			{margin:0px; margin-top:5px; padding-left:10px;}
-.vSyntheseDayCal					{background:#ddd; border:dotted 1px #eee;}
-.vSyntheseDayCal.vSyntheseDayCalWE	{background:#ccc;}
+#syntheseBlock.miscContainer			{padding:8px!important; margin-bottom:20px;}/*surcharge*/
+#syntheseTable							{display:table; width:100%;}
+#syntheseHeader, .vSyntheseLine			{display:table-row;}
+.vSyntheseDayCurDay						{color:#c00;}
+.vSyntheseLabel							{display:table-cell; width:100px; white-space:nowrap; padding-right:10px; vertical-align:middle;}
+.vSyntheseDay							{display:table-cell; vertical-align:middle; text-align:center; height:22px;}
+.vSyntheseDayEvts						{display:table; width:100%; height:100%;}
+.vSyntheseDayEvt						{display:table-cell; border-left:transparent;}
+.vSyntheseDayEvts:hover					{opacity:0.8;}
+.vSyntheseDayEvtTooltip					{text-align:left;}
+.vSyntheseDayEvtTooltip	ul				{margin:0px; margin-top:5px; padding-left:10px;}
+.vSyntheseDayCal						{background:#ddd; border:dotted 1px #eee;}
+.vSyntheseDayCal.vSyntheseDayCalWE		{background:#ccc;}
 
 /*Agendas : conteneur + menu d'affichage + label des jours*/
-.vCalMain							{min-height:500px; padding:0px; visibility:hidden;}/*Agendas masqués par défaut (pas "display:none") puis affichés via calendarDisplay()*/
-.vCalMain:not(:last-child)			{margin-bottom:40px;}
-.vCalHeader							{display:table; width:100%;}
-.vCalHeader>div						{display:table-cell; width:33%; padding:10px; vertical-align:middle;}
-.vCalTitleLabel, .vCalMonthLabel	{font-size:1.1em; margin:0px 8px;}/*Libellé de l'agenda et mois affiché*/
-.vCalPeriod							{text-align:center;}
-[id^=calMonthPeriodMenu]			{width:300px; overflow:visible;}
-#calMonthPeriodMenuContainer a		{display:inline-block; width:85px; padding:5px; text-align:left;}
-.vCalDisplayMode					{text-align:right;}
-.vCalDisplayMode button				{border-radius:5px;}
-.vCalDisplayToday					{margin-right:10px;}/*Afficher aujourd'hui*/
-.vCalLabelWeekDays					{height:25px; padding:4px; text-align:center;}
-.vCalLabelToday						{color:#05c;}															/*Aujourd'hui*/
-.vCalLabelToday .vCalLabelDayNb		{background-color:#07d; color:white; border-radius:50%; padding:7px;}	/*Pastille du numéro du jour du mois*/
+.vCalMain								{min-height:500px; padding:0px; visibility:hidden;}/*Agendas masqués par défaut (pas "display:none") puis affichés via calendarDisplay()*/
+.vCalMain:not(:last-child)				{margin-bottom:40px;}
+.vCalHeader								{display:table; width:100%;}
+.vCalHeader>div							{display:table-cell; width:33%; padding:10px; vertical-align:middle;}
+.vCalTitleLabel, .vCalMonthLabel		{font-size:1.1em; margin:0px 8px;}/*Libellé de l'agenda et mois affiché*/
+.vCalPeriod								{text-align:center;}
+[id^=calMonthPeriodMenu]				{width:300px; overflow:visible;}
+#calMonthPeriodMenuContainer a			{display:inline-block; width:85px; padding:5px; text-align:left;}
+.vCalDisplayMode						{text-align:right;}
+.vCalDisplayMode button					{border-radius:5px;}
+.vCalDisplayToday						{margin-right:10px;}/*Afficher aujourd'hui*/
+.vCalLabelWeekDays						{height:25px; padding:4px; text-align:center;}
+.vCalLabelToday							{color:#05c;}															/*Aujourd'hui*/
+.vCalLabelToday .vCalLabelDayNb			{background-color:#07d; color:white; border-radius:50%; padding:7px;}	/*Pastille du numéro du jour du mois*/
 
 /*Evenements*/
-.vEvtBlock							{margin:0px; padding-right:20px!important; box-shadow:1px 1px 2px #555; border-radius:5px!important; cursor:pointer;}/*padding-right pour le menu burger (pas de "overflow:hidden"!)*/
-.vEvtBlockPast:not(:hover)			{opacity:0.9;}/*événements passés opacifiés (sauf si survolé : cf. menu context)*/
-.vEvtLabel							{overflow:hidden; font-size:0.95em; font-weight:normal; color:white!important;}
-.vEvtLabel img						{max-height:12px;}
-.vEvtImportant						{margin-left:5px;}
+.vEvtBlock								{margin:0px; padding-right:20px!important; box-shadow:1px 1px 2px #555; border-radius:5px!important; cursor:pointer;}/*padding-right pour le menu burger (pas de "overflow:hidden"!)*/
+.vEvtBlockPast:not(:hover)				{opacity:0.7;}/*événements passés opacifiés (sauf si survolé : cf. menu context)*/
+.vEvtLabel								{overflow:hidden; font-size:0.95em; font-weight:normal; color:white!important;}
+.vEvtLabel img							{max-height:12px;}
+.vEvtImportant							{margin-left:5px;}
 
 /*MOBILE*/
 @media screen and (max-width:1024px){
@@ -119,7 +121,7 @@ $(function(){
 	.vCalMain						{box-shadow:none; margin-bottom:0;}
 	.vCalHeader						{white-space:nowrap;}
 	.vCalHeader>div					{width:auto; padding:4px; font-size:0.9em; text-transform:lowercase;}
-	.vCalTitleLabel, .vCalMonthLabel{margin:0px 3px;}
+	.vCalTitleLabel,.vCalMonthLabel	{margin:0px 3px;}
 	.vCalTitleLabel					{vertical-align:middle; max-width:150px; display:inline-block; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalTitleLabel::first-letter	{text-transform:uppercase}
 	.vCalDisplayMode button			{padding:10px 8px;}
@@ -161,8 +163,9 @@ $(function(){
 
 			////	LISTE DES AGENDAS DISPONIBLES
 			if(!empty($readableCalendars)){
+				$displayAdminCals=(Ctrl::$curUser->isSpaceAdmin() && empty($_SESSION["displayAdmin"]))  ?  '<img src="app/img/plusSmall.png" id="displayAdminCals" onclick="redir(\'?ctrl='.Req::$curCtrl.'&displayAdmin=true\')" title="'.Txt::trad("HEADER_displayAdmin").' : '.Txt::trad("HEADER_displayAdminInfo").'">'  :  null;
 				echo '<form action="index.php" id="calsList">
-						<div id="calsListLabel">'.Txt::trad("CALENDAR_calsList").' :</div>
+						<div id="calsListLabel">'.Txt::trad("CALENDAR_calsList").' :'.$displayAdminCals.'</div>
 						<input type="hidden" name="curTime" value="'.Req::param("curTime").'"/>';
 						foreach($readableCalendars as $tmpCal){
 							echo '<div class="calsListCalendar">
@@ -261,7 +264,7 @@ $(function(){
 					<?php if(!empty($calMonthPeriodMenu))  {echo "<div class='menuContext' id='calMonthPeriodMenu".$tmpCal->_typeId."'><div id='calMonthPeriodMenuContainer'>".$calMonthPeriodMenu."</div></div>";} ?>
 					<img src="app/img/navNext.png" class="vCalNext" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>>
 				</div>
-				<!--AFFICHAGE TODAY / MONTH / WEEK / 7DAYS / 3DAYS -->
+				<!--AFFICHAGE (today, month, week, etc.)-->
 				<div class="vCalDisplayMode">
 					<button class="vCalDisplayToday" onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')"><?= ucfirst(Txt::trad("today")) ?></button>
 					<button class="menuLaunch" for="menuDisplayMode<?= $tmpCal->_typeId ?>"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.png"> <?= Txt::trad("CALENDAR_display_".$displayMode) ?> <img src="app/img/arrowBottom.png"></button>

@@ -220,9 +220,9 @@ class Txt
 				if(($format=="basic" || $format=="dateFull") && empty($timeEnd) && date("Ymd")==date("Ymd",$timeBegin))	{$dateLabel=self::trad("today");}	//Affiche "Aujourd'hui" (ne pas mettre dans le $pattern)
 				elseif($format=="basic" || $format=="dateFull")															{$pattern="eee d MMMM";}			//jour et mois réduit		-> Ex: "lun. 8 fevrier"
 				elseif($format=="mini" && $diffDays==true)																{$pattern="d MMM";}					//jour mois réduit			-> Ex: "8 fev."
-				elseif($format=="dateMini")																				{$pattern="dd/MM/Y";}				//Date au format basique	-> Ex: "08/02/2050"
+				elseif($format=="dateMini")																				{$pattern="dd/MM/yyyy";}			//Date au format basique	-> Ex: "08/02/2050"
 				//Ajoute l'année si différente de l'année courante (Ex: "8 juin 2001")  &&  Ajoute l'heure si on affiche pas que la date (Ex: "9:05")
-				if(!preg_match("/mini/i",$format) &&  ( (!empty($timeBegin) && date("y",$timeBegin)!=date("y"))  ||  (!empty($timeEnd) && date("y",$timeEnd)!=date("y")) ))   {$pattern.=" Y";}
+				if(!preg_match("/mini/i",$format) &&  ( (!empty($timeBegin) && date("y",$timeBegin)!=date("y"))  ||  (!empty($timeEnd) && date("y",$timeEnd)!=date("y")) ))   {$pattern.=" yyyy";}
 				if(!preg_match("/date/i",$format))   {$pattern.=" H:mm";}
 				//Instancie toujours le pattern via la class "IntlDateFormatter()", avec la "lang" et "timezone" locale
 				$dateFormat->setPattern($pattern);

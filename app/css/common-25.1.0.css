@@ -166,7 +166,7 @@ legend										{padding:5px 10px;}
 }
 
 /*** INPUTS D'EDITION D'OBJET : EDIT D'USER, DE CONTACT, DE PARAMETRAGE GENERAL...*/
-.objField									{display:table; width:100%; padding:10px 0px;}
+.objField									{display:table; width:100%; padding-top:20px;}
 .objField>div								{display:table-cell; width:50%; line-height:25px; vertical-align:top;}/*"line-height" aligne verticalement les labels avec les inputs*/
 .objField img								{max-width:30px; margin-right:8px;}
 .objField input[type=text]					{width:100%;}
@@ -175,8 +175,7 @@ legend										{padding:5px 10px;}
 /*MOBILE FANCYBOX : 440px*/
 @media screen and (max-width:440px){
 	.objField, .objField>div				{display:block; width:100%!important;}
-	.objField								{margin:25px 0px;}
-	.objField>div							{margin:10px 0px;}
+	.objField>div							{padding-top:10px;}
 }
 
 /*** PERSONS : CONTACTS & USERS*/

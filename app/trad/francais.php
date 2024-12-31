@@ -78,7 +78,7 @@ class Trad extends Txt
 			"connect"=>"Connexion",
 			"connectAuto"=>"Rester connecté",
 			"connectAutoTooltip"=>"Mémoriser mes identifiants pour une connexion automatique",
-			"gIdentityUserUnknown"=>"n'est pas enregistré sur l'espace",//"boby.smith@gmail.com" n'est pas enregistré sur l'espace
+			"gIdentityUserUnknown"=>"n'est pas enregistré sur l'espace",
 			"connectSpaceSwitch"=>"Me connecter à un autre espace",
 			"connectSpaceSwitchConfirm"=>"Confirmer la déconnexion pour vous connecter à un autre espace ?",
 			"guestAccess"=>"Connexion invité",
@@ -390,8 +390,8 @@ class Trad extends Txt
 			////	Header / Footer
 			"HEADER_displaySpace"=>"espaces de travail",
 			"HEADER_displayAdmin"=>"Affichage Administrateur",
+			"HEADER_displayAdminInfo"=>"Cette option permet d'afficher également les éléments de l'espace qui ne vous sont pas attribués (dossiers, agendas, etc)",
 			"HEADER_displayAdminEnabled"=>"Affichage Administrateur activé",
-			"HEADER_displayAdminInfo"=>"Cette option permet d'afficher également les éléments de l'espace qui ne vous sont pas attribués",
 			"HEADER_searchElem"=>"Rechercher sur l'espace",
 			"HEADER_documentation"=>"Guide d'utilisation",
 			"HEADER_shortcuts"=>"Raccourcis",
@@ -512,7 +512,7 @@ class Trad extends Txt
 			"AGORA_backupConfirm"=>"Cette opération peut durer de nombreuses minutes : confirmer le téléchargement ?",
 			"AGORA_diskSpaceInvalid"=>"L'espace disque pour les fichiers doit être un entier",
 			"AGORA_visioHostInvalid"=>"L'adresse du serveur de visioconférence est invalide : elle doit commencer par 'https'",
-			"AGORA_mapApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
+			"AGORA_gApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
 			"AGORA_confirmModif"=>"Confirmer les modifications ?",
 			"AGORA_name"=>"Nom de l'espace principal",
@@ -548,14 +548,12 @@ class Trad extends Txt
 			"AGORA_usersLike"=>"J'aime !",
 			"AGORA_mapTool"=>"Outil de cartographie",
 			"AGORA_mapToolTooltip"=>"Outil de cartographie pour voir les utilisateurs et contacts sur une carte",
-			"AGORA_mapApiKey"=>"API Key pour la cartographie Google Map",
-			"AGORA_mapApiKeyTooltip"=>"Parametrage obligatoire pour l'outil de cartographie Google Map : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
-			"AGORA_gIdentity"=>"Option de connexion via Google",
+			"AGORA_gApiKey"=>"Google API Key pour Maps",
+			"AGORA_gApiKeyTooltip"=>"Parametrage obligatoire pour Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
+			"AGORA_gIdentity"=>"Connexion via un compte Google Gmail",
 			"AGORA_gIdentityTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
 			"AGORA_gIdentityClientId"=>"API Key pour la connexion via Google",
-			"AGORA_gIdentityClientIdTooltip"=>"Une 'API Key' est nécessaire pour la connexion via Google. Plus d'infos sur <a href='https://developers.google.com/identity/sign-in/web' target='_blank'>https://developers.google.com/identity/sign-in/web</a>",
-			"AGORA_gPeopleApiKey"=>"API KEY pour importer les contacts Google",
-			"AGORA_gPeopleApiKeyTooltip"=>"Une 'API Key' est nécessaire pour la récupération des contacts Google / Gmail. Plus d'infos sur <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>",
+			"AGORA_gIdentityClientIdTooltip"=>"Parametrage obligatoire pour la connexion via un compte Google :<br> https://developers.google.com/identity/protocols/oauth2",
 			"AGORA_messengerDisplay"=>"Messagerie instantanée",
 			"AGORA_personsSort"=>"Trier les utilisateurs et contacts par",
 			//SMTP
@@ -669,7 +667,7 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Modifier mon profil utilisateur",
 			// Invitations
 			"USER_sendInvitation"=>"Envoyer des invitations par email",
-			"USER_sendInvitationTooltip"=>"Envoyer des invitations à vos contacts, pour créer un compte utilisateur et rejoindre l'espace de travail.<hr><img src='app/img/google.png' height=15> Vous pouvez également envoyer des invitations à vos contacts Gmail",
+			"USER_sendInvitationTooltip"=>"Envoyer des emails d'invitation à rejoindre l'espace courant. Dès qu'une invitation est validée, un compte utilisateur est automatiquement créé pour la personne concernée.",
 			"USER_mailInvitationObject"=>"Invitation de", // ..Jean DUPOND
 			"USER_mailInvitationFromSpace"=>"vous invite sur l'espace", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Cliquez ici pour confirmer l'invitation",
@@ -678,7 +676,7 @@ class Trad extends Txt
 			"USER_invitPassword"=>"Confirmez votre invitation",
 			"USER_invitPassword2"=>"Choisissez votre mot de passe puis validez votre invitation",
 			"USER_invitationValidated"=>"Votre invitation a été validée !",
-			"USER_gPeopleImport"=>"Récupérer mes contacts Google / Gmail",
+			"USER_gPeopleImport"=>"Importer mes contacts Google / Gmail",
 			"USER_importQuotaExceeded"=>"Vous êtes limité à --USERS_QUOTA_REMAINING-- nouveaux comptes utilisateurs, sur un total de --LIMITE_NB_USERS-- utilisateurs",
 			// groupes
 			"USER_spaceGroups"=>"Groupes d'utilisateurs de l'espace",
@@ -832,6 +830,7 @@ class Trad extends Txt
 			"CALENDAR_display_3Days"=>"3 jours",
 			"CALENDAR_display_7Days"=>"7 jours",
 			"CALENDAR_display_week"=>"Semaine",
+			"CALENDAR_display_workWeek"=>"Semaine de travail",
 			"CALENDAR_display_month"=>"Mois",
 			"CALENDAR_yearWeekNum"=>"Voir la semaine n°", //...5
 			"CALENDAR_periodNext"=>"Période suivante",

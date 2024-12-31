@@ -78,7 +78,7 @@ class Trad extends Txt
 			"connect"=>"Accedi",
 			"connectAuto"=>"Ricordati di me",
 			"connectAutoTooltip"=>"Ricorda i miei dati di accesso per la connessione automatica",
-			"gIdentityUserUnknown"=>"non è registrato nello spazio",//"boby.smith@gmail.com" n'est pas enregistré sur l'espace
+			"gIdentityUserUnknown"=>"non è registrato nello spazio",
 			"connectSpaceSwitch"=>"Connettiti a un altro spazio",
 			"connectSpaceSwitchConfirm"=>"Confermi la disconnessione per connetterti ad un altro spazio?",
 			"guestAccess"=>"Accedi come ospite",
@@ -390,8 +390,8 @@ class Trad extends Txt
 			////	Header / Footer
 			"HEADER_displaySpace"=>"spazi di lavoro",
 			"HEADER_displayAdmin"=>"Visualizzazione amministratore",
-			"HEADER_displayAdminEnabled"=>"Visualizzazione amministratore abilitata",
 			"HEADER_displayAdminInfo"=>"Questa opzione consente di visualizzare anche gli elementi dello spazio non assegnati all'utente",
+			"HEADER_displayAdminEnabled"=>"Visualizzazione amministratore abilitata",
 			"HEADER_searchElem"=>"Ricerca nello spazio",
 			"HEADER_documentation"=>"Documentazione",
 			"HEADER_shortcuts"=>"Scorciatoie",
@@ -512,7 +512,7 @@ class Trad extends Txt
 			"AGORA_backupConfirm"=>"Questa operazione potrebbe richiedere alcuni minuti: confermi il download?",
 			"AGORA_diskSpaceInvalid"=>"Lo spazio su disco per i file deve essere un numero intero",
 			"AGORA_visioHostInvalid"=>"L'indirizzo web del server di videoconferenza non è valido: deve iniziare con 'https'",
-			"AGORA_mapApiKeyInvalid"=>"Se scegli Google Map come strumento di mappatura, devi specificare una 'Chiave API'",
+			"AGORA_gApiKeyInvalid"=>"Se scegli Google Map come strumento di mappatura, devi specificare una 'Chiave API'",
 			"AGORA_gIdentityKeyInvalid"=>"Se scegli la connessione opzionale tramite Google, devi specificare una 'Chiave API' per l'accesso con Google",
 			"AGORA_confirmModif"=>"Confermi le modifiche?",
 			"AGORA_name"=>"Nome dello spazio principale",
@@ -548,14 +548,12 @@ class Trad extends Txt
 			"AGORA_usersLike"=>"Mi piace!",
 			"AGORA_mapTool"=>"Strumento di mappatura",
 			"AGORA_mapToolTooltip"=>"Strumento di mappatura per vedere utenti e contatti su una mappa",
-			"AGORA_mapApiKey"=>"Chiave API per la cartografia di Google Map",
-			"AGORA_mapApiKeyTooltip"=>"Impostazione obbligatoria per lo strumento di mappatura di Google Map: <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript /get -chiave-api",
+			"AGORA_gApiKey"=>"Chiave API di Google per Maps e l'importazione di contatti",
+			"AGORA_gApiKeyTooltip"=>"Configurazione per visualizzare Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
 			"AGORA_gIdentity"=>"Opzione di accesso tramite Google",
 			"AGORA_gIdentityTooltip"=>"Gli utenti con un identificatore con indirizzo <i>@gmail.com</i> potranno connettersi anche tramite il proprio account Google",
 			"AGORA_gIdentityClientId"=>"Chiave API per la connessione tramite Google",
 			"AGORA_gIdentityClientIdTooltip"=>"Per la connessione tramite Google è necessaria una 'chiave API'. Ulteriori informazioni su <a href='https://developers.google.com/identity/sign-in/web' target=' _blank'> https://developers.google.com/identity/sign-in/web</a>",
-			"AGORA_gPeopleApiKey"=>"API KEY per importare contatti Google",
-			"AGORA_gPeopleApiKeyTooltip"=>"Per recuperare i contatti Google/Gmail è necessaria una 'chiave API'. Maggiori informazioni su <a href='https://developers.google.com/people/' target='_blank' >https:/ /developers.google.com/people/</a>",
 			"AGORA_messengerDisplay"=>"Messaggistica istantanea",
 			"AGORA_personsSort"=>"Ordina utenti e contatti per",
 			//SMTP
@@ -669,7 +667,7 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Modifica il mio profilo utente",
 			// Invitations
 			"USER_sendInvitation"=>"Invia inviti via e-mail",
-			"USER_sendInvitationTooltip"=>"Invia inviti ai tuoi contatti, per creare un account utente e partecipare all'area di lavoro.<hr><img src= app/img/google.png  height=15> Se hai un account Google, potrai inviare inviti ai tuoi contatti Gmail.",
+			"USER_sendInvitationTooltip"=>"Invia inviti via email per entrare a far parte dello spazio corrente. Non appena un invito viene convalidato, viene automaticamente creato un account utente per la persona interessata",
 			"USER_mailInvitationObject"=>"Invito di ", // ..Jean DUPOND
 			"USER_mailInvitationFromSpace"=>"invita a unirsi a ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Fare clic qui per confermare l'invito",
@@ -832,6 +830,7 @@ class Trad extends Txt
 			"CALENDAR_display_3Days"=>"3 giorni",
 			"CALENDAR_display_7Days"=>"7 giorni",
 			"CALENDAR_display_week"=>"Settimana",
+			"CALENDAR_display_workWeek"=>"settimana lavorativa",
 			"CALENDAR_display_month"=>"Mese",
 			"CALENDAR_yearWeekNum"=>"Vedi il numero della settimana", //...5
 			"CALENDAR_periodNext"=>"Periodo successivo",

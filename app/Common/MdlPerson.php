@@ -194,8 +194,8 @@ class MdlPerson extends MdlObject
 						$this->getFieldValue("companyOrganization",$mode).
 						$this->getFieldValue("comment",$mode);
 		}
-		//User : ajoute la date de dernire connexion
-		if(static::objectType=="user" && Ctrl::$curUser->isSpaceAdmin() && $mode!="edit")  {$labels.=$this->getFieldValue("lastConnection",$mode);}
+		//Date de dernière connexion
+		if(static::objectType=="user" && $mode=="profile" && Ctrl::$curUser->isSpaceAdmin())   {$labels.=$this->getFieldValue("lastConnection",$mode);}
 		//Retourne le résultat
 		return $labels;
 	}

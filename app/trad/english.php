@@ -390,8 +390,8 @@ class Trad extends Txt
 			////	Header / Footer
 			"HEADER_displaySpace"=>"workspaces",
 			"HEADER_displayAdmin"=>"Administrator view",
+			"HEADER_displayAdminInfo"=>"This option also allows you to display elements of the space that are not assigned to you (folders, calendars, etc)",
 			"HEADER_displayAdminEnabled"=>"Administrator view enabled",
-			"HEADER_displayAdminInfo"=>"This option also allows you to display elements of the space that are not assigned to you",
 			"HEADER_searchElem"=>"Search in the space",
 			"HEADER_documentation"=>"Documentation",
 			"HEADER_shortcuts"=>"Shortcuts",
@@ -512,7 +512,7 @@ class Trad extends Txt
 			"AGORA_backupConfirm"=>"This operation can take several minutes: confirm the download?",
 			"AGORA_diskSpaceInvalid"=>"Disk space for files must be an integer",
 			"AGORA_visioHostInvalid"=>"The web address of your videocall server is invalid : it must start with 'https'",
-			"AGORA_mapApiKeyInvalid"=>"If you choose Google Map as the mapping tool, you must specify an 'API Key'",
+			"AGORA_gApiKeyInvalid"=>"If you choose Google Map as the mapping tool, you must specify an 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"If you choose the optional connection via Google, you must specify an 'API Key' for Google SignIn",
 			"AGORA_confirmModif"=>"Confirm modifications ?",
 			"AGORA_name"=>"Space name",
@@ -548,14 +548,12 @@ class Trad extends Txt
 			"AGORA_usersLike"=>"Like !",
 			"AGORA_mapTool"=>"Mapping tool",
 			"AGORA_mapToolTooltip"=>"Mapping tool to see users and contacts on a map",
-			"AGORA_mapApiKey"=>"API Key for mapping tool",
-			"AGORA_mapApiKeyTooltip"=>"API Key for Google Map mapping tool : <br>https://developers.google.com/maps/ <br>https://developers.google.com/maps/documentation/javascript/get-api-key",
+			"AGORA_gApiKey"=>"Google API Key for Maps and Contacts Import",
+			"AGORA_gApiKeyTooltip"=>"Configuration to display Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
 			"AGORA_gIdentity"=>"Optional connection via Google",
 			"AGORA_gIdentityTooltip"=>"Users can connect more easily to their space through their Google account : for that, an email <i>@gmail.com</ i> must already be registered on the account of the user.",
 			"AGORA_gIdentityClientId"=>"Google Sign-In settings : Client ID",
 			"AGORA_gIdentityClientIdTooltip"=>"This setting is required to enable Google Sign-In : https://developers.google.com/identity/sign-in/web/",
-			"AGORA_gPeopleApiKey"=>"Google People settings :  API KEY",
-			"AGORA_gPeopleApiKeyTooltip"=>"This setting is required to get Google / Gmail contacts : <a href='https://developers.google.com/people/' target='_blank'>https://developers.google.com/people/</a>",
 			"AGORA_messengerDisplay"=>"Instant messenger",
 			"AGORA_personsSort"=>"Sort users and contacts",
 			//SMTP
@@ -669,7 +667,7 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Modify my user profile",
 			// Invitation
 			"USER_sendInvitation"=>"Send invitations by email",
-			"USER_sendInvitationTooltip"=>"Send invitations to your contacts, to create a user account and join the workspace.<hr><img src='app/img/google.png' height=15> If you have a Google account, you will be able to send invitations to your Gmail contacts.",
+			"USER_sendInvitationTooltip"=>"Send email invitations to join the current space. As soon as an invitation is validated, a user account is automatically created for the person concerned",
 			"USER_mailInvitationObject"=>"Invitation of", // ..Jean DUPOND
 			"USER_mailInvitationFromSpace"=>"invites you to join the space", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
 			"USER_mailInvitationConfirm"=>"Click here to confirm the invitation",
@@ -832,6 +830,7 @@ class Trad extends Txt
 			"CALENDAR_display_3Days"=>"3 days",
 			"CALENDAR_display_7Days"=>"7 days",
 			"CALENDAR_display_week"=>"Week",
+			"CALENDAR_display_workWeek"=>"Working week",
 			"CALENDAR_display_month"=>"Month",
 			"CALENDAR_yearWeekNum"=>"See the week n°",
 			"CALENDAR_periodNext"=>"Next period",

@@ -34,9 +34,9 @@ $(function(){
 	});
 
 	/**************************************************************************************************************************************************
-	 *	AFFICHE DU "MAPAPIKEYDIV" SI "MAPTOOL"=="GMAP"  &&   AFFICHE DU "GIDENTITYCLIENTID" SI "GIDENTITY" EST ACTIVÉ  ("TRIGGER()" INITIE L'AFFICHAGE)
+	 *	AFFICHE DU "gApiKeyDiv" SI "MAPTOOL"=="GMAP"  &&   AFFICHE DU "GIDENTITYCLIENTID" SI "GIDENTITY" EST ACTIVÉ  ("TRIGGER()" INITIE L'AFFICHAGE)
 	 ***************************************************************************************************************************************************/
-	$("select[name='mapTool']").on("change",function(){  this.value=="gmap" ? $("#mapApiKeyDiv").fadeIn() : $("#mapApiKeyDiv").fadeOut();  }).trigger("change");
+	$("select[name='mapTool']").on("change",function(){  this.value=="gmap" ? $("#gApiKeyDiv").fadeIn() : $("#gApiKeyDiv").fadeOut();  }).trigger("change");
 	$("select[name='gIdentity']").on("change",function(){  this.value=="1" ? $("#gIdentityClientIdDiv").fadeIn() : $("#gIdentityClientIdDiv").fadeOut();  }).trigger("change");
 
 	/*******************************************************************************************
@@ -45,12 +45,12 @@ $(function(){
 	$("#mainForm").submit(function(){
 		//Contrôle le nom de l'espace
 		if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
-		//Contrôle de l'espace disque, l'url de serveur de visio, le mapApiKey et gIdentityClientId
+		//Contrôle de l'espace disque, l'url de serveur de visio, le gApiKey et gIdentityClientId
 		<?php if(Req::isHost()==false){ ?>
 		if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
 		if($("input[name='visioHost']").isNotEmpty() && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
 		if($("input[name='visioHostAlt']").isNotEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
-		if($("select[name='mapTool']").val()=="gmap" && $("input[name='mapApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_mapApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
+		if($("select[name='mapTool']").val()=="gmap" && $("input[name='gApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_gApiKeyInvalid") ?>");  return false;}	//Doit spécifier un "API Key"
 		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>");  return false;}	//Idem
 		<?php } ?>
 		return confirm("<?= Txt::trad("AGORA_confirmModif") ?>");
@@ -66,7 +66,6 @@ $(function(){
 #pageModuleMenu hr			{margin:20px 0px;}
 
 /*Formulaire principal*/
-.objField>div				{padding:4px 0px 4px 0px;}/*surcharge*/
 input[type='radio']+label	{margin-right:20px;}/*espace entre chaque input + label*/
 #logoImg, #logoConnectImg	{margin:0px 10px; max-width:80px; max-height:40px;}/*surcharge ".objField img"*/
 #logoUrl					{margin-top:10px;}
@@ -306,7 +305,7 @@ input[type='radio']+label	{margin-right:20px;}/*espace entre chaque input + labe
 				<div><img src="app/img/map.png"><?= Txt::trad("AGORA_mapTool") ?></div>
 				<div>
 					<select name="mapTool">
-						<option value="leaflet">OpenStreetMap / Leaflet</option>
+						<option value="leaflet">OpenStreetMap</option>
 						<option value="gmap" <?= Ctrl::$agora->mapTool=="gmap"?"selected":null ?>>Google Map</option>
 					</select>
 				</div>
@@ -314,9 +313,9 @@ input[type='radio']+label	{margin-right:20px;}/*espace entre chaque input + labe
 
 			<!--GOOGLE MAP APIKEY (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-				<div class="objField" id="mapApiKeyDiv" title="<?= Txt::trad("AGORA_mapApiKeyTooltip") ?>">
-					<div><img src="app/img/map.png"><?= Txt::trad("AGORA_mapApiKey") ?></div>
-					<div><input type="text" name="mapApiKey" value="<?= Ctrl::$agora->mapApiKey ?>"></div>
+				<div class="objField" id="gApiKeyDiv" title="<?= Txt::trad("AGORA_gApiKeyTooltip") ?>">
+					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gApiKey") ?></div>
+					<div><input type="text" name="gApiKey" value="<?= Ctrl::$agora->gApiKey ?>"></div>
 				</div>
 			<?php } ?>
 
@@ -331,15 +330,11 @@ input[type='radio']+label	{margin-right:20px;}/*espace entre chaque input + labe
 				</div>
 			</div>
 
-			<!--GOOGLE SIGNIN "CLIENT ID" & PEOPLE "API KEY" (AUTO-HEBERGEMENT)-->
+			<!--GOOGLE SIGNIN "CLIENT ID" (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
 				<div class="objField" id="gIdentityClientIdDiv" title="<?= Txt::trad("AGORA_gIdentityClientIdTooltip") ?>">
 					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentityClientId") ?></div>
 					<div><input type="text" name="gIdentityClientId" value="<?= Ctrl::$agora->gIdentityClientId ?>"></div>
-				</div>
-				<div class="objField" title="<?= Txt::trad("AGORA_gPeopleApiKeyTooltip") ?>">
-					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gPeopleApiKey") ?></div>
-					<div><input type="text" name="gPeopleApiKey" value="<?= Ctrl::$agora->gPeopleApiKey ?>"></div>
 				</div>
 			<?php } ?>
 

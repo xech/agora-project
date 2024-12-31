@@ -118,8 +118,8 @@ class MdlCalendar extends MdlObject
 	public function evtList($durationBegin, $durationEnd, $accessRightMin, $categoryFilter=false, $pluginParams=false)
 	{
 		////	EVT AFFECTÉS À L'AGENDA COURANT ET CONFIRMÉS (INIT LA SELECTION)
-		$sqlSelection="_id IN (select _idEvt from ap_calendarEventAffectation where _idCal=".$this->_id." and confirmed=1)";									
-		////	EVT DANS LA DURÉE/PERIODE  (début d'evt dans la durée || fin d'evt dans la durée || evt avant et après la durée)  &&  EVT RÉCURRENTS (début d'evt avant la durée && (fin de de l'evt null || après le début de la durée))
+		$sqlSelection="_id IN (SELECT _idEvt FROM ap_calendarEventAffectation WHERE _idCal=".$this->_id." AND confirmed=1)";
+		////	EVT DANS LA DURÉE/PERIODE  (début d'evt dans la période || fin d'evt dans la période || evt avant et après la période)  &&  EVT RÉCURRENTS (evt commence avant la période && (pas de fin de récurrence || fin de récurrence après/pendant la période))
 		$sqlDurBegin	=Db::format(date("Y-m-d H:i:00",$durationBegin));
 		$sqlDurEnd		=Db::format(date("Y-m-d H:i:59",$durationEnd));
 		$sqlBeginEnd	='((dateBegin BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateEnd BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateBegin <= '.$sqlDurBegin.' AND dateEnd >= '.$sqlDurEnd.'))';
@@ -134,22 +134,22 @@ class MdlCalendar extends MdlObject
 			if($tmpEvt->accessRight() < $accessRightMin)  {unset($eventList[$keyEvt]);}
 		}
 		////	AJOUTE LES RÉCURRENCES D'EVENEMENTS (CLONE)
-		if(($durationEnd-$durationBegin)<3888000){																				//Uniquement si affichage < 45j (semaine/mois)
+		if(($durationEnd-$durationBegin)<5184000){																				//Uniquement si affichage semaine/mois (60 jours max)
 			foreach($eventList as $keyEvt=>$tmpEvt){																			//Parcourt chaque evt
 				if(!empty($tmpEvt->periodType)){																				//Vérif si l'evt est récurrent
 					$tmpEvt->cloneNb=0;																							//Compteur de récurrence
 					for($tmpDayBegin=$durationBegin; $tmpDayBegin<=$durationEnd; $tmpDayBegin+=86400){							//Parcourt chaque jour de la durée/période
 						$tmpDayEnd=($tmpDayBegin+86399);																		//Fin du jour courant
 						$evtInDuration=static::evtInDuration($tmpEvt,$tmpDayBegin,$tmpDayEnd);									//Zappe si la date courante correspond à la dateBegin/dateEnd de l'evt (evt de départ) 
-						$evtInExceptions=preg_match("/".date("Y-m-d",$tmpDayBegin)."/",(string)$tmpEvt->periodDateExceptions);	//Zappe si la date courante est dans les "periodDateExceptions"
 						$evtExpired=(!empty($tmpEvt->periodDateEnd) && $tmpDayBegin > strtotime($tmpEvt->periodDateEnd));		//Zappe si la date courante est après "periodDateEnd"
 						$evtNotStarted=($tmpDayEnd < strtotime($tmpEvt->dateBegin));											//Zappe si la date courante est avant le début de l'evt (cf. dateBegin de départ)
-						if($evtInDuration==false && empty($evtInExceptions) && $evtExpired==false && $evtNotStarted==false){	//Ajoute si besoin une récurrence pour le jour courant
+						$evtInExceptions=preg_match("/".date("Y-m-d",$tmpDayBegin)."/",(string)$tmpEvt->periodDateExceptions);	//Zappe si la date courante est dans les "periodDateExceptions"
+						if($evtInDuration==false && $evtExpired==false && $evtNotStarted==false && empty($evtInExceptions)){	//Ajoute si besoin une récurrence pour le jour courant
 							$dateReplace=null;
 							$periodValues=Txt::txt2tab($tmpEvt->periodValues);
-							if($tmpEvt->periodType=="weekDay" && in_array(date("N",$tmpDayBegin),$periodValues))														{$dateReplace="Y-m-d";}	//Remplace le jour
-							elseif($tmpEvt->periodType=="month" && in_array(date("m",$tmpDayBegin),$periodValues) && date("d",$tmpDayBegin)==date("d",$tmpDayBegin))	{$dateReplace="Y-m";}	//Remplace le mois
-							elseif($tmpEvt->periodType=="year" && date("m-d",$tmpEvt->timeBegin)==date("m-d",$tmpDayBegin))												{$dateReplace="Y";}		//Remplace l'année
+							if($tmpEvt->periodType=="weekDay" && in_array(date("N",$tmpDayBegin),$periodValues))															{$dateReplace="Y-m-d";}	//Remplace le jour
+							elseif($tmpEvt->periodType=="month" && in_array(date("m",$tmpDayBegin),$periodValues) && date("d",$tmpEvt->timeBegin)==date("d",$tmpDayBegin))	{$dateReplace="Y-m";}	//Remplace le mois
+							elseif($tmpEvt->periodType=="year" && date("m-d",$tmpEvt->timeBegin)==date("m-d",$tmpDayBegin))													{$dateReplace="Y";}		//Remplace l'année
 							if(!empty($dateReplace)){
 								$evtClone=clone $tmpEvt;																										//Clone l'evt de départ
 								$evtClone->dateBegin=str_replace(date($dateReplace,$tmpEvt->timeBegin), date($dateReplace,$tmpDayBegin), $tmpEvt->dateBegin);	//Remplace le dateBegin par celle du jour courant

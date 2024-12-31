@@ -59,7 +59,7 @@ $(function(){
 		event.preventDefault();																																			//Pas de validation du form
 		let objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());																								//Récupère "objUrl" du form principal de connexion
 		let password=encodeURIComponent($("#publicSpacePassword").val());																								//Récupère le password
-		$.ajax("?action=PublicSpacePassword&_idSpaceAccess="+$("[name='_idSpaceAccess']").val()+"&password="+password).done(function(result){							//Controle Ajax du password
+		$.ajax("index.php?action=PublicSpacePassword&_idSpaceAccess="+$("[name='_idSpaceAccess']").val()+"&password="+password).done(function(result){					//Controle Ajax du password
 			if(/passwordError/i.test(result))	{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}																//Notif d'erreur de password
 			else								{redir("index.php?_idSpaceAccess="+$("[name='_idSpaceAccess']").val()+"&password="+password+"&objUrl="+objUrlEncoded);}	//Redir vers l'espace demandé!
 		});
@@ -69,7 +69,7 @@ $(function(){
 
 <style>
 body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
-#headerBar>div								{padding:0px 20px;}/*surcharge*/
+#headerBar									{height:40px; line-height:40px; text-align:center; font-size:1.05em;}/*surcharge*/
 .miscContainer								{width:500px; margin:10px auto; padding:25px 10px; border-radius:10px; text-align:center;}/*surcharge*/
 .miscContainer input:not([type=checkbox]), .miscContainer button	{width:var(--inputWidth); height:45px!important; border-radius:5px; margin-bottom:12px!important;}
 .miscContainer button						{margin-bottom:25px!important;}
@@ -95,9 +95,10 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	body									{--inputWidth:340px;}/*Variable: largeur des boutons et Inputs*/
-	#headerBar>div							{display:block; padding:3px 10px; text-align:left!important; font-weight:normal;}/*surcharge*/
-	.miscContainer							{width:100%; margin:30px 0px;}
+	body									{--inputWidth:320px;}/*Variable: largeur des boutons et Inputs*/
+	#headerBar								{font-size:1em;}/*surcharge*/
+	#headerBar span							{display:none;}
+	.miscContainer							{width:95%; margin-top:30px!important; border-radius:10px!important;}/*surcharge*/
 	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%; text-align:left!important;}
 	#publicSpaceTab .option					{margin-left:40px; margin-top:10px;}
 	.vConnectOptions>div					{font-size:0.9em;}
@@ -106,8 +107,7 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 
 
 <div id="headerBar">
-	<div><?= Ctrl::$agora->name ?></div>
-	<div><?= Ctrl::$agora->description ?></div>
+	<?= ucfirst(Ctrl::$agora->name).(!empty(Ctrl::$agora->description) ? '<span> - '.ucfirst(Ctrl::$agora->description).'<span>' : null) ?></span>
 </div>
 
 <div id="pageCenter">
@@ -120,12 +120,14 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 
 	<!--CONNEXION A UN ESPACE PUBLIC (INVITE)-->
 	<?php if(!empty($objPublicSpaces)){ ?>
-	<div id="publicSpaceTab" class="miscContainer">
-		<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRightBig.png"></div>
-		<div>
-			<?php foreach($objPublicSpaces as $tmpSpace){ ?>
-				<div class="option" data-idSpace="<?= $tmpSpace->_id ?>" data-hasPassword="<?= $tmpSpace->password?'true':'false' ?>" title="<?= Txt::trad("guestAccessTooltip")."<br>".$tmpSpace->description ?>"><?= $tmpSpace->name ?></div>
-			<?php } ?>
+	<div class="miscContainer">
+		<div id="publicSpaceTab">
+			<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRightBig.png"></div>
+			<div>
+				<?php foreach($objPublicSpaces as $tmpSpace){ ?>
+					<div class="option" data-idSpace="<?= $tmpSpace->_id ?>" data-hasPassword="<?= $tmpSpace->password?'true':'false' ?>" title="<?= Txt::trad("guestAccessTooltip")."<br>".$tmpSpace->description ?>"><?= $tmpSpace->name ?></div>
+				<?php } ?>
+			</div>
 		</div>
 	</div>
 	<form id="publicSpaceForm" class="vLightboxForm">
@@ -158,7 +160,7 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 			////	Callback pour traiter l'appel à Google Identity
 			function gIdentityResponse(response){
 				const jsonResponse=jwt_decode(response.credential);																		//Décode le JSON Web Token
-				$.ajax("?action=GIdentityControl&credential="+response.credential).done(function(ajaxResult){							//Controle Ajax de la connexion de l'user
+				$.ajax("index.php?action=GIdentityControl&credential="+response.credential).done(function(ajaxResult){					//Controle Ajax de la connexion de l'user
 					if(/userConnected/i.test(ajaxResult))	{redir("index.php");}														//User connecté : recharge la page courante
 					else									{notify(jsonResponse.email+" <?= Txt::trad("gIdentityUserUnknown") ?>");}	//Notif d'erreur
 				});
