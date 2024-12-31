@@ -4,10 +4,35 @@ CHANGELOG - JOURNAL DES VERSIONS
 #################################
 
 
-VERSION 24.11.1
+VERSION 25.1.0
+###############
+Amélioration de l'import de contacts via Google People
+Fusion des champs de paramétrage général "gPeopleApiKey" et "mapApiKey" via "gApiKey"
+Corrections et optimisations diverses
+-----
+Improved import of contacts via Google People
+Merged general setting fields "gPeopleApiKey" and "mapApiKey" via "gApiKey"
+Various fixes and optimizations
+
+
+VERSION 24.12.1
+###############
+Optimisation de l'affichage des agendas
+Nouvelle traduction en Italien
+Optimisation de l'affichage des cartes via GMaps
+Corrections et optimisations diverses
+-----
+Optimization of the display of calendars
+New Italian translation
+Map display optimizations via GMaps
+Various fixes and optimizations
+
+
+VERSION 24.11.2
 ###############
 Nouvel affichage des agendas sur 7 jours consécutifs (en + de "semaine")
 Amélioration de l'impression des agendas mois/semaine
+Amélioration de l'affichage des créneaux occupés lors de l'édition d'un événement
 Optimisation des modes d'affichage des agendas sur mobile
 Meilleure gestion du téléchargement de fichier sur l'application mobile
 Amélioration du menu de lancement des visioconférences
@@ -17,6 +42,7 @@ Correction d'affichage des agendas semaine sur Mac Safari
 -----
 New display of calendars over 7 consecutive days (in addition to "week")
 Better management of printing month/week calendars
+Improved display of occupied slots when editing an event
 Optimization of calendar display modes on mobile
 Improved management of file download on mobile App
 Improvement of the launch menu of videoconferences
