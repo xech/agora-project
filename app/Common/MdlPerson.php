@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -15,7 +15,7 @@ class MdlPerson extends MdlObject
 	public static $displayModes=["block","line"];
 	public static $requiredFields=["name","firstName","login"];
 	public static $searchFields=["name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment"];
-	//Valeurs en cache
+	//Init le cache
 	private $_profileImg=null;
 	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
 	public static $csvFormats=array(
@@ -166,36 +166,36 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 * AFFICHE LES INFOS SUR LA PERSONNE  ($mode : block / line / profile / edit)
 	 *******************************************************************************************/
-	public function getFieldsValues($mode)
+	public function getFields($mode)
 	{
 		$labels=null;
 		//Affichage en page principale ("display mode" block || line)
 		if($mode=="block" || $mode=="line")
 		{
-			if($this->userMailDisplay())  {$labels.=$this->getFieldValue("mail",$mode);}
-			$labels.=	$this->getFieldValue("companyOrganization",$mode).
-						$this->getFieldValue("function",$mode).
-						$this->getFieldValue("telephone",$mode).
-						$this->getFieldValue("telmobile",$mode).
-						$this->getFieldValue("fullAdress",$mode);
+			if($this->userMailDisplay())  {$labels.=$this->getField("mail",$mode);}
+			$labels.=	$this->getField("companyOrganization",$mode).
+						$this->getField("function",$mode).
+						$this->getField("telephone",$mode).
+						$this->getField("telmobile",$mode).
+						$this->getField("fullAdress",$mode);
 		}
 		//Affichage du profil (vue / édition)
 		elseif($mode=="profile" || $mode=="edit")
 		{
-			if($mode=="edit")  				{$labels.=$this->getFieldValue("civility",$mode).$this->getFieldValue("name",$mode).$this->getFieldValue("firstName",$mode)."<hr>";}
-			if($this->userMailDisplay())	{$labels.=$this->getFieldValue("mail",$mode);}
-			$labels.=	$this->getFieldValue("telmobile",$mode).
-						$this->getFieldValue("telephone",$mode).
-						$this->getFieldValue("adress",$mode).
-						$this->getFieldValue("postalCode",$mode).
-						$this->getFieldValue("city",$mode).
-						$this->getFieldValue("country",$mode).
-						$this->getFieldValue("function",$mode).
-						$this->getFieldValue("companyOrganization",$mode).
-						$this->getFieldValue("comment",$mode);
+			if($mode=="edit")  				{$labels.=$this->getField("civility",$mode).$this->getField("name",$mode).$this->getField("firstName",$mode)."<hr>";}
+			if($this->userMailDisplay())	{$labels.=$this->getField("mail",$mode);}
+			$labels.=	$this->getField("telmobile",$mode).
+						$this->getField("telephone",$mode).
+						$this->getField("adress",$mode).
+						$this->getField("postalCode",$mode).
+						$this->getField("city",$mode).
+						$this->getField("country",$mode).
+						$this->getField("function",$mode).
+						$this->getField("companyOrganization",$mode).
+						$this->getField("comment",$mode);
 		}
 		//Date de dernière connexion
-		if(static::objectType=="user" && $mode=="profile" && Ctrl::$curUser->isSpaceAdmin())   {$labels.=$this->getFieldValue("lastConnection",$mode);}
+		if(static::objectType=="user" && Ctrl::$curUser->isSpaceAdmin())  {$labels.=$this->getField("lastConnection",$mode);}
 		//Retourne le résultat
 		return $labels;
 	}
@@ -203,28 +203,39 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 * AFFICHE UNE INFO SUR LA PERSONNE  ($mode : "block", "line", "profile", "edit")
 	 *******************************************************************************************/
-	public function getFieldValue($fieldName, $mode)
+	public function getField($fieldName, $mode)
 	{
-		//Valeur du champ
-		$fieldValue=(string)$this->$fieldName;
-		//Habillage du champ en mode "Edit" ||  Habillage de certains champs spécifiques
+		//Cast la valeur du champ
+		$fieldVal=(string)$this->$fieldName;
+		//Edition du champ
 		if($mode=="edit"){
-			if($fieldName=="comment")	{$fieldValue="<textarea name='".$fieldName."'>".strip_tags($fieldValue)."</textarea>";}
-			else						{$fieldValue="<input type='text' name='".$fieldName."' value=\"".strip_tags($fieldValue)."\">";}
+			if($fieldName=="comment")	{$fieldVal='<textarea name="'.$fieldName.'">'.strip_tags($fieldVal).'</textarea>';}
+			else						{$fieldVal='<input type="text" name="'.$fieldName.'" value="'.strip_tags($fieldVal).'">';}
 		}
-		//Mail : redirige vers le module mail (ou à défaut, l'outil de messagerie). "parent" pour rediriger aussi depuis un lightbox..
-		elseif($fieldName=="mail" && !empty($fieldValue)){
-			$mailtoUrl=(Ctrl::$curSpace->moduleEnabled("mail"))  ?  "onclick=\"windowParent.redir('?ctrl=mail&checkedMailto=".$this->$fieldName."');\""  :  "href=\"mailto:".$this->$fieldName."\"";
-			$fieldValue="<a ".$mailtoUrl." ".Txt::tooltip("sendMail").">".$this->$fieldName." &nbsp;<img src='app/img/person/mail.png'></a>";
+		//Mail : redirige vers le module mail ou un simple "mailto"
+		elseif($fieldName=="mail" && !empty($fieldVal)){
+			$mailtoUrl=Ctrl::$curSpace->moduleEnabled("mail")  ?  'onclick="window.parent.redir(\'?ctrl=mail&checkedMailto='.$this->$fieldName.'\')"'  :  'href="mailto:'.$this->$fieldName.'"';
+			$fieldVal='<a '.$mailtoUrl.' '.Txt::tooltip("sendMail").'>'.$this->$fieldName.'</a>';
 		}
-		elseif($fieldName=="fullAdress" && $this->hasAdress())	{$fieldValue="<a onclick=\"lightboxOpen('?ctrl=misc&action=PersonsMap&objectsTypeId[".static::objectType."]=".$this->_id."');\" ".Txt::tooltip("mapLocalize").">".$this->adress." ".$this->postalCode." ".$this->city." <img src='app/img/map.png'></a>";}//Adresse complete : affiche une carte 
-		elseif($fieldName=="lastConnection")					{$fieldValue=(!empty($fieldValue))  ?  Txt::trad("lastConnection2")." ".Txt::dateLabel($fieldValue,"dateMini")  :  Txt::trad("lastConnectionEmpty");}//"Connecté le 20 mars" / "Pas encore connecté"
-		elseif($fieldName=="comment")							{$fieldValue=nl2br($fieldValue);}
+		//Dernière connexion
+		elseif($fieldName=="lastConnection"){
+			if($mode=="profile" && empty($fieldVal))						{$fieldVal=Txt::trad("notConnected");}
+			elseif(!empty($fieldVal) && date("Ymd")==date("Ymd",$fieldVal))	{$fieldVal=Txt::trad("connectedToday");}
+			elseif(!empty($fieldVal))										{$fieldVal=Txt::trad("connectedThe").' '.Txt::dateLabel($fieldVal,"dateBasic");}
+		}
+		//Adresse complete : affiche une carte 
+		elseif($fieldName=="fullAdress" && $this->hasAdress()){
+			$fieldVal='<a onclick="lightboxOpen(\'?ctrl=misc&action=PersonsMap&objectsTypeId['.static::objectType.']='.$this->_id.'\')" '.Txt::tooltip("mapLocalize").'><img src="app/img/map.png"> '.$this->adress.' '.$this->postalCode.' '.$this->city.'</a>';
+		}
+		//Commentaire
+		elseif($fieldName=="comment"){
+			$fieldVal=nl2br($fieldVal);
+		}
 		//Retourne le champ dans son conteneur
-		if(!empty($fieldValue)){
-			if($mode=="block")		{return '<div class="objPersonDetail">'.$fieldValue.'</div>';}
-			elseif($mode=="line")	{return '<div class="objPersonDetail">'.$fieldValue.'</div><img src="app/img/separator.png" class="objPersonDetailSeparator">';}
-			else					{return '<div class="objField"><div><img src="app/img/person/'.$fieldName.'.png"> '.Txt::trad($fieldName).'</div><div>'.$fieldValue.'</div></div>';}
+		if(!empty($fieldVal)){
+			if($mode=="block")		{return '<div class="objPersonDetail">'.$fieldVal.'</div>';}
+			elseif($mode=="line")	{return '<div class="objPersonDetail">'.$fieldVal.'</div><img src="app/img/separator.png" class="objPersonDetailSeparator">';}
+			else					{return '<div class="objField"><div><img src="app/img/person/'.$fieldName.'.png"> '.Txt::trad($fieldName).'</div><div>'.$fieldVal.'</div></div>';}
 		}
 	}
 
@@ -249,9 +260,9 @@ class MdlPerson extends MdlObject
 	/*******************************************************************************************
 	 *  IMAGE DU PROFIL : BALISE <IMG>
 	 *******************************************************************************************/
-	public function profileImg($openProfile=false, $smallImg=false, $defaultImg=false)
+	public function profileImg($openProfile=false, $smallImg=false)
 	{
-		$imgPath=$this->profileImgPath($defaultImg);
+		$imgPath=$this->profileImgPath(false);
 		if(!empty($imgPath)){
 			$personImg='<img src="'.$imgPath.'" class="personImg '.($smallImg==true?"personImgSmall":null).'">';
 			if($openProfile==true)  {$personImg='<a onclick="'.$this->openVue().'" '.Txt::tooltip("displayProfil").'>'.$personImg.'</a>';}

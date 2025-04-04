@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -31,9 +31,11 @@ abstract class Ctrl
 	 *******************************************************************************************/
 	public static function initCtrl()
 	{
-		////	Lance la session || Déconnexion & réinit la session
-		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Différent pour chaque db
+		////	Lance la session
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Correspondant à db_name
 		session_start();
+
+		////	Déconnexion demandée
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
@@ -65,7 +67,7 @@ abstract class Ctrl
 
 			////	Enregistre le cookie pour "Req::isMobileApp()"
 			if(!empty($_GET["mobileAppli"])){
-				setcookie("mobileAppli", "true", TIME_COOKIES);
+				setcookie("mobileAppli", "true", TIME_COOKIES, "/");//Sur tout le path/domaine
 				$_COOKIE["mobileAppli"]="true";
 			}
 
@@ -79,7 +81,8 @@ abstract class Ctrl
 			////	Init/Switch l'affichage administrateur
 			if(self::$curUser->isSpaceAdmin() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(bool)(Req::param("displayAdmin")=="true");
-				if($_SESSION["displayAdmin"]==true)  {Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+				if($_SESSION["displayAdmin"]==true)		{Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." :<br> ".Txt::trad("HEADER_displayAdminInfo"));}
+				else									{Ctrl::notify("HEADER_displayAdminDisabled");}
 			}
 
 			////	Affichage des utilisateurs ("space"=espace courant || "all"=tous)  &&  Charge l'objet courant
@@ -113,11 +116,11 @@ abstract class Ctrl
 			////	CONNEXION VIA FORMULAIRE
 			if($connectViaForm==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
-				$passwordClear=Req::param("connectPassword");
-				$passwordVerifyHost=(Req::isHost() && Host::passwordVerifyHost($passwordClear));
+				$clearPassword=Req::param("connectPassword");
+				$passwordVerifyHost=(Req::isHost() && Host::passwordVerifyHost($clearPassword));
 				//// Verif si le password correspond à un hash :  "password_verify()" avec hash Bcrypt  ||  "passwordSha1()" : obsolete mais tjs retro-compatible  ||  "passwordVerifyHost()" : specific aux hosts
-				if(!empty($tmpUser)  &&  (password_verify($passwordClear,$tmpUser["password"]) || MdlUser::passwordSha1($passwordClear)==$tmpUser["password"] || $passwordVerifyHost==true)){
-					if($passwordVerifyHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}// Update le hash ..sauf pour les hosts!
+				if(!empty($tmpUser)  &&  (password_verify($clearPassword,$tmpUser["password"]) || MdlUser::passwordSha1($clearPassword)==$tmpUser["password"] || $passwordVerifyHost==true)){
+					if($passwordVerifyHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}// Update le hash ..sauf pour les hosts!
 					$userAuthentified=true;
 				}
 			}
@@ -170,7 +173,7 @@ abstract class Ctrl
 		{
 			//// Init l'espace sélectionné et les espaces disponibles
 			$idSpaceSelected=null;
-			$userSpaces=self::$curUser->getSpaces();
+			$userSpaces=self::$curUser->spaceList();
 			//// Sélectionne un espace
 			if(!empty($userSpaces))
 			{
@@ -203,12 +206,12 @@ abstract class Ctrl
 				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();											//Récup les modules de l'espace courant		
 				if(Req::isParam("objUrl"))		{self::redir(Req::param("objUrl"));}										//Redir vers un objet de l'espace (cf. "getUrlExternal()")
 				elseif(!empty($spaceModules))	{self::redir("index.php?ctrl=".key($spaceModules));}						//Redir vers le premier module de l'espace
-				else							{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace : message d'erreur et déconnexion
+				else							{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace (notif et déconnexion)
 			}
-			//// User identifié mais affecté à aucun espace : message d'erreur et déconnexion
+			//// User identifié mais affecté à aucun espace (notif et déconnexion)
 			elseif(self::$userJustConnected==true)   {self::notify("NOTIF_noAccessNoSpaceAffected");  self::redir("index.php?disconnect=1");}
 		}
-		////	USER NON IDENTIFIÉ + AUCUN ESPACE PUBLIC DISPONIBLE (notif "Vous êtes maintenant déconnecté")
+		////	USER NON IDENTIFIÉ + AUCUN ESPACE PUBLIC DISPONIBLE (notif et déconnexion)
 		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}
 	}
 
@@ -222,19 +225,20 @@ abstract class Ctrl
 		if(!empty($_COOKIE["userAuthToken"])){
 			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);																		//Récupère le token du cookie
 			if(!empty($cookieToken[1]))  {Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));}	//Supprime le token correspondant dans la bdd
-			setcookie("userAuthToken", "", time()-TIME_COOKIES);																		//Supprime le cookie
+			setcookie("userAuthToken", "", -1);																							//Supprime le cookie sur tout le domaine
+			setcookie("userAuthToken", "", -1, "/");																					//Idem: sur tout le path/domaine (cf. "createHost()")
 			unset($_COOKIE["userAuthToken"]);																							//Idem
 		}
 		////	Créé un nouveau token au format : enregistre le token en bdd et dans un cookie
 		if($action=="create" && !empty($_idUser)){
-			require_once('app/misc/Browser.php');																				//Charge la classe "Browser()"
-			$browserObj=new Browser();																							//Récup les infos du browser
-			$browserId=(is_object($browserObj))  ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  :  null;			//Identifie le browser et l'OS
-			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);															//Créé un nouveau Token avec l'algo Bcrypt
-			$cookieToken=$_idUser."@@@".$userAuthToken;																			//Créé le token du cookie
-			setcookie("userAuthToken", $cookieToken, TIME_COOKIES);																//Enregistre le cookie
-			$_COOKIE["userAuthToken"]=$cookieToken;																				//Charge le cookie
-			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));			//Supprime en bdd les anciens tokens
+			require_once('app/misc/Browser.php');																						//Charge la classe "Browser()"
+			$browserObj=new Browser();																									//Récup les infos du browser
+			$browserId=(is_object($browserObj))  ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  :  null;					//Identifie le browser et l'OS
+			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);																	//Créé un nouveau Token avec l'algo Bcrypt
+			$cookieToken=$_idUser."@@@".$userAuthToken;																					//Créé le token du cookie
+			setcookie("userAuthToken", $cookieToken, TIME_COOKIES);																		//Enregistre le cookie
+			$_COOKIE["userAuthToken"]=$cookieToken;																						//Charge le cookie
+			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));					//Supprime en bdd les anciens tokens
 			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", browserId=".Db::format($browserId).", userAuthToken=".Db::format($userAuthToken).", dateCrea=NOW()");	//Enregistre le token en bdd !
 		}
 		////	Supprime les cookies de l'ancienne méthode  &&  Supprime les tokens de plus d'un an
@@ -297,35 +301,25 @@ abstract class Ctrl
 			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 			$vDatas["pathLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			//// HEADERMENU & MESSENGER (sauf si ctrl externe)
-			if(!in_array(Req::$curCtrl,["offline","misc"]))
-			{
-				//Espace Disk
-				$vDatasHeader["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
-				$vDatasHeader["diskSpaceAlert"]=($vDatasHeader["diskSpacePercent"]>70);
-				//Récupère les plugins "shortcuts" de chaque module
+			//// HEADER & MESSENGER (sauf si ctrl externe)
+			if(!in_array(Req::$curCtrl,["offline","misc"])){
+				//Plugins "shortcuts" des modules
 				$vDatasHeader["pluginsShortcut"]=[];
 				foreach(self::$curSpace->moduleList() as $tmpModule){
 					if(method_exists($tmpModule["ctrl"],"getPlugins"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"], $tmpModule["ctrl"]::getPlugins(["type"=>"shortcut"]));}
 				}
-				//Validation d'inscription d'utilisateurs  && Affiche la liste des espaces  && Liste des modules (Url, Description, Libellé, Class de l'icone)
-				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
-				$vDatasHeader["showSpaceList"]=(count(Ctrl::$curUser->getSpaces())>1);
+				//Liste des espaces et modules +  Inscription d'utilisateurs  +  Puis récupère la vue
+				$vDatasHeader["spaceList"]=self::$curUser->spaceList();
+				$vDatasHeader["spaceListMenu"]=(count($vDatasHeader["spaceList"])>=2);
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
-				foreach($vDatasHeader["moduleList"] as $moduleKey=>$tmpModule)	{$vDatasHeader["moduleList"][$moduleKey]["isCurModule"]=($tmpModule["moduleName"]==static::moduleName);}
-				//Récupère le menu principal : "HeaderMenu"
+				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
 				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
 				//Récupère le Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
 				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}
 			}
 		}
-		////	SKIN DE LA PAGE
-		$vDatas["skinCss"]=(!empty(self::$agora->skin) && self::$agora->skin=="black")  ?  "black"  :  "white";
-		////	NOTIFICATIONS PASSÉES EN GET/POST
-		if(Req::isParam("notify")){
-			foreach(Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}
-		}
-		////	AFFICHE LA VUE
+		////	NOTIFS (GET/POST)  +  AFFICHE LA VUE
+		foreach((array)Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}
 		$pathVue=(strstr($fileMainVue,Req::commonPath)==false)  ?  Req::curModPath()  :  null;//"app/Common/" déjà précisé?
 		$vDatas["mainContent"]=self::getVue($pathVue.$fileMainVue, $vDatasMainVue);
 		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
@@ -434,11 +428,21 @@ abstract class Ctrl
 	public static function redir($redirUrl, $urlNotify=true)
 	{
 		if(!empty($redirUrl)){
-			if($urlNotify==true)  {$redirUrl.=self::urlNotify();}													//Ajoute les notifs
-			if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}										//Redirection simple
-			else							{echo "<script> parent.location.href=\"".$redirUrl."\"; </script>";}	//Redirection de la page principale depuis une Iframe (ex: après édit/suppr d'un objet)
-			exit;																									//Fin de script
+			if($urlNotify==true)  {$redirUrl.=self::urlNotify();}												//Ajoute les notifs
+			if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}									//Redirection simple
+			else							{echo '<script> parent.location.href="'.$redirUrl.'"; </script>';}	//Redirection depuis une Iframe (ex: après édit/suppr d'un objet)
+			exit;																								//Fin de script
 		}
+	}
+	
+	/*******************************************************************************************
+	 * FERME LE LIGHTBOX VIA JS (ex: après édit d'objet)
+	 *******************************************************************************************/
+	public static function lightboxClose($urlRedir=null, $urlParms=null)
+	{
+		echo '<script src="app/Common/js-css-'.Req::appVersion().'/app.js"></script>
+			  <script>lightboxClose("'.$urlRedir.'","'.$urlParms.self::urlNotify().'");</script>';
+		exit;
 	}
 
 	/*******************************************************************************************
@@ -462,16 +466,6 @@ abstract class Ctrl
 		foreach(self::$notify as $message)  {$urlNotify.="&notify[]=".urlencode($message["message"]);}
 		return $urlNotify;
 	}
-	
-	/*******************************************************************************************
-	 * FERME LE LIGHTBOX VIA JS (ex: après édit d'objet)
-	 *******************************************************************************************/
-	public static function lightboxClose($urlRedir=null, $urlParms=null)
-	{
-		echo '<script src="app/js/common-'.Req::appVersion().'.js"></script>
-			  <script>lightboxClose("'.$urlRedir.'","'.$urlParms.self::urlNotify().'");</script>';
-		exit;
-	}
 
 	/*******************************************************************************************
 	 * AFFICHE "ELEMENT INACCESSIBLE" (OU AUTRE) & FIN DE SCRIPT
@@ -479,7 +473,7 @@ abstract class Ctrl
 	public static function noAccessExit($message=null)
 	{
 		if($message===null)  {$message=Txt::trad("inaccessibleElem");}
-		echo "<h2><img src='app/img/important.png' style='vertical-align:middle;'> ".$message."</h2>";
+		echo "<h2><img src='app/img/importantBig.png'> ".$message."</h2>";
 		exit;
 	}
 }

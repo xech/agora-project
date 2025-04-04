@@ -1,22 +1,11 @@
-<script>
-/*******************************************************************************************
- *	CRÉATION D'UN USER À PARTIR D'UN CONTACT
- *******************************************************************************************/
-function contactAddUser(typeId)
-{
-	if(confirm("<?= Txt::trad("CONTACT_createUserConfirm") ?>"))
-		{redir("?ctrl=contact&action=contactAddUser&typeId="+typeId);}
-}
-</script>
-
 <div id="pageFull">
-	<div id="pageModuleMenu">
+	<div id="pageMenu">
 		<?= MdlContact::menuSelect() ?>
-		<div id="pageModMenu" class="miscContainer">
+		<div class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
+				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
 				if(Ctrl::$curUser->isSpaceAdmin())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_contact")."</div></div>";}
 				echo "<hr>";
@@ -27,7 +16,8 @@ function contactAddUser(typeId)
 			?>
 		</div>
 	</div>
-	<div id="pageFullContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
+
+	<div id="pageContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());
@@ -35,15 +25,15 @@ function contactAddUser(typeId)
 		////	LISTE DES CONTACTS
 		foreach($contactList as $tmpContact)
 		{
-			echo $tmpContact->divContainerContextMenu("objPerson").
+			echo $tmpContact->objContainerMenu("objPerson").
 				"<div class='objContainerScroll'>
 					<div class='objContent'>
-						<div class='objIcon'>".$tmpContact->profileImg(true,false,true)."</div>
+						<div class='objIcon'>".$tmpContact->profileImg(true,false)."</div>
 						<div class='objLabel' onclick=\"".$tmpContact->openVue()."\">
 							".$tmpContact->getLabel("full")."
-							<div class='objPersonDetails'>".$tmpContact->getFieldsValues(MdlContact::getDisplayMode())."</div>
+							<div class='objPersonDetails'>".$tmpContact->getFields(MdlContact::getDisplayMode())."</div>
 						</div>
-						<div class='objAutorDate'>".$tmpContact->autorDateLabel()."</div>
+						<div class='objAutorDate'>".$tmpContact->autorDate()."</div>
 					</div>
 				</div>
 			</div>";

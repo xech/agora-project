@@ -30,7 +30,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	if(!empty($logUrl))  {echo '<div class="menuLine" onclick="lightboxOpen(\''.$logUrl.'\')"><div class="menuIcon"><img src="app/img/log.png"></div><div>'.Txt::trad("objHistory").'</div></div>';}
 
 	////	COPIER L'ADRESSE/URL D'ACCES (affiche puis masque l'input pour pouvoir être copié..)
-	if(!empty($getUrlExternal))  {echo '<div class="menuLine" '.Txt::tooltip("copyUrlTooltip").' onclick="$(this).find(\'input\').show().select();document.execCommand(\'copy\');$(this).find(\'input\').hide();notify(\''.Txt::trad("copyUrlConfirmed",true).'\')"><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'<input type="text" value="'.$getUrlExternal.'" style="display:none"></div></div>';}
+	if(!empty($getUrlExternal))  {echo '<div class="menuLine" '.Txt::tooltip("copyUrlTooltip").' onclick="$(this).find(\'input\').show().select();document.execCommand(\'copy\');$(this).find(\'input\').hide();notify(\''.Txt::trad("copyUrlNotif",true).'\')"><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'<input type="text" value="'.$getUrlExternal.'" style="display:none"></div></div>';}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	if(!empty($options["specificOptions"])){
@@ -54,7 +54,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	}
 
 	////	OBJET USER : EDIT DU MESSENGER / SUPPRIMER DE L'ESPACE / ESPACES AFFECTES A L'USER
-	if(!empty($userEditMessengerUrl))		{echo '<div class="menuLine" onclick="lightboxOpen(\''.$userEditMessengerUrl.'\')"><div class="menuIcon"><img src="app/img/messengerSmall.png"></div><div>'.Txt::trad("USER_messengerEdit2").'</div></div>';}
+	if(!empty($userEditMessengerUrl))		{echo '<div class="menuLine" onclick="lightboxOpen(\''.$userEditMessengerUrl.'\')"><div class="menuIcon"><img src="app/img/messenger.png"></div><div>'.Txt::trad("USER_livecounterVisibility").'</div></div>';}
 	if(!empty($deleteFromCurSpaceConfirm))	{echo '<div class="menuLine" onclick="'.$deleteFromCurSpaceConfirm.'"><div class="menuIcon"><img src="app/img/delete.png"></div><div>'.Txt::trad("USER_deleteFromCurSpace").'</div></div>';}
 	if(!empty($userSpaceList))				{echo '<hr><div class="menuLine"><div class="menuIcon"><img src="app/img/space.png"></div><div>'.$userSpaceList.'</div></div>';}
 
@@ -64,17 +64,17 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	////	AUTEUR ET DATE DE CREATION/MODIF
 	if(!empty($autorDateCrea)){
 		echo '<hr>';
-		if(!empty($autorDateCrea))	{echo '<div class="menuLine"><div class="menuContextTxtLeft">'.Txt::trad("createBy").'</div><div>'.$autorDateCrea.'</div></div>';}
+		if(!empty($autorDateCrea))	{echo '<div class="menuLine"><div class="menuContextTxtLeft">'.Txt::trad("createdBy").'</div><div>'.$autorDateCrea.'</div></div>';}
 		if(!empty($autorDateModif))	{echo '<div class="menuLine"><div class="menuContextTxtLeft">'.Txt::trad("modifBy").'</div><div>'.$autorDateModif.'</div></div>';}
-		if($curObj->isRecent())		{echo '<div class="menuLine"><div class="menuContextTxtLeft">&nbsp;</div><div>'.Txt::trad("objNew").' &nbsp;<img src="app/img/menuNewSmall.png"></div></div>';}
+		if($curObj->isRecent())		{echo '<div class="menuLine" '.Txt::tooltip("objNewTooltip").'><div class="menuContextTxtLeft">&nbsp;</div><div>'.Txt::trad("objNew").'&nbsp;<img src="app/img/menuNewSmall.png"></div></div>';}
 	}
 
 	////	AFFECTATIONS ET DROITS D'ACCES
 	if(!empty($affectLabels)){
 		echo '<hr>';
-		if(!empty($affectLabels["2"]))		{echo '<div class="menuLine sAccessWrite" '.Txt::tooltip($affectTooltips["2"]).'><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessWrite").'</abbr></div><div>'.$affectLabels["2"].'</div></div>';}
-		if(!empty($affectLabels["1.5"]))	{echo '<div class="menuLine sAccessWriteLimit" '.Txt::tooltip($affectTooltips["1.5"]).'><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessWriteLimit").'</abbr></div><div>'.$affectLabels["1.5"].'</div></div>';}
-		if(!empty($affectLabels["1"]))		{echo '<div class="menuLine sAccessRead" '.Txt::tooltip($affectTooltips["1"]).'><div class="menuContextTxtLeft"><abbr>'.Txt::trad("accessRead").'</abbr></div><div>'.$affectLabels["1"].'</div></div>';}
+		if(!empty($affectLabels["2"]))		{echo '<div class="menuLine sAccessWrite" '.Txt::tooltip($affectTooltips["2"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessWrite").'</div><div>'.$affectLabels["2"].'</div></div>';}
+		if(!empty($affectLabels["1.5"]))	{echo '<div class="menuLine sAccessWriteLimit" '.Txt::tooltip($affectTooltips["1.5"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessWriteLimit").'</div><div>'.$affectLabels["1.5"].'</div></div>';}
+		if(!empty($affectLabels["1"]))		{echo '<div class="menuLine sAccessRead" '.Txt::tooltip($affectTooltips["1"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessRead").'</div><div>'.$affectLabels["1"].'</div></div>';}
 	}
 
 	////	LISTE DES FICHIERS JOINTS
@@ -93,7 +93,7 @@ if($launcherIcon=="floatBig")
 			$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." : ".Txt::trad("commentAdd");
 			$commentOnclick="lightboxOpen('?ctrl=object&action=UsersComment&typeId=".$curObj->_typeId."')";
 			echo '<div class="objMiscMenuDiv '.(empty($commentNb)?"hideMiscMenu":null).'" id="usersComment_'.$curObj->_typeId.'" onclick="'.$commentOnclick.'" '.Txt::tooltip($commentTooltip).'>
-					<div class="menuCircle">'.(!empty($commentNb)?$commentNb:null).'</div>
+					<span class="circleNb">'.(!empty($commentNb)?$commentNb:null).'</span>
 					<img src="app/img/usersComment.png">
 				  </div>';
 		}
@@ -102,7 +102,7 @@ if($launcherIcon=="floatBig")
 			$likeNb=count($curObj->getUsersLike());
 			$likeOnclick="usersLikeUpdate('".$curObj->_typeId."')";
 			echo '<div class="objMiscMenuDiv '.(empty($likeNb)?"hideMiscMenu":null).'" id="usersLike_'.$curObj->_typeId.'" onclick="'.$likeOnclick.'" '.Txt::tooltip($curObj->usersLikeTooltip()).'>
-					<div class="menuCircle">'.(!empty($likeNb)?$likeNb:null).'</div>
+					<span class="circleNb">'.(!empty($likeNb)?$likeNb:null).'</span>
 					<img src="app/img/usersLike.png">
 				  </div>';
 		}

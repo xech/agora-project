@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -32,12 +32,11 @@ class CtrlLink extends Ctrl
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlLinkFolder::getPluginFolders($params);
-		foreach(MdlLink::getPluginObjects($params) as $tmpObj)
-		{
+		foreach(MdlLink::getPluginObjects($params) as $tmpObj){
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->description))  ?  $tmpObj->description  :  $tmpObj->adress;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
+			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel="window.open('".addslashes($tmpObj->adress)."');";
 			$pluginsList[]=$tmpObj;
 		}

@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -18,7 +18,7 @@ class MdlUser extends MdlPerson
 	const isSelectable=true;
 	public static $requiredFields=["login","name"];//password facultatif si modification de l'user
 	public static $sortFields=["name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","dateCrea@@desc","dateCrea@@asc","lastConnection@@asc","lastConnection@@desc"];
-	//Valeurs en cache
+	//Init le cache
 	private $_userSpaces=null;
 	private $_isAdminCurSpace=null;
 	private $_usersVisibles=null;
@@ -68,7 +68,7 @@ class MdlUser extends MdlPerson
 	 *******************************************************************************************/
 	public function accessRight()
 	{
-		//Init la mise en cache
+		//Init le cache
 		if($this->_accessRight===null)
 		{
 			//Droit par défaut
@@ -160,7 +160,7 @@ class MdlUser extends MdlPerson
 	 * ESPACES AUXQUELS EST AFFECTÉ L'UTILISATEUR
 	 * Retourne un tableau "objects" ou "ids"
 	 *******************************************************************************************/
-	public function getSpaces($return="objects")
+	public function spaceList($return="objects")
 	{
 		//Initialise la liste des objets "space"
 		if($this->_userSpaces===null){
@@ -211,7 +211,7 @@ class MdlUser extends MdlPerson
 	{
 		if(Ctrl::$curUser->isSpaceAdmin()){
 			Db::query("DELETE FROM ap_joinSpaceUser WHERE _idUser=".$this->_id." AND _idSpace=".(int)$_idSpace);
-			if(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".(int)$_idSpace." AND allUsers=1")>0)  {Ctrl::notify("USER_allUsersOnSpaceNotif");}
+			if(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".(int)$_idSpace." AND allUsers=1")>0)  {Ctrl::notify("USER_allUsersOnSpace");}
 		}
 	}
 
@@ -223,7 +223,7 @@ class MdlUser extends MdlPerson
 		//Init
 		if($this->_usersVisibles===null){
 			$idsSql=null;
-			foreach($this->getSpaces() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
+			foreach($this->spaceList() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
 			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Ctrl::$agora->personsSort);
 		}
 		//Par défaut, on enlève l'user courant  /  "mailFilter" => garde uniquement les users avec mail (cf. notifMailUsers)
@@ -273,17 +273,17 @@ class MdlUser extends MdlPerson
 	/*******************************************************************************************
 	 * SURCHARGE : AJOUT/MODIF D'UTILISATEUR
 	 *******************************************************************************************/
-	public function createUpdate($sqlProperties, $login=null, $passwordClear=null, $spaceId=null)
+	public function createUpdate($sqlFields, $login=null, $clearPassword=null, $spaceId=null)
 	{
 		////	Controles : quota atteint ? Login existe déjà ?
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
 		if(self::loginExists($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginExists")." (".$login.")");  return false;}
 		////	Ajoute le login, le password? si l'agenda perso est désactivé?
-		$sqlProperties=trim(trim($sqlProperties),",");
-		$sqlProperties.=", `login`=".Db::format($login);
-		if(!empty($passwordClear))  {$sqlProperties.=", `password`=".Db::format(password_hash($passwordClear,PASSWORD_DEFAULT));}
+		$sqlFields=trim(trim($sqlFields),",");
+		$sqlFields.=", `login`=".Db::format($login);
+		if(!empty($clearPassword))  {$sqlFields.=", `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT));}
 		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
-		$reloadedObj=parent::createUpdate($sqlProperties);
+		$reloadedObj=parent::createUpdate($sqlFields);
 		if($reloadedObj->isNewRecord()){
 			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");//Affecte l'user à tout le monde sur le messenger
 			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");//créé l'agenda, même si l'agenda est désactivé par défaut
@@ -296,13 +296,35 @@ class MdlUser extends MdlPerson
 		return $reloadedObj;
 	}
 
+	/*******************************************************************************************
+	 * CREATION D'USER : ENVOI DES CREDENTIALS PAR EMAIL (LOGIN/PASS)
+	 *******************************************************************************************/
+	public function createCredentialsMail($clearPassword, $hidePassword=false)
+	{
+		//Récupère l'email (login en priorité)
+		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
+		//Email non spécifié / Envoi du mail de reset de password
+		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
+		else{
+			$passwordLabel=($hidePassword==true)  ?  substr_replace($clearPassword,'*****',-5)  :  $clearPassword;			//Password avec les 5 derniers caractères masqués
+			$connectUrl=Req::getCurUrl()."/index.php?login=".$this->login;													//Url vers l'espace
+			$mailSubject=Txt::trad("USER_mailNotifObject").' '.ucfirst(Ctrl::$agora->name);									//"Bienvenue sur Mon-espace"
+			$mailMessage=Txt::trad("USER_mailNotifContent").' <i>'.Ctrl::$agora->name.' - '.Req::getCurUrl(false).'</i>'.	//"Votre compte utilisateur vient d'être créé sur 'Mon espace - www.mon-espace.net'"
+						 '<br><br><a href="'.$connectUrl.'" target="_blank">'.Txt::trad("USER_mailNotifContent2").'</a> :'.	//"Connectez-vous ici avec les coordonnées suivantes"
+						 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$this->login.'</b>'.									//"Login : Mon-login"
+						 '<br>'.Txt::trad("passwordToModify2")." : <b>".$passwordLabel.'</b>'.								//"Mot de passe (à modifier si besoin sur votre profil utilisateur)"
+						 '<br><br>'.Txt::trad("USER_mailNotifContent3");													//"Pensez à conserver cet email dans vos archives"
+			return Tool::sendMail($mailTo, $mailSubject, $mailMessage);
+		}
+	}
+
 	/*****************************************************************************************************
 	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ TEMPORAIRE
 	 *****************************************************************************************************/
-	public static function passwordSha1($passwordClear)
+	public static function passwordSha1($clearPassword)
 	{
 		$passwordSalt=(!defined("AGORA_SALT") || empty(AGORA_SALT))  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
-		return sha1($passwordSalt.sha1($passwordClear));
+		return sha1($passwordSalt.sha1($clearPassword));
 	}
 
 	/*******************************************************************************************
@@ -330,27 +352,6 @@ class MdlUser extends MdlPerson
 					 	 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
 					 	 "<br><br>".Txt::trad("resetPasswordMailLoginRemind")." : <i>".$this->login."</i>";
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify","noTimeControl"]);//"noTimeControl" pour l'envoi de mails en série (cf. "actionResetPasswordSendMailUsers()")
-		}
-	}
-
-	/*******************************************************************************************
-	 * ENVOI DU MAIL DES COORDONNÉES DE CONNEXION POUR UN NOUVEL UTILISATEUR
-	 *******************************************************************************************/
-	public function newUserCoordsSendMail($clearPassword)
-	{
-		//Récupère l'email (login en priorité)
-		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
-		//Email non spécifié / Envoi du mail de reset de password
-		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
-		else{
-			$connectUrl=Req::getCurUrl()."/index.php?login=".$this->login;													//Url vers l'espace
-			$mailSubject=Txt::trad("USER_mailNotifObject").' '.ucfirst(Ctrl::$agora->name);									//"Bienvenue sur Mon-espace"
-			$mailMessage=Txt::trad("USER_mailNotifContent").' <i>'.Ctrl::$agora->name.' - '.Req::getCurUrl(false).'</i>'.	//"Votre compte utilisateur vient d'être créé sur 'Mon espace - www.mon-espace.net'"
-						 '<br><br><a href="'.$connectUrl.'" target="_blank">'.Txt::trad("USER_mailNotifContent2").'</a> :'.	//"Connectez-vous ici avec les coordonnées suivantes"
-						 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$this->login.'</b>'.									//"Login : Mon-login"
-						 '<br>'.Txt::trad("passwordToModify2")." : <b>".$clearPassword.'</b>'.								//"Mot de passe (à modifier si besoin sur votre profil utilisateur)"
-						 '<br><br>'.Txt::trad("USER_mailNotifContent3");													//"Pensez à conserver cet email dans vos archives"
-			return Tool::sendMail($mailTo, $mailSubject, $mailMessage);
 		}
 	}
 }

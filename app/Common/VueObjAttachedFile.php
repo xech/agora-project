@@ -10,7 +10,7 @@ extFileMp3=["<?= implode('","',File::fileTypes("mp3")) ?>"];						//Extensions d
 /*******************************************************************************************
  *	SELECTION D'UN FICHIER DANS UN INPUT ".attachedFileInput"
  *******************************************************************************************/
-$(function(){
+ready(function(){
 	$(".attachedFileInput").on("change",function(){
 		if(this.files && this.files[0].size < <?= File::uploadMaxFilesize() ?>){									//Vérif la taille du fichier
 			var cptFile=Math.round(this.name.replace("attachedFile",""));											//Récupère le compteur du fichier
@@ -23,17 +23,17 @@ $(function(){
 /*******************************************************************************************
  *	FICHIER JOINT : SUPPRESSION AJAX ET SUPRESSION DU TAG HTML DANS L'EDITEUR
  *******************************************************************************************/
-function attachedFileDelete(_id)
+async function attachedFileDelete(_id)
 {
-	//Demande confirmation
-	if(confirm("<?= Txt::trad("confirmDelete") ?>")==false)  {return false;}
-	//Lance la suppression et efface le fichier lorsque c'est fait
-	$.ajax("?ctrl=object&action=attachedFileDelete&_id="+_id).done(function(result){
-		if(/true/i.test(result)){
-			$("#attachedFileDivList"+_id).fadeOut();				//Supprime le fichier de la liste
-			tinymce.activeEditor.dom.remove("attachedFileTag"+_id);	//Supprime l'image/video/mp3 dans l'éditeur (pas de "#") : cf. "attachedFileInsert()"
-		}
-	});
+	if(await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){								//Demande confirmation
+		$.ajax("?ctrl=object&action=attachedFileDelete&_id="+_id).done(function(result){	//Lance la suppression Ajax
+			if(/true/i.test(result)){														//Vérif la confirmation de delete
+				$("#attachedFileDivList"+_id).fadeOut();									//Supprime le fichier de la liste
+				tinymce.activeEditor.dom.remove("attachedFileTag"+_id);						//Supprime l'image/video/mp3 dans l'éditeur (pas de "#") : cf. "attachedFileInsert()"
+				notify("<?= Txt::trad("confirmDeleteNotify") ?>");							//Notif que la suppression a bien été réalisé
+			}
+		});
+	}
 }
 </script>
 

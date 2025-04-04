@@ -16,5 +16,5 @@ lightboxSetWidth(600);
 
 	<!--CHAMPS PRINCIPAUX & MENU COMMUN-->
 	<hr>
-	<?= $curObj->getFieldsValues("edit").$curObj->editMenuSubmit() ?>
+	<?= $curObj->getFields("edit").$curObj->editMenuSubmit() ?>
 </form>

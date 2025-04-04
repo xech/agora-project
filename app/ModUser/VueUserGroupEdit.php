@@ -3,9 +3,9 @@
 lightboxSetWidth(650);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	Controle du formulaire
-	$("form").submit(function(){
+	$("form").on("submit",function(){
 		//Vérif la présence du titre
 		if($(this).find("[name='title']").isEmpty()){
 			notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("title") ?>");
@@ -42,8 +42,8 @@ input[name='title']				{width:50%;}
 
 <div>
 	<div class="lightboxTitle">
-		<img src="app/img/user/userGroup.png"> <?= Txt::trad("USER_spaceGroups") ?> : <span id="labelSpaceName"><?= Ctrl::$curSpace->name ?></span>
-		<div class="lightboxTitleDetail"><img src="app/img/info.png"> <?= Txt::trad("USER_groupEditInfo") ?></div>
+		<img src="app/img/user/userGroup.png"> <?= Txt::trad("USER_spaceGroupsEdit") ?> <span id="labelSpaceName"><?= Ctrl::$curSpace->name ?></span>
+		<div class="lightboxTitleDetail"><?= Txt::trad("USER_groupEditInfo") ?></div>
 	</div>
 	<div class="lightboxAddElem">
 		<button onclick="$('form:first-of-type').slideToggle().find('[name=title]').focusAlt()"><img src="app/img/plus.png"> <?= Txt::trad("USER_addGroup") ?></button>	

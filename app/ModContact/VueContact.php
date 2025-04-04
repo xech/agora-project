@@ -5,11 +5,11 @@ lightboxSetWidth(600);//Resize
 <div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->lightboxTitleMenu().$curObj->getLabel("full")."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->lightboxMenu().$curObj->getLabel("full")."</div>";
 	
 	////	IMAGE & DETAILS DU CONTACT
 	echo "<div class='personLabelImg'>".$curObj->profileImg()."</div>
-		  <div class='personVueFields'>".$curObj->getFieldsValues("profile")."</div>".
+		  <div class='personVueFields'>".$curObj->getFields("profile")."</div>".
 		  $curObj->attachedFileMenu();
 	?>
 </div>

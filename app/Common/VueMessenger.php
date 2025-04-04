@@ -2,13 +2,13 @@
 /*******************************************************************************************
  *	LOAD LA PAGE
 *******************************************************************************************/
-$(function(){
+ready(function(){
 	messengerDisplayMode="none";																	//Affichage courant du messenger : "none" / "all" / "idUser"
 	messengerCheckedUsers=[];																		//Users "checked" lors d'une discussion à plusieurs
 	messengerAlert=new Audio("app/misc/messengerAlert.mp3");										//Charge le son mp3 d'alerte
 	messengerAlert.volume=0.5;																		//Volume à 50% par défaut
 	messengerAlert.loop=false;																		//Pas de son en boucle
-	if(isMobile()==false)  {$("#messengerMain").draggable({handle:"#messengerMove",opacity:0.9});}	//Drag/drop du messenger
+	if(isMobile()==false)  {$("#messengerMain").draggable({handle:"#messengerMove",opacity:0.8});}	//Drag/drop du messenger
 	setInterval(function(){ messengerUpdate(); },10000);											//Update le messenger toutes les 10 secondes
 	messengerUpdate();																				//Lance le messenger !
 });
@@ -57,7 +57,7 @@ function messengerUpdate()
 
 		//// Finalise l'affichage
 		if(result.messengerUpdate==true || result.livecounterUpdate==true)  {messengerDisplayUser();}							//Affiche uniquement les messages d'un user OU les messages de tous les users
-		if(result.livecounterMainHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainPageDisplay();}					//Update les tooltips/lightbox (toujours à la fin)
+		if(result.livecounterMainHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainDisplay();}						//Update les tooltips
 		messengerCheckedUsers=result.messengerCheckedUsers;																		//Update la liste des users "checked" (après post d'un message dans une discussion à plusieurs)
 
 		//// Pulsate & alerte sonore des users ayant posté un nouveau message
@@ -107,10 +107,9 @@ function messengerDisplay(messengerDisplayModeNew)
 		labelUserDisplayed=($.isNumeric(messengerDisplayMode))  ?  $("#livecounterUser"+messengerDisplayMode).text()  :  null;															//Récup le label de l'user du livecounter
 		var placeholderLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_addMessageToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_addMessageTo") ?> "+labelUserDisplayed;	//Placeholer de l'input text
 		visioButtonLabel=(labelUserDisplayed==null)  ?  "<?= Txt::trad("MESSENGER_visioProposeToSelection") ?>"  :  "<?= Txt::trad("MESSENGER_visioProposeTo") ?> "+labelUserDisplayed;	//Title du bouton de visio (variable globale)
-		$("#messengerMessageForm").attr("placeholder",placeholderLabel);						//Placeholer de l'input text : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
-		$("#messengerMessageForm").focusAlt();													//Focus sur l'input
-		$("#launchVisioButton.tooltipstered").tooltipster("destroy");							//Bouton de visio : Réinitialise si besoin le "tooltipster" avant update ci-après
-		$("#launchVisioButton").attr("title",visioButtonLabel).tooltipster(tooltipsterOptions);	//Bouton de visio : title "Proposer une visio à Bob" / "Proposer une visio aux personnes sélectionnées"
+		$("#messengerMessageForm").attr("placeholder",placeholderLabel);	//Placeholer de l'input text : "Mon message à Boby" OU "Mon message aux personnes sélectionnées"
+		$("#messengerMessageForm").focusAlt();								//Focus sur l'input
+		$("#launchVisioButton").tooltipsterUpdate(visioButtonLabel);		//Bouton de visio : Update le tooltip : "Proposer une visio à Bob" / "Proposer une visio aux personnes sélectionnées"
 
 		//// Divers
 		messengerAlert.pause();									//Fin de son d'alerte
@@ -176,7 +175,7 @@ function messengerPost(event)
 	if($("#messengerMessageForm").isEmpty())  			{notify("<?= Txt::trad("MESSENGER_addMessageNotif") ?>");  return false;}
 	if($(".messengerUserCheckbox:checked").length==0)	{notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	// Poste le message via Ajax
-	$.ajax({url:"?ctrl=misc&action=messengerPost",data:$("#messengerForm").serialize(),type:"POST"}).done(function(){
+	$.ajax({url:"?ctrl=misc&action=messengerPost",data:$("#messengerForm").serialize(),method:"POST"}).done(function(){
 		$("#messengerMessageForm").val("");		//Réinit l'input text
 		$("#messengerMessageForm").focusAlt();	//Focus à nouveau sur l'input
 		messengerUpdate();						//Update les messages pour afficher le post
@@ -186,20 +185,20 @@ function messengerPost(event)
 /*******************************************************************************************
  *	PROPOSITION DE VISIO : POST UN MESSAGE AVEC LE LIEN DE VISIO
 *******************************************************************************************/
-function proposeVisio()
+async function proposeVisio()
 {
-	//Vérif qu'au moins un user est sélectionné  &&  Confirme la visio (cf. tooltip "visioButtonLabel")
+	//Vérif qu'au moins un user est sélectionné
 	if($(".messengerUserCheckbox:checked").length==0)  {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
-	else if(confirm(visioButtonLabel+" ?"))
-	{
-		visioUsers="<?= Ctrl::$curUser->getLabel("firstName") ?>";												//Init la liste des destinaires avec l'user courant
-		visioURL="<?= Ctrl::$agora->visioUrl()."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";	//Init l'Url de la visio avec l'user courant
-		$(".messengerUserCheckbox:checked").each(function(){													//Label de chaque user sélectionné :
-			visioUsers+=" & "+$(this).attr("data-user-label");													//- ajoute dans la liste des destinaires
-			visioURL+="-"+$(this).attr("data-user-label-visio");												//- ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "roomId"
+	//Confirme la visio (cf. tooltip "visioButtonLabel")
+	if(await confirmAlt(visioButtonLabel+" ?")){
+		visioUsers	="<?= Ctrl::$curUser->getLabel("firstName") ?>";												//Init la liste des destinaires avec l'user courant
+		visioURL	="<?= Ctrl::$agora->visioUrl()."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";	//Init l'Url de la visio avec l'user courant
+		$(".messengerUserCheckbox:checked").each(function(){														//Label de chaque user sélectionné :
+			visioUsers	+=" & "+$(this).attr("data-user-label");													//Ajoute dans la liste des destinaires
+			visioURL	+="-"+$(this).attr("data-user-label-visio");												//Ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "visioId"
 		});
-		var visioMessage="<?= Txt::trad("MESSENGER_visioProposeToUsers") ?> "+visioUsers+"<img src='app/img/visioSmall.png'>";					//Message "Cliquez ici pour lancer la visioconférence : Will & Boby"
-		$("#messengerMessageForm").val("<a href=\"javascript:launchVisio('"+visioURL+"')\" class='launchVisioMessage'>"+visioMessage+"</a>");	//Post le message dans le messenger avec le "launchVisio()" : tester le lien car filtré via "Db::format()" & CO !
+		var visioMessage="<?= Txt::trad("MESSENGER_visioProposeToUsers") ?> "+visioUsers+'<img src="app/img/visioSmall.png">';					//Message "Cliquez ici pour lancer la visioconférence : Will & Boby"
+		$("#messengerMessageForm").val('<a href="javascript:launchVisio(\''+visioURL+'\')" class="launchVisioMessage">'+visioMessage+'</a>');	//Post le message avec le "launchVisio()" (tester car filtré via "Db::format()")
 		messengerPost();
 	}
 }
@@ -209,12 +208,12 @@ function proposeVisio()
 <style>
 /*Principal*/
 #messengerMain, #livecounterMain 			{display:none; position:fixed; max-width:100%!important; max-height:100%!important; color:#ddd!important; box-shadow:0px 0px 3px 2px rgba(0,0,0,0.3);}/*"position:fixed" pour que sur moblie, le clavier viruel ne cache pas le formulaire*/
-#messengerMain								{z-index:30; bottom:0px!important; background:#111; padding:20px; padding-top:10px; width:850px; min-width:300px; border-radius:5px; border:0px;}
+#messengerMain								{z-index:110; bottom:0px!important; background:#111; padding:20px; padding-top:10px; width:850px; min-width:300px; border-radius:5px; border:0px;}/*z-index idem .menuContext*/
 #messengerMain td							{vertical-align:top;}
 #messengerBottomMargin						{height:60px;}/*marge du bas du messenger : pour afficher le livecounter ci-dessus qui s'y superpose (cf. "#livecounterMain td" ci-dessus)*/
 #messengerNobodyDiv							{position:relative; background:#333; font-size:1.05em; padding:20px; margin:10px; line-height:30px; border-radius:10px;}
 #messengerNobodyDiv img[src*=messenger]		{position:absolute; top:-20px; left:-10px;}
-#livecounterMain							{z-index:31; bottom:5px!important; background:#333; padding:15px 40px; border-radius:5px;}
+#livecounterMain							{z-index:111; bottom:5px!important; background:#333; padding:15px 40px; border-radius:5px;}
 #livecounterMain td							{vertical-align:middle;}
 
 /*Livecounter principal : #livecounterMain*/
@@ -223,7 +222,6 @@ function proposeVisio()
 .vLivecounterUser							{padding:10px; margin-left:5px; border:solid 1px transparent; color:white!important;}	/*Label de chaque user : height de 30px (cf. "CtrlMisc::actionMessengerUpdate")*/
 .vLivecounterUserSelect						{background:#555; border:solid 1px #777; border-radius:3px;}							/*Label d'un user sélectionné*/
 .vLivecounterUser .personImg				{width:30px; height:30px; margin-right:5px;}											/*Image des users (cf. "CtrlMisc::actionMessengerUpdate")*/
-#messengerMultiUsersIcon					{padding-left:10px; cursor:pointer;}
 
 /*Messenger : #messengerMain*/
 #messengerMove								{height:16px; cursor:move; background-image:url(app/img/dragDrop.png);}
@@ -278,7 +276,7 @@ function proposeVisio()
 	<tr>
 		<td class="cursorHelp" title="<?= Txt::trad("MESSENGER_messengerTitle") ?>"><img src="app/img/messenger.png"><span id="livecounterConnectedLabel"><?= Txt::trad("MESSENGER_connected") ?><img src="app/img/arrowRight.png"></span></td>
 		<td id="livecounterUsers"></td>
-		<td id="messengerMultiUsersIcon" onclick="messengerDisplay('all')" title="<?= Txt::trad("MESSENGER_messengerMultiUsers") ?>"><img src="app/img/user/iconSmall.png"></td>
+		<td id="messengerMultiUsersIcon" class="sLink" onclick="messengerDisplay('all')" title="<?= Txt::trad("MESSENGER_messengerMultiUsers") ?>"><img src="app/img/separator.png">&nbsp; <img src="app/img/user/iconSmall.png"></td>
 	</tr>
 </table>
 
@@ -286,7 +284,7 @@ function proposeVisio()
 <form id="messengerForm">
 	<table id="messengerMain">
 		<tr>
-			<td id="messengerMove" colspan="2"><img src="app/img/closeMessenger.png" id="messengerClose" onclick="messengerDisplay('none')" title="<?= Txt::trad("close") ?>"></td>
+			<td id="messengerMove" colspan="2"><img src="app/img/close.png" id="messengerClose" onclick="messengerDisplay('none')" title="<?= Txt::trad("close") ?>"></td>
 		</tr>
 		<tr>
 			<td id="messengerMessagesCell" class="vMessengerContent"><div id="messengerMessagesAjax" class="vMessengerScroll">&nbsp;</div></td>	<!--LISTE DES MESSAGES-->
@@ -297,7 +295,7 @@ function proposeVisio()
 				<div id="messengerPostDiv">
 					<input type="text" name="message" id="messengerMessageForm" maxlength="1000">
 					<button id="messengerButtonForm" onclick="messengerPost(event);"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
-					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="proposeVisio()"><?php } ?>
+					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="proposeVisio()" title="<?= Txt::trad("MESSENGER_visioProposeToSelection") ?>"><?php } ?>
 				</div>
 				<div id="messengerNobodyDiv"><img src="app/img/messenger.png"> <?= Txt::trad("MESSENGER_nobody") ?></div>
 			</td>

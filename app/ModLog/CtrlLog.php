@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -44,7 +44,7 @@ class CtrlLog extends Ctrl
 				elseif($tmpField=="userName")	{$curLog["userName"]=Ctrl::getObj("user",$tmpLog["_idUser"])->getLabel();}
 				elseif($tmpField=="spaceName")	{$curLog["spaceName"]=Ctrl::getObj("space",$tmpLog["_idSpace"])->name;}
 				elseif($tmpField=="moduleName"){
-					$moduleTrad=strtoupper($tmpLog["moduleName"])."_headerModuleName";
+					$moduleTrad=strtoupper($tmpLog["moduleName"])."_MODULE_NAME";
 					$curLog["moduleName"]=(Txt::isTrad($moduleTrad))  ?  Txt::trad($moduleTrad)  :  $tmpLog["moduleName"];
 				}
 				elseif($tmpField=="action"){
@@ -75,7 +75,7 @@ class CtrlLog extends Ctrl
 		$sqlGetVals=($fieldName=="spaceName")  ?  "SELECT DISTINCT `name` FROM ap_space ORDER BY `name` asc"  :  "SELECT DISTINCT ".$fieldName." FROM ap_log ORDER BY ".$fieldName." asc";
 		foreach(Db::getCol($sqlGetVals)  as  $tmpVal){
 			if(Txt::isTrad("LOG_".$tmpVal))									{$tmpLabel=Txt::trad("LOG_".$tmpVal);}//"action"
-			elseif(Txt::isTrad(strtoupper($tmpVal)."_headerModuleName"))	{$tmpLabel=Txt::trad(strtoupper($tmpVal)."_headerModuleName");}//"moduleName"
+			elseif(Txt::isTrad(strtoupper($tmpVal)."_MODULE_NAME"))	{$tmpLabel=Txt::trad(strtoupper($tmpVal)."_MODULE_NAME");}//"moduleName"
 			else															{$tmpLabel=$tmpVal;}//"spaceName"
 			$optionsFilter.="<option value=\"".$tmpLabel."\">".$tmpLabel."</option>";
 		}

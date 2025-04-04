@@ -11,7 +11,7 @@ lightboxSetWidth(700);
 <div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->lightboxTitleMenu().$curObj->title."<br>".$curObj->categoryLabel().$curObj->priorityLabel()."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->lightboxMenu().$curObj->title."<br>".$curObj->categoryLabel().$curObj->priorityLabel()."</div>";
 
 	////	DESCRIPTION  +  PERS. RESPONSABLES / AVANCEMENT / DATES DEBUT & FIN + FICHIERS JOINTS
 	echo $curObj->description.

@@ -4,19 +4,18 @@ lightboxSetWidth(600);
 
 ////	Agenda partagé d'espace : titre et description non modifiable
 <?php if($curObj->isSpacelCalendar()){ ?>
-$(function(){
+ready(function(){
 	$(".inputTitleName, .descriptionTextarea textarea").prop("readonly","readonly");
 });
 <?php } ?>
 
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		//vérif si un autre element porte le même nom
 		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&controledName="+encodeURIComponent($("[name='title']").val());
 		$.ajax(ajaxUrl).done(function(result){
-			if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}	//"Un autre element porte le même nom"
-			else							{resolve(true);}														//Sinon renvoie le résultat du controle principal
+			if(/duplicateName/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}//"Un autre element porte le même nom"
+			else								{resolve(true);}
 		});
 	});
 }
@@ -35,7 +34,7 @@ function objectFormControl(){
 	<!--TITRE / DESCRIPTION (SAUF AGENDA D'USERS)-->
 	<?php if($curObj->type!="user"){ ?>
 		<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>" >
-		<?= $curObj->editDescription() ?>
+		<?= $curObj->descriptionEditor() ?>
 	<?php } ?>
 
 	<?php

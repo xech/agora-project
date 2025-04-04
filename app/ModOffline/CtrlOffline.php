@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -21,6 +21,7 @@ class CtrlOffline extends Ctrl
 	{
 		//Init
 		$vDatas=[];
+
 		////	Reset du password
 		if(Req::isParam("resetPasswordMail"))
 		{
@@ -55,16 +56,17 @@ class CtrlOffline extends Ctrl
 		{
 			//// Infos de l'invitation
 			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::param("_idInvitation")." AND mail=".Db::param("mail"));
-			//// Invitation expiré  ||  Valide l'invitation avec le "newPassword" : créé le nouvel utilisateur
-			if(empty($tmpInvit))  {Ctrl::notify("USER_exired_idInvitation");}
-			elseif(Req::isParam("newPassword") && MdlUser::usersQuotaOk()){
+			//// Invitation expiré  ||  Quota d'users atteint  ||  Valide l'invitation : créé le nouvel user avec le "newPassword"
+			if(empty($tmpInvit))  					{Ctrl::notify("USER_exired_idInvitation");}
+			elseif(MdlUser::usersQuotaOk()==false)  {Ctrl::notify("USER_quotaExceeded");}
+			elseif(Req::isParam("newPassword")){
 				$newUser=new MdlUser();
-				$sqlProperties="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
-				$newUser=$newUser->createUpdate($sqlProperties, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
+				$sqlFields="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
+				$newUser=$newUser->createUpdate($sqlFields, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
 				if(is_object($newUser)){
 					Db::query("DELETE FROM ap_invitation WHERE _idInvitation=".Db::format($tmpInvit["_idInvitation"]));
 					$_COOKIE["AGORAP_LOG"]=$tmpInvit["mail"];//Préremplis le 'login'
-					$newUser->newUserCoordsSendMail(Req::param("newPassword"));
+					$newUser->createCredentialsMail(Req::param("newPassword"),true);
 					Ctrl::notify("USER_invitationValidated","success");
 				}
 			}
@@ -87,11 +89,10 @@ class CtrlOffline extends Ctrl
 		////	Valide le formulaire via Ajax
 		if(Req::isParam("formValidate"))
 		{
-			//// Verif l'existance du login/mail  ||  Vérif le Captcha  ||  Enregistre l'inscription
-			if(MdlUser::loginExists(Req::param("mail")))	{$result=Txt::trad("USER_loginExists");}
-			elseif(CtrlMisc::actionCaptchaControl()==false)	{$result=Txt::trad("captchaError");}
-			else
-			{
+			////	Verif l'existance du login/mail
+			if(MdlUser::loginExists(Req::param("mail")))  {$result=Txt::trad("USER_loginExists");}
+			////	Enregistre l'inscription
+			else{
 				//// Enregistre en DB
 				$result="inscriptionOK";
 				$password=Txt::uniqId(8);
@@ -120,12 +121,12 @@ class CtrlOffline extends Ctrl
 	}
 
 	/*******************************************************************************************
-	 * AJAX : TEST LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC
+	 * AJAX : CONTROLE LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC  ("BINARY" : case sensitive)
 	 *******************************************************************************************/
-	public static function actionPublicSpacePassword()
+	public static function actionPublicSpacePasswordControl()
 	{
-		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpaceAccess")." AND BINARY `password`=".Db::param("password"));//"BINARY"=>case sensitive
-		if(empty($passwordValid))  {echo "passwordError";}
+		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpaceAccessControl")." AND BINARY `password`=".Db::param("passwordControl"));
+		if(!empty($passwordValid))  {echo "passwordOK";}
 	}
 
 	/*******************************************************************************************

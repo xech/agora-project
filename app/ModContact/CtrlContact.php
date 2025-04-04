@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -32,12 +32,11 @@ class CtrlContact extends Ctrl
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlContactFolder::getPluginFolders($params);
-		foreach(MdlContact::getPluginObjects($params) as $tmpObj)
-		{
+		foreach(MdlContact::getPluginObjects($params) as $tmpObj){
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
+			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel=$tmpObj->openVue();
 			$pluginsList[]=$tmpObj;
 		}
@@ -102,14 +101,14 @@ class CtrlContact extends Ctrl
 					//Créé le contact  &&  Spécifie le "_idContainer" pour le controle d'accès (cf. "createUpdate()"+"createRight()")
 					$curObj=new MdlContact();
 					$curObj->_idContainer=$curFolder->_id;
-					$sqlProperties=null;
+					$sqlFields=null;
 					//Récupère la valeur de chaque champ du contact
 					foreach(Req::param("agoraFields") as $fieldCpt=>$curFieldName){
 						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
-						if(!empty($curFieldVal) && !empty($curFieldName))  {$sqlProperties.="`".$curFieldName."`=".Db::format($curFieldVal).", ";}
+						if(!empty($curFieldVal) && !empty($curFieldName))  {$sqlFields.="`".$curFieldName."`=".Db::format($curFieldVal).", ";}
 					}
 					//Enregistre le nouveau contact !
-					$curObj=$curObj->createUpdate($sqlProperties);
+					$curObj=$curObj->createUpdate($sqlFields);
 					//Nouveau contact du dossier racine : affecte en lecture à "tous les users" de l'espace courant
 					if($curFolder->isRootFolder())  {Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
 				}
@@ -137,8 +136,8 @@ class CtrlContact extends Ctrl
 			$newUser=new MdlUser();
 			$login=(!empty($contactRef->mail))  ?  $contactRef->mail  :  substr($contactRef->firstName,0,1).substr($contactRef->name,0,5);
 			$password=Txt::uniqId(8);
-			$sqlProperties="civility=".Db::format($contactRef->civility).", name=".Db::format($contactRef->name).", firstName=".Db::format($contactRef->firstName).", mail=".Db::format($contactRef->mail).", telephone=".Db::format($contactRef->telephone).", telmobile=".Db::format($contactRef->telmobile).", adress=".Db::format($contactRef->adress).", postalCode=".Db::format($contactRef->postalCode).", city=".Db::format($contactRef->city).", country=".Db::format($contactRef->country).", `function`=".Db::format($contactRef->function).", companyOrganization=".Db::format($contactRef->companyOrganization).", `comment`=".Db::format($contactRef->comment);
-			$newUser=$newUser->createUpdate($sqlProperties, $login, $password, Ctrl::$curSpace->_id);
+			$sqlFields="civility=".Db::format($contactRef->civility).", name=".Db::format($contactRef->name).", firstName=".Db::format($contactRef->firstName).", mail=".Db::format($contactRef->mail).", telephone=".Db::format($contactRef->telephone).", telmobile=".Db::format($contactRef->telmobile).", adress=".Db::format($contactRef->adress).", postalCode=".Db::format($contactRef->postalCode).", city=".Db::format($contactRef->city).", country=".Db::format($contactRef->country).", `function`=".Db::format($contactRef->function).", companyOrganization=".Db::format($contactRef->companyOrganization).", `comment`=".Db::format($contactRef->comment);
+			$newUser=$newUser->createUpdate($sqlFields, $login, $password, Ctrl::$curSpace->_id);
 			if(is_object($newUser)){
 				Ctrl::notify("CONTACT_createUserConfirmed");
 				if(is_file($contactRef->pathImgThumb()))  {copy($contactRef->pathImgThumb(),$newUser->pathImgThumb());}//Récupère l'image?

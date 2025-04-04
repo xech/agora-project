@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -83,13 +83,10 @@ class CtrlDashboard extends Ctrl
 	public static function getPlugins($params)
 	{
 		$pluginsList=[];
-		if($params["type"]=="search")
-		{
-			foreach(MdlDashboardNews::getPluginObjects($params) as $curObj)
-			{
+		if($params["type"]=="search"){
+			foreach(MdlDashboardNews::getPluginObjects($params) as $curObj){
 				$curObj->pluginIcon=self::moduleName."/icon.png";
 				$curObj->pluginLabel=$curObj->description;
-				$curObj->pluginTooltip=$curObj->autorLabel(true,true);
 				$curObj->pluginJsIcon=null;
 				$curObj->pluginJsLabel=null;
 				$pluginsList[]=$curObj;

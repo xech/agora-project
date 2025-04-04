@@ -3,7 +3,7 @@
 lightboxSetWidth("<?= Req::isParam("actionImportExport")?"95%":"800" ?>");
 
 ////	Init
-$(function(){
+ready(function(){
 	////	Switch le formulaire d'import ou d'export
 	$("#selectImportExport").on("change",function(){
 		$("#importBlock").toggle(this.value=="import");//affiche/masque
@@ -42,7 +42,7 @@ $(function(){
 	});
 
 	////	Contrôle du formulaire
-	$("form").submit(function(){
+	$("form").on("submit",function(){
 		//Controle que le fichier d'import est au format csv
 		if($("#selectImportExport").isVisible() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
 			notify("<?= Txt::trad("fileExtension") ?> CSV");
@@ -185,7 +185,7 @@ form											{text-align:center;}
 				echo '<div class="vImportUserOptions">';
 					echo '<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser"><label for="notifCreaUser" '.Txt::tooltip("USER_sendCoordsTooltip2").'>'.Txt::trad("USER_sendCoords").'</label><hr>';
 					echo "<div>".Txt::trad("USER_spaceList")." :</div>";
-					foreach(Ctrl::$curUser->getSpaces() as $tmpSpace){
+					foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
 						if($tmpSpace->accessRight()==2){
 							$tmpChecked =($tmpSpace->isCurSpace() || $tmpSpace->allUsersAffected()) ? "checked" : null;	//Affecté à tous les users / espace courant
 							$tmpDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;							//Affecté à tous les users

@@ -1,22 +1,24 @@
 <script>
 ////	Resize
-lightboxSetWidth(500);
+lightboxSetWidth(600);
 
-////	Controle du formulaire
-$(function(){
-	$("#mainForm").submit(function(){
-		////	Controle si au moins un champ de recherche est rempli
+////	Controle du formulaire (async)
+ready(function(){
+	$("#mainForm").on("submit",async function(event){
+		event.preventDefault();
+		////	Formulaire de recherche : controle si au moins un champ est rempli
 		if($("input[name^='searchFields']").isVisible()){
 			var allFieldsEmpty=true;
 			$("input[name^='searchFields']").each(function(){
-				if($(this).isNotEmpty())  {allFieldsEmpty=false;}
+				if($(this).notEmpty())  {allFieldsEmpty=false;}
 			});
-			if(allFieldsEmpty==true)   {notify("<?= Txt::trad("USER_searchPrecision") ?>");  return false;}
+			if(allFieldsEmpty==true)	{notify("<?= Txt::trad("USER_searchPrecision") ?>");}
+			else						{submitFinal(this);}//Submit final (sans récursivité Jquery)
 		}
-		////	Controle si au moins un utilisateur est sélectionné
+		////	Liste des users : Controle si au moins un utilisateur est sélectionné et valide l'affectation
 		else if($("input[name^='usersList']").isVisible()){
-			if($("input[name^='usersList']:checked").length==0)		 			{notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
-			else if(!confirm("<?= Txt::trad("USER_userAffectConfirm") ?>"))		{return false;}
+			if($("input[name^='usersList']:checked").length==0)		 					{notify("<?= Txt::trad("notifSelectUser") ?>");}
+			else if(await confirmAlt("<?= Txt::trad("USER_userAffectConfirm") ?>"))		{submitFinal(this);}//Submit final (sans récursivité Jquery)
 		}
 	});
 });

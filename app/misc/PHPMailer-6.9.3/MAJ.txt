@@ -1,0 +1,5 @@
+METTRE A JOUR PHPMAILER :
+******************************
+- Récupérer la dernière version de PHPMailer sur https://github.com/PHPMailer/PHPMailer
+- Remplacer les fichiers présents par ceux de l'archive, garder les trads "fr", "es", "it", "pt" dans le dossier "language/"
+- Modifier le $phpMailerPath dans "app/Common/Tool.php"

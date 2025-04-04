@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -29,8 +29,7 @@ class CtrlMisc extends Ctrl
 			Db::query("INSERT INTO ap_userLivecouter SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 
 			////	INIT LE MESSENGER EN DEBUT DE SESSION
-			if(!isset($_SESSION["livecounterUsers"]))
-			{
+			if(!isset($_SESSION["livecounterUsers"])){
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
 				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
@@ -56,20 +55,17 @@ class CtrlMisc extends Ctrl
 			$result["messengerUpdate"]=(serialize($messengerMessagesListOld)!=serialize($_SESSION["messengerMessages"]));//compare les messages sérialisés (pas de "count()")
 
 			////	LISTE DES USERS CONNECTÉS (LIVECOUNTERS)
-			if($result["livecounterUpdate"]==true)
-			{
+			if($result["livecounterUpdate"]==true){
 				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]="";//Réinit
-				foreach($_SESSION["livecounterUsers"] as $tmpUser)
-				{
-					//Image/Label des users du livecounter principal
-					$userImg=(Req::isMobile()==false && $tmpUser->profileImgExist())  ?  $tmpUser->profileImg(false,true)  :  null;//Verif qu'on soit pas en mode mobile et si l'image existe
-					$userTitle=$tmpUser->getLabel()." &nbsp;".$userImg;
-					$userFirstName=$tmpUser->getLabel("firstName");
-					//Affichage de l'user dans le livecounter principal et le formulaire du messenger
-					$_SESSION["livecounterMainHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" '.Txt::tooltip(Txt::trad("MESSENGER_chatWith")." ".$userTitle).'>'.$userImg.$userFirstName.'</label>';
+				foreach($_SESSION["livecounterUsers"] as $tmpUser){
+					$userImg=(Req::isMobile()==false && $tmpUser->profileImgExist())  ?  $tmpUser->profileImg(false,true)  :  null;	//Image de l'user
+					$userTooltip=$tmpUser->getLabel()." &nbsp;".$userImg;															//Tooltip du label de l'user
+					$userFirstName=$tmpUser->getLabel("firstName");																	//Prénom de l'user
+					//Affichage dans le livecounter et le formulaire du messenger (checkbox)
+					$_SESSION["livecounterMainHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" '.Txt::tooltip(Txt::trad("MESSENGER_chatWith")." ".$userTooltip).'>'.$userImg.$userFirstName.'</label>';
 					$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser">
 															<input type="checkbox" name="messengerUsers[]" value="'.$tmpUser->_id.'" id="messengerUserCheckbox'.$tmpUser->_id.'" class="messengerUserCheckbox" data-user-label="'.$userFirstName.'" data-user-label-visio="'.Txt::clean(trim($userFirstName),"max").'">
-															<label for="messengerUserCheckbox'.$tmpUser->_id.'" '.Txt::tooltip(Txt::trad("select")." ".$userTitle).'>'.$userImg.$userFirstName.'</label>
+															<label for="messengerUserCheckbox'.$tmpUser->_id.'" '.Txt::tooltip(Txt::trad("select")." ".$userTooltip).'>'.$userImg.$userFirstName.'</label>
 													   </div>';
 				}
 				//Ajoute "inverser la sélection" si ya + de 5 users
@@ -78,29 +74,24 @@ class CtrlMisc extends Ctrl
 			}
 
 			////	LISTE DES MESSAGES DU MESSENGER  &&  DES "PULSATES"
-			if($result["messengerUpdate"]==true)
-			{
-				//Init la liste des messages & la liste des users connectés (y compris l'user courant)
-				$userConnectedIds=array_merge(array_keys($_SESSION["livecounterUsers"]), [self::$curUser->_id]);
+			if($result["messengerUpdate"]==true){
 				$_SESSION["messengerMessagesHtml"]="";//init
-				foreach($_SESSION["messengerMessages"] as $message)
-				{
-					//Label/icone de l'auteur du message
-					$destList=Txt::txt2tab($message["_idUsers"]);
-					$autorObj=self::getObj("user",$message["_idUser"]);
-					if(Req::isMobile())				{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//sur mobile :  "Will<br>11:00 "
-					elseif($autorObj->profileImgExist())		{$dateAutor=date("H:i",$message["date"]).$autorObj->profileImg(false,true);}			//Mode normal avec icone de l'user : "11:00 <img>"
-					else							{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
-					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}			//Ajoute si besoin l'icone de discussion à plusieurs
+				foreach($_SESSION["messengerMessages"] as $message){																			//Parcourt chaque message
+					$destList=Txt::txt2tab($message["_idUsers"]);																				//List des destinataires
+					$autorObj=self::getObj("user",$message["_idUser"]);																			//Label/icone de l'auteur
+					if(Req::isMobile())						{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//Mobile : "Will 11:00"
+					elseif($autorObj->profileImgExist())	{$dateAutor=date("H:i",$message["date"]).$autorObj->profileImg(false,true);}		//Mode normal avec icone de l'user : "11:00 <img>"
+					else									{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
+					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}					//Ajoute si besoin l'icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
-					$oldMessageClass="vMessengerOldMessage";//Par défaut on ajoute la class "vMessengerOldMessage"...
-					$messageTitle=Txt::dateLabel($message["date"])." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageTo")." ";//Date/heure et auteur du message 
+					$oldMessageClass="vMessengerOldMessage";																															//"vMessengerOldMessage" par défaut
+					$messageTooltip=Txt::dateLabel($message["date"],"labelFull")." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageTo")." ";//Tooltip des détails du message 
 					foreach($destList as $_idUserDest){
-						if($_idUserDest!=$autorObj->_id) {$messageTitle.=self::getObj("user",$_idUserDest)->getLabel().", ";}	//Ajoute le libellé du destinataire
-						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Le message est bien affecté à un user connnecté : on retire la class "vMessengerOldMessage" 
+						if($_idUserDest!=$autorObj->_id) {$messageTooltip.=self::getObj("user",$_idUserDest)->getLabel().", ";}	//Ajoute le libellé du destinataire
+						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Message affecté à un user connnecté : on retire "vMessengerOldMessage" 
 					}
 					//Affichage du message
-					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" data-idUsers="'.$message["_idUsers"].'" '.Txt::tooltip(rtrim($messageTitle,", ")).'><tr>
+					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" data-idUsers="'.$message["_idUsers"].'" '.Txt::tooltip(rtrim($messageTooltip,", ")).'><tr>
 															<td class="vMessengerMessageDateAutor">'.$dateAutor.'</td>
 															<td data-idAutor="'.$autorObj->_id.'">'.$message["message"].'</td>
 														 </tr></table>';
@@ -225,6 +216,14 @@ class CtrlMisc extends Ctrl
 	}
 
 	/*******************************************************************************************
+	 * AJAX : CONTROLE DU CAPTCHA
+	 *******************************************************************************************/
+	public static function actionCaptchaControl()
+	{
+		if($_SESSION["captcha"]==Req::param("captcha"))  {echo "controlOK";}
+	}
+
+	/*******************************************************************************************
 	 *  ACTION : AFFICHE L'IMAGE D'UN MENU "CAPTCHA"
 	 *******************************************************************************************/
 	public static function actionCaptchaImg()
@@ -270,17 +269,6 @@ class CtrlMisc extends Ctrl
 	protected static function captchaColor($colors)
 	{
 		return preg_match("/^#?([\dA-F]{6})$/i",$colors,$rgb) ? hexdec($rgb[1]) : false;
-	}
-
-	/*******************************************************************************************
-	 * AJAX OU DIRECT : CONTROLE DU CAPTCHA
-	 *******************************************************************************************/
-	public static function actionCaptchaControl()
-	{
-		if($_SESSION["captcha"]==Req::param("captcha")){
-			if(Req::$curAction=="CaptchaControl")	{echo "true";}//Controle Ajax
-			else									{return true;}//Controle Direct
-		}
 	}
 
 	/*******************************************************************************************

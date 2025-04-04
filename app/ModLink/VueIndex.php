@@ -6,13 +6,13 @@
 </style>
 
 <div id="pageFull">
-	<div id="pageModuleMenu">
+	<div id="pageMenu">
 		<?= MdlLink::menuSelect() ?>
-		<div id="pageModMenu" class="miscContainer">
+		<div class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
+				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
 					  <div class='menuLine' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
 					  <hr>";
 			}
@@ -22,7 +22,8 @@
 			?>
 		</div>
 	</div>
-	<div id="pageFullContent" class="<?= MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
+
+	<div id="pageContent" class="<?= MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo MdlFolder::menuPath(Txt::trad("LINK_addLink"),MdlLink::getUrlNew());
@@ -31,12 +32,12 @@
 		foreach($linkList as $tmpLink)
 		{
 			$linkLabel=(!empty($tmpLink->description))  ?  '<span '.Txt::tooltip($tmpLink->adress).'>'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
-			echo $tmpLink->divContainerContextMenu().
+			echo $tmpLink->objContainerMenu().
 				'<div class="objContainerScroll">
 					<div class="objContent">
 						<div class="objIcon objIconOpacity"><img src="app/img/link/iconOpacity.png"></div>
 						<div class="objLabel" onclick="window.open(\''.$tmpLink->adress.(Req::isMobileApp()?"#fromMobileApp":null).'\')"><img src="https://www.google.com/s2/favicons?domain='.$tmpLink->adress.'">'.$linkLabel.'</div>
-						<div class="objAutorDate">'.$tmpLink->autorDateLabel().'</div>
+						<div class="objAutorDate">'.$tmpLink->autorDate().'</div>
 					</div>
 				</div>
 			</div>';

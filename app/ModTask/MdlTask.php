@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -91,14 +91,14 @@ class MdlTask extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * ICONE-BARRE :  DATE DE DEBUT / FIN
+	 * ICONE-BARRE :  DATE DE DEBUT/FIN
 	 *******************************************************************************************/
 	public function dateBeginEnd($isVueTask=false)
 	{
 		//// Vérif si ya une date de début  OU  une date de fin
 		if(!empty($this->dateBegin) || !empty($this->dateEnd)){
 			//// Date de début et/ou de fin && Tooltip
-			$barLabel=Txt::dateLabel($this->dateBegin,"dateFull",$this->dateEnd);
+			$barLabel=Txt::dateLabel($this->dateBegin,"default",$this->dateEnd);
 			if(!empty($this->dateBegin) && !empty($this->dateEnd))	{$barTooltip=Txt::trad("beginEnd")." : &nbsp; ";}
 			elseif(!empty($this->dateBegin))						{$barTooltip=Txt::trad("begin")." : &nbsp; ";}
 			elseif(!empty($this->dateEnd))							{$barTooltip=null;}//Txt::trad("end") récup via "dateLabel()" ci-dessus
@@ -117,10 +117,9 @@ class MdlTask extends MdlObject
 		//Vérif si ya une date de début  ET  une date de fin
 		if(!empty($this->dateBegin) && !empty($this->dateEnd)){
 			$barLabel="&nbsp;";//jamais vide
-			$barTooltip=$this->title."<hr>".Txt::trad("beginEnd")." : ".Txt::dateLabel($this->dateBegin,"dateMini",$this->dateEnd);
+			$barTooltip=$this->title."<hr>".Txt::trad("beginEnd")." : ".Txt::dateLabel($this->dateBegin,"dateBasic",$this->dateEnd);
 			//Avancement de la tâche
 			if(!empty($this->advancement)){
-
 				$advancementIcon='<img src="app/img/task/advancement'.($this->isDelayed()?'Delayed':null).'.png">';
 				$barLabel.=$advancementIcon.' '.$this->advancement.'%';
 				$barTooltip.='<br>'.$advancementIcon.' '.Txt::trad("TASK_advancement").' : '.$this->advancement.' % '.$this->isDelayed(true);

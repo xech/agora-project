@@ -1,5 +1,5 @@
 <script>
-$(function(){
+ready(function(){
 	/**********************************************************************************************************
 	 *	INIT L'AFFICHAGE
 	 **********************************************************************************************************/
@@ -11,7 +11,7 @@ $(function(){
 	/**********************************************************************************************************
 	 *	CONTRÔLE DU FORMULAIRE DE CONNEXION
 	 **********************************************************************************************************/
-	$("#formConnect").submit(function(){
+	$("#formConnect").on("submit",function(){
 		let connectLogin=$("[name=connectLogin]");
 		let connectPassword=$("[name=connectPassword]");
 		if(connectLogin.isEmpty() || connectLogin.val()==connectLogin.attr("placeholder") || connectPassword.isEmpty() || connectPassword.val()==connectPassword.attr("placeholder")){
@@ -23,14 +23,14 @@ $(function(){
 	/**********************************************************************************************************
 	 *	CONTROLE L'EMAIL DE RESET DU PASSWORD
 	 **********************************************************************************************************/
-	$("#resetPasswordMailForm").submit(function(){
+	$("#resetPasswordMailForm").on("submit",function(){
 		if($(this).find("[name='resetPasswordMail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
 	});
 
 	/**********************************************************************************************************
 	 *	FORMULAIRE DE RESET DU PASSWORD ET FORMULAIRE DE VALIDATION D'INVITATION : CONTROLE DES CHAMPS "PASSWORD"
 	 **********************************************************************************************************/
-	$("#resetPasswordModifForm, #invitationPasswordForm").submit(function(){
+	$("#resetPasswordModifForm, #invitationPasswordForm").on("submit",function(){
 		let newPassword		=$(this).find("[name='newPassword']").val();
 		let newPasswordVerif=$(this).find("[name='newPasswordVerif']").val();
 		if(!isValidUserPassword(newPassword))	{notify("<?= Txt::trad("passwordInvalid"); ?>");		return false;}//Password invalide
@@ -38,30 +38,28 @@ $(function(){
 	});
 
 	/**********************************************************************************************************
-	 *	ACCÈS À UN ESPACE PUBLIQUE : ACCÈS DIRECT || AFFICHE LE FORMULAIRE DU PASSWORD
+	 *	ESPACE PUBLIQUE :  AFFICHE LE FORMULAIRE DU PASSWORD  ||  ACCÈS DIRECT
 	 **********************************************************************************************************/
 	$("#publicSpaceTab .option").click(function(){
-		$("[name='_idSpaceAccess']").val($(this).attr("data-idSpace"));											//Enregistre le "_idSpaceAccess"
-		if($(this).attr("data-hasPassword")==="true"){															//Accès avec password : 
-			let facyboxOptions= {src:'#publicSpaceForm',type:'inline',buttons:['close'],modal:true};			//Option d'affichage du Fancybox
-			$.fancybox.open(facyboxOptions);																	//Affiche le formulaire ('modal': sans bouton par défaut)
-		}	
-		else{																									//Accès direct à l'espace :
-			let objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());									//"objUrl" encodé
-			redir("index.php?_idSpaceAccess="+$("[name='_idSpaceAccess']").val()+"&objUrl="+objUrlEncoded);		//Redir vers l'espace demandé
+		if($(this).attr("data-hasPassword")==="true"){
+			$("#publicSpaceForm [name='_idSpaceAccess']").val($(this).attr("data-idSpace"));
+			$.fancybox.open({src:"#publicSpaceForm",type:"inline",buttons:['close']});
+		}else{
+			redir("index.php?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+encodeURIComponent($("#formConnect [name='objUrl']").val()));
 		}
 	});
 
 	/**********************************************************************************************************
-	 *	ACCÈS À UN ESPACE PUBLIQUE : CONTROLE DU PASSWORD VIA AJAX
+	 *	ESPACE PUBLIQUE : CONTROLE DU PASSWORD VIA AJAX
 	 **********************************************************************************************************/
-	$("#publicSpaceForm").submit(function(event){
-		event.preventDefault();																																			//Pas de validation du form
-		let objUrlEncoded=encodeURIComponent($("[name='objUrl']").val());																								//Récupère "objUrl" du form principal de connexion
-		let password=encodeURIComponent($("#publicSpacePassword").val());																								//Récupère le password
-		$.ajax("index.php?action=PublicSpacePassword&_idSpaceAccess="+$("[name='_idSpaceAccess']").val()+"&password="+password).done(function(result){					//Controle Ajax du password
-			if(/passwordError/i.test(result))	{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}																//Notif d'erreur de password
-			else								{redir("index.php?_idSpaceAccess="+$("[name='_idSpaceAccess']").val()+"&password="+password+"&objUrl="+objUrlEncoded);}	//Redir vers l'espace demandé!
+	$("#publicSpaceForm").on("submit",function(event){
+		event.preventDefault();
+		let idSpaceAccess=$("#publicSpaceForm [name='_idSpaceAccess']").val();
+		let objUrl=encodeURIComponent($("#formConnect [name='objUrl']").val());																			//"objUrl" du form de connexion
+		let password=encodeURIComponent($("#publicSpacePassword").val());																				//Récupère le password
+		$.ajax("index.php?action=PublicSpacePasswordControl&_idSpaceAccessControl="+idSpaceAccess+"&passwordControl="+password).done(function(result){	//Controle Ajax du password (pas '_idSpaceAccess=' dans l'URL!)
+			if(/passwordOK/i.test(result))	{redir("index.php?_idSpaceAccess="+idSpaceAccess+"&password="+password+"&objUrl="+objUrl);}					//Redir vers l'espace demandé
+			else							{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}													//Notif d'erreur de password
 		});
 	});
 });
@@ -69,7 +67,8 @@ $(function(){
 
 <style>
 body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
-#headerBar									{height:40px; line-height:40px; text-align:center; font-size:1.05em;}/*surcharge*/
+#headerBar									{line-height:50px; text-align:center;}/*surcharge*/
+#pageCenter									{margin-top:100px;}/*surcharge*/
 .miscContainer								{width:500px; margin:10px auto; padding:25px 10px; border-radius:10px; text-align:center;}/*surcharge*/
 .miscContainer input:not([type=checkbox]), .miscContainer button	{width:var(--inputWidth); height:45px!important; border-radius:5px; margin-bottom:12px!important;}
 .miscContainer button						{margin-bottom:25px!important;}
@@ -131,7 +130,8 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 		</div>
 	</div>
 	<form id="publicSpaceForm" class="vLightboxForm">
-		<input type="password" id="publicSpacePassword" placeholder="<?= Txt::trad("password") ?>">
+		<input type="password" id="publicSpacePassword" placeholder="<?= Txt::trad("password") ?>" required>
+		<input type="hidden" name="_idSpaceAccess">
 		<?= Txt::submitButton("validate",false) ?>
 	</form>
 	<?php }  ?>
@@ -144,7 +144,7 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("mailLlogin") ?>" title="<?= Txt::trad("mailLlogin") ?>"  class="isAutocomplete">
 			<input type="password" name="connectPassword" value="<?= Req::param("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>" title="<?= Txt::trad("password") ?>" class="isAutocomplete">
 			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>">					<!--accès direct à un objet via "getUrlExternal()"-->
-			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">	<!--idem + accès à un espace publique-->
+			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">	<!--idem-->
 			<button type="submit"><?= Txt::trad("connect") ?></button>
 			<div class="vConnectOptions">
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked>&nbsp;<label for="boxRememberMe" title="<?= Txt::trad("connectAutoTooltip") ?>"><?= Txt::trad("connectAuto") ?></label></div>
@@ -191,7 +191,7 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 				<input type="hidden" name="connectLogin" value="<?= Req::param("resetPasswordMail") ?>">			<!--pour le pré-remplissage du champ login après validation du form-->
 				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
-			<script> $(function(){ $("#resetPasswordModifFormLabel").trigger("click"); }); </script>				<!--Affiche au chargement de la page-->
+			<script> ready(function(){ $("#resetPasswordModifFormLabel").trigger("click"); }); </script>				<!--Affiche au chargement de la page-->
 		<?php } ?>
 
 		<!--FORM DE VALIDATION D'INVITATION : INIT DU PASSWORD-->
@@ -205,7 +205,7 @@ body										{--inputWidth:300px;}/*Variable: largeur des boutons et Inputs*/
 				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">									<!--idem-->
 				<br><?= Txt::submitButton("validate",false) ?>
 			</form>
-			<script> $(function(){ $("#invitationPasswordFormLabel").trigger("click"); }); </script>				<!--Affiche au chargement de la page-->
+			<script> ready(function(){ $("#invitationPasswordFormLabel").trigger("click"); }); </script>				<!--Affiche au chargement de la page-->
 		<?php } ?>
 
 		<!--INSCRIPTION D'USER  ||  SWITCH D'ESPACE-->

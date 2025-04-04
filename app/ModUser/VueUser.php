@@ -12,11 +12,11 @@ lightboxSetWidth(500);
 <div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->lightboxTitleMenu().$curObj->getLabel("full")."</div>";
+	echo "<div class='lightboxTitle'>".$curObj->lightboxMenu().$curObj->getLabel("full")."</div>";
 
 	////	IMAGE & DETAILS DE l'USER
 	echo "<div class='personLabelImg'>".$curObj->profileImg()."</div>";
-	echo "<div class='personVueFields'>".$curObj->getFieldsValues("profile")."</div>";
+	echo "<div class='personVueFields'>".$curObj->getFields("profile")."</div>";
 
 	////	GROUPES D'UTILISATEURS
 	$groupsLabel=null;

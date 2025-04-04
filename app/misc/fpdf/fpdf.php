@@ -930,7 +930,7 @@ function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
 		$this->Link($x,$y,$w,$h,$link);
 }
 
-function GetPageWidth()
+function GetpageWidthRecord()
 {
 	// Get current page width
 	return $this->w;

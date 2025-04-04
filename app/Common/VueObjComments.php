@@ -3,18 +3,18 @@
 lightboxSetWidth(600);
 
 ////	Init l'affichage
-$(function(){
+ready(function(){
 	////	Contrôle l'ajout/modif d'un commentaire
-	$("form").submit(function(){
-		if($(this).find("textarea").isEmpty())  {notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
+	$("form").on("submit",function(){
+		if($(this).find("textarea").isEmpty())  {notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 	});
 
-	////	Edition/suppression d'un commentaire : update le "menuCircle"  (idem "usersLikeUpdate()")
+	////	Edition/suppression d'un commentaire : update le "circleNb"  (idem "usersLikeUpdate()")
 	<?php if(Req::isParam("actionComment")){ ?>
 		var menuId="#usersComment_<?= $curObj->_typeId ?>";																							//Id du menu
-		if(<?= count($commentList) ?>==0)	{parent.$(menuId).addClass("hideMiscMenu").find(".menuCircle").html("");}								//Masque l'icone et le nb de commentaires
-		else								{parent.$(menuId).removeClass("hideMiscMenu").find(".menuCircle").html("<?= count($commentList) ?>");}	//Affiche l'icone..
-		parent.$(menuId).attr("title","<?= $commentsTitle ?>").tooltipster("destroy").tooltipster(tooltipsterOptions);								//Tooltip le menu
+		if(<?= count($commentList) ?>==0)	{parent.$(menuId).addClass("hideMiscMenu").find(".circleNb").html("");}									//Masque l'icone et le nb de commentaires
+		else								{parent.$(menuId).removeClass("hideMiscMenu").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone..
+		parent.$(menuId).tooltipsterUpdate("<?= $commentsTitle ?>");																				//Update le Tooltip
 	<?php } ?>
 
 	////	Focus du champ (pas sur mobile pour ne pas afficher le clavier virtuel)
@@ -32,7 +32,7 @@ form button				{width:120px;}
 .vCommentDateUser		{width:200px;}
 .vCommentDateUser>div	{font-weight:normal}
 .vCommentText form		{display:none;}
-.vCommentOptions		{width:80px;}
+.vCommentOptions		{width:100px; text-align:right;}
 .vCommentOptions img	{margin-left:10px;}
 .submitButtonInline		{padding-top:10px;}
 
@@ -53,7 +53,7 @@ form button				{width:120px;}
 	<?php foreach($commentList as $tmpComment){ ?>
 		<div class="vCommentsTable">
 			<div class="vCommentsRow lineHover">
-				<div class="vCommentDateUser"><?= Ctrl::getObj("user",$tmpComment['_idUser'])->getLabel() ?><div><?= Txt::dateLabel($tmpComment['dateCrea']) ?></div></div>
+				<div class="vCommentDateUser"><?= Ctrl::getObj("user",$tmpComment['_idUser'])->getLabel() ?><div><?= Txt::dateLabel($tmpComment['dateCrea'],"labelFull") ?></div></div>
 				<div class="vCommentText" id="commentText<?= $tmpComment['_id'] ?>">
 					<div><?= $tmpComment['comment'] ?></div>
 					<form action="index.php" method="post">

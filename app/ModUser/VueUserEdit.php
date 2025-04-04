@@ -3,38 +3,33 @@
 lightboxSetWidth(600);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	Modif du login
-	$("input[name='login']").on("focusout",function(event){
-		if($(this).isMail()) 	{$("input[name='mail']").val(this.value);}									//Préremplit le champ "mail"
-		else					{$("#mailLloginNotif").show().pulsate(1);  $(this).addClass("focusPulsate");}//Notif "il est conseillé d'utiliser un email"  +  Class .focusPulsate (pas focusPulsate() sinon on focus en boucle)
+	$("input[name='login']").on("focusout keyup",function(event){
+		if($(this).isMail()) 				{$("input[name='mail']").val(this.value);}	//Préremplit le champ "mail"
+		else if(event.type=="focusout")		{$("#mailLloginNotif").pulsate(1);}			//Pulsate "Il est conseillé d'utiliser un email.."
 	});
-	////	Init les affectations des Spaces<->Users (cf. "common.js")
+	////	Init les affectations des Spaces<->Users (cf. "app.js")
 	spaceAffectations();
 });
 
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		//Verif si le login/email est présent et sans espace
-		if($("input[name='login']").isEmpty() || /\s/g.test($("input[name='login']").val()))
-			{notify("<?= Txt::trad("specifyLogin"); ?>","warning");  resolve(false);}
-		//Vérif si le login/email et l'email sont bien identiques
-		if($("input[name='login']").isMail()  &&  $("input[name='mail']").isMail()  &&  $("input[name='login']").val()!=$("input[name='mail']").val())
-			{notify("<?= Txt::trad("USER_loginAndMailDifferent"); ?>","warning");  resolve(false);}
-		//Password obligatoire pour les nouveaux users
-		<?php if($curObj->isNew()){ ?>
-		if($("[name='password']").isEmpty())  {notify("<?= Txt::trad("specifyPassword"); ?>","warning");  resolve(false);}
-		<?php } ?>
-		//Vérif le password et sa confirmation
-		if($("[name='password']").isNotEmpty()){
-			if(isValidUserPassword($("[name='password']").val())==false)			{notify("<?= Txt::trad("passwordInvalid") ?>","warning");		resolve(false);}
-			if($("[name='password']").val()!=$("[name='passwordVerif']").val())		{notify("<?= Txt::trad("passwordConfirmError") ?>","warning");	resolve(false);}
-		}
-		// Verif si le compte utilisateur existe déjà
+		if($("input[name='login']").isEmpty())																										//// Login obligatoire
+			{notify("<?= Txt::trad("specifyLogin"); ?>");  resolve(false);}
+		if($("input[name='login']").isMail() && $("input[name='mail']").isMail() && $("input[name='mail']").val()!=$("input[name='login']").val())	//// Vérif si le Login (format mail) est identique à l'email
+			{notify("<?= Txt::trad("USER_loginAndMailDifferent"); ?>");  resolve(false);}
+		if($("[name='password']").isEmpty() && <?= $curObj->isNew()?'true':'false'?>==true)															//// Password obligatoire (nouveaux users)
+			{notify("<?= Txt::trad("specifyPassword"); ?>");  resolve(false);}															
+		if($("[name='password']").notEmpty() && !isValidUserPassword($("[name='password']").val()))												//// Password invalide
+			{notify("<?= Txt::trad("passwordInvalid") ?>");  resolve(false);}
+		if($("[name='password']").notEmpty() && $("[name='password']").val()!=$("[name='passwordVerif']").val())									//// passwordVerif invalide
+			{notify("<?= Txt::trad("passwordConfirmError") ?>");	resolve(false);}
+		//// Verif Ajax finale : un compte existe déjà avec le même login ?
 		$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(result){
-			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  resolve(false);}	//L'user existe déjà..
-			else						{resolve(true);}																//Controle ok
+			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>");	resolve(false);}
+			else						{resolve(true);}
 		});
 	});
 }
@@ -43,9 +38,9 @@ function objectFormControl(){
 
 <style>
 #mailLloginNotif, #passwordModifNotif	{display:none; margin:15px 0px 0px 0px; padding:15px; color:#500; text-align:center;}
-<?=$curObj->isNew() ? "#passwordModifLabel" : "#passwordInput,#passwordInput2" ?>  {display:none;}
-#passwordModifLabel						{margin:15px 0px 15px 0px;}
+#passwordModifLabel						{margin-bottom:15px;}
 select[name="connectionSpace"]			{width:100%}
+<?=$curObj->isNew() ? "#passwordModifLabel" : "#passwordInput,#passwordInput2" ?>  {display:none;}
 </style>
 
 
@@ -70,14 +65,14 @@ select[name="connectionSpace"]			{width:100%}
 	<hr>
 
 	<!-- CHAMPS PRINCIPAUX !-->
-	<?= $curObj->getFieldsValues("edit") ?>
+	<?= $curObj->getFields("edit") ?>
 	<hr>
 
 	<!--ESPACE DE CONNEXION-->
-	<?php if(count($curObj->getSpaces())>0){ ?>
+	<?php if(count($curObj->spaceList())>0){ ?>
 	<div class="objField">
 		<div><img src="app/img/user/connection.png"><?= Txt::trad("USER_connectionSpace") ?></div>
-		<div><select name="connectionSpace"><?php foreach($curObj->getSpaces() as $tmpSpace)  {echo "<option value='".$tmpSpace->_id."' ".($tmpSpace->_id==$curObj->connectionSpace?'selected':null).">".$tmpSpace->name."</option>";} ?></select></div>
+		<div><select name="connectionSpace"><?php foreach($curObj->spaceList() as $tmpSpace)  {echo "<option value='".$tmpSpace->_id."' ".($tmpSpace->_id==$curObj->connectionSpace?'selected':null).">".$tmpSpace->name."</option>";} ?></select></div>
 	</div>
 	<?php } ?>
 
@@ -104,8 +99,8 @@ select[name="connectionSpace"]			{width:100%}
 		{
 			$userChecked =($tmpSpace->userAffectation($curObj)==1) ? "checked" : null;	//Sélectionne la box "user"
 			$adminChecked=($tmpSpace->userAffectation($curObj)==2) ? "checked" : null;	//Sélectionne la box "admin"
-			$userDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
-			$userTooltip=($tmpSpace->allUsersAffected())  ?  Txt::trad("USER_allUsersOnSpaceNotif")  :  Txt::trad("SPACE_userTooltip");
+			$userDisabled=($tmpSpace->allUsersAffected())  ?  "disabled" : null;		//Désactive la checkbox "user" si "allUsers" est sélectionné
+			$userTooltip =($tmpSpace->allUsersAffected())  ?  Txt::trad("USER_allUsersOnSpace")  :  Txt::trad("SPACE_userTooltip");
 			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpSpace->_id.'">
 					<label class="spaceAffectLabel" '.Txt::tooltip($userTooltip).'>'.$tmpSpace->name.'</label>
 					<div> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpSpace->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>

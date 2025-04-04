@@ -1,13 +1,11 @@
 <style>
-#htmlLightbox body	{padding:0px!important;}/*Surcharge*/
+#htmlLightbox body	{padding:0px!important;}
 </style>
 
-<!--CONTENEUR DE LA CARTE-->
-<img src="app/img/loading.png" style="position:absolute;bottom:50px;right:50px;z-index:50;">
+<!--CONTENEUR DE LA CARTE -->
 <div id="mapid"></div>
 
-
-<!--CHARGE LA LIBRAIRIE GOOGLE MAP OU LEAFLET/OPENSTREETMAP-->
+<!--LIBRAIRIE GOOGLE MAPS / LEAFLET-OPENSTREETMAP-->
 <?php if($mapTool=="gmap"){ ?>
 	<script src="https://maps.googleapis.com/maps/api/js?key=<?= Ctrl::$agora->gApiKey ?>"></script>
 <?php }else{ ?>
@@ -20,7 +18,7 @@
 /**********************************************************************************************************
  *	INIT LA CARTE ET MARQUE LES ADRESSES
  **********************************************************************************************************/
-$(function(){
+ready(function(){
 	//// Init l'affichage
 	mapTool="<?= $mapTool ?>";//"gmap" ou "leaflet"
 	$("#mapid").css("width",parent.$(window).width()+"px").css("height",parent.$(window).height()+"px");//Redimensionne le div de la carte
@@ -32,7 +30,7 @@ $(function(){
 		geocoder=new google.maps.Geocoder();										//Init le géocodeur
 		bounds	=new google.maps.LatLngBounds();									//bornes la carte (latitude/longitude)
 	}
-	//// Instancie la carte Leaflet/Openstreetmap
+	//// Instancie la carte Leaflet-Openstreetmap
 	else{
 		leafletMap=L.map("mapid").setView([45,-20], 14);																//Créé une nouvelle carte (par défaut sur l'Atlantique)
 		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'OpenStreetMap'}).addTo(leafletMap);	//Ajoute les tuiles/vues d'Openstreetmap	
@@ -90,11 +88,10 @@ function displayAdress(adressKey)
 			else{
 				gMap.fitBounds(bounds);
 				setTimeout(function(){ gMap.setZoom(14); },200);//Dézoom juste après le "fitBounds"
-				$("img[src*=loading]").hide();
 			}
 		});
 	}
-	//// OPENSTREETMAP
+	//// LEAFLET-OPENSTREETMAP
 	else{
 		//// Géocode et marque chaque adresse
 		$.ajax({url:"https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(tmpAdress.adress), dataType:"json"}).done(function(result){
@@ -116,7 +113,7 @@ function displayAdress(adressKey)
 			}
 			//// Géolocalise l'adresse suivante  OU  Affichage final : recentre et ajuste le zoom en fonction des limites de la carte ("fitBounds()" et "zoomOut()")
 			if(getAdressKeyNext(adressKey))	{displayAdress(getAdressKeyNext(adressKey));}
-			else							{leafletMap.fitBounds(bounds).zoomOut(1);  $("img[src*=loading]").hide();}
+			else							{leafletMap.fitBounds(bounds).zoomOut(1);}
 		});
 	}
 }

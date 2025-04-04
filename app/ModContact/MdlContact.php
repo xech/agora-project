@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -50,9 +50,11 @@ class MdlContact extends MdlPerson
 	 *******************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//"Créer un utilisateur sur cet espace" : admin général uniquement!
-		if(Ctrl::$curUser->isGeneralAdmin())
-			{$options["specificOptions"][]=["actionJs"=>"contactAddUser('".$this->_typeId."')", "iconSrc"=>"plusSmall.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];}
+		//Ajoute l'option "Créer un utilisateur sur cet espace" : admin général uniquement!
+		if(Ctrl::$curUser->isGeneralAdmin()){
+			$actionJs="confirmRedir('?ctrl=contact&action=contactAddUser&typeId=".$this->_typeId."', '".Txt::trad("CONTACT_createUserConfirm",true)."');";
+			$options["specificOptions"][]=["actionJs"=>$actionJs, "iconSrc"=>"plusSmall.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];
+		}
 		return parent::contextMenu($options);
 	}
 }

@@ -14,19 +14,19 @@ class Trad extends Txt
 
 		////	TRADUCTIONS
 		self::$trad=array(
-			////	Langue courante / Header http / Editeurs Tinymce / Documention pdf
+			////	Langue de l'appli, des dates et de l'éditeur
 			"CURLANG"=>"it",
 			"DATELANG"=>"it_IT",
-			"EDITORLANG"=>"it_IT",
+			"EDITORLANG"=>"it",
 
 			////	Divers
 			"mainMenu"=>"Menu principale",
-			"menuOptions"=>"Menu delle opzioni sisponibili",
-			"fillFieldsForm"=>"Compilare i campi del modulo",
+			"menuOptions"=>"Menu delle opzioni",
+			"emptyFields"=>"Compilare i campi del modulo",
 			"requiredFields"=>"Campi obbligatori",
 			"inaccessibleElem"=>"Elemento inaccessibile",
 			"warning"=>"Avviso",
-			"elemEditedByAnotherUser"=>"L'elemento è stato modificato da",//"..bob".
+			"elemEditedByAnotherUser"=>"L'elemento è stato modificato da",
 			"yes"=>"Si",
 			"no"=>"no",
 			"none"=>"no",
@@ -49,18 +49,31 @@ class Trad extends Txt
 			"folder"=>"cartella",
 			"folders"=>"cartelle",
 			"close"=>"Chiudi",
-			"confirmCloseForm"=>"Sei sicuro di voler chiudere il modulo?",
 			"modifRecorded"=>"Le modifiche sono state salvate",
-			"confirm"=>"Conferma?",
 			"comment"=>"Commento",
 			"commentAdd"=>"Aggiungi un commento",
 			"optional"=>"(opzionale)",
 			"objNew"=>"Oggetto creato di recente",
+			"objNewTooltip"=>"Creato entro 24 ore o dall'accesso precedente",
 			"personalAccess"=>"Accesso personale",
 			"copyUrl"=>"Copia il link/url nell'elemento",
 			"copyUrlTooltip"=>"L'indirizzo di condivisione (URL) consente l'accesso esterno da un'e-mail, un blog, ecc.",
-			"copyUrlConfirmed"=>"L indirizzo web è stato copiato con successo",
-			"cancel"=>"Annulla",
+			"copyUrlNotif"=>"L indirizzo web è stato copiato con successo",
+		
+			////	Confirm et Suppression
+			"confirm"=>"Conferma",
+			"confirmOk"=>"Ok",
+			"confirmCancel"=>"Cancellare",
+			"confirmCloseForm"=>"Sei sicuro di voler chiudere il modulo?",
+			"delete"=>"Elimina",
+			"confirmDelete"=>"Confermare l'eliminazione ?",
+			"confirmDeleteAlert"=>"Attenzione : questa azione è definitiva !",
+			"confirmDeleteNotify"=>"L'eliminazione è avvenuta con successo",
+			"confirmDeleteSelect"=>"Si desidera eliminare definitivamente la selezione?",
+			"confirmDeleteSelectNb"=>"elementi selezionati",
+			"confirmDeleteFolder"=>"Alcune sottocartelle non sono accessibili: puoi comunque confermarlo ?",
+			"notifDeleteWait"=>"Attendi un attimo: l'eliminazione della cartella potrebbe richiedere alcuni secondi",
+			"notifDeleteFolderUncomplete"=>"Alcuni elementi non sono stati eliminati perché non si dispone dei diritti di accesso necessari",
 
 			////	images
 			"picture"=>"Immagine",
@@ -71,27 +84,26 @@ class Trad extends Txt
 			"pixels"=>"pixels",
 
 			////	Connexion
-			"specifyLoginPassword"=>"Grazie per aver scelto un login e una password",//user connexion forms
-			"specifyLogin"=>"Grazie per aver scelto un e-mail/login (senza spazi)",//user edit
-			"mailLloginNotif"=>"Si consiglia di utilizzare un e-mail come ID di accesso",//idem
+			"specifyLoginPassword"=>"Grazie per aver scelto un login e una password",
+			"specifyLogin"=>"Grazie per aver scelto un e-mail/login (senza spazi)",
+			"mailLloginNotif"=>"Si consiglia di utilizzare un e-mail come ID di accesso",
 			"mailLlogin"=>"Email / Login",
 			"connect"=>"Accedi",
 			"connectAuto"=>"Ricordati di me",
 			"connectAutoTooltip"=>"Ricorda i miei dati di accesso per la connessione automatica",
 			"gIdentityUserUnknown"=>"non è registrato nello spazio",
 			"connectSpaceSwitch"=>"Connettiti a un altro spazio",
-			"connectSpaceSwitchConfirm"=>"Confermi la disconnessione per connetterti ad un altro spazio?",
 			"guestAccess"=>"Accedi come ospite",
 			"guestAccessTooltip"=>"Accedi a questo spazio come ospite",
 			"publicSpacePasswordError"=>"Password errata",
 			"disconnectSpace"=>"Esci",
-			"disconnectSpaceConfirm"=>"Confermare l'uscita dallo spazio?",
+			"disconnectSpaceConfirm"=>"Uscita dallo spazio?",
 
 			////	Password : connexion d'user / edition d'user / reset du password
 			"password"=>"Password",
 			"passwordModify"=>"Cambiare la password",
-			"passwordToModify"=>"Password temporanea (da modificare all'accesso)",//Mail d'envoi d'invitation
-			"passwordToModify2"=>"Password (da modificare se necessario)",//Mail de création de user
+			"passwordToModify"=>"Password temporanea (da modificare all'accesso)",
+			"passwordToModify2"=>"Password (da modificare se necessario)",
 			"passwordVerif"=>"Conferma password",
 			"passwordTooltip"=>"Compila i campi solo se desideri modificare la password",
 			"passwordInvalid"=>"La password deve contenere numeri, lettere e almeno 6 caratteri",
@@ -130,7 +142,6 @@ class Trad extends Txt
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", ecc.)
 			"from"=>"di ",
 			"at"=>"al",
-			"the"=>"il",
 			"begin"=>"Inizio",
 			"end"=>"End",
 			"beginEnd"=>"Inizio/Fine",
@@ -165,7 +176,7 @@ class Trad extends Txt
 			"description"=>"Descrizione",
 			"specifyName"=>"Si prega di specificare un nome",
 			"editorDraft"=>"Recupera il mio testo",
-			"editorDraftConfirm"=>"Recupera l'ultimo testo specificato",
+			"editorDraftConfirm"=>"Recupera l'ultimo testo inserito nell'editor",
 			"editorFileInsert"=>"Aggiungi immagine o video",
 			"editorFileInsertNotif"=>"Selezionare un immagine in formato Jpeg, Png, Gif o Svg",
 			
@@ -199,30 +210,15 @@ class Trad extends Txt
 			"SORT_function"=>"funzione",
 			"SORT_companyOrganization"=>"azienda / organizzazione",
 			"SORT_lastConnection"=>"ultimo accesso",
-			"tri_ascendant"=>"Ascendente",
-			"tri_descendant"=>"Discendente",
-		
-			////	Options de suppression
-			"confirmDelete"=>"Vuoi eliminare definitivamente questi elementi?",
-			"confirmDeleteDbl"=>"Questa azione è definitiva: confermate tutti gli stessi elementi?",
-			"confirmDeleteSelect"=>"Si desidera eliminare definitivamente la selezione?",
-			"confirmDeleteSelectNb"=>"elementi selezionati",//"55 elementi selezionati".
-			"confirmDeleteFolderAccess"=>"Attenzione! Alcune sottocartelle non sono accessibili: saranno eliminate!",
-			"notifyBigFolderDelete"=>"L'eliminazione di --NB_FOLDERS-- sottocartelle può essere un po  grande, attendere qualche istante prima della fine del processo",
-			"delete"=>"Elimina",
-			"notDeletedElements"=>"Alcuni elementi non sono stati eliminati perché non si dispone dei diritti di accesso necessari",
+			"SORT_ascend"=>"Ascendente",
+			"SORT_descend"=>"Discendente",
 
-			////	Visibilité d'un Objet : auteur et droits d'accès
-			"autor"=>"Autore",
-			"postBy"=>"Postato da",
+			////	Visibilité d'un Objet
 			"guest"=>"Ospite",
-			"creation"=>"Creazione",
-			"modification"=>"Modifica",
-			"createBy"=>"Creato da",
+			"createdBy"=>"Creato da",
 			"modifBy"=>"Modificato da",
 			"objHistory"=>"Storia dell'elemento",
 			"all"=>"tutti",
-			"all2"=>"tutti",
 			"deletedUser"=>"account utente eliminato",
 			"folderContent"=>"contenuto",
 			"accessRead"=>"Leggi",
@@ -234,7 +230,7 @@ class Trad extends Txt
 			"accessWriteTooltipContainer"=>"Accesso in scrittura : possibilità di aggiungere, modificare o eliminare tutti gli -OBJCONTENT-- della --OBJLABEL--",
 			"accessAutorPrivilege"=>"Solo l'autore e gli amministratori possono modificare o rimuovere questo --OBJLABEL--",
 			"accessRightsInherited"=>"Diritti di accesso ereditati da --OBJLABEL-- superiore",
-			"categoryNotifSpaceAccess"=>"è accessibile solo nello spazio",//Ex: "Thème bidule -n est accessible que sur l'espace- Machin"
+			"categoryNotifSpaceAccess"=>"è accessibile solo nello spazio",
 			"categoryNotifChangeOrder"=>"L'ordine di visualizzazione è stato modificato",
 
 			////	Libellé des objets (cf. "MdlObject::objectType")
@@ -261,7 +257,6 @@ class Trad extends Txt
 			"MAIL_sendOk"=>"L'e-mail è stata inviata con successo",
 			"MAIL_sendNotOk"=>"Impossibile inviare l'e-mail",
 			"MAIL_recipients"=>"Destinatari",
-			"MAIL_attachedFileError"=>"Il file non è stato aggiunto all'e-mail perché è troppo grande",
 			"MAIL_hello"=>"Ciao",
 			"MAIL_hideRecipients"=>"Nascondi destinatari",
 			"MAIL_hideRecipientsTooltip"=>"Metti tutti i destinatari in copia nascosta. Si noti che con questa opzione l'e-mail potrebbe arrivare nello spam in alcune caselle di posta elettronica",
@@ -273,13 +268,14 @@ class Trad extends Txt
 			"MAIL_receptionNotifTooltip"=>"Attenzione! Alcuni client di posta elettronica non supportano le ricevute di consegna",
 			"MAIL_specificMails"=>"Aggiungi indirizzi email",
 			"MAIL_specificMailsTooltip"=>"Aggiungi indirizzi email non elencati nello spazio",
-			"MAIL_fileMaxSize"=>"Tutti i tuoi allegati non devono superare i 15 MB. Alcuni servizi di messaggistica potrebbero rifiutare le email oltre questo limite. Inviare lo stesso?",
+			"MAIL_maxFileSizeConfirm"=>"Il set di file allegati supera il limite di ricezione di alcune caselle di posta (--MAXFILESSIZE--) <br><br> Inviare comunque?",
+			"MAIL_maxFileSizeNotif"=>"Il file non è stato aggiunto all'e-mail perché è troppo grande",
 			"MAIL_sendButton"=>"Invia e-mail",
-			"MAIL_sendBy"=>"Inviato da",//"Envoyé par" M. Trucmuche
+			"MAIL_sendBy"=>"Inviato da",
 			"MAIL_sendNotif"=>"L'e-mail di notifica è stata inviata",
-			"MAIL_fromTheSpace"=>"dallo spazio",//"depuis l'espace Bidule"
-			"MAIL_elemCreatedBy"=>"--OBJLABEL-- creato da",//Dossier 'créé par' boby
-			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificato da",//Dossier modifié par 'Boby'
+			"MAIL_fromTheSpace"=>"dallo spazio",
+			"MAIL_elemCreatedBy"=>"--OBJLABEL-- creato da",
+			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificato da",
 			"MAIL_elemAccessLink"=>"Clicca qui per accedervi dal tuo spazio",
 
 			////	Dossier & fichier
@@ -293,7 +289,7 @@ class Trad extends Txt
 			"downloadFolder"=>"Scarica cartella",
 			"diskSpaceUsed"=>"Spazio su disco utilizzato",
 			"diskSpaceUsedModFile"=>"Spazio su disco utilizzato per il gestore di file",
-			"downloadAlert"=>"L'archivio è troppo grande per essere scaricato durante il giorno (--ARCHIVE_SIZE--). Riavviare il download dopo",//"19h".
+			"downloadAlert"=>"L'archivio è troppo grande per essere scaricato durante il giorno (--ARCHIVE_SIZE--). Riavviare il download dopo",
 			"downloadBackToApp"=>"Torna all'app",
 			
 			////	Infos sur une personne
@@ -309,9 +305,10 @@ class Trad extends Txt
 			"mail"=>"Email",
 			"function"=>"Funzione",
 			"companyOrganization"=>"Azienda/Organizzazione",
-			"lastConnection"=>"Ultimo accesso",
-			"lastConnection2"=>"Accesso effettuato",
-			"lastConnectionEmpty"=>"Non ancora connesso",
+			"lastConnection"=>"Ultima connessione",
+			"notConnected"=>"Non ancora connesso",
+			"connectedToday"=>"Connesso oggi",
+			"connectedThe"=>"Connesso il",
 			"displayProfil"=>"Visualizza profilo",
 			
 			////	Captcha
@@ -322,12 +319,12 @@ class Trad extends Txt
 			////	Rechercher
 			"searchSpecifyText"=>"Specificare almeno 3 caratteri (alfanumerici e non speciali)",
 			"search"=>"Ricerca",
+			"searchOnSpace"=>"Cerca in questo spazio",
 			"searchDateCrea"=>"Data di creazione",
 			"searchDateCreaDay"=>"meno di un giorno",
 			"searchDateCreaWeek"=>"meno di una settimana",
 			"searchDateCreaMonth"=>"meno di un mese",
 			"searchDateCreaYear"=>"meno di un anno",
-			"searchOnSpace"=>"Cerca in questo spazio",
 			"advancedSearch"=>"Ricerca avanzata",
 			"advancedSearchAnyWord"=>"qualsiasi parola",
 			"advancedSearchAllWords"=>"tutte le parole",
@@ -343,7 +340,7 @@ class Trad extends Txt
 			"userInscriptionTooltip"=>"Crea un nuovo account utente (convalidato da un amministratore)",
 			"userInscriptionSpace"=>"Registrati nello spazio",
 			"userInscriptionRecorded"=>"La registrazione è stata salvata: sarà convalidata al più presto dall'amministratore dello spazio",
-			"userInscriptionEmailSubject"=>"Nuova registrazione nello spazio",//"Mon espace"
+			"userInscriptionEmailSubject"=>"Nuova registrazione nello spazio",
 			"userInscriptionEmailMessage"=>"È stata richiesta una nuova registrazione da parte di <i>--NEW_USER_LABEL--</i> per lo spazio <i>--SPACE_NAME--</i> : <br><br><i>--NEW_USER_MESSAGE--<i> <br><br>Ricordatevi di convalidare o invalidare questa registrazione durante la vostra prossima connessione.",
 			"userInscriptionEdit"=>"Consenti ai visitatori di registrarsi nello spazio",
 			"userInscriptionEditTooltip"=>"La registrazione avviene nella homepage del sito. La registrazione deve poi essere convalidata dall'amministratore dello spazio",
@@ -366,7 +363,7 @@ class Trad extends Txt
 			"exportFormat"=>"Formato",
 			"specifyFile"=>"Seleziona un file un file",
 			"fileExtension"=>"Il tipo di file non è valido. Deve essere del tipo",
-			"importContactRootFolder"=>"I contatti verranno assegnati per impostazione predefinita a &quot;tutti gli utenti dello spazio&quot;",//"Mon espace"
+			"importContactRootFolder"=>"I contatti verranno assegnati per impostazione predefinita a &quot;tutti gli utenti dello spazio&quot;",
 			"importInfo"=>"Selezionare i campi di Agorà a cui puntare, grazie al menu a tendina di ciascuna colonna",
 			"importNotif1"=>"Scegli la colonna del nome nelle caselle di selezione",
 			"importNotif2"=>"Scegli un contatto da importare",
@@ -383,24 +380,24 @@ class Trad extends Txt
 			"NOTIF_fileVersion"=>"Tipo di file diverso dall'originale",
 			"NOTIF_folderMove"=>"Non è possibile spostare la cartella all'interno...!",
 			"NOTIF_duplicateName"=>"Esiste già un elemento con lo stesso nome",
+			"NOTIF_duplicateNameFolder"=>"Esiste già una cartella con lo stesso nome",
 			"NOTIF_fileName"=>"Esiste già un file con lo stesso nome (ma non è stato sostituito con il file corrente)",
 			"NOTIF_chmodDATAS"=>"La cartella   DATAS   non è accessibile in scrittura. È necessario concedere un accesso in lettura-scrittura al proprietario e al gruppo (  chmod 775  )",
-			"NOTIF_usersNb"=>"Non è possibile aggiungere un nuovo utente: limitato a ", // "...limité à" 10
+			"NOTIF_usersNb"=>"Non è possibile aggiungere un nuovo utente: limitato a ",
 			
-			////	Header / Footer
-			"HEADER_displaySpace"=>"spazi di lavoro",
+			////	Header
+			"HEADER_displaySpace"=>"Spazi di lavoro",
 			"HEADER_displayAdmin"=>"Visualizzazione amministratore",
-			"HEADER_displayAdminInfo"=>"Questa opzione consente di visualizzare anche gli elementi dello spazio non assegnati all'utente",
+			"HEADER_displayAdminInfo"=>"Consente di visualizzare gli elementi nello spazio che non mi sono assegnati direttamente: cartelle, calendari, ecc.",
 			"HEADER_displayAdminEnabled"=>"Visualizzazione amministratore abilitata",
-			"HEADER_searchElem"=>"Ricerca nello spazio",
+			"HEADER_displayAdminDisabled"=>"Visualizzazione amministratore disabilitata",
 			"HEADER_documentation"=>"Documentazione",
 			"HEADER_shortcuts"=>"Scorciatoie",
-			"FOOTER_pageGenerated"=>"Pagina generata in",
 
 			////	Messenger / Visio
-			"MESSENGER_headerModuleName"=>"Messaggi",
-			"MESSENGER_moduleDescription"=>"Messaggistica istantanea: chattare in diretta o avviare una videoconferenza con persone collegate allo spazio",
-			"MESSENGER_messengerTitle"=>"Messaggistica istantanea: fare clic sul nome di una persona per chattare o avviare una videoconferenza",
+			"MESSENGER_MODULE_NAME"=>"Messaggistica",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chatta o avvia una videoconferenza con le persone connesse allo spazio",
+			"MESSENGER_messengerTitle"=>"Messaggistica : fare clic sul nome di una persona per chattare o avviare una videoconferenza",
 			"MESSENGER_messengerMultiUsers"=>"Chatta con altri selezionando i miei interlocutori nel riquadro di destra",
 			"MESSENGER_connected"=>"Online",
 			"MESSENGER_nobody"=>"Al momento sei l'unica persona connessa allo spazio",
@@ -410,15 +407,15 @@ class Trad extends Txt
 			"MESSENGER_addMessageToSelection"=>"Il mio messaggio (persone selezionate)",
 			"MESSENGER_addMessageTo"=>"Il mio messaggio a",
 			"MESSENGER_addMessageNotif"=>"Grazie per aver specificato un messaggio",
-			"MESSENGER_visioProposeTo"=>"Proponi una videochiamata a",//..boby
+			"MESSENGER_visioProposeTo"=>"Proponi una videochiamata a",
 			"MESSENGER_visioProposeToSelection"=>"Proponi una videochiamata alle persone selezionate",
-			"MESSENGER_visioProposeToUsers"=>"Fare clic qui per avviare la videochiamata con",//"..Will & Boby".
+			"MESSENGER_visioProposeToUsers"=>"Fare clic qui per avviare la videochiamata con",
 			
 			////	Lancer une Visio
 			"VISIO_urlAdd"=>"Aggiungi una videoconferenza",
+			"VISIO_urlAddConfirm"=>"Aggiungi un link alla fine del testo per avviare una nuova videoconferenza ?",
 			"VISIO_urlCopy"=>"Copia il link alla videoconferenza",
 			"VISIO_urlDelete"=>"Rimuovi il link alla videoconferenza",
-			"VISIO_urlMail"=>"Aggiungi un link alla fine del testo per avviare una nuova videoconferenza",
 			"VISIO_launch"=>"Avvia la videoconferenza",
 			"VISIO_launchJitsi"=>"Avviare la videoconferenza <br>con l'applicazione Jitsi",
 			"VISIO_launchFromEvent"=>"Avvia la videoconferenza dell'evento",
@@ -428,7 +425,7 @@ class Trad extends Txt
 			"VISIO_launchServerMain"=>"Server video principale",
 			"VISIO_launchServerAlt"=>"Server video secondario",
 
-			////	VueObjEditMenuSubmit.php
+			////	VueObjMenuEdit.php
 			"EDIT_notifNoSelection"=>"È necessario selezionare almeno una persona o uno spazio",
 			"EDIT_notifNoPersoAccess"=>"Non sei assegnato all'elemento. convalidare tutti gli stessi ?",
 			"EDIT_parentFolderAccessError"=>"Verificare i diritti di accesso della cartella padre <br><i>--FOLDER_NAME--</i><br><br>Deve essere presente anche un diritto di accesso per <br><i>--SPACE_LABEL--</i> &nbsp;>&nbsp; <i>--TARGET_LABEL--</i><br><br>In caso contrario questo file non sarà accessibile!",
@@ -477,15 +474,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Agora-Project è stato installato correttamente!",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Spazio per la condivisione e il lavoro collaborativo",
-			"INSTALL_dataDashboardNews"=>"<h3>Benvenuto nel tuo nuovo spazio di condivisione!</h3>
-											<h4><img src='app/img/file/iconSmall.png'> Condividi ora i tuoi file nel gestore di file</h4>
-											<h4><img src='app/img/calendar/iconSmall.png'> Condividi i calendari comuni o il tuo calendario personale</h4>
-											<h4><img src='app/img/dashboard/iconSmall.png'> Espandi il feed di notizie della tua comunità</h4>
-											<h4><img src='app/img/messenger.png'> Comunicare attraverso il forum, la messaggistica istantanea o le videoconferenze</h4>
-											<h4><img src='app/img/task/iconSmall.png'> Centralizza le tue note, i tuoi progetti e i tuoi contatti</h4>
-											<h4><img src='app/img/mail/iconSmall.png'> Invia le newsletter via e-mail</h4>
-											<h4><img src='app/img/postMessage.png'> <a onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\">Clicca qui per inviare le email di invito e far crescere la tua community!</a></h4>
-											<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>Per maggiori informazioni, consulta la documentazione ufficiale di Omnispace & Agora-Project</a></h4>",
+			"INSTALL_dataDashboardNews"=>"<h3>Benvenuti nel vostro nuovo spazio di lavoro collaborativo!</h3>
+											<h4 onclick=\"redir('?ctrl=file')\"><img src='app/img/file/iconSmall.png'>Condividi i tuoi file con il tuo team nel file manager</h4>
+											<h4 onclick=\"redir('?ctrl=calendar')\"><img src='app/img/calendar/iconSmall.png'> Crea eventi sul tuo calendario condiviso o sul tuo calendario personale</h4>
+											<h4 onclick=\"redir('?ctrl=dashboard')\"><img src='app/img/dashboard/iconSmall.png'> Utilizza il feed di notizie per trasmettere informazioni sulla tua attività</h4>
+											<h4 onclick=\"redir('?ctrl=forum')\"><img src='app/img/messenger.png'>Comunicare tramite forum, messaggistica o videoconferenze</h4>
+											<h4 onclick=\"redir('?ctrl=task')\"><img src='app/img/task/iconSmall.png'> Gestisci le tue attività e i tuoi progetti per organizzare la tua attività</h4>
+											<h4 onclick=\"redir('?ctrl=mail')\"><img src='app/img/mail/iconSmall.png'> Invia newsletter per distribuire email informative sulla tua attività.</h4>
+											<h4 onclick=\"lightboxOpen('docs/DOCUMENTATION_FR.pdf?displayFile=true')\"><img src='app/img/documentation.png'>Consulta la guida utente per scoprire il tuo spazio di lavoro</h4>
+											<h4 onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\"><img src='app/img/mail.png'>Invia inviti via email per unirti allo spazio</h4>",
 			"INSTALL_dataDashboardPoll"=>"Cosa ne pensi del news feed?",
 			"INSTALL_dataDashboardPollA"=>"Molto interessante!",
 			"INSTALL_dataDashboardPollB"=>"Interessante",
@@ -584,7 +581,7 @@ class Trad extends Txt
 
 			////	MOD : LOG
 			////
-			"LOG_moduleDescription"=>"Registri - Registro eventi",
+			"LOG_MODULE_DESCRIPTION"=>"Registri - Registro eventi",
 			"LOG_path"=>"Percorso",
 			"LOG_filter"=>"Filtro",
 			"LOG_date"=>"Data/Ora",
@@ -598,18 +595,16 @@ class Trad extends Txt
 			"LOG_noLogs"=>"Nessun registro",
 			"LOG_filterSince"=>"filtrato da",
 			"LOG_search"=>"ricerca",
-			"LOG_connexion"=>"connessione",//azione
-			"LOG_add"=>"aggiungi",//azione
-			"LOG_delete"=>"cancella",//azione
-			"LOG_modif"=>"modifica modifica",//azione
+			"LOG_connexion"=>"connessione",
+			"LOG_add"=>"aggiungi",
+			"LOG_delete"=>"cancella",
+			"LOG_modif"=>"modifica",
 
 			////	MOD : SPACE
 			////
 			"SPACE_moduleTooltip"=>"Lo spazio principale può essere suddiviso in più spazi (vedere 'sottospazio')",
 			"SPACE_manageAllSpaces"=>"Gestione di tutti gli spazi",
-			"SPACE_config"=>"Impostazioni dello spazio",//.."mon espace"
-			//Index
-			"SPACE_confirmDeleteDbl"=>"Attenzione : questa azione è definitiva. Tieni presente che verranno cancellati solo i dati presenti in questo spazio. Confermare comunque l'eliminazione?",
+			"SPACE_config"=>"Impostazioni dello spazio",
 			"SPACE_space"=>"spazio",
 			"SPACE_spaces"=>"spazi",
 			"SPACE_accessRightUndefined"=>"Da definire!",
@@ -632,18 +627,15 @@ class Trad extends Txt
 
 			////	MOD : USER
 			////
-			// Menu principal
-			"USER_headerModuleName"=>"Utente",
-			"USER_moduleDescription"=>"Utenti dello spazio",
-			"USER_option_allUsersAddGroup"=>"Gli utenti possono anche creare gruppi",
-			//Index
-			"USER_spaceOrAllUsersTooltip"=>"Gestione degli utenti dello spazio visualizzato / Gestione degli utenti di tutti gli spazi (riservata all'amministratore generale)",
-			"USER_spaceUsers"=>"Utenti attuali dello spazio",
-			"USER_allUsers"=>"Gestione di tutti gli utenti",
+			"USER_MODULE_NAME"=>"Utente",
+			"USER_MODULE_DESCRIPTION"=>"Utenti dello spazio",
+			"USER_OPTION_allUsersAddGroup"=>"Gli utenti possono anche creare gruppi",
+			"USER_spaceOrAllUsersTooltip"=>"Utenti dello spazio corrente / Utenti di tutti gli spazi (visualizzazione amministratore)",
+			"USER_spaceUsers"=>"Gestisci gli utenti dello spazio",
+			"USER_allUsers"=>"Gestisci tutti gli utenti",
 			"USER_deleteDefinitely"=>"Elimina definitivamente",
 			"USER_deleteFromCurSpace"=>"Disassegnare allo spazio corrente",
 			"USER_deleteFromCurSpaceConfirm"=>"Disassegnare l'utente allo spazio corrente?",
-			"USER_allUsersOnSpaceNotif"=>"Tutti gli utenti sono interessati da questo spazio",
 			"USER_user"=>"Utente",
 			"USER_users"=>"Utenti",
 			"USER_addExistUser"=>"Aggiungi un utente esistente allo spazio",
@@ -667,9 +659,9 @@ class Trad extends Txt
 			"USER_myProfilEdit"=>"Modifica il mio profilo utente",
 			// Invitations
 			"USER_sendInvitation"=>"Invia inviti via e-mail",
-			"USER_sendInvitationTooltip"=>"Invia inviti via email per entrare a far parte dello spazio corrente. Non appena un invito viene convalidato, viene automaticamente creato un account utente per la persona interessata",
-			"USER_mailInvitationObject"=>"Invito di ", // ..Jean DUPOND
-			"USER_mailInvitationFromSpace"=>"invita a unirsi a ", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
+			"USER_sendInvitationTooltip"=>"Invia inviti via email per entrare a far parte dello spazio corrente :<br> Non appena un invito viene convalidato, viene automaticamente creato un account utente per la persona interessata",
+			"USER_mailInvitationObject"=>"Invito di ",
+			"USER_mailInvitationFromSpace"=>"invita a unirsi a ",
 			"USER_mailInvitationConfirm"=>"Fare clic qui per confermare l'invito",
 			"USER_mailInvitationWait"=>"Inviti non ancora confermati",
 			"USER_exired_idInvitation"=>"Il link web per il vostro invito è scaduto...",
@@ -677,18 +669,19 @@ class Trad extends Txt
 			"USER_invitPassword2"=>"Scegli la password per confermare l'invito",
 			"USER_invitationValidated"=>"Il vostro invito è stato convalidato!",
 			"USER_gPeopleImport"=>"Ottieni i miei contatti dal mio indirizzo Gmail",
+			"USER_quotaExceeded"=>"È stata raggiunta la quota massima di utenti. Si prega di contattare l'amministratore dello spazio.",
 			"USER_importQuotaExceeded"=>"L utente è limitato a --USERS_QUOTA_REMAINING-- nuovi account utente, su un totale di --LIMITE_NB_USERS-- utenti",
 			// groupes
-			"USER_spaceGroups"=>"gruppi di utenti dello spazio",
-			"USER_spaceGroupsEdit"=>"modifica i gruppi di utenti dello spazio",
-			"USER_groupEditInfo"=>"Ogni gruppo può essere modificato dal suo autore o dall'amministratore dello spazio",
+			"USER_spaceGroups"=>"Gruppi di utenti",
+			"USER_spaceGroupsEdit"=>"Modifica gruppi utenti spazio",
+			"USER_groupEditInfo"=>"Elenco dei gruppi che posso modificare: autore del gruppo o amministratore dello spazio",
 			"USER_addGroup"=>"Aggiungi un gruppo",
 			"USER_userGroups"=>"Gruppi di utenti",
 			// Utilisateur_affecter
 			"USER_searchPrecision"=>"Grazie per aver specificato un cognome, un nome o un indirizzo e-mail",
 			"USER_userAffectConfirm"=>"Confermare le assegnazioni?",
 			"USER_userSearch"=>"Cerca gli utenti da aggiungere allo spazio corrente",
-			"USER_allUsersOnSpace"=>"Tutti gli utenti del sito sono già assegnati a questo spazio",
+			"USER_allUsersOnSpace"=>"Tutti gli utenti sono assegnati allo spazio corrente",
 			"USER_usersSpaceAffectation"=>"Assegna gli utenti allo spazio:",
 			"USER_usersSearchNoResult"=>"Nessun utente trovato",
 			"USER_usersSearchBack"=>"Indietro",
@@ -704,39 +697,35 @@ class Trad extends Txt
 			"USER_mailNotifContent"=>"L account utente è stato creato su",
 			"USER_mailNotifContent2"=>"Connettiti con il seguente login e password",
 			"USER_mailNotifContent3"=>"Grazie per aver archiviato questa e-mail",
-			// Edition du Livecounter / Messenger / Visio
-			"USER_messengerEdit"=>"Configura la mia messaggistica istantanea",
-			"USER_messengerEdit2"=>"Configura la messaggistica istantanea",
-			"USER_livecounterVisibility"=>"Visibilità su messaggistica istantanea e videoconferenza",
+			// Edition du Livecounter/Messenger
+			"USER_livecounterVisibility"=>"Visibilità su messaggistica",
 			"USER_livecounterAllUsers"=>"Visualizza la mia presenza quando sono connesso: messaggistica/video abilitati",
 			"USER_livecounterDisabled"=>"Nascondi la mia presenza quando sono connesso: messaggistica/video disattivati",
 			"USER_livecounterSomeUsers"=>"Solo alcuni utenti possono vedermi quando sono connesso",
 
 			////	MOD : DASHBOARD
-			////
-			// Menu principal + options du module
-			"DASHBOARD_headerModuleName"=>"Notizie",
-			"DASHBOARD_moduleDescription"=>"Notizie, sondaggi ed elementi recenti",
-			"DASHBOARD_option_adminAddNews"=>"Solo l'amministratore può aggiungere notizie",
-			"DASHBOARD_option_disablePolls"=>"Disabilita i sondaggi",
-			"DASHBOARD_option_adminAddPoll"=>"Solo l'amministratore può aggiungere sondaggi",
-			// Index
+			////	
+			"DASHBOARD_MODULE_NAME"=>"Notizie",
+			"DASHBOARD_MODULE_DESCRIPTION"=>"Notizie, sondaggi ed elementi recenti",
+			"DASHBOARD_OPTION_adminAddNews"=>"Solo l'amministratore può aggiungere notizie",
+			"DASHBOARD_OPTION_disablePolls"=>"Disabilita i sondaggi",
+			"DASHBOARD_OPTION_adminAddPoll"=>"Solo l'amministratore può aggiungere sondaggi",
 			"DASHBOARD_menuNews"=>"Notizie",
 			"DASHBOARD_menuPolls"=>"Sondaggi",
 			"DASHBOARD_menuElems"=>"Nuovi elementi",
 			"DASHBOARD_addNews"=>"Aggiungi notizie",
 			"DASHBOARD_offlineNews"=>"Mostra notizie archiviate",
-			"DASHBOARD_offlineNewsNb"=>"Notizie archiviate",//"55 actualités archivées"
+			"DASHBOARD_offlineNewsNb"=>"Notizie archiviate",
 			"DASHBOARD_noNews"=>"Nessuna notizia per il momento",
 			"DASHBOARD_addPoll"=>"Aggiungi un sondaggio",
 			"DASHBOARD_pollsVoted"=>"Mostra solo i sondaggi votati",
-			"DASHBOARD_pollsVotedNb"=>"sondaggi per i quali ho già votato",//"55 sondaggi..déjà voté"
-			"DASHBOARD_pollsNotVoted"=>"sondaggi non votati",//55 sondages non votés
+			"DASHBOARD_pollsVotedNb"=>"sondaggi per i quali ho già votato",
+			"DASHBOARD_pollsNotVoted"=>"sondaggi non votati",
 			"DASHBOARD_vote"=>"Vota e vedi i risultati!",
 			"DASHBOARD_voteTooltip"=>"I voti sono anonimi: nessuno saprà la tua scelta di voto",
 			"DASHBOARD_answerVotesNb"=>"Votate --NB_VOTES-- volte",
 			"DASHBOARD_pollVotesNb"=>"Il sondaggio è stato votato --NB_VOTES-- volte",
-			"DASHBOARD_pollVotedBy"=>"Votato da",//Bibi, boby, ecc.
+			"DASHBOARD_pollVotedBy"=>"Votato da",
 			"DASHBOARD_noPoll"=>"Nessun sondaggio per il momento",
 			"DASHBOARD_plugins"=>"Nuovi elementi",
 			"DASHBOARD_pluginsTooltip"=>"Elementi creati",
@@ -774,11 +763,9 @@ class Trad extends Txt
 
 			////	MOD : FILE
 			////
-			// Menu principale
-			"FILE_headerModuleName"=>"File",
-			"FILE_moduleDescription"=>"Festore di file",
-			"FILE_option_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e file nella cartella principale",
-			// Index
+			"FILE_MODULE_NAME"=>"File",
+			"FILE_MODULE_DESCRIPTION"=>"Festore di file",
+			"FILE_OPTION_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e file nella cartella principale",
 			"FILE_addFile"=>"Aggiungi file",
 			"FILE_addFileAlert"=>"Cartella sul server non accessibile per iscritto! Si prega di contattare l'amministratore",
 			"FILE_downloadSelection"=>"Selezione download",
@@ -806,14 +793,19 @@ class Trad extends Txt
 
 			////	MOD : CALENDAR
 			////
-			// Menu principal
-			"CALENDAR_headerModuleName"=>"Calendario",
-			"CALENDAR_moduleDescription"=>"Calendario personale e condiviso",
-			"CALENDAR_option_adminAddRessourceCalendar"=>"Solo l'amministratore può aggiungere calendari di risorse",
-			"CALENDAR_option_adminAddCategory"=>"Solo l'amministratore può aggiungere una categoria di eventi",
-			"CALENDAR_option_createSpaceCalendar"=>"Crea un calendario condiviso per questo spazio",
+			"CALENDAR_MODULE_NAME"=>"Calendario",
+			"CALENDAR_MODULE_DESCRIPTION"=>"Calendario personale e condiviso",
+			"CALENDAR_OPTION_adminAddRessourceCalendar"=>"Solo l'amministratore può aggiungere calendari di risorse",
+			"CALENDAR_OPTION_adminAddCategory"=>"Solo l'amministratore può aggiungere una categoria di eventi",
+			"CALENDAR_OPTION_createSpaceCalendar"=>"Crea un calendario condiviso per questo spazio",
+			"CALENDAR_CAT_menuTooltip"=>"Mostra solo gli eventi con categoria",
+			"CALENDAR_CAT_showAll"=>"Tutte le categorie",
+			"CALENDAR_CAT_showAllTooltip"=>"Mostra tutte le categorie",
+			"CALENDAR_CAT_undefined"=>"Senza categoria",
+			"CALENDAR_CAT_editTitle"=>"Modifica categorie",
+			"CALENDAR_CAT_editInfo"=>"Ogni categoria di eventi può essere modificata dal suo autore o dall'amministratore generale",
+			"CALENDAR_CAT_editAdd"=>"Aggiungi una categoria di eventi",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Gli utenti che non hanno disattivato il calendario personale nel loro profilo utente vedranno comunque il modulo Calendario nella barra dei menu",
-			// Index
 			"CALENDAR_calsList"=>"Calendari disponibili",
 			"CALENDAR_hideAllCals"=>"Nascondi tutti i calendari",
 			"CALENDAR_printCalendars"=>"Stampa calendario",
@@ -827,30 +819,33 @@ class Trad extends Txt
 			"CALENDAR_ignoreOldEvt"=>"Non importare eventi più vecchi di un anno",
 			"CALENDAR_importIcalPresent"=>"Già presente?",
 			"CALENDAR_importIcalPresentInfo"=>"Evento già presente nel calendario ?",
+			"CALENDAR_display_1Day"=>"1 giorno",
 			"CALENDAR_display_3Days"=>"3 giorni",
 			"CALENDAR_display_7Days"=>"7 giorni",
 			"CALENDAR_display_week"=>"Settimana",
 			"CALENDAR_display_workWeek"=>"settimana lavorativa",
 			"CALENDAR_display_month"=>"Mese",
-			"CALENDAR_yearWeekNum"=>"Vedi il numero della settimana", //...5
+			"CALENDAR_yearWeekNum"=>"Vedi il numero della settimana",
 			"CALENDAR_periodNext"=>"Periodo successivo",
-			"CALENDAR_periodPrevious"=>"Periodo precedente",
+			"CALENDAR_periodPrev"=>"Periodo precedente",
 			"CALENDAR_evtAffects"=>"Nel calendario di",
 			"CALENDAR_evtAffectToConfirm"=>"Conferma in attesa nel calendario di",
-			"CALENDAR_evtProposed"=>"Proposte di eventi da confermare",
-			"CALENDAR_evtProposedBy"=>"Proposto da",//..Mr SMITH
-			"CALENDAR_evtProposedConfirm"=>"Conferma la proposta",
-			"CALENDAR_evtProposedConfirmBis"=>"La proposta di evento è stata integrata nel calendario",
-			"CALENDAR_evtProposedConfirmMail"=>"La proposta di evento è stata confermata",
-			"CALENDAR_evtProposedDecline"=>"Rifiuta la proposta",
-			"CALENDAR_evtProposedDeclineBis"=>"La proposta è stata rifiutata",
-			"CALENDAR_evtProposedDeclineMail"=>"La proposta di evento è stata rifiutata",
+			"CALENDAR_evtProposition"=>"Proposte di eventi da confermare",
+			"CALENDAR_evtProposedBy"=>"Proposto da",
+			"CALENDAR_evtProposeConfirm"=>"Conferma la proposta",
+			"CALENDAR_evtProposeConfirmed"=>"La proposta di evento è stata integrata nel calendario",
+			"CALENDAR_evtProposeConfirmedMail"=>"La proposta di evento è stata confermata",
+			"CALENDAR_evtProposeDecline"=>"Rifiuta la proposta",
+			"CALENDAR_evtProposeDeclined"=>"La proposta è stata rifiutata",
+			"CALENDAR_evtProposeDeclinedMail"=>"La proposta di evento è stata rifiutata",
 			"CALENDAR_deleteEvtCal"=>"Cancellare solo per questo calendario?",
 			"CALENDAR_deleteEvtCals"=>"Eliminare per tutti i calendari?",
 			"CALENDAR_deleteEvtDate"=>"Cancellare solo per questa data?",
 			"CALENDAR_evtPrivate"=>"Evento privato",
 			"CALENDAR_evtAutor"=>"Eventi che ho creato",
 			"CALENDAR_evtAutorInfo"=>"Mostra solo gli eventi che ho creato",
+			"CALENDAR_evtChangeTime"=>"Sposta a",
+			"CALENDAR_evtChangeTimeConfirmed"=>"L'evento è stato spostato correttamente",
 			"CALENDAR_noEvt"=>"Nessun evento",
 			"CALENDAR_calendarsPercentBusy"=>"Calendari occupati",
 			"CALENDAR_noCalendarDisplayed"=>"Nessun calendario visualizzato",
@@ -866,9 +861,11 @@ class Trad extends Txt
 			"CALENDAR_noPeriodicity"=>"Solo una volta",
 			"CALENDAR_period_weekDay"=>"Ogni settimana",
 			"CALENDAR_period_month"=>"Ogni mese",
+			"CALENDAR_period_monthBis"=>"Ogni --DATE-- del mese",
 			"CALENDAR_period_year"=>"Ogni anno",
-			"CALENDAR_periodDateEnd"=>"fino al",
-			"CALENDAR_periodException"=>"Eccezione di ricorrenza",
+			"CALENDAR_period_yearBis"=>"Ogni --DATE-- dell'anno",
+			"CALENDAR_periodDateExceptions"=>"Eccezione di ripetizione",
+			"CALENDAR_periodDateEnd"=>"Fine di ripetizione",
 			"CALENDAR_calendarAffectations"=>"Assegnazione ai seguenti calendari",
 			"CALENDAR_addEvt"=>"Aggiungi un evento",
 			"CALENDAR_addEvtTooltip"=>"Aggiungi un evento",
@@ -886,26 +883,23 @@ class Trad extends Txt
 			"CALENDAR_propositionNotifTooltip"=>"Nota: ogni proposta di evento viene convalidata o invalidata dall'amministratore del calendario",
 			"CALENDAR_propositionGuest"=>"Gli ospiti possono proporre eventi",
 			"CALENDAR_propositionGuestTooltip"=>"Nota: ricordarsi di selezionare  tutti gli utenti e gli ospiti  nei diritti di accesso sottostanti.",
-			"CALENDAR_propositionEmailSubject"=>"Nuovo evento proposto da",//.. "boby SMITH"
+			"CALENDAR_propositionEmailSubject"=>"Nuovo evento proposto da",
 			"CALENDAR_propositionEmailMessage"=>"Nuovo evento proposto da --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accedi al tuo spazio per confermare o annullare questa proposta",
-			// Category : Catégories d'événement
-			"CALENDAR_categoryMenuTooltip"=>"Mostra solo gli eventi con categoria",
-			"CALENDAR_categoryShowAll"=>"Tutte le categorie",
-			"CALENDAR_categoryShowAllTooltip"=>"Mostra tutte le categorie",
-			"CALENDAR_categoryUndefined"=>"Senza categoria",
-			"CALENDAR_categoryEditTitle"=>"Modifica categorie",
-			"CALENDAR_categoryEditInfo"=>"Ogni categoria di eventi può essere modificata dal suo autore o dall'amministratore generale",
-			"CALENDAR_categoryEditAdd"=>"Aggiungi una categoria di eventi",
 
 			////	MOD : FORUM
 			////
-			// Menu principal
-			"FORUM_headerModuleName"=>"Forum",
-			"FORUM_moduleDescription"=>"Forum di discussione",
-			"FORUM_option_adminAddSubject"=>"Solo l'amministratore può aggiungere argomenti",
-			"FORUM_option_adminAddTheme"=>"Solo l'amministratore può aggiungere temi",
+			"FORUM_MODULE_NAME"=>"Forum",
+			"FORUM_MODULE_DESCRIPTION"=>"Forum di discussione",
+			"FORUM_OPTION_adminAddSubject"=>"Solo l'amministratore può aggiungere argomenti",
+			"FORUM_OPTION_adminAddTheme"=>"Solo l'amministratore può aggiungere temi",
+			"FORUM_CAT_menuTooltip"=>"Mostra solo argomenti con tema",
+			"FORUM_CAT_showAll"=>"Tutti i temi",
+			"FORUM_CAT_showAllTooltip"=>"Mostra tutti i temi",
+			"FORUM_CAT_undefined"=>"Senza tema",
+			"FORUM_CAT_editTitle"=>"Modifica temi",
+			"FORUM_CAT_editInfo"=>"Ogni tema può essere modificato dal suo autore o dall'amministratore generale",
+			"FORUM_CAT_editAdd"=>"Aggiungi un tema",
 			"SORT_dateLastMessage"=>"Ultimo messaggio",
-			//Index & Sujet
 			"FORUM_forumRoot"=>"Pagina iniziale del forum",
 			"FORUM_subject"=>"Argomento",
 			"FORUM_subjects"=>"Argomenti",
@@ -921,30 +915,26 @@ class Trad extends Txt
 			"FORUM_quoteMessageInfo"=>"Rispondi e cita questo messaggio",
 			"FORUM_notifyLastPost"=>"Notifica via e-mail",
 			"FORUM_notifyLastPostTooltip"=>"Inviami una notifica via e-mail per ogni nuovo messaggio",
-			// Edit
 			"FORUM_notifOnlyReadAccess"=>"Se l'accesso è solo in lettura, nessuno può contribuire all'argomento",
 			"FORUM_notifWriteAccess"=>" l'accesso in scrittura è destinato ai moderatori :<br>Preferite piuttosto i diritti di   Scrittura limitata  ",
-			// Category : Themes
-			"FORUM_categoryMenuTooltip"=>"Mostra solo argomenti con tema",
-			"FORUM_categoryShowAll"=>"Tutti i temi",
-			"FORUM_categoryShowAllTooltip"=>"Mostra tutti i temi",
-			"FORUM_categoryUndefined"=>"Senza tema",
-			"FORUM_categoryEditTitle"=>"Modifica temi",
-			"FORUM_categoryEditInfo"=>"Ogni tema può essere modificato dal suo autore o dall'amministratore generale",
-			"FORUM_categoryEditAdd"=>"Aggiungi un tema",
 
 			////	MOD : TASK
 			////
-			// Menu principal
-			"TASK_headerModuleName"=>"Attività",
-			"TASK_moduleDescription"=>"Attività / Note",
-			"TASK_option_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e attività nella cartella principale",
-			"TASK_option_adminAddStatus"=>"Solo l'amministratore può creare uno stato Kanban",
+			"TASK_MODULE_NAME"=>"Attività",
+			"TASK_MODULE_DESCRIPTION"=>"Attività / Note",
+			"TASK_OPTION_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e attività nella cartella principale",
+			"TASK_OPTION_adminAddStatus"=>"Solo l'amministratore può creare uno stato Kanban",
+			"TASK_CAT_menuTooltip"=>"Mostra solo le attività con stato",
+			"TASK_CAT_showAll"=>"Tutti gli stati",
+			"TASK_CAT_showAllTooltip"=>"Mostra tutti gli stati",			
+			"TASK_CAT_undefined"=>"Stato non definito",
+			"TASK_CAT_editTitle"=>"Modifica stato",
+			"TASK_CAT_editInfo"=>"Ogni stato può essere modificato dal suo autore o dall'amministratore generale",
+			"TASK_CAT_editAdd"=>"Aggiungi uno stato",
 			"SORT_priority"=>"Priorità",
 			"SORT_advancement"=>"Avanzamento",
 			"SORT_dateBegin"=>"Data inizio",
 			"SORT_dateEnd"=>"Data fine",
-			//Index
 			"TASK_addTask"=>"Aggiungi un attività",
 			"TASK_noTask"=>"Nessuna attività per il momento",
 			"TASK_advancement"=>"Avanzamento",
@@ -957,22 +947,12 @@ class Trad extends Txt
 			"TASK_assignedTo"=>"Assegnato a",
 			"TASK_advancementLate"=>"Avanzamento ritardato",
 			"TASK_folderDateBeginEnd"=>"Data di inizio più precoce / data di fine più recente",
-			//Categorie : Statuts Kanban
-			"TASK_categoryMenuTooltip"=>"Mostra solo le attività con stato",
-			"TASK_categoryShowAll"=>"Tutti gli stati",
-			"TASK_categoryShowAllTooltip"=>"Mostra tutti gli stati",			
-			"TASK_categoryUndefined"=>"Stato non definito",
-			"TASK_categoryEditTitle"=>"Modifica stato",
-			"TASK_categoryEditInfo"=>"Ogni stato può essere modificato dal suo autore o dall'amministratore generale",
-			"TASK_categoryEditAdd"=>"Aggiungi uno stato",
 
 			////	MOD : CONTACT
 			////
-			// Menu principal
-			"CONTACT_headerModuleName"=>"Contatti",
-			"CONTACT_moduleDescription"=>"Directory di contatti",
-			"CONTACT_option_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e contatti nella cartella principale",
-			//Index
+			"CONTACT_MODULE_NAME"=>"Contatti",
+			"CONTACT_MODULE_DESCRIPTION"=>"Directory di contatti",
+			"CONTACT_OPTION_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e contatti nella cartella principale",
 			"CONTACT_addContact"=>"Aggiungi un contatto",
 			"CONTACT_noContact"=>"Nessun contatto per il momento",
 			"CONTACT_createUser"=>"Crea un utente in questo spazio",
@@ -981,26 +961,20 @@ class Trad extends Txt
 
 			////	MOD : LINK
 			////
-			// Menu principal
-			"LINK_headerModuleName"=>"Segnalibri",
-			"LINK_moduleDescription"=>"Segnalibri",
-			"LINK_option_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e segnalibri alla cartella principale",
-			//Index
+			"LINK_MODULE_NAME"=>"Segnalibri",
+			"LINK_MODULE_DESCRIPTION"=>"Segnalibri",
+			"LINK_OPTION_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e segnalibri alla cartella principale",
 			"LINK_addLink"=>"Aggiungi un segnalibro",
 			"LINK_noLink"=>"Nessun segnalibro al momento",
-			//Edit
 			"LINK_adress"=>"segnalibro",
 
 			////	MOD : MAIL
 			////
-			// Menu principal
-			"MAIL_headerModuleName"=>"Email",
-			"MAIL_moduleDescription"=>"Invia e-mail con un clic!",
-			//Index
+			"MAIL_MODULE_NAME"=>"Email",
+			"MAIL_MODULE_DESCRIPTION"=>"Invia e-mail con un clic!",
 			"MAIL_specifyMail"=>"Grazie per aver inserito un indirizzo e-mail",
 			"MAIL_title"=>"Oggetto dell'e-mail",
 			"MAIL_description"=>"Messaggio e-mail",
-			// Historique
 			"MAIL_historyTitle"=>"Cronologia delle e-mail inviate",
 			"MAIL_delete"=>"Elimina questa e-mail",
 			"MAIL_resend"=>"Reinvia questa e-mail",
@@ -1026,9 +1000,12 @@ class Trad extends Txt
 		$dateList[$year."-12-26"]="Santo Stefano";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date("Y-m-d",$easterTime)]		="Pasqua";
-			$dateList[date("Y-m-d",$easterTime+86400)]	="Lunedì di Pasquetta";
+			$dateList[date('Y-m-d',$easterTime)]		="Pasqua";
+			$dateList[date('Y-m-d',$easterTime+86400)]	="Lunedì di Pasquetta";
 		}
+		$tmpDates=Txt::timeChangeDates($year);
+		$dateList[$tmpDates["summer"]]="Ora legale";
+		$dateList[$tmpDates["winter"]]="Orario invernale";
 		return $dateList;
 	}
 }

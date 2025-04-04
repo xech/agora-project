@@ -21,7 +21,7 @@ lightboxSetWidth(800);
 	echo '<input type="text" name="title" value="'.$curObj->title.'" placeholder="'.Txt::trad("title").' '.Txt::trad("optional").'">';
 
 	////	DESCRIPTION (EDITOR)  &&  MESSAGE PARENT (?)  &&  MENU COMMUN
-	echo $curObj->editDescription(false);
+	echo $curObj->descriptionEditor(false);
 	if(Req::isParam("_idMessageParent"))  {echo "<input type='hidden' name='_idMessageParent' value=\"".Req::param("_idMessageParent")."\">";}
 	echo $curObj->editMenuSubmit();
 	?>

@@ -3,7 +3,7 @@
 lightboxSetWidth(600);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	Option "espace public"
 	$("#publicSpace, #publicSpacePassword").on("change",function(){
 		$("#publicSpacePasswordDiv").toggle($("#publicSpace").prop("checked"));														//#publicSpace checked/unchecked : affiche/masque l'input du password 
@@ -38,15 +38,15 @@ $(function(){
 		spaceAffectationsLabel();																		//Stylise les labels
 	});
 
-	////	Init les affectations des Spaces<->Users (cf. "common.js")
+	////	Init les affectations des Spaces<->Users (cf. "app.js")
 	spaceAffectations();
 });
 
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		//// Controle le password et le nombre de modules sélectionnés
-		if($("#publicSpace").prop("checked")  &&  $("#publicSpacePassword").isNotEmpty()  &&  $("#publicSpacePassword").val().length < 6)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
+		//// Controle le password de l'espace public + le nombre de modules sélectionnés
+		if($("#publicSpace").prop("checked")  &&  $("#publicSpacePassword").notEmpty()  &&  $("#publicSpacePassword").val().length < 6)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
 		if($("input[name='moduleList[]']:checked").isEmpty())																				{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
 		else																																{resolve(true);}
 	});
@@ -82,7 +82,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 
 	<!--NOM / DESCRIPTION-->
 	<input type="text" name="name" value="<?= $curObj->name ?>" class="inputTitleName" placeholder="<?= Txt::trad("name") ?>">
-	<?= $curObj->editDescription() ?>
+	<?= $curObj->descriptionEditor() ?>
 
 	<!--ESPACE PUBLIC (avec password?)-->
 	<div class="vSpaceOptions">
@@ -135,7 +135,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 				$checkOption=(!empty($tmpModule["options"]) && stristr($tmpModule["options"],$optionName))  ?  "checked"  :  null;
 				if($optionName=="createSpaceCalendar")  {$checkOption="checked";}//"check" la création d'un agenda s'il s'agit d'un nouvel espace
 				$inputId=$moduleName."Option".$optionName;
-				$labelTradId=strtoupper($moduleName)."_option_".$optionName;
+				$labelTradId=strtoupper($moduleName)."_OPTION_".$optionName;
 				$labelTitle=Txt::isTrad($labelTradId."Info")  ?  Txt::trad($labelTradId."Info")  :  null;
 				//Affiche l'option
 				$moduleOptions.='<div class="moduleOptions'.$moduleName.'">

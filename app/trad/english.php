@@ -14,19 +14,19 @@ class Trad extends Txt
 
 		////	TRADUCTIONS
 		self::$trad=array(
-			////	Langue courante / Header http / Editeurs Tinymce / Documention pdf
+			////	Langue de l'appli, des dates et de l'éditeur
 			"CURLANG"=>"en",
 			"DATELANG"=>"en_GB",
-			"EDITORLANG"=>"en_GB",
+			"EDITORLANG"=>"en",
 
 			////	Divers
 			"mainMenu"=>"Main menu",
-			"menuOptions"=>"Menu of available options",
-			"fillFieldsForm"=>"Please fill in the fields of the form",
+			"menuOptions"=>"Menu of options",
+			"emptyFields"=>"Please fill in the fields of the form",
 			"requiredFields"=>"Required Fields",
 			"inaccessibleElem"=>"Inaccessible Element",
 			"warning"=>"Warning",
-			"elemEditedByAnotherUser"=>"The element is being edited by",//"..bob"
+			"elemEditedByAnotherUser"=>"The element is being edited by",
 			"yes"=>"yes",
 			"no"=>"no",
 			"none"=>"no",
@@ -49,23 +49,36 @@ class Trad extends Txt
 			"folder"=>"folder",
 			"folders"=>"folders",
 			"close"=>"Close",
-			"confirmCloseForm"=>"Close the form without saving ?",
 			"modifRecorded"=>"The changes were saved",
-			"confirm"=>"Confirm ?",
 			"comment"=>"Comment",
 			"commentAdd"=>"Add a comment",
 			"optional"=>"(optional)",
 			"objNew"=>"Recently created item",
+			"objNewTooltip"=>"Created today or since previous login",
 			"personalAccess"=>"Personal access",
 			"copyUrl"=>"Copy the item's web address (URL)",
 			"copyUrlTooltip"=>"Allows external access to the element : from a news item, an email, a forum message, a blog, etc.",
-			"copyUrlConfirmed"=>"The web address has been copied successfully.",
-			"cancel"=>"Cancel",
+			"copyUrlNotif"=>"The web address has been copied successfully",
 
-			////	images
+			////	Confirm et Suppression
+			"confirm"=>"Confirm",
+			"confirmOk"=>"Ok",
+			"confirmCancel"=>"Cancel",
+			"confirmCloseForm"=>"Close the form without saving ?",
+			"delete"=>"Delete",
+			"confirmDelete"=>"Confirm deletion ?",
+			"confirmDeleteAlert"=>"Attention : this action is final !",
+			"confirmDeleteNotify"=>"The deletion was successful",
+			"confirmDeleteSelect"=>"Do you want to permanently delete the selection ?",
+			"confirmDeleteSelectNb"=>"items selected",
+			"confirmDeleteFolder"=>"Some subfolders are not accessible to you: can you confirm this anyway?",
+			"notifDeleteWait"=>"Please wait a moment: deleting the folder may take a few seconds",
+			"notifDeleteFolderUncomplete"=>"Some items have not been deleted because you do not have the necessary access rights",
+	
+			////	Images
 			"picture"=>"Picture",
 			"pictureProfil"=>"Profile picture",
-			"wallpaper"=>"wallpaper",
+			"wallpaper"=>"Wallpaper",
 			"keepImg"=>"Keep image",
 			"changeImg"=>"Change image",
 			"pixels"=>"pixels",
@@ -80,18 +93,17 @@ class Trad extends Txt
 			"connectAutoTooltip"=>"Remember my credentials for automatic connection",
 			"gIdentityUserUnknown"=>"is not registered on the space",
 			"connectSpaceSwitch"=>"Connect to another space",
-			"connectSpaceSwitchConfirm"=>"Are you sure you want to leave this space to connect to another space ?",
 			"guestAccess"=>"Guest Login",
 			"guestAccessTooltip"=>"Log in to this space as a guest",
 			"publicSpacePasswordError"=>"Wrong password",
 			"disconnectSpace"=>"Log out",
-			"disconnectSpaceConfirm"=>"Confirm log out from the space ?",
+			"disconnectSpaceConfirm"=>"Log out from the space ?",
 
 			////	Password : connexion d'user / edition d'user / reset du password
 			"password"=>"Password",
 			"passwordModify"=>"Change password",
-			"passwordToModify"=>"Temporary password (to be changed at login)",//Mail d'envoi d'invitation
-			"passwordToModify2"=>"Password (change if needed)",//Mail de création de compte
+			"passwordToModify"=>"Temporary password (to be changed at login)",
+			"passwordToModify2"=>"Password (change if needed)",
 			"passwordVerif"=>"Confirm password",
 			"passwordTooltip"=>"Leave blank if you want to keep your password",
 			"passwordInvalid"=>"Your password must contain numbers, letters and at least 6 characters",
@@ -130,7 +142,6 @@ class Trad extends Txt
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", etc.)
 			"from"=>"of ",
 			"at"=>"to",
-			"the"=>"the",
 			"begin"=>"Begin",
 			"end"=>"End",
 			"beginEnd"=>"Begin / End",
@@ -165,7 +176,7 @@ class Trad extends Txt
 			"description"=>"Description",
 			"specifyName"=>"Thank you for specifying a name",
 			"editorDraft"=>"Retrieve my text",
-			"editorDraftConfirm"=>"Retrieve the last specified text",
+			"editorDraftConfirm"=>"Retrieve the last text entered in the editor (draft)",
 			"editorFileInsert"=>"Add Image or video",
 			"editorFileInsertNotif"=>"Please select an image in Jpeg, Png, Gif or Svg format",
 			
@@ -199,30 +210,15 @@ class Trad extends Txt
 			"SORT_function"=>"function",
 			"SORT_companyOrganization"=>"company / Organization",
 			"SORT_lastConnection"=>"last login",
-			"tri_ascendant"=>"Ascend",
-			"tri_descendant"=>"Descend",
+			"SORT_ascend"=>"Ascend",
+			"SORT_descend"=>"Descend",
 			
-			////	Options de suppression
-			"confirmDelete"=>"Do you want to permanently delete these element ?",
-			"confirmDeleteDbl"=>"This action is definitive : confirm all the same ?",
-			"confirmDeleteSelect"=>"Do you want to permanently delete the selection ?",
-			"confirmDeleteSelectNb"=>"items selected",//"55 éléments sélectionnés"
-			"confirmDeleteFolderAccess"=>"Caution ! certain sub-folders are not accessible for you : they will be deleted !",
-			"notifyBigFolderDelete"=>"Deleting --NB_FOLDERS-- sub-folders can be a little large, please wait a few moments before the end of the process",
-			"delete"=>"Delete",
-			"notDeletedElements"=>"Some items have not been deleted because you do not have the necessary access rights",
-			
-			////	Visibilité d'un Objet : auteur et droits d'accès
-			"autor"=>"Author",
-			"postBy"=>"Post by",
+			////	Visibilité d'un Objet
 			"guest"=>"Guest",
-			"creation"=>"Creation",
-			"modification"=>"Modification",
-			"createBy"=>"Created by",
+			"createdBy"=>"Created by",
 			"modifBy"=>"Modified by",
 			"objHistory"=>"Element history",
 			"all"=>"all",
-			"all2"=>"all",
 			"deletedUser"=>"deleted user account",
 			"folderContent"=>"content",
 			"accessRead"=>"Read",
@@ -234,7 +230,7 @@ class Trad extends Txt
 			"accessWriteTooltipContainer"=>"Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the --OBJLABEL--",
 			"accessAutorPrivilege"=>"Only the author and administrators can edit the access rights or delete the --OBJLABEL--",
 			"accessRightsInherited"=>"Access rights inherited from the --OBJLABEL--",
-			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",//Ex: "Thème bidule -n'est accessible que sur l'espace- Machin"
+			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",
 			"categoryNotifChangeOrder"=>"The display order has been changed",
 
 			////	Libellé des objets
@@ -257,11 +253,10 @@ class Trad extends Txt
 			"OBJECTtaskFolder"=>"folder",
 			"OBJECTuser"=>"user",
 			
-			////	Envoi d'un email (nouvel utilisateur, notification de création d'objet, etc...)
-			"MAIL_sendOk"=>"The email was well sent!",			//ne pas modifier la cle de la trad ! (cf. "Tool::sendMail()")
-			"MAIL_sendNotOk"=>"The email could not be sent...",	//idem
-			"MAIL_recipients"=>"Recipients",					//Idem
-			"MAIL_attachedFileError"=>"The file was not added to the email because it is too large",//Idem
+			////	Envoi d'un email
+			"MAIL_sendOk"=>"The email was well sent!",
+			"MAIL_sendNotOk"=>"The email could not be sent...",
+			"MAIL_recipients"=>"Recipients",
 			"MAIL_hello"=>"Hello",
 			"MAIL_hideRecipients"=>"Hide recipients",
 			"MAIL_hideRecipientsTooltip"=>"Put all recipients in hidden copy. Note that with this option your email may arrive in spam in some mailboxes",
@@ -273,19 +268,20 @@ class Trad extends Txt
 			"MAIL_receptionNotifTooltip"=>"Warning! some email clients don't support delivery receipts",
 			"MAIL_specificMails"=>"Add email addresses",
 			"MAIL_specificMailsTooltip"=>"Add email addresses listed on the space",
-			"MAIL_fileMaxSize"=>"All of your attachments should not exceed 15 MB, some messaging services may refuse emails beyond this limit. Send anyway?",
+			"MAIL_maxFileSizeConfirm"=>"The set of attached files exceeds the reception limit of some mailboxes (--MAXFILESSIZE--)<br><br> Send anyway?",
+			"MAIL_maxFileSizeNotif"=>"The file was not added to the email because it is too large",
 			"MAIL_sendButton"=>"Send email",
-			"MAIL_sendBy"=>"Sent by",//"Envoyé par" Mr trucmuche
+			"MAIL_sendBy"=>"Sent by",
 			"MAIL_sendNotif"=>"The notification email was sent !",
-			"MAIL_fromTheSpace"=>"from the space",//"depuis l'espace Bidule"
-			"MAIL_elemCreatedBy"=>"--OBJLABEL-- created by",//boby
-			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modified by",//boby
+			"MAIL_fromTheSpace"=>"from the space",
+			"MAIL_elemCreatedBy"=>"--OBJLABEL-- created by",
+			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modified by",
 			"MAIL_elemAccessLink"=>"Click here to access the element on your space",
 
 			////	Dossier & fichier
-			"gigaOctet"=>"Gb",
-			"megaOctet"=>"Mb",
-			"kiloOctet"=>"Kb",
+			"gigaOctet"=>"GB",
+			"megaOctet"=>"MB",
+			"kiloOctet"=>"KB",
 			"rootFolder"=>"Root folder",
 			"rootFolderTooltip"=>"Open the the space settings to change the access rights to the root folder",
 			"addFolder"=>"add a folder",
@@ -293,7 +289,7 @@ class Trad extends Txt
 			"downloadFolder"=>"Download folder",
 			"diskSpaceUsed"=>"Disk space used",
 			"diskSpaceUsedModFile"=>"Disk space used for the File manager",
-			"downloadAlert"=>"Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download after",//"19h"
+			"downloadAlert"=>"Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download after",
 			"downloadBackToApp"=>"Back to the application",
 			
 			////	Infos sur une personne
@@ -309,9 +305,10 @@ class Trad extends Txt
 			"mail"=>"Email",
 			"function"=>"Function",
 			"companyOrganization"=>"Company /Organization",
-			"lastConnection"=>"Last login",
-			"lastConnection2"=>"Logged in on",
-			"lastConnectionEmpty"=>"Not logged in yet",
+			"lastConnection"=>"Last connection",
+			"notConnected"=>"Not yet connected",
+			"connectedToday"=>"Connected today",
+			"connectedThe"=>"Connected on",
 			"displayProfil"=>"Display Profile",
 			
 			////	Captcha
@@ -322,12 +319,12 @@ class Trad extends Txt
 			////	Rechercher
 			"searchSpecifyText"=>"Please specify at least 3 characters (alphanumeric and no special characters)",
 			"search"=>"Search",
+			"searchOnSpace"=>"Search in this space",
 			"searchDateCrea"=>"Creation date",
 			"searchDateCreaDay"=>"less than one day",
 			"searchDateCreaWeek"=>"less than a week",
 			"searchDateCreaMonth"=>"less than one month",
 			"searchDateCreaYear"=>"less than a year",
-			"searchOnSpace"=>"Search in this space",
 			"advancedSearch"=>"Advanced Search",
 			"advancedSearchAnyWord"=>"any word",
 			"advancedSearchAllWords"=>"all words",
@@ -343,7 +340,7 @@ class Trad extends Txt
 			"userInscriptionTooltip"=>"Create a new user account (validated by an administrator)",
 			"userInscriptionSpace"=>"Register on the space",
 			"userInscriptionRecorded"=>"Your registration was saved : it will be validated as soon as possible by the administrator of the space",
-			"userInscriptionEmailSubject"=>"New registration on the space",//"Mon espace"
+			"userInscriptionEmailSubject"=>"New registration on the space",
 			"userInscriptionEmailMessage"=>"A new registration has been requested by <i>--NEW_USER_LABEL--</i> for the space <i>--SPACE_NAME--</i> : <br><br><i>--NEW_USER_MESSAGE--<i> <br><br>Remember to validate or invalidate this registration during your next connection.",
 			"userInscriptionEdit"=>"Allow visitors to register on the space",
 			"userInscriptionEditTooltip"=>"The registration is on the homepage of the site. Registration must then be validated by the administrator of the space.",
@@ -366,7 +363,7 @@ class Trad extends Txt
 			"exportFormat"=>"Format",
 			"specifyFile"=>"Thank you for choosing a file",
 			"fileExtension"=>"The file type is invalid. It must be of the type",
-			"importContactRootFolder"=>"The contacts will be assigned by default to &quot;all users of the space&quot;",//"Mon espace"
+			"importContactRootFolder"=>"The contacts will be assigned by default to &quot;all users of the space&quot;",
 			"importInfo"=>"Select the Agora's fields to target, thanks to the dropdown of each column",
 			"importNotif1"=>"Thank you for selecting the name's column in the select boxes",
 			"importNotif2"=>"Thank you for selecting a contact to import",
@@ -383,24 +380,24 @@ class Trad extends Txt
 			"NOTIF_fileVersion"=>"File type different from the original",
 			"NOTIF_folderMove"=>"You cannot move the folder inside..!",
 			"NOTIF_duplicateName"=>"An element with the same name already exists",
+			"NOTIF_duplicateNameFolder"=>"A folder with the same name already exists",
 			"NOTIF_fileName"=>"A file with the same name already exists (but not replaced with the current file)",
 			"NOTIF_chmodDATAS"=>"The ''DATAS'' folder is not accessible in writing. You need to give a read-write access to the owner and the group (''chmod 775'').",
-			"NOTIF_usersNb"=>"You cannot add new user: limited to ", // "...limité à" 10
+			"NOTIF_usersNb"=>"You cannot add new user: limited to ",
 			
-			////	Header / Footer
-			"HEADER_displaySpace"=>"workspaces",
-			"HEADER_displayAdmin"=>"Administrator view",
-			"HEADER_displayAdminInfo"=>"This option also allows you to display elements of the space that are not assigned to you (folders, calendars, etc)",
-			"HEADER_displayAdminEnabled"=>"Administrator view enabled",
-			"HEADER_searchElem"=>"Search in the space",
+			////	Header
+			"HEADER_displaySpace"=>"Workspaces",
+			"HEADER_displayAdmin"=>"Administrator display",
+			"HEADER_displayAdminInfo"=>"Allows you to display items in the space that are not directly assigned to me: folders, calendars, etc.",
+			"HEADER_displayAdminEnabled"=>"Administrator display enabled",
+			"HEADER_displayAdminDisabled"=>"Administrator display disabled",
 			"HEADER_documentation"=>"Documentation",
 			"HEADER_shortcuts"=>"Shortcuts",
-			"FOOTER_pageGenerated"=>"page generated in",
 
 			////	Messenger / Visio
-			"MESSENGER_headerModuleName"=>"Messages",
-			"MESSENGER_moduleDescription"=>"Instant messaging : Chat live or start a videoconference with people logged to the space",
-			"MESSENGER_messengerTitle"=>"Instant messaging : click on a person's name to chat or start a video conference",
+			"MESSENGER_MODULE_NAME"=>"Messaging",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chat or start a video conference with people connected to the space",
+			"MESSENGER_messengerTitle"=>"Messaging : click on a person's name to chat or start a video conference",
 			"MESSENGER_messengerMultiUsers"=>"Chat with others by selecting my interlocutors in the right pane",
 			"MESSENGER_connected"=>"Online",
 			"MESSENGER_nobody"=>"You are currently the only person logged to the space",
@@ -410,15 +407,15 @@ class Trad extends Txt
 			"MESSENGER_addMessageToSelection"=>"My message (selected persons)",
 			"MESSENGER_addMessageTo"=>"My message to",
 			"MESSENGER_addMessageNotif"=>"Thank you to specify a message",
-			"MESSENGER_visioProposeTo"=>"Propose a video call to",//..boby
+			"MESSENGER_visioProposeTo"=>"Propose a video call to",
 			"MESSENGER_visioProposeToSelection"=>"Propose a video call to the selected people",
-			"MESSENGER_visioProposeToUsers"=>"Click here to start the video call with",//"..Will & Boby"
+			"MESSENGER_visioProposeToUsers"=>"Click here to start the video call with",
 			
 			////	Lancer une Visio
 			"VISIO_urlAdd"=>"Add a videoconference",
+			"VISIO_urlAddConfirm"=>"Add a link at the end of the text to start a new videoconference ?",
 			"VISIO_urlCopy"=>"Copy the videoconference link",
 			"VISIO_urlDelete"=>"Remove the video conference link",
-			"VISIO_urlMail"=>"Add a link at the end of the text to start a new videoconference",
 			"VISIO_launch"=>"Start the videoconference",
 			"VISIO_launchJitsi"=>"Start videoconference <br>with the Jitsi app",
 			"VISIO_launchFromEvent"=>"Start the videoconference of this event",
@@ -428,7 +425,7 @@ class Trad extends Txt
 			"VISIO_launchServerMain"=>"Main server",
 			"VISIO_launchServerAlt"=>"Secondary server",
 
-			////	VueObjEditMenuSubmit.php
+			////	VueObjMenuEdit.php
 			"EDIT_notifNoSelection"=>"You must select at least a person or a space",
 			"EDIT_notifNoPersoAccess"=>"You are not assigned to the element. validate all the same ?",
 			"EDIT_parentFolderAccessError"=>"Check the access rights of the parent folder <br><i>--FOLDER_NAME--</i><br><br> There must also be an access right for <br><i>--SPACE_LABEL--</i> &nbsp;>&nbsp; <i>--TARGET_LABEL--</i><br><br> Otherwise this file will not be accessible!",
@@ -477,15 +474,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Agora-Project was installed correctly !",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Space for sharing and collaborative work",
-			"INSTALL_dataDashboardNews"=>"<h3>Welcome to your new sharing space!</h3>
-											<h4><img src='app/img/file/iconSmall.png'> Share your files now in the file manager</h4>
-											<h4><img src='app/img/calendar/iconSmall.png'> Share your common calendars or your personal calendar</h4>
-											<h4><img src='app/img/dashboard/iconSmall.png'> Expand your community's news feed</h4>
-											<h4><img src='app/img/messenger.png'> Communicate via the forum, instant messaging or video conferences</h4>
-											<h4><img src='app/img/task/iconSmall.png'> Centralize your notes, projects and contacts</h4>
-											<h4><img src='app/img/mail/iconSmall.png'> Send newsletters by email</h4>
-											<h4><img src='app/img/postMessage.png'> <a onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\">Click here to send invitation emails and grow your community!</a></h4>
-											<h4><img src='app/img/pdf.png'> <a href='https://www.omnispace.fr/index.php?ctrl=offline&action=Documentation' target='_blank'>For more information, see the official Omnispace & Agora-Project documentation</a></h4>",
+			"INSTALL_dataDashboardNews"=>"<h3>Welcome to your new collaborative workspace !</h3>
+											<h4 onclick=\"redir('?ctrl=file')\"><img src='app/img/file/iconSmall.png'> Share your files with your team in the file manager</h4>
+											<h4 onclick=\"redir('?ctrl=calendar')\"><img src='app/img/calendar/iconSmall.png'> Create events on your shared calendar or personal calendar</h4>
+											<h4 onclick=\"redir('?ctrl=dashboard')\"><img src='app/img/dashboard/iconSmall.png'> Use the news feed to broadcast information about your activity</h4>
+											<h4 onclick=\"redir('?ctrl=forum')\"><img src='app/img/messenger.png'> Communicate via the forum, messaging or videoconferences</h4>
+											<h4 onclick=\"redir('?ctrl=task')\"><img src='app/img/task/iconSmall.png'> Manage your tasks and projects to organize your activity</h4>
+											<h4 onclick=\"redir('?ctrl=mail')\"><img src='app/img/mail/iconSmall.png'> Send newsletters to distribute information emails about your activity.</h4>
+											<h4 onclick=\"lightboxOpen('docs/DOCUMENTATION_FR.pdf?displayFile=true')\"><img src='app/img/documentation.png'> Consult the user guide to discover your workspace</h4>
+											<h4 onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\"><img src='app/img/mail.png'>Send email invitations to join the space</h4>",
 			"INSTALL_dataDashboardPoll"=>"What do you think of the news feed ?",
 			"INSTALL_dataDashboardPollA"=>"Very interesting !",
 			"INSTALL_dataDashboardPollB"=>"Interesting",
@@ -501,7 +498,7 @@ class Trad extends Txt
 			////	MOD : AGORA
 			////
 			"AGORA_generalSettings"=>"General Settings",
-			"AGORA_Changelog"=>"View the version log",
+			"AGORA_Changelog"=>"Release notes",
 			"AGORA_phpMailDisabled"=>"PHP Mail function disabled",
 			"AGORA_phpLdapDisabled"=>"PHP LDAP function disabled",
 			"AGORA_phpGD2Disabled"=> "PHP GD2 function disabled",
@@ -584,7 +581,7 @@ class Trad extends Txt
 
 			////	MOD : LOG
 			////
-			"LOG_moduleDescription"=>"Logs - Event Log",
+			"LOG_MODULE_DESCRIPTION"=>"Logs - Event Log",
 			"LOG_path"=>"Path",
 			"LOG_filter"=>"filter",
 			"LOG_date"=>"Date / Time",
@@ -598,18 +595,16 @@ class Trad extends Txt
 			"LOG_noLogs"=>"no log",
 			"LOG_filterSince"=>"filtered from",
 			"LOG_search"=>"search",
-			"LOG_connexion"=>"connection",//action
-			"LOG_add"=>"add",//action
-			"LOG_delete"=>"delete",//action
-			"LOG_modif"=>"edit change",//action
+			"LOG_connexion"=>"connection",
+			"LOG_add"=>"add",
+			"LOG_delete"=>"delete",
+			"LOG_modif"=>"modification",
 
 			////	MOD : SPACE
 			////
 			"SPACE_moduleTooltip"=>"The main space can be subdivided into several spaces (see ''subspace'')",
 			"SPACE_manageAllSpaces"=>"Manage all spaces",
-			"SPACE_config"=>"Settings of the space",//.."mon espace"
-			//Index
-			"SPACE_confirmDeleteDbl"=>"Confirm the deletion ? Attention, this action cannot be undone !",
+			"SPACE_config"=>"Settings of the space",
 			"SPACE_space"=>"space",
 			"SPACE_spaces"=>"spaces",
 			"SPACE_accessRightUndefined"=>"To define !",
@@ -632,18 +627,15 @@ class Trad extends Txt
 
 			////	MOD : USER
 			////
-			// Menu principal
-			"USER_headerModuleName"=>"User",
-			"USER_moduleDescription"=>"Users of the space",
-			"USER_option_allUsersAddGroup"=>"Users can also create groups",//OPTION!
-			//Index
-			"USER_spaceOrAllUsersTooltip"=>"Manage users of the displayed space / Manage users of all spaces (reserved for the general administrator)",
-			"USER_spaceUsers"=>"Current space users",
+			"USER_MODULE_NAME"=>"User",
+			"USER_MODULE_DESCRIPTION"=>"Users of the space",
+			"USER_OPTION_allUsersAddGroup"=>"Users can also create groups",
+			"USER_spaceOrAllUsersTooltip"=>"Current space users / All space users (administrator view)",
+			"USER_spaceUsers"=>"Manage space users",
 			"USER_allUsers"=>"Manage all users",
 			"USER_deleteDefinitely"=>"Delete permanently",
 			"USER_deleteFromCurSpace"=>"Unassign to current space",
 			"USER_deleteFromCurSpaceConfirm"=>"Unassign the user to the current space?",
-			"USER_allUsersOnSpaceNotif"=>"All the users are affected to this space",
 			"USER_user"=>"User",
 			"USER_users"=>"users",
 			"USER_addExistUser"=>"Add an existing user to the space",
@@ -665,11 +657,11 @@ class Trad extends Txt
 			"USER_userSpace"=>"User of the space",
 			"USER_profilEdit"=>"Modify profile",
 			"USER_myProfilEdit"=>"Modify my user profile",
-			// Invitation
+			// Invitations
 			"USER_sendInvitation"=>"Send invitations by email",
-			"USER_sendInvitationTooltip"=>"Send email invitations to join the current space. As soon as an invitation is validated, a user account is automatically created for the person concerned",
-			"USER_mailInvitationObject"=>"Invitation of", // ..Jean DUPOND
-			"USER_mailInvitationFromSpace"=>"invites you to join the space", // Jean DUPOND "vous invite à rejoindre l'espace" Mon Espace
+			"USER_sendInvitationTooltip"=>"Send email invitations to join the current space :<br> As soon as an invitation is validated, a user account is automatically created for the person concerned",
+			"USER_mailInvitationObject"=>"Invitation of",
+			"USER_mailInvitationFromSpace"=>"invites you to join the space",
 			"USER_mailInvitationConfirm"=>"Click here to confirm the invitation",
 			"USER_mailInvitationWait"=>"Invitations not confirmed yet",
 			"USER_exired_idInvitation"=>"The weblink for your invitation has expired ...",
@@ -677,18 +669,19 @@ class Trad extends Txt
 			"USER_invitPassword2"=>"Choose your password to confirm your invitation",
 			"USER_invitationValidated"=>"Your invitation has been validated !",
 			"USER_gPeopleImport"=>"Get my contacts from my Gmail address",
+			"USER_quotaExceeded"=>"User quota reached. Please contact the space administrator.",
 			"USER_importQuotaExceeded"=>"You are limited to --USERS_QUOTA_REMAINING-- new user accounts, out of a total of --LIMITE_NB_USERS-- users",
 			// groupes
-			"USER_spaceGroups"=>"groups of users of the space",
-			"USER_spaceGroupsEdit"=>"edit the groups of users of the space",
-			"USER_groupEditInfo"=>"Each group can be modified by its author or the space administrator",
+			"USER_spaceGroups"=>"User Groups",
+			"USER_spaceGroupsEdit"=>"Edit Space User Groups",
+			"USER_groupEditInfo"=>"List of groups I can edit: group author or space administrator",
 			"USER_addGroup"=>"Add a group",
 			"USER_userGroups"=>"User groups",
 			// Utilisateur_affecter
 			"USER_searchPrecision"=>"Thank you for specifying a last name, a first name or an address of email",
 			"USER_userAffectConfirm"=>"Confirm assignements?",
 			"USER_userSearch"=>"Search users to add to the current space",
-			"USER_allUsersOnSpace"=>"All the users of the site are already assigned to this space",
+			"USER_allUsersOnSpace"=>"All users are assigned to the current space",
 			"USER_usersSpaceAffectation"=>"Assign users to the space :",
 			"USER_usersSearchNoResult"=>"No user found",
 			"USER_usersSearchBack"=>"Back",
@@ -700,43 +693,39 @@ class Trad extends Txt
 			"USER_loginExists"=>"The login/email already exists. Please choose another",
 			"USER_mailPresentInAccount"=>"A user account already exists with this email address",
 			"USER_loginAndMailDifferent"=>"Both email addresses must be identical",
-			"USER_mailNotifObject"=>"New account on",  // "...sur" l'Agora machintruc
-			"USER_mailNotifContent"=>"Your user account has been created on",  // idem
+			"USER_mailNotifObject"=>"New account on",
+			"USER_mailNotifContent"=>"Your user account has been created on",
 			"USER_mailNotifContent2"=>"Connect with the following login and password",
 			"USER_mailNotifContent3"=>"Thank you for archiving this email.",
-			// Livecounter & Messenger & Visio
-			"USER_messengerEdit"=>"Configure my instant messaging",
-			"USER_messengerEdit2"=>"Configure instant messaging",
-			"USER_livecounterVisibility"=>"Visibility on instant messaging and videoconferencing",
+			// Edition du Livecounter/Messenger
+			"USER_livecounterVisibility"=>"Visibility on messaging",
 			"USER_livecounterAllUsers"=>"Display my presence when I am connected: messaging / video enabled",
 			"USER_livecounterDisabled"=>"Hide my presence when I am connected: messaging / video disabled",
 			"USER_livecounterSomeUsers"=>"Only certain users can see me when I'm logged in",
 
 			////	MOD : DASHBOARD
-			////
-			// Menu principal + options du module
-			"DASHBOARD_headerModuleName"=>"News",
-			"DASHBOARD_moduleDescription"=>"News, Polls and Recent elements",
-			"DASHBOARD_option_adminAddNews"=>"Only the admin can add News",//OPTION!
-			"DASHBOARD_option_disablePolls"=>"Disable polls",//OPTION!
-			"DASHBOARD_option_adminAddPoll"=>"Only the admin can add Polls",//OPTION!
-			//Index
+			////	
+			"DASHBOARD_MODULE_NAME"=>"News",
+			"DASHBOARD_MODULE_DESCRIPTION"=>"News, Polls and Recent elements",
+			"DASHBOARD_OPTION_adminAddNews"=>"Only the admin can add News",
+			"DASHBOARD_OPTION_disablePolls"=>"Disable polls",
+			"DASHBOARD_OPTION_adminAddPoll"=>"Only the admin can add Polls",
 			"DASHBOARD_menuNews"=>"News",
 			"DASHBOARD_menuPolls"=>"Polls",
 			"DASHBOARD_menuElems"=>"Last elements",
 			"DASHBOARD_addNews"=>"Add news",
 			"DASHBOARD_offlineNews"=>"Show archived news",
-			"DASHBOARD_offlineNewsNb"=>"archived news",//"55 actualités archivées"
+			"DASHBOARD_offlineNewsNb"=>"archived news",
 			"DASHBOARD_noNews"=>"No news for the moment",
 			"DASHBOARD_addPoll"=>"Add a poll",
 			"DASHBOARD_pollsVoted"=>"Show only voted polls",
-			"DASHBOARD_pollsVotedNb"=>"polls I've already voted for",//"55 sondages..déjà voté"
-			"DASHBOARD_pollsNotVoted"=>"unvoted polls",//55 sondages non votés
+			"DASHBOARD_pollsVotedNb"=>"polls I've already voted for",
+			"DASHBOARD_pollsNotVoted"=>"unvoted polls",
 			"DASHBOARD_vote"=>"Vote and see the results !",
 			"DASHBOARD_voteTooltip"=>"The votes are anonymous : nobody will know your choice of vote",
 			"DASHBOARD_answerVotesNb"=>"Voté --NB_VOTES-- times",
 			"DASHBOARD_pollVotesNb"=>"The poll was voted --NB_VOTES-- times",
-			"DASHBOARD_pollVotedBy"=>"Voted by",//Bibi, boby, etc
+			"DASHBOARD_pollVotedBy"=>"Voted by",
 			"DASHBOARD_noPoll"=>"No poll for the moment",
 			"DASHBOARD_plugins"=>"New Elements",
 			"DASHBOARD_pluginsTooltip"=>"Elements created",
@@ -774,24 +763,22 @@ class Trad extends Txt
 
 			////	MOD : FILE
 			////
-			// Menu principal
-			"FILE_headerModuleName"=>"File manager",
-			"FILE_moduleDescription"=>"File manager",
-			"FILE_option_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",//OPTION!
-			//Index
+			"FILE_MODULE_NAME"=>"File manager",
+			"FILE_MODULE_DESCRIPTION"=>"File manager",
+			"FILE_OPTION_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",
 			"FILE_addFile"=>"Add files",
 			"FILE_addFileAlert"=>"Folder on the server not accessible in writing! thank you to contact the administrator",
 			"FILE_downloadSelection"=>"Download Selection",
 			"FILE_fileDownload"=>"Download",
 			"FILE_fileSize"=>"File size",
 			"FILE_imageSize"=>"Image size",
-			"FILE_nbFileVersions"=>"versions of the file",//"55 versions du fichier"
+			"FILE_nbFileVersions"=>"versions of the file",
 			"FILE_downloadsNb"=>"(downloaded --NB_DOWNLOAD-- times)",
-			"FILE_downloadedBy"=>"file Downloaded by",//"..boby, will"
+			"FILE_downloadedBy"=>"file Downloaded by",
 			"FILE_addFileVersion"=>"add a new file version",
 			"FILE_noFile"=>"No file for the moment",
-			// Fichier_edit  &  Dossier_edit  &  fichier_edit_ajouter  &  Versions_fichier
-			"FILE_fileSizeLimit"=>"The files should not exceed", // ...2 Mega Octets
+			// Edit
+			"FILE_fileSizeLimit"=>"The files should not exceed",
 			"FILE_uploadSimple"=>"Simple upload",
 			"FILE_uploadMultiple"=>"Multiple upload",
 			"FILE_imgReduce"=>"Optimize the image",
@@ -800,20 +787,25 @@ class Trad extends Txt
 			"FILE_addMultipleFilesTooltip"=>"Button 'Shift' or 'Ctrl' to select multiple files",
 			"FILE_selectFile"=>"Thank you to select at least a file",
 			"FILE_fileContent"=>"Content",
-			// Versions_fichier
-			"FILE_versionsOf"=>"Versions of", // versions de fichier
+			// Versions
+			"FILE_versionsOf"=>"Versions of",
 			"FILE_confirmDeleteVersion"=>"Confirm the removal of this version ?",
 
 			////	MOD : CALENDAR
 			////
-			// Menu principal
-			"CALENDAR_headerModuleName"=>"Calendar",
-			"CALENDAR_moduleDescription"=>"Personal and shared calendar",
-			"CALENDAR_option_adminAddRessourceCalendar"=>"Only the admin can add resource calendars",//OPTION!
-			"CALENDAR_option_adminAddCategory"=>"Only the admin can add a category of event",//OPTION!
-			"CALENDAR_option_createSpaceCalendar"=>"Create a shared calendar for this space",//OPTION!
+			"CALENDAR_MODULE_NAME"=>"Calendar",
+			"CALENDAR_MODULE_DESCRIPTION"=>"Personal and shared calendar",
+			"CALENDAR_OPTION_adminAddRessourceCalendar"=>"Only the admin can add resource calendars",
+			"CALENDAR_OPTION_adminAddCategory"=>"Only the admin can add a category of event",
+			"CALENDAR_OPTION_createSpaceCalendar"=>"Create a shared calendar for this space",
+			"CALENDAR_CAT_menuTooltip"=>"Show only events with category",
+			"CALENDAR_CAT_showAll"=>"All categories",
+			"CALENDAR_CAT_showAllTooltip"=>"Show all categories",
+			"CALENDAR_CAT_undefined"=>"Without category",
+			"CALENDAR_CAT_editTitle"=>"Edit categories",
+			"CALENDAR_CAT_editInfo"=>"Each event category can be modified by its author or by the general administrator",
+			"CALENDAR_CAT_editAdd"=>"Add an event category",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar",
-			//Index
 			"CALENDAR_calsList"=>"Available calendars",
 			"CALENDAR_hideAllCals"=>"Hide all calendars",
 			"CALENDAR_printCalendars"=>"Print calendar(s)",
@@ -827,6 +819,7 @@ class Trad extends Txt
 			"CALENDAR_ignoreOldEvt"=>"Do not import events older than one year",
 			"CALENDAR_importIcalPresent"=>"Already present?",
 			"CALENDAR_importIcalPresentInfo"=>"Event already present in the calendar ?",
+			"CALENDAR_display_1Day"=>"1 day",
 			"CALENDAR_display_3Days"=>"3 days",
 			"CALENDAR_display_7Days"=>"7 days",
 			"CALENDAR_display_week"=>"Week",
@@ -834,23 +827,25 @@ class Trad extends Txt
 			"CALENDAR_display_month"=>"Month",
 			"CALENDAR_yearWeekNum"=>"See the week n°",
 			"CALENDAR_periodNext"=>"Next period",
-			"CALENDAR_periodPrevious"=>"Preceding period",
+			"CALENDAR_periodPrev"=>"Preceding period",
 			"CALENDAR_evtAffects"=>"In the calendar of",
 			"CALENDAR_evtAffectToConfirm"=>"Confirmation on standby in the calendar of",
-			"CALENDAR_evtProposed"=>"Events proposals to confirm", 
-			"CALENDAR_evtProposedBy"=>"Proposed by",//..Mr SMITH
-			"CALENDAR_evtProposedConfirm"=>"Confirm the proposal",
-			"CALENDAR_evtProposedConfirmBis"=>"The event proposal has been integrated into the calendar",
-			"CALENDAR_evtProposedConfirmMail"=>"Your event proposal has been confirmed",
-			"CALENDAR_evtProposedDecline"=>"Decline the proposal",
-			"CALENDAR_evtProposedDeclineBis"=>"The proposal has been declined",
-			"CALENDAR_evtProposedDeclineMail"=>"Your event proposal has been declined",
+			"CALENDAR_evtProposition"=>"Events proposals to confirm", 
+			"CALENDAR_evtProposedBy"=>"Proposed by",
+			"CALENDAR_evtProposeConfirm"=>"Confirm the proposal",
+			"CALENDAR_evtProposeConfirmed"=>"The event proposal has been integrated into the calendar",
+			"CALENDAR_evtProposeConfirmedMail"=>"Your event proposal has been confirmed",
+			"CALENDAR_evtProposeDecline"=>"Decline the proposal",
+			"CALENDAR_evtProposeDeclined"=>"The proposal has been declined",
+			"CALENDAR_evtProposeDeclinedMail"=>"Your event proposal has been declined",
 			"CALENDAR_deleteEvtCal"=>"Delete only for this calendar ?",
 			"CALENDAR_deleteEvtCals"=>"Delete for all the calendars ?",
 			"CALENDAR_deleteEvtDate"=>"Delete only for this date ?",
 			"CALENDAR_evtPrivate"=>"Private event",
 			"CALENDAR_evtAutor"=>"Events which I created",
 			"CALENDAR_evtAutorInfo"=>"Show only events I created",
+			"CALENDAR_evtChangeTime"=>"Move to",
+			"CALENDAR_evtChangeTimeConfirmed"=>"The event has been successfully moved",
 			"CALENDAR_noEvt"=>"No event",
 			"CALENDAR_calendarsPercentBusy"=>"Busy calendars",
 			"CALENDAR_noCalendarDisplayed"=>"No calendars displayed",
@@ -861,14 +856,16 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublicHide"=>"Time slot display",
 			"CALENDAR_visibilityPrivate"=>"Private display",
 			"CALENDAR_visibilityTooltip"=>"For people with read-only access to the calendar: <br>- Time slot display : show only the time slot occupied by the event and hide the details<br>- Private display: do not display the event",
-			// Agenda/Evenement : edit
+			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Shared calendar of the space",
 			"CALENDAR_noPeriodicity"=>"Only once",
 			"CALENDAR_period_weekDay"=>"Every week",
 			"CALENDAR_period_month"=>"Every month",
+			"CALENDAR_period_monthBis"=>"Every --DATE-- of the month",
 			"CALENDAR_period_year"=>"Every year",
-			"CALENDAR_periodDateEnd"=>"Until",
-			"CALENDAR_periodException"=>"Recurrence exception",
+			"CALENDAR_period_yearBis"=>"Every --DATE-- of the year",
+			"CALENDAR_periodDateExceptions"=>"Repeat exception",
+			"CALENDAR_periodDateEnd"=>"Repeat end",
 			"CALENDAR_calendarAffectations"=>"Assign to the following calendars",
 			"CALENDAR_addEvt"=>"Add an event",
 			"CALENDAR_addEvtTooltip"=>"Add an event",
@@ -886,26 +883,23 @@ class Trad extends Txt
 			"CALENDAR_propositionNotifTooltip"=>"Note: Each event proposal is validated or invalidated by the administrator of the calendar.",
 			"CALENDAR_propositionGuest"=>"Guests can propose events",
 			"CALENDAR_propositionGuestTooltip"=>"Note: Remember to select 'all users and guests' in the access rights below.",
-			"CALENDAR_propositionEmailSubject"=>"New event proposed by",//.."boby SMITH"
+			"CALENDAR_propositionEmailSubject"=>"New event proposed by",
 			"CALENDAR_propositionEmailMessage"=>"New event proposed by --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Access your space to confirm or cancel this proposal",
-			// Category : Catégories d'événement
-			"CALENDAR_categoryMenuTooltip"=>"Show only events with category",
-			"CALENDAR_categoryShowAll"=>"All categories",
-			"CALENDAR_categoryShowAllTooltip"=>"Show all categories",
-			"CALENDAR_categoryUndefined"=>"Without category",
-			"CALENDAR_categoryEditTitle"=>"Edit categories",
-			"CALENDAR_categoryEditInfo"=>"Each event category can be modified by its author or by the general administrator",
-			"CALENDAR_categoryEditAdd"=>"Add an event category",
 
 			////	MOD : FORUM
 			////
-			// Menu principal
-			"FORUM_headerModuleName"=>"Forum",
-			"FORUM_moduleDescription"=>"Forum",
-			"FORUM_option_adminAddSubject"=>"Only the administrator can add topics",//OPTION!
-			"FORUM_option_adminAddTheme"=>"Only the administrator can add themes",//OPTION!
+			"FORUM_MODULE_NAME"=>"Forum",
+			"FORUM_MODULE_DESCRIPTION"=>"Forum",
+			"FORUM_OPTION_adminAddSubject"=>"Only the administrator can add topics",
+			"FORUM_OPTION_adminAddTheme"=>"Only the administrator can add themes",
+			"FORUM_CAT_menuTooltip"=>"Show only topics with theme",
+			"FORUM_CAT_showAll"=>"All themes",
+			"FORUM_CAT_showAllTooltip"=>"Show all themes",
+			"FORUM_CAT_undefined"=>"Without theme",
+			"FORUM_CAT_editTitle"=>"Edit themes",
+			"FORUM_CAT_editInfo"=>"Each theme can be modified by its author or the general administrator",
+			"FORUM_CAT_editAdd"=>"Add a theme",
 			"SORT_dateLastMessage"=>"Last message",
-			//Index & Sujet
 			"FORUM_forumRoot"=>"Forum Home",
 			"FORUM_subject"=>"Topic",
 			"FORUM_subjects"=>"Topics",
@@ -921,30 +915,26 @@ class Trad extends Txt
 			"FORUM_quoteMessageInfo"=>"Answer and quote this message",
 			"FORUM_notifyLastPost"=>"Notify by email",
 			"FORUM_notifyLastPostTooltip"=>"Send me a notification by email to each new message",
-			// Sujet_edit  &  Message_edit
 			"FORUM_notifOnlyReadAccess"=>"If there is only read access, no one can contribute to the topic",
 			"FORUM_notifWriteAccess"=>"''Write'' access is intended for moderators :<br>Rather prefer the ''Limited Writing'' rights",
-			// Category : Themes
-			"FORUM_categoryMenuTooltip"=>"Show only topics with theme",
-			"FORUM_categoryShowAll"=>"All themes",
-			"FORUM_categoryShowAllTooltip"=>"Show all themes",
-			"FORUM_categoryUndefined"=>"Without theme",
-			"FORUM_categoryEditTitle"=>"Edit themes",
-			"FORUM_categoryEditInfo"=>"Each theme can be modified by its author or the general administrator",
-			"FORUM_categoryEditAdd"=>"Add a theme",
 
 			////	MOD : TASK
 			////
-			// Menu principal
-			"TASK_headerModuleName"=>"Tasks",
-			"TASK_moduleDescription"=>"Tasks",
-			"TASK_option_adminRootAddContent"=>"Only the administrator can add folders and tasks in the root folder",//OPTION!
-			"TASK_option_adminAddStatus"=>"Only admin can create Kanban status",//OPTION!
+			"TASK_MODULE_NAME"=>"Tasks",
+			"TASK_MODULE_DESCRIPTION"=>"Tasks",
+			"TASK_OPTION_adminRootAddContent"=>"Only the administrator can add folders and tasks in the root folder",
+			"TASK_OPTION_adminAddStatus"=>"Only admin can create Kanban status",
+			"TASK_CAT_menuTooltip"=>"Show only tasks with status",
+			"TASK_CAT_showAll"=>"All status",
+			"TASK_CAT_showAllTooltip"=>"Show all status",
+			"TASK_CAT_undefined"=>"Undefined status",
+			"TASK_CAT_editTitle"=>"Edit status",
+			"TASK_CAT_editInfo"=>"Each status can be modified by its author or by the general admin",
+			"TASK_CAT_editAdd"=>"Add a status",
 			"SORT_priority"=>"Priority",
 			"SORT_advancement"=>"Progress",
 			"SORT_dateBegin"=>"Begin date",
 			"SORT_dateEnd"=>"End date",
-			//Index
 			"TASK_addTask"=>"Add a task",
 			"TASK_noTask"=>"No task for the moment",
 			"TASK_advancement"=>"Progress",
@@ -957,22 +947,12 @@ class Trad extends Txt
 			"TASK_assignedTo"=>"Assigned to",
 			"TASK_advancementLate"=>"Progress delayed",
 			"TASK_folderDateBeginEnd"=>"Earliest start date / latest end date",
-			//Categorie : Statuts Kanban
-			"TASK_categoryMenuTooltip"=>"Show only tasks with status",
-			"TASK_categoryShowAll"=>"All status",
-			"TASK_categoryShowAllTooltip"=>"Show all status",
-			"TASK_categoryUndefined"=>"Undefined status",
-			"TASK_categoryEditTitle"=>"Edit status",
-			"TASK_categoryEditInfo"=>"Each status can be modified by its author or by the general admin",
-			"TASK_categoryEditAdd"=>"Add a status",
 
 			////	MOD : CONTACT
 			////
-			// Menu principal
-			"CONTACT_headerModuleName"=>"Contacts",
-			"CONTACT_moduleDescription"=>"Directory of contacts",
-			"CONTACT_option_adminRootAddContent"=>"Only the administrator can add folders and contacts in the root folder",//OPTION!
-			//Index
+			"CONTACT_MODULE_NAME"=>"Contacts",
+			"CONTACT_MODULE_DESCRIPTION"=>"Directory of contacts",
+			"CONTACT_OPTION_adminRootAddContent"=>"Only the administrator can add folders and contacts in the root folder",
 			"CONTACT_addContact"=>"Add a contact",
 			"CONTACT_noContact"=>"No contact for the moment",
 			"CONTACT_createUser"=>"Create a user in this space",
@@ -981,26 +961,20 @@ class Trad extends Txt
 
 			////	MOD : LINK
 			////
-			// Menu principal
-			"LINK_headerModuleName"=>"Bookmarks",
-			"LINK_moduleDescription"=>"Bookmarks",
-			"LINK_option_adminRootAddContent"=>"Only the administrator can add folders and bookmarks to the root folder",//OPTION!
-			//Index
+			"LINK_MODULE_NAME"=>"Bookmarks",
+			"LINK_MODULE_DESCRIPTION"=>"Bookmarks",
+			"LINK_OPTION_adminRootAddContent"=>"Only the administrator can add folders and bookmarks to the root folder",
 			"LINK_addLink"=>"Add a bookmark",
 			"LINK_noLink"=>"No bookmark at the moment",
-			// lien_edit & dossier_edit
 			"LINK_adress"=>"bookmark",
 
 			////	MOD : MAIL
 			////
-			//  Menu principal
-			"MAIL_headerModuleName"=>"Emails",
-			"MAIL_moduleDescription"=>"Send emails in a click!",
-			//Index
+			"MAIL_MODULE_NAME"=>"Emails",
+			"MAIL_MODULE_DESCRIPTION"=>"Send emails in a click!",
 			"MAIL_specifyMail"=>"Thank you for entering an address email",
 			"MAIL_title"=>"Email subject",
 			"MAIL_description"=>"Email message",
-			// Historique Email
 			"MAIL_historyTitle"=>"History of the emails sent",
 			"MAIL_delete"=>"Delete this email",
 			"MAIL_resend"=>"Resend this email",
@@ -1019,9 +993,12 @@ class Trad extends Txt
 		$dateList[$year."-12-26"]="Boxing Day";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date("Y-m-d",$easterTime)]		="Easter";
-			$dateList[date("Y-m-d",$easterTime+86400)]	="Easter Monday";			
+			$dateList[date('Y-m-d',$easterTime)]		="Easter";
+			$dateList[date('Y-m-d',$easterTime+86400)]	="Easter Monday";			
 		}
+		$tmpDates=Txt::timeChangeDates($year);
+		$dateList[$tmpDates["summer"]]="Daylight saving time";
+		$dateList[$tmpDates["winter"]]="Winter time";
 		return $dateList;
 	}
 }

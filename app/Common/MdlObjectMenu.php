@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -26,14 +26,14 @@ trait MdlObjectMenu
 
 	/*******************************************************************************************************************************
 	 * DIV PRINCIPAL (".objContainer")  &&  MENU CONTEXTUEL
-	 *"data-urlEdit" : url d'édition via "dblClick"  &&  "objMenu" : id du menu contextuel via click droit et "menuContextDisplay()"
+	 * objMenu 	: id du menu contextuel via click droit et "menuContext()"
 	 *******************************************************************************************************************************/
-	public function divContainerContextMenu($containerClass=null, $containerAttributes=null, $contextMenuOptions=null)
+	public function objContainerMenu($containerClasses=null, $containerAttributes=null, $contextMenuOptions=null)
 	{
-		if($this->isSelectable())	{$containerClass.=' isSelectable';}
-		if($this->editRight())		{$containerAttributes.=' data-urlEdit="'.$this->getUrl("edit").'"';}
-		return  '<div id="'.$this->uniqId("objContainer").'" for="'.$this->uniqId("objMenu").'" class="objContainer '.$containerClass.'" '.$containerAttributes.'>'.
-				$this->contextMenu($contextMenuOptions);
+		if($this->isSelectable())	{$containerClasses	 .=' isSelectable';}								//Classes pour rendre l'objet "sélectionnable"
+		if($this->editRight())		{$containerAttributes.=' data-urlEdit="'.$this->getUrl("edit").'"';}	//Url d'édition via "dblClick"
+		return  '<div class="objContainer '.$containerClasses.'" id="'.$this->uniqId("objContainer").'" for="'.$this->uniqId("objMenu").'" '.$containerAttributes.'>'.
+					$this->contextMenu($contextMenuOptions);
 	}
 
 	/*****************************************************************************************************************************************************************************************************
@@ -62,24 +62,21 @@ trait MdlObjectMenu
 				$vDatas["editLabel"]=Txt::trad("USER_profilEdit");
 				$vDatas["userEditMessengerUrl"]="?ctrl=user&action=userEditMessenger&typeId=".$this->_typeId;
 			}
-			////	SUPPRESSION DE L'ESPACE COURANT
+			////	SUPPRIMER L'AFFECTATION DE L'ESPACE COURANT
 			if($this->deleteFromCurSpaceRight()){
-				$deleteFromCurSpaceUrl="?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id;
-				$vDatas["deleteFromCurSpaceConfirm"]="if(confirm('".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')) redir('".$deleteFromCurSpaceUrl."')";
+				$vDatas["deleteFromCurSpaceConfirm"]="confirmRedir('?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')";
 			}
-			////	SUPPRESSION DEFINITIVE (double confirmation)
+			////	SUPPRESSION DEFINITIVE
 			if($this->deleteRight()){
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."',labelConfirmDeleteDbl)";
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."',$('#".$this->uniqId("objLabel")."').text())";
 				$vDatas["deleteLabel"]=Txt::trad("USER_deleteDefinitely");
 			}
-			////	LISTE DES ESPACES DE L'UTILISATEUR
+			////	LISTE DES ESPACES DE L'UTILISATEUR (..pas ceux de $curUser)
 			if(Ctrl::$curUser->isGeneralAdmin()){
 				$vDatas["userSpaceList"]=Txt::trad("USER_spaceList")." : ";
-				if(count($this->getSpaces())==0)	{$vDatas["userSpaceList"].=Txt::trad("USER_spaceNoAffectation");}
-				else								{ foreach($this->getSpaces() as $tmpSpace)  {$vDatas["userSpaceList"].="<br>".$tmpSpace->name;} }
+				if(count($this->spaceList())==0)	{$vDatas["userSpaceList"].=Txt::trad("USER_spaceNoAffectation");}
+				else								{ foreach($this->spaceList() as $tmpSpace)  {$vDatas["userSpaceList"].="<br>".$tmpSpace->name;} }
 			}
-			////	AUTEUR/DATE DE CREATION
-			//$vDatas["autorDateCrea"]="<a onclick=\"".Ctrl::getObj("user",$this->_idUser)->openVue()."\">".$this->autorLabel()."</a> - ".$this->dateLabel();
 		}
 		////	OBJET LAMBDA
 		else
@@ -90,28 +87,17 @@ trait MdlObjectMenu
 				$vDatas["logUrl"]="?ctrl=object&action=logs&typeId=".$this->_typeId;
 				if(!empty(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			}
-			////	COPIER L'ADRESSE/URL D'ACCES
+			////	URL D'ACCES EXTERNE
 			if(Ctrl::$curUser->isUser() && static::objectType!="space")   {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
+			////	AUTEUR/DATE DE CREATION/MODIF
+			$vDatas["autorDateCrea"] =(!empty($this->dateCrea))   ?  $this->autorDate()  :  null;
+			$vDatas["autorDateModif"]=(!empty($this->dateModif))  ?  $this->autorDate(true)  :  null;
 			////	SUPPRIMER
-			if($this->deleteRight())
-			{
-				//Options du "confirmDelete()" 
-				$labelConfirmDbl=$ajaxControlUrl="null";
-				if(static::objectType=="space")	{$labelConfirmDbl="'".Txt::trad("SPACE_confirmDeleteDbl",true)."'";}						//Suppression d'espace : double confirmation spécifique
-				if(static::isContainer())		{$labelConfirmDbl="labelConfirmDeleteDbl";}													//Suppression de conteneur : double confirmation du "VueStructure.php"
-				if(static::isFolder==true)		{$ajaxControlUrl="'?ctrl=object&action=folderDeleteControl&typeId=".$this->_typeId."'";}	//Suppression de dossier : controle d'accès via Ajax
-				//Ajoute l'option
-				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."', ".$labelConfirmDbl.", ".$ajaxControlUrl.", '".$this->uniqId("objLabel")."')";
+			if($this->deleteRight()){
+				$ajaxControlUrl =(static::isFolder==true)  ?  "'?ctrl=object&action=folderDeleteControl&typeId=".$this->_typeId."'"  :  "null";	//Controle d'accès aux sous-dossiers
+				$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."', $('#".$this->uniqId("objLabel")."').text(), ".$ajaxControlUrl.")";
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
-			////	AUTEUR/DATE DE CREATION/MODIF
-			$vDatas["autorDateCrea"]=$vDatas["autorDateModif"]=null;
-			if($this->_idUser)		{$vDatas["autorDateCrea"]='<a onclick="'.Ctrl::getObj("user",$this->_idUser)->openVue().'">'.$this->autorLabel().'</a>';}	//Auteur de l'objet : user
-			elseif($this->guest)	{$vDatas["autorDateCrea"]=$this->autorLabel();}																				//Guest
-			if($this->dateCrea)		{$vDatas["autorDateCrea"].=' - '.$this->dateLabel();}																		//Ajoute la Date de création de l'objet
-			//Précise l'auteur/date de modif
-			if(!empty($this->_idUserModif))  	{$vDatas["autorDateModif"]='<a onclick="'.Ctrl::getObj("user",$this->_idUserModif)->openVue().'">'.$this->autorLabel(false).'</a> - '.$this->dateLabel(false);}
-
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
 			if($this->hasAccessRight() || $this->accessRightFromContainer())
 			{
@@ -121,7 +107,7 @@ trait MdlObjectMenu
 				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][(string)$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
 				//Affiche si l'objet est personnel ("isPersoAccess")
 				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
-				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["target_id"]==Ctrl::$curUser->_id);
+				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["targetId"]==Ctrl::$curUser->_id);
 				//Tooltip spécifique
 				if(static::isContainer())  					{$tooltipDetail=$this->tradObject("accessAutorPrivilege")."<hr>";}					//"Seul l'auteur ou l'admin peuvent modifier/supprimer le -dossier-"
 				elseif($this->accessRightFromContainer())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
@@ -137,13 +123,19 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************
-	 * VUE D'UN OBJET : AFFICHE LE MENU CONTEXTUEL + LE BOUTON D'EDITION (AVEC LE TITRE DE L'OBJET)
+	 * BOUTON D'EDITION D'UN OBJET 
 	 *******************************************************************************************/
-	public function lightboxTitleMenu()
+	public function editButtom()
 	{
-		$return=$this->contextMenu(["launcherIcon"=>"inlineBig"]);/*menu burger inline*/
-		if($this->editRight())  {$return.='<img src="app/img/edit.png" onclick="lightboxOpen(\''.$this->getUrl('edit').'\')" '.Txt::tooltip("modify").'>';}
-		return '<span class="lightboxTitleMenu">'.$return.'</span>';
+		if($this->editRight())  {return '<img src="app/img/edit.png" class="editButton" onclick="lightboxOpen(\''.$this->getUrl("edit").'\')" '.Txt::tooltip("modify").'>';}
+	}
+
+	/*******************************************************************************************
+	 * VUE D'UN OBJET : MENU CONTEXTUEL + BOUTON D'EDITION
+	 *******************************************************************************************/
+	public function lightboxMenu()
+	{
+		return '<span class="lightboxMenu">'.$this->editButtom().$this->contextMenu(["launcherIcon"=>"inlineBig"]).'</span>';
 	}
 
 	/*******************************************************************************************
@@ -155,22 +147,21 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************
-	 * VUE : MENU D'ÉDITION DE LA DESCRIPTION, SI BESOIN AVEC L'EDITEUR TINYMCE
+	 * VUE : ÉDITION DE LA DESCRIPTION : AVEC L'EDITEUR TINYMCE ?
 	 *******************************************************************************************/
-	public function editDescription($toggleButton=true)
+	public function descriptionEditor($toggleButton=true)
 	{
 		$vDatas["curObj"]=$this;
 		$vDatas["toggleButton"]=$toggleButton;
 		//Sélectionne au besoin le "draftTypeId" pour n'afficher que le brouillon/draft de l'objet précédement édité (on n'utilise pas "editTypeId" car il est effacé dès qu'on sort de l'édition de l'objet...)
 		$sqlTypeId=Req::isParam("typeId")  ?  "draftTypeId=".Db::param("typeId")  :  "draftTypeId IS NULL";
 		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
-		$vDatas["editorCode"]=Ctrl::$curUser->isGeneralAdmin() ? 'code': null;
 		//Affiche la vue
-		return Ctrl::getVue(Req::commonPath."VueObjEditDescription.php",$vDatas);
+		return Ctrl::getVue(Req::commonPath."VueObjDescriptionEditor.php",$vDatas);
 	}
 
 	/*******************************************************************************************
-	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "VueObjEditMenuSubmit.php")
+	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "VueObjMenuEdit.php")
 	 *******************************************************************************************/
 	public function attachedFile()
 	{
@@ -193,11 +184,9 @@ trait MdlObjectMenu
 			$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
 			////	Droits d'accès pour chaque espace ("targets")
 			$vDatas["accessRightSpaces"]=[];
-			foreach(Ctrl::$curUser->getSpaces() as $tmpSpace)
-			{
-				//Verif si le module de l'objet est bien activé sur l'espace
-				if(array_key_exists(static::moduleName,$tmpSpace->moduleList()))
-				{
+			foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
+				//// Verif si le module de l'objet est bien activé sur l'espace
+				if(array_key_exists(static::moduleName,$tmpSpace->moduleList())){
 					////	Init les "targetLines"
 					$tmpSpace->targetLines=[];
 					////	"Tous les utilisateurs"  OU  "Tous les utilisateurs et invités"
@@ -258,7 +247,7 @@ trait MdlObjectMenu
 		}
 		////	AFFICHE LA VUE
 		$vDatas["curObj"]=$this;
-		return Ctrl::getVue(Req::commonPath."VueObjEditMenuSubmit.php",$vDatas);
+		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
 
 	/*******************************************************************************************

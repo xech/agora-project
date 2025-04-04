@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -75,9 +75,9 @@ class CtrlSpace extends Ctrl
 		}
 		////	Liste de tous les users du site  &&  Liste de tous les modules disponibles
 		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);
-		$vDatas["moduleList"]=$curObj->moduleList(false);
+		$vDatas["moduleList"]=$curObj->moduleList(true);
 		//Ajoute les modules désactivés
-		foreach(MdlSpace::availableModuleList() as $moduleName=>$tmpModule){
+		foreach(MdlSpace::availableModules() as $moduleName=>$tmpModule){
 			if(empty($vDatas["moduleList"][$moduleName])){
 				$tmpModule["disabled"]=true;
 				$vDatas["moduleList"][$moduleName]=$tmpModule;

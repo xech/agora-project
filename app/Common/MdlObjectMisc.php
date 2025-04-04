@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -44,15 +44,14 @@ trait MdlObjectMisc
 	 *******************************************************************************************/
 	public function attachedFileList()
 	{
-		//Mise en cache
-		if($this->_attachedFiles===null){																														
-			if(static::hasAttachedFiles!==true)  {$this->_attachedFiles==[];}																					//Ce type d'objet ne gère pas les fichiers joint : tableau vide
+		if($this->_attachedFiles===null){
+			if(static::hasAttachedFiles!==true)  {$this->_attachedFiles==[];}
 			else{
-				$this->_attachedFiles=Db::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);	//Récupère les fichiers joints de l'objet en BDD
-				foreach($this->_attachedFiles as $key=>$tmpFile)  {$this->_attachedFiles[$key]=self::attachedFileInfos($tmpFile);}								//Ajoute le "path" et autres infos de chaque fichier joint
+				$this->_attachedFiles=Db::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);//Récupère les fichiers joints de l'objet en BDD
+				foreach($this->_attachedFiles as $key=>$tmpFile)  {$this->_attachedFiles[$key]=self::attachedFileInfos($tmpFile);}							//Ajoute le "path" et autres infos de chaque fichier joint
 			}
 		}
-		//Retoune les résultats (toujours au format "array")
+		//Retoune les résultats au format "array"
 		return (array)$this->_attachedFiles;
 	}
 
@@ -63,13 +62,12 @@ trait MdlObjectMisc
 	{
 		if($this->_attachedFilesMenu===null){
 			$this->_attachedFilesMenu="";
-			if(count($this->attachedFileList())>0){
-				//Affiche le menu pour chaque fichier
-				foreach($this->attachedFileList() as $tmpFile){
-					$urlDownload='?ctrl=object&action=AttachedFileDownload&_id='.$tmpFile["_id"];
-					if(Req::isMobileApp())  {$urlDownload=CtrlMisc::urlExternalGetFile($urlDownload,$tmpFile["name"]);}//Download depuis l'exterieur : switch sur "ctrl=misc"
-					$this->_attachedFilesMenu.='<div class="attachedFileMenu" '.Txt::tooltip("download").' onclick="if(confirm(\''.Txt::trad("download",true).' ?\')) redir(\''.$urlDownload.'\')"><img src="app/img/attachment.png"> '.$tmpFile["name"].'</div>';
-				}
+			foreach($this->attachedFileList() as $tmpFile){
+				$urlDownload='?ctrl=object&action=AttachedFileDownload&_id='.$tmpFile["_id"];						//Affiche le menu pour chaque fichier
+				if(Req::isMobileApp())  {$urlDownload=CtrlMisc::urlExternalGetFile($urlDownload,$tmpFile["name"]);}	//Download depuis l'exterieur : switch sur "ctrl=misc"
+				$this->_attachedFilesMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$urlDownload.'\',\''.Txt::trad("download",true).' ?\')" '.Txt::tooltip("download").'>
+												<img src="app/img/attachment.png"> '.$tmpFile["name"].
+											'</div>';
 			}
 		}
 		//Retoune les résultats, avec un séparateur différent pour chaque affichage

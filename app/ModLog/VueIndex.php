@@ -5,7 +5,7 @@
 /**********************************************************************************************************
  *	PARAMETRAGE DE DATATABLES
 **********************************************************************************************************/
-$(function(){
+ready(function(){
 	//Construction du tableau de donnees
 	oTable=$("#tableLogs").dataTable({
         "iDisplayLength": 100,			//nb de lignes par page par défaut
@@ -34,7 +34,7 @@ $(function(){
 </script>
 
 <style>
-#pageCenterContent			{padding:10px;}
+#pageContent				{padding:10px;}
 thead th					{text-align:left;}
 #tableLogs					{font-size:0.9em;}
 #tableLogs td				{text-align:left; padding:3px;}
@@ -47,8 +47,9 @@ tfoot select, tfoot input	{width:100px;}
 .dataTables_filter img		{max-height:18px;}/*champ "recherche"*/
 </style>
 
+
 <div id="pageCenter">
-	<div id="pageCenterContent" class="miscContainer">
+	<div id="pageContent" class="miscContainer">
 		<!--TABLEAU DES LOGS-->
 		<table id="tableLogs" class="display">
 			<!--HEADER-->

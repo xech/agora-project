@@ -5,9 +5,7 @@ lightboxSetWidth(600);
 ////	Confirmation de suppression de version
 function confirmDeleteVersion(dateCrea)
 {
-	if(confirm("<?= Txt::trad("FILE_confirmDeleteVersion")?>")){
-		redir("?ctrl=file&action=DeleteFileVersion&typeId=<?= $curObj->_typeId ?>&dateCrea="+dateCrea);
-	}
+	confirmRedir("?ctrl=file&action=DeleteFileVersion&typeId=<?= $curObj->_typeId ?>&dateCrea="+dateCrea, "<?= Txt::trad("FILE_confirmDeleteVersion")?>");
 }
 </script>
 
@@ -28,7 +26,7 @@ img[src*='delete']		{margin-left:20px;}
 				<?= $tmpVersion["name"] ?>
 				<div class="versionDetails">
 					<?php
-					echo Txt::dateLabel($tmpVersion["dateCrea"]).'<img src="app/img/separator.png">'.
+					echo Txt::dateLabel($tmpVersion["dateCrea"],"labelFull").'<img src="app/img/separator.png">'.
 					Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel().'<img src="app/img/separator.png">'.
 					File::sizeLabel($tmpVersion["octetSize"]).'<br>'.
 					'<a href="'.$curObj->urlDownload($tmpVersion["dateCrea"]).'" target="_blank"><img src="app/img/download.png"> '.Txt::trad("download").'</a>'.

@@ -1,7 +1,7 @@
 <script>
-$(function(){
+ready(function(){
 	/********************************************************************************************************************************************************
-	 *	VÉRIFIE SI LA CATEGORIE EST BIEN AFFECTÉE AUX ESPACES SÉLECTIONNÉS POUR L'OBJET COURANT  (cf. "VueObjEditMenuSubmit.php"  &  VueCategoryEdit.php")
+	 *	VÉRIFIE SI LA CATEGORIE EST BIEN AFFECTÉE AUX ESPACES SÉLECTIONNÉS POUR L'OBJET COURANT  (cf. "VueObjMenuEdit.php"  &  VueCategoryEdit.php")
 	 ********************************************************************************************************************************************************/
 	if($("[name='objectRight[]']").exist()){											//Vérif si le tableau des droits d'accès est bien instancié
 		$("#selectCategory, [name='objectRight[]']").on("change",function(){			//Change de categorie  OU  Sélectionne un espace dans les droits d'accès
@@ -12,7 +12,7 @@ $(function(){
 					let _idSpaceTmp=this.value.split("_").shift();						//_id de l'espace (ex: "2_spaceUsers_1" => "2")
 					if(catSpaceIds.split(",").indexOf(_idSpaceTmp)==-1){
 						let notifyText="<i>"+$(catSelector).text()+"</i> <?= Txt::trad("categoryNotifSpaceAccess") ?> <br><i>"+$(catSelector).attr("data-spacesLabel")+"</i>";
-						notify(notifyText, "warning");									//Notif si l'espace n'est pas affecté à la catégorie sélectionnée (ex: "Catégorie truc n'est accessible que sur l'espace Bidule")
+						notify(notifyText, "error");									//Notif si l'espace n'est pas affecté à la catégorie sélectionnée (ex: "Catégorie truc n'est accessible que sur l'espace Bidule")
 						$("#selectCategory").focusPulsate();							//Focus sur le champ de la categorie
 						return false;													//Arrête la boucle
 					}
@@ -27,7 +27,7 @@ $(function(){
 
 
 <select name="<?= $dbParentField; ?>" id="selectCategory">
-	<option value=""><?= Txt::trad($tradPrefix."_categoryUndefined") ?></option>
+	<option value=""><?= Txt::trad($tradPrefix."_CAT_undefined") ?></option>
 	<?php
 	////	Liste les categories disponibles
 	foreach($categoryList as $tmpCat){

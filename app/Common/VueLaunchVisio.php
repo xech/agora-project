@@ -3,7 +3,7 @@
 lightboxSetWidth(650);
 
 ////	Lance la visio
-$(function(){
+ready(function(){
 	$(".launchVisio").on("click",function(){
 		visioURL=$(this).attr("data-visioURL");																										// Visio via le browser ou l'appli Jitsi
 		if($("#visioHostServer").val()=="alt")  {visioURL=visioURL.replace("<?= Ctrl::$agora->visioHost ?>","<?= Ctrl::$agora->visioHostAlt ?>");}	// Url du serveur alternatif

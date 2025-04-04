@@ -1,9 +1,9 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxSetWidth(700);
 
 ////	INIT
-$(function(){
+ready(function(){
 	//// Affiche/masque la liste des utilisateurs
 	$("[name='messengerDisplay']").on("click",function(){
 		if(this.value=="some")	{$("#divSomeUsers").slideDown();}
@@ -11,20 +11,21 @@ $(function(){
 	});
 
 	//// Validation du formulaire : vérif
-	$("form").submit(function(){
+	$("form").on("submit",function(){
 		if($("#messengerDisplaySome").prop("checked") && $("input[id^=someUser]:checked").length==0)   {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	});
 });
 </script>
 
 <style>
-.vDivRadio		{margin-bottom:10px;}
-#divSomeUsers	{display:<?= empty($someUsers)?"none":"inline-block" ?>; padding-top:10px; padding-left:25px;}
-.vDivSomeUser	{display:inline-block; width:50%; padding:5px;}
+.lightboxTitle img	{margin-right:20px;}
+.vDivRadio			{margin-bottom:15px;}
+#divSomeUsers		{display:<?= empty($someUsers)?"none":"inline-block" ?>; padding-top:10px;}
+.vDivSomeUser		{display:inline-block; width:32%; padding:8px;}
 </style>
 
 <form action="index.php" method="post">
-	<div class="lightboxTitle"><?= ucfirst(Txt::trad("USER_livecounterVisibility")) ?></div>
+	<div class="lightboxTitle"><img src="app/img/messenger.png"><?= ucfirst(Txt::trad("USER_livecounterVisibility")) ?></div>
 
 	<div class="vDivRadio">
 		<input type="radio" name="messengerDisplay" value="all" id="messengerDisplayAll" <?= $allUsers==true?"checked":null ?>>

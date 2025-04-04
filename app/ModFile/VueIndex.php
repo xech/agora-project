@@ -16,25 +16,25 @@
 
 
 <div id="pageFull">
-	<div id="pageModuleMenu">
+	<div id="pageMenu">
 		<?= MdlFile::menuSelect() ?>
-		<div id="pageModMenu" class="miscContainer">
-			<?php
-			////	MENU D'AJOUT D'ELEMENTS
-			if(Ctrl::$curContainer->addContentRight()){
-				echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlFile::urlAddFiles().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FILE_addFile").'</div></div>
-					  <div class="menuLine" onclick="lightboxOpen(\''.MdlFileFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div>'.Txt::trad("addFolder").'</div></div>
-					  <hr>';
-			}
-			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
-			echo MdlFileFolder::menuTree().MdlFile::menuDisplayMode().MdlFile::menuSort().
-				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
-			////	ESPACE DISQUE
-			if(!empty($diskSpaceProgressBar))  {echo '<div class="menuLine"><div class="menuIcon"><img src="app/img/diskSpace'.($diskSpaceAlert==true?"Alert":null).'.png"></div><div>'.$diskSpaceProgressBar.'</div></div>';}
-			?>
+		<div class="miscContainer">
+			<!--AJOUT D'ELEMENTS-->
+			<?php if(Ctrl::$curContainer->addContentRight()){ ?>
+				<div class="menuLine" onclick="lightboxOpen('<?= MdlFile::urlAddFiles() ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("FILE_addFile") ?></div></div>
+				<div class="menuLine" onclick="lightboxOpen('<?= MdlFileFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div><?= Txt::trad("addFolder") ?></div></div>
+				<hr>
+			<?php } ?>
+			<!--ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU  &  ESPACE DISQUE-->
+			<?= MdlFileFolder::menuTree().MdlFile::menuDisplayMode().MdlFile::menuSort() ?>
+			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= Ctrl::$curContainer->contentDescription() ?></div></div>
+			<?php if(!empty($diskSpaceBar)){ ?>
+				<div class="menuLine"><div class="menuIcon"><img src="app/img/<?= $diskSpaceAlert==true?"diskSpaceAlert.png":"diskSpace.png" ?>"></div><div><?= $diskSpaceBar ?></div></div>
+			<?php } ?>
 		</div>
 	</div>
-	<div id="pageFullContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
+
+	<div id="pageContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles());
@@ -42,12 +42,13 @@
 		////	LISTE DES FICHIERS  ("iconTooltip" tjs dans le "<div>" && "iconLink" sur l'image pour pouvoir "select" le fichier)
 		$fileNameLength=MdlFile::getDisplayMode()=="line" ? 80 : 50;
 		foreach($filesList as $tmpFile){
-			echo $tmpFile->divContainerContextMenu($tmpFile->hasThumbClass).
+			$hasThumbClass=$tmpFile->thumbExist() ? "hasThumb" : null;
+			echo $tmpFile->objContainerMenu($hasThumbClass).
 				'<div class="objContent objFiles '.$tmpFile->thumbClass.'">
 					<div class="objIcon" '.Txt::tooltip($tmpFile->iconTooltip).'><img src="'.$tmpFile->typeIcon().'" '.$tmpFile->iconLink.'></div>
 					<div class="objLabel"><span '.Txt::tooltip($tmpFile->labelTooltip).' '.$tmpFile->labelLink.'>'.Txt::reduce($tmpFile->name,$fileNameLength).$tmpFile->versionsMenu("icon").'</span></div>
 					<div class="objDetails">'.File::sizeLabel($tmpFile->octetSize).'</div>
-					<div class="objAutorDate">'.$tmpFile->autorDateLabel().'</div>
+					<div class="objAutorDate">'.$tmpFile->autorDate().'</div>
 				</div>
 			</div>';
 		}

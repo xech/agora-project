@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -62,14 +62,14 @@ class CtrlTask extends Ctrl
 				elseif(date("N",$dayTimeBegin)==1)								{$vTimelineLeftBorder="vTimelineLeftBorder2";}	//début de semaine : bordure de gauche plus fine
 				else															{$vTimelineLeftBorder=null;}
 				$vDatas["timelineDays"][]=array(
-					"curDate"=>date("Y-m-d",$dayTimeBegin),
-					"timeBegin"=>$dayTimeBegin,
-					"newMonthLabel"=>($newMonth==true ? ucfirst(Txt::formatime("MMMM y",$dayTimeBegin)) : null),
+					"curDate"=>date('Y-m-d',$dayTimeBegin),
+					"dayTimeBegin"=>$dayTimeBegin,
+					"newMonthLabel"=>$newMonth==true ? date('y/m',$dayTimeBegin) : null,
 					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
 					"vTimelineLeftBorder"=>$vTimelineLeftBorder,
-					"vTimelineToday"=>(date("Y-m-d",$dayTimeBegin)==date("Y-m-d")  ?  "vTimelineToday"  :  null),//Label d'aujourd'hui
+					"vTimelineToday"=>date('Y-m-d',$dayTimeBegin)==date('Y-m-d')  ?  "vTimelineToday"  :  null,//Label d'aujourd'hui
 					"dayLabel"=>date("j",$dayTimeBegin),
-					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin,"dateFull")
+					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin)
 				);
 				$tmpMonth=date("m",$dayTimeBegin);
 			}
@@ -86,15 +86,14 @@ class CtrlTask extends Ctrl
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlTaskFolder::getPluginFolders($params);
-		foreach(MdlTask::getPluginObjects($params) as $tmpObj)
-		{
+		foreach(MdlTask::getPluginObjects($params) as $tmpObj){
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			if(!empty($tmpObj->description))	{$tmpObj->pluginTooltip.="<hr>".Txt::reduce($tmpObj->description);}
 			if(!empty($tmpObj->dateBegin))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("begin")." : ".Txt::dateLabel($tmpObj->dateBegin);}
 			if(!empty($tmpObj->dateEnd))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("end")." : ".Txt::dateLabel($tmpObj->dateEnd);}
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
+			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel=$tmpObj->openVue();
 			$pluginsList[]=$tmpObj;
 		}

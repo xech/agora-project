@@ -1,9 +1,9 @@
 <script>
-$(function(){
+ready(function(){
 	/***************************************************************************************************************************
-	 * 	LARGEUR DE LA TIMELINE (GANTT) masqué par défaut pour permettre le calcul du width des ".objContainer" via "common.js"
+	 * 	LARGEUR DE LA TIMELINE (GANTT) masqué par défaut pour permettre le calcul du width des ".objContainer" via "app.js"
 	 ***************************************************************************************************************************/
-	$(".vTimelineMain").width($("#pageFullContent").width()).show();
+	$(".vTimelineMain").width($("#pageContent").width()).show();
 });
 </script>
 
@@ -17,7 +17,7 @@ $(function(){
 /*TIMELINE*/
 .vTimelineSeparator					{visibility:hidden; width:100%;}
 .vTimelineMain						{margin-top:20px; padding:0px; padding-top:10px;}
-.vTimelineMain						{display:none; overflow-x:auto;}				/*masqué par défaut pour le calcul du width des ".objContainer" via "common.js"*/
+.vTimelineMain						{display:none; overflow-x:auto;}				/*masqué par défaut pour le calcul du width des ".objContainer" via "app.js"*/
 .vTimelineMain table				{border-collapse:collapse;}
 .vTimelineMain td					{vertical-align:middle; white-space:nowrap;}
 .vTimelineMonths					{padding-bottom:8px;}							/*Label des mois*/
@@ -37,24 +37,24 @@ $(function(){
 </style>
 
 <div id="pageFull">
-	<div id="pageModuleMenu">
+	<div id="pageMenu">
 		<?= MdlTask::menuSelect() ?>
-		<div id="pageModMenu" class="miscContainer">
+		<div class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlTask::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("TASK_addTask")."</div></div>
-					  <div class='menuLine' onclick=\"lightboxOpen('".MdlTaskFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
-					  <hr>";
+				echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
+					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div>'.Txt::trad("addFolder").'</div></div>
+					  <hr>';
 			}
 			////	ARBORESCENCE  &  MENU DES STATUS KANBAN  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlTaskFolder::menuTree().MdlTaskStatus::displayMenu().MdlTask::menuDisplayMode().MdlTask::menuSort().
-				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
+				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>
 		</div>
 	</div>
 
-	<div id="pageFullContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
+	<div id="pageContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew());
@@ -62,13 +62,13 @@ $(function(){
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask)
 		{
-			echo $tmpTask->divContainerContextMenu().
+			echo $tmpTask->objContainerMenu().
 					"<div class='objContainerScroll'>
 						<div class='objContent'>
 							<div class='objIcon objIconOpacity'><img src='app/img/task/iconSmall.png'></div>
 							<div class='objLabel' onclick=\"".$tmpTask->openVue()."\">".ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel()."</div>
 							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
-							<div class='objAutorDate'>".$tmpTask->autorDateLabel()."</div>
+							<div class='objAutorDate'>".$tmpTask->autorDate()."</div>
 						</div>
 					</div>
 				</div>";
@@ -100,7 +100,7 @@ $(function(){
 						//Affiche chaque jour de la timeline pour la tâche courante (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
 						foreach($timelineDays as $tmpDay){
 							$isTaskBegin=($tmpTask->dateBegin==$tmpDay["curDate"]);//La tâche commence la cellule du jour affichée ($tmpDay)
-							if($isTaskBegin==true || $tmpDay["timeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["timeBegin"]){
+							if($isTaskBegin==true || $tmpDay["dayTimeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["dayTimeBegin"]){
 								$tmpCellColspan=($isTaskBegin==true)  ?  "colspan='".$tmpTask->timelineColspan."'"  :  null;
 								$tmpCellLabel  =($isTaskBegin==true)  ?  $tmpTask->timelineGanttBar()  :  "&nbsp;";
 								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["vTimelineLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}

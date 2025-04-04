@@ -1,0 +1,296 @@
+/*** BALISES HTML*/
+html, body, div				{margin:0px; padding:0px;}/*reset*/
+html						{background:#222;}
+body						{font-size:13px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; background-position:right top; background-repeat:no-repeat;}/*"font-size:13px" : valeur de reference pour "em"*/
+div							{vertical-align:top; box-sizing:border-box;}																	/*"box-sizing" : définit la façon dont la largeur est calculée*/
+p							{margin:3px;}																									/*Balises "<p>" de l'éditeur tinyMce (cf. "content_style")*/
+abbr						{border-bottom: 1px dotted #777; cursor:help;}																	/*remplace balise "acronym" et classe ".acronym"*/
+img							{border:0px; vertical-align:middle;}																			/*alignemment des images*/
+hr							{border:0; height:1px; margin-top:10px; margin-bottom:10px;}													/*lignes de séparateur*/
+audio						{min-width:350px;}																								/*balise des lecteurs audio*/
+#htmlLightbox body			{padding:25px;}																									/*Padding principal des lightbox*/
+[data-fancybox='images']	{cursor:zoom-in;}																								/*Affichage d'image dans la lightbox (modFile & Co)*/
+a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
+/*MOBILE*/
+@media screen and (max-width:440px){
+	body					{font-size:17px;}
+	#htmlLightbox body		{padding:15px; padding-top:45px;}/*padding-top : cf. #menuMobileClose*/
+}
+
+/*** CONTENEURS PRINCIPAUX DE LA PAGE*/
+#headerBar											{display:table; width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; background-repeat:repeat-x; user-select:none;}
+#headerBar>div										{display:table-cell; vertical-align:middle!important;}
+#headerBar>div:last-child							{text-align:right;}
+#pageFull, #pageCenter								{display:table; margin-top:75px; margin-bottom:70px;}							/*Conteneur de la page ("margin-top" cf. #headerBar  &  "margin-bottom" cf. #pageFooterIcon)*/
+#pageFull											{width:100%;}																	/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
+#pageCenter											{max-width:100%; margin-left:auto; margin-right:auto;}							/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage entre 1024px et 1366px*/
+#pageMenu, #pageContent								{display:table-cell;}
+#pageMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
+#pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
+/*MOBILE*/
+@media screen and (max-width:1024px){
+	#pageFull, #pageCenter							{margin-top:65px;}
+	#pageCenter										{width:100%;}
+	#pageContent, #pageCenter #pageContent			{width:100%; min-width:100%; max-width:100%;}
+	#pageContent .objBlocks							{padding-right:0px;}
+}
+
+/*** DIV "CONTENEUR" DES OBJETS*/
+.objContainer, .miscContainer, .emptyContainer, .menuContext	{margin:0px 5px 5px 0px; box-sizing:border-box; box-shadow:2px 2px 8px #555; transition:box-shadow 0.3s ease-in-out; border-radius:4px; background-repeat:no-repeat; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
+.objContainer										{position:relative; padding:0px; padding-right:60px; height:100px; min-height:100px;}/*"height"+"min-height" pour l'overflow" du "objContainerScroll"  &&  "padding-right" pour l'affichage des "objMiscMenus"*/
+.objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
+.miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
+.objContainer:hover, .miscContainer:hover			{box-shadow:2px 2px 8px #e5e5e5;}											/*Conteneurs survolés*/
+.emptyContainer										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
+.emptyContainer div									{margin-top:20px;}															/*Idem*/
+.objContent											{display:table; height:inherit; min-height:inherit; width:100%;}			/*Contenu de l'objet*/
+.objContent>div										{display:table-cell; vertical-align:middle;}								/*idem : cellule*/
+.objIcon											{vertical-align:middle;}													/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
+.objIcon img										{max-width:100%; max-height:100%;}											/*Icone d'objet*/
+.objIconOpacity img									{filter:opacity(0.2);}														/*Icones opaques des links, tasks, etc*/
+.objLabel											{padding-left:15px; overflow-wrap:break-word; text-overflow:ellipsis;}		/*Cellule du label de l'objet : "break-word" évite qu'une URL éclate l'affichage*/
+/*DIPLAY "BLOCK"*/
+.objBlocks .objContainer							{display:none; float:left; width:200px; min-width:200px; max-width:400px;}	/*Affiché après le calcul de mainDisplay()*/
+.objBlocks .objIcon									{width:90px; text-align:center;}											/*Icone/image de l'objet*/
+.objBlocks .objIcon:empty							{width:0px!important;}														/*Cf. Profil Contact/User sans image*/
+.objBlocks .objIconOpacity							{width:40px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
+.objBlocks .objDetails, .objBlocks .objAutorDate	{display:none!important;}													/*Details & Auteur/Date : masqués par défaut*/
+/*DIPLAY "LINE"*/
+.objLines .objContainer								{height:60px; min-height:60px; padding-right:75px; margin-bottom:0px; box-shadow:none;}/*"padding-right": pour l'affichage des "objMiscMenus"*/
+.objLines .objIcon									{width:60px; text-align:left;}												/*Icone/image de l'objet (fichier, user, etc)*/
+.objLines .objIcon img								{max-height:50px; max-width:55px; margin-left:5px;}							/*cf. ".objLines .objContainer"*/
+.objLines .objDetails, .objLines .objAutorDate		{text-align:right; }														/*Details (dossiers, tasks, etc.)  &  Auteur/Date*/
+.objLines .objAutorDate								{width:200px;}																/*Auteur/Date*/
+.objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
+.objLines .objAutorDate span						{display:block; margin-top:5px; font-weight:normal;}						/*Auteur/Date sur 2 lignes*/
+/*MOBILE*/
+@media screen and (max-width:1024px){
+	.objContainer, .miscContainer, .emptyContainer	{width:100%; margin:0px 0px 7px 0px; border-radius:0px!important;}			/*tester affichage de news, fichiers et agendas*/
+	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
+	.objContainerScroll								{overflow-y:hidden;}														/*pas d'ascenseur sur mobile !*/
+	.objBlocks .objLabel							{font-size:0.9em;}															/*Réduit la taille des labels d'objets*/
+	.objIcon										{width:70px!important;}
+	.objIconOpacity, .objDetails, .objAutorDate		{display:none!important;}													/*toujours masqué*/
+}
+
+/*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
+.objMenuContextFloat							{position:absolute; z-index:50; top:7px; right:4px;}							/*Launcher du menu context : Icone "burger" par défaut*/
+.objContainer:not(:hover) .objMenuContextFloat	{opacity:0.75;}																	/*Launcher opaque par défaut (pas moins de 0.75 : cf. images du module fichier)*/
+.objContainer:not(:hover) .hideMiscMenu			{display:none;}																	/*Masque les .hideMiscMenu, sauf au survol du ".objContainer"*/
+.objContainer.isSelectable						{cursor:url("../../img/checkSmall.png"),default;}								/*Curseur des elements selectionnables*/
+.objSelectCheckbox								{display:none;}																	/*input hidden de sélection/désélection d'objet*/
+.objMiscMenus									{position:absolute; z-index:50;  top:40px; right:5px; text-align:right; width:35px;}/*Affichage vertical des MenuContext + Likes + Comments + Files + persoAccess (cf. "padding-right" des ".objContainer")*/
+.objLines .objMiscMenus							{width:100px;}																	/*Affichage horizontal (cf. "padding-right" de ".objLines .objContainer")*/
+.objMiscMenuDiv									{display:inline-block; margin-bottom:5px; margin-left:8px;}						/*'margin-left' pour l'affichage sur une ligne (.objLines)*/
+.circleNb										{display:inline-block; margin-left:5px; width:22px; height:22px; line-height:22px; background:#07d; border-radius:50%; font-size:12px; color:white; text-align:center;}/*Cercle numéroté*/
+.objMiscMenus .circleNb							{position:relative; margin-left:0px; margin-right:-10px; width:14px; height:14px; line-height:14px; background:#db930c; font-size:9px; font-weight:normal;}/*Nb de likes, comments, etc*/
+.circleNb:empty									{display:none;}																	/*Cercle vide*/
+.attachedFileMenu								{display:inline-block; margin-right:10px;}										/*Fichiers joints à l'objet*/
+.attachedFileMenu img							{margin-right:5px;}																/*idem*/
+.menuContext .attachedFileMenu					{display:flex; margin:10px;}													/*idem*/
+.attachedFileTag								{max-width:100%; height:auto;}													/*cf. "attachedFileInsert()". Tester l'affichage d'une image en mobileApp*/
+.attachedFileInsertImg							{max-width:50px!important; max-height:50px!important;}							/*Liste des images dans le menu d'edition*/
+/*MOBILE*/
+@media screen and (max-width:1024px){
+	.objMenuContextFloat	{opacity:1!important;}										/*Icones affichées sans opacité*/
+	.objMiscMenuDiv			{display:inline-block!important; margin:5px 0px 5px 5px;}	/*Affiche toujours les icones + margin pour cliquer facilement*/
+}
+
+/*** MENUS DES MODULES & MENUS CONTEXTUELS*/
+.menuLine									{display:table; width:100%;}
+.menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
+.menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
+.menuIcon img								{max-width:30px!important; max-height:30px!important;}
+#pageMenu .miscContainer					{padding:10px;}
+#pageFull #pageMenu .miscContainer			{border-radius:0px 4px 4px 0px;}	/*Menus des modules en affichage full*/
+.menuLaunch									{display:inline-block;}				/*launcher du menu contextuel*/
+.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px; box-shadow:0px 0px 10px black;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+.menuContextLabel							{text-align:center; padding:5px 0px;}
+.menuContext .menuLine>div					{line-height:18px;}
+.menuContext .menuLine>div:last-child		{white-space:nowrap;}				/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
+.menuContext hr								{margin:3px 0px!important;}
+.menuContextSpecificLabels					{padding:5px; line-height:20px;}	/*cf. affectations des agendas*/
+.menuContextTxtLeft							{width:85px; min-width:85px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*cf. menuContext : Auteur, Droits d'accès..*/
+/*MOBILE*/
+@media screen and (max-width:1024px){
+	#pageMenu								{display:none;}
+	.menuContext							{max-width:500px;}/*cf. menuContext des "lightbox" (cf. "vueContact")*/
+	.menuContextSubMenu						{position:relative; margin-top:5px; box-shadow:none!important; background-image:none; padding:0px!important; background-image:none!important;}/*cf. "#menuMobileMain"*/
+}
+
+/*** MENUS CENTRÉS ("Ajouter un element" ou Menu de pagination)*/
+.objBottomMenu								{clear:both; text-align:center; padding-top:20px;}/*clear le "float" des "objBlocks"*/
+.objBottomMenu>.miscContainer				{display:inline-block; padding:15px 30px;}
+.objBottomMenu .linkSelect					{font-size:1.1em;}
+.objBottomMenu a							{margin-left:5px; margin-right:5px;}
+
+/*** INPUTS*/
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #b4b4b4; transition:box-shadow 0.4s ease-in-out; box-sizing:border-box; min-height:33px; max-width:100%; padding:4px; border:#aaa 1px solid; border-radius:3px; outline:none; font-weight:normal; font-size:inherit; font-family:inherit;}/*"box-sizing" pour intégrer les padding/border dans le "height"*/
+input:hover:not([type=radio],[type=checkbox]), textarea:hover		{box-shadow:0px 0px 4px #505050;}
+input:focus:not([type=radio],[type=checkbox]), textarea:focus		{box-shadow:0px 0px 4px #0064c8; border:#bbd 1px solid;}
+input:disabled, textarea:disabled			{opacity:0.7;}
+input:read-only, textarea:read-only			{background:#ddd;}
+::placeholder 								{font-weight:normal; padding-left:5px; color:#aaa;}/*placeholder des inputs/textarea (texte par défaut)*/
+input[type=radio], input[type=checkbox]		{vertical-align:middle; margin:0px 3px;}
+input[type=checkbox]						{width:15px; height:15px;}
+input[type=file]							{height:auto;}
+input[type=time]							{width:70px;}/*Cf. Timepicker*/
+input[type=time]::-webkit-calendar-picker-indicator	{margin:0px; filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);}/*icone "horloge" du Timepicker*/
+.dateInput, .dateBegin, .dateEnd			{width:80px;}/*Datepicker*/
+fieldset									{margin-top:30px; padding:10px;}
+legend										{padding:5px 20px;}
+textarea									{width:100%; height:70px;}
+button										{border-radius:5px; padding:0px 10px; font-weight:bold; cursor:pointer; vertical-align:middle;}
+select option								{font-size:1.15em;}
+.tox-tinymce								{box-shadow:0px 0px 4px #b4b4b4!important; border:#bbb 1px solid!important; border-radius:5px!important;}/*Conteneur de l'éditeur TinyMCE*/
+.inputTitleName								{width:80%;}/*Title ou Name d'un objet*/
+.focusPulsate								{animation:focusPulsate 1.5s linear infinite;}
+@keyframes focusPulsate 					{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
+.submitButtonMain							{margin-top:40px; margin-bottom:10px; text-align:center;}	/*div du bouton principal*/
+.submitButtonMain button					{min-width:180px; min-height:45px;}							/*bouton principal*/
+.submitButtonMain .submitLoading			{max-width:40px; margin-right:-40px;}						/*icone "loading" du button principal*/
+.submitButtonInline							{display:inline-block;}										/*div du button inline : form de recherche & co*/
+.submitButtonInline	button					{min-width:100px; min-height:30px;}							/*height idem input[type=text]*/
+.submitButtonInline .submitLoading			{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
+.submitLoading								{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
+/*MOBILE FANCYBOX : 440px*/
+@media screen and (max-width:440px){
+	input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:40px; padding:8px 5px;}
+	fieldset								{padding:5px;}
+	.inputTitleName							{width:100%;}
+	.dateInput, .dateBegin, .dateEnd		{margin-left:10px; width:110px;}/*Datepicker plus large !*/
+	input[type=time]						{margin-left:10px; width:90px; padding-block:8px!important;}/*Timepicker*/
+}
+
+/*** INPUTS D'EDITION D'OBJET : EDIT D'USER, DE CONTACT, DE PARAMETRAGE GENERAL...*/
+.objField									{display:table; width:100%; padding-top:15px;}
+.objField>div								{display:table-cell; width:50%; line-height:25px; vertical-align:top;}/*"line-height" aligne verticalement les labels avec les inputs*/
+.objField img								{max-width:30px; margin-right:8px;}
+.objField input[type=text]					{width:100%;}
+.objField input[type=checkbox]				{margin-right:10px;}
+.objField .personImg						{max-width:100%; max-height:150px;}
+/*MOBILE FANCYBOX : 440px*/
+@media screen and (max-width:440px){
+	.objField, .objField>div				{display:block; width:100%!important;}
+	.objField>div							{padding-top:10px;}
+}
+
+/*** PERSONS : CONTACTS & USERS*/
+.personLabelImg								{text-align:center;}
+.personLabelImg img							{max-width:100%; max-height:200px;}													/*Cf. vue principale/détaillée d'une personne*/
+.personImgSmall								{border-radius:50%; height:28px; width:28px;}										/*Icone d'une personne : pastille ronde*/
+.objBlocks .objPerson						{height:150px; min-height:150px; width:250px; min-width:250px; max-width:450px;}	/*surcharge .objContainer*/
+.objLines .objPerson						{height:75px; min-height:75px;} 													/*idem*/
+.objLines .personImg						{max-width:60px; max-height:70px!important;}										/*Photo du Contact/User*/
+.objPersonDetails							{width:fit-content; margin-top:10px; font-weight:normal; line-height:20px;}			/*Détails d'un Contact/User : mail, tel, adresse, etc*/
+.objPersonDetail img						{max-height:18px;}
+.objPersonDetailSeparator					{margin:0px 10px; opacity:0.5;}
+.objPersonDetailSeparator:last-child		{display:none!important;}
+.objLines .objPersonDetail					{display:inline-block;}
+/*AFFECTATION SPACE/USER*/
+.spaceAffectLine							{display:table; width:100%; max-width:100%;}
+.spaceAffectLine img						{max-width:15px;}
+.spaceAffectLine>*							{display:table-cell; padding:8px;}	/*label ou div pour de checkbox*/
+.spaceAffectLine>div						{text-align:center; width:130px;}	/*checkboxes*/
+/*MOBILE FANCYBOX : 440px*/
+@media screen and (max-width:440px){
+	.spaceAffectLine img					{display:none;}
+	.spaceAffectLine>div					{width:100px; font-size:0.95em;}/*checkboxes*/
+}
+
+/*** MENU MOBILE */
+#menuMobileBg, #menuMobileMain 							{position:fixed; top:0px; right:0px; width:100%; height:100%;}
+#menuMobileBg											{z-index:110; background:rgba(0,0,0,0.7);}/*z-index idem .menuContext*/
+#menuMobileMain											{z-index:111; max-width:440px;/*idem css*/ overflow:auto; padding:10px; padding-top:45px;/*cf. #menuMobileClose*/ font-size:18px!important; font-weight:bold!important;}
+#menuMobileMain .menuLine>div							{padding:10px 5px;}/*surcharge*/
+#menuMobileMain hr										{margin:10px 0px;}/*surcharge*/
+#menuMobileMain .miscContainer							{margin:20px 0px; padding:5px; border-radius:10px!important;}
+#menuMobileTwo											{display:none; margin-top:10px; border-radius:5px;}
+#menuMobileAddButton									{z-index:100; position:fixed; bottom:10px; right:10px; filter:drop-shadow(0px 2px 4px #ccc);}/*z-index idem #headerBar*/
+#menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masque par défaut les menus sur mobile*/
+
+/*** JQUERY FANCYBOX LIGHTBOX*/
+.fancybox-slide--iframe						{padding:0px;}/*Lightbox iframes*/
+.fancybox-slide--iframe .fancybox-content	{width:95%; height:95%; max-width:95%!important; max-height:95%!important; margin:0px;}/*Lightbox iframes*/
+.fancybox-iframe,.fancybox-content			{border-radius:10px!important;}/*"border-radius" aussi sur l'iframe!*/
+.fancybox-toolbar							{opacity:1!important; visibility:visible!important; border-left:solid 1px #777; border-bottom:solid 1px #777; border-bottom-left-radius:5px;}/*"opacity" et "visibility" pour tjs afficher le "close" et éviter le masquage auto (ex: maps des contact)*/
+.lightboxTitle								{position:relative; padding:0px 60px 15px 60px; margin-bottom:30px; text-align:center; font-size:1.1em; line-height:22px; box-shadow:0px 7px 7px -7px #888;}/*padding left/right : .lightboxMenu*/
+.lightboxMenu								{position:absolute; top:-5px; right:0px;}/*menu context + bouton edit*/
+.lightboxMenu .editButton					{margin-right:15px;}
+.lightboxTitleDetail						{font-size:0.9em; margin-top:15px;}
+.lightboxAddElem							{text-align:center;}/*ex: Bouton "ajouter un  groupe"*/
+.lightboxAddElem button						{width:230px; height:50px;}
+/*MOBILE FANCYBOX : 440px*/
+@media screen and (max-width:440px){
+	.fancybox-slide--iframe .fancybox-content	{width:100%!important; height:100%!important; max-width:100%!important; max-height:100%!important;}/*Lightbox iframe en pleine page (sauf les images!)*/
+	.fancybox-iframe,.fancybox-content			{border-radius:0px!important;}
+	.fancybox-toolbar							{border:0px;}
+	.fancybox-button							{width:40px; height:40px; padding:0px; background:white;}
+	.fancybox-button--close svg					{display:none;}/*Masque le "close" svg par défaut*/
+	.fancybox-button--close, #menuMobileClose	{top:0px; right:0px; width:45px; height:45px; background:white url("../../img/closeBig.png"); background-position:top 10px right 10px; background-repeat:no-repeat;}/*Bouton "close"*/
+	#menuMobileClose							{position:absolute; border-bottom-left-radius:5px;}
+	.lightboxTitle								{padding-right:30px;}/*cf. #menuMobileClose*/
+	.lightboxMenu								{top:0px; left:-5px; right:auto;}
+}
+
+/*** JQUERY UI & PLUGINS*/
+.toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : "notify()"*/
+.toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
+.tooltipster-box								{box-shadow:0px 0px 5px 3px rgba(50,50,50,0.5)!important;}				/*TOOLTIPSTER : attr "title"*/
+.tooltipster-content							{color:#555!important; padding:15px!important;}
+.ui-datepicker									{width:300px; max-width:98%; box-shadow:0px 0px 8px #888;}				/*JQUERY-UI DATEPICKER*/
+.ui-datepicker-header							{background-color:transparent; border:none;}	/*label du mois*/
+.ui-datepicker .ui-state-default				{padding:10px; text-align:center; border:0px;}	/*cellules des jours*/
+.ui-datepicker .ui-state-highlight				{background:#cde; color:black;}			 /*aujourd'hui*/
+.ui-datepicker .ui-state-active					{background:#007fff; color:white;}		 /*jour sélectionné*/
+.ui-timepicker-wrapper							{max-height:400px;}														/*JQUERY-UI TIMEPICKER : pseudo <select>*/
+.ui-timepicker-list li 							{padding:10px 20px;}
+.jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
+.jconfirm-box									{border-radius:15px!important; padding:30px 30px 10px 30px!important;}
+.jconfirm-title									{line-height:28px!important; font-size:22px!important;}
+.jconfirm-content								{font-size:18px!important;}
+.jconfirm-content .confirmDeleteAlert			{color:#500!important; margin-bottom:20px!important;}
+.jconfirm-buttons								{text-align:center!important;}
+.jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important;}
+.jconfirm-buttons .btn-green					{background:#25a55b!important;}
+@media screen and (max-width:440px){
+	.jconfirm-buttons					{width:100%!important;}
+	.jconfirm-buttons button			{min-width:80%!important;}
+}
+
+/*** DIVERS*/
+.infos							{border:dotted 1px #aaa; margin:7px; padding:10px; border-radius:4px; text-align:center; line-height:22px;}
+.progressBar					{display:inline-block; padding:0px 10px; margin:3px 15px 0px 0px; line-height:28px; border:solid 1px #ccc; border-radius:5px; background:linear-gradient(white,#d5d5d5); background-repeat:no-repeat; text-align:center; font-size:0.9em; cursor:help;}/*"background-size" : cf. "progressBar()"*/
+.progressBar img				{max-height:20px; margin:4px 0px;}
+.pluginModule					{margin-top:15px;}
+.pluginModule img				{float:right; margin-top:-5px; max-height:24px;}
+.changeOrder					{width:30px; vertical-align:middle; text-align:right; cursor:move; user-select:none;}/*Change l'ordre d'affichage d'une liste*/
+.changeOrderShadow				{opacity:0.5; border:1px dashed #999; height:100px;}/*Block "fantome" durant le changement*/
+.cursorHelp						{cursor:help;}
+.pathMenu						{display:table; padding:5px 10px; margin-bottom:10px;}
+.pathMenu img					{max-height:30px;}
+.pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
+.pathMenuHome					{width:auto;}
+.pathMenuAdd					{width:65px; padding-left:10px!important;}
+.hide							{display:none;}
+.menuTradIcon					{vertical-align:middle;}
+.categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
+.categoryColorAll				{border:solid #bbb 2px;}
+.orLabel						{display:table; width:100%; margin:30px 0px;}
+.orLabel div					{display:table-cell; width:45%; text-align:center;}
+.orLabel div:nth-child(2)		{width:10%; min-width:50px; opacity:0.5; text-transform:uppercase;}/*texte "OU"*/
+.orLabel hr						{background:#ddd;}
+.pulsate						{animation:pulsateAnimation 1.5s linear infinite;}/*equivalent css du "pulsate" jQuery*/
+@keyframes pulsateAnimation		{ 50% {opacity:0.2;} }
+/*MOBILE*/
+@media screen and (max-width:1024px){
+	.pathMenu		{width:100%; max-width:100%; padding:5px;}
+}
+
+
+/*** PRINT*/
+@media print{
+	body						{background:white; color:#000;}
+	#pageFull, #pageCenter		{margin:0px;}
+	#headerBar, #pageMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
+}

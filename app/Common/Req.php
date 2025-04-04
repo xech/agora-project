@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -69,15 +69,10 @@ class Req
 	 *******************************************************************************************/
 	public static function appVersion()
 	{
-		//Récupère le numéro de version et l'enregistre en cache
-		if(self::$_appVersion===null){
-			//Récupère le numéro de version dans le fichier ad'hoc (tjs avec un trim()!)
-			self::$_appVersion=trim((string)file_get_contents('app/VERSION.txt'));
-			//Renomme si besoin les fichiers JS & CSS
-			if(!is_file('app/js/common-'.self::$_appVersion.'.js')){
-				rename(glob('app/js/common-*.js')[0], 'app/js/common-'.self::$_appVersion.'.js');
-				rename(glob('app/css/common-*.css')[0], 'app/css/common-'.self::$_appVersion.'.css');
-			}
+		if(self::$_appVersion===null){																//Init le cache :
+			self::$_appVersion=trim((string)file_get_contents('app/VERSION.txt'));					//Récupère le numéro de version (tjs avec "trim()")
+			if(!file_exists("app/Common/js-css-".self::$_appVersion))								//Renomme si besoin le dossier des JS/CSS de l'appli
+				{rename(glob("app/Common/js-css*")[0], "app/Common/js-css-".self::$_appVersion);}
 		}
 		//Retourne le numéro de version
 		return self::$_appVersion;
@@ -117,12 +112,12 @@ class Req
 	public static function paramFilter($tmpKey, $text)
 	{
 		if(is_string($text)){																//Verif qu'il s'agit d'un texte
-			$text=preg_replace('/\bon\w+=\S+(?=.*>)/i', '', $text);							//Enlève le javascript inline
-			$text=preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);			//Enlève les tags javascript
-			if(preg_match("/notify/i",$tmpKey))   {$text=strip_tags($text,"<br>");}			//Filtre les "notify"
-			elseif(!preg_match("/^(description|editorDraft|message|objUrl)$/i",$tmpKey)){	//Filtre les tags/entités html (sauf tinyMce, messenger, objUrl avec "urlencode()")
-				$text=strip_tags($text);
-				$text=htmlspecialchars($text);
+			$text=preg_replace('/\bon\w+=\S+(?=.*>)/i', '', $text);							//Filtre le javascript inline
+			$text=preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);			//Filtre les tags javascript
+			if(preg_match("/notify/i",$tmpKey))  {$text=strip_tags($text,"<br>");}			//Filtre les notif
+			elseif(!preg_match("/^(description|editorDraft|message|objUrl)$/i",$tmpKey)){	//Filtre les tags/entités html (sauf tinyMce, messenger, objUrl)
+				$text=strip_tags($text);													//Filtre les tags html
+				$text=htmlspecialchars($text,ENT_COMPAT);									//Convertit les caractères spéciaux (& " < >) en entités HTML
 			}
 		}
 		return $text;
@@ -171,7 +166,7 @@ class Req
 	 *******************************************************************************************/
 	public static function isLinux()
 	{
-		return preg_match("/linux/i", PHP_OS);
+		return preg_match("/linux/i",PHP_OS);
 	}
 
 	/********************************************************************************************
@@ -183,7 +178,7 @@ class Req
 	}
 
 	/********************************************************************************************
-	 * AFFICHAGE MOBILE/RESPONSIVE SI WIDTH <= 1024PX  (Idem CSS et Common.js)
+	 * AFFICHAGE MOBILE/RESPONSIVE SI WIDTH <= 1024PX  (Idem CSS et app.js)
 	 ********************************************************************************************/
 	public static function isMobile()
 	{
@@ -212,7 +207,7 @@ class Req
 		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)   {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
         echo '<h3 style="text-align:center;margin-top:50px;font-size:24px">
-				<img src="app/img/important.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
+				<img src="app/img/importantBig.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
 				<br><br><a href="?ctrl=offline">Retour</a>
 			  </h3>';
 		exit;

@@ -3,7 +3,7 @@
 <?php if($context=="move"){ ?>lightboxSetWidth(500);<?php } ?>
 
 ////	Init
-$(function(){
+ready(function(){
 	////	Ids des dossiers du "path" courant
 	curPathFolderIds=[<?= implode(",",Ctrl::$curContainer->folderPath("id")) ?>];
 	////	Init l'affichage de l'arborescence
@@ -23,7 +23,7 @@ $(function(){
 	});
 
 	////	Valide le formulaire de déplacement d'un objet dans l'arborescence
-	$("#folderTreeForm").submit(function(){
+	$("#folderTreeForm").on("submit",function(){
 		$(".vTreeFolder .vNewFolderId").each(function(){ $(this).prop("disabled",false); });
 	});
 });
@@ -66,7 +66,7 @@ function folderMove(newFolderId){
 
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	#menuMobileContent #treeFolders	{position:relative; max-height:200px; overflow-y:auto;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
+	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
 }
 </style>
 

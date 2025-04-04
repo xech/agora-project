@@ -1,31 +1,32 @@
 <script>
 ////	Resize
-lightboxSetWidth(450);
+lightboxSetWidth(550);
 
 ////	Confirme l'envoi?
-$(function(){
-	$("form").submit(function(event){
-		if(!confirm("<?= TXT::trad("USER_sendCoordsConfirm") ?>"))  {return false;}
+ready(function(){
+	$("form").on("submit",async function(event){
+		event.preventDefault();
+		if($("input[name='usersList[]']:checked").length==0)						{notify("<?= Txt::trad("notifSelectUser") ?>");}	//"Merci de sélectionner au moins un user"
+		else if(await confirmAlt("<?= TXT::trad("USER_sendCoordsConfirm") ?>"))		{submitFinal(this);}								//Submit final (sans récursivité Jquery)
 	});
 });
 </script>
 
 <style>
-.vUserLine	{margin-bottom:10px;}
+.vUserLine	{display:inline-block; width:48%; padding:7px;}
 </style>
 
 
 <form action="index.php" method="post">
 	<div class="lightboxTitle"><?= Txt::trad("USER_sendCoordsTooltip") ?></div>
-	<?php
-	////	LISTE DES UTILISATEURS AVEC MAIL
-	foreach($usersList as $tmpUser){
-		echo '<div class="vUserLine">
-				<input type="checkbox" name="usersList[]" value="'.$tmpUser->_id.'" id="usersBox'.$tmpUser->_id.'">
-				<label for="usersBox'.$tmpUser->_id.'" '.Txt::tooltip($tmpUser->mail).'>'.$tmpUser->getLabel().'</label>
-			  </div>';
-	}
-	//Validation du formulaire
-	echo Txt::submitButton("send");
-	?>
+
+	<!--Liste des users-->
+	<?php foreach($usersList as $tmpUser){ ?>
+		<div class="vUserLine"><input type="checkbox" name="usersList[]" value="<?= $tmpUser->_id ?>" id="usersBox<?= $tmpUser->_id ?>">
+			<label for="usersBox<?= $tmpUser->_id ?>" <?= Txt::tooltip($tmpUser->mail) ?> ><?= $tmpUser->getLabel() ?></label>
+		</div>
+	<?php } ?>
+	
+	<!--Bouton de validation-->
+	<?= Txt::submitButton("send") ?>
 </form>

@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -960,6 +960,13 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_agora","gPeopleApiKey"))	{self::query("ALTER TABLE `ap_agora` DROP `gPeopleApiKey`");}
 				if(self::fieldExist("ap_agora", "mapApiKey"))		{self::query("ALTER TABLE `ap_agora` CHANGE `mapApiKey` `gApiKey` VARCHAR(255) DEFAULT NULL");}
 			}
+
+			if(self::updateVersion("25.3.2"))
+			{
+				//Ajoute "shortcut" à la table "ap_calendarEvent"
+				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` tinyint DEFAULT NULL AFTER `periodDateExceptions`");
+			}
+
 			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////
 			////////////////////////////////////////

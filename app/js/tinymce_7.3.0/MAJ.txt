@@ -1,6 +1,0 @@
-VERSION COURANTE : 7.3.0
-
-Télécharger la dernière version "Community" de prod.	-> https://www.tiny.cloud/get-tiny/self-hosted/
-Télécharger les traductions "fr_FR" + "es" + "pt_PT"	-> https://www.tiny.cloud/download/language-packages/
-Modifier le path dans "/app/Common/VueObjEditDescription.php"
-Vérifier le fonctionnement : inclusion d'image dans le texte, récupération d'un brouillon/draft, autoresize de l'editeur, etc

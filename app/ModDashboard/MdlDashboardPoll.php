@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -263,7 +263,7 @@ class MdlDashboardPoll extends MdlObject
 		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  $this->votesUsers()  :  null;
 		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>'<span class="cursorHelp" '.Txt::tooltip($tooltipVotedBy).'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb")).'</span>'];
 		//// Date de fin de vote  &&  Vote est public  &&  Export pdf du résultat d'un sondage
-		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dashboard/pollDateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
+		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
 		if(!empty($this->publicVote))			{$options["specificOptions"][]=["iconSrc"=>"eye.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"];}
 		if(Ctrl::$curUser->isGeneralAdmin())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->_typeId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
 		//// Retourne le menu contextuel

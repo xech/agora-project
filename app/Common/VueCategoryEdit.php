@@ -3,7 +3,7 @@
 lightboxSetWidth(600);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	Change l'ordre d'affichage des modules ("hightlight" : module fantome & "y" : déplacemnt vertical)
 	if(isMobile())	{$(".changeOrder").hide();}
 	else{
@@ -25,7 +25,7 @@ $(function(){
 	$(".vCategoryEdit").on("click",function(){																//Click sur le bouton "modifier" ou "ajouter"
 		let selectFieldset="#"+$(this).closest("fieldset").attr("id");										//Sélecteur du fieldset de la catégorie (balise parent via "closest")
 		let selectHeaders=selectFieldset+" .vCategoryMain>div:not(.vCategoryEdit)";							//Sélecteur du header : libellé principal & boutons (sauf "modifier")
-		if($(selectFieldset+" form").is(":visible")){														//Si le formulaire est déjà visible :
+		if($(selectFieldset+" form").isVisible()){															//Si le formulaire est déjà visible :
 			$(selectHeaders).show();																		//Affiche les boutons delete/changeOrder
 			$(selectFieldset+" form").slideUp();															//Masque le formulaire
 		}else{																								//Si le formulaire n'est pas visible :
@@ -43,7 +43,7 @@ $(function(){
 	});
 
 	////	Controle du formulaire
-	$("form").submit(function(){
+	$("form").on("submit",function(){
 		//Vérif la présence du titre
 		if($(this).find("input[name='title']").isEmpty()){
 			$(this).find("input[name='title']").focusPulsate();
@@ -96,8 +96,8 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 
 <div>
 	<div class="lightboxTitle">
-		<img src="app/img/category.png"><?= Txt::trad($tradModulePrefix."_categoryEditTitle") ?>
-		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_categoryEditInfo") ?></div>
+		<img src="app/img/category.png"><?= Txt::trad($tradModulePrefix."_CAT_editTitle") ?>
+		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_CAT_editInfo") ?></div>
 	</div>
 	<div id="categoryList">
 		<?php foreach($categoriesList as $tmpObj){ ?>
@@ -107,7 +107,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 				<?php if($tmpObj->isNew()==false){ ?>
 					<div class="vCategoryLabel" title="<?= $tmpObj->description ?>">
 						<div><?= $tmpObj->getLabel() ?></div>
-						<div class="vCategoryAutor"><?= Txt::trad("createBy").' '.$tmpObj->autorLabel() ?></div>
+						<div class="vCategoryAutor"><?= Txt::trad("createdBy").' '.$tmpObj->autorLabel() ?></div>
 					</div>
 					<div class="vCategoryModif vCategoryEdit sLink"><img src="app/img/edit.png"> <?= Txt::trad("modify") ?></div>
 					<div class="vCategoryDelete" onclick="confirmDelete('<?= $tmpObj->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></div>
@@ -116,7 +116,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 					<?php } ?>
 				<!--AJOUTER UNE NOUVELLE CATEGORIE-->
 				<?php }else{ ?>
-					<div class="vCategoryAdd vCategoryEdit sLink"><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_categoryEditAdd") ?></div>
+					<div class="vCategoryAdd vCategoryEdit sLink"><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
 				<?php } ?>
 			</div>
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->

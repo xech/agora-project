@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -47,24 +47,21 @@ class CtrlForum extends Ctrl
 	{
 		$pluginsList=[];
 		//Sujets
-		foreach(MdlForumSubject::getPluginObjects($params) as $objSubject)
-		{
+		foreach(MdlForumSubject::getPluginObjects($params) as $objSubject){
 			$objSubject->pluginIcon=self::moduleName."/icon.png";
 			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  Txt::reduce($objSubject->description);
 			$objSubject->pluginTooltip=$objSubject->pluginLabel;
-			$objSubject->pluginJsIcon="windowParent.redir('".$objSubject->getUrl()."');";//Redir vers le sujet
+			$objSubject->pluginJsIcon="window.parent.redir('".$objSubject->getUrl()."')";//Redir vers le sujet
 			$objSubject->pluginJsLabel=$objSubject->pluginJsIcon;
 			$pluginsList[]=$objSubject;
 		}
-		//messages
-		if($params["type"]!="shortcut")
-		{
-			foreach(MdlForumMessage::getPluginObjects($params) as $objMessage)
-			{
+		//Messages
+		if($params["type"]!="shortcut"){
+			foreach(MdlForumMessage::getPluginObjects($params) as $objMessage){
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  Txt::reduce($objMessage->description);
 				$objMessage->pluginTooltip=$objMessage->pluginLabel;
-				$objMessage->pluginJsIcon="windowParent.redir('".$objMessage->getUrl()."');";//Affiche le message dans son sujet conteneur
+				$objMessage->pluginJsIcon="window.parent.redir('".$objMessage->getUrl()."')";//Affiche le message et son sujet
 				$objMessage->pluginJsLabel=$objMessage->pluginJsIcon;
 				$pluginsList[]=$objMessage;
 			}
@@ -108,7 +105,7 @@ class CtrlForum extends Ctrl
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
 		if(Req::isParam("_idTheme"))  {$curObj->_idTheme=Req::param("_idTheme");}
-		$vDatas["themeList"]=MdlForumTheme::getList();
+		$vDatas["themeList"]=MdlForumTheme::catList();
 		static::displayPage("VueForumSubjectEdit.php",$vDatas);
 	}
 

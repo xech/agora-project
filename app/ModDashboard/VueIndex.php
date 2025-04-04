@@ -2,11 +2,11 @@
 /*******************************************************************************************
  *	INIT
  *******************************************************************************************/
-$(function(){
+ready(function(){
 	////	"Infinite scroll" : Affichage progressif des news et sondages
-	$(window).scroll(function(){
+	$(window).on("scroll",function(){
 		//Timeout pour ne pas charger durant le scroll
-		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout !
+		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout
 		scrollTimeout=setTimeout(function(){
 			//Lance l'infinite scroll quand on arrive en fin de page  (hauteur de page < (scrollTop + hauteur de fenêtre + 20px))
 			if($(document).height() < ($(window).scrollTop() + $(window).height() + 20))
@@ -25,8 +25,8 @@ $(function(){
 						else{
 							$("#contentNews").append(vueNewsList);	//Affiche les news
 							$(".vNewsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
-							mainPageDisplay();						//Update les tooltips/lightbox
-							menuContextDisplay();					//Maj les menus contextuels des news
+							mainDisplay();							//Update les tooltips
+							menuContext();							//Maj les menus contextuels des news
 							newsOffset++;							//Update le compteur
 						}
 					});
@@ -40,8 +40,8 @@ $(function(){
 						{
 							$("#contentPolls").append(vuePollsList);//Affiche les sondages
 							$(".vPollsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
-							mainPageDisplay();						//Update les tooltips/lightbox
-							menuContextDisplay();					//Maj les menus contextuels des sondages
+							mainDisplay();							//Update les tooltips
+							menuContext();							//Maj les menus contextuels des sondages
 							dashboardPollVote();					//Update le "trigger" de vote des sondages
 							pollsOffset++;							//Update le compteur
 						}
@@ -73,7 +73,7 @@ function dashboardOption(menuName)
 	$("[id^=tabMenu]").removeClass("linkSelect");
 	$("#tabMenu"+menuName).addClass("linkSelect");
 	//Déselectionne les menus contextuels et blocks de contenu principaux, puis sélectionne l'option demandé (via "linkSelect")
-	$("[id^=modMenu], #pageCenterContent>div:not(#tabMenus)").hide();
+	$("[id^=modMenu], #pageContent>div:not(#tabMenus)").hide();
 	$("#modMenu"+menuName).fadeIn();
 	$("#content"+menuName).show();
 	//Rsponsive : affiche le bouton d'ajout d'element uniquement pour les actualités
@@ -86,17 +86,17 @@ function dashboardOption(menuName)
 function dashboardPollVote()
 {
 	////	VOTE UN SONDAGE
-	$("form[id^=pollForm]").submit(function(event){
-		//Stop la validation du form
+	$("form[id^=pollForm]").on("submit",function(event){
 		event.preventDefault();
-		//Controle et Soumission Ajax du formulaire
-		if($("#"+this.id+" input[name='pollResponse[]']:checked").length==0)  {notify("<?= Txt::trad("DASHBOARD_voteNoResponse") ?>");}
+		//// Controle et Soumission Ajax du formulaire
+		if($("#"+this.id+" input[name='pollResponse[]']:checked").length==0)
+			{notify("<?= Txt::trad("DASHBOARD_voteNoResponse") ?>");}
+		//// Valide le vote puis affiche le résultat du sondage
 		else{
-			//Valide le vote puis affiche le résultat du sondage
-			$.ajax({url:"?ctrl=dashboard&action=pollVote",data:$(this).serialize(),dataType:"json"}).done(function(result){
+			$.ajax({url:"?ctrl=dashboard&action=pollVote",data:$(this).serialize(),method:"POST",dataType:"json"}).done(function(result){
 				if(result.vuePollResult.length>0){
 					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le formulaire par le résultat du sondage  (+ au besoin le "newsDisplay")
-					mainPageDisplay();												//Update les tooltips/lightbox de "vuePollResult"
+					mainDisplay();													//Update les tooltips
 				}
 			});
 		}
@@ -110,14 +110,13 @@ function dashboardPollVote()
 #tabMenus								{display:table; position:relative; width:100%; height:40px; margin-bottom:10px;}
 #tabMenus a								{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.1em;}/*label du menu*/
 #tabMenus hr							{display:inline; position:absolute; bottom:0px; left:0px; width:<?= $isPolls==true?33:50 ?>%; height:6px; margin:0px; background:tomato; transition:0.1s ease-in-out;}/*Surlignage des options du module*/
-#tabMenus .menuCircle					{margin:0px; margin-left:5px; width:18px; height:18px; line-height:18px; font-size:11px!important;}/*Surcharge sur #tabMenus uniquement!*/
 #tabMenuNews.linkSelect ~ hr			{margin-left:0%;}
 #tabMenuPolls.linkSelect ~ hr			{margin-left:33%;}
 #tabMenuElems.linkSelect ~ hr			{margin-left:<?= $isPolls==true?66:50 ?>%;}
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	#tabMenus.miscContainer	{padding:8px;}/*surcharge*/
+	#tabMenus.miscContainer	{padding-inline:3px;}/*surcharge .miscContainer*/
 }
 
 /*Infinites scrolls : News / Sondages*/
@@ -125,28 +124,28 @@ function dashboardPollVote()
 .infiniteScrollLoading					{text-align:center; padding:10px;}
 
 /*News*/
-.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}	/*surcharge de .objContainer : height adapté au contenu*/
+.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}		/*surcharge de .objContainer : height adapté au contenu*/
 .vNewsDescription						{font-weight:normal;}
-.vNewsDescription a						{text-decoration:underline;}								/*idem editeur*/
-.vNewsDetail							{margin-top:20px; text-align:center;}						/*Détails centrés*/
-.vNewsDetail>div						{display:inline-block; margin:0px 15px; line-height:20px;}	/*"line-height" idem à la taille des img ci-dessous*/
-.vNewsDetail img						{max-height:20px;}											/*Icones des details (à la une, etc)*/
-.vNewsTopNews							{color:#a40;}												/*texte "Actualité à la une"*/
-.calEventProposition					{margin:10px;}												/*propositions d'événements*/
-.vNewsDescription h3					{text-align:center;}										/*News par défaut : cf. "INSTALL_dataDashboardNews"*/
-.vNewsDescription h4>img				{max-width:30px!important; margin-right:8px;}				/*Idem : images de chaque ligne*/
-.vNewsDescription h3, .vNewsDescription h4:nth-last-child(3)	{margin-bottom:25px;}				/*Idem : première ligne + avant-avant dernière ligne + dernière ligne*/
+.vNewsDescription a						{text-decoration:underline;}									/*idem editeur*/
+.vNewsDetail							{margin-top:20px; margin-bottom:10px; text-align:center;}		/*Détails centrés*/
+.vNewsDetail>div						{display:inline-block; margin-inline:15px; line-height:20px;}	/*"line-height" idem à la taille des img ci-dessous*/
+.vNewsDetail img						{max-height:20px;}												/*Icones des details (à la une, etc)*/
+.vNewsTopNews							{color:#a40;}													/*texte "Actualité à la une"*/
+/*News par défaut (cf. "INSTALL_dataDashboardNews")*/
+.vNewsDescription h3					{text-align:center; padding:10px;}							
+.vNewsDescription h4>img				{max-width:33px!important; margin-left:20px; margin-right:15px;}
+.vNewsDescription h4:last-child			{margin-bottom:30px;}
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	.vNewsDescription h3				{font-size:1.5em;}		/*New par défaut*/
-	.vNewsDescription h4>img			{margin-bottom:5px;}	/*Idem : images de chaque ligne*/
-	.vNewsDetail>div					{margin:5px;}
+	.vNewsDescription h3				{font-size:1.3em;}									/*New par défaut*/
+	.vNewsDescription h4				{font-size:1.05em; clear:left;}						/*Idem. "clear:left" pour aligner avec l'image float : tester width 500px*/
+	.vNewsDescription h4>img			{float:left; margin-left:0px; margin-bottom:30px;}	/*Idem*/
 }
 
 /*Sondages*/
-#pageModMenu .vPollsTitle				{margin:20px 0px; font-size:1.05em;}
-#pageModMenu .vPollsContainer ul		{padding-left:10px!important;}
-#pageModMenu .submitButtonMain			{margin-top:10px;}
+#pageMenu .vPollsTitle					{margin:20px 0px; font-size:1.05em;}
+#pageMenu .vPollsContainer ul			{padding-left:10px!important;}
+#pageMenu .submitButtonMain				{margin-top:10px;}
 .vPollsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
 .vPollsTitle,.vPollsDescription			{text-align:center; margin:15px 0px;}/*Titre et Description*/
 #contentPolls .vPollsTitle				{font-size:1.25em;}/*Titre de l'affichage principal (pas avec les news)*/
@@ -181,8 +180,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 
 
 <div id="pageCenter">
-	<div id="pageModuleMenu">
-		<div id="pageModMenu" class="miscContainer">
+	<div id="pageMenu">
+		<div class="miscContainer">
 			<?php
 			////	MENU CONTEXTUEL DES "NEWS"
 			////
@@ -230,7 +229,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		</div>
 	</div>
 
-	<div id="pageCenterContent">
+	<div id="pageContent">
 		<?php
 		////	MENU "ONGLET" DU DASHBOARD => SWITCH L'AFFICHAGE DES NEWS / SONDAGES / NOUVEAUTES
 		////
@@ -238,8 +237,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		{
 			echo "<div id='tabMenus' class='miscContainer'>";
 				echo "<a onclick=\"dashboardOption('News')\" id='tabMenuNews'>".Txt::trad("DASHBOARD_menuNews")."</a>";
-				if($isPolls==true)  {echo "<a onclick=\"dashboardOption('Polls')\" id='tabMenuPolls'>".Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?"<div class='menuCircle' ".Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted")." : ".count($pollsListNewsDisplay)).">".count($pollsListNewsDisplay)."</div>":null)."</a>";}
-				echo "<a onclick=\"dashboardOption('Elems')\" id='tabMenuElems'>".Txt::trad("DASHBOARD_menuElems").(!empty($pluginsList)?"<div class='menuCircle'>".count($pluginsList)."</div>":null)."</a>";
+				if($isPolls==true)  {echo "<a onclick=\"dashboardOption('Polls')\" id='tabMenuPolls'>".Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?"<span class='circleNb' ".Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted")." : ".count($pollsListNewsDisplay)).">".count($pollsListNewsDisplay)."</span>":null)."</a>";}
+				echo "<a onclick=\"dashboardOption('Elems')\" id='tabMenuElems'>".Txt::trad("DASHBOARD_menuElems").(!empty($pluginsList)?"<span class='circleNb'>".count($pluginsList)."</span>":null)."</a>";
 				echo "<hr>";//Barre de surlignage (après les menus!)
 			echo "</div>";
 		}
@@ -274,28 +273,20 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		if($showNewElems==true)
 		{
 			echo '<div id="contentElems"><div class="miscContainer">';
-			foreach($pluginsList as $tmpObj)
-			{
-				//// Affiche le libellé du module
-				$tmpObjModuleName=(!empty($tmpObj->moduleName))  ?  $tmpObj->moduleName  :  $tmpObj::moduleName;//Nom du module: "eventProposition" ou objet standard
-				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObjModuleName){
+			foreach($pluginsList as $tmpObj){
+				//// Libellé du module (séparateur?)
+				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName){
 					if(!empty($tmpModuleName))  {echo "<hr>";}	//Affiche un séparateur
-					$tmpModuleName=$tmpObjModuleName;			//Enregistre le nom du module courant
-					echo '<div class="vContentElemsModuleLabel"><img src="app/img/'.$tmpModuleName.'/icon.png">'.Txt::trad(strtoupper($tmpModuleName).'_headerModuleName').'</div>';
+					$tmpModuleName=$tmpObj::moduleName;			//Enregistre le nom du module courant
+					echo '<div class="vContentElemsModuleLabel"><img src="app/img/'.$tmpModuleName.'/icon.png">'.Txt::trad(strtoupper($tmpModuleName).'_MODULE_NAME').'</div>';
 				}
-				//// Plugin Spécifique (ex: proposition d'evt)  ||  Plugin lambda
-				if(isset($tmpObj->pluginSpecificMenu))  {echo $tmpObj->pluginSpecificMenu;}
-				else{
-					//Date de création et Auteur
-					if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("creation")." : ".Txt::dateLabel($tmpObj->dateCrea,"dateMini")."<hr>".$tmpObj->autorLabel(true,true);}
-					//Tooltip de l'icone : ajoute si besoin "Afficher l'element dans son dossier"
-					$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")  :  $tmpObj->pluginTooltip;
-					//Affiche le plugin
-					echo '<div class="menuLine lineHover">
-							<div onclick="'.$tmpObj->pluginJsIcon.'" '.Txt::tooltip($tmpObj->pluginTooltipIcon).' class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
-							<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$tmpObj->pluginLabel.'</div>
-						  </div>';
-				}
+				//// Affiche le plugin
+				if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("createdBy")." ".$tmpObj->autorDate();}
+				$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")."<hr>".$tmpObj->pluginTooltip  :  $tmpObj->pluginTooltip;//Ajoute si besoin "Afficher l'element dans son dossier"
+				echo '<div class="menuLine lineHover">
+						<div onclick="'.$tmpObj->pluginJsIcon.'" '.Txt::tooltip($tmpObj->pluginTooltipIcon).' class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
+						<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$tmpObj->pluginLabel.'</div>
+					  </div>';
 			}
 			//// "Aucune nouveauté sur cette période"
 			if(empty($pluginsList))  {echo "<div class='emptyContainer'>".Txt::trad("DASHBOARD_pluginEmpty")."</div>";}

@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -104,10 +104,10 @@ class MdlObject
 	}
 
 	/******************************************************************************************
-	 * VERIF : OBJET CRÉÉ RECEMMENT -> DANS LES 24 HEURES OU DEPUIS LA PRÉCÉDENTE CONNEXION
+	 * VERIF : OBJET RÉCENT CRÉÉ AUJOURD'HUI OU DEPUIS MA PRÉCÉDENTE CONNEXION
 	*******************************************************************************************/
 	public function isRecent(){
-		return (!empty($this->dateCrea)  &&  (strtotime($this->dateCrea) > (time()-86400) || strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
+		return (!empty($this->dateCrea)  &&  (substr($this->dateCrea,0,10)==date('Y-m-d') || strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
 	}
 
 	/*******************************************************************************************
@@ -205,33 +205,31 @@ class MdlObject
 	 *******************************************************************************************/
 	public function getAffectations()
 	{
-		if($this->_affectations===null)
-		{
-			//Init
+		////	Init les affectations en cache
+		if($this->_affectations===null){
 			$this->_affectations=$affects=[];
-			////	Objet existant : récupère les affectations en Bdd
-			if($this->isNew()==false){
+			////	Objet existant : récup les affectations en Bdd
+			if($this->isNew()==false){																													
 				$affects=Db::getTab("SELECT * FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." ORDER BY _idSpace, target");//"ORDER BY" pour les labels du "contextMenu()"
-				if(empty($affects))  {$affects[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"U".$this->_idUser, "accessRight"=>2];}//Aucun droit n'est défini : droit en écriture pour l'auteur (cf. agendas persos et affichage des droits d'accès par défaut dans le menu d'édition)
+				if(empty($affects))  {$affects[]=["_idSpace"=>Ctrl::$curSpace->_id, "target"=>"U".$this->_idUser, "accessRight"=>2];}											//Droit par défaut (cf. agendas persos & co)
 			}
-			////	Nouvel objet : initialise les affectations par défaut en type "string" !
-			else{
-				$affects[]=["_idSpace"=>Ctrl::$curSpace->_id,  "target"=>"spaceUsers",				"accessRight"=>(static::isContainer() ? 1.5 : 1)];	//Users de l'espace courant : Ecriture limité (conteneurs)  ||  Lecture
-				$affects[]=["_idSpace"=>Ctrl::$curSpace->_id,  "target"=>"U".Ctrl::$curUser->_id,	"accessRight"=>2];									//User courant (auteur) : Ecriture
+			////	Nouvel objet : affectations par défaut
+			else{																																		
+				$affects[]=["_idSpace"=>Ctrl::$curSpace->_id,  "target"=>"spaceUsers",				"accessRight"=>(static::isContainer() ? 1.5 : 1)];	//Users de l'espace courant (ecriture limité / lecture)
+				$affects[]=["_idSpace"=>Ctrl::$curSpace->_id,  "target"=>"U".Ctrl::$curUser->_id,	"accessRight"=>2];									//User courant (ecriture)
 			}
-			////	Formate chaque affectation
-			foreach($affects as $tmpAffect)
-			{
-				//Affectations détaillées :  "Espace Bidule > tous les utilisateurs"  /  "Groupe Bidule"  /  "Jean Dupont"
-				$tmpAffect["targetType"]=$tmpAffect["target_id"]=$tmpAffect["label"]=null;
-				if(preg_match("/^U/",$tmpAffect["target"]))		{$tmpAffect["targetType"]="user";			$tmpAffect["target_id"]=(int)substr($tmpAffect["target"],1);	$tmpAffect["label"]=Ctrl::getObj("user",$tmpAffect["target_id"])->getLabel();}
-				elseif(preg_match("/^G/",$tmpAffect["target"]))	{$tmpAffect["targetType"]="group";			$tmpAffect["target_id"]=(int)substr($tmpAffect["target"],1);	$tmpAffect["label"]=Ctrl::getObj("userGroup",$tmpAffect["target_id"])->getLabel();}
-				elseif($tmpAffect["target"]=="spaceUsers")		{$tmpAffect["targetType"]="spaceUsers";		$tmpAffect["target_id"]=$tmpAffect["_idSpace"];					$tmpSpace=Ctrl::getObj("space",$tmpAffect["_idSpace"]);		$tmpAffect["label"]=$tmpSpace->getLabel()." <img src='app/img/arrowRight.png'> ".(!empty($tmpSpace->public)?Txt::trad("EDIT_allUsersAndGuests"):Txt::trad("EDIT_allUsers"));}
-				//Affectation perso/groupe sur un autre espace : ajoute le nom de l'espace (cf. "contextMenu()")
-				if($tmpAffect["_idSpace"]!=Ctrl::$curSpace->_id && $tmpAffect["target"]!="spaceUsers")  {$tmpAffect["label"]=Ctrl::getObj("space",$tmpAffect["_idSpace"])->getLabel()." <img src='app/img/arrowRight.png'> ".$tmpAffect["label"];}
+			////	Label des affectations
+			foreach($affects as $aff){
+				//Exple : User "Jean Dupont"  || Groupe "Bidule" || "Tous les utilisateurs > Espace XJ200"
+				$targetKey=$aff["_idSpace"].'_'.$aff["target"];
+				$aff["targetType"]= $aff["targetId"]=$aff["label"]=null;
+				if(preg_match("/^U/",$aff["target"]))		{$aff["targetType"]="user";			$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("user",$aff["targetId"])->getLabel();}
+				elseif(preg_match("/^G/",$aff["target"]))	{$aff["targetType"]="group";		$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("userGroup",$aff["targetId"])->getLabel();}
+				elseif($aff["target"]=="spaceUsers")		{$aff["targetType"]="spaceUsers";	$aff["targetId"]=(int)$aff["_idSpace"];			 $aff["label"]=Txt::trad("EDIT_allUsers");}
+				//Label de l'espace : "tous les utilisateurs" || affectation sur un autre espace
+				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRight.png">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
 				//Ajoute l'affectation
-				$targetKey=(int)$tmpAffect["_idSpace"]."_".$tmpAffect["target"];//concaténation des champs "_idSpace" et "target"
-				$this->_affectations[$targetKey]=$tmpAffect;
+				$this->_affectations[$targetKey]=$aff;
 			}
 		}
 		return $this->_affectations;
@@ -243,13 +241,12 @@ class MdlObject
 	public function setAffectations($objectRightSpecific=null)
 	{
 		////	Object indépendant  &&  "objectRight" spécifié OU droit d'accès spécifiques
-		if($this->hasAccessRight()  &&  (Req::isParam("objectRight") || !empty($objectRightSpecific)))
-		{
+		if($this->hasAccessRight()  &&  (Req::isParam("objectRight") || !empty($objectRightSpecific))){
 			//Init
 			$sqlInsertBase="INSERT INTO ap_objectTarget SET objectType=".Db::format(static::objectType).", _idObject=".$this->_id.", ";
 			//Réinitialise les droits, uniquement sur les espaces auxquels l'user courant a accès
 			if($this->isNew()==false){
-				$sqlSpaces="_idSpace IN (".implode(",",Ctrl::$curUser->getSpaces("ids")).")";
+				$sqlSpaces="_idSpace IN (".implode(",",Ctrl::$curUser->spaceList("ids")).")";
 				if(Ctrl::$curUser->isGeneralAdmin())	{$sqlSpaces="(".$sqlSpaces." OR _idSpace is null)";}
 				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND ".$sqlSpaces);
 			}
@@ -515,7 +512,7 @@ class MdlObject
 				}
 			}
 			////	Reload l'objet (et du cache)
-			$reloadedObj=Ctrl::getObj(static::objectType, $this->_id, true);
+			$curObj=Ctrl::getObj(static::objectType, $this->_id, true);
 			////	Déplace un fichier sur le disque
 			if(static::objectType=="file"){
 				//Deplace chaque version du fichier
@@ -527,12 +524,12 @@ class MdlObject
 					rename($oldFolder->folderPath("real").$this->thumbName(), $newFolder->folderPath("real").$this->thumbName());
 				}
 			}
-			////	Déplace un dossier sur le disque (du chemin actuel : $this,  vers le nouveau chemin : $reloadedObj)
+			////	Déplace un dossier sur le disque (du chemin actuel : $this,  vers le nouveau chemin : $curObj)
 			elseif(static::objectType=="fileFolder"){
-				rename($this->folderPath("real"), $reloadedObj->folderPath("real"));
+				rename($this->folderPath("real"), $curObj->folderPath("real"));
 			}
 			////	Ajoute aux logs
-			Ctrl::addLog("modif", $reloadedObj, Txt::trad("changeFolder"));
+			Ctrl::addLog("modif", $curObj, Txt::trad("changeFolder"));
 			return true;
 		}
 	}
@@ -548,9 +545,9 @@ class MdlObject
 		//Récupère les users de chaque affectation
 		foreach($refObject->getAffectations() as $affect){
 			if($onlyWriteAccess==true && $affect["accessRight"]<2)	{continue;}																							//Uniquement accès en écriture ? (cf. agendas perso)
-			elseif($affect["targetType"]=="spaceUsers")				{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["target_id"])->getUsers("idsTab"));}	//Ajoute tous les users de l'espace
-			elseif($affect["targetType"]=="group")					{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["target_id"])->userIds);}			//Ajoute les users du groupe
-			elseif($affect["targetType"]=="user")					{$userIds[]=$affect["target_id"];}																	//Ajoute l'user
+			elseif($affect["targetType"]=="spaceUsers")				{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["targetId"])->getUsers("idsTab"));}	//Ajoute tous les users de l'espace
+			elseif($affect["targetType"]=="group")					{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->userIds);}			//Ajoute les users du groupe
+			elseif($affect["targetType"]=="user")					{$userIds[]=$affect["targetId"];}																	//Ajoute l'user
 		}
 		//Retourne la liste des users
 		return array_unique($userIds);
@@ -559,38 +556,24 @@ class MdlObject
 	/*******************************************************************************************
 	 * AJOUT/MODIF D'OBJET
 	 *******************************************************************************************/
-	public function createUpdate($sqlProperties)
+	public function createUpdate($sqlFields)
 	{
-		if($this->editRight())
-		{
-			////	Enleve les éventuels espaces et virgules en début/fin de requête
-			$sqlProperties=trim(trim($sqlProperties),",");
-			////	Date et Auteur : création ou modif
-			if(static::objectType!="agora"){
-				if($this->isNew())	{$sqlProperties.=", dateCrea=".Db::dateNow().", _idUser=".Db::format(Ctrl::$curUser->_id);}
-				else				{$sqlProperties.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}
+		if($this->editRight()){
+			$sqlFields=trim(trim($sqlFields),",");																						//Enleve les espaces PUIS les virgules
+			if(Req::isParam("guest"))			{$sqlFields.=", guest=".Db::param("guest").", guestMail=".Db::param("guestMail");}		//Auteur "guest"
+			if(Req::isParam("_idContainer"))	{$sqlFields.=", _idContainer=".Db::param("_idContainer");}								//"_idContainer" de l'objet
+			if(static::hasShortcut==true)		{$sqlFields.=", shortcut=".Db::param("shortcut");}										//"shortcut" sur l'objet
+			if(static::objectType!="agora"){																							//Objet lambda :
+				if($this->isNew())	{$sqlFields.=", dateCrea=".Db::dateNow().", _idUser=".Db::format(Ctrl::$curUser->_id);}				//Auteur/Date de création
+				else				{$sqlFields.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}		//Auteur/Date de modification
 			}
-			////	Propriétés optionnelles "_idContainer", "shortcut" (attention au decochage)
-			if(Req::isParam("_idContainer"))	{$sqlProperties.=", _idContainer=".Db::param("_idContainer");}
-			if(static::hasShortcut==true)		{$sqlProperties.=", shortcut=".Db::param("shortcut");}
-			////	LANCE L'INSERT/UPDATE !!
-			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlProperties, true);}
-			else{
-				Db::query("UPDATE ".static::dbTable." SET ".$sqlProperties." WHERE _id=".$this->_id);
-				$_id=$this->_id;
-			}
-			////	Reload l'objet pour prendre en compte les nouvelles propriétés ("true" pour l'update du cache)
-			$reloadedObj=Ctrl::getObj(static::objectType, $_id, true);
-			////	Ajoute si besoin les droits d'accès
-			$reloadedObj->setAffectations();
-			////	Ajoute si besoin les fichiers joints
-			$reloadedObj->attachedFileAdd();
-			////	Reload à nouveau l'objet (ex: si la description est maj avec insertion d'image)
-			$reloadedObj=Ctrl::getObj(static::objectType, $_id, true);
-			////	Ajoute aux Logs  &  Renvoie l'objet rechargé
-			$logAction=(strtotime($reloadedObj->dateCrea)==time())  ?  "add"  :  "modif";
-			Ctrl::addLog($logAction,$reloadedObj);
-			return $reloadedObj;
+			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlFields, true);}							//INSERT UN NOUVEL OBJET
+			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE _id=".$this->_id);   $_id=$this->_id;}	//UPDATE L'OBJET
+			$curObj=Ctrl::getObj(static::objectType, $_id);																				//Charge les nouvelles propriétés
+			$curObj->setAffectations();																									//Ajoute les droits d'accès
+			$curObj->attachedFileAdd();																									//Ajoute les fichiers joints
+			Ctrl::addLog(($curObj->isNewRecord()?"add":"modif"), $curObj);																//Ajoute aux Log
+			return Ctrl::getObj(static::objectType, $_id, true);																		//Renvoie l'objet avec update du cache
 		}
 	}
 
@@ -702,7 +685,7 @@ class MdlObject
 			$objFolder->pluginLabel=$objFolder->name;
 			$objFolder->pluginTooltip=$objFolder->folderPath("text");
 			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
-			$objFolder->pluginJsIcon="windowParent.redir('".$objFolder->getUrl()."');";//Redir vers le dossier
+			$objFolder->pluginJsIcon="window.parent.redir('".$objFolder->getUrl()."');";//Redir vers le dossier
 			$objFolder->pluginJsLabel=$objFolder->pluginJsIcon;
 			$pluginsList[]=$objFolder;
 		}
@@ -756,32 +739,29 @@ class MdlObject
 	}
 
 	/*******************************************************************************************
-	 * AUTEUR DE L'OBJET
+	 * AUTEUR DE CRÉATION/MODIF
 	 *******************************************************************************************/
-	public function autorLabel($getCreator=true, $tradAutor=false)
+	public function autorLabel($isModif=false)
 	{
-		$labelAutor=($tradAutor==true)  ?  Txt::trad("autor")." : "  :  null;
-		if(!empty($this->guest))			{return $labelAutor.$this->guest." (".Txt::trad("guest").")";}				//Invité
-		elseif($getCreator==true)			{return $labelAutor.Ctrl::getObj("user",$this->_idUser)->getLabel();}		//Créateur de l'objet
-		elseif(!empty($this->_idUserModif))	{return $labelAutor.Ctrl::getObj("user",$this->_idUserModif)->getLabel();}	//Auteur de dernière modif
+		if($isModif==false && !empty($this->guest))  			{return $this->guest.' ('.Txt::trad("guest").')';}				//Auteur "guest" (création uniquement)
+		elseif($isModif==true && !empty($this->_idUserModif))	{return Ctrl::getObj("user",$this->_idUserModif)->getLabel();}	//Auteur de la modification
+		else													{return Ctrl::getObj("user",$this->_idUser)->getLabel();}		//Auteur de la création	
 	}
 
 	/*******************************************************************************************
-	 * DATE DE CRÉATION/MODIFICATION
+	 * AUTEUR + DATE DE CRÉATION / MODIFICATION
 	 *******************************************************************************************/
-	public function dateLabel($isDateCrea=true)
+	public function autorDate($isModif=false, $profileImg=false)
 	{
-		//Date de création : si demandée || si "dateModif" pas encore spécifié 
-		return ($isDateCrea==true || empty($this->dateModif))  ?  Txt::dateLabel($this->dateCrea)  :  Txt::dateLabel($this->dateModif);
-	}
-
-	/*******************************************************************************************
-	 * AUTEUR DE L' OBJET + DATE DE CRÉATION/MODIFICATION
-	 *******************************************************************************************/
-	public function autorDateLabel($showPersonImg=false)
-	{
-		$personImg=($showPersonImg==true)  ?  Ctrl::getObj("user",$this->_idUser)->profileImg(true,true)." &nbsp;"  :  null;
-		return  $personImg.$this->autorLabel().' <img src="app/img/arrowRightBig.png"> <span>'.$this->dateLabel().'</span>';
+		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;																	//Date de créa/modif
+		$autorLabel=$this->autorLabel($isModif);																															//Label de l'auteur
+		if($isModif==false && !empty($this->guestMail) && Ctrl::$curUser->isSpaceAdmin())  {$autorLabel='<span '.Txt::tooltip($this->guestMail).'>'.$autorLabel.'<span>';}	//GUEST : Ajoute le "guestMail" (création et admin)
+		else{																																								//USER :
+			$objUser=($isModif==true && !empty($this->_idUserModif))  ?  Ctrl::getObj("user",$this->_idUserModif)  :  Ctrl::getObj("user",$this->_idUser);					//Obj de l'user
+			if($profileImg==true)  {$autorLabel=$objUser->profileImg(true,true).' &nbsp;'.$autorLabel;}																		//Image de l'auteur
+			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  																					//Lien vers le profil
+		}
+		return $autorLabel.'<img src="app/img/arrowRight.png">'.Txt::dateLabel($dateEdit,"labelFull");
 	}
 
 	/*******************************************************************************************

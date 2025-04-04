@@ -2,18 +2,21 @@
 ////	Resize
 lightboxSetWidth(850);
 
-////	Archive la news s'il ya une date de mise en ligne
-$(function(){
-	$(".dateBegin").on("change",function(){
-		if(this.value.length>0){
-			var dateBegin=this.value.split("/");
-			var timeBegin=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]);//Format "MM/dd/yyy"
-			//Date "online" supérieure à aujourd'hui : passe si besoin l'actu en "offline"
-			if(Date.now() < timeBegin.valueOf() && $("[name='offline']").prop("checked")==false){
-				$("[name='offline']").trigger("click");
-				notify("<?= Txt::trad("DASHBOARD_dateOnlineNotif") ?>");
+////	Archive la news s'il ya une date de publication automatique
+////	trigger "blur" avec timeout : le temps d'executer les controles de base du trigger "change" (cf. "app.js")
+ready(function(){
+	$(".dateBegin").on("blur",function(){
+		setTimeout(function(){
+			if($(".dateBegin").notEmpty()){
+				var dateBegin=$(".dateBegin").val().split("/");
+				var timeBegin=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]);//Format "MM/dd/yyy"
+				//Date "online" supérieure à aujourd'hui : passe si besoin l'actu en "offline"
+				if(Date.now() < timeBegin.valueOf() && $("[name='offline']").prop("checked")==false){
+					$("[name='offline']").trigger("click");
+					notify("<?= Txt::trad("DASHBOARD_dateOnlineNotif") ?>");
+				}
 			}
-		}
+		},200);
 	});
 });
 </script>
@@ -21,14 +24,12 @@ $(function(){
 
 <style>
 #newsOptions			{margin-top:22px; text-align:center;}
-#newsOptions>div		{display:inline-block; margin-right:20px; margin-top:15px;}
-#newsOptions img		{vertical-align:bottom;}
-.dateBegin, .dateEnd	{width:160px!important;}/*surcharge pour afficher les placeholders*/
-.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.9em;}/*Taille du "placeholder"*/
+#newsOptions>div		{display:inline-block; line-height:30px; margin-right:25px;}
+.dateBegin, .dateEnd	{width:180px;}/*surcharge pour afficher les placeholders*/
 /*MOBILE FANCYBOX (440px)*/
 @media screen and (max-width:440px){
-	.dateBegin, .dateEnd	{width:125px!important;}/*surcharge*/
-	.dateBegin::placeholder, .dateEnd::placeholder	{font-size:0.7em;}/*Taille du "placeholder"*/
+	#newsOptions>div		{display:block; margin-bottom:20px;}
+	.dateBegin, .dateEnd	{width:220px;}/*surcharge pour afficher les placeholders*/
 }
 </style>
 
@@ -39,28 +40,28 @@ $(function(){
 	<?= $curObj->titleMobile("DASHBOARD_addNews") ?>
 
 	<!--DESCRIPTION -->
-	<?= $curObj->editDescription(false) ?>
+	<?= $curObj->descriptionEditor(false) ?>
 
 	<div id="newsOptions">
 		<!--A LA UNE-->
 		<div>
 			<input type="checkbox" name="une" value="1" id="uneCheckbox" <?= $curObj->une==1?"checked":"" ?>>
-			<label for="uneCheckbox" title="<?= Txt::trad("DASHBOARD_topNewsTooltip") ?>"><img src="app/img/dashboard/topNews.png"> <?= Txt::trad("DASHBOARD_topNews") ?></label>	
+			<label for="uneCheckbox" title="<?= Txt::trad("DASHBOARD_topNewsTooltip") ?>"><?= Txt::trad("DASHBOARD_topNews") ?> <img src="app/img/dashboard/topNews.png"></label>	
 		</div>
 		<!--IS OFFLINE-->
 		<div>
 			<input type="checkbox" name="offline" value="1" id="offlineCheckbox" <?= $curObj->offline==1?"checked":null ?>>
-			<label for="offlineCheckbox"><img src="app/img/dashboard/newsOffline.png"> <?= Txt::trad("DASHBOARD_offline") ?></label>
+			<label for="offlineCheckbox"><?= Txt::trad("DASHBOARD_offline") ?> <img src="app/img/dashboard/newsOffline.png"></label>
 		</div>
 		<!--DATE ONLINE-->
 		<div>
-			<img src="app/img/dashboard/dateOnline.png">
 			<input type="text" name="dateOnline" class="dateBegin" value="<?= Txt::formatDate($curObj->dateOnline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOnline") ?>" title="<?= Txt::trad("DASHBOARD_dateOnlineTooltip") ?>">
+			<img src="app/img/dateEnd2.png">
 		</div>
 		<!--DATE OFFLINE-->
 		<div>
-			<img src="app/img/dashboard/dateOffline.png">
 			<input type="text" name="dateOffline" class="dateEnd" value="<?= Txt::formatDate($curObj->dateOffline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOffline") ?>" title="<?= Txt::trad("DASHBOARD_dateOfflineTooltip") ?>">
+			<img src="app/img/dateEnd.png">
 		</div>
 	</div>
 

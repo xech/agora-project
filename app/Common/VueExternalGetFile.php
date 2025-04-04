@@ -1,21 +1,22 @@
 <style>
-	#pageCenter				{text-align: center;}
-.miscContainer				{display:inline-block; width:300px;}
-.miscContainer:first-child	{margin-top:100px; padding:20px 40px;}
-.miscContainer:last-child	{margin-top:50px; padding:10px 40px;}
+#pageCenter						{text-align: center;}
+#pageCenter	button				{width:350px; margin-top:80px; border-radius:10px; font-size:1.3em;}
+#pageCenter	button:first-child	{height:150px;}
+#pageCenter	button:last-child	{height:100px;}
+#pageCenter	button div			{margin-top:15px; font-size:0.9em; font-style:italic; word-wrap:break-word;}
+#pageCenter	button img			{max-height:35px; margin-right:10px;}
 </style>
 
 
 <div id="pageCenter">
-	<div class="miscContainer" onclick="redir('<?= $urlDownload ?>')">
-		<h3><img src="app/img/download.png"> &nbsp; <?= Txt::trad("FILE_fileDownload") ?> </h3>
-		<h2><i><?= $_GET["fileName"] ?></i></h2>
-	</div>
+	<button onclick="redir('<?= $urlDownload ?>')">
+		<img src="app/img/download.png"><?= Txt::trad("FILE_fileDownload") ?>
+		<div><?= $_GET["fileName"] ?></div>
+	</button>
 
 	<?php if(!empty($appUrl)){ ?>
-	<br>
-	<div class="miscContainer" onclick="redir('<?= $appUrl ?>')">
-		<h3><img src="app/img/logoMobile.png"> &nbsp; <?= Txt::trad("downloadBackToApp") ?> </h3>
-	</div>
+	<button onclick="redir('<?= $appUrl ?>')">
+		<img src="app/img/logoSmall.png"><?= Txt::trad("downloadBackToApp") ?>
+	</button>
 	<?php } ?>
 </div>

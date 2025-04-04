@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -39,11 +39,11 @@ class MdlUserGroup extends MdlObject
 	 *******************************************************************************************/
 	public function accessRight()
 	{
-		//Init la mise en cache
+		//Init le cache
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();
 			//Ajoute l'accès en lecture si :  User courant se trouve dans le groupe  OU  l'espace du groupe fait partie des espaces de l'user (pour les affectations d'objet)
-			if(empty($this->_accessRight) && (in_array(Ctrl::$curUser->_id,$this->userIds) || in_array($this->_idSpace,Ctrl::$curUser->getSpaces("ids"))))	{$this->_accessRight=1;}
+			if(empty($this->_accessRight) && (in_array(Ctrl::$curUser->_id,$this->userIds) || in_array($this->_idSpace,Ctrl::$curUser->spaceList("ids"))))	{$this->_accessRight=1;}
 		}
 		return $this->_accessRight;
 	}

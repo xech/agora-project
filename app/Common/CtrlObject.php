@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -23,7 +23,7 @@ class CtrlObject extends Ctrl
 		if(Req::isParam("typeId")){
 			$curObj=self::getObjTarget();
 			if($curObj->editRight()){
-				$vDatas["logsList"]=Db::getTab("SELECT *, UNIX_TIMESTAMP(date) as dateUnix FROM ap_log WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY date");
+				$vDatas["logsList"]=Db::getTab("SELECT *, UNIX_TIMESTAMP(date) as `timestamp` FROM ap_log WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY date");
 				static::displayPage(Req::commonPath."VueObjLogs.php",$vDatas);
 			}
 		}
@@ -54,10 +54,10 @@ class CtrlObject extends Ctrl
 		}
 		////	Update le "datasFolderSize()" en session
 		if($updateDatasFolderSize==true)  {File::datasFolderSize(true);}
-		////	Objets non supprimés : affiche les labels des objets concernés (10 objets maxi)
+		////	Objets non supprimés : affiche une notif "Certains éléments n'ont pas été supprimé.." avec les labels des objets concernés (10 objets maxi)
 		if(!empty($notDeletedObjects)){
 			if(count($notDeletedObjects)>10)  {$notDeletedObjects=array_slice($notDeletedObjects,0,10);  $notDeletedObjects[]="..."; }
-			Ctrl::notify(Txt::trad("notDeletedElements")." :<br><br>".implode(", ",$notDeletedObjects));
+			Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete")." :<br><br>".implode(", ",$notDeletedObjects));
 		}
 		////	Redirection
 		self::redir($redirUrl);
@@ -144,8 +144,8 @@ class CtrlObject extends Ctrl
 			header("Location: ?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&objectType=".$MdlObject::objectType);//Toujours recharger la page (mais sans "redir()")
 		}
 		////	Liste des objets à afficher (+ nouvel objet)  &&  Liste des espaces de l'user courant  &&  Préfixe des traduction
-		$vDatas["categoriesList"]=$MdlObject::getList("edit");
-		$vDatas["spaceList"]=Ctrl::$curUser->getSpaces();
+		$vDatas["categoriesList"]=$MdlObject::catList("edit");
+		$vDatas["spaceList"]=Ctrl::$curUser->spaceList();
 		$vDatas["tradModulePrefix"]=strtoupper($MdlObject::moduleName);
 		////	Affiche la vue
 		static::displayPage(Req::commonPath."VueCategoryEdit.php",$vDatas);
@@ -168,13 +168,12 @@ class CtrlObject extends Ctrl
 	public static function actionControlDuplicateName()
 	{
 		if(Req::isParam(["typeId","controledName"])){
-			//Récupère l'objet courant +  Recherche sur le nom ou le titre  +  Sélectionne si besoin le conteur de l'objet (cf. dossier/fichier)
-			$curObj=Ctrl::getObjTarget();
-			$sqlMainSelectors=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");
-			if(Req::isParam("typeIdContainer"))  {$sqlMainSelectors.="AND _idContainer=".Ctrl::getObjTarget(Req::param("typeIdContainer"))->_id;}
+			$curObj=Ctrl::getObjTarget();																										//Récupère l'objet courant 
+			$sqlSelectors=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");	//Recherche sur le nom ou le titre
+			if(Req::isParam("typeIdContainer"))  {$sqlSelectors.=" AND _idContainer=".Ctrl::getObjTarget(Req::param("typeIdContainer"))->_id;}	//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
 			//Recherche les doublons dans les objets affectés à l'espace courant
-			$nbDuplicate=Db::getVal("SELECT count(*) FROM ".$curObj::dbTable." WHERE  _id!=".$curObj->_id." AND ".$sqlMainSelectors." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")");
-			if($nbDuplicate>0)  {echo "duplicate";}
+			$queryDuplicate="SELECT count(*) FROM ".$curObj::dbTable." WHERE ".$sqlSelectors." AND _id!=".$curObj->_id." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")";
+			if(Db::getVal($queryDuplicate) > 0)  {echo "duplicateName";}
 		}
 	}
 
@@ -183,16 +182,12 @@ class CtrlObject extends Ctrl
 	 *******************************************************************************************/
 	public static function actionFolderDeleteControl()
 	{
-		//// Init les notifications
 		$result=[];
-		//// Controle si tous les sous-dossiers sont bien accessibles en écriture ("Certains sous-dossiers ne vous sont pas accessibles... confirmer?")
 		$curFolder=Ctrl::getObjTarget();
-		$folderTreeAll=$curFolder->folderTree("all");//Liste tous les dossiers (pas forcément en lecture)
-		$folderTreeWrite=$curFolder->folderTree(2);//Liste les dossiers accessibles en écriture (pas forcément en accès total)
-		if(count($folderTreeAll)!=count($folderTreeWrite))  {$result["confirmDeleteFolderAccess"]=Txt::trad("confirmDeleteFolderAccess");}
-		//// Arborescence de plus de 100 dossiers : notif "merci de patienter quelques instants avant la fin du processus"
-		if(count($folderTreeAll)>100 )  {$result["notifyBigFolderDelete"]=str_replace("--NB_FOLDERS--",count($folderTreeAll),Txt::trad("notifyBigFolderDelete"));}
-		//// Retourne le résultat au format JSON
+		$folderTree		=$curFolder->folderTree("all");																		//Arbo complète des dossiers, accessibles ou pas en lecture
+		$folderTreeWrite=$curFolder->folderTree(2);																			//Arbo uniquement des dossiers accessibles en écriture
+		if(count($folderTree)!=count($folderTreeWrite))	{$result["confirmDeleteFolder"]=Txt::trad("confirmDeleteFolder");}	//"Certains sous-dossiers ne sont pas accessibles ..confirmer ?"
+		if(count($folderTree)>100)  					{$result["notifDeleteWait"]=Txt::trad("notifDeleteWait");}			//Notif "Merci de patienter un instant"
 		echo json_encode($result);
 	}
 

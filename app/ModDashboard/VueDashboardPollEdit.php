@@ -4,28 +4,27 @@ lightboxSetWidth(700);
 
 ////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
 <?php if($pollIsVoted==true){ ?>
-$(function(){
+ready(function(){
 	$("input[name='title'],.vPollResponseDiv input,#multipleResponsesInput,#publicVoteInput").prop("disabled",true);
 });
 <?php } ?>
 
 ////	SUPPRESSION DU FICHIER D'UNE REPONSE
-function deleteResponseFile(_idReponse)
+async function deleteResponseFile(_idReponse)
 {
-	if(confirm("<?= Txt::trad("confirmDelete") ?>")){
+	if(await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){
 		$.ajax({url:"?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->_typeId ?>&_idResponse="+_idReponse}).done(function(result){
 			if(/true/i.test(result))  {$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");}//Remplace le fichier supprimé par un champ "File"
 		});
 	}
 }
 
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		//// Il doit y avoir au moins 2 réponses au sondage
-		var responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return this.value; }).length;
-		if(responsesNb<2)	{notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");	 resolve(false);}
-		else				{$("input:disabled").prop("disabled",false);  				 resolve(true);}//Réactive les champs désactivés des sondage déjà votés
+		let responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return this.value; }).length;	//Nombre de "Réponses" spécifiées
+		if(responsesNb < 2)		{notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");	 resolve(false);}				//Au moins 2 réponses au sondage
+		else					{$("input:disabled").prop("disabled",false);  				 resolve(true);}				//Réactive les champs désactivés
 	});
 }
 </script>
@@ -54,7 +53,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 
 	<!--TITRE / DESCRIPTION-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("DASHBOARD_titleQuestion") ?>">
-	<?= $curObj->editDescription() ?>
+	<?= $curObj->descriptionEditor() ?>
 
 	<!--LISTE DES REPONSES POSSIBLES (10 maxi)-->
 	<div id="responseListLabel"><?= Txt::trad("DASHBOARD_responseList") ?> :</div>
@@ -95,7 +94,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		<label for="newsDisplayInput"><?= Txt::trad("DASHBOARD_newsDisplay") ?>
 	</div>
 	<div class="pollOptions">
-		<img src="app/img/dashboard/pollDateEnd.png">
+		<img src="app/img/dateEnd.png">
 		<?= Txt::trad("DASHBOARD_dateEnd") ?> :
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>">
 	</div>

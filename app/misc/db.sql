@@ -67,6 +67,7 @@ CREATE TABLE `ap_calendarEvent` (
   `periodValues` varchar(1000) DEFAULT NULL,
   `periodDateEnd` date DEFAULT NULL,
   `periodDateExceptions` text DEFAULT NULL,
+  `shortcut` tinyint DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   `guest` varchar(255) DEFAULT NULL,
@@ -574,10 +575,11 @@ INSERT INTO `ap_calendar` (`_id`, `type`, `_idUser`, `title`) VALUES
 (2,'user',1,NULL);
 
 INSERT INTO `ap_calendarCategory` (`_id`, `color`, `title`) VALUES 
-(1,'#770000','rendez-vous'), 
-(2,'#000077','reunion'), 
-(3,'#dd7700','vacances'), 
-(4,'#007700','personnel');
+(1,'#880000','Rendez-vous'), 
+(2,'#000088','Reunion'), 
+(3,'#dd7700','Congés'), 
+(4,'#007700','Personnel'), 
+(5,'#bf0073','Evènement périodique');
 
 INSERT INTO `ap_contactFolder` SET `_id`=1, `_idContainer`=0;
 INSERT INTO `ap_fileFolder` SET `_id`=1, `_idContainer`=0;

@@ -3,15 +3,13 @@
 lightboxSetWidth("1300px");
 
 ////	Controle du formulaire
-$(function(){
-	$("#mainForm").submit(function(){
-		//Fichier Import au format csv
+ready(function(){
+	$("#mainForm").on("submit",function(){
 		if($("input[name='importFile']").exist()){
-			if($("input[name='importFile']").isEmpty())						{notify("<?= Txt::trad("specifyFile") ?>");	return false;}
+			if($("input[name='importFile']").isEmpty())						{notify("<?= Txt::trad("specifyFile") ?>");			return false;}
 			else if(extension($("input[name='importFile']").val())!="ics")	{notify("<?= Txt::trad("fileExtension") ?> ICS");	return false;}
 		}
-		//Affiche l'icone "loading"
-		submitButtonLoading();
+		submitLoading();
 	});
 });
 </script>
@@ -70,7 +68,7 @@ tr:not(.vTableHeader)			{text-align:left;}				/*Ligne des evts*/
 							<input type="hidden"	name="eventList['.$cptEvt.'][dbPeriodDateEnd]"	value="'.$tmpEvt["dbPeriodDateEnd"].'">
 						</td>
 						<td '.Txt::tooltip("CALENDAR_importIcalPresentInfo").'>'.$evtCheckLabel.'</td>
-						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"basic",$tmpEvt["dbDateEnd"]).'</td>
+						<td>'.Txt::dateLabel($tmpEvt["dbDateBegin"],"labelFull",$tmpEvt["dbDateEnd"]).'</td>
 						<td><label for="'.$evtBoxId.'">'.$tmpEvt["dbTitle"].'</label></td>
 						<td>'.Txt::reduce($tmpEvt["dbDescription"],120).'</td>
 					</tr>';

@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -23,46 +23,41 @@ class CtrlFile extends Ctrl
 	public static function actionDefault()
 	{
 		////	Verif l'accès en écriture & Occupation d'espace disque
-		if(Ctrl::$curUser->isGeneralAdmin())
-		{
+		if(Ctrl::$curUser->isGeneralAdmin()){
 			//Verif l'accès en écriture
 			if(!is_writable(Ctrl::$curContainer->folderPath("real")))
-				{Ctrl::notify(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "warning");}
+				{Ctrl::notify(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "error");}
 			//Occupation d'espace disque
 			$folderSize=File::folderSize(PATH_MOD_FILE);
 			$barFillPercent=ceil(($folderSize/limite_espace_disque)*100);
 			$barLabel=Txt::trad("diskSpaceUsed")." : ".$barFillPercent."%";
 			$barTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::sizeLabel($folderSize)." ".Txt::trad("from")." ".File::sizeLabel(limite_espace_disque);
 			$vDatas["diskSpaceAlert"]=($barFillPercent>70);
-			$vDatas["diskSpaceProgressBar"]=Tool::progressBar($barLabel, $barTooltip, $barFillPercent, $vDatas["diskSpaceAlert"]);
+			$vDatas["diskSpaceBar"]=Tool::progressBar($barLabel, $barTooltip, $barFillPercent, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer).MdlFile::sqlSort());
-		foreach($vDatas["filesList"] as $fileKey=>$tmpFile)
-		{
+		foreach($vDatas["filesList"] as $fileKey=>$tmpFile){
 			//// Lien du label/nom du fichier : Download direct
-			$tmpFile->labelLink="onclick=\"if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpFile->urlDownload()."')\"";
+			$tmpFile->labelLink='onclick="confirmRedir(\''.$tmpFile->urlDownload().'\',\''.Txt::trad("download").' ?\')"';
 			//// Lien de l'icone/vignette du fichier : Display ou Download
-			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink="href=\"".$tmpFile->urlDisplay()."\" data-fancybox='images'";}	//Affiche l'image dans la fancybox
-			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink="onclick=\"redir('".$tmpFile->urlDisplay()."')\"";}				//Download le pdf si isMobileApp
-			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->urlDisplay()."')\"";}		//Affiche le pdf/text dans une Lightbox 
-			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink="onclick=\"lightboxOpen('".$tmpFile->filePath()."')\"";}		//Affiche la video/mp3 dans une Lightbox
+			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink='href="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Affiche l'image dans la fancybox
+			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink='onclick="redir(\''.$tmpFile->urlDisplay().'\')"';}				//Download le pdf si isMobileApp
+			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}		//Affiche le pdf/text dans une Lightbox 
+			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->filePath().'\')"';}		//Affiche la video/mp3 dans une Lightbox
 			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}											//Download direct
-			//// Vignette d'image/pdf
-			if($tmpFile->thumbExist()){
-				$tmpFile->hasThumbClass="hasThumb";					//Ajoute la classe "hasThumb"
-				if(File::isType("imageBrowser",$tmpFile->name)){	//Fichier image : ajoute la résolution et la "thumbClass" en fonction de l'orientation
-					list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
-					$tmpFile->imageSize=$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
-					$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
-				}
+			//// Fichier image : ajoute la résolution et la "thumbClass" en fonction de l'orientation
+			if($tmpFile->thumbExist() && File::isType("imageBrowser",$tmpFile->name)){
+				list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
+				$tmpFile->imageSize=$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
+				$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
 			}
 			//// Tooltip
-			$tooltipTxt="<i>".$tmpFile->name."</i><hr>".Txt::trad("FILE_fileSize")." : ".File::sizeLabel($tmpFile->octetSize);										//Nom & taille du fichier
-			if(!empty($tmpFile->imageSize))		{$tooltipTxt.="<hr>".Txt::trad("FILE_imageSize")." : ".$tmpFile->imageSize;}											//Taille de l'image
-			if(!empty($tmpFile->description))	{$tooltipTxt.="<hr>".$tmpFile->description;}																			//Description du fichier
-			$tmpFile->labelTooltip=$tmpFile->iconTooltip="<img src='app/img/download.png'> ".Txt::trad("FILE_fileDownload")." ".$tooltipTxt;							//Tooltip de download
-			if(preg_match("/redir/i",$tmpFile->iconLink)==false)  {$tmpFile->iconTooltip="<img src='app/img/search.png'> ".ucfirst(Txt::trad("show"))." ".$tooltipTxt;}	//Tooltip de l'icone pour afficher le fichier
+			$tooltipTxt='<i>'.$tmpFile->name.'</i><hr>'.Txt::trad("FILE_fileSize").' : '.File::sizeLabel($tmpFile->octetSize);											//Nom & taille du fichier
+			if(!empty($tmpFile->imageSize))		{$tooltipTxt.='<hr>'.Txt::trad("FILE_imageSize").' : '.$tmpFile->imageSize;}											//Taille de l'image
+			if(!empty($tmpFile->description))	{$tooltipTxt.='<hr>'.$tmpFile->description;}																			//Description du fichier
+			$tmpFile->labelTooltip=$tmpFile->iconTooltip='<img src="app/img/download.png"> '.Txt::trad("FILE_fileDownload").' '.$tooltipTxt;							//Tooltip de download
+			if(preg_match("/redir/i",$tmpFile->iconLink)==false)  {$tmpFile->iconTooltip='<img src="app/img/search.png"> '.ucfirst(Txt::trad("show")).' '.$tooltipTxt;}	//Tooltip de l'icone pour afficher le fichier
 			//Ajoute le fichier
 			$vDatas["filesList"][$fileKey]=$tmpFile;
 		}
@@ -76,13 +71,12 @@ class CtrlFile extends Ctrl
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlFileFolder::getPluginFolders($params);
-		foreach(MdlFile::getPluginObjects($params) as $tmpObj)
-		{
+		foreach(MdlFile::getPluginObjects($params) as $tmpObj){
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="windowParent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="if(confirm('".Txt::trad("download",true)." ?')) redir('".$tmpObj->urlDownload()."')";
+			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
+			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."','".Txt::trad("download",true)." ?')";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;
@@ -128,7 +122,7 @@ class CtrlFile extends Ctrl
 		foreach(self::getObjectsTypeId("fileFolder") as $curFolder)
 		{
 			$archiveSize+=File::folderSize($curFolder->folderPath("real"));
-			$archiveName=$curFolder->containerObj()->name;
+			$archiveName=(count(Req::param("objectsTypeId"))==1)  ?  $curFolder->name  :  $curFolder->containerObj()->name;
 			$containerFolderPathZip=$curFolder->containerObj()->folderPath("zip");
 			if($curFolder->readRight())
 			{

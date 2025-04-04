@@ -12,7 +12,7 @@
 lightboxSetWidth(600);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)
 	<?php if(Req::isParam("addVersion")){ ?>
 		$("[name='addFileVersion']").on("change",function(){
@@ -43,26 +43,21 @@ $(function(){
 	<?php } ?>
 });
 
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		//// Ajout de fichier via Plupload
-		if($("#uploadMultiple").isVisible()){
-			if($("#uploadMultiple").plupload("getFiles").length==0){								//Vérif s'il y a au moins un fichier dans la liste
-				notify("<?= Txt::trad("FILE_selectFile") ?>");										//Notify si aucun fichier
-				resolve(false);																		//Retourne false
-			}else{																					//Lance l'upload via Plupload
-				$(".plupload_add,#uploadOptions>span").hide();										//Masque le bouton d'ajout & les options d'upload (pas le block d'options)
-				$(".plupload_filelist_footer .plupload_file_status").show();						//Affiche le % de progression
-				$("#uploadMultiple").plupload("start").on("complete",function(){ resolve(true); });	//Retourne true à la fin des uploads
-			}
+		// "Merci de sélectionner au moins un fichier"
+		let isPlupload=$("#uploadMultiple").isVisible();
+		if( (isPlupload==true && $("#uploadMultiple").plupload("getFiles").length==0)  ||  (isPlupload==false && $("[name='addFileSimple'],[name='addFileVersion']").isEmpty())){
+			notify("<?= Txt::trad("FILE_selectFile") ?>");
+			resolve(false);
 		}
-		//// Ajout de fichier via un input "file" (envoi simple ou nouvelle version de fichier)
-		else{
-			// Verif si un fichier a été sélectionné
-			if($("[name='addFileSimple'],[name='addFileVersion']").isEmpty())	{notify("<?= Txt::trad("FILE_selectFile") ?>");  resolve(false);}
-			else																{resolve(true);}
-		}
+		//Envoi des fichiers
+		else if(isPlupload==true){																	//Lance Plupload :
+			$(".plupload_add,#uploadOptions>span").hide();											//Masque le bouton de lancement et les options d'upload
+			$(".plupload_filelist_footer .plupload_file_status").show();							//Affiche le % de progression
+			$("#uploadMultiple").plupload("start").on("complete",function(){  resolve(true);  });	//Retourne true à la fin des uploads
+		} else {resolve(true);}																		//Validation directe du formulaire
 	});
 }
 </script>

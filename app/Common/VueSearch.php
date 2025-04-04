@@ -3,7 +3,7 @@
 lightboxSetWidth(700);
 
 ////	Init
-$(function(){
+ready(function(){
 	////	Focus du champ de recherche
 	$("[name='searchText']").focusAlt();
 
@@ -15,11 +15,11 @@ $(function(){
 	});
 
 	////	Contrôle du formulaire
-	$("form").submit(function(){
+	$("form").on("submit",function(){
 		//Vérif que les mots recherchés (au moins 3 caracteres alphanumeriques)  &&  Au moins un module et champ de recherche sont sélectionnés (cf. recherche avancée)
 		var searchText=$("[name=searchText]").val();
 		if(searchText.length<3 || /[\w]/.test(searchText)==false)													{notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
-		else if($("[name='searchModules[]']:checked").isEmpty() || $("[name='searchFields[]']:checked").isEmpty())	{notify("<?= Txt::trad("fillFieldsForm") ?>");  return false;}
+		else if($("[name='searchModules[]']:checked").isEmpty() || $("[name='searchFields[]']:checked").isEmpty())	{notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 	});
 });
 </script>
@@ -92,7 +92,7 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 					if(method_exists($tmpModule["ctrl"],"getPlugins")){
 						$moduleChecked=(Req::isParam("searchModules")==false || in_array($tmpModule["moduleName"],Req::param("searchModules")))  ?  "checked='checked'"  :  "";
 						$moduleInputId="searchModules".$tmpModule["moduleName"];
-						$moduleName=Txt::trad(strtoupper($tmpModule["moduleName"])."_headerModuleName");
+						$moduleName=Txt::trad(strtoupper($tmpModule["moduleName"])."_MODULE_NAME");
 						echo "<div class='vAdvancedSearchOption'><input type='checkbox' name='searchModules[]' value='".$tmpModule["moduleName"]."' id='".$moduleInputId."' ".$moduleChecked."><label for='".$moduleInputId."'>".$moduleName."</label></div>";
 					}
 				}
@@ -125,7 +125,7 @@ if(Req::isParam("searchText"))
 	{
 		//// Header des plugins du module : affiche si besoin le libellé du module
 		if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName){
-			echo "<div class='vModuleLabel'><hr><img src='app/img/".$tmpObj::moduleName."/icon.png'>".Txt::trad(strtoupper($tmpObj::moduleName)."_headerModuleName")."</div>";
+			echo "<div class='vModuleLabel'><hr><img src='app/img/".$tmpObj::moduleName."/icon.png'>".Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME")."</div>";
 			$tmpModuleName=$tmpObj::moduleName;
 		}
 		//// Label des objets lambda  ||  "dashboardNews" : "reduce()" du label/description + possibilité de l'afficher entièrement + menu contextuel

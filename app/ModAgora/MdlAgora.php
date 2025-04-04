@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -31,7 +31,7 @@ class MdlAgora extends MdlObject
 	 *******************************************************************************************/
 	public function pathLogoFooter()
 	{
-		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logoFooter.png";
+		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logoSmall.png";
 	}
 
 	/*******************************************************************************************
@@ -43,13 +43,13 @@ class MdlAgora extends MdlObject
 	}
 
 	/*******************************************************************************************
-	 * VISIO JITSI : URL DU SERVEUR DE VISIO AVEC LE NOM DE LA "ROOM" (ex: "room-AFTKEOPDRF")
+	 * VISIO JITSI : URL ALEATOIRE VERS LE SERVEUR DE VISIO (ex: "www.server.tv/visio-AF1GH2")
 	 *******************************************************************************************/
 	public function visioUrl()
 	{
 		if(!empty($this->visioHost)){
-			$roomId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");													//$roomId de 8 caractères aléatoires
-			return $this->visioHost."/".(Req::isHost()?"visio-room":"omnispace-room")."-".substr($roomId,0,8);	//Url avec un préfixe + $roomId
+			$visioId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");	//$visioId de 6 caractères aléatoires
+			return $this->visioHost."/visio-".substr($visioId,0,6);			//Url avec $visioId
 		}
 	}
 

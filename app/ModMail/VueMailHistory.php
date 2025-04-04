@@ -7,7 +7,7 @@ lightboxSetWidth(750);
 *******************************************************************************************/
 function sendOldMail(typeId)
 {
-	if(confirm("<?= Txt::trad("MAIL_resendInfo") ?> ?"))  {parent.redir("?ctrl=mail&oldMailTypeId="+typeId);}
+	parent.confirmRedir("?ctrl=mail&oldMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
 }
 </script>
 
@@ -32,7 +32,7 @@ li									{margin-bottom:20px;}
 	foreach($mailList as $tmpMail)
 	{
 		//Date et destinataires du mail
-		$autorRecipents="<div class='vMailDetail'>".Txt::trad("MAIL_sendBy")." ".Ctrl::getObj("user",$tmpMail->_idUser)->getLabel()." : ".$tmpMail->dateLabel()."</div>".
+		$autorRecipents="<div class='vMailDetail'>".Txt::trad("MAIL_sendBy")." ".$tmpMail->autorDate()."</div>".
 						"<div class='vMailDetail'>".Txt::trad("MAIL_recipients")." : ".str_replace(',',' - ',$tmpMail->recipients)."</div>";
 		//Récupération de l'email || Suppression de l'email 
 		$buttonResend="<div class='vMailDetail vMailDetailOption' onclick=\"sendOldMail('".$tmpMail->_typeId."')\" ".Txt::tooltip("MAIL_resendInfo")."><img src='app/img/mail/resend.png'> ".Txt::trad("MAIL_resend")."</div>";

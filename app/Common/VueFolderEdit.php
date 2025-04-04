@@ -2,7 +2,7 @@
 ////	Resize
 lightboxSetWidth(600);
 
-$(function(){
+ready(function(){
 	////	CHANGE L'ICONE DU DOSSIER
 	$("select[name='icon']").on("change",function(){
 		var iconPath=$("option[value='"+this.value+"']").attr("data-filePath");
@@ -22,14 +22,13 @@ $(function(){
 	<?php } ?>
 });
 
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		// vérif si un autre element porte le même nom
-		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&controledName="+encodeURIComponent($("[name='name']").val())+"&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>";
+		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&controledName="+encodeURIComponent($("input[name='name']").val())+"&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>";
 		$.ajax(ajaxUrl).done(function(result){
-			if(/duplicate/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}	//"Un autre element porte le même nom"
-			else							{resolve(true);}														//Sinon renvoie le résultat du controle principal
+			if(/duplicateName/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateNameFolder") ?>");  resolve(false);}//"Un autre element porte le même nom"
+			else								{resolve(true);}
 		});
 	});
 }
@@ -51,7 +50,7 @@ function objectFormControl(){
 
 	<!--NOM & DESCRIPTION-->
 	<input type="text" name="name" value="<?= $curObj->name ?>" class="inputTitleName" placeholder="<?= Txt::trad("name") ?>">
-	<?= $curObj->editDescription() ?>
+	<?= $curObj->descriptionEditor() ?>
 
 	<!--ICONE DU DOSSIER-->
 	<div id="folderIcon">

@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -18,6 +18,7 @@ class File
 	const sizeKo=1024;
 	//Taille maxi de la totalité des fichiers attachés aux mails (cf. "message_size_limit" du /etc/postfix/mail.cf à 25Mo)
 	const mailMaxFilesSize=26214400;
+	const mailMaxFilesSizeLabel="25 Mo max";
 	//init les types de fichiers
 	private static $_fileTypes=null;
 
@@ -380,7 +381,7 @@ class File
 		$disabledEnd  =18;				//fin plage horaire de limitation
 		if(date("G") > $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > $limitSize){
 			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
-			Ctrl::notify($alertLabel, "warning");
+			Ctrl::notify($alertLabel, "error");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
 		}
 	}

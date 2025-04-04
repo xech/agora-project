@@ -5,7 +5,7 @@
 lightboxSetWidth(500);
 
 ////	INIT
-$(function(){
+ready(function(){
 	<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
 	////	Import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js?hl=fr
 	gapi.load("client", function(){
@@ -50,7 +50,7 @@ $(function(){
 						// Affiche les contacts !
 						$("#gPeopleForm").prepend(contactInputs).show();	//Affiche les inputs des contacts importés
 						$("#invitationForm, #gPeopleImportButton").hide();	//Masque le formulaire principal
-						mainPageDisplay();									//Update les tooltips/lightbox
+						mainDisplay();										//Update les tooltips
 						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts!)
 						$.ajax({url:"?ctrl=user&action=loginExists",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
@@ -78,22 +78,22 @@ $(function(){
 	<?php } ?>
 
 	////	Controle du formulaire multiple gPeople et le nombre de contacts sélectionnés
-	$("#gPeopleForm").submit(function(event){
+	$("#gPeopleForm").on("submit",function(event){
 		if($("input[name='gPeopleContacts[]']:checked").length==0){
 			event.preventDefault();//Stop la validation du form
-			notify("<?= Txt::trad("notifSelectUser"); ?>","warning");
+			notify("<?= Txt::trad("notifSelectUser"); ?>","error");
 		}
 	});
 
 	////	Contrôle du formulaire simple
-	$("#invitationForm").submit(function(event){
-		if(typeof invitationFormControled==="undefined"){
-			event.preventDefault();//Stop la validation du form
-			if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())	{notify("<?= Txt::trad("fillFieldsForm") ?>","warning");  return false;}
-			if($("input[name='mail']").isMail()==false)										{notify("<?= Txt::trad("mailInvalid") ?>","warning");  return false;}
-			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(resultText){	// Verif si le compte utilisateur existe déjà
-				if(/true/i.test(resultText))	{notify("<?= Txt::trad("USER_loginExists"); ?>","warning");  return false;}				//L'user existe déjà..
-				else							{invitationFormControled=true;  $("#invitationForm").submit();}							//Sinon on confirme le formulaire récursivement !
+	$("#invitationForm").on("submit",function(event){
+		event.preventDefault();
+		if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())	{notify("<?= Txt::trad("emptyFields") ?>","error");}	//Vérif qu'un nom/prénom est spécifié
+		else if($("input[name='mail']").isMail()==false)								{notify("<?= Txt::trad("mailInvalid") ?>","error");}	//Vérif qu'un email est spécifié
+		else{
+			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(result){				// Verif si l'user existe déjà
+				if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>","error");}
+				else						{submitFinal($("#invitationForm"));}//Submit final (sans récursivité Jquery)
 			});
 		}
 	});

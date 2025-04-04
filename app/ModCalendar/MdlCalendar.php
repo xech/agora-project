@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -35,8 +35,8 @@ class MdlCalendar extends MdlObject
 		parent::__construct($objIdOrValues);
 		//Libellé de l'agenda perso
 		if($this->type=="user"){
-			$this->title=$this->autorLabel();//Pour l'affichage
-			$this->userName=Ctrl::getObj("user",$this->_idUser)->name;//Champ utilisé pour le tri des agendas (cf. "sortCalendars()")
+			$this->title=$this->autorLabel();
+			$this->userName=Ctrl::getObj("user",$this->_idUser)->name;//Cf. "sortCalendars()"
 			$this->userFirstName=Ctrl::getObj("user",$this->_idUser)->firstName;//Idem
 		}
 		//Plage horaire de l'agenda
@@ -120,11 +120,14 @@ class MdlCalendar extends MdlObject
 		////	EVT AFFECTÉS À L'AGENDA COURANT ET CONFIRMÉS (INIT LA SELECTION)
 		$sqlSelection="_id IN (SELECT _idEvt FROM ap_calendarEventAffectation WHERE _idCal=".$this->_id." AND confirmed=1)";
 		////	EVT DANS LA DURÉE/PERIODE  (début d'evt dans la période || fin d'evt dans la période || evt avant et après la période)  &&  EVT RÉCURRENTS (evt commence avant la période && (pas de fin de récurrence || fin de récurrence après/pendant la période))
-		$sqlDurBegin	=Db::format(date("Y-m-d H:i:00",$durationBegin));
-		$sqlDurEnd		=Db::format(date("Y-m-d H:i:59",$durationEnd));
-		$sqlBeginEnd	='((dateBegin BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateEnd BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateBegin <= '.$sqlDurBegin.' AND dateEnd >= '.$sqlDurEnd.'))';
-		$sqlRecurrent	='(periodType is not null AND dateBegin <= '.$sqlDurBegin.' AND (periodDateEnd IS NULL OR periodDateEnd >= '.$sqlDurBegin.'))';
-		$sqlSelection.=" AND (".$sqlBeginEnd." OR ".$sqlRecurrent.") ";
+		$durationSelection=(!empty($durationBegin) && !empty($durationEnd));
+		if($durationSelection==true){
+			$sqlDurBegin	=Db::format(date("Y-m-d H:i:00",$durationBegin));
+			$sqlDurEnd		=Db::format(date("Y-m-d H:i:59",$durationEnd));
+			$sqlBeginEnd	='((dateBegin BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateEnd BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateBegin <= '.$sqlDurBegin.' AND dateEnd >= '.$sqlDurEnd.'))';
+			$sqlRecurrent	='(periodType is not null AND dateBegin <= '.$sqlDurBegin.' AND (periodDateEnd IS NULL OR periodDateEnd >= '.$sqlDurBegin.'))';
+			$sqlSelection.=" AND (".$sqlBeginEnd." OR ".$sqlRecurrent.") ";
+		}
 		////	EVT D'UNE CERTAINE CATEGORIE  ||  EVT DU PLUGIN (search/dashboard/shortcut)
 		if(!empty($categoryFilter))		{$sqlSelection.=MdlCalendarCategory::sqlCategoryFilter();}
 		elseif(!empty($pluginParams))	{$sqlSelection.=" AND ".MdlCalendarEvent::sqlPlugins($pluginParams);}
@@ -134,7 +137,7 @@ class MdlCalendar extends MdlObject
 			if($tmpEvt->accessRight() < $accessRightMin)  {unset($eventList[$keyEvt]);}
 		}
 		////	AJOUTE LES RÉCURRENCES D'EVENEMENTS (CLONE)
-		if(($durationEnd-$durationBegin)<5184000){																				//Uniquement si affichage semaine/mois (60 jours max)
+		if($durationSelection==true){																							//Uniquement si sélection d'evt sur une durée donnée
 			foreach($eventList as $keyEvt=>$tmpEvt){																			//Parcourt chaque evt
 				if(!empty($tmpEvt->periodType)){																				//Vérif si l'evt est récurrent
 					$tmpEvt->cloneNb=0;																							//Compteur de récurrence
@@ -143,7 +146,7 @@ class MdlCalendar extends MdlObject
 						$evtInDuration=static::evtInDuration($tmpEvt,$tmpDayBegin,$tmpDayEnd);									//Zappe si la date courante correspond à la dateBegin/dateEnd de l'evt (evt de départ) 
 						$evtExpired=(!empty($tmpEvt->periodDateEnd) && $tmpDayBegin > strtotime($tmpEvt->periodDateEnd));		//Zappe si la date courante est après "periodDateEnd"
 						$evtNotStarted=($tmpDayEnd < strtotime($tmpEvt->dateBegin));											//Zappe si la date courante est avant le début de l'evt (cf. dateBegin de départ)
-						$evtInExceptions=preg_match("/".date("Y-m-d",$tmpDayBegin)."/",(string)$tmpEvt->periodDateExceptions);	//Zappe si la date courante est dans les "periodDateExceptions"
+						$evtInExceptions=preg_match("/".date('Y-m-d',$tmpDayBegin)."/",(string)$tmpEvt->periodDateExceptions);	//Zappe si la date courante est dans les "periodDateExceptions"
 						if($evtInDuration==false && $evtExpired==false && $evtNotStarted==false && empty($evtInExceptions)){	//Ajoute si besoin une récurrence pour le jour courant
 							$dateReplace=null;
 							$periodValues=Txt::txt2tab($tmpEvt->periodValues);
@@ -173,7 +176,7 @@ class MdlCalendar extends MdlObject
 	/*******************************************************************************************
 	 * FILTRE LES EVT POUR UNE JOURNEE DONNEE
 	 *******************************************************************************************/
-	public static function evtListDay($eventList, $durationBegin, $durationEnd)
+	public static function dayEvtList($eventList, $durationBegin, $durationEnd)
 	{
 		$eventDayList=[];
 		foreach($eventList as $tmpEvt){
@@ -224,8 +227,7 @@ class MdlCalendar extends MdlObject
 	 **************************************************************************************************/
 	public static function affectationCalendars()
 	{
-		if(self::$_affectationCalendars===null)
-		{
+		if(self::$_affectationCalendars===null){
 			//Agendas accessibles en lecture
 			self::$_affectationCalendars=self::readableCalendars();
 			//Ajoute les agendas persos inaccessibles en lecture, pour les propositions d'événement (sauf "guest")
@@ -259,14 +261,14 @@ class MdlCalendar extends MdlObject
 				if($tmpCal->isSpacelCalendar() || $tmpCal->isPersonalCalendar())  {$displayedCalendars[]=$tmpCal;  break;}
 			}
 		}
-		//// Supprime les evénements de plus de 4 ans (lancé en début de session)
-		if(empty($_SESSION["calendarsCleanEvt"])){
-			$time20YearsAgo =time()-(86400*365*20);											//Time 20ans
-			$time4YearsAgo =time()-(86400*365*4);											//Time 4ans
-			foreach($displayedCalendars as $tmpCal){										//Sélectionne les agendas avec "editContentRight()"
-				if($tmpCal->editContentRight()){											//Vérif si l'agenda est accessible en écriture
-					foreach($tmpCal->evtList($time20YearsAgo,$time4YearsAgo,1) as $tmpEvt){	//Params : $accessRightMin=1
-						if($tmpEvt->isOldEvt($time4YearsAgo))  {$tmpEvt->delete();}			//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
+		//// Délestage des evts de + de 10 ans
+		if(empty($_SESSION["calendarsCleanEvt"])){												//Lance en début de session
+			$timeDeleteMin=time()-946080000;													//30ans
+			$timeDeleteMax=time()-315360000;													//10ans
+			foreach($displayedCalendars as $tmpCal){											//Sélectionne les agendas avec "editContentRight()"
+				if($tmpCal->editContentRight()){												//Vérif si l'agenda est accessible en écriture
+					foreach($tmpCal->evtList($timeDeleteMin, $timeDeleteMax, 1) as $tmpEvt){	//$accessRightMin=1
+						if($tmpEvt->isOldEvt($timeDeleteMax))  {$tmpEvt->delete();}				//"isOldEvt()" : date de fin passé && sans périodicité ou périodicité terminé
 					}
 				}
 			}
@@ -306,7 +308,7 @@ class MdlCalendar extends MdlObject
 			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_typeId."' value=\"".Req::getCurUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->_typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
 			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"link.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
 			////	Export Ical des evts
-			$options["specificOptions"][]=["actionJs"=>"if(confirm('".Txt::trad("confirm",true)."')) redir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
+			$options["specificOptions"][]=["actionJs"=>"confirmRedir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
 		}
 		//// Import Ical des evts
 		if($this->editContentRight()){

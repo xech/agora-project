@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -24,7 +24,7 @@
 	{
 		parent::__construct($objIdOrValues);
 		$this->spaceIds=Txt::txt2tab($this->_idSpaces);	//Espaces où l'objet est visible
-		if(empty($this->color))  {$this->color="#777";}	//Couleur par défaut
+		if(empty($this->color))  {$this->color="#555";}	//Couleur par défaut
 	}
 
 	/*******************************************************************************************
@@ -32,7 +32,7 @@
 	 *******************************************************************************************/
 	public function getLabel()
 	{
-		if($this->allCategories==true)	{return '<span class="categoryColor categoryColorAll">&nbsp;</span>'.Txt::trad(static::tradPrefix."_categoryShowAll");}
+		if($this->allCategories==true)	{return '<span class="categoryColor categoryColorAll">&nbsp;</span>'.Txt::trad(static::tradPrefix."_CAT_showAll");}
 		else							{return '<span class="categoryColor" style="background:'.$this->color.'">&nbsp;</span>'.ucfirst($this->title);}
 	}
 
@@ -40,7 +40,7 @@
 	 * LISTE DES CATEGORIES A AFFICHER
 	 * $mode : "display" / "select" / "edit"
 	 *******************************************************************************************/
-	public static function getList($mode="display", $_idCategory=null)
+	public static function catList($mode="display", $_idCategory=null)
 	{
 		//// Liste des categories
 		$sqlFilter=($mode=="edit" && Ctrl::$curUser->isGeneralAdmin())  ?  null  :  " WHERE _idSpaces IS NULL OR _idSpaces LIKE '%@".Ctrl::$curSpace->_id."@%'";	//Sélection filtrée par espace ?
@@ -79,7 +79,7 @@
 	public static function displayMenu()
 	{
 		$vDatas["tradPrefix"]=static::tradPrefix;
-		$vDatas["categoryList"]=static::getList();
+		$vDatas["categoryList"]=static::catList();
 		$vDatas["_idCategoryFilter"]=(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  ?  $_SESSION["_idCategoryFilter"][static::objectType]  :  null;	//catégorie affichée
 		if(static::addRight())	{$vDatas["urlEditObjects"]="?ctrl=object&action=EditCategories&objectType=".static::objectType;}									
 		return Ctrl::getVue(Req::commonPath."VueCategoryMenu.php",$vDatas);
@@ -91,7 +91,7 @@
 	public static function selectInput($_idCategory)
 	{
 		//Affiche un input <select> pour définir la catégorie du $curObj
-		$categoryList=static::getList("select",$_idCategory);
+		$categoryList=static::catList("select",$_idCategory);
 		if(!empty($categoryList)){
 			$vDatas["tradPrefix"]=static::tradPrefix;
 			$vDatas["categoryList"]=$categoryList;

@@ -1,59 +1,64 @@
 <style>
-#displayUsersDiv			{text-align:center; margin:10px 0px 20px;}
-#displayUsersDiv select		{height:38px; font-weight:bold;}
-.vInputSelectAllUsers		{color:#b00; font-weight:bold;}
-.vGroupLabel				{margin-top:5px; cursor:help;}
-#menuAlphabet>a				{margin-right:5px;}
-.vAdminIcon					{margin-left:5px;}
+#displayUsersSelect		{margin:10px; height:40px; border-radius:5px; font-weight:bold; cursor:pointer;}
+.vDisplayUsersSelectAll	{background-color:#059!important; color:white!important}
+#menuAlphabet>a			{padding:8px;}
+.vAdminIcon				{margin-left:5px;}
 </style>
 
 <div id="pageFull">
-	<div id="pageModuleMenu">
+	<div id="pageMenu">
 		<?= MdlUser::menuSelect() ?>
-		<div id="pageModMenu" class="miscContainer">
+		<div class="miscContainer">
+			<!--ADD USER /  INVITATIONS  /  IMPORTER DES USERS  /  ENVOI DES CREDENTIALS  /  AFFECT USER -->
 			<?php
-			////	MENU "USERS DE L'ESPACE"/"TOUS LES USERS"
-			if($menuDisplayUsers==true){
-				echo "<div id='displayUsersDiv'>
-						<select name='displayUsers' class='linkSelect' onChange=\"redir('?ctrl=user&displayUsers='+this.value)\" ".Txt::tooltip("USER_spaceOrAllUsersTooltip").">
-							<option value='space'>".Txt::trad("USER_spaceUsers")."</option>
-							<option value='all' ".($_SESSION["displayUsers"]=='all'?'selected':null).">".Txt::trad("USER_allUsers")."</option>
-						</select>
-					  </div><hr>";
-			}
-			////	GROUPES D'UTILISATEURS (AFFICHAGE ESPACE UNIQUEMENT)
-			if($_SESSION["displayUsers"]=="space" && (!empty($userGroups) || MdlUserGroup::addRight()))
-			{
-				$menuGroups=Txt::trad("USER_spaceGroups");
-				if(MdlUserGroup::addRight())  {$menuGroups.="&nbsp; <img src='app/img/edit.png' ".Txt::tooltip("USER_spaceGroupsEdit")." onclick=\"lightboxOpen('?ctrl=user&action=UserGroupEdit');\">";}
-				foreach($userGroups as $tmpGroup)  {$menuGroups.="<div class='vGroupLabel' ".Txt::tooltip($tmpGroup->usersLabel)."><img src='app/img/user/accessGroup.png'> ".$tmpGroup->title."</div>";}
-				echo "<div class='menuLine'>
-						<div class='menuIcon'><img src='app/img/user/userGroup.png'></div>
-						<div>".$menuGroups."</div>
-					  </div><hr>";
-			}
-			////	AJOUTER UN UTILISATEUR  /  AFFECTER UN USER EXISTANT A L'ESPACE  /  ENVOYER DES INVITATIONS  /  IMPORTER DES UTILISATEURS  /  ENVOI DES COORDONNEES DE CONNEXION
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" ".Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
-			if(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false)  {echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" ".Txt::tooltip("USER_addExistUserTitle")."><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
+			$affectNewUsers=(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" ".Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
 			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\" ".Txt::tooltip("USER_sendInvitationTooltip")."><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_user")."</div></div>";}
 			if(Ctrl::$curUser->isGeneralAdmin())		{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=ResetPasswordSendMailUsers');\" ".Txt::tooltip("USER_sendCoordsTooltip")."><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
-			////	TYPE D'AFFICHAGE / TRI D'AFFICHAGE
-			echo "<hr>".MdlUser::menuDisplayMode().MdlUser::menuSort();
-			////	FILTRAGE ALPHABET
-			$menuAlphabet=null;
-			foreach($alphabetList as $tmpLetter)  {$menuAlphabet.="<a href=\"?ctrl=user&alphabet=".$tmpLetter."\" ".(Req::param("alphabet")==$tmpLetter?"class='linkSelect'":null).">".$tmpLetter."</a>";}
-			$menuAlphabet.="&nbsp; <a href='?ctrl=user' ".(Req::isParam("alphabet")==false?"class='linkSelect'":null).">".Txt::trad("displayAll")."</a>";
-			echo "<div class='menuLine sLink'>
-					<div class='menuIcon'><img src='app/img/alphabet.png'></div>
-					<div><div class='menuLaunch' for='menuAlphabet'>".Txt::trad("alphabetFilter").(Req::isParam("alphabet")?" : ".Req::param("alphabet"):null)."</div><div id='menuAlphabet' class='menuContext'>".$menuAlphabet."</div></div>
-				 </div>";
-			////	NB D'UTILISATEURS
-			echo "<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".$usersTotalNbLabel."</div></div>";
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_user")."</div></div>";}
+			if($affectNewUsers==true)  					{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" ".Txt::tooltip("USER_addExistUserTitle")."><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
 			?>
+
+			<!--GROUPES D'UTILISATEURS-->
+			<?php if($_SESSION["displayUsers"]=="space" && (!empty($userGroups) || MdlUserGroup::addRight())){ ?>
+				<hr><div <?= MdlUserGroup::addRight() ?  Txt::tooltip("USER_spaceGroupsEdit").' onclick="lightboxOpen(\'?ctrl=user&action=UserGroupEdit\')"'  :  null ?>>
+					<div class="menuLine"><div class="menuIcon"><img src='app/img/user/userGroup.png'></div><div><?= Txt::trad("USER_spaceGroups") ?></div></div>
+					<?php foreach($userGroups as $tmpGroup){ ?>
+						<div class="menuLine"><div class="menuIcon"></div><div><img src='app/img/arrowRightBig.png'> <?= ucfirst($tmpGroup->title) ?></div></div>
+					<?php } ?>
+				</div>
+			<?php } ?>
+
+			<!--"USERS DE L'ESPACE" / "TOUS LES USERS"-->
+			<?php if($menuDisplayUsers==true){ ?>
+				<hr>
+				<select name="displayUsers" id="displayUsersSelect" <?= Txt::tooltip("USER_spaceOrAllUsersTooltip").($_SESSION["displayUsers"]=="all"?'class="vDisplayUsersSelectAll"':null) ?> onChange="redir('?ctrl=user&displayUsers='+this.value)">
+					<option value="space"><?= Txt::trad("USER_spaceUsers") ?></option>
+					<option value="all" <?= $_SESSION["displayUsers"]=="all"?"selected":null ?> ><?= Txt::trad("USER_allUsers") ?></option>
+				</select>
+			<?php } ?>
+
+			<!--TYPE D'AFFICHAGE / TRI D'AFFICHAGE / FILTRAGE ALPHABET / NB D'UTILISATEURS-->
+			<?php
+			//// Menus type et tri d'affichage
+			echo MdlUser::menuDisplayMode().MdlUser::menuSort();
+			//// Menu "alphabet"
+			$curAlphabet=Req::isParam("alphabet")  ?  " : ".Req::param("alphabet")  :  null;
+			$menuAlphabet='<a href="?ctrl=user" '.(!Req::isParam("alphabet")?'class="linkSelect"':null).'>'.Txt::trad("displayAll").'</a>';
+			foreach($alphabetList as $tmpLetter)  {$menuAlphabet.='<a href="?ctrl=user&alphabet='.$tmpLetter.'" '.(Req::param("alphabet")==$tmpLetter?'class="linkSelect"':null).'>'.$tmpLetter.'</a>';}
+			?>
+			<div class="menuLine">
+				<div class="menuIcon"><img src="app/img/alphabet.png"></div>
+				<div><div class="menuLaunch" for="menuAlphabet"><?= Txt::trad("alphabetFilter").$curAlphabet ?></div><div id="menuAlphabet" class="menuContext"><?= $menuAlphabet ?></div></div>
+			</div>
+			<div class="menuLine" <?= Ctrl::$curSpace->allUsersAffected() ? Txt::tooltip("USER_allUsersOnSpace") : null ?> >
+				<div class="menuIcon"><img src="app/img/info.png"></div>
+				<div><?= $usersTotalNb." ".Txt::trad("USER_users") ?></div>
+			</div>
 		</div>
 	</div>
-	<div id="pageFullContent" class="<?= MdlUser::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
+
+	<div id="pageContent" class="<?= MdlUser::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	LISTE DES USERS
 		foreach($displayedUsers as $tmpUser)
@@ -63,13 +68,13 @@
 			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}
 			else								{$adminIcon=null;}
 			//Affiche le block
-			echo $tmpUser->divContainerContextMenu("objPerson").
+			echo $tmpUser->objContainerMenu("objPerson").
 				"<div class='objContainerScroll'>
 					<div class='objContent'>
-						<div class='objIcon'>".$tmpUser->profileImg(true,false,true)."</div>
+						<div class='objIcon'>".$tmpUser->profileImg(true,false)."</div>
 						<div class='objLabel' onclick=\"".$tmpUser->openVue()."\">
 							".$tmpUser->getLabel("full").$adminIcon."
-							<div class='objPersonDetails'>".$tmpUser->getFieldsValues(MdlUser::getDisplayMode())."</div>
+							<div class='objPersonDetails'>".$tmpUser->getFields(MdlUser::getDisplayMode())."</div>
 						</div>
 					</div>
 				</div>

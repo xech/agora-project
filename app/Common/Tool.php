@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -39,9 +39,10 @@ class Tool
 
 		////	Charge une première fois PHPMailer et crée une nouvelle instance
 		if(!defined("phpmailerLoaded")){
-			require 'app/misc/PHPMailer/src/Exception.php';
-			require 'app/misc/PHPMailer/src/PHPMailer.php';
-			require 'app/misc/PHPMailer/src/SMTP.php';
+			$phpMailerPath=  'app/misc/PHPMailer-6.9.3/src/';
+			require $phpMailerPath.'Exception.php';
+			require $phpMailerPath.'PHPMailer.php';
+			require $phpMailerPath.'SMTP.php';
 			define("phpmailerLoaded",true);
 		}
 		$mail=new PHPMailer();
@@ -102,7 +103,7 @@ class Tool
 			}
 
 			////	Sujet & message
-			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".Ctrl::$agora->name  :  ucfirst($subject);									//"Sujet de mon email - Mon espace"
+			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".htmlspecialchars_decode(Ctrl::$agora->name)  :  ucfirst($subject);			//"Sujet de mon email - Mon espace"
 			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){													//Footer du message :
 				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																										//Label de l'espace
 				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}			//Ajoute le nom du sous-espace (">> sous-espace")
@@ -122,14 +123,11 @@ class Tool
 			if(!empty($attachedFiles)){
 				$fileSizeCpt=0;
 				foreach($attachedFiles as $tmpFile){
-					//Taille du fichier
-					$tmpFileSize=@filesize($tmpFile["path"]);
-					//Controle l'accès et la taille du fichier (25M max par défaut)  ||  Fichier Ok : on l'ajoute à l'email
-					if(!is_file($tmpFile["path"]) || ($fileSizeCpt+$tmpFileSize) > File::mailMaxFilesSize)  {Ctrl::notify(Txt::trad("MAIL_attachedFileError")."<br>".$tmpFile["name"]." = ".File::sizeLabel($tmpFileSize)." (".File::sizeLabel(File::mailMaxFilesSize)." max)");}
-					else{
-						$fileSizeCpt+=$tmpFileSize;//Ajoute la taille du fichier au compteur
-						if(!empty($tmpFile["cid"]))			{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Intègre une image dans le message (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
-						elseif(!empty($tmpFile["name"]))	{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}		//Ajoute un fichier joint classique
+					if(is_file($tmpFile["path"])){
+						$fileSizeCpt+=filesize($tmpFile["path"]);
+						if($fileSizeCpt > File::mailMaxFilesSize)	{Ctrl::notify(Txt::trad("MAIL_maxFileSizeNotif")." (".File::mailMaxFilesSizeLabel.") : ".$tmpFile["name"]);}//Fichier trop volumineux
+						elseif(!empty($tmpFile["cid"]))				{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Intègre une image dans le message (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
+						elseif(!empty($tmpFile["name"]))			{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}		//Ajoute un fichier joint classique
 					}
 				}
 			}
@@ -139,10 +137,10 @@ class Tool
 			if(in_array("noNotify",$options)==false){																											//Affiche une notification si l'email a été envoyé ou pas 
 				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");										//Affiche si besoin "L'email de notification a bien été envoyé"
 				if($sendReturn==true)				{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
-				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}										//Erreurs dans l'envoi de l'email
+				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}											//Erreurs dans l'envoi de l'email
 				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																//Mail non envoyé
 			}
-			return $sendReturn;//tjs renvoyer
+			return $sendReturn;//tjs!
 		}
 		////	Exception PHPMailer
 		catch (Exception $error){

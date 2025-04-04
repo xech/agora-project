@@ -26,8 +26,8 @@
 					echo '<div class="menuLine">
 							<div class="'.$classLabel.'" onclick="redir(\''.$urlSort.($curSortAscDesc=="asc"?"desc":"asc").'\')">'.Txt::trad("sortBy2").' '.Txt::trad("SORT_".$fieldTmp).'</div>
 							<div class="menuSortAscDesc">
-								<img src="app/img/'.$imgAsc.'" '.Txt::tooltip("tri_ascendant").' onclick="redir(\''.$urlSort.'asc\')">
-								<img src="app/img/'.$imgDesc.'" '.Txt::tooltip("tri_descendant").' onclick="redir(\''.$urlSort.'desc\')">
+								<img src="app/img/'.$imgAsc.'" '.Txt::tooltip("SORT_ascend").' onclick="redir(\''.$urlSort.'asc\')">
+								<img src="app/img/'.$imgDesc.'" '.Txt::tooltip("SORT_descend").' onclick="redir(\''.$urlSort.'desc\')">
 							</div>
 						</div>';
 				}

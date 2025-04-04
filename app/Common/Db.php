@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -13,8 +13,6 @@
 class Db
 {
 	private static $_objPDO=null;
-	//public static $readsNb=null;
-	//public static $writesNb=null;
 
 	/*******************************************************************************************
 	 * RENVOIE L'OBJET PDO INITIALISÉ QU'UNE SEULE FOIS
@@ -46,56 +44,56 @@ class Db
 	 *******************************************************************************************/
 	public static function query($sqlQuery, $returnLastInsertId=false)
 	{
-		$queryResult=self::objPDO()->query($sqlQuery);//(preg_match("/(update|insert|delete)/i",$sqlQuery)) ? self::$writesNb++ : self::$readsNb++;
+		$queryResult=self::objPDO()->query($sqlQuery);
 		if($returnLastInsertId==true)	{return self::objPDO()->lastInsertId();}
 		else							{return $queryResult;}
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE UN TABLEAU DE RÉSULTAT
+	 * RETOURNE UN TABLEAU DE RÉSULTAT (tous les résultats)
 	 *******************************************************************************************/
 	public static function getTab($sqlQuery)
 	{
-		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
-		return $result->fetchAll(PDO::FETCH_ASSOC);//faster than "fetch()"
+		$result=self::objPDO()->query($sqlQuery);
+		return $result->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE UN TABLEAU D'OBJETS : AVEC ID DE L'OBJET EN KEY
+	 * RETOURNE UN TABLEAU D'OBJETS (avec "_id" en key)
 	 *******************************************************************************************/
 	public static function getObjTab($objectType, $sqlQuery)
 	{
-		//"getObj" pour récupérer l'objet en cache s'il a déjà été chargé (pas de "FETCH_CLASS").
 		$returnTab=[];
 		$result=self::objPDO()->query($sqlQuery);
-		foreach($result->fetchAll(PDO::FETCH_ASSOC) as $objValues)  {$returnTab[$objValues["_id"]]=Ctrl::getObj($objectType, $objValues);}
+		foreach($result->fetchAll(PDO::FETCH_ASSOC) as $objValues)
+			{$returnTab[$objValues["_id"]]=Ctrl::getObj($objectType, $objValues);}//"getObj()" pour récupérer l'objet en cache (pas de "FETCH_CLASS")
 		return $returnTab;
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE UNE LIGNE DE RESULTAT : PREMIER ENREGISTREMENT RETOURNÉ AVEC SES CHAMPS
+	 * RETOURNE UNE LIGNE DE RESULTAT (1ere ligne)
 	 *******************************************************************************************/
 	public static function getLine($sqlQuery)
 	{
-		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
+		$result=self::objPDO()->query($sqlQuery);
 		return $result->fetch(PDO::FETCH_ASSOC);
 	}
 
-	/****************************************************************************************************************************
-	 * RETOURNE UNE COLONNE D'ENREGISTREMENTS : PREMIER CHAMP D'UNE LISTE D'ENREGISTREMENTS (liste d'identifiants par exemple)
-	 ****************************************************************************************************************************/
+	/**********************************************************************************************
+	 * RETOURNE UNE COLONNE D'ENREGISTREMENTS  (1er champ de chaque enregistrement : _id ou autre)
+	 *********************************************************************************************/
 	public static function getCol($sqlQuery)
 	{
-		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
-		return $result->fetchAll(PDO::FETCH_COLUMN,0);//que le premier champs
+		$result=self::objPDO()->query($sqlQuery);
+		return $result->fetchAll(PDO::FETCH_COLUMN,0);
 	}
 
 	/*******************************************************************************************
-	 * RETOURNE LA VALEUR D'UN CHAMP : PREMIER CHAMPS DU PREMIER RÉSULTAT D'UNE REQUETE
+	 * RETOURNE LA VALEUR D'UN CHAMP (1er champ de la 1ere ligne)
 	 *******************************************************************************************/
 	public static function getVal($sqlQuery)
 	{
-		$result=self::objPDO()->query($sqlQuery);//self::$readsNb++;
+		$result=self::objPDO()->query($sqlQuery);
 		$record=$result->fetch(PDO::FETCH_NUM);
 		if(!empty($record))  {return $record[0];}
 	}
@@ -105,8 +103,8 @@ class Db
 	 *******************************************************************************************/
 	public static function dbVersion()
 	{
-		$dbVersion=self::getVal("select version()");												//Récupère la version complete (Ex: "10.5.18-MariaDB")
-		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql")." ".strtok($dbVersion, "-");	//Renvoie "MariaDb" ou "Mysql" && le numero de version (texte avant le 1er "-". Ex: 10.5.18)
+		$dbVersion=self::getVal("select version()");												//Ex: "10.5.55-MariaDB-Ubuntu55"
+		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql")." ".strtok($dbVersion, "-");	//Ex: "MariaDb 10.5.55" (MariaDb/Mysql + numero de version simplifié)
 	}
 
 	/*******************************************************************************************

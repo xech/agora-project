@@ -3,7 +3,7 @@
 lightboxSetWidth(700);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	Donne une valeur aux inputs "select"
 	$("[name='advancement']").val("<?= $curObj->advancement ?>");
 	$("[name='priority']").val("<?= $curObj->priority ?>");
@@ -35,7 +35,7 @@ img[src*='arrowRight']		{margin:3px;}
 
 	<!--TITRE / DESCRIPTION (EDITOR)-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>">
-	<?= $curObj->editDescription() ?>
+	<?= $curObj->descriptionEditor() ?>
 
 	<!--<SELECT> DE LA COLONNE KANBAN-->
 	<div class="vTaskOptions">
@@ -67,7 +67,7 @@ img[src*='arrowRight']		{margin:3px;}
 
 	<!--ASSIGNATIONS / RESPONSABLES-->
 	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#fieldsetResponsiblePersons').slideToggle();">
-		<img src="app/img/user/icon.png"> <?= Txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
+		<img src="app/img/user/iconSmall.png"> <?= Txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
 	</button>
 	<fieldset id="fieldsetResponsiblePersons">
 		<?php

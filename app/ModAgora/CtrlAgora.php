@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -26,7 +26,7 @@ class CtrlAgora extends Ctrl
 		{
 			////	Update le parametrage
 			Db::query("UPDATE ap_agora SET 
-				name=".Db::param("name").",
+				`name`=".Db::param("name").",
 				description=".Db::param("description").",
 				lang=".Db::param("lang").",
 				timezone=".Db::param("timezone").",
@@ -113,7 +113,9 @@ class CtrlAgora extends Ctrl
 			File::rm($wallpaperPath);
 		}
 		////	Affiche la page
-		static::displayPage("VueIndex.php");
+		$vDatas["diskSpacePercent"]=ceil((File::datasFolderSize()/limite_espace_disque)*100);
+		$vDatas["diskSpaceAlert"]=($vDatas["diskSpacePercent"]>75);
+		static::displayPage("VueIndex.php",$vDatas);
 	}
 
 	/*******************************************************************************************
@@ -129,7 +131,7 @@ class CtrlAgora extends Ctrl
 		{
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille de l'archive
 			ini_set("max_execution_time","600");//10mn max
-			$archiveName="BackupAgora_".date("Y-m-d");
+			$archiveName="BackupAgora_".date('Y-m-d');
 			//// Sauvegarde via "shell_exec()"
 			if(Req::isLinux() && function_exists('shell_exec')){
 				$archiveTmpPath=tempnam(File::getTempDir(),"backupAgora".uniqid());
@@ -147,7 +149,7 @@ class CtrlAgora extends Ctrl
 		////	Sauvegarde uniquement la Bdd
 		else{
 			$filesList=[ ["realPath"=>$dumpPath, "zipPath"=>str_replace(PATH_DATAS,"",$dumpPath)] ];
-			File::downloadArchive($filesList, "BackupAgoraBdd_".date("Y-m-d").".zip");
+			File::downloadArchive($filesList, "BackupAgoraBdd_".date('Y-m-d').".zip");
 		}
 		////	Supprime le dump de la Bdd
 		File::rm($dumpPath);

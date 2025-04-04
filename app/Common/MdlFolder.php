@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 /*
@@ -22,7 +22,7 @@
 	public static $requiredFields=["name"];
 	public static $searchFields=["name","description"];
 	public static $sortFields=["name@@asc","name@@desc","description@@asc","description@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc"];
-	//Valeurs en cache
+	//Init le cache
 	private $_contentDescription=null;
 
 	/*******************************************************************************************
@@ -130,7 +130,7 @@
 	 *******************************************************************************************/
 	public function contentDescription()
 	{
-		//Init la mise en cache
+		//Init le cache
 		if($this->_contentDescription===null)
 		{
 			//Init
@@ -188,8 +188,8 @@
 			else{
 				$return=null;
 				foreach($foldersList as $cpt=>$objFolder){
-					if($typeReturn=="text")		{$return.=($cpt>0?" <img src='app/img/arrowRight.png'> ":null).$objFolder->name; }	//format "text" : Dossier racine > Mon sous-dossier
-					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name)."/";}										//format "zip" : Dossier_racine/mon_sous-dossier/
+					if($typeReturn=="text")		{$return.=($cpt>0?'<img src="app/img/arrowRight.png">':null).$objFolder->name; }//format "text" : Dossier racine > Mon sous-dossier
+					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name).'/';}									//format "zip" : Dossier_racine/mon_sous-dossier/
 				}
 				return $return;
 			}

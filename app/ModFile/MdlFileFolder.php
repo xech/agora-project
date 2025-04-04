@@ -3,7 +3,7 @@
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @license GNU General Public License (GPL-2.0)
 */
 
 
@@ -30,9 +30,9 @@ class MdlFileFolder extends MdlFolder
 	/*******************************************************************************************
 	 * SURCHARGE : AJOUT/MODIF DE DOSSIER
 	 *******************************************************************************************/
-	public function createUpdate($sqlProperties)
+	public function createUpdate($sqlFields)
 	{
-		$reloadedObj=parent::createUpdate($sqlProperties);
+		$reloadedObj=parent::createUpdate($sqlFields);
 		//Créé un nouveau dossier sur le disque?
 		if(!file_exists($reloadedObj->folderPath("real"))){
 			$isCreated=mkdir($reloadedObj->folderPath("real"));

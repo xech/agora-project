@@ -6,6 +6,7 @@ lightboxSetWidth(600);
 .vEvtDetails						{margin-top:15px;}
 .vEvtDetails img, .categoryColor	{margin-right:15px;}
 .vEvtDetails img					{max-width:24px;}
+.vEvtDetails div					{margin-left:30px;}/*Exple: jours/mois des périodicités*/
 .categoryColor						{width:20px; height:20px;}
 </style>
 
@@ -13,12 +14,12 @@ lightboxSetWidth(600);
 <div>
 	<?php
 	////	MENU CONTEXTUEL & D'EDITION / TITRE / DESCRIPTION
-	echo '<div class="lightboxTitle">'.$curObj->lightboxTitleMenu().$curObj->title.'</div>';
+	echo '<div class="lightboxTitle">'.$curObj->lightboxMenu().$curObj->title.'</div>';
 	if(!empty($curObj->description))	{echo $curObj->description.'<hr>';}
 
 	////	DATE / PERIODICITE / CATEGORIE
-	echo '<div class="vEvtDetails"><img src="app/img/calendar/clock.png">'.Txt::dateLabel($curObj->dateBegin,"basic",$curObj->dateEnd).'</div>';
-	if(!empty($labelPeriod))			{echo '<hr><div class="vEvtDetails"><img src="app/img/calendar/repeat.png">'.$labelPeriod.'</div>';}
+	echo '<div class="vEvtDetails"><img src="app/img/calendar/clock.png">'.Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd).'</div>';
+	if(!empty($labelPeriod))			{echo '<hr><div class="vEvtDetails"><img src="app/img/calendar/period.png">'.$labelPeriod.'</div>';}
 	if($curObj->_idCat)					{echo '<hr><div class="vEvtDetails">'.$curObj->categoryLabel().'</div>';}
 
 	////	AFFECTATIONS AUX AGENDAS / IMPORTANT / VISIBILITE SPECIALE

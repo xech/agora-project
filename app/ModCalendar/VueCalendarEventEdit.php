@@ -3,7 +3,7 @@
 lightboxSetWidth(800);
 
 ////	INIT
-$(function(){
+ready(function(){
 	////	INIT L'AFFICHAGE DU FORMULAIRE
 	$("select[name='periodType']").val("<?= $curObj->periodType ?>");						//Prérempli la périodicité
 	$("select[name='contentVisible']").val("<?= $curObj->contentVisible ?>");				//Prérempli le "contentVisible"
@@ -17,32 +17,55 @@ $(function(){
 	elseif($curObj->fullRight()==false)	{echo '$(".vEvtOptionAdvanced,.inputTitleName,.descriptionToggle,.descriptionTextarea,#eventDates").hide();';}//User pas auteur de l'evt : masque les principaux champs, sauf les affectations aux agendas
 	?>
 
-	////	INIT LE SURLIGNAGE DES AGENDAS PRÉSÉLECTIONNÉS
+	////	SURLIGNE LES AGENDAS PRÉSÉLECTIONNÉS
 	$(".vCalInput:checked").each(function(){
 		$(this).parents(".vCalAffectBlock").addClass("lineSelect");
 	});
 
-	////	CHANGE DE DATE/HEURE/PÉRIODICITÉ : CONTROLE SI LES CRÉNEAUX HORAIRES SONT DÉJÀ OCCUPÉS  &  AFFICHE AU BESOIN LES DETAILS DE PÉRIODICITÉ
-	<?php if(Ctrl::$curUser->isUser()){ ?>
+	////	CHANGE DE DATE/HEURE : CONTROLE SI LES CRÉNEAUX HORAIRES SONT OCCUPÉS  &  
 	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").on("change",function(){ timeSlotBusy(); });
+
+	////	PÉRIODICITÉ : AFFICHAGE & DETAILS
 	$("[name='periodType'],[name='dateBegin']").on("change",function(){ displayPeriodType(); });
-	<?php } ?>
+
+	////	PÉRIODICITÉ : AJOUTE UNE DATE D'EXCEPTION
+	$("#periodDateExceptionsAdd").on("click",function(){
+		$('.vPeriodDateExceptionsInput:hidden:first').fadeIn().css("display","inline-block");
+	});
+
+	////	PÉRIODICITÉ : SUPPRIME UNE DATE D'EXCEPTION
+	$(".vPeriodDateExceptionsDelete").on("click",async function(){
+		if($(this).parent(".vPeriodDateExceptionsInput").find("input").isEmpty() || await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){
+			$(this).parent(".vPeriodDateExceptionsInput").find("input").val("");
+			$(this).parent(".vPeriodDateExceptionsInput").hide();
+		}
+	});
 
 	////	VISIO : "AJOUTER UNE VISIO"
-	$("#visioUrlAdd").on("click",function(){
-		if(confirm("<?= Txt::trad("VISIO_urlAdd") ?> ?")){				//Confirme l'ajout de la visio
-			$(this).hide();												//Masque le label "Ajouter une visio"
-			$("#visioOptions").show();									//Affiche l'input / copy / delete
-			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>");	//Spécifie l'URL d'une visio avec un identifiant aléatoire
+	$("#visioUrlAdd").on("click", async function(){
+		if(await confirmAlt("<?= Txt::trad("VISIO_urlAddConfirm") ?>")){
+			$(this).hide();													//Masque le label "Ajouter une visio"
+			$("#visioOptions").show();										//Affiche l'input / copy / delete
+			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>");		//Spécifie l'URL d'une visio avec un identifiant aléatoire
+		}
+	});
+
+	////	VISIO : COPIE L'URL DANS LE PRESSE PAPIER
+	$("#visioUrlCopy").on("click", async function(){
+		if(await confirmAlt("<?= Txt::trad("VISIO_urlCopy") ?>")){
+			let visioUrlVal=$("#visioUrlInput").val();							//Récupère l'Url
+			navigator.clipboard.writeText(visioUrlVal).then(()=>{				//Copie l'url dans le clipboard (Presse-papiers)
+				notify(visioUrlVal+" <br> <?= Txt::trad("copyUrlNotif") ?>");	//Notify "L'url a bien été copiée"
+			});
 		}
 	});
 
 	////	VISIO : SUPPRIME L'URL
-	$("#visioUrlDelete").on("click",function(){
-		if(confirm("<?= Txt::trad("VISIO_urlDelete") ?> ?")){			//Confirme la suppression de la visio
-			$("#visioUrlInput").val("");								//Réinit l'url de la visio
-			$("#visioOptions").hide();									//Affiche l'input / copy / delete
-			$("#visioUrlAdd").show();									//Affiche le label "Ajouter une visio"
+	$("#visioUrlDelete").on("click", async function(){
+		if(await confirmAlt("<?= Txt::trad("VISIO_urlDelete") ?>")){
+			$("#visioUrlInput").val("");	//Réinit l'url de la visio
+			$("#visioOptions").hide();		//Affiche l'input / copy / delete
+			$("#visioUrlAdd").show();		//Affiche le label "Ajouter une visio"
 		}
 	});
 
@@ -51,19 +74,10 @@ $(function(){
 		launchVisio(this.value);
 	});
 
-	////	VISIO : COPIE L'URL DANS LE PRESSE PAPIER
-	$("#visioUrlCopy").on("click",function(){
-		if(confirm("<?= Txt::trad("VISIO_urlCopy") ?> ?")){
-			$("#visioUrlInput").select();
-			document.execCommand('copy');
-			notify("<?= Txt::trad("copyUrlConfirmed") ?>");
-		}
-	});
-
 	////	SELECTION D'AGENDA : CHECK/UNCKECK L'INPUT PRINCIPAL D'UN AGENDA VIA SON LABEL
 	$(".vCalInput").on("change",function(){
 		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
-		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout !
+		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout
 		timeoutPropose=setTimeout(function(thisInput){
 			if(/proposition/i.test(thisInput.name) && $(thisInput).prop("checked"))  {notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
 		},500,this);//Affiche avec un timeout (cf. sélection d'un groupe d'users). Transmet l'input courant en paramètre via "this"
@@ -85,78 +99,50 @@ $(function(){
 });
 
 
-////	GÈRE L'AFFICHAGE DE LA PÉRIODICITÉ
+////	PÉRIODICITÉ : AFFICHAGE & DETAILS
 function displayPeriodType()
 {
 	//Réinitialise les options de périodicité & Affiche au besoin l'options sélectionnée
-	$("#periodOptions, #periodTypeLabel, #periodOption_weekDay, #periodOption_month, #periodDateEnd, #periodDateExceptions").hide();
-	if($("[name='periodType']").isNotEmpty())  {$("#periodOptions, #periodTypeLabel, #periodDateEnd, #periodDateExceptions, #periodOption_"+$("[name='periodType']").val()).fadeIn();}
+	$("#periodFieldset, #periodLegend, #periodType_weekDay, #periodType_month, #periodDateEnd, #periodDateExceptions").hide();
+	if($("[name='periodType']").notEmpty())  {$("#periodFieldset, #periodLegend, #periodDateEnd, #periodDateExceptions, #periodType_"+$("[name='periodType']").val()).fadeIn();}
 	//Affiche les détails de périodicité (ex: "Tous les mois, le 15")
-	if($("[name='periodType']").val()=="weekDay")		{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_weekDay") ?>");}																//"Toutes les semaines"
-	else if($("[name='periodType']").val()=="month")	{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_month").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,2));}	//"Tous les mois, le 22"
-	else if($("[name='periodType']").val()=="year")		{$("#periodTypeLabel").html("<?= Txt::trad("CALENDAR_period_year").", ".Txt::trad("the") ?> "+$("[name='dateBegin']").val().substr(0,5));}	//"Tous les ans, le 15/10"
+	let dateBeginValue=$("[name='dateBegin']").val();
+	if($("[name='periodType']").val()=="weekDay")		{$("#periodLegend").html("<?= Txt::trad("CALENDAR_period_weekDay") ?>");}															//"Toutes les semaines"
+	else if($("[name='periodType']").val()=="month")	{$("#periodLegend").html(String("<?= Txt::trad("CALENDAR_period_monthBis") ?>").replace("--DATE--",dateBeginValue.substr(0,2)));}	//"Tous les 15 du mois"
+	else if($("[name='periodType']").val()=="year")		{$("#periodLegend").html(String("<?= Txt::trad("CALENDAR_period_yearBis") ?>").replace("--DATE--",dateBeginValue.substr(0,5)));}	//"Tous les ans, le 15/10"
 	//Pré-check si besoin tous les mois
 	if($("[name='periodType']").val()=="month" && $("[name*='periodValues_month']:checked").length==0)  {$("input[name*='periodValues_month']").prop("checked","true");}
-	//Masque les exceptions de périodicité vides
-	$(".periodExceptionDiv").each(function(){
-		if($("#"+this.id.replace("Div","Input")).isEmpty())  {$(this).hide();}
-	});
 }
-
-
-////	SUPPRIME UNE "PERIODDATEEXCEPTIONS"
-function deletePeriodDateExceptions(exceptionCpt)
-{
-	var inputSelector="#periodExceptionInput"+exceptionCpt;
-	if($(inputSelector).isEmpty() || ($(inputSelector).isNotEmpty() && confirm("<?= Txt::trad("delete") ?>?"))){
-		$(inputSelector).val("");
-		$("#periodExceptionDiv"+exceptionCpt).hide();
-	}
-}
-
 
 ////	CONTROLE L'OCCUPATION DES CRÉNEAUX HORAIRES DES AGENDAS SÉLECTIONNÉS (AJAX)
 function timeSlotBusy()
 {
-	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout !
+	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout
 	timeoutTimeSlotBusy=setTimeout(function(){
-		if($("[name='dateBegin']").isNotEmpty() && $("[name='dateEnd']").isNotEmpty() && $("[name='dateBegin']").val()==$("[name='dateEnd']").val()){
+		if($("[name='dateBegin']").notEmpty() && $("[name='dateEnd']").notEmpty() && $("[name='dateBegin']").val()==$("[name='dateEnd']").val()){
 			//Init l'url, avec le créneau horaire et les agendas concernés
 			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy"+
 						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
 						"&_evtId=<?= $curObj->_id ?>";
 			$(".vCalInput:checked,.vCalInputProposition:checked").each(function(){  ajaxUrl+="&calendarIds[]="+this.value;  });
-			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé ("mainPageDisplay()" pour les tooltips)
+			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
-				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainPageDisplay();}
+				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainDisplay();}//Update les tooltips via mainDisplay()
 				else					{$("#timeSlotBusy").hide();}
 			});
 		}
 	}, 1500);
 }
 
-
-////	Controle spécifique à l'objet (cf. "VueObjEditMenuSubmit.php")
+////	Controle spécifique (cf. "VueObjMenuEdit.php")
 function objectFormControl()
 {
 	return new Promise((resolve)=>{
-		//// Controle le nombre d'affectations aux agendas
-		if($(".vCalInput:checked,.vCalInputProposition:checked").isEmpty())
-			{notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");  resolve(false);}
-		//// Controle des "guests"
-		if($("input[name='guest']").exist()){
-			//// Controle du champ "guest" & "guestMail"
-			if($("input[name='guest']").val().length<3)													{notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");  resolve(false);}
-			if($("input[name='guestMail']").isEmpty() || $("input[name='guestMail']").isMail()==false)	{notify("<?= Txt::trad("mailInvalid") ?>");  resolve(false);}
-			//// Controle du Captcha via Ajax
-			$.ajax("?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val())).done(function(result){
-				if(/true/i.test(result)==false)		{notify("<?=Txt::trad("captchaError") ?>");  resolve(false);}
-				else								{resolve(true);}							
-			});
-		}
-		//// Controle OK : Renvoi "true"
-		else  {resolve(true);}
+		if($(".vCalInput:checked,.vCalInputProposition:checked").isEmpty())								{notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");  resolve(false);}	//Aucune affectation aux agendas
+		else if($("input[name='guest']").exist() && $("input[name='guest']").val().length<3)			{notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");  resolve(false);}	//"Merci de préciser un nom ou un pseudo"
+		else if($("input[name='guestMail']").exist() && $("input[name='guestMail']").isMail()==false)	{notify("<?= Txt::trad("mailInvalid") ?>");			 resolve(false);}	//Mail invalide
+		else																							{resolve(true);}
 	});
 }
 </script>
@@ -164,54 +150,54 @@ function objectFormControl()
 
 <style>
 /*GENERAL*/
-legend			 							{font-size:1.05em;}
-.vEvtOptionInline							{display:inline-block; margin:25px 25px 0px 0px;}
-.beginEndLabel								{display:none}
-#beginEndSeparator							{margin:0px 5px;}
+legend			 					{font-size:1.05em; text-align: center!important;}
+.vEvtOptionInline					{display:inline-block; margin:25px 25px 0px 0px;}
+.beginEndLabel						{display:none}
+#beginEndSeparator					{margin:0px 5px;}
 
 /*PÉRIODICITÉ*/
-#periodOptions					 							{display:none; margin-top:20px; margin-bottom:10px;}
-#periodOption_weekDay, #periodOption_month					{text-align:left; vertical-align:middle;}/*checkboxes des jours ou des mois*/
-#periodOption_weekDay>div, #periodOption_month>div			{display:inline-block; width:14%; padding:8px;}
-#periodDateEnd, #periodDateExceptions, .periodExceptionDiv	{padding:8px;}
-#periodDateExceptions, .periodExceptionDiv					{display:inline-block;}
+#periodFieldset					 	{display:none; margin:20px 0px;}
+#periodFieldset>div					{margin-bottom:20px; line-height:30px;}/*blocks principaux*/
+.vPeriodCheckboxDays				{display:inline-block; width:14%;}
+.vPeriodCheckboxMonths				{display:inline-block; width:16%;}
+.vPeriodDateExceptionsInput			{display:inline-block; margin:0px 10px;}
+.vPeriodDateExceptionsInput:has(input[value=''])	{display:none;}
 
 /*VISIOCONFERENCE*/
-#visioUrlAdd								{line-height:35px;}
-#visioUrlInput								{width:280px; font-size:0.95em;}
+#visioUrlAdd						{line-height:35px;}
+#visioUrlInput						{width:280px; font-size:0.95em;}
 <?= empty($curObj->visioUrl) ? "#visioOptions{display:none;}" : "#visioUrlAdd{display:none;}" ?>/*masque "Ajouter une visio"  ||  masque l'input de la visio*/
 
 /*AFFECTATION AUX AGENDAS*/
-#eventAffectations hr						{margin:5px;}/*surcharge*/
-#calsAffectDiv								{max-height:200px; overflow-y:auto;}
-.vCalAffectBlock							{display:inline-block; width:32%; margin:2px; margin-right:5px; border-radius:3px;}
-.vCalAffectBlock .vCalInput					{display:none;}
-.vCalAffectBlock label						{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
-.vCalAffectBlock img						{max-height:18px;}
-.vCalAffectBlockBis label					{width:100%;}
-.vCalAffectProposition						{display:none; float:right; height:25px; padding:3px; background:#e5e5e5;}
-.vCalAffectProposition input				{margin-right:5px;}
-input[name='calUsersGroup[]']				{display:none;}
+#eventAffectations hr				{margin:5px;}/*surcharge*/
+#calsAffectDiv						{max-height:200px; overflow-y:auto;}
+.vCalAffectBlock					{display:inline-block; width:32%; margin:2px; margin-right:5px; border-radius:3px;}
+.vCalAffectBlock .vCalInput			{display:none;}
+.vCalAffectBlock label				{display:inline-block; width:75%; padding:5px 3px 5px 3px;}
+.vCalAffectBlock img				{max-height:18px;}
+.vCalAffectBlockBis label			{width:100%;}
+.vCalAffectProposition				{display:none; float:right; height:25px; padding:3px; background:#ddd; border-radius:5px;}
+.vCalAffectProposition input		{margin-right:5px;}
+input[name='calUsersGroup[]']		{display:none;}
 
 /*GUESTS*/
-#guestMenu									{text-align:center;}
-input[name='guestMail']						{margin-left:20px;}
+#guestMenu							{text-align:center;}
+input[name='guestMail']				{margin-left:20px;}
 
-/*AFFICHAGE DU "timeSlotBusy()"*/
-#timeSlotBusy								{display:none;}
-.timeSlotBusyContent table					{margin-top:10px;}
+/*AFFICHAGE DE "timeSlotBusy"*/
+#timeSlotBusy						{display:none;}
+.timeSlotBusyContent table			{margin-top:10px;}
 .timeSlotBusyContent table td:first-child	{min-width:120px; vertical-align:top;}
-.timeSlotBusyContent span					{margin-right:20px; display:inline-block}
+.timeSlotBusyContent span			{margin-right:20px; display:inline-block}
 
 /*MOBILE*/
 @media screen and (max-width:440px){
-	#beginEndSeparator									{visibility:hidden; display:block;}
-	.beginEndLabel										{display:inline-block; width:50px;}
-	input:read-only										{background:#eee!important;}/*sélection des dates & times*/
-	#periodOption_weekDay>div, #periodOption_month>div	{width:33%; padding:8px 4px; font-size:0.9em;}
-	#calsAffectDiv										{max-height:500px;}
-	.vCalAffectBlock									{width:96%;}
-	.vCalAffectBlock label								{padding:8px 3px 8px 3px;}
+	#beginEndSeparator								{visibility:hidden; display:block;}
+	.beginEndLabel									{display:inline-block; width:50px;}
+	.vPeriodCheckboxDays, .vPeriodCheckboxMonths	{width:33%!important;}
+	#calsAffectDiv									{max-height:500px;}
+	.vCalAffectBlock								{width:96%;}
+	.vCalAffectBlock label							{padding:8px 3px 8px 3px;}
 }
 </style>
 
@@ -223,7 +209,7 @@ input[name='guestMail']						{margin-left:20px;}
 
 	<!--TITRE / DESCRIPTION-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>">
-	<?= $curObj->editDescription() ?>
+	<?= $curObj->descriptionEditor() ?>
 
 	<!--DATE DEBUT & FIN-->
 	<div class="vEvtOptionInline" id="eventDates">
@@ -237,7 +223,7 @@ input[name='guestMail']						{margin-left:20px;}
 	</div>
 
 	<!--<SELECT> DE LA CATEGORIE-->
-	<div class="vEvtOptionInline vEvtOptionAdvanced">
+	<div class="vEvtOptionInline">
 		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
 	</div>
 
@@ -251,51 +237,53 @@ input[name='guestMail']						{margin-left:20px;}
 		</select>
 	</div>
 
-	<!--PERIODICITE : DIV DES OPTIONS-->
-	<fieldset class="vEvtOptionAdvanced" id="periodOptions">
+	<!--PERIODICITE : DIV DES TYPES-->
+	<fieldset class="vEvtOptionAdvanced" id="periodFieldset">
 		<!--PERIODICITE: DETAIL POUR LES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
-		<legend><img src="app/img/calendar/repeat.png"> <span id="periodTypeLabel"></span></legend>
+		<legend><img src="app/img/calendar/period.png"> <span id="periodLegend"></span></legend>
 		<!--PERIODICITE: JOURS DE LA SEMAINE-->
-		<div id="periodOption_weekDay">
+		<div id="periodType_weekDay">
 			<?php
 			for($cpt=1; $cpt<=7; $cpt++){
 				$periodValueChecked=($curObj->periodType=="weekDay" && in_array($cpt,$tabPeriodValues))  ?  "checked"  :  null;
-				echo '<div>
+				echo '<span class="vPeriodCheckboxDays">
 						<input type="checkbox" name="periodValues_weekDay[]" value="'.$cpt.'" id="periodValues_weekDay'.$cpt.'" '.$periodValueChecked.' >
 						<label for="periodValues_weekDay'.$cpt.'">'.Txt::trad("day_".$cpt).'</label>
-					  </div>';
+					  </span>';
 			}
 			?>
 		</div>
 		<!--PERIODICITE: MOIS DE L'ANNEE-->
-		<div id="periodOption_month">
+		<div id="periodType_month">
 			<?php
 			for($cpt=1; $cpt<=12; $cpt++){
 				$periodValueChecked=($curObj->periodType=="month" && in_array($cpt,$tabPeriodValues))  ?  "checked"  :  null;
-				echo '<div>
+				echo '<span class="vPeriodCheckboxMonths">
 						<input type="checkbox" name="periodValues_month[]" value="'.$cpt.'" id="periodValues_month'.$cpt.'" '.$periodValueChecked.' >
 						<label for="periodValues_month'.$cpt.'">'.Txt::trad("month_".$cpt).'</label>
-					  </div>';
+					  </span>';
+			}
+			?>
+		</div>
+		<!--EXCEPTIONS DE PERIODICITE-->
+		<div id="periodDateExceptions">
+			<label id="periodDateExceptionsAdd" <?= Txt::tooltip("add") ?>><img src="app/img/calendar/periodDateExceptions.png"> <?= Txt::trad("CALENDAR_periodDateExceptions") ?> <img src="app/img/plusSmall.png"></label>
+			<?php
+			////	Dates d'exceptions de périodicité (10 max)
+			for($cpt=1; $cpt<=10; $cpt++){
+				echo '<span class="vPeriodDateExceptionsInput" id="periodDateExceptionsInput'.$cpt.'">
+						<img src="app/img/arrowRightBig.png">
+						<input type="text" name="periodDateExceptions[]" value="'.(!empty($periodDateExceptions[$cpt]) ? $periodDateExceptions[$cpt] : null).'" class="dateInput">
+						<img src="app/img/delete.png" class="vPeriodDateExceptionsDelete sLink" '.Txt::tooltip("delete").'>
+					  </span>';
 			}
 			?>
 		</div>
 		<!--PERIODICITE: FIN-->
 		<div id="periodDateEnd">
-			<?= Txt::trad("CALENDAR_periodDateEnd") ?> <input type="text" name="periodDateEnd" class="dateInput" value="<?= Txt::formatDate($curObj->periodDateEnd,"dbDate","inputDate") ?>">
+			<img src="app/img/dateEnd.png"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowRightBig.png">
+			<input type="text" name="periodDateEnd" class="dateInput" value="<?= Txt::formatDate($curObj->periodDateEnd,"dbDate","inputDate") ?>">
 		</div>
-		<!--EXCEPTIONS DE PERIODICITE-->
-		<div id="periodDateExceptions">
-			<span  onclick="$('.periodExceptionDiv:hidden:first').fadeIn()"><?= Txt::trad("CALENDAR_periodException") ?> <img src="app/img/plusSmall.png"></span>
-		</div>
-		<?php
-		////	Dates d'exceptions de périodicité (10 max)
-		for($cpt=1; $cpt<=10; $cpt++){
-			echo '<div id="periodExceptionDiv'.$cpt.'" class="periodExceptionDiv">
-					<input type="text" name="periodDateExceptions[]" value="'.(isset($periodDateExceptions[$cpt])?$periodDateExceptions[$cpt]:null).'" class="dateInput" id="periodExceptionInput'.$cpt.'">
-					<img src="app/img/delete.png" onclick="deletePeriodDateExceptions('.$cpt.')" '.Txt::tooltip("delete").'>
-				  </div>';
-		}
-		?>
 	</fieldset>
 
 	<!--IMPORTANT-->
@@ -318,7 +306,7 @@ input[name='guestMail']						{margin-left:20px;}
 	<!--VISIOCONFERENCE-->
 	<?php if(Ctrl::$agora->visioEnabled()){ ?>
 	<div class="vEvtOptionInline vEvtOptionAdvanced">
-		<span id="visioUrlAdd" class="sLink"><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
+		<span id="visioUrlAdd" class="sLink" <?= Txt::tooltip("VISIO_urlAddConfirm") ?>><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
 		<span id="visioOptions">
 			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" class="sLink" <?= Txt::tooltip("VISIO_launchFromEvent") ?> readonly>
 			<img src="app/img/copy.png" id="visioUrlCopy" class="sLink" <?= Txt::tooltip("VISIO_urlCopy") ?>>
@@ -351,7 +339,7 @@ input[name='guestMail']						{margin-left:20px;}
 			//Affiche l'input d'affectation/proposition
 			echo '<div class="vCalAffectBlock lineHover">
 					<input type="checkbox" name="'.$inputName.'" value="'.$tmpCal->_id.'" id="box'.$tmpCal->_typeId.'" class="vCalInput" '.$tmpCal->isChecked.' '.$tmpCal->isDisabled.' '.$dataIdUser.'>
-					<label for="box'.$tmpCal->_typeId.'" class="noTooltip" '.Txt::tooltip($tmpCal->labelTooltip).'><img src="app/img/calendar/'.$iconLabel.'"> '.$tmpCal->title.'</label>
+					<label for="box'.$tmpCal->_typeId.'" class="noTooltipster" '.Txt::tooltip($tmpCal->labelTooltip).'><img src="app/img/calendar/'.$iconLabel.'"> '.$tmpCal->title.'</label>
 					'.$moreInputs.'
 				  </div>';
 		}
