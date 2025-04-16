@@ -45,20 +45,18 @@ ready(function(){
 	*******************************************************************************************/
 	$("#mainForm").on("submit", async function(event){
 		event.preventDefault();
-
-		////	Sélection d'une personne, d'un titre et d'un description
-		if($("[name='personList[]']:checked, [name='groupList[]']:checked").length==0)	{notify("<?= Txt::trad("MAIL_specifyMail") ?>");	return false;}
-		else if($("[name='title']").isEmpty())											{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_title") ?>");		return false;}
-		else if(isEmptyEditor())														{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_description") ?>");  return false;}
-
-		////	Fichiers joints > 25Mo ?
-		var filesSize=0;
-		$(".attachedFileInput").each(function(){  if($(this).notEmpty()) {filesSize+=this.files[0].size;}	 });
-		if(filesSize > <?= File::mailMaxFilesSize ?>  && await confirmAlt("<?= str_replace("--MAXFILESSIZE--",File::mailMaxFilesSizeLabel,Txt::trad("MAIL_maxFileSizeConfirm")) ?>")==false)  {return false;}
-
-		////	Valide le formulaire
-		attachedFileSrcReplace();	// Remplace le "src" des images temporaires (cf tinymce)
-		submitFinal(this);			// Submit final (sans récursivité Jquery)
+		if(await confirmAlt("<?= Txt::trad("MAIL_sendMail") ?> ?")){
+			////	Sélection d'une personne, d'un titre et d'un description
+			if($("[name='personList[]']:checked, [name='groupList[]']:checked").length==0)	{notify("<?= Txt::trad("MAIL_specifyMail") ?>");	return false;}
+			else if($("[name='title']").isEmpty())											{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_title") ?>");		return false;}
+			else if(isEmptyEditor())														{notify("<?= Txt::trad("requiredFields")." : ".Txt::trad("MAIL_description") ?>");  return false;}
+			////	Fichiers joints > 25Mo ?
+			var filesSize=0;
+			$(".attachedFileInput").each(function(){  if($(this).notEmpty())  {filesSize+=this.files[0].size;}  });
+			if(filesSize > <?= File::mailMaxFilesSize ?>  && await confirmAlt("<?= str_replace("--MAXFILESSIZE--",File::mailMaxFilesSizeLabel,Txt::trad("MAIL_maxFileSizeConfirm")) ?>")==false)  {return false;}
+			////	Valide le formulaire
+			asyncSubmit(this);
+		}
 	});
 });
 </script>
@@ -81,9 +79,10 @@ ready(function(){
 #pageContent [name='title']			{width:100%; height:35px; margin-bottom:20px;}
 #mailOptions						{display:table; width:100%; margin-top:20px;}
 #mailOptions>div					{display:table-cell;}/*options et bouton "Envoyer"*/
-#mailOptions>div>div				{margin:10px;}/*lignes des options*/
+#mailOptions>div>div				{margin-top:10px;}/*lignes des options*/
 #mailOptions img[src*=dependency]	{display:none;}
-.submitButtonMain button			{margin-top:50px;}
+.submitButtonMain					{text-align:right;}
+.submitButtonMain button			{width:220px; margin-top:20px;}
 /*MOBILE*/
 @media screen and (max-width:1024px){
 	#historyLabel					{border-bottom:none; margin:0px;}
@@ -151,28 +150,35 @@ ready(function(){
 			<div id="historyLabel" class="miscContainer" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/log.png"> <?= Txt::trad("MAIL_historyTitle") ?></div>
 		</div>
 
-		<div id="pageContent" class="miscContainer">
-			<!--TITRE / DESCRIPTION / MOBILE : LISTE DES DESTINATAIRES-->
-			<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("MAIL_title") ?>">
-			<?= $curObj->descriptionEditor(false) ?>
-			<div id="mobileRecipients"></div>
+		<div id="pageContent">
+			<div class="miscContainer">
+				<!--TITRE / DESCRIPTION / MOBILE : LISTE DES DESTINATAIRES-->
+				<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("MAIL_title") ?>" required>
+				<?= $curObj->descriptionEditor(false) ?>
+				<div id="mobileRecipients"></div>
 
-			<!--OPTIONS DU MAIL-->
-			<div id="mailOptions">
-				<div>
-					<?php
-					//// Options de base des emails (cf. Tool::sendMail()")  &&  "Ajouter une visioconférence"  &&  "joindre des fichiers"
-					echo MdlObject::sendMailBasicOptions();
-					if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" '.Txt::tooltip("VISIO_urlAddConfirm").'><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").'</div>';}
-					echo $curObj->attachedFile();
-					?>
-				</div>
-				<div>
-					<?php
-					//// Ancien email rappelé via "oldMailTypeId"  &  Bouton"Submit"
-					if(Req::isParam("oldMailTypeId"))  {echo '<input type="hidden" name="oldMailTypeId" value="'.Req::param("oldMailTypeId").'">';}
-					echo Txt::submitButton("<img src='app/img/postMessage.png'> ".Txt::trad("MAIL_sendButton"));
-					?>
+				<!--OPTIONS DU MAIL-->
+				<div id="mailOptions">
+					<div>
+						<?php
+						//// Options de base des emails
+						echo MdlObject::sendMailBasicOptions();
+						?>
+					</div>
+					<div>
+						<?php
+						//// Ajouter une visio ou des fichiers 
+						if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" '.Txt::tooltip("VISIO_urlAddConfirm").'><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").'</div>';}
+						echo $curObj->attachedFile();
+						?>
+					</div>
+					<div>
+						<?php
+						//// Ancien email rappelé via "oldMailTypeId"  &  Bouton"Submit"
+						if(Req::isParam("oldMailTypeId"))  {echo '<input type="hidden" name="oldMailTypeId" value="'.Req::param("oldMailTypeId").'">';}
+						echo Txt::submitButton("<img src='app/img/postMessage.png'> ".Txt::trad("MAIL_sendMail"));
+						?>
+					</div>
 				</div>
 			</div>
 		</div>

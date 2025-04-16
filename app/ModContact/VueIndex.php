@@ -41,7 +41,7 @@
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($contactList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlContact::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("CONTACT_addContact")."</div>"  :  null;
-			echo "<div class='emptyContainer'>".Txt::trad("CONTACT_noContact").$addElement."</div>";
+			echo '<div class="miscContainer emptyContainer">'.Txt::trad("CONTACT_noContact").$addElement.'</div>';
 		}
 		?>
 	</div>

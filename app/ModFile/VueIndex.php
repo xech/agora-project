@@ -55,7 +55,7 @@
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($filesList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlFile::urlAddFiles().'\')"><img src="app/img/plus.png"> '.Txt::trad("FILE_addFile").'</div>'  :  null;
-			echo '<div class="emptyContainer">'.Txt::trad("FILE_noFile").$addElement.'</div>';
+			echo '<div class="miscContainer emptyContainer">'.Txt::trad("FILE_noFile").$addElement.'</div>';
 		}
 		?>
 	</div>

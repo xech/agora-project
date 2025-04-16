@@ -405,15 +405,14 @@ class MdlObject
 	public function getUrl($display=null)
 	{
 		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe plus ou pas encore
-		else
-		{
+		else{
 			$urlCtrl="?ctrl=".static::moduleName;
-			if($display=="vue")									{return $urlCtrl."&typeId=".$this->_typeId."&action=Vue".static::objectType;}				//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
-			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}	//Url de suppression via "CtrlObject->delete()"
-			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=EditFolder&typeId=".$this->_typeId;}							//Edite un dossier via "actionEditFolder()"
-			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}			//Edite un objet lambda : via une "action" spécifique
-			elseif(static::isContainerContent())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId."&typeIdChild=".$this->_typeId;}	//Affichage par défaut d'un "content" dans son "Container" (file/contact/task/link/forumMessage). Surchargé pour les "calendarEvent" car on doit sélectionner l'agenda principal de l'evt
-			else												{return $urlCtrl."&typeId=".$this->_typeId;}												//Affichage par défaut (Folder,news,forumSubject...)
+			if($display=="vue")									{return $urlCtrl."&typeId=".$this->_typeId."&action=Vue".static::objectType;}			//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
+			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}//Url de suppression via "actionDelete()"
+			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=EditFolder&typeId=".$this->_typeId;}						//Edite un dossier via "actionEditFolder()"
+			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}		//Edite un objet lambda
+			elseif(static::isContainerContent())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId;}							//Affichage d'un objet dans son "Container" (file, task, etc. Surchargé pour "calendarEvent")
+			else												{return $urlCtrl."&typeId=".$this->_typeId;}											//Affichage par défaut (Folder, News, etc)
 		}
 	}
 
@@ -685,7 +684,7 @@ class MdlObject
 			$objFolder->pluginLabel=$objFolder->name;
 			$objFolder->pluginTooltip=$objFolder->folderPath("text");
 			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
-			$objFolder->pluginJsIcon="window.parent.redir('".$objFolder->getUrl()."');";//Redir vers le dossier
+			$objFolder->pluginJsIcon="window.top.redir('".$objFolder->getUrl()."')";//Redir vers le dossier
 			$objFolder->pluginJsLabel=$objFolder->pluginJsIcon;
 			$pluginsList[]=$objFolder;
 		}

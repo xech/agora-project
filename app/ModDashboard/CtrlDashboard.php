@@ -110,7 +110,7 @@ class CtrlDashboard extends Ctrl
 			$curObj=$curObj->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","inputDate").", dateOffline=".Db::param("dateOffline","inputDate"));
 			//Notif par mail & Ferme la page
 			$curObj->sendMailNotif();
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -171,7 +171,7 @@ class CtrlDashboard extends Ctrl
 			foreach($curObj->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
 			$pollVote.="</ul><a href='".$curObj->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
 			$curObj->sendMailNotif($pollVote);
-			static::lightboxClose(null,"&dashboardPoll=true");
+			static::lightboxRedir("&dashboardPoll=true");
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;

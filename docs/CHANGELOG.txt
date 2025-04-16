@@ -4,7 +4,7 @@ CHANGELOG - JOURNAL DES VERSIONS
 --------------------------------
 
 
-VERSION 25.3.2
+VERSION 25.3.3
 ---------------
 Nouvelle fonction de drag/drop pour déplacer l'heure/date d'un événement
 Nouvel affichage des fenêtres de confirmation (JS "confirm()")
@@ -25,7 +25,7 @@ Optimisation majeures du fichier app.js
 Mise à jour de l'éditeur TinyMce en v7.7.2
 Mise à jour de PHPMailer en v6.9.3
 -----
-New drag/drop function to move the time/date of an event
+New drag/drop function to change the time/date of an event
 New display of confirmation windows (JS "confirm()")
 New main menu presentation
 New German translation
@@ -37,7 +37,7 @@ Optimisation of the context menus on mobile
 Optimization of calendar display
 Optimization of swipe navigation in calendars
 Optimization of event confirmation menus
-Optimisation installation form
+Optimisation of the installation form
 Fixed the name of downloaded folders
 Fixed the display of summer/winter hours on the weekly calendar
 Major optimizations of the app.js file

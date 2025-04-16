@@ -26,69 +26,57 @@ ready(function(){
 	});
 
 	/*******************************************************************************************
-	 *	DATEPICKER MOIS : MENU DE GAUCHE (display "week" uniquement)
+	 *	DATEPICKER DU MOIS (menu de gauche & display "week")
 	 *******************************************************************************************/
 	$("#datepickerCalendar").datepicker({
-		defaultDate:"<?= date("Y-m-d",$curTime) ?>",	//cf. "dateFormat" ci-après
-		dateFormat:"yy-mm-dd",							//Utilisé par le "dayYmd" suivant
-		firstDay:1,										//Commence chaque semaine par lundi
+		firstDay:1,										//Début de semaine le lundi
 		showOtherMonths:true,							//Affiche les jours des mois précédents/suivants
-		onSelect:function(dayYmd){						//Clique sur une date : redirection
-			var dateObject=new Date(dayYmd);
-			redir("?ctrl=calendar&curTime="+Math.round(dateObject.valueOf()/1000));
-		}
+		defaultDate:"<?= date("Y-m-d",$curTime) ?>",	//Mois/Date affiché
+		dateFormat:"yy-mm-dd",							//Utilisé par "dayYmd" ci-dessous
+		onSelect:function(dayYmd){ let dateObj=new Date(dayYmd);  redir("?ctrl=calendar&curTime="+(dateObj.getTime()/1000));}//Clique sur une date : redirection
 	});
-
-	/*******************************************************************************************
-	 *	DATEPICKER MOIS : SURLIGNE LA SEMAINE AFFICHÉE
-	 *******************************************************************************************/
+	/////	SURLIGNE LA SEMAINE COURANTE
 	<?php foreach($periodDays as $tmpDay){ ?>
 		$(".ui-state-active").removeClass("ui-state-active");//Réinit le style du jour de référence
 		$("[data-month=<?= date("n",$tmpDay["dayTimeBegin"])-1 ?>] [data-date=<?= date("j",$tmpDay["dayTimeBegin"]) ?>]").addClass("ui-state-highlight");//Surligne les jours de la semaine affichée
 	<?php } ?>
 
 	/*******************************************************************************************
-	 *	MOBILE : SWIPE GAUCHE/DROITE POUR CHANGER DE PERIODE  &  DEPLACE LE BOUTON "TODAY"
+	 *	MOBILE : SWIPE GAUCHE/DROITE  &&  BOUTON "TODAY"
 	 *******************************************************************************************/
 	if(isMobile()){
-		////	SWIPE GAUCHE/DROITE : AFFICHE LA PERIODE PRECEDENTE/SUIVANTE
-		swipeMenuActive=false;																					//Désactive l'affichage du menuContext : cf "menuContext()"
+		////	SWIPE GAUCHE/DROITE POUR AFFICHER LA PERIODE PRECEDENTE/SUIVANTE
+		swipeMenuActive=false;																					//Params désactivé : cf menuContext()
+		document.addEventListener("touchstart",function(event){ buttonPeriod=null; });							//Début de swipe
 		document.addEventListener("touchmove",function(event){													//Lance le swipe de navigation
-			if(Math.abs(swipeStartY-event.touches[0].clientY) < 50 && $("#menuMobileMain").isVisible()==false){	//Swipe < 50px d'amplitude verticale && Menu contextuel pas affiché
-				if((event.touches[0].clientX - swipeStartX) > 100)		{var buttonPeriod=".vCalPrev";}			//Swipe de 150px à gauche : affiche la période précédente (150px ou+ du bord de page : pour pas interférer avec "menuMobileDisplay()" > cf. "swipeWidth")
-				else if((swipeStartX - event.touches[0].clientX) > 100)	{var buttonPeriod=".vCalNext";}			//Swipe de 150px à droite : affiche la période suivante
-				$(buttonPeriod).effect("pulsate",{times:1},1000);												//Fait clignoter le bouton de changement de période 
-				if(typeof calendarSwipeTimeout!="undefined")  {clearTimeout(calendarSwipeTimeout);}				//Pas de cumul de Timeout (attendre la fin du "touchmove")
-				calendarSwipeTimeout=setTimeout(function(){  $(buttonPeriod).trigger("click");  },20);			//Trigger "Click" sur ce bouton, avec un timeOut
+			if($("#menuMobileMain").isVisible()==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){	//Menu contextuel masqué && Swipe < 50px d'amplitude verticale
+				if((event.touches[0].clientX - swipeXstart) > 100)		{buttonPeriod=".vCalPrev";}				//Swipe à gauche > 100px : période précédente
+				else if((swipeXstart - event.touches[0].clientX) > 100)	{buttonPeriod=".vCalNext";}				//Swipe à droite > 100px : période suivante
 			}
 		});
-		////	AJOUTE LE 1ER BOUTON "TODAY" AU MENU DES DISPLAYMODE  &  MASQUE CELUI DES AGENDAS SUIVANTS
+		document.addEventListener("touchend",function(){														//Fin de swipe :
+			if(buttonPeriod!=null)  {$(buttonPeriod).effect("pulsate",{times:1},1000).trigger("click");}		//Pulsate le bouton de la Prev/Next  && Trigger "Click"
+		});
+		////	AJOUTE LE 1ER BOUTON "TODAY" AU MENU DES DISPLAYMODE  &&  MASQUE CELUI DES AGENDAS SUIVANTS
 		$(".vCalDisplayMode:first .vCalDisplayToday").appendTo(".vCalDisplayMode .menuContext");
 		$(".vCalDisplayMode:not(:first)").hide();
 	}
-
-	/*******************************************************************************************
-	 *	LANCE ENFIN L'AFFICHAGE DES AGENDAS
-	 *******************************************************************************************/
-	mainCalendarDisplay();
-	window.onresize=function(){	mainCalendarDisplay(); };					//Relance si window.onresize
-	screen.orientation.onchange=function(){ mainCalendarDisplay(500); };	//Relance si orientation.onchange (timeout + long)
 });
 
 /*******************************************************************************************
- *	AFFICHAGE DES AGENDAS
+ *	AFFICHAGE DES AGENDAS  (lancé via "mainDisplay()" cf "app.js")
 *******************************************************************************************/
-function mainCalendarDisplay(timoutDuration=20)
+function moduleDisplay()
 {
-	if(typeof mainCalendarDisplayTimeout!="undefined")  {clearTimeout(mainCalendarDisplayTimeout);}//Pas de cumul de Timeout
-	mainCalendarDisplayTimeout=setTimeout(function(){
-		$(".vSynthDay").outerWidth( ($("#synthHeader").width() - $("#synthHeader .vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );	//Synthese des agendas : width des cellules des jours
-		$(".vCalMain").outerHeight( $(window).height() - $("#pageContent").offset().top - <?= !empty($_SESSION["livecounterUsers"]) ? 65 : 5 ?>);	//Hauteur des vCalMain en fonction #livecounterMain
-		$(".vCalVue").outerHeight( $(".vCalMain").height() - $(".vCalHeader").outerHeight(true));													//Hauteur des vues Month/Week en fonction de vCalMain
-		$(".vEvtBlock").each(function(){ $(this).css("background-color",$(this).attr("data-eventColor")); });										//Bgcolor de chaque evt
-		calendarDisplay();																															//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
-		$(".vCalMain").css("visibility","visible");																									//Affiche les agendas après calendarDisplay()
-	},timoutDuration);
+	if(typeof moduleDisplayTimeout!="undefined")  {clearTimeout(moduleDisplayTimeout);}//Un seul timeout
+	moduleDisplayTimeout=setTimeout(function(){																									//Timeout pour récupérer les dimensions globales (cf. affichage sur mobile)
+		$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );				//Synthese des agendas : width des cellules des jours
+		$(".vCalMain").outerHeight( (windowHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?0:60 ?>), true);	//Hauteur des vCalMain en fonction #livecounterMain (chargé + tard)
+		$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());												//Hauteur des vues Month/Week en fonction de vCalMain
+		$(".vEvtBlock").each(function(){ $(this).css("background-color",$(this).attr("data-eventColor")); });									//Bgcolor de chaque evt
+		calendarDisplay();																														//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
+		$(".vCalMain").css("visibility","visible");																								//Affiche les agendas après calendarDisplay()
+	},20);
 }
 </script>
 
@@ -105,8 +93,8 @@ function mainCalendarDisplay(timoutDuration=20)
 #calsList								{max-height:400px; overflow-y:auto; padding:5px;}
 #calsListLabel 							{margin-bottom:10px;}
 #calsList .calsListCalendar				{line-height:25px;}/*Label de chaque agenda*/
-#calsList .menuLaunch					{display:none;}/*menu context de chaque agenda*/
-#calsList>div:hover .menuLaunch			{display:inline; margin-left:5px;}/*idem*/
+#calsList .menuLauncher					{display:none;}/*menu context de chaque agenda*/
+#calsList>div:hover .menuLauncher		{display:inline; margin-left:5px;}/*idem*/
 #calsList .submitButtonInline			{display:none; margin-top:15px;}/*bouton d'affichage des agendas*/
 #displayAdminCals						{display:inline; float:right; height:18px;}
 #calsList:not(:hover) #displayAdminCals {visibility:hidden;}
@@ -118,11 +106,12 @@ function mainCalendarDisplay(timoutDuration=20)
 .ui-datepicker .ui-state-default		{padding:7px;}/*Cellules des jours*/
 
 /*Synthese des agendas*/
-#synthBlock.miscContainer				{padding:8px!important; margin-bottom:20px;}/*surcharge*/
-#synthTable								{display:table; width:100%;}
+#synthBlock.miscContainer				{padding:2px 8px; margin-bottom:20px;}/*surcharge*/
+#synthTable								{display:table; width:100%; max-width:100%;}
 #synthHeader, .vSynthLine				{display:table-row;}
-.vSynthDayCurDay						{color:#c00;}
-.vSynthLabel							{display:table-cell; width:100px; white-space:nowrap; padding-right:10px; vertical-align:middle;}
+#synthHeader							{font-size:0.9em!important;}
+#synthHeader .vSynthDayCurDay			{color:#c00;}
+.vSynthLabel							{display:table-cell; width:150px; white-space:nowrap; padding-right:10px; vertical-align:middle;}
 .vSynthDay								{display:table-cell; vertical-align:middle; text-align:center; height:22px;}
 .vSynthDayEvts							{display:table; width:100%; height:100%;}
 .vSynthDayEvt							{display:table-cell; border-left:transparent;}
@@ -135,6 +124,7 @@ function mainCalendarDisplay(timoutDuration=20)
 /*Agendas : conteneur + menu d'affichage + label des jours*/
 .vCalMain								{min-height:500px; padding:0px; visibility:hidden;}/*Masqué le tps du calcul de l'affichage*/
 .vCalMain:not(:last-child)				{margin-bottom:40px;}
+.vCalVue								{max-width:100%; width:100%;}
 .vCalHeader								{display:table; width:100%;}
 .vCalHeader>div							{display:table-cell; width:33%; padding:10px; vertical-align:middle;}
 .vCalTitleLabel,.vCalMonthLabel			{font-size:1.1em; margin-inline:5px;}/*Libellé de l'agenda et mois affiché*/
@@ -156,8 +146,7 @@ function mainCalendarDisplay(timoutDuration=20)
 
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	.vCalMain, .vCalVue				{max-width:100%!important;}
-	.vCalMain						{box-shadow:none; margin-bottom:0;}
+	.vCalMain						{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader						{white-space:nowrap;}
 	.vCalHeader>div					{width:auto; padding:4px; font-size:0.9em; text-transform:lowercase;}
 	.vCalTitleLabel,.vCalMonthLabel	{margin:0px;}
@@ -183,7 +172,7 @@ function mainCalendarDisplay(timoutDuration=20)
 	.vCalPeriod										{text-align:right;}
 	.vEvtLabel										{font-size:0.9em;}
 	.vWeekScroller									{overflow:visible!important;}/*pas d'overflow scroll en affichage "week"*/
-	#synthBlock, .vCalPrevNext, .vCalDisplayMode, .vMonthYearWeekNum	{display:none!important;}
+	#synthBlock, .vCalPrevNext, .vCalDisplayMode, .vMonthWeekNbYear	{display:none!important;}
 }
 </style>
 
@@ -312,14 +301,14 @@ function mainCalendarDisplay(timoutDuration=20)
 				<!--LABEL DE LA PERIODE AFFICHEE  &&  MENU CONTEXT MONTHS/YEARS  &&  PRECEDENT/SUIVANT-->
 				<div class="vCalPeriod">
 					<span class="vCalPrevNext vCalPrev" onclick="redir('?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/navPrev.png"></span>
-					<span class="menuLaunch vCalMonthLabel" for="monthsYearsMenu<?= $tmpCal->_typeId ?>"><?= ucfirst($monthLabel) ?></span>
+					<span class="menuLauncher vCalMonthLabel" for="monthsYearsMenu<?= $tmpCal->_typeId ?>"><?= ucfirst($monthLabel) ?></span>
 					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->_typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
 					<span class="vCalPrevNext vCalNext" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/navNext.png"></span>
 				</div>
 				<!--"AUJOURD'HUI"  &&  AFFICHAGE MONTH/WEEK/ETC-->
 				<div class="vCalDisplayMode">
 					<button class="vCalDisplayToday" onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')"><?= ucfirst(Txt::trad("today")) ?></button>
-					<button class="menuLaunch" for="menuDisplayMode<?= $tmpCal->_typeId ?>"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.png"> <?= Txt::trad("CALENDAR_display_".$displayMode) ?> <img src="app/img/arrowBottom.png"></button>
+					<button class="menuLauncher" for="menuDisplayMode<?= $tmpCal->_typeId ?>"><img src="app/img/calendar/display<?= ucfirst($displayMode) ?>.png"> <?= Txt::trad("CALENDAR_display_".$displayMode) ?> <img src="app/img/arrowBottom.png"></button>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->_typeId ?>">
 					<?php foreach($displayModeList as $displayModeTmp){ ?>
 						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('?ctrl=calendar&displayMode=<?= $displayModeTmp ?>')"><div class="menuIcon"><img src="app/img/calendar/display<?= ucfirst($displayModeTmp) ?>.png"></div><div><?= ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp)) ?></div></div>
@@ -333,6 +322,6 @@ function mainCalendarDisplay(timoutDuration=20)
 		<?php } ?>
 
 		<!--AUCUN AGENDA-->
-		<?php if(empty($displayedCalendars))  {echo "<div class='emptyContainer'>".Txt::trad("CALENDAR_noCalendarDisplayed")."</div>";} ?>
+		<?php if(empty($displayedCalendars))  {echo '<div class="miscContainer emptyContainer">'.Txt::trad("CALENDAR_noCalendarDisplayed").'</div>';} ?>
 	</div>
 </div>

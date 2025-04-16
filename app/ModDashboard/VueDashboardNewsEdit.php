@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(850);
+lightboxWidth(850);
 
 ////	Archive la news s'il ya une date de publication automatique
 ////	trigger "blur" avec timeout : le temps d'executer les controles de base du trigger "change" (cf. "app.js")

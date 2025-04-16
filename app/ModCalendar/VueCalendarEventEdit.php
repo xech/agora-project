@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(800);
+lightboxWidth(800);
 
 ////	INIT
 ready(function(){
@@ -22,7 +22,7 @@ ready(function(){
 		$(this).parents(".vCalAffectBlock").addClass("lineSelect");
 	});
 
-	////	CHANGE DE DATE/HEURE : CONTROLE SI LES CRÉNEAUX HORAIRES SONT OCCUPÉS  &  
+	////	CHANGE DE DATE/HEURE : CONTROLE SI LES CRÉNEAUX HORAIRES SONT OCCUPÉS
 	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").on("change",function(){ timeSlotBusy(); });
 
 	////	PÉRIODICITÉ : AFFICHAGE & DETAILS
@@ -77,7 +77,7 @@ ready(function(){
 	////	SELECTION D'AGENDA : CHECK/UNCKECK L'INPUT PRINCIPAL D'UN AGENDA VIA SON LABEL
 	$(".vCalInput").on("change",function(){
 		//Coche une proposition d'evt : affiche la notif "l'événement sera proposé..."
-		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Pas de cumul de Timeout
+		if(typeof timeoutPropose!="undefined")  {clearTimeout(timeoutPropose);}//Un seul timeout
 		timeoutPropose=setTimeout(function(thisInput){
 			if(/proposition/i.test(thisInput.name) && $(thisInput).prop("checked"))  {notify("<?= Txt::trad("CALENDAR_inputProposed") ?>");}
 		},500,this);//Affiche avec un timeout (cf. sélection d'un groupe d'users). Transmet l'input courant en paramètre via "this"
@@ -87,7 +87,7 @@ ready(function(){
 		//"uncheck" si besoin l'option de proposition
 		$(this).parents(".vCalAffectBlock").find(".vCalInputProposition").prop("checked",false);
 		//Controle d'occupation du créneau horaire de chaque agenda sélectionné
-		timeSlotBusy();
+		timeSlotBusy(2000);
 	});
 
 	////	CHECK/UNCHECK L'OPTION DE PROPOSITION POUR UN AGENDA
@@ -114,10 +114,10 @@ function displayPeriodType()
 	if($("[name='periodType']").val()=="month" && $("[name*='periodValues_month']:checked").length==0)  {$("input[name*='periodValues_month']").prop("checked","true");}
 }
 
-////	CONTROLE L'OCCUPATION DES CRÉNEAUX HORAIRES DES AGENDAS SÉLECTIONNÉS (AJAX)
-function timeSlotBusy()
+////	CONTROLE L'OCCUPATION DES CRÉNEAUX HORAIRES DES AGENDAS SÉLECTIONNÉS
+function timeSlotBusy(timoutDuration=10)
 {
-	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Pas de cumul de Timeout
+	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Un seul timeout
 	timeoutTimeSlotBusy=setTimeout(function(){
 		if($("[name='dateBegin']").notEmpty() && $("[name='dateEnd']").notEmpty() && $("[name='dateBegin']").val()==$("[name='dateEnd']").val()){
 			//Init l'url, avec le créneau horaire et les agendas concernés
@@ -128,11 +128,11 @@ function timeSlotBusy()
 			$(".vCalInput:checked,.vCalInputProposition:checked").each(function(){  ajaxUrl+="&calendarIds[]="+this.value;  });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
-				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainDisplay();}//Update les tooltips via mainDisplay()
+				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  tooltipDisplay();}
 				else					{$("#timeSlotBusy").hide();}
 			});
 		}
-	}, 1500);
+	}, timoutDuration);
 }
 
 ////	Controle spécifique (cf. "VueObjMenuEdit.php")
@@ -186,9 +186,8 @@ input[name='guestMail']				{margin-left:20px;}
 
 /*AFFICHAGE DE "timeSlotBusy"*/
 #timeSlotBusy						{display:none;}
-.timeSlotBusyContent table			{margin-top:10px;}
-.timeSlotBusyContent table td:first-child	{min-width:120px; vertical-align:top;}
-.timeSlotBusyContent span			{margin-right:20px; display:inline-block}
+#timeSlotBusy table:first-child		{margin-top:10px;}
+#timeSlotBusy table td:first-child	{min-width:120px; vertical-align:top; padding-right:20px;}
 
 /*MOBILE*/
 @media screen and (max-width:440px){

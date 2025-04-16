@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ////	Controle du formulaire (async)
 ready(function(){
@@ -8,17 +8,14 @@ ready(function(){
 		event.preventDefault();
 		////	Formulaire de recherche : controle si au moins un champ est rempli
 		if($("input[name^='searchFields']").isVisible()){
-			var allFieldsEmpty=true;
-			$("input[name^='searchFields']").each(function(){
-				if($(this).notEmpty())  {allFieldsEmpty=false;}
-			});
-			if(allFieldsEmpty==true)	{notify("<?= Txt::trad("USER_searchPrecision") ?>");}
-			else						{submitFinal(this);}//Submit final (sans récursivité Jquery)
+			let fieldNotEmpty=$("input[name^='searchFields']").is(function(){  return $(this).notEmpty();  });
+			if(fieldNotEmpty==false)	{notify("<?= Txt::trad("USER_searchPrecision") ?>");}
+			else						{asyncSubmit(this);}//Valide le formulaire
 		}
 		////	Liste des users : Controle si au moins un utilisateur est sélectionné et valide l'affectation
 		else if($("input[name^='usersList']").isVisible()){
 			if($("input[name^='usersList']:checked").length==0)		 					{notify("<?= Txt::trad("notifSelectUser") ?>");}
-			else if(await confirmAlt("<?= Txt::trad("USER_userAffectConfirm") ?>"))		{submitFinal(this);}//Submit final (sans récursivité Jquery)
+			else if(await confirmAlt("<?= Txt::trad("USER_userAffectConfirm") ?>"))		{asyncSubmit(this);}//Valide le formulaire
 		}
 	});
 });

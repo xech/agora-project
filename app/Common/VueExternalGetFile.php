@@ -1,5 +1,5 @@
 <style>
-#pageCenter						{text-align: center;}
+#pageCenter						{text-align:center;}
 #pageCenter	button				{width:350px; margin-top:80px; border-radius:10px; font-size:1.3em;}
 #pageCenter	button:first-child	{height:150px;}
 #pageCenter	button:last-child	{height:100px;}

@@ -1,0 +1,12 @@
+
+/*** STYLE DU TEXTE DANS L'ÉDITEUR TINYMCE*/
+body 						{font-size:13px!important;}					/*idem "app.css"*/
+p							{margin:3px;}								/*idem*/
+.attachedFileTag			{max-width:100%!important;}					/*idem*/
+.mce-content-body			{padding:10px;}								/*Texte de l'éditeur*/
+.mce-content-body::before	{color:#aaa!important; padding-left:7px; }	/*Placeholder de l'éditeur*/
+
+/*MOBILE*/
+@media screen and (max-width:440px){
+	body 	{font-size:17px!important;}
+}

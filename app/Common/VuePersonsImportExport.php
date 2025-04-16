@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth("<?= Req::isParam("actionImportExport")?"95%":"800" ?>");
+lightboxWidth("<?= Req::isParam("actionImportExport")?"95%":"800" ?>");
 
 ////	Init
 ready(function(){
@@ -136,7 +136,7 @@ form											{text-align:center;}
 		}
 
 		////	AFFICHE LE TABLEAU D'IMPORT
-		if(empty($importPersons))  {echo "<div class='emptyContainer'>".Txt::trad("noResults")."</div>";}//"aucun resultat"
+		if(empty($importPersons))  {echo '<div class="miscContainer emptyContainer">'.Txt::trad("noResults").'</div>';}//"aucun resultat"
 		else
 		{
 			////	INFOS

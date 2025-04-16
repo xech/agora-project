@@ -21,20 +21,20 @@ ready(function(){
 		if(installEmptyField==true)   {notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 	
 		//// Controle le nom de la DB & le mail & le password
-		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   				{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>","error");  $("[name='db_name']").focusPulsate();  return false;}
-		if($("[name='adminMailLogin']").isMail()==false)  								{notify("<?= Txt::trad("mailInvalid") ?>","error");				return false;}
-		if(isValidUserPassword($("[name='adminPassword']").val())==false)				{notify("<?= Txt::trad("passwordInvalid") ?>","error");			return false;}
-		if($("[name='adminPassword']").val()!=$("[name='adminPasswordVerif']").val())	{notify("<?= Txt::trad("passwordConfirmError") ?>","error");	return false;}
+		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   				{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>");  $("[name='db_name']").focusPulsate();  return false;}
+		if($("[name='adminMailLogin']").isMail()==false)  								{notify("<?= Txt::trad("mailInvalid") ?>");			return false;}
+		if(isValidPassword($("[name='adminPassword']").val())==false)					{notify("<?= Txt::trad("passwordInvalid") ?>");		return false;}
+		if($("[name='adminPassword']").val()!=$("[name='adminPasswordVerif']").val())	{notify("<?= Txt::trad("passwordVerifError") ?>");	return false;}
 	
 		//// Formulaire validé et confirmé : "Post" via Ajax
 		if(await confirmAlt("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
-			submitLoading();																			//Img "loading"
+			submitLoading();																		//Img "loading"
 			$.ajax({url:"index.php",data:$(this).serialize(),type:"POST"}).done(function(result){	//Submit Ajax
 				if(/installOk/i.test(result)==false)	{notify(result);}							//Erreur
 				else{																				//Install Ok
 					notify("<?= Txt::trad("INSTALL_installOk") ?>");								//Notify
 					confirmCloseForm=false;															//Reinit confirmCloseForm
-					setTimeout(function(){ redir("index.php?Ctrl=offline&disconnect=1"); },3000);	//Redir en page d'accueil avec un Timeout de 3sec minimum
+					setTimeout(function(){ redir("index.php?ctrl=offline&disconnect=1"); },3000);	//Redir en page d'accueil avec un Timeout de 3sec minimum
 				}												
 			});
 		}

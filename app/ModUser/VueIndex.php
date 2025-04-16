@@ -49,7 +49,7 @@
 			?>
 			<div class="menuLine">
 				<div class="menuIcon"><img src="app/img/alphabet.png"></div>
-				<div><div class="menuLaunch" for="menuAlphabet"><?= Txt::trad("alphabetFilter").$curAlphabet ?></div><div id="menuAlphabet" class="menuContext"><?= $menuAlphabet ?></div></div>
+				<div><div class="menuLauncher" for="menuAlphabet"><?= Txt::trad("alphabetFilter").$curAlphabet ?></div><div id="menuAlphabet" class="menuContext"><?= $menuAlphabet ?></div></div>
 			</div>
 			<div class="menuLine" <?= Ctrl::$curSpace->allUsersAffected() ? Txt::tooltip("USER_allUsersOnSpace") : null ?> >
 				<div class="menuIcon"><img src="app/img/info.png"></div>
@@ -81,7 +81,7 @@
 			</div>";
 		}
 		////	AUCUN CONTENU  &&  MENU DE PAGINATION
-		if(empty($displayedUsers))	{echo "<div class='emptyContainer'>".Txt::trad("USER_noUser")."</div>";}
+		if(empty($displayedUsers))	{echo '<div class="miscContainer emptyContainer">'.Txt::trad("USER_noUser").'</div>';}
 		echo MdlUser::menuPagination($usersTotalNb,"alphabet");
 		?>
 	</div>

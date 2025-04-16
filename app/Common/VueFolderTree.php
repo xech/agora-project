@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-<?php if($context=="move"){ ?>lightboxSetWidth(500);<?php } ?>
+<?php if($context=="move"){ ?>lightboxWidth(500);<?php } ?>
 
 ////	Init
 ready(function(){

@@ -35,12 +35,10 @@
 		<link  href="app/Common/js-css-<?= Req::appVersion() ?>/<?= (is_object(Ctrl::$agora) && Ctrl::$agora->skin=="black")?"black.css":"white.css" ?>" rel="stylesheet" type="text/css">
 
 		<script>
-		////	Parametres de base et labels de "app.js"
-		confirmCloseForm		=false;
-		isMainPage				=<?= Ctrl::$isMainPage==true ? "true" : "false" ?>;
+		////	Parametres et labels principaux (cf. app.js)
 		isMobileApp				=<?= Req::isMobileApp()==true ? "true" : "false" ?>;
-		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
 		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
+		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
 		labelConfirm			="<?= Txt::trad("confirm") ?>";
 		labelConfirmOk			="<?= Txt::trad("confirmOk") ?>";
 		labelConfirmCancel		="<?= Txt::trad("confirmCancel") ?>";
@@ -105,7 +103,7 @@
 		<!--MENU MOBILE (cf. app.js)-->
 		<div id="menuMobileBg"></div>
 		<div id="menuMobileMain">
-			<div id="menuMobileClose">&nbsp;</div><div id="menuMobileOne"></div><div id="menuMobileTwo"></div>
+			<div id="menuMobileClose">&nbsp;</div><div id="menuMobileContent"></div><div id="menuMobileContent2"></div>
 		</div>
 		<div id="menuMobileAddButton"><img src="app/img/plusBig.png"></div>
 	</body>

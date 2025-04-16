@@ -22,8 +22,8 @@
 			browser_spellcheck: true,														//Correcteur orthographique du browser activé
 			contextmenu: false,																//Désactive le menu contextuel de l'éditeur : cf. "browser_spellcheck" ci-dessus
 			images_upload_handler: imageUploadHandler,										//Gestion du Drag/Drop d'image
-			font_size_formats:"13px 16px 18px 20px 24px 28px 32px",							//Liste des "fontsize" : cf. "content_style" ci-dessus pour le "font-size" par défaut
-			content_style:"body {font-size:13px;font-family:Arial,Helvetica,sans-serif;}  p {margin:3px;}  .attachedFileTag {max-width:100%!important;}  .mce-content-body[data-mce-placeholder]:not(.mce-visualblocks)::before {padding-left:5px;color:#aaa;}",//Style du texte dans l'éditeur : idem "body" dans "common.css" + Style du placeholder de l'éditeur
+			content_css:"app/Common/js-css-<?= Req::appVersion() ?>/editor.css",			//Style du texte dans l'éditeur
+			font_size_formats:"0.8em 1em 1.2em 1.4em 1.6em 1.8em 2em 2.2em 2.4em 2.6em",	//Liste des "font-size" disponibles
 			////	Plugins +  Menubar + Toolbar
 			plugins: "preview searchreplace autolink link image media table charmap advlist lists wordcount charmap emoticons autoresize anchor <?= Ctrl::$curUser->isGeneralAdmin() ? "code" : null ?>",
 			menubar: 'file edit view insert format tools table',
@@ -37,8 +37,8 @@
 				});
 				////	Modif le contenu de l'éditeur
 				editor.on("change keyup",function(){
-					lightboxResize();						//Resize si besoin le lightbox en fonction du contenu (après "autoresize" : cf. plugin ci-dessus)
-					window.parent.confirmCloseForm=true;	//Marqueur pour la confirmation de sortie de formulaire
+					lightboxResize();					//Resize si besoin le lightbox en fonction du contenu (après "autoresize" : cf. plugin ci-dessus)
+					window.top.confirmCloseForm=true;	//Marqueur pour la confirmation de sortie de formulaire
 				});
 				////	Récup du brouillon/draft (cf. bouton de la "toolbar1")
 				var editorDraftHtml="<?= addslashes(str_replace(["\n","\r"],"",$editorDraft)) ?>";//Pas de \n\r car pb avec les images en pièces jointe
@@ -106,7 +106,7 @@
 			if(isNewFile==true)  {$("#attachedFileInput"+fileId).val("");}	//Réinit l'input File
 			return false;
 		}
-		////	Créé le Tag html du fichier (cf. ".attachedFileTag" du "common.css")
+		////	Créé le Tag html du fichier (cf. ".attachedFileTag" du "app.css")
 		var fileTagId= (isNewFile==true)  ?  'attachedFileTagTmp'+fileId  :  'attachedFileTag'+fileId;	//Id de la balise html (temporaire ou final)
 		var fileTagSrc=(isNewFile==true)  ?  'fileSrcTmp'+fileId  :  fileSrc;							//Src du fichier : Temporaire si nouveau fichier ||  Final si le fichier est dejà sur le serveur
 		if($.inArray(extFileCurrent,extFileImage)>=0)		{var fileTag='<a id="'+fileTagId+'" href="'+fileTagSrc+'" data-fancybox="images"><img src="'+fileTagSrc+'" class="attachedFileTag"></a>';}//"data-fancybox" pour l'affichage dans une lightBox
@@ -149,9 +149,7 @@
 	const imageUploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
 		////	Vérifie qu'il s'agit d'une image copiée/collée (et pas ajouté via le bouton "addMediaFileButton", qui ne renvoie pas de "FileName")
 		var fileName=blobInfo.blob().name;
-		if(fileName!=undefined && $.inArray(extension(fileName),extFileImage)>=0)
-		{
-			////	Affiche un nouvel "attachedFileInput" et y ajoute les datas de l'image
+		if(fileName!=undefined && $.inArray(extension(fileName),extFileImage)>=0){										//// Affiche un nouvel "attachedFileInput" et y ajoute les datas de l'image
 			$("[for='objMenuAttachedFile']").trigger("click");															//Affiche le menu des fichiers joints (cf. "VueObjAttachedFile.php")
 			var fileInput=$(".attachedFileInput").filter(function(){ return this.value==""; }).first();					//Sélectionne le premier "attachedFileInput" disponible
 			const tmpFile=new File([blobInfo.blob()], fileName, {type:blobInfo.blob().type, lastModified:new Date()});	//Créé un objet Javascript "File" dans lequel on ajoute le contenu du fichier
@@ -171,6 +169,7 @@
 .descriptionToggle		{margin-bottom:20px; display:inline-block; line-height:35px; margin-left:15px;}							/*Label pour afficher/masquer la description d'un objet. Height identique aux inputs text*/
 .descriptionTextarea	{margin-bottom:20px; <?= ($toggleButton==true && empty($curObj->description)) ?"display:none;":null ?>}	/*Textarea masqué par défaut ?*/
 .tox-promotion			{display:none;}/*Masque le bouton "Upgrade !"*/
+
 /*MOBILE FANCYBOX : 440px*/
 @media screen and (max-width:440px){
 	.descriptionToggle	{display:block; margin:0px; margin-top:20px; margin-bottom:10px!important;}

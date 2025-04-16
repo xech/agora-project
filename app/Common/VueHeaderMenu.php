@@ -35,9 +35,9 @@
 	#menuMainContainer, #menuMainTab, #menuMainTab>div	{display:block; padding:0px;}
 	#menuMainTab>div:not(:first-child)		{border-left:none; border-top:var(--headerMenuBorder);}/*Blocks du menu principal*/
 	.editButton								{visibility:visible;}/*tjs visible*/
-	/*MENU DES MODULES (intégré dans le "#menuMobileOne" de VueStructure.php)*/
+	/*MENU DES MODULES*/
 	#headerMenuMain							{display:none;}															/*liste des modules masqués dans la barre de menu..*/
-	.vHeaderModule							{display:inline-block; width:50%; text-align:left; font-size:1.1em;}	/*..puis copiés dans le menu mobile*/
+	.vHeaderModule							{display:inline-block; width:50%; text-align:left; font-size:1.1em;}	/*..puis copiés dans "#menuMobileContent"*/
 	.vHeaderModule img						{margin-right:10px;}
 	.vHeaderModuleButton					{margin-top:5px; padding:5px;}
 }
@@ -47,7 +47,7 @@
 <div id="headerBar">
 
 	<!--LOGO + LABEL DE L'USER ET L'ESPACE COURANT-->
-	<div id="headerMenuLeft" class="menuLaunch" for="menuMainContainer"  <?= Txt::tooltip("mainMenu") ?>>
+	<div id="headerMenuLeft" class="menuLauncher" for="menuMainContainer"  <?= Txt::tooltip("mainMenu") ?>>
 		<?php
 		////	LOGO PRINCIPAL  +  VALIDATION D'INSCRIPTION D'USER
 		echo '<img src="app/img/'.(Req::isMobile()?'logoSmall':'logo').'.png" id="headerMainLogo">';
@@ -160,6 +160,6 @@
 		</div>
 
 		<!--MENU MOBILE : LABEL DU MODULE COURANT-->
-		<div id="headerMobileModule" class="menuLaunch" for="headerMenuMain" forBis="pageMenu"><?= isset($mobileModuleLabel) ? $mobileModuleLabel : "modules" ?> <img src="app/img/menuSmall.png">&nbsp;</div>
+		<div id="headerMobileModule" class="menuLauncher" for="headerMenuMain"><?= isset($mobileModuleLabel) ? $mobileModuleLabel : "modules" ?> <img src="app/img/menuSmall.png">&nbsp;</div>
 	</div>
 </div>

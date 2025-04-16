@@ -48,14 +48,14 @@ ready(function(){
 		if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 		////	Contrôle de l'espace disque, l'url de serveur de visio, le gApiKey et gIdentityClientId
 		<?php if(Req::isHost()==false){ ?>
-		if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");  return false;}	//doit être un nombre
-		if($("input[name='visioHost']").notEmpty() && /^https/.test($("input[name='visioHost']").val())==false)		{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
-		if($("input[name='visioHostAlt']").notEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");  return false;}	//doit commencer par "https"
-		if($("select[name='mapTool']").val()=="gmap" && $("input[name='gApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_gApiKeyInvalid") ?>");	return false;}	//Doit spécifier un "API Key"
-		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>"); return false;}//Idem
+		if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");		return false;}//doit être un nombre
+		if($("input[name='visioHost']").notEmpty() && /^https/.test($("input[name='visioHost']").val())==false)			{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");		return false;}//doit commencer par "https"
+		if($("input[name='visioHostAlt']").notEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");		return false;}//Idem
+		if($("select[name='mapTool']").val()=="gmap" && $("input[name='gApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_gApiKeyInvalid") ?>");		return false;}//Doit avoir un "API Key"
+		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>");	return false;}//Idem
 		<?php } ?>
-		////	Submit final (sans récursivité Jquery)
-		if(await confirmAlt("<?= Txt::trad("AGORA_confirmModif") ?>"))  {submitFinal(this);}
+		////	Valide le formulaire
+		if(await confirmAlt("<?= Txt::trad("AGORA_confirmModif") ?>"))  {asyncSubmit(this);}
 	});
 });
 </script>

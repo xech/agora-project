@@ -71,7 +71,7 @@ class CtrlSpace extends Ctrl
 				Db::query("UPDATE ap_calendar SET title=".Db::format($curObj->name).", description=".Db::format(Txt::trad("CALENDAR_sharedCalendarDescription"))." WHERE title=".Db::format($oldSpaceName));
 			}
 			//Ferme la page
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Liste de tous les users du site  &&  Liste de tous les modules disponibles
 		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);

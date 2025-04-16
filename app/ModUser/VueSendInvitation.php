@@ -2,7 +2,7 @@
 
 <script>
 ////	Resize
-lightboxSetWidth(500);
+lightboxWidth(500);
 
 ////	INIT
 ready(function(){
@@ -50,7 +50,7 @@ ready(function(){
 						// Affiche les contacts !
 						$("#gPeopleForm").prepend(contactInputs).show();	//Affiche les inputs des contacts importés
 						$("#invitationForm, #gPeopleImportButton").hide();	//Masque le formulaire principal
-						mainDisplay();										//Update les tooltips
+						tooltipDisplay();									//Update les tooltips
 						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts!)
 						$.ajax({url:"?ctrl=user&action=loginExists",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
@@ -88,14 +88,14 @@ ready(function(){
 	////	Contrôle du formulaire simple
 	$("#invitationForm").on("submit",function(event){
 		event.preventDefault();
-		if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())	{notify("<?= Txt::trad("emptyFields") ?>","error");}	//Vérif qu'un nom/prénom est spécifié
-		else if($("input[name='mail']").isMail()==false)								{notify("<?= Txt::trad("mailInvalid") ?>","error");}	//Vérif qu'un email est spécifié
-		else{
-			$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(result){				// Verif si l'user existe déjà
-				if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>","error");}
-				else						{submitFinal($("#invitationForm"));}//Submit final (sans récursivité Jquery)
-			});
-		}
+		////	Nom/prénom/Email à spécifier
+		if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())		{notify("<?= Txt::trad("emptyFields") ?>");  return false;}
+		if($("input[name='mail']").isMail()==false)											{notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
+		////	Vérif si l'user existe déjà
+		$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(result){
+			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>");}	
+			else						{asyncSubmit($("#invitationForm"));}//Valide le formulaire
+		});
 	});
 });
 </script>

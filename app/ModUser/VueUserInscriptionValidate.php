@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(700);
+lightboxWidth(700);
 
 ////	Sélectionner au moins une demande d'inscription
 ready(function(){

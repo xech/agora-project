@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(650);
+lightboxWidth(650);
 
 ////	Lance la visio
 ready(function(){

@@ -175,7 +175,6 @@ class MdlCalendarEvent extends MdlObject
 	{
 		//// Attributs de l'evt
 		$attrList=[
-			'typeId'		=>$this->_typeId,
 			'eventColor'	=>$this->eventColor,
 			'timeBegin'		=>$this->timeBegin,
 			'timeEnd'		=>$this->timeEnd,

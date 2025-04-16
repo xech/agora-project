@@ -1,5 +1,5 @@
 <script>
-lightboxSetWidth(600);//Resize
+lightboxWidth(600);//Resize
 </script>
 
 <div>

@@ -179,7 +179,7 @@ class CtrlCalendar extends Ctrl
 					$tmpEvt->pluginIcon=self::moduleName."/icon.png";
 					$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"dateFull",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
 					$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
-					$tmpEvt->pluginJsIcon="window.parent.redir('".$tmpEvt->getUrl()."');";//Affiche l'evt dans son principal agenda (surcharge "getUrl()")
+					$tmpEvt->pluginJsIcon="window.top.redir('".$tmpEvt->getUrl()."')";//Affiche l'evt dans son principal agenda (surcharge "getUrl()")
 					$tmpEvt->pluginJsLabel=$tmpEvt->openVue();//Affiche l'evt en détail
 					$pluginsList[$tmpEvt->_typeId]=$tmpEvt;
 				}
@@ -203,7 +203,7 @@ class CtrlCalendar extends Ctrl
 			$timeSlot=Req::param("timeSlotBegin")."-".Req::param("timeSlotEnd");
 			$typeCalendar=$curObj->isNew() ? ", type='ressource'" : null;
 			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", timeSlot=".Db::format($timeSlot).", propositionNotify=".Db::param("propositionNotify").", propositionGuest=".Db::param("propositionGuest").$typeCalendar);
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -277,7 +277,7 @@ class CtrlCalendar extends Ctrl
 				File::rm($icalPath);
 			}
 			//Ferme la page
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	AFFICHE LE FORMULAIRE
 		//// Liste des agendas pour les affectations
@@ -330,12 +330,12 @@ class CtrlCalendar extends Ctrl
 				$timeSlotBusyCalendar=null;															//Init le TimeSlotBusy de l'agenda
 				foreach($tmpCal->evtList($timeSlotDayBegin, $timeSlotDayEnd, 0) as $tmpEvt){									//Evts sur le jour du timeSlot ($accessRightMin=0) : récupère ainsi les evts périodiques
 					if(MdlCalendar::evtInDuration($tmpEvt,$timeSlotBegin,$timeSlotEnd) && $tmpEvt->_id!=Req::param("_evtId")){	//Vérif si l'evt s'il est sur le timeSlot (pas celui en cours d'édition : cf. modif d'evt)
-						$evtTitle=($tmpCal->readRight())  ?  " - ".Txt::reduce($tmpEvt->title,40)  :  null;						//Title de l'evt si accès en lecture à l'agenda (pas un proposition d'evt)
+						$evtTitle=($tmpCal->readRight())  ?  " - ".Txt::reduce($tmpEvt->title,80)  :  null;						//Title de l'evt si accès en lecture à l'agenda (pas un proposition d'evt)
 						$timeSlotBusyCalendar.='<span title="'.Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<br>'.$tmpEvt->title.'"><img src="app/img/arrowRightBig.png">'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).$evtTitle.'</span>';
 					}
 				}
 				//L'agenda est occupé?
-				if(!empty($timeSlotBusyCalendar))  {$timeSlotBusy.="<table><tr><td>".$tmpCal->title." : </td><td>".$timeSlotBusyCalendar."</td></tr></table>";}
+				if(!empty($timeSlotBusyCalendar))  {$timeSlotBusy.="<table><tr><td>".$tmpCal->title."</td><td>".$timeSlotBusyCalendar."</td></tr></table>";}
 			}
 			//Retourne le message
 			echo $timeSlotBusy;
@@ -485,7 +485,7 @@ class CtrlCalendar extends Ctrl
 					}
 				}
 				//Ferme la page
-				static::lightboxClose();
+				static::lightboxRedir();
 			}
 		}
 		////	Affiche le menu d'Import/Export

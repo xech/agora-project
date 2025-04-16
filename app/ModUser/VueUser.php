@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(500);
+lightboxWidth(500);
 </script>
 
 <style>

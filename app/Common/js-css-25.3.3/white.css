@@ -7,13 +7,13 @@ button:hover						{background:linear-gradient(#eee,#fff);}
 button:disabled, button[disabled]	{background:#ccc;}
 
 /*Liens principaux / label+checkbox / accès utilisateur  &  Option sélectionnée*/
-a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLaunch:hover, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(0,104,189);}
+a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(0,104,189);}
 .option							{border:solid 1px transparent;}
 .option:hover, .optionSelect	{color:rgb(0,104,189); background:#eeefff; border:solid 1px #ddd; border-radius:5px;}
 
 /*Blocks d'objet & menus contextuels*/
 .sAccessWrite, .sAccessWriteLimit																	{color:#900;}						/*Droit d'accès "Write" & "Write limit"*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext										{background:white;}				/*blocks principaux*/
+.objContainer, .miscContainer, .menuContext															{background:white;}				/*blocks principaux*/
 .objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover	{background: #eee!important;}		/*objets sélectionnés & lignes survolées (cf. droit d'accès & CO)*/
 .objLines .objContainer																				{border-bottom:solid 1px #ccc;}	/*pas de "box-shadow" en affichage "objLines"*/
 
@@ -21,8 +21,8 @@ a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLaunch:hover, button:h
 #menuMobileMain															{background:white; border:solid 1px #ddd;}
 #menuMobileMain .vHeaderModuleCurrent, #menuMobileMain .miscContainer	{background:#eee!important; border:solid 1px #eee; box-shadow:0px 2px 6px #888;}
 @media screen and (max-width:1024px){
-	#htmlMainPage	{background:white url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
-	.objContainer, .miscContainer, .emptyContainer	{box-shadow:0px 2px 6px #888;}
+	#htmlMainPage					{background:white url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	.objContainer, .miscContainer	{box-shadow:0px 2px 6px #888;}
 }
 
 /*Divers*/

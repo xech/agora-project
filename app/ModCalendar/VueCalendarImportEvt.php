@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth("1300px");
+lightboxWidth("1300px");
 
 ////	Controle du formulaire
 ready(function(){

@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(500);
+lightboxWidth(500);
 
 ////	CONTRÔLE DU FORMULAIRE
 ready(function(){
@@ -12,7 +12,7 @@ ready(function(){
 		////	Captcha Ok : Controle et valide le formulaire
 		if(await captchaControl()){
 			$.ajax({url:"index.php",data:$(this).serialize(),method:"POST"}).done(function(result){
-				if(/inscriptionOK/i.test(result))	{parent.redir("index.php?notify=userInscriptionRecorded");}
+				if(/inscriptionOK/i.test(result))	{window.top.redir("index.php?notify=userInscriptionRecorded");}
 				else								{notify(result,"error");}
 			});
 		}

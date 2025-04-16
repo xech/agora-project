@@ -20,20 +20,20 @@ trait MdlObjectMenu
 	 *******************************************************************************************/
 	public function uniqId($prefix)
 	{
-		if(empty($this->objUniqId))  {$this->objUniqId=Txt::uniqId();}	//Un seul ID par instance de l'objet (tester avec les événements périodiques de l'agenda)
-		return $prefix.$this->objUniqId;								//Retourne l'id avec un prefix : "objContainer", "objMenu", "objCheckbox", "objAttachment", etc
+		if(empty($this->objUniqId))  {$this->objUniqId=uniqid();}	//Un seul ID par instance de l'objet (tester avec les événements périodiques de l'agenda)
+		return $prefix.$this->objUniqId;							//Retourne l'id avec un prefix : "objContainer", "objMenu", "objCheckbox", "objAttachment", etc
 	}
 
 	/*******************************************************************************************************************************
 	 * DIV PRINCIPAL (".objContainer")  &&  MENU CONTEXTUEL
 	 * objMenu 	: id du menu contextuel via click droit et "menuContext()"
 	 *******************************************************************************************************************************/
-	public function objContainerMenu($containerClasses=null, $containerAttributes=null, $contextMenuOptions=null)
+	public function objContainerMenu($classes=null, $attributes=null, $menuOptions=null)
 	{
-		if($this->isSelectable())	{$containerClasses	 .=' isSelectable';}								//Classes pour rendre l'objet "sélectionnable"
-		if($this->editRight())		{$containerAttributes.=' data-urlEdit="'.$this->getUrl("edit").'"';}	//Url d'édition via "dblClick"
-		return  '<div class="objContainer '.$containerClasses.'" id="'.$this->uniqId("objContainer").'" for="'.$this->uniqId("objMenu").'" '.$containerAttributes.'>'.
-					$this->contextMenu($contextMenuOptions);
+		$classes='objContainer '.$classes.' '.($this->isSelectable()?'isSelectable':null);		//Classe de base + Classe en paramètre + classe des objets sélectionnables
+		if($this->editRight())  {$attributes.=' data-urlEdit="'.$this->getUrl("edit").'"';}		//Url d'édition via "dblClick"
+		return  '<div id="'.$this->uniqId("objContainer").'" class="'.$classes.'" for="'.$this->uniqId("objMenu").'" data-typeId="'.$this->_typeId.'" '.$attributes.'>'.
+					$this->contextMenu($menuOptions);
 	}
 
 	/*****************************************************************************************************************************************************************************************************

@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ready(function(){
 	////	CHANGE L'ICONE DU DOSSIER

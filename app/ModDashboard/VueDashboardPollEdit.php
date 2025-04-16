@@ -1,6 +1,6 @@
 <script>
 ////	RESIZE
-lightboxSetWidth(700);
+lightboxWidth(700);
 
 ////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
 <?php if($pollIsVoted==true){ ?>
@@ -61,18 +61,18 @@ form .infos								{margin:0px; margin-bottom:20px;}
 	for($tmpKey=0; $tmpKey<=10; $tmpKey++)
 	{
 		//Init la réponse
-		$respTmp		=(isset($pollResponses[$tmpKey]))  ?  $pollResponses[$tmpKey] : null;		//Réponse courante
-		$respClass		=(empty($respTmp) && $tmpKey>=3)  ?  "vPollResponseHidden"  :  null;		//Masque les champs vides, à partir du 3ème champ
-		$respId			=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["_id"]  :  Txt::uniqId();	//Identifiant unique de la réponse (15 caracteres, pas moins)
-		$respValue		=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["label"]  :  null;			//Valeur/libellé de la réponse
+		$respTmp		=(isset($pollResponses[$tmpKey]))  ?  $pollResponses[$tmpKey] : null;	//Réponse courante
+		$respClass		=(empty($respTmp) && $tmpKey>=3)  ?  "vPollResponseHidden"  :  null;	//Masque les champs vides, à partir du 3ème champ
+		$respId			=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["_id"]  :  uniqid();	//Identifiant unique de la réponse
+		$respValue		=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["label"]  :  null;		//Valeur/libellé de la réponse
 		if(empty($respTmp["fileName"]))	{$respFileHide="responseFileHide";	$respFileContent="<input type='file' name=\"responsesFile".$respId."\">";}
 		else							{$respFileHide=null;				$respFileContent="<div id='respFileName".$respId."'><a href=\"".$respTmp["fileUrlDownload"]."\" ".Txt::tooltip("download")."><img src='app/img/attachment.png'> ".$respTmp["fileName"]."</a> &nbsp; <img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"deleteResponseFile('".$respId."');\">";}
 		//Affiche la réponse
-		echo "<div class='vPollResponseDiv ".$respClass."'>
-				<input type='text' name=\"responses[".$respId."]\" value=\"".$respValue."\" placeholder=\"".Txt::trad("DASHBOARD_responseNb").($tmpKey+1)."\">
-				<img src='app/img/attachment.png' onclick=\"$('#responseFile".$respId."').slideToggle();\" ".Txt::tooltip("EDIT_attachedFileAdd").">
-				<div id='responseFile".$respId."' class='responseFile ".$respFileHide."'>".$respFileContent."</div>
-			  </div>";
+		echo '<div class="vPollResponseDiv '.$respClass.'">
+				<input type="text" name="responses['.$respId.']" value="'.$respValue.'" placeholder="'.Txt::trad("DASHBOARD_responseNb").($tmpKey+1).'">
+				<img src="app/img/attachment.png" onclick="$(\'#responseFile'.$respId.'\').slideToggle()" '.Txt::tooltip("EDIT_attachedFileAdd").'>
+				<div id="responseFile'.$respId.'" class="responseFile '.$respFileHide.'">'.$respFileContent.'</div>
+			  </div>';
 	}
 	?>
 

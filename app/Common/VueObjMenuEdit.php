@@ -82,29 +82,23 @@ ready(function(){
 	**********************************************************************************************************/
 	$("#mainForm").on("submit", async function(event){
 		event.preventDefault();
-
 		////	Controles asynchrones :  Captcha (guest)  ||  Controle spécifique (ex: controle Ajax de champs)
 		if(typeof captchaControl=="function" && await captchaControl()!=true)				{return false;}
 		else if(typeof objectFormControl=="function" && await objectFormControl()!=true)	{return false;}
-
 		////	Controle les mails
-		if($("input[name='mail']").notEmpty() && $("input[name='mail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid"); ?>","error");  return false;}
-
+		if($("input[name='mail']").notEmpty() && $("input[name='mail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid"); ?>");  return false;}
 		////	Controle la description de l'éditeur
 		<?php if($curObj::descriptionEditor==true && in_array("description",$curObj::$requiredFields)){ ?>
-		if(isEmptyEditor())  {notify("<?= Txt::trad("requiredFields")." <i>".Txt::trad("description") ?></i>", "error");	return false;}
+		if(isEmptyEditor())  {notify("<?= Txt::trad("requiredFields")." <i>".Txt::trad("description") ?></i>");  return false;}
 		<?php } ?>
-
 		////	Controle les affectations
 		if($("input[name='objectRight[]']").exist()){
 			let curUserSelector=":checked[name='objectRight[]'][value*='spaceUsers'], :checked[name='objectRight[]'][value*='_U<?= Ctrl::$curUser->_id ?>_']";
-			if($(":checked[name='objectRight[]']").length==0)   {notify("<?= Txt::trad("EDIT_notifNoSelection") ?>","error");  return false;}	//Aucune affectation
-			if($(curUserSelector).length==0  &&  await confirmAlt("<?= Txt::trad("EDIT_notifNoPersoAccess") ?>")==false)  {return false;}		//Aucune affectation à l'user courant
+			if($(":checked[name='objectRight[]']").length==0)   {notify("<?= Txt::trad("EDIT_notifNoSelection") ?>");  return false;}		//Aucune affectation
+			if($(curUserSelector).length==0  &&  await confirmAlt("<?= Txt::trad("EDIT_notifNoPersoAccess") ?>")==false)  {return false;}	//Aucune affectation à l'user courant
 		}
-
 		////	Valide le formulaire
-		if(typeof tinymce!="undefined")  {attachedFileSrcReplace();}	// Remplace le "src" des images temporaires (cf tinymce)
-		submitFinal(this);												// Submit final (sans récursivité Jquery)
+		asyncSubmit(this);
 	});
 });
 

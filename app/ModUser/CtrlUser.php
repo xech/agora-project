@@ -76,7 +76,7 @@ class CtrlUser extends Ctrl
 		$curObj=Ctrl::getObjTarget();
 		$curObj->editControl();
 		//Nb max d'utilisateurs dépassé?
-		if($curObj->isNew() && MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
+		if($curObj->isNew() && MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -110,7 +110,7 @@ class CtrlUser extends Ctrl
 				if(Req::isParam("notifMail") && Req::isParam("mail"))  {$curObj->createCredentialsMail(Req::param("password"));}
 			}
 			//Ferme la page
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche le formulaire
 		else
@@ -155,7 +155,7 @@ class CtrlUser extends Ctrl
 			//Réinitialise si besoin le "curUserMessengerEnabled" (cf. "messengerEnabled()")
 			if($curObj->_id==Ctrl::$curUser->_id)  {$_SESSION["curUserMessengerEnabled"]=null;}
 			//Ferme la page
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["allUsers"]=(Db::getVal("SELECT count(*) FROM ap_userMessenger WHERE _idUserMessenger=".$curObj->_id." AND allUsers=1")>0);
@@ -170,7 +170,7 @@ class CtrlUser extends Ctrl
 	public static function actionEditPersonsImportExport()
 	{
 		////	Controle d'accès && nombre max d'utilisateurs
-		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
+		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -198,7 +198,7 @@ class CtrlUser extends Ctrl
 					//Login et Password par défaut
 					if(empty($tmpUser["login"]) && !empty($tmpUser["mail"]))  {$tmpUser["login"]=$tmpUser["mail"];}//Login email par défaut
 					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",""),0,1).substr(Txt::clean($tmpUser["name"],"max",""),0,8) );}//Ou login prédéfinit par défaut. Ex: "Jean Durant"=>"jdurant"
-					if(empty($tmpUser["password"]))	{$tmpUser["password"]=Txt::uniqId(8);}//Password par défaut
+					if(empty($tmpUser["password"]))	{$tmpUser["password"]=Txt::defaultPassword();}
 					//Enregistre le nouvel utilisateur !
 					$curObj=$curObj->createUpdate($sqlFields, $tmpUser["login"], $tmpUser["password"]);
 					//Options de création
@@ -212,7 +212,7 @@ class CtrlUser extends Ctrl
 					}
 				}
 				//Ferme la page
-				static::lightboxClose();
+				static::lightboxRedir();
 			}
 		}
 		////	Affiche le menu d'Import/Export
@@ -226,7 +226,7 @@ class CtrlUser extends Ctrl
 	public static function actionAffectUsers()
 	{
 		//Administrateur de l'espace courant?
-		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxClose();}
+		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxRedir();}
 		////	Valide l'un des deux formulaires
 		if(Req::isParam("formValidate"))
 		{
@@ -249,7 +249,7 @@ class CtrlUser extends Ctrl
 				foreach(Req::param("usersList") as $_idUser){
 					if(is_numeric($_idUser))  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".Ctrl::$curSpace->_id.",  _idUser=".$_idUser.", accessRight=1");}
 				}
-				static::lightboxClose();
+				static::lightboxRedir();
 			}
 		}
 		////	Affiche l'un des deux formulaires (recherche d'users & sélection d'users)
@@ -263,12 +263,12 @@ class CtrlUser extends Ctrl
 	public static function actionResetPasswordSendMailUsers()
 	{
 		////	Admin general uniquement
-		if(Ctrl::$curUser->isGeneralAdmin()==false)  {static::lightboxClose();}
+		if(Ctrl::$curUser->isGeneralAdmin()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : envoi de plusieurs mails en série !
 		if(Req::isParam("formValidate") && Req::isParam("usersList")){
 			foreach(Req::param("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
 			if($isSendmail==true)  {Ctrl::notify("MAIL_sendOk","success");}
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affichage du formulaire
 		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." AND LENGTH(mail)>0 AND _id!=".Ctrl::$curUser->_id." ".MdlUser::sqlSort());
@@ -281,7 +281,7 @@ class CtrlUser extends Ctrl
 	public static function actionSendInvitation()
 	{
 		////	Droit d'envoyer des invitations?  Nb max d'utilisateurs dépassé?
-		if(Ctrl::$curUser->sendInvitationRight()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
+		if(Ctrl::$curUser->sendInvitationRight()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Validation du formulaire (Ajax)
 		if(Req::isParam("formValidate"))
 		{
@@ -300,8 +300,8 @@ class CtrlUser extends Ctrl
 			{
 				foreach($invitList as $invitationTmp)
 				{
-					$_idInvitation=Txt::uniqId();
-					$password=Txt::uniqId(8);
+					$_idInvitation=uniqId();
+					$password=Txt::defaultPassword();
 					$confirmUrl=Req::getCurUrl()."/index.php?ctrl=offline&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
 					//Envoi du mail d'invitation
 					$mailSubject=Txt::trad("USER_mailInvitationObject").' '.Ctrl::$curUser->getLabel();														//"Invitation de Jean DUPOND"
@@ -316,7 +316,7 @@ class CtrlUser extends Ctrl
 				}
 			}
 			//Ferme la page
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche le formulaire
 		else
@@ -356,13 +356,13 @@ class CtrlUser extends Ctrl
 	public static function actionUserGroupEdit()
 	{
 		//Droit d'editer/ajouter un groupe?
-		if(MdlUserGroup::addRight()==false)  {static::lightboxClose();}
+		if(MdlUserGroup::addRight()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : edit un groupe
 		if(Req::isParam("formValidate")){
 			$curObj=Ctrl::getObjTarget();
 			$curObj->editControl();
 			$curObj->createUpdate("title=".Db::param("title").", _idSpace=".Ctrl::$curSpace->_id.", _idUsers=".Db::formatTab2txt(Req::param("userList")));
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		//Users et groupes de l'espace (en 1er un nouveau groupe "vierge")
 		$vDatas["usersList"]=Ctrl::$curSpace->getUsers();
@@ -401,7 +401,7 @@ class CtrlUser extends Ctrl
 	public static function actionUserInscriptionValidate()
 	{
 		//Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
-		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxClose();}
+		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		//Validation du formulaire
 		if(Req::isParam(["formValidate","inscriptionValidate"]))
 		{
@@ -427,7 +427,7 @@ class CtrlUser extends Ctrl
 			}
 			//Réinitialise la liste des inscriptions (cf. "userInscriptionValidate()")  &&  Ferme la page
 			unset($_SESSION["userInscriptionValidate"]);
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		//Affiche le formulaire
 		static::displayPage("VueUserInscriptionValidate.php");

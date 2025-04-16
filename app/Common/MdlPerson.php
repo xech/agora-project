@@ -214,7 +214,7 @@ class MdlPerson extends MdlObject
 		}
 		//Mail : redirige vers le module mail ou un simple "mailto"
 		elseif($fieldName=="mail" && !empty($fieldVal)){
-			$mailtoUrl=Ctrl::$curSpace->moduleEnabled("mail")  ?  'onclick="window.parent.redir(\'?ctrl=mail&checkedMailto='.$this->$fieldName.'\')"'  :  'href="mailto:'.$this->$fieldName.'"';
+			$mailtoUrl=Ctrl::$curSpace->moduleEnabled("mail")  ?  'onclick="window.top.redir(\'?ctrl=mail&checkedMailto='.$this->$fieldName.'\')"'  :  'href="mailto:'.$this->$fieldName.'"';
 			$fieldVal='<a '.$mailtoUrl.' '.Txt::tooltip("sendMail").'>'.$this->$fieldName.'</a>';
 		}
 		//Dernière connexion

@@ -36,7 +36,7 @@ class CtrlContact extends Ctrl
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
+			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel=$tmpObj->openVue();
 			$pluginsList[]=$tmpObj;
 		}
@@ -69,7 +69,7 @@ class CtrlContact extends Ctrl
 			//Ajoute/supprime l'image / Notifie par mail & Ferme la page
 			$curObj->profileImgRecord();
 			$curObj->sendMailNotif($curObj->getLabel());
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -83,7 +83,7 @@ class CtrlContact extends Ctrl
 	{
 		////	Folder courant  &&  Controle d'accès
 		$curFolder=self::getObj("contactFolder",Req::param("_idContainer"));
-		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxClose();}
+		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
@@ -113,7 +113,7 @@ class CtrlContact extends Ctrl
 					if($curFolder->isRootFolder())  {Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
 				}
 				//Ferme la page
-				static::lightboxClose();
+				static::lightboxRedir();
 			}
 		}
 		////	Affiche le menu d'Import/Export
@@ -135,12 +135,13 @@ class CtrlContact extends Ctrl
 			//Création du nouveau User
 			$newUser=new MdlUser();
 			$login=(!empty($contactRef->mail))  ?  $contactRef->mail  :  substr($contactRef->firstName,0,1).substr($contactRef->name,0,5);
-			$password=Txt::uniqId(8);
+			$password=Txt::defaultPassword();
 			$sqlFields="civility=".Db::format($contactRef->civility).", name=".Db::format($contactRef->name).", firstName=".Db::format($contactRef->firstName).", mail=".Db::format($contactRef->mail).", telephone=".Db::format($contactRef->telephone).", telmobile=".Db::format($contactRef->telmobile).", adress=".Db::format($contactRef->adress).", postalCode=".Db::format($contactRef->postalCode).", city=".Db::format($contactRef->city).", country=".Db::format($contactRef->country).", `function`=".Db::format($contactRef->function).", companyOrganization=".Db::format($contactRef->companyOrganization).", `comment`=".Db::format($contactRef->comment);
 			$newUser=$newUser->createUpdate($sqlFields, $login, $password, Ctrl::$curSpace->_id);
 			if(is_object($newUser)){
 				Ctrl::notify("CONTACT_createUserConfirmed");
 				if(is_file($contactRef->pathImgThumb()))  {copy($contactRef->pathImgThumb(),$newUser->pathImgThumb());}//Récupère l'image?
+				$newUser->createCredentialsMail($password);//Mail de notif
 			}
 			//Redirige
 			self::redir($contactRef->getUrl());

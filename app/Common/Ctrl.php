@@ -15,16 +15,16 @@ abstract class Ctrl
 	//Propriétés de base
 	const moduleName=null;
 	public static $moduleOptions=[];
-	public static $agora, $curUser, $curSpace;
-	public static $isMainPage=false;			//Page principale ou Iframe
+	public static $agora, $curUser, $curSpace;	//Parametrage principal
+	public static $isMainPage=false;			//False : Iframe  || True : page principale avec barre de menu, etc
+	public static $notify=[];					//Notifications à afficher
+	public static $curTimezone=null;			//Timezone courante
 	public static $userJustConnected=false;		//Controle si l'user vient de s'identifier / connecter
 	public static $curContainer=null;			//Conteneur courant : dossier / sujet / agenda
 	public static $curRootFolder=null;			//Dossier root du module courant
-	public static $curTimezone=null;			//Timezone courante
-	public static $notify=[];					//Messages de Notifications (cf. Vues)
 	protected static $initCtrlFull=true;		//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
 	protected static $folderObjType=null;		//Module avec une arborescence
-	protected static $cacheObjects=[];			//Objets mis en cache !
+	protected static $cacheObjects=[];			//Objets mis en cache
 
 	/*******************************************************************************************
 	 * INITIALISE LE CONTROLEUR PRINCIPAL (session, parametrages, connexion de l'user, etc)
@@ -425,24 +425,39 @@ abstract class Ctrl
 	/*******************************************************************************************
 	 * REDIRIGE VERS L'ADRESSE DEMANDÉE : REDIRECTION SIMPLE OU SUR LA PAGE PRINCIPALE (IFRAME)
 	 *******************************************************************************************/
-	public static function redir($redirUrl, $urlNotify=true)
+	public static function redir($url, $urlNotify=true)
 	{
-		if(!empty($redirUrl)){
-			if($urlNotify==true)  {$redirUrl.=self::urlNotify();}												//Ajoute les notifs
-			if(static::$isMainPage==true)	{header("Location: ".$redirUrl);}									//Redirection simple
-			else							{echo '<script> parent.location.href="'.$redirUrl.'"; </script>';}	//Redirection depuis une Iframe (ex: après édit/suppr d'un objet)
-			exit;																								//Fin de script
+		if(!empty($url)){
+			if($urlNotify==true)  {$url.=self::urlNotify();}				//Ajoute les notifs
+			echo '<script> window.top.location.href="'.$url.'"; </script>';	//Redirection window.top (cf. "lightbox")
+			exit;
 		}
 	}
-	
+
 	/*******************************************************************************************
-	 * FERME LE LIGHTBOX VIA JS (ex: après édit d'objet)
+	 * RELOAD LA PAGE PRINCIPALE DEPUIS UNE LIGHTBOX
 	 *******************************************************************************************/
-	public static function lightboxClose($urlRedir=null, $urlParms=null)
+	public static function lightboxRedir($newParms=null)
 	{
-		echo '<script src="app/Common/js-css-'.Req::appVersion().'/app.js"></script>
-			  <script>lightboxClose("'.$urlRedir.'","'.$urlParms.self::urlNotify().'");</script>';
+		echo '<script>
+				const urlObj=new URL(window.top.location.href);												//Url de la page principale (Objet)
+				const urlParams=urlObj.searchParams;														//Parametres
+				let urlNew=urlObj.origin + urlObj.pathname + "?ctrl="+urlParams.get("ctrl").toString();		//Url sans ses paramètres, excepté "ctrl"
+				if(urlParams.has("typeId"))  {urlNew+="&typeId="+urlParams.get("typeId").toString();}		//Récupère si besoin le parametre "typeId" (Exple: redir vers le dossier courant)
+				urlNew+="'.$newParms.self::urlNotify().'";													//Ajoute les nouveaux parametres et notify
+				window.top.location.href=urlNew;															//Reload la page principale
+			</script>';
 		exit;
+	}
+
+	/********************************************************************************************
+	 * AJOUTE SI BESOIN LES "NOTIFY()" COURANTE À UNE URL DE REDIRECTION
+	 ********************************************************************************************/
+	public static function urlNotify()
+	{
+		$urlNotify=null;
+		foreach(self::$notify as $message)  {$urlNotify.="&notify[]=".urlencode($message["message"]);}
+		return $urlNotify;
 	}
 
 	/*******************************************************************************************
@@ -455,16 +470,6 @@ abstract class Ctrl
 		if(Tool::arraySearch(self::$notify,$message)==false){		//Vérifie si le message n'est pas déjà dans la liste (évite les doublons de notif)
 			self::$notify[]=["message"=>$message, "type"=>$type];	//Ajoute la notification au tableau "self::$notify"
 		}
-	}
-
-	/********************************************************************************************
-	 * AJOUTE SI BESOIN LES "NOTIFY()" COURANTE À UNE URL DE REDIRECTION
-	 ********************************************************************************************/
-	public static function urlNotify()
-	{
-		$urlNotify=null;
-		foreach(self::$notify as $message)  {$urlNotify.="&notify[]=".urlencode($message["message"]);}
-		return $urlNotify;
 	}
 
 	/*******************************************************************************************

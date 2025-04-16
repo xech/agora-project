@@ -4,7 +4,7 @@
 **********************************************************************************************************/
 ready(function(){
 	$("#notifyLastMessage").on("click",function(){
-		$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= $curSubject->_typeId ?>").done(function(result){
+		$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= isset($curSubject) ? $curSubject->_typeId : null ?>").done(function(result){
 			$("#notifyLastMessage").toggleClass("optionSelect",(result=="addUser"));
 		});
 	});
@@ -97,7 +97,7 @@ ready(function(){
 
 		////	LISTE DES SUJETS : "AUCUN CONTENU"  ||  MENU DE PAGINATION
 		if($forumDisplay=="subjectList"){
-			if(empty($subjectList))	{echo "<div class='emptyContainer'>".Txt::trad("FORUM_noSubject")."</div>";}
+			if(empty($subjectList))	{echo '<div class="miscContainer emptyContainer">'.Txt::trad("FORUM_noSubject").'</div>';}
 			else					{echo MdlForumSubject::menuPagination($subjectsTotalNb);}
 		}
 

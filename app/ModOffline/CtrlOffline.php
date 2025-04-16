@@ -95,7 +95,7 @@ class CtrlOffline extends Ctrl
 			else{
 				//// Enregistre en DB
 				$result="inscriptionOK";
-				$password=Txt::uniqId(8);
+				$password=Txt::defaultPassword();
 				Db::query("INSERT INTO ap_userInscription SET `_idSpace`=".Db::param("_idSpace").", `name`=".Db::param("name").", `firstName`=".Db::param("firstName").", `mail`=".Db::param("mail").", `password`=".Db::format($password).", `message`=".Db::param("message").", `date`=".Db::dateNow());
 				//// Envoie un mail de notif aux admins de l'espace ?
 				$curSpace=Ctrl::getObj("space",Req::param("_idSpace"));

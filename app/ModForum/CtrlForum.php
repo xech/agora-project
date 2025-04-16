@@ -51,7 +51,7 @@ class CtrlForum extends Ctrl
 			$objSubject->pluginIcon=self::moduleName."/icon.png";
 			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  Txt::reduce($objSubject->description);
 			$objSubject->pluginTooltip=$objSubject->pluginLabel;
-			$objSubject->pluginJsIcon="window.parent.redir('".$objSubject->getUrl()."')";//Redir vers le sujet
+			$objSubject->pluginJsIcon="window.top.redir('".$objSubject->getUrl()."')";//Redir vers le sujet
 			$objSubject->pluginJsLabel=$objSubject->pluginJsIcon;
 			$pluginsList[]=$objSubject;
 		}
@@ -61,7 +61,7 @@ class CtrlForum extends Ctrl
 				$objMessage->pluginIcon=self::moduleName."/icon.png";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  Txt::reduce($objMessage->description);
 				$objMessage->pluginTooltip=$objMessage->pluginLabel;
-				$objMessage->pluginJsIcon="window.parent.redir('".$objMessage->getUrl()."')";//Affiche le message et son sujet
+				$objMessage->pluginJsIcon="window.top.redir('".$objMessage->getUrl()."')";//Redir vers le message et son sujet
 				$objMessage->pluginJsLabel=$objMessage->pluginJsIcon;
 				$pluginsList[]=$objMessage;
 			}
@@ -100,7 +100,7 @@ class CtrlForum extends Ctrl
 			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", _idTheme=".Db::param("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -132,7 +132,7 @@ class CtrlForum extends Ctrl
 			}
 			//Notifie par mail aux users spécifiés & Ferme la page
 			$curObj->sendMailNotif(null, null, $notifUserIds);
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;

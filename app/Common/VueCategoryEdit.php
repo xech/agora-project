@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ////	INIT
 ready(function(){
@@ -122,7 +122,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
 			<form action="index.php" method="post">
 				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_id ?>" placeholder="<?= Txt::trad("title") ?>" style="background:<?= $tmpObj->color ?>">
-				<img src="app/img/colorPicker.png" class="menuLaunch" for="colorPickerDiv<?= $tmpObj->_id ?>">
+				<img src="app/img/colorPicker.png" class="menuLauncher" for="colorPickerDiv<?= $tmpObj->_id ?>">
 				<div class="colorPicker menuContext" id="colorPickerDiv<?= $tmpObj->_id ?>">
 					<div id="colorPickerMenu<?= $tmpObj->_id ?>"></div>
 					<script>

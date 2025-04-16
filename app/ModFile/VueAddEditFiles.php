@@ -9,7 +9,7 @@
 
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ////	INIT
 ready(function(){

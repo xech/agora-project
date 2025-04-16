@@ -6,8 +6,8 @@
 <div class="menuLine">
 	<div class="menuIcon"><img src="app/img/sort.png"></div>
 	<div>
-		<span class="menuLaunch" for="menuSort<?= $menuSortId=Txt::uniqId() ?>"><?= Txt::trad("sortBy")." ".Txt::trad("SORT_".$curSortField) ?> <img src="app/img/sort<?= ucfirst($curSortAscDesc)?>.png"></span>
-		<div  class="menuContext" id="menuSort<?= $menuSortId ?>">
+		<span class="menuLauncher" for="objMenuSort"><?= Txt::trad("sortBy")." ".Txt::trad("SORT_".$curSortField) ?> <img src="app/img/sort<?= ucfirst($curSortAscDesc)?>.png"></span>
+		<div  class="menuContext" id="objMenuSort">
 			<?php
 			//Affiche chaque option de Tri
 			foreach($sortFields as $tmpSort)

@@ -961,7 +961,7 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_agora", "mapApiKey"))		{self::query("ALTER TABLE `ap_agora` CHANGE `mapApiKey` `gApiKey` VARCHAR(255) DEFAULT NULL");}
 			}
 
-			if(self::updateVersion("25.3.2"))
+			if(self::updateVersion("25.3.3"))
 			{
 				//Ajoute "shortcut" à la table "ap_calendarEvent"
 				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` tinyint DEFAULT NULL AFTER `periodDateExceptions`");

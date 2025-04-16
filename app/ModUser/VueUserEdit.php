@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ////	INIT
 ready(function(){
@@ -9,26 +9,24 @@ ready(function(){
 		if($(this).isMail()) 				{$("input[name='mail']").val(this.value);}	//Préremplit le champ "mail"
 		else if(event.type=="focusout")		{$("#mailLloginNotif").pulsate(1);}			//Pulsate "Il est conseillé d'utiliser un email.."
 	});
-	////	Init les affectations des Spaces<->Users (cf. "app.js")
+	////	Init les affectations des Spaces<->Users
 	spaceAffectations();
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
-		if($("input[name='login']").isEmpty())																										//// Login obligatoire
-			{notify("<?= Txt::trad("specifyLogin"); ?>");  resolve(false);}
-		if($("input[name='login']").isMail() && $("input[name='mail']").isMail() && $("input[name='mail']").val()!=$("input[name='login']").val())	//// Vérif si le Login (format mail) est identique à l'email
-			{notify("<?= Txt::trad("USER_loginAndMailDifferent"); ?>");  resolve(false);}
-		if($("[name='password']").isEmpty() && <?= $curObj->isNew()?'true':'false'?>==true)															//// Password obligatoire (nouveaux users)
-			{notify("<?= Txt::trad("specifyPassword"); ?>");  resolve(false);}															
-		if($("[name='password']").notEmpty() && !isValidUserPassword($("[name='password']").val()))												//// Password invalide
-			{notify("<?= Txt::trad("passwordInvalid") ?>");  resolve(false);}
-		if($("[name='password']").notEmpty() && $("[name='password']").val()!=$("[name='passwordVerif']").val())									//// passwordVerif invalide
-			{notify("<?= Txt::trad("passwordConfirmError") ?>");	resolve(false);}
+		//// Vérif de base
+		if($("input[name='login']").isEmpty())																		{notify("<?= Txt::trad("specifyLogin") ?>");		resolve(false);}//Login obligatoire
+		if($("[name='password']").isEmpty() && <?= $curObj->isNew()?'true':'false'?>==true)							{notify("<?= Txt::trad("specifyPassword") ?>");		resolve(false);}//Password obligatoire (new users)													
+		if($("[name='password']").notEmpty() && isValidPassword($("[name='password']").val())==false)				{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false);}//Password invalide
+		if($("[name='password']").notEmpty() && $("[name='password']").val()!=$("[name='passwordVerif']").val())	{notify("<?= Txt::trad("passwordVerifError") ?>");	resolve(false);}//"passwordVerif" invalide
+		//// Vérif si le Login (format mail) est identique à l'email
+		if($("input[name='login']").isMail() && $("input[name='mail']").isMail() && $("input[name='mail']").val()!=$("input[name='login']").val())
+			{notify("<?= Txt::trad("USER_loginAndMailDifferent") ?>");  resolve(false);}
 		//// Verif Ajax finale : un compte existe déjà avec le même login ?
 		$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(result){
-			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>");	resolve(false);}
+			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists") ?>");	resolve(false);}
 			else						{resolve(true);}
 		});
 	});

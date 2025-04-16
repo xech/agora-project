@@ -1,11 +1,12 @@
 <script>
-ready(function(){
-	/***************************************************************************************************************************
-	 * 	LARGEUR DE LA TIMELINE (GANTT) masqué par défaut pour permettre le calcul du width des ".objContainer" via "app.js"
-	 ***************************************************************************************************************************/
-	$(".vTimelineMain").width($("#pageContent").width()).show();
-});
+/*******************************************************************************************
+ *	WIDTH DE LA TIMELINE (lancé via "mainDisplay()" cf "app.js")
+*******************************************************************************************/
+function moduleDisplay(){
+	$(".vTimelineMain").outerWidth(containerWidth,true);
+}
 </script>
+
 
 <style>
 /*LABEL/DETAILS DES TACHES*/
@@ -16,14 +17,13 @@ ready(function(){
 
 /*TIMELINE*/
 .vTimelineSeparator					{visibility:hidden; width:100%;}
-.vTimelineMain						{margin-top:20px; padding:0px; padding-top:10px;}
-.vTimelineMain						{display:none; overflow-x:auto;}				/*masqué par défaut pour le calcul du width des ".objContainer" via "app.js"*/
+.vTimelineMain						{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px;}
 .vTimelineMain table				{border-collapse:collapse;}
 .vTimelineMain td					{vertical-align:middle; white-space:nowrap;}
-.vTimelineMonths					{padding-bottom:8px;}							/*Label des mois*/
+.vTimelineMonths					{padding-bottom:8px;}/*Label des mois*/
 .vTimelineDays						{padding-left:3px; cursor:help;}
-.vTimelineTitle						{padding:0px 10px;}								/*Label de la tâche*/
-.vTimelineMain td:not(:first-child)	{min-width:25px;}								/*Cell des jours !!*/
+.vTimelineTitle						{padding:0px 10px;}	/*Label de la tâche*/
+.vTimelineMain td:not(:first-child)	{min-width:25px;}	/*Cell des jours*/
 .vTimelineLeftBorder				{border-left:#ccc solid 1px;}
 .vTimelineLeftBorder2				{border-left:#eee solid 1px;}
 .vTimelineToday						{color:#c00; font-size:1.1em}
@@ -35,6 +35,7 @@ ready(function(){
 	.vTimelineMain img						{display:none;}
 }
 </style>
+
 
 <div id="pageFull">
 	<div id="pageMenu">
@@ -76,10 +77,10 @@ ready(function(){
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($tasksList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlTask::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("TASK_addTask")."</div>"  :  null;
-			echo "<div class='emptyContainer'>".Txt::trad("TASK_noTask").$addElement."</div>";
+			echo '<div class="miscContainer emptyContainer">'.Txt::trad("TASK_noTask").$addElement.'</div>';
 		}
 
-		////	TIMELINE (GANTT)
+		////	TIMELINE
 		if(!empty($timelineBegin))
 		{
 			//// INIT LA TIMELINE

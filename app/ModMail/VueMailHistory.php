@@ -1,13 +1,13 @@
 <script>
 ////	RESIZE
-lightboxSetWidth(750);
+lightboxWidth(750);
 
 /*******************************************************************************************
  *	OPTION POUR RENVOYER UN ANCIEN EMAIL : RELOAD LA PAGE PRINCIPALE
 *******************************************************************************************/
 function sendOldMail(typeId)
 {
-	parent.confirmRedir("?ctrl=mail&oldMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
+	window.top.confirmRedir("?ctrl=mail&oldMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
 }
 </script>
 

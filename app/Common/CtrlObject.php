@@ -71,7 +71,7 @@ class CtrlObject extends Ctrl
 		//Validation du formulaire
 		if(Req::isParam("formValidate") && Req::isParam("newFolderId")){
 			foreach(self::getObjectsTypeId() as $tmpObj)  {$tmpObj->folderMove(Req::param("newFolderId"));}
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		//Affiche le menu de déplacement de dossier
 		MdlFolder::menuTree("move");
@@ -116,7 +116,7 @@ class CtrlObject extends Ctrl
 			}
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		else
@@ -133,7 +133,7 @@ class CtrlObject extends Ctrl
 	{
 		////	Modèle des objets (ex: "MdlTaskStatus")  &&  Droit d'ajouter un objet ?
 		$MdlObject="Mdl".ucfirst(Req::param("objectType"));
-		if($MdlObject::addRight()==false)  {static::lightboxClose();}
+		if($MdlObject::addRight()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : edite une des categories
 		if(Req::isParam("formValidate")){
 			$curObj=Ctrl::getObjTarget();

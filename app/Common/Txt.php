@@ -173,12 +173,11 @@ class Txt
 	}
 
 	/*******************************************************************************************
-	 * CRÉÉ UN IDENTIFIANT UNIQUE D'UNE CERTAINE LONGEUR (MAX 32 CARACTÈRES)
+	 * CRÉÉ UN PASSWORD PAR DEFAUT
 	 *******************************************************************************************/
-	public static function uniqId($length=15)
+	public static function defaultPassword()
 	{
-		//"uniqid()" utilise le microtime du systeme : on ajoute donc un prefixe "rand()"
-		return substr(md5(uniqid(rand())), 0, $length);
+		return substr(uniqid(),0,8);
 	}
 
 	/*******************************************************************************************

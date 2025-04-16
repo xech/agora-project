@@ -5,7 +5,7 @@ $burgerIcon=($curObj->isRecent())  ?  "menuNew"  :  "menu";										//Nouvel ob
 if(stristr($launcherIcon,"small"))	{$burgerIcon.="Small";}										//Taille du menu burger : "small" / "Big"
 $launcherFloat=(stristr($launcherIcon,"float"))  ?  "objMenuContextFloat"  :  null;				//Menu burger "float" : position absolute à droite
 $launcherLabel=(!empty($options["launcherLabel"]))  ?  $options["launcherLabel"]  :  null;		//Text/label ajouté au menu burger (cf. agendas)
-echo '<span for="'.$objMenuId.'" class="menuLaunch '.$launcherFloat.'"><img src="app/img/'.$burgerIcon.'.png" '.Txt::tooltip("menuOptions").'> '.$launcherLabel.'</span>';
+echo '<span for="'.$objMenuId.'" class="menuLauncher '.$launcherFloat.'"><img src="app/img/'.$burgerIcon.'.png" '.Txt::tooltip("menuOptions").'> '.$launcherLabel.'</span>';
 
 
 ////	MENU CONTEXTUEL
@@ -108,7 +108,7 @@ if($launcherIcon=="floatBig")
 		}
 		//ICONE DES FICHIERS JOINTS
 		if($curObj->attachedFileMenu()){
-			echo '<div class="objMiscMenuDiv menuLaunch" for="'.$curObj->uniqId("objAttachment").'"><img src="app/img/attachment.png"></div>
+			echo '<div class="objMiscMenuDiv menuLauncher" for="'.$curObj->uniqId("objAttachment").'"><img src="app/img/attachment.png"></div>
 				  <div class="menuContext" id="'.$curObj->uniqId("objAttachment").'">'.$curObj->attachedFileMenu(null).'</div>';
 		}
 		//ICONE D'ACCÈS PERSO

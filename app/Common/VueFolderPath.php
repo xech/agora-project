@@ -19,7 +19,7 @@
 	if(!empty($addElemLabel) && $curFolder->addContentRight()){
 	?>
 		<div class="pathMenuAdd">
-			  	<img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png" class="menuLaunch" for="folderPathAddMenu">
+			  	<img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png" class="menuLauncher" for="folderPathAddMenu">
 				<div id="folderPathAddMenu" class="menuContext">
 					<div class="menuLine" onclick="lightboxOpen('<?= $addElemUrl ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= $addElemLabel ?></div></div>
 					<div class="menuLine" onclick="lightboxOpen('<?= $curFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div><?= Txt::trad("addFolder") ?></div></div>

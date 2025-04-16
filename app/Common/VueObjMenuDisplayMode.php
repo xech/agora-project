@@ -1,7 +1,7 @@
 <div class="menuLine">
 	<div class="menuIcon"><img src="app/img/display<?= ucfirst($curDisplayMode) ?>.png"></div>
 	<div>
-		<span class="menuLaunch" for="menuDisplayMode"><?= Txt::trad("displayMode")." ".Txt::trad("displayMode_".$curDisplayMode) ?></span>
+		<span class="menuLauncher" for="menuDisplayMode"><?= Txt::trad("displayMode")." ".Txt::trad("displayMode_".$curDisplayMode) ?></span>
 		<div  class="menuContext" id="menuDisplayMode">
 			<?php
 			//Options d'affichage

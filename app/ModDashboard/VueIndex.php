@@ -6,10 +6,10 @@ ready(function(){
 	////	"Infinite scroll" : Affichage progressif des news et sondages
 	$(window).on("scroll",function(){
 		//Timeout pour ne pas charger durant le scroll
-		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Pas de cumul de Timeout
+		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Un seul timeout
 		scrollTimeout=setTimeout(function(){
 			//Lance l'infinite scroll quand on arrive en fin de page  (hauteur de page < (scrollTop + hauteur de fenêtre + 20px))
-			if($(document).height() < ($(window).scrollTop() + $(window).height() + 20))
+			if($(document).height() < ($(window).scrollTop() +windowHeight + 20))
 			{
 				//Init le chargement
 				if(typeof loadMoreNews==="undefined"){
@@ -25,8 +25,8 @@ ready(function(){
 						else{
 							$("#contentNews").append(vueNewsList);	//Affiche les news
 							$(".vNewsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
-							mainDisplay();							//Update les tooltips
-							menuContext();							//Maj les menus contextuels des news
+							menuContext();							//Update les menus contextuels des news
+							tooltipDisplay();						//Update les tooltips
 							newsOffset++;							//Update le compteur
 						}
 					});
@@ -40,8 +40,8 @@ ready(function(){
 						{
 							$("#contentPolls").append(vuePollsList);//Affiche les sondages
 							$(".vPollsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
-							mainDisplay();							//Update les tooltips
 							menuContext();							//Maj les menus contextuels des sondages
+							tooltipDisplay();						//Update les tooltips
 							dashboardPollVote();					//Update le "trigger" de vote des sondages
 							pollsOffset++;							//Update le compteur
 						}
@@ -96,7 +96,7 @@ function dashboardPollVote()
 			$.ajax({url:"?ctrl=dashboard&action=pollVote",data:$(this).serialize(),method:"POST",dataType:"json"}).done(function(result){
 				if(result.vuePollResult.length>0){
 					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le formulaire par le résultat du sondage  (+ au besoin le "newsDisplay")
-					mainDisplay();													//Update les tooltips
+					tooltipDisplay();												//Update les tooltips
 				}
 			});
 		}
@@ -116,7 +116,8 @@ function dashboardPollVote()
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	#tabMenus.miscContainer	{padding-inline:3px;}/*surcharge .miscContainer*/
+	#tabMenus.miscContainer	{padding:3px;}/*surcharge .miscContainer*/
+	#tabMenus a				{padding-block:3px; font-size:0.95em;}
 }
 
 /*Infinites scrolls : News / Sondages*/
@@ -157,7 +158,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResponseFile						{margin-top:8px;}/*cf. MdlDashboardPoll*/
 .vPollsResponseFile img					{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
 .vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
-.vPollsContainer button					{width:220px!important;}/*surcharge*/
+.vPollsContainer button					{width:240px!important;}/*surcharge*/
 .vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:5px; background:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
 .vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:5px; box-shadow:0px 1px 3px #bbb;}
 .vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
@@ -233,45 +234,45 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 		<?php
 		////	MENU "ONGLET" DU DASHBOARD => SWITCH L'AFFICHAGE DES NEWS / SONDAGES / NOUVEAUTES
 		////
-		if($isPolls==true || $showNewElems==true)
-		{
-			echo "<div id='tabMenus' class='miscContainer'>";
-				echo "<a onclick=\"dashboardOption('News')\" id='tabMenuNews'>".Txt::trad("DASHBOARD_menuNews")."</a>";
-				if($isPolls==true)  {echo "<a onclick=\"dashboardOption('Polls')\" id='tabMenuPolls'>".Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?"<span class='circleNb' ".Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted")." : ".count($pollsListNewsDisplay)).">".count($pollsListNewsDisplay)."</span>":null)."</a>";}
-				echo "<a onclick=\"dashboardOption('Elems')\" id='tabMenuElems'>".Txt::trad("DASHBOARD_menuElems").(!empty($pluginsList)?"<span class='circleNb'>".count($pluginsList)."</span>":null)."</a>";
-				echo "<hr>";//Barre de surlignage (après les menus!)
-			echo "</div>";
+		if($isPolls==true || $showNewElems==true){
+			$pollOption=($isPolls==true)  ?  '<a onclick="dashboardOption(\'Polls\')" id="tabMenuPolls">'.Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?'<span class="circleNb" '.Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted").' : '.count($pollsListNewsDisplay)).'>'.count($pollsListNewsDisplay).'</span>':null).'</a>'  :  null;
+			echo '<div id="tabMenus" class="miscContainer">
+					<a onclick="dashboardOption(\'News\')" id="tabMenuNews">'.Txt::trad("DASHBOARD_menuNews").'</a>
+					'.$pollOption.'
+					<a onclick="dashboardOption(\'Elems\')" id="tabMenuElems">'.Txt::trad("DASHBOARD_menuElems").(!empty($pluginsList)?'<span class="circleNb">'.count($pluginsList).'</span>':null).'</a>
+					<hr>
+				</div>';
 		}
 		
 		////	LISTE DES ACTUALITES
 		////
 		echo "<div id='contentNews'>";
-			//// Premières news avant de "infinite scroll"  (Ou sinon "Aucun contenu")
-			if(!empty($vueNewsListInitial))  {echo $vueNewsListInitial;}
-			else{
+			//// Premières news avant de "infinite scroll"
+			echo $vueNewsListInitial;
+			//// Aucune news
+			if(empty($vueNewsListInitial)){
 				$addElement=(MdlDashboardNews::addRight())  ?  "<div onclick=\"lightboxOpen('".MdlDashboardNews::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("DASHBOARD_addNews")."</div>"  :  null;
-				echo "<div class='emptyContainer'>".Txt::trad("DASHBOARD_noNews").$addElement."</div>";
+				echo '<div class="miscContainer emptyContainer">'.Txt::trad("DASHBOARD_noNews").$addElement.'</div>';
 			}
 		echo "</div>";
 		
 		////	LISTE DES SONDAGES
 		////
-		if($isPolls==true)
-		{
+		if($isPolls==true){
 			echo "<div id='contentPolls'>";
-			//// Premiers sondages avant "infinite scroll"  (Ou sinon "Aucun contenu")
-			if(!empty($vuePollsListInitial))  {echo $vuePollsListInitial;}
-			else{
+			//// Premiers sondages avant "infinite scroll"
+			echo $vuePollsListInitial;
+			//// Aucun sondage
+			if(empty($vuePollsListInitial)){
 				$addElement=(MdlDashboardPoll::addRight())  ?  "<div onclick=\"lightboxOpen('".MdlDashboardPoll::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("DASHBOARD_addPoll")."</div>"  :  null;
-				echo "<div class='emptyContainer'>".Txt::trad("DASHBOARD_noPoll").$addElement."</div>";
+				echo '<div class="miscContainer emptyContainer">'.Txt::trad("DASHBOARD_noPoll").$addElement.'</div>';
 			}
 			echo "</div>";
 		}
 		
 		////	NOUVEAUX ELEMENTS DE CHAQUE MODULES (CF. PLUGINS)
 		////
-		if($showNewElems==true)
-		{
+		if($showNewElems==true){
 			echo '<div id="contentElems"><div class="miscContainer">';
 			foreach($pluginsList as $tmpObj){
 				//// Libellé du module (séparateur?)
@@ -289,7 +290,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					  </div>';
 			}
 			//// "Aucune nouveauté sur cette période"
-			if(empty($pluginsList))  {echo "<div class='emptyContainer'>".Txt::trad("DASHBOARD_pluginEmpty")."</div>";}
+			if(empty($pluginsList))  {echo '<div class="emptyContainer">'.Txt::trad("DASHBOARD_pluginEmpty").'</div>';}
 			echo "</div></div>";
 		}
 		?>

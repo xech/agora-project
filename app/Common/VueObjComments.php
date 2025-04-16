@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ////	Init l'affichage
 ready(function(){
@@ -12,9 +12,9 @@ ready(function(){
 	////	Edition/suppression d'un commentaire : update le "circleNb"  (idem "usersLikeUpdate()")
 	<?php if(Req::isParam("actionComment")){ ?>
 		var menuId="#usersComment_<?= $curObj->_typeId ?>";																							//Id du menu
-		if(<?= count($commentList) ?>==0)	{parent.$(menuId).addClass("hideMiscMenu").find(".circleNb").html("");}									//Masque l'icone et le nb de commentaires
-		else								{parent.$(menuId).removeClass("hideMiscMenu").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone..
-		parent.$(menuId).tooltipsterUpdate("<?= $commentsTitle ?>");																				//Update le Tooltip
+		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("hideMiscMenu").find(".circleNb").html("");}									//Masque l'icone et le nb de commentaires
+		else								{window.top.$(menuId).removeClass("hideMiscMenu").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone..
+		window.top.$(menuId).tooltipsterUpdate("<?= $commentsTitle ?>");																				//Update le Tooltip
 	<?php } ?>
 
 	////	Focus du champ (pas sur mobile pour ne pas afficher le clavier virtuel)

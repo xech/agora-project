@@ -45,7 +45,7 @@
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($linkList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
-			echo "<div class='emptyContainer'>".Txt::trad("LINK_noLink").$addElement."</div>";
+			echo '<div class="miscContainer emptyContainer">'.Txt::trad("LINK_noLink").$addElement.'</div>';
 		}
 		?>
 	</div>

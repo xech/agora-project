@@ -36,8 +36,8 @@ class CtrlLink extends Ctrl
 			$tmpObj->pluginIcon=self::moduleName."/icon.png";
 			$tmpObj->pluginLabel=(!empty($tmpObj->description))  ?  $tmpObj->description  :  $tmpObj->adress;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="window.open('".addslashes($tmpObj->adress)."');";
+			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
+			$tmpObj->pluginJsLabel="window.open('".addslashes($tmpObj->adress)."')";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;
@@ -57,7 +57,7 @@ class CtrlLink extends Ctrl
 			$curObj=$curObj->createUpdate("adress=".Db::param("adress").", description=".Db::param("description"));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif("<a href=\"".$curObj->adress."\" target='_blank'><b>".$curObj->adress."</b></a>");
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;

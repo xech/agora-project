@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(600);
+lightboxWidth(600);
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){

@@ -93,7 +93,7 @@ class CtrlTask extends Ctrl
 			if(!empty($tmpObj->description))	{$tmpObj->pluginTooltip.="<hr>".Txt::reduce($tmpObj->description);}
 			if(!empty($tmpObj->dateBegin))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("begin")." : ".Txt::dateLabel($tmpObj->dateBegin);}
 			if(!empty($tmpObj->dateEnd))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("end")." : ".Txt::dateLabel($tmpObj->dateEnd);}
-			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."');";//Affiche dans son dossier
+			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel=$tmpObj->openVue();
 			$pluginsList[]=$tmpObj;
 		}
@@ -127,7 +127,7 @@ class CtrlTask extends Ctrl
 			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", _idStatus=".Db::param("_idStatus").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", advancement=".Db::param("advancement").", priority=".Db::param("priority").", responsiblePersons=".Db::formatTab2txt(Req::param("responsiblePersons")));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;

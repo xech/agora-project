@@ -3,14 +3,14 @@ html, body, div				{margin:0px; padding:0px;}/*reset*/
 html						{background:#222;}
 body						{font-size:13px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; background-position:right top; background-repeat:no-repeat;}/*"font-size:13px" : valeur de reference pour "em"*/
 div							{vertical-align:top; box-sizing:border-box;}																	/*"box-sizing" : définit la façon dont la largeur est calculée*/
-p							{margin:3px;}																									/*Balises "<p>" de l'éditeur tinyMce (cf. "content_style")*/
+p							{margin:3px;}																									/*Idem balises "<p>" de l'éditeur tinyMce (cf. "editor.css")*/
 abbr						{border-bottom: 1px dotted #777; cursor:help;}																	/*remplace balise "acronym" et classe ".acronym"*/
 img							{border:0px; vertical-align:middle;}																			/*alignemment des images*/
 hr							{border:0; height:1px; margin-top:10px; margin-bottom:10px;}													/*lignes de séparateur*/
 audio						{min-width:350px;}																								/*balise des lecteurs audio*/
 #htmlLightbox body			{padding:25px;}																									/*Padding principal des lightbox*/
 [data-fancybox='images']	{cursor:zoom-in;}																								/*Affichage d'image dans la lightbox (modFile & Co)*/
-a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
+a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
 /*MOBILE*/
 @media screen and (max-width:440px){
 	body					{font-size:17px;}
@@ -36,11 +36,11 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 }
 
 /*** DIV "CONTENEUR" DES OBJETS*/
-.objContainer, .miscContainer, .emptyContainer, .menuContext	{margin:0px 5px 5px 0px; box-sizing:border-box; box-shadow:2px 2px 8px #555; transition:box-shadow 0.3s ease-in-out; border-radius:4px; background-repeat:no-repeat; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
+.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; box-sizing:border-box; box-shadow:2px 2px 8px #555; transition:box-shadow 0.3s ease-in-out; border-radius:4px; background-repeat:no-repeat; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
 .objContainer										{position:relative; padding:0px; padding-right:60px; height:100px; min-height:100px;}/*"height"+"min-height" pour l'overflow" du "objContainerScroll"  &&  "padding-right" pour l'affichage des "objMiscMenus"*/
 .objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
 .miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
-.objContainer:hover, .miscContainer:hover			{box-shadow:2px 2px 8px #e5e5e5;}											/*Conteneurs survolés*/
+.objContainer:hover, .miscContainer:hover			{box-shadow:2px 2px 8px #ccc;}												/*Conteneurs survolés*/
 .emptyContainer										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
 .emptyContainer div									{margin-top:20px;}															/*Idem*/
 .objContent											{display:table; height:inherit; min-height:inherit; width:100%;}			/*Contenu de l'objet*/
@@ -50,7 +50,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 .objIconOpacity img									{filter:opacity(0.2);}														/*Icones opaques des links, tasks, etc*/
 .objLabel											{padding-left:15px; overflow-wrap:break-word; text-overflow:ellipsis;}		/*Cellule du label de l'objet : "break-word" évite qu'une URL éclate l'affichage*/
 /*DIPLAY "BLOCK"*/
-.objBlocks .objContainer							{display:none; float:left; width:200px; min-width:200px; max-width:400px;}	/*Affiché après le calcul de mainDisplay()*/
+.objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px;}				/*Dimensions des blocs*/
 .objBlocks .objIcon									{width:90px; text-align:center;}											/*Icone/image de l'objet*/
 .objBlocks .objIcon:empty							{width:0px!important;}														/*Cf. Profil Contact/User sans image*/
 .objBlocks .objIconOpacity							{width:40px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
@@ -65,7 +65,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 .objLines .objAutorDate span						{display:block; margin-top:5px; font-weight:normal;}						/*Auteur/Date sur 2 lignes*/
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	.objContainer, .miscContainer, .emptyContainer	{width:100%; margin:0px 0px 7px 0px; border-radius:0px!important;}			/*tester affichage de news, fichiers et agendas*/
+	.objContainer, .miscContainer:hover				{width:100%; margin:0px 0px 7px 0px; border-radius:0px!important;}			/*tester affichage de news, fichiers et agendas*/
 	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
 	.objContainerScroll								{overflow-y:hidden;}														/*pas d'ascenseur sur mobile !*/
 	.objBlocks .objLabel							{font-size:0.9em;}															/*Réduit la taille des labels d'objets*/
@@ -92,8 +92,9 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 .attachedFileInsertImg							{max-width:50px!important; max-height:50px!important;}							/*Liste des images dans le menu d'edition*/
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	.objMenuContextFloat	{opacity:1!important;}										/*Icones affichées sans opacité*/
-	.objMiscMenuDiv			{display:inline-block!important; margin:5px 0px 5px 5px;}	/*Affiche toujours les icones + margin pour cliquer facilement*/
+	.objMenuContextFloat						{opacity:1!important;}										/*Icones affichées sans opacité*/
+	.objMiscMenuDiv								{display:inline-block!important; margin:5px 0px 5px 5px;}	/*Affiche toujours les icones + margin pour cliquer facilement*/
+	.circleNb									{width:24px; height:24px; line-height:24px; font-size:15px;}
 }
 
 /*** MENUS DES MODULES & MENUS CONTEXTUELS*/
@@ -103,7 +104,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLaunch 	{
 .menuIcon img								{max-width:30px!important; max-height:30px!important;}
 #pageMenu .miscContainer					{padding:10px;}
 #pageFull #pageMenu .miscContainer			{border-radius:0px 4px 4px 0px;}	/*Menus des modules en affichage full*/
-.menuLaunch									{display:inline-block;}				/*launcher du menu contextuel*/
+.menuLauncher								{display:inline-block;}				/*launcher du menu contextuel*/
 .menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px; box-shadow:0px 0px 10px black;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
 .menuContextLabel							{text-align:center; padding:5px 0px;}
 .menuContext .menuLine>div					{line-height:18px;}
@@ -205,21 +206,21 @@ select option								{font-size:1.15em;}
 #menuMobileMain .menuLine>div							{padding:10px 5px;}/*surcharge*/
 #menuMobileMain hr										{margin:10px 0px;}/*surcharge*/
 #menuMobileMain .miscContainer							{margin:20px 0px; padding:5px; border-radius:10px!important;}
-#menuMobileTwo											{display:none; margin-top:10px; border-radius:5px;}
+#menuMobileContent2										{margin-top:10px; border-radius:5px;}
 #menuMobileAddButton									{z-index:100; position:fixed; bottom:10px; right:10px; filter:drop-shadow(0px 2px 4px #ccc);}/*z-index idem #headerBar*/
 #menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masque par défaut les menus sur mobile*/
 
 /*** JQUERY FANCYBOX LIGHTBOX*/
-.fancybox-slide--iframe						{padding:0px;}/*Lightbox iframes*/
-.fancybox-slide--iframe .fancybox-content	{width:95%; height:95%; max-width:95%!important; max-height:95%!important; margin:0px;}/*Lightbox iframes*/
-.fancybox-iframe,.fancybox-content			{border-radius:10px!important;}/*"border-radius" aussi sur l'iframe!*/
-.fancybox-toolbar							{opacity:1!important; visibility:visible!important; border-left:solid 1px #777; border-bottom:solid 1px #777; border-bottom-left-radius:5px;}/*"opacity" et "visibility" pour tjs afficher le "close" et éviter le masquage auto (ex: maps des contact)*/
-.lightboxTitle								{position:relative; padding:0px 60px 15px 60px; margin-bottom:30px; text-align:center; font-size:1.1em; line-height:22px; box-shadow:0px 7px 7px -7px #888;}/*padding left/right : .lightboxMenu*/
-.lightboxMenu								{position:absolute; top:-5px; right:0px;}/*menu context + bouton edit*/
-.lightboxMenu .editButton					{margin-right:15px;}
-.lightboxTitleDetail						{font-size:0.9em; margin-top:15px;}
-.lightboxAddElem							{text-align:center;}/*ex: Bouton "ajouter un  groupe"*/
-.lightboxAddElem button						{width:230px; height:50px;}
+.fancybox-slide--iframe							{padding:0px;}/*Lightbox iframes*/
+.fancybox-slide--iframe .fancybox-content		{width:95%; height:95%; max-width:95%!important; max-height:95%!important; margin:0px;}/*Lightbox iframes*/
+.fancybox-iframe,.fancybox-content				{border-radius:10px!important;}/*"border-radius" aussi sur l'iframe!*/
+.fancybox-toolbar								{opacity:1!important; visibility:visible!important; border-left:solid 1px #777; border-bottom:solid 1px #777; border-bottom-left-radius:5px;}/*"opacity" et "visibility" pour tjs afficher le "close" et éviter le masquage auto (ex: maps des contact)*/
+.lightboxTitle									{position:relative; padding:0px 60px 15px 60px; margin-bottom:30px; text-align:center; font-size:1.1em; line-height:22px; box-shadow:0px 7px 7px -7px #888;}/*padding left/right : .lightboxMenu*/
+.lightboxMenu									{position:absolute; top:-5px; right:0px;}/*menu context + bouton edit*/
+.lightboxMenu .editButton						{margin-right:15px;}
+.lightboxTitleDetail							{font-size:0.9em; margin-top:15px;}
+.lightboxAddElem								{text-align:center;}/*ex: Bouton "ajouter un  groupe"*/
+.lightboxAddElem button							{width:230px; height:50px;}
 /*MOBILE FANCYBOX : 440px*/
 @media screen and (max-width:440px){
 	.fancybox-slide--iframe .fancybox-content	{width:100%!important; height:100%!important; max-width:100%!important; max-height:100%!important;}/*Lightbox iframe en pleine page (sauf les images!)*/
@@ -227,7 +228,7 @@ select option								{font-size:1.15em;}
 	.fancybox-toolbar							{border:0px;}
 	.fancybox-button							{width:40px; height:40px; padding:0px; background:white;}
 	.fancybox-button--close svg					{display:none;}/*Masque le "close" svg par défaut*/
-	.fancybox-button--close, #menuMobileClose	{top:0px; right:0px; width:45px; height:45px; background:white url("../../img/closeBig.png"); background-position:top 10px right 10px; background-repeat:no-repeat;}/*Bouton "close"*/
+	.fancybox-button--close, #menuMobileClose	{top:0px; right:0px; width:45px; height:45px; background:white url("../../img/close.png"); background-position:top 10px right 10px; background-repeat:no-repeat;}/*Bouton "close"*/
 	#menuMobileClose							{position:absolute; border-bottom-left-radius:5px;}
 	.lightboxTitle								{padding-right:30px;}/*cf. #menuMobileClose*/
 	.lightboxMenu								{top:0px; left:-5px; right:auto;}
@@ -239,10 +240,10 @@ select option								{font-size:1.15em;}
 .tooltipster-box								{box-shadow:0px 0px 5px 3px rgba(50,50,50,0.5)!important;}				/*TOOLTIPSTER : attr "title"*/
 .tooltipster-content							{color:#555!important; padding:15px!important;}
 .ui-datepicker									{width:300px; max-width:98%; box-shadow:0px 0px 8px #888;}				/*JQUERY-UI DATEPICKER*/
-.ui-datepicker-header							{background-color:transparent; border:none;}	/*label du mois*/
-.ui-datepicker .ui-state-default				{padding:10px; text-align:center; border:0px;}	/*cellules des jours*/
-.ui-datepicker .ui-state-highlight				{background:#cde; color:black;}			 /*aujourd'hui*/
-.ui-datepicker .ui-state-active					{background:#007fff; color:white;}		 /*jour sélectionné*/
+.ui-datepicker-header							{background-color:transparent; border:none;}								/*label du mois*/
+.ui-datepicker .ui-state-default				{padding:10px; text-align:center; border:0px;}								/*cellules des jours*/
+.ui-datepicker .ui-state-highlight				{background:#cde; color:black;}									 	  /*aujourd'hui*/
+.ui-datepicker .ui-state-active					{background:#007fff; color:white;}		 							  /*jour sélectionné*/
 .ui-timepicker-wrapper							{max-height:400px;}														/*JQUERY-UI TIMEPICKER : pseudo <select>*/
 .ui-timepicker-list li 							{padding:10px 20px;}
 .jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
@@ -251,11 +252,11 @@ select option								{font-size:1.15em;}
 .jconfirm-content								{font-size:18px!important;}
 .jconfirm-content .confirmDeleteAlert			{color:#500!important; margin-bottom:20px!important;}
 .jconfirm-buttons								{text-align:center!important;}
-.jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important;}
+.jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important; font-size:15px!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
 @media screen and (max-width:440px){
-	.jconfirm-buttons					{width:100%!important;}
-	.jconfirm-buttons button			{min-width:80%!important;}
+	.jconfirm-buttons							{width:100%!important;}
+	.jconfirm-buttons button					{min-width:80%!important;}
 }
 
 /*** DIVERS*/
@@ -284,7 +285,7 @@ select option								{font-size:1.15em;}
 @keyframes pulsateAnimation		{ 50% {opacity:0.2;} }
 /*MOBILE*/
 @media screen and (max-width:1024px){
-	.pathMenu		{width:100%; max-width:100%; padding:5px;}
+	.pathMenu					{width:100%; max-width:100%; padding:5px;}
 }
 
 

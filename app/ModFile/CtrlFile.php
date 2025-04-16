@@ -75,7 +75,7 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
-			$tmpObj->pluginJsIcon="window.parent.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
+			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."','".Txt::trad("download",true)." ?')";
 			$pluginsList[]=$tmpObj;
 		}
@@ -169,7 +169,7 @@ class CtrlFile extends Ctrl
 			Db::Query("UPDATE ap_fileVersion SET name=".Db::format($fileName).", description=".Db::param("description")." WHERE _idFile=".$lastVersion["_idFile"]." AND dateCrea=".Db::format($lastVersion["dateCrea"]));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		else
@@ -257,7 +257,7 @@ class CtrlFile extends Ctrl
 			if(!empty($lastObjFile))  {$lastObjFile->sendMailNotif(implode("<br><br>",$notifFilesLabel), $notifFiles);}
 			if(!empty($tmpDirPath) && is_dir($tmpDirPath))  {File::rm($tmpDirPath);}
 			File::datasFolderSize(true);
-			static::lightboxClose();
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -302,6 +302,6 @@ class CtrlFile extends Ctrl
 	{
 		$curObj=self::getObjTarget();
 		$curObj->delete(Req::param("dateCrea"));
-		static::lightboxClose();
+		static::lightboxRedir();
 	}
 }

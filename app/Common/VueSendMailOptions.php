@@ -16,7 +16,7 @@ ready(function(){
 input[name*='mailOptions'], #specificMailsPlus	{margin-right:10px;}
 #specificMailsPlus								{height:18px;}
 .specificMailsDiv								{display:none;}
-.specificMailsDiv input							{width:350px; max-width:90%;}
+.specificMailsDiv input							{width:300px; max-width:90%;}
 </style>
 
 

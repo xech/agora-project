@@ -1,5 +1,5 @@
 <script>
-lightboxSetWidth(600);
+lightboxWidth(600);
 </script>
 
 <style>

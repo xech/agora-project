@@ -33,8 +33,8 @@ ready(function(){
 	$("#resetPasswordModifForm, #invitationPasswordForm").on("submit",function(){
 		let newPassword		=$(this).find("[name='newPassword']").val();
 		let newPasswordVerif=$(this).find("[name='newPasswordVerif']").val();
-		if(!isValidUserPassword(newPassword))	{notify("<?= Txt::trad("passwordInvalid"); ?>");		return false;}//Password invalide
-		else if(newPassword!=newPasswordVerif)	{notify("<?= Txt::trad("passwordConfirmError") ?>");	return false;}//Passwords différents
+		if(!isValidPassword(newPassword))	{notify("<?= Txt::trad("passwordInvalid"); ?>");		return false;}//Password invalide
+		else if(newPassword!=newPasswordVerif)	{notify("<?= Txt::trad("passwordVerifError") ?>");	return false;}//Passwords différents
 	});
 
 	/**********************************************************************************************************

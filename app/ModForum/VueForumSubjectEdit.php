@@ -1,6 +1,6 @@
 <script>
 ////	Resize
-lightboxSetWidth(800);
+lightboxWidth(800);
 
 ////	INIT
 ready(function(){

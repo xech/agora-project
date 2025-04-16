@@ -1,13 +1,15 @@
 <script>
 ////	Resize
-lightboxSetWidth(550);
+lightboxWidth(550);
 
 ////	Confirme l'envoi?
 ready(function(){
 	$("form").on("submit",async function(event){
 		event.preventDefault();
-		if($("input[name='usersList[]']:checked").length==0)						{notify("<?= Txt::trad("notifSelectUser") ?>");}	//"Merci de sélectionner au moins un user"
-		else if(await confirmAlt("<?= TXT::trad("USER_sendCoordsConfirm") ?>"))		{submitFinal(this);}								//Submit final (sans récursivité Jquery)
+		////	Controle le nb d'users sélectionnés
+		if($("input[name='usersList[]']:checked").length==0)   {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
+		////	Valide le formulaire
+		if(await confirmAlt("<?= TXT::trad("USER_sendCoordsConfirm") ?>"))  {asyncSubmit(this);}
 	});
 });
 </script>
