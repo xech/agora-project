@@ -19,24 +19,22 @@
 
 	<div id="pageContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
-		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
+		////	PATH DU DOSSIER COURANT  &  LISTE DES DOSSIERS  &  LISTE DES CONTACTS
 		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());
 		echo CtrlObject::vueFolders();
-		////	LISTE DES CONTACTS
-		foreach($contactList as $tmpContact)
-		{
+		foreach($contactList as $tmpContact){
 			echo $tmpContact->objContainerMenu("objPerson").
-				"<div class='objContainerScroll'>
-					<div class='objContent'>
-						<div class='objIcon'>".$tmpContact->profileImg(true,false)."</div>
-						<div class='objLabel' onclick=\"".$tmpContact->openVue()."\">
-							".$tmpContact->getLabel("full")."
-							<div class='objPersonDetails'>".$tmpContact->getFields(MdlContact::getDisplayMode())."</div>
+				'<div class="objContainerScroll">
+					<div class="objContent">
+						<div class="objIcon">'.$tmpContact->profileImg(true,false).'</div>
+						<div class="objLabel" onclick="'.$tmpContact->openVue().'">
+							<div class="objPersonDetail">'.$tmpContact->getLabel("full").'</div>
+							<div class="objPersonDetails">'.$tmpContact->getFields(MdlContact::getDisplayMode()).'</div>
 						</div>
-						<div class='objAutorDate'>".$tmpContact->autorDate()."</div>
+						<div class="objAutorDate">'.$tmpContact->autorDate().'</div>
 					</div>
 				</div>
-			</div>";
+			</div>';
 		}
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($contactList)){

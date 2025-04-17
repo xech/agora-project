@@ -54,24 +54,22 @@ class CtrlTask extends Ctrl
 			$timelineSeconds=86400 * 80;
 			if(($timelineEnd-$timelineBegin) < $timelineSeconds)   {$timelineEnd=$timelineBegin+$timelineSeconds;}
 			//Mois et Jours du header de la timeline
-			$tmpMonth=null;
-			for($dayTimeBegin=$timelineBegin; $dayTimeBegin<=$timelineEnd; $dayTimeBegin+=86400)
-			{
-				$newMonth=$tmpMonth!=date("m",$dayTimeBegin);
-				if($dayTimeBegin==$timelineBegin || date("j",$dayTimeBegin)==1)	{$vTimelineLeftBorder="vTimelineLeftBorder";}	//début de tableau / début de mois : bordure de gauche pour la cellule du jour
-				elseif(date("N",$dayTimeBegin)==1)								{$vTimelineLeftBorder="vTimelineLeftBorder2";}	//début de semaine : bordure de gauche plus fine
-				else															{$vTimelineLeftBorder=null;}
+			$prevDayMonth=null;
+			for($dayTimeBegin=$timelineBegin; $dayTimeBegin<=$timelineEnd; $dayTimeBegin+=86400){
+				if($dayTimeBegin==$timelineBegin || date("j",$dayTimeBegin)==1)	{$classLeftBorder="vTimelineLeftBorder";}	//début de tableau / début de mois : bordure de gauche pour la cellule du jour
+				elseif(date("N",$dayTimeBegin)==1)								{$classLeftBorder="vTimelineLeftBorder2";}	//début de semaine : bordure de gauche plus fine
+				else															{$classLeftBorder=null;}
 				$vDatas["timelineDays"][]=array(
 					"curDate"=>date('Y-m-d',$dayTimeBegin),
 					"dayTimeBegin"=>$dayTimeBegin,
-					"newMonthLabel"=>$newMonth==true ? date('y/m',$dayTimeBegin) : null,
+					"newMonthLabel"=>$prevDayMonth!=date("m/y",$dayTimeBegin)  ?  Txt::timeLabel($dayTimeBegin,'MMM yyyy')  :  null,
 					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
-					"vTimelineLeftBorder"=>$vTimelineLeftBorder,
+					"classLeftBorder"=>$classLeftBorder,
 					"vTimelineToday"=>date('Y-m-d',$dayTimeBegin)==date('Y-m-d')  ?  "vTimelineToday"  :  null,//Label d'aujourd'hui
 					"dayLabel"=>date("j",$dayTimeBegin),
 					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin)
 				);
-				$tmpMonth=date("m",$dayTimeBegin);
+				$prevDayMonth=date("m/y",$dayTimeBegin);
 			}
 		}
 		////	Affiche la vue

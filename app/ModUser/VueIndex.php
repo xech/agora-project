@@ -12,11 +12,11 @@
 			<!--ADD USER /  INVITATIONS  /  IMPORTER DES USERS  /  ENVOI DES CREDENTIALS  /  AFFECT USER -->
 			<?php
 			$affectNewUsers=(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlUser::getUrlNew()."');\" ".Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace')."><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("USER_addUser")."</div></div>";}
-			if(Ctrl::$curUser->sendInvitationRight())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation');\" ".Txt::tooltip("USER_sendInvitationTooltip")."><div class='menuIcon'><img src='app/img/mail.png'></div><div>".Txt::trad("USER_sendInvitation")."</div></div>";}
-			if(Ctrl::$curUser->isGeneralAdmin())		{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=ResetPasswordSendMailUsers');\" ".Txt::tooltip("USER_sendCoordsTooltip")."><div class='menuIcon'><img src='app/img/user/connection.png'></div><div>".Txt::trad("USER_sendCoords")."</div></div>";}
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=EditPersonsImportExport');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_user")."</div></div>";}
-			if($affectNewUsers==true)  					{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=user&action=AffectUsers');\" ".Txt::tooltip("USER_addExistUserTitle")."><div class='menuIcon'><img src='app/img/plusSmall.png'></div><div>".Txt::trad("USER_addExistUser")."</div></div>";}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
+			if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
+			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=ResetPasswordSendMailUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/user/connection.png"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=EditPersonsImportExport\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_user").'</div></div>';}
+			if($affectNewUsers==true)  					{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=AffectUsers\')" '.Txt::tooltip("USER_addExistUserTitle").'><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("USER_addExistUser").'</div></div>';}
 			?>
 
 			<!--GROUPES D'UTILISATEURS-->
@@ -39,6 +39,7 @@
 			<?php } ?>
 
 			<!--TYPE D'AFFICHAGE / TRI D'AFFICHAGE / FILTRAGE ALPHABET / NB D'UTILISATEURS-->
+			<hr>
 			<?php
 			//// Menus type et tri d'affichage
 			echo MdlUser::menuDisplayMode().MdlUser::menuSort();
@@ -61,24 +62,21 @@
 	<div id="pageContent" class="<?= MdlUser::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	LISTE DES USERS
-		foreach($displayedUsers as $tmpUser)
-		{
-			//Icone "admin general" OU Icone"admin space"
-			if($tmpUser->isGeneralAdmin())		{$adminIcon='<img src="app/img/user/userAdminGeneral.png" '.Txt::tooltip("USER_adminGeneral").' class="vAdminIcon">';}
-			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}
+		foreach($displayedUsers as $tmpUser){
+			if($tmpUser->isGeneralAdmin())		{$adminIcon='<img src="app/img/user/userAdminGeneral.png" '.Txt::tooltip("USER_adminGeneral").' class="vAdminIcon">';}	//Admin general
+			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}		//Admin space
 			else								{$adminIcon=null;}
-			//Affiche le block
 			echo $tmpUser->objContainerMenu("objPerson").
-				"<div class='objContainerScroll'>
-					<div class='objContent'>
-						<div class='objIcon'>".$tmpUser->profileImg(true,false)."</div>
-						<div class='objLabel' onclick=\"".$tmpUser->openVue()."\">
-							".$tmpUser->getLabel("full").$adminIcon."
-							<div class='objPersonDetails'>".$tmpUser->getFields(MdlUser::getDisplayMode())."</div>
+				'<div class="objContainerScroll">
+					<div class="objContent">
+						<div class="objIcon">'.$tmpUser->profileImg(true,false).'</div>
+						<div class="objLabel" onclick="'.$tmpUser->openVue().'">
+							<div class="objPersonDetail">'.$tmpUser->getLabel("full").$adminIcon.'</div>
+							<div class="objPersonDetails">'.$tmpUser->getFields(MdlUser::getDisplayMode()).'</div>
 						</div>
 					</div>
 				</div>
-			</div>";
+			</div>';
 		}
 		////	AUCUN CONTENU  &&  MENU DE PAGINATION
 		if(empty($displayedUsers))	{echo '<div class="miscContainer emptyContainer">'.Txt::trad("USER_noUser").'</div>';}

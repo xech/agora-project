@@ -6,16 +6,22 @@ button								{background:linear-gradient(#fff,#eee); color:#555;}
 button:hover						{background:linear-gradient(#eee,#fff);}
 button:disabled, button[disabled]	{background:#ccc;}
 
-/*Liens principaux / label+checkbox / accès utilisateur  &  Option sélectionnée*/
-a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, button:hover, label:hover, input:checked+label, .sAccessRead	{color:rgb(0,104,189);}
-.option							{border:solid 1px transparent;}
-.option:hover, .optionSelect	{color:rgb(0,104,189); background:#eeefff; border:solid 1px #ddd; border-radius:5px;}
+/*Liens / label+checkbox / Options  / Droit d'accès / etc*/
+a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, button:hover, label:hover, input:checked+label, .sAccessRead	{color:#0068bd;}
+.sAccessWrite, .sAccessWriteLimit	{color:#900;}
+.option								{border:solid 1px transparent;}
+.option:hover, .optionSelect		{background:#e8e8ff; color:#0068bd; border:solid 1px #ccc; border-radius:5px;}
+.optionSelectAll					{background:#f9f9f9!important;}
 
-/*Blocks d'objet & menus contextuels*/
-.sAccessWrite, .sAccessWriteLimit																	{color:#900;}						/*Droit d'accès "Write" & "Write limit"*/
-.objContainer, .miscContainer, .menuContext															{background:white;}				/*blocks principaux*/
-.objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover	{background: #eee!important;}		/*objets sélectionnés & lignes survolées (cf. droit d'accès & CO)*/
-.objLines .objContainer																				{border-bottom:solid 1px #ccc;}	/*pas de "box-shadow" en affichage "objLines"*/
+/*Blocks principaux / Menu context / Inputs / etc*/
+.objContainer, .miscContainer, .menuContext, .tox-tinymce			{box-shadow:2px 2px 10px #333; transition:box-shadow 0.3s ease-in-out;}
+.objContainer:hover, .miscContainer:hover, .menuContext:hover		{box-shadow:2px 2px 10px #ccc;}
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #bbb; transition:box-shadow 0.3s ease-in-out; border:#bbb 1px solid;}
+input:not([type=radio],[type=checkbox]):hover, textarea:hover		{box-shadow:0px 0px 4px #555;}
+input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0px 4px #0068bd; border:#bbf 1px solid;}
+.objLines .objContainer												{border-bottom:solid 1px #ccc;}
+.objContainer, .miscContainer, .menuContext							{background:white;}
+.objContainerSelect, #objSelectMenu, .lineSelect, .menuContext .menuLine:hover, .lineHover:hover, .objLines .objContainer:hover  {background:#eee;}
 
 /*MOBILE*/
 #menuMobileMain															{background:white; border:solid 1px #ddd;}
@@ -26,7 +32,7 @@ a:hover, [onclick]:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, button
 }
 
 /*Divers*/
-#headerBar								{background:linear-gradient(180deg,#f1f1f1,white,#f1f1f1); box-shadow:0px 2px 8px rgb(80,80,80);}/*barre de menu principale*/
+#headerBar								{background:linear-gradient(180deg,#f1f1f1,white,#f1f1f1); box-shadow:0px 2px 8px #505050;}/*barre de menu principale*/
 hr										{background:linear-gradient(90deg,#eee,#ccc,#eee);}				/*barre de séparation*/
 fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px;}	/*fieldset & onglet "VueObjMenuEdit.php"*/
 .fieldsetSub							{background:#ececec; border:1px solid #ccc; border-radius:5px;}	/*ex: "VueObjMenuEdit.php"*/

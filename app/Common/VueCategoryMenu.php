@@ -6,11 +6,17 @@
 <!--affiche chaque categorie-->
 <?php
 foreach($categoryList as $tmpCat){
-	$categoryTooltip=(!empty($tmpCat->_id))  ?  Txt::trad($tradPrefix."_CAT_menuTooltip").' &nbsp; '.$tmpCat->getLabel().'<br>'.$tmpCat->description  :  Txt::trad($tradPrefix."_CAT_showAllTooltip");
+	$labelClass=($_idCategoryFilter==$tmpCat->_id)  ?  'optionSelect'  :  'option';
+	if(!empty($tmpCat->_id)){
+		$categoryTooltip=Txt::trad($tradPrefix."_CAT_menuTooltip").' <img src="app/img/arrowRight.png"> '.$tmpCat->getLabel().'<br>'.$tmpCat->description;
+	}else{
+		$categoryTooltip=Txt::trad($tradPrefix."_CAT_showAllTooltip");		
+		if($labelClass=="optionSelect")	{$labelClass.=' optionSelectAll';}
+	}
 ?>
-<div class="menuLine vMenuCategory" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&_idCategoryFilter=<?= $tmpCat->_id ?>')" <?= Txt::tooltip($categoryTooltip) ?>>
-	<div class="<?= $_idCategoryFilter==$tmpCat->_id?'optionSelect':'option' ?>"><?= $tmpCat->getLabel() ?></div>
-</div>
+	<div class="menuLine vMenuCategory" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&_idCategoryFilter=<?= $tmpCat->_id ?>')" <?= Txt::tooltip($categoryTooltip) ?>>
+		<div class="<?= $labelClass ?>"><?= $tmpCat->getLabel() ?></div>
+	</div>
 <?php } ?>
 
 

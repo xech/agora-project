@@ -760,7 +760,7 @@ class MdlObject
 			if($profileImg==true)  {$autorLabel=$objUser->profileImg(true,true).' &nbsp;'.$autorLabel;}																		//Image de l'auteur
 			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  																					//Lien vers le profil
 		}
-		return $autorLabel.'<img src="app/img/arrowRight.png">'.Txt::dateLabel($dateEdit,"labelFull");
+		return $autorLabel.'&nbsp;<img src="app/img/arrowRight.png">'.Txt::dateLabel($dateEdit,"labelFull");
 	}
 
 	/*******************************************************************************************

@@ -195,7 +195,7 @@ class MdlPerson extends MdlObject
 						$this->getField("comment",$mode);
 		}
 		//Date de dernière connexion
-		if(static::objectType=="user" && Ctrl::$curUser->isSpaceAdmin())  {$labels.=$this->getField("lastConnection",$mode);}
+		if(static::objectType=="user" && $mode!="edit" && Ctrl::$curUser->isSpaceAdmin())  {$labels.=$this->getField("lastConnection",$mode);}
 		//Retourne le résultat
 		return $labels;
 	}

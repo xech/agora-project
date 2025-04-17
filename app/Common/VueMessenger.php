@@ -225,7 +225,7 @@ async function proposeVisio()
 
 /*Messenger : #messengerMain*/
 #messengerMove								{height:16px; cursor:move; background-image:url(app/img/dragDrop.png);}
-#messengerClose								{position:absolute; top:10px; right:10px; cursor:pointer;}
+#messengerClose								{position:absolute; top:7px; right:7px; cursor:pointer;}
 .vMessengerContent, .vMessengerScroll		{height:450px;}		/*Fixe la hauteur du contenu principal (pas + de 500px) : pour éviter que les ".vMessengerScroll" ne puissent agrandir automatiquement le <table> en hauteur (si ya beaucoup de messages à afficher)*/
 .vMessengerScroll							{overflow-y:auto;}	/*divs scrollables*/
 .vMessengerScroll::-webkit-scrollbar		{background:#333;}	/*couleur de background*/

@@ -36,11 +36,10 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 }
 
 /*** DIV "CONTENEUR" DES OBJETS*/
-.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; box-sizing:border-box; box-shadow:2px 2px 8px #555; transition:box-shadow 0.3s ease-in-out; border-radius:4px; background-repeat:no-repeat; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
-.objContainer										{position:relative; padding:0px; padding-right:60px; height:100px; min-height:100px;}/*"height"+"min-height" pour l'overflow" du "objContainerScroll"  &&  "padding-right" pour l'affichage des "objMiscMenus"*/
+.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; box-sizing:border-box; border-radius:4px; background-repeat:no-repeat; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
+.objContainer										{position:relative; padding:0px; height:100px; min-height:100px;}			/*"height"+"min-height" pour l'overflow" du "objContainerScroll""*/
 .objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
 .miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
-.objContainer:hover, .miscContainer:hover			{box-shadow:2px 2px 8px #ccc;}												/*Conteneurs survolés*/
 .emptyContainer										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
 .emptyContainer div									{margin-top:20px;}															/*Idem*/
 .objContent											{display:table; height:inherit; min-height:inherit; width:100%;}			/*Contenu de l'objet*/
@@ -50,13 +49,13 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objIconOpacity img									{filter:opacity(0.2);}														/*Icones opaques des links, tasks, etc*/
 .objLabel											{padding-left:15px; overflow-wrap:break-word; text-overflow:ellipsis;}		/*Cellule du label de l'objet : "break-word" évite qu'une URL éclate l'affichage*/
 /*DIPLAY "BLOCK"*/
-.objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px;}				/*Dimensions des blocs*/
+.objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px; padding-right:35px;}/*"padding-right": cf "objMiscMenus"*/
 .objBlocks .objIcon									{width:90px; text-align:center;}											/*Icone/image de l'objet*/
 .objBlocks .objIcon:empty							{width:0px!important;}														/*Cf. Profil Contact/User sans image*/
 .objBlocks .objIconOpacity							{width:40px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
 .objBlocks .objDetails, .objBlocks .objAutorDate	{display:none!important;}													/*Details & Auteur/Date : masqués par défaut*/
 /*DIPLAY "LINE"*/
-.objLines .objContainer								{height:60px; min-height:60px; padding-right:75px; margin-bottom:0px; box-shadow:none;}/*"padding-right": pour l'affichage des "objMiscMenus"*/
+.objLines .objContainer								{height:60px; min-height:60px; padding-right:75px; margin-bottom:0px; box-shadow:none;}/*"padding-right": cf "objMiscMenus"*/
 .objLines .objIcon									{width:60px; text-align:left;}												/*Icone/image de l'objet (fichier, user, etc)*/
 .objLines .objIcon img								{max-height:50px; max-width:55px; margin-left:5px;}							/*cf. ".objLines .objContainer"*/
 .objLines .objDetails, .objLines .objAutorDate		{text-align:right; }														/*Details (dossiers, tasks, etc.)  &  Auteur/Date*/
@@ -105,7 +104,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 #pageMenu .miscContainer					{padding:10px;}
 #pageFull #pageMenu .miscContainer			{border-radius:0px 4px 4px 0px;}	/*Menus des modules en affichage full*/
 .menuLauncher								{display:inline-block;}				/*launcher du menu contextuel*/
-.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px; box-shadow:0px 0px 10px black;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:4px;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
 .menuContextLabel							{text-align:center; padding:5px 0px;}
 .menuContext .menuLine>div					{line-height:18px;}
 .menuContext .menuLine>div:last-child		{white-space:nowrap;}				/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
@@ -126,9 +125,8 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objBottomMenu a							{margin-left:5px; margin-right:5px;}
 
 /*** INPUTS*/
-input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #b4b4b4; transition:box-shadow 0.4s ease-in-out; box-sizing:border-box; min-height:33px; max-width:100%; padding:4px; border:#aaa 1px solid; border-radius:3px; outline:none; font-weight:normal; font-size:inherit; font-family:inherit;}/*"box-sizing" pour intégrer les padding/border dans le "height"*/
-input:hover:not([type=radio],[type=checkbox]), textarea:hover		{box-shadow:0px 0px 4px #505050;}
-input:focus:not([type=radio],[type=checkbox]), textarea:focus		{box-shadow:0px 0px 4px #0064c8; border:#bbd 1px solid;}
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-sizing:border-box; min-height:33px; max-width:100%; padding:4px; border-radius:3px; outline:none; font-weight:normal; font-size:inherit; font-family:inherit;}/*"box-sizing" pour intégrer les padding/border dans le "height"*/
+
 input:disabled, textarea:disabled			{opacity:0.7;}
 input:read-only, textarea:read-only			{background:#ddd;}
 ::placeholder 								{font-weight:normal; padding-left:5px; color:#aaa;}/*placeholder des inputs/textarea (texte par défaut)*/
@@ -143,7 +141,7 @@ legend										{padding:5px 20px;}
 textarea									{width:100%; height:70px;}
 button										{border-radius:5px; padding:0px 10px; font-weight:bold; cursor:pointer; vertical-align:middle;}
 select option								{font-size:1.15em;}
-.tox-tinymce								{box-shadow:0px 0px 4px #b4b4b4!important; border:#bbb 1px solid!important; border-radius:5px!important;}/*Conteneur de l'éditeur TinyMCE*/
+.tox-tinymce								{border:#bbb 1px solid!important; border-radius:5px!important;}/*Conteneur de l'éditeur TinyMCE*/
 .inputTitleName								{width:80%;}/*Title ou Name d'un objet*/
 .focusPulsate								{animation:focusPulsate 1.5s linear infinite;}
 @keyframes focusPulsate 					{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
@@ -178,12 +176,12 @@ select option								{font-size:1.15em;}
 
 /*** PERSONS : CONTACTS & USERS*/
 .personLabelImg								{text-align:center;}
-.personLabelImg img							{max-width:100%; max-height:200px;}													/*Cf. vue principale/détaillée d'une personne*/
-.personImgSmall								{border-radius:50%; height:28px; width:28px;}										/*Icone d'une personne : pastille ronde*/
-.objBlocks .objPerson						{height:150px; min-height:150px; width:250px; min-width:250px; max-width:450px;}	/*surcharge .objContainer*/
-.objLines .objPerson						{height:75px; min-height:75px;} 													/*idem*/
-.objLines .personImg						{max-width:60px; max-height:70px!important;}										/*Photo du Contact/User*/
-.objPersonDetails							{width:fit-content; margin-top:10px; font-weight:normal; line-height:20px;}			/*Détails d'un Contact/User : mail, tel, adresse, etc*/
+.personLabelImg img							{max-width:100%; max-height:200px;}																		/*Cf. vue principale/détaillée d'une personne*/
+.personImgSmall								{border-radius:50%; height:28px; width:28px;}															/*Icone d'une personne : pastille ronde*/
+.objBlocks .objPerson						{height:160px; min-height:160px; width:250px; min-width:250px; max-width:450px;}						/*surcharge .objContainer*/
+.objLines .objPerson						{height:70px; min-height:70px;} 																		/*idem*/
+.objLines .personImg						{max-width:60px; max-height:70px!important;}															/*Photo du Contact/User*/
+.objPersonDetails							{width:fit-content; margin-top:5px; font-weight:normal; line-height:18px; text-transform:lowercase;}	/*Détails d'un Contact/User : mail, tel, adresse, etc*/
 .objPersonDetail img						{max-height:18px;}
 .objPersonDetailSeparator					{margin:0px 10px; opacity:0.5;}
 .objPersonDetailSeparator:last-child		{display:none!important;}
@@ -211,10 +209,10 @@ select option								{font-size:1.15em;}
 #menuMobileAddButton, #menuMobileBg, #menuMobileMain	{display:none;}/*Masque par défaut les menus sur mobile*/
 
 /*** JQUERY FANCYBOX LIGHTBOX*/
-.fancybox-slide--iframe							{padding:0px;}/*Lightbox iframes*/
-.fancybox-slide--iframe .fancybox-content		{width:95%; height:95%; max-width:95%!important; max-height:95%!important; margin:0px;}/*Lightbox iframes*/
-.fancybox-iframe,.fancybox-content				{border-radius:10px!important;}/*"border-radius" aussi sur l'iframe!*/
-.fancybox-toolbar								{opacity:1!important; visibility:visible!important; border-left:solid 1px #777; border-bottom:solid 1px #777; border-bottom-left-radius:5px;}/*"opacity" et "visibility" pour tjs afficher le "close" et éviter le masquage auto (ex: maps des contact)*/
+.fancybox-slide									{margin:0px; padding:0px;}
+.fancybox-slide--iframe .fancybox-content		{max-width:95%!important; max-height:95%!important; box-shadow:0px 0px 5px #888;}
+.fancybox-content, .fancybox-iframe				{border-radius:10px;}
+.fancybox-toolbar								{opacity:1!important; visibility:visible!important; border:solid 1px #777; border-bottom-left-radius:10px;}/*opacity/visibility pour afficher tjs le "close"(ex: maps des contact)*/
 .lightboxTitle									{position:relative; padding:0px 60px 15px 60px; margin-bottom:30px; text-align:center; font-size:1.1em; line-height:22px; box-shadow:0px 7px 7px -7px #888;}/*padding left/right : .lightboxMenu*/
 .lightboxMenu									{position:absolute; top:-5px; right:0px;}/*menu context + bouton edit*/
 .lightboxMenu .editButton						{margin-right:15px;}
@@ -223,8 +221,8 @@ select option								{font-size:1.15em;}
 .lightboxAddElem button							{width:230px; height:50px;}
 /*MOBILE FANCYBOX : 440px*/
 @media screen and (max-width:440px){
-	.fancybox-slide--iframe .fancybox-content	{width:100%!important; height:100%!important; max-width:100%!important; max-height:100%!important;}/*Lightbox iframe en pleine page (sauf les images!)*/
-	.fancybox-iframe,.fancybox-content			{border-radius:0px!important;}
+	.fancybox-slide--iframe .fancybox-content	{max-width:100%!important; max-height:100%!important; width:100%!important; height:100%!important; box-shadow:none;}
+	.fancybox-content, .fancybox-iframe			{border-radius:0px;}
 	.fancybox-toolbar							{border:0px;}
 	.fancybox-button							{width:40px; height:40px; padding:0px; background:white;}
 	.fancybox-button--close svg					{display:none;}/*Masque le "close" svg par défaut*/
@@ -235,16 +233,16 @@ select option								{font-size:1.15em;}
 }
 
 /*** JQUERY UI & PLUGINS*/
-.toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : "notify()"*/
+.toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : notify()*/
 .toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
-.tooltipster-box								{box-shadow:0px 0px 5px 3px rgba(50,50,50,0.5)!important;}				/*TOOLTIPSTER : attr "title"*/
-.tooltipster-content							{color:#555!important; padding:15px!important;}
-.ui-datepicker									{width:300px; max-width:98%; box-shadow:0px 0px 8px #888;}				/*JQUERY-UI DATEPICKER*/
+.tooltipster-box								{box-shadow:0px 0px 5px #555!important;}								/*TOOLTIPSTER*/
+.tooltipster-content							{color:#555!important; padding:15px!important;}						/*TOOLTIPSTER : texte*/
+.ui-datepicker									{box-shadow:0px 0px 8px #888; width:300px; max-width:98%;}				/*DATEPICKER*/
 .ui-datepicker-header							{background-color:transparent; border:none;}								/*label du mois*/
 .ui-datepicker .ui-state-default				{padding:10px; text-align:center; border:0px;}								/*cellules des jours*/
 .ui-datepicker .ui-state-highlight				{background:#cde; color:black;}									 	  /*aujourd'hui*/
 .ui-datepicker .ui-state-active					{background:#007fff; color:white;}		 							  /*jour sélectionné*/
-.ui-timepicker-wrapper							{max-height:400px;}														/*JQUERY-UI TIMEPICKER : pseudo <select>*/
+.ui-timepicker-wrapper							{max-height:400px;}														/*TIMEPICKER : pseudo <select>*/
 .ui-timepicker-list li 							{padding:10px 20px;}
 .jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
 .jconfirm-box									{border-radius:15px!important; padding:30px 30px 10px 30px!important;}

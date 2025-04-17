@@ -90,7 +90,7 @@ function moduleDisplay(){
 					$timelineHeaderMonths=$timelineHeaderDays=null;
 					foreach($timelineDays as $tmpDay){
 						if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.='<td class="vTimelineMonths" colspan="'.$tmpDay["newMonthColspan"].'">'.$tmpDay["newMonthLabel"].'</td>';}
-						$timelineHeaderDays.='<td class="vTimelineDays '.$tmpDay["vTimelineToday"].' '.$tmpDay["vTimelineLeftBorder"].'" '.Txt::tooltip($tmpDay["dayLabelTitle"]).'>'.$tmpDay["dayLabel"].'</td>';
+						$timelineHeaderDays.='<td class="vTimelineDays '.$tmpDay["vTimelineToday"].' '.$tmpDay["classLeftBorder"].'" '.Txt::tooltip($tmpDay["dayLabelTitle"]).'>'.$tmpDay["dayLabel"].'</td>';
 					}
 					echo '<tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderMonths.'</tr>
 						  <tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderDays.'</tr>';
@@ -104,7 +104,7 @@ function moduleDisplay(){
 							if($isTaskBegin==true || $tmpDay["dayTimeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["dayTimeBegin"]){
 								$tmpCellColspan=($isTaskBegin==true)  ?  "colspan='".$tmpTask->timelineColspan."'"  :  null;
 								$tmpCellLabel  =($isTaskBegin==true)  ?  $tmpTask->timelineGanttBar()  :  "&nbsp;";
-								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["vTimelineLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}
+								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["classLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}
 						}
 						//Affiche toute la timeline de la tâche courante
 						echo '<tr class="lineHover" onclick="'.$tmpTask->openVue().'">
