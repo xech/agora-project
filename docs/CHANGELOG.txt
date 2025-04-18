@@ -6,7 +6,7 @@ CHANGELOG - JOURNAL DES VERSIONS
 
 VERSION 25.3.3
 ---------------
-Nouvelle fonction de drag/drop pour déplacer l'heure/date d'un événement
+Nouvelle fonction de drag/drop en vue "semaine" pour déplacer l'heure/date d'un événement
 Nouvel affichage des fenêtres de confirmation (JS "confirm()")
 Nouvelle présentation du menu principal
 Nouvelle traduction en Allemand
@@ -25,8 +25,8 @@ Optimisation majeures du fichier app.js
 Mise à jour de l'éditeur TinyMce en v7.7.2
 Mise à jour de PHPMailer en v6.9.3
 -----
-New drag/drop function to change the time/date of an event
-New display of confirmation windows (JS "confirm()")
+New drag/drop function to change the time/date of an event (Week view)
+New confirmation dialog (JS "confirm()")
 New main menu presentation
 New German translation
 Dates of winter/summer hour switch in calendars

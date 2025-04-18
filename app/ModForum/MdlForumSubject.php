@@ -24,7 +24,6 @@ class MdlForumSubject extends MdlObject
 	const hasUsersLike=true;
 	const isSelectable=true;
 	protected static $_hasAccessRight=true;
-	public static $pageNbObjects=20;
 	public static $requiredFields=["description"];
 	public static $searchFields=["title","description"];
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateLastMessage@@desc","dateLastMessage@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
