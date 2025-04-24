@@ -115,7 +115,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 @media screen and (max-width:1024px){
 	#pageMenu								{display:none;}
 	.menuContext							{max-width:500px;}/*cf. menuContext des "lightbox" (cf. "vueContact")*/
-	.menuContextSubMenu						{position:relative; margin-top:5px; box-shadow:none!important; background-image:none; padding:0px!important; background-image:none!important;}/*cf. "#menuMobileMain"*/
+	.menuContextSubMenu						{position:relative; margin-top:20px;}/*cf. "#menuMobileMain"*/
 }
 
 /*** MENUS CENTRÉS ("Ajouter un element" ou Menu de pagination)*/

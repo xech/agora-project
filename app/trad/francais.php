@@ -1,6 +1,6 @@
 <?php
 /*
- * Classe de traduction
+ * Traductions
  */
 class Trad extends Txt
 {
@@ -432,9 +432,9 @@ class Trad extends Txt
 			"EDIT_accessRight"=>"Droits d'accès",
 			"EDIT_accessRightContent"=>"Droits d'accès au contenu",
 			"EDIT_spaceNoModule"=>"Le module courant n'a pas encore été ajouté à cet espace",
-			"EDIT_allUsers"=>"Tout les utilisateurs",
+			"EDIT_allUsers"=>"Tous les utilisateurs",
 			"EDIT_allUsersTooltip"=>"Droit d'accès pour tous les utilisateurs de l'espace <i>--SPACENAME--</i>",
-			"EDIT_allUsersAndGuests"=>"Tout les utilisateurs et invités",
+			"EDIT_allUsersAndGuests"=>"Tous les utilisateurs et invités",
 			"EDIT_allUsersAndGuestsTooltip"=>"Droit d'accès pour tous les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Les invités n'ont qu'un accès en lecture à l'espace (personnes sans compte utilisateur)",
 			"EDIT_adminSpace"=>"Administrateur : accès total à tous les éléments de l'espace",
 			"EDIT_showAllUsers"=>"Afficher tous les utilisateurs",

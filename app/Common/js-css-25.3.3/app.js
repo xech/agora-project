@@ -213,7 +213,7 @@ function menuContext()
 			if(pageScrolled==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){									//Aucun scroll en cours && swipe d'amplitude verticale < 50px
 				let swipeDiff=(swipeXstart - event.touches[0].clientX);														//Diff entre la position X de départ et celle de fin
 				if(swipeMenuActive==true && swipeDiff > 100 && (windowWidth-swipeXstart)<250)	{menuMobileShow();}								//Swipe gauche > 100px et < 250px du bord de page : affiche
-				else if(swipeDiff < -10)															{menuMobileClose(event.touches[0].clientX);}	//swipe droit > 10px : masque le menu (meme si swipeMenuActive==false)
+				else if(swipeDiff < -10)														{menuMobileClose(event.touches[0].clientX);}	//swipe droit > 10px : masque le menu (meme si swipeMenuActive==false)
 			}
 		});
 		document.addEventListener("touchend",function(){																	//Fin de swipe :
@@ -263,6 +263,9 @@ function menuMobileShow(launcher)
 		$("#menuMobileBg,#menuMobileContent,#menuMobileContent2").show();						//Affiche le contenu du menu
 		$("#menuMobileMain").css("right","0px").show("slide",{direction:"right",duration:200});	//Réinit la position puis affiche #menuMobileMain progressivement
 		$("body").css("overflow","hidden");														//Désactive le scroll de page en arriere plan
+	}
+	else if($("#menuMobileContent").isVisible()){												//Menu déjà affiché : on affiche le sous-menu
+		$(idMenuMain).addClass("menuContextSubMenu").slideToggle();
 	}
 }
 

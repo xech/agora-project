@@ -577,9 +577,9 @@ INSERT INTO `ap_calendar` (`_id`, `type`, `_idUser`, `title`) VALUES
 INSERT INTO `ap_calendarCategory` (`_id`, `color`, `title`) VALUES 
 (1,'#880000','Rendez-vous'), 
 (2,'#000088','Reunion'), 
-(3,'#dd7700','Congés'), 
+(3,'#dd7700','Vacances'), 
 (4,'#007700','Personnel'), 
-(5,'#bf0073','Evènement périodique');
+(5,'#bf0073','Evenement periodique');
 
 INSERT INTO `ap_contactFolder` SET `_id`=1, `_idContainer`=0;
 INSERT INTO `ap_fileFolder` SET `_id`=1, `_idContainer`=0;
