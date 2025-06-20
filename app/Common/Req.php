@@ -7,14 +7,14 @@
 */
 
 
-/*****************************************************************************************************************
- * AUTOLOADER DES CLASSES DE BASE ET DES CONTROLEURS (pas des classes des modèles : chargées par le controleur!)
- *****************************************************************************************************************/
+/********************************************************************************************
+ * AUTOLOADER DE CLASSE DE CONTROLEUR
+ ********************************************************************************************/
 function agoraAutoloader($className)
 {
-	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}								//Ex: "app/common/Txt.php"
-	elseif(is_file(Req::modClassPath($className)))	{require_once Req::modClassPath($className);}									//Ex: "app/modFile/MdlFile.php"
-	else											{throw new Exception("Désolé, cette page est introuvable. (".$className.")");}	//Dev: message d'erreur
+	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}
+	elseif(is_file(Req::modClassPath($className)))	{require_once Req::modClassPath($className);}
+	else											{throw new Exception("Page introuvable (".$className.")");}
 }
 spl_autoload_register("agoraAutoloader");
 
@@ -26,10 +26,9 @@ class Req
 {
 	const commonPath="app/Common/";
 	private static $_getPostParams;
-	private static $_isMobile=null;
 	private static $_appVersion=null;
-	public static $curCtrl;		//exple : "offline"
-	public static $curAction;	//exple : "default"
+	public static $curCtrl;	
+	public static $curAction;
 
 	/********************************************************************************************
 	 * INIT
@@ -43,20 +42,20 @@ class Req
 				foreach($tmpVal as $tmpKey2=>$tmpVal2)	{self::$_getPostParams[$tmpKey][$tmpKey2]=self::paramFilter($tmpKey,$tmpVal2);}//Tableau de valeurs : tjs avec $tmpKey dans le paramFilter()
 			}
 		}
-		////	Classe du controleur courant & Methode de l'action courante
+		////	Classe du controleur courant (ex: "offline")  &  Methode de l'action courante (ex: "default")
 		self::$curCtrl=(self::isParam("ctrl")) ? self::param("ctrl") : "offline";
 		self::$curAction=(self::isParam("action")) ? self::param("action") : "default";
-		$curCtrlClass="Ctrl".ucfirst(self::$curCtrl);
-		$curActionMethod="action".ucfirst(self::$curAction);
+		$CtrlClass="Ctrl".ucfirst(self::$curCtrl);
+		$ActionMethod="action".ucfirst(self::$curAction);
 		////	Init le temps d'execution & charge les Params + Config
 		define("TPS_EXEC_BEGIN",microtime(true));
 		require_once self::commonPath."Params.php";
 		require_once PATH_DATAS."config.inc.php";
 		////	Lance l'action demandée
 		try{
-			if(self::isInstalling()==false)  {$curCtrlClass::initCtrl();}																			//Lance le controleur principal (sauf si Install AP)
-			if(method_exists($curCtrlClass,$curActionMethod))	{$curCtrlClass::$curActionMethod();}												//Lance le controleur spécifique
-			else												{throw new Exception("Page introuvable : Action '".$curActionMethod."'");  exit;}	//Lance une Exception
+			if(self::isInstalling()==false)				{$CtrlClass::initCtrl();}														//Controleur principal
+			if(method_exists($CtrlClass,$ActionMethod))	{$CtrlClass::$ActionMethod();}													//Controleur demandé
+			else										{throw new Exception("Page introuvable : Action '".$ActionMethod."'");  exit;}	//Lance une Exception
 		}
 		////	Gestion des exceptions
 		catch(Exception $error){
@@ -64,9 +63,9 @@ class Req
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RÉCUPÈRE LE NUMÉRO DE VERSION DE L'APPLI  &&  MODIF SI BESOIN LES FICHIERS JS/CSS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function appVersion()
 	{
 		if(self::$_appVersion===null){																//Init le cache :
@@ -153,58 +152,53 @@ class Req
 		return $urlProtocol.$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER["PHP_SELF"]),'/');
 	}
 
-	/*******************************************************************************************
-	 * VÉRIF SI ON EST SUR UN HOST
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VÉRIF HOSTED SPACE
+	 ********************************************************************************************************/
 	public static function isHost()
 	{
 		return defined("HOST_DOMAINE");
 	}
 
-	/*******************************************************************************************
-	 * VÉRIF SI ON EST SUR LINUX
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VÉRIF LINUX
+	 ********************************************************************************************************/
 	public static function isLinux()
 	{
 		return preg_match("/linux/i",PHP_OS);
 	}
 
 	/********************************************************************************************
-	 * VÉRIFIE SI ON EST EN MODE 'DEV' ('DEBIAN' OU IP LOCALE POUR IONIC DEVAPP)
+	 * VÉRIF MODE DEV
 	 ********************************************************************************************/
 	public static function isDevServer()
 	{
-		return (stristr($_SERVER['SERVER_NAME'],"debian") || stristr($_SERVER['SERVER_NAME'],"192.168"));
+		return preg_match("/(devbian|debian)/i",$_SERVER['SERVER_NAME']);
 	}
 
 	/********************************************************************************************
-	 * AFFICHAGE MOBILE/RESPONSIVE SI WIDTH <= 1024PX  (Idem CSS et app.js)
+	 * VÉRIF AFFICHAGE MOBILE/RESPONSIVE <= 1024PX  (Idem CSS & JS)
 	 ********************************************************************************************/
 	public static function isMobile()
 	{
-		if(self::$_isMobile===null)  {self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1024);}
-		return self::$_isMobile;
+		return (isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1024);
 	}
 
 	/********************************************************************************************
-	 * NAVIGATION DEPUIS L'APPLI MOBILE, QUELQUESOIT LA RESOLUTION  (Macintosh: Ipad récents)
+	 * VÉRIF AFFICHAGE SUR APP MOBILE (quelquesoit la resolution, 'macintosh' = Ipads récents)
 	 ********************************************************************************************/
 	public static function isMobileApp()
 	{
 		return (!empty($_COOKIE["mobileAppli"]) && preg_match("/(android|iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']));
 	}
 
-	/***************************************************************************************************************************/
-	/*******************************************	SPECIFIC METHODS	********************************************************/
-	/***************************************************************************************************************************/
-
 	/********************************************************************************************
 	 * AFFICHE UNE ERREUR D'EXECUTION
 	 ********************************************************************************************/
     private function displayExeption(Exception $exception)
 	{
-		////	Install à réaliser et pas de hosting : redirige vers le formulaire d'install
-		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && Req::isHost()==false)   {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+		////	Install à réaliser et pas de hosting : redirige vers le formulaire d'install			///!!!! Différent de l'app opensource !!!!
+		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && self::isHost()==false)   {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
         echo '<h3 style="text-align:center;margin-top:50px;font-size:24px">
 				<img src="app/img/importantBig.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
@@ -213,12 +207,18 @@ class Req
 		exit;
     }
 
+
+	/***************************************************************************************************************************/
+	/*******************************************	SPECIFIC METHODS	********************************************************/
+	/***************************************************************************************************************************/
+
+
 	/********************************************************************************************
 	 * SWITCH D'ESPACE : BOUTON DE RETOUR AU MENU DE RECHERCHE (APP MOBILE OU HOST)
 	 ********************************************************************************************/
 	public static function isSpaceSwitch()
 	{
-		return (Req::isMobileApp() || Req::isHost());
+		return (self::isMobileApp() || self::isHost());
 	}
 
 	/********************************************************************************************

@@ -7,7 +7,7 @@ class Trad extends Txt
 	/*
 	 * Chargement les elements de traduction
 	 */
-	public static function loadTradsLang()
+	public static function loadTrads()
 	{
 		////	Dates formatées par PHP
 		setlocale(LC_TIME, "de_DE.utf8", "de_DE.UTF-8", "de_DE", "de", "german");
@@ -18,6 +18,7 @@ class Trad extends Txt
 			"CURLANG"=>"de",
 			"DATELANG"=>"de_DE",
 			"EDITORLANG"=>"de",
+			"FANCYBOXLANG"=>"de",
 
 			////	Divers
 			"mainMenu"=>"Hauptmenü",
@@ -64,6 +65,7 @@ class Trad extends Txt
 			"confirm"=>"Bestätigen",
 			"confirmOk"=>"Ok",
 			"confirmCancel"=>"Abbrechen",
+			"confirmDownload"=>"Datei herunterladen ?",
 			"confirmCloseForm"=>"Formular schließen ohne zu speichern?",
 			"delete"=>"Löschen",
 			"confirmDelete"=>"Löschen bestätigen?",
@@ -72,7 +74,7 @@ class Trad extends Txt
 			"confirmDeleteSelect"=>"Endgültiges Löschen der ausgewählten Elemente bestätigen?",
 			"confirmDeleteSelectNb"=>"ausgewählte Elemente",
 			"confirmDeleteFolder"=>"Einige Unterordner sind für Sie zum Lesen nicht zugänglich: Trotzdem bestätigen?",
-			"notifDeleteWait"=>"Bitte warten Sie einen Moment: Das Löschen des Ordners kann einige Sekunden dauern",
+			"confirmDeleteWait"=>"Bitte warten Sie einen Moment: Das Löschen des Ordners kann einige Sekunden dauern",
 			"notifDeleteFolderUncomplete"=>"Einige Elemente wurden nicht gelöscht, da Sie nicht über die erforderlichen Zugriffsrechte verfügen",
 
 			////	Images
@@ -96,7 +98,7 @@ class Trad extends Txt
 			"guestAccess"=>"Gast-Login",
 			"guestAccessTooltip"=>"Melden Sie sich in diesem Bereich als Gast an",
 			"publicSpacePasswordError"=>"Falsches Passwort",
-			"disconnectSpace"=>"Trennen Sie mich vom Weltraum",
+			"disconnectSpace"=>"Trennen Sie mich vom Projektraum",
 			"disconnectSpaceConfirm"=>"Mich vom Space trennen?",
 
 			////	Password : connexion d'user / edition d'user / reset du password
@@ -166,6 +168,7 @@ class Trad extends Txt
 			"month_11"=>"November",
 			"month_12"=>"Dezember",
 			"today"=>"heute",
+			"displayToday"=>"Heute anzeigen",
 			"beginEndError"=>"Enddatum darf nicht vor Startdatum liegen",
 			"dateFormatError"=>"Das Datum muss im Format TT/MM/JJJJ vorliegen",
 			"timeFormatError"=>"Die Zeit muss im Format HH:mm angegeben werden",
@@ -273,7 +276,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"E-Mail senden",
 			"MAIL_sendBy"=>"Gesendet von",
 			"MAIL_sendNotif"=>"Die Benachrichtigungs-E-Mail wurde erfolgreich versendet",
-			"MAIL_fromTheSpace"=>"aus dem Weltraum",
+			"MAIL_fromTheSpace"=>"aus dem Projektraum",
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- erstellt von",
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- geändert von",
 			"MAIL_elemAccessLink"=>"Klicken Sie hier, um in Ihrem Bereich darauf zuzugreifen",
@@ -319,7 +322,7 @@ class Trad extends Txt
 			////	Rechercher
 			"searchSpecifyText"=>"Bitte geben Sie mindestens 3 Zeichen ein (alphanumerisch und ohne Sonderzeichen)",
 			"search"=>"Suchen",
-			"searchOnSpace"=>"Suche im Weltraum",
+			"searchOnSpace"=>"Suche im Projektraum",
 			"searchDateCrea"=>"Erstellungsdatum",
 			"searchDateCreaDay"=>"weniger als ein Tag",
 			"searchDateCreaWeek"=>"weniger als eine Woche",
@@ -346,7 +349,6 @@ class Trad extends Txt
 			"userInscriptionEditTooltip"=>"Besucher können eine Registrierung im Space beantragen, um ein Benutzerkonto zu haben: Die Anfrage wird dann vom Space-Administrator bestätigt",
 			"userInscriptionNotif"=>"Benachrichtige mich per E-Mail, wenn ich mich registriere",
 			"userInscriptionNotifTooltip"=>"Nach jeder Registrierung eine E-Mail-Benachrichtigung an die Space-Administratoren senden",
-			"userInscriptionPulsate"=>"Registrierungen",
 			"userInscriptionValidate"=>"Registrierungsanfragen validieren",
 			"userInscriptionValidateTooltip"=>"Anfragen zur Platzregistrierung validieren",
 			"userInscriptionSelectValidate"=>"Ausgewählte Registrierungen validieren",
@@ -395,21 +397,20 @@ class Trad extends Txt
 			"HEADER_shortcuts"=>"Verknüpfungen",
 
 			////	Messenger / Visio
-			"MESSENGER_MODULE_NAME"=>"Nachrichtenübermittlung",
-			"MESSENGER_MODULE_DESCRIPTION"=>"Chatten oder eine Videokonferenz mit Personen starten, die mit dem Space verbunden sind",
-			"MESSENGER_messengerTitle"=>"Messaging: Klicken Sie auf den Namen einer Person, um zu chatten oder eine Videokonferenz zu starten",
-			"MESSENGER_messengerMultiUsers"=>"Chatten Sie mit mehreren Personen, indem Sie im rechten Bereich meine Kontakte auswählen",
-			"MESSENGER_connected"=>"Verbunden",
-			"MESSENGER_nobody"=>"Sie sind derzeit die einzige Person, die mit dem Raum verbunden ist",
+			"MESSENGER_MODULE_NAME"=>"Nachrichten",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chatten oder Videokonferenz mit anderen Personen online starten",
+			"MESSENGER_messengerMultiUsers"=>"Chatten Sie mit mehreren Personen im Nachrichtensystem (linker Bereich zur Auswahl der Empfänger)",
+			"MESSENGER_chatWithMulti"=>"Chatten mit",
+			"MESSENGER_chatWith"=>"Chatten oder Videokonferenz starten mit",
 			"MESSENGER_messageFrom"=>"Nachricht von",
-			"MESSENGER_messageTo"=>"gesendet an",
-			"MESSENGER_chatWith"=>"Chatten mit",
-			"MESSENGER_addMessageToSelection"=>"Meine Nachricht an die ausgewählten Personen",
-			"MESSENGER_addMessageTo"=>"Nachricht an",
+			"MESSENGER_messageSentTo"=>"Gesendet an",
+			"MESSENGER_messageToSelected"=>"Nachricht an ausgewählte Personen",
+			"MESSENGER_messageTo"=>"Nachricht an",
 			"MESSENGER_addMessageNotif"=>"Bitte geben Sie eine Nachricht an",
-			"MESSENGER_visioProposeTo"=>"Eine Videokonferenz vorschlagen an",
-			"MESSENGER_visioProposeToSelection"=>"Den ausgewählten Personen eine Videokonferenz vorschlagen",
-			"MESSENGER_visioProposeToUsers"=>"Klicken Sie hier, um die Videokonferenz zwischen zu starten",
+			"MESSENGER_visioProposeTo"=>"Videokonferenz vorschlagen an",
+			"MESSENGER_visioProposeToSelection"=>"Videokonferenz vorschlagen an ausgewählte Personen Personen",
+			"MESSENGER_visioProposeToUsers"=>"Klicken Sie hier, um die Videokonferenz zu starten",
+			"MESSENGER_nobody"=>"Derzeit sind keine anderen Benutzer angemeldet",
 
 			////	Lancer une Visio
 			"VISIO_urlAdd"=>"Videokonferenz hinzufügen",
@@ -419,7 +420,7 @@ class Trad extends Txt
 			"VISIO_launch"=>"Videokonferenz starten",
 			"VISIO_launchJitsi"=>"Starten Sie die Videokonferenz <br>mit der Jitsi-Anwendung",
 			"VISIO_launchFromEvent"=>"Event-Videokonferenz starten",
-			"VISIO_launchTooltip"=>"Denken Sie daran, den Zugriff auf Ihre Webcam und Ihr Mikrofon zuzulassen!",
+			"VISIO_launchTooltip"=>"Denken Sie daran, den Zugriff auf Ihre Webcam und Ihr Mikrofon zuzulassen",
 			"VISIO_launchTooltip2"=>"Probleme mit der Kamera oder dem Mikrofon bei Ihrer Videokonferenz? Folgen Sie der Anleitung <img src='app/img/pdf.png'>",
 			"VISIO_launchServerTooltip"=>"Wählen Sie den sekundären Server, wenn der primäre Server nicht richtig funktioniert:<br>Wichtig: Ihre Gesprächspartner müssen denselben Server wie Sie auswählen.",
 			"VISIO_launchServerMain"=>"Haupt-Visio-Server",
@@ -621,7 +622,7 @@ class Trad extends Txt
 			"SPACE_usersInvitationTooltip"=>"Alle Benutzer können E-Mail-Einladungen zum Beitritt zum Space senden",
 			"SPACE_allUsers"=>"Alle Benutzer",
 			"SPACE_user"=>"Benutzer",
-			"SPACE_userTooltip"=>"Normaler Zugriff auf den Weltraum",
+			"SPACE_userTooltip"=>"Normaler Zugriff auf den Projektraum",
 			"SPACE_admin"=>"Administrator",
 			"SPACE_adminTooltip"=>"Der Administrator kann alle im Space vorhandenen Elemente bearbeiten/löschen.<br>Er kann den Space außerdem konfigurieren, neue Benutzer oder Benutzergruppen erstellen, Einladungen per E-Mail versenden usw.",
 
@@ -838,16 +839,15 @@ class Trad extends Txt
 			"CALENDAR_evtProposeDecline"=>"Vorschlag ablehnen",
 			"CALENDAR_evtProposeDeclined"=>"Der Vorschlag wurde abgelehnt. <br>Eine Benachrichtigungs-E-Mail wurde an den Autor gesendet",
 			"CALENDAR_evtProposeDeclinedMail"=>"Ihr Veranstaltungsvorschlag wurde abgelehnt",
-			"CALENDAR_deleteEvtCal"=>"Nur in diesem Kalender löschen?",
-			"CALENDAR_deleteEvtCals"=>"Aus allen Kalendern löschen?",
-			"CALENDAR_deleteEvtDate"=>"Nur an diesem Datum löschen?",
+			"CALENDAR_evtDelete"=>"Ereignis löschen",
+			"CALENDAR_evtDeleteCal"=>"Entfernen Sie das Ereignis aus diesem Kalender",
+			"CALENDAR_evtDeleteDate"=>"Löschen Sie das Ereignis an diesem Datum",
 			"CALENDAR_evtPrivate"=>"Private Veranstaltung",
 			"CALENDAR_evtAutor"=>"Von mir erstellte Veranstaltungen",
 			"CALENDAR_evtAutorInfo"=>"Nur von mir erstellte Termine anzeigen",
 			"CALENDAR_evtChangeTime"=>"Verschieben nach",
 			"CALENDAR_evtChangeTimeConfirmed"=>"Der Termin wurde erfolgreich verschoben",
 			"CALENDAR_noEvt"=>"Keine Veranstaltung",
-			"CALENDAR_calendarsPercentBusy"=>"Belegte Kalender",
 			"CALENDAR_noCalendarDisplayed"=>"Kein Kalender angezeigt",
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Normale Wichtigkeit",
@@ -861,22 +861,17 @@ class Trad extends Txt
 			"CALENDAR_noPeriodicity"=>"Nur einmal",
 			"CALENDAR_period_weekDay"=>"Jede Woche",
 			"CALENDAR_period_month"=>"Jeden Monat",
-			"CALENDAR_period_monthBis"=>"Jeden --DATE-- des Monats",
+			"CALENDAR_period_monthDetail"=>"Jeden --DATE-- des Monats",
 			"CALENDAR_period_year"=>"Jedes Jahr",
-			"CALENDAR_period_yearBis"=>"Jeden --DATE-- des Jahres",
+			"CALENDAR_period_yearDetail"=>"Jeden --DATE-- des Jahres",
 			"CALENDAR_periodDateExceptions"=>"Ausnahme wiederholen",
 			"CALENDAR_periodDateEnd"=>"Ende der Wiederholung",
 			"CALENDAR_calendarAffectations"=>"Zuweisung zu Kalendern",
 			"CALENDAR_addEvt"=>"Neue Veranstaltung",
 			"CALENDAR_addEvtTooltip"=>"Ein Ereignis zum Kalender hinzufügen",
-			"CALENDAR_addEvtTooltipBis"=>"Ereignis zum Kalender hinzufügen",
-			"CALENDAR_proposeEvtTooltip"=>"Dem Kalenderbesitzer ein Ereignis vorschlagen",
-			"CALENDAR_proposeEvtTooltipBis"=>"Schlage das Ereignis dem Besitzer dieses Kalenders vor",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Veranstaltung vorschlagen: dieser Kalender ist für mich nur im Lesemodus zugänglich",
-			"CALENDAR_inputProposed"=>"Das Ereignis wird dem Besitzer dieses Kalenders vorgeschlagen, bevor es zur Hinzufügung validiert wird",
+			"CALENDAR_addEvtTooltip2"=>"Ereignis zum Kalender hinzufügen",
+			"CALENDAR_proposeEvtTooltip"=>"Schlagen Sie ein Ereignis für diesen Kalender vor (lesbar):<br> Anschließend vom Kalenderbesitzer bestätigt",
 			"CALENDAR_verifCalNb"=>"Bitte wählen Sie mindestens einen Kalender aus",
-			"CALENDAR_noModifTooltip"=>"Änderung nicht erlaubt (Sie haben keinen Schreibzugriff auf diesen Kalender)",
-			"CALENDAR_editLimit"=>"Sie sind nicht der Autor der Veranstaltung: Sie können daher nur die Zuordnungen zu Ihren Kalendern verwalten",
 			"CALENDAR_busyTimeSlot"=>"Slot im Kalender bereits belegt:",
 			"CALENDAR_timeSlot"=>"Zeitfenster für Anzeige 'Woche'",
 			"CALENDAR_propositionNotif"=>"Benachrichtige mich per E-Mail über jeden Veranstaltungsvorschlag",

@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ////	INIT
 ready(function(){
 	////	Change l'ordre d'affichage des modules ("hightlight" : module fantome & "y" : déplacemnt vertical)
@@ -25,7 +22,7 @@ ready(function(){
 	$(".vCategoryEdit").on("click",function(){																//Click sur le bouton "modifier" ou "ajouter"
 		let selectFieldset="#"+$(this).closest("fieldset").attr("id");										//Sélecteur du fieldset de la catégorie (balise parent via "closest")
 		let selectHeaders=selectFieldset+" .vCategoryMain>div:not(.vCategoryEdit)";							//Sélecteur du header : libellé principal & boutons (sauf "modifier")
-		if($(selectFieldset+" form").isVisible()){															//Si le formulaire est déjà visible :
+		if($(selectFieldset+" form").isDisplayed()){														//Si le formulaire est déjà visible :
 			$(selectHeaders).show();																		//Affiche les boutons delete/changeOrder
 			$(selectFieldset+" form").slideUp();															//Masque le formulaire
 		}else{																								//Si le formulaire n'est pas visible :
@@ -70,6 +67,7 @@ function colorPickerChange(tmpColor, fieldsetId){
 
 
 <style>
+#bodyLightbox						{max-width:700px;}
 fieldset							{margin-top:35px;}/*surcharge*/
 .lightboxTitle img					{margin:0px 15px;}
 .vCategoryMain						{display:table; width:100%;}
@@ -86,8 +84,8 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 .vLabelAllSpaces					{font-style:italic;}
 .submitButtonMain					{margin-top:30px;}/*surcharge du button*/
 .changeOrderShadow					{height:50px;}/*surcharge*/
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vSpaceList>div 					{display:block; width:100%; margin:15px 0px;}
 	.vCategoryModif, .vCategoryDelete	{font-size:0.9em;}
 }
@@ -105,14 +103,14 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 			<div class="vCategoryMain">
 				<!--CATEGORIE EXISTANTE : LABEL ET MENU-->
 				<?php if($tmpObj->isNew()==false){ ?>
-					<div class="vCategoryLabel" title="<?= $tmpObj->description ?>">
+					<div class="vCategoryLabel" <?= Txt::tooltip($tmpObj->description) ?> >
 						<div><?= $tmpObj->getLabel() ?></div>
 						<div class="vCategoryAutor"><?= Txt::trad("createdBy").' '.$tmpObj->autorLabel() ?></div>
 					</div>
 					<div class="vCategoryModif vCategoryEdit sLink"><img src="app/img/edit.png"> <?= Txt::trad("modify") ?></div>
 					<div class="vCategoryDelete" onclick="confirmDelete('<?= $tmpObj->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></div>
 					<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
-					<div class="changeOrder" title="<?= Txt::trad("changeOrder") ?>"><img src="app/img/changeOrder.png"><input type="hidden" name="changeOrderIds[]" value="<?= $tmpObj->_id ?>"></div>
+					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?> ><img src="app/img/changeOrder.png"><input type="hidden" name="changeOrderIds[]" value="<?= $tmpObj->_id ?>"></div>
 					<?php } ?>
 				<!--AJOUTER UNE NOUVELLE CATEGORIE-->
 				<?php }else{ ?>

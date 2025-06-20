@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(800);
-
 ////	INIT
 ready(function(){
 	//// Sélectionne l'accès en écriture pour tout le monde : "L'accès en ''Ecriture'' est destiné aux modérateurs du sujet"
@@ -22,12 +19,13 @@ function objectFormControl(){
 
 
 <style>
+#bodyLightbox			{max-width:900px;}
 [name='title']			{width:45%;}
 [name="_idTheme"]		{min-width:200px; margin-left:30px;}
 .descriptionTextarea	{margin-top:30px!important;}/*surcharge*/
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	[name='title'], [name="_idTheme"]	{width:100%;}
 	[name="_idTheme"]					{margin-left:0px; margin-top:20px;}
 }

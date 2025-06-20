@@ -17,9 +17,9 @@
 	public static $requiredFields=["title"];
 	public static $sortFields=["title@asc","title@desc"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -27,19 +27,19 @@
 		if(empty($this->color))  {$this->color="#555";}	//Couleur par défaut
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TITRE ET COULEUR DE L'OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getLabel()
 	{
 		if($this->allCategories==true)	{return '<span class="categoryColor categoryColorAll">&nbsp;</span>'.Txt::trad(static::tradPrefix."_CAT_showAll");}
 		else							{return '<span class="categoryColor" style="background:'.$this->color.'">&nbsp;</span>'.ucfirst($this->title);}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE DES CATEGORIES A AFFICHER
 	 * $mode : "display" / "select" / "edit"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function catList($mode="display", $_idCategory=null)
 	{
 		//// Liste des categories
@@ -61,9 +61,9 @@
 		return $catList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SQL : INIT LE FILTRE DES CATEGORIES ET RENVOI LA SELECTION SQL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function sqlCategoryFilter()
 	{
 		//Initialise le filtre des catégories : cf. "VueCategoryMenu.php"  (static::objectType : "forumTheme", "taskStatus", etc)
@@ -73,9 +73,9 @@
 		if(!empty($_SESSION["_idCategoryFilter"][static::objectType]))	{return " AND `".static::dbParentField."`=".$_SESSION["_idCategoryFilter"][static::objectType]." ";}
 	}
 
-	/*******************************************************************************************
-	 * VUE : MENU POUR FILTRER L'AFFICHAGE PAR CATEGORIES
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VUE : MENU POUR FILTRER L'AFFICHAGE PAR CATEGORIE
+	 ********************************************************************************************************/
 	public static function displayMenu()
 	{
 		$vDatas["tradPrefix"]=static::tradPrefix;
@@ -85,9 +85,9 @@
 		return Ctrl::getVue(Req::commonPath."VueCategoryMenu.php",$vDatas);
 	}
 
-	/*******************************************************************************************
-	 * INPUT <SELECT> DE LA CATÉGORIE : FORMULAIRE D'ÉDITION D'UN OBJET (TASK, EVT, ETC)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * INPUT <SELECT> DE LA CATEGORIE : FORMULAIRE D'ÉDITION D'UN OBJET (TASK, EVT, ETC)
+	 ********************************************************************************************************/
 	public static function selectInput($_idCategory)
 	{
 		//Affiche un input <select> pour définir la catégorie du $curObj
@@ -101,17 +101,17 @@
 		}
 	}
 
-	/*******************************************************************************************
-	 * DROIT D'AJOUTER UN NOUVEL OBJET : TOUS LES USERS  /  ADMIN UNIQUEMENT SI L'OPTION ACTIVÉE
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * DROIT D'AJOUTER UNE NOUVELLE CATEGORIE : ADMIN / USERS + OPTION ACTIVÉE
+	 ********************************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,static::optionAdminAddCategory)==false));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRESSION DE L'OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){

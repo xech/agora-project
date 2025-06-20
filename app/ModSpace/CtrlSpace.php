@@ -14,9 +14,9 @@ class CtrlSpace extends Ctrl
 {
 	const moduleName="space";
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		//	Controle d'accès && Affiche la vue
@@ -25,20 +25,20 @@ class CtrlSpace extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PARAMETRAGE D'UN ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionSpaceEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			////	Enregistre & recharge l'objet
 			$oldSpaceName=($curObj->isNewRecord()==false)  ?  $curObj->name  :  null;
-			$curObj=$curObj->createUpdate("name=".Db::param("name").", description=".Db::param("description").", public=".Db::param("public").", `password`=".Db::param("password").", userInscription=".Db::param("userInscription").", userInscriptionNotify=".Db::param("userInscriptionNotify").", usersInvitation=".Db::param("usersInvitation").", wallpaper=".Db::param("wallpaper"));
+			$curObj=$curObj->editRecord("name=".Db::param("name").", description=".Db::param("description").", public=".Db::param("public").", `password`=".Db::param("password").", userInscription=".Db::param("userInscription").", userInscriptionNotify=".Db::param("userInscriptionNotify").", usersInvitation=".Db::param("usersInvitation").", wallpaper=".Db::param("wallpaper"));
 			////	Affectations des users
 			if(Ctrl::$curUser->isSpaceAdmin())
 			{
@@ -63,7 +63,7 @@ class CtrlSpace extends Ctrl
 			////	Nouvel espace : Creation de l'agenda partagé de l'espace (affectation par défaut : lecture pour les users de l'espace)
 			if($curObj->isNewRecord() && in_array("calendar",Req::param("moduleList")) && Req::isParam("calendarOptions") && in_array("createSpaceCalendar",Req::param("calendarOptions"))){
 				$newCalendar=new MdlCalendar();
-				$newCalendar=$newCalendar->createUpdate("title=".Db::format($curObj->name).", description=".Db::format(Txt::trad("CALENDAR_sharedCalendarDescription")).", type='ressource'");
+				$newCalendar=$newCalendar->editRecord("title=".Db::format($curObj->name).", description=".Db::format(Txt::trad("CALENDAR_sharedCalendarDescription")).", type='ressource'");
 				Db::query("INSERT INTO ap_objectTarget SET objectType='calendar', _idObject=".$newCalendar->_id.", _idSpace=".$curObj->_id.", target='spaceUsers', accessRight='1.5'");
 			}
 			////	Modif d'espace : synchronise le nom de l'agenda partagé et ajoute au besoin "agenda partagé de l'espace"

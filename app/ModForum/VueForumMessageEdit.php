@@ -1,10 +1,5 @@
-<script>
-////	Resize
-lightboxWidth(800);
-</script>
-
-
 <style>
+#bodyLightbox					{max-width:900px;}
 [name='title']					{width:100%; margin-bottom:30px!important;}
 .vMessageQuoted					{position:relative; display:inline-block; overflow:auto; max-height:100px; margin-bottom:20px; padding:10px; padding-left:40px; border-radius:5px; font-style:italic; font-weight:normal; background:<?= Ctrl::$agora->skin=="black"?"#333":"#eee" ?>;}
 .vMessageQuoted [src*='quote']	{position:absolute; top:5px; left:5px; opacity:0.5;}

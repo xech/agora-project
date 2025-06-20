@@ -1,6 +1,6 @@
 <?php if($tmpCal->isFirstCal==true){ ?>
 <script>
-/*******************************************************************************************
+/********************************************************************************************************
  *	AFFICHAGE DES AGENDAS
  *******************************************************************************************/
 function calendarDisplay(isPrint)
@@ -76,13 +76,14 @@ function calendarDisplay(isPrint)
 			let evtTmpH=Math.floor(evtTmptHM);														//Heure "integer"	(9,75 => 9)
 			let evtTmpM=Math.round((evtTmptHM-evtTmpH) * 60);										//Minutes décimales (0,75 => 45)
 			let evtLabelDate=evtTmpH+":"+String(evtTmpM).padStart(2,'0');							//Label final
+			$(draggedEvt).find(".vEvtLabel").addClass("vEvtBlockMoved");							//Evt en cours de déplacement : cursor "move" (surcharge celui de .vEvtLabel et "onclick")
 			$(draggedEvt).find(".vEvtLabelDate").html('<b>'+evtLabelDate+'</b>');					//Affiche l'heure temporaire dans le vEvtLabelDate
 			$(".tooltipster-box").hide();															//Masque le tooltip durant le déplacement
 		},
 		//// Fin du Draggable
 		stop:function(event,ui){
-			setTimeout(function(){ evtIsDragged=false; },300);										//Marqueur du Draggable (tjs avec timout!)
-			$(this).parent().find(".vWeekCell").each(function(){									//Parcourt chaque .vWeekCell
+			//// Récupère la .vWeekCell dont la position correspond au .vEvtBlock courant
+			$(this).parent().find(".vWeekCell").each(function(){
 				let diffTop =ui.position.top  - $(this).position().top;								//Diff de position top entre l'evt et la .vWeekCell
 				let diffLeft=ui.position.left - $(this).position().left;							//Diff de position left
 				if(Math.abs(diffTop) < 2 && Math.abs(diffLeft) <= ($(".vWeekCell").width()/2))		//.vWeekCell correspond avec la nouvelle position de l'evt (tester 2 evt qui commencent en même tps)
@@ -107,7 +108,7 @@ function calendarDisplay(isPrint)
 									$(".vEvtBlock[data-typeId='"+evtTypeId+"']").each(function(){															//Parcourt chaque instance de l'evt dans chaque agenda affiché
 										for(var keyAttr in result.attributes)  {$(this).attr("data-"+keyAttr, result.attributes[keyAttr]);}					//Update les attributs de l'evt : timeBegin, timeEnd, etc
 										$(this).find(".vEvtLabelDate").html(result.evtLabelDate);															//Update le label de la date 
-										$(this).find(".vEvtLabel").tooltipsterUpdate(result.tooltip);														//Update le tooltip
+										$(this).find(".vEvtLabel").tooltipUpdate(result.tooltip);															//Update le tooltip
 									});
 									notify("<?= Txt::trad("CALENDAR_evtChangeTimeConfirmed") ?>","success");												//Affiche une notif
 									calendarDisplay();																										//Rafraichit l'affichage de l'agenda !
@@ -119,40 +120,46 @@ function calendarDisplay(isPrint)
 				//// Lance le Confirm (paramétrage par défaut + spécifique)
 				$.confirm(Object.assign(confirmParamsDefault,confirmParams));
 			}
+			//// Fin du Drag : réinit avec timout
+			setTimeout(function(){
+				$(draggedEvt).find(".vEvtLabel").removeClass("vEvtBlockMoved");
+				evtIsDragged=false;
+			},300);										
 		}
 	});
 }
 
 /******************************************************************************************
- *	AJOUT D'UN EVT EN SELECTIONNANT UN CRÉNEAU HORAIRE (SAUF MOBILE)
+ *	PROPOSER/AJOUTER UN EVT EN SELECTIONNANT UN CRÉNEAU HORAIRE
  ******************************************************************************************/
+<?php if($tmpCal->affectationAddRight() && Req::isMobile()==false){ ?>
 ready(function(){
-	if(!isMobile()){
-		let isMouseDown=startTimeBegin=startTimeEnd=null;
-		$(".vWeekCell").on("mousedown mousemove mouseup",function(event){
-			if(event.type=="mousedown"){																		//// Début de sélection : init les valeurs
-				isMouseDown=true;																				// Debut de sélection
-				startDayYmd=$(this).attr("data-dayYmd");														// Jour Ymd
-				startTimeBegin=parseInt($(this).attr("data-cellTimeBegin"));									// Time du début de sélection
-				startTimeEnd  =parseInt($(this).attr("data-cellTimeEnd"));										// Time de fin de sélection
-			}
-			else if(event.type=="mousemove" && isMouseDown==true && startDayYmd==$(this).attr("data-dayYmd")){	//// Continue la sélection sur le même jour
-				startTimeEnd=parseInt($(this).attr("data-cellTimeEnd"));										// Update le Time de fin de sélection
-				$(".vWeekCell[data-dayYmd='"+startDayYmd+"']").each(function(){									// Sélection/déselection des .vWeekCell (descend/monte la souris) : ajoute/enlève .vWeekCellSelect
-					if(startTimeBegin <= parseInt($(this).attr("data-cellTimeBegin"))  &&  parseInt($(this).attr("data-cellTimeEnd")) <= startTimeEnd)	{$(this).addClass("vWeekCellSelect");}
-					else																																{$(this).removeClass("vWeekCellSelect");}
-				});
-			}
-			else if(event.type=="mouseup"){																		//// Fin de sélection : ouvre l'édition d'un nouvel événement !
-				if((startTimeEnd-startTimeBegin) >= 1800)														// Edit un nouvel evt si sélection >= 30mn (évite les sélections indésirées)
-					{lightboxOpen("<?= MdlCalendarEvent::getUrlNew() ?>&_idCal="+$(this).attr("data-idCal")+"&newEvtTimeBegin="+startTimeBegin+"&newEvtTimeEnd="+startTimeEnd);}
-				$(".vWeekCell").removeClass("vWeekCellSelect");													// Réinit .vWeekCellSelect
-				isMouseDown=startTimeBegin=startTimeEnd=null;													// Réinit enfin les valeurs
-			}
-		});
-	}
+	let isMouseDown=startTimeBegin=startTimeEnd=null;
+	$(".vWeekCell").on("mousedown mousemove mouseup",function(event){
+		if(event.type=="mousedown"){																		//// Début de sélection : init les valeurs
+			isMouseDown=true;																				// Debut de sélection
+			startDayYmd=$(this).attr("data-dayYmd");														// Jour Ymd
+			startTimeBegin=parseInt($(this).attr("data-cellTimeBegin"));									// Time du début de sélection
+			startTimeEnd  =parseInt($(this).attr("data-cellTimeEnd"));										// Time de fin de sélection
+			$(this).addClass("lineSelect");																	// Sélection du .vWeekCell
+		}
+		else if(event.type=="mousemove" && isMouseDown==true && startDayYmd==$(this).attr("data-dayYmd")){	//// Continue la sélection sur le même jour
+			startTimeEnd=parseInt($(this).attr("data-cellTimeEnd"));										// Update le Time de fin de sélection
+			$(".vWeekCell[data-dayYmd='"+startDayYmd+"']").each(function(){									// Sélection/déselection des .vWeekCell (descend/monte la souris) : ajoute/enlève .lineSelect
+				if(startTimeBegin <= parseInt($(this).attr("data-cellTimeBegin"))  &&  parseInt($(this).attr("data-cellTimeEnd")) <= startTimeEnd)	{$(this).addClass("lineSelect");}
+				else																																{$(this).removeClass("lineSelect");}
+			});
+		}
+		else if(event.type=="mouseup" && startTimeBegin < startTimeEnd){									//// Fin de sélection : ouvre l'édition d'un nouvel événement !
+			lightboxOpen("<?= MdlCalendarEvent::getUrlNew() ?>&_idCal="+$(this).attr("data-idCal")+"&newEvtTimeBegin="+startTimeBegin+"&newEvtTimeEnd="+startTimeEnd);
+			$(".vWeekCell").removeClass("lineSelect");														// Réinit .lineSelect
+			isMouseDown=startTimeBegin=startTimeEnd=null;													// Réinit enfin les valeurs
+		}
+	});
 });
+<?php } ?>
 </script>
+
 
 <style>
 .vCalVue							{height:100%;}
@@ -165,21 +172,20 @@ ready(function(){
 .vWeekCell							{vertical-align:top; font-size:0.1em; padding:0px; border:0px solid <?= Ctrl::$agora->skin=="white"?"#dededf" : "#333" ?>; border-left-width:1px;}/*Cellule des créneaux de 15mn*/
 .vWeekCell[data-cellMinutes='00']	{border-top-width:1px;}												/*Cellules du début des heures avec border-top*/
 .vWeekCellRedLine					{border-top:solid 1px #f00;}										/*Heure courante : ligne rouge*/
-.vWeekCellSelect					{background:<?= Ctrl::$agora->skin=="white"?"#ccc" : "#333" ?>;}	/*créneaux sélectionné*/
 .vWeekCell .vMobileAddEvt			{display:none;}														/*Bouton d'ajout d'evt masqué par défaut (cf. mobile)*/
 .vLineNotTimeSlot					{background:<?= Ctrl::$agora->skin=="white"?"#fbfbfb" : "#222" ?>}	/*Heures en dehors du TimeSlot*/
 .vEvtBlock							{position:absolute;}												/*Tester un evt de 15mn*/
+.vEvtBlockSuperposed				{box-shadow:0px 0px 3px white;}										/*Evt superposé*/
 .vEvtBlock .objMenuContextFloat		{top:4px;}															/*Replace le menu "burger"*/
-.vEvtBlockSuperposed				{box-shadow:0px 0px 3px white;}							/*Evt superposé*/
+.vEvtBlockMoved						{cursor:move!important;}											/*Evt en cours de déplacement*/
 .vEvtLabelDate						{margin-top:2px;}													/*Label de l'heure*/
 .vEvtLabelDate b					{margin-top:20px; font-size:1.2em;}									/*Label de l'heure en cours de déplacement*/
 
-/*MOBILE*/
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.vWeekHourLabel						{font-size:0.8em; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
 	.vWeekCell							{position:relative;}
 	.vWeekCell:active .vMobileAddEvt	{display:block; position:absolute; top:0px; right:0px; padding:7px;}/*Affiche le bouton d'ajout d'evt si on sélectionne le jour*/
-	.vEvtLabel							{font-size:16px;}
 }
 </style>
 <?php } ?>
@@ -218,7 +224,7 @@ ready(function(){
 						$classRedLine=($cellTimeBegin < time() && time() < $cellTimeEnd) ? "vWeekCellRedLine" : null;			//Heure en cours : ligne rouge
 						$cellAttributes='data-cellLabelBegin="'.Txt::dateLabel($cellTimeBegin,"labelFull").'" data-cellTimeBegin="'.$cellTimeBegin.'" data-cellTimeEnd="'.$cellTimeEnd.'" data-cellMinutes="'.$cellMinutes.'" data-dayYmd="'.$dayYmd.'" data-idCal="'.$tmpCal->_id.'" data-timeChangeSummer="'.$tmpDay["timeChangeSummer"].'" data-timeChangeWinter="'.$tmpDay["timeChangeWinter"].'" ';
 						$mobileAddEvt=(Req::isMobile() && $cellMinutes=="00") ? '<div class="vMobileAddEvt" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.$cellTimeBegin.'\')"><img src="app/img/plus.png"></div>'  :  null;
-						echo '<td class="vWeekCell noTooltipster '.$classRedLine.'" '.$cellAttributes.'>'.$mobileAddEvt.'</td>';	//Affiche la cellule
+						echo '<td class="vWeekCell '.$classRedLine.'" '.$cellAttributes.'>'.$mobileAddEvt.'</td>';	//Affiche la cellule
 					}
 				echo '</tr>';
 			}

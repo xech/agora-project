@@ -121,7 +121,7 @@ function labelRightStyle()
 		else if(targetRight=="15")	{$("#"+targetLabelId).addClass("sAccessWriteLimit");}
 		else if(targetRight=="2")	{$("#"+targetLabelId).addClass("sAccessWrite");}
 		//Si on affiche tout, on met les lignes sélectionnées en surbrillance
-		if($("#showAllUsers").isVisible()==false)  {$("#targetLine"+targetLabelId).addClass("lineSelect");}
+		if($("#showAllUsers").isDisplayed()==false)  {$("#targetLine"+targetLabelId).addClass("lineSelect");}
 	});
 }
 ////  INIT
@@ -160,8 +160,8 @@ ready(function(){ labelRightStyle(); });
 #notifMailSelectList>div				{display:inline-block; width:50%; padding:7px;}
 #notifMailUsersPlus, #notifMailSelectList, #notifMailOptions  {display:none;}
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.objMenuTab[for='objMenuAccessRight']					{min-width:100px;}/*onglet des droits d'accès*/
 	.objMenuOptions											{padding:25px 8px;}
 	.vSpaceTable											{font-size:0.9em;}/*Nom de l'espace et label des "targets"*/
@@ -177,10 +177,10 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 {
 	////	ONGLETS DES MENUS (droits d'accès / fichier joint / notif mail / shortcut)
 	echo '<div id="objMenuTabs">';
-		if(!empty($objMenuAccessRight))  	{echo '<div class="objMenuTab" for="objMenuAccessRight"><img src="app/img/accessRight.png">'.$objMenuAccessRightLabel.'</div>';}
-		if(!empty($objMenuNotifMail))		{echo '<div class="objMenuTab" for="objMenuNotifMail"><img src="app/img/mail.png">'.Txt::trad("EDIT_notifMail").'</div>';}
-		if(!empty($objMenuAttachedFile))	{echo '<div class="objMenuTab" for="objMenuAttachedFile"><img src="app/img/attachment.png">'.Txt::trad("EDIT_attachedFileAdd").(!empty($curObj->attachedFileList())?'&nbsp;<span class="circleNb">'.count($curObj->attachedFileList()).'</span>':null).'</div>';}
-		if(!empty($objMenuShortcut))		{echo '<div class="objMenuTab '.($curObj->shortcut?'linkSelect':null).' '.(Req::isMobile()?'hide':null).'" for="objMenuShortcut"><img src="app/img/shortcut.png">'.Txt::trad("EDIT_shortcut").'</div>';}
+		if(!empty($objMenuAccessRight))  	{echo '<div for="objMenuAccessRight"  class="objMenuTab"><img src="app/img/accessRight.png">'.$objMenuAccessRightLabel.'</div>';}
+		if(!empty($objMenuNotifMail))		{echo '<div for="objMenuNotifMail"    class="objMenuTab"><img src="app/img/mail.png">'.Txt::trad("EDIT_notifMail").'</div>';}
+		if(!empty($objMenuAttachedFile))	{echo '<div for="objMenuAttachedFile" class="objMenuTab"><img src="app/img/attachment.png">'.Txt::trad("EDIT_attachedFileAdd").(!empty($curObj->attachedFileList())?'&nbsp;<span class="circleNb">'.count($curObj->attachedFileList()).'</span>':null).'</div>';}
+		if(!empty($objMenuShortcut))		{echo '<div for="objMenuShortcut"     class="objMenuTab '.($curObj->shortcut?'linkSelect':null).' '.(Req::isMobile()?'hide':null).'"><img src="app/img/shortcut.png">'.Txt::trad("EDIT_shortcut").'</div>';}
 	echo '</div>';
 
 	////	MENU DES DROITS D'ACCES (OBJETS INDEPENDANTS)
@@ -239,7 +239,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 				//Groupe d'users de l'espace courant
 				foreach($curSpaceUserGroups as $tmpGroup){
 					echo '<div '.Txt::tooltip(Txt::trad("selectUnselect")." : ".$tmpGroup->usersLabel).'>
-							<input type="checkbox" name="notifUsersGroup[]" value="'.implode(",",$tmpGroup->userIds).'" id="notifUsersGroup'.$tmpGroup->_typeId.'" onchange="userGroupSelect(this,\'#notifMailSelectList\');">
+							<input type="checkbox" name="notifUsersGroup[]" value="'.implode(",",$tmpGroup->userIds).'" id="notifUsersGroup'.$tmpGroup->_typeId.'" onchange="userGroupSelect(this,\'#notifMailSelectList\')">
 							<label for="notifUsersGroup'.$tmpGroup->_typeId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label>
 						  </div>';
 				}
@@ -256,9 +256,9 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		//Fin des "notifMailSelectList" et "notifMailOptions" + "objMenuNotifMail"
 		echo '</div></div></div>';
 	}
-	////	MENU DES FICHIERS JOINTS
+	////	MENU D'EDITION DES FICHIERS JOINTS
 	if(!empty($objMenuAttachedFile)){
-		echo '<div class="objMenuOptions" id="objMenuAttachedFile">'.$curObj->attachedFile().'</div>';
+		echo '<div class="objMenuOptions" id="objMenuAttachedFile">'.$curObj->attachedFileEdit().'</div>';
 	}
 	////	MENU DES SHORTCUT
 	if(!empty($objMenuShortcut)){

@@ -1,13 +1,13 @@
 <?php
 /*
- * Classe de traduction
+ * Traductions
  */
 class Trad extends Txt
 {
 	/*
 	 * Chargement les elements de traduction
 	 */
-	public static function loadTradsLang()
+	public static function loadTrads()
 	{
 		////	Dates formatées par PHP
 		setlocale(LC_TIME, "es_ES.utf8", "es_ES.UTF-8", "es_ES", "es", "spanish");
@@ -18,6 +18,7 @@ class Trad extends Txt
 			"CURLANG"=>"es",
 			"DATELANG"=>"es_ES",
 			"EDITORLANG"=>"es",
+			"FANCYBOXLANG"=>"es",
 
 			////	Divers
 			"mainMenu"=>"Menú principal",
@@ -64,6 +65,7 @@ class Trad extends Txt
 			"confirm"=>"Confirmar",
 			"confirmOk"=>"Ok",
 			"confirmCancel"=>"Cancelar",
+			"confirmDownload"=>"¿ Descargar el archivo ?",
 			"confirmCloseForm"=>"¿ Cerrar el formulario sin guardar ?",
 			"delete"=>"Eliminar",
 			"confirmDelete"=>"¿ Confirmar eliminación ?",
@@ -72,7 +74,7 @@ class Trad extends Txt
 			"confirmDeleteSelect"=>"¿ Desea eliminar estos elementos permanentemente ?",
 			"confirmDeleteSelectNb"=>"elementos seleccionados",
 			"confirmDeleteFolder"=>"Algunas subcarpetas no son accesibles para usted: ¿puede confirmarlo de todos modos ?",
-			"notifDeleteWait"=>"Espere un momento: la eliminación de la carpeta puede tardar unos segundos",
+			"confirmDeleteWait"=>"Espere un momento: la eliminación de la carpeta puede tardar unos segundos",
 			"notifDeleteFolderUncomplete"=>"Algunos elementos no se han eliminado porque no tienes los derechos de acceso necesarios",
 			
 			////	Images
@@ -166,6 +168,7 @@ class Trad extends Txt
 			"month_11"=>"Noviembre",
 			"month_12"=>"Diciembre",
 			"today"=>"hoy",
+			"displayToday"=>"Mostrar hoy",
 			"beginEndError"=>"La fecha de inicio debe ser anterior a la fecha de finalización.",
 			"dateFormatError"=>"La fecha debe estar en el formato dd/mm/AAAA",
 			"timeFormatError"=>"La hora debe estar en el formato HH:mm",
@@ -346,7 +349,6 @@ class Trad extends Txt
 			"userInscriptionEditTooltip"=>"El registro se encuentra en la página de inicio. Debe ser validado por el administrador del espacio.",
 			"userInscriptionNotif"=>"Notificar por correo electrónico en cada registro",
 			"userInscriptionNotifTooltip"=>"Envíe una notificación por correo electrónico a los administradores del espacio, después de cada registro",
-			"userInscriptionPulsate"=>"Registros",
 			"userInscriptionValidate"=>"Registros de usuarios",
 			"userInscriptionValidateTooltip"=>"Validar registros de usuarios al espacio",
 			"userInscriptionSelectValidate"=>"Validar registros",
@@ -396,20 +398,19 @@ class Trad extends Txt
 
 			////	Messenger / Visio
 			"MESSENGER_MODULE_NAME"=>"Mensajería",
-			"MESSENGER_MODULE_DESCRIPTION"=>"Chatea o inicia una videoconferencia con personas conectadas al espacio",
-			"MESSENGER_messengerTitle"=>"Mensajería : haga clic en el nombre de una persona para chatear o iniciar una videoconferencia",
-			"MESSENGER_messengerMultiUsers"=>"Chatear con otros seleccionando mis interlocutores en el panel derecho",
-			"MESSENGER_connected"=>"Conectado",
-			"MESSENGER_nobody"=>"Actualmente eres la única persona conectada al espacio.",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chatea o inicia una videoconferencia con personas en línea",
+			"MESSENGER_messengerMultiUsers"=>"Chatea con varias personas en el sistema de mensajería (panel izquierdo para seleccionar destinatarios)",
+			"MESSENGER_chatWithMulti"=>"Chatea con",
+			"MESSENGER_chatWith"=>"Chatea o inicia una videoconferencia con",
 			"MESSENGER_messageFrom"=>"Mensaje de",
-			"MESSENGER_messageTo"=>"enviado a",
-			"MESSENGER_chatWith"=>"Chatear con",
-			"MESSENGER_addMessageToSelection"=>"Mi mensaje (personas seleccionadas)",
-			"MESSENGER_addMessageTo"=>"Mi mensaje a",
-			"MESSENGER_addMessageNotif"=>"Por favor, especifique un mensaje",
-			"MESSENGER_visioProposeTo"=>"Enviar  una videollamada a",
-			"MESSENGER_visioProposeToSelection"=>"Enviar una videollamada a las personas seleccionadas",
-			"MESSENGER_visioProposeToUsers"=>"Haga clic aquí para iniciar la videollamada con",
+			"MESSENGER_messageSentTo"=>"Enviado a",
+			"MESSENGER_messageToSelected"=>"Mensaje a las personas seleccionadas",
+			"MESSENGER_messageTo"=>"Mensaje para",
+			"MESSENGER_addMessageNotif"=>"Especifica un mensaje",
+			"MESSENGER_visioProposeTo"=>"Proponer una videoconferencia a",
+			"MESSENGER_visioProposeToSelection"=>"Proponer una videoconferencia a las personas seleccionadas",
+			"MESSENGER_visioProposeToUsers"=>"Haga clic aquí para iniciar la videoconferencia entre",
+			"MESSENGER_nobody"=>"No hay otros usuarios conectados actualmente",
 			
 			////	Lancer une Visio
 			"VISIO_urlAdd"=>"Añadir una videoconferencia",
@@ -838,16 +839,15 @@ class Trad extends Txt
 			"CALENDAR_evtProposeDecline"=>"Rechazar la propuesta",
 			"CALENDAR_evtProposeDeclined"=>"La propuesta ha sido rechazada",
 			"CALENDAR_evtProposeDeclinedMail"=>"Tu propuesta de evento ha sido rechazada",
-			"CALENDAR_deleteEvtCal"=>"¿ Eliminar sólo en ese calendario ?",
-			"CALENDAR_deleteEvtCals"=>"¿ Eliminar en todos los calendarios ?",
-			"CALENDAR_deleteEvtDate"=>"¿ Eliminar sólo en esta fecha ?",
+			"CALENDAR_evtDelete"=>"Eliminar evento",
+			"CALENDAR_evtDeleteCal"=>"Eliminar el evento de este calendario",
+			"CALENDAR_evtDeleteDate"=>"Eliminar el evento en esta fecha",
 			"CALENDAR_evtPrivate"=>"Évento privado",
 			"CALENDAR_evtAutor"=>"Eventos que he creado",
 			"CALENDAR_evtAutorInfo"=>"Mostrar solo eventos que he creado",
 			"CALENDAR_evtChangeTime"=>"¿ Mover a",
 			"CALENDAR_evtChangeTimeConfirmed"=>"El evento se ha movido correctamente",
 			"CALENDAR_noEvt"=>"No hay eventos",
-			"CALENDAR_calendarsPercentBusy"=>"Calendarios ocupados",
 			"CALENDAR_noCalendarDisplayed"=>"No calendario",
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Importancia normal",
@@ -861,22 +861,17 @@ class Trad extends Txt
 			"CALENDAR_noPeriodicity"=>"Una vez",
 			"CALENDAR_period_weekDay"=>"Cada semana",
 			"CALENDAR_period_month"=>"Todos los meses",
-			"CALENDAR_period_monthBis"=>"Cada --DATE-- del mes",
+			"CALENDAR_period_monthDetail"=>"Cada --DATE-- del mes",
 			"CALENDAR_period_year"=>"Todos los años",
-			"CALENDAR_period_yearBis"=>"Cada --DATE-- del año",
+			"CALENDAR_period_yearDetail"=>"Cada --DATE-- del año",
 			"CALENDAR_periodDateExceptions"=>"Excepción de repetición",
 			"CALENDAR_periodDateEnd"=>"Fin de repetición",
 			"CALENDAR_calendarAffectations"=>"Asignación a los calendarios",
 			"CALENDAR_addEvt"=>"Añadir un evento",
 			"CALENDAR_addEvtTooltip"=>"Añadir un evento",
-			"CALENDAR_addEvtTooltipBis"=>"Añadir el evento al calendario",
-			"CALENDAR_proposeEvtTooltip"=>"Proponer un evento al administrador del calendario",
-			"CALENDAR_proposeEvtTooltipBis"=>"Proponer el evento al administrador del calendario",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proponer el evento al administrador del calendario : el calendario solo es accesible para lectura",
-			"CALENDAR_inputProposed"=>"El evento será propuesto al administrador del calendario",
+			"CALENDAR_addEvtTooltip2"=>"Añadir el evento al calendario",
+			"CALENDAR_proposeEvtTooltip"=>"Proponer un evento para este calendario (legible):<br>Luego validado por el propietario del calendario",
 			"CALENDAR_verifCalNb"=>"Gracias por seleccionar por lo menos un calendario",
-			"CALENDAR_noModifTooltip"=>"Edición prohibida porque no tiene acceso de escritura al calendario",
-			"CALENDAR_editLimit"=>"Usted no es el autor de el evento : sólo puedes editar las asignaciones a sus calendarios",
 			"CALENDAR_busyTimeSlot"=>"La ranura ya está ocupado en este calendario :",
 			"CALENDAR_timeSlot"=>"Rango de tiempo de la pantalla ''semana''",
 			"CALENDAR_propositionNotif"=>"Notificar por correo electrónico de cada propuesta de evento",

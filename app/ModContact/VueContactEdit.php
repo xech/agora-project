@@ -1,9 +1,3 @@
-<script>
-////	Resize
-lightboxWidth(600);
-</script>
-
-
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
 	<?= $curObj->titleMobile("CONTACT_addContact") ?>

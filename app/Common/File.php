@@ -22,9 +22,9 @@ class File
 	//init les types de fichiers
 	private static $_fileTypes=null;
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * CHMOD SUR UN FICHIER || CHMOD RÉCURSIF SUR UN DOSSIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function setChmod($path)
 	{
 		$path=trim($path,"/");
@@ -38,26 +38,23 @@ class File
 		}
 	}
 	
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * EXTENSION DU FICHIER -> SANS LE POINT !
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function extension($fileName)
 	{
 		return strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TABLEAU DES EXTENSIONS DE FICHIERS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function fileTypes($typeKey)
 	{
 		//Init les types de fichiers en fonction de leur extension
 		if(static::$_fileTypes===null)
 		{
 			static::$_fileTypes=[
-				"image"=>["jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"],
-				"imageBrowser"=>["jpg","jpeg","png","gif","svg"],
-				"imageResize"=>["jpg","jpeg","png"],
 				"textEditor"=>["doc","docx","odt","sxw"],
 				"text"=>["txt","text","rtf"],
 				"pdf"=>["pdf"],
@@ -70,12 +67,15 @@ class File
 				"web"=>["htm","html","js","css","php","asp","jsp"],
 				"autocad"=>["dwg","dxf"],
 				"executable"=>["exe","bat","dat","dll","msi"],
+				"image"=>["jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"],
+				"imageResize"=>["jpg","jpeg","png"],
+				"video"=>["mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"],
 				"audio"=>["mp3","flac","wma","wav","aac","mid"],
 				"mp3"=>["mp3"],
-				"video"=>["mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"],
-				"videoPlayer"=>["mp4","webm"],
-				"mediaPlayer"=>["mp4","webm","mp3"],
-				"attachedFileInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],							//Fichiers joints intégrable dans l'éditeur TinyMce
+				"editorInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],									//Medias pouvant être insérés dans l'éditeur TinyMce
+				"imageBrowser"=>["jpg","jpeg","png","gif","svg"],												//Images : idem
+				"videoBrowser"=>["mp4","webm"],																	//Videos : idem
+				"lightboxPlayer"=>["mp4","webm","mp3"],															//Video/audio via lightbox
 				"forbiddenExt"=>["php","phtml","js","htaccess","sh","so","bin","cgi","rpm","deb","bat","exe"],	//Fichiers non autorisés
 			];
 		}
@@ -83,9 +83,9 @@ class File
 		return (array_key_exists($typeKey,static::$_fileTypes))  ?  static::$_fileTypes[$typeKey]  :  [];
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * CONTROLE LE TYPE DE FICHIER EN FONCTION DE SON EXTENSION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isType($typeKey, $fileName)
 	{
 		return in_array(self::extension($fileName), self::fileTypes($typeKey));
@@ -96,13 +96,14 @@ class File
 	 *******************************************************************************************************/
 	public static function uploadControl($tmpFile, $tmpDatasFolderSize=null)
 	{
-		//Controle l'accès au fichier
-		if($tmpFile["error"]==0 && is_file($tmpFile["tmp_name"]))
-		{
+		//Controle l'accès au fichier (tjs "clearstatcache" avant "is_file" des fichiers temporaires)
+		clearstatcache();
+		if($tmpFile["error"]==0 && is_file($tmpFile["tmp_name"])){
 			////	Init le $datasFolderSize
 			$datasFolderSize=(!empty($tmpDatasFolderSize))  ?  $tmpDatasFolderSize  :  self::datasFolderSize();
 			////	Récupère le type mime du fichier
-			$isForbiddenMimeType=preg_match("/(php|javascript|shell|binary|executable|msdownload|debian)/i", mime_content_type($tmpFile["tmp_name"]));
+			$finfo=finfo_open(FILEINFO_MIME_TYPE);
+			$isForbiddenMimeType=preg_match("/(php|javascript|shell|binary|executable|msdownload|debian)/i", finfo_file($finfo,$tmpFile["tmp_name"]));
 			////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
 			if(self::isType("forbiddenExt",$tmpFile["name"]) || $isForbiddenMimeType==true)					{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$tmpFile["name"]);  return false;}
 			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)		{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
@@ -147,20 +148,18 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
-	 * AFFICHE UN FICHIER DANS LE BROWSER (MASQUE LE PATH REEL DU FICHIER IMG/PDF/ETC)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * AFFICHE UN FICHIER DANS LE BROWSER (MASQUE LE PATH REEL DU FICHIER)
+	 ********************************************************************************************************/
 	public static function display($filePath)
 	{
-		if(is_file($filePath))
-		{
-			//Init le "Content-Type"
-			if(self::isType("imageBrowser",$filePath))	{$contentType="image/".self::extension($filePath);}
-			elseif(self::isType("pdf",$filePath))		{$contentType="application/pdf";}
-			elseif(self::isType("text",$filePath))		{$contentType="text/plain;";}
-			else										{$contentType="application/octet-stream";}
-			//Envoie le "Header"
-			header('Content-Type: '.$contentType);
+		if(is_file($filePath)){
+			if(self::isType("imageBrowser",$filePath))		{header('Content-Type: image/'.self::extension($filePath));}
+			elseif(self::isType("pdf",$filePath))			{header('Content-Type: application/pdf');}
+			elseif(self::isType("videoBrowser",$filePath))	{header('Content-Type: video/mpeg');}
+			elseif(self::isType("mp3",$filePath))			{header('Content-Type: audio/mpeg');}
+			elseif(self::isType("text",$filePath))			{header('Content-Type: text/plain');}
+			else											{header('Content-Type: application/octet-stream');}
 			header('Cache-Control: no-store');
 			header('Content-Transfer-Encoding: binary');
 			header('Content-Length: '.filesize($filePath));
@@ -169,9 +168,9 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TAILLE D'UN DOSSIER, EN OCTETS  (fonction récursive. Alternative: "du -sb")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function folderSize($folderPath)
 	{
 		$folderSize=0;
@@ -188,9 +187,9 @@ class File
 		return $folderSize;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TAILLE DU PATH_DATAS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function datasFolderSize($refresh=false)
 	{
 		//Durée de la valeur gardée en cache : 5mn
@@ -204,9 +203,9 @@ class File
 		return $_SESSION["datasFolderSize"];
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RETOURNE UNE VALEUR EN OCTETS À PARTIR D'UNE VALEUR EN Go/Mo/Ko (inverse de "sizeLabel()")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
 		if(preg_match("/(g|go)$/i",$sizeText))		{return floatval(str_ireplace(["go","g"],"",$sizeText)) * self::sizeGo;}
@@ -227,9 +226,9 @@ class File
 		return ($displayLabel==true)  ?  $size." ".Txt::trad($tradLabel)  :  $size;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RETOURNE LA TAILLE MAX DES FICHIERS UPLOADÉS : EN OCTETS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function uploadMaxFilesize($message=false)
 	{
 		$upload_max_filesize=(int)self::getBytesSize(ini_get("upload_max_filesize"));
@@ -238,9 +237,9 @@ class File
 		else					{return $upload_max_filesize;}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SUPPRESSION D'UN FICHIER/DOSSIER SUR LE DISQUE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function rm($targetPath, $errorMessage=true)
 	{
 		//suppr le dernier "/"
@@ -262,9 +261,9 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIFIE SI UN DOSSIER OU UN FICHIER EST ACCESSIBLE EN ÉCRITURE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isWritable($targetPath, $errorMessage=true)
 	{
 		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE)	{return true;}
@@ -274,9 +273,9 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * REDIMENSIONNE UNE IMAGE ("imgSrc.png"= "imgDest.jpg")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)
 	{
 		// Verifs de base
@@ -346,9 +345,9 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * GENÈRE UNE ARCHIVE ZIP A PARTIR D'UN TABLEAU DE FICHIERS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function downloadArchive($filesList, $archiveName)
 	{
 		if(!empty($filesList))
@@ -386,9 +385,9 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DOSSIER TEMPORAIRE DU SYSTÈME "/tmp"  OU  DOSSIER TEMPORAIRE "./DATAS/tmp"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getTempDir()
 	{
 		//Dossier temporaire du systeme  ||  Dossier temporaire dans /DATAS
@@ -408,9 +407,9 @@ class File
 		return $tmpDir;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * MODIFIE LE FICHIER "config.inc.php"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function updateConfigFile($constantsEdit=null, $constantsDelete=null)
 	{
 		//Fichier accessible en écriture?
@@ -472,9 +471,9 @@ class File
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PATH DE LA DOCUMENTATION PDF (FRANÇAISE / ANGLAISE)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function docFile()
 	{
 		return 'docs/DOCUMENTATION_'.(Txt::trad("CURLANG")=='fr'?'FR':'EN').'.pdf?displayFile=true';//"displayFile" : url d'affichage dans l'appli mobile

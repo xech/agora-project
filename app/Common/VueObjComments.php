@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ////	Init l'affichage
 ready(function(){
 	////	Contrôle l'ajout/modif d'un commentaire
@@ -11,10 +8,10 @@ ready(function(){
 
 	////	Edition/suppression d'un commentaire : update le "circleNb"  (idem "usersLikeUpdate()")
 	<?php if(Req::isParam("actionComment")){ ?>
-		var menuId="#usersComment_<?= $curObj->_typeId ?>";																							//Id du menu
-		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("hideMiscMenu").find(".circleNb").html("");}									//Masque l'icone et le nb de commentaires
-		else								{window.top.$(menuId).removeClass("hideMiscMenu").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone..
-		window.top.$(menuId).tooltipsterUpdate("<?= $commentsTitle ?>");																				//Update le Tooltip
+		var menuId="#usersComment_<?= $curObj->_typeId ?>";																								//Id du menu
+		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("objMenuMiscHide").find(".circleNb").html("");}								//Masque l'icone et le nb de commentaires
+		else								{window.top.$(menuId).removeClass("objMenuMiscHide").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone..
+		window.top.$(menuId).tooltipUpdate("<?= $commentsTitle ?>");																					//Update le Tooltip
 	<?php } ?>
 
 	////	Focus du champ (pas sur mobile pour ne pas afficher le clavier virtuel)
@@ -36,8 +33,8 @@ form button				{width:120px;}
 .vCommentOptions img	{margin-left:10px;}
 .submitButtonInline		{padding-top:10px;}
 
-/*MOBILE*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vCommentsTable, .vCommentsRow, .vCommentsRow>div	{display:block; width:100%;}
 	.vCommentsRow			{margin-bottom:15px!important;}
 	.vCommentText			{border:dotted 1px #ddd; padding:10px!important;}
@@ -65,8 +62,8 @@ form button				{width:120px;}
 				</div>
 				<?php if(MdlObject::userCommentEditRight($tmpComment['_id'])){ ?>
 					<div class="vCommentOptions">
-						<img src="app/img/edit.png" title="<?= Txt::trad("modify") ?>" onclick="$('#commentText<?= $tmpComment['_id'] ?> >*').toggle()">
-						<img src="app/img/delete.png" title="<?= Txt::trad("delete") ?>" onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->_typeId ?>&idComment=<?= $tmpComment['_id'] ?>&actionComment=delete')">
+						<img src="app/img/edit.png" <?= Txt::tooltip("modify") ?> onclick="$('#commentText<?= $tmpComment['_id'] ?> >*').toggle()">
+						<img src="app/img/delete.png" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->_typeId ?>&idComment=<?= $tmpComment['_id'] ?>&actionComment=delete')">
 					</div>
 				<?php } ?>
 			</div>

@@ -1,5 +1,5 @@
 <script>
-/*******************************************************************************************
+/********************************************************************************************************
  *	WIDTH DE LA TIMELINE (lancé via "mainDisplay()" cf "app.js")
 *******************************************************************************************/
 function moduleDisplay(){
@@ -29,8 +29,8 @@ function moduleDisplay(){
 .vTimelineToday						{color:#c00; font-size:1.1em}
 .vTimelineMain .progressBar			{width:100%; text-align:left; padding:0px 3px;}	/*surcharge : 100% de width en fonction de la durée de la tâche (cf. "colspan" des cellules)*/
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vTimelineMain td:not(:first-child)		{min-width:22px;}
 	.vTimelineMain img						{display:none;}
 }
@@ -38,7 +38,7 @@ function moduleDisplay(){
 
 
 <div id="pageFull">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<?= MdlTask::menuSelect() ?>
 		<div class="miscContainer">
 			<?php
@@ -58,8 +58,8 @@ function moduleDisplay(){
 	<div id="pageContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew());
-		echo CtrlObject::vueFolders();
+		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).
+			 CtrlObject::vueFolders();
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask)
 		{

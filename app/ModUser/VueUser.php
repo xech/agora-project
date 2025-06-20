@@ -1,8 +1,3 @@
-<script>
-////	Resize
-lightboxWidth(500);
-</script>
-
 <style>
 .vAdminLabel		{text-align:center;}
 .vAdminLabel hr		{margin-top:30px; margin-bottom:10px;}

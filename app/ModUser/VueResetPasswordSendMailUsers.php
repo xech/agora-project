@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(550);
-
 ////	Confirme l'envoi?
 ready(function(){
 	$("form").on("submit",async function(event){

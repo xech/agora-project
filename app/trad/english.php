@@ -7,7 +7,7 @@ class Trad extends Txt
 	/*
 	 * Chargement les elements de traduction
 	 */
-	public static function loadTradsLang()
+	public static function loadTrads()
 	{
 		////	Dates formatées par PHP
 		setlocale(LC_TIME, "en_US.utf8", "en_US.UTF-8", "en_US", "en", "english");
@@ -18,6 +18,7 @@ class Trad extends Txt
 			"CURLANG"=>"en",
 			"DATELANG"=>"en_GB",
 			"EDITORLANG"=>"en",
+			"FANCYBOXLANG"=>"en",
 
 			////	Divers
 			"mainMenu"=>"Main menu",
@@ -64,6 +65,7 @@ class Trad extends Txt
 			"confirm"=>"Confirm",
 			"confirmOk"=>"Ok",
 			"confirmCancel"=>"Cancel",
+			"confirmDownload"=>"Download the file ?",
 			"confirmCloseForm"=>"Close the form without saving ?",
 			"delete"=>"Delete",
 			"confirmDelete"=>"Confirm deletion ?",
@@ -72,7 +74,7 @@ class Trad extends Txt
 			"confirmDeleteSelect"=>"Do you want to permanently delete the selection ?",
 			"confirmDeleteSelectNb"=>"items selected",
 			"confirmDeleteFolder"=>"Some subfolders are not accessible to you: can you confirm this anyway?",
-			"notifDeleteWait"=>"Please wait a moment: deleting the folder may take a few seconds",
+			"confirmDeleteWait"=>"Please wait a moment: deleting the folder may take a few seconds",
 			"notifDeleteFolderUncomplete"=>"Some items have not been deleted because you do not have the necessary access rights",
 	
 			////	Images
@@ -166,6 +168,7 @@ class Trad extends Txt
 			"month_11"=>"November",
 			"month_12"=>"December",
 			"today"=>"Today",
+			"displayToday"=>"Show today",
 			"beginEndError"=>"Start date must precede end date",
 			"dateFormatError"=>"The date must be in the format dd/mm/YYYY",
 			"timeFormatError"=>"The time must be in the format HH:mm",
@@ -346,7 +349,6 @@ class Trad extends Txt
 			"userInscriptionEditTooltip"=>"The registration is on the homepage of the site. Registration must then be validated by the administrator of the space.",
 			"userInscriptionNotif"=>"Notify by email at each registration",
 			"userInscriptionNotifTooltip"=>"Send an email notification to space administrators, after each registration",
-			"userInscriptionPulsate"=>"Registration",
 			"userInscriptionValidate"=>"Validate user registration",
 			"userInscriptionValidateTooltip"=>"Validate user registration on the site",
 			"userInscriptionSelectValidate"=>"Validate registrations",
@@ -396,20 +398,19 @@ class Trad extends Txt
 
 			////	Messenger / Visio
 			"MESSENGER_MODULE_NAME"=>"Messaging",
-			"MESSENGER_MODULE_DESCRIPTION"=>"Chat or start a video conference with people connected to the space",
-			"MESSENGER_messengerTitle"=>"Messaging : click on a person's name to chat or start a video conference",
-			"MESSENGER_messengerMultiUsers"=>"Chat with others by selecting my interlocutors in the right pane",
-			"MESSENGER_connected"=>"Online",
-			"MESSENGER_nobody"=>"You are currently the only person logged to the space",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chat or start a video conference with people online",
+			"MESSENGER_messengerMultiUsers"=>"Chat with several people on the messaging (left pane to select recipients)",
+			"MESSENGER_chatWithMulti"=>"Chat with",
+			"MESSENGER_chatWith"=>"Chat or start a video conference with",
 			"MESSENGER_messageFrom"=>"Message from",
-			"MESSENGER_messageTo"=>"sent to",
-			"MESSENGER_chatWith"=>"Chat with",
-			"MESSENGER_addMessageToSelection"=>"My message (selected persons)",
-			"MESSENGER_addMessageTo"=>"My message to",
-			"MESSENGER_addMessageNotif"=>"Thank you to specify a message",
-			"MESSENGER_visioProposeTo"=>"Propose a video call to",
-			"MESSENGER_visioProposeToSelection"=>"Propose a video call to the selected people",
-			"MESSENGER_visioProposeToUsers"=>"Click here to start the video call with",
+			"MESSENGER_messageSentTo"=>"sent to",
+			"MESSENGER_messageToSelected"=>"Message to selected people",
+			"MESSENGER_messageTo"=>"Message to",
+			"MESSENGER_addMessageNotif"=>"Please specify a message",
+			"MESSENGER_visioProposeTo"=>"Propose a video conference to",
+			"MESSENGER_visioProposeToSelection"=>"Propose a video conference to the selected people",
+			"MESSENGER_visioProposeToUsers"=>"Click here to start the video conference between",
+			"MESSENGER_nobody"=>"No other users are currently logged in",
 			
 			////	Lancer une Visio
 			"VISIO_urlAdd"=>"Add a videoconference",
@@ -838,16 +839,15 @@ class Trad extends Txt
 			"CALENDAR_evtProposeDecline"=>"Decline the proposal",
 			"CALENDAR_evtProposeDeclined"=>"The proposal has been declined",
 			"CALENDAR_evtProposeDeclinedMail"=>"Your event proposal has been declined",
-			"CALENDAR_deleteEvtCal"=>"Delete only for this calendar ?",
-			"CALENDAR_deleteEvtCals"=>"Delete for all the calendars ?",
-			"CALENDAR_deleteEvtDate"=>"Delete only for this date ?",
+			"CALENDAR_evtDelete"=>"Delete event",
+			"CALENDAR_evtDeleteCal"=>"Remove the event from this calendar",
+			"CALENDAR_evtDeleteDate"=>"Remove the event on this date",
 			"CALENDAR_evtPrivate"=>"Private event",
 			"CALENDAR_evtAutor"=>"Events which I created",
 			"CALENDAR_evtAutorInfo"=>"Show only events I created",
 			"CALENDAR_evtChangeTime"=>"Move to",
 			"CALENDAR_evtChangeTimeConfirmed"=>"The event has been successfully moved",
 			"CALENDAR_noEvt"=>"No event",
-			"CALENDAR_calendarsPercentBusy"=>"Busy calendars",
 			"CALENDAR_noCalendarDisplayed"=>"No calendars displayed",
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Normal importance",
@@ -861,22 +861,17 @@ class Trad extends Txt
 			"CALENDAR_noPeriodicity"=>"Only once",
 			"CALENDAR_period_weekDay"=>"Every week",
 			"CALENDAR_period_month"=>"Every month",
-			"CALENDAR_period_monthBis"=>"Every --DATE-- of the month",
+			"CALENDAR_period_monthDetail"=>"Every --DATE-- of the month",
 			"CALENDAR_period_year"=>"Every year",
-			"CALENDAR_period_yearBis"=>"Every --DATE-- of the year",
+			"CALENDAR_period_yearDetail"=>"Every --DATE-- of the year",
 			"CALENDAR_periodDateExceptions"=>"Repeat exception",
 			"CALENDAR_periodDateEnd"=>"Repeat end",
 			"CALENDAR_calendarAffectations"=>"Assign to the following calendars",
 			"CALENDAR_addEvt"=>"Add an event",
 			"CALENDAR_addEvtTooltip"=>"Add an event",
-			"CALENDAR_addEvtTooltipBis"=>"Add the event to the calendar",
-			"CALENDAR_proposeEvtTooltip"=>"Propose an event to the administrator of the calendar",
-			"CALENDAR_proposeEvtTooltipBis"=>"Propose the event to the administrator/owner of the calendar",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Propose the event to the administrator/owner of the calendar : the calendar is only accessible for reading",
-			"CALENDAR_inputProposed"=>"The event will be proposed to the administrator of the calendar",
+			"CALENDAR_addEvtTooltip2"=>"Add the event to the calendar",
+			"CALENDAR_proposeEvtTooltip"=>"Propose an event for this calendar (readable):<br> Then validated by the calendar owner",
 			"CALENDAR_verifCalNb"=>"Thank you for selecting a calendar",
-			"CALENDAR_noModifTooltip"=>"Modification forbidden because you don't have access to write in this calendar",
-			"CALENDAR_editLimit"=>"You are not the author of the event: you can only manage your calendars assignments",
 			"CALENDAR_busyTimeSlot"=>"The slot is already occupied on this calendar :",
 			"CALENDAR_timeSlot"=>"Time range of the ''week'' display",
 			"CALENDAR_propositionNotif"=>"Notify by email of each event proposal",

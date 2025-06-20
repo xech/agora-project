@@ -28,9 +28,9 @@ class MdlForumSubject extends MdlObject
 	public static $searchFields=["title","description"];
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateLastMessage@@desc","dateLastMessage@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE LES MESSAGES DU SUJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function messageList()
 	{
 		return Db::getObjTab("forumMessage", "SELECT * FROM ap_forumMessage WHERE _idContainer=".$this->_id." ".MdlForumMessage::sqlSort());
@@ -47,25 +47,25 @@ class MdlForumSubject extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF : L'USER COURANT A-T-IL CONSULTÉ LE DERNIER MESSAGE ?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function alreadyConsulted()
 	{
 		return (Ctrl::$curUser->isUser()==false || in_array(Ctrl::$curUser->_id,Txt::txt2tab($this->usersConsultLastMessage)));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF : L'USER COURANT RECOIT-IL DES NOTIFICATIONS D'AJOUT DE NOUVEAU MESSAGE SUR LE SUJET COURANT?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function curUserNotifyLastMessage()
 	{
 		return in_array(Ctrl::$curUser->_id,Txt::txt2tab($this->usersNotifyLastMessage));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DROIT D'AJOUTER UN NOUVEAU SUJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddSubject")==false));

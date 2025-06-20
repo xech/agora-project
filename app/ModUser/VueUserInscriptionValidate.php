@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(700);
-
 ////	Sélectionner au moins une demande d'inscription
 ready(function(){
 	$("form").on("submit",function(){
@@ -10,8 +7,8 @@ ready(function(){
 });
 </script>
 
-
 <style>
+#bodyLightbox				{max-width:700px;}
 fieldset					{text-align:left;}
 fieldset label				{margin-left:20px;}
 fieldset li					{line-height:25px;}

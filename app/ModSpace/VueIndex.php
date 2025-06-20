@@ -1,6 +1,6 @@
 <style>
 /* BLOCKS DE CONTENU */
-#pageMenu .infos			{text-align:left;}
+#moduleMenu .infos			{text-align:left;}
 .objBlocks .objContainer	{height:200px; width:300px; min-width:300px; max-width:700px; padding:10px;}/*surcharge*/
 .vSpaceName					{font-size:1.1em;}
 .vSpaceDescription			{margin-top:10px; font-weight:normal;}
@@ -11,14 +11,14 @@
 .vSpaceAffectation			{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.95em;}
 .vSpaceAffectation img		{max-height:20px;}
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vSpaceAffectation	{width:48%;}
 }
 </style>
 
 <div id="pageFull">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<div class="miscContainer">
 			<div class="menuLine" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')" <?= Txt::tooltip("SPACE_moduleTooltip") ?>><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>

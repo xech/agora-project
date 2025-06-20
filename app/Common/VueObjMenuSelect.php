@@ -65,7 +65,7 @@ async function menuSelectAction(urlRedir, lightbox)
 
 	<!--"VOIR SUR UNE CARTE" (user / contact)-->
 	<?php if(Req::$curCtrl=="user" || Req::$curCtrl=="contact"){ ?>
-		<div class="menuLine" onclick="menuSelectAction('?ctrl=misc&action=PersonsMap',true)" title="<?= Txt::trad("showOnMapTooltip") ?>"><div class="menuIcon"><img src="app/img/map.png"></div><div><?= Txt::trad("showOnMap") ?></div></div>
+		<div class="menuLine" onclick="menuSelectAction('?ctrl=misc&action=PersonsMap',true)" <?= Txt::tooltip("showOnMapTooltip") ?> ><div class="menuIcon"><img src="app/img/map.png"></div><div><?= Txt::trad("showOnMap") ?></div></div>
 	<?php } ?>
 
 	<!--"DEPLACER" (arbo)-->

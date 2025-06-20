@@ -1,7 +1,3 @@
-<script>
-lightboxWidth(600);
-</script>
-
 <style>
 .vEvtDetails						{margin-top:15px;}
 .vEvtDetails img, .categoryColor	{margin-right:15px;}

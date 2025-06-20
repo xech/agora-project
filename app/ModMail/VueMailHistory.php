@@ -1,25 +1,16 @@
 <script>
-////	RESIZE
-lightboxWidth(750);
-
-/*******************************************************************************************
- *	OPTION POUR RENVOYER UN ANCIEN EMAIL : RELOAD LA PAGE PRINCIPALE
-*******************************************************************************************/
-function sendOldMail(typeId)
-{
-	window.top.confirmRedir("?ctrl=mail&oldMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
+////	Option pour renvoyer un ancien email : reload la page principale
+function sendOldMail(typeId){
+	window.top.confirmRedir("?ctrl=mail&reloadMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
 }
 </script>
 
 <style>
-ul									{padding-left:20px;}
-li									{margin-bottom:20px;}
-.vMailDetailBlock					{display:none;}
-.vMailDetail, .vMailDetailOption	{margin-top:10px;}
-.vMailDetailOption					{display:inline-block; margin-right:20px;}
-.vMailDetailOption img				{max-height:22px;}
-.vMailDescription					{margin-top:10px; padding:5px; border:dotted #999 1px;}
-.vRecipients						{font-weight:normal;}
+#bodyLightbox			{max-width:900px;}
+li						{margin-top:20px;}
+.vMailDetails			{display:none;}
+.vMailDetails>div		{margin-top:15px;}
+.vMailDetails label		{margin-right:20px;}
 </style>
 
 
@@ -27,26 +18,21 @@ li									{margin-bottom:20px;}
 	<div class="lightboxTitle"><?= Txt::trad("MAIL_historyTitle") ?></div>
 
 	<ul>
-	<?php
-	////	AFFICHE CHAQUE MAILS ENVOYE
-	foreach($mailList as $tmpMail)
-	{
-		//Date et destinataires du mail
-		$autorRecipents="<div class='vMailDetail'>".Txt::trad("MAIL_sendBy")." ".$tmpMail->autorDate()."</div>".
-						"<div class='vMailDetail'>".Txt::trad("MAIL_recipients")." : ".str_replace(',',' - ',$tmpMail->recipients)."</div>";
-		//Récupération de l'email || Suppression de l'email 
-		$buttonResend="<div class='vMailDetail vMailDetailOption' onclick=\"sendOldMail('".$tmpMail->_typeId."')\" ".Txt::tooltip("MAIL_resendInfo")."><img src='app/img/mail/resend.png'> ".Txt::trad("MAIL_resend")."</div>";
-		$buttonDelete="<div class='vMailDetail vMailDetailOption' onclick=\"confirmDelete('".$tmpMail->getUrl("delete")."')\"><img src='app/img/delete.png'> ".Txt::trad("MAIL_delete")."</div>";
-		//Affiche chaque email envoyé
-		echo "<li>
-				<label onclick=\"$('#mailDetailBlock".$tmpMail->_id."').slideToggle()\">".$tmpMail->title." <img src='app/img/arrowBottom.png'></label>
-				<div id=\"mailDetailBlock".$tmpMail->_id."\" class='vMailDetailBlock'>
-					".$buttonResend.$buttonDelete.$autorRecipents."
-					<div id=\"mailDescription".$tmpMail->_id."\" class='vMailDescription'>".$tmpMail->description."</div>
-				</div>
-			  </li>";
-	}
-	?>
+	<!--ANCIENS MAILS-->
+	<?php foreach($mailList as $tmpMail){ ?>
+	<li>
+		<label onclick="$('#mailDetails<?= $tmpMail->_id ?>').slideToggle()"><?= $tmpMail->title ?> <img src='app/img/arrowBottom.png'></label>
+		<div id="mailDetails<?= $tmpMail->_id ?>" class="vMailDetails">
+			<div><?= Txt::trad("MAIL_sendBy").' '.$tmpMail->autorDate() ?></div>
+			<div><?= Txt::trad("MAIL_recipients").' : '.str_replace(',',' - ',$tmpMail->recipients) ?></div>
+			<div>
+				<label onclick="sendOldMail('<?= $tmpMail->_typeId ?>')" <?= Txt::tooltip("MAIL_resendInfo") ?>><img src="app/img/mail/resend.png"> <?= Txt::trad("MAIL_resend") ?></label>
+				<label onclick="confirmDelete('<?= $tmpMail->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("MAIL_delete") ?></label>
+			</div>
+			<div class="miscContainer"><?= $tmpMail->description ?></div>
+		</div>
+	</li>
+	<?php } ?>
 	</ul>
 
 	<!--AUCUN MAIL-->

@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function objectFormControl(){
 	return new Promise((resolve)=>{
@@ -30,6 +27,6 @@ function objectFormControl(){
 	<input type="text" name="dotExtension" value="<?= strrchr($curObj->name,".") ?>" readonly>
 	<?= $curObj->descriptionEditor() ?>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

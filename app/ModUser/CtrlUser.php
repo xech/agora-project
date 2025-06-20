@@ -16,9 +16,9 @@ class CtrlUser extends Ctrl
 	public static $moduleOptions=["allUsersAddGroup"];
 	public static $MdlObjects=["MdlUser"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		//Affichage des utilisateurs : "space" / "all"
@@ -37,9 +37,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PLUGINS DU MODULE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPlugins($params)
 	{
 		$pluginsList=[];
@@ -56,24 +56,24 @@ class CtrlUser extends Ctrl
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : DÉTAILS D'UN UTILISATEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionVueUser()
 	{
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueUser.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UN USER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUserEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		//Nb max d'utilisateurs dépassé?
 		if($curObj->isNew() && MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
@@ -84,7 +84,7 @@ class CtrlUser extends Ctrl
 			$sqlFields="civility=".Db::param("civility").", name=".Db::param("name").", firstName=".Db::param("firstName").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang");
 			if($curObj->editAdminGeneralRight())	{$sqlFields.=", generalAdmin=".Db::param("generalAdmin");}
 			if(Ctrl::$curUser->isGeneralAdmin())	{$sqlFields.=", calendarDisabled=".Db::param("calendarDisabled");}
-			$curObj=$curObj->createUpdate($sqlFields, Req::param("login"), Req::param("password"));//Ajoute login/password pour les controles standards
+			$curObj=$curObj->editRecord($sqlFields, Req::param("login"), Req::param("password"));//Ajoute login/password pour les controles standards
 			//Objet bien créé/existant : Affectations / Images / etc
 			if(MdlObject::isObject($curObj))
 			{
@@ -127,20 +127,20 @@ class CtrlUser extends Ctrl
 	public static function actionDeleteFromCurSpace()
 	{
 		$urlRedir=null;
-		foreach(self::getObjectsTypeId() as $tmpObj){
+		foreach(self::getCurObjects() as $tmpObj){
 			if(empty($urlRedir))  {$urlRedir=$tmpObj->getUrl();}
 			$tmpObj->deleteFromCurSpace(Ctrl::$curSpace->_id);
 		}
 		self::redir($urlRedir);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PARAMETRAGE DU MESSENGER D'UN UTILISATEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUserEditMessenger()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate") && Req::isParam("messengerDisplay"))
@@ -164,9 +164,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueUserEditMessenger.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : IMPORT/EXPORT D'UTILISATEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionEditPersonsImportExport()
 	{
 		////	Controle d'accès && nombre max d'utilisateurs
@@ -200,7 +200,7 @@ class CtrlUser extends Ctrl
 					if(empty($tmpUser["login"]))	{$tmpUser["login"]=strtolower( substr(Txt::clean($tmpUser["firstName"],"max",""),0,1).substr(Txt::clean($tmpUser["name"],"max",""),0,8) );}//Ou login prédéfinit par défaut. Ex: "Jean Durant"=>"jdurant"
 					if(empty($tmpUser["password"]))	{$tmpUser["password"]=Txt::defaultPassword();}
 					//Enregistre le nouvel utilisateur !
-					$curObj=$curObj->createUpdate($sqlFields, $tmpUser["login"], $tmpUser["password"]);
+					$curObj=$curObj->editRecord($sqlFields, $tmpUser["login"], $tmpUser["password"]);
 					//Options de création
 					if(MdlObject::isObject($curObj)){
 						//Envoi si besoin une notification mail
@@ -220,9 +220,9 @@ class CtrlUser extends Ctrl
 		static::displayPage(Req::commonPath."VuePersonsImportExport.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : AFFECTATION À L'ESPACE COURANT D'AUTRES USERS PRESENTS SUR LE SITE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionAffectUsers()
 	{
 		//Administrateur de l'espace courant?
@@ -257,9 +257,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueAffectUsers.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : ENVOI UN EMAIL POUR REINITIALISER LES COORDONNEES DE CONNEXION D'USERS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionResetPasswordSendMailUsers()
 	{
 		////	Admin general uniquement
@@ -275,9 +275,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueResetPasswordSendMailUsers.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : ENVOI D'INVITATION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionSendInvitation()
 	{
 		////	Droit d'envoyer des invitations?  Nb max d'utilisateurs dépassé?
@@ -331,9 +331,9 @@ class CtrlUser extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : VÉRIFIE LA PRÉSENCE D'UN COMPTE USER OU DE PLUSIEURS COMPTES USERS (cf "vueSendInvitation.php">"gPeopleGetContacts()")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionloginExists()
 	{
 		//Vérif un seul compte user
@@ -350,18 +350,18 @@ class CtrlUser extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION DES GROUPES D'UTILISATEURS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUserGroupEdit()
 	{
 		//Droit d'editer/ajouter un groupe?
 		if(MdlUserGroup::addRight()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : edit un groupe
 		if(Req::isParam("formValidate")){
-			$curObj=Ctrl::getObjTarget();
+			$curObj=Ctrl::getCurObj();
 			$curObj->editControl();
-			$curObj->createUpdate("title=".Db::param("title").", _idSpace=".Ctrl::$curSpace->_id.", _idUsers=".Db::formatTab2txt(Req::param("userList")));
+			$curObj->editRecord("title=".Db::param("title").", _idSpace=".Ctrl::$curSpace->_id.", _idUsers=".Db::formatTab2txt(Req::param("userList")));
 			static::lightboxRedir();
 		}
 		//Users et groupes de l'espace (en 1er un nouveau groupe "vierge")
@@ -378,9 +378,9 @@ class CtrlUser extends Ctrl
 		static::displayPage("VueUserGroupEdit.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * INSCRIPTIONS D'USERS SUR LES ESPACES ADMINISTRÉS PAR L'USER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function userInscriptionValidate()
 	{
 		//Mise en cache dans une variable de session
@@ -395,9 +395,9 @@ class CtrlUser extends Ctrl
 		return $_SESSION["userInscriptionValidate"];
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : VALIDATION DES INSCRIPTIONS A L'ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUserInscriptionValidate()
 	{
 		//Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
@@ -414,7 +414,7 @@ class CtrlUser extends Ctrl
 				if(Req::isParam("submitInvalidate")==false){
 					$curObj=new MdlUser();
 					$sqlFields="name=".Db::format($tmpInscription["name"]).", firstName=".Db::format($tmpInscription["firstName"]).", mail=".Db::format($tmpInscription["mail"]);
-					$curObj=$curObj->createUpdate($sqlFields, $tmpInscription["mail"], $tmpInscription["password"], $tmpInscription["_idSpace"]);//Ajoute login/password pour les controles standards
+					$curObj=$curObj->editRecord($sqlFields, $tmpInscription["mail"], $tmpInscription["password"], $tmpInscription["_idSpace"]);//Ajoute login/password pour les controles standards
 					if(is_object($curObj))  {$curObj->createCredentialsMail($tmpInscription["password"]);}//Mail de notif
 				}
 				//Invalide l'inscription et demande d'envoie la notif "Votre compte n'a pas été validé.."

@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ////	Agenda partagé d'espace : titre et description non modifiable
 <?php if($curObj->isSpacelCalendar()){ ?>
 ready(function(){
@@ -23,7 +20,7 @@ function objectFormControl(){
 
 
 <style>
-.inputTitleName			{width:75%;}/*surcharge*/
+#bodyLightbox			{max-width:700px;}
 .vCalOption				{margin-top:20px;}
 #divPropositionGuest	{<?= $hidePropositionGuest==true ? "display:none" : null ?>}
 </style>
@@ -53,7 +50,7 @@ function objectFormControl(){
 	////	OPTION DE PROPOSITION D'ÉVÉNEMENT POUR LES GUESTS
 	echo "<div class='vCalOption' id='divPropositionGuest' ".Txt::tooltip("CALENDAR_propositionGuestTooltip").">
 			<input type='checkbox' name='propositionGuest' value='1' ".(!empty($curObj->propositionGuest)?'checked':null)." id='inputPropositionGuest'>
-			<label for='inputPropositionGuest'>".Txt::trad("CALENDAR_propositionGuest")." <img src='app/img/user/accessGuest.png'></label>
+			<label for='inputPropositionGuest'>".Txt::trad("CALENDAR_propositionGuest")." <img src='app/img/plusSmall.png'></label>
 		  </div>";
 
 	////	MENU COMMUN

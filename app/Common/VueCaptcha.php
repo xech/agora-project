@@ -25,12 +25,12 @@ ready(function(){
 #captchaDiv		{margin-top:20px;}
 #captchaImg		{vertical-align:middle;}
 #captchaArrow	{margin-inline:10px;}
-#captchaText	{width:170px!important; margin-right:10px;}
+#captchaText	{width:180px!important; font-size:14px; margin-right:5px;}
 </style>
 
 <div id="captchaDiv">
 	<img src="?ctrl=misc&action=CaptchaImg" id="captchaImg">
 	<img src="app/img/arrowRight.png" id="captchaArrow">
-	<input type="text" name="captcha" id="captchaText" placeholder="<?= Txt::trad("captcha") ?>" title="<?= Txt::trad("captchaTooltip") ?>" required>
+	<input type="text" name="captcha" id="captchaText" placeholder="<?= Txt::trad("captcha") ?>" <?= Txt::tooltip("captchaTooltip") ?> required>
 	<img src="app/img/reload.png" id="captchaReload" title="Change captcha" onclick="$('#captchaImg').attr('src','?ctrl=misc&action=CaptchaImg&rand='+Math.random())">
 </div>

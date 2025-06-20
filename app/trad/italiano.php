@@ -1,13 +1,13 @@
 <?php
 /*
- * Classe de traduction
+ * Traductions
  */
 class Trad extends Txt
 {
 	/*
 	 * Chargement les elements de traduction
 	 */
-	public static function loadTradsLang()
+	public static function loadTrads()
 	{
 		////	Date formattate da PHP
 		setlocale(LC_TIME, "it_IT.utf8", "it_IT.UTF-8", "it_IT", "it", "italiano");
@@ -18,6 +18,7 @@ class Trad extends Txt
 			"CURLANG"=>"it",
 			"DATELANG"=>"it_IT",
 			"EDITORLANG"=>"it",
+			"FANCYBOXLANG"=>"it",
 
 			////	Divers
 			"mainMenu"=>"Menu principale",
@@ -64,7 +65,8 @@ class Trad extends Txt
 			"confirm"=>"Conferma",
 			"confirmOk"=>"Ok",
 			"confirmCancel"=>"Cancellare",
-			"confirmCloseForm"=>"Sei sicuro di voler chiudere il modulo?",
+			"confirmDownload"=>"Scaricare il file ?",
+			"confirmCloseForm"=>"Sei sicuro di voler chiudere il modulo ?",
 			"delete"=>"Elimina",
 			"confirmDelete"=>"Confermare l'eliminazione ?",
 			"confirmDeleteAlert"=>"Attenzione : questa azione è definitiva !",
@@ -72,7 +74,7 @@ class Trad extends Txt
 			"confirmDeleteSelect"=>"Si desidera eliminare definitivamente la selezione?",
 			"confirmDeleteSelectNb"=>"elementi selezionati",
 			"confirmDeleteFolder"=>"Alcune sottocartelle non sono accessibili: puoi comunque confermarlo ?",
-			"notifDeleteWait"=>"Attendi un attimo: l'eliminazione della cartella potrebbe richiedere alcuni secondi",
+			"confirmDeleteWait"=>"Attendi un attimo: l'eliminazione della cartella potrebbe richiedere alcuni secondi",
 			"notifDeleteFolderUncomplete"=>"Alcuni elementi non sono stati eliminati perché non si dispone dei diritti di accesso necessari",
 
 			////	images
@@ -166,6 +168,7 @@ class Trad extends Txt
 			"month_11"=>"novembre",
 			"month_12"=>"dicembre",
 			"today"=>"oggi",
+			"displayToday"=>"Mostra oggi",
 			"beginEndError"=>"La data di fine non può precedere la data di inizio",
 			"dateFormatError"=>"La data deve essere nel formato gg/mm/aaaa",
 			"timeFormatError"=>"L'ora deve essere in formato HH:mm",
@@ -346,7 +349,6 @@ class Trad extends Txt
 			"userInscriptionEditTooltip"=>"La registrazione avviene nella homepage del sito. La registrazione deve poi essere convalidata dall'amministratore dello spazio",
 			"userInscriptionNotif"=>"Notifica via e-mail a ogni registrazione",
 			"userInscriptionNotifTooltip"=>"Invia una notifica via e-mail agli amministratori dello spazio, dopo ogni registrazione",
-			"userInscriptionPulsate"=>"Registrazione",
 			"userInscriptionValidate"=>"Convalida registrazione utente",
 			"userInscriptionValidateTooltip"=>"Convalida la registrazione dell'utente sul sito",
 			"userInscriptionSelectValidate"=>"Convalida registrazioni",
@@ -396,20 +398,19 @@ class Trad extends Txt
 
 			////	Messenger / Visio
 			"MESSENGER_MODULE_NAME"=>"Messaggistica",
-			"MESSENGER_MODULE_DESCRIPTION"=>"Chatta o avvia una videoconferenza con le persone connesse allo spazio",
-			"MESSENGER_messengerTitle"=>"Messaggistica : fare clic sul nome di una persona per chattare o avviare una videoconferenza",
-			"MESSENGER_messengerMultiUsers"=>"Chatta con altri selezionando i miei interlocutori nel riquadro di destra",
-			"MESSENGER_connected"=>"Online",
-			"MESSENGER_nobody"=>"Al momento sei l'unica persona connessa allo spazio",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chatta o avvia una videoconferenza con persone online",
+			"MESSENGER_messengerMultiUsers"=>"Chatta con più persone sul sistema di messaggistica (riquadro a sinistra per selezionare i destinatari)",
+			"MESSENGER_chatWithMulti"=>"Chatta con",
+			"MESSENGER_chatWith"=>"Chatta o avvia una videoconferenza con",
 			"MESSENGER_messageFrom"=>"Messaggio da",
-			"MESSENGER_messageTo"=>"Inviato a",
-			"MESSENGER_chatWith"=>"Chatta con",
-			"MESSENGER_addMessageToSelection"=>"Il mio messaggio (persone selezionate)",
-			"MESSENGER_addMessageTo"=>"Il mio messaggio a",
-			"MESSENGER_addMessageNotif"=>"Grazie per aver specificato un messaggio",
-			"MESSENGER_visioProposeTo"=>"Proponi una videochiamata a",
-			"MESSENGER_visioProposeToSelection"=>"Proponi una videochiamata alle persone selezionate",
-			"MESSENGER_visioProposeToUsers"=>"Fare clic qui per avviare la videochiamata con",
+			"MESSENGER_messageSentTo"=>"inviato a",
+			"MESSENGER_messageToSelected"=>"Messaggio alle persone selezionate",
+			"MESSENGER_messageTo"=>"Messaggio a",
+			"MESSENGER_addMessageNotif"=>"Specifica un messaggio",
+			"MESSENGER_visioProposeTo"=>"Proponi una videoconferenza a",
+			"MESSENGER_visioProposeToSelection"=>"Proponi una videoconferenza alle persone selezionate",
+			"MESSENGER_visioProposeToUsers"=>"Clicca qui per avviare la videoconferenza tra",
+			"MESSENGER_nobody"=>"Nessun altro utente è attualmente connesso",
 			
 			////	Lancer une Visio
 			"VISIO_urlAdd"=>"Aggiungi una videoconferenza",
@@ -419,7 +420,7 @@ class Trad extends Txt
 			"VISIO_launch"=>"Avvia la videoconferenza",
 			"VISIO_launchJitsi"=>"Avviare la videoconferenza <br>con l'applicazione Jitsi",
 			"VISIO_launchFromEvent"=>"Avvia la videoconferenza dell'evento",
-			"VISIO_launchTooltip"=>"Ricordati di consentire l'accesso alla tua webcam e al tuo microfono!",
+			"VISIO_launchTooltip"=>"Ricordati di consentire l'accesso alla tua webcam e al tuo microfono",
 			"VISIO_launchTooltip2"=>"Problemi con la fotocamera o il microfono durante la tua videoconferenza? Segui la documentazione <img src='app/img/pdf.png'>",
 			"VISIO_launchServerTooltip"=>"Scegli il server secondario se il server primario non funziona correttamente:<br>Importante: i tuoi contatti devono selezionare il tuo stesso server.",
 			"VISIO_launchServerMain"=>"Server video principale",
@@ -838,16 +839,15 @@ class Trad extends Txt
 			"CALENDAR_evtProposeDecline"=>"Rifiuta la proposta",
 			"CALENDAR_evtProposeDeclined"=>"La proposta è stata rifiutata",
 			"CALENDAR_evtProposeDeclinedMail"=>"La proposta di evento è stata rifiutata",
-			"CALENDAR_deleteEvtCal"=>"Cancellare solo per questo calendario?",
-			"CALENDAR_deleteEvtCals"=>"Eliminare per tutti i calendari?",
-			"CALENDAR_deleteEvtDate"=>"Cancellare solo per questa data?",
+			"CALENDAR_evtDelete"=>"Cancellare evento",
+			"CALENDAR_evtDeleteCal"=>"Rimuovi l'evento da questo calendario",
+			"CALENDAR_evtDeleteDate"=>"Rimuovi l'evento in questa data",
 			"CALENDAR_evtPrivate"=>"Evento privato",
 			"CALENDAR_evtAutor"=>"Eventi che ho creato",
 			"CALENDAR_evtAutorInfo"=>"Mostra solo gli eventi che ho creato",
 			"CALENDAR_evtChangeTime"=>"Sposta a",
 			"CALENDAR_evtChangeTimeConfirmed"=>"L'evento è stato spostato correttamente",
 			"CALENDAR_noEvt"=>"Nessun evento",
-			"CALENDAR_calendarsPercentBusy"=>"Calendari occupati",
 			"CALENDAR_noCalendarDisplayed"=>"Nessun calendario visualizzato",
 			// Evenement
 			"CALENDAR_importanceNormal"=>"Importanza normale",
@@ -861,22 +861,17 @@ class Trad extends Txt
 			"CALENDAR_noPeriodicity"=>"Solo una volta",
 			"CALENDAR_period_weekDay"=>"Ogni settimana",
 			"CALENDAR_period_month"=>"Ogni mese",
-			"CALENDAR_period_monthBis"=>"Ogni --DATE-- del mese",
+			"CALENDAR_period_monthDetail"=>"Ogni --DATE-- del mese",
 			"CALENDAR_period_year"=>"Ogni anno",
-			"CALENDAR_period_yearBis"=>"Ogni --DATE-- dell'anno",
+			"CALENDAR_period_yearDetail"=>"Ogni --DATE-- dell'anno",
 			"CALENDAR_periodDateExceptions"=>"Eccezione di ripetizione",
 			"CALENDAR_periodDateEnd"=>"Fine di ripetizione",
 			"CALENDAR_calendarAffectations"=>"Assegnazione ai seguenti calendari",
 			"CALENDAR_addEvt"=>"Aggiungi un evento",
 			"CALENDAR_addEvtTooltip"=>"Aggiungi un evento",
-			"CALENDAR_addEvtTooltipBis"=>"Aggiungi l'evento al calendario",
-			"CALENDAR_proposeEvtTooltip"=>"Proporre un evento all'amministratore del calendario",
-			"CALENDAR_proposeEvtTooltipBis"=>"Proporre l'evento all'amministratore/proprietario del calendario",
-			"CALENDAR_proposeEvtTooltipBis2"=>"Proporre l'evento all'amministratore/proprietario del calendario: il calendario è accessibile solo in lettura",
-			"CALENDAR_inputProposed"=>"L'evento verrà proposto all'amministratore del calendario",
+			"CALENDAR_addEvtTooltip2"=>"Aggiungi l'evento al calendario",
+			"CALENDAR_proposeEvtTooltip"=>"Proporre un evento per questo calendario (leggibile):<br> Quindi convalidato dal proprietario del calendario",
 			"CALENDAR_verifCalNb"=>"Grazie per aver selezionato un calendario",
-			"CALENDAR_noModifTooltip"=>"Modifica vietata perché non si ha accesso alla scrittura in questo calendario",
-			"CALENDAR_editLimit"=>"Non sei l'autore dell'evento: puoi solo gestire le assegnazioni dei calendari",
 			"CALENDAR_busyTimeSlot"=>"Lo slot è già occupato in questo calendario:",
 			"CALENDAR_timeSlot"=>"Intervallo di tempo della visualizzazione della   settimana  ",
 			"CALENDAR_propositionNotif"=>"Notifica via e-mail di ogni proposta di evento",

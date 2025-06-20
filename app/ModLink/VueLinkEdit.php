@@ -1,8 +1,3 @@
-<script>
-////	Resize
-lightboxWidth(700);
-</script>
-
 <style>
 input[name='adress']	{width:100%;}
 </style>
@@ -17,6 +12,6 @@ input[name='adress']	{width:100%;}
 	<br><br>
 	<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

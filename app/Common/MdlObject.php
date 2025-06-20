@@ -16,9 +16,8 @@
  */
 class MdlObject
 {
-	//Utilise les classes des menus ("trait")
+	//Classes des menus : "trait"
 	use MdlObjectMenu;
-	use MdlObjectMisc;
 
 	//Propriétés de base de l'objet
 	const moduleName=null;
@@ -32,12 +31,12 @@ class MdlObject
 	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier
 	protected static $_hasAccessRight=null;		//Pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
 	//Propriétés d'affichage et d'édition
-	const isSelectable=false;					//Menu de sélection multiple d'objet
-	const hasShortcut=false;					//Création de raccourcis sur l'objet
-	const hasNotifMail=false;					//Envoyer des notifs d'édition par mail
-	const hasAttachedFiles=false;				//Ajouter des pièces jointes
-	const hasUsersLike=false;					//Like sur l'objet
-	const hasUsersComment=false;				//Ajout de commentaires sur l'objet
+	const isSelectable=false;					//Sélection multiple d'objet
+	const hasShortcut=false;					//Raccourcis vers l'objet
+	const hasNotifMail=false;					//Notifs d'édition par mail
+	const hasAttachedFiles=false;				//Fichiers joints de l'objet
+	const hasUsersLike=false;					//Likes sur l'objet
+	const hasUsersComment=false;				//Commentaires sur l'objet
 	const descriptionEditor=false;				//Editeur html dans la description
 	public static $displayModes=[];				//Type d'affichage : ligne/block le plus souvent
 	public static $requiredFields=[];			//Champs obligatoires pour valider l'édition d'un objet
@@ -46,15 +45,15 @@ class MdlObject
 	//Valeurs mises en cache
 	private $_accessRight=null;
 	private $_affectations=null;
-	private $_attachedFiles=null;
-	private $_attachedFilesMenu=null;
+	private $_attachedFileList=null;
+	private $_attachedFileMenu=null;
 	private $_usersComment=null;
 	private $_usersLike=null;
 	protected static $_sqlTargets=null;
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * CONSTRUCTEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		////	Init l'id
@@ -73,115 +72,113 @@ class MdlObject
 		$this->_typeId=static::objectType."-".$this->_id;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RENVOIE LA VALEUR D'UNE PROPRIÉTÉ UNIQUEMENT SI ELLE EXISTE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	function __get($propertyName)
 	{
 		if(isset($this->$propertyName))  {return $this->$propertyName;}
 	}
 
-	/*******************************************************************************************
-	 * VÉRIFIE SI UN OBJET EST DÉJÀ CRÉÉ ET POSSÈDE UN _ID  (L'OJECT PEUT NE PAS ENCORE EXISTER)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : OBJET DÉJÀ CRÉÉ, AVEC UN _ID
+	 ********************************************************************************************************/
 	public static function isObject($curObj=null)
 	{
 		return (!empty($curObj) && is_object($curObj) && !empty($curObj->_id));
 	}
 
-	/*******************************************************************************************
-	 * VERIF : OBJECT EN COURS DE CRÉATION -> _id à 0 
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : OBJECT EN COURS DE CRÉATION
+	 ********************************************************************************************************/
 	public function isNew(){
 		return empty($this->_id);
 	}
 
-	/******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF : OBJET ENREGISTRÉ À L'INSTANT EN BDD  (cf. mails de notif)
-	*******************************************************************************************/
+	*********************************************************************************************************/
 	public function isNewRecord(){
 		return ($this->isNew()==false && time()-strtotime($this->dateCrea)<5);
 	}
 
-	/******************************************************************************************
-	 * VERIF : OBJET RÉCENT CRÉÉ AUJOURD'HUI OU DEPUIS MA PRÉCÉDENTE CONNEXION
-	*******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : OBJET RÉCENT CRÉÉ AUJOURD'HUI / DEPUIS MA PRÉCÉDENTE CONNEXION
+	*********************************************************************************************************/
 	public function isRecent(){
 		return (!empty($this->dateCrea)  &&  (substr($this->dateCrea,0,10)==date('Y-m-d') || strtotime($this->dateCrea) > Ctrl::$curUser->previousConnection));
 	}
 
-	/*******************************************************************************************
-	 * VERIF : OBJET "CONTAINER" QUI CONTIENT DU "CONTENT" ?  (calendar/forumSubjet/FOLDERS)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : OBJET "CONTAINER" AVEC DU "CONTENT"  (FOLDERS/calendar/forumSubjet/Calendar)
+	 ********************************************************************************************************/
 	public static function isContainer(){
 		return (static::MdlObjectContent!==null);
 	}
 
-	/****************************************************************************************************************************
-	 * VERIF : OBJET "CONTENT" DANS UN "CONTAINER" ?  (file/contact/task/link/forumMessage/calendarEvent ...mais pas les FOLDERS!)
-	 ****************************************************************************************************************************/
-	public static function isContainerContent(){
+	/*****************************************************************************************************
+	 * VERIF : OBJET "CONTENT" DANS UN "CONTAINER"  (file/contact/task/link/forumMessage/CalendarEvent)
+	 *****************************************************************************************************/
+	public static function isInContainer(){
 		return (static::MdlObjectContainer!==null);
 	}
 
-	/*******************************************************************************************
-	 * VERIF : OBJET DANS UNE ARBORESCENCE ?  (file/contact/task/link/FOLDERS)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : OBJET DANS UNE ARBORESCENCE  (file/contact/task/link/FOLDERS)
+	 ********************************************************************************************************/
 	public static function isInArbo(){
 		return (static::isFolderContent==true || static::isFolder==true);
 	}
 
-	/*******************************************************************************************
-	 * VERIF : L'OBJET EST UN DOSSIER RACINE ?
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : L'OBJET EST UN DOSSIER RACINE
+	 ********************************************************************************************************/
 	public function isRootFolder(){
 		return (static::isFolder==true && $this->_id==1);
 	}
 
-	/*******************************************************************************************
-	 * VERIF : L'OBJET EST UN "CONTENT" DANS LE DOSSIER RACINE, AVEC SES PROPRES DROITS D'ACCÈS ?
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : L'OBJET EST UN "CONTENT" DANS LE DOSSIER RACINE, AVEC SES PROPRES DROITS D'ACCÈS
+	 ********************************************************************************************************/
 	public function isRootFolderContent(){
 		return (static::isFolderContent==true && $this->_idContainer==1);
 	}
 
-	/*******************************************************************************************
-	 * VERIF : L'OBJET POSSÈDE SES PROPRES DROITS D'ACCÈS ?
-	 * L'objet possède explicitement des droits d'accès  ||  L'objet est un dossier  ||  L'objet se trouve dans le dossier racine (file/contact/link/task)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : L'OBJET POSSÈDE SES PROPRES DROITS D'ACCÈS
+	 ********************************************************************************************************/
 	public function hasAccessRight(){
 		return (static::$_hasAccessRight==true || $this->isRootFolderContent());
 	}
 
-	/*******************************************************************************************
-	 * VERIF : OBJET "CONTENT" DONT LE DROIT D'ACCÈS DÉPEND D'UN "CONTAINER" ?
-	 * Donc pas un objet d'un dossier racine, ni un "calendarEvent" (car affectés à plusieurs agendas)
-	 *******************************************************************************************/
-	public function accessRightFromContainer(){
-		return (static::isContainerContent() && $this->isRootFolderContent()==false && static::objectType!="calendarEvent");
+	/********************************************************************************************************
+	 * VERIF : DROITS D'ACCES DE L'OBJET DEPEND D'UN "CONTAINER" (SAUF ROOT FOLDER)
+	 ********************************************************************************************************/
+	public function hasContainerAccessRight(){
+		return (static::isInContainer() && $this->isRootFolderContent()==false);
 	}
 
-	/*******************************************************************************************
-	 * VERIF : L'USER COURANT EST L'AUTEUR DE L'OBJET ?
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VERIF : USER COURANT AUTEUR DE L'OBJET
+	 ********************************************************************************************************/
 	public function isAutor(){
 		return (Ctrl::$curUser->isUser() && $this->_idUser==Ctrl::$curUser->_id);
 	}
 
-	/***************************************************************************************************************************
-	 * RECUPÈRE L'OBJET "CONTENEUR" DE L'OBJET COURANT  (file, contact, task, link, subjectMessage ..et FOLDERS)
-	 **************************************************************************************************************************/
+	/********************************************************************************************************
+	 * OBJET "CONTENEUR" DE L'OBJET COURANT  (file/contact/task/link/FOLDERS)
+	 ********************************************************************************************************/
 	public function containerObj()
 	{
 		if(!empty($this->_idContainer)){
-			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;	//Modèle du dossier courant  ||  Modèle de l'objet parent
+			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;//Dossier courant || Objet parent
 			return Ctrl::getObj($MdlObjectContainer::objectType, $this->_idContainer);
 		}
 	}
 
-	/***************************************************************************************************************************
-	 * RECUPÈRE L'OBJET "CATEGORY" DE L'OBJET COURANT  (theme du forum / categorie des événements / status des tâches / etc)
-	 **************************************************************************************************************************/
+	/********************************************************************************************************
+	 * OBJET "CATEGORY" DE L'OBJET COURANT  (theme du forum / categorie d'evts / status des tâches..)
+	 ********************************************************************************************************/
 	public function categoryObj()
 	{
 		if(static::MdlCategory!==null){
@@ -191,21 +188,20 @@ class MdlObject
 		}
 	}
 
-	/******************************************************************************************
+	/********************************************************************************************************
 	 * RECUPÈRE LE LABEL DE LA CATEGORIE L'OBJET
-	 ******************************************************************************************/
+	 ********************************************************************************************************/
 	public function categoryLabel()
 	{
 		$categoryObj=$this->categoryObj();
 		if(is_object($categoryObj))  {return '<span class="categoryLabel">'.$categoryObj->getLabel().'</span>';}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE LES AFFECTATIONS ET DROITS D'ACCES DE L'OBJET (Espaces/groupes/users)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getAffectations()
 	{
-		////	Init les affectations en cache
 		if($this->_affectations===null){
 			$this->_affectations=$affects=[];
 			////	Objet existant : récup les affectations en Bdd
@@ -235,9 +231,9 @@ class MdlObject
 		return $this->_affectations;
 	}
 
-	/*******************************************************************************************
+	/*****************************************************************************************************************************************
 	 * EDITE LES AFFECTATIONS ET DROITS D'ACCÈS DE L'OBJET (cf."editMenuSubmit()"). Par défaut : accès en lecture à l'espace courant
-	 *******************************************************************************************/
+	 *****************************************************************************************************************************************/
 	public function setAffectations($objectRightSpecific=null)
 	{
 		////	Object indépendant  &&  "objectRight" spécifié OU droit d'accès spécifiques
@@ -260,7 +256,7 @@ class MdlObject
 	}
 
 	/*****************************************************************************************************************************************
-	 * RÉCUPÈRE LE DROIT D'ACCÈS DE L'USER COURANT SUR L'OBJET
+	 * RÉCUPÈRE LE DROIT D'ACCÈS POUR L'USER COURANT SUR L'OBJET
 	 *		3	[total]					objet indépendant *	-> modif/suppression
 	 *									objet conteneur **	-> modif/suppression du conteneur + modif/suppression de tout le contenu ***
 	 *		2	[ecriture]				objet indépendant *	-> modif/suppression
@@ -269,112 +265,99 @@ class MdlObject
 	 *									objet conteneur **	-> lecture du conteneur + modif/suppression du contenu créé par l'user courant
 	 *		1	[lecture]				objet indépendant *	-> lecture
 	 *									objet conteneur **	-> lecture du conteneur
-	 *		*	objet indépendant : 		actualités et objets du dossier racine (fichiers, taches, etc)
+	 *		*	objet indépendant : 		actualités et objets du dossier racine (fichiers, taches..)
 	 *		**	objet conteneur : 			dossiers, agendas, sujets du forum
-	 *		***	contenu d'un conteneur :	fichiers, taches, message du forum, etc qui héritent des droits d'accès du dossier conteneur
+	 *		***	contenu d'un conteneur :	fichiers, taches, message du forum.. qui héritent des droits d'accès du conteneur
 	******************************************************************************************************************************************/
 	public function accessRight()
 	{
-		//Mise en cache
-		if($this->_accessRight===null)
-		{
-			//Init
-			$this->_accessRight=0;
-			////	DROIT D'ACCES TOTAL  =>  Admin général  ||  Auteur de l'objet  ||  Nouvel objet
-			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())  {$this->_accessRight=3;}
-			////	DROIT D'ACCES EN LECTURE POUR UN ACCES EXTERNE
-			elseif($this->md5IdControl())  {$this->_accessRight=1;}
-			////	DROIT D'ACCES EN FONCTION DU CONTENEUR PARENT
-			elseif($this->accessRightFromContainer())  {$this->_accessRight=$this->containerObj()->accessRight();}
-			////	DROIT D'ACCES EN FONCTION DES AFFECTATIONS (cf. table "ap_objectTarget")
-			elseif($this->hasAccessRight())
-			{
-				//Init la requete des droits d'acces
-				$sqlAccessRight="objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND _idSpace=".Ctrl::$curSpace->_id;
-				//Acces total si "isSpaceAdmin()" et objet affecté à l'espace (sauf pour les agendas perso : pas de privilège)
-				if(Ctrl::$curUser->isSpaceAdmin() && Db::getVal("SELECT count(*) FROM ap_objectTarget WHERE ".$sqlAccessRight)>0 && static::objectType!="calendar" && $this->type!="user")  {$this->_accessRight=3;}
-				//Acces en fonction des affectations à l'user => recupere le droit le plus important !
+		if($this->_accessRight===null){
+			$this->_accessRight=0;																															//INIT
+			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//ACCES TOTAL : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
+			elseif($this->md5IdControl())														{$this->_accessRight=1;}									//ACCES EN LECTURE : VUE EXTERNE DE L'OBJET
+			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();}	//ACCES EN FONCTION DU CONTENEUR PARENT
+			elseif($this->hasAccessRight()){																												//ACCES EN FONCTION DES AFFECTATIONS EN BDD
+				$isPersonalCalendar=(static::objectType=="calendar" && $this->type=="user");
+				$sqlSelect="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;
+				//// ACCES TOTAL :  admin de l'espace et objet affecté à l'espace (sauf agendas persos : pas de privilège admin)
+				if(Ctrl::$curUser->isSpaceAdmin()  &&  Db::getVal("SELECT COUNT(*) ".$sqlSelect)>0  &&  $isPersonalCalendar==false){
+					$this->_accessRight=3;
+				}
+				//// ACCES EN FONCTION DES AFFECTATIONS EN BDD
 				else{
-					$this->_accessRight=Db::getVal("SELECT max(accessRight) FROM ap_objectTarget WHERE ".$sqlAccessRight." AND target IN (".static::sqlAffectations().")");
-					if(Ctrl::$curUser->isUser()==false && $this->_accessRight>1)  {$this->_accessRight=1;}//Guests : droit de lecture au maximum !
+					$this->_accessRight=Db::getVal("SELECT MAX(accessRight) ".$sqlSelect." AND target IN (".static::sqlAffectations().")");	//Droit le + important pour l'user courant
+					if(Ctrl::$curUser->isUser()==false  &&  $this->_accessRight>1)  {$this->_accessRight=1;}								//Droit en lecture pour les Guests
 				}
 			}
 		}
-		//Renvoie toujours un résultat "float" (cf. droit "1.5" en "ecriture limité"), et même pour les integers 
+		//Renvoie le résultat "float" (cf. droit "1.5" en "ecriture limité")
 		return (float)$this->_accessRight;
 	}
 
-	/*******************************************************************************************
-	 * DROIT DE CRÉER LE NOUVEL OBJET POUR L'USER COURANT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * DROIT POUR L'USER COURANT DE CRÉER UN NOUVEL OBJET
+	 ********************************************************************************************************/
 	public function createRight()
 	{
 		if($this->_id==0){
-			if($this->hasAccessRight() || static::MdlObjectContainer==null)	{return true;}										//Objet avec ses propres droits d'accès OU Objet indépendant (type "user", "space" ou autre)
-			elseif($this->accessRightFromContainer())						{return $this->containerObj()->addContentRight();}	//Fonction du "addContentRight()" du parent (sauf "calendarEvent" car affectés à plusieurs agendas)
+			if($this->hasAccessRight() || static::isInContainer()==false)	{return true;}										//Obj avec ses propres droits d'accès || Obj indépendant avec un accès spécifique (user/space)
+			elseif($this->hasContainerAccessRight())						{return $this->containerObj()->addContentRight();}	//Droits en fonction du "addContentRight()" du parent
 		}
-		return false;//Retourne false dans tous les autres cas
+		return false;//false si l'objet existe dejà
 	}
 
-	/*******************************************************************************************
-	 * DROIT DE LECTURE SUR L'OBJET POUR L'USER COURANT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * DROIT POUR L'USER COURANT D'ACCEDER EN LECTURE A L'OBJET
+	 ********************************************************************************************************/
 	public function readRight()
 	{
 		return ($this->accessRight()>0);
 	}
 
-	/*******************************************************************************************
-	 * CONTENEUR : DROIT D'AJOUTER DU CONTENU AU CONTENEUR POUR L'USER COURANT  (accessRight >= 1.5)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * CONTENEUR : DROIT POUR L'USER COURANT D'AJOUTER DU CONTENU AU CONTENEUR
+	 ********************************************************************************************************/
 	public function addContentRight()
 	{
 		return (static::isContainer() && $this->accessRight()>1);
 	}
 
-	/*******************************************************************************************
-	 * CONTENEUR : DROIT D'ÉDITER TOUT LE CONTENU DU CONTENEUR POUR L'USER COURANT  (accessRight >= 2)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * CONTENEUR : DROIT POUR L'USER COURANT D'ÉDITER TOUT LE CONTENU DU CONTENEUR
+	 ********************************************************************************************************/
 	public function editContentRight()
 	{
 		return (static::isContainer() && $this->accessRight()>=2);
 	}
 
-	/*******************************************************************************************
-	 * DROIT D'ÉDITER L'OBJET POUR L'USER COURANT  (accessRight==3 pour les conteneurs : proprio ou admins  ||  accessRight==2 pour les autres objets)
-	****************************************************************************************** */
+	/********************************************************************************************************
+	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET : accessRight==3 POUR LES CONTENEURS
+	********************************************************************************************/
 	public function editRight()
 	{
-		return ($this->accessRight()==3  ||  (static::isContainer()==false && $this->accessRight()==2));
+		return ($this->accessRight()==3  ||  ($this->accessRight()==2 && static::isContainer()==false));
 	}
 
-	/*******************************************************************************************
-	 * DROIT DE SUPPRIMER L'OBJET POUR L'USER COURANT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * DROIT POUR L'USER COURANT DE SUPPRIMER L'OBJET : METHODE SURCHARGÉE
+	 ********************************************************************************************************/
 	public function deleteRight()
 	{
 		return ($this->editRight());
 	}
 
-	/*******************************************************************************************
-	 * DROIT COMPLET SUR L'OBJET POUR L'USER COURANT
-	 *******************************************************************************************/
-	public function fullRight()
-	{
-		return ($this->accessRight()==3);
-	}
-
-	/*******************************************************************************************
-	 * DROIT DE LECTURE DE L'OBJET POUR L'USER COURANT (ERREUR S'IL N'EXISTE PLUS)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * CONTROLE LE DROIT POUR L'USER COURANT DE LIRE L'OBJET
+	 ********************************************************************************************************/
 	public function readControl()
 	{
+		//Controle le droit d'accès en lecture && Controle si l'objet existe
 		if($this->accessRight()==0 || empty($this->_id))  {Ctrl::noAccessExit();}
 	}
 
-	/*******************************************************************************************
-	 * CONTROLE LE DROIT D'EDITER L'OBJET POUR L'USER COURANT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * CONTROLE LE DROIT POUR L'USER COURANT D'EDITER L'OBJET
+	 ********************************************************************************************************/
 	public function editControl()
 	{
 		//Controle le droit d'accès en écriture
@@ -384,9 +367,9 @@ class MdlObject
 		if($this->isNew()==false && !empty($_idUserEditSameObj))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$_idUserEditSameObj)->getLabel()." !");}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LABEL DE L'OBJET (Nom/Titre/etc : cf. "$requiredFields" des objets)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getLabel()
 	{
 		//Label principal
@@ -399,9 +382,9 @@ class MdlObject
 		return Txt::reduce($tmpLabel,50);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * URL D'ACCÈS À L'OBJET  :  $display => "vue" / "edit" / "delete" / "default"
-	********************************************************************************************/
+	*********************************************************************************************************/
 	public function getUrl($display=null)
 	{
 		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe plus ou pas encore
@@ -411,96 +394,91 @@ class MdlObject
 			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}//Url de suppression via "actionDelete()"
 			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=EditFolder&typeId=".$this->_typeId;}						//Edite un dossier via "actionEditFolder()"
 			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}		//Edite un objet lambda
-			elseif(static::isContainerContent())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId;}							//Affichage d'un objet dans son "Container" (file, task, etc. Surchargé pour "calendarEvent")
+			elseif(static::isInContainer())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId;}							//Affichage d'un objet dans son "Container" (file, task, etc. Surchargé pour "calendarEvent")
 			else												{return $urlCtrl."&typeId=".$this->_typeId;}											//Affichage par défaut (Folder, News, etc)
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LIEN POUR AFFICHER LA VUE DE L'OBJET
-	********************************************************************************************/
+	*********************************************************************************************************/
 	public function openVue()
 	{
 		return "lightboxOpen('".$this->getUrl("vue")."');";
 	}
 
-	/*****************************************************************************************************************
+	/********************************************************************************************************
 	 * URL D'ACCÈS À L'OBJET
 	 * Accès direct à l'élément  ||  Accès depuis une notifs mail (cf. "Ctrl::userConnectionSpaceSelection()")
-	 *****************************************************************************************************************/
+	 ********************************************************************************************************/
 	public function getUrlExternal()
 	{
 		//Depuis la page de connexion : Cible l'espace courant > puis l'url encodé de l'objet (module + typeId de l'objet)
 		return Req::getCurUrl()."/index.php?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&objUrl=".urlencode($this->getUrl());
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * URL D'EDITION D'UN NOUVEL OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getUrlNew()
 	{
-		$url=(static::isFolder==true)  ?  "?ctrl=object&action=EditFolder"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";//Nouveau dossier ou nouvel objet
-		if(!empty(Ctrl::$curContainer))  {$url.="&_idContainer=".Ctrl::$curContainer->_id;}//Ajoute l'id du container?
+		$url=(static::isFolder==true)  ?  "?ctrl=object&action=EditFolder"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";	//Nouveau dossier / Nouvel objet
+		if(!empty(Ctrl::$curContainer))  {$url.="&_idContainer=".Ctrl::$curContainer->_id;}															//Ajoute l'id du container
 		return $url."&typeId=".static::objectType."-0";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * IDENTIFIANT "md5()" DE L'OBJET POUR UN ACCÈS EXTERNE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function md5Id()
 	{
 		return md5($this->_id.$this->dateCrea.$this->_idUser);
 	}
 	
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * CONTROLE L'IDENTIFIANT MD5 PASSÉ EN PARAMETRE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function md5IdControl()
 	{
 		return (Req::isParam("md5Id") && $this->md5Id()==Req::param("md5Id"));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SUPPRESSION D'UN OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
-		if($this->deleteRight())
-		{
-			//Supprime les fichiers joints (s'il y en a)
-			foreach($this->attachedFileList() as $tmpFile)  {$this->attachedFileDelete($tmpFile);}
-			//Init la sélection de l'objet dans les tables
-			$sqlSelectObject="WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id;
-			//Supprime les éventuels "usersComment" & "usersLike"
-			if(static::hasUsersComment)	{Db::query("DELETE FROM ap_objectComment ".$sqlSelectObject);}
-			if(static::hasUsersLike)	{Db::query("DELETE FROM ap_objectLike ".$sqlSelectObject);}
-			//Ajoute le log de suppression, mais pas en dernier!
-			Ctrl::addLog("delete",$this);
-			//Supprime les droits d'accès (s'il y en a)
-			Db::query("DELETE FROM ap_objectTarget ".$sqlSelectObject);
-			//Supprime enfin l'objet lui-même !
-			Db::query("DELETE FROM ".static::dbTable." WHERE _id=".$this->_id);
+		if($this->deleteRight()){																	//Controle d'accès
+			$sqlSelect="WHERE objectType='".static::objectType."' AND _idObject=".$this->_id;		//Sélection SQL de l'objet
+			if(static::hasUsersComment)	{Db::query("DELETE FROM ap_objectComment ".$sqlSelect);}	//Supprime les "commentaires"
+			if(static::hasUsersLike)	{Db::query("DELETE FROM ap_objectLike ".$sqlSelect);}		//Supprime les "likes"
+			foreach($this->attachedFileList() as $tmpFile)  {$this->attachedFileDelete($tmpFile);}	//Supprime les fichiers joints
+			Ctrl::addLog("delete",$this);															//Ajoute le log de suppression
+			Db::query("DELETE FROM ap_objectTarget ".$sqlSelect);									//Supprime les droits d'accès
+			Db::query("DELETE FROM ".static::dbTable." WHERE _id=".$this->_id);						//Supprime ENFIN l'objet !
 		}
 	}
 
-	/*******************************************************************************************
-	 * DÉPLACE UN OBJET (DOSSIER OU CONTENU) DANS UN AUTRE DOSSIER
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * DÉPLACE UN OBJET DANS UN AUTRE DOSSIER (DOSSIER OU CONTENU D'UN DOSSIER)
+	 ********************************************************************************************************/
 	public function folderMove($newFolderId)
 	{
 		////	Ancien et nouveau dossier
 		$oldFolder=$this->containerObj();
 		$newFolder=Ctrl::getObj($oldFolder::objectType, $newFolderId);
-		////	Objet pas dans une arbo? Droit d'accès pas ok? || dossier de destination inaccessible sur le disque? || Déplace un dossier à l'interieur de lui même?
-		if(static::isInArbo()==false || $this->accessRight()<2 || $newFolder->accessRight()<2 || (static::objectType=="fileFolder" && is_dir($newFolder->folderPath("real"))==false))	{Ctrl::notify(Txt::trad("inaccessibleElem")." : ".$this->name.$this->title);}
-		elseif(static::isFolder===true && $this->isInCurrentTree($newFolder))																											{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
-		else
-		{
-			////	Change le dossier conteneur
+		////	Objet dans une arbo & droit d'accès ok ?
+		if(static::isInArbo()==false || $this->accessRight()<2 || $newFolder->accessRight()<2 || (static::objectType=="fileFolder" && is_dir($newFolder->folderPath("real"))==false))
+			{Ctrl::notify(Txt::trad("inaccessibleElem")." : ".$this->name.$this->title);}
+		////	Dossier de destination accessible & pas à l'interieur de lui même ?
+		elseif(static::isFolder===true && $this->isInCurrentTree($newFolder))
+			{Ctrl::notify(Txt::trad("NOTIF_folderMove")." : ".$this->name);}
+		////	Déplacement du dossier Ok
+		else{
+			////	Change le dossier parent en BDD
 			Db::query("UPDATE ".static::dbTable." SET _idContainer=".(int)$newFolderId." WHERE _id=".$this->_id);
-			//Contenu de dossier : change les droits d'accès?
-			if(static::isFolder==false)
-			{
+			////	Update les droits d'accès
+			if(static::isFolder==false){
 				//Réinitialise les droits d'accès
 				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id);
 				//Déplace à la racine : récupère les droits d'accès de l'ancien dossier conteneur
@@ -519,7 +497,7 @@ class MdlObject
 					rename($oldFolder->folderPath("real").$tmpFileVersion["realName"], $newFolder->folderPath("real").$tmpFileVersion["realName"]);
 				}
 				//Déplace la vignette
-				if($this->thumbExist()){
+				if($this->hasTumb()){
 					rename($oldFolder->folderPath("real").$this->thumbName(), $newFolder->folderPath("real").$this->thumbName());
 				}
 			}
@@ -533,52 +511,52 @@ class MdlObject
 		}
 	}
 
-	/*******************************************************************************************
-	 * LISTE DES USERS AFFECTÉS À L'OBJET
-	 *******************************************************************************************/
-	public function affectedUserIds($onlyWriteAccess=false)
+	/********************************************************************************************************
+	 * LISTE DES USERS AFFECTÉS À L'OBJET ($accessWrite==true pour filtrer uniquement les accès en écriture )
+	 ********************************************************************************************************/
+	public function affectedUserIds($accessWrite=false)
 	{
 		//Init les users et l'objet de référence des affectations (ex: dossier parent d'un fichier)
 		$userIds=[];
 		$refObject=($this->hasAccessRight())  ?  $this :  $this->containerObj();
 		//Récupère les users de chaque affectation
 		foreach($refObject->getAffectations() as $affect){
-			if($onlyWriteAccess==true && $affect["accessRight"]<2)	{continue;}																							//Uniquement accès en écriture ? (cf. agendas perso)
-			elseif($affect["targetType"]=="spaceUsers")				{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["targetId"])->getUsers("idsTab"));}	//Ajoute tous les users de l'espace
-			elseif($affect["targetType"]=="group")					{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->userIds);}			//Ajoute les users du groupe
-			elseif($affect["targetType"]=="user")					{$userIds[]=$affect["targetId"];}																	//Ajoute l'user
+			if($accessWrite==true && $affect["accessRight"]<2)	{continue;}																						//Uniquement accès en écriture ? (cf. agendas perso)
+			elseif($affect["targetType"]=="spaceUsers")			{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["targetId"])->getUsers("idsTab"));}//Ajoute tous les users de l'espace
+			elseif($affect["targetType"]=="group")				{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->userIds);}		//Ajoute les users du groupe
+			elseif($affect["targetType"]=="user")				{$userIds[]=$affect["targetId"];}																//Ajoute l'user
 		}
 		//Retourne la liste des users
 		return array_unique($userIds);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJOUT/MODIF D'OBJET
-	 *******************************************************************************************/
-	public function createUpdate($sqlFields)
+	 ********************************************************************************************************/
+	public function editRecord($sqlFields)
 	{
 		if($this->editRight()){
-			$sqlFields=trim(trim($sqlFields),",");																						//Enleve les espaces PUIS les virgules
-			if(Req::isParam("guest"))			{$sqlFields.=", guest=".Db::param("guest").", guestMail=".Db::param("guestMail");}		//Auteur "guest"
-			if(Req::isParam("_idContainer"))	{$sqlFields.=", _idContainer=".Db::param("_idContainer");}								//"_idContainer" de l'objet
-			if(static::hasShortcut==true)		{$sqlFields.=", shortcut=".Db::param("shortcut");}										//"shortcut" sur l'objet
-			if(static::objectType!="agora"){																							//Objet lambda :
-				if($this->isNew())	{$sqlFields.=", dateCrea=".Db::dateNow().", _idUser=".Db::format(Ctrl::$curUser->_id);}				//Auteur/Date de création
-				else				{$sqlFields.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}		//Auteur/Date de modification
+			$sqlFields=trim(trim($sqlFields),",");																									//Init $sqlFields
+			if(Req::isParam("guest"))			{$sqlFields.=", guest=".Db::param("guest").", guestMail=".Db::param("guestMail");}					//Auteur "guest"
+			if(Req::isParam("_idContainer"))	{$sqlFields.=", _idContainer=".Db::param("_idContainer");}											//"_idContainer" de l'objet
+			if(static::hasShortcut==true)		{$sqlFields.=", shortcut=".Db::param("shortcut");}													//"shortcut" sur l'objet
+			if(static::objectType!="agora"){																										//Objet lambda :
+				if($this->isNew())					{$sqlFields.=", dateCrea=".Db::dateNow().", _idUser=".Db::format(Ctrl::$curUser->_id);}			//Auteur/Date de création
+				elseif(static::objectType!="mail")	{$sqlFields.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}	//Auteur/Date de modification
 			}
-			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlFields, true);}							//INSERT UN NOUVEL OBJET
-			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE _id=".$this->_id);   $_id=$this->_id;}	//UPDATE L'OBJET
-			$curObj=Ctrl::getObj(static::objectType, $_id);																				//Charge les nouvelles propriétés
-			$curObj->setAffectations();																									//Ajoute les droits d'accès
-			$curObj->attachedFileAdd();																									//Ajoute les fichiers joints
-			Ctrl::addLog(($curObj->isNewRecord()?"add":"modif"), $curObj);																//Ajoute aux Log
-			return Ctrl::getObj(static::objectType, $_id, true);																		//Renvoie l'objet avec update du cache
+			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlFields, true);}										//INSERT UN NOUVEL OBJET
+			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE _id=".$this->_id);   $_id=$this->_id;}				//UPDATE L'OBJET
+			$curObj=Ctrl::getObj(static::objectType, $_id, true);																					//Charge les nouvelles propriétés (avec update du cache)
+			$curObj->setAffectations();																												//Ajoute les droits d'accès
+			$curObj->attachedFileAdd();																												//Ajoute les fichiers joints
+			Ctrl::addLog(($curObj->isNewRecord()?"add":"modif"), $curObj);																			//Enregistre dans les Logs
+			return Ctrl::getObj(static::objectType, $_id, true);																					//Renvoie l'objet avec update du cache
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ENVOI UNE NOTIF PAR MAIL DE L'EDITION DE L'OBJET (cf. "menuEdit")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function sendMailNotif($messageSpecific=null, $addFiles=null, $addUserIds=null)
 	{
 		//Notification demandé par l'auteur de l'objet  OU  Destinataires passés en paramètres (ex: notif de nouveaux messages du forum)
@@ -611,21 +589,20 @@ class MdlObject
 			////	Envoi du message
 			if(!empty($mailUserIds))
 			{
-				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";										//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
-				if(Req::isParam("mailOptions"))  		{$options=array_merge($options,Req::param("mailOptions"));}		//Options sélectionnées par l'user
-				if(static::descriptionEditor==true)		{$message=$this->attachedFileImageCid($message);}				//Affiche si besoin les images en pièce jointe dans le corps du mail
-				///if(Req::isDevServer())  				{$message=str_replace($_SERVER['HTTP_HOST']."/omnispace","www.omnispace.fr",$message);}//Cf. "getUrlExternal()" en DEV
-				$attachedFiles=$this->attachedFileList();																//Fichiers joints de l'objet
-				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}							//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
-				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);								//Envoie l'email
+				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";									//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
+				if(Req::isParam("mailOptions"))  		{$options=array_merge($options,Req::param("mailOptions"));}	//Options sélectionnées par l'user
+				if(static::descriptionEditor==true)		{$message=$this->attachedFileImageCid($message);}			//Affiche si besoin les images en pièce jointe dans le corps du mail
+				$attachedFiles=$this->attachedFileList();															//Fichiers joints de l'objet
+				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}						//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
+				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);							//Envoie l'email
 			}
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC SQL : PREPARE LA SELECTION D'OBJETS EN FONCTION DE LEUR AFFECTATION
 	 * "targets" (exple) : "spaceUsers" / "U1" / "G1"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	protected static function sqlAffectations()
 	{
 		if(static::$_sqlTargets===null)
@@ -655,8 +632,8 @@ class MdlObject
 		}
 		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (pour pas retourner d'objet ni d'erreur sql)
 		$sqlDisplay=(!empty($conditions))  ?  "(".implode(" AND ",$conditions).")"  :  $_idKey." IS NULL";
-		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a accès (dossiers/sujets..)
-		if($containerObj==null && static::isContainerContent()){
+		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a accès (dossiers/sujets/evt..)
+		if($containerObj==null && static::isInContainer()){
 			$MdlObjectContainer=static::MdlObjectContainer;
 			$sqlDisplay="(".$sqlDisplay." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
 		}
@@ -664,17 +641,17 @@ class MdlObject
 		return " ".$sqlDisplay." ";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RECUPÈRE LES OBJETS D'UN "PLUGIN" (FONCTION DE $params ET DES DROITS D'ACCES)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPluginObjects($params)
 	{
 		return (!empty($params))  ?  Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPlugins($params)." AND ".static::sqlDisplay()." ORDER BY dateCrea desc")  :  [];
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RECUPERE LES PLUGINS DE TYPE "FOLDER"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPluginFolders($params)
 	{
 		$pluginsList=[];
@@ -737,9 +714,9 @@ class MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AUTEUR DE CRÉATION/MODIF
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function autorLabel($isModif=false)
 	{
 		if($isModif==false && !empty($this->guest))  			{return $this->guest.' ('.Txt::trad("guest").')';}				//Auteur "guest" (création uniquement)
@@ -747,9 +724,9 @@ class MdlObject
 		else													{return Ctrl::getObj("user",$this->_idUser)->getLabel();}		//Auteur de la création	
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AUTEUR + DATE DE CRÉATION / MODIFICATION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function autorDate($isModif=false, $profileImg=false)
 	{
 		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;																	//Date de créa/modif
@@ -763,9 +740,9 @@ class MdlObject
 		return $autorLabel.'&nbsp;<img src="app/img/arrowRight.png">'.Txt::dateLabel($dateEdit,"labelFull");
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LIBELLE DE L'OBJET (CHANGE --OBJLABEL-- & CO)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function tradObject($tradKey)
 	{
 		//// Traduction principale
@@ -778,11 +755,208 @@ class MdlObject
 			$trad=str_replace("-OBJCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $trad);
 		}
 		//// Remplace le label du conteneur de l'objet (ex: "agenda" si l'objet courant est un evt)
-		if(static::isContainerContent()){
+		if(static::isInContainer()){
 			$MdlObjectContainer=static::MdlObjectContainer;
 			$trad=str_replace("-OBJCONTAINER-", Txt::trad("OBJECT".$MdlObjectContainer::objectType), $trad);
 		}
 		/// Retourne la trad
 		return $trad;
+	}
+
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : EDITION DES FICHIERS DE L'OBJET (cf. "VueObjMenuEdit.php")
+	 ********************************************************************************************************/
+	public function attachedFileEdit()
+	{
+		$vDatas["curObj"]=$this;
+		return Ctrl::getVue(Req::commonPath."VueObjAttachedFileEdit.php",$vDatas);
+	}
+
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : INFOS SUR UN FICHIER
+	 ********************************************************************************************************/
+	public static function attachedFileInfos($file)
+	{
+		if(!empty($file)){
+			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}			//Si besoin, récupère les infos en bdd
+			$file["containerObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier joint
+			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);								//Path/chemin réel du fichier
+			$file["downloadUrl"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
+			if(Req::isMobileApp())  {$file["downloadUrl"]=CtrlMisc::urlExternalGetFile($file["downloadUrl"],$file["name"]);}	//Url de download externe : bascule sur une page spécifique
+			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier ou de l'image (cf "actionAttachedFileDisplay()")
+			if(File::isType("imageBrowser",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf. "attachedFileImageCid()")
+			return $file;
+		}
+	}
+	
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : URL D'AFFICHAGE D'UN FICHIER  (cf "actionAttachedFileDisplay()")
+	 ********************************************************************************************************/
+	public static function attachedFileDisplayUrl($fileId, $fileName)
+	{
+		return "?ctrl=object&action=AttachedFileDisplay&_id=".$fileId."&extension=.".File::extension($fileName);
+	}
+
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : LISTE DES FICHIERS
+	 ********************************************************************************************************/
+	public function attachedFileList()
+	{
+		if($this->_attachedFileList===null){
+			if(static::hasAttachedFiles!==true)  {$this->_attachedFileList==[];}
+			else{
+				$this->_attachedFileList=Db::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);	//Récupère les fichiers joints de l'objet en BDD
+				foreach($this->_attachedFileList as $key=>$tmpFile)  {$this->_attachedFileList[$key]=self::attachedFileInfos($tmpFile);}						//Ajoute le "path" et autres infos de chaque fichier joint
+			}
+		}
+		return (array)$this->_attachedFileList;
+	}
+
+	/******************************************************************************************************************
+	 * FICHIERS JOINTS : AFFICHE LES FICHIERS DE L'OBJET (Menu contextuel / Vue "inline" + propose le téléchargement)
+	 ******************************************************************************************************************/
+	public function attachedFileMenu($separator="<hr>")
+	{
+		if($this->_attachedFileMenu===null){
+			$this->_attachedFileMenu="";
+			foreach($this->attachedFileList() as $tmpFile)
+				{$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["downloadUrl"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$tmpFile["name"].'</div>';}
+		}
+		if($this->_attachedFileMenu)  {return $separator.$this->_attachedFileMenu;}
+	}
+
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : AJOUTE DES FICHIERS   (cf. "VueObjAttachedFileEdit.php")
+	 ********************************************************************************************************/
+	public function attachedFileAdd()
+	{
+		if(static::hasAttachedFiles==true){
+			foreach($_FILES as $inputName=>$tmpFile){
+				//Ajoute chaque fichier joint
+				if(stristr($inputName,"attachedFile") && File::uploadControl($tmpFile)){
+					//Ajoute en BDD + Déplace dans le dossier de destination
+					$_idFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($tmpFile["name"]).", objectType='".static::objectType."', _idObject=".$this->_id,  true);
+					$filePath=PATH_OBJECT_ATTACHMENT.$_idFile.".".File::extension($tmpFile["name"]);
+					$isMoved=move_uploaded_file($tmpFile["tmp_name"], $filePath);
+					//Fichier ajouté
+					if($isMoved==true){
+						//Optimise si besoin l'image + chmod du fichier
+						if(File::isType("imageResize",$filePath))  {File::imageResize($filePath,$filePath,1600);}
+						File::setChmod($filePath);
+						//Ajoute une Image / Vidéo / Mp3 dans la description de l'objet
+						if(static::descriptionEditor==true && File::isType("editorInsert",$tmpFile["name"])){									//Vérif s'il s'agit d'un fichier inséré dans l'éditeur TinyMce							
+							$inputCpt=str_replace("attachedFile", "", $inputName);																//Cpt de l'input : présent dans "attachedFileTagTmp" et "attachedFileSrcTmp"
+							$displayUrl=self::attachedFileDisplayUrl($_idFile, $tmpFile["name"]);												//Url d'affichage du fichier
+							$this->description=str_replace("attachedFileSrcTmp".$inputCpt, $displayUrl, $this->description);					//Remplace "attachedFileSrcTmp" par l'url d'affichage du fichier
+							$this->description=str_replace("attachedFileTagTmp".$inputCpt, "attachedFileTag".$_idFile, $this->description);		//Remplace "attachedFileTagTmp" par le "attachedFileTag" final du fichier
+							Db::query("UPDATE ".static::dbTable." SET `description`=".Db::format($this->description)." WHERE _id=".$this->_id);	//Update le texte de l'éditeur !
+						}
+					}
+				}
+			}
+			File::datasFolderSize(true);//Recalcule $_SESSION["datasFolderSize"]
+		}
+	}
+
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : SUPPRIME UN FICHIER JOINT
+	 ********************************************************************************************************/
+	public function attachedFileDelete($curFile)
+	{
+		if($this->editRight() && is_array($curFile)){
+			File::rm($curFile["path"]);
+			if(!is_file($curFile["path"])){
+				Db::query("DELETE FROM ap_objectAttachedFile WHERE _id=".(int)$curFile["_id"]);
+				return true;
+			}
+		}
+	}
+
+	/*****************************************************************************************************************
+ 	 * FICHIERS JOINTS : CHARGE LA DESCRIPTION HTML (DOM) EN VUE DE MODIFIER LES TAGS DES FICHIERS  (<a> <img> etc)
+	 *****************************************************************************************************************/
+	public function descriptionDOM()
+	{
+		libxml_use_internal_errors(true);													//Evite les erreurs et avertissements
+		$dom=new DOMDocument;																//Créé un nouveau DOMDocument
+		$dom->loadHTML($this->description, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);	//Charge la description HTML de l'objet (sans les éléments html/body...)
+		libxml_clear_errors();																//Vide le buffer d'erreur libxml
+		return $dom;																		//Renvoi le DOM de la description
+	}
+
+	/*************************************************************************************************************************************
+	 * FICHIERS JOINTS : MODIFIE LA "SRC" DES IMAGES INTEGREES A UNE DESCRIPTION, ENVOYEE PAR MAIL (ex: <img src="cid:attachedFile55">)
+	 *************************************************************************************************************************************/
+	public function descriptionMail()
+	{
+		$dom=$this->descriptionDOM();														//Récupère le DOM de la description
+		$xpath=new DOMXPath($dom);															//Créé un XPath pour naviguer dans le DOM
+		foreach($this->attachedFileList() as $tmpFile){										//Charge chaque image
+			if(!empty($tmpFile["cid"])){													//Vérif si l'image contient un "cid"
+				$nodes=$xpath->query('//img[@id="attachedFileTag'.$tmpFile["_id"].'"]');	//Trouve les tags <img> avec l'attribut id="attachedFileTagXX"
+				foreach($nodes as $node){													//Parcourt chaque tag
+					$node->setAttribute('src', 'cid:'.$tmpFile["cid"]);						//Update le "src" avec le "cid" de l'image
+					$node->setAttribute('style', 'style="max-width:95%"');					//Ajoute un "max-width"
+				}
+			}
+		}
+		return $dom->saveHTML();
+	}
+
+	/********************************************************************************************************
+	 * COMMENTAIRES : L'OBJET PEUT AVOIR DES COMMENTAIRES?
+	 ********************************************************************************************************/
+	public function hasUsersComment()
+	{
+		return (static::hasUsersComment && !empty(Ctrl::$agora->usersComment));
+	}
+
+	/********************************************************************************************************
+	 * COMMENTAIRES : LISTE LES COMMENTAIRES
+	 ********************************************************************************************************/
+	public function getUsersComment()
+	{
+		if($this->_usersComment===null)
+			{$this->_usersComment=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);}
+		return $this->_usersComment;
+	}
+
+	/********************************************************************************************************
+	 * COMMENTAIRES : DROIT D'ÉDITION/SUPPRESSION D'UN COMMENTAIRE
+	 ********************************************************************************************************/
+	public static function userCommentEditRight($_idComment)
+	{
+		if(!empty($_idComment)){
+			$idUser=Db::getVal("SELECT _idUser FROM ap_objectComment WHERE _id=".(int)$_idComment);
+			return (Ctrl::$curUser->isGeneralAdmin() || $idUser==Ctrl::$curUser->_id);
+		}
+	}
+
+	/********************************************************************************************************
+	 * LIKES : VERIF SI ON PEUT "LIKER" L'OBJET (fonction du type d'objet et du param. général)
+	 ********************************************************************************************************/
+	public function hasUsersLike()
+	{
+		return (static::hasUsersLike && !empty(Ctrl::$agora->usersLike));
+	}
+
+	/********************************************************************************************************
+	 * LIKES : LISTE DES USERS AYANT "LIKÉ" L'OBJET
+	 ********************************************************************************************************/
+	public function getUsersLike()
+	{
+		if($this->_usersLike===null)
+			{$this->_usersLike=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (select _idUser as _id from ap_objectLike where objectType='".static::objectType."' AND _idObject=".$this->_id.")");}
+		return $this->_usersLike;
+	}
+
+	/********************************************************************************************************
+	 * LIKES : TOOLTIP DES USERS AYANT "LIKÉ" L'OBJET
+	 ********************************************************************************************************/
+	public function usersLikeTooltip()
+	{
+		$tooltip=Txt::trad("AGORA_usersLike").'<br>';
+		foreach($this->getUsersLike() as $tmpUser)  {$tooltip.=$tmpUser->getLabel().", ";}
+		return trim($tooltip,", ");
 	}
 }

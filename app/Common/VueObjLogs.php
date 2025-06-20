@@ -1,9 +1,5 @@
-<script>
-////	Resize
-lightboxWidth(700);
-</script>
-
 <style>
+#bodyLightbox			{max-width:700px;}
 .vLogsRow				{display:table-row;}
 .vLogsRow>div			{display:table-cell; padding:6px;}
 .vLogAction,.vLogUser	{width:120px;}
@@ -11,8 +7,8 @@ lightboxWidth(700);
 .vLogAction img			{max-height:16px;}
 .vNoLogs				{padding:15px; text-align:center;}
 
-/*MOBILE*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vLogsRow, .vLogsRow>div	{display:block!important; width:100%!important;}
 	.vLogsRow					{margin-bottom:20px;}
 	.vLogsRow>div				{padding:5px;}

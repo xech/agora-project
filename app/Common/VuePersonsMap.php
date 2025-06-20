@@ -1,5 +1,5 @@
 <style>
-#htmlLightbox body	{padding:0px!important;}
+#bodyLightbox	{max-width:100%; padding:0px!important;}
 </style>
 
 <!--CONTENEUR DE LA CARTE -->
@@ -22,7 +22,6 @@ ready(function(){
 	//// Init l'affichage
 	mapTool="<?= $mapTool ?>";//"gmap" ou "leaflet"
 	$("#mapid").css("width",windowWidth).css("height",windowHeight-(isMobile()?0:80));//Redimensionne le div de la carte
-	window.top.$.fancybox.getInstance().update();//Redimensionne le fancybox
 
 	//// Instancie la carte Google Map
 	if(mapTool=="gmap"){

@@ -1,24 +1,24 @@
 <script>
 ready(function(){
-	/*******************************************************************************************
+	/********************************************************************************************************
  	*	RECUP UN BACKUP
 	*******************************************************************************************/
 	$(".vButtonBackup").on("click",function(){
 		confirmRedir("?ctrl=agora&action=getBackup&typeBackup="+$(this).attr("data-typeBackup"), "<?= Txt::trad("AGORA_backupConfirm") ?>");
 	});
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	LOGO EN PAGE DE CONNEXION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("#logoConnectSelect").on("change",function(){
 		$("#logoConnectImg,#logoConnectFile").hide();
 		if(this.value=="<?= Ctrl::$agora->logoConnect ?>")	{$("#logoConnectImg").show();}			//Affiche le logo spécifique
 		else if(this.value=="modify")						{$("#logoConnectFile").show();}			//Affiche l'input "file"
 	}).trigger("change");
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	LOGO DU FOOTER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("#logoSelect").on("change",function(){
 		$("#logoImg,#logoFile,#logoUrl").hide();
 		if(this.value=="<?= Ctrl::$agora->logo ?>")	{$("#logoImg").show();}		//Affiche le logo spécifique / par défaut
@@ -26,9 +26,9 @@ ready(function(){
 		if(this.value!="")												{$("#logoUrl").show();}		//Affiche l'input "url" du logo
 	}).trigger("change");
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	VÉRIF LE TYPE DU FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("#logoFile,#logoConnectFile,#wallpaperFile").on("change",function(){
 		if(/\.(jpg|jpeg|png)/i.test(this.value)==false)  {notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
@@ -39,9 +39,9 @@ ready(function(){
 	$("select[name='mapTool']").on("change",function(){  this.value=="gmap" ? $("#gApiKeyDiv").fadeIn() : $("#gApiKeyDiv").fadeOut();  }).trigger("change");
 	$("select[name='gIdentity']").on("change",function(){  this.value=="1" ? $("#gIdentityClientIdDiv").fadeIn() : $("#gIdentityClientIdDiv").fadeOut();  }).trigger("change");
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	CONTROLE DU FORMULAIRE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("#mainForm").on("submit",async function(event){
 		event.preventDefault();
 		////	Contrôle le nom de l'espace
@@ -64,8 +64,8 @@ ready(function(){
 /*Menu context de gauche*/
 .vAgoraVersion					{text-align:center; margin-top:10px;}
 .vButtonLogs, .vButtonBackup	{width:100%; margin-block:10px; height:45px; text-align:left;}
-#pageMenu img					{max-height:25px; margin-right:10px;}
-#pageMenu hr					{margin:20px 0px;}
+#moduleMenu img					{max-height:25px; margin-right:10px;}
+#moduleMenu hr					{margin:20px 0px;}
 
 /*Formulaire principal*/
 #vMainFormLabel					{text-align:center;}
@@ -79,7 +79,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 <div id="pageCenter">
 
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<!--ESPACE DISQUE UTILISÉ-->
 		<div class="miscContainer">
 			<img src="app/img/diskSpace<?= $diskSpaceAlert==true?'Alert':null ?>.png"> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
@@ -95,8 +95,8 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 		<!--VOPTIONS DE BACKUP-->
 		<?php if(Req::isMobile()==false){ ?>
 		<div class="miscContainer">
-			<button class="vButtonBackup" data-typeBackup="all" title="<?= Txt::trad("AGORA_backupFullTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
-			<button class="vButtonBackup" data-typeBackup="db"  title="<?= Txt::trad("AGORA_backupDbTooltip") ?>"><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
+			<button class="vButtonBackup" data-typeBackup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
+			<button class="vButtonBackup" data-typeBackup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
 		</div>
 		<?php } ?>
 	</div>
@@ -107,7 +107,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 			<hr>
 
 			<!--NOM DE L'ESPACE PRINCIPAL-->
-			<div class="objField" title="<?= Txt::trad("AGORA_nameTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_nameTooltip") ?> >
 				<div><?= Txt::trad("AGORA_name") ?></div>
 				<div><input type="text" name="name" value="<?= Ctrl::$agora->name ?>"></div>
 			</div>
@@ -119,7 +119,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 			</div>
 
 			<!--LOGO EN PAGE DE CONNEXION-->
-			<div class="objField" title="<?= Txt::trad("AGORA_logoConnectTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_logoConnectTooltip") ?> >
 				<div><?= Txt::trad("AGORA_logoConnect") ?></div>
 				<div>
 					<?php
@@ -234,7 +234,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 			</div>
 
 			<!--AFFICHAGE DES EMAILS DES UTILISATEURS-->
-			<div class="objField" title="<?= Txt::trad("AGORA_userMailDisplayTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_userMailDisplayTooltip") ?> >
 				<div><img src="app/img/mail.png"><?= Txt::trad("AGORA_userMailDisplay") ?></div>
 				<div>
 					<?php
@@ -277,7 +277,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 			</div>
 
 			<!--LOGS TIMEOUT-->
-			<div class="objField" title="<?= Txt::trad("AGORA_logsTimeOutTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_logsTimeOutTooltip") ?> >
 				<div><img src="app/img/log.png"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
 				<div>
 					<select name="logsTimeOut">
@@ -302,18 +302,18 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 			<!--SERVEURS JITSI (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-			<div class="objField" title="<?= Txt::trad("AGORA_visioHostTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_visioHostTooltip") ?> >
 				<div><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHost") ?></div>
 				<div><input type="text" name="visioHost" value="<?= Ctrl::$agora->visioHost ?>"></div>
 			</div>
-			<div class="objField" title="<?= Txt::trad("AGORA_visioHostAltTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_visioHostAltTooltip") ?> >
 				<div><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHostAlt") ?></div>
 				<div><input type="text" name="visioHostAlt" value="<?= Ctrl::$agora->visioHostAlt ?>"></div>
 			</div>
 			<?php } ?>
 
 			<!--CARTOGRAPHIE : OPENSTREETMAP OU GOOGLE MAP-->
-			<div class="objField" title="<?= Txt::trad("AGORA_mapToolTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_mapToolTooltip") ?> >
 				<div><img src="app/img/map.png"><?= Txt::trad("AGORA_mapTool") ?></div>
 				<div>
 					<select name="mapTool">
@@ -325,14 +325,14 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 			<!--GOOGLE MAP APIKEY (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-				<div class="objField" id="gApiKeyDiv" title="<?= Txt::trad("AGORA_gApiKeyTooltip") ?>">
+				<div class="objField" id="gApiKeyDiv" <?= Txt::tooltip("AGORA_gApiKeyTooltip") ?> >
 					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gApiKey") ?></div>
 					<div><input type="text" name="gApiKey" value="<?= Ctrl::$agora->gApiKey ?>"></div>
 				</div>
 			<?php } ?>
 
 			<!--GOOGLE SIGNIN ENABLED/DISABLED-->
-			<div class="objField" title="<?= Txt::trad("AGORA_gIdentityTooltip") ?>">
+			<div class="objField" <?= Txt::tooltip("AGORA_gIdentityTooltip") ?> >
 				<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentity") ?></div>
 				<div>
 					<?php
@@ -344,7 +344,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 			<!--GOOGLE SIGNIN "CLIENT ID" (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-				<div class="objField" id="gIdentityClientIdDiv" title="<?= Txt::trad("AGORA_gIdentityClientIdTooltip") ?>">
+				<div class="objField" id="gIdentityClientIdDiv" <?= Txt::tooltip("AGORA_gIdentityClientIdTooltip") ?> >
 					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentityClientId") ?></div>
 					<div><input type="text" name="gIdentityClientId" value="<?= Ctrl::$agora->gIdentityClientId ?>"></div>
 				</div>
@@ -352,7 +352,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 			<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-				<div class="objField" onclick="$('#smtpConfig').fadeToggle()">
+				<div class="objField" onclick="$('#smtpConfig').slideToggle()">
 					<div><img src="app/img/postMessage.png"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowBottom.png"></div>
 				</div>
 				<fieldset id="smtpConfig" <?= empty(Ctrl::$agora->smtpHost)?"style='display:none'":null ?>>
@@ -360,11 +360,11 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 						<div><?= Txt::trad("AGORA_smtpHost") ?></div>
 						<div><input type="text" name="smtpHost" value="<?= Ctrl::$agora->smtpHost ?>"></div>
 					</div>
-					<div class="objField" title="<?= Txt::trad("AGORA_smtpPortTooltip") ?>">
+					<div class="objField" <?= Txt::tooltip("AGORA_smtpPortTooltip") ?> >
 						<div><?= Txt::trad("AGORA_smtpPort") ?></div>
 						<div><input type="text" name="smtpPort" value="<?= Ctrl::$agora->smtpPort ?>"></div>
 					</div>
-					<div class="objField" title="<?= Txt::trad("AGORA_smtpSecureTooltip") ?>">
+					<div class="objField" <?= Txt::tooltip("AGORA_smtpSecureTooltip") ?> >
 						<div><?= Txt::trad("AGORA_smtpSecure") ?></div>
 						<div><input type="text" name="smtpSecure" value="<?= Ctrl::$agora->smtpSecure ?>"></div>
 					</div>
@@ -385,19 +385,19 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 			<!--PARAMETRAGE LDAP-->
 			<?php if(function_exists("ldap_connect")){ ?>
-				<div class="objField" onclick="$('#ldapConfig').fadeToggle()" title="<?= Txt::trad("AGORA_ldapLabelTooltip") ?>">
+				<div class="objField" onclick="$('#ldapConfig').slideToggle()" <?= Txt::tooltip("AGORA_ldapLabelTooltip") ?> >
 					<div><img src="app/img/user/ldap.png"> <?= Txt::trad("AGORA_ldapLabel") ?> <img src="app/img/arrowBottom.png"></div>
 				</div>
 				<fieldset id="ldapConfig" <?= empty(Ctrl::$agora->ldap_server)?"style='display:none'":null ?>>
-					<div class="objField" title="<?= Txt::trad("AGORA_ldapUriTooltip") ?>">
+					<div class="objField" <?= Txt::tooltip("AGORA_ldapUriTooltip") ?> >
 						<div><?= Txt::trad("AGORA_ldapUri") ?></div>
 						<div><input type="text" name="ldap_server" value="<?= Ctrl::$agora->ldap_server ?>"></div>
 					</div>
-					<div class="objField" title="<?= Txt::trad("AGORA_ldapPortTooltip") ?>">
+					<div class="objField" <?= Txt::tooltip("AGORA_ldapPortTooltip") ?> >
 						<div><?= Txt::trad("AGORA_ldapPort") ?></div>
 						<div><input type="text" name="ldap_server_port" value="<?= Ctrl::$agora->ldap_server_port ?>"></div>
 					</div>
-					<div class="objField" title="<?= Txt::trad("AGORA_ldapLoginTooltip") ?>">
+					<div class="objField" <?= Txt::tooltip("AGORA_ldapLoginTooltip") ?> >
 						<div><?= Txt::trad("AGORA_ldapLogin") ?></div>
 						<div><input type="text" name="ldap_admin_login" value="<?= Ctrl::$agora->ldap_admin_login ?>"></div>
 					</div>
@@ -405,7 +405,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 						<div><?= Txt::trad("AGORA_ldapPass") ?></div>
 						<div><input type="password" name="ldap_admin_pass" value="<?= Ctrl::$agora->ldap_admin_pass ?>"></div>
 					</div>
-					<div class="objField" title="<?= Txt::trad("AGORA_ldapDnTooltip") ?>">
+					<div class="objField" <?= Txt::tooltip("AGORA_ldapDnTooltip") ?> >
 						<div><?= Txt::trad("AGORA_ldapDn") ?></div>
 						<div><input type="text" name="ldap_base_dn" value="<?= Ctrl::$agora->ldap_base_dn ?>"></div>
 					</div>

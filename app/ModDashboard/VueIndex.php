@@ -1,5 +1,5 @@
 <script>
-/*******************************************************************************************
+/********************************************************************************************************
  *	INIT
  *******************************************************************************************/
 ready(function(){
@@ -17,7 +17,7 @@ ready(function(){
 					newsOffset=pollsOffset=1;	//Compteur des blocs de news/polls déjà affichés (offset). Commence à "1" car le bloc "0" est affiché au chargement de page
 				}
 				//Charge les news suivantes (via ".get()" et non ".ajax")
-				if($("#contentNews").isVisible() && loadMoreNews==true)
+				if($("#contentNews").isDisplayed() && loadMoreNews==true)
 				{
 					$("#contentNews").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
 					$.get("?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
@@ -32,7 +32,7 @@ ready(function(){
 					});
 				}
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
-				if($("#contentPolls").isVisible() && loadMorePolls==true)
+				if($("#contentPolls").isDisplayed() && loadMorePolls==true)
 				{
 					$("#contentPolls").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
 					$.get("?ctrl=dashboard&action=GetMorePolls&pollsNotVoted=<?= Req::param("pollsNotVoted") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
@@ -48,7 +48,7 @@ ready(function(){
 					});
 				}
 				//Masque si besoin les icones "loading"
-				if($(".infiniteScrollLoading").isVisible())  {$(".infiniteScrollLoading").fadeOut(800);}
+				if($(".infiniteScrollLoading").isDisplayed())  {$(".infiniteScrollLoading").fadeOut(800);}
 			}
 		},300);
 	});
@@ -64,7 +64,7 @@ ready(function(){
 	dashboardPollVote();
 });
 
-/*******************************************************************************************
+/********************************************************************************************************
  *	AFFICHE UNE OPTION DU DASHBOARD ("menuName"="News"/"Polls"/"Elems")
  *******************************************************************************************/
 function dashboardOption(menuName)
@@ -76,11 +76,9 @@ function dashboardOption(menuName)
 	$("[id^=modMenu], #pageContent>div:not(#tabMenus)").hide();
 	$("#modMenu"+menuName).fadeIn();
 	$("#content"+menuName).show();
-	//Rsponsive : affiche le bouton d'ajout d'element uniquement pour les actualités
-	(isMobile() && menuName=="News") ? $("#menuMobileAddButton").show() : $("#menuMobileAddButton").hide();
 }
 
-/*******************************************************************************************
+/********************************************************************************************************
  *	VOTE D'UN SONDAGE
  *******************************************************************************************/
 function dashboardPollVote()
@@ -108,16 +106,16 @@ function dashboardPollVote()
 <style>
 /*Menu "onglet" et conteneurs principaux : News / Sondages / Nouveautés*/
 #tabMenus								{display:table; position:relative; width:100%; height:40px; margin-bottom:10px;}
-#tabMenus a								{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.1em;}/*label du menu*/
+#tabMenus a								{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.05em;}/*label du menu*/
 #tabMenus hr							{display:inline; position:absolute; bottom:0px; left:0px; width:<?= $isPolls==true?33:50 ?>%; height:6px; margin:0px; background:tomato; transition:0.1s ease-in-out;}/*Surlignage des options du module*/
 #tabMenuNews.linkSelect ~ hr			{margin-left:0%;}
 #tabMenuPolls.linkSelect ~ hr			{margin-left:33%;}
 #tabMenuElems.linkSelect ~ hr			{margin-left:<?= $isPolls==true?66:50 ?>%;}
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
-/*MOBILE*/
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	#tabMenus.miscContainer	{padding:3px;}/*surcharge .miscContainer*/
-	#tabMenus a				{padding-block:3px; font-size:0.95em;}
+	#tabMenus a				{padding-block:3px;}
 }
 
 /*Infinites scrolls : News / Sondages*/
@@ -133,10 +131,10 @@ function dashboardPollVote()
 .vNewsDetail img						{max-height:20px;}												/*Icones des details (à la une, etc)*/
 .vNewsTopNews							{color:#a40;}													/*texte "Actualité à la une"*/
 /*News par défaut (cf. "INSTALL_dataDashboardNews")*/
-.vNewsDescription h3					{text-align:center; padding:10px;}							
-.vNewsDescription h4>img				{max-width:33px!important; margin-left:20px; margin-right:15px;}
-.vNewsDescription h4:last-child			{margin-bottom:30px;}
-/*MOBILE*/
+.vNewsDescription h3					{text-align:center;}							
+.vNewsDescription h4 img				{max-width:33px!important; margin-left:10px; margin-right:10px;}/*cf. width réel des "iconSmall.png"*/
+.vNewsDescription h4:last-child			{margin-bottom:20px;}
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.vNewsDescription h3				{font-size:1.3em;}									/*New par défaut*/
 	.vNewsDescription h4				{font-size:1.05em; clear:left;}						/*Idem. "clear:left" pour aligner avec l'image float : tester width 500px*/
@@ -144,9 +142,9 @@ function dashboardPollVote()
 }
 
 /*Sondages*/
-#pageMenu .vPollsTitle					{margin:20px 0px; font-size:1.05em;}
-#pageMenu .vPollsContainer ul			{padding-left:10px!important;}
-#pageMenu .submitButtonMain				{margin-top:10px;}
+#moduleMenu .vPollsTitle				{margin:20px 0px; font-size:1.05em;}
+#moduleMenu .vPollsContainer ul			{padding-left:10px!important;}
+#moduleMenu .submitButtonMain			{margin-top:10px;}
 .vPollsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
 .vPollsTitle,.vPollsDescription			{text-align:center; margin:15px 0px;}/*Titre et Description*/
 #contentPolls .vPollsTitle				{font-size:1.25em;}/*Titre de l'affichage principal (pas avec les news)*/
@@ -164,7 +162,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
 .vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
 .vPollsResultBar100						{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
-/*MOBILE*/
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.vPollsContainer ul		{padding-left:0px!important;}
 	.vPollsDetails>div		{display:block; margin:8px;}
@@ -181,7 +179,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 
 
 <div id="pageCenter">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<div class="miscContainer">
 			<?php
 			////	MENU CONTEXTUEL DES "NEWS"

@@ -1,9 +1,6 @@
 <?php if(Ctrl::$agora->gIdentityEnabled()){ ?><script src="https://apis.google.com/js/api.js"></script><?php } ?>
 
 <script>
-////	Resize
-lightboxWidth(500);
-
 ////	INIT
 ready(function(){
 	<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
@@ -101,6 +98,7 @@ ready(function(){
 </script>
 
 <style>
+#bodyLightbox									{max-width:500px;}
 #invitationForm input, #invitationForm textarea	{width:100%; margin-bottom:10px;}
 .orLabel										{margin:40px 0px;}/*surcharge*/
 #gPeopleImportButton							{text-align:center;}
@@ -115,7 +113,7 @@ ready(function(){
 
 
 <div>
-	<div class="lightboxTitle"><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png" title="<?= Txt::trad("USER_sendInvitationTooltip") ?>"></div>
+	<div class="lightboxTitle"><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png" <?= Txt::tooltip("USER_sendInvitationTooltip") ?> ></div>
 
 	<!--INVITATION SIMPLE-->
 	<form id="invitationForm">
@@ -141,7 +139,7 @@ ready(function(){
 	<?php if(!empty($invitationList)){ ?>
 	<div id="invitationList">
 		<hr id="invitationListHr">
-		<div onclick="$('#invitationListDiv').fadeToggle();"><img src="app/img/mail.png">&nbsp; <?= count($invitationList)." ".Txt::trad("USER_mailInvitationWait") ?></div>
+		<div onclick="$('#invitationListDiv').slideToggle();"><img src="app/img/mail.png">&nbsp; <?= count($invitationList)." ".Txt::trad("USER_mailInvitationWait") ?></div>
 		<ul id="invitationListDiv">
 			<?php
 			//Invitations déjà envoyées

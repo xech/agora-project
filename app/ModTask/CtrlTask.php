@@ -17,9 +17,9 @@ class CtrlTask extends Ctrl
 	public static $moduleOptions=["adminRootAddContent","adminAddStatus"];
 	public static $MdlObjects=["MdlTask","MdlTaskFolder"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		////	LISTE DES TÂCHES
@@ -78,9 +78,9 @@ class CtrlTask extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PLUGINS DU MODULE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlTaskFolder::getPluginFolders($params);
@@ -98,31 +98,31 @@ class CtrlTask extends Ctrl
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : AFFICHAGE D'UNE TACHE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionVueTask()
 	{
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueTask.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UNE TACHE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionTaskEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
 			$dateBegin=Txt::formatDate(Req::param("dateBegin"), "inputDate", "dbDate");
 			$dateEnd=Txt::formatDate(Req::param("dateEnd"), "inputDate", "dbDate");
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", _idStatus=".Db::param("_idStatus").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", advancement=".Db::param("advancement").", priority=".Db::param("priority").", responsiblePersons=".Db::formatTab2txt(Req::param("responsiblePersons")));
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", _idStatus=".Db::param("_idStatus").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", advancement=".Db::param("advancement").", priority=".Db::param("priority").", responsiblePersons=".Db::formatTab2txt(Req::param("responsiblePersons")));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxRedir();

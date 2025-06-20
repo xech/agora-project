@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(700);
-
 ////	INIT
 ready(function(){
 	//// Affiche/masque la liste des utilisateurs
@@ -19,9 +16,9 @@ ready(function(){
 
 <style>
 .lightboxTitle img	{margin-right:20px;}
-.vDivRadio			{margin-bottom:15px;}
+.vDivRadio			{margin-bottom:20px;}
 #divSomeUsers		{display:<?= empty($someUsers)?"none":"inline-block" ?>; padding-top:10px;}
-.vDivSomeUser		{display:inline-block; width:32%; padding:8px;}
+.vDivSomeUser		{display:inline-block; width:33%; padding-top:10px; padding-left:10px;}
 </style>
 
 <form action="index.php" method="post">
@@ -51,6 +48,6 @@ ready(function(){
 		</div>
 	</div>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

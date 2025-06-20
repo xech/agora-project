@@ -1,9 +1,11 @@
 <script>
-////	Resize
-lightboxWidth("<?= Req::isParam("actionImportExport")?"95%":"800" ?>");
-
 ////	Init
 ready(function(){
+	////	Affiche la liste d'users/contacts à importer : resize avec timeout
+	<?php if(Req::isParam("actionImportExport")){ ?>
+		setTimeout(function(){ lightboxResize(); },300);
+	<?php } ?>
+
 	////	Switch le formulaire d'import ou d'export
 	$("#selectImportExport").on("change",function(){
 		$("#importBlock").toggle(this.value=="import");//affiche/masque
@@ -44,7 +46,7 @@ ready(function(){
 	////	Contrôle du formulaire
 	$("form").on("submit",function(){
 		//Controle que le fichier d'import est au format csv
-		if($("#selectImportExport").isVisible() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
+		if($("#selectImportExport").isDisplayed() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
 			notify("<?= Txt::trad("fileExtension") ?> CSV");
 			return false;
 		}
@@ -60,17 +62,18 @@ ready(function(){
 
 
 <style>
+#bodyLightbox 					{max-width:<?= Req::isParam("actionImportExport") ? '1800px' : '800px' ?>;}
+form								{text-align:center;}
+#importLdapDn						{width:350px;}
+#importLdapFilter					{width:200px;}
+#tableImport						{width:100%; margin-top:20px; text-align:left;}
+.vTableImport						{font-size:0.9em; font-weight:normal;}
+.vTableImport select				{width:130px;}
+.vTableImport img[src*='switch']	{cursor:pointer;}
+.vImportUserOptions					{display:inline-block; text-align:left; margin-top:20px;}
+.vSpaceAffect						{margin-left:20px; margin-top:5px;}
 #importExportBlock, #importBlock, #exportBlock, #importCsvFile, #importLdapDn, #importLdapFilter	{display:none;}
-#importExportBlock, #importBlock, #exportBlock	{margin-right:10px;}
-form											{text-align:center;}
-#importLdapDn									{width:350px;}
-#importLdapFilter								{width:200px;}
-#tableImport									{width:100%; margin-top:20px; text-align:left;}
-.vTableImport									{font-size:0.9em; font-weight:normal;}
-.vTableImport select							{width:130px;}
-.vTableImport img[src*='switch']				{cursor:pointer;}
-.vImportUserOptions								{display:inline-block; text-align:left; margin-top:20px;}
-.vSpaceAffect									{margin-left:20px; margin-top:5px;}
+#importExportBlock, #importBlock, #exportBlock														{margin-right:10px;}
 </style>
 
 
@@ -90,8 +93,8 @@ form											{text-align:center;}
 			<?php if(Ctrl::$agora->ldap_server){ ?><option value="ldap">LDAP</option><?php } ?>
 		</select><br><br><br>
 		<input type="file" name="importFile" id="importCsvFile">
-		<input type="text" name="importLdapDn" id="importLdapDn" value="<?= Ctrl::$agora->ldap_base_dn ?>" title="<?= Txt::trad("AGORA_ldapDnTooltip") ?>">
-		<input type="text" name="importLdapFilter" id="importLdapFilter" value="(cn=*)" title="<?= Txt::trad("importLdapFilterTooltip") ?>">
+		<input type="text" name="importLdapDn" id="importLdapDn" value="<?= Ctrl::$agora->ldap_base_dn ?>" <?= Txt::tooltip("AGORA_ldapDnTooltip") ?> >
+		<input type="text" name="importLdapFilter" id="importLdapFilter" value="(cn=*)" <?= Txt::tooltip("importLdapFilterTooltip") ?> >
 	</span>
 	<!--INPUTS D'EXPORT-->
 	<span id="exportBlock">
@@ -204,7 +207,7 @@ form											{text-align:center;}
 	}
 
 	////	TYPEID DU DOSSIER CONTENEUR (TYPE "CONTACT")  &&  BOUTON DE VALIDATION
-	if(Req::isParam("typeId"))  {echo '<input type="hidden" name="_idContainer" value="'.Ctrl::getObjTarget()->_id.'">';}
+	if(Req::isParam("typeId"))  {echo '<input type="hidden" name="_idContainer" value="'.Ctrl::getCurObj()->_id.'">';}
 	echo Txt::submitButton("validate");
 	?>
 </form>

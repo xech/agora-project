@@ -8,16 +8,16 @@
 
 
 /*
- * Controleur pour les "action" diverses (sans init complete du controleur)
+ * Controleur express
  */
 class CtrlMisc extends Ctrl
 {
-	//Désactive l'initialisation complete du controleur
+	//Initialisation limitée du controleur
 	protected static $initCtrlFull=false;
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : UPDATE DU MESSENGER & LIVECOUNTER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionMessengerUpdate()
 	{
 		//Messenger activé?
@@ -32,10 +32,10 @@ class CtrlMisc extends Ctrl
 			if(!isset($_SESSION["livecounterUsers"])){
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
-				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				//Supprime les livecounters des users déconnectés (> 7 jours)  &&  Supprime les vieux messages du messenger (messages > 30 jours + "launchVisio" > 1 heure)
-				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-604800));
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-2592000));
+				$_SESSION["livecounterUsersHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
+				//Supprime les anciens livecounters d'users déconnectés et les anciens messages du messenger (> 60 jours) +  et les anciens messages  de visio (> 1 heure)
+				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-TIME_2MONTHS));
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-TIME_2MONTHS));
 				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisio%' AND `date` < ".intval(time()-3600));
 				//Garde en session les users qui rendent visible leur messenger (cf. paramétrage dans "ap_userMessenger")
 				$idsUsersVisibles=[0];//Ajoute un pseudo user '0'
@@ -56,13 +56,13 @@ class CtrlMisc extends Ctrl
 
 			////	LISTE DES USERS CONNECTÉS (LIVECOUNTERS)
 			if($result["livecounterUpdate"]==true){
-				$_SESSION["livecounterMainHtml"]=$_SESSION["livecounterFormHtml"]="";//Réinit
+				$_SESSION["livecounterUsersHtml"]=$_SESSION["livecounterFormHtml"]="";//Réinit
 				foreach($_SESSION["livecounterUsers"] as $tmpUser){
 					$userImg=(Req::isMobile()==false && $tmpUser->profileImgExist())  ?  $tmpUser->profileImg(false,true)  :  null;	//Image de l'user
 					$userTooltip=$tmpUser->getLabel()." &nbsp;".$userImg;															//Tooltip du label de l'user
 					$userFirstName=$tmpUser->getLabel("firstName");																	//Prénom de l'user
 					//Affichage dans le livecounter et le formulaire du messenger (checkbox)
-					$_SESSION["livecounterMainHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" '.Txt::tooltip(Txt::trad("MESSENGER_chatWith")." ".$userTooltip).'>'.$userImg.$userFirstName.'</label>';
+					$_SESSION["livecounterUsersHtml"].='<label class="vLivecounterUser" id="livecounterUser'.$tmpUser->_id.'" onclick="messengerDisplay('.$tmpUser->_id.')" '.Txt::tooltip(Txt::trad("MESSENGER_chatWith")." ".$userTooltip).'>'.$userImg.$userFirstName.'</label>';
 					$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser">
 															<input type="checkbox" name="messengerUsers[]" value="'.$tmpUser->_id.'" id="messengerUserCheckbox'.$tmpUser->_id.'" class="messengerUserCheckbox" data-user-label="'.$userFirstName.'" data-user-label-visio="'.Txt::clean(trim($userFirstName),"max").'">
 															<label for="messengerUserCheckbox'.$tmpUser->_id.'" '.Txt::tooltip(Txt::trad("select")." ".$userTooltip).'>'.$userImg.$userFirstName.'</label>
@@ -84,8 +84,8 @@ class CtrlMisc extends Ctrl
 					else									{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
 					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}					//Ajoute si besoin l'icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
-					$oldMessageClass="vMessengerOldMessage";																															//"vMessengerOldMessage" par défaut
-					$messageTooltip=Txt::dateLabel($message["date"],"labelFull")." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageTo")." ";//Tooltip des détails du message 
+					$oldMessageClass="vMessengerOldMessage";																																	//"vMessengerOldMessage" par défaut
+					$messageTooltip=Txt::dateLabel($message["date"],"labelFull")." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageSentTo")." ";	//Tooltip des détails du message 
 					foreach($destList as $_idUserDest){
 						if($_idUserDest!=$autorObj->_id) {$messageTooltip.=self::getObj("user",$_idUserDest)->getLabel().", ";}	//Ajoute le libellé du destinataire
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Message affecté à un user connnecté : on retire "vMessengerOldMessage" 
@@ -114,7 +114,7 @@ class CtrlMisc extends Ctrl
 			self::actionMessengerDisplayTimesUpdate();
 
 			////	RETOURNE LE RÉSULTAT AU FORMAT JSON
-			$result["livecounterMainHtml"]=$_SESSION["livecounterMainHtml"];
+			$result["livecounterUsersHtml"]=$_SESSION["livecounterUsersHtml"];
 			$result["livecounterFormHtml"]=$_SESSION["livecounterFormHtml"];
 			$result["messengerMessagesHtml"]=$_SESSION["messengerMessagesHtml"];
 			$result["messengerCheckedUsers"]=$_SESSION["messengerCheckedUsers"];
@@ -122,9 +122,9 @@ class CtrlMisc extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : UPDATE LE "MessengerDisplayTimes" D'UN USER OU DE "ALL"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionMessengerDisplayTimesUpdate()
 	{
 		//Update l'affichage de l'user affiché || Update l'affichage de tous les users du livecounter ("messengerDisplayMode==all")
@@ -134,10 +134,10 @@ class CtrlMisc extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : POST D'UN MESSAGE SUR LE MESSENGER
 	 * Note : les messages sont encodés en "utf8mb4" pour le support des "emoji"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionMessengerPost()
 	{
 		if(self::$curUser->messengerEnabled())
@@ -154,9 +154,9 @@ class CtrlMisc extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : RECHERCHE D'OBJETS SUR TOUS L'ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionSearch()
 	{
 		//Init
@@ -193,9 +193,9 @@ class CtrlMisc extends Ctrl
 		static::displayPage(Req::commonPath."VueSearch.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU DE LANCEMENT DE VISIOCONFERENCE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionLaunchVisio()
 	{
 		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));																// Url de la visioconf
@@ -207,25 +207,25 @@ class CtrlMisc extends Ctrl
 		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU "CAPTCHA"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuCaptcha()
 	{
 		return self::getVue(Req::commonPath."VueCaptcha.php");
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : CONTROLE DU CAPTCHA
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionCaptchaControl()
 	{
 		if($_SESSION["captcha"]==Req::param("captcha"))  {echo "controlOK";}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *  ACTION : AFFICHE L'IMAGE D'UN MENU "CAPTCHA"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionCaptchaImg()
 	{
 		//Init
@@ -263,23 +263,22 @@ class CtrlMisc extends Ctrl
 		imagejpeg($image);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * COULEUR AU FORMAT HEXADECIMAL POUR UN CAPTCHA
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	protected static function captchaColor($colors)
 	{
 		return preg_match("/^#?([\dA-F]{6})$/i",$colors,$rgb) ? hexdec($rgb[1]) : false;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : AFFICHE DES PERSONNES SUR UNE CARTE (contacts/utilisateurs)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionPersonsMap()
 	{
 		//Liste les personnes/adresses à afficher
 		$adressList=[];
-		foreach(Ctrl::getObjectsTypeId() as $tmpPerson)
-		{
+		foreach(Ctrl::getCurObjects() as $tmpPerson){
 			//La personne est visible et possède une adresse
 			if($tmpPerson->readRight() && method_exists($tmpPerson,"hasAdress") && $tmpPerson->hasAdress()){
 				$tmpAdress=trim($tmpPerson->adress.", ".$tmpPerson->postalCode." ".str_ireplace("cedex","",$tmpPerson->city)." ".$tmpPerson->country,  ", ");
@@ -295,9 +294,9 @@ class CtrlMisc extends Ctrl
 		static::displayPage(Req::commonPath."VuePersonsMap.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU DE SELECTION DU WALLPAPER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuWallpaper($curWallpaper)
 	{
 		//Wallpapers disponibles
@@ -316,9 +315,9 @@ class CtrlMisc extends Ctrl
 		return self::getVue(Req::commonPath."VueMenuWallpaper.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PATH D'UN WALLPAPER ENREGISTRE EN BDD (cf. Ctrl::$curSpace->wallpaper && Ctrl::$agora->wallpaper)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function pathWallpaper($fileName=null)
 	{
 		//Récup le chemin et vérifie la présence du fichier
@@ -330,12 +329,12 @@ class CtrlMisc extends Ctrl
 		return PATH_WALLPAPER_DEFAULT."1.jpg";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : AFFICHE UN FICHIER ICAL (cf. "MdlCalendar->contextMenu()")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDisplayIcal()
 	{
-		$objCalendar=self::getObjTarget();
+		$objCalendar=self::getCurObj();
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 

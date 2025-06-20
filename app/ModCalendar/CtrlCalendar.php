@@ -24,23 +24,24 @@ class CtrlCalendar extends Ctrl
 	public static function actionDefault()
 	{
 		////	INIT : LISTE D'AGENDAS / MODE D'AFFICHAGE / TPS DE REFERENCE
-		$vDatas["readableCalendars"]=(!empty($_SESSION["displayAdmin"]))  ?  MdlCalendar::affectationCalendars()  :  MdlCalendar::readableCalendars();	//Agendas visibles : "readable" / "affectation" ("displayAdmin")
-		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["readableCalendars"]);													//Agendas affichés
-		$smallDisplay=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=600);																	//Affichage réduit (600px de width max)
-		$displayMode=self::prefUser("calendarDisplayMode","displayMode");																				//Mode d'affichage en preference
-		if(empty($displayMode))  {$displayMode="month";}																								//Sinon "month" par défaut
-		if($smallDisplay==true && preg_match("/(week|7Days)/i",$displayMode))	{$displayMode="3Days";}													//Affichage réduit : switch de "week"/"7Days" à "3Days"
-		elseif($smallDisplay==false && $displayMode=="3Days")					{$displayMode="week";}													//Affichage normal : switch de "3Days" à "week"
-		$vDatas["displayMode"]=$displayMode;																											//Affichage courant
-		$vDatas["displayModeList"]=($smallDisplay==true)  ?  ["month","3Days","1Day"]  :  ["month","week","workWeek","7Days"];							//Affichages disponibles
-		$vDatas["curTime"]=$curTime=Req::isParam("curTime")  ?  Req::param("curTime")  :  time();														//Temps de référence
+		if(!empty($_SESSION["displayAdmin"]))	{$vDatas["readableCalendars"]=MdlCalendar::affectationCalendars();}				//Agendas visibles : "affectation" ("displayAdmin")
+		else									{$vDatas["readableCalendars"]=MdlCalendar::readableCalendars();}				//Agendas visibles : "readable"
+		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars($vDatas["readableCalendars"]);							//Agendas affichés
+		$smallDisplay=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=600);											//Affichage réduit (600px de width max)
+		$displayMode=self::prefUser("calendarDisplayMode","displayMode");														//Mode d'affichage en preference
+		if(empty($displayMode))  {$displayMode="month";}																		//Sinon "month" par défaut
+		if($smallDisplay==true && preg_match("/(week|7Days)/i",$displayMode))	{$displayMode="3Days";}							//Affichage réduit : switch de "week"/"7Days" à "3Days"
+		elseif($smallDisplay==false && $displayMode=="3Days")					{$displayMode="week";}							//Affichage normal : switch de "3Days" à "week"
+		$vDatas["displayMode"]=$displayMode;																					//Affichage courant
+		$vDatas["displayModeList"]=($smallDisplay==true)  ?  ["month","3Days","1Day"]  :  ["month","week","workWeek","7Days"];	//Affichages disponibles
+		$vDatas["curTime"]=$curTime=Req::isParam("curTime")  ?  Req::param("curTime")  :  time();								//Temps de référence
 
 		////	MENU DES PROPOSITIONS D'EVT
 		$vDatas["eventPropositions"]=[];
-		foreach(MdlCalendar::writableCalendars() as $tmpCal){																//Liste les evts à confirmer pour chaque agenda de l'user
-			foreach(Db::getObjTab("calendarEvent","SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2._idCal=".$tmpCal->_id." AND T2.confirmed is null") as $tmpEvt){
-				if($tmpEvt->isOldEvt(time()-5184000))	{$tmpEvt->deleteAffectation($tmpCal->_id);}							//Supprime la proposition si + de 60 jours
-				else									{$vDatas["eventPropositions"][]=["evt"=>$tmpEvt,"cal"=>$tmpCal];}	//Ajoute la proposition d'evt
+		foreach(MdlCalendar::writableCalendars() as $tmpCal){																	//Liste les evts à confirmer pour chaque agenda de l'user
+			foreach(Db::getObjTab("calendarEvent","SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed is null AND T2._idCal=".$tmpCal->_id) as $tmpEvt){
+				if($tmpEvt->isOldEvt(time()-5184000))	{$tmpEvt->affectationDelete($tmpCal->_id);}								//Supprime la proposition de + de 60 jours
+				else									{$vDatas["eventPropositions"][]=["evt"=>$tmpEvt,"cal"=>$tmpCal];}		//Ajoute la proposition d'evt
 			}
 		}
 
@@ -75,7 +76,7 @@ class CtrlCalendar extends Ctrl
 		////	LABEL DU MOIS AFFICHÉ
 		if(date('Ym',$timeBegin)!=date('Ym',$timeEnd))	{$vDatas["monthLabel"]=Txt::timeLabel($timeBegin,'MMM')." / ".Txt::timeLabel($timeEnd,'MMM');}	//"Fev./Mar."	: semaine sur 2 mois
 		else											{$vDatas["monthLabel"]=Txt::timeLabel($timeBegin,'MMMM');}										//"Fevrier"		: format par défaut
-		if(Req::isMobile()==false || date('Y')!=date('Y',$timeBegin))	{$vDatas["monthLabel"].=" ".date('Y',$timeBegin);}								//Ajoute l'année (sauf mobile + année courante)
+		if(Req::isMobile()==false || date('Y')!=date('Y',$timeBegin))	{$vDatas["monthLabel"].=" ".date((Req::isMobile()?'y':'Y'),$timeBegin);}		//Ajoute l'année (sauf mobile + année courante)
 
 		////	MENU CONTEXTUEL DES ANNÉES/MOIS
 		$vDatas["monthsYearsMenu"]=null;
@@ -90,15 +91,14 @@ class CtrlCalendar extends Ctrl
 		}
 
 		////	RECUPERE LA VUE DE CHAQUE AGENDA ("VueCalendarMonth.php" / "VueCalendarWeek.php")  &&   LA LISTE DES EVENEMENTS
-		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal)
-		{
-			//// LABEL D'AJOUT D'ÉVÉNEMENT / PROPOSITION D'ÉVÉNEMENT
-			if($tmpCal->addContentRight())		{$tmpCal->addEventLabel=Txt::trad("CALENDAR_addEvtTooltip");}
-			elseif($tmpCal->addOrProposeEvt())	{$tmpCal->addEventLabel=Txt::trad("CALENDAR_proposeEvtTooltip");}
-			else								{$tmpCal->addEventLabel=null;}
+		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal){
+			//// LABEL D'AJOUT / PROPOSITION D'ÉVÉNEMENT
+			if($tmpCal->addContentRight())			{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_addEvtTooltip");}
+			elseif($tmpCal->affectationAddRight())	{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_proposeEvtTooltip");}
+			else									{$tmpCal->addEvtTooltip=null;}
 			//// EVENEMENTS POUR CHAQUE JOUR
 			$tmpCal->evtListDays=[];																													//Init la liste des evts pour chaque jour affiché
-			$tmpCal->evtListDisplayed=$tmpCal->evtList($showTimeBegin, $showTimeEnd, 0.5, true);														//Evts sur la période affichée ($accessRightMin=0.5, $categoryFilter=true)
+			$tmpCal->evtListDisplayed=$tmpCal->evtList($showTimeBegin, $showTimeEnd, 1, true);															//Evts sur la période affichée ($accessRightMin=1, $categoryFilter=true)
 			foreach($vDatas["periodDays"] as $dayYmd=>$tmpDay){
 				$tmpCal->evtListDays[$dayYmd]=[];																										//Init la liste des evts de l'agenda
 				$evtListDay=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);							//Récupère uniquement les evts de la journée
@@ -145,15 +145,14 @@ class CtrlCalendar extends Ctrl
 	public static function actionEvtChangeTime()
 	{
 		//// Récupère l'evt et Controle l'accès
-		$curObj=Ctrl::getObjTarget();
-		if($curObj->fullRight()==false || Req::isParam("newTimeBegin")==false)  {$result["error"]=true;}
-		//// Controle Ok
+		$curObj=Ctrl::getCurObj();
+		if($curObj->editRight()==false || Req::isParam("newTimeBegin")==false)  {$result["error"]=true;}
 		else{
 			// Update la date de l'evt en Bdd
 			$timeDiff=strtotime($curObj->dateEnd)-strtotime($curObj->dateBegin);
 			$newTimeBegin=(int)Req::param("newTimeBegin");
 			$newTimeEnd=($newTimeBegin+$timeDiff);
-			$curObj=$curObj->createUpdate("dateBegin=".Db::format(date("Y-m-d H:i",$newTimeBegin)).", dateEnd=".Db::format(date("Y-m-d H:i",$newTimeEnd)));
+			$curObj=$curObj->editRecord("dateBegin=".Db::format(date("Y-m-d H:i",$newTimeBegin)).", dateEnd=".Db::format(date("Y-m-d H:i",$newTimeEnd)));
 			//Renvoi les nouvelles propriétés de l'evt
 			$result["attributes"]=$curObj->attributes("array", strtotime("today 00:00:00",$newTimeBegin), strtotime("today 23:59:59",$newTimeBegin));
 			$result["evtLabelDate"]=Txt::dateLabel($curObj->timeBegin,"mini",$curObj->timeEnd);
@@ -194,7 +193,7 @@ class CtrlCalendar extends Ctrl
 	public static function actionCalendarEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		if($curObj->isNew() && MdlCalendar::addRight()==false)	{self::noAccessExit();}
 		else													{$curObj->editControl();}
 		////	Valide le formulaire
@@ -202,7 +201,7 @@ class CtrlCalendar extends Ctrl
 			//Enregistre & recharge l'objet
 			$timeSlot=Req::param("timeSlotBegin")."-".Req::param("timeSlotEnd");
 			$typeCalendar=$curObj->isNew() ? ", type='ressource'" : null;
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", timeSlot=".Db::format($timeSlot).", propositionNotify=".Db::param("propositionNotify").", propositionGuest=".Db::param("propositionGuest").$typeCalendar);
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", timeSlot=".Db::format($timeSlot).", propositionNotify=".Db::param("propositionNotify").", propositionGuest=".Db::param("propositionGuest").$typeCalendar);
 			static::lightboxRedir();
 		}
 		////	Affiche la vue
@@ -217,59 +216,52 @@ class CtrlCalendar extends Ctrl
 	public static function actionCalendarEventEdit()
 	{
 		////	INIT
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	VALIDE LE FORMULAIRE
-		if(Req::isParam("formValidate"))
-		{
-			//// EDITE LES PRINCIPAUX CHAMPS DE L'ÉVÉNEMENT (titre, timeBegin..)
-			if($curObj->fullRight())
-			{
-				//Prépare les dates
-				$dateBegin=Txt::formatDate(Req::param("dateBegin")." ".Req::param("timeBegin"), "inputDatetime", "dbDatetime");
-				$dateEnd  =Txt::formatDate(Req::param("dateEnd")." ".Req::param("timeEnd"), "inputDatetime", "dbDatetime");
-				//Périodicité / répétition de l'evt
-				$periodDateEnd=$periodValues=$periodDateExceptions=null;
-				if(Req::isParam("periodType")){
-					$periodDateEnd=Txt::formatDate(Req::param("periodDateEnd"), "inputDate", "dbDate");
-					$periodValues=Txt::tab2txt(Req::param("periodValues_".Req::param("periodType")));
-					if(Req::isParam("periodDateExceptions")){
-						$periodDateExceptions=[];
-						foreach(Req::param("periodDateExceptions") as $tmpDay)  {$periodDateExceptions[]=Txt::formatDate($tmpDay,"inputDate","dbDate");}
-					}
+		if(Req::isParam("formValidate")){
+			//// EDITE LES PRINCIPAUX CHAMPS DE L'ÉVÉNEMENT (date, périodicité, etc)
+			$dateBegin=Txt::formatDate(Req::param("dateBegin")." ".Req::param("timeBegin"), "inputDatetime", "dbDatetime");
+			$dateEnd  =Txt::formatDate(Req::param("dateEnd")." ".Req::param("timeEnd"), "inputDatetime", "dbDatetime");
+			$periodDateEnd=$periodValues=$periodDateExceptions=null;
+			if(Req::isParam("periodType")){
+				$periodDateEnd=Txt::formatDate(Req::param("periodDateEnd"), "inputDate", "dbDate");
+				$periodValues=Txt::tab2txt(Req::param("periodValues_".Req::param("periodType")));
+				if(Req::isParam("periodDateExceptions")){
+					$periodDateExceptions=[];
+					foreach(Req::param("periodDateExceptions") as $tmpDay)  {$periodDateExceptions[]=Txt::formatDate($tmpDay,"inputDate","dbDate");}
 				}
-				//Invité : affiche une notif "Votre proposition sera examiné..."
-				if(Ctrl::$curUser->isUser()==false && Req::isParam("guest"))  {Ctrl::notify("EDIT_guestElementRegistered");}
-				//Enregistre & recharge l'objet
-				$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", _idCat=".Db::param("_idCat").", important=".Db::param("important").", contentVisible=".Db::param("contentVisible").", visioUrl=".Db::param("visioUrl").", periodType=".Db::param("periodType").", periodValues=".Db::format($periodValues).", periodDateEnd=".Db::format($periodDateEnd).", periodDateExceptions=".Db::formatTab2txt($periodDateExceptions));
 			}
-			//// RÉINITIALISE SI BESOIN LES AFFECTATIONS/PROPOSITIONS AUX AGENDAS
-			if(Req::isParam("reinitCalendars")){
-				foreach(Req::param("reinitCalendars") as $idCal)  {$curObj->deleteAffectation($idCal,true);}
+			//Enregistre l'objet  &  Notif pour les invités ("Proposition examiné par un admin")
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd).", _idCat=".Db::param("_idCat").", important=".Db::param("important").", contentVisible=".Db::param("contentVisible").", visioUrl=".Db::param("visioUrl").", periodType=".Db::param("periodType").", periodValues=".Db::format($periodValues).", periodDateEnd=".Db::format($periodDateEnd).", periodDateExceptions=".Db::formatTab2txt($periodDateExceptions));
+			if(Ctrl::$curUser->isUser()==false && Req::isParam("guest"))  {Ctrl::notify("EDIT_guestElementRegistered");}
+			//// MODIF D'EVT : RÉINITIALISE LES AFFECTATIONS AUX AGENDAS
+			$alreadyConfirmedCals=[];
+			if($curObj->isNewRecord()==false){
+				foreach(MdlCalendar::affectationCalendars() as $tmpCal){												//Agendas dispos pour les affectations
+					if($curObj->isAffectedCalendar($tmpCal,true))	{$alreadyConfirmedCals[]=$tmpCal;}					//Incrémente la liste des affectations confirmées (cf. agendas en lecture avec proposition confirmée)
+					if($curObj->isAffectedCalendar($tmpCal))		{$curObj->affectationDelete($tmpCal->_id,true);}	//Supprime l'affectation (Confirmation/Proposition)
+				}
 			}
-			//// ATTRIBUE LES NOUVELLES AFFECTATIONS/PROPOSITIONS AUX AGENDAS
-			$affectationCals=(array)Req::param("affectationCalendars");
-			$propositionCals=(array)Req::param("propositionCalendars");
-			$propositionIdUsers=[];
-			foreach(array_merge($affectationCals,$propositionCals) as $idCal){
-				//Récupère l'agenda  &&  Verif si l'evt est déjà affecté à cet agenda
-				$tmpCal=Ctrl::getObj("calendar",$idCal);
-				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){
-					$isConfirmed=in_array($idCal,$affectationCals);
-					Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$tmpCal->_id.", confirmed=".Db::format($isConfirmed));		//Ajoute l'affectation à l'agenda
-					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$propositionIdUsers=array_merge($propositionIdUsers,$tmpCal->affectedUserIds(true));}	//Proposition : ajoute les proprios de l'agenda pour la notif mail
+			//// (RE)ATTRIBUE LES AFFECTATIONS AUX AGENDAS
+			$_idUsersMail=[];
+			foreach(Req::param("affectationCalendars") as $tmpId){
+				$tmpCal=Ctrl::getObj("calendar",$tmpId);																											//Récupère l'agenda
+				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){																							//Verif si l'evt peut être affecté à cet agenda
+					$isConfirmed=($tmpCal->addContentRight() || in_array($tmpCal,$alreadyConfirmedCals));															//Agenda accessible en écriture / Proposition déjà confirmée
+					Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$tmpCal->_id.", confirmed=".Db::format($isConfirmed));	//Affectation à l'agenda
+					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$_idUsersMail=array_merge($_idUsersMail,$tmpCal->affectedUserIds(true));}			//Notif d'une proposition pour les proprios de l'agenda
 				}
 			}
 			//// NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
-			if(!empty($propositionIdUsers)){
+			if(!empty($_idUsersMail)){
 				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
-				Tool::sendMail($propositionIdUsers, $mailSubject, $mailMessage, ["noNotify"]);
+				Tool::sendMail($_idUsersMail, $mailSubject, $mailMessage, ["noNotify"]);
 			}
 			//// NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
-			if(Req::isParam("notifMail") && $curObj->fullRight())
-			{
+			if(Req::isParam("notifMail") && $curObj->editRight()){
 				$objLabel=Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
 				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title).".ics"]];
@@ -280,36 +272,25 @@ class CtrlCalendar extends Ctrl
 			static::lightboxRedir();
 		}
 		////	AFFICHE LE FORMULAIRE
-		//// Liste des agendas pour les affectations
+		//// Agendas disponibles pour les affectations
 		$vDatas["affectationCalendars"]=MdlCalendar::affectationCalendars();
-		//Evt créé par un autre user : ajoute si besoin les agendas inaccessibles pour l'user courant mais quand même affectés à l'événement
-		if($curObj->isNew()==false && $curObj->isAutor()==false){
-			$vDatas["affectationCalendars"]=array_merge($vDatas["affectationCalendars"], $curObj->affectedCalendars("all"));
-			$vDatas["affectationCalendars"]=MdlCalendar::sortCalendars(array_unique($vDatas["affectationCalendars"],SORT_REGULAR));//"SORT_REGULAR" pour les objets
-		}
-		//// Prépare l'affichage de chaque agenda
 		foreach($vDatas["affectationCalendars"] as $tmpCal){
-			//Ajoute quelques propriétés à l'agenda
-			$tmpCal->mainInput=($tmpCal->addContentRight() || in_array($tmpCal,$curObj->affectedCalendars()))  ?  "affectation"  :  "proposition";	//Input principal : "affectation" || "proposition" pour l'agenda
-			$tmpCal->isChecked=($tmpCal->_id==Req::param("_idCal") || in_array($tmpCal,$curObj->affectedCalendars("all")))  ?  "checked"  :  null;	//Input principal : check l'agenda s'il est présélectionné ou déjà affecté
-			$tmpCal->isDisabled=($tmpCal->addContentRight()==false && $curObj->fullRight()==false)  ?  "disabled"  :  null;							//Input principal : désactive l'agenda s'il n'est pas accessible en écriture && user courant pas auteur de l'evt
-			$tmpCal->reinitCalendarInput=($curObj->isNew()==false && $tmpCal->isDisabled==null);													//Ajoute l'input "hidden" de réinitialisation de l'affectation : modif d'evt et input pas "disabled"
-			//Tooltip du label principal
-			if($tmpCal->isDisabled!=null)				{$tmpCal->labelTooltip=Txt::trad("CALENDAR_noModifTooltip");}			//"Modification non autorisé..." (tjs mettre en premier)
-			elseif($tmpCal->mainInput=="affectation")	{$tmpCal->labelTooltip=Txt::trad("CALENDAR_addEvtTooltipBis");}			//"Ajouter l'événement..."
-			else										{$tmpCal->labelTooltip=Txt::trad("CALENDAR_proposeEvtTooltipBis2");}	//"Proposer l'événement...agenda en lecture seule"
-			//Ajoute la description de l'agenda ?
-			if(!empty($tmpCal->description))  			{$tmpCal->labelTooltip.=" (".$tmpCal->description.")";}						
+			$tmpCal->inputAttr=null;
+			if($tmpCal->_id==Req::param("_idCal") || $curObj->isAffectedCalendar($tmpCal))	{$tmpCal->inputAttr.=" checked";}								//Check si présélectionné / déjà affecté
+			if($tmpCal->type=="user")														{$tmpCal->inputAttr.=' data-idUser="'.$tmpCal->_idUser.'"';}	//Cf "userGroupSelect()"
+			$tmpCal->inputType=($tmpCal->addContentRight())  ?  "affectation"  :  "proposition";															//Affectation / proposition d'evt
+			$tmpCal->tooltip=($tmpCal->inputType=="proposition")  ?  Txt::trad("CALENDAR_proposeEvtTooltip")  :  Txt::trad("CALENDAR_addEvtTooltip2");		//Tooltip : "Proposer l'événement" / "Ajouter l'événement"
+			if(!empty($tmpCal->description))  {$tmpCal->tooltip.="<hr>".$tmpCal->description;}																//Tooltip : description de l'agenda
+			if($tmpCal->inputType=="proposition")  {$tmpCal->title.=" &ast;";}																				//Title : ajoute un asterisk pour les proposition
 		}
 		//// Nouvel evt : dates par défaut
 		if($curObj->isNew()){
-			$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	?  date("Y-m-d H:i",Req::param("newEvtTimeBegin"))	:  date("Y-m-d H:00",time()+3600);							//date du jour, avec la prochaine heure courante
-			$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	?  date("Y-m-d H:i",Req::param("newEvtTimeEnd"))	:  date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);	//une heure après l'heure de début
+			$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	? date("Y-m-d H:i",Req::param("newEvtTimeBegin")) : date("Y-m-d H:00",time()+3600);
+			$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	? date("Y-m-d H:i",Req::param("newEvtTimeEnd"))   : date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);
 		}
 		//// Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["tabPeriodValues"]=Txt::txt2tab($curObj->periodValues);
-		foreach(Txt::txt2tab($curObj->periodDateExceptions) as $keyTmp=>$tmpException)	{$vDatas["periodDateExceptions"][$keyTmp+1]=Txt::formatDate($tmpException,"dbDate","inputDate");}
+		foreach(Txt::txt2tab($curObj->periodDateExceptions) as $tmpDate)  {$vDatas["periodDateExceptions"][]=Txt::formatDate($tmpDate,"dbDate","inputDate");}
 		$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 		static::displayPage("VueCalendarEventEdit.php",$vDatas);
 	}
@@ -325,17 +306,18 @@ class CtrlCalendar extends Ctrl
 			$timeSlotEnd  =Txt::formatDate(Req::param("dateTimeEnd"),"inputDatetime","time")-1;		//Idem
 			$timeSlotDayBegin=strtotime(date("Y-m-d 00:00:00",$timeSlotBegin));						//Début/fin du jour du timeSlot (récupère ainsi les récurrences)
 			$timeSlotDayEnd=strtotime(date("Y-m-d 23:59:59",$timeSlotEnd));							//Idem
-			foreach(Req::param("calendarIds") as $calId){											//Parcourt les agendas sélectionnés (pas de "getObjectsTypeId()" sinon on ne récupère pas les agendas pour "proposition")
+			foreach(Req::param("calendarIds") as $calId){											//Parcourt les agendas sélectionnés (sans "getCurObjects()", sinon on récupère pas les agendas pour "proposition")
 				$tmpCal=self::getObj("calendar", $calId);											//Récupère l'agenda
-				$timeSlotBusyCalendar=null;															//Init le TimeSlotBusy de l'agenda
+				$timeSlotBusyCal=null;																//Init le TimeSlotBusy de l'agenda
 				foreach($tmpCal->evtList($timeSlotDayBegin, $timeSlotDayEnd, 0) as $tmpEvt){									//Evts sur le jour du timeSlot ($accessRightMin=0) : récupère ainsi les evts périodiques
 					if(MdlCalendar::evtInDuration($tmpEvt,$timeSlotBegin,$timeSlotEnd) && $tmpEvt->_id!=Req::param("_evtId")){	//Vérif si l'evt s'il est sur le timeSlot (pas celui en cours d'édition : cf. modif d'evt)
-						$evtTitle=($tmpCal->readRight())  ?  " - ".Txt::reduce($tmpEvt->title,80)  :  null;						//Title de l'evt si accès en lecture à l'agenda (pas un proposition d'evt)
-						$timeSlotBusyCalendar.='<span title="'.Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<br>'.$tmpEvt->title.'"><img src="app/img/arrowRightBig.png">'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).$evtTitle.'</span>';
+						$evtTitle=($tmpCal->readRight())  ?  " - ".Txt::reduce($tmpEvt->title,80)  :  null;						//Title de l'evt si accès en lecture à l'agenda (pas une proposition)
+						$evtTooltip=Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<br>'.$tmpEvt->title;		//Tooltip de l'evt
+						$timeSlotBusyCal.='<div '.Txt::tooltip($evtTooltip).'>'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,80).'</div>';
 					}
 				}
 				//L'agenda est occupé?
-				if(!empty($timeSlotBusyCalendar))  {$timeSlotBusy.="<table><tr><td>".$tmpCal->title."</td><td>".$timeSlotBusyCalendar."</td></tr></table>";}
+				if(!empty($timeSlotBusyCal))  {$timeSlotBusy.="<table><tr><td>".$tmpCal->title."</td><td>".$timeSlotBusyCal."</td></tr></table>";}
 			}
 			//Retourne le message
 			echo $timeSlotBusy;
@@ -357,7 +339,7 @@ class CtrlCalendar extends Ctrl
 	public static function actionEventPropositionConfirm()
 	{
 		//Récupère l'agenda concerné et vérif le droit d'accès (cf. "typeId")
-		$curCal=Ctrl::getObjTarget();
+		$curCal=Ctrl::getCurObj();
 		if($curCal->editContentRight())
 		{
 			//Récup L'evt et l'email pour la notif
@@ -365,7 +347,7 @@ class CtrlCalendar extends Ctrl
 			$notifMail=(!empty($curEvt->guestMail))  ?  $curEvt->guestMail  :  Ctrl::getObj("user",$curEvt->_idUser)->mail;
 			//Valide/Invalide la proposition
 			if(Req::isParam("isConfirmed"))	{Db::query("UPDATE ap_calendarEventAffectation SET confirmed=1 WHERE _idEvt=".(int)$curEvt->_id." AND _idCal=".$curCal->_id);}
-			else							{$curEvt->deleteAffectation($curCal->_id);}
+			else							{$curEvt->affectationDelete($curCal->_id);}
 			//Envoi une notification par email
 			if(!empty($notifMail)){
 				$mailSubject=Req::isParam("isConfirmed")  ?  Txt::trad("CALENDAR_evtProposeConfirmedMail")." ".Ctrl::$curUser->getLabel()  :  Txt::trad("CALENDAR_evtProposeDeclinedMail");
@@ -382,7 +364,7 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************/
 	public static function actionVueCalendarEvent()
 	{
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();							//Controle d'accès
 		$vDatas["curObj"]=$curObj;						//Récup l'evt
 		$vDatas["labelPeriod"]=$curObj->periodLabel();	//Périodicité de l'événement
@@ -397,7 +379,7 @@ class CtrlCalendar extends Ctrl
 	public static function actionImportEvents()
 	{
 		//Charge et controle
-		$objCalendar=Ctrl::getObjTarget();
+		$objCalendar=Ctrl::getCurObj();
 		if($objCalendar->editContentRight()==false)  {Ctrl::noAccessExit();}
 		$vDatas=[];
 		////	Valide le formulaire : sélection du fichier / des evt à importer
@@ -479,7 +461,7 @@ class CtrlCalendar extends Ctrl
 					if(!empty($tmpEvt["checked"])){
 						//Créé et enregistre l'événement
 						$curObj=new MdlCalendarEvent();
-						$curObj=$curObj->createUpdate("title=".Db::format($tmpEvt["dbTitle"]).", description=".Db::format($tmpEvt["dbDescription"]).", dateBegin=".Db::format($tmpEvt["dbDateBegin"]).", dateEnd=".Db::format($tmpEvt["dbDateEnd"]).", periodType=".Db::format($tmpEvt["dbPeriodType"]).", periodValues=".Db::format($tmpEvt["dbPeriodValues"]).", periodDateEnd=".Db::format($tmpEvt["dbPeriodDateEnd"]));
+						$curObj=$curObj->editRecord("title=".Db::format($tmpEvt["dbTitle"]).", description=".Db::format($tmpEvt["dbDescription"]).", dateBegin=".Db::format($tmpEvt["dbDateBegin"]).", dateEnd=".Db::format($tmpEvt["dbDateEnd"]).", periodType=".Db::format($tmpEvt["dbPeriodType"]).", periodValues=".Db::format($tmpEvt["dbPeriodValues"]).", periodDateEnd=".Db::format($tmpEvt["dbPeriodDateEnd"]));
 						//Affecte à l'agenda courant
 						Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$objCalendar->_id.", confirmed=1");
 					}
@@ -498,7 +480,7 @@ class CtrlCalendar extends Ctrl
 	public static function actionExportEvents()
 	{
 		////	Charge l'objet + Controle d'accès + Création du fichier .ical 
-		$objCalendar=Ctrl::getObjTarget();
+		$objCalendar=Ctrl::getCurObj();
 		$objCalendar->readControl();
 		self::getIcal($objCalendar);
 	}

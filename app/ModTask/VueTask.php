@@ -1,8 +1,3 @@
-<script>
-////	Resize
-lightboxWidth(700);
-</script>
-
 <style>
 .priorityLabel, .categoryLabel	{display:inline-block; margin-left:20px; line-height:40px;}	/*Label de la priorité et du statut (surcharges)*/
 .vTaskDetails					{text-align:center; margin:20px 0px;}						/*Ligne des détails*/

@@ -15,13 +15,13 @@ class CtrlObject extends Ctrl
 	//Vue des Folders en cache
 	public static $vueFolders=null;
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : AFFICHE LES LOGS D'UN OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionLogs()
 	{
 		if(Req::isParam("typeId")){
-			$curObj=self::getObjTarget();
+			$curObj=self::getCurObj();
 			if($curObj->editRight()){
 				$vDatas["logsList"]=Db::getTab("SELECT *, UNIX_TIMESTAMP(date) as `timestamp` FROM ap_log WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY date");
 				static::displayPage(Req::commonPath."VueObjLogs.php",$vDatas);
@@ -29,22 +29,22 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : SUPPRIME LE OU LES OBJETS SÉLECTIONNÉS : CF. $object->getUrl("delete")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDelete()
 	{
 		// Init
 		$redirUrl=$updateDatasFolderSize=null;
 		$notDeletedObjects=[];
 		////	Supprime le/les objets
-		foreach(self::getObjectsTypeId() as $tmpObj)
+		foreach(self::getCurObjects() as $tmpObj)
 		{
 			//Enregistre l'Url de redirection après le delete
 			if(empty($redirUrl)){
-				if($tmpObj::isFolder==true)				{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
-				elseif($tmpObj::isContainerContent())	{$redirUrl=$tmpObj->getUrl();}					//Suppr un contenu (content) : affiche le "container"
-				else									{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
+				if($tmpObj::isInContainer())	{$redirUrl=$tmpObj->getUrl();}					//Suppr un "content" : raffiche le "container"
+				elseif($tmpObj::isFolder==true)	{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
+				else							{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
 			}
 			//Enregistre si on doit mettre à jour le "datasFolderSize()"
 			if($tmpObj::moduleName=="file")  {$updateDatasFolderSize=true;}
@@ -63,23 +63,23 @@ class CtrlObject extends Ctrl
 		self::redir($redirUrl);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU POUR DÉPLACER DES ÉLÉMENTS DANS UN AUTRE DOSSIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionFolderMove()
 	{
 		//Validation du formulaire
 		if(Req::isParam("formValidate") && Req::isParam("newFolderId")){
-			foreach(self::getObjectsTypeId() as $tmpObj)  {$tmpObj->folderMove(Req::param("newFolderId"));}
+			foreach(self::getCurObjects() as $tmpObj)  {$tmpObj->folderMove(Req::param("newFolderId"));}
 			static::lightboxRedir();
 		}
 		//Affiche le menu de déplacement de dossier
 		MdlFolder::menuTree("move");
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : LISTE DES DOSSIERS DU DOSSIER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function vueFolders()
 	{
 		if(self::$vueFolders===null)
@@ -97,19 +97,19 @@ class CtrlObject extends Ctrl
 		return self::$vueFolders;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UN DOSSIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionEditFolder()
 	{
 		////	Charge le dossier et Controle d'accès: dossier existant / nouveau dossier
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre et recharge l'objet
-			$curObj=$curObj->createUpdate("name=".Db::param("name").", description=".Db::param("description").", icon=".Db::param("icon"));
+			$curObj=$curObj->editRecord("name=".Db::param("name").", description=".Db::param("description").", icon=".Db::param("icon"));
 			//Etend les droits aux sous dossiers?
 			if(Req::isParam("extendToSubfolders")){
 				foreach($curObj->folderTree("all") as $tmpObj)	{$tmpObj->setAffectations();}
@@ -136,10 +136,10 @@ class CtrlObject extends Ctrl
 		if($MdlObject::addRight()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : edite une des categories
 		if(Req::isParam("formValidate")){
-			$curObj=Ctrl::getObjTarget();
+			$curObj=Ctrl::getCurObj();
 			$curObj->editControl();
 			$_idSpaces=(in_array("allSpaces",Req::param("spaceList")))  ?  null : Txt::tab2txt(Req::param("spaceList"));
-			$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
+			$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", color=".Db::param("color").", _idSpaces=".Db::format($_idSpaces));
 			Ctrl::notify("modifRecorded","success");
 			header("Location: ?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&objectType=".$MdlObject::objectType);//Toujours recharger la page (mais sans "redir()")
 		}
@@ -151,52 +151,52 @@ class CtrlObject extends Ctrl
 		static::displayPage(Req::commonPath."VueCategoryEdit.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : CHANGE L'ORDRE DES CATEGORIES
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionCategoryChangeOrder()
 	{
-		foreach(self::getObjectsTypeId() as $cpt=>$tmpObj){
+		foreach(self::getCurObjects() as $cpt=>$tmpObj){
 			Db::query("UPDATE ".$tmpObj::dbTable." SET `rank`=".Db::format($cpt+1)." WHERE _id=".(int)$tmpObj->_id);
 		}
 		echo "true";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : CONTROLE SI UN AUTRE OBJET PORTE LE MÊME NOM (FOLDER/FILE) OU TITRE (CALENDAR)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionControlDuplicateName()
 	{
 		if(Req::isParam(["typeId","controledName"])){
-			$curObj=Ctrl::getObjTarget();																										//Récupère l'objet courant 
+			$curObj=Ctrl::getCurObj();																										//Récupère l'objet courant 
 			$sqlSelectors=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");	//Recherche sur le nom ou le titre
-			if(Req::isParam("typeIdContainer"))  {$sqlSelectors.=" AND _idContainer=".Ctrl::getObjTarget(Req::param("typeIdContainer"))->_id;}	//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
+			if(Req::isParam("typeIdContainer"))  {$sqlSelectors.=" AND _idContainer=".Ctrl::getCurObj(Req::param("typeIdContainer"))->_id;}	//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
 			//Recherche les doublons dans les objets affectés à l'espace courant
 			$queryDuplicate="SELECT count(*) FROM ".$curObj::dbTable." WHERE ".$sqlSelectors." AND _id!=".$curObj->_id." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")";
 			if(Db::getVal($queryDuplicate) > 0)  {echo "duplicateName";}
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : CONTROLE D'ACCÈS AVANT SUPPRESSION D'UN DOSSIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionFolderDeleteControl()
 	{
 		$result=[];
-		$curFolder=Ctrl::getObjTarget();
+		$curFolder=Ctrl::getCurObj();
 		$folderTree		=$curFolder->folderTree("all");																		//Arbo complète des dossiers, accessibles ou pas en lecture
 		$folderTreeWrite=$curFolder->folderTree(2);																			//Arbo uniquement des dossiers accessibles en écriture
 		if(count($folderTree)!=count($folderTreeWrite))	{$result["confirmDeleteFolder"]=Txt::trad("confirmDeleteFolder");}	//"Certains sous-dossiers ne sont pas accessibles ..confirmer ?"
-		if(count($folderTree)>100)  					{$result["notifDeleteWait"]=Txt::trad("notifDeleteWait");}			//Notif "Merci de patienter un instant"
+		if(count($folderTree)>100)  					{$result["confirmDeleteWait"]=Txt::trad("confirmDeleteWait");}		//Notif "Merci de patienter un instant"
 		echo json_encode($result);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : EDITION D'UN DOSSIER => CONTROL LE DROIT D'ACCÈS AU DOSSIER PARENT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionAccessRightParentFolder()
 	{
-		$objFolder=Ctrl::getObjTarget();						//Récupère le dossier parent
+		$objFolder=Ctrl::getCurObj();							//Récupère le dossier parent
 		$objectRight=explode("_",Req::param("objectRight"));	//Droit d'accès sélectionné pour le dossier édité (Ex: "1_U2_2" ou "1_spaceUsers_1.5")
 		$_idSpace=(int)$objectRight[0];							//Espace du droit d'accès
 		$target=(string)$objectRight[1];						//Target du droit d'accès
@@ -213,47 +213,38 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : BACKUP A RETOURNER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionClientBackup()
 	{
 		$actionName=Req::param("actionName");
 		if(Req::isHost())  {Host::$actionName();}
 	}
 
-	/*******************************************************************************************
-	 * ACTION : TELECHARGE UN FICHIER JOINT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * FICHIER JOINT : DOWNLOAD D'UN FICHIER ("nameMd5" : cf. "actionExternalGetFile()")
+	 ********************************************************************************************************/
 	public static function actionAttachedFileDownload()
 	{
-		//Récupère le fichier et controle le droit d'accès ("nameMd5" : cf. "actionExternalGetFile()")
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))   {File::download($curFile["name"],$curFile["path"]);}
+		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))
+			{File::download($curFile["name"],$curFile["path"]);}
 	}
 
-	/*******************************************************************************************
-	 * ACTION : AFFICHE UN FICHIER JOINT (IMAGE/PDF/ETC) DANS LE BROWSER
-	 *******************************************************************************************/
-	 public static function actionAttachedFileDisplay()
+	/********************************************************************************************************
+	 * FICHIER JOINT : AFFICHE UNE IMAGE / VIDEO / PDF
+	 ********************************************************************************************************/
+	public static function actionAttachedFileDisplay()
 	{
-		//Récupère le fichier et controle le droit d'accès
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"]) && $curFile["containerObj"]->readRight())  {File::display($curFile["path"]);}
+		if(is_file($curFile["path"]) && $curFile["containerObj"]->readRight())
+			{File::display($curFile["path"]);}
 	}
 
-	/*******************************************************************************************
-	 * FICHIER JOINT : URL D'AFFICHAGE DU FICHIER VIA "actionAttachedFileDisplay()"
-	 *******************************************************************************************/
-	public static function attachedFileDisplayUrl($fileId, $fileName)
-	{
-		//Ajoute "&amp;" pour Tinymce et ajoute l'extension en toute fin (cf. fancybox des images et controle du type de fichier)
-		return "?ctrl=object&amp;action=AttachedFileDisplay&amp;_id=".$fileId."&amp;extension=.".File::extension($fileName);
-	}
-
-	/*******************************************************************************************
-	 * AJAX : SUPPRIME UN FICHIER JOINT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * FICHIER JOINT / AJAX : SUPPRIME UN FICHIER JOINT
+	 ********************************************************************************************************/
 	public static function actionAttachedFileDelete()
 	{
 		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
@@ -263,13 +254,13 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : SWITH LE "LIKE" DE L'USER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUsersLike()
 	{
 		if(Ctrl::$curUser->isUser() && Req::isParam("typeId")){																		//Vérif de base
-			$curObj=self::getObjTarget();																							//Objet courant
+			$curObj=self::getCurObj();																							//Objet courant
 			$sqlObjectLike="objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." AND _idUser=".Ctrl::$curUser->_id;	//Selecteur SQL
 			$curUserLiked=Db::getVal("SELECT count(*) FROM ap_objectLike WHERE ".$sqlObjectLike);									//Vérif si l'user courant à "liké" l'objet
 			if(!empty($curUserLiked))	{Db::query("DELETE FROM ap_objectLike WHERE ".$sqlObjectLike);}								//Supprime le like de l'user courant ("switch" le like)
@@ -280,13 +271,13 @@ class CtrlObject extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : AFFICHE LES COMMENTAIRES D'UN OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUsersComment()
 	{
 		////	Charge l'element
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		////	Ajoute un commentaire
 		if(Req::isParam(["formValidate","comment"]) && Req::param("actionComment")=="add"){

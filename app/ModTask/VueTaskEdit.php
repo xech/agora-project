@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(700);
-
 ////	INIT
 ready(function(){
 	////	Donne une valeur aux inputs "select"
@@ -14,6 +11,7 @@ ready(function(){
 
 
 <style>
+#bodyLightbox				{max-width:800px;}
 .vTaskOptions				{display:inline-block; margin:20px 20px 0px 0px;}
 .vTaskOptionsButton			{height:40px;}
 .vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
@@ -21,8 +19,8 @@ ready(function(){
 .divResponsiblePerson		{display:inline-block; width:33%; padding:5px;}
 img[src*='arrowRight']		{margin:3px;}
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vTaskOptions			{display:block; margin:30px 0px 0px 0px;}
 	.divResponsiblePerson	{width:100%;}	
 }
@@ -44,9 +42,9 @@ img[src*='arrowRight']		{margin:3px;}
 
 	<!--DATE DEBUT & FIN-->
 	<div class="vTaskOptions">
-		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" title="<?= Txt::trad("begin") ?>">
+		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" <?= Txt::tooltip("begin") ?> >
 		<img src="app/img/arrowRight.png">
-		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" title="<?= Txt::trad("end") ?>">
+		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" <?= Txt::tooltip("end") ?> >
 	</div>
 
 	<!--PRIORITE-->
@@ -83,6 +81,6 @@ img[src*='arrowRight']		{margin:3px;}
 		?>
 	</fieldset>
 	
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

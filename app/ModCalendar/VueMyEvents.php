@@ -1,12 +1,8 @@
-<script>
-////	Resize
-lightboxWidth(700);
-</script>
-
 <style>
+#bodyLightbox		{max-width:800px;}
 .vEvtLine			{display:table; width:100%; padding:5px;}
 .vEvtLine>div		{display:table-cell; padding:5px;}
-.vEvtDate			{width:200px;}
+.vEvtDate			{width:300px;}
 .vEvtOptions		{width:80px; text-align:right;}
 </style>
 
@@ -16,7 +12,7 @@ lightboxWidth(700);
 
 	<!--LISTE DES EVT-->
 	<?php foreach($myEvents as $tmpEvent){ ?>
-	<div class="vEvtLine lineHover" title="<?= Txt::dateLabel($tmpEvent->dateBegin,"default",$tmpEvent->dateEnd) ?><br><?= $tmpEvent->description ?>">
+	<div class="vEvtLine lineHover" <?= Txt::tooltip($tmpEvent->description) ?>>
 		<div class="vEvtDate"><?= Txt::dateLabel($tmpEvent->dateBegin,"labelFull",$tmpEvent->dateEnd) ?></div>
 		<div><?= $tmpEvent->title ?></div>
 		<div class="vEvtOptions">

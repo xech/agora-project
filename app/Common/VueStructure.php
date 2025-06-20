@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="<?= Txt::trad("CURLANG") ?>" id="<?= Ctrl::$isMainPage==true?'htmlMainPage':'htmlLightbox' ?>">
 	<head>
 		<!-- AGORA-PROJECT :: UNDER THE GENERAL PUBLIC LICENSE V2 :: https://www.gnu.org -->
@@ -12,14 +12,15 @@
 		<meta name="Description" content="<?= !empty(Ctrl::$agora->description) ? Ctrl::$agora->description : "Omnispace.fr - Agora-Project" ?>">
 		<meta name="application-name" content="Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
-		<!-- JQUERY & JQUERY-UI -->
+		<!--  JQUERY -->
 		<script src="app/js/jquery-3.7.1.min.js"></script>
 		<script src="app/js/jquery-ui_1.14.0/jquery-ui.min.js"></script>
 		<script src="app/js/jquery-ui_1.14.0/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
 		<link rel="stylesheet" href="app/js/jquery-ui_1.14.0/jquery-ui.css">
-		<!-- JQUERY PLUGINS -->
-		<script src="app/js/fancybox/dist/jquery.fancybox.min.js"></script>
-		<link  href="app/js/fancybox/dist/jquery.fancybox.css" rel="stylesheet">
+		<!-- LIBRAIRIES JS -->
+		<script src="app/js/fancybox_5.0.36/fancybox.umd.js"></script>
+		<script src="app/js/fancybox_5.0.36/l10n/<?= Txt::trad("FANCYBOXLANG") ?>.umd.js"></script>
+		<link rel="stylesheet" href="app/js/fancybox_5.0.36/fancybox.css" />
 		<script type="text/javascript" src="app/js/tooltipster/tooltipster.bundle.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="app/js/tooltipster/tooltipster.bundle.css">
 		<link rel="stylesheet" type="text/css" href="app/js/tooltipster/tooltipster-sideTip-shadow.min.css">
@@ -37,11 +38,13 @@
 		<script>
 		////	Parametres et labels principaux (cf. app.js)
 		isMobileApp				=<?= Req::isMobileApp()==true ? "true" : "false" ?>;
+		fancyboxLang			=Fancybox.l10n.<?= Txt::trad("FANCYBOXLANG") ?>;	
 		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
 		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
 		labelConfirm			="<?= Txt::trad("confirm") ?>";
 		labelConfirmOk			="<?= Txt::trad("confirmOk") ?>";
 		labelConfirmCancel		="<?= Txt::trad("confirmCancel") ?>";
+		labelConfirmDownload	="<?= Txt::trad("confirmDownload") ?>";
 		labelConfirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
 		labelConfirmDelete		="<?= Txt::trad("confirmDelete") ?>";
 		labelConfirmDeleteAlert	="<?= Txt::trad("confirmDeleteAlert") ?>";
@@ -51,20 +54,18 @@
 
 		////	Au chargement de la page
 		ready(function(){
-			////	Mobile : Affiche le bouton en bas de page pour ajouter un nouvel element
+			//// Mobile : Affiche le bouton "Ajouter" en bas de page
 			if(isMobile()){
-				var addElemButton=$("#pageMenu img[src*='plus']").first().parents(".menuLine");									//Sélectionne le premier bouton "Ajouter"
-				if(addElemButton.exist())  {$("#menuMobileAddButton").attr("onclick",addElemButton.attr("onclick")).show();}	//Ajoute l'attribut "onclick", puis affiche ce bouton
+				var addElemButton=$("#moduleMenu img[src*='plus']").first().parents(".menuLine");									//Sélectionne le premier bouton "Ajouter"
+				if(addElemButton.exist())  {$("#menuMobileAddButton").attr("onclick",addElemButton.attr("onclick")).show();}	//Ajoute l'attribut "onclick" et affiche le bouton
 			}
-			<?php
-			////	Affichage des notifications
-			foreach(Ctrl::$notify as $tmpNotif){
-				if(Txt::isTrad($tmpNotif["message"]))  {$tmpNotif["message"]=Txt::trad($tmpNotif["message"]);}
-				echo 'notify("'.$tmpNotif["message"].'", "'.$tmpNotif["type"].'");';
-			}
-			////	Footer & Notify du host
-			if(Req::isHost())  {Host::footerJsNotify();}
-			?>
+			//// Affiche des notifs
+			<?php foreach(Ctrl::$notify as $tmpNotif){ ?>
+				notify("<?= Txt::trad($tmpNotif["message"]) ?>","<?= $tmpNotif["type"] ?>");
+			<?php } ?>
+
+			//// Footer & Notify du host
+			<?php if(Req::isHost()) {Host::footerJsNotify();} ?>
 		});
 		</script>
 
@@ -77,34 +78,38 @@
 		#pageFooterHtml						{bottom:15px; left:15px; font-weight:normal; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
 		#pageFooterIcon						{bottom:5px; right:5px;}
 		#pageFooterIcon img					{max-height:70px; max-width:200px;}
-
-		/*MOBILE*/
+		/*RESPONSIVE SMALL*/
 		@media screen and (max-width:1024px){
 			#pageFooterHtml, #pageFooterIcon	{display:none;}
 		}
 		</style>
 	</head>
 
-	<body>
+	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>">
+	
+		<!--CONTENU PRINCIPAL DE LA PAGE-->
 		<?php
-		////	VUES PRINCIPALES : MENU DU HEADER + CORPS DE LA PAGE + MESSENGER
 		if(!empty($headerMenu))		{echo $headerMenu;}
 		if(!empty($mainContent))	{echo $mainContent;}
 		if(!empty($messenger))		{echo $messenger;}
-
-		////	PAGE PRINCIPALE : TEXTE PERSONNALISÉ DU FOOTER (OU SCRIPT)  &&  ICONE DE L'ESPACE
-		if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){
-			$pageFooterIconTooltip=OMNISPACE_URL_LABEL.'<hr> generated in '.round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
-			echo '<div id="pageFooterHtml">'.Ctrl::$agora->footerHtml.'</div>
-				  <div id="pageFooterIcon"><a href="'.$pathLogoUrl.'" target="_blank" '.Txt::tooltip($pageFooterIconTooltip).'><img src="'.Ctrl::$agora->pathLogoFooter().'"></a></div>';
-		}
 		?>
 
-		<!--MENU MOBILE (cf. app.js)-->
+		<!--FOOTER EN PAGE PRINCIPALE-->
+		<?php if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){ ?>
+			<div id="pageFooterHtml"><?= Ctrl::$agora->footerHtml ?></div>
+			<div id="pageFooterIcon"><a href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a></div>
+		<?php } ?>
+
+		<!--MENU CONTEXT RESPONSIVE (cf. app.js / app.css)-->
 		<div id="menuMobileBg"></div>
 		<div id="menuMobileMain">
-			<div id="menuMobileClose">&nbsp;</div><div id="menuMobileContent"></div><div id="menuMobileContent2"></div>
+			<div id="menuMobileClose"><img src="app/img/close.png"></div>
+			<div id="menuMobileContent1"></div>
+			<div id="menuMobileContent2"></div>
 		</div>
+
+		<!--BOUTON "AJOUTER" SUR MOBILE-->
 		<div id="menuMobileAddButton"><img src="app/img/plusBig.png"></div>
+
 	</body>
 </html>

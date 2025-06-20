@@ -29,7 +29,7 @@ ready(function(){
 .vMessageQuoted					{position:relative; display:block; overflow:auto; max-height:100px; margin:15px 0px; padding:10px; padding-left:40px; font-style:italic;}/*"position:relative" : cf. "vMessageQuotedImg" */
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
-/*MOBILE*/
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.vMessages					{border-radius:5px;}
 	.vDetails, .vDetails>div	{display:block;}
@@ -39,7 +39,7 @@ ready(function(){
 
 
 <div id="pageCenter">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<?= MdlForumSubject::menuSelect() ?>
 		<div class="miscContainer">
 		<?php
@@ -127,8 +127,9 @@ ready(function(){
 						</div>
 					</div>';
 			}
-			//REPONDRE AU SUJET (sur mobile on affiche le bouton du bas : "menuMobileAddButton")
-			if($curSubject->addContentRight() && Req::isMobile()==false)  {echo '<div class="objBottomMenu"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
+			//"Ajouter un message" en fin de page
+			if($curSubject->addContentRight() && Req::isMobile()==false)
+				{echo '<div class="objBottomMenu"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
 		}
 		?>
 	</div>

@@ -17,9 +17,9 @@ class MdlFileFolder extends MdlFolder
 	const dbTable="ap_fileFolder";
 	const MdlObjectContent="MdlFile";
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : MENU CONTEXTUEL AVEC L'OPTION "TELECHARGER LE DOSSIER"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight())
@@ -27,12 +27,12 @@ class MdlFileFolder extends MdlFolder
 		return parent::contextMenu($options);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : AJOUT/MODIF DE DOSSIER
-	 *******************************************************************************************/
-	public function createUpdate($sqlFields)
+	 ********************************************************************************************************/
+	public function editRecord($sqlFields)
 	{
-		$reloadedObj=parent::createUpdate($sqlFields);
+		$reloadedObj=parent::editRecord($sqlFields);
 		//Créé un nouveau dossier sur le disque?
 		if(!file_exists($reloadedObj->folderPath("real"))){
 			$isCreated=mkdir($reloadedObj->folderPath("real"));

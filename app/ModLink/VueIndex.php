@@ -6,7 +6,7 @@
 </style>
 
 <div id="pageFull">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<?= MdlLink::menuSelect() ?>
 		<div class="miscContainer">
 			<?php
@@ -26,8 +26,8 @@
 	<div id="pageContent" class="<?= MdlLink::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo MdlFolder::menuPath(Txt::trad("LINK_addLink"),MdlLink::getUrlNew());
-		echo CtrlObject::vueFolders();
+		echo MdlFolder::menuPath(Txt::trad("LINK_addLink"),MdlLink::getUrlNew()).
+			 CtrlObject::vueFolders();
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink)
 		{

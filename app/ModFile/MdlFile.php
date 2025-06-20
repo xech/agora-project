@@ -31,18 +31,19 @@ class MdlFile extends MdlObject
 	public static $searchFields=["name","description"];
 	public static $sortFields=["name@@asc","name@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","extension@@asc","extension@@desc","octetSize@@asc","octetSize@@desc","downloadsNb@@desc","downloadsNb@@asc"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE DES VERSIONS DU FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getVersions($forceUpdate=false)
 	{
-		if($this->_versions===null || $forceUpdate==true)  {$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea desc");}//Le "ORDER BY" place la dernière version en premier!
+		if($this->_versions===null || $forceUpdate==true)
+			{$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea desc");}//"ORDER BY" place la dernière version en 1er
 		return $this->_versions;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DERNIÈRE VERSION DU FICHIER /  VERSION À UNE DATE DONNÉE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getVersion($dateCrea=null)
 	{
 		foreach($this->getVersions() as $tmpVersion){
@@ -50,19 +51,19 @@ class MdlFile extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * CHEMIN DU FICHIER SUR LE DISQUE (DERNIÈRE VERSION / VERSION PRÉCISÉ AVEC "$dateCrea")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function filePath($dateCrea=null)
 	{
 		$curVersion=$this->getVersion($dateCrea);
 		return $this->containerObj()->folderPath("real").$curVersion["realName"];
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LIEN POUR AJOUTER DES FICHIERS
 	 * $urlParams spécifié pour une nouvelle version de fichier
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function urlAddFiles($urlParams=null)
 	{
 		//Par défaut on spécifie le dossier courant
@@ -70,9 +71,9 @@ class MdlFile extends MdlObject
 		return "?ctrl=".static::moduleName."&action=AddEditFiles&".$urlParams;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * URL DE DOWNLOAD
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function urlDownload($dateCrea=null)
 	{
 		$urlDownload="?ctrl=file&action=GetFile&typeId=".$this->_typeId;								//Url de base
@@ -81,51 +82,51 @@ class MdlFile extends MdlObject
 		return $urlDownload;																			//Retourne l'Url
 	}
 
-	/*******************************************************************************************
-	 * URL D'AFFICHAGE DANS LE BROWSER OU L'APPLI MOBILE (PDF/IMG/VIDEO)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * URL D'AFFICHAGE DANS LE BROWSER OU L'APPLI MOBILE (IMG/VIDEO/PDF/TXT)
+	 ********************************************************************************************************/
 	public function urlDisplay()
 	{
-		return $this->urlDownload()."&displayFile=true";
+		return $this->urlDownload()."&displayFile=true&extension=".File::extension($this->name);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VIGNETTE DU FICHIER : NOM REEL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function thumbName()
 	{
 		return $this->_id."_thumb.jpg";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VIGNETTE DU FICHIER : PDF & IMAGICK ACTIVÉ
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function thumbPdfEnabled()
 	{
 		return (File::isType("pdf",$this->name) && extension_loaded("imagick"));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VIGNETTE DU FICHIER : VERIFIE L'EXISTENCE
-	 *******************************************************************************************/
-	public function thumbExist()
+	 ********************************************************************************************************/
+	public function hasTumb()
 	{
 		if($this->_hasTumb===null)  {$this->_hasTumb=(strlen($this->thumbPath()) && is_file($this->thumbPath()));}
 		return $this->_hasTumb;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VIGNETTE DU FICHIER : PATH REEL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function thumbPath()
 	{
 		if($this->_tumbPath===null)  {$this->_tumbPath=(File::isType("imageResize",$this->name) || $this->thumbPdfEnabled())  ?  $this->containerObj()->folderPath("real").$this->thumbName()  :  "";}
 		return $this->_tumbPath;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VIGNETTE DU FICHIER : CRÉE OU UPDATE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function thumbEdit()
 	{
 		//Fichier de moins de 15Mo?
@@ -151,22 +152,22 @@ class MdlFile extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * MENU DES VERSIONS DU FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function versionsMenu($displayType)
 	{
 		$nbVersions=count($this->getVersions());
 		if($nbVersions>1){
 			$nbVersionsTitle=$nbVersions." ".Txt::trad("FILE_nbFileVersions");
 			$displayLabelIcon=($displayType=="label")  ?  $nbVersionsTitle  :  "<img src='app/img/file/versions.png'>";
-			return '<a class="vVersionsMenu" onclick="lightboxOpen(\'?ctrl=file&action=FileVersions&typeId='.$this->_typeId.'\')" '.Txt::tooltip($nbVersionsTitle).'>'.$displayLabelIcon.'</a>';
+			return '<a class="versionsMenu" onclick="lightboxOpen(\'?ctrl=file&action=FileVersions&typeId='.$this->_typeId.'\')" '.Txt::tooltip($nbVersionsTitle).'>'.$displayLabelIcon.'</a>';
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : MENU CONTEXTUEL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		//// ADMIN D'ESPACE : "TÉLÉCHARGÉ PAR" + LISTE DES USERS AYANT TELECHARGE LE FICHIER
@@ -182,13 +183,13 @@ class MdlFile extends MdlObject
 		return parent::contextMenu($options);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * IMAGE DU FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function typeIcon()
 	{
 		$pathFileTypes="app/img/file/fileType/";
-		if($this->thumbExist())								{return $this->thumbPath();}
+		if($this->hasTumb())								{return $this->thumbPath();}
 		elseif(File::isType("pdf",$this->name))				{return $pathFileTypes."pdf.png";}
 		elseif(File::isType("textEditor",$this->name))		{return $pathFileTypes."textEditor.png";}
 		elseif(File::isType("text",$this->name))			{return $pathFileTypes."text.png";}
@@ -204,10 +205,10 @@ class MdlFile extends MdlObject
 		else												{return $pathFileTypes."misc.png";}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRIME UN FICHIER (toutes ses versions OU une version spécifique)	
 	 * $deleteVersion : "deleteFolder" / "all" / version précise via "dateCrea"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete($deleteVersion="all")
 	{
 		if($this->deleteRight())
@@ -235,11 +236,11 @@ class MdlFile extends MdlObject
 				}
 				////	Supprime toutes les versions OU la dernière version du fichier : efface auquel cas la vignette, puis efface définitivement le fichier
 				if($deleteVersion=="all" || count($versionList)==1){
-					if($this->thumbExist())  {File::rm($this->thumbPath());}
+					if($this->hasTumb())  {File::rm($this->thumbPath());}
 					parent::delete();
 				}
 				////	Si ya une vignette du fichier : on recharge la liste des versions et update la vignette
-				elseif($this->thumbExist()){
+				elseif($this->hasTumb()){
 					$this->getVersions(true);
 					$this->thumbEdit();
 				}

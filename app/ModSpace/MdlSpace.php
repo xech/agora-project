@@ -25,23 +25,23 @@ class MdlSpace extends MdlObject
 
 
 	
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : DROITS D'ACCÈS A L'ESPACE POUR L'USER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function accessRight()
 	{
 		return $this->accessRightUser(Ctrl::$curUser);
  	}
 
-	 /*******************************************************************************************
+	 /********************************************************************************************************
 	  * SURCHARGE : DROIT D'ÉDITION DE L'ESPACE POUR L'USER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	 public function editRight()
 	 {
 		 return ($this->accessRight()==2);
 	 }
  
-	 /*******************************************************************************************
+	 /********************************************************************************************************
 	  * SURCHARGE : DROIT DE SUPPRESSION DE L'ESPACE POUR L'USER COURANT
 	  *******************************************************************************************/
 	 public function deleteRight()
@@ -72,24 +72,22 @@ class MdlSpace extends MdlObject
 		return (int)Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIFIE SI TOUS LES UTILISATEURS DU SITE SONT AFFECTES À L'ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function allUsersAffected()
 	{
-		//Init "_allUsersAffected" si pas encore en "cache"
 		if($this->_allUsersAffected===null){
 			$this->_allUsersAffected=(Db::getVal("SELECT count(*) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND allUsers=1") > 0);
 		}
 		return $this->_allUsersAffected;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * UTILISATEURS AFFECTÉS À UN ESPACE  ($return= "objects" OU "idsTab" OU "idsSql")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getUsers($return="objects")
 	{
-		// Init "_spaceUsers" si pas encore en "cache"
 		if($this->_spaceUsers===null){
 			$personsSort="ORDER BY ".Ctrl::$agora->personsSort;
 			$objUsers=($this->allUsersAffected())  ?  Db::getObjTab("user","SELECT * FROM ap_user ".$personsSort)  :  Db::getObjTab("user","SELECT DISTINCT T1.* FROM ap_user T1, ap_joinSpaceUser T2 WHERE T1._id=T2._idUser AND T2._idSpace=".$this->_id." ".$personsSort);
@@ -108,9 +106,9 @@ class MdlSpace extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * MODULES DISPONIBLES ET LEURS PROPRIÉTÉS DE BASE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function availableModules()
 	{
 		$availableModulesName=["dashboard","file","calendar","forum","task","link","contact","mail","user"];
@@ -126,9 +124,9 @@ class MdlSpace extends MdlObject
 		return $availableModules;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE DES MODULES AFFECTÉS A UN ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function moduleList($persoCalendarSkip=false)
 	{
 		//Init "_moduleList" si pas encore en "cache"
@@ -153,35 +151,35 @@ class MdlSpace extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF SI UN MODULE EST AFFECTÉ A UN ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function moduleEnabled($moduleName)
 	{
 		$moduleList=$this->moduleList();
 		return !empty($moduleList[$moduleName]);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIFIE SI L'ESPACE EN QUESTION EST L'ESPACE COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isCurSpace()
 	{
 		return ($this->_id==Ctrl::$curSpace->_id);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * OPTION D'UN MODULE ACTIVÉ POUR L'ESPACE ?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function moduleOptionEnabled($moduleName, $optionName)
 	{
 		$moduleList=$this->moduleList();
 		return (!empty($moduleList[$moduleName]["options"]) && preg_match("/".$optionName."/i",$moduleList[$moduleName]["options"]));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRIME UN ESPACE DÉFINITIVEMENT!
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight())
@@ -191,7 +189,7 @@ class MdlSpace extends MdlObject
 			foreach($objectsOnlyInCurSpace as $tmpObject){
 				//Charge l'objet et le supprime (sauf les dossiers racine et agendas persos)
 				$tmpObj=Ctrl::getObj($tmpObject["objectType"],$tmpObject["_idObject"]);
-				$isPersonalCalendar=($tmpObj::objectType=="calendar" && $tmpObj->isPersonalCalendar());
+				$isPersonalCalendar=($tmpObj::objectType=="calendar" && $tmpObj->isMyPersonalCalendar());
 				if(MdlObject::isObject($tmpObj) && $tmpObj->isRootFolder()==false && $isPersonalCalendar==false)  {$tmpObj->delete();}
 			}
 			//Supprime les affectations espace->modules, espace->users, espace->objets (pour les objets affectés à plusieurs espaces) et espace->invitations

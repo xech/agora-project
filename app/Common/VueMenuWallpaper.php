@@ -1,8 +1,8 @@
 <script>
 ready(function(){
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	CHANGE DE WALLPAPER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("select[name='wallpaper']").on("change click",function(){
 		$("#wallpaperImg,#wallpaperAdd,#wallpaperDelete").hide();					//Réinit les valeurs
 		if(this.value=="add")  {$("#wallpaperAdd").show();}							//Input pour "Ajouter" un Wallpaper  OU  Affiche la vignette du wallpaper courant
@@ -15,7 +15,7 @@ ready(function(){
 	}).trigger("click");//Paramétrage général : Trigger au chargement de la page pour afficher si besoin le "wallpaperDelete"
 });
 
-/*******************************************************************************************
+/********************************************************************************************************
  *	SUPPRESSION D'UN WALLPAPER
 *******************************************************************************************/
 function wallpaperDelete()

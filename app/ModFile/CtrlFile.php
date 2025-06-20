@@ -17,9 +17,9 @@ class CtrlFile extends Ctrl
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=["MdlFile","MdlFileFolder"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		////	Verif l'accès en écriture & Occupation d'espace disque
@@ -38,36 +38,35 @@ class CtrlFile extends Ctrl
 		////	Dossiers & Fichiers
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer).MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile){
-			//// Lien du label/nom du fichier : Download direct
+			////	Url du label/icone
 			$tmpFile->labelLink='onclick="confirmRedir(\''.$tmpFile->urlDownload().'\',\''.Txt::trad("download").' ?\')"';
-			//// Lien de l'icone/vignette du fichier : Display ou Download
-			if(File::isType("imageBrowser",$tmpFile->name))								{$tmpFile->iconLink='href="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Affiche l'image dans la fancybox
-			elseif(File::isType("pdf",$tmpFile->name) && Req::isMobileApp())			{$tmpFile->iconLink='onclick="redir(\''.$tmpFile->urlDisplay().'\')"';}				//Download le pdf si isMobileApp
-			elseif(File::isType("pdfTxt",$tmpFile->name) && Req::isMobileApp()==false)	{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}		//Affiche le pdf/text dans une Lightbox 
-			elseif(File::isType("mediaPlayer",$tmpFile->name))							{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->filePath().'\')"';}		//Affiche la video/mp3 dans une Lightbox
-			else																		{$tmpFile->iconLink=$tmpFile->labelLink;}											//Download direct
-			//// Fichier image : ajoute la résolution et la "thumbClass" en fonction de l'orientation
-			if($tmpFile->thumbExist() && File::isType("imageBrowser",$tmpFile->name)){
+			if(File::isType("imageBrowser",$tmpFile->name))			{$tmpFile->iconLink='data-src="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Image
+			elseif(File::isType("pdfTxt",$tmpFile->name))			{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}			//Pdf/txt
+			elseif(File::isType("lightboxPlayer",$tmpFile->name))	{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->filePath().'\')"';}			//Vidéo/Mp3
+			else													{$tmpFile->iconLink=$tmpFile->labelLink;}												//Idem labelLink
+			////	Tooltip
+			$tooltipBase='&nbsp; <i>'.$tmpFile->name.'</i><hr>'.Txt::trad("FILE_fileSize").' : '.File::sizeLabel($tmpFile->octetSize);	//Nom et taille du fichier
+			if(!empty($tmpFile->description))  {$tooltipBase.='<hr>'.$tmpFile->description;}											//Ajoute la description
+			$tmpFile->labelTooltip='<img src="app/img/download.png"> '.Txt::trad("FILE_fileDownload").$tooltipBase;						//Tooltip du label : download
+			if(stristr($tmpFile->iconLink,"redir"))	{$tmpFile->iconTooltip=$tmpFile->labelTooltip;}										//Tooltip de l'icone : idem labelTooltip
+			else									{$tmpFile->iconTooltip=Txt::trad("show").$tooltipBase;}								//Tooltip de l'icone : lightboxOpen()
+			////	Fichier image
+			if(File::isType("imageBrowser",$tmpFile->name) && $tmpFile->hasTumb()){
 				list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
-				$tmpFile->imageSize=$imgWidth." x ".$imgHeight." ".Txt::trad("pixels");
-				$tmpFile->thumbClass=($imgWidth>$imgHeight) ? "thumbLandscape" : "thumbPortrait";
+				$tmpFile->iconTooltip.='<br>'.$imgWidth.' x '.$imgHeight.' '.Txt::trad("pixels");	//Ajoute la résolution de l'image
+				$tmpFile->iconClass=($imgWidth>$imgHeight) ? 'thumbLandscape' : 'thumbPortrait';	//"iconClass" en fonction de l'orientation
 			}
-			//// Tooltip
-			$tooltipTxt='<i>'.$tmpFile->name.'</i><hr>'.Txt::trad("FILE_fileSize").' : '.File::sizeLabel($tmpFile->octetSize);											//Nom & taille du fichier
-			if(!empty($tmpFile->imageSize))		{$tooltipTxt.='<hr>'.Txt::trad("FILE_imageSize").' : '.$tmpFile->imageSize;}											//Taille de l'image
-			if(!empty($tmpFile->description))	{$tooltipTxt.='<hr>'.$tmpFile->description;}																			//Description du fichier
-			$tmpFile->labelTooltip=$tmpFile->iconTooltip='<img src="app/img/download.png"> '.Txt::trad("FILE_fileDownload").' '.$tooltipTxt;							//Tooltip de download
-			if(preg_match("/redir/i",$tmpFile->iconLink)==false)  {$tmpFile->iconTooltip='<img src="app/img/search.png"> '.ucfirst(Txt::trad("show")).' '.$tooltipTxt;}	//Tooltip de l'icone pour afficher le fichier
-			//Ajoute le fichier
+			////	Ajoute le fichier
 			$vDatas["filesList"][$fileKey]=$tmpFile;
 		}
 		////	Affiche la vue
+		$vDatas["nameLength"]=(MdlFile::getDisplayMode()=="line")  ?  100  :  60;
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PLUGINS DU MODULE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlFileFolder::getPluginFolders($params);
@@ -76,21 +75,21 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."','".Txt::trad("download",true)." ?')";
+			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."',labelConfirmDownload)";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AFFICHAGE/DOWNLOAD D'UN FICHIER DANS LE DATAS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionGetFile()
 	{
 		if(Req::isParam("typeId"))
 		{
 			//Récupère le fichier et controle le droit d'accès ("nameMd5" : cf. "actionExternalGetFile()")
-			$curFile=self::getObjTarget();
+			$curFile=self::getCurObj();
 			if($curFile->readRight()  ||  md5($curFile->name)==Req::param("nameMd5")){
 				//Affiche dans le browser ou l'appli (pdf/img/video)  OU  Download direct du fichier
 				if(Req::isParam("displayFile"))   {File::display($curFile->filePath());}
@@ -111,15 +110,15 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DOWNLOAD D'UNE ARCHIVE ZIP (DOSSIER / ELEMENTS SÉLECTIONNÉS)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDownloadArchive()
 	{
 		$archiveSize=0;
 		$filesList=[];
 		////	Ajoute à l'archive les dossiers sélectionnés
-		foreach(self::getObjectsTypeId("fileFolder") as $curFolder)
+		foreach(self::getCurObjects("fileFolder") as $curFolder)
 		{
 			$archiveSize+=File::folderSize($curFolder->folderPath("real"));
 			$archiveName=(count(Req::param("objectsTypeId"))==1)  ?  $curFolder->name  :  $curFolder->containerObj()->name;
@@ -139,7 +138,7 @@ class CtrlFile extends Ctrl
 			}
 		}
 		////	Ajoute à l'archive les fichiers sélectionnés
-		foreach(self::getObjectsTypeId("file") as $curFile){
+		foreach(self::getCurObjects("file") as $curFile){
 			$archiveSize+=$curFile->octetSize;
 			$archiveName=$curFile->containerObj()->name;
 			if($curFile->readRight())  {$filesList[]=array("realPath"=>$curFile->filePath(),"zipPath"=>$curFile->name);}
@@ -151,20 +150,20 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MODIF D'UN FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionFileEdit()
 	{
 		////	Charge le fichier
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge le fichier + update la dernière version
 			$fileName=Req::param("name").Req::param("dotExtension");
-			$curObj=$curObj->createUpdate("name=".Db::format($fileName).", description=".Db::param("description"));
+			$curObj=$curObj->editRecord("name=".Db::format($fileName).", description=".Db::param("description"));
 			$lastVersion=$curObj->getVersion();
 			Db::Query("UPDATE ap_fileVersion SET name=".Db::format($fileName).", description=".Db::param("description")." WHERE _idFile=".$lastVersion["_idFile"]." AND dateCrea=".Db::format($lastVersion["dateCrea"]));
 			//Notifie par mail & Ferme la page
@@ -179,13 +178,13 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : AJOUT DE FICHIERS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionAddEditFiles()
 	{
 		////	Charge l'objet & Controles d'accès
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		$folderPath=$curObj->containerObj()->folderPath("real");
 		if(!is_dir($folderPath) || !is_writable($folderPath))  {Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess")." : ".$curObj->containerObj()->name);}
@@ -228,8 +227,8 @@ class CtrlFile extends Ctrl
 					if(Db::getVal("SELECT count(*) FROM ap_file WHERE _idContainer=".(int)$curObj->_idContainer." AND _id!=".$curObj->_id." AND name=".Db::format($tmpFile["name"]))>0)
 						{Ctrl::notify(Txt::trad("NOTIF_fileName")." :<br><br>".$tmpFile["name"]);}
 					////	Charge le fichier (nouveau fichier OU nouvelle version du fichier)  &&  Enregistre ses propriétés  &&  Recharge l'objet
-					$tmpObj=Ctrl::getObjTarget();
-					$tmpObj=$lastObjFile=$tmpObj->createUpdate("name=".Db::format($tmpFile["name"]).", description=".Db::param("description").", octetSize=".Db::format($tmpFile["size"]));
+					$tmpObj=Ctrl::getCurObj();
+					$tmpObj=$lastObjFile=$tmpObj->editRecord("name=".Db::format($tmpFile["name"]).", description=".Db::param("description").", octetSize=".Db::format($tmpFile["size"]));
 					////	Ajoute la nouvelle version du fichier
 					$sqlVersionFileName=$tmpObj->_id."_".time().".".File::extension($tmpFile["name"]);
 					Db::query("INSERT INTO ap_fileVersion SET _idFile=".$tmpObj->_id.", name=".Db::format($tmpFile["name"]).", realName=".Db::format($sqlVersionFileName).", octetSize=".Db::format($tmpFile["size"]).", description=".Db::param("description").", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);
@@ -266,9 +265,9 @@ class CtrlFile extends Ctrl
 		static::displayPage("VueAddEditFiles.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : UPLOAD D'UN FICHIER TEMPORAIRE VIA PLUPLOAD
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
 		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")) && !empty($_FILES))
@@ -285,22 +284,22 @@ class CtrlFile extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : VERSIONS D'UN FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionFileVersions()
 	{
-		$curObj=self::getObjTarget();
+		$curObj=self::getCurObj();
 		$vDatas["curObj"]=$curObj;
 		static::displayPage("VueFileVersions.php",$vDatas);
 	}
 	
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SUPPRESION D'UNE VERSION D'UN FICHIER
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDeleteFileVersion()
 	{
-		$curObj=self::getObjTarget();
+		$curObj=self::getCurObj();
 		$curObj->delete(Req::param("dateCrea"));
 		static::lightboxRedir();
 	}

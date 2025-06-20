@@ -8,10 +8,7 @@
 
 
 <script>
-////	Resize
-lightboxWidth(600);
-
-////	INIT
+////	Init
 ready(function(){
 	////	NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)
 	<?php if(Req::isParam("addVersion")){ ?>
@@ -47,7 +44,7 @@ ready(function(){
 function objectFormControl(){
 	return new Promise((resolve)=>{
 		// "Merci de sélectionner au moins un fichier"
-		let isPlupload=$("#uploadMultiple").isVisible();
+		let isPlupload=$("#uploadMultiple").isDisplayed();
 		if( (isPlupload==true && $("#uploadMultiple").plupload("getFiles").length==0)  ||  (isPlupload==false && $("[name='addFileSimple'],[name='addFileVersion']").isEmpty())){
 			notify("<?= Txt::trad("FILE_selectFile") ?>");
 			resolve(false);
@@ -86,8 +83,8 @@ function objectFormControl(){
 .plupload_filelist_header, .plupload_start, .plupload_progress_container, .plupload_filelist_footer .plupload_file_size, .plupload_filelist_footer .plupload_file_status  {display:none;}
 .plupload_filelist_footer .plupload_file_status  {position:absolute; bottom:13px; right:15px;}/*Repositionne le % de progression*/
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.plupload_droptext 	{display:none!important;}
 	.plupload_container	{height:180px; min-height:180px;}
 }
@@ -101,13 +98,13 @@ function objectFormControl(){
 	<!--NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS (UPLOAD MULTIPLE/SIMPLE)-->
 	<?php if(Req::isParam("addVersion")){ ?>
 		<div id="uploadAdd">
-			<input type="file" name="addFileVersion" title="<?= $uploadMaxFilesize ?> Max">
+			<input type="file" name="addFileVersion" <?= Txt::tooltip($uploadMaxFilesize." Max") ?> >
 			<input type="hidden" name="curFileName" value="<?= $curObj->name ?>">
 			<input type="hidden" name="addVersion" value="true">
 		</div>
 	<?php }else{ ?>
-		<div id="uploadMultiple"><input type="file" name="addFileMultiple" title="<?= $uploadMaxFilesize ?> Max"></div>
-		<div id="uploadSimple"><input type="file" name="addFileSimple" title="<?= $uploadMaxFilesize ?> Max"></div>
+		<div id="uploadMultiple"><input type="file" name="addFileMultiple" <?= Txt::tooltip($uploadMaxFilesize." Max") ?>></div>
+		<div id="uploadSimple"><input type="file" name="addFileSimple" <?= Txt::tooltip($uploadMaxFilesize." Max") ?>></div>
 		<input type="hidden" name="tmpFolderName" value="<?= $tmpFolderName ?>">
 	<?php } ?>
 		
@@ -129,6 +126,6 @@ function objectFormControl(){
 		</span>
 	</div>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

@@ -24,9 +24,9 @@ class MdlForumMessage extends MdlObject
 	public static $searchFields=["title","description"];
 	public static $sortFields=["dateCrea@@asc","dateCrea@@desc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRIME UN MESSAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){

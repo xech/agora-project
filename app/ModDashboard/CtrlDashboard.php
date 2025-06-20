@@ -16,9 +16,9 @@ class CtrlDashboard extends Ctrl
 	public static $moduleOptions=["adminAddNews","adminAddPoll","disablePolls"];
 	public static $MdlObjects=["MdlDashboardNews"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		////	Objets Actualités/News
@@ -57,9 +57,9 @@ class CtrlDashboard extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : RECUPERE LA SUITE DES NEWS VIA L'INFINITE SCROLL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionGetMoreNews()
 	{
 		$vDatas["infiniteSroll"]=true;
@@ -67,9 +67,9 @@ class CtrlDashboard extends Ctrl
 		if(!empty($vDatas["newsList"]))  {echo self::getVue(Req::curModPath()."VueNewsList.php", $vDatas);}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : RECUPERE LA SUITE DES SONDAGES VIA L'INFINITE SCROLL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionGetMorePolls()
 	{
 		$vDatas["infiniteSroll"]=true;
@@ -77,9 +77,9 @@ class CtrlDashboard extends Ctrl
 		if(!empty($vDatas["pollsList"]))  {echo self::getVue(Req::curModPath()."VuePollsList.php", $vDatas);}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PLUGINS DU MODULE : RECHERCHE DE NEWS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPlugins($params)
 	{
 		$pluginsList=[];
@@ -95,19 +95,19 @@ class CtrlDashboard extends Ctrl
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UNE ACTUALITÉ
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDashboardNewsEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		if(MdlDashboardNews::addRight()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","inputDate").", dateOffline=".Db::param("dateOffline","inputDate"));
+			$curObj=$curObj->editRecord("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","inputDate").", dateOffline=".Db::param("dateOffline","inputDate"));
 			//Notif par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxRedir();
@@ -117,13 +117,13 @@ class CtrlDashboard extends Ctrl
 		static::displayPage("VueDashboardNewsEdit.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDashboardPollEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		if($curObj->isNew() && MdlDashboardPoll::addRight()==false)	{self::noAccessExit();}
 		else														{$curObj->editControl();}
 		$pollIsVoted=($curObj->votesNbTotal()>0);
@@ -131,7 +131,7 @@ class CtrlDashboard extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","inputDate"));
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","inputDate"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
 			if($pollIsVoted==false)
 			{
@@ -166,12 +166,12 @@ class CtrlDashboard extends Ctrl
 					}
 				}
 			}
-			//Notif par mail & Ferme la page ("dashboardPoll=true" : cf. "dashboardOption()")
+			//Notif par mail & Ferme la page
 			$pollVote="<ul style='padding-left:20px;'>";
 			foreach($curObj->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
 			$pollVote.="</ul><a href='".$curObj->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
 			$curObj->sendMailNotif($pollVote);
-			static::lightboxRedir("&dashboardPoll=true");
+			static::lightboxRedir();
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -180,13 +180,13 @@ class CtrlDashboard extends Ctrl
 		static::displayPage("VueDashboardPollEdit.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : VOTE D'UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionPollVote()
 	{
 		//Récupère le sondage et Controle l'accès
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		//Enregistre le vote du sondage (..si aucun vote n'a déjà été fait par l'user courant)
 		if($curObj->curUserHasVoted()==false && Req::isParam("pollResponse"))
@@ -201,13 +201,13 @@ class CtrlDashboard extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TELECHARGE LE FICHIER D'UNE RÉPONSE DE SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionResponseDownloadFile()
 	{
 		//Récupère le sondage et Controle l'accès
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		//Download le fichier de la réponse
 		$tmpResponse=$curObj->getResponse(Req::param("_idResponse"));
@@ -215,13 +215,13 @@ class CtrlDashboard extends Ctrl
 		if(is_file($responseFilePath))  {File::download($tmpResponse["fileName"],$responseFilePath);}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : SUPPRIME LE FICHIER D'UNE RÉPONSE DE SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDeleteResponseFile()
 	{
 		//Récupère le sondage et Controle l'accès
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		//Supprime le fichier
 		$isDeleted=$curObj->deleteReponseFile(Req::param("_idResponse"));
@@ -234,7 +234,7 @@ class CtrlDashboard extends Ctrl
 	public static function actionExportPollResult()
 	{
 		////	RÉCUPÈRE LE SONDAGE ET CONTROLE L'ACCÈS
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 
 		////	CREATION DU PDF ET INIT LES CELLULES DES TABLEAUX

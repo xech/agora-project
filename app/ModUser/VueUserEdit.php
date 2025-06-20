@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ////	INIT
 ready(function(){
 	////	Modif du login
@@ -58,8 +55,8 @@ select[name="connectionSpace"]			{width:100%}
 	<div class="objField"><div class="vFieldConnexion"><?= Txt::trad("mailLlogin") ?></div><div><input type="text" name="login" value="<?= $curObj->login ?>"></div></div>
 	<div class="objField" id="passwordModifLabel"><div><a onclick="$('#passwordModifNotif,#passwordInput,#passwordInput2').show();$(this).hide();"><?= Txt::trad("passwordModify") ?> <img src="app/img/arrowBottom.png"></a></div></div>
 	<fieldset id="passwordModifNotif"><?= Txt::trad("passwordTooltip") ?></fieldset>
-	<div class="objField" id="passwordInput"><div class="vFieldConnexion"><abbr><?= Txt::trad("password") ?></abbr></div><div><input type="password" name="password"></div></div>
-	<div class="objField" id="passwordInput2"><div class="vFieldConnexion"><abbr><?= Txt::trad("passwordVerif") ?></abbr></div><div><input type="password" name="passwordVerif"></div></div>
+	<div class="objField" id="passwordInput"><div class="vFieldConnexion"><?= Txt::trad("password") ?></div><div><input type="password" name="password"></div></div>
+	<div class="objField" id="passwordInput2"><div class="vFieldConnexion"><?= Txt::trad("passwordVerif") ?></div><div><input type="password" name="passwordVerif"></div></div>
 	<hr>
 
 	<!-- CHAMPS PRINCIPAUX !-->
@@ -109,6 +106,6 @@ select[name="connectionSpace"]			{width:100%}
 	</fieldset>
 	<?php } ?>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

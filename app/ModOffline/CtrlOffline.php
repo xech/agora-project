@@ -14,9 +14,9 @@ class CtrlOffline extends Ctrl
 {
 	const moduleName="offline";
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		//Init
@@ -62,7 +62,7 @@ class CtrlOffline extends Ctrl
 			elseif(Req::isParam("newPassword")){
 				$newUser=new MdlUser();
 				$sqlFields="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
-				$newUser=$newUser->createUpdate($sqlFields, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
+				$newUser=$newUser->editRecord($sqlFields, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
 				if(is_object($newUser)){
 					Db::query("DELETE FROM ap_invitation WHERE _idInvitation=".Db::format($tmpInvit["_idInvitation"]));
 					$_COOKIE["AGORAP_LOG"]=$tmpInvit["mail"];//Préremplis le 'login'
@@ -81,9 +81,9 @@ class CtrlOffline extends Ctrl
 		static::displayPage("VueConnection.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : INSCRIPTION D'UTILISATEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionUserInscription()
 	{
 		////	Valide le formulaire via Ajax
@@ -120,19 +120,19 @@ class CtrlOffline extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : CONTROLE LE PASSWORD DE CONNEXION À UN ESPACE PUBLIC  ("BINARY" : case sensitive)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionPublicSpacePasswordControl()
 	{
 		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpaceAccessControl")." AND BINARY `password`=".Db::param("passwordControl"));
 		if(!empty($passwordValid))  {echo "passwordOK";}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : AUTHENTIFICATION VIA GOOGLE IDENTITY / OAUTH 
 	 * https://developers.google.com/identity/gsi/web/guides/overview
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionGIdentityControl()
 	{
 		require_once 'app/misc/google-api-php-client/vendor/autoload.php';										//Charge l'API Google Identity/Oauth
@@ -153,9 +153,9 @@ class CtrlOffline extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ACTION : INSTALL DE L'ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionInstall()
 	{
 		////	Init

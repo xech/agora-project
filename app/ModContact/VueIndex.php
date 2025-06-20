@@ -1,5 +1,5 @@
 <div id="pageFull">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<?= MdlContact::menuSelect() ?>
 		<div class="miscContainer">
 			<?php
@@ -20,8 +20,8 @@
 	<div id="pageContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
 		////	PATH DU DOSSIER COURANT  &  LISTE DES DOSSIERS  &  LISTE DES CONTACTS
-		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew());
-		echo CtrlObject::vueFolders();
+		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew()).
+			 CtrlObject::vueFolders();
 		foreach($contactList as $tmpContact){
 			echo $tmpContact->objContainerMenu("objPerson").
 				'<div class="objContainerScroll">

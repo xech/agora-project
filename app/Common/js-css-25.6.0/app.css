@@ -1,0 +1,296 @@
+/*** BASICS*/
+html, body, div			{margin:0px; padding:0px;}/*reset*/
+html					{background:#222;}
+body					{font-size:13px; font-family:Arial,Helvetica,sans-serif; font-weight:bold; background-position:right top; background-repeat:no-repeat;}/*"font-size:13px" : valeur de reference pour "em"*/
+#bodyLightbox			{padding:25px;}
+div						{vertical-align:top; box-sizing:border-box;}																		/*"box-sizing" : définit la façon dont la largeur est calculée*/
+p						{margin:3px;}																										/*Idem balises "<p>" de l'éditeur tinyMce (cf. "editor.css")*/
+abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*remplace balise "acronym" et classe ".acronym"*/
+img						{border:0px; vertical-align:middle;}																				/*alignemment des images*/
+hr						{border:0; height:1px; margin-top:10px; margin-bottom:10px;}														/*lignes de séparateur*/
+video, audio			{max-width:100%; max-height:100%;}																					/*Lecteurs video/audio*/
+a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	body				{font-size:14px;}
+}
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
+	body				{font-size:17px;}
+	#bodyLightbox		{padding:25px 12px;}
+}
+
+/*** CONTENEURS PRINCIPAUX DE LA PAGE*/
+#headerBar											{display:table; width:100%; max-width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; background-repeat:repeat-x; user-select:none;}
+#headerBar>div										{display:table-cell; vertical-align:middle!important;}
+#headerBar>div:last-child							{text-align:right;}
+#pageFull, #pageCenter								{display:table; max-width:100%; margin-bottom:70px;}	/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
+#pageFull											{width:100%;}											/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
+#pageCenter											{margin-left:auto; margin-right:auto;}					/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage entre 1024px et 1366px*/
+#moduleMenu, #pageContent							{display:table-cell;}
+#moduleMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
+#pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	#pageCenter										{width:100%;}
+	#pageContent, #pageCenter #pageContent			{width:100%; min-width:100%; max-width:100%;}
+	#pageContent .objBlocks							{padding-right:0px;}
+}
+
+/*** PRINT*/
+@media print{
+	body					{background:white; color:#000;}
+	#pageFull, #pageCenter	{margin:0px;}
+	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
+}
+
+/*** DIV "CONTENEUR" DES OBJETS*/
+.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; box-sizing:border-box; border-radius:4px; background-repeat:no-repeat; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
+.objContainer										{position:relative; padding:0px; height:100px; min-height:100px;}			/*"height"+"min-height" pour l'overflow" du "objContainerScroll""*/
+.objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
+.miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
+.emptyContainer										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
+.emptyContainer div									{margin-top:20px;}															/*Idem*/
+.objContent											{display:table; height:inherit; min-height:inherit; width:100%;}			/*Contenu de l'objet*/
+.objContent>div										{display:table-cell; vertical-align:middle;}								/*idem : cellule*/
+.objIcon											{vertical-align:middle;}													/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
+.objIcon img										{max-width:100%; max-height:100%;}											/*Icone d'objet*/
+.objIconOpacity img									{filter:opacity(0.2);}														/*Icones opaques des links, tasks, etc*/
+.objLabel											{padding-left:15px; overflow-wrap:break-word; text-overflow:ellipsis;}		/*Cellule du label de l'objet : "break-word" évite qu'une URL éclate l'affichage*/
+/*DIPLAY "BLOCK"*/
+.objBlocks .objContainer							{float:left; width:200px; min-width:200px; max-width:400px; padding-right:35px;}/*"padding-right": cf "objMenuMisc"*/
+.objBlocks .objIcon									{width:90px; text-align:center;}											/*Icone/image de l'objet*/
+.objBlocks .objIcon:empty							{width:0px!important;}														/*Cf. Profil Contact/User sans image*/
+.objBlocks .objIconOpacity							{width:40px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
+.objBlocks .objDetails, .objBlocks .objAutorDate	{display:none!important;}													/*Details & Auteur/Date : masqués par défaut*/
+/*DIPLAY "LINE"*/
+.objLines .objContainer								{height:60px; min-height:60px; margin-bottom:0px; box-shadow:none; padding-right:70px;}/*"padding-right": cf "objMenuMisc"*/
+.objLines .objIcon									{width:60px; text-align:left;}												/*Icone/image de l'objet (fichier, user, etc)*/
+.objLines .objIcon img								{max-height:50px; max-width:55px; margin-left:5px;}							/*cf. ".objLines .objContainer"*/
+.objLines .objDetails, .objLines .objAutorDate		{text-align:right; }														/*Details (dossiers, tasks, etc.)  &  Auteur/Date*/
+.objLines .objAutorDate								{width:200px;}																/*Auteur/Date*/
+.objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
+.objLines .objAutorDate span						{display:block; margin-top:5px; font-weight:normal;}						/*Auteur/Date sur 2 lignes*/
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	.objContainer									{width:100%; margin:0px 0px 7px 0px; border-radius:0px!important;}			/*tester affichage de news, fichiers et agendas*/
+	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
+	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller sur mobile*/
+	.objIcon										{width:70px!important;}
+	.objIconOpacity, .objDetails, .objAutorDate		{display:none!important;}													/*toujours masqué*/
+}
+
+/*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
+.objMenuContextFloat							{position:absolute; z-index:50; top:7px; right:3px;}							/*Launcher du menu context : Icone "burger" par défaut*/
+.objContainer:not(:hover) .objMenuContextFloat	{opacity:0.75;}																	/*Launcher opaque par défaut (pas moins de 0.75 : cf. images du module fichier)*/
+.objContainer:not(:hover) .objMenuMiscHide		{display:none;}																	/*Masque les .objMenuMiscHide, sauf au survol du ".objContainer"*/
+.objContainer.isSelectable						{cursor:url("../../img/checkSmall.png"),default;}								/*Curseur des elements selectionnables*/
+.objSelectCheckbox								{display:none;}																	/*input hidden de sélection/désélection d'objet*/
+.objMenuMisc									{position:absolute; z-index:50; top:35px; right:3px; width:35px; text-align:right;}	/*Likes + Comments + Files + persoAccess*/
+.objMenuMisc>div								{display:inline-block; margin:4px;}												/*'margin-left' pour l'affichage .objLines*/
+.objLines .objMenuMisc							{width:70px;}																	/*Affichage horizontal*/
+.circleNb										{width:22px; height:22px; line-height:22px; display:inline-block; margin-left:5px; background:#07d; border-radius:50%; font-size:12px; color:white; text-align:center;}/*Nb de polls & News*/
+.objMenuMisc .circleNb							{width:14px; height:14px; line-height:14px; position:relative; margin-left:0px; margin-right:-10px; background:#db930c; font-size:9px; font-weight:normal;}/*Nb de likes & comments*/
+.circleNb:empty									{display:none;}																	/*Cercle vide*/
+.attachedFileMenu								{display:inline-block;}															/*Fichiers joints à l'objet*/
+.attachedFileMenu img							{margin-right:0px;}																/*idem*/
+.menuContext .attachedFileMenu					{margin:5px;}																	/*idem*/
+.attachedFileTag								{max-width:100%;}																/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
+video.attachedFileTag							{min-width:600px; min-height:400px;}											/*Vidéo*/
+audio.attachedFileTag							{min-height:100px;}																/*Mp3*/
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	.objMenuContextFloat						{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
+	.objMenuMisc>div							{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
+	.attachedFileMenu							{margin:10px;}								/*Fichiers joints à l'objet*/
+	video.attachedFileTag						{min-width:350px;}							/*vidéo*/
+}
+
+/*** MENUS DES MODULES & MENUS CONTEXTUELS*/
+.menuLine									{display:table; width:100%;}
+.menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
+.menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
+.menuIcon img								{max-width:30px!important; max-height:30px!important;}
+#moduleMenu .miscContainer					{padding:10px;}
+#pageFull #moduleMenu .miscContainer		{border-radius:0px 4px 4px 0px;}	/*Menus des modules en affichage full*/
+.menuLauncher								{display:inline-block;}				/*launcher du menu contextuel*/
+.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:8px;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+.menuContextLabel							{text-align:center; padding:5px 0px;}
+.menuContext .menuLine>div					{line-height:18px;}
+.menuContext .menuLine>div:last-child		{white-space:nowrap;}				/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
+.menuContext hr								{margin:3px 0px!important;}
+.menuContextSpecificLabels					{padding:5px; line-height:20px;}	/*cf. affectations des agendas*/
+.menuContextTxtLeft							{width:85px; min-width:85px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*cf. menuContext : Auteur, Droits d'accès..*/
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
+	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
+}
+
+/*** MENUS CENTRÉS ("Ajouter un element" ou Menu de pagination)*/
+.objBottomMenu								{clear:both; text-align:center; padding-top:20px;}/*clear le "float" des "objBlocks"*/
+.objBottomMenu>.miscContainer				{display:inline-block; padding:15px 30px;}
+.objBottomMenu .linkSelect					{font-size:1.1em;}
+.objBottomMenu a							{margin-left:5px; margin-right:5px;}
+
+/*** INPUTS*/
+input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:33px; max-width:100%; padding:4px; border-radius:3px; outline:none; font-weight:normal; font-size:inherit; font-family:inherit; box-sizing:border-box;}/*"box-sizing" pour intégrer les padding/border dans le "height"*/
+input:disabled, textarea:disabled					{opacity:0.7;}
+input:read-only, textarea:read-only					{background:#ddd;}
+::placeholder 										{font-weight:normal; padding-left:5px; color:#aaa;}/*placeholder des inputs/textarea (texte par défaut)*/
+input[type=radio], input[type=checkbox]				{vertical-align:middle; margin:0px 3px;}
+input[type=checkbox]								{width:15px; height:15px;}
+input[type=file]									{height:auto;}
+.dateInput, .dateBegin, .dateEnd					{width:80px;}													/*DATEPICKER INPUTS*/
+.ui-datepicker										{box-shadow:0px 0px 8px #888; width:300px; max-width:98%;}		/*DATEPICKER JQUERY :*/
+.ui-datepicker-header								{background-color:transparent; border:none;}					/*label du mois*/
+.ui-datepicker .ui-state-default					{padding:10px; text-align:center; border:0px;}					/*cellules des jours*/
+.ui-datepicker .ui-state-highlight					{background:#cde; color:black;}						  	/*aujourd'hui*/
+.ui-datepicker .ui-state-active						{background:#007fff; color:white;}		 				  /*jour sélectionné*/
+input[type=time]									{width:70px;}													/*TIMEPICKER INPUTS*/
+input[type=time]::-webkit-calendar-picker-indicator	{margin:0px; filter: invert(48%) sepia(20%) saturate(2000%) hue-rotate(150deg) brightness(95%) contrast(80%);}/*icone "horloge"*/
+.ui-timepicker-wrapper								{max-height:400px;}												/*pseudo <select>*/
+.ui-timepicker-list li 								{padding:10px;}													/*liste des heures*/
+fieldset											{margin-top:30px; padding:10px;}
+legend												{padding:5px 20px;}
+textarea											{width:100%; height:70px;}
+button												{border-radius:5px; padding:0px 10px; font-weight:bold; cursor:pointer; vertical-align:middle;}
+select option										{font-size:1.15em;}
+.inputTitleName										{width:75%;}/*Title ou Name d'un objet*/
+.focusPulsate										{animation:focusPulsate 1.5s linear infinite;}
+@keyframes focusPulsate 							{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
+.submitButtonMain									{margin-top:40px; margin-bottom:10px; text-align:center;}	/*div du bouton principal*/
+.submitButtonMain button							{min-width:180px; min-height:45px;}							/*bouton principal*/
+.submitButtonMain .submitLoading					{max-width:40px; margin-right:-40px;}						/*icone "loading" du button principal*/
+.submitButtonInline									{display:inline-block;}										/*div du button inline : form de recherche & co*/
+.submitButtonInline	button							{min-width:100px; min-height:30px;}							/*height idem input[type=text]*/
+.submitButtonInline .submitLoading					{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
+.submitLoading										{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
+	input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:40px; padding:8px 5px;}
+	.inputTitleName									{width:100%;}
+	.dateInput, .dateBegin, .dateEnd				{margin-left:10px; width:110px;}/*Datepicker + grand*/
+	input[type=time]								{margin-left:10px; width:90px; padding-block:8px!important;}/*Timepicker + grand*/
+}
+
+/*** INPUTS D'EDITION D'OBJET : EDIT D'USER, DE CONTACT, DE PARAMETRAGE GENERAL...*/
+.objField									{display:table; width:100%; padding-top:15px;}
+.objField>div								{display:table-cell; width:50%; line-height:25px; vertical-align:top;}/*"line-height" aligne verticalement les labels avec les inputs*/
+.objField img								{max-width:30px; margin-right:8px;}
+.objField input[type=text]					{width:100%;}
+.objField input[type=checkbox]				{margin-right:10px;}
+.objField .personImg						{max-width:100%; max-height:150px;}
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
+	.objField, .objField>div				{display:block; width:100%!important;}
+	.objField>div							{padding-top:5px;}
+}
+
+/*** PERSONS : CONTACTS & USERS*/
+.personLabelImg								{text-align:center;}
+.personLabelImg img							{max-width:100%; max-height:200px;}																		/*Cf. vue principale/détaillée d'une personne*/
+.personImgSmall								{border-radius:50%; height:28px; width:28px;}															/*Icone d'une personne : pastille ronde*/
+.objBlocks .objPerson						{height:160px; min-height:160px; width:250px; min-width:250px; max-width:450px;}						/*surcharge .objContainer*/
+.objLines .objPerson						{height:70px; min-height:70px;} 																		/*idem*/
+.objLines .personImg						{max-width:60px; max-height:70px!important;}															/*Photo du Contact/User*/
+.objPersonDetails							{width:fit-content; margin-top:5px; font-weight:normal; line-height:18px; text-transform:lowercase;}	/*Détails d'un Contact/User : mail, tel, adresse, etc*/
+.objPersonDetail img						{max-height:18px;}
+.objPersonDetailSeparator					{margin:0px 10px; opacity:0.5;}
+.objPersonDetailSeparator:last-child		{display:none!important;}
+.objLines .objPersonDetail					{display:inline-block;}
+.spaceAffectLine							{display:table; width:100%; max-width:100%;}/*Input d'affectation d'user à un espace*/
+.spaceAffectLine img						{max-width:15px;}
+.spaceAffectLine>*							{display:table-cell; padding:8px;}	/*label ou div pour de checkbox*/
+.spaceAffectLine>div						{text-align:center; width:130px;}	/*checkboxes*/
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
+	.spaceAffectLine img					{display:none;}
+	.spaceAffectLine>div					{width:100px; font-size:0.95em;}/*checkboxes*/
+}
+
+/*** MENU CONTEXT RESPONSIVE*/
+#menuMobileBg, #menuMobileMain, #menuMobileAddButton	{display:none;}/*Masque par défaut*/
+#menuMobileBg, #menuMobileMain 							{position:fixed; top:0px; right:0px; max-width:100%; height:100%;}
+#menuMobileBg											{z-index:120; width:100%; background:rgba(0,0,0,0.7);}
+#menuMobileMain											{z-index:121; width:430px;/*idem Pro Max*/ overflow:auto; padding:10px;}
+#menuMobileClose										{text-align:right;}
+#menuMobileMain .menuLine>div							{padding:10px 5px;}/*surcharge*/
+#menuMobileContent2										{margin-top:30px;}
+#menuMobileContent2 .miscContainer						{padding:5px;}
+#menuMobileAddButton									{z-index:100;/*idem #headerBar*/ position:fixed; bottom:15px; right:15px;}
+
+/*** FANCYBOX*/
+.fancybox__backdrop								{background:rgba(0,0,0,0.85);}/*surcharge*/
+.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:15px; box-shadow:0px 0px 2px white;}
+.fancybox__slide.has-iframe						{padding-top:50px; padding-bottom:30px;}/*espace top/bottom si Iframe en full hauteur*/
+.fancybox__slide.has-iframe .fancybox__content	{padding:0px;}
+.fancybox__slide.has-inline .fancybox__content	{padding:25px;}
+.f-thumbs__slide__button						{box-shadow:none;}/*surcharge*/
+[data-fancybox='images']						{cursor:zoom-in;}/*Cursor des images à affichger dans fancybox*/
+.lightboxTitle									{margin-bottom:30px; padding-bottom:20px; text-align:center; font-size:1.1em; line-height:22px; box-shadow:0px 7px 7px -7px #888;}
+.lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:60px; padding-right:30px;}	/*padding pour .lightboxMenu et .is-close-btn*/
+.lightboxMenu									{position:absolute; top:0px; left:0px; font-size:0.9em;}	/*Icones du menu context + d'édition de l'objet*/
+.lightboxMenu .editButton						{margin-left:15px;}											/*Icone d'édition*/
+.lightboxTitleDetail							{font-size:0.9em; margin-top:15px;}							/*libellé détaillé*/
+.lightboxAddElem								{text-align:center;}										/*exple: "Ajouter un  groupe"*/
+.lightboxAddElem button							{width:230px; height:50px;}
+.lightboxInline									{display:none; width:400px; text-align:center}/*<form> en page de connexion*/
+.lightboxInline input, .lightboxInline button:not([data-fancybox-close])  {height:45px!important; width:80%!important; margin:10px auto!important;}/*Width des input (sauf "data-fancybox-close")*/
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:0px; box-shadow:none;}
+	.fancybox__slide							{padding:0px!important;}/*surcharge*/
+	.fancybox__slide, .fancybox__content		{width:100%!important; height:100%!important; margin:0px!important;}
+	.fancybox__iframe							{margin:0px auto;}/*iframe centré*/
+	.fancybox__slide:not(.has-image) button[data-fancybox-close]	 	{width:45px!important; height:45px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
+	.fancybox__slide:not(.has-image) button[data-fancybox-close] svg	{display:none;}/*Masque le svg "close" par défaut*/
+}
+
+/*** JQUERY UI & PLUGINS*/
+.toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : notify()*/
+.toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
+.tooltipster-box								{box-shadow:0px 0px 5px #555!important;}								/*TOOLTIPSTER*/
+.tooltipster-content							{color:#555!important; padding:15px!important;}						/*TOOLTIPSTER : texte*/
+.jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
+.jconfirm-box									{border-radius:15px!important; padding:30px 30px 10px 30px!important;}
+.jconfirm-title									{line-height:28px!important; font-size:22px!important;}
+.jconfirm-content								{font-size:18px!important;}
+.jconfirm-content .confirmDeleteAlert			{color:#500!important; margin-bottom:20px!important;}
+.jconfirm-buttons								{text-align:center!important;}
+.jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important; font-size:15px!important;}
+.jconfirm-buttons .btn-green					{background:#25a55b!important;}
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
+	.jconfirm-buttons							{width:100%!important;}
+	.jconfirm-buttons button					{min-width:80%!important;}
+}
+
+/*** DIVERS*/
+.infos							{border:dotted 1px #aaa; margin:7px; padding:10px; border-radius:4px; text-align:center; line-height:22px;}
+.progressBar					{display:inline-block; padding:0px 10px; margin:3px 15px 0px 0px; line-height:28px; border:solid 1px #ccc; border-radius:5px; background:linear-gradient(white,#d5d5d5); background-repeat:no-repeat; text-align:center; font-size:0.9em; cursor:help;}/*"background-size" : cf. "progressBar()"*/
+.progressBar img				{max-height:20px; margin:4px 0px;}
+.pluginModule					{margin-top:15px;}
+.pluginModule img				{float:right; margin-top:-5px; max-height:24px;}
+.changeOrder					{width:30px; vertical-align:middle; text-align:right; cursor:move; user-select:none;}/*Change l'ordre d'affichage d'une liste*/
+.changeOrderShadow				{opacity:0.5; border:1px dashed #999; height:100px;}/*Block "fantome" durant le changement*/
+.cursorHelp						{cursor:help;}
+.pathMenu						{display:table; padding:5px 10px; margin-bottom:10px;}
+.pathMenu img					{max-height:30px;}
+.pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
+.pathMenuHome					{width:auto;}
+.pathMenuAdd					{width:65px; padding-left:10px!important;}
+.hide							{display:none;}
+.menuTradIcon					{vertical-align:middle;}
+.categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
+.categoryColorAll				{border:solid #bbb 2px;}
+.orLabel						{display:table; width:100%; margin:30px 0px;}
+.orLabel div					{display:table-cell; width:45%; text-align:center;}
+.orLabel div:nth-child(2)		{width:10%; min-width:50px; opacity:0.5; text-transform:uppercase;}/*texte "OU"*/
+.orLabel hr						{background:#ddd;}
+.pulsate						{animation:pulsateAnimation 1.5s linear infinite;}/*equivalent css du "pulsate" jQuery*/
+@keyframes pulsateAnimation		{ 50% {opacity:0.2;} }
+/*RESPONSIVE SMALL*/
+@media screen and (max-width:1024px){
+	.pathMenu					{width:100%; max-width:100%; padding:5px;}
+}

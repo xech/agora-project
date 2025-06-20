@@ -6,7 +6,7 @@
 </style>
 
 <div id="pageFull">
-	<div id="pageMenu">
+	<div id="moduleMenu">
 		<?= MdlUser::menuSelect() ?>
 		<div class="miscContainer">
 			<!--ADD USER /  INVITATIONS  /  IMPORTER DES USERS  /  ENVOI DES CREDENTIALS  /  AFFECT USER -->

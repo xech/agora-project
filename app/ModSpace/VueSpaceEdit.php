@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ////	INIT
 ready(function(){
 	////	Option "espace public"
@@ -55,7 +52,6 @@ function objectFormControl(){
 
 
 <style>
-.inputTitleName							{width:70%;}
 .vSpaceOptions							{margin:20px 0px;}
 .vSpaceOptions>img						{max-width:18px;}
 #publicSpacePasswordDiv, #divUserInscriptionNotify	{margin:5px 0px 0px 30px;}
@@ -71,8 +67,8 @@ label[for='allUsers']					{font-size:1.1em;}
 .vModuleLineIcon						{vertical-align:middle; margin-left:5px;}
 div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut les options*/
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.vModuleLineIcon	{display:none!important;}
 }
 </style>
@@ -87,7 +83,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<!--ESPACE PUBLIC (avec password?)-->
 	<div class="vSpaceOptions">
 		<img src="app/img/user/accessGuest.png"> <input type="checkbox" name="public" id="publicSpace" value="1" <?= (!empty($curObj->public))?'checked':null ?>>
-		<label for="publicSpace" title="<?= Txt::trad("SPACE_publicSpaceTooltip") ?>"><?= Txt::trad("SPACE_publicSpace") ?></label>
+		<label for="publicSpace" <?= Txt::tooltip("SPACE_publicSpaceTooltip") ?> ><?= Txt::trad("SPACE_publicSpace") ?></label>
 		<div id="publicSpacePasswordDiv">
 			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : &nbsp; <input type="text" name="password" value="<?= $curObj->password ?>" id="publicSpacePassword">
 			<fieldset id="publicSpaceNotif"><?= Txt::trad("SPACE_publicSpaceNotif") ?></fieldset><!--Notif sur la RGPD-->
@@ -97,8 +93,8 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<!--INSCRIPTION A L'ESPACE-->
 	<div class="vSpaceOptions">
 		<img src="app/img/edit.png"> <input type="checkbox" name="userInscription" id="userInscription" value="1" <?= (!empty($curObj->userInscription))?'checked':null ?>>
-		<label for="userInscription" title="<?= Txt::trad("userInscriptionEditTooltip") ?>"><?= Txt::trad("userInscriptionEdit") ?></label>
-		<div id="divUserInscriptionNotify" title="<?= Txt::trad("userInscriptionNotifTooltip") ?>">
+		<label for="userInscription" <?= Txt::tooltip("userInscriptionEditTooltip") ?> ><?= Txt::trad("userInscriptionEdit") ?></label>
+		<div id="divUserInscriptionNotify" <?= Txt::tooltip("userInscriptionNotifTooltip") ?> >
 			<img src="app/img/dependency.png">
 			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curObj->userInscriptionNotify))?'checked':null ?>>
 			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotif") ?></label>
@@ -106,7 +102,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	</div>
 
 	<!--INVITATIONS PAR MAIL-->
-	<div class="vSpaceOptions" title="<?= Txt::trad("SPACE_usersInvitationTooltip") ?>">
+	<div class="vSpaceOptions" <?= Txt::tooltip("SPACE_usersInvitationTooltip") ?> >
 		<img src="app/img/mail.png"> <input type="checkbox" name="usersInvitation" id="usersInvitation" value="1" <?= (!empty($curObj->usersInvitation))?'checked':null ?>>
 		<label for="usersInvitation"><?= Txt::trad("SPACE_usersInvitation") ?></label>
 	</div>
@@ -162,15 +158,15 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	<!--USERS DE L'ESPACE-->
 	<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?>
 	<fieldset>
-		<legend title="<?= Txt::trad("SPACE_adminTooltip") ?>"><img src="app/img/info.png"> <?= Txt::trad("SPACE_userAdminAccess") ?></legend>
+		<legend <?= Txt::tooltip("SPACE_adminTooltip") ?> ><img src="app/img/info.png"> <?= Txt::trad("SPACE_userAdminAccess") ?></legend>
 		<div class="spaceAffectLine">
 			<label>&nbsp;</label>
-			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
-			<div title="<?= Txt::trad("SPACE_adminTooltip") ?>"><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
+			<div <?= Txt::tooltip("SPACE_userTooltip") ?> ><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
+			<div <?= Txt::tooltip("SPACE_adminTooltip") ?> ><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
 		<div class="spaceAffectLine lineHover">
 			<label for="allUsers"><?= Txt::trad("SPACE_allUsers") ?></label>
-			<div title="<?= Txt::trad("SPACE_userTooltip") ?>"><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curObj->allUsersAffected())?'checked':null ?>></div>
+			<div <?= Txt::tooltip("SPACE_userTooltip") ?> ><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curObj->allUsersAffected())?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>
 		<?php
@@ -190,6 +186,6 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 	</fieldset>
 	<?php } ?>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

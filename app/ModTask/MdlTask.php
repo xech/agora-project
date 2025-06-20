@@ -31,18 +31,18 @@ class MdlTask extends MdlObject
 	public static $searchFields=["title","description"];
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc","priority@@asc","priority@@desc","advancement@@asc","advancement@@desc","dateBegin@@asc","dateBegin@@desc","dateEnd@@asc","dateEnd@@desc"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * COULEUR & LABEL "PRIORITY"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function priorityLabel()
 	{
 		if(!empty($this->priority))
 			{return '<span class="priorityLabel"><img src="app/img/task/priority'.$this->priority.'.png">&nbsp; '.Txt::trad("TASK_priority").' '.Txt::trad("TASK_priority".$this->priority).'</span>';}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TACHE EN RETARD : DATE DE FIN PASSÉE ET TACHE INACHEVÉE (ADVANCEMENT < 100%)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isDelayed($displayLabel=false)
 	{
 		if($this->_isDelayed===null){
@@ -52,9 +52,9 @@ class MdlTask extends MdlObject
 		else												{return $this->_isDelayed;}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ICONE-BARRE :  PERSONNES ASSIGNÉES A LA TACHE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function responsiblePersons($isVueTask=false)
 	{
 		if(!empty($this->responsiblePersons)){
@@ -76,9 +76,9 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ICONE-BARRE :  ETAT D'AVANCEMENT EN %
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function advancement($isVueTask=false)
 	{
 		if(!empty($this->advancement)){
@@ -90,9 +90,9 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ICONE-BARRE :  DATE DE DEBUT/FIN
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function dateBeginEnd($isVueTask=false)
 	{
 		//// Vérif si ya une date de début  OU  une date de fin
@@ -109,9 +109,9 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * BARRE DE PROGESSION GANTT :  TITRE  +  DATE DE DEBUT/FIN  +  ETAT D'AVANCEMENT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function timelineGanttBar()
 	{
 		//Vérif si ya une date de début  ET  une date de fin
@@ -129,16 +129,16 @@ class MdlTask extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * POURCENTAGE DE PROGRESSION DANS LE TEMPS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function timeProgressPercent()
 	{
-		if(!empty($this->dateBegin) && !empty($this->dateEnd)){												//Vérif si ya une date de début et de fin
-			$timeBegin=strtotime($this->dateBegin);															//Timestamp de début
-			$timeEnd=strtotime($this->dateEnd);																//Timestamp de fin
-			if($timeEnd > time())	{return 100;}															//Retourne 100% si la date de fin est déjà passée
-			else					{return floor(100 * ((time()-$timeBegin) / ($timeEnd-$timeBegin)));}	//Sinon renvoie le % (ex: 30% si la tâche se passe entre le 1er et le 10 du mois et qu'on est le 3 du mois)
+		if(!empty($this->dateBegin) && !empty($this->dateEnd)){														//Vérif si ya une date de début et de fin
+			$timeBegin=strtotime($this->dateBegin);																	//Timestamp de début
+			$timeEnd  =strtotime($this->dateEnd);																	//Timestamp de fin
+			if($timeEnd < time())			{return 100;}															//"100%" si la date de fin est déjà passée
+			elseif($timeBegin < $timeEnd)	{return floor(100 * ((time()-$timeBegin) / ($timeEnd-$timeBegin)));}	//"n%" d'avancement (ex: "30%" si la tâche se déroule sur 10 jours et qu'on est au 3eme)
 		}
 	}
 }

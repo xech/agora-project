@@ -15,9 +15,9 @@ trait MdlObjectMenu
 	public static $pageNbObjects=50;	//Nb d'éléments affichés par page : 50 par défaut
 	public static $displayMode=null;	//Type d'affichage en préference (ligne/block)
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * IDENTIFIANT UNIQUE DE L'OBJET : CONTENEUR DE L'OBJET, MENU CONTEXTUEL, ETC
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function uniqId($prefix)
 	{
 		if(empty($this->objUniqId))  {$this->objUniqId=uniqid();}	//Un seul ID par instance de l'objet (tester avec les événements périodiques de l'agenda)
@@ -41,7 +41,7 @@ trait MdlObjectMenu
 	 * $options["launcherIcon"]		: "floatBig" (par défaut) / "floatSmall" / "inlineBig" / "inlineSmall"
 	 * $options["deleteLabel"]		: Label spécifique de suppression
 	 * $options["specificOptions"]	: Boutons à ajouter au menu, chaque bouton ayant les propriétés  ["actionJs"=>"onclick=xxx", "iconSrc"=>"option.png", "label"=>"mon label", "tooltip"=>"mon tooltip"]
-	 * $options["specificLabels"]	: Texte à afficher (exple: agendas affectés à un evenement)
+	 * $options["specificLabels"]	: Texte à afficher (ex: agendas affectés à un evenement)
 	 *****************************************************************************************************************************************************************************************************/
 	public function contextMenu($options=null)
 	{
@@ -99,7 +99,7 @@ trait MdlObjectMenu
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
-			if($this->hasAccessRight() || $this->accessRightFromContainer())
+			if($this->hasAccessRight() || $this->hasContainerAccessRight())
 			{
 				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
 				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
@@ -110,7 +110,7 @@ trait MdlObjectMenu
 				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["targetId"]==Ctrl::$curUser->_id);
 				//Tooltip spécifique
 				if(static::isContainer())  					{$tooltipDetail=$this->tradObject("accessAutorPrivilege")."<hr>";}					//"Seul l'auteur ou l'admin peuvent modifier/supprimer le -dossier-"
-				elseif($this->accessRightFromContainer())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
+				elseif($this->hasContainerAccessRight())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
 				else										{$tooltipDetail=null;}
 				//Tooltip : description de chaque droit d'accès
 				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("accessReadTooltip");}
@@ -122,33 +122,33 @@ trait MdlObjectMenu
 		return Ctrl::getVue(Req::commonPath."VueObjMenuContext.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * BOUTON D'EDITION D'UN OBJET 
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function editButtom()
 	{
 		if($this->editRight())  {return '<img src="app/img/edit.png" class="editButton" onclick="lightboxOpen(\''.$this->getUrl("edit").'\')" '.Txt::tooltip("modify").'>';}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE D'UN OBJET : MENU CONTEXTUEL + BOUTON D'EDITION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function lightboxMenu()
 	{
-		return '<span class="lightboxMenu">'.$this->editButtom().$this->contextMenu(["launcherIcon"=>"inlineBig"]).'</span>';
+		return '<span class="lightboxMenu">'.$this->contextMenu(["launcherIcon"=>"inlineBig"]).$this->editButtom().'</span>';
 	}
 
-	/*******************************************************************************************
-	 * VUE : TITRE DE L'OBJET SUR MOBILE ("nouveau fichier", "nouveau dossier", etc)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * VUE : TITRE DE L'OBJET SUR MOBILE (Ex: "Nouveau dossier", "Mon dossier")
+	 ********************************************************************************************************/
 	public function titleMobile($keyTrad)
 	{
-		if(Req::isMobile() && $this->isNew())  {echo "<div class='lightboxTitle'>".Txt::trad($keyTrad)."</div>";}
+		if(Req::isMobile())  {echo '<div class="lightboxTitle">'.($this->isNew() ? Txt::trad($keyTrad) : $this->getLabel()).'</div>';}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : ÉDITION DE LA DESCRIPTION : AVEC L'EDITEUR TINYMCE ?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function descriptionEditor($toggleButton=true)
 	{
 		$vDatas["curObj"]=$this;
@@ -157,21 +157,12 @@ trait MdlObjectMenu
 		$sqlTypeId=Req::isParam("typeId")  ?  "draftTypeId=".Db::param("typeId")  :  "draftTypeId IS NULL";
 		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
 		//Affiche la vue
-		return Ctrl::getVue(Req::commonPath."VueObjDescriptionEditor.php",$vDatas);
+		return Ctrl::getVue(Req::commonPath."VueObjEditor.php",$vDatas);
 	}
 
-	/*******************************************************************************************
-	 * VUE : AFFICHE LES FICHIERS JOINTS DE L'OBJET (cf. "VueObjMenuEdit.php")
-	 *******************************************************************************************/
-	public function attachedFile()
-	{
-		$vDatas["curObj"]=$this;
-		return Ctrl::getVue(Req::commonPath."VueObjAttachedFile.php",$vDatas);
-	}
-
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU D'ÉDITION PRINCIPAL (droits d'accès, fichiers joints, etc)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function editMenuSubmit()
 	{
 		////	Menu des droits d'accès
@@ -250,9 +241,9 @@ trait MdlObjectMenu
 		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC : CLÉ DE PRÉFÉRENCE EN BDD ($prefDbKey)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function prefDbKey($containerObj)
 	{
 		if(is_object($containerObj))											{return $containerObj->_typeId;}		//"_typeId" de l'objet en parametre
@@ -260,9 +251,9 @@ trait MdlObjectMenu
 		else																	{return static::moduleName;}			//"moduleName" courant
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU DE SÉLECTION D'OBJETS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuSelect()
 	{
 		if(static::menuSelectDisplay()){
@@ -273,27 +264,27 @@ trait MdlObjectMenu
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC : AFFICHE LE MENU DE SÉLECTION D'OBJETS ?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuSelectDisplay()
 	{
 		//Type d'objet sélectionnable + Mode desktop + User identifié
 		return (static::isSelectable && Req::isMobile()==false && Ctrl::$curUser->isUser());
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * L'OBJET AFFICHÉ EST-IL SELECTIONNABLE ?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isSelectable()
 	{
 		//Menu de sélection d'objets affiché  +  l'objet n'est pas le conteneur/dossier courant (cf. ".pathMenu")
 		return (static::menuSelectDisplay()  &&  (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$this->_typeId));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU DE TRI D'UN TYPE D'OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuSort($containerObj=null, $addUrlParams=null)
 	{
 		$vDatas["sortFields"]=static::$sortFields;
@@ -305,9 +296,9 @@ trait MdlObjectMenu
 		return Ctrl::getVue(Req::commonPath."VueObjMenuSort.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC : TRI D'OBJETS : PREFERENCE EN BDD / PARAMÈTRE PASSÉ EN GET (ex: "firstName@@asc")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	private static function getSort($containerObj=null)
 	{
 		$objectsSort=Ctrl::prefUser("sort_".static::prefDbKey($containerObj), "sort");									//Récupère la préférence en Bdd ou params GET/POST
@@ -326,9 +317,9 @@ trait MdlObjectMenu
 		return " ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1]." ";										//Renvoie le tri Sql (avec des espaces avant/après!)
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU DU MODE D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModes)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuDisplayMode($containerObj=null)
 	{
 		if(static::isMobileDisplayBlock()==false){
@@ -339,9 +330,9 @@ trait MdlObjectMenu
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DES OBJETS DE LA PAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getDisplayMode($containerObj=null)
 	{
 		if(static::$displayMode===null){
@@ -355,17 +346,17 @@ trait MdlObjectMenu
 		return static::$displayMode;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isMobileDisplayBlock()
 	{
 		return (Req::isMobile() && in_array("block",static::$displayModes));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : MENU DE FILTRE ALPHABÉTIQUE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function menuPagination($displayedObjNb, $getParamKey=null)
 	{
 		$pageNbTotal=ceil($displayedObjNb/static::$pageNbObjects);
@@ -386,18 +377,18 @@ trait MdlObjectMenu
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC SQL : FILTRE DE PAGINATION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function sqlPagination()
 	{
 		$offset=Req::isParam("pageNb")  ?  ((Req::param("pageNb")-1)*static::$pageNbObjects)  :  "0";
 		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * MENU DE SÉLECTION DE LA LANGUE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function selectTrad($typeConfig, $selectedLang=null)
 	{
 		// Langue "francais" par défaut
@@ -416,10 +407,10 @@ trait MdlObjectMenu
 		return '<select name="lang" onchange="'.$onchange.'">'.$menuLangOptions.'</select> &nbsp; <img src="app/trad/'.$selectedLang.'.png" class="menuTradIcon">';
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE DES BOUTONS "RADIO" D'UN INPUT
 	 * Chaque element de $tabRadios doit avoir une "value" + "trad"  ("img" optionnel)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function radioButtons($inputName, $curValue, $tabRadios)
 	{
 		$radioButtons=null;
@@ -433,9 +424,9 @@ trait MdlObjectMenu
 		return $radioButtons;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function sendMailBasicOptions()
 	{
 		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");

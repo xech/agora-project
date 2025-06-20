@@ -20,16 +20,16 @@ class MdlCalendar extends MdlObject
 	protected static $_hasAccessRight=true;
 	public static $requiredFields=["title"];
 	public static $searchFields=["title","description"];
-	public static $forceDeleteRight=false;//Force la suppression d'agenda perso : cf. "deleteRight()"
+	public static $isUserDelete=false;
 	//Valeurs mises en cache
 	private static $_readableCalendars=null;
 	private static $_myCalendars=null;
 	private static $_affectationCalendars=null;
 
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -50,55 +50,22 @@ class MdlCalendar extends MdlObject
 		}
 	}
 
-	/**************************************************************************************************************
-	 * VERIF SI L'USER COURANT PEUT AJOUTER UN AGENDA DE RESSOURCE (ne concerne pas les agenda de type 'user')
-	 **************************************************************************************************************/
-	public static function addRight()
-	{
-		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddRessourceCalendar")==false));
-	}
-
-	/*************************************************************************************************************************************************************************
-	 * VERIF SI L'USER COURANT PEUT AJOUTER OU PROPOSER UN ÉVÉNEMENT ("true" pour tous les users && pour les guests si l'option "propositionGuest" de l'agenda est activé)
-	 *************************************************************************************************************************************************************************/
-	public function addOrProposeEvt()
-	{
-		return (Ctrl::$curUser->isUser() || !empty($this->propositionGuest));
-	}
-
-	/*******************************************************************************************
-	 * VERIF SI C'EST L'AGENDA PARTAGE DE L'ESPACE COURANT
-	 *******************************************************************************************/
-	public function isSpacelCalendar()
-	{
-		return ($this->type=="ressource" && ($this->_id==1 || $this->title==Ctrl::$curSpace->name));
-	}
-
-	/*******************************************************************************************
-	 * VERIF SI C'EST L'AGENDA PERSO DE L'USER COURANT
-	 *******************************************************************************************/
-	public function isPersonalCalendar()
-	{
-		return ($this->type=="user" && $this->isAutor());
-	}
-
-	/**************************************************************************************************************************************
-	 * SURCHARGE : DROIT DE SUPPRIMER L'AGENDA POUR L'USER COURANT => DESACTIVÉ PAR DEFAUT POUR LES AGENDAS PERSOS (cf. $forceDeleteRight)
-	 **************************************************************************************************************************************/
+	/********************************************************************************************************
+	 * SURCHARGE : DROIT DE SUPPRIMER L'AGENDA POUR L'USER COURANT
+	 ********************************************************************************************************/
 	public function deleteRight()
 	{
-		//"MdlUser::delete()" supprime l'agenda perso en passant $forceDeleteRight à "true" : cela garde ainsi le "deleteRight()" à "true" dans "MdlCalendar::delete()" et "parent::delete()"
-		return ($this->type=="user" && $this::$forceDeleteRight==false)  ?  false  :  parent::deleteRight();
+		//Droit lambda pour les agendas de ressource ou agendas perso via "MdlUser::delete()" (admin general)
+		return ($this->type!="user" || $this::$isUserDelete==true)  ?  parent::deleteRight()  :  false;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRESSION D'AGENDA
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		//Controle le droit d'accès
-		if($this->deleteRight())
-		{
+		if($this->deleteRight()){
 			//Supprime les evenements affectés uniquement à l'agenda en question
 			$eventList=Db::getCol("SELECT DISTINCT _idEvt FROM ap_calendarEventAffectation WHERE _idCal=".$this->_id." AND _idEvt NOT IN (select _idEvt from ap_calendarEventAffectation where _idCal!=".$this->_id.")");
 			foreach($eventList as $_idEvt){
@@ -112,9 +79,47 @@ class MdlCalendar extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 ********************************************************************************************************/
+	public function contextMenu($options=null)
+	{
+		////	Accès en lecture
+		if($this->readRight()){
+			////	Adresse de partage
+			$actionJsTmp="$('#urlIcal".$this->_typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->_typeId."').hide(); notify('".Txt::trad("copyUrlNotif",true)."');";
+			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_typeId."' value=\"".Req::getCurUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->_typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
+			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"link.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
+			////	Export Ical des evts
+			$options["specificOptions"][]=["actionJs"=>"confirmRedir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
+		}
+		//// Import Ical des evts
+		if($this->editContentRight()){
+			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
+		}
+		//Renvoie le menu surchargé
+		return parent::contextMenu($options);
+	}
+
+	/********************************************************************************************************
+	 * VERIF SI C'EST L'AGENDA PARTAGE DE L'ESPACE COURANT
+	 ********************************************************************************************************/
+	public function isSpacelCalendar()
+	{
+		return ($this->type=="ressource" && ($this->_id==1 || $this->title==Ctrl::$curSpace->name));
+	}
+
+	/********************************************************************************************************
+	 * VERIF SI C'EST L'AGENDA PERSO DE L'USER COURANT
+	 ********************************************************************************************************/
+	public function isMyPersonalCalendar()
+	{
+		return ($this->type=="user" && $this->isAutor());
+	}
+
+	/********************************************************************************************************
 	 * LISTE D'EVENEMENTS SUR UNE DURÉE/PERIODE DONNEE (>= à un jour : cf. evt récurrents)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function evtList($durationBegin, $durationEnd, $accessRightMin, $categoryFilter=false, $pluginParams=false)
 	{
 		////	EVT AFFECTÉS À L'AGENDA COURANT ET CONFIRMÉS (INIT LA SELECTION)
@@ -131,7 +136,7 @@ class MdlCalendar extends MdlObject
 		////	EVT D'UNE CERTAINE CATEGORIE  ||  EVT DU PLUGIN (search/dashboard/shortcut)
 		if(!empty($categoryFilter))		{$sqlSelection.=MdlCalendarCategory::sqlCategoryFilter();}
 		elseif(!empty($pluginParams))	{$sqlSelection.=" AND ".MdlCalendarEvent::sqlPlugins($pluginParams);}
-		////	RECUPERE LES EVTS  :  PUIS FILTRE EN FONCTION DU DROIT D'ACCÈS (0.5=créneau horaire, 1=lecture, 2=écriture)
+		////	RECUPERE LES EVTS && FILTRE EN FONCTION DU DROIT D'ACCÈS
 		$eventList=Db::getObjTab("calendarEvent", "SELECT * FROM ap_calendarEvent WHERE ".$sqlSelection." ORDER BY dateBegin ASC, dateEnd DESC");//"dateEnd DESC" : récup les evts les plus long en 1er si 2 evt commencent en même tps (cf. display "week")
 		foreach($eventList as $keyEvt=>$tmpEvt){
 			if($tmpEvt->accessRight() < $accessRightMin)  {unset($eventList[$keyEvt]);}
@@ -173,9 +178,9 @@ class MdlCalendar extends MdlObject
 		return $eventList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * FILTRE LES EVT POUR UNE JOURNEE DONNEE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function dayEvtList($eventList, $durationBegin, $durationEnd)
 	{
 		$eventDayList=[];
@@ -193,9 +198,9 @@ class MdlCalendar extends MdlObject
 		return (($evt->timeBegin >= $durationBegin && $evt->timeBegin <= $durationEnd)  ||  ($evt->timeEnd >= $durationBegin && $evt->timeEnd <= $durationEnd)  ||  ($evt->timeBegin <= $durationBegin && $evt->timeEnd >= $durationEnd));
 	}
 
-	/*******************************************************************************************
-	 * AGENDAS ACCESSIBLES EN LECTURE A L'USER COURANT
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * AGENDAS ACCESSIBLES EN LECTURE POUR L'USER COURANT
+	 ********************************************************************************************************/
 	public static function readableCalendars()
 	{
 		//Agendas de ressource  &&  Agendas personnels (enabled)  &&  Agenda de l'user
@@ -208,9 +213,9 @@ class MdlCalendar extends MdlObject
 		return self::$_readableCalendars;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AGENDAS ACCESSIBLES EN ECRITURE POUR L'USER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function writableCalendars()
 	{
 		if(self::$_myCalendars===null){
@@ -222,29 +227,50 @@ class MdlCalendar extends MdlObject
 		return self::$_myCalendars;
 	}
 
-	/**************************************************************************************************
-	 * AGENDAS SUR LESQUELS L'USER COURANT PEUT AFFECTER OU PROPOSER DES ÉVÉNEMENTS
-	 **************************************************************************************************/
+	/********************************************************************************************************
+	 * AGENDAS ACCESSIBLES POUR AFFECTER/PROPOSER DES ÉVÉNEMENTS PAR L'USER COURANT
+	 ********************************************************************************************************/
 	public static function affectationCalendars()
 	{
 		if(self::$_affectationCalendars===null){
-			//Agendas accessibles en lecture
-			self::$_affectationCalendars=self::readableCalendars();
-			//Ajoute les agendas persos inaccessibles en lecture, pour les propositions d'événement (sauf "guest")
+			$calendars=self::readableCalendars();
+			//// Users : ajoute les agendas persos des users de l'espace courant et inaccessibles en lecture (cf propositions d'evt)
 			if(Ctrl::$curUser->isUser()){
-				$otherPersoCalendars=Db::getObjTab("calendar", "SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND _idUser IN (".Ctrl::$curSpace->getUsers("idsSql").") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
-				foreach($otherPersoCalendars as $tmpCal){
-					if(!in_array($tmpCal,self::$_affectationCalendars))  {self::$_affectationCalendars[]=$tmpCal;}//Ajoute l'agenda?
+				$userCalendars=Db::getObjTab("calendar","SELECT DISTINCT * FROM `ap_calendar` WHERE `type`='user' AND _idUser IN (".Ctrl::$curSpace->getUsers("idsSql").") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
+				foreach($userCalendars as $_id=>$tmpCal){
+					if(!in_array($tmpCal,$calendars))  {$calendars[]=$tmpCal;}
 				}
-				self::$_affectationCalendars=self::sortCalendars(self::$_affectationCalendars);//Liste des agendas triée
 			}
+			//// Guests : vérif si l'agenda possède l'option "propositionGuest"
+			else{																			
+				foreach($calendars as $_id=>$tmpCal){
+					if(empty($tmpCal->propositionGuest)) {unset($calendars[$_id]);}
+				}
+			}
+			self::$_affectationCalendars=self::sortCalendars($calendars);//Tri les agendas
 		}
 		return self::$_affectationCalendars;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
+	 * DROIT DE PROPOSER/AJOUTER UN EVT POUR L'AGENDA COURANT PAR L'USER COURANT
+	 ********************************************************************************************************/
+	public function affectationAddRight()
+	{
+		return in_array($this,self::affectationCalendars());
+	}
+
+	/********************************************************************************************************
+	 * DROIT D'AJOUTER  UN AGENDA DE RESSOURCE (pas de type 'user')
+	 ********************************************************************************************************/
+	public static function addRight()
+	{
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddRessourceCalendar")==false));
+	}
+
+	/********************************************************************************************************
 	 * AGENDAS ACTUELLEMENT AFFICHÉS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function displayedCalendars($readableCalendars)
 	{
 		$displayedCalendars=[];
@@ -258,13 +284,13 @@ class MdlCalendar extends MdlObject
 		//// Si aucun agenda en pref, on récupère l'agenda partagé de l'espace (en 1er) ou l'agenda perso de l'user courant
 		if(empty($displayedCalendars)){
 			foreach($readableCalendars as $tmpCal){
-				if($tmpCal->isSpacelCalendar() || $tmpCal->isPersonalCalendar())  {$displayedCalendars[]=$tmpCal;  break;}
+				if($tmpCal->isSpacelCalendar() || $tmpCal->isMyPersonalCalendar())  {$displayedCalendars[]=$tmpCal;  break;}
 			}
 		}
 		//// Délestage des evts de + de 10 ans
 		if(empty($_SESSION["calendarsCleanEvt"])){												//Lance en début de session
-			$timeDeleteMin=time()-946080000;													//30ans
-			$timeDeleteMax=time()-315360000;													//10ans
+			$timeDeleteMin=time()-(TIME_1YEAR*30);												//30ans
+			$timeDeleteMax=time()-(TIME_1YEAR*10);												//10ans
 			foreach($displayedCalendars as $tmpCal){											//Sélectionne les agendas avec "editContentRight()"
 				if($tmpCal->editContentRight()){												//Vérif si l'agenda est accessible en écriture
 					foreach($tmpCal->evtList($timeDeleteMin, $timeDeleteMax, 1) as $tmpEvt){	//$accessRightMin=1
@@ -286,7 +312,7 @@ class MdlCalendar extends MdlObject
 		foreach($calendarList as $tmpCal){
 			if($tmpCal->isSpacelCalendar())			{$tmpCal->sortField="A__".$tmpCal->title;}
 			elseif($tmpCal->type=="ressource")		{$tmpCal->sortField="B__".$tmpCal->title;}
-			elseif($tmpCal->isPersonalCalendar())	{$tmpCal->sortField="C__".$tmpCal->title;}
+			elseif($tmpCal->isMyPersonalCalendar())	{$tmpCal->sortField="C__".$tmpCal->title;}
 			else									{$tmpCal->sortField="D__".$tmpCal->title;}
 		}
 		//Tri alphabetique sur le "sortField"
@@ -294,27 +320,5 @@ class MdlCalendar extends MdlObject
 			return strcmp($objA->sortField, $objB->sortField);
 		});
 		return $calendarList;
-	}
-
-	/*******************************************************************************************
-	 * SURCHARGE : MENU CONTEXTUEL
-	 *******************************************************************************************/
-	public function contextMenu($options=null)
-	{
-		////	Accès en lecture
-		if($this->readRight()){
-			////	Adresse de partage
-			$actionJsTmp="$('#urlIcal".$this->_typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->_typeId."').hide(); notify('".Txt::trad("copyUrlNotif",true)."');";
-			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_typeId."' value=\"".Req::getCurUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->_typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
-			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"link.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
-			////	Export Ical des evts
-			$options["specificOptions"][]=["actionJs"=>"confirmRedir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
-		}
-		//// Import Ical des evts
-		if($this->editContentRight()){
-			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
-		}
-		//Renvoie le menu surchargé
-		return parent::contextMenu($options);
 	}
 }

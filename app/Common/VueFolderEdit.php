@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(600);
-
 ready(function(){
 	////	CHANGE L'ICONE DU DOSSIER
 	$("select[name='icon']").on("change",function(){
@@ -36,11 +33,10 @@ function objectFormControl(){
 
 
 <style>
-.inputTitleName			{width:75%}/*surcharge*/
-#folderIcon				{display:table; margin-top:30px;}
-#folderIcon>div			{display:table-cell;}
-#folderIcon select		{height:80px; margin-left:20px; padding:5px;}
-#folderIcon option		{padding:2px;}
+#folderIcon			{display:table; margin-top:30px;}
+#folderIcon>div		{display:table-cell;}
+#folderIcon select	{height:80px; margin-left:20px; padding:5px;}
+#folderIcon option	{padding:2px;}
 </style>
 
 
@@ -71,6 +67,6 @@ function objectFormControl(){
 		</div>
 	</div>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

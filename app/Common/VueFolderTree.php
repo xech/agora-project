@@ -1,7 +1,4 @@
 <script>
-////	Resize
-<?php if($context=="move"){ ?>lightboxWidth(500);<?php } ?>
-
 ////	Init
 ready(function(){
 	////	Ids des dossiers du "path" courant
@@ -35,7 +32,7 @@ function folderTreeDisplay(folderId, toggle)
 	var openIconSelector=".vTreeFolder[data-folderId='"+folderId+"'] .vIconOpen";
 	var subFoldersSelector=".vTreeFolder[data-parentFolderId='"+folderId+"']";
 	//Affiche les sous-dossiers : niveau juste en dessous
-	if(toggle==true && $(subFoldersSelector).isVisible()==false){
+	if(toggle==true && $(subFoldersSelector).isDisplayed()==false){
 		$(subFoldersSelector).slideDown();
 		$(openIconSelector).addClass("vIconOpened");
 	}
@@ -56,6 +53,7 @@ function folderMove(newFolderId){
 
 
 <style>
+<?= $context=='move' ? '#bodyLightbox {max-width:500px;}' : null ?>
 #treeFolders						{user-select:none; -webkit-user-select:none; padding:4px;}
 .vTreeFolder						{display:none;}											/*dossier masqué par défaut*/
 .vTreeFolder>div					{display:table-cell; padding:3px; vertical-align:top;}	/*cellules du dossier */
@@ -64,7 +62,7 @@ function folderMove(newFolderId){
 .vTreeFolder:first-child .vIconOpen	{display:none!important;}								/*dossier root : pas d'icone de d'ouverture du dossier*/
 .vIconOpened						{transform:rotate(40deg); filter:brightness(0);}
 
-/*MOBILE*/
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
 }

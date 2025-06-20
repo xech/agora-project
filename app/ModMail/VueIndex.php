@@ -1,38 +1,38 @@
 <script>
 ready(function(){
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	MOBILE : DÉPLACE LE MENU DES DESTINATAIRES À COTÉ DU MENU DES "OPTIONS"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	if(isMobile()){
 		$("#recipientMainMenu>*").appendTo("#mobileRecipients");
 		$("#recipientMainMenu").hide();	//Masque le block vide
 		$("#mobileRecipients").show();	//Affiche le block des destinataires
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	PRÉSELECTIONNE LE TITRE DU MAIL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("[name='title']").focusAlt();
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	INIT L'AFFICHAGE DE L'ARBORESCENCE DE CONTACTS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$(".vMailsBlock").each(function(){
 		var folderTreeLevel=$(this).attr("data-folderTreeLevel");
 		if(typeof folderTreeLevel!=="undefined" && folderTreeLevel>0)
 			{$(this).css("padding-left",(folderTreeLevel*18)+"px");}
 	});
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *  AFFICHE/MASQUE LES USERS D'UN ESPACE (SAUF ESPACE COURANT)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$(".vMailsLabel").on("click",function(){
 		$("#mailsContainer"+$(this).attr("data-typeId")).slideToggle();
 	});
 	
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	AJOUTE UNE NOUVELLE UNE URL DE VISIO
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	$("#visioUrlAdd").on("click",async function(){
 		if(await confirmAlt("<?= Txt::trad("VISIO_urlAddConfirm") ?>")){
 			let visioUrl ="<?= Ctrl::$agora->visioUrl() ?>";
@@ -40,7 +40,7 @@ ready(function(){
 		}
 	});
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *	CONTROLE FINAL DU FORMULAIRE (TESTER AVEC INSERTION D'IMAGE)
 	*******************************************************************************************/
 	$("#mainForm").on("submit", async function(event){
@@ -82,8 +82,8 @@ ready(function(){
 #mailOptions>div>div				{margin-top:10px;}/*lignes des options*/
 #mailOptions img[src*=dependency]	{display:none;}
 .submitButtonMain					{text-align:right;}
-.submitButtonMain button			{width:220px; margin-top:20px;}
-/*MOBILE*/
+.submitButtonMain button			{width:200px; height:50px;}
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
@@ -95,7 +95,7 @@ ready(function(){
 
 <div id="pageCenter">
 	<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
-		<div id="pageMenu">
+		<div id="moduleMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
 			<div id="recipientMainMenu" class="miscContainer" >
 				<div id="recipientLabel"><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRightBig.png"><hr></div>
@@ -167,15 +167,15 @@ ready(function(){
 					</div>
 					<div>
 						<?php
-						//// Ajouter une visio ou des fichiers 
+						//// Ajouter une visio & Joindre des fichiers
 						if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" '.Txt::tooltip("VISIO_urlAddConfirm").'><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").'</div>';}
-						echo $curObj->attachedFile();
+						echo $curObj->attachedFileEdit();
 						?>
 					</div>
 					<div>
 						<?php
-						//// Ancien email rappelé via "oldMailTypeId"  &  Bouton"Submit"
-						if(Req::isParam("oldMailTypeId"))  {echo '<input type="hidden" name="oldMailTypeId" value="'.Req::param("oldMailTypeId").'">';}
+						//// Ancien email rappelé via "reloadMailTypeId"  &  Bouton"Submit"
+						if(Req::isParam("reloadMailTypeId"))  {echo '<input type="hidden" name="reloadMailTypeId" value="'.Req::param("reloadMailTypeId").'">';}
 						echo Txt::submitButton("<img src='app/img/postMessage.png'> ".Txt::trad("MAIL_sendMail"));
 						?>
 					</div>

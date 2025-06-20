@@ -1,7 +1,3 @@
-<script>
-lightboxWidth(600);//Resize
-</script>
-
 <div>
 	<?php
 	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE

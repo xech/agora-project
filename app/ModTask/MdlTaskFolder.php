@@ -17,9 +17,9 @@ class MdlTaskFolder extends MdlFolder
 	const dbTable="ap_taskFolder";
 	const MdlObjectContent="MdlTask";
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE :  POURCENTAGE DE PROGRESSION DANS LA TIMELINE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function folderOtherDetails()
 	{
 		//Affiche la barre s'il ya une date au plus tôt et au plus tard sur l'ensemble des tâches du dossier

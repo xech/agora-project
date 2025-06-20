@@ -48,9 +48,9 @@ class MdlDashboardNews extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DROIT D'AJOUTER UNE NOUVELLE NEWS
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddNews")==false));

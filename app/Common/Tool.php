@@ -17,7 +17,7 @@ use PHPMailer\PHPMailer\Exception;
  */
 class Tool
 {
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ENVOI D'UN MAIL
 	 * ***************
 	 * $options des mails ("in_array()" pour les tests)
@@ -30,7 +30,7 @@ class Tool
 	 * Notes :
 	 * - toujours mettre en place un SPF, DKIM et REVERS DNS (évite la spambox)
 	 * - tester l'envoi des emails via https://www.mail-tester.com/
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function sendMail($mailsTo, $subject, $message, $options=null, $attachedFiles=null)
 	{
 		////	Vérifs de base && Init les options
@@ -39,7 +39,7 @@ class Tool
 
 		////	Charge une première fois PHPMailer et crée une nouvelle instance
 		if(!defined("phpmailerLoaded")){
-			$phpMailerPath=  'app/misc/PHPMailer-6.9.3/src/';
+			$phpMailerPath='app/misc/PHPMailer-6.10.0/src/';
 			require $phpMailerPath.'Exception.php';
 			require $phpMailerPath.'PHPMailer.php';
 			require $phpMailerPath.'SMTP.php';
@@ -64,10 +64,10 @@ class Tool
 			}
 
 			////	Expediteur
-			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);															//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
-			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "nepasrepondre@".$serverName;	//Email du paramétrage général OU du domaine courant (ex: "nepasrepondre@mondomaine.net")
-			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);				//Nom de l'expediteur (Ex: "monespace.fr")
-			$mail->SetFrom($setFromMail, $setFromName);																			//"SetFrom" fixe (cf. score des antispams)
+			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);																	//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
+			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "nepasrepondre@".$serverName;			//Email du paramétrage général OU du domaine courant (ex: "nepasrepondre@mondomaine.net")
+			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);						//Nom de l'expediteur (Ex: "monespace.fr")
+			$mail->SetFrom($setFromMail, $setFromName);																					//"SetFrom" fixe (cf. score des antispams)
 			//Controles de base
 			if(in_array("noTimeControl",$options)==false && (time()-@$_SESSION["sendMailTime"])<10)	{echo "please wait 10 sec."; exit;}	//Temps minimum entre chaque mail
 			else																					{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
@@ -78,8 +78,8 @@ class Tool
 			$fromUserWithMail=(isset(Ctrl::$curUser) && Ctrl::$curUser->isUser() && !empty(Ctrl::$curUser->mail));						//Verif que l'expediteur est un user authentifié avec un email
 			//Ajoute si besoin l'email de l'user en replyTo ou pour une demande de notif de lecture
 			if($fromUserWithMail==true){
-				if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}	//Ajoute si besoin un "ReplyTo" avec son email (tjs en option: cf. score des antispams)
-				if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}							//Ajoute une demande de notification de lecture (envoyé à l'expéditeur du présent mail)
+				if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}			//Ajoute si besoin un "ReplyTo" avec son email (tjs en option: cf. score des antispams)
+				if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}									//Ajoute une demande de notification de lecture (envoyé à l'expéditeur du présent mail)
 			}
 
 			////	Destinataires (idUser au format text/array)
@@ -116,7 +116,7 @@ class Tool
 			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoLabel.png";
 			if(in_array("noFooter",$options)==false && is_file($logoFooterPath)){
 				$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
-				$mail->msgHTML($message."<br><br><img src='cid:logoFooterId' style='max-height:100px' alt=''>");
+				$mail->msgHTML($message.'<br><br><img src="cid:logoFooterId" style="max-height:100px">');
 			}
 
 			////	Fichiers joints à ajouter
@@ -126,7 +126,7 @@ class Tool
 					if(is_file($tmpFile["path"])){
 						$fileSizeCpt+=filesize($tmpFile["path"]);
 						if($fileSizeCpt > File::mailMaxFilesSize)	{Ctrl::notify(Txt::trad("MAIL_maxFileSizeNotif")." (".File::mailMaxFilesSizeLabel.") : ".$tmpFile["name"]);}//Fichier trop volumineux
-						elseif(!empty($tmpFile["cid"]))				{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Intègre une image dans le message (ex: CID="XYZ" correspond à "<img src='cid:XYZ'>")
+						elseif(!empty($tmpFile["cid"]))				{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Remplace le "src" des images intégrées au message (ex: <img src="cid:attachedFile55">)
 						elseif(!empty($tmpFile["name"]))			{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}		//Ajoute un fichier joint classique
 					}
 				}
@@ -134,13 +134,13 @@ class Tool
 
 			////	Envoi du mail + rapport d'envoi si demandé
 			$sendReturn=$mail->Send();
-			if(in_array("noNotify",$options)==false){																											//Affiche une notification si l'email a été envoyé ou pas 
-				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");										//Affiche si besoin "L'email de notification a bien été envoyé"
-				if($sendReturn==true)				{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}//Mail correctement envoyé
-				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}											//Erreurs dans l'envoi de l'email
-				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																//Mail non envoyé
+			if(in_array("noNotify",$options)==false){																												//Notification de l'envoie de l'email 
+				$notifMail=(in_array("objectNotif",$options))  ?  Txt::trad("MAIL_sendNotif")  :  Txt::trad("MAIL_sendOk");											//"Email de notif envoyé" ou "Email bien été envoyé"
+				if($sendReturn==true)				{Ctrl::notify($notifMail."<br><br>".Txt::trad("MAIL_recipients")." : ".trim($mailsToNotif,","), "success");}	//Mail correctement envoyé
+				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}												//Erreurs dans l'envoi de l'email
+				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																	//Mail non envoyé
 			}
-			return $sendReturn;//tjs!
+			return $sendReturn;//Tjs renvoyer
 		}
 		////	Exception PHPMailer
 		catch (Exception $error){
@@ -148,9 +148,9 @@ class Tool
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * URL FILTRÉ DES PARAMETRES PASSÉS EN GET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getParamsUrl($paramsExclude=null)
 	{
 		//Init
@@ -165,9 +165,9 @@ class Tool
 		return "?".http_build_query($getParamsUrl);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * TRI UN TABLEAU MULTIDIMENTIONNEL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function sortArray($sortedArray, $sortedField)
 	{
 		// Créé un tableau temporaire avec uniquement le champ à trier, puis trie ce tableau
@@ -179,9 +179,9 @@ class Tool
 		return $returnArray;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RECHERCHE UNE VALEUR DANS UN TABLEAU MULTIDIMENTIONNEL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function arraySearch($curTable, $searchValue)
 	{
 		if(is_array($curTable)){
@@ -200,9 +200,9 @@ class Tool
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 *  TABLEAU DES TIMESZONES
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static $tabTimezones=array(
 		"Kwajalein"=>"-12:00",
 		"Pacific/Midway"=>"-11:00",
@@ -233,17 +233,17 @@ class Tool
 		"Pacific/Tongatapu"=>"13:00"
 	);	
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ENVOI DES MAILS ACTIVÉ SUR LE SERVEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function mailEnabled()
 	{
 		return (function_exists("mail") || (!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * BARRE DE POURCENTAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function progressBar($barLabel, $barTooltip, $barFillPercent=0, $orangeBar=false)
 	{
 		// $barFillPercent de 100% maximum

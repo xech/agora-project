@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth("1300px");
-
 ////	Controle du formulaire
 ready(function(){
 	$("#mainForm").on("submit",function(){
@@ -16,6 +13,7 @@ ready(function(){
 
 
 <style>
+#bodyLightbox					{max-width:1200px;}
 form							{padding:0px; margin:0px; text-align:center;}
 .vTable							{width:98%;}
 .vTable img						{vertical-align:middle;}

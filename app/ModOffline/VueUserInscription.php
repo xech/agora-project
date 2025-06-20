@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(500);
-
 ////	CONTRÔLE DU FORMULAIRE
 ready(function(){
 	$("#userInscriptionForm").on("submit",async function(event){
@@ -22,6 +19,7 @@ ready(function(){
 
 
 <style>
+#bodyLightbox 				{max-width:500px;}
 form>div					{margin:20px 0px;}
 input[type=text], textarea	{width:100%!important;}
 </style>

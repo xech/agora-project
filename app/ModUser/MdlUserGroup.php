@@ -18,9 +18,9 @@ class MdlUserGroup extends MdlObject
 	public static $requiredFields=["title"];
 	public static $sortFields=["title@asc","title@desc"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -34,12 +34,11 @@ class MdlUserGroup extends MdlObject
 		$this->usersLabel=@trim($this->usersLabel,", ");
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : DROIT D'ACCÈS AU GROUPE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function accessRight()
 	{
-		//Init le cache
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();
 			//Ajoute l'accès en lecture si :  User courant se trouve dans le groupe  OU  l'espace du groupe fait partie des espaces de l'user (pour les affectations d'objet)
@@ -48,17 +47,17 @@ class MdlUserGroup extends MdlObject
 		return $this->_accessRight;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : DROIT D'ÉDITION DU GROUPE (ACCÈS TOTAL OU ADMIN D'ESPACE)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function editRight()
 	{
 		return (parent::editRight() || Ctrl::$curUser->isSpaceAdmin());
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRIME UN GROUPE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight()){
@@ -67,9 +66,9 @@ class MdlUserGroup extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * GROUPES D'UTILISATEURS (AFFECTÉS À UN ESPACE ET/OU AFFECTÉS À UN UTILISATEUR?)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getGroups($objSpace=null, $objUser=null)
 	{
 		$sqlFilter=null;
@@ -78,9 +77,9 @@ class MdlUserGroup extends MdlObject
 		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DROIT D'AJOUTER UN NOUVEAU GROUPE POUR L'USER COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddGroup")));

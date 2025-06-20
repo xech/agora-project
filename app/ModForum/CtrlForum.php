@@ -16,13 +16,13 @@ class CtrlForum extends Ctrl
 	public static $moduleOptions=["adminAddSubject","adminAddTheme"];
 	public static $MdlObjects=["MdlForumSubject","MdlForumMessage"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		////	MESSAGES D'UN SUJET
-		$curSubject=Ctrl::getObjTarget();
+		$curSubject=Ctrl::getCurObj();
 		if(is_object($curSubject) && $curSubject::objectType=="forumSubject"){
 			$curSubject->usersConsultUpdate();
 			$vDatas["curSubject"]=$curSubject;
@@ -40,9 +40,9 @@ class CtrlForum extends Ctrl
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PLUGINS DU MODULE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPlugins($params)
 	{
 		$pluginsList=[];
@@ -69,12 +69,12 @@ class CtrlForum extends Ctrl
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AJAX : ACTIVE/DÉSACTIVE LES NOTIFICATIONS DES MESSAGES PAR MAIL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionNotifyLastMessage()
 	{
-		$curSubject=Ctrl::getObjTarget();
+		$curSubject=Ctrl::getCurObj();
 		if($curSubject->readRight()){
 			$usersNotifyLastMessage=Txt::txt2tab($curSubject->usersNotifyLastMessage);
 			if($curSubject->curUserNotifyLastMessage())		{$usersNotifyLastMessage=array_diff($usersNotifyLastMessage,[Ctrl::$curUser->_id]);		echo "removeUser";}
@@ -83,13 +83,13 @@ class CtrlForum extends Ctrl
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UN SUJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionForumSubjectEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		if($curObj->isNew() && MdlForumSubject::addRight()==false)	{self::noAccessExit();}
 		else														{$curObj->editControl();}
 		////	Valide le formulaire
@@ -97,7 +97,7 @@ class CtrlForum extends Ctrl
 		{
 			//Enregistre & recharge l'objet
 			$dateLastMessage=($curObj->isNew())  ?  ", dateLastMessage=".Db::dateNow()  :  null;//Init "dateLastMessage" pour un nouveau sujet (classement des sujets)
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").", _idTheme=".Db::param("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", _idTheme=".Db::param("_idTheme").", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." ".$dateLastMessage);
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxRedir();
@@ -109,19 +109,19 @@ class CtrlForum extends Ctrl
 		static::displayPage("VueForumSubjectEdit.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : EDITION D'UN MESSAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionForumMessageEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
 			$idMessageParent=Req::isParam("_idMessageParent")  ?  ", _idMessageParent=".Db::param("_idMessageParent")  :  null;//Rattaché à un message parent?
-			$curObj=$curObj->createUpdate("title=".Db::param("title").", description=".Db::param("description").$idMessageParent);
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").$idMessageParent);
 			//MAJ "dateLastMessage" & "usersConsultLastMessage" du sujet conteneur
 			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE _id=".$curObj->_idContainer);
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")

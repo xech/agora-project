@@ -17,18 +17,18 @@ class CtrlLink extends Ctrl
 	public static $moduleOptions=["adminRootAddContent"];
 	public static $MdlObjects=["MdlLink","MdlLinkFolder"];
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
 		$vDatas["linkList"]=Db::getObjTab("link", "SELECT * FROM ap_link WHERE ".MdlLink::sqlDisplay(self::$curContainer).MdlLink::sqlSort());
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PLUGINS DU MODULE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPlugins($params)
 	{
 		$pluginsList=MdlLinkFolder::getPluginFolders($params);
@@ -43,18 +43,18 @@ class CtrlLink extends Ctrl
 		return $pluginsList;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : AJOUT D'UN LIEN
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function actionLinkEdit()
 	{
 		//Init
-		$curObj=Ctrl::getObjTarget();
+		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->createUpdate("adress=".Db::param("adress").", description=".Db::param("description"));
+			$curObj=$curObj->editRecord("adress=".Db::param("adress").", description=".Db::param("description"));
 			//Notifie par mail & Ferme la page
 			$curObj->sendMailNotif("<a href=\"".$curObj->adress."\" target='_blank'><b>".$curObj->adress."</b></a>");
 			static::lightboxRedir();

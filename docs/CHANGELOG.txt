@@ -4,6 +4,35 @@ CHANGELOG - JOURNAL DES VERSIONS
 --------------------------------
 
 
+VERSION 25.6.0
+---------------
+Nouvelle visionneuse d'images (Rotation, Diaporama, Vignettes, etc)
+Simplification des menus d'édition des evenements et affectation aux agendas
+Amélioration de la messagerie instantanée
+Optimisation de l'affichage responsive des menus contextuels/principaux
+Optimisation de la gestion des droits d'accès aux objets
+Optimisation de l'affichage de l'historique des emails
+Correction des propositions d'événement par les invités
+Correction de l'intégration des images d'emails reloadés
+Correction de l'affichage après suppression d'une version de fichier
+Mise à jour majeure de Fancybox en v5.0.36
+Mise à jour de l'éditeur TinyMce en v7.9.1
+Mise à jour de PHPMailer en v6.10.0
+-----
+New images viewer (Rotate, Slideshow, Thumbnails, etc)
+Simplification of event editing menus and assignment to calendars
+Improved instant messaging display
+Optimized responsive display of contextual/main menus
+Optimization of object access rights management
+Optimization of email history display
+Fixed event proposals by guests
+Fixed integration of reloaded email images
+Fixed display after deleting a file version
+Fancybox major update to v5.0.36
+TinyMce editor update to v7.9.1
+PHPMailer updated to v6.10.0
+
+
 VERSION 25.3.3
 ---------------
 Nouvelle fonction de drag/drop en vue "semaine" pour déplacer l'heure/date d'un événement

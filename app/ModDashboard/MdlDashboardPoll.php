@@ -70,22 +70,21 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * STATIC : DROIT DE CRÉER UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function addRight()
 	{
 		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"adminAddPoll")==false));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LISTE DES RÉPONSES D'UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getResponses($orderByNbVotes=false)
 	{
-		//Réponses du sondage (trié par "rank"), avec pour chaque réponse : le nb de votes ("GROUP BY") et auquel cas le chemin du fichier
-		if($this->_responseList===null)
-		{
+		if($this->_responseList===null){
+			//Réponses du sondage (trié par "rank"), avec pour chaque réponse : le nb de votes ("GROUP BY") et auquel cas le chemin du fichier
 			$this->_responseList=Db::getTab("SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPollResponse T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idResponse  WHERE T1._idPoll=".$this->_id."  GROUP BY _id, _idPoll, label, `rank`, fileName  ORDER BY `rank` ASC");//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
 			foreach($this->_responseList as $tmpKey=>$tmpResponse){
 				if(!empty($tmpResponse["fileName"])){
@@ -104,9 +103,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * INFOS SUR UNE RÉPONSE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function getResponse($_idResponse)
 	{
 		//Parcourt la liste des réponses et renvoi la réponse demandée
@@ -115,18 +114,18 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * NOMBRE DE VOTES POUR LE SONDAGE OU POUR UNE RÉPONSE DU SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function votesNb($_idResponse=false)
 	{
 		$sqlResponse=(!empty($_idResponse))  ?  "AND _idResponse=".Db::format($_idResponse)  :  null;
 		return Db::getVal("SELECT count(DISTINCT _idUser) FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." ".$sqlResponse);//"DISTINCT _idUser" car un user peut choisir plusieurs réponses
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PERSONNES AYANT VOTÉ POUR LE SONDAGE OU POUR UNE RÉPONSE DU SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function votesUsers($_idResponse=false)
 	{
 		$sqlResponse=(!empty($_idResponse))  ?  "AND _idResponse=".Db::format($_idResponse)  :  null;
@@ -138,51 +137,51 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * POURCENTAGE DES VOTES POUR UNE RÉPONSE DU SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function votesPercent($_idResponse)
 	{
 		return ($this->votesNbTotal()>0)  ?  round(($this->votesNb($_idResponse) / $this->votesNbTotal()) * 100)  :  0;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * NOMBRE TOTAL DE VOTES POUR LE SONDAGE (GARDE EN CACHE)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function votesNbTotal()
 	{
 		if($this->_votesNbTotal===null)  {$this->_votesNbTotal=$this->votesNb();}
 		return $this->_votesNbTotal;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * L'USER COURANT A DÉJÀ VOTÉ LE SONDAGE ?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function curUserHasVoted()
 	{
 		return (Db::getVal("SELECT count(*) FROM ap_dashboardPollResponseVote WHERE _idPoll=".$this->_id." AND _idUser=".Ctrl::$curUser->_id) > 0);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIFIE SI LE SONDAGE EST TERMINÉ
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isFinished()
 	{
 		return (!empty($this->dateEnd) && Txt::formatDate($this->dateEnd,"dbDate","time")<time());
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RÉCUPÈRE LES RÉSULTATS D'UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function vuePollResult()
 	{
 		$vDatas["curObj"]=$this;
 		return Ctrl::getVue(Req::curModPath()."vuePollResult.php", $vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * RÉCUPÈRE LE FORMULAIRE DE VOTE D'UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function vuePollForm($newsDisplay=false)
 	{
 		$vDatas["curObj"]=$this;
@@ -191,9 +190,9 @@ class MdlDashboardPoll extends MdlObject
 		return Ctrl::getVue(Req::curModPath()."vuePollForm.php", $vDatas);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRESSION D'UN SONDAGE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		//Supprime chaque reponses du sondage
@@ -202,10 +201,10 @@ class MdlDashboardPoll extends MdlObject
 		parent::delete();
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SUPPRIME UNE RÉPONSE DU SONDAGE
 	 * $forceDelete à false (édition du sondage) : ne supprime pas la réponse si le sondage a déjà été voté
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function deleteResponse($_idResponse, $forceDelete=false)
 	{
 		//On supprime les votes de la réponse, Puis supprime la réponse elle-même
@@ -219,17 +218,17 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PATH DU FICHIER D'UNE RÉPONSE ($tmpResponse : "_id" + "fileName" nécessaires)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function responseFilePath($tmpResponse)
 	{
 		return PATH_MOD_DASHBOARD.$tmpResponse["_id"].".".File::extension($tmpResponse["fileName"]);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * AFFICHAGE DU FICHIER D'UNE RÉPONSE ($tmpResponse : "_id" + "fileName" + "fileUrlDownload" nécessaires)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function responseFileDiv($tmpResponse)
 	{
 		//Il y a un fichier ?
@@ -241,9 +240,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SUPPRIME LE FICHIER D'UNE RÉPONSE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function deleteReponseFile($_idResponse)
 	{
 		$tmpResponse=$this->getResponse($_idResponse);
@@ -254,9 +253,9 @@ class MdlDashboardPoll extends MdlObject
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VUE : SURCHARGE DU MENU CONTEXTUEL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
 		//// Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)

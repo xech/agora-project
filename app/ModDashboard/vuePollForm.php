@@ -14,5 +14,5 @@
 	?>
 	</ul>
 	<input type="hidden" name="typeId" value="<?= $curObj->_typeId ?>">
-	<div class="submitButtonMain"><button type="submit" title="<?= $submitButtonTooltip ?>"><?= Txt::trad("DASHBOARD_vote") ?></button></div>
+	<div class="submitButtonMain"><button type="submit" <?= Txt::tooltip($submitButtonTooltip) ?> ><?= Txt::trad("DASHBOARD_vote") ?></button></div>
 </form>

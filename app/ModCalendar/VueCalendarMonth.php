@@ -1,6 +1,6 @@
 <?php if($tmpCal->isFirstCal==true){ ?>
 <script>
-/*******************************************************************************************
+/********************************************************************************************************
  *	AFFICHAGE DES AGENDAS
  *******************************************************************************************/
 function calendarDisplay(isPrint)
@@ -35,7 +35,7 @@ function calendarDisplay(isPrint)
 .vEvtLabel									{white-space:nowrap;}					/*Texte sur une seule ligne*/
 .vEvtLabelDate								{margin-left:3px; margin-right:5px;}
 
-/*MOBILE*/
+/*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.vMonthDayLabel							{font-size:0.85em;}
 	.vMonthDayLabel .vMonthAddEvt			{margin:0px;}
@@ -62,9 +62,9 @@ function calendarDisplay(isPrint)
 
 		////	INIT LA CELLULE DU JOUR
 		$classDayOtherMonth=(date("m",$tmpDay["dayTimeBegin"])!=date("m",$curTime))  ?  "vMonthDayOtherMonth"  :  null;	//Class du jour du précédent/futur mois
-		if($tmpCal->addOrProposeEvt()){																					//Bouton d'ajout d'evt
+		if($tmpCal->affectationAddRight()){																				//Proposer/Ajouter un evt
 			$newEvtTimeBegin=strtotime($dayYmd." ".date("H:00"));														//Timestamp du nouvel evt
-			$addEvtButton='<img src="app/img/plusSmall.png" class="vMonthAddEvt" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.$newEvtTimeBegin.'\')" '.Txt::tooltip($tmpCal->addEventLabel).'>';
+			$addEvtButton='<img src="app/img/plusSmall.png" class="vMonthAddEvt" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.$newEvtTimeBegin.'\')" '.$tmpCal->addEvtTooltip.'>';
 		}else{$addEvtButton=null;}
 
 		////	BLOCK DU JOUR ET EVENEMENTS DU JOUR

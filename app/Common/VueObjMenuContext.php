@@ -83,36 +83,33 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 echo '</div>';
 
 
-////	MENU BURGER PRINCIPAL : LIKES / COMMENTAIRES / FICHIERS JOINTS / ACCÈS PERSO
+////	MENU DES FICHIERS JOINTS / ACCÈS PERSO / COMMENTAIRES / LIKES
 if($launcherIcon=="floatBig")
 {
-	echo '<div class="objMiscMenus">';
+	echo '<div class="objMenuMisc">';
+		//ICONE DES FICHIERS JOINTS & D'ACCÈS PERSO
+		if($curObj->attachedFileMenu())
+			{echo '<div><img src="app/img/attachment.png"></div>';}
+		if(!empty($isPersoAccess))
+			{echo '<div><img src="app/img/user/accessUser.png" '.Txt::tooltip("personalAccess").'></div>';}
+		//MENU DES LIKES
+		if($curObj->hasUsersLike()){
+			$likeNb=count($curObj->getUsersLike());
+			$likeOnclick="usersLikeUpdate('".$curObj->_typeId."')";
+			echo '<div class="'.(empty($likeNb)?"objMenuMiscHide":null).'" id="usersLike_'.$curObj->_typeId.'" onclick="'.$likeOnclick.'" '.Txt::tooltip($curObj->usersLikeTooltip()).'>
+					<span class="circleNb">'.(!empty($likeNb)?$likeNb:null).'</span>
+					<img src="app/img/usersLike.png">
+				  </div>';
+		}
 		//MENU DES COMMENTAIRES
 		if($curObj->hasUsersComment()){
 			$commentNb=count($curObj->getUsersComment());
 			$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." : ".Txt::trad("commentAdd");
 			$commentOnclick="lightboxOpen('?ctrl=object&action=UsersComment&typeId=".$curObj->_typeId."')";
-			echo '<div class="objMiscMenuDiv '.(empty($commentNb)?"hideMiscMenu":null).'" id="usersComment_'.$curObj->_typeId.'" onclick="'.$commentOnclick.'" '.Txt::tooltip($commentTooltip).'>
+			echo '<div class="'.(empty($commentNb)?"objMenuMiscHide":null).'" id="usersComment_'.$curObj->_typeId.'" onclick="'.$commentOnclick.'" '.Txt::tooltip($commentTooltip).'>
 					<span class="circleNb">'.(!empty($commentNb)?$commentNb:null).'</span>
 					<img src="app/img/usersComment.png">
 				  </div>';
 		}
-		//MENU DES LIKES
-		if($curObj->hasUsersLike()){
-			$likeNb=count($curObj->getUsersLike());
-			$likeOnclick="usersLikeUpdate('".$curObj->_typeId."')";
-			echo '<div class="objMiscMenuDiv '.(empty($likeNb)?"hideMiscMenu":null).'" id="usersLike_'.$curObj->_typeId.'" onclick="'.$likeOnclick.'" '.Txt::tooltip($curObj->usersLikeTooltip()).'>
-					<span class="circleNb">'.(!empty($likeNb)?$likeNb:null).'</span>
-					<img src="app/img/usersLike.png">
-				  </div>';
-		}
-		//ICONE DES FICHIERS JOINTS
-		if($curObj->attachedFileMenu()){
-			echo '<div class="objMiscMenuDiv menuLauncher" for="'.$curObj->uniqId("objAttachment").'"><img src="app/img/attachment.png"></div>
-				  <div class="menuContext" id="'.$curObj->uniqId("objAttachment").'">'.$curObj->attachedFileMenu(null).'</div>';
-		}
-		//ICONE D'ACCÈS PERSO
-		if(!empty($isPersoAccess))
-			{echo '<div class="objMiscMenuDiv"><img src="app/img/user/accessUser.png" '.Txt::tooltip("personalAccess").'></div>';}
 	echo '</div>';
 }

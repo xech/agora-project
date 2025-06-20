@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(650);
-
 ////	Lance la visio
 ready(function(){
 	$(".launchVisio").on("click",function(){
@@ -20,30 +17,26 @@ ready(function(){
 </style>
 
 
-<div >
-
+<div>
 	<!--LANCE LA VISIO VIA L'APPLI JITSI-->
 	<?php if(Req::isMobileApp()){ ?>
 		<div class="divOptions">
 			<button class="launchVisio" data-visioURL="<?= $visioURLJitsi ?>"><img src="app/img/visioSmall.png" class="launchVisioIcon"><?= Txt::trad("VISIO_launchJitsi") ?><img src="app/img/jitsi.png"></button>
 		</div>
 	<?php } ?>
-
 	<!--LANCE LA VISIO-->
 	<div class="divOptions">
 		<button class="launchVisio" data-visioURL="<?= $visioURL ?>"><img src="app/img/visioSmall.png" class="launchVisioIcon"><?= Txt::trad("VISIO_launch") ?></button>
 	</div>
-
-	<!--GUIDE PDF-->
-	<div class="divOptions">
-		<a href="docs/VISIO.pdf?displayFile=true" target="_blank" <?= Txt::tooltip("VISIO_launchTooltip2") ?>><img src="app/img/pdf.png">&nbsp; <?= Txt::trad("VISIO_launchTooltip") ?></a>
-	</div>
-
-	<!--SERVEUR DE VISIO-->
+	<!--SERVEURS DE VISIO-->
 	<div class="divOptions" <?= empty(Ctrl::$agora->visioHostAlt) ? 'style="display:none"' : null ?> >
 		<select id="visioHostServer" <?= Txt::tooltip("VISIO_launchServerTooltip") ?>>
 			<option value="main" selected><?= Txt::trad("VISIO_launchServerMain") ?></option>
 			<option value="alt"><?= Txt::trad("VISIO_launchServerAlt") ?></option>
 		</select>
+	</div>
+	<!--GUIDE PDF-->
+	<div class="divOptions">
+		<a href="docs/VISIO.pdf?displayFile=true" target="_blank" <?= Txt::tooltip("VISIO_launchTooltip2") ?>><img src="app/img/pdf.png">&nbsp; <?= Txt::trad("VISIO_launchTooltip") ?></a>
 	</div>
 </div>

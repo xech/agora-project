@@ -23,59 +23,55 @@ class MdlUser extends MdlPerson
 	private $_isAdminCurSpace=null;
 	private $_usersVisibles=null;
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * PHOTO D'UN UTILISATEUR
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function pathImgThumb()
 	{
 		return PATH_MOD_USER.$this->_id."_thumb.jpg";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIFIE SI L'USER EST BIEN IDENTIFIÉ (..SINON C'EST UN INVITÉ/GUEST)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isUser()
 	{
 		return (!empty($this->_id));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIFIE SI L'USER EST UN ADMINISTRATEUR GÉNÉRAL
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isGeneralAdmin()
 	{
 		return (!empty($this->generalAdmin));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIFIE SI L'USER EST UN ADMINISTRATEUR DE L'ESPACE COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isSpaceAdmin()
 	{
 		if($this->_isAdminCurSpace===null)	{$this->_isAdminCurSpace=(Ctrl::$curSpace->accessRightUser($this)==2);}
 		return $this->_isAdminCurSpace;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : VERIF SI L'AUTEUR DE L'OBJET == L'USER CONNECTÉ
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function isAutor(){
 		return (Ctrl::$curUser->isUser() && ($this->_id==Ctrl::$curUser->_id || $this->_idUser==Ctrl::$curUser->_id));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : DROIT D'ACCÈS À L'OBJET
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function accessRight()
 	{
-		//Init le cache
-		if($this->_accessRight===null)
-		{
-			//Droit par défaut
-			$this->_accessRight=parent::accessRight();
-			//Pas d'accès : Ajoute l'accès en lecture si l'objet user fait partie des "usersVisibles" de l'user connecté (cf. messenger)
-			if(empty($this->_accessRight)){
-				foreach(Ctrl::$curUser->usersVisibles() as $tmpUser){
+		if($this->_accessRight===null){
+			$this->_accessRight=parent::accessRight();						//Droit d'accès à l'user
+			if(empty($this->_accessRight)){									//Pas d'accès : Ajoute l'accès en lecture pour le messenger
+				foreach(Ctrl::$curUser->usersVisibles() as $tmpUser){		//Parcourt les "usersVisibles()" de l'user courant
 					if($this->_id==$tmpUser->_id)  {$this->_accessRight=1;}
 				}
 			}
@@ -83,45 +79,40 @@ class MdlUser extends MdlPerson
 		return $this->_accessRight;
 	}
 
-	/*******************************************************************************************
-	 * SURCHARGE : DROIT D'ÉDITION (ACCÈS TOTAL UNIQUEMENT)
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 * SURCHARGE : DROIT D'ÉDITION => ACCÈS TOTAL
+	 ********************************************************************************************************/
 	public function editRight()
 	{
 		return ($this->accessRight()==3);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : DROIT DE SUPPRESSION
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function deleteRight()
 	{
-		//Accès total  &&  Autre user que celui en cours  &&  Pas dernier adminGeneral
-		$deleteRight=false;
-		if(parent::fullRight() && $this->_id!=Ctrl::$curUser->_id){
-			if($this->isGeneralAdmin()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>1)  {$deleteRight=true;}
-		}
-		//Retourne le droit d'Accès
-		return $deleteRight;
+		//Accès total  &&  Pas l'user courant  &&  Pas le dernier "generalAdmin"
+		return ($this->editRight()  &&  $this->_id!=Ctrl::$curUser->_id  &&  ($this->isGeneralAdmin()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>=2));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * DROIT DE DESAFFECTATION DE L'ESPACE
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function deleteFromCurSpaceRight()
 	{
 		return (Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * LE DROIT "ADMIN GENERAL" PEUT ÊTRE ÉDITÉ PAR L'USER COURANT?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function editAdminGeneralRight()
 	{
 		return (Ctrl::$curUser->isGeneralAdmin() && Ctrl::$curUser->_id!=$this->_id);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF SI L'USER COURANT PEUT ENVOYER DES INVITATIONS
 	********************************************************************************************/
 	public function sendInvitationRight($objSpace=null)
@@ -130,9 +121,9 @@ class MdlUser extends MdlPerson
 		return (Tool::mailEnabled() && ($this->isSpaceAdmin() || (!empty($objSpace->usersInvitation) && $this->isUser())));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF SI LE MESSENGER EST ACTIVÉ POUR L'USER COURANT (Cf. "actionUserEditMessenger()")
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function messengerEnabled()
 	{
 		if(empty($_SESSION["curUserMessengerEnabled"]))
@@ -140,37 +131,37 @@ class MdlUser extends MdlPerson
 		return $_SESSION["curUserMessengerEnabled"];
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * VERIF SI LE MESSENGER EST ACTIVÉ DANS LE PARAM. GENERAL ET QUE L'USER N'EST PAS UN GUEST
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function agoraMessengerEnabled()
 	{
 		return (!empty(Ctrl::$agora->messengerDisplay) && Ctrl::$curUser->isUser());
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SELECTIONNE LES USERS DE TOUT LE SITE OU LES USERS DE L'ESPACE COURANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function sqlDisplay($containerObj=null, $keyId=null)
 	{
 		return ($_SESSION["displayUsers"]=="all")  ?  "1"  :  "_id IN (".Ctrl::$curSpace->getUsers("idsSql").")";
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ESPACES AUXQUELS EST AFFECTÉ L'UTILISATEUR
 	 * Retourne un tableau "objects" ou "ids"
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function spaceList($return="objects")
 	{
-		//Initialise la liste des objets "space"
 		if($this->_userSpaces===null){
 			if($this->isGeneralAdmin())	{$sqlQuery="SELECT * FROM ap_space ORDER BY name ASC";}//Admin général : tous les espaces
 			elseif($this->isUser())		{$sqlQuery="SELECT DISTINCT T1.* FROM ap_space T1 LEFT JOIN ap_joinSpaceUser T2 ON T1._id=T2._idSpace WHERE T2._idUser=".$this->_id." OR T2.allUsers=1 ORDER BY name ASC";}//User lambda : espaces affectés
 			else						{$sqlQuery="SELECT * FROM ap_space WHERE public=1 ORDER BY name ASC";}//Guest : espaces publics
 			$this->_userSpaces=Db::getObjTab("space",$sqlQuery);
 		}
-		// Retourne un tableau d'objets OU d'identifiants
+		// Retourne un tableau d'objets
 		if($return=="objects")  {return $this->_userSpaces;}
+		// Retourne un tableau d'identifiants
 		else{
 			$tabIds=[];
 			foreach($this->_userSpaces as $objSpace)  {$tabIds[]=$objSpace->_id;}
@@ -178,9 +169,9 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : SUPPRIME UN USER DÉFINITIVEMENT (ADMIN GÉNÉRAL UNIQUEMENT!)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function delete()
 	{
 		if($this->deleteRight())
@@ -195,18 +186,18 @@ class MdlUser extends MdlPerson
 			Db::query("DELETE FROM ap_userPreference		WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_objectLike			WHERE _idUser=".$this->_id);
 			Db::query("UPDATE ap_userGroup					SET _idUsers=REPLACE(_idUsers,'@@".$this->_id."@@','')");
-			//Suppr l'agenda et ses evts
-			$objCalendar=new MdlCalendar(Db::getVal("SELECT _id FROM ap_calendar WHERE _idUser=".$this->_id." AND type='user'"));
-			$objCalendar::$forceDeleteRight=true;//Force la suppression de l'agenda : cf. "MdlCalendar::deleteRight()"
+			//Suppr l'agenda perso
+			$objCalendar=Ctrl::getObj("calendar", Db::getLine("SELECT * FROM ap_calendar WHERE type='user' AND _idUser=".$this->_id));
+			$objCalendar::$isUserDelete=true;//Suppression d'agenda perso via "MdlCalendar::deleteRight()"
 			$objCalendar->delete();
 			//Suppr l'user
 			parent::delete();
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : DÉSAFFECTE/SUPPRIME UN USER D'UN ESPACE (ADMIN D'ESPACE UNIQUEMENT!)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function deleteFromCurSpace($_idSpace)
 	{
 		if(Ctrl::$curUser->isSpaceAdmin()){
@@ -215,12 +206,11 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*******************************************************************************************
-	 *  AUTRES USERS QUE L'USER COURANT PEUT VOIR : SUR L'ENSEMBLE DE SES ESPACES
-	 *******************************************************************************************/
+	/********************************************************************************************************
+	 *  USERS QUE L'USER COURANT PEUT VOIR SUR L'ENSEMBLE DE SES ESPACES
+	 ********************************************************************************************************/
 	public function usersVisibles($mailFilter=false)
 	{
-		//Init
 		if($this->_usersVisibles===null){
 			$idsSql=null;
 			foreach($this->spaceList() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
@@ -246,9 +236,9 @@ class MdlUser extends MdlPerson
 		return (!empty($login)  &&  Db::getVal("SELECT count(*) FROM ap_user WHERE (login=".Db::format($login)." OR mail=".Db::format($login).") ".$sql_idUserIgnore)>0);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * NOMBRE D'UTILISATEURS MAXI DÉJÀ ATTEINT?
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function usersQuotaOk($notify=true)
 	{
 		//Quota Ok ...sinon on ajoute une notif?
@@ -262,18 +252,18 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * NOMBRE D'UTILISATEURS RESTANT
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function usersQuotaRemaining()
 	{
 		if(defined("limite_nb_users"))  {return (int)(limite_nb_users - Db::getVal("SELECT count(*) FROM ap_user"));}
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * SURCHARGE : AJOUT/MODIF D'UTILISATEUR
-	 *******************************************************************************************/
-	public function createUpdate($sqlFields, $login=null, $clearPassword=null, $spaceId=null)
+	 ********************************************************************************************************/
+	public function editRecord($sqlFields, $login=null, $clearPassword=null, $spaceId=null)
 	{
 		////	Controles : quota atteint ? Login existe déjà ?
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
@@ -283,7 +273,7 @@ class MdlUser extends MdlPerson
 		$sqlFields.=", `login`=".Db::format($login);
 		if(!empty($clearPassword))  {$sqlFields.=", `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT));}
 		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
-		$reloadedObj=parent::createUpdate($sqlFields);
+		$reloadedObj=parent::editRecord($sqlFields);
 		if($reloadedObj->isNewRecord()){
 			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");//Affecte l'user à tout le monde sur le messenger
 			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");//créé l'agenda, même si l'agenda est désactivé par défaut
@@ -296,9 +286,9 @@ class MdlUser extends MdlPerson
 		return $reloadedObj;
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * CREATION D'USER : ENVOI DES CREDENTIALS PAR EMAIL (LOGIN/PASS)
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function createCredentialsMail($clearPassword, $hidePassword=false)
 	{
 		//Récupère l'email (login en priorité)
@@ -327,17 +317,17 @@ class MdlUser extends MdlPerson
 		return sha1($passwordSalt.sha1($clearPassword));
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * IDENTIFIANT TEMPORAIRE POUR LA RÉINITIALISATION DU PASSWORD
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function resetPasswordId()
 	{
 		return sha1($this->login.$this->password);
 	}
 
-	/*******************************************************************************************
+	/********************************************************************************************************
 	 * ENVOI DU MAIL DE RESET DE PASSWORD
-	 *******************************************************************************************/
+	 ********************************************************************************************************/
 	public function resetPasswordSendMail()
 	{
 		//Récupère l'email (login en priorité)

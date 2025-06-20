@@ -353,7 +353,7 @@ class DbUpdate extends Db
 					//Nouveau chemin des fichiers joint (images, mp3, videos)
 					foreach(self::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".$objectType."'") as $tmpFile)
 					{
-						if(File::isType("imageBrowser",$tmpFile["name"]) || File::isType("mp3",$tmpFile["name"]) || File::isType("videoPlayer",$tmpFile["name"]))
+						if(File::isType("imageBrowser",$tmpFile["name"]) || File::isType("mp3",$tmpFile["name"]) || File::isType("videoBrowser",$tmpFile["name"]))
 						{
 							//chemin du fichier joint
 							$fileExtension=".".File::extension($tmpFile["name"]);
@@ -361,7 +361,7 @@ class DbUpdate extends Db
 							$newPath="index.php?ctrl=object&action=AttachedFileDisplay&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObject.php"
 							//Mp3 ("url_encode" : lecteur mp3)  ||  Videos 
 							if(File::isType("mp3",$tmpFile["name"]))  {$newPath=urlencode($newPath);}
-							elseif(File::isType("videoPlayer",$tmpFile["name"])){
+							elseif(File::isType("videoBrowser",$tmpFile["name"])){
 								$oldPath="../".$oldPath;//Racine depuis le player : "../../"
 								$newPath="../".str_replace("fichiers_objet","objectAttachment",$oldPath);//Racine depuis le player : "../../../"
 							}
@@ -965,6 +965,28 @@ class DbUpdate extends Db
 			{
 				//Ajoute "shortcut" à la table "ap_calendarEvent"
 				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` tinyint DEFAULT NULL AFTER `periodDateExceptions`");
+			}
+
+			if(self::updateVersion("25.6.0"))
+			{
+				//// Remplace les tags  <a href="xxxx" data-fancybox="images">  par  <a data-src="xxxx" data-fancybox="images">  (cf Fancybox v5)
+				foreach(["ap_calendarEvent","ap_dashboardNews","ap_dashboardPoll","ap_forumMessage","ap_forumSubject","ap_mail","ap_task"] as $tableName){
+					foreach(self::getTab("SELECT * FROM `".$tableName."` WHERE `description` like '%data-fancybox%'") as $tmpRecord){
+						libxml_use_internal_errors(true);															//Evite les erreurs et avertissements
+						$dom=new DOMDocument;																		//Créé un nouveau DOMDocument
+						$dom->loadHTML($tmpRecord['description'], LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);	//Charge la description HTML (sans les éléments html/body...)
+						libxml_clear_errors();																		//Vide le buffer d'erreur libxml
+						$xpath=new DOMXPath($dom);																	//Créé un XPath pour naviguer dans le DOM
+						$nodes=$xpath->query('//a[@data-fancybox="images"][@href]');								//Trouve les tags <a> avec l'attribut 'data-fancybox="images"' et 'href'
+						foreach($nodes as $node){																	//Parcourt chaque tag
+							$href=$node->getAttribute('href');														//Récupère la valeur de href
+							$node->setAttribute('data-src', $href);													//Ajoute un attribut "data-src" avec la valeur de href
+							$node->removeAttribute('href');															//Supprime le href
+						}
+						$newDescription=$dom->saveHTML();
+						self::query("UPDATE `".$tableName."` SET `description`=".self::format($newDescription)." WHERE _id=".(int)$tmpRecord['_id']);
+					}
+				}
 			}
 
 			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

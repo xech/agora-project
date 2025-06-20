@@ -1,7 +1,4 @@
 <script>
-////	RESIZE
-lightboxWidth(700);
-
 ////	INIT : DESACTIVE CERTAINS CHAMPS SI LE SONDAGE EST DEJA VOTÉ
 <?php if($pollIsVoted==true){ ?>
 ready(function(){
@@ -31,7 +28,7 @@ function objectFormControl(){
 
 
 <style>
-[name='description']					{width:100%; height:70px; <?= empty($curObj->description)?"display:none;":null ?>}
+#bodyLightbox							{max-width:800px;}
 #responseListLabel						{margin-top:30px;}
 .vPollResponseDiv						{margin-top:12px;}
 .vPollResponseDiv input[type=text]		{width:90%; margin-right:5px;}
@@ -85,7 +82,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		<input type="checkbox" name="multipleResponses" value="1" id="multipleResponsesInput" <?= !empty($curObj->multipleResponses) ? "checked" : null ?> >
 		<label for="multipleResponsesInput"><?= Txt::trad("DASHBOARD_multipleResponses") ?>
 	</div>
-	<div class="pollOptions" title="<?= Txt::trad("DASHBOARD_publicVoteInfos") ?>">
+	<div class="pollOptions" <?= Txt::tooltip("DASHBOARD_publicVoteInfos") ?> >
 		<input type="checkbox" name="publicVote" value="1" id="publicVoteInput" <?= (!empty($curObj->publicVote)) ? "checked" : null ?> >
 		<label for="publicVoteInput"><?= Txt::trad("DASHBOARD_publicVote") ?>
 	</div>
@@ -99,6 +96,6 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>">
 	</div>
 
-	<!--MENU COMMUN & SUBMIT & CONTROLE DU FORM-->
+	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit(); ?>
 </form>

@@ -1,7 +1,4 @@
 <script>
-////	Resize
-lightboxWidth(700);
-
 ////	Init
 ready(function(){
 	////	Focus du champ de recherche
@@ -26,6 +23,7 @@ ready(function(){
 
 
 <style>
+#bodyLightbox						{max-width:700px;}
 input[name="searchText"]			{width:250px; margin-right:5px;}
 #advancedSearchLabel				{margin-left:30px; line-height:30px;}
 .advancedSearchBlock				{display:<?= Req::param("advancedSearch")?"block":"none" ?>;}
@@ -41,8 +39,8 @@ input[name="searchText"]			{width:250px; margin-right:5px;}
 .vPluginNews						{display:none; padding:5px; background:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
 .emptyContainer						{margin-top:20px;}
 
-/*MOBILE FANCYBOX (440px)*/
-@media screen and (max-width:440px){	
+/*RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:490px){	
 	#searchMainField			{text-align:center;}
 	input[name="searchText"]	{margin-bottom:15px;}
 	#advancedSearchLabel		{display:block; margin-top:15px;}
