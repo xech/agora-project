@@ -967,7 +967,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` tinyint DEFAULT NULL AFTER `periodDateExceptions`");
 			}
 
-			if(self::updateVersion("25.6.0"))
+			if(self::updateVersion("25.6.1"))
 			{
 				//// Remplace les tags  <a href="xxxx" data-fancybox="images">  par  <a data-src="xxxx" data-fancybox="images">  (cf Fancybox v5)
 				foreach(["ap_calendarEvent","ap_dashboardNews","ap_dashboardPoll","ap_forumMessage","ap_forumSubject","ap_mail","ap_task"] as $tableName){
@@ -987,6 +987,9 @@ class DbUpdate extends Db
 						self::query("UPDATE `".$tableName."` SET `description`=".self::format($newDescription)." WHERE _id=".(int)$tmpRecord['_id']);
 					}
 				}
+				//// Correction de libellé de catégorie d'evt
+				self::query("UPDATE `ap_calendarCategory` SET title='réunion' WHERE title='rÃ©union'");
+				self::query("UPDATE `ap_calendarCategory` SET title='congés' WHERE title='congÃ©s'");
 			}
 
 			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

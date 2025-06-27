@@ -20,7 +20,7 @@ class CtrlMail extends Ctrl
 	public static function actionDefault()
 	{
 		////	Controle d'accès && Supprime les mails de plus d'un an
-		if(Ctrl::$curUser->isUser()==false)  {Ctrl::noAccessExit();}
+		if(Ctrl::$curUser->isGuest())  {Ctrl::noAccessExit();}
 		////	Envoi un mail
 		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList")))
 		{

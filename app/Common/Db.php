@@ -31,7 +31,7 @@ class Db
 				//Pas de connexion, ni d'exception : dbInstall!
 				if(!is_object(self::$_objPDO))	{throw new Exception("dbInstall_pdoIsNull");}
 			}
-			//Erreur envoyé par PDO : renvoi une exception de base, avec demande d'install
+			//Erreur envoyé par PDO : renvoie une exception de base, avec demande d'install
 			catch(PDOException $exception){
 				throw new Exception("dbInstall_".$exception);
 			}

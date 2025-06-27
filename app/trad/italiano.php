@@ -264,7 +264,7 @@ class Trad extends Txt
 			"MAIL_hideRecipients"=>"Nascondi destinatari",
 			"MAIL_hideRecipientsTooltip"=>"Metti tutti i destinatari in copia nascosta. Si noti che con questa opzione l'e-mail potrebbe arrivare nello spam in alcune caselle di posta elettronica",
 			"MAIL_addReplyTo"=>"Metti il mio messaggio di posta elettronica in risposta",
-			"MAIL_addReplyToTooltip"=>"Aggiungi il mio messaggio di posta elettronica nel campo   Rispondi a  . Si noti che con questa opzione l'e-mail potrebbe finire nello spam in alcune caselle di posta elettronica",
+			"MAIL_addReplyToTooltip"=>"Aggiungi il mio messaggio di posta elettronica nel campo ''Rispondi a'' <br><span style='font-size:1.5em'>&#9888;</span> Si noti che con questa opzione l'e-mail potrebbe finire nello spam in alcune caselle di posta elettronica",
 			"MAIL_noFooter"=>"Non firmare il messaggio",
 			"MAIL_noFooterTooltip"=>"Non firmare la fine del messaggio con il nome del mittente e un collegamento web allo spazio",
 			"MAIL_receptionNotif"=>"Ricevuta di consegna",
@@ -279,7 +279,7 @@ class Trad extends Txt
 			"MAIL_fromTheSpace"=>"dallo spazio",
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- creato da",
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificato da",
-			"MAIL_elemAccessLink"=>"Clicca qui per accedervi dal tuo spazio",
+			"MAIL_elemAccessLink"=>"Accedervi dal  spazio",
 
 			////	Dossier & fichier
 			"gigaOctet"=>"Gb",
@@ -807,7 +807,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editInfo"=>"Ogni categoria di eventi può essere modificata dal suo autore o dall'amministratore generale",
 			"CALENDAR_CAT_editAdd"=>"Aggiungi una categoria di eventi",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Gli utenti che non hanno disattivato il calendario personale nel loro profilo utente vedranno comunque il modulo Calendario nella barra dei menu",
-			"CALENDAR_calsList"=>"Calendari disponibili",
+			"CALENDAR_readableCalendars"=>"Calendari disponibili",
 			"CALENDAR_hideAllCals"=>"Nascondi tutti i calendari",
 			"CALENDAR_printCalendars"=>"Stampa calendario",
 			"CALENDAR_printCalendarsInfos"=>"Stampa la pagina in modalità orizzontale",

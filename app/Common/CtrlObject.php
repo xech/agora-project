@@ -35,11 +35,9 @@ class CtrlObject extends Ctrl
 	public static function actionDelete()
 	{
 		// Init
-		$redirUrl=$updateDatasFolderSize=null;
-		$notDeletedObjects=[];
+		$redirUrl=$updateDatasFolderSize=$notDeletedObjects=null;
 		////	Supprime le/les objets
-		foreach(self::getCurObjects() as $tmpObj)
-		{
+		foreach(self::getCurObjects() as $cptObj=>$tmpObj){
 			//Enregistre l'Url de redirection après le delete
 			if(empty($redirUrl)){
 				if($tmpObj::isInContainer())	{$redirUrl=$tmpObj->getUrl();}					//Suppr un "content" : raffiche le "container"
@@ -48,17 +46,14 @@ class CtrlObject extends Ctrl
 			}
 			//Enregistre si on doit mettre à jour le "datasFolderSize()"
 			if($tmpObj::moduleName=="file")  {$updateDatasFolderSize=true;}
-			//Delete si on a les droits ..ou prepare un message d'erreur
+			//Delete si on a les droits  ||  Label de l'objet non supprimé (10 max)
 			if($tmpObj->deleteRight())	{$tmpObj->delete();}																		
-			else						{$notDeletedObjects[]=$tmpObj->getLabel();}	
+			elseif($cptObj<10)			{$notDeletedObjects.=$tmpObj->getLabel().'<br>';}	
 		}
 		////	Update le "datasFolderSize()" en session
 		if($updateDatasFolderSize==true)  {File::datasFolderSize(true);}
-		////	Objets non supprimés : affiche une notif "Certains éléments n'ont pas été supprimé.." avec les labels des objets concernés (10 objets maxi)
-		if(!empty($notDeletedObjects)){
-			if(count($notDeletedObjects)>10)  {$notDeletedObjects=array_slice($notDeletedObjects,0,10);  $notDeletedObjects[]="..."; }
-			Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete")." :<br><br>".implode(", ",$notDeletedObjects));
-		}
+		////	Objets non supprimés : affiche une notif "Certains éléments n'ont pas été supprimé.."
+		if(!empty($notDeletedObjects))  {Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete").' :<br><br>'.$notDeletedObjects);}
 		////	Redirection
 		self::redir($redirUrl);
 	}

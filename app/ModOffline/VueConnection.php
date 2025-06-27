@@ -117,7 +117,7 @@ ready(function(){
 	<?php if(!empty($objPublicSpaces)){ ?>
 	<div class="miscContainer">
 		<div id="publicSpaceTab">
-			<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRightBig.png"></div>
+			<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRight.png"></div>
 			<div>
 				<?php foreach($objPublicSpaces as $tmpSpace){ ?>
 					<div class="option publicSpaceOption" data-idSpace="<?= $tmpSpace->_id ?>" data-spaceName="<?= $tmpSpace->name ?>" data-hasPassword="<?= $tmpSpace->password?'true':'false' ?>" <?= Txt::tooltip(Txt::trad("guestAccessTooltip").'<br>'.$tmpSpace->description) ?> ><?= $tmpSpace->name ?></div>

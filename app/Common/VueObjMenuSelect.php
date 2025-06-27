@@ -52,8 +52,8 @@ async function menuSelectAction(urlRedir, lightbox)
 
 
 <style>
-#objSelectMenu							{display:none;}										/*menu masqué par défaut*/
-#objSelectMenu, .objContainerSelect		{box-shadow:2px 2px 5px rgb(80,80,80)!important;}	/*border des elements sélectionnés*/
+#objSelectMenu							{display:none;}										 /*menu masqué par défaut*/
+#objSelectMenu, .objContainerSelect		{box-shadow:2px 2px 5px rgb(80,80,80)!important;}  /*border des elements sélectionnés*/
 </style>
 
 
@@ -68,7 +68,7 @@ async function menuSelectAction(urlRedir, lightbox)
 		<div class="menuLine" onclick="menuSelectAction('?ctrl=misc&action=PersonsMap',true)" <?= Txt::tooltip("showOnMapTooltip") ?> ><div class="menuIcon"><img src="app/img/map.png"></div><div><?= Txt::trad("showOnMap") ?></div></div>
 	<?php } ?>
 
-	<!--"DEPLACER" (arbo)-->
+	<!--"DEPLACER VERS UN AUTRE DOSSIER"-->
 	<?php if($folderMoveOption==true){ ?>
 	<div class="menuLine" onclick="menuSelectAction('?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->_typeId ?>',true)"><div class="menuIcon"><img src="app/img/folder/folderMove.png"></div><div><?= Txt::trad("changeFolder") ?></div></div>
 	<?php } ?>
@@ -84,6 +84,6 @@ async function menuSelectAction(urlRedir, lightbox)
 	<?php } ?>
 
 	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
-	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
-	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/checkSmall.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
+	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkAll.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
+	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/checkSwitch.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
 </div>

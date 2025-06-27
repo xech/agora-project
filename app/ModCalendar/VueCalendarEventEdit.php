@@ -126,7 +126,7 @@ legend			 					{font-size:1.05em; text-align: center!important;}
 #beginEndSeparator					{margin:0px 5px;}
 #guestMenu							{text-align:center;}
 input[name='guestMail']				{margin-left:20px;}
-<?= Ctrl::$curUser->isUser()==false ? '.vEvtGuestHide {display:none;}' : null ?>
+<?= Ctrl::$curUser->isGuest() ? '.vEvtGuestHide {display:none;}' : null ?>
 
 /*PÉRIODICITÉ*/
 #periodFieldset					 	{display:none; margin:20px 0px;}
@@ -176,7 +176,7 @@ input[name='guestMail']				{margin-left:20px;}
 		<span class="beginEndLabel"><?= Txt::trad("begin") ?></span>
 		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("begin") ?>>
 		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("begin") ?>>
-		<span id="beginEndSeparator"><img src="app/img/arrowRight.png"></span>
+		<span id="beginEndSeparator"><img src="app/img/arrowRightSmall.png"></span>
 		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("end") ?>>
 		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("end") ?>>
@@ -226,7 +226,7 @@ input[name='guestMail']				{margin-left:20px;}
 			<label id="periodDateExceptionsAdd" <?= Txt::tooltip("add") ?>><img src="app/img/calendar/periodDateExceptions.png"> <?= Txt::trad("CALENDAR_periodDateExceptions") ?> <img src="app/img/plusSmall.png"></label>
 			<?php for($cpt=0; $cpt<20; $cpt++){ ?>
 			<span class="vPeriodDateExceptionsInput">
-				<img src="app/img/arrowRightBig.png">
+				<img src="app/img/arrowRight.png">
 				<input type="text" name="periodDateExceptions[]" value="<?= isset($periodDateExceptions[$cpt]) ? $periodDateExceptions[$cpt] : null ?>" class="dateInput">
 				<img src="app/img/delete.png" class="vPeriodDateExceptionsDelete sLink" <?= Txt::tooltip("delete") ?> >
 			</span>
@@ -234,7 +234,7 @@ input[name='guestMail']				{margin-left:20px;}
 		</div>
 		<!--PERIODICITE : FIN-->
 		<div id="periodDateEnd">
-			<img src="app/img/dateEnd.png"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowRightBig.png">
+			<img src="app/img/dateEnd.png"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowRight.png">
 			<input type="text" name="periodDateEnd" class="dateInput" value="<?= Txt::formatDate($curObj->periodDateEnd,"dbDate","inputDate") ?>">
 		</div>
 	</fieldset>
@@ -275,15 +275,15 @@ input[name='guestMail']				{margin-left:20px;}
 			<!--AGENDAS DE RESSOURCES & AGENDAS PERSONNELS-->
 			<?php foreach($affectationCalendars as $tmpCal){ ?>
 				<div class="vCalAffectation option" <?= Txt::tooltip($tmpCal->tooltip) ?> >
-					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="boxCal<?= $tmpCal->_id ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
-					<label for="boxCal<?= $tmpCal->_id ?>"><?= ($tmpCal->type=="ressource"?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="box<?= $tmpCal->_typeId ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
+					<label for="box<?= $tmpCal->_typeId ?>"><?= ($tmpCal->type=="ressource"?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
 				</div>
 			<?php } ?>
 			<!--SWITCH LA SELECTION D'UN GROUPE D'USERS-->
 			<?php if(count($affectationCalendars)>2){ ?>
 				<hr>
 				<div class="vCalAffectation option" onclick="$('.vCalInput').trigger('click')">
-					<label><img src="app/img/checkSmall.png"> <?= Txt::trad("selectSwitch") ?></label>
+					<label><img src="app/img/checkSwitch.png"> <?= Txt::trad("selectSwitch") ?></label>
 				</div>
 				<?php foreach($curSpaceUserGroups as $tmpGroup){ ?>
 				<div class="vCalAffectation option" <?=Txt::tooltip(Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel) ?>>
@@ -303,7 +303,7 @@ input[name='guestMail']				{margin-left:20px;}
 	</fieldset>
 
 	<!--MENU D'IDENTIFICATION DES GUESTS-->
-	<?php if(Ctrl::$curUser->isUser()==false){ ?>
+	<?php if(Ctrl::$curUser->isGuest()){ ?>
 		<fieldset id="guestMenu">
 			<input type="text" name="guest" placeholder="<?= Txt::trad("EDIT_guestName") ?>">
 			<input type="text" name="guestMail" placeholder="<?= Txt::trad("EDIT_guestMail") ?>" <?= Txt::tooltip("EDIT_guestMailTooltip") ?> >

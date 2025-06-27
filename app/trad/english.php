@@ -264,7 +264,7 @@ class Trad extends Txt
 			"MAIL_hideRecipients"=>"Hide recipients",
 			"MAIL_hideRecipientsTooltip"=>"Put all recipients in hidden copy. Note that with this option your email may arrive in spam in some mailboxes",
 			"MAIL_addReplyTo"=>"Put my email in reply",
-			"MAIL_addReplyToTooltip"=>"Add my email in the ''Reply to'' field. Note that with this option your email may arrive in spam in some mailboxes",
+			"MAIL_addReplyToTooltip"=>"Add my email in the ''Reply to'' field <br><span style='font-size:1.5em'>&#9888;</span> Note that with this option your email may arrive in spam in some mailboxes",
 			"MAIL_noFooter"=>"Do not sign the message",
 			"MAIL_noFooterTooltip"=>"Do not sign the end of the message with the sender's name and a weblink to the space",
 			"MAIL_receptionNotif"=>"Delivery receipt",
@@ -279,7 +279,7 @@ class Trad extends Txt
 			"MAIL_fromTheSpace"=>"from the space",
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- created by",
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modified by",
-			"MAIL_elemAccessLink"=>"Click here to access the element on your space",
+			"MAIL_elemAccessLink"=>"Display on my space",
 
 			////	Dossier & fichier
 			"gigaOctet"=>"GB",
@@ -807,7 +807,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editInfo"=>"Each event category can be modified by its author or by the general administrator",
 			"CALENDAR_CAT_editAdd"=>"Add an event category",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar",
-			"CALENDAR_calsList"=>"Available calendars",
+			"CALENDAR_readableCalendars"=>"Available calendars",
 			"CALENDAR_hideAllCals"=>"Hide all calendars",
 			"CALENDAR_printCalendars"=>"Print calendar(s)",
 			"CALENDAR_printCalendarsInfos"=>"Print in landscape mode",

@@ -42,7 +42,7 @@ class MdlObject
 	public static $requiredFields=[];			//Champs obligatoires pour valider l'édition d'un objet
 	public static $searchFields=[];				//Champs de recherche
 	public static $sortFields=[];				//Champs/Options de tri des résulats
-	//Valeurs mises en cache
+	//Valeurs en cache
 	private $_accessRight=null;
 	private $_affectations=null;
 	private $_attachedFileList=null;
@@ -152,7 +152,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * VERIF : DROITS D'ACCES DE L'OBJET DEPEND D'UN "CONTAINER" (SAUF ROOT FOLDER)
+	 * VERIF : DROITS D'ACCES DE L'OBJET DEPEND D'UN "CONTAINER" (SAUF FOLDERS ET SI DANS LE ROOT FOLDER)
 	 ********************************************************************************************************/
 	public function hasContainerAccessRight(){
 		return (static::isInContainer() && $this->isRootFolderContent()==false);
@@ -223,7 +223,7 @@ class MdlObject
 				elseif(preg_match("/^G/",$aff["target"]))	{$aff["targetType"]="group";		$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("userGroup",$aff["targetId"])->getLabel();}
 				elseif($aff["target"]=="spaceUsers")		{$aff["targetType"]="spaceUsers";	$aff["targetId"]=(int)$aff["_idSpace"];			 $aff["label"]=Txt::trad("EDIT_allUsers");}
 				//Label de l'espace : "tous les utilisateurs" || affectation sur un autre espace
-				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRight.png">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
+				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRightSmall.png">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
 				//Ajoute l'affectation
 				$this->_affectations[$targetKey]=$aff;
 			}
@@ -272,11 +272,11 @@ class MdlObject
 	public function accessRight()
 	{
 		if($this->_accessRight===null){
-			$this->_accessRight=0;																															//INIT
-			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//ACCES TOTAL : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
-			elseif($this->md5IdControl())														{$this->_accessRight=1;}									//ACCES EN LECTURE : VUE EXTERNE DE L'OBJET
-			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();}	//ACCES EN FONCTION DU CONTENEUR PARENT
-			elseif($this->hasAccessRight()){																												//ACCES EN FONCTION DES AFFECTATIONS EN BDD
+			$this->_accessRight=0;																														 //INIT
+			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight()) {$this->_accessRight=3;}									 //FULL ACCESS : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
+			elseif($this->isRootFolder() || $this->md5IdControl())							 {$this->_accessRight=1;}									 //LECTURE : DOSSIER RACINE (DROIT PAR DEFAUT) / VUE EXTERNE DE L'OBJET
+			elseif($this->hasContainerAccessRight())										 {$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
+			elseif($this->hasAccessRight()){																											 //EN FONCTION DES AFFECTATIONS EN BDD
 				$isPersonalCalendar=(static::objectType=="calendar" && $this->type=="user");
 				$sqlSelect="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;
 				//// ACCES TOTAL :  admin de l'espace et objet affecté à l'espace (sauf agendas persos : pas de privilège admin)
@@ -360,11 +360,10 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function editControl()
 	{
-		//Controle le droit d'accès en écriture
+		//Controle l'accès en écriture  &&  Notif si un autre user édite le même objet (cf. "messengerUpdate()")
 		if($this->editRight()==false)  {Ctrl::noAccessExit();}
-		//Controle si l'objet n'est pas déjà en cour de modification par un autre user (cf. "messengerUpdate()")
-		$_idUserEditSameObj=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editTypeId=".Db::param("typeId")." AND `date` > ".(time()-60));
-		if($this->isNew()==false && !empty($_idUserEditSameObj))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$_idUserEditSameObj)->getLabel()." !");}
+		$otherUserEdit=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editTypeId=".Db::param("typeId")." AND `date` > ".(time()-30));
+		if($this->isNew()==false && !empty($otherUserEdit))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$otherUserEdit)->getLabel()." !");}
 	}
 
 	/********************************************************************************************************
@@ -394,7 +393,7 @@ class MdlObject
 			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}//Url de suppression via "actionDelete()"
 			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=EditFolder&typeId=".$this->_typeId;}						//Edite un dossier via "actionEditFolder()"
 			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}		//Edite un objet lambda
-			elseif(static::isInContainer())				{return $urlCtrl."&typeId=".$this->containerObj()->_typeId;}							//Affichage d'un objet dans son "Container" (file, task, etc. Surchargé pour "calendarEvent")
+			elseif(static::isInContainer())						{return $urlCtrl."&typeId=".$this->containerObj()->_typeId;}							//Affichage d'un objet dans son "Container" (file, task, etc. Surchargé pour "calendarEvent")
 			else												{return $urlCtrl."&typeId=".$this->_typeId;}											//Affichage par défaut (Folder, News, etc)
 		}
 	}
@@ -546,11 +545,11 @@ class MdlObject
 			}
 			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlFields, true);}										//INSERT UN NOUVEL OBJET
 			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE _id=".$this->_id);   $_id=$this->_id;}				//UPDATE L'OBJET
-			$curObj=Ctrl::getObj(static::objectType, $_id, true);																					//Charge les nouvelles propriétés (avec update du cache)
+			$curObj=Ctrl::getObj(static::objectType, $_id, true);																					//Charge les nouvelles propriétés (cache updated)
 			$curObj->setAffectations();																												//Ajoute les droits d'accès
 			$curObj->attachedFileAdd();																												//Ajoute les fichiers joints
 			Ctrl::addLog(($curObj->isNewRecord()?"add":"modif"), $curObj);																			//Enregistre dans les Logs
-			return Ctrl::getObj(static::objectType, $_id, true);																					//Renvoie l'objet avec update du cache
+			return Ctrl::getObj(static::objectType, $_id, true);																					//Renvoie l'objet (cache updated)
 		}
 	}
 
@@ -559,42 +558,34 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function sendMailNotif($messageSpecific=null, $addFiles=null, $addUserIds=null)
 	{
-		//Notification demandé par l'auteur de l'objet  OU  Destinataires passés en paramètres (ex: notif de nouveaux messages du forum)
-		if(Req::isParam("notifMail") || !empty($addUserIds))
-		{
-			////	Sujet : "Fichier créé par boby SMITH"
-			$tradCreaModif=($this->isNew() || $this->isNewRecord())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par" / "News modifiée par"
-			$subject=ucfirst($this->tradObject($tradCreaModif))." ".Ctrl::$curUser->getLabel();
-			////	Message : Label principal de l'objet et si besoin description de l'objet
-			if(!empty($messageSpecific))	{$messageObj="<div><b>".$messageSpecific."</b></div>";}	//ex: nom des fichiers uploadés, etc 
-			elseif(!empty($this->title))	{$messageObj="<div><b>".$this->title."</b></div>";}		//ex: titre des sujets, task, etc
-			elseif(!empty($this->name))		{$messageObj="<div><b>".$this->name."</b></div>";}		//ex: nom des dossiers, etc
-			else							{$messageObj=null;}
-			if(!empty($this->description))	{$messageObj.="<div><b>".$this->description."</b></div>";}
-			////	Message : Remplace les chemins relatifs en chemins absolus && Ajoute le max-width des images des descriptions
-			$messageObj=str_replace(PATH_DATAS, Req::getCurUrl()."/".PATH_DATAS, $messageObj);
-			$messageObj=str_replace("<img ", "<img style='max-width:100%!important;cursor:initial' ", $messageObj);
-			////	Message : Corps du mail (pas de balise <style> car souvent supprimés par les clients mail)
-			$message="<div style='margin:20px 0px'>".$subject." :</div>
-					  <div style='margin:20px 0px;padding:10px;max-width:1024px;background:#eee;color:#333;border:1px solid #bbb;border-radius:3px;'>".$messageObj."</div>
-					  <a href=\"".$this->getUrlExternal()."\" target='_blank'>".Txt::trad("MAIL_elemAccessLink")."</a>";
-			////	Destinataires de la notif : Users spécifiques OU Users affectées à l'objet (lecture ou+)
+		if(Req::isParam("notifMail") || !empty($addUserIds)){
+			////	Sujet
+			$tradSubject=($this->isNew() || $this->isNewRecord())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par Paul"
+			$subject=ucfirst($this->tradObject($tradSubject))." ".Ctrl::$curUser->getLabel();
+			////	Message
+			if(!empty($messageSpecific))		{$message=$messageSpecific;}			//Message spécifique (ex: liste des fichiers uploadés)
+			elseif(!empty($this->description))	{$message=$this->descriptionMail();}	//Description avec au besoin les images en pièce jointe ("cid")
+			else								{$message=$this->getLabel();}			//Label de l'objet
+			$message='<div style="margin:20px 0px;">'.$subject.' :</div>
+					  <div style="margin:20px 10px;max-width:90%;padding:15px;background:#eee;border:1px solid #bbb;border-radius:5px;font-weight:bold;">'.$message.'</div>
+					  <a href="'.$this->getUrlExternal().'" target="_blank">'.Txt::trad("MAIL_elemAccessLink").'</a>';
+			////	Destinataires de la notif :  Users spécifiés ou affectés à l'objet
 			$mailUserIds=[];
-			if(Req::isParam("notifMail"))	{$mailUserIds=Req::isParam("notifMailUsers") ? Req::param("notifMailUsers") : $this->affectedUserIds();}
-			////	Ajoute si besoin les destinataires passés en paramètres (ex: notif de nouveaux messages du forum)
+			if(Req::isParam("notifMail")){
+				$mailUserIds=Req::isParam("notifMailUsers")  ?  Req::param("notifMailUsers")  :  $this->affectedUserIds();
+			}
+			////	Destinataires passés en paramètres (ex: "notifyLastMessage" du forum)
 			if(!empty($addUserIds)){
-				if(Req::isParam("notifMail")==false)  {$noNotify=true;}//Pas de "notifiy()" sur l'envoie de l'email
+				if(Req::isParam("notifMail")==false)  {$noNotify=true;}//Pas de notif d'envoie du mail
 				$mailUserIds=array_unique(array_merge($mailUserIds,$addUserIds));
 			}
 			////	Envoi du message
-			if(!empty($mailUserIds))
-			{
-				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";									//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
-				if(Req::isParam("mailOptions"))  		{$options=array_merge($options,Req::param("mailOptions"));}	//Options sélectionnées par l'user
-				if(static::descriptionEditor==true)		{$message=$this->attachedFileImageCid($message);}			//Affiche si besoin les images en pièce jointe dans le corps du mail
-				$attachedFiles=$this->attachedFileList();															//Fichiers joints de l'objet
-				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}						//Ajoute si besoin les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
-				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);							//Envoie l'email
+			if(!empty($mailUserIds)){
+				$options[]=(!empty($noNotify))  ?  "noNotify"  :  "objectNotif";								//Options "notify()" : pas de notif OU notif "L'email de notification a bien été envoyé"
+				if(Req::isParam("mailOptions"))  {$options=array_merge($options,Req::param("mailOptions"));}	//Options sélectionnées par l'user
+				$attachedFiles=$this->attachedFileList();														//Fichiers joints de l'objet
+				if(!empty($addFiles))  {$attachedFiles=array_merge($addFiles,$attachedFiles);}					//Ajoute les fichiers spécifiques (ex: fichier ".ics" d'un évenement)
+				Tool::sendMail($mailUserIds, $subject, $message, $options, $attachedFiles);						//Envoie l'email
 			}
 		}
 	}
@@ -637,7 +628,7 @@ class MdlObject
 			$MdlObjectContainer=static::MdlObjectContainer;
 			$sqlDisplay="(".$sqlDisplay." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
 		}
-		////	Renvoi le résultat (avec des espaces avant/après!)
+		////	Renvoie le résultat (avec des espaces avant/après!)
 		return " ".$sqlDisplay." ";
 	}
 
@@ -737,7 +728,7 @@ class MdlObject
 			if($profileImg==true)  {$autorLabel=$objUser->profileImg(true,true).' &nbsp;'.$autorLabel;}																		//Image de l'auteur
 			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  																					//Lien vers le profil
 		}
-		return $autorLabel.'&nbsp;<img src="app/img/arrowRight.png">'.Txt::dateLabel($dateEdit,"labelFull");
+		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">'.Txt::dateLabel($dateEdit,"labelFull");
 	}
 
 	/********************************************************************************************************
@@ -779,16 +770,16 @@ class MdlObject
 	{
 		if(!empty($file)){
 			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}			//Si besoin, récupère les infos en bdd
-			$file["containerObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier joint
 			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);								//Path/chemin réel du fichier
 			$file["downloadUrl"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
 			if(Req::isMobileApp())  {$file["downloadUrl"]=CtrlMisc::urlExternalGetFile($file["downloadUrl"],$file["name"]);}	//Url de download externe : bascule sur une page spécifique
+			$file["containerObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
 			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier ou de l'image (cf "actionAttachedFileDisplay()")
-			if(File::isType("imageBrowser",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf. "attachedFileImageCid()")
+			if(File::isType("imageBrowser",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf "descriptionMail()")
 			return $file;
 		}
 	}
-	
+
 	/********************************************************************************************************
 	 * FICHIERS JOINTS : URL D'AFFICHAGE D'UN FICHIER  (cf "actionAttachedFileDisplay()")
 	 ********************************************************************************************************/
@@ -819,8 +810,11 @@ class MdlObject
 	{
 		if($this->_attachedFileMenu===null){
 			$this->_attachedFileMenu="";
-			foreach($this->attachedFileList() as $tmpFile)
-				{$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["downloadUrl"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$tmpFile["name"].'</div>';}
+			foreach($this->attachedFileList() as $tmpFile){
+				$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["downloadUrl"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
+												<img src="app/img/attachment.png"> '.$tmpFile["name"].'
+											</div>';
+			}
 		}
 		if($this->_attachedFileMenu)  {return $separator.$this->_attachedFileMenu;}
 	}
@@ -873,7 +867,7 @@ class MdlObject
 	}
 
 	/*****************************************************************************************************************
- 	 * FICHIERS JOINTS : CHARGE LA DESCRIPTION HTML (DOM) EN VUE DE MODIFIER LES TAGS DES FICHIERS  (<a> <img> etc)
+ 	 * FICHIERS JOINTS : CHARGE LA DESCRIPTION HTML (DOM) POUR MODIFIER LES TAGS DES FICHIERS  (<a> <img> etc)
 	 *****************************************************************************************************************/
 	public function descriptionDOM()
 	{
@@ -881,7 +875,7 @@ class MdlObject
 		$dom=new DOMDocument;																//Créé un nouveau DOMDocument
 		$dom->loadHTML($this->description, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);	//Charge la description HTML de l'objet (sans les éléments html/body...)
 		libxml_clear_errors();																//Vide le buffer d'erreur libxml
-		return $dom;																		//Renvoi le DOM de la description
+		return $dom;																		//Renvoie le DOM de la description
 	}
 
 	/*************************************************************************************************************************************
@@ -896,7 +890,7 @@ class MdlObject
 				$nodes=$xpath->query('//img[@id="attachedFileTag'.$tmpFile["_id"].'"]');	//Trouve les tags <img> avec l'attribut id="attachedFileTagXX"
 				foreach($nodes as $node){													//Parcourt chaque tag
 					$node->setAttribute('src', 'cid:'.$tmpFile["cid"]);						//Update le "src" avec le "cid" de l'image
-					$node->setAttribute('style', 'style="max-width:95%"');					//Ajoute un "max-width"
+					$node->setAttribute('style', 'max-width:90%;');							//Ajoute un "max-width"
 				}
 			}
 		}

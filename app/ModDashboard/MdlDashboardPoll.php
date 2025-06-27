@@ -24,7 +24,7 @@ class MdlDashboardPoll extends MdlObject
 	public static $requiredFields=["title"];
 	public static $searchFields=["title","description"];
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc"];
-	//Valeurs mises en cache
+	//Valeurs en cache
 	private $_responseList=null;
 	private $_votesNbTotal=null;
 
@@ -108,7 +108,7 @@ class MdlDashboardPoll extends MdlObject
 	 ********************************************************************************************************/
 	public function getResponse($_idResponse)
 	{
-		//Parcourt la liste des réponses et renvoi la réponse demandée
+		//Parcourt la liste des réponses et renvoie la réponse demandée
 		foreach($this->getResponses() as $tmpResponse){
 			if($tmpResponse["_id"]==$_idResponse)  {return $tmpResponse;}
 		}

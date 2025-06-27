@@ -1,10 +1,12 @@
 /*** BASIC*/
 body, a, .sLink																				{color:#ccc;}
 #htmlLightbox, .objContainer, .miscContainer, .menuContext									{background:#222;}
-.objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #333; transition:box-shadow 0.3s ease-in-out;}
+.objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #555; transition:box-shadow 0.3s ease-in-out;}
 .objContainer:hover																			{box-shadow:2px 2px 10px #ccc;}
 .objLines .objContainer																		{border-bottom:solid 1px #555;}
-.objContainerSelect, .objLines .objContainer:hover, .lineSelect, #objSelectMenu, .menuContext .menuLine:hover, .lineHover:hover		{background:#444;}
+.menuContext, #livecounterMain, #messengerMain												{border:solid 1px #444;}
+.objLines .objContainer:hover, .menuContext .menuLine:hover, .lineHover:hover				{background:#333;}
+.objContainerSelect, .lineSelect, #objSelectMenu											{background:#444!important;}
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	#htmlMainPage											{background:#333 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
@@ -12,11 +14,12 @@ body, a, .sLink																				{color:#ccc;}
 }
 
 /*** LIENS & OPTIONS*/
-a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .option:hover, .optionSelect	{color:#679cd8;}
+a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .optionSelect	{color:#679cd8;}
 .sAccessWrite, .sAccessWriteLimit	{color:#f88;}
 .option								{border:solid 1px transparent;}
-.option:hover, .optionSelect		{border:solid 1px #445; border-radius:5px; background:#445; color:#679cd8;}
-.optionSelectAll.optionSelect		{background:#333!important;}
+.option:hover, .optionSelect		{border:solid 1px #555; border-radius:5px;}
+.option:hover						{background:#333; }
+.optionSelect						{background:#444!important;}
 
 /*** MENU CONTEXT RESPONSIVE*/
 #menuMobileMain															{background:#333; border:solid 1px #444;}
@@ -27,7 +30,7 @@ input, textarea, select												{color:#ccc; background:#333; border:1px soli
 button																{color:#ccc; background:linear-gradient(#444,#333);}
 button:hover:not(.f-button)											{background:linear-gradient(#444,#3a3a3a);}
 button:disabled														{color:#888;}
-input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #777; transition:box-shadow 0.3s ease-in-out; border:#777 1px solid;}
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #777; transition:box-shadow 0.3s ease-in-out; border:#585858 1px solid;}
 input:not([type=radio],[type=checkbox]):hover, textarea:hover		{box-shadow:0px 0px 4px #505050;}
 input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0px 4px #0068bd; border:#bcf 1px solid;}
 .tox-tinymce														{box-shadow:0px 0px 4px #777!important; border-radius:5px!important;}/*Editeur TinyMCE*/

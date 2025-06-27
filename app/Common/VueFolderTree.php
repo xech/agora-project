@@ -64,7 +64,7 @@ function folderMove(newFolderId){
 
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
-	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrowRight" d'ouverture de dossier sont en position absolute*/
+	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrow" d'ouverture de dossier sont en position absolute*/
 }
 </style>
 
@@ -88,7 +88,7 @@ function folderMove(newFolderId){
 		$folderLabelCheckbox=($context=="move" && $isCurFolder==false)  ?  '<input type="checkbox" name="newFolderId" class="vNewFolderId" value="'.$tmpFolder->_id.'" disabled>'  :  null;
 		//Affiche le dossier
 		echo '<div class="vTreeFolder" data-folderId="'.$tmpFolder->_id.'" data-parentFolderId="'.$tmpFolder->_idContainer.'" data-folderTreeLevel="'.$tmpFolder->treeLevel.'" '.Txt::tooltip($folderTooltip).'>
-				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRight.png" class="vIconOpen"><img src="app/img/folder/folderSmall.png"></div>
+				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRightSmall.png" class="vIconOpen"><img src="app/img/folder/folderSmall.png"></div>
 				<div class="vTreeFolderLabel '.$folderLabelClass.'" onclick="'.$folderLabelActionJs.'">'.Txt::reduce($tmpFolder->name,80).$folderLabelCheckbox.'</div>
 			  </div>';
 	}

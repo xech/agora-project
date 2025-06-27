@@ -14,9 +14,10 @@
 			skin: "<?= Ctrl::$agora->skin=="black" ? "tinymce-5-dark" : "tinymce-5" ?>",	//Editeur blanc/noir
 			content_css: "<?= Ctrl::$agora->skin=="black" ? "dark": "default" ?>",			//Skin du contenu
 			width: "100%",																	//Largeur de l'éditeur
-			min_height:(<?= $toggleButton==true?150:300 ?>),								//Hauteur par défaut de l'éditeur
+			min_height:(<?= $toggleButton==true?150:250 ?>),								//Hauteur par défaut de l'éditeur
 			convert_urls: false,															//Urls des liens : ne pas les convertir en "relatives"
 			menubar: false,																	//Pas de "menubar" en haut de l'éditeur (menu déroulant)
+			paste_as_text: true,															//Coller en texte brut (evite les erreurs de code)
 			statusbar: false,																//Pas de "statusbar" en bas de l'éditeur
 			allow_script_urls: true,														//Autorise l'ajout de js dans les hrefs ("lightboxOpen()" & co)
 			browser_spellcheck: true,														//Correcteur orthographique du browser activé
@@ -80,7 +81,7 @@
 	}
 
 	/********************************************************************************************************
-	 *	RENVOI LE CONTENU DE L'EDITEUR  (cf. "editorDraft")
+	 *	RENVOIE LE CONTENU DE L'EDITEUR  (cf. "editorDraft")
 	********************************************************************************************/
 	function editorContent()
 	{

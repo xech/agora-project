@@ -1,11 +1,6 @@
 <script>
 ////	Init
 ready(function(){
-	////	Affiche la liste d'users/contacts à importer : resize avec timeout
-	<?php if(Req::isParam("actionImportExport")){ ?>
-		setTimeout(function(){ lightboxResize(); },300);
-	<?php } ?>
-
 	////	Switch le formulaire d'import ou d'export
 	$("#selectImportExport").on("change",function(){
 		$("#importBlock").toggle(this.value=="import");//affiche/masque
@@ -150,7 +145,7 @@ form								{text-align:center;}
 				//HEADER DU TABLEAU : INPUT "SELECT" DES CHAMPS "AGORA"
 				echo "<tr>";
 					//Bouton "switch" la sélection des personnes importées
-					echo "<th><img src='app/img/switch.png' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" ".Txt::tooltip("selectSwitch")."></th>";
+					echo "<th><img src='app/img/checkSwitch.png' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" ".Txt::tooltip("selectSwitch")."></th>";
 					//Pour chaque colonne, on affiche un input "select" avec chaque champ "agora" (type "csv_agora")
 					for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){
 						echo "<th><select name='agoraFields[".$fieldCpt."]' class='vAgoraFieldSelect' data-fieldCpt='".$fieldCpt."'><option></option>";	//Début du <select> et option vide (champ pas importé)

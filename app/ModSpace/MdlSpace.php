@@ -17,7 +17,7 @@ class MdlSpace extends MdlObject
 	const dbTable="ap_space";
 	public static $requiredFields=["name"];
 	public static $sortFields=["name@@asc","name@@desc","description@@asc","description@@desc"];
-	//Valeurs mises en cache
+	//Valeurs en cache
 	private $_usersAccessRight=[];
 	private $_allUsersAffected=null;
 	private $_spaceUsers=null;
@@ -134,14 +134,14 @@ class MdlSpace extends MdlObject
 			$availableModules=self::availableModules();																							//Modules disponibles
 			foreach(Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY `rank` ASC") as $tmpModule){			//Modules affectés à l'espace (DB)
 				$moduleName=$tmpModule["moduleName"];																							//Nom du module
-				if(Ctrl::$curUser->isUser()==false && ($moduleName=="mail" || ($moduleName=="user" && empty($this->password))))  {continue;}	//Pas de module mail/user pour les guests (sauf si user+password)
+				if(Ctrl::$curUser->isGuest() && ($moduleName=="mail" || ($moduleName=="user" && empty($this->password))))  {continue;}	//Pas de module mail/user pour les guests (sauf si user+password)
 				$this->_moduleList[$moduleName]=array_merge($availableModules[$moduleName], $tmpModule);										//Ajoute le module et ses propriétés
 			}
 			//Ajoute l'agenda perso s'il est activé pour l'user courant et qu'il n'est pas dans la liste des modules
 			if(Ctrl::$curUser->isUser() && empty(Ctrl::$curUser->calendarDisabled) && array_key_exists("calendar",$this->_moduleList)==false)
 				{$this->_moduleList["calendar"]=array_merge($availableModules["calendar"], ["rank"=>100,"options"=>null,"isPersoCalendar"=>true]);}
 		}
-		// Renvoi les modules (avec/sans l'agenda perso ?)
+		// Renvoie les modules (avec/sans l'agenda perso ?)
 		if($persoCalendarSkip==true && isset($this->_moduleList["calendar"]["isPersoCalendar"])){
 			$moduleList=$this->_moduleList;
 			unset($moduleList["calendar"]);
@@ -189,7 +189,7 @@ class MdlSpace extends MdlObject
 			foreach($objectsOnlyInCurSpace as $tmpObject){
 				//Charge l'objet et le supprime (sauf les dossiers racine et agendas persos)
 				$tmpObj=Ctrl::getObj($tmpObject["objectType"],$tmpObject["_idObject"]);
-				$isPersonalCalendar=($tmpObj::objectType=="calendar" && $tmpObj->isMyPersonalCalendar());
+				$isPersonalCalendar=($tmpObj::objectType=="calendar" && $tmpObj->isMyPersoCalendar());
 				if(MdlObject::isObject($tmpObj) && $tmpObj->isRootFolder()==false && $isPersonalCalendar==false)  {$tmpObj->delete();}
 			}
 			//Supprime les affectations espace->modules, espace->users, espace->objets (pour les objets affectés à plusieurs espaces) et espace->invitations

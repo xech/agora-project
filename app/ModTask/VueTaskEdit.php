@@ -17,7 +17,6 @@ ready(function(){
 .vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
 #fieldsetResponsiblePersons	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
 .divResponsiblePerson		{display:inline-block; width:33%; padding:5px;}
-img[src*='arrowRight']		{margin:3px;}
 
 /*RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:490px){

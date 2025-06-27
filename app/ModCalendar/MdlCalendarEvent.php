@@ -119,7 +119,7 @@ class MdlCalendarEvent extends MdlObject
 		if($this->_mainCalendarObj===null){
 			$accessRightMax=0;																														//Init le droit d'accès le + élevé
 			foreach($this->affectedCalendars(true) as $tmpCal){																						//Parcours la liste des agendas où est affecté l'événement
-				if($tmpCal->isMyPersonalCalendar())					{$this->_mainCalendarObj=$tmpCal;	break;}										//Renvoie l'agenda perso && stop la boucle
+				if($tmpCal->isMyPersoCalendar())					{$this->_mainCalendarObj=$tmpCal;	break;}										//Renvoie l'agenda perso && stop la boucle
 				elseif($accessRightMax < $tmpCal->accessRight())	{$this->_mainCalendarObj=$tmpCal;	$accessRightMax=$tmpCal->accessRight();}	//Sinon récupère l'agenda avec le droit d'accès le + élevé
 			}
 		}
@@ -295,16 +295,16 @@ class MdlCalendarEvent extends MdlObject
 			if(!empty($this->periodDateEnd)){
 				$periodLabel.=' <br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel($this->periodDateEnd,"dateFull"));
 			}
-			//// Renvoi le résultat
+			//// Renvoie le résultat
 			return $periodLabel;
 		}
 	}
 
 	/********************************************************************************************************
-	 * VÉRIFIE S'IL S'AGIT D'UN EVENEMENT PASSÉ (PREND EN COMPTE LA PÉRIODICITÉ)
+	 * VÉRIFIE S'IL S'AGIT D'UN EVENEMENT PASSÉ (sans périodicité ou fin de périodicité passée)
 	 ********************************************************************************************************/
-	public function isOldEvt($referenceTime)
+	public function isPastEvent($timeMax)
 	{
-		return ((int)$referenceTime>0 && strtotime($this->dateEnd)<$referenceTime  &&  (empty($this->periodType) || (!empty($this->periodDateEnd) && strtotime($this->periodDateEnd)<$referenceTime)));
+		return (!empty($timeMax)  &&  strtotime($this->dateEnd) < $timeMax  &&  (empty($this->periodType) || (!empty($this->periodDateEnd) && strtotime($this->periodDateEnd) < $timeMax)));
 	}
 }

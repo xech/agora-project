@@ -52,7 +52,7 @@ class MdlForumSubject extends MdlObject
 	 ********************************************************************************************************/
 	public function alreadyConsulted()
 	{
-		return (Ctrl::$curUser->isUser()==false || in_array(Ctrl::$curUser->_id,Txt::txt2tab($this->usersConsultLastMessage)));
+		return (Ctrl::$curUser->isGuest() || in_array(Ctrl::$curUser->_id,Txt::txt2tab($this->usersConsultLastMessage)));
 	}
 
 	/********************************************************************************************************

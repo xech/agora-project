@@ -142,7 +142,7 @@ ready(function(){ labelRightStyle(); });
 /*DROITS D'ACCÈS*/
 .vSpaceTable							{display:inline-table; user-select:none; -webkit-user-select:none; max-width:600px; margin-bottom:30px;}
 .vSpaceTable>div						{display:table-row;}
-.vSpaceTable>div>div					{display:table-cell; padding:8px; text-align:center;}
+.vSpaceTable>div>div					{display:table-cell; padding:6px; text-align:center;}
 .vSpaceTable img						{max-height:18px;}
 .vSpaceHeader>div						{vertical-align:top; padding-bottom:10px!important;}
 .vSpaceHeader>.vSpaceLabel				{padding-left:10px!important; font-style:italic;}/*Nom de l'espace*/
@@ -151,7 +151,7 @@ ready(function(){ labelRightStyle(); });
 .vSpaceWriteLimit						{width:120px;}/*idem*/
 .vSpaceTargetIcon						{margin-right:8px;}
 .vSpaceTargetHide						{display:none!important;}/*Par défaut : masque les users décochés de l'espace courant*/
-#showAllUsers, #extendToSubfoldersDiv	{cursor:pointer; margin-bottom:10px;}
+#showAllUsers, #extendToSubfoldersDiv	{cursor:pointer;}
 
 /*MENU DES NOTIFICATIONS PAR MAIL*/
 #notifMailOptions>div					{padding-left:15px; padding-top:12px;}

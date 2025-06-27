@@ -43,7 +43,7 @@ tr:not(.vTableHeader)			{text-align:left;}				/*Ligne des evts*/
 		//// DEBUT DU TABLEAU + HEADER
 		echo '<table class="vTable">
 				<tr class="vTableHeader">
-					<td '.Txt::tooltip("selectSwitch").'><img src="app/img/switch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
+					<td '.Txt::tooltip("selectSwitch").'><img src="app/img/checkSwitch.png" onclick="$(\':checkbox[id^=boxEvent]\').trigger(\'click\');"></td>
 					<td>'.Txt::trad("CALENDAR_importIcalPresent").'</td>
 					<td>'.Txt::trad("begin").' - '.Txt::trad("end").'</td>
 					<td>'.Txt::trad("title").'</td>

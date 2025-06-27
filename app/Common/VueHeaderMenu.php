@@ -12,7 +12,7 @@ ready(function(){
 #headerMainLogo								{content:url('app/img/logo.png'); position:absolute; top:2px; left:0px;}
 #headerUserLabel, #headerSpaceLabel			{display:inline-block; max-width:250px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
 .headerArrowBottom							{margin-left:5px; margin-right:2px;}
-#headerMenuLeft img[src*=arrowRight]		{margin:0px 4px 0px 8px;}
+#headerMenuLeft img[src*=arrowRight]		{margin-left:5px;}
 #headerBar>#menuMainContext					{display:none; padding:5px; box-shadow:0px 0px 15px black; border-radius:10px; top:5px!important; left:5px!important;}/*surcharge "#headerBar>div" de app.css*/
 #menuMainTab								{display:table;}
 #menuMainTab>div							{display:table-cell; padding:5px;}
@@ -52,7 +52,7 @@ ready(function(){
 		<!--TABLEAU 1-3 COLONNES-->
 		<div id="menuMainTab">
 
-			<!--COLONNE 1-->
+			<!--COLONNE 1 : OPTIONS PRINCIPALES-->
 			<?php if(Ctrl::$curUser->isUser()){ ?>
 			<div>
 				<!--INSCRIPTION D'USERS  +  RECHERCHER  +  ENVOI D'INVITATION  +  DOCUMENTATION-->
@@ -77,16 +77,19 @@ ready(function(){
 			</div>
 			<?php } ?>
 
-			<!--COLONNE 2-->
+			<!--COLONNE 2 : GUEST || LISTE / GESTION DES ESPACES-->
+			<?php if(Ctrl::$curUser->isGuest() || $spaceListMenu==true || Ctrl::$curUser->isSpaceAdmin()){ ?>
 			<div>
 				<!--CONNEXION GUEST-->
-				<?php if(Ctrl::$curUser->isUser()==false){ ?><div class="menuLine" onclick="redir('?disconnect=1')"><div class="menuIcon"><img src="app/img/logout.png"></div><div><?= Txt::trad("connect") ?></div></div><hr><?php } ?>
+				<?php if(Ctrl::$curUser->isGuest()){ ?>
+					<div class="menuLine" onclick="redir('?disconnect=1')"><div class="menuIcon"><img src="app/img/logout.png"></div><div><?= Txt::trad("connect") ?></div></div>
+				<?php } ?>
 				<!--LISTE DES ESPACES-->
 				<?php if($spaceListMenu==true){ ?>
 					<div class="menuLine"><div class="menuIcon"><img src="app/img/space.png"></div><div><?= Txt::trad("HEADER_displaySpace") ?> :</div></div>
 					<?php foreach($spaceList as $tmpSpace){ ?>
 					<div class="menuLine <?= $tmpSpace->isCurSpace()?'linkSelect':null ?>">
-						<div class="menuIcon menuMainArrow"><img src="app/img/arrowRightBig.png"></div>
+						<div class="menuIcon menuMainArrow"><img src="app/img/arrowRightSmall.png"></div>
 						<div>
 							<span onclick="redir('?_idSpaceAccess=<?= $tmpSpace->_id ?>')" <?= Txt::tooltip($tmpSpace->description) ?> ><?= $tmpSpace->name ?></span>
 							<?php if($tmpSpace->editRight()){ ?><img src="app/img/edit.png" class="editButton" onclick="lightboxOpen('<?= $tmpSpace->getUrl('edit') ?>')" <?= Txt::tooltip("SPACE_config") ?> ><?php } ?>
@@ -94,7 +97,7 @@ ready(function(){
 					</div>
 					<?php } ?>
 				<?php } ?>
-				<!--GERER L'ESPACE COURANT  +  GERER TOUS LES ESPACES  +  AFFICHAGE "ADMINISTRATEUR"-->
+				<!--GESTION DES ESPACES  +  AFFICHAGE "ADMINISTRATEUR"-->
 				<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?>
 					<?= $spaceListMenu==true ? '<hr>' : null ?>
 					<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curSpace->getUrl('edit') ?>')"><div class="menuIcon"><img src="app/img/settingsCurSpace.png"></div><div><?= Txt::trad("SPACE_config") ?> <i><?= Txt::reduce(Ctrl::$curSpace->name,35) ?></i></div></div>
@@ -102,14 +105,15 @@ ready(function(){
 					<div class="menuLine <?= empty($_SESSION['displayAdmin'])?'option':'optionSelect' ?>" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>><div class="menuIcon"><img src="app/img/eye.png"></div><div><?= Txt::trad("HEADER_displayAdmin") ?></div></div>
 				<?php } ?>
 			</div>
+			<?php } ?>
 
-			<!--COLONNE 3 : LISTE DES SHORTCUTS-->
+			<!--COLONNE 3 : SHORTCUTS-->
 			<?php if(!empty($pluginsShortcut) && Ctrl::$curUser->isUser()){ ?>
 			<div>
 				<div class="menuLine"><div class="menuIcon"><img src="app/img/shortcut.png"></div><div><?= Txt::trad("HEADER_shortcuts") ?> :</div></div>
 				<?php foreach($pluginsShortcut as $tmpObj){ ?>
 					<div class="menuLine" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> >
-						<div class="menuIcon menuMainArrow"><img src="app/img/arrowRightBig.png"></div>
+						<div class="menuIcon menuMainArrow"><img src="app/img/arrowRightSmall.png"></div>
 						<div>
 							<img src="app/img/<?= $tmpObj->pluginIcon ?>" onclick="<?= $tmpObj->pluginJsIcon ?>" class="menuMainShortcut">
 							<span onclick="<?= $tmpObj->pluginJsLabel ?>"><?= $tmpObj->pluginLabel ?></span><?= $tmpObj->editButtom() ?>
@@ -128,7 +132,7 @@ ready(function(){
 	<!--MENU LEFT : LOGO PRINCIPAL  &  LABEL DE L'USER  &  LABEL L'ESPACE COURANT  &  ICONE DE VALIDATION D'INSCRIPTION-->
 	<div id="headerMenuLeft" class="menuLauncher" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
 		<img src="app/img/logo.png" id="headerMainLogo">
-		<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRightBig.png"></div><?php } ?>
+		<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRight.png"></div><?php } ?>
 		<div id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?></div><img src="app/img/arrowBottom.png" class="headerArrowBottom">
 		<?php if($userInscriptionValidate==true){ ?><img src="app/img/user/subscribe.png" class="pulsate" <?= Txt::tooltip("userInscriptionValidateTooltip") ?>><?php } ?>
 	</div>

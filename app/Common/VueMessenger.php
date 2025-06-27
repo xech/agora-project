@@ -85,9 +85,9 @@ function messengerDisplay(messengerDisplayModeNew)
 	else{
 		//// Affichage du messenger en mode mobile / normal
 		if(isMobile()){
-			menuMobileClose();											//Masque si besoin le menu principal (cf. icone messenger du menu des modules)
-			messengerFullPage();										//Messenger en pleine page.
-			$(window).on("resize",function(){ messengerFullPage(); });	//Idem si on resize la page (change d'orientation ou affiche le clavier virtuel)
+			menuMobileClose();												//Masque si besoin le menu principal (cf. icone messenger du menu des modules)
+			messengerMobileDisplay();										//Messenger en pleine page.
+			$(window).on("resize",function(){ messengerMobileDisplay(); });	//Idem si on resize la page (change d'orientation ou affiche le clavier virtuel)
 		}else{
 			var messengerLeftPos=(windowWidth/2)-($("#messengerMain").outerWidth(true)/2);	//Position Left du messenger, pour pouvoir le centrer ("outerWidth(true)" pour prendre en compte le "margin")
 			$("#messengerMain").css("left",messengerLeftPos).resizable({handles:"e,w"});	//Centre le messenger && le rend "resizable" en largeur uniquement
@@ -147,15 +147,15 @@ function messengerDisplayUser()
 	}
 }
 
-/********************************************************************************************************
- *	MESSENGER SUR MOBILE : FULL PAGE  (Test avec 5 users connectés, changements d'orientation, etc)
-*********************************************************************************************************/
-function messengerFullPage(){
+/**********************************************************************************************************************
+ *	MESSENGER AFFICHA SUR MOBILE EN FULL PAGE  (Tester avec 5 users connectés, changements d'orientation, etc)
+***********************************************************************************************************************/
+function messengerMobileDisplay(){
 	setTimeout(function(){																			//Timeout après affichage du clavier virtuel
 		$("#messengerFormMain").css('padding-bottom', $("#livecounterMain").outerHeight(true) +15);	//Margin-bottom du "#messengerFormMain" pour afficher le #livecounterMain
 		let contentHeight=windowHeight-$("#messengerHeader,#messengerFormMain").totalHeight() -15;	//Hauteur du contenu principal : messages
 		$(".vMessengerContent,.vMessengerContent>div").height(contentHeight);						//Resize les divs principaux et divs scrollables
-	},400);
+	},50);
 }
 
 /********************************************************************************************************
@@ -250,7 +250,7 @@ async function proposeVisio()
 @media screen and (max-width:1024px){
 	.vLivecounterUser							{margin-inline:0px; padding-block:10px;}
 	.vLivecounterUser .personImg				{display:none;}
-	#messengerMain								{width:100%!important; height:100%!important; border-radius:0px; padding:0px; font-size:0.9em;}
+	#messengerMain								{width:100%!important; height:100%!important; border:none!important; box-shadow:none!important; border-radius:0px; padding:0px; font-size:0.9em;}
 	#messengerHeader							{text-align:right; height:30px;}/*cf. #messengerClose*/
 	#messengerMove								{display:none;}
 	#messengerClose								{float:none;}

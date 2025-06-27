@@ -70,7 +70,7 @@ class CtrlMisc extends Ctrl
 				}
 				//Ajoute "inverser la sélection" si ya + de 5 users
 				if(count($_SESSION["livecounterUsers"])>5)
-					{$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser"><label onclick="$(\'label[for^=messengerUserCheckbox]\').trigger(\'click\')"><img src="app/img/checkSmall.png"> &nbsp; '.Txt::trad("selectSwitch").'</label></div>';}
+					{$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser"><label onclick="$(\'label[for^=messengerUserCheckbox]\').trigger(\'click\')"><img src="app/img/checkSwitch.png"> &nbsp; '.Txt::trad("selectSwitch").'</label></div>';}
 			}
 
 			////	LISTE DES MESSAGES DU MESSENGER  &&  DES "PULSATES"

@@ -4,7 +4,9 @@ body, a, .sLink																				{color:#555;}
 .objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #333; transition:box-shadow 0.3s ease-in-out;}
 .objContainer:hover																			{box-shadow:2px 2px 10px #ccc;}
 .objLines .objContainer																		{border-bottom:solid 1px #ccc;}
-.objContainerSelect, .objLines .objContainer:hover, .lineSelect, #objSelectMenu, .menuContext .menuLine:hover, .lineHover:hover		{background:#eee;}
+.menuContext, #livecounterMain, #messengerMain, .tox-tinymce								{border:solid 1px #ccc;}
+.objLines .objContainer:hover, .menuContext .menuLine:hover, .lineHover:hover				{background:#eee;}
+.objContainerSelect, .lineSelect, #objSelectMenu											{background:#ddd!important;}
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	#htmlMainPage											{background:white url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
@@ -12,11 +14,12 @@ body, a, .sLink																				{color:#555;}
 }
 
 /*** LIENS & OPTIONS*/
-a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .option:hover, .optionSelect	{color:#0068bd;}
+a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .optionSelect	{color:#0068bd;}
 .sAccessWrite, .sAccessWriteLimit	{color:#900;}
 .option								{border:solid 1px transparent;}
-.option:hover, .optionSelect		{border:solid 1px #ccc; border-radius:5px; background:#eee; color:#0068bd;}
-.optionSelectAll.optionSelect		{background:#fafafa!important;}
+.option:hover, .optionSelect		{border:solid 1px #ccc; border-radius:5px;}
+.option:hover						{background:#fcfcfc; }
+.optionSelect						{background:#eaeaea!important;}
 
 /*** MENU CONTEXT RESPONSIVE*/
 #menuMobileMain															{background:white; border:solid 1px #ddd;}

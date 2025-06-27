@@ -12,7 +12,7 @@
  */
 trait MdlObjectMenu
 {
-	public static $pageNbObjects=50;	//Nb d'éléments affichés par page : 50 par défaut
+	public static $nbObjsPerPage=30;	//Nb d'éléments affichés par page : 50 par défaut
 	public static $displayMode=null;	//Type d'affichage en préference (ligne/block)
 
 	/********************************************************************************************************
@@ -46,7 +46,7 @@ trait MdlObjectMenu
 	public function contextMenu($options=null)
 	{
 		////	PAS DE MENU POUR LES GUESTS
-		if(Ctrl::$curUser->isUser()==false)  {return false;}
+		if(Ctrl::$curUser->isGuest())  {return false;}
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
 		$vDatas["objMenuId"]=$this->uniqId("objMenu");
@@ -181,8 +181,8 @@ trait MdlObjectMenu
 					////	Init les "targetLines"
 					$tmpSpace->targetLines=[];
 					////	"Tous les utilisateurs"  OU  "Tous les utilisateurs et invités"
-					if(empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsers");															$allUsersLabelInfo=Txt::trad("EDIT_allUsersTooltip");}
-					else							{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests").' <img src="app/img/user/accessGuest.png">';	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsTooltip");}
+					if(empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsers");				$allUsersLabelInfo=Txt::trad("EDIT_allUsersTooltip");}
+					else							{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests");	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsTooltip");}
 					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/accessAll.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
 					////	Groupe d'utilisateurs de l'espace
 					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
@@ -242,23 +242,14 @@ trait MdlObjectMenu
 	}
 
 	/********************************************************************************************************
-	 * STATIC : CLÉ DE PRÉFÉRENCE EN BDD ($prefDbKey)
-	 ********************************************************************************************************/
-	public static function prefDbKey($containerObj)
-	{
-		if(is_object($containerObj))											{return $containerObj->_typeId;}		//"_typeId" de l'objet en parametre
-		elseif(!empty(Ctrl::$curContainer) && is_object(Ctrl::$curContainer))	{return Ctrl::$curContainer->_typeId;}	//"_typeId" du conteneur/dossier courant
-		else																	{return static::moduleName;}			//"moduleName" courant
-	}
-
-	/********************************************************************************************************
 	 * VUE : MENU DE SÉLECTION D'OBJETS
 	 ********************************************************************************************************/
 	public static function menuSelect()
 	{
+		////	Déplacer dans un autre dossier (2 dossiers ou + dans l'arbo)  ||  Supprimer des objets  ||  Supprimer des users de l'espace
 		if(static::menuSelectDisplay()){
-			$vDatas["folderMoveOption"]=(is_object(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1 && Ctrl::$curContainer->editContentRight());//Si ya plus d'un dossiers dans l'arbo + qu'on peut éditer le contenu
-			$vDatas["deleteOption"]=((is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ||  (Req::$curCtrl=="forum" && Ctrl::$curUser->isUser())  ||  (Req::$curCtrl=="user" && Ctrl::$curUser->isGeneralAdmin()));
+			$vDatas["folderMoveOption"]		=(is_object(Ctrl::$curRootFolder) && Ctrl::$curContainer->editContentRight() && count(Ctrl::$curRootFolder->folderTree())>=2);
+			$vDatas["deleteOption"]			=((is_object(Ctrl::$curContainer) && Ctrl::$curContainer->editContentRight())  ||  (Req::$curCtrl=="forum" && Ctrl::$curUser->isUser())  ||  (Req::$curCtrl=="user" && Ctrl::$curUser->isGeneralAdmin()));
 			$vDatas["deleteFromSpaceOption"]=(Req::$curCtrl=="user" && Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
 			return Ctrl::getVue(Req::commonPath."VueObjMenuSelect.php",$vDatas);
 		}
@@ -285,62 +276,65 @@ trait MdlObjectMenu
 	/********************************************************************************************************
 	 * VUE : MENU DE TRI D'UN TYPE D'OBJET
 	 ********************************************************************************************************/
-	public static function menuSort($containerObj=null, $addUrlParams=null)
+	public static function menuSort($addUrlParams=null)
 	{
-		$vDatas["sortFields"]=static::$sortFields;
-		$vDatas["curSort"]=self::getSort($containerObj);
+		$vDatas["curSort"]=self::getSort();
+		$vDatas["objectType"]=static::objectType;
 		$curSortTab=Txt::txt2tab($vDatas["curSort"]);
 		$vDatas["curSortField"]=$curSortTab[0];
-		$vDatas["curSortAscDesc"]=$curSortTab[1];
+		$vDatas["curSortValue"]=$curSortTab[1];
 		$vDatas["addUrlParams"]=$addUrlParams;
+		$vDatas["sortFields"]=static::$sortFields;
 		return Ctrl::getVue(Req::commonPath."VueObjMenuSort.php",$vDatas);
 	}
 
 	/********************************************************************************************************
-	 * STATIC : TRI D'OBJETS : PREFERENCE EN BDD / PARAMÈTRE PASSÉ EN GET (ex: "firstName@@asc")
+	 * TRI D'OBJETS : EN PREFERENCE / PAR DEFAUT (ex: "firstName@@asc")
 	 ********************************************************************************************************/
-	private static function getSort($containerObj=null)
+	private static function getSort()
 	{
-		$objectsSort=Ctrl::prefUser("sort_".static::prefDbKey($containerObj), "sort");									//Récupère la préférence en Bdd ou params GET/POST
-		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))  {$objectsSort=static::$sortFields[0];}	//Tri par défaut si aucune préf. n'existe OU Tri sélectionné indisponible pour l'objet courant 
-		return $objectsSort;																							//Renvoie le tri
+		$prefSuffix=(Ctrl::$curContainer)  ?  Ctrl::$curContainer->_typeId  :  static::objectType;	//Suffixe de préférence (ex: "sort_fileFolder-55")
+		$objectsSort=Ctrl::getPref("sort",$prefSuffix);												//Préférence de tri
+		if(empty($objectsSort) || !in_array($objectsSort,static::$sortFields))						//Aucune préférence OU Tri disponible :
+			{$objectsSort=static::$sortFields[0];}													//Récupère le 1er tri disponible
+		return $objectsSort;
 	}
 
-	/*****************************************************************************************************************************
-	 * STATIC SQL : TRI SQL DES OBJETS (avec premier tri si besoin : news, subject, etc. Ex: "ORDER BY firstName asc")
-	 *****************************************************************************************************************************/
+	/********************************************************************************************************
+	 * TRI SQL DES OBJETS  (avec un 1er tri au besoin : news, subject, etc. Ex: "ORDER BY firstName asc")
+	 ********************************************************************************************************/
 	public static function sqlSort($firstSort=null)
 	{
-		$firstSort=(!empty($firstSort))  ?  $firstSort.", "  :  null;											//Pré-tri ? Exple pour les News: "une desc"
-		$sortTab=Txt::txt2tab(self::getSort(Ctrl::$curContainer));												//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Ex: ["name","asc"]
-		$fieldSort=($sortTab[0]=="extension")  ?  "SUBSTRING_INDEX(`name`,'.',-1)"  :  '`'.$sortTab[0].'`';		//Tri par type de fichier  : récupère son extension pour le tri 
-		return " ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1]." ";										//Renvoie le tri Sql (avec des espaces avant/après!)
+		$firstSort=(!empty($firstSort))  ?  $firstSort.", "  :  null;										//Pré-tri ? Exple pour les News: "une desc"
+		$sortTab=Txt::txt2tab(self::getSort());																//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Ex: ["name","asc"]
+		$fieldSort=($sortTab[0]=="extension")  ?  "SUBSTRING_INDEX(`name`,'.',-1)"  :  "`".$sortTab[0]."`";	//Tri par type de fichier  : récupère son extension pour le tri 
+		return " ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1]." ";									//Renvoie le tri Sql (avec des espaces avant/après)
 	}
 
 	/********************************************************************************************************
 	 * VUE : MENU DU MODE D'AFFICHAGE DES OBJETS DANS UNE PAGE : BLOCKS / LIGNES (cf. $displayModes)
 	 ********************************************************************************************************/
-	public static function menuDisplayMode($containerObj=null)
+	public static function menuDisplayMode()
 	{
 		if(static::isMobileDisplayBlock()==false){
 			$vDatas["displayModes"]=static::$displayModes;
-			$vDatas["curDisplayMode"]=static::getDisplayMode($containerObj);
+			$vDatas["curDisplayMode"]=static::getDisplayMode();
 			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
 			return Ctrl::getVue(Req::commonPath."VueObjMenuDisplayMode.php",$vDatas);
 		}
 	}
 
 	/********************************************************************************************************
-	 * STATIC : RÉCUPÈRE LE TYPE D'AFFICHAGE DES OBJETS DE LA PAGE
+	 * MODE D'AFFICHAGE DES OBJETS : EN PREFERENCE / PAR DEFAUT ("block"/"line"/etc)
 	 ********************************************************************************************************/
-	public static function getDisplayMode($containerObj=null)
+	public static function getDisplayMode()
 	{
 		if(static::$displayMode===null){
-			if(static::isMobileDisplayBlock())	{static::$displayMode="block";}																			//Affichage "block" sur mobile
-			else								{static::$displayMode=Ctrl::prefUser("displayMode_".static::prefDbKey($containerObj),"displayMode");}	//Ou préférence d'affichage de l'user
-			if(empty(static::$displayMode)){																											//Ou affichage par défaut :
-				if(Ctrl::$agora->folderDisplayMode && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes))	{static::$displayMode=Ctrl::$agora->folderDisplayMode;}	//"folderDisplayMode" du Paramétrage général
-				else																									{static::$displayMode=static::$displayModes[0];}		//Premier $displayModes disponible
+			$prefSuffix=(Ctrl::$curContainer)  ?  Ctrl::$curContainer->_typeId  :  static::objectType;										//Suffixe de préférence (ex: "displayMode_fileFolder-55")
+			static::$displayMode=static::isMobileDisplayBlock()  ?  "block"  :  Ctrl::getPref("displayMode",$prefSuffix);					//Affichage "block" sur mobile  ||  Préférence d'affichage
+			if(empty(static::$displayMode)){																								//Aucune préférence -> Affichage par défaut :
+				$folderDisplayMode=(Ctrl::$agora->folderDisplayMode && in_array(Ctrl::$agora->folderDisplayMode,static::$displayModes));	//Affichage des dossiers du paramétrage général || 1er Affichage disponible
+				static::$displayMode=($folderDisplayMode==true)  ?  Ctrl::$agora->folderDisplayMode  :  static::$displayModes[0];
 			}
 		}
 		return static::$displayMode;
@@ -357,22 +351,16 @@ trait MdlObjectMenu
 	/********************************************************************************************************
 	 * VUE : MENU DE FILTRE ALPHABÉTIQUE
 	 ********************************************************************************************************/
-	public static function menuPagination($displayedObjNb, $getParamKey=null)
+	public static function menuPagination($objNbDisplayed, $paramKey=null)
 	{
-		$pageNbTotal=ceil($displayedObjNb/static::$pageNbObjects);
-		if($pageNbTotal>1)
-		{
-			//Nb de page et numéro de page courant
-			$vDatas["pageNbTotal"]=$pageNbTotal;
-			$vDatas["pageNb"]=$pageNb=Req::isParam("pageNb") ? Req::param("pageNb") : 1;
-			//Url de redirection de base
-			$vDatas["hrefBase"]="?ctrl=".Req::$curCtrl;
-			if(!empty($getParamKey) && Req::isParam($getParamKey))  {$vDatas["hrefBase"].="&".$getParamKey."=".Req::param($getParamKey);}
-			$vDatas["hrefBase"].="&pageNb=";
-			//Page Précédente / Suivante (desactive si on est déjà en première ou dernière page)
-			$vDatas["prevAttr"]=($pageNb>1)  ?  "href=\"".$vDatas["hrefBase"].((int)$pageNb-1)."\""  :  "class='vNavMenuDisabled'";
-			$vDatas["nextAttr"]=($pageNb<$pageNbTotal)  ?  "href=\"".$vDatas["hrefBase"].((int)$pageNb+1)."\""  :  "class='vNavMenuDisabled'";
-			//Récupère le menu
+		$vDatas["pageNbTotal"]=ceil($objNbDisplayed / static::$nbObjsPerPage);								//Nombre de pages au total 
+		if($vDatas["pageNbTotal"]>1){																		//Affiche le menu s'il ya + d'une page
+			$vDatas["pageNbCur"]=Req::isParam("pageNb") ? (int)Req::param("pageNb") : 1;					//Page courante
+			$vDatas["pageUrl"]="?ctrl=".Req::$curCtrl;														//Url de redirection de base
+			if(Req::isParam($paramKey))  {$vDatas["pageUrl"].="&".$paramKey."=".Req::param($paramKey);}		//Ajoute un parametre dans l'url
+			$vDatas["pageUrl"].="&pageNb=";																	//Termine par le parametre "pageNb"
+			$vDatas["pageUrlPrev"]=($vDatas["pageNbCur"] > 1) ?  						'href="'.$vDatas["pageUrl"].($vDatas["pageNbCur"]-1).'"'  :  'class="vMenuPageDisabled"';//Page Précédente : url / disabled
+			$vDatas["pageUrlNext"]=($vDatas["pageNbCur"] < $vDatas["pageNbTotal"]) ?	'href="'.$vDatas["pageUrl"].($vDatas["pageNbCur"]+1).'"'  :  'class="vMenuPageDisabled"';//Page Suivante : idem
 			return Ctrl::getVue(Req::commonPath."VueObjMenuPagination.php",$vDatas);
 		}
 	}
@@ -382,8 +370,8 @@ trait MdlObjectMenu
 	 ********************************************************************************************************/
 	public static function sqlPagination()
 	{
-		$offset=Req::isParam("pageNb")  ?  ((Req::param("pageNb")-1)*static::$pageNbObjects)  :  "0";
-		return "LIMIT ".static::$pageNbObjects." OFFSET ".$offset;
+		$offset=Req::isParam("pageNb")  ?  ((Req::param("pageNb")-1)*static::$nbObjsPerPage)  :  "0";
+		return "LIMIT ".static::$nbObjsPerPage." OFFSET ".$offset;
 	}
 
 	/********************************************************************************************************

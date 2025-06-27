@@ -6,6 +6,11 @@ ready(function(){
 	if($(".eventProposition").exist() && $("#headerMobileModule").isDisplayed())  {$("#headerMobileModule").pulsate();}
 
 	/********************************************************************************************************
+	 *	SUBMIT LA LISTE DES AGENDAS AFFICHES
+	 ********************************************************************************************************/
+	$("input[name='displayedCalendars[]']").on("change",function(){ $("#readableCalendarsForm").submit(); });
+
+	/********************************************************************************************************
 	 *	PROPOSITION D'EVT : CONFIRME/ANNULE UNE PROPOSITION
 	 ********************************************************************************************************/
 	$(".eventProposition").on("click",function(){
@@ -86,14 +91,12 @@ function moduleDisplay()
 /*Menu du module (gauche)*/
 #eventPropositionPulsate						{float:right; margin:-10px;}
 .eventProposition								{padding:10px; margin-top:10px;}
-#calsList										{max-height:400px; overflow-y:auto; padding:5px;}
-#calsListLabel 									{margin-bottom:10px;}
-#calsList .calsListCalendar						{line-height:25px;}/*Label de chaque agenda*/
-#calsList .menuLauncher							{display:none;}/*menu context de chaque agenda*/
-#calsList>div:hover .menuLauncher				{display:inline; margin-left:5px;}/*idem*/
-#calsList .submitButtonInline					{display:none; margin-top:15px;}/*bouton d'affichage des agendas*/
-#displayAdminCals								{display:inline; float:right;}
-#calsList:not(:hover) #displayAdminCals 		{visibility:hidden;}
+#readableCalendarsForm							{max-height:400px; overflow-y:auto;}
+#readableCalendarsTitle 						{margin-bottom:10px;}
+#readableCalsAdmin								{float:right;}
+#readableCalendarsForm:not(:hover) #readableCalsAdmin {visibility:hidden;}
+.readableCalendar input							{display:none;}
+.readableCalendar label							{display:block; padding:4px; margin-block:2px;}/*Label des agendas*/
 #menuCategory>div								{margin:10px 0px;}
 #menuCategory>div .linkSelect					{font-style:italic;}
 #datepickerCalendar								{margin-top:20px; margin-bottom:10px;}
@@ -173,45 +176,41 @@ function moduleDisplay()
 <div id="pageFull">
 	<div id="moduleMenu">
 		<!--PROPOSITIONS D'EVT-->
-		<?php if(!empty($eventPropositions)){ ?>
+		<?php if(!empty($proposedEvents)){ ?>
 			<div class="miscContainer">
 				<legend><?= Txt::trad("CALENDAR_evtProposition") ?><img src="app/img/importantBig.png" id="eventPropositionPulsate" class="pulsate"></legend>
-				<?php
-				////	Affiche chaque proposition d'événement 
-				foreach($eventPropositions as $tmpProposition){
-					$tmpEvt=$tmpProposition["evt"];
-					$tmpCal=$tmpProposition["cal"];
-					$evtDetails=$evtDetailsBis=htmlspecialchars($tmpEvt->title,ENT_COMPAT)."<hr>".Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd);
-					$evtDetailsBis.="<hr>".ucfirst(Txt::trad("OBJECTcalendar"))." : ".$tmpCal->title."<hr>".Txt::trad("CALENDAR_evtProposedBy")." ".$tmpEvt->autorDate();
-					if($tmpEvt->description)  {$evtDetailsBis.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}
-					echo '<div class="eventProposition optionSelect" data-details="'.strip_tags($evtDetailsBis,"<br><hr>").'" data-idCal="'.$tmpCal->_id.'" data-idEvt="'.$tmpEvt->_id.'" '.Txt::tooltip($evtDetailsBis).'>'.$evtDetails.'</div>';
-				} 
-				?>
+				<?php foreach($proposedEvents as $evtTmp){ ?>
+					<div class="eventProposition optionSelect" data-idEvt="<?= $evtTmp["_idEvt"] ?>" data-idCal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["dataDetail"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["dataDetail"]) ?> ><?= $evtTmp["details"] ?></div>
+				<?php } ?>
 			</div>
 		<?php } ?>
 
 		<div class="miscContainer">
-			<?php
-			////	AGENDAS DISPONIBLES
-			if(!empty($readableCalendars)){
-				$displayAdminCals=(Ctrl::$curUser->isSpaceAdmin() && empty($_SESSION["displayAdmin"]))  ?  '<img src="app/img/plusSmall.png" id="displayAdminCals" onclick="redir(\'?ctrl='.Req::$curCtrl.'&displayAdmin=true\')" title="'.Txt::trad("HEADER_displayAdmin").' : '.Txt::trad("HEADER_displayAdminInfo").'">'  :  null;
-				echo '<form action="index.php" id="calsList">
-						<div id="calsListLabel">'.Txt::trad("CALENDAR_calsList").' :'.$displayAdminCals.'</div>
-						<input type="hidden" name="curTime" value="'.Req::param("curTime").'"/>';
-						foreach($readableCalendars as $tmpCal){
-							$boxChecked=in_array($tmpCal->_id,array_column($displayedCalendars,"_id"))  ?  "checked"  :  null;
-							echo '<div class="calsListCalendar">
-									<input type="checkbox" name="displayedCalendars[]" value="'.$tmpCal->_id.'" id="boxCal'.$tmpCal->_typeId.'" onchange="$(\'#calsList .submitButtonInline\').show()" '.$boxChecked.'>
-									<label for="boxCal'.$tmpCal->_typeId.'" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</label> '.(Req::isMobile()==false?$tmpCal->contextMenu(["launcherIcon"=>"inlineSmall"]):null).'
-								</div>';
-						}
-				echo Txt::submitButton("show",false).'</form><hr>';
-			}
-			////	MENU DES CATEGORIES
-			echo MdlCalendarCategory::displayMenu();
-			?>
+			<!--AGENDAS DISPONIBLES-->
+			<?php if(!empty($readableCalendars)){ ?>
+				<form action="index.php" id="readableCalendarsForm">
+					<!--TITRE && AFFICHAGE ADMINISTRATEUR-->
+					<div id="readableCalendarsTitle">
+						<?= Txt::trad("CALENDAR_readableCalendars") ?> :
+						<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" id="readableCalsAdmin" <?= Txt::tooltip(Txt::trad("HEADER_displayAdmin").' : '.Txt::trad("HEADER_displayAdminInfo")) ?> onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?>
+					</div>
+					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
+					<?php foreach($readableCalendars as $tmpCal){ ?>
+						<div class="readableCalendar" <?= Txt::tooltip($tmpCal->description) ?> >
+							<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->_typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
+							<label for="boxDisplay<?= $tmpCal->_typeId ?>" class="option <?= $tmpCal->isDisplayed==true?'optionSelect':null ?>"><?= $tmpCal->title ?></label>
+						</div>
+					<?php } ?>
+					<input type="hidden" name="ctrl" value="<?= Req::$curCtrl ?>">
+					<input type="hidden" name="curTime" value="<?= Req::param("curTime") ?>">
+			</form>
+			<hr>
+			<?php }	?>
 
-			<!--CREER AGENDA PARTAGE-->
+			<!--MENU DES CATEGORIES-->
+			<?= MdlCalendarCategory::displayMenu()	?>
+
+			<!--CREER UN AGENDA PARTAGE-->
 			<?php if(MdlCalendar::addRight()){ ?>
 			<div class="menuLine" onclick="lightboxOpen('<?= MdlCalendar::getUrlNew() ?>');" <?= Txt::tooltip("CALENDAR_addSharedCalendarTooltip") ?>>
 				<div class="menuIcon"><img src="app/img/calendar/calendarAdd.png"></div>
@@ -219,7 +218,7 @@ function moduleDisplay()
 			</div>
 			<?php } ?>
 
-			<!--EVT PROPRIO-->
+			<!--EVTS PROPRIO-->
 			<?php if(Ctrl::$curUser->isUser()){ ?>
 			<div class="menuLine" onclick="lightboxOpen('?ctrl=calendar&action=MyEvents')" <?= Txt::tooltip("CALENDAR_evtAutorInfo") ?>>
 				<div class="menuIcon"><img src="app/img/edit.png"></div>
@@ -288,17 +287,17 @@ function moduleDisplay()
 				</div>
 				<!--PERIODE AFFICHEE  &  PRECEDENT/SUIVANT  &  MENU CONTEXT MONTHS/YEARS-->
 				<div class="vCalHeaderCenter">
-					<span class="vCalPrevNext vCalPrev" onclick="redir('?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/navPrev.png"></span>
+					<span class="vCalPrevNext vCalPrev" onclick="redir('?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeftNav.png"></span>
 					<span class="menuLauncher vCalHeaderMonth" for="monthsYearsMenu<?= $tmpCal->_typeId ?>"><?= ucfirst($monthLabel) ?></span>
 					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->_typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
-					<span class="vCalPrevNext vCalNext" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/navNext.png"></span>
+					<span class="vCalPrevNext vCalNext" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRightNav.png"></span>
 				</div>
 				
 				<!--PROPOSER/AJOUTER UN EVT  &  "AUJOURD'HUI"  &  AFFICHAGE MONTH/WEEK/ETC-->
 				<div class="vCalHeaderRight">
 					<?php if($tmpCal->affectationAddRight()){ ?>
 					<span onclick="lightboxOpen('<?= MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id ?>')" <?= $tmpCal->addEvtTooltip ?> >
-						<?= Req::isMobile() ? '<img src="app/img/plusSmall.png">' : '<button><img src="app/img/plusSmall.png"> '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
+						<?= Req::isMobile() ? '<img src="app/img/plusSmall.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
 					</span>
 					<?php } ?>
 					<span onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')" <?= Txt::tooltip("displayToday") ?> >
@@ -309,7 +308,7 @@ function moduleDisplay()
 					</span>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->_typeId ?>">
 						<?php foreach($displayModeList as $displayModeTmp){ ?>
-						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('?ctrl=calendar&displayMode=<?= $displayModeTmp ?>')">
+						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('?ctrl=calendar&calendarDisplayMode=<?= $displayModeTmp ?>')">
 							<div class="menuIcon"><img src="app/img/calendar/display<?= ucfirst($displayModeTmp) ?>.png"></div><div><?= ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp)) ?></div>
 						</div>
 						<?php } ?>

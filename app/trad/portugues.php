@@ -264,7 +264,7 @@ class Trad extends Txt
 			"MAIL_hideRecipients"=>"Ocultar destinatários",
 			"MAIL_hideRecipientsTooltip"=>"Coloque todos os destinatários em uma cópia oculta. Observe que, com esta opção, seu e-mail pode chegar como SPAM em alguns mensageiros",
 			"MAIL_addReplyTo"=>"Coloque meu e-mail em resposta",
-			"MAIL_addReplyToTooltip"=>"Adicione meu e-mail no campo 'Responder a'. Observe que, com esta opção, seu e-mail pode chegar como SPAM em alguns mensageiros",
+			"MAIL_addReplyToTooltip"=>"Adicione meu e-mail no campo ''Responder a'' <br><span style='font-size:1.5em'>&#9888;</span> Com esta opção, seu e-mail pode chegar como SPAM em alguns mensageiros",
 			"MAIL_noFooter"=>"Não assine a mensagem",
 			"MAIL_noFooterTooltip"=>"Não assine o final da mensagem com o nome do remetente e um link para o espaço",
 			"MAIL_receptionNotif"=>"Confirmação de entrega",
@@ -279,7 +279,7 @@ class Trad extends Txt
 			"MAIL_fromTheSpace"=>"Do espaço",
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- criado por",
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificado por",
-			"MAIL_elemAccessLink"=>"Clique aqui para acessar o item no espaço",
+			"MAIL_elemAccessLink"=>"Acessar o item no espaço",
 
 			////	Dossier & fichier
 			"gigaOctet"=>"GB",
@@ -807,7 +807,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editInfo"=>"Cada categoria de evento pode ser modificada por seu autor ou pelo administrador geral",
 			"CALENDAR_CAT_editAdd"=>"Adicionar uma categoria de evento",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Os usuários que não desativaram seu calendário pessoal em seu perfil de usuário ainda verão o módulo Calendário na barra de menus.",
-			"CALENDAR_calsList"=>"Calendários disponíveis",
+			"CALENDAR_readableCalendars"=>"Calendários disponíveis",
 			"CALENDAR_hideAllCals"=>"Ocultar todos os calendários",
 			"CALENDAR_printCalendars"=>"Imprimir calendários",
 			"CALENDAR_printCalendarsInfos"=>"imprimir a página no modo horizontal",

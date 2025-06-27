@@ -26,7 +26,7 @@ class CtrlDashboard extends Ctrl
 		$vDatasNews["newsList"]=MdlDashboardNews::getNews("scroll");					//Affichage principal des news "infinite scroll"
 		$vDatas["vueNewsListInitial"]=self::getVue(Req::curModPath()."VueNewsList.php", $vDatasNews);
 		////	Objets Sondages/Polls (sauf guest)
-		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isUser()==false) ?  false  :  true;
+		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isGuest()) ?  false  :  true;
 		if($vDatas["isPolls"]==true){
 			$vDatas["pollsVotedNb"]=MdlDashboardPoll::getPolls("pollsVotedNb");			//Nb de sondages votés
 			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("newsDisplay");	//Sondages non votés et affichés avec les news (menu de gauche)
@@ -38,7 +38,7 @@ class CtrlDashboard extends Ctrl
 		if($vDatas["showNewElems"]==true)
 		{
 			//Période en préférence / par défaut
-			$vDatas["pluginPeriod"]=self::prefUser("pluginPeriod");
+			$vDatas["pluginPeriod"]=self::getPref("pluginPeriod");
 			if(in_array($vDatas["pluginPeriod"],["day","week","month","previousConnection"])==false)  {$vDatas["pluginPeriod"]="week";}
 			//Periode "jour"/"semaine"/"month"/"previousConnection"
 			$vDatas["pluginPeriodOptions"]["day"]  =["timeBegin"=>strtotime("today 00:00:00"),						"timeEnd"=>strtotime("today 23:59:59")];

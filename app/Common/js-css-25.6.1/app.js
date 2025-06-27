@@ -57,10 +57,10 @@ function mainDisplay()
 
 		////	Width de la fenêtre enregistré dans un Cookie
 		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}								//Un seul timeout
-		mainDisplayTimeout=setTimeout(function(){																	//Timeout le tps de finaliser un window resize 
+		mainDisplayTimeout=setTimeout(function(){																	//Timeout le tps de finaliser un window resize (tps supérieur à $.fx.speeds)
 			document.cookie="windowWidth="+windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";			//Path courant
 			document.cookie="windowWidth="+windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";	//Path racine
-		},100);
+		},150);
 	}
 }
 
@@ -92,21 +92,24 @@ function mainTriggers()
 	if($("#moduleMenu").isDisplayed()){
 		$(window).on("scroll",function(){
 			if(typeof moduleMenuTimeout!="undefined")  {clearTimeout(moduleMenuTimeout);}							//Un seul timeout
-			moduleMenuTimeout=setTimeout(function(){																//Timeout le tps de finaliser le scroll 
+			moduleMenuTimeout=setTimeout(function(){																//Timeout le tps de finaliser le scroll (tps supérieur à $.fx.speeds)
 				let menuHeight=$("#moduleMenu").position().top;														//Position top du menu
 				$("#moduleMenu").children().each(function(){ menuHeight+=$(this).outerHeight(true); });				//Ajoute la hauteur de chaque element
 				if(menuHeight < windowHeight)  {$("#moduleMenu").css("padding-top",$(window).scrollTop()+"px");}	//Repositionne le menu en fonction de la fenêtre
-			},100);
+			},150);
 		});
 	}
 
-	////	Fancybox d'images & inline (mode "Declarative")
+	////	Fancybox : images & inline (mode "Declarative")
 	const fancyboxThumbs=isMobile() ? false : {type:"classic"};
 	const fancyboxImagesToolbar={
 		display:{left:[], right:["zoomIn","rotateCW","slideshow","fullscreen","thumbs","close"]}
 	};
 	Fancybox.bind("[data-fancybox='images']", {l10n:fancyboxLang, Thumbs:fancyboxThumbs, Toolbar:fancyboxImagesToolbar});
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
+
+	////	Fancybox : Init la taille d'une Iframe
+	if(isMainPage==false)  {lightboxResize();}
 }
 
 /**************************************************************************************************
@@ -161,8 +164,8 @@ function controleFields()
 	////	Datepicker/Timepicker : Controle du DateTime
 	$(".dateBegin, .dateEnd, .timeBegin, .timeEnd").on("change",function(){
 		//// Controle le format des dates et heures
-		if( ($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"))  &&  $(this).notEmpty()  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)  	 {notify(labelDateFormatError);}
-		if( ($(this).hasClass("timeBegin") || $(this).hasClass("timeEnd"))  &&  $(this).notEmpty()  &&  /^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false)   {notify(labelTimeFormatError);}
+		if( ($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"))  &&  $(this).notEmpty()  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)		{notify(labelDateFormatError);}
+		if( ($(this).hasClass("timeBegin") || $(this).hasClass("timeEnd"))  &&  $(this).notEmpty()  &&  /^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false)	{notify(labelTimeFormatError);}
 		//// dateBegin avancé/reculé : dateEnd ajusté
 		if($(this).hasClass("dateBegin") && $(".dateEnd").notEmpty()){
 			let beginDiffTime=($(".dateBegin").datepicker("getDate").getTime() - dateBeginRef);						//Différence entre l'ancienne et la nouvelle .dateBegin (en millisecondes!)
@@ -407,7 +410,7 @@ async function confirmRedir(locationUrl, confirmTitle)
 async function confirmDelete(deleteUrl, confirmContentAdd, ajaxControlUrl)
 {
 	let confirmContent='<div class="confirmDeleteAlert">'+labelConfirmDeleteAlert+'</div>';											// Détail du confirm "Attention : cette action est définitive !"
-	if(isValue(confirmContentAdd))  {confirmContent+='<img src="app/img/arrowRightBig.png"> '+confirmContentAdd;}					// Ajoute le label de l'objet, le nb d'objets sélectionnés, etc.
+	if(isValue(confirmContentAdd))  {confirmContent+='<img src="app/img/arrowRight.png"> '+confirmContentAdd;}					// Ajoute le label de l'objet, le nb d'objets sélectionnés, etc.
 	if(await confirmAlt(labelConfirmDelete,confirmContent)){																		// Confirm "Confirmer la suppression ?"
 		if(!isValue(ajaxControlUrl))  {window.location.href=deleteUrl;}																// Suppression directe (pas de "window.top.location" : cf. lightbox des commentaires ou autre)
 		else{																														// Controle Ajax avant suppression de dossier
@@ -481,9 +484,6 @@ function lightboxOpen(fileSrc)
 				closeExisting:/edit/i.test(fileSrc),																		//Ferme au besoin une Fancybox dejà ouverte
 				dragToClose:false,																							//Désactive la fermeture de Fancybox via "drop"
 				on:{
-					loaded:function(){																						//Affichage du Fancybox :
-						window.top.document.querySelector(".fancybox__iframe").contentWindow.lightboxResize();				//lance un 1er lightboxResize() depuis l'iframe
-					},
 					shouldClose:function(fancybox,slide){																	//Avant fermeture du Fancybox :
 						if(window.top.confirmCloseForm==true && typeof lightboxCloseOk==="undefined"){						//Fermeture du formulaire à confirmer ?
 							confirmAlt(labelConfirmCloseForm).then(()=>{ lightboxCloseOk=true; fancybox.close(); });		//Fermeture confirmée => ferme la lightbox récursivement
@@ -502,28 +502,27 @@ function lightboxOpen(fileSrc)
 function lightboxResize()
 {
 	ready(function(){
-		if(isMainPage==false){
-			//// Contenu/Iframe du lightbox
-			lightboxContent=window.top.document.querySelector(".fancybox__content");
-			lightboxIframe =window.top.document.querySelector(".fancybox__iframe");
-			//// Width de la lightbox
-			let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");					//Width en fonction de "#bodyLightbox" ("px" ou "%")
-			let lightboxWidth=parseInt(cssWidth);																//Width en Integer
-			if(Number.isInteger(lightboxWidth)==false) 	{lightboxWidth=650;}									//"max-width" non spécifié : 650px par défaut
-			if(/%/.test(cssWidth))						{lightboxWidth=(windowWidth/100) * lightboxWidth;}		//Width en % de windowWidth
-			else if(lightboxWidth > windowWidth)		{lightboxWidth=windowWidth;}							//Width toujours <= windowWidth
-			lightboxContent.style.width =lightboxWidth+"px";													//Applique le width à lightboxContent
-			lightboxIframe.style.width  =lightboxWidth+"px";													//Applique le width à lightboxIframe
-			//// Height de la lightbox
+		//// Contenu/Iframe du lightbox
+		lightboxContent=window.top.document.querySelector(".fancybox__content");
+		lightboxIframe =window.top.document.querySelector(".fancybox__iframe");
+		if(isMainPage==false && lightboxIframe){
+			//// Width/Height de la lightbox
 			if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}							//Un seul timeout
-			lightboxTimeout=setTimeout(function(){																//Timeout le tps de finaliser les nombreux show() fadeIn() etc
+			lightboxTimeout=setTimeout(function(){																//Timeout le tps de lancer les show(), fadeIn(), etc. (tps supérieur à $.fx.speeds)
+				let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");				//Width en fonction de "#bodyLightbox" ("px" ou "%")
+				let lightboxWidth=parseInt(cssWidth);															//Width en Integer
+				if(Number.isInteger(lightboxWidth)==false) 	{lightboxWidth=650;}								//"max-width" non spécifié : 650px par défaut
+				if(/%/.test(cssWidth))						{lightboxWidth=(windowWidth/100) * lightboxWidth;}	//Width en % de windowWidth
+				else if(lightboxWidth > windowWidth)		{lightboxWidth=windowWidth;}						//Width toujours <= windowWidth
+				lightboxContent.style.width =lightboxWidth+"px";												//Applique le width à lightboxContent
+				lightboxIframe.style.width  =lightboxWidth+"px";												//Applique le width à lightboxIframe
 				let lightboxHeight=Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);	//Récupère le height du contenu
 				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){				//Ajuste le lightboxHeight si le height du document à augmenté
 					lightboxContent.style.height =lightboxHeight+"px";											//Applique le height à lightboxContent
 					lightboxIframe.style.height	 =lightboxHeight+"px";											//Applique le height à lightboxIframe
 					lightboxHeightLast=lightboxHeight;															//Enregistre le height
 				}
-			},400);
+			},150);
 		}
 	});
 }

@@ -84,7 +84,7 @@ function calendarDisplay(isPrint)
 
 		////	DERNIER JOUR DE LA SEMAINE : NUMERO DE SEMAINE DANS L'ANNEE + FIN DE LIGNE DE SEMAINE
 		if(date("N",$tmpDay["dayTimeBegin"])==7){
-			echo '<td class="vMonthWeekNbYear" onclick="redir(\'?ctrl=calendar&displayMode=week&curTime='.$tmpDay["dayTimeBegin"].'\')" '.Txt::tooltip(Txt::trad("CALENDAR_yearWeekNum")." ".date("W",$tmpDay["dayTimeBegin"])).'>'.date("W",$tmpDay["dayTimeBegin"]).'</td>
+			echo '<td class="vMonthWeekNbYear" onclick="redir(\'?ctrl=calendar&calendarDisplayMode=week&curTime='.$tmpDay["dayTimeBegin"].'\')" '.Txt::tooltip(Txt::trad("CALENDAR_yearWeekNum")." ".date("W",$tmpDay["dayTimeBegin"])).'>'.date("W",$tmpDay["dayTimeBegin"]).'</td>
 				</tr>';
 		}
 	}

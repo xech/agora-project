@@ -25,8 +25,8 @@ fieldset li					{line-height:25px;}
 	<!--LISTES DES INSCRIPTIONS D'USERS-->
 	<?php foreach(CtrlUser::userInscriptionValidate() as $tmpInsc){ ?>
 		<fieldset>
-			<input type="checkbox" name="inscriptionValidate[]" value="<?= $tmpInsc["_id"] ?>" id="inputInscription<?= $tmpInsc["_id"] ?>">
-			<label for="inputInscription<?= $tmpInsc["_id"] ?>">
+			<input type="checkbox" name="inscriptionValidate[]" value="<?= $tmpInsc["_id"] ?>" id="boxInscription<?= $tmpInsc["_id"] ?>">
+			<label for="boxInscription<?= $tmpInsc["_id"] ?>">
 				<?= $tmpInsc["name"].' '.$tmpInsc["firstName"] ?>
 				<ul>
 					<li><?= $tmpInsc["mail"] ?></li>
@@ -41,8 +41,8 @@ fieldset li					{line-height:25px;}
 	<div id="submitButtons">
 		<!--BOUTON D'INVALIDATION  &&  OPTION D'ENVOI DE NOTIFICATION PAR EMAIL-->
 		<div id="inscriptionNotify">
-			<input type="checkbox" name="inscriptionNotify" value="true" id="inputInscriptionNotify">
-			<label for="inputInscriptionNotify"><?= Txt::trad("EDIT_notifMail2") ?></label>
+			<input type="checkbox" name="inscriptionNotify" value="true" id="boxInscriptionNotify">
+			<label for="boxInscriptionNotify"><?= Txt::trad("EDIT_notifMail2") ?></label>
 		</div>
 		<!--BOUTON D'INVALIDATION  /  BOUTON DE VALIDATION-->
 		<div class="submitButtonInline"><button type="submit" name="submitInvalidate" value="true"><img src="app/img/delete.png"><?= Txt::trad("userInscriptionSelectInvalidate") ?></button></div>

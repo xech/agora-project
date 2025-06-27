@@ -8,7 +8,7 @@
 foreach($categoryList as $tmpCat){
 	$labelClass=($_idCategoryFilter==$tmpCat->_id)  ?  'optionSelect'  :  'option';
 	if(!empty($tmpCat->_id)){
-		$categoryTooltip=Txt::trad($tradPrefix."_CAT_menuTooltip").' <img src="app/img/arrowRight.png"> '.$tmpCat->getLabel().'<br>'.$tmpCat->description;
+		$categoryTooltip=Txt::trad($tradPrefix."_CAT_menuTooltip").' <img src="app/img/arrowRightSmall.png"> '.$tmpCat->getLabel().'<br>'.$tmpCat->description;
 	}else{
 		$categoryTooltip=Txt::trad($tradPrefix."_CAT_showAllTooltip");		
 		if($labelClass=="optionSelect")	{$labelClass.=' optionSelectAll';}

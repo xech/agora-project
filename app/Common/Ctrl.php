@@ -80,8 +80,8 @@ abstract class Ctrl
 			////	Init/Switch l'affichage administrateur
 			if(self::$curUser->isSpaceAdmin() && Req::isParam("displayAdmin")){
 				$_SESSION["displayAdmin"]=(bool)(Req::param("displayAdmin")=="true");
-				if($_SESSION["displayAdmin"]==true)		{Ctrl::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
-				else									{Ctrl::notify("HEADER_displayAdminDisabled");}
+				if($_SESSION["displayAdmin"]==true)		{self::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+				else									{self::notify("HEADER_displayAdminDisabled");}
 			}
 
 			////	Affichage des utilisateurs  &&  Charge l'objet courant
@@ -111,7 +111,7 @@ abstract class Ctrl
 		$connectViaCookieOld=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]));
 
 		////	CONNEXION D'UN USER
-		if(self::$curUser->isUser()==false && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true || $connectViaCookieOld==true))
+		if(self::$curUser->isGuest() && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true || $connectViaCookieOld==true))
 		{
 			////	CONNEXION VIA FORMULAIRE
 			if($connectViaForm==true){
@@ -145,17 +145,21 @@ abstract class Ctrl
 				self::$userJustConnected=true;
 				self::addLog("connexion");
 
-				//// Charge les preferences de l'user  &&  update "lastconnection" (connexion courante) + "previousconnection" (connexion précédente)
-				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)  {$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
+				//// Update "lastconnection" / "previousconnection" (connexion courante / précédente)
 				$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
 				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".self::$curUser->_id);
 
-				//// Reinitialise le token de connexion auto
-				if( ($connectViaForm==true && Req::isParam("rememberMe")) || $connectViaToken==true || $connectViaCookieOld==true)  {self::userAuthToken("create",self::$curUser->_id);}
+				//// Charge les preferences de l'user en session
+				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)
+					{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
 
-				//// Notif si l'user est connecté via une autre ip	=> Verif si l'Ip est utilisé hors 'mobile'
-				////////////////////////if(Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".Db::format($tmpUser["_id"])." AND `date`>".Db::format(time()-60)." AND ipAdress NOT LIKE ".Db::format($_SERVER["REMOTE_ADDR"])) > 0)
-				////////////////////////	{self::notify(Txt::trad("NOTIF_presentIp")." -> ".$_SERVER["REMOTE_ADDR"]);}
+				//// Reinitialise le token de connexion auto
+				if($connectViaToken==true || $connectViaCookieOld==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
+					{self::userAuthToken("create",self::$curUser->_id);}
+
+				//// Notif si le compte est connecté via une autre ip : controle des accès hors mobile => vérifier l'OS
+				////////////////////////////////////!!!!!!!!!!!!!!!!	if(Req::isMobile()==false  &&  Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".Db::format($tmpUser["_id"])." AND `date`>".Db::format(time()-60)." AND ipAdress NOT LIKE ".Db::format($_SERVER["REMOTE_ADDR"])) > 0)
+				////////////////////////////////////!!!!!!!!!!!!!!!!		{self::notify(Txt::trad("NOTIF_presentIp")." -> ".$_SERVER["REMOTE_ADDR"]);}
 			}
 			////	USER NON-AUTHENTIFIÉ
 			else{
@@ -246,37 +250,28 @@ abstract class Ctrl
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-TIME_1YEAR));
 	}
 
-	/********************************************************************************************************
-	 * RÉCUPÈRE UNE PRÉFÉRENCE  (tri des résultats/type d'affichage/etc)
-	 * Passé en parametre GET/POST ? Enregistre en BDD ?
-	 ********************************************************************************************************/
-	public static function prefUser($prefDbKey, $prefParamKey=null, $emptyValueEnabled=false)
+	/**********************************************************************************************************************
+	 * RÉCUPÈRE UNE PRÉFÉRENCE EN GET/POST OU BDD  (mode d'affichage, tri des résultats, etc)
+	 **********************************************************************************************************************/
+	public static function getPref($keyParam, $suffix=null)
 	{
-		//Clé identique en BDD et en GET-POST ?
-		if(empty($prefParamKey))  {$prefParamKey=$prefDbKey;}
-		//Préférence passé en Get/Post ?
-		if(Req::isParam($prefParamKey))										{$prefParamVal=Req::param($prefParamKey);}
-		elseif($emptyValueEnabled==true && Req::isParam("formValidate"))	{$prefParamVal="";}//Enregistre une valeur vide? (Ex: checkbox non cochée dans un formulaire)
-		//Enregistre si besoin la préférence  ("isset" pour aussi enregistrer les valeurs vides) 
-		if(isset($prefParamVal))
-		{
-			//Formate la valeur
-			if(is_array($prefParamVal))  {$prefParamVal=Txt::tab2txt($prefParamVal);}
-			//User : enregistre en Bdd
-			if(self::$curUser->isUser()){
-				Db::query("DELETE FROM ap_userPreference WHERE _idUser=".self::$curUser->_id." AND keyVal=".Db::format($prefDbKey));
-				Db::query("INSERT INTO ap_userPreference SET _idUser=".self::$curUser->_id.", keyVal=".Db::format($prefDbKey).", value=".Db::format($prefParamVal));
+		$keyBdd=(!empty($suffix))  ?  $keyParam."_".$suffix  :  $keyParam;	//Ajoute le suffixe d'un objet ou d'un type d'objet
+		if(Req::isParam($keyParam)){										//Valeur passé en GET/POST : enregistre/update en DB et SESSION
+			$value=Req::param($keyParam);									//Récup la valeur
+			if(is_array($value))  {$value=Txt::tab2txt($value);}			//Formate un array en txt
+			$_SESSION["pref"][$keyBdd]=$value;								//Enregistre/update en session
+			if(self::$curUser->isUser()){									//Delete/Insert en DB
+				Db::query("DELETE FROM ap_userPreference WHERE _idUser=".self::$curUser->_id." AND keyVal=".Db::format($keyBdd));
+				Db::query("INSERT INTO ap_userPreference SET   _idUser=".self::$curUser->_id.", keyVal=".Db::format($keyBdd).", `value`=".Db::format($value));
 			}
-			//Enregistre en session
-			$_SESSION["pref"][$prefDbKey]=$prefParamVal;
 		}
-		//retourne la preference
-		if(isset($_SESSION["pref"][$prefDbKey]))  {return $_SESSION["pref"][$prefDbKey];}
+		//Renvoie la pref en session
+		if(isset($_SESSION["pref"][$keyBdd]))  {return $_SESSION["pref"][$keyBdd];}
 	}
 
 	/********************************************************************************************************
      * GÉNÈRE UNE VUE  (cf. paramètres $datas)
-     *******************************************************************************************/
+     ********************************************************************************************************/
 	public static function getVue($filePath, $datas=array())
 	{
 		if(file_exists($filePath)){
@@ -308,7 +303,7 @@ abstract class Ctrl
 				$vDatasHeader["spaceListMenu"]=(count($vDatasHeader["spaceList"])>=2);
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
 				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
-				$vDatasHeader["moduleLabelDisplay"]=(!empty(Ctrl::$agora->moduleLabelDisplay) || Req::isMobile());
+				$vDatasHeader["moduleLabelDisplay"]=(!empty(self::$agora->moduleLabelDisplay) || Req::isMobile());
 				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
 				//Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
 				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}

@@ -22,7 +22,6 @@ ready(function(){
 .vDetails>div					{display:table-cell; vertical-align:middle;}
 .vDetails>div:last-child		{text-align:right;}
 .vLastMessage					{margin-top:10px;}
-.objBottomMenu div				{border-radius:10px;}/*surcharge*/
 
 /*Messages & citation de message : "quote"*/
 .vMessages						{border-left:5px solid #bbb; border-radius:8px;}
@@ -65,7 +64,7 @@ ready(function(){
 		{
 			echo '<div class="pathMenu miscContainer">
 					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.Txt::trad("FORUM_forumRoot").'</div>
-					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/arrowRightBig.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
+					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/arrowRight.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
 					</div>';
 		}
 
@@ -129,7 +128,7 @@ ready(function(){
 			}
 			//"Ajouter un message" en fin de page
 			if($curSubject->addContentRight() && Req::isMobile()==false)
-				{echo '<div class="objBottomMenu"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
+				{echo '<div class="objMenuBottom"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
 		}
 		?>
 	</div>

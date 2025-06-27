@@ -1,15 +1,16 @@
 <style>
-.vNavMenuDisabled	{opacity:0.4;}
+#menuPagination 					{padding:8px;}/*surcharge*/
+#menuPagination .vMenuPageDisabled	{opacity:0.4;}
+#menuPagination a					{display:inline-block; padding:10px 8px; border-radius:5px; font-size:1.1em;}
+#menuPagination a:hover, #menuPagination .linkSelect	{background-color:#eee;}
 </style>
 
-<div class="objBottomMenu">
-	<div class="miscContainer">
-		<?php
-		////	PRECEDENT / NUMÉROS DE PAGE / SUIVANT
-		echo '<a '.$prevAttr.'><img src="app/img/navPrev.png"></a>';
-		for($pageNbTmp=1; $pageNbTmp<=$pageNbTotal; $pageNbTmp++)
-			{echo '<a href="'.$hrefBase.$pageNbTmp.'" class="'.($pageNb==$pageNbTmp?"linkSelect":null).'" '.Txt::tooltip(Txt::trad("goToPage")." ".$pageNbTmp).'>'.$pageNbTmp.'</a>';}
-		echo '<a '.$nextAttr.'><img src="app/img/navNext.png"></a>';
-		?>
+<div class="objMenuBottom">
+	<div class="miscContainer" id="menuPagination">
+		<a <?= $pageUrlPrev ?> ><img src="app/img/arrowLeftNav.png"></a>
+		<?php for($pageNbTmp=1; $pageNbTmp<=$pageNbTotal; $pageNbTmp++){ ?>
+			<a href="<?= $pageUrl.$pageNbTmp ?>" class="<?= $pageNbTmp==$pageNbCur?'linkSelect':null ?>" <?=Txt::tooltip(Txt::trad("goToPage").' '.$pageNbTmp) ?> ><?= $pageNbTmp ?></a>
+		<?php } ?>
+		<a <?= $pageUrlNext ?> ><img src="app/img/arrowRightNav.png"></a>
 	</div>
 </div>

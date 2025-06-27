@@ -251,7 +251,7 @@ class Txt
 				if(!empty($timeBegin))	{$label.=$formatter->format($timeBegin);}																					//Label de début
 				if(!empty($timeEnd)){																																//Label de fin :
 					if($diffDays==false && $diffHours==true && $onlyDate==false)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}	//Même jour + diff heures	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)											{$label.='<img src="app/img/arrowRight.png"> '.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
+					elseif($diffDays==true)											{$label.='<img src="app/img/arrowRightSmall.png"> '.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
 					elseif(empty($timeBegin))										{$label.=Txt::trad("end").' : '.$formatter->format($timeEnd);}					//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 

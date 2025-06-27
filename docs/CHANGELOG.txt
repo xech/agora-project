@@ -4,30 +4,38 @@ CHANGELOG - JOURNAL DES VERSIONS
 --------------------------------
 
 
-VERSION 25.6.0
+VERSION 25.6.1
 ---------------
-Nouvelle visionneuse d'images (Rotation, Diaporama, Vignettes, etc)
-Simplification des menus d'édition des evenements et affectation aux agendas
+Amélioration du menu de sélection des agendas affichés
 Amélioration de la messagerie instantanée
-Optimisation de l'affichage responsive des menus contextuels/principaux
+Amélioration du menu de pagination
+Nouvelle visionneuse d'images (Rotation, Diaporama, Vignettes, etc)
+Simplification des éditions d'evenements et sélection/affectation aux agendas
+Optimisation de l'affichage des menus responsives
 Optimisation de la gestion des droits d'accès aux objets
 Optimisation de l'affichage de l'historique des emails
+Optimisation de la gestion des préférences en Bdd/Session
 Correction des propositions d'événement par les invités
 Correction de l'intégration des images d'emails reloadés
 Correction de l'affichage après suppression d'une version de fichier
+Correction de libellé de catégories d'événement par défaut
 Mise à jour majeure de Fancybox en v5.0.36
 Mise à jour de l'éditeur TinyMce en v7.9.1
 Mise à jour de PHPMailer en v6.10.0
 -----
-New images viewer (Rotate, Slideshow, Thumbnails, etc)
-Simplification of event editing menus and assignment to calendars
+Improved menu for selecting displayed calendars
 Improved instant messaging display
-Optimized responsive display of contextual/main menus
+Improved pagination menu
+New images viewer (Rotate, Slideshow, Thumbnails, etc)
+Simplification of events editing and selection/affectation to calendars
+Optimized responsive menus display
 Optimization of object access rights management
 Optimization of email history display
+Optimization of preference management in DB/Session
 Fixed event proposals by guests
 Fixed integration of reloaded email images
 Fixed display after deleting a file version
+Fixed default event category labeling
 Fancybox major update to v5.0.36
 TinyMce editor update to v7.9.1
 PHPMailer updated to v6.10.0
@@ -867,7 +875,7 @@ VERSION 3.1.12 (09-2016)
 ------------------------
 Nouveau controle AJAX des droits d'accès sur les affections des dossiers
 Amélioration du controle de créneau horaire pour l'édition d'evenement des agendas
-Amélioration de la procédure de renvoi des coordonnées de connexion aux utilisateurs
+Amélioration de la procédure de renvoie des coordonnées de connexion aux utilisateurs
 Optimisations et corrections diverses
 
 

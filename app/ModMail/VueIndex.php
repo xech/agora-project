@@ -74,7 +74,7 @@ ready(function(){
 .vMailsMenu							{padding-left:5px!important; display:none;}
 .vMailsMenu.vMailsMenuDisplay		{display:block;}
 .vMailsMenu>div						{padding:7px;}
-.vMailsMenu img[src*=check]			{height:17px; margin-right:4px;}
+.vMailsMenu img[src*=check]			{margin-right:4px;}
 /*formulaire principal*/
 #pageContent [name='title']			{width:100%; height:35px; margin-bottom:20px;}
 #mailOptions						{display:table; width:100%; margin-top:20px;}
@@ -98,7 +98,7 @@ ready(function(){
 		<div id="moduleMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
 			<div id="recipientMainMenu" class="miscContainer" >
-				<div id="recipientLabel"><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRightBig.png"><hr></div>
+				<div id="recipientLabel"><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS & CONTACTS
 				foreach($containerList as $tmpContainer)
@@ -131,8 +131,8 @@ ready(function(){
 					////	BOUTON SWITCH LA SELECTION (5 pers. minimum)
 					if(count($tmpContainer->personList)>=5){
 						$boxSelector="'#mailsContainer".$tmpContainer->_typeId." input[name^=personList]'";
-						$tmpSwitchOption='<div onclick="$('.$boxSelector.').prop(\'checked\',false).trigger(\'click\')"><img src="app/img/check.png"> '.Txt::trad("selectAll").'</div>
-										  <div onclick="$('.$boxSelector.').trigger(\'click\')"><img src="app/img/check.png"> '.Txt::trad("selectSwitch").'</div>';
+						$tmpSwitchOption='<div onclick="$('.$boxSelector.').prop(\'checked\',false).trigger(\'click\')"><img src="app/img/checkAll.png"> '.Txt::trad("selectAll").'</div>
+										  <div onclick="$('.$boxSelector.').trigger(\'click\')"><img src="app/img/checkSwitch.png"> '.Txt::trad("selectSwitch").'</div>';
 					}
 					////	AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
 					echo '<div class="vMailsBlock" '.($tmpContainer::isFolder==true?'data-folderTreeLevel="'.$tmpContainer->treeLevel.'"':null).'>

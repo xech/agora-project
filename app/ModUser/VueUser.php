@@ -15,7 +15,7 @@
 
 	////	GROUPES D'UTILISATEURS
 	$groupsLabel=null;
-	foreach(MdlUserGroup::getGroups(null,$curObj) as $tmpGroup)  {$groupsLabel.="<img src='app/img/arrowRight.png'> ".$tmpGroup->title."<br>";}
+	foreach(MdlUserGroup::getGroups(null,$curObj) as $tmpGroup)  {$groupsLabel.="<img src='app/img/arrowRightSmall.png'> ".$tmpGroup->title."<br>";}
 	if(!empty($groupsLabel))  {echo "<div class='objField'><div><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";}
 	
 	////	ADMIN GENERAL/D'ESPACE

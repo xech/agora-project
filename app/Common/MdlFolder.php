@@ -35,21 +35,11 @@
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : DROIT D'ACCES AU DOSSIER
-	 ********************************************************************************************************/
-	public function accessRight()
-	{
-		//Dossier racine : access en lecture par défaut + ajout de contenu gere via "addContentRight()"
-		return $this->isRootFolder() ? 1 : parent::accessRight();
-	}
-
-	/********************************************************************************************************
-	 * SURCHARGE : DROIT D'AJOUTER DU CONTENU DANS LE DOSSIER
+	 * SURCHARGE : DROIT D'AJOUTER DU CONTENU DANS LE DOSSIER (RACINE/LAMBDA)
 	 ********************************************************************************************************/
 	public function addContentRight()
 	{
-		//Dossier racine : Admin / Users + "adminRootAddContent" est "false"
-		if($this->isRootFolder())	{return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}
+		if($this->isRootFolder())	{return (Ctrl::$curUser->isSpaceAdmin()  ||  (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(static::moduleName,"adminRootAddContent")==false));}
 		else						{return parent::addContentRight();}
 	}
 
@@ -201,7 +191,7 @@
 	 ********************************************************************************************************/
 	public function folderTree($accessRightMin=1, $curFolder=null, $treeLevel=0)
 	{
-		////	Arbo du dossier racine (arbo complete) : renvoi l'arbo en cache?
+		////	Arbo du dossier racine (arbo complete) : renvoie l'arbo en cache?
 		$isRootFolderTree=($this->_id==1 && $accessRightMin==1 && $treeLevel==0);					//Verif si on récupère l'arbo complete du dossier racine
 		if($isRootFolderTree==true){																//Idem
 			$rootFolderTreeSessKey="rootFolderTree_".static::objectType."_".Ctrl::$curSpace->_id;	//Clé de session de l'arbo root   (cf. module et espace courant)

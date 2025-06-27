@@ -264,7 +264,7 @@ class Trad extends Txt
 			"MAIL_hideRecipients"=>"Ocultar destinatarios",
 			"MAIL_hideRecipientsTooltip"=>"Poner todos los destinatarios en copia oculta. Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
 			"MAIL_addReplyTo"=>"pon mi correo en respuesta",
-			"MAIL_addReplyToTooltip"=>"Añadir mi correo electrónico en el campo ''Responder a''. Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
+			"MAIL_addReplyToTooltip"=>"Añadir mi correo electrónico en el campo ''Responder a'' <br><span style='font-size:1.5em'>&#9888;</span> Tenga en cuenta que con esta opción su correo electrónico puede llegar en spam en algunas mensajerías",
 			"MAIL_noFooter"=>"No firme el mensaje",
 			"MAIL_noFooterTooltip"=>"No firme el final del mensaje con el nombre del remitentey un enlace al espacio",
 			"MAIL_receptionNotif"=>"Confirmación de entrega",
@@ -279,7 +279,7 @@ class Trad extends Txt
 			"MAIL_fromTheSpace"=>"desde el espacio",
 			"MAIL_elemCreatedBy"=>"--OBJLABEL-- creado por",
 			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modificado por",
-			"MAIL_elemAccessLink"=>"Haga clic aquí para acceder al elemento en el espacio",
+			"MAIL_elemAccessLink"=>"Ver en mi espacio",
 
 			////	Dossier & fichier
 			"gigaOctet"=>"GB",
@@ -807,7 +807,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editInfo"=>"Cada categoría de evento puede ser modificada por su autor o por el administrador general",
 			"CALENDAR_CAT_editAdd"=>"Añadir una categoría de evento",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Los usuarios que no hayan desactivado su calendario personal en su perfil de usuario seguirán viendo el módulo Calendario en la barra de menú.",
-			"CALENDAR_calsList"=>"Calendarios disponibles",
+			"CALENDAR_readableCalendars"=>"Calendarios disponibles",
 			"CALENDAR_hideAllCals"=>"Ocultar todo los calendarios",
 			"CALENDAR_printCalendars"=>"Imprimir el/los calendarios",
 			"CALENDAR_printCalendarsInfos"=>"imprimir la página en modo horizontal",

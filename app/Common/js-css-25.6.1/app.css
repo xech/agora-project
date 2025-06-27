@@ -84,7 +84,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objMenuContextFloat							{position:absolute; z-index:50; top:7px; right:3px;}							/*Launcher du menu context : Icone "burger" par défaut*/
 .objContainer:not(:hover) .objMenuContextFloat	{opacity:0.75;}																	/*Launcher opaque par défaut (pas moins de 0.75 : cf. images du module fichier)*/
 .objContainer:not(:hover) .objMenuMiscHide		{display:none;}																	/*Masque les .objMenuMiscHide, sauf au survol du ".objContainer"*/
-.objContainer.isSelectable						{cursor:url("../../img/checkSmall.png"),default;}								/*Curseur des elements selectionnables*/
+.objContainer.isSelectable						{cursor:url("../../img/check.png"),default;}									/*Curseur des elements selectionnables*/
 .objSelectCheckbox								{display:none;}																	/*input hidden de sélection/désélection d'objet*/
 .objMenuMisc									{position:absolute; z-index:50; top:35px; right:3px; width:35px; text-align:right;}	/*Likes + Comments + Files + persoAccess*/
 .objMenuMisc>div								{display:inline-block; margin:4px;}												/*'margin-left' pour l'affichage .objLines*/
@@ -98,6 +98,8 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .attachedFileTag								{max-width:100%;}																/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
 video.attachedFileTag							{min-width:600px; min-height:400px;}											/*Vidéo*/
 audio.attachedFileTag							{min-height:100px;}																/*Mp3*/
+.objMenuBottom									{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
+.objMenuBottom>.miscContainer					{display:inline-block; padding:15px; border-radius:10px;}
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.objMenuContextFloat						{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
@@ -106,7 +108,7 @@ audio.attachedFileTag							{min-height:100px;}																/*Mp3*/
 	video.attachedFileTag						{min-width:350px;}							/*vidéo*/
 }
 
-/*** MENUS DES MODULES & MENUS CONTEXTUELS*/
+/*** MENUS CONTEXTUELS & MENUS DE GAUCHE DES MODULES*/
 .menuLine									{display:table; width:100%;}
 .menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
 .menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
@@ -126,12 +128,6 @@ audio.attachedFileTag							{min-height:100px;}																/*Mp3*/
 	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
 	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
 }
-
-/*** MENUS CENTRÉS ("Ajouter un element" ou Menu de pagination)*/
-.objBottomMenu								{clear:both; text-align:center; padding-top:20px;}/*clear le "float" des "objBlocks"*/
-.objBottomMenu>.miscContainer				{display:inline-block; padding:15px 30px;}
-.objBottomMenu .linkSelect					{font-size:1.1em;}
-.objBottomMenu a							{margin-left:5px; margin-right:5px;}
 
 /*** INPUTS*/
 input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:33px; max-width:100%; padding:4px; border-radius:3px; outline:none; font-weight:normal; font-size:inherit; font-family:inherit; box-sizing:border-box;}/*"box-sizing" pour intégrer les padding/border dans le "height"*/
@@ -282,8 +278,8 @@ select option										{font-size:1.15em;}
 .pathMenuAdd					{width:65px; padding-left:10px!important;}
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle;}
-.categoryColor					{display:inline-block; width:15px; height:15px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
-.categoryColorAll				{border:solid #bbb 2px;}
+.categoryColor					{display:inline-block; width:14px; height:14px; border:solid transparent 1px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
+.categoryColorAll				{border:solid #aaa 1px;}
 .orLabel						{display:table; width:100%; margin:30px 0px;}
 .orLabel div					{display:table-cell; width:45%; text-align:center;}
 .orLabel div:nth-child(2)		{width:10%; min-width:50px; opacity:0.5; text-transform:uppercase;}/*texte "OU"*/

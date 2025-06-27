@@ -62,7 +62,7 @@
 	}
 
 	/********************************************************************************************************
-	 * SQL : INIT LE FILTRE DES CATEGORIES ET RENVOI LA SELECTION SQL
+	 * SQL : INIT LE FILTRE DES CATEGORIES ET RENVOIE LA SELECTION SQL
 	 ********************************************************************************************************/
 	public static function sqlCategoryFilter()
 	{
