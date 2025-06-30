@@ -230,6 +230,7 @@
 		if(Ctrl::$curContainer->isRootFolder()==false || !empty($addElemLabel)){
 			$vDatas["addElemLabel"]=$addElemLabel;
 			$vDatas["addElemUrl"]=$addElemUrl;
+			$vDatas["curFolder"]=Ctrl::$curContainer;
 			return Ctrl::getVue(Req::commonPath."VueFolderPath.php", $vDatas);
 		}
 	}

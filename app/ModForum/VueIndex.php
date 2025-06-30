@@ -60,11 +60,10 @@ ready(function(){
 	<div id="pageContent">
 		<?php
 		////	SUJET COURANT : MENU "RETOUR VERS L'ACCUEIL"
-		if($forumDisplay=="suject")
-		{
+		if($forumDisplay=="suject"){
 			echo '<div class="pathMenu miscContainer">
 					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.Txt::trad("FORUM_forumRoot").'</div>
-					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/arrowRight.png">&nbsp;<img src="app/img/plus.png"></div>' : null).'
+					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/plus.png"></div>' : null).'
 					</div>';
 		}
 

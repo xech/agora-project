@@ -134,6 +134,7 @@ function moduleDisplay()
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{text-align:right; width:500px;}/*Largeur fixe*/
 .vCalHeaderRight>span							{margin-left:8px;}
+.vCalHeaderRight button							{height:37px; border-radius:8px;}
 .vCalLabelDays									{height:25px; padding:4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
@@ -295,11 +296,6 @@ function moduleDisplay()
 				
 				<!--PROPOSER/AJOUTER UN EVT  &  "AUJOURD'HUI"  &  AFFICHAGE MONTH/WEEK/ETC-->
 				<div class="vCalHeaderRight">
-					<?php if($tmpCal->affectationAddRight()){ ?>
-					<span onclick="lightboxOpen('<?= MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id ?>')" <?= $tmpCal->addEvtTooltip ?> >
-						<?= Req::isMobile() ? '<img src="app/img/plusSmall.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
-					</span>
-					<?php } ?>
 					<span onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')" <?= Txt::tooltip("displayToday") ?> >
 						<?= Req::isMobile() ? '<img src="app/img/calendar/displayToday.png">' : '<button>'.Txt::trad("today").'</button>' ?>
 					</span>
@@ -313,6 +309,11 @@ function moduleDisplay()
 						</div>
 						<?php } ?>
 					</div>
+					<?php if($tmpCal->affectationAddRight()){ ?>
+					<span onclick="lightboxOpen('<?= MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id ?>')" <?= $tmpCal->addEvtTooltip ?> >
+						<?= Req::isMobile() ? '<img src="app/img/plusSmall.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
+					</span>
+					<?php } ?>
 				</div>
 			</div>
 			<!-- VUE MONTH / WEEK DE L'AGENDA (Cf "VueCalendarMonth"/"VueCalendarWeek")-->

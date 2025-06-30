@@ -76,7 +76,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 	.objContainer									{width:100%; margin:0px 0px 7px 0px; border-radius:0px!important;}			/*tester affichage de news, fichiers et agendas*/
 	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
 	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller sur mobile*/
-	.objIcon										{width:70px!important;}
+	.objIcon										{width:60px!important;}														/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
 	.objIconOpacity, .objDetails, .objAutorDate		{display:none!important;}													/*toujours masqué*/
 }
 
@@ -274,8 +274,8 @@ select option										{font-size:1.15em;}
 .pathMenu						{display:table; padding:5px 10px; margin-bottom:10px;}
 .pathMenu img					{max-height:30px;}
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
-.pathMenuHome					{width:auto;}
-.pathMenuAdd					{width:65px; padding-left:10px!important;}
+.pathMenu>div:first-child		{width:50px; white-space:nowrap;}/*icone de dossier ou "top"*/
+.pathMenuAdd					{width:50px; text-align:right;}/*icone d'ajout d'element*/
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle;}
 .categoryColor					{display:inline-block; width:14px; height:14px; border:solid transparent 1px; border-radius:50%; margin-right:5px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
