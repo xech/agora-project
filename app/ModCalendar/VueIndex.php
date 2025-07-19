@@ -91,7 +91,7 @@ function moduleDisplay()
 /*Menu du module (gauche)*/
 #eventPropositionPulsate						{float:right; margin:-10px;}
 .eventProposition								{padding:10px; margin-top:10px;}
-#readableCalendarsForm							{max-height:400px; overflow-y:auto;}
+#readableCalendarsForm							{max-height:450px; overflow-y:auto;}
 #readableCalendarsTitle 						{margin-bottom:10px;}
 #readableCalsAdmin								{float:right;}
 #readableCalendarsForm:not(:hover) #readableCalsAdmin {visibility:hidden;}

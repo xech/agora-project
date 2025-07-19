@@ -23,8 +23,6 @@ class MdlCalendar extends MdlObject
 	public static $isUserDelete=false;
 	//Valeurs en cache
 	private static $_readableCals=null;
-	private static $_displayedCals=null;
-	private static $_displayedCalsIds=[];
 	private static $_affectationCals=null;
 
 
@@ -224,49 +222,28 @@ class MdlCalendar extends MdlObject
 	 ********************************************************************************************************/
 	public static function readableCalendars()
 	{
-		////	Agendas de ressource  &&  Agendas personnels (enabled)  &&  Agenda de l'user
+		////	Agendas de ressource  &&  Agendas persos activés
 		if(self::$_readableCals===null){
 			$sqlDisplay=self::sqlDisplay();
 			$ressourceCals	=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='ressource' AND ".$sqlDisplay);
 			$persoCals		=Db::getObjTab("calendar","SELECT DISTINCT * FROM ap_calendar WHERE type='user' AND (".$sqlDisplay." OR _idUser=".Ctrl::$curUser->_id.") AND _idUser NOT IN (select _id from ap_user where calendarDisabled=1)");
 			self::$_readableCals=self::sort(array_merge($ressourceCals,$persoCals));
 		}
-		return self::$_readableCals;
-	}
-
-	/********************************************************************************************************
-	 * AGENDAS ACTUELLEMENT AFFICHÉS
-	 ********************************************************************************************************/
-	public static function displayedCalendars()
-	{
-		////	Agendas en préférence  ||  Agenda de l'espace/perso (par défaut)
-		if(self::$_displayedCals===null){
-			self::$_displayedCals=[];
-			$prefCalendars=Txt::txt2tab(Ctrl::getPref("displayedCalendars"));
-			foreach(self::readableCalendars() as $tmpCal){
-				if(in_array($tmpCal->_id,$prefCalendars)  ||  (empty($prefCalendars) && ($tmpCal->isMainCalendar()))){
-					self::$_displayedCals[]=$tmpCal;
-					self::$_displayedCalsIds[]=$tmpCal->_id;
-					if(empty($prefCalendars))  {break;}//Pas de préférence : prends le 1er agenda principal
-				}
-			}
-			//// Supprime les evt passés (>10ans)
-			if(empty($_SESSION["calendarsCleanEvt"])){
-				$timeMin=time()-(TIME_1YEAR*50);
-				$timeMax=time()-(TIME_1YEAR*10);
-				$_SESSION["calendarsCleanEvt"]=true;
-				foreach(self::$_displayedCals as $tmpCal){
-					if($tmpCal->editContentRight()){
-						foreach($tmpCal->evtList($timeMin,$timeMax,1) as $tmpEvt){
-							if($tmpEvt->isPastEvent($timeMax))  {$tmpEvt->delete();}
-						}
+		////	Delete les evts de + de 10ans (admin général)
+		if(empty($_SESSION["calendarsCleanEvt"]) && Ctrl::$curUser->isGeneralAdmin()){
+			$timeMin=time()-(TIME_1YEAR*50);
+			$timeMax=time()-(TIME_1YEAR*10);
+			$_SESSION["calendarsCleanEvt"]=true;
+			foreach(self::$_readableCals as $tmpCal){
+				if($tmpCal->editContentRight()){
+					foreach($tmpCal->evtList($timeMin,$timeMax,1) as $tmpEvt){
+						if($tmpEvt->isPastEvent($timeMax))  {$tmpEvt->delete();}
 					}
 				}
 			}
-			////	Tri à nouveau les agendas
-			self::$_displayedCals=self::sort(self::$_displayedCals);
 		}
-		return self::$_displayedCals;
+		////	Renvoi les agendas triés
+		return self::sort(self::$_readableCals);
 	}
 
 	/********************************************************************************************************
@@ -296,17 +273,15 @@ class MdlCalendar extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * TRI DES AGENDAS PAR TYPE & TITLE
+	 * TRI DES AGENDAS PAR TYPE + TITLE
 	 ********************************************************************************************************/
 	public static function sort($calendarList)
 	{
 		////	Créé un "sortField" pour le tri
 		foreach($calendarList as $tmpCal){
-			$tmpCal->isDisplayed=in_array($tmpCal->_id,self::$_displayedCalsIds);
-			if($tmpCal->isDisplayed==true)		{$tmpCal->sortField="A__".$tmpCal->title;}	//Agenda affiché
-			elseif($tmpCal->isMainCalendar())	{$tmpCal->sortField="B__".$tmpCal->title;}	//Agenda de l'espace courant / agenda perso
-			elseif($tmpCal->type=="user")		{$tmpCal->sortField="C__".$tmpCal->title;}	//Agenda d'user
-			else								{$tmpCal->sortField="D__".$tmpCal->title;}	//Agenda de ressource
+			if($tmpCal->isMainCalendar())	{$tmpCal->sortField="A__".$tmpCal->title;}	//Agenda principal
+			elseif($tmpCal->type=="user")	{$tmpCal->sortField="B__".$tmpCal->title;}	//Agendas d'user
+			else							{$tmpCal->sortField="C__".$tmpCal->title;}	//Agendas de ressource
 		}
 		////	Tri alphabetique via "sortField" ("strcmp()" : comparaison binaire de chaînes, sensible à la casse)
 		usort($calendarList,function($objA,$objB){

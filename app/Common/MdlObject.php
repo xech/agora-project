@@ -618,7 +618,7 @@ class MdlObject
 		$conditions=(is_object($containerObj))  ?  ["_idContainer=".$containerObj->_id]  :  [];
 		////	Selection en fonction des droits d'acces (cf. "ap_objectTarget" et $_hasAccessRight)   ||  Selectionne les objets d'une arbo (toute l'arbo si $containerObj==null ou isRootFolder()==true)
 		if(static::$_hasAccessRight==true  ||  (static::isFolderContent==true && ($containerObj==null || $containerObj->isRootFolder()))){
-			$sqlTargets=(empty($_SESSION["displayAdmin"]))  ?  "and `target` in (".static::sqlAffectations().")"  :  null;//Sélection en fonction des droits d'acces || Sélectionne tout si "displayAdmin==true"
+			$sqlTargets=(!empty($_SESSION["displayAdmin"]) && Ctrl::$curUser->isSpaceAdmin())  ?  null  :  "and `target` in (".static::sqlAffectations().")";//Sélection "displayAdmin" || en fonction des droits d'acces
 			$conditions[]=$_idKey." IN (select _idObject as ".$_idKey." from ap_objectTarget where objectType='".static::objectType."' and _idSpace=".Ctrl::$curSpace->_id." ".$sqlTargets.")";
 		}
 		////	Fusionne toutes les conditions avec "AND"  ||  Sélection par défaut (pour pas retourner d'objet ni d'erreur sql)
@@ -628,7 +628,7 @@ class MdlObject
 			$MdlObjectContainer=static::MdlObjectContainer;
 			$sqlDisplay="(".$sqlDisplay." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
 		}
-		////	Renvoie le résultat (avec des espaces avant/après!)
+		////	Renvoie le résultat (avec des espaces avant/après)
 		return " ".$sqlDisplay." ";
 	}
 

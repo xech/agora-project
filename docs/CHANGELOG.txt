@@ -4,7 +4,7 @@ CHANGELOG - JOURNAL DES VERSIONS
 --------------------------------
 
 
-VERSION 25.6.2
+VERSION 25.6.3
 ---------------
 Amélioration du menu de sélection des agendas affichés
 Amélioration de la messagerie instantanée

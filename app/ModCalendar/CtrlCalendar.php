@@ -78,11 +78,19 @@ class CtrlCalendar extends Ctrl
 			$vDatas["monthsYearsMenu"].='<a onclick="redir(\'?ctrl=calendar&curTime='.$yearTime.'\')" class="'.(date('Y',$curTime)==$yearNb?'optionSelect':'option').'">'.$yearNb.'</a>';
 		}
 
-		////	AGENDAS AFFICHES  &&  AGENDAS DISPONIBLES ("readable" / "affectation" pour les admins)
+		////	AGENDAS DISPONIBLES  +  AGENDAS AFFICHÉS
 		$vDatas["readableCalendars"]=(empty($_SESSION["displayAdmin"]))  ?  MdlCalendar::readableCalendars()  :  MdlCalendar::affectationCalendars();
-		$vDatas["displayedCalendars"]=MdlCalendar::displayedCalendars();
+		$vDatas["displayedCalendars"]=[];
+		$prefCalendars=Txt::txt2tab(Ctrl::getPref("displayedCalendars"));
+		foreach($vDatas["readableCalendars"] as $tmpCal){
+			//Ajoute l'agenda si dans les préférence ou c'est un agenda principal
+			if(in_array($tmpCal->_id,$prefCalendars)  ||  (empty($prefCalendars) && ($tmpCal->isMainCalendar()))){
+				$tmpCal->isDisplayed=true;
+				$vDatas["displayedCalendars"][]=$tmpCal;
+			}
+		}
 
-		////	AGENDAS AFFICHES : RECUPERE LA VUE (VueCalendarMonth/VueCalendarWeek)  &&  LISTE DES EVENEMENTS
+		////	AGENDAS AFFICHÉS : RECUPÈRE LA VUE (VueCalendarMonth/VueCalendarWeek)  &&  LISTE DES EVENEMENTS
 		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal){
 			//// AJOUT/PROPOSITION D'EVT
 			if($tmpCal->addContentRight())			{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_addEvtTooltip");}

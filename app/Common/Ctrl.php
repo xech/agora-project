@@ -77,11 +77,11 @@ abstract class Ctrl
 					{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
 			}
 
-			////	Init/Switch l'affichage administrateur
+			////	Switch l'affichage administrateur
 			if(self::$curUser->isSpaceAdmin() && Req::isParam("displayAdmin")){
-				$_SESSION["displayAdmin"]=(bool)(Req::param("displayAdmin")=="true");
-				if($_SESSION["displayAdmin"]==true)		{self::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
-				else									{self::notify("HEADER_displayAdminDisabled");}
+				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
+				if($_SESSION["displayAdmin"]==true)	{self::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+				else								{self::notify("HEADER_displayAdminDisabled");}
 			}
 
 			////	Affichage des utilisateurs  &&  Charge l'objet courant
