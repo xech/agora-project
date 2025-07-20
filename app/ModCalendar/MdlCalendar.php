@@ -143,20 +143,18 @@ class MdlCalendar extends MdlObject
 	{
 		////	EVT AFFECTÉS À L'AGENDA COURANT ET CONFIRMÉS (INIT LA SELECTION)
 		$sqlSelection="_id IN (SELECT _idEvt FROM ap_calendarEventAffectation WHERE _idCal=".$this->_id." AND confirmed=1)";
-		////	EVT DANS LA DURÉE/PERIODE  (début d'evt dans la période || fin d'evt dans la période || evt avant et après la période)  &&  EVT RÉCURRENTS (evt commence avant la période && (pas de fin de récurrence || fin de récurrence après/pendant la période))
+		////	EVT DANS LA DURÉE/PERIODE  (début d'evt dans la période || fin d'evt dans la période || evt avant et après la période || evt récurrent : commence avant la période et (pas de fin de récurrence ou fin de récurrence après la période))
 		$durationSelection=(!empty($durationBegin) && !empty($durationEnd));
 		if($durationSelection==true){
-			$sqlDurBegin	=Db::format(date("Y-m-d H:i:00",$durationBegin));
-			$sqlDurEnd		=Db::format(date("Y-m-d H:i:59",$durationEnd));
-			$sqlBeginEnd	='((dateBegin BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateEnd BETWEEN '.$sqlDurBegin.' AND '.$sqlDurEnd.') OR (dateBegin <= '.$sqlDurBegin.' AND dateEnd >= '.$sqlDurEnd.'))';
-			$sqlRecurrent	='(periodType is not null AND dateBegin <= '.$sqlDurBegin.' AND (periodDateEnd IS NULL OR periodDateEnd >= '.$sqlDurBegin.'))';
-			$sqlSelection.=" AND (".$sqlBeginEnd." OR ".$sqlRecurrent.") ";
+			$sqlBegin =Db::format(date("Y-m-d H:i:00",$durationBegin));
+			$sqlEnd	  =Db::format(date("Y-m-d H:i:59",$durationEnd));
+			$sqlSelection.=" AND (  (dateBegin BETWEEN ".$sqlBegin." AND ".$sqlEnd.")  OR  (dateEnd BETWEEN ".$sqlBegin." AND ".$sqlEnd.")  OR  (dateBegin <= ".$sqlBegin." AND dateEnd >= ".$sqlEnd.")  OR  (periodType is not null AND dateBegin <= ".$sqlBegin." AND (periodDateEnd IS NULL OR periodDateEnd >= ".$sqlBegin."))  ) ";
 		}
 		////	EVT D'UNE CERTAINE CATEGORIE  ||  EVT DU PLUGIN (search/dashboard/shortcut)
 		if(!empty($categoryFilter))		{$sqlSelection.=MdlCalendarCategory::sqlCategoryFilter();}
 		elseif(!empty($pluginParams))	{$sqlSelection.=" AND ".MdlCalendarEvent::sqlPlugins($pluginParams);}
-		////	RECUPERE LES EVTS && FILTRE EN FONCTION DU DROIT D'ACCÈS
-		$eventList=Db::getObjTab("calendarEvent", "SELECT * FROM ap_calendarEvent WHERE ".$sqlSelection." ORDER BY dateBegin ASC, dateEnd DESC");//"dateEnd DESC" : récup les evts les plus long en 1er si 2 evt commencent en même tps (cf. display "week")
+		////	RECUPERE LES EVTS FILTRÉS EN FONCTION DU DROIT D'ACCÈS
+		$eventList=Db::getObjTab("calendarEvent", "SELECT * FROM ap_calendarEvent WHERE ".$sqlSelection." ORDER BY dateBegin ASC, dateEnd DESC");//"dateEnd DESC" : evts + long en 1er si 2 evt commencent en même tps (display "week")
 		foreach($eventList as $keyEvt=>$tmpEvt){
 			if($tmpEvt->accessRight() < $accessRightMin)  {unset($eventList[$keyEvt]);}
 		}

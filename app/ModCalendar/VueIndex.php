@@ -90,15 +90,14 @@ function moduleDisplay()
 
 /*Menu du module (gauche)*/
 #eventPropositionPulsate						{float:right; margin:-10px;}
-.eventProposition								{padding:10px; margin-top:10px;}
+.eventProposition								{padding:5px; margin-top:5px;}
+.eventProposition hr							{margin:5px;}
 #readableCalendarsForm							{max-height:450px; overflow-y:auto;}
 #readableCalendarsTitle 						{margin-bottom:10px;}
 #readableCalsAdmin								{float:right;}
 #readableCalendarsForm:not(:hover) #readableCalsAdmin {visibility:hidden;}
 .readableCalendar input							{display:none;}
-.readableCalendar label							{display:block; padding:4px; margin-block:2px;}/*Label des agendas*/
-#menuCategory>div								{margin:10px 0px;}
-#menuCategory>div .linkSelect					{font-style:italic;}
+.readableCalendar label							{display:block; padding:4px; margin:2px;}/*Label des agendas : cf ".option"*/
 #datepickerCalendar								{margin-top:20px; margin-bottom:10px;}
 .ui-datepicker									{box-shadow:none;}/*Datepicker*/
 .ui-datepicker thead							{display:none;}/*pas de libellé des jours*/

@@ -967,7 +967,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` tinyint DEFAULT NULL AFTER `periodDateExceptions`");
 			}
 
-			if(self::updateVersion("25.6.3"))
+			if(self::updateVersion("25.6.4"))
 			{
 				//// Remplace les tags  <a href="xxxx" data-fancybox="images">  par  <a data-src="xxxx" data-fancybox="images">  (cf Fancybox v5)
 				foreach(["ap_calendarEvent","ap_dashboardNews","ap_dashboardPoll","ap_forumMessage","ap_forumSubject","ap_mail","ap_task"] as $tableName){

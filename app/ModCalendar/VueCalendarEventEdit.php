@@ -144,8 +144,10 @@ input[name='guestMail']				{margin-left:20px;}
 /*AFFECTATION AUX AGENDAS*/
 #calAffectationsOverflow			{max-height:500px; overflow-y:auto;}
 .vCalAffectation					{display:inline-block; width:32%; margin:2px;}
-.vCalAffectation input				{display:none;}
-.vCalAffectation label				{display:block; padding:3px;}
+.vCalAffectation .vCalInput			{display:none;}
+.vCalAffectation label				{display:inline-block; margin:3px; width:80%;}/*label rattaché à ".vCalInput"*/
+.vCalAffectation .vCalProposeOption						{float:right; margin:3px;}/*Option de proposition d'evt*/
+.vCalAffectation:not(.optionSelect) .vCalProposeOption	{display:none;}/*masque l'input de proposition si l'agenda n'est pas sélectionné*/
 
 /*AFFICHAGE DE "timeSlotBusy"*/
 #timeSlotBusy						{display:none;}
@@ -274,9 +276,14 @@ input[name='guestMail']				{margin-left:20px;}
 		<div id="calAffectationsOverflow">
 			<!--AGENDAS DE RESSOURCES & AGENDAS PERSONNELS-->
 			<?php foreach($affectationCalendars as $tmpCal){ ?>
-				<div class="vCalAffectation option" <?= Txt::tooltip($tmpCal->tooltip) ?> >
+				<div class="vCalAffectation option">
+					<!--AFFECTATION A L'AGENDA-->
 					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="box<?= $tmpCal->_typeId ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
-					<label for="box<?= $tmpCal->_typeId ?>"><?= ($tmpCal->type=="ressource"?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					<label for="box<?= $tmpCal->_typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->type=="ressource"?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					<!--OPTION DE PROPOSITION-->
+					<?php if($tmpCal->proposeOption==true){ ?>
+					<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> class="vCalProposeOption" <?= Txt::tooltip("CALENDAR_proposeOptionTooltip") ?>>
+					<?php } ?>
 				</div>
 			<?php } ?>
 			<!--SWITCH LA SELECTION D'UN GROUPE D'USERS-->

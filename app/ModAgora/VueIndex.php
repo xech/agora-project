@@ -63,7 +63,7 @@ ready(function(){
 <style>
 /*Menu context de gauche*/
 .vAgoraVersion					{text-align:center; margin-top:10px;}
-.vButtonLogs, .vButtonBackup	{width:100%; margin-block:10px; height:45px; text-align:left;}
+.vButtonLogs, .vButtonBackup	{width:90%; height:45px; margin:15px; text-align:left; border-radius:10px;}
 #moduleMenu img					{max-height:25px; margin-right:10px;}
 #moduleMenu hr					{margin:20px 0px;}
 

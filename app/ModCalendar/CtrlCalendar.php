@@ -127,9 +127,10 @@ class CtrlCalendar extends Ctrl
 		$vDatas["proposedEvents"]=[];
 		foreach(MdlCalendar::readableCalendars() as $tmpCal){
 			if($tmpCal->editContentRight()){
-				foreach(Db::getObjTab("calendarEvent","SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed is null AND T2._idCal=".$tmpCal->_id) as $tmpEvt){
-					if($tmpEvt->isPastEvent(time()-5184000))  {$tmpEvt->affectationDelete($tmpCal->_id);}					//Supprime la proposition si > 60 jours
-					else{																									//Ajoute la proposition d'evt avec les détails pour la confirmation
+				$proposedEvents=Db::getObjTab("calendarEvent", "SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed is null AND T1._idUser!=".Ctrl::$curUser->_id." AND T2._idCal=".$tmpCal->_id);
+				foreach($proposedEvents as $tmpEvt){
+					if($tmpEvt->isPastEvent(time()-5184000))  {$tmpEvt->affectationDelete($tmpCal->_id);}	//Supprime la proposition si > 60 jours
+					else{																					//Ajoute la proposition d'evt avec les détails pour la confirmation
 						$propDetails=$tmpEvt->title.'<hr>'.Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd);
 						$confirmDetails=htmlspecialchars($propDetails,ENT_COMPAT).'<hr>'.ucfirst(Txt::trad("OBJECTcalendar")).' : '.$tmpCal->title.'<hr>'.Txt::trad("CALENDAR_evtProposedBy").' '.$tmpEvt->autorDate();
 						if($tmpEvt->description)  {$confirmDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}
@@ -138,7 +139,7 @@ class CtrlCalendar extends Ctrl
 				}
 			}
 		}
-	
+
 		////	SYNTHESE DES AGENDAS (SI + D'UN AGENDA)
 		if(count($vDatas["displayedCalendars"])>1 && Req::isMobile()==false){
 			$vDatas["periodSynthese"]=[];																													//Jours à afficher pour la synthese
@@ -255,7 +256,7 @@ class CtrlCalendar extends Ctrl
 			$alreadyConfirmedCals=[];
 			if($curObj->isNewRecord()==false){
 				foreach(MdlCalendar::affectationCalendars() as $tmpCal){												//Agendas dispos pour les affectations
-					if($curObj->isAffectedCalendar($tmpCal,true))	{$alreadyConfirmedCals[]=$tmpCal;}					//Incrémente la liste des affectations confirmées (cf. agendas en lecture avec proposition confirmée)
+					if($curObj->isAffectedCalendar($tmpCal,true))	{$alreadyConfirmedCals[]=$tmpCal->_id;}				//Incrémente la liste des affectations confirmées (cf. agendas en lecture avec proposition confirmée)
 					if($curObj->isAffectedCalendar($tmpCal))		{$curObj->affectationDelete($tmpCal->_id,true);}	//Supprime l'affectation (Confirmation/Proposition)
 				}
 			}
@@ -264,7 +265,8 @@ class CtrlCalendar extends Ctrl
 			foreach(Req::param("affectationCalendars") as $tmpId){
 				$tmpCal=Ctrl::getObj("calendar",$tmpId);																											//Récupère l'agenda
 				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){																							//Verif si l'evt peut être affecté à cet agenda
-					$isConfirmed=($tmpCal->addContentRight() || in_array($tmpCal,$alreadyConfirmedCals));															//Agenda accessible en écriture / Proposition déjà confirmée
+					$proposeOptionChecked=(Req::isParam("proposeOptionCalendars") && in_array($tmpId,Req::param("proposeOptionCalendars")));						//Option de proposition cochée
+					$isConfirmed=($proposeOptionChecked==false && ($tmpCal->addContentRight() || in_array($tmpId,$alreadyConfirmedCals)));							//Agenda accessible en écriture / Proposition déjà confirmée
 					Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$tmpCal->_id.", confirmed=".Db::format($isConfirmed));	//Affectation à l'agenda
 					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$_idUsersMail=array_merge($_idUsersMail,$tmpCal->affectedUserIds(true));}			//Notif d'une proposition pour les proprios de l'agenda
 				}
@@ -295,9 +297,10 @@ class CtrlCalendar extends Ctrl
 			if($tmpCal->_id==Req::param("_idCal") || $curObj->isAffectedCalendar($tmpCal))	{$tmpCal->inputAttr.=" checked";}								//Check si présélectionné / déjà affecté
 			if($tmpCal->type=="user")														{$tmpCal->inputAttr.=' data-idUser="'.$tmpCal->_idUser.'"';}	//Cf "userGroupSelect()"
 			$tmpCal->inputType=($tmpCal->addContentRight())  ?  "affectation"  :  "proposition";															//Affectation / proposition d'evt
-			$tmpCal->tooltip=($tmpCal->inputType=="proposition")  ?  Txt::trad("CALENDAR_proposeEvtTooltip")  :  Txt::trad("CALENDAR_addEvtTooltip2");		//Tooltip : "Proposer l'événement" / "Ajouter l'événement"
-			if(!empty($tmpCal->description))  {$tmpCal->tooltip.="<hr>".$tmpCal->description;}																//Tooltip : description de l'agenda
+			$tmpCal->tooltip=($tmpCal->inputType=="proposition")  ?  Txt::trad("CALENDAR_proposeEvtTooltip")  :  Txt::trad("CALENDAR_addEvtTooltip2");		//Tooltip du label : "Proposer" / "Ajouter l'événement"
+			if(!empty($tmpCal->description))  {$tmpCal->tooltip.="<hr>".$tmpCal->description;}																//Ajoute la description de l'agenda
 			if($tmpCal->inputType=="proposition")  {$tmpCal->title.=" &ast;";}																				//Title : ajoute un asterisk pour les proposition
+			$tmpCal->proposeOption=($tmpCal->type=="user" && $tmpCal->addContentRight() && $tmpCal->isMyPersoCalendar()==false);							//Option de proposition d'evt : agenda perso "writable"
 		}
 		//// Nouvel evt : dates par défaut
 		if($curObj->isNew()){

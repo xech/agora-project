@@ -55,24 +55,24 @@ class MdlCalendarEvent extends MdlObject
 	public function accessRight()
 	{
 		if($this->_accessRight===null){
-			////	ACCES TOTAL : AUTEUR / ADMIN GENERAL
+			////	ACCES TOTAL POUR L'AUTEUR ET L'ADMIN GENERAL
 			if(parent::accessRight()==3)	{return 3;}
 			////	DROIT EN FONCTION DES AGENDAS AUQUELS L'EVT EST AFFECTÉ
 			else{
 				$editCalsCpt=$readCalsCpt=0;
-				foreach($this->affectedCalendars() as $objCalendar){							//Parcourt les affectations aux agendas
-					if($objCalendar->editRight())		{$editCalsCpt++;}						//Droit d'éditer l'agenda
-					elseif($objCalendar->readRight())	{$readCalsCpt++;}						//Droit de lecture
+				foreach($this->affectedCalendars() as $objCalendar){								//Parcourt les affectations aux agendas
+					if($objCalendar->editRight())		{$editCalsCpt++;}							//Droit d'éditer l'agenda
+					elseif($objCalendar->readRight())	{$readCalsCpt++;}							//Droit de lecture
 				}
-				if(count($this->affectedCalendars())==$editCalsCpt)	{$this->_accessRight=2;}	//Droit en écriture : affecté uniquement à des agendas accessibles en écriture
-				elseif($readCalsCpt>=1)								{$this->_accessRight=1;}	//Droit en lecture  : affecté à un agenda (ou+) accessible en lecture
-				else												{$this->_accessRight=0;}	//Aucun droit
+				if(count($this->affectedCalendars())==$editCalsCpt)		{$this->_accessRight=2;}	//Droit en écriture : affecté uniquement à des agendas "writable"
+				elseif(!empty($editCalsCpt) || !empty($readCalsCpt))	{$this->_accessRight=1;}	//Droit en lecture  : affecté à des agendas "writable" et/ou "readable"
+				else													{$this->_accessRight=0;}	//Aucun droit
 			}
 		}
 		//Retourne le résultat
 		return (int)$this->_accessRight;
 	}
-	
+
 	/********************************************************************************************************
 	 * SURCHARGE : UN EVT DEPEND DE PLUSIEURS "CONTAINER" AGENDA => CF. "accessRight()"
 	 ********************************************************************************************************/
@@ -256,8 +256,8 @@ class MdlCalendarEvent extends MdlObject
 			$calendarsConfirmed=$calendarsProposed=null;
 			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", <i>".$objCalendar->title."</i>";}
 			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsProposed.=", <i>".$objCalendar->title."</i>";}
-			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." ".trim($calendarsConfirmed,",")."<br>";}
-			if(!empty($calendarsProposed))	{$calendarsProposed=Txt::trad("CALENDAR_evtAffectToConfirm")." ".trim($calendarsProposed,",");}
+			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." ".trim($calendarsConfirmed,",");}
+			if(!empty($calendarsProposed))	{$calendarsProposed="<hr>".Txt::trad("CALENDAR_evtAffectToConfirm")." ".trim($calendarsProposed,",");}
 			return $calendarsConfirmed.$calendarsProposed;
 		}
 	}

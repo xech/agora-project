@@ -522,7 +522,7 @@ function lightboxResize()
 					lightboxIframe.style.height	 =lightboxHeight+"px";											//Applique le height à lightboxIframe
 					lightboxHeightLast=lightboxHeight;															//Enregistre le height
 				}
-			},150);
+			},250);
 		}
 	});
 }
