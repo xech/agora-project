@@ -227,7 +227,7 @@ class Trad extends Txt
 			"accessRead"=>"Read",
 			"accessReadTooltip"=>"Access in reading",
 			"accessWriteLimit"=>"limited writing",
-			"accessWriteLimitTooltip"=>"Limited write access: possibility to add -OBJCONTENT- in the --OBJLABEL--,<br> but each user can only modify/delete the -OBJCONTENT- he created.",
+			"accessWriteLimitTooltip"=>"Limited writing access: possibility to add -OBJCONTENT- in the --OBJLABEL--,<br> but each user can only modify/delete the -OBJCONTENT- he created.",
 			"accessWrite"=>"write",
 			"accessWriteTooltip"=>"Access in writing",
 			"accessWriteTooltipContainer"=>"Access in writing : Ability to add, modify or delete all the -OBJCONTENT-s of the --OBJLABEL--",

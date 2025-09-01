@@ -509,20 +509,20 @@ function lightboxResize()
 			//// Width/Height de la lightbox
 			if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}							//Un seul timeout
 			lightboxTimeout=setTimeout(function(){																//Timeout le tps de lancer les show(), fadeIn(), etc. (tps supérieur à $.fx.speeds)
-				let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");				//Width en fonction de "#bodyLightbox" ("px" ou "%")
-				let lightboxWidth=parseInt(cssWidth);															//Width en Integer
-				if(Number.isInteger(lightboxWidth)==false) 	{lightboxWidth=650;}								//"max-width" non spécifié : 650px par défaut
+				let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");				//"max-width" de "#bodyLightbox" ("px" ou "%")
+				let lightboxWidth=parseInt(cssWidth);															//Parse le width en Integer
+				if(Number.isInteger(lightboxWidth)==false) 	{lightboxWidth=650;}								//Width par défaut si "max-width" non spécifié (idem app.css)
 				if(/%/.test(cssWidth))						{lightboxWidth=(windowWidth/100) * lightboxWidth;}	//Width en % de windowWidth
-				else if(lightboxWidth > windowWidth)		{lightboxWidth=windowWidth;}						//Width toujours <= windowWidth
+				else if(lightboxWidth > windowWidth)		{lightboxWidth=windowWidth;}						//Width doit être inférieur à windowWidth
 				lightboxContent.style.width =lightboxWidth+"px";												//Applique le width à lightboxContent
 				lightboxIframe.style.width  =lightboxWidth+"px";												//Applique le width à lightboxIframe
-				let lightboxHeight=Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);	//Récupère le height du contenu
-				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){				//Ajuste le lightboxHeight si le height du document à augmenté
+				let lightboxHeight=document.body.scrollHeight;													//Height du body de l'iframe
+				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){				//Init ou ajuste le lightboxHeight (après show(), fadeIn(), etc)
 					lightboxContent.style.height =lightboxHeight+"px";											//Applique le height à lightboxContent
 					lightboxIframe.style.height	 =lightboxHeight+"px";											//Applique le height à lightboxIframe
 					lightboxHeightLast=lightboxHeight;															//Enregistre le height
 				}
-			},250);
+			},200);
 		}
 	});
 }

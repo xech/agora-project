@@ -163,27 +163,27 @@ ready(function(){
 
 <style>
 .vCalVue							{height:100%;}
-.vWeekScroller						{position:relative; overflow-y:scroll; overflow-x:hidden;}			/*Partie visible de l'agenda*/
-.vWeekHeader, .vWeekTable			{width:100%; border-collapse:collapse;}								/*Tableau du libellé des jours et de la grille des heures*/
-.vCalLabelDays span					{margin-left:5px;}													/*Nb du jour du mois*/
-.vPublicHoliday						{margin-left:5px; vertical-align:top;}								/*Icone du jour férié*/
-.vWeekHeaderScrollbar				{width:12px;}														/*Width "fantome" de la scrollbar de .vWeekScroller*/
-.vWeekHourLabel						{width:35px; vertical-align:top; color:#888; font-size:0.9em;}		/*Libellé des heures sur la 1ere colonne du tableau*/
-.vWeekCell							{vertical-align:top; font-size:0.1em; padding:0px; border:0px solid <?= Ctrl::$agora->skin=="white"?"#dededf" : "#333" ?>; border-left-width:1px;}/*Cellule des créneaux de 15mn*/
-.vWeekCell[data-cellMinutes='00']	{border-top-width:1px;}												/*Cellules du début des heures avec border-top*/
-.vWeekCellRedLine					{border-top:solid 1px #f00;}										/*Heure courante : ligne rouge*/
-.vWeekCell .vMobileAddEvt			{display:none;}														/*Bouton d'ajout d'evt masqué par défaut (cf. mobile)*/
+.vWeekScroller						{position:relative; overflow-y:scroll; overflow-x:hidden;}				/*Partie visible de l'agenda*/
+.vWeekHeader, .vWeekTable			{width:100%; border-collapse:collapse;}									/*Tableau du libellé des jours et de la grille des heures*/
+.vCalLabelDays span					{margin-left:5px;}														/*Nb du jour du mois*/
+.vPublicHoliday						{margin-left:5px; vertical-align:top;}									/*Icone du jour férié*/
+.vWeekHeaderScrollbar				{width:12px;}															/*Width "fantome" de la scrollbar de .vWeekScroller*/
+.vWeekHourLabel						{width:35px; vertical-align:top; color:#888; font-size:0.9rem;}			/*Libellé des heures sur la 1ere colonne du tableau*/
+.vWeekCell							{vertical-align:top; font-size:0.1rem; padding:0px; border:0px solid <?= Ctrl::$agora->skin=="white"?"#dededf" : "#333" ?>; border-left-width:1px;}/*Cellule des créneaux de 15mn*/
+.vWeekCell[data-cellMinutes='00']	{border-top-width:1px;}													/*Cellules du début des heures avec border-top*/
+.vWeekCellRedLine					{border-top:solid 1px #f00;}											/*Heure courante : ligne rouge*/
+.vWeekCell .vMobileAddEvt			{display:none;}															/*Bouton d'ajout d'evt masqué par défaut (cf. mobile)*/
 .vLineNotTimeSlot					{background:<?= Ctrl::$agora->skin=="white"?"#fbfbfb" : "#222" ?>}	/*Heures en dehors du TimeSlot*/
-.vEvtBlock							{position:absolute;}												/*Tester un evt de 15mn*/
-.vEvtBlockSuperposed				{box-shadow:0px 0px 3px white;}										/*Evt superposé*/
-.vEvtBlock .objMenuContextFloat		{top:4px;}															/*Replace le menu "burger"*/
-.vEvtBlockMoved						{cursor:move!important;}											/*Evt en cours de déplacement*/
-.vEvtLabelDate						{margin-top:2px;}													/*Label de l'heure*/
-.vEvtLabelDate b					{margin-top:20px; font-size:1.2em;}									/*Label de l'heure en cours de déplacement*/
+.vEvtBlock							{position:absolute;}													/*Tester un evt de 15mn*/
+.vEvtBlockSuperposed				{box-shadow:0px 0px 3px white;}											/*Evt superposé*/
+.vEvtBlock .objMenuContextFloat		{top:4px;}																/*Replace le menu "burger"*/
+.vEvtBlockMoved						{cursor:move!important;}												/*Evt en cours de déplacement*/
+.vEvtLabelDate						{margin-top:2px;}														/*Label de l'heure*/
+.vEvtLabelDate b					{margin-top:20px; font-size:1.2rem;}									/*Label de l'heure en cours de déplacement*/
 
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
-	.vWeekHourLabel						{font-size:0.8em; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
+	.vWeekHourLabel						{font-size:0.8rem; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
 	.vWeekCell							{position:relative;}
 	.vWeekCell:active .vMobileAddEvt	{display:block; position:absolute; top:0px; right:0px; padding:7px;}/*Affiche le bouton d'ajout d'evt si on sélectionne le jour*/
 }

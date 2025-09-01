@@ -153,7 +153,7 @@ class CtrlFile extends Ctrl
 	/********************************************************************************************************
 	 * VUE : MODIF D'UN FICHIER
 	 ********************************************************************************************************/
-	public static function actionFileEdit()
+	public static function actionVueEditFile()
 	{
 		////	Charge le fichier
 		$curObj=Ctrl::getCurObj();
@@ -174,7 +174,7 @@ class CtrlFile extends Ctrl
 		else
 		{
 			$vDatas["curObj"]=$curObj;
-			static::displayPage("VueFileEdit.php",$vDatas);
+			static::displayPage("VueEditFile.php",$vDatas);
 		}
 	}
 

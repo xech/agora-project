@@ -12,6 +12,7 @@
 .objBlocks .hasThumb .objLabel									{background:<?= Ctrl::$agora->skin ?>; border-radius:4px;}							/*images/vignettes pdf : background des labels*/
 .objLines .objLabel>span										{padding:10px 50px 10px 0px;}														/*Zone clickable élargie*/
 .versionsMenu													{margin-left:20px;}																	/*bouton "versions de fichiers" : cf. "versionsMenu()"*/
+.objFiles .objLabel												{font-size:0.95rem;}																/*nom des fichiers*/
 </style>
 
 
@@ -43,10 +44,10 @@
 		////	LISTE DES FICHIERS
 		foreach($filesList as $tmpFile){
 			$containerClass=$tmpFile->hasTumb() ? "hasThumb" : null;
+			echo $tmpFile->objContainerMenu($containerClass);
 		?>
-			<?= $tmpFile->objContainerMenu($containerClass) ?>
 				<div class="objContent objFiles">
-					<div class="objIcon <?= $tmpFile->iconClass ?>" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?>></div>
+					<div class="objIcon <?= $tmpFile->iconClass ?>" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="typeIdTarget"></div>
 					<div class="objLabel" <?= Txt::tooltip($tmpFile->labelTooltip) ?>><a <?= $tmpFile->labelLink ?> ><?= Txt::reduce($tmpFile->name,$nameLength).$tmpFile->versionsMenu("icon") ?></a></div>
 					<div class="objDetails"><?= File::sizeLabel($tmpFile->octetSize) ?></div>
 					<div class="objAutorDate"><?= $tmpFile->autorDate() ?></div>

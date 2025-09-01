@@ -21,7 +21,7 @@
 
 			<!--GROUPES D'UTILISATEURS-->
 			<?php if($_SESSION["displayUsers"]=="space" && (!empty($userGroups) || MdlUserGroup::addRight())){ ?>
-				<hr><div <?= MdlUserGroup::addRight() ?  Txt::tooltip("USER_spaceGroupsEdit").' onclick="lightboxOpen(\'?ctrl=user&action=UserGroupEdit\')"'  :  null ?>>
+				<hr><div <?= MdlUserGroup::addRight() ?  Txt::tooltip("USER_spaceGroupsEdit").' onclick="lightboxOpen(\'?ctrl=user&action=VueEditUserGroup\')"'  :  null ?>>
 					<div class="menuLine"><div class="menuIcon"><img src='app/img/user/userGroup.png'></div><div><?= Txt::trad("USER_spaceGroups") ?></div></div>
 					<?php foreach($userGroups as $tmpGroup){ ?>
 						<div class="menuLine"><div class="menuIcon"></div><div><img src='app/img/arrowRightSmall.png'> <?= ucfirst($tmpGroup->title) ?></div></div>

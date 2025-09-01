@@ -57,9 +57,9 @@ class Trad extends Txt
 			"objNew"=>"Nouvel élément",
 			"objNewTooltip"=>"Créé aujourd'hui ou depuis ma précédente connexion",
 			"personalAccess"=>"Accès personnel",
-			"copyUrl"=>"Copier l'adresse de partage",
+			"copyUrl"=>"Copier l'URL de partage",
 			"copyUrlTooltip"=>"Permet d'accéder à l'élément depuis un email, un blog, etc.",
-			"copyUrlNotif"=>"L'adresse a bien été copiée",
+			"copyUrlNotif"=>"L'URL a bien été copiée",
 
 			////	Confirm et Suppression
 			"confirm"=>"Confirmer",
@@ -227,11 +227,11 @@ class Trad extends Txt
 			"accessRead"=>"Lecture",
 			"accessReadTooltip"=>"Accès en lecture",
 			"accessWriteLimit"=>"Ecriture limitée",
-			"accessWriteLimitTooltip"=>"Accès en écriture limité : chaque utilisateur ne peut modifier ou supprimer que les -OBJCONTENT-s qu'il a créé dans ce --OBJLABEL--.",
+			"accessWriteLimitTooltip"=>"Accès en écriture limité : chaque utilisateur ne peut modifier ou supprimer que les -OBJCONTENT-s qu'il a créé dans ce/cet --OBJLABEL--.",//"Ce dossier"/"cet agenda"
 			"accessWrite"=>"Ecriture",
 			"accessWriteTooltip"=>"Accès en écriture",
-			"accessWriteTooltipContainer"=>"Accès en écriture : possibilité de modifier ou supprimer tous les -OBJCONTENT-s du --OBJLABEL--",
-			"accessAutorPrivilege"=>"Seul l'auteur et les administrateurs peuvent modifier ou supprimer ce --OBJLABEL--",
+			"accessWriteTooltipContainer"=>"Accès en écriture : possibilité de modifier ou supprimer tous les -OBJCONTENT-s dans ce/cet --OBJLABEL--",//"Ce dossier"/"cet agenda"
+			"accessAutorPrivilege"=>"Seul l'auteur et les administrateurs peuvent modifier ou supprimer ce/cet --OBJLABEL--",//"Ce dossier"/"cet agenda"
 			"accessRightsInherited"=>"Droits d'accès hérités du --OBJLABEL-- parent",
 			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",
 			"categoryNotifChangeOrder"=>"L'ordre d'affichage a bien été modifié",
@@ -509,7 +509,7 @@ class Trad extends Txt
 			"AGORA_backupDbTooltip"=>"Récupérer uniquement la sauvegarde de la base de données de l'espace",
 			"AGORA_backupConfirm"=>"Cette opération peut durer de nombreuses minutes : confirmer le téléchargement ?",
 			"AGORA_diskSpaceInvalid"=>"L'espace disque pour les fichiers doit être un entier",
-			"AGORA_visioHostInvalid"=>"L'adresse du serveur de visioconférence est invalide : elle doit commencer par 'https'",
+			"AGORA_visioHostInvalid"=>"L'URL du serveur de visioconférence est invalide : elle doit commencer par 'https'",
 			"AGORA_gApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
 			"AGORA_gIdentityKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
 			"AGORA_confirmModif"=>"Confirmer les modifications ?",
@@ -603,7 +603,7 @@ class Trad extends Txt
 
 			////	MOD : SPACE
 			////
-			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces de travail (alias ''sous-espace'')",
+			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (alias ''sous-espace'')",
 			"SPACE_manageAllSpaces"=>"Gérer tous les espaces de travail",
 			"SPACE_config"=>"Gérer l'espace de travail",
 			"SPACE_space"=>"espace",
@@ -814,7 +814,7 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Nouvel agenda partagé",
 			"CALENDAR_addSharedCalendarTooltip"=>"Créer un agenda partagé : pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.",
 			"CALENDAR_exportIcal"=>"Exporter les événements au format iCal",
-			"CALENDAR_icalUrl"=>"Copier l'adresse de l'agenda :<br>Pour le consulter via une appli externe",
+			"CALENDAR_icalUrl"=>"Copier l'URL de l'agenda pour un accès via une appli externe",
 			"CALENDAR_icalUrlCopy"=>"Permet un accès à l'agenda depuis une appli externe (lecture seule) :<br>depuis Thunderbird, Outlook, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importer des événements au format iCal",
 			"CALENDAR_ignoreOldEvt"=>"Ne pas importer les événements de plus d'un an",

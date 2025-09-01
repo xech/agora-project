@@ -57,7 +57,7 @@ class CtrlContact extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION D'UN CONTACT
 	 ********************************************************************************************************/
-	public static function actionContactEdit()
+	public static function actionVueEditContact()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -73,7 +73,7 @@ class CtrlContact extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		static::displayPage("VueContactEdit.php",$vDatas);
+		static::displayPage("VueEditContact.php",$vDatas);
 	}
 
 	/********************************************************************************************************

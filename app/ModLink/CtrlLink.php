@@ -46,7 +46,7 @@ class CtrlLink extends Ctrl
 	/********************************************************************************************************
 	 * VUE : AJOUT D'UN LIEN
 	 ********************************************************************************************************/
-	public static function actionLinkEdit()
+	public static function actionVueEditLink()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -61,6 +61,6 @@ class CtrlLink extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		static::displayPage("VueLinkEdit.php",$vDatas);
+		static::displayPage("VueEditLink.php",$vDatas);
 	}
 }

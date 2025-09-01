@@ -106,7 +106,7 @@ function dashboardPollVote()
 <style>
 /*Menu "onglet" et conteneurs principaux : News / Sondages / Nouveautés*/
 #tabMenus								{display:table; position:relative; width:100%; height:40px; margin-bottom:10px;}
-#tabMenus a								{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.05em;}/*label du menu*/
+#tabMenus a								{display:table-cell; width:<?= $isPolls==true?33:50 ?>%; text-align:center; vertical-align:middle; font-size:1.05rem;}/*label du menu*/
 #tabMenus hr							{display:inline; position:absolute; bottom:0px; left:0px; width:<?= $isPolls==true?33:50 ?>%; height:6px; margin:0px; background:tomato; transition:0.1s ease-in-out;}/*Surlignage des options du module*/
 #tabMenuNews.linkSelect ~ hr			{margin-left:0%;}
 #tabMenuPolls.linkSelect ~ hr			{margin-left:33%;}
@@ -136,18 +136,18 @@ function dashboardPollVote()
 .vNewsDescription h4:last-child			{margin-bottom:20px;}
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
-	.vNewsDescription h3				{font-size:1.3em;}									/*New par défaut*/
-	.vNewsDescription h4				{font-size:1.05em; clear:left;}						/*Idem. "clear:left" pour aligner avec l'image float : tester width 500px*/
+	.vNewsDescription h3				{font-size:1.3rem;}									/*New par défaut*/
+	.vNewsDescription h4				{font-size:1.05rem; clear:left;}					/*Idem. "clear:left" pour aligner avec l'image float : tester width 500px*/
 	.vNewsDescription h4>img			{float:left; margin-left:0px; margin-bottom:30px;}	/*Idem*/
 }
 
 /*Sondages*/
-#moduleMenu .vPollsTitle				{margin:20px 0px; font-size:1.05em;}
+#moduleMenu .vPollsTitle				{margin:20px 0px; font-size:1.05rem;}
 #moduleMenu .vPollsContainer ul			{padding-left:10px!important;}
 #moduleMenu .submitButtonMain			{margin-top:10px;}
 .vPollsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
 .vPollsTitle,.vPollsDescription			{text-align:center; margin:15px 0px;}/*Titre et Description*/
-#contentPolls .vPollsTitle				{font-size:1.25em;}/*Titre de l'affichage principal (pas avec les news)*/
+#contentPolls .vPollsTitle				{font-size:1.25rem;}/*Titre de l'affichage principal (pas avec les news)*/
 .vPollsDescription img					{max-height:400px;}/*Affichage des images dans la description*/
 .vPollsContainer ul li					{list-style:none; margin-bottom:20px;}
 .vPollsDetails							{margin-top:20px; text-align:center;}

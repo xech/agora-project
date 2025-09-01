@@ -17,7 +17,7 @@ function calendarDisplay(isPrint)
 <style>
 /*Conteneur principal + header + lignes*/
 .vCalVue									{border-collapse:collapse;}											/*Bordures fusionnées*/
-.vMonthWeekNbYear							{width:15px; font-size:0.9em; opacity:0.5; text-align:center;}		/*numero des semaines dans l'année*/
+.vMonthWeekNbYear							{width:15px; font-size:0.9rem; opacity:0.5; text-align:center;}		/*numero des semaines dans l'année*/
 .vMonthWeek									{height:17%; min-height:17%;}										/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 .vPublicHoliday								{color:#080; font-style:italic; margin-left:15px;}					/*Libellé du jour férié*/
 
@@ -37,7 +37,7 @@ function calendarDisplay(isPrint)
 
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
-	.vMonthDayLabel							{font-size:0.85em;}
+	.vMonthDayLabel							{font-size:0.8em; font-weight:normal;}
 	.vMonthDayLabel .vMonthAddEvt			{margin:0px;}
 	.vEvtLabel								{font-size:13px; line-height:11px;}
 	.vMonthWeekNbYear, .vPublicHoliday		{display:none!important;}

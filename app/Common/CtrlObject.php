@@ -36,8 +36,10 @@ class CtrlObject extends Ctrl
 	{
 		// Init
 		$redirUrl=$updateDatasFolderSize=$notDeletedObjects=null;
+		if(Req::isParam("objectsTypeId"))	{$objectList=self::getCurObjects();}
+		else								{$objectList=[self::getCurObj()];}
 		////	Supprime le/les objets
-		foreach(self::getCurObjects() as $cptObj=>$tmpObj){
+		foreach($objectList as $cptObj=>$tmpObj){
 			//Enregistre l'Url de redirection après le delete
 			if(empty($redirUrl)){
 				if($tmpObj::isInContainer())	{$redirUrl=$tmpObj->getUrl();}					//Suppr un "content" : raffiche le "container"
@@ -95,7 +97,7 @@ class CtrlObject extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION D'UN DOSSIER
 	 ********************************************************************************************************/
-	public static function actionEditFolder()
+	public static function actionVueEditFolder()
 	{
 		////	Charge le dossier et Controle d'accès: dossier existant / nouveau dossier
 		$curObj=Ctrl::getCurObj();
@@ -117,14 +119,14 @@ class CtrlObject extends Ctrl
 		else
 		{
 			$vDatas["curObj"]=$curObj;
-			static::displayPage(Req::commonPath."VueFolderEdit.php",$vDatas);
+			static::displayPage(Req::commonPath."VueEditFolder.php",$vDatas);
 		}
 	}
 
 	/**************************************************************************************************************
 	* VUE : EDITION DES OBJETS DE TYPE "CATEGORY" : CATEGORIES D'EVT / THEMES DE SUJET / COLONNES KANBAN
 	**************************************************************************************************************/
-	public static function actionEditCategories()
+	public static function actionVueEditCategory()
 	{
 		////	Modèle des objets (ex: "MdlTaskStatus")  &&  Droit d'ajouter un objet ?
 		$MdlObject="Mdl".ucfirst(Req::param("objectType"));
@@ -143,7 +145,7 @@ class CtrlObject extends Ctrl
 		$vDatas["spaceList"]=Ctrl::$curUser->spaceList();
 		$vDatas["tradModulePrefix"]=strtoupper($MdlObject::moduleName);
 		////	Affiche la vue
-		static::displayPage(Req::commonPath."VueCategoryEdit.php",$vDatas);
+		static::displayPage(Req::commonPath."VueEditCategory.php",$vDatas);
 	}
 
 	/********************************************************************************************************

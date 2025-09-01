@@ -38,7 +38,7 @@ ready(function(){
 	#headerSpaceLabel						{max-width:180px; text-transform:capitalize;}
 	#menuMainTab, #menuMainTab>div			{display:block; padding:0px; border:none!important;}/*cf. --headerMenuBorder*/
 	#menuMainTab .editButton				{visibility:visible;}/*tjs visible*/
-	#menuMobileMain .vHeaderModule			{display:inline-block; width:49%; margin:5px 0px; padding:5px; text-align:left; font-size:1.2em;}/*Modules affichés dans "#menuMobileMain"*/
+	#menuMobileMain .vHeaderModule			{display:inline-block; width:49%; margin:5px 0px; padding:5px; text-align:left; font-size:1.2rem;}/*Modules affichés dans "#menuMobileMain"*/
 	#headerMenuRight .vHeaderModule			{display:none;}/*Modules masqués dans le header car affichés dans "#menuMobileMain"*/
 	.vHeaderModule label					{display:inline-block; margin-left:10px;}/*toujours affiché : cf. $moduleLabelDisplay*/
 }

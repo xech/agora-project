@@ -44,6 +44,14 @@
 	}
 
 	/********************************************************************************************************
+	 * SURCHARGE : URL D'ACCÈS À L'OBJET  >  EDITE VIA "actionVueEditFolder()"
+	 ********************************************************************************************************/
+	public function getUrl($display=null)
+	{
+		return ($display=="edit")  ?  "?ctrl=object&action=VueEditFolder&typeId=".$this->_typeId  :  parent::getUrl($display);
+	}
+
+	/********************************************************************************************************
 	 * SURCHARGE : AFFECTATIONS DE L'OBJET
 	 ********************************************************************************************************/
 	public function getAffectations()

@@ -66,9 +66,9 @@ function objectFormControl(){
 .plupload_wrapper					{min-width:100%!important; max-width:100%!important;}										/*Evite le scroll horizontal*/
 .plupload_header					{display:none;}																				/*Masque le header par défaut*/
 .plupload_content					{top:0px; height:170px}																		/*Liste des fichiers (cf. ".plupload_header" masqué)*/
-.plupload_droptext					{color:#aaa; font-size:1.1em;}																/*"Glisser les fichiers ici". "overflow" pour Firefox*/
+.plupload_droptext					{color:#aaa; font-size:1.1r}																/*"Glisser les fichiers ici". "overflow" pour Firefox*/
 .plupload_cell, .plupload_buttons	{width:100%; text-align:center;}															/*conteneur des boutons principaux*/
-.plupload_buttons .plupload_button	{padding:15px; width:250px; font-size:1.1em; font-weight:bold; text-transform:uppercase;}	/*Bouton "Choisir les fichiers" /  "Arreter"*/
+.plupload_buttons .plupload_button	{padding:15px; width:250px; font-size:1.1rem; font-weight:bold; text-transform:uppercase;}	/*Bouton "Choisir les fichiers" /  "Arreter"*/
 .ui-widget-header					{border:none!important;	background:none!important;}											/*Annule le background par defaut de jQuery-UI !*/
 .ui-resizable-handle				{display:none!important;}
 

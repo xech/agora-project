@@ -70,7 +70,7 @@ class CtrlUser extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION D'UN USER
 	 ********************************************************************************************************/
-	public static function actionUserEdit()
+	public static function actionVueEditUser()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -117,7 +117,7 @@ class CtrlUser extends Ctrl
 		{
 			$vDatas["curObj"]=$curObj;
 			$vDatas["spaceList"]=Db::getObjTab("space","select * from ap_space");//Espaces disponilbes
-			static::displayPage("VueUserEdit.php",$vDatas);
+			static::displayPage("VueEditUser.php",$vDatas);
 		}
 	}
 
@@ -353,7 +353,7 @@ class CtrlUser extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION DES GROUPES D'UTILISATEURS
 	 ********************************************************************************************************/
-	public static function actionUserGroupEdit()
+	public static function actionVueEditUserGroup()
 	{
 		//Droit d'editer/ajouter un groupe?
 		if(MdlUserGroup::addRight()==false)  {static::lightboxRedir();}
@@ -375,7 +375,7 @@ class CtrlUser extends Ctrl
 			}
 		}
 		//Affiche la page
-		static::displayPage("VueUserGroupEdit.php",$vDatas);
+		static::displayPage("VueEditUserGroup.php",$vDatas);
 	}
 
 	/********************************************************************************************************

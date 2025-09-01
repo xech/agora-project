@@ -88,7 +88,7 @@ trait MdlObjectMenu
 				if(!empty(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1)  {$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->_typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			}
 			////	URL D'ACCES EXTERNE
-			if(Ctrl::$curUser->isUser() && static::objectType!="space")   {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
+			if(Ctrl::$curUser->isUser() && static::objectType!="space")  {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
 			////	AUTEUR/DATE DE CREATION/MODIF
 			$vDatas["autorDateCrea"] =(!empty($this->dateCrea))   ?  $this->autorDate()  :  null;
 			$vDatas["autorDateModif"]=(!empty($this->dateModif))  ?  $this->autorDate(true)  :  null;

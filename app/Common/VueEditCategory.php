@@ -72,10 +72,10 @@ fieldset							{margin-top:35px;}/*surcharge*/
 .lightboxTitle img					{margin:0px 15px;}
 .vCategoryMain						{display:table; width:100%;}
 .vCategoryMain>div					{display:table-cell;}
-.vCategoryLabel						{font-size:1.05em;}
+.vCategoryLabel						{font-size:1.05rem;}
 .vCategoryAutor						{text-transform:lowercase; margin-top:5px; opacity:0.8;}
 .vCategoryModif, .vCategoryDelete	{width:1%; white-space:nowrap; padding:0px 10px; text-align:right; vertical-align:middle;}/*Width ajusté au contenu via 'nowrap'*/
-.vCategoryAdd						{font-size:1.1em; text-align:center;}
+.vCategoryAdd						{font-size:1.1rem; text-align:center;}
 form								{display:none; margin-top:25px;}/*masque par défaut*/
 form input[name='title']			{width:300px; max-width:80%; color:white; margin-right:5px;}
 form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
@@ -87,7 +87,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 /*RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vSpaceList>div 					{display:block; width:100%; margin:15px 0px;}
-	.vCategoryModif, .vCategoryDelete	{font-size:0.9em;}
+	.vCategoryModif, .vCategoryDelete	{font-size:0.9rem;}
 }
 </style>
 

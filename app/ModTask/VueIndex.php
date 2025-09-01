@@ -60,23 +60,26 @@ function moduleDisplay(){
 		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
 		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).
 			 CtrlObject::vueFolders();
+
 		////	LISTE DES TACHES
-		foreach($tasksList as $tmpTask)
-		{
-			echo $tmpTask->objContainerMenu().
-					"<div class='objContainerScroll'>
-						<div class='objContent'>
-							<div class='objIcon objIconOpacity'><img src='app/img/task/iconSmall.png'></div>
-							<div class='objLabel' onclick=\"".$tmpTask->openVue()."\">".ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel()."</div>
-							<div class='objDetails vObjTaskDetails'>".$tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd()."</div>
-							<div class='objAutorDate'>".$tmpTask->autorDate()."</div>
-						</div>
+		foreach($tasksList as $tmpTask){
+			echo $tmpTask->objContainerMenu();
+		?>
+				<div class="objContainerScroll">
+					<div class="objContent">
+						<div class="objIcon objIconOpacity"><img src="app/img/task/iconSmall.png"></div>
+						<div class="objLabel" onclick="<?= $tmpTask->openVue() ?>"><?= ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
+						<div class="objDetails vObjTaskDetails"><?= $tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd() ?></div>
+						<div class="objAutorDate"><?= $tmpTask->autorDate() ?></div>
 					</div>
-				</div>";
+				</div>
+			</div>
+		<?php
 		}
+
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($tasksList)){
-			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlTask::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("TASK_addTask")."</div>"  :  null;
+			$addElement=(Ctrl::$curContainer->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><img src="app/img/plus.png"> '.Txt::trad("TASK_addTask").'</div>'  :  null;
 			echo '<div class="miscContainer emptyContainer">'.Txt::trad("TASK_noTask").$addElement.'</div>';
 		}
 

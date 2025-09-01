@@ -15,23 +15,20 @@ class Db
 	private static $_objPDO=null;
 
 	/********************************************************************************************************
-	 * RENVOIE L'OBJET PDO INITIALISÉ QU'UNE SEULE FOIS
+	 * RENVOIE UN OBJET PDO
 	 ********************************************************************************************************/
 	private static function objPDO()
 	{
 		//Instancie PDO
 		if(self::$_objPDO===null){
-			//Connection PDO
 			try{
-				//Utilise l'encodage "utf8mb4" pour les emojis sur mobile ("utf8" pour les versions inférieures à PHP 7)
-				$dbCharset=(version_compare(PHP_VERSION,7,">="))  ?  "utf8mb4"  :  "utf8";
-				//Aucune DB n'est spécifiée : dbInstall!  /  Sinon on établit une connexion
-				if(!defined("db_name") || !db_name)	{throw new Exception("dbInstall_dbNameUndefined");}
-				else								{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=".$dbCharset, db_login, db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));}
-				//Pas de connexion, ni d'exception : dbInstall!
+				//Créé une connexion PDO ("utf8mb4" pour les emojis)  ||  Aucune DB spécifiée : dbInstall
+				if(defined("db_name"))	{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=utf8mb4;", db_login, db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));}
+				else					{throw new Exception("dbInstall_dbNameUndefined");}
+				//Aucune connexion, ni d'exception : dbInstall
 				if(!is_object(self::$_objPDO))	{throw new Exception("dbInstall_pdoIsNull");}
 			}
-			//Erreur envoyé par PDO : renvoie une exception de base, avec demande d'install
+			//Erreur de PDO : renvoie une exception avec install
 			catch(PDOException $exception){
 				throw new Exception("dbInstall_".$exception);
 			}

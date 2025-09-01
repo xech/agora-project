@@ -112,7 +112,7 @@ class CtrlTask extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION D'UNE TACHE
 	 ********************************************************************************************************/
-	public static function actionTaskEdit()
+	public static function actionVueEditTask()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -129,6 +129,6 @@ class CtrlTask extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		static::displayPage("VueTaskEdit.php",$vDatas);
+		static::displayPage("VueEditTask.php",$vDatas);
 	}
 }

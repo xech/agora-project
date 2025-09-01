@@ -86,7 +86,7 @@ class CtrlForum extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION D'UN SUJET
 	 ********************************************************************************************************/
-	public static function actionForumSubjectEdit()
+	public static function actionVueEditForumSubject()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -106,13 +106,13 @@ class CtrlForum extends Ctrl
 		$vDatas["curObj"]=$curObj;
 		if(Req::isParam("_idTheme"))  {$curObj->_idTheme=Req::param("_idTheme");}
 		$vDatas["themeList"]=MdlForumTheme::catList();
-		static::displayPage("VueForumSubjectEdit.php",$vDatas);
+		static::displayPage("VueEditForumSubject.php",$vDatas);
 	}
 
 	/********************************************************************************************************
 	 * VUE : EDITION D'UN MESSAGE
 	 ********************************************************************************************************/
-	public static function actionForumMessageEdit()
+	public static function actionVueEditForumMessage()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -137,6 +137,6 @@ class CtrlForum extends Ctrl
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
 		$vDatas["messageParent"]=Req::isParam("_idMessageParent")  ?  self::getObj("forumMessage",Req::param("_idMessageParent"))  :  null;
-		static::displayPage("VueForumMessageEdit.php",$vDatas);
+		static::displayPage("VueEditForumMessage.php",$vDatas);
 	}
 }

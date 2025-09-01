@@ -62,7 +62,7 @@ form								{text-align:center;}
 #importLdapDn						{width:350px;}
 #importLdapFilter					{width:200px;}
 #tableImport						{width:100%; margin-top:20px; text-align:left;}
-.vTableImport						{font-size:0.9em; font-weight:normal;}
+.vTableImport						{font-size:0.9rem; font-weight:normal;}
 .vTableImport select				{width:130px;}
 .vTableImport img[src*='switch']	{cursor:pointer;}
 .vImportUserOptions					{display:inline-block; text-align:left; margin-top:20px;}

@@ -125,7 +125,6 @@ function moduleDisplay()
 .vCalVue										{max-width:100%; width:100%;}
 .vCalHeader										{display:table; width:100%;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
-.vCalHeaderTitle, .vCalHeaderMonth				{font-size:1.1em;}/*Libellé de l'agenda et mois affiché*/
 .vCalHeaderCenter								{text-align:center;}
 .vCalHeaderCenter .vCalPrevNext					{padding:12px; border-radius:5px;}
 .vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
@@ -133,24 +132,25 @@ function moduleDisplay()
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{text-align:right; width:500px;}/*Largeur fixe*/
 .vCalHeaderRight>span							{margin-left:8px;}
-.vCalHeaderRight button							{height:37px; border-radius:8px;}
+.vCalHeaderRight button							{height:33px; border-radius:5px;}
 .vCalLabelDays									{height:25px; padding:4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
 .vEvtBlock										{height:20px; min-height:20px; margin:0px; padding:3px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:4px!important;}/*padding-right pour le menu burger*/
 .vEvtBlock[data-pastEvent='true']:not(:hover)	{filter:brightness(0.9);}/*événements passés (sauf si survolé : cf. menu context)*/
-.vEvtLabel										{overflow:hidden; font-size:0.95em; font-weight:normal; color:white!important;}
+.vEvtLabel										{overflow:hidden; font-size:0.9rem; font-weight:normal; color:white!important;}
 .vEvtLabel img									{margin-left:5px;}
 
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
-	.vCalHeader>div								{padding:4px; width:auto; font-size:0.9em; text-transform:lowercase;}
+	.vCalHeader>div								{padding:4px; width:auto; font-size:0.9rem; text-transform:lowercase;}
 	.vCalHeaderTitle							{vertical-align:middle; max-width:150px; display:inline-block; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalHeaderTitle::first-letter				{text-transform:uppercase}
 	.vCalHeaderCenter .vCalPrevNext				{padding:4px;}
-	.vCalHeaderRight>span						{margin-left:4px;}
+	.vCalHeaderRight>span						{margin-left:5px;}
+	.vCalHeaderRight>span img					{min-height:18px;}
 	.vEvtBlock									{height:25px; min-height:25px; overflow:hidden; padding-right:0px;}/*padding-right : pas menu burger*/
 	.vEvtLabel									{text-transform:lowercase; white-space:normal!important;}/*longs mots splités sur plusieurs lignes*/
 	.vCalHeader .personImgSmall, .vEvtLabelDate, .vEvtBlock .objMenuContextFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
@@ -159,14 +159,15 @@ function moduleDisplay()
 /* IMPRESSION */
 @media print{
 	@page											{size:landscape;}/*format paysage*/
+	html, body										{background-image:none!important;}/*surcharge*/
 	body											{-webkit-print-color-adjust:exact; print-color-adjust:exact;}/*conserve les couleurs des evts*/
 	.vCalMain, .vCalVue, .vCalVue>*, .vWeekTable	{width:1200px!important; max-width:1200px!important; max-height:98%!important;}
 	.vEvtBlock										{max-width:165px!important;}/*1200 % 7*/
 	.vCalMain										{box-shadow:none;}
 	.vCalMain:not(:last-child)						{page-break-after:always;}/*saut de page après chaque agenda (sauf le dernier)*/
-	.vCalHeader>div									{padding:0px 10px 0px 20px !important; font-size:1.1em;}
+	.vCalHeader>div									{padding:0px 10px 0px 20px !important; font-size:1.1rem;}
 	.vCalHeaderCenter								{text-align:right;}
-	.vEvtLabel										{font-size:0.9em;}
+	.vEvtLabel										{font-size:0.9rem;}
 	.vWeekScroller									{overflow:visible!important;}/*pas d'overflow scroll en affichage "week"*/
 	#synthBlock, .vCalPrevNext, .vCalHeaderRight, .vMonthWeekNbYear	{display:none!important;}
 }

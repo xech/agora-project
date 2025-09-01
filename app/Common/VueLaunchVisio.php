@@ -10,8 +10,8 @@ ready(function(){
 </script>
 
 <style>
-.divOptions						{margin:40px 0px; text-align:center; font-size:1.1em;}
-.divOptions .launchVisio		{width:320px; height:80px; padding:10px 5px; font-size:1.2em;}
+.divOptions						{margin:40px 0px; text-align:center; font-size:1.1rem;}
+.divOptions .launchVisio		{width:320px; height:80px; padding:10px 5px; font-size:1.2rem;}
 .divOptions .launchVisio img	{margin:5px;}
 .divOptions .launchVisioIcon	{float:left; margin:10px;}
 </style>

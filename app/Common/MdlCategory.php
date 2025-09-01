@@ -81,7 +81,7 @@
 		$vDatas["tradPrefix"]=static::tradPrefix;
 		$vDatas["categoryList"]=static::catList();
 		$vDatas["_idCategoryFilter"]=(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  ?  $_SESSION["_idCategoryFilter"][static::objectType]  :  null;	//catégorie affichée
-		if(static::addRight())	{$vDatas["urlEditObjects"]="?ctrl=object&action=EditCategories&objectType=".static::objectType;}									
+		if(static::addRight())	{$vDatas["urlEditObjects"]="?ctrl=object&action=VueEditCategory&objectType=".static::objectType;}									
 		return Ctrl::getVue(Req::commonPath."VueCategoryMenu.php",$vDatas);
 	}
 

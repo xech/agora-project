@@ -138,7 +138,7 @@ input[name='guestMail']				{margin-left:20px;}
 
 /*VISIOCONFERENCE*/
 #visioUrlAdd						{line-height:35px;}
-#visioUrlInput						{width:250px; font-size:0.95em;}
+#visioUrlInput						{width:250px; font-size:0.9rem;}
 <?= empty($curObj->visioUrl) ? "#visioOptions{display:none;}" : "#visioUrlAdd{display:none;}" ?>/*masque "Ajouter une visio"  ||  masque l'input de la visio*/
 
 /*AFFECTATION AUX AGENDAS*/

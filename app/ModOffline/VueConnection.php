@@ -91,12 +91,12 @@ ready(function(){
 
 /*RESPONSIVE SMALL*/
 @media screen and (max-width:1024px){
-	#headerBar								{font-size:1em;}/*surcharge*/
+	#headerBar								{font-size:1rem;}/*surcharge*/
 	#headerBar span							{display:none;}
 	.miscContainer							{width:95%; margin-top:30px!important; border-radius:10px!important;}/*surcharge*/
 	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%; text-align:left!important;}
 	.publicSpaceOption						{margin-left:40px; margin-top:10px;}
-	.vConnectOptions>div					{font-size:0.9em;}
+	.vConnectOptions>div					{font-size:0.9rem;}
 }
 </style>
 

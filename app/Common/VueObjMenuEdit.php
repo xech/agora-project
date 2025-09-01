@@ -164,7 +164,7 @@ ready(function(){ labelRightStyle(); });
 @media screen and (max-width:490px){
 	.objMenuTab[for='objMenuAccessRight']					{min-width:100px;}/*onglet des droits d'accès*/
 	.objMenuOptions											{padding:25px 8px;}
-	.vSpaceTable											{font-size:0.9em;}/*Nom de l'espace et label des "targets"*/
+	.vSpaceTable											{font-size:0.9rem;}/*Nom de l'espace et label des "targets"*/
 	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}/*colonne des checkboxes*/
 	.objMenuTab img, .vSpaceTable img, .vSpaceTargetIcon	{display:none;}
 }

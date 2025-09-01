@@ -98,7 +98,7 @@ class CtrlDashboard extends Ctrl
 	/********************************************************************************************************
 	 * VUE : EDITION D'UNE ACTUALITÉ
 	 ********************************************************************************************************/
-	public static function actionDashboardNewsEdit()
+	public static function actionVueEditDashboardNews()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -114,13 +114,13 @@ class CtrlDashboard extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		static::displayPage("VueDashboardNewsEdit.php",$vDatas);
+		static::displayPage("VueEditDashboardNews.php",$vDatas);
 	}
 
 	/********************************************************************************************************
 	 * VUE : EDITION D'UN SONDAGE
 	 ********************************************************************************************************/
-	public static function actionDashboardPollEdit()
+	public static function actionVueEditDashboardPoll()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -177,7 +177,7 @@ class CtrlDashboard extends Ctrl
 		$vDatas["curObj"]=$curObj;
 		$vDatas["pollResponses"]=$curObj->getResponses();
 		$vDatas["pollIsVoted"]=$pollIsVoted;
-		static::displayPage("VueDashboardPollEdit.php",$vDatas);
+		static::displayPage("VueEditDashboardPoll.php",$vDatas);
 	}
 
 	/********************************************************************************************************

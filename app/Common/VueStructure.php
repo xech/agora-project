@@ -41,6 +41,7 @@
 		fancyboxLang			=Fancybox.l10n.<?= Txt::trad("FANCYBOXLANG") ?>;	
 		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
 		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
+		labeCopyUrlNotif		="<?= Txt::trad("copyUrlNotif") ?>";
 		labelConfirm			="<?= Txt::trad("confirm") ?>";
 		labelConfirmOk			="<?= Txt::trad("confirmOk") ?>";
 		labelConfirmCancel		="<?= Txt::trad("confirmCancel") ?>";
@@ -54,16 +55,22 @@
 
 		////	Au chargement de la page
 		ready(function(){
-			//// Mobile : Affiche le bouton "Ajouter" en bas de page
+			//// Mobile : Bouton "Add" du footer ("plusBig.png")
 			if(isMobile()){
-				var addElemButton=$("#moduleMenu img[src*='plus']").first().parents(".menuLine");									//Sélectionne le premier bouton "Ajouter"
+				var addElemButton=$("#moduleMenu img[src*='plus']").first().parents(".menuLine");								//Sélectionne le premier bouton "Add"
 				if(addElemButton.exist())  {$("#menuMobileAddButton").attr("onclick",addElemButton.attr("onclick")).show();}	//Ajoute l'attribut "onclick" et affiche le bouton
 			}
 			//// Affiche des notifs
 			<?php foreach(Ctrl::$notify as $tmpNotif){ ?>
 				notify("<?= Txt::trad($tmpNotif["message"]) ?>","<?= $tmpNotif["type"] ?>");
 			<?php } ?>
-
+			//// Affiche la vue d'un objet depuis une Url de partage (cf. "getUrlExternal()" et "typeIdTarget")
+			<?php if(Req::isParam("typeIdTarget")){ ?>
+			setTimeout(function(){
+				//Focus le block de l'objet via son "data-typeId" ("objContainerMenu()")  +  Affiche la vue de l'objet (fichier pdf/img via .typeIdTarget)  +  Exclu. les VueEdit et .menuContext
+				$("div[data-typeId='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTarget").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
+			}, 500);
+			<?php } ?>
 			//// Footer & Notify du host
 			<?php if(Req::isHost()) {Host::footerJsNotify();} ?>
 		});

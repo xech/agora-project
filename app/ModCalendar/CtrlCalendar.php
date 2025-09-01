@@ -83,12 +83,15 @@ class CtrlCalendar extends Ctrl
 		$vDatas["displayedCalendars"]=[];
 		$prefCalendars=Txt::txt2tab(Ctrl::getPref("displayedCalendars"));
 		foreach($vDatas["readableCalendars"] as $tmpCal){
-			//Ajoute l'agenda si dans les préférence ou c'est un agenda principal
+			//Ajoute l'agenda si dans les préférence OU Aucun agenda en pref et c'est un agenda principal
 			if(in_array($tmpCal->_id,$prefCalendars)  ||  (empty($prefCalendars) && ($tmpCal->isMainCalendar()))){
 				$tmpCal->isDisplayed=true;
 				$vDatas["displayedCalendars"][]=$tmpCal;
 			}
 		}
+		////	Tjs aucun "displayedCalendars" : affiche le 1er "readableCalendars"
+		if(empty($vDatas["displayedCalendars"]) && !empty($vDatas["readableCalendars"]))
+			{$vDatas["displayedCalendars"][]=$vDatas["readableCalendars"][0];}
 
 		////	AGENDAS AFFICHÉS : RECUPÈRE LA VUE (VueCalendarMonth/VueCalendarWeek)  &&  LISTE DES EVENEMENTS
 		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal){
@@ -207,7 +210,7 @@ class CtrlCalendar extends Ctrl
 	/********************************************************************************************
 	 * VUE : EDITION D'UN AGENDA
 	 ********************************************************************************************/
-	public static function actionCalendarEdit()
+	public static function actionVueEditCalendar()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -224,13 +227,13 @@ class CtrlCalendar extends Ctrl
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
 		$vDatas["hidePropositionGuest"]=(Db::getVal("SELECT count(*) FROM ap_space WHERE public=1")==0);//Masque l'option s'il n'y a pas d'espace public disponible
-		static::displayPage("VueCalendarEdit.php",$vDatas);
+		static::displayPage("VueEditCalendar.php",$vDatas);
 	}
 
 	/********************************************************************************************
 	 * VUE : EDITION D'UN EVENEMENT D'AGENDA
 	 ********************************************************************************************/
-	public static function actionCalendarEventEdit()
+	public static function actionVueEditCalendarEvent()
 	{
 		////	INIT
 		$curObj=Ctrl::getCurObj();
@@ -311,7 +314,7 @@ class CtrlCalendar extends Ctrl
 		$vDatas["curObj"]=$curObj;
 		foreach(Txt::txt2tab($curObj->periodDateExceptions) as $tmpDate)  {$vDatas["periodDateExceptions"][]=Txt::formatDate($tmpDate,"dbDate","inputDate");}
 		$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
-		static::displayPage("VueCalendarEventEdit.php",$vDatas);
+		static::displayPage("VueEditCalendarEvent.php",$vDatas);
 	}
 
 	/********************************************************************************************

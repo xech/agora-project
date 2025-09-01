@@ -226,7 +226,7 @@ async function proposeVisio()
 .vMessengerMessage								{width:100%;}
 .vMessengerMessage tr:hover						{background:#393939;}
 .vMessengerMessage td							{padding:4px; cursor:help; vertical-align:middle;}
-.vMessengerMessageDateAutor						{min-width:80px; width:1%; white-space:nowrap; vertical-align:top; color:#888; font-size:0.9em;}/*Heure/label de l'auteur. Width ajusté via 'nowrap'*/
+.vMessengerMessageDateAutor						{min-width:80px; width:1%; white-space:nowrap; vertical-align:top; color:#888; font-size:0.9rem;}/*Heure/label de l'auteur. Width ajusté via 'nowrap'*/
 .vMessengerMessage .personImg					{width:22px; height:22px; margin-left:8px;}	/*image des users dans les messages (cf. "actionMessengerUpdate()")*/
 .vMessengerMessage .iconUsersMultiple			{height:18px; margin-bottom:5px;}			/*Icone de discussion à plusieurs*/
 .vMessengerMessage a							{color:white;}								/*lien des visios*/
@@ -250,7 +250,7 @@ async function proposeVisio()
 @media screen and (max-width:1024px){
 	.vLivecounterUser							{margin-inline:0px; padding-block:10px;}
 	.vLivecounterUser .personImg				{display:none;}
-	#messengerMain								{width:100%!important; height:100%!important; border:none!important; box-shadow:none!important; border-radius:0px; padding:0px; font-size:0.9em;}
+	#messengerMain								{width:100%!important; height:100%!important; border:none!important; box-shadow:none!important; border-radius:0px; padding:0px; font-size:0.9rem;}
 	#messengerHeader							{text-align:right; height:30px;}/*cf. #messengerClose*/
 	#messengerMove								{display:none;}
 	#messengerClose								{float:none;}

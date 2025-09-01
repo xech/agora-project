@@ -1,6 +1,6 @@
 
 /*** STYLE CHARGÉ DANS L'ÉDITEUR TINYMCE : IDEM "app.css" !*/
-.mce-content-body			{padding:10px; font-size:13px!important; font-size:13px; font-family:Arial,Helvetica,sans-serif; font-weight:normal;}/*Texte de l'éditeur*/
+.mce-content-body			{padding:10px; font-size:14px; font-weight:normal;}/*Texte de l'éditeur*/
 .mce-content-body::before	{color:#aaa!important; padding-left:7px; }/*Placeholder "Description"*/
 p							{margin:3px;}
 .attachedFileTag			{max-width:100%;}						/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/

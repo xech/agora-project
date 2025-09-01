@@ -13,7 +13,6 @@
 class Txt
 {
 	protected static $trad=[];
-	protected static $detectEncoding=null;
 	protected static $IntlDateFormatter=null;
 	public static $tradList=["francais","english","espanol","italiano","deutsch","portugues"];
 
@@ -87,26 +86,6 @@ class Txt
 		}
 	}
 
-	/********************************************************************************************************
-	 * REDUCTION DE TEXTE POUR LES TOOLTIPS, LOGS, ETC : ENLEVE LES TAGS HTML
-	 ********************************************************************************************************/
-	public static function reduce($text, $maxCaracNb=200)
-	{
-		if(!empty($text)){
-			$text=strip_tags($text);												//Enlève les tags html
-			$text=html_entity_decode($text);										//Converti les caractères html (ex: '&egrave;' => 'é')
-			$text=str_replace('&nbsp;', ' ', $text);								//Supprime les "&nbsp;"
-			$text=preg_replace('!\s+!', ' ', $text);								//Supprime les espaces en trop
-			if(strlen($text) > $maxCaracNb){										//Vérifie que le texte ne dépasse pas $maxCaracNb
-				$text=substr($text, 0, $maxCaracNb);								//Réduit le texte
-				if($maxCaracNb>100)  {$text=substr($text,0,strrpos($text," "));}	//Enlève le dernier mot si $maxCaracNb>100 (sinon on réduit trop le texte)
-				$text=rtrim($text,",")."...";										//Ajoute "..." en fin de texte (enlève si besoin la dernière virgule)
-			}
-			$text=htmlentities($text);												//Re-converti les caractères html (ex: 'é' => '&egrave;')
-			return $text;															//Retourne le résultat
-		}
-	}
-
 	/********************************************************************************************
 	 * AFFICHE UN TITLE / TOOLTIP DANS UNE BALISE
 	 ********************************************************************************************/
@@ -122,40 +101,57 @@ class Txt
 		}
 	}
 
+	/********************************************************************************************************
+	 * REDUCTION DE TEXTE POUR LES TOOLTIPS, LOGS, ETC : ENLEVE LES TAGS HTML
+	 ********************************************************************************************************/
+	public static function reduce($text, $maxSize=200)
+	{
+		if(!empty($text)){
+			$text=self::clean($text,"min");										//Clean le texte
+			if(strlen($text) > $maxSize){										//Vérif si le texte dépasse $maxSize
+				$text=substr($text, 0, $maxSize);								//Réduit le texte au $maxSize
+				$lastSpace=strrpos($text, ' ');									//Position du dernier espace
+				if($lastSpace!==false)	{$text=substr($text, 0, $lastSpace);}	//Enlève le dernier mot après le dernier espace
+				$text=trim($text,',').'...';									//Ajoute '...' en fin de texte (trim si besoin les virgules)
+			}
+			return htmlentities($text);											//Retourne le résultat avec encodage des caractères html (ex: & -> &amp;)
+		}
+	}
+
 	/*********************************************************************************************************************
-	 * SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
+	 * CLEAN DE TEXTE : SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
 	 * $scope="min" 	-> parametres de fichier Ical, etc :			"l'été &amp; (!?)"  ->  "l'été & (!?)"
 	 * $scope="normal"	-> noms de fichier, recherche d'objets, etc :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
 	 * $scope="max"		-> identifiants, noms en bdd, etc :				"l'été &amp; (!?)"  ->  "l_ete_"
 	 *********************************************************************************************************************/
-	public static function clean($text, $scope="normal", $replaceBy="_")
+	public static function clean($text, $scope="normal", $charReplace="_")
 	{
-		//Editeur TinyMce && injection XSS : enleve les balises html via "strip_tags()" && décode les caractères html (&quot; &amp; etc) via "html_entity_decode()"
+		//Editeur TinyMce ou XSS : enleve les balises html + décode les caractères html (ex: &amp; -> &)  +  supprime les '&nbsp;', espaces multiples, tabulations et sauts de ligne
 		$text=html_entity_decode(strip_tags($text));
+		$text=preg_replace(['/&nbsp;/','/\s+/'], ' ', $text);
 		//Remplace les caractères accentués
 		if($scope=="max"){
-			$accentedChars=['Š'=>'S','š'=>'s','Ž'=>'Z','ž'=>'z','À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Ä'=>'A','Å'=>'A','Æ'=>'A','Ç'=>'C','È'=>'E','É'=>'E','Ê'=>'E','Ë'=>'E','Ì'=>'I','Í'=>'I','Î'=>'I','Ï'=>'I','Ñ'=>'N','Ò'=>'O','Ó'=>'O','Ô'=>'O','Õ'=>'O','Ö'=>'O','Ø'=>'O','Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U','Ý'=>'Y','Þ'=>'B','ß'=>'Ss','à'=>'a','á'=>'a','â'=>'a','ã'=>'a','ä'=>'a','å'=>'a','æ'=>'a','ç'=>'c','è'=>'e','é'=>'e','ê'=>'e','ë'=>'e','ì'=>'i','í'=>'i','î'=>'i','ï'=>'i','ð'=>'o','ñ'=>'n','ò'=>'o','ó'=>'o','ô'=>'o','õ'=>'o','ö'=>'o','ø'=>'o','ù'=>'u','ú'=>'u','û'=>'u','ý'=>'y','þ'=>'b','ÿ'=>'y'];
-			$text=strtr($text, $accentedChars);
+			$charsAccent=['/[àáâãäå]/u', '/[ç]/u', '/[èéêë]/u', '/[ìíîï]/u', '/[ñ]/u', '/[òóôõö]/u', '/[ùúûü]/u', '/[ÀÁÂÃÄÅ]/u', '/[Ç]/u', '/[ÈÉÊË]/u', '/[ÌÍÎÏ]/u', '/[Ñ]/u', '/[ÒÓÔÕÖ]/u', '/[ÙÚÛÜ]/u', '/[Ý]/u'];
+			$charsBasic =['a', 'c', 'e', 'i', 'n', 'o', 'u', 'A', 'C', 'E', 'I', 'N', 'O', 'U', 'Y'];
+			$text=preg_replace($charsAccent, $charsBasic, $text);
 		}
-		//Conserve uniquement les caractères alphanumériques et certains caractères spéciaux
-		$acceptedChars=['.','-','_'];																												//Caractères spéciaux conservés : scope "max"
-		if($scope!="max")	{$acceptedChars=array_merge($acceptedChars, ["'",',',' ','(',')','[',']']);}											//Idem : scope "normal" et "min"
-		if($scope=="min")	{$acceptedChars=array_merge($acceptedChars, ['"','/','\\','*',':','<','>','@','&','?','!','#']);  $replaceBy=" ";}		//Idem : scope "min"  +  change le $replaceBy par des espaces
-		foreach(preg_split('//u',$text) as $tmpChars){																								//pas de "str_split()" car ne reconnait pas les caractères accentués
-			if(!preg_match("/[\p{Nd}\p{L}]/u",$tmpChars) && !in_array($tmpChars,$acceptedChars))  {$text=str_replace($tmpChars,$replaceBy,$text);}	//valeurs décimales via "\p{Nd}" + lettres via "\p{L}" (même accentuées)
-		}
-		//Minimise le nb de $replaceBy et renvoie le résultat
-		$text=str_replace($replaceBy.$replaceBy, $replaceBy, $text);
+		//Conserve les caractères alphanumériques et certains caractères spéciaux
+		$charsSpec='\.\-\_';																//conserve les caractères spéciaux  . - _ 
+		if($scope!="max")	{$charsSpec.='\s\'\,\(\)\[\]';}									//conserve aussi les espaces  ' , ( ) [ ]
+		if($scope=="min")	{$charsSpec.='\*\:\<\>\@\&\?\!\#"\/\\\\';  $charReplace=' ';}	//conserve aussi les  * : < > @ & ? ! # " / \   ('\' doit être échappé 2 fois)
+		$text=preg_replace('/[^\p{L}0-9'.$charsSpec.']/u', $charReplace, $text);			//Conserve les lettres (même accentuées) via  \p{L}  +  chiffres via  0-9  + caractère spéciaux
+		//Renvoie le résultat
 		return trim($text);
 	}
 
 	/********************************************************************************************************
-	 * ENCODE SI BESOIN UNE CHAINE EN UTF-8
+	 * RETOURNE UNE CHAINE EN UTF-8
 	 ********************************************************************************************************/
 	public static function utf8Encode($text)
 	{
-		if(static::$detectEncoding===null)	{static::$detectEncoding=function_exists("mb_detect_encoding");}
-		return (static::$detectEncoding==false || mb_detect_encoding($text,"UTF-8",true))  ?  $text  :  utf8_encode($text);
+		$encoding=mb_detect_encoding($text, ['UTF-8','ISO-8859-1','ISO-8859-15','Windows-1252','ASCII'], true);	//Détection de l'encodage
+		if($encoding!='UTF-8')	{return mb_convert_encoding($text, 'UTF-8', $encoding);}						//Renvoi le texte convertit en UTF-8 || le texte déjà en UTF-8
+		else					{return $text;}
 	}
 
 	/********************************************************************************************************
@@ -248,11 +244,11 @@ class Txt
 				$formatter->setPattern($pattern);
 
 				//Formate le label de début et/ou de fin
-				if(!empty($timeBegin))	{$label.=$formatter->format($timeBegin);}																					//Label de début
-				if(!empty($timeEnd)){																																//Label de fin :
-					if($diffDays==false && $diffHours==true && $onlyDate==false)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}	//Même jour + diff heures	-> Ex: "11:30-12:30"
+				if(!empty($timeBegin))	{$label.=$formatter->format($timeBegin);}																						//Label de début
+				if(!empty($timeEnd)){																																	//Label de fin :
+					if($diffDays==false && $diffHours==true && $onlyDate==false)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
 					elseif($diffDays==true)											{$label.='<img src="app/img/arrowRightSmall.png"> '.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
-					elseif(empty($timeBegin))										{$label.=Txt::trad("end").' : '.$formatter->format($timeEnd);}					//Date de fin sans début	-> $pattern idem $timeBegin
+					elseif(empty($timeBegin))										{$label.=Txt::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 
 				//Retourne le résultat en utf-8

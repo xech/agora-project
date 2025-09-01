@@ -142,14 +142,14 @@ class Req
 	/**************************************************************************************************************************************************************
 	 * RECUPÈRE L'URL COURANTE DE BASE (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&typeId=file-55"  =>  "https://www.mon-espace.net/agora")
 	 **************************************************************************************************************************************************************/
-	public static function getCurUrl($urlProtocol=true)
+	public static function getCurUrl($protocol=true)
 	{
 		//Spécifie le protocole dans l'url (vide si affichage simplifié de l'url)
-		if($urlProtocol==false)				{$urlProtocol=null;}
-		elseif(!empty($_SERVER['HTTPS']))	{$urlProtocol="https://";}
-		else								{$urlProtocol="http://";}
+		if($protocol==false)				{$protocol=null;}
+		elseif(!empty($_SERVER['HTTPS']))	{$protocol="https://";}
+		else								{$protocol="http://";}
 		//Renvoie l'url sans les paramètres ni le dernier "/" (Note : toutes les requêtes passent par "index.php")
-		return $urlProtocol.$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER["PHP_SELF"]),'/');
+		return $protocol.$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER["PHP_SELF"]),'/');
 	}
 
 	/********************************************************************************************************
@@ -173,7 +173,7 @@ class Req
 	 ********************************************************************************************/
 	public static function isDevServer()
 	{
-		return preg_match("/(devbian|debian)/i",$_SERVER['SERVER_NAME']);
+		return preg_match('/^(omnispace\.local|debian12)$/i', $_SERVER['SERVER_NAME']);
 	}
 
 	/********************************************************************************************
@@ -197,8 +197,9 @@ class Req
 	 ********************************************************************************************/
     private function displayExeption(Exception $exception)
 	{
-		////	Install à réaliser et pas de hosting : redirige vers le formulaire d'install			///!!!! Différent de l'app opensource !!!!
-		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && self::isHost()==false)   {Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+		////	Install d'Agora-Project en Auto-hébergement
+		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && self::isHost()==false)
+			{Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
         echo '<h3 style="text-align:center;margin-top:50px;font-size:24px">
 				<img src="app/img/importantBig.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
@@ -242,7 +243,7 @@ class Req
 	 ********************************************************************************************/
 	public static function verifPhpVersion()
 	{
-		$versionPhpMinimum="7.0";
+		$versionPhpMinimum="7.4";
 		if(version_compare(PHP_VERSION,$versionPhpMinimum,"<=")){
 			echo "<h2><img src='app/img/important.png'> ".str_replace("--CURRENT_VERSION--",static::appVersion(),Txt::trad("INSTALL_PhpOldVersion"))." : ".$versionPhpMinimum." minimum &nbsp; -> current version : ".PHP_VERSION."</h2>";
 			exit;

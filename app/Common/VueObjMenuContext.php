@@ -29,8 +29,8 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	////	HISTORIQUE/LOGS
 	if(!empty($logUrl))  {echo '<div class="menuLine" onclick="lightboxOpen(\''.$logUrl.'\')"><div class="menuIcon"><img src="app/img/log.png"></div><div>'.Txt::trad("objHistory").'</div></div>';}
 
-	////	COPIER L'ADRESSE/URL D'ACCES (affiche puis masque l'input pour pouvoir être copié..)
-	if(!empty($getUrlExternal))  {echo '<div class="menuLine" '.Txt::tooltip("copyUrlTooltip").' onclick="$(this).find(\'input\').show().select();document.execCommand(\'copy\');$(this).find(\'input\').hide();notify(\''.Txt::trad("copyUrlNotif",true).'\')"><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'<input type="text" value="'.$getUrlExternal.'" style="display:none"></div></div>';}
+	////	COPIER L'URL DE PARTAGE
+	if(!empty($getUrlExternal))  {echo '<div class="menuLine" onclick="navigator.clipboard.writeText(\''.$getUrlExternal.'\');notify(labeCopyUrlNotif);" '.Txt::tooltip("copyUrlTooltip").'><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'</div></div>';}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	if(!empty($options["specificOptions"])){

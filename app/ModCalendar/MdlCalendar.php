@@ -229,8 +229,8 @@ class MdlCalendar extends MdlObject
 		}
 		////	Delete les evts de + de 10ans (admin général)
 		if(empty($_SESSION["calendarsCleanEvt"]) && Ctrl::$curUser->isGeneralAdmin()){
-			$timeMin=time()-(TIME_1YEAR*50);
-			$timeMax=time()-(TIME_1YEAR*10);
+			$timeMin=strtotime("-50 year");
+			$timeMax=strtotime("-10 year");
 			$_SESSION["calendarsCleanEvt"]=true;
 			foreach(self::$_readableCals as $tmpCal){
 				if($tmpCal->editContentRight()){

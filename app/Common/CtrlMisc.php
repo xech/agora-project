@@ -338,22 +338,22 @@ class CtrlMisc extends Ctrl
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 
-	/**********************************************************************************************************************************************
-	 * URL : DOWNLOAD DEPUIS L'EXTERIEUR, VIA MOBILEAPP OU NOTIF MAIL
-	 * exple:	"?ctrl=file&action=GetFile&typeId=file-1"
-	 * 		=>  "?ctrl=misc&action=ExternalGetFile&typeId=file-1&ctrlBis=file&nameMd5=184dfd315adbbed13729076606b1afac&fileName=Documentation.pdf"
-	 **********************************************************************************************************************************************/
+	/****************************************************************************************************************************************************
+	 * URL : DOWNLOAD EXTERNE -> MOBILEAPP OU NOTIF MAIL
+	 * exple:		"?ctrl=file&action=GetFile&typeId=file-1"
+	 * devient : 	"?ctrl=misc&action=ExternalGetFile&typeId=file-55&ctrlBis=file&nameMd5=184dfd315adbbed13729076606b1afac&fileName=Documentation.pdf"
+	 ****************************************************************************************************************************************************/
 	public static function urlExternalGetFile($urlDownload, $fileName)
 	{
 		$ctrlBis=stristr($urlDownload,"ctrl=file")  ?  "file"  :  "object";														//Défini d'abord le controleur secondaire : "file" ou "object" ("attachedFile")
 		$urlDownload=str_ireplace(["ctrl=file","ctrl=object"], "ctrl=misc", $urlDownload);										//Puis switch sur le controleur "misc" (cf. "$initCtrlFull=false")
 		$urlDownload=str_ireplace(["action=GetFile","action=AttachedFileDownload"], "action=ExternalGetFile", $urlDownload);	//Puis switch sur l'action "ExternalGetFile"
-		return $urlDownload."&ctrlBis=".$ctrlBis."&nameMd5=".md5($fileName)."&fileName=".urldecode($fileName);					//Retourne l'url avec le nom du fichier et le "nameMd5" pour le controle d'accès
+		return $urlDownload."&ctrlBis=".$ctrlBis."&nameMd5=".md5($fileName)."&fileName=".urlencode($fileName);					//Retourne l'url avec le "nameMd5" pour le controle d'accès + le nom du fichier urlencodé
 	}
 
-	/*********************************************************************************************************************************
-	 * ACTION : DOWNLOAD DEPUIS L'EXTERIEUR, VIA MOBILEAPP OU NOTIF MAIL  (cf. contrôle de l'Url via "main.dart")
-	 *********************************************************************************************************************************/
+	/********************************************************************************************************
+	 * ACTION : DOWNLOAD EXTERNE -> MOBILEAPP OU NOTIF MAIL  (cf. contrôle de l'Url via "main.dart")
+	 ********************************************************************************************************/
 	public static function actionExternalGetFile()
 	{
 		////	Download/Affiche le fichier (pdf/img/video)

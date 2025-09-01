@@ -137,9 +137,9 @@ if(Req::isParam("searchText"))
 		$pluginLabel=preg_replace("/".$searchText."/i", "<mark>".$searchText."</mark>", $pluginLabel);		//Surligne l'expression exacte en gardant la casse (pas avec "str_ireplace")
 		//// Affiche le plugin
 		echo '<div class="menuLine lineHover">
+				<div class="vContextMenu">'.$tmpObj->contextMenu(["launcherIcon"=>"inlineSmall"]).'</div>
 				<div onclick="'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
 				<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$pluginLabel.'</div>
-				<div class="vContextMenu">'.$tmpObj->contextMenu(["launcherIcon"=>"inlineSmall"]).'</div>
 			  </div>';
 	}
 	//Aucun résultat à afficher

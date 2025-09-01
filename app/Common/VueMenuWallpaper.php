@@ -30,7 +30,7 @@ function wallpaperDelete()
 select[name='wallpaper']		{height:120px; max-width:180px;}
 #wallpaperImg img 				{height:120px; max-width:none;}/*surcharge ".objField img"*/
 #wallpaperAdd, #wallpaperDelete	{display:none;}
-#wallpaperDelete				{font-size:0.9em;}
+#wallpaperDelete				{font-size:0.9rem;}
 option[value='add']				{background:#800;color:white;}
 </style>
 

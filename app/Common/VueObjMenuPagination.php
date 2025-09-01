@@ -1,7 +1,7 @@
 <style>
 #menuPagination 					{padding:8px;}/*surcharge*/
 #menuPagination .vMenuPageDisabled	{opacity:0.4;}
-#menuPagination a					{display:inline-block; padding:10px 8px; border-radius:5px; font-size:1.1em;}
+#menuPagination a					{display:inline-block; padding:10px 8px; border-radius:5px; font-size:1.1rem;}
 #menuPagination a:hover, #menuPagination .linkSelect	{background-color:#eee;}
 </style>
 

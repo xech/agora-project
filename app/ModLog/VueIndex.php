@@ -36,7 +36,6 @@ ready(function(){
 <style>
 #pageContent				{padding:10px;}
 thead th					{text-align:left;}
-#tableLogs					{font-size:0.9em;}
 #tableLogs td				{text-align:left; padding:3px;}
 #tableLogs th				{text-align:left; padding:8px; padding-left:3px;}
 #tableLogs tbody			{color:#333;}/*text toujours en noir*/

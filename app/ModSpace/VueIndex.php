@@ -2,13 +2,13 @@
 /* BLOCKS DE CONTENU */
 #moduleMenu .infos			{text-align:left;}
 .objBlocks .objContainer	{height:200px; width:300px; min-width:300px; max-width:700px; padding:10px;}/*surcharge*/
-.vSpaceName					{font-size:1.1em;}
+.vSpaceName					{font-size:1.1rem;}
 .vSpaceDescription			{margin-top:10px; font-weight:normal;}
 .vModules					{margin:15px 0px;}
 .vModules img				{max-height:30px; margin-right:10px;}
 .vSpaceAffectationLabel		{margin:12px 0px 8px 3px;}
 .vSpaceAffectations			{overflow-y:auto; height:70px;}
-.vSpaceAffectation			{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.95em;}
+.vSpaceAffectation			{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.9rem;}
 .vSpaceAffectation img		{max-height:20px;}
 
 /*RESPONSIVE SMARTPHONE*/

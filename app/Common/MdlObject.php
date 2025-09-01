@@ -367,35 +367,51 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * LABEL DE L'OBJET (Nom/Titre/etc : cf. "$requiredFields" des objets)
+	 * LABEL DE L'OBJET : CHAMP PRINCIPAL (CF "$requiredFields")
 	 ********************************************************************************************************/
 	public function getLabel()
 	{
 		//Label principal
-		if(!empty($this->name))				{$tmpLabel=$this->name;}		//Ex: nom de fichier
-		elseif(!empty($this->title))		{$tmpLabel=$this->title;}		//Ex: task
-		elseif(!empty($this->description))	{$tmpLabel=$this->description;}	//Ex: sujet/message du forum (sans titre)
-		elseif(!empty($this->adress))		{$tmpLabel=$this->adress;}		//Ex: link
-		else								{$tmpLabel=null;}
-		//Retourne un résultat "clean"
-		return Txt::reduce($tmpLabel,50);
+		if(!empty($this->name))				{$text=$this->name;}		//Ex: nom de fichier
+		elseif(!empty($this->title))		{$text=$this->title;}		//Ex: titre d'une 'task'
+		elseif(!empty($this->description))	{$text=$this->description;}	//Ex: actualité, message du forum
+		elseif(!empty($this->adress))		{$text=$this->adress;}		//Ex: Url d'un 'link'
+		else								{$text=null;}
+		//Retourne le label de l'objet
+		return Txt::reduce($text,50);
 	}
 
 	/********************************************************************************************************
-	 * URL D'ACCÈS À L'OBJET  :  $display => "vue" / "edit" / "delete" / "default"
+	 * URL D'ACCÈS À L'OBJET  :  $display => "vue"/ "edit" / "delete" / accès direct
 	*********************************************************************************************************/
 	public function getUrl($display=null)
 	{
-		if($this->isNew())  {return "?ctrl=".static::moduleName;}//Objet qui n'existe plus ou pas encore
-		else{
-			$urlCtrl="?ctrl=".static::moduleName;
-			if($display=="vue")									{return $urlCtrl."&typeId=".$this->_typeId."&action=Vue".static::objectType;}			//Vue détaillée dans une lightbox (user/contact/task/calendarEvent)
-			elseif($display=="delete")							{return "?ctrl=object&action=delete&objectsTypeId[".static::objectType."]=".$this->_id;}//Url de suppression via "actionDelete()"
-			elseif($display=="edit" && static::isFolder==true)	{return "?ctrl=object&action=EditFolder&typeId=".$this->_typeId;}						//Edite un dossier via "actionEditFolder()"
-			elseif($display=="edit")							{return $urlCtrl."&typeId=".$this->_typeId."&action=".static::objectType."Edit";}		//Edite un objet lambda
-			elseif(static::isInContainer())						{return $urlCtrl."&typeId=".$this->containerObj()->_typeId;}							//Affichage d'un objet dans son "Container" (file, task, etc. Surchargé pour "calendarEvent")
-			else												{return $urlCtrl."&typeId=".$this->_typeId;}											//Affichage par défaut (Folder, News, etc)
-		}
+		$url="?ctrl=".static::moduleName;
+		if($display=="vue")					{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->_typeId;}			//Vue dans une lightbox (Task/User/Contact/etc)
+		elseif($display=="edit")			{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->_typeId;}		//Edition un objet
+		elseif($display=="delete")			{return "?ctrl=object&action=delete&typeId=".$this->_typeId;}								//Suppression d'un objet via "actionDelete()"
+		elseif(static::isInContainer())		{return $url."&typeId=".$this->containerObj()->_typeId."&typeIdTarget=".$this->_typeId;}	//Affichage du conteneur d'un objet (File/Task/CalendarEvent/etc)
+		else								{return $url."&typeId=".$this->_typeId;}													//Affichage par défaut (News/Folder/etc)
+	}
+
+	/********************************************************************************************************
+	 * URL DE PARTAGE D'UN OBJET (NOTIFS MAIL, ETC)
+	 * Via "userConnectionSpaceSelection()"  >  cible l'espace courant  >  puis redir vers l'url de l'objet
+	 ********************************************************************************************************/
+	public function getUrlExternal()
+	{
+		return Req::getCurUrl().'/index.php?ctrl=offline&_idSpaceAccess='.Ctrl::$curSpace->_id.'&objUrl='.urlencode($this->getUrl());
+	}
+
+	/********************************************************************************************************
+	 * URL D'EDITION D'UN NOUVEL OBJET
+	 ********************************************************************************************************/
+	public static function getUrlNew()
+	{
+		$url=(new static())->getUrl("edit");									//URL d'édition d'un nouvel objet
+		if(!empty(Ctrl::$curContainer) && static::objectType!="calendarEvent")	//Ajoute l'id du container (Folder/File/ForumMessage/etc sauf CalendarEvent)
+			{$url.='&_idContainer='.Ctrl::$curContainer->_id;}
+		return $url;
 	}
 
 	/********************************************************************************************************
@@ -404,26 +420,6 @@ class MdlObject
 	public function openVue()
 	{
 		return "lightboxOpen('".$this->getUrl("vue")."');";
-	}
-
-	/********************************************************************************************************
-	 * URL D'ACCÈS À L'OBJET
-	 * Accès direct à l'élément  ||  Accès depuis une notifs mail (cf. "Ctrl::userConnectionSpaceSelection()")
-	 ********************************************************************************************************/
-	public function getUrlExternal()
-	{
-		//Depuis la page de connexion : Cible l'espace courant > puis l'url encodé de l'objet (module + typeId de l'objet)
-		return Req::getCurUrl()."/index.php?ctrl=offline&_idSpaceAccess=".Ctrl::$curSpace->_id."&objUrl=".urlencode($this->getUrl());
-	}
-
-	/********************************************************************************************************
-	 * URL D'EDITION D'UN NOUVEL OBJET
-	 ********************************************************************************************************/
-	public static function getUrlNew()
-	{
-		$url=(static::isFolder==true)  ?  "?ctrl=object&action=EditFolder"  :  "?ctrl=".static::moduleName."&action=".static::objectType."Edit";	//Nouveau dossier / Nouvel objet
-		if(!empty(Ctrl::$curContainer))  {$url.="&_idContainer=".Ctrl::$curContainer->_id;}															//Ajoute l'id du container
-		return $url."&typeId=".static::objectType."-0";
 	}
 
 	/********************************************************************************************************
@@ -556,18 +552,21 @@ class MdlObject
 	/********************************************************************************************************
 	 * ENVOI UNE NOTIF PAR MAIL DE L'EDITION DE L'OBJET (cf. "menuEdit")
 	 ********************************************************************************************************/
-	public function sendMailNotif($messageSpecific=null, $addFiles=null, $addUserIds=null)
+	public function sendMailNotif($specificLabel=null, $addFiles=null, $addUserIds=null)
 	{
 		if(Req::isParam("notifMail") || !empty($addUserIds)){
 			////	Sujet
 			$tradSubject=($this->isNew() || $this->isNewRecord())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par Paul"
 			$subject=ucfirst($this->tradObject($tradSubject))." ".Ctrl::$curUser->getLabel();
-			////	Message
-			if(!empty($messageSpecific))		{$message=$messageSpecific;}			//Message spécifique (ex: liste des fichiers uploadés)
-			elseif(!empty($this->description))	{$message=$this->descriptionMail();}	//Description avec au besoin les images en pièce jointe ("cid")
-			else								{$message=$this->getLabel();}			//Label de l'objet
+			////	Message : label/description de l'objet
+			$descriptionLabel=in_array('description',static::$requiredFields);			//Label = description (champ principal)
+			if(!empty($specificLabel))			{$message=$specificLabel;}				//Nom des fichiers uploadés, etc
+			elseif($descriptionLabel==true)		{$message=$this->descriptionMail();}	//Description envoyee par mail
+			else								{$message=$this->getLabel();}			//Label principal (title, name, etc)
+			if($descriptionLabel==false && !empty($this->description))  {$message.='<br><br><b>'.$this->descriptionMail().'</b>';}//Ajoute si besoin la description (ex: fichiers uploadés)
+			////	Message : mise en forme
 			$message='<div style="margin:20px 0px;">'.$subject.' :</div>
-					  <div style="margin:20px 10px;max-width:90%;padding:15px;background:#eee;border:1px solid #bbb;border-radius:5px;font-weight:bold;">'.$message.'</div>
+					  <div style="margin:20px 0px;max-width:95%;padding:10px 20px;background:#eee;border:1px solid #bbb;border-radius:5px;">'.$message.'</div>
 					  <a href="'.$this->getUrlExternal().'" target="_blank">'.Txt::trad("MAIL_elemAccessLink").'</a>';
 			////	Destinataires de la notif :  Users spécifiés ou affectés à l'objet
 			$mailUserIds=[];
@@ -760,7 +759,7 @@ class MdlObject
 	public function attachedFileEdit()
 	{
 		$vDatas["curObj"]=$this;
-		return Ctrl::getVue(Req::commonPath."VueObjAttachedFileEdit.php",$vDatas);
+		return Ctrl::getVue(Req::commonPath."VueObjAttachedFile.php",$vDatas);
 	}
 
 	/********************************************************************************************************
@@ -820,7 +819,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * FICHIERS JOINTS : AJOUTE DES FICHIERS   (cf. "VueObjAttachedFileEdit.php")
+	 * FICHIERS JOINTS : AJOUTE DES FICHIERS   (cf. "VueObjAttachedFile.php")
 	 ********************************************************************************************************/
 	public function attachedFileAdd()
 	{
@@ -878,9 +877,9 @@ class MdlObject
 		return $dom;																		//Renvoie le DOM de la description
 	}
 
-	/*************************************************************************************************************************************
-	 * FICHIERS JOINTS : MODIFIE LA "SRC" DES IMAGES INTEGREES A UNE DESCRIPTION, ENVOYEE PAR MAIL (ex: <img src="cid:attachedFile55">)
-	 *************************************************************************************************************************************/
+	/*****************************************************************************************************************************
+	 * DESCRIPTION ENVOYEE PAR MAIL AVEC IMAGES : MODIFIE LA "SRC" DES IMAGES PAR UN "CID"  (ex: <img src="cid:attachedFile55">)
+	 *****************************************************************************************************************************/
 	public function descriptionMail()
 	{
 		$dom=$this->descriptionDOM();														//Récupère le DOM de la description

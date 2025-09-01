@@ -43,9 +43,10 @@ ready(function(){
 </script>
 
 <style>
+#pageCenter							{margin-top:50px;}
 form								{padding:20px;}
  #formTitle							{margin-bottom:40px;}
- #formTitle	span					{font-size:1.4em; margin:0px 20px;}
+ #formTitle	span					{font-size:1.4rem; margin:0px 20px;}
  #formTitle img[src*='logoLabel']	{float:right; margin-top:-10px}
 form h3								{margin:40px 0px 10px; padding-bottom:5px; border-bottom:#ddd solid 1px;}
 #spaceDiskLimit						{width:50px;}

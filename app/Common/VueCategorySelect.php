@@ -1,7 +1,7 @@
 <script>
 ready(function(){
 	/********************************************************************************************************************************************************
-	 *	VÉRIFIE SI LA CATEGORIE EST BIEN AFFECTÉE AUX ESPACES SÉLECTIONNÉS POUR L'OBJET COURANT  (cf. "VueObjMenuEdit.php"  &  VueCategoryEdit.php")
+	 *	VÉRIFIE SI LA CATEGORIE EST BIEN AFFECTÉE AUX ESPACES SÉLECTIONNÉS POUR L'OBJET COURANT  (cf. "VueObjMenuEdit.php"  &  VueEditCategory.php")
 	 ********************************************************************************************************************************************************/
 	if($("[name='objectRight[]']").exist()){											//Vérif si le tableau des droits d'accès est bien instancié
 		$("#selectCategory, [name='objectRight[]']").on("change",function(){			//Change de categorie  OU  Sélectionne un espace dans les droits d'accès

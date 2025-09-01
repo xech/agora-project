@@ -3,6 +3,26 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 --------------------------------
 
+VERSION 25.8.1
+--------------
+Affichage direct d'un element (fichier, evenement, etc) depuis une URL de partage (URL externe)
+Optimisation des fonctions de controle de texte
+Optimisation de l'affichage des lightboxes
+Optimisation du download de fichier via l'application mobile
+Optimisation de l'encodage des caractères importés en UTF-8
+Correction des descriptions de notifications par email
+Correction de l'affichage des agendas par défaut
+Mise à jour de la documentation
+-----
+Direct display of an element (file, event, etc.) from a shared URL (external URL)
+Optimized text control functions
+Optimized lightbox display
+Optimized file uploads via the mobile app
+Optimized the encoding of imported characters in UTF-8
+Fixed email notification descriptions
+Fixed default calendar display
+Documentation update
+
 
 VERSION 25.6.4
 ---------------

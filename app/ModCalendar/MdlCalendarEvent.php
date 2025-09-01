@@ -127,20 +127,11 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : URL D'ACCÈS
+	 * SURCHARGE : URL D'ACCÈS À L'OBJET  >  AJOUTE "timeBegin" POUR AFFICHER L'AGENDA À LA DATE DE L'EVT
 	 ********************************************************************************************************/
 	public function getUrl($display=null)
 	{
-		//Url par défaut (en fonction de $display)
-		if(!empty($display))  {return parent::getUrl($display);}
-		//Surcharge : Affiche l'evt à la bonne date et si besoin dans l'agenda principal
-		else{
-			//Url du module à la bonne date 
-			$url="?ctrl=calendar&curTime=".$this->timeBegin;
-			//Spécifie si besoin l'agenda principal (affichage de "plugin", url accès direct.. mais inutile après un delete d'evt, sinon on perd la liste des agendas en cours d'affichage)
-			if(Req::$curAction!="delete" && $this->containerObj())  {$url.="&displayedCalendars[]=".$this->containerObj()->_id;}
-			return $url;
-		}
+		return empty($display)  ?  parent::getUrl()."&curTime=".$this->timeBegin  :  parent::getUrl($display);
 	}
 
 	/********************************************************************************************************

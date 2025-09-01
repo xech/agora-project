@@ -28,7 +28,7 @@ class CtrlSpace extends Ctrl
 	/********************************************************************************************************
 	 * VUE : PARAMETRAGE D'UN ESPACE
 	 ********************************************************************************************************/
-	public static function actionSpaceEdit()
+	public static function actionVueEditSpace()
 	{
 		//Init
 		$curObj=Ctrl::getCurObj();
@@ -85,6 +85,6 @@ class CtrlSpace extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		static::displayPage("VueSpaceEdit.php",$vDatas);
+		static::displayPage("VueEditSpace.php",$vDatas);
 	}
 }

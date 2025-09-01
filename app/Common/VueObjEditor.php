@@ -12,7 +12,7 @@
 			placeholder: "<?= Txt::trad("description") ?>",									//Placeholder du textarea (text par défaut)
 			language:"<?= Txt::trad("EDITORLANG") ?>",										//Langue du menu de l'éditeur
 			skin: "<?= Ctrl::$agora->skin=="black" ? "tinymce-5-dark" : "tinymce-5" ?>",	//Editeur blanc/noir
-			content_css: "<?= Ctrl::$agora->skin=="black" ? "dark": "default" ?>",			//Skin du contenu
+			content_css:"app/Common/js-css-<?= Req::appVersion() ?>/editor.css",			//Style du contenu dans l'éditeur et "font-size" par défaut
 			width: "100%",																	//Largeur de l'éditeur
 			min_height:(<?= $toggleButton==true?150:250 ?>),								//Hauteur par défaut de l'éditeur
 			convert_urls: false,															//Urls des liens : ne pas les convertir en "relatives"
@@ -23,8 +23,7 @@
 			browser_spellcheck: true,														//Correcteur orthographique du browser activé
 			contextmenu: false,																//Désactive le menu contextuel de l'éditeur : cf. "browser_spellcheck" ci-dessus
 			images_upload_handler: imageUploadHandler,										//Gestion du Drag/Drop d'image
-			content_css:"app/Common/js-css-<?= Req::appVersion() ?>/editor.css",			//Style du texte dans l'éditeur
-			font_size_formats:"0.8em 1em 1.2em 1.4em 1.6em 1.8em 2em 2.2em 2.4em 2.6em",	//Liste des "font-size" disponibles
+			font_size_formats:"80% 100% 120% 140% 160% 180% 200% 220% 240% 260% 280%",		//Liste des "font-size" disponibles
 			////	Plugins +  Menubar + Toolbar
 			plugins: "preview searchreplace autolink link image media table charmap advlist lists wordcount charmap emoticons autoresize anchor <?= Ctrl::$curUser->isGeneralAdmin() ? "code" : null ?>",
 			menubar: "<?= Ctrl::$curUser->isUser() ? "file edit view insert format tools table" : null ?>",//Barre de menu principale
@@ -54,7 +53,7 @@
 						}
 					});
 				}
-				////	Affiche une image/video/mp3 (fichier joint) dans l'éditeur : cf. "toolbar1" && "VueObjAttachedFileEdit.php"
+				////	Affiche une image/video/mp3 (fichier joint) dans l'éditeur : cf. "toolbar1" && "VueObjAttachedFile.php"
 				if($(".attachedFileInput").exist()){
 					editor.ui.registry.addButton("addMediaFileButton",{
 						icon: "image",
@@ -103,7 +102,7 @@
 	}
 
 	/****************************************************************************************************************************************************
-	 *	FICHIER JOINT : INSERE UNE IMAGE/VIDEO/MP3 DANS L'EDITEUR  (cf. "VueObjAttachedFileEdit.php")
+	 *	FICHIER JOINT : INSERE UNE IMAGE/VIDEO/MP3 DANS L'EDITEUR  (cf. "VueObjAttachedFile.php")
 	*****************************************************************************************************************************************************/
 	function attachedFileInsert(fileId, displayUrl)
 	{
@@ -152,7 +151,7 @@
 	const imageUploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
 		let fileName=blobInfo.blob().name;																				//Récupère le fileName du fichier "dropped"
 		if(fileName!=undefined && isType("imageBrowser",fileName)){														//Affiche un nouvel "attachedFileInput" et y ajoute les datas de l'image
-			$("[for='objMenuAttachedFile']").trigger("click");															//Affiche le menu des fichiers joints (cf. "VueObjAttachedFileEdit.php")
+			$("[for='objMenuAttachedFile']").trigger("click");															//Affiche le menu des fichiers joints (cf. "VueObjAttachedFile.php")
 			var fileInput=$(".attachedFileInput").filter(function(){ return this.value==""; }).first();					//Sélectionne le premier "attachedFileInput" disponible
 			const tmpFile=new File([blobInfo.blob()], fileName, {type:blobInfo.blob().type, lastModified:new Date()});	//Créé un objet Javascript "File" dans lequel on ajoute le contenu du fichier
 			const dataTransfer=new DataTransfer();																		//Créé un objet Javascript "DataTransfer"
