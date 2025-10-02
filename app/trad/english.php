@@ -26,8 +26,8 @@ class Trad extends Txt
 			"emptyFields"=>"Please fill in the fields of the form",
 			"requiredFields"=>"Required Fields",
 			"inaccessibleElem"=>"Inaccessible Element",
-			"warning"=>"Warning",
-			"elemEditedByAnotherUser"=>"The element is being edited by",
+			"warning"=>"Attention",
+			"elemEditedByAnotherUser"=>"Attention : this element is currently edited by",
 			"yes"=>"yes",
 			"no"=>"no",
 			"none"=>"no",
@@ -44,6 +44,7 @@ class Trad extends Txt
 			"mapLocalizationFailureLeaflet"=>"Localization of the following address failed",
 			"mapLocalizationFailureLeaflet2"=>"Please check that the following address exists on www.google.com/maps or www.openstreetmap.org",
 			"sendMail"=>"Send an email",
+			"sendMailTo"=>"Send an email to",
 			"mailInvalid"=>"This email is not valid",
 			"element"=>"element",
 			"elements"=>"elements",
@@ -93,7 +94,7 @@ class Trad extends Txt
 			"connect"=>"Log In",
 			"connectAuto"=>"Stay connected",
 			"connectAutoTooltip"=>"Remember my credentials for automatic connection",
-			"gIdentityUserUnknown"=>"is not registered on the space",
+			"gOAuthUserUnknown"=>"is not registered on the space",
 			"connectSpaceSwitch"=>"Connect to another space",
 			"guestAccess"=>"Guest Login",
 			"guestAccessTooltip"=>"Log in to this space as a guest",
@@ -108,7 +109,7 @@ class Trad extends Txt
 			"passwordToModify2"=>"Password (change if needed)",
 			"passwordVerif"=>"Confirm password",
 			"passwordTooltip"=>"Leave blank if you want to keep your password",
-			"passwordInvalid"=>"Your password must contain numbers, letters and at least 6 characters",
+			"passwordInvalid"=>"The password must be at least 6 characters long, with at least one uppercase letter, one lowercase letter and one number.",
 			"passwordVerifError"=>"Your confirmation password is not valid",
 			"specifyPassword"=>"Thank you to specify a password",
 			"resetPassword"=>"Forgotten login info ?",
@@ -292,7 +293,7 @@ class Trad extends Txt
 			"downloadFolder"=>"Download folder",
 			"diskSpaceUsed"=>"Disk space used",
 			"diskSpaceUsedModFile"=>"Disk space used for the File manager",
-			"downloadAlert"=>"Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download after",
+			"downloadAlert"=>"Your archive is too large to download during the day (--ARCHIVE_SIZE--). Please restart the download from",
 			"downloadBackToApp"=>"Back to the application",
 			
 			////	Infos sur une personne
@@ -420,8 +421,7 @@ class Trad extends Txt
 			"VISIO_launch"=>"Start the videoconference",
 			"VISIO_launchJitsi"=>"Start videoconference <br>with the Jitsi app",
 			"VISIO_launchFromEvent"=>"Start the videoconference of this event",
-			"VISIO_launchTooltip"=>"Remember to allow access to your webcam and microphone",
-			"VISIO_launchTooltip2"=>"Click here if you have problems launching the videoconference",
+			"VISIO_launchGuide"=>"Camera or microphone problems: follow the guide",
 			"VISIO_launchServerTooltip"=>"Choose the secondary server if the primary server is not functioning properly.<br>Your contacts will have to select the same video server.",
 			"VISIO_launchServerMain"=>"Main server",
 			"VISIO_launchServerAlt"=>"Secondary server",
@@ -475,15 +475,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Agora-Project was installed correctly !",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Space for sharing and collaborative work",
-			"INSTALL_dataDashboardNews"=>"<h3>Welcome to your new collaborative workspace !</h3>
-											<h4 onclick=\"redir('?ctrl=file')\"><img src='app/img/file/iconSmall.png'> Share your files with your team in the file manager</h4>
-											<h4 onclick=\"redir('?ctrl=calendar')\"><img src='app/img/calendar/iconSmall.png'> Create events on your shared calendar or personal calendar</h4>
-											<h4 onclick=\"redir('?ctrl=dashboard')\"><img src='app/img/dashboard/iconSmall.png'> Use the news feed to broadcast information about your activity</h4>
-											<h4 onclick=\"redir('?ctrl=forum')\"><img src='app/img/messenger.png'> Communicate via the forum, messaging or videoconferences</h4>
-											<h4 onclick=\"redir('?ctrl=task')\"><img src='app/img/task/iconSmall.png'> Manage your tasks and projects to organize your activity</h4>
-											<h4 onclick=\"redir('?ctrl=mail')\"><img src='app/img/mail/iconSmall.png'> Send newsletters to distribute information emails about your activity.</h4>
-											<h4 onclick=\"lightboxOpen('docs/DOCUMENTATION_FR.pdf?displayFile=true')\"><img src='app/img/documentation.png'> Consult the user guide to discover your workspace</h4>
-											<h4 onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\"><img src='app/img/mail.png'>Send email invitations to join the space</h4>",
+			"INSTALL_dataDashboardNews"=>  '<h3>Welcome to your new collaborative workspace !</h3>
+											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png"> Share your files with your team in the file manager</a></h4>
+											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Create events on your shared calendar or personal calendar</a></h4>
+											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Use the news feed to broadcast information about your activity</a></h4>
+											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png"> Communicate via the forum, messaging or videoconferences</a></h4>
+											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png"> Manage your tasks and projects to organize your activity</a></h4>
+											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Send newsletters to distribute information emails about your activity.</a></h4>
+											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Consult the user guide to discover your workspace</a></h4>
+											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Send email invitations to join the space</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"What do you think of the news feed ?",
 			"INSTALL_dataDashboardPollA"=>"Very interesting !",
 			"INSTALL_dataDashboardPollB"=>"Interesting",
@@ -511,7 +511,7 @@ class Trad extends Txt
 			"AGORA_diskSpaceInvalid"=>"Disk space for files must be an integer",
 			"AGORA_visioHostInvalid"=>"The web address of your videocall server is invalid : it must start with 'https'",
 			"AGORA_gApiKeyInvalid"=>"If you choose Google Map as the mapping tool, you must specify an 'API Key'",
-			"AGORA_gIdentityKeyInvalid"=>"If you choose the optional connection via Google, you must specify an 'API Key' for Google SignIn",
+			"AGORA_gOAuthKeyInvalid"=>"If you choose the optional connection via Google, you must specify an 'API Key' for Google SignIn",
 			"AGORA_confirmModif"=>"Confirm modifications ?",
 			"AGORA_name"=>"Space name",
 			"AGORA_nameTooltip"=>"Name displayed on login page, in emails, etc.",
@@ -548,10 +548,10 @@ class Trad extends Txt
 			"AGORA_mapToolTooltip"=>"Mapping tool to see users and contacts on a map",
 			"AGORA_gApiKey"=>"Google API Key for Maps and Contacts Import",
 			"AGORA_gApiKeyTooltip"=>"Configuration to display Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
-			"AGORA_gIdentity"=>"Optional connection via Google",
-			"AGORA_gIdentityTooltip"=>"Users can connect more easily to their space through their Google account : for that, an email <i>@gmail.com</ i> must already be registered on the account of the user.",
-			"AGORA_gIdentityClientId"=>"Google Sign-In settings : Client ID",
-			"AGORA_gIdentityClientIdTooltip"=>"This setting is required to enable Google Sign-In : https://developers.google.com/identity/sign-in/web/",
+			"AGORA_gOAuth"=>"Optional connection via Google",
+			"AGORA_gOAuthTooltip"=>"Users can connect more easily to their space through their Google account : for that, an email <i>@gmail.com</ i> must already be registered on the account of the user.",
+			"AGORA_gOAuthClientId"=>"Google Sign-In settings : Client ID",
+			"AGORA_gOAuthClientIdTooltip"=>"This setting is required to enable Google Sign-In : https://developers.google.com/identity/sign-in/web/",
 			"AGORA_messengerDisplay"=>"Instant messenger",
 			"AGORA_personsSort"=>"Sort users and contacts",
 			//SMTP
@@ -941,7 +941,7 @@ class Trad extends Txt
 			"TASK_priority2"=>"Medium",
 			"TASK_priority3"=>"High",
 			"TASK_assignedTo"=>"Assigned to",
-			"TASK_advancementLate"=>"Progress delayed",
+			"TASK_advancementDelayed"=>"Progress delayed",
 			"TASK_folderDateBeginEnd"=>"Earliest start date / latest end date",
 
 			////	MOD : CONTACT

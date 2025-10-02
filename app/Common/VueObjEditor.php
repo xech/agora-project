@@ -93,10 +93,10 @@
 	********************************************************************************************/
 	function isType(fileType, fileName)
 	{
-		if(fileType=="editorInsert")		{var fileTypes=["<?= implode('","',File::fileTypes("editorInsert")) ?>"];}	//Images/vidéos/Mp3
-		else if(fileType=="imageBrowser")	{var fileTypes=["<?= implode('","',File::fileTypes("imageBrowser")) ?>"];}	//Images
-		else if(fileType=="videoBrowser")	{var fileTypes=["<?= implode('","',File::fileTypes("videoBrowser")) ?>"];}	//Vidéos
-		else if(fileType=="mp3")			{var fileTypes=["<?= implode('","',File::fileTypes("mp3")) ?>"];}			//Mp3
+		if(fileType=="editorInsert")		{var fileTypes=["<?= implode("','",File::fileTypes("editorInsert")) ?>"];}	//Images/vidéos/Mp3
+		else if(fileType=="editorImage")	{var fileTypes=["<?= implode("','",File::fileTypes("editorImage")) ?>"];}	//Images
+		else if(fileType=="editorVideo")	{var fileTypes=["<?= implode("','",File::fileTypes("editorVideo")) ?>"];}	//Vidéos
+		else if(fileType=="mp3")			{var fileTypes=["<?= implode("','",File::fileTypes("mp3")) ?>"];}			//Mp3
 		else								{var fileTypes=[];}
 		return fileTypes.includes(extension(fileName));
 	}
@@ -117,12 +117,11 @@
 		////	Créé le Tag html du fichier (cf. ".attachedFileTag" du "app.css")
 		let tagId= (isNewFile==true)  ?  "attachedFileTagTmp"+fileId  :  "attachedFileTag"+fileId;	//Id de la balise : Temporaire si nouveau fichier ||  Final si fichier dejà sur le serveur
 		let tagSrc=(isNewFile==true)  ?  "attachedFileSrcTmp"+fileId  :  displayUrl;				//Src du fichier  : Idem
-		if(isType("imageBrowser",displayUrl))		{var fileTag='<img   id="'+tagId+'" class="attachedFileTag" src="'+tagSrc+'" data-fancybox="images">';}
-		else if(isType("videoBrowser",displayUrl))	{var fileTag='<video id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="video/'+extension(displayUrl)+'">HTML5 Video</video>';}
-		else if(isType("mp3",displayUrl))			{var fileTag='<audio id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="audio/mpeg">HTML5 Audio</audio>';}
-		fileTag="<br><br>"+fileTag+"<br><br>";
+		if(isType("editorImage",displayUrl))		{var fileTag='<p><img   id="'+tagId+'" class="attachedFileTag fancyboxImages" src="'+tagSrc+'"></p>';}/*Pas de "data-fancybox" : cf HTMLPurifier*/
+		else if(isType("editorVideo",displayUrl))	{var fileTag='<p><video id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="video/'+extension(displayUrl)+'">HTML5 Video</video></p>';}
+		else if(isType("mp3",displayUrl))			{var fileTag='<p><audio id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="audio/mpeg">HTML5 Audio</audio></p>';}
 		////	Nouvelle image : remplace  src="attachedFileSrcTmpXX"  par le contenu binaire de l'image
-		if(isNewFile==true && isType("imageBrowser",displayUrl)){					//Verif si c'est une nouvelle image
+		if(isNewFile==true && isType("editorImage",displayUrl)){					//Verif si c'est une nouvelle image
 			let reader=new FileReader();											//Créé un nouveau "FileReader" pour récupérer l'image au format "blob"
 			reader.readAsDataURL($("#attachedFileInput"+fileId).prop("files")[0]);	//Récupère l'image depuis l'input File : données binaires encodées en base64
 			reader.onload=function(){												//Charge la nouvelle image
@@ -150,7 +149,7 @@
 	*****************************************************************************************************************************************************/
 	const imageUploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
 		let fileName=blobInfo.blob().name;																				//Récupère le fileName du fichier "dropped"
-		if(fileName!=undefined && isType("imageBrowser",fileName)){														//Affiche un nouvel "attachedFileInput" et y ajoute les datas de l'image
+		if(fileName!=undefined && isType("editorImage",fileName)){														//Affiche un nouvel "attachedFileInput" et y ajoute les datas de l'image
 			$("[for='objMenuAttachedFile']").trigger("click");															//Affiche le menu des fichiers joints (cf. "VueObjAttachedFile.php")
 			var fileInput=$(".attachedFileInput").filter(function(){ return this.value==""; }).first();					//Sélectionne le premier "attachedFileInput" disponible
 			const tmpFile=new File([blobInfo.blob()], fileName, {type:blobInfo.blob().type, lastModified:new Date()});	//Créé un objet Javascript "File" dans lequel on ajoute le contenu du fichier
@@ -181,4 +180,5 @@
 <?php if($toggleButton==true){ ?>
 	<div class="descriptionToggle" onclick="$('.descriptionTextarea').slideToggle()"><img src="app/img/description.png"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label></div>
 <?php } ?>
+
 <div class="descriptionTextarea"><textarea name="description"><?= $curObj->description ?></textarea></div>

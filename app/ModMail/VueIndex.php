@@ -83,7 +83,7 @@ ready(function(){
 #mailOptions img[src*=dependency]	{display:none;}
 .submitButtonMain					{text-align:right;}
 .submitButtonMain button			{width:200px; height:50px;}
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
@@ -117,11 +117,11 @@ ready(function(){
 					////	PERSONNES DU CONTENEUR (prépare l'affichage)
 					foreach($tmpContainer->personList as $tmpPerson)
 					{
-						if(empty($tmpPerson->mail))  {continue;}														//zap les personnes sans mail
-						if(Req::param("checkedMailto")==$tmpPerson->mail && empty($personsChecked[$tmpPerson->mail])){	//Préselectionne le mail
-							$tmpPerson->mailChecked="checked";															//Checkbox "checked"
-							$personsChecked[$tmpPerson->mail]=$tmpPerson->mail;											//Indique qu'il est déjà sélectionné
-							$mailsMenuClass="vMailsMenuDisplay";														//Affiche le menu (si besoin)
+						if(empty($tmpPerson->mail))  {continue;}													//zap les personnes sans mail
+						if(Req::param("checkMail")==$tmpPerson->mail && empty($personsChecked[$tmpPerson->mail])){	//Préselectionne le mail
+							$tmpPerson->mailChecked="checked";														//Checkbox "checked"
+							$personsChecked[$tmpPerson->mail]=$tmpPerson->mail;										//Indique qu'il est déjà sélectionné
+							$mailsMenuClass="vMailsMenuDisplay";													//Affiche le menu (si besoin)
 						}
 						$tmpBoxId=$tmpContainer->_typeId.$tmpPerson->_typeId;
 						$userMailTooltip=($tmpPerson->userMailDisplay())  ?  Txt::tooltip($tmpPerson->mail)  :  null;

@@ -71,8 +71,8 @@
 					<div class="objContent">
 						<div class="objIcon">'.$tmpUser->profileImg(true,false).'</div>
 						<div class="objLabel" onclick="'.$tmpUser->openVue().'">
-							<div class="objPersonDetail">'.$tmpUser->getLabel("full").$adminIcon.'</div>
-							<div class="objPersonDetails">'.$tmpUser->getFields(MdlUser::getDisplayMode()).'</div>
+							<div class="personLabel">'.$tmpUser->getLabel("full").$adminIcon.'</div>
+							'.$tmpUser->getFields("index").'
 						</div>
 					</div>
 				</div>

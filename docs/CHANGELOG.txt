@@ -3,9 +3,34 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 --------------------------------
 
+VERSION 25.10.1
+---------------
+Amélioration de la présentation des tâches : responsables, durée, etc.
+Amélioration de la navigation et présentation sur application mobile
+Ajout du contrôle et validation des formulaires via la librairie HTMLPurifier
+Ajout du controle d'upload de fichier via whitelist
+Optimisation des créations d'archive Zip lors du download de dossier
+Optimisation du contrôle des fonctions MobileFileDownload
+Optimisation du controle des champs du moteur de recherche
+Optimisation des filtres d'injection XSS
+OAuth via "google-api-php-client" mis à jour en v2.18.3
+Corrections et optimisations diverses
+-----
+Improved task presentation: responsible persons, Duration, etc.
+Improved navigation and presentation on the mobile app
+Added form control and validation via the HTMLPurifier library
+Added file upload control via whitelist
+Optimized Zip archive creation during file uploads
+Optimized MobileFileDownload function control
+Optimized search engine field control
+Optimized XSS injection filters
+OAuth via "google-api-php-client" updated to v2.18.3
+Various fixes and optimizations
+
+
 VERSION 25.8.1
 --------------
-Affichage direct d'un element (fichier, evenement, etc) depuis une URL de partage (URL externe)
+Affichage direct d'un element (fichier, evenement, etc.) depuis une URL de partage (URL externe)
 Optimisation des fonctions de controle de texte
 Optimisation de l'affichage des lightboxes
 Optimisation du download de fichier via l'application mobile
@@ -29,7 +54,7 @@ VERSION 25.6.4
 Amélioration du menu de sélection des agendas affichés
 Amélioration de la messagerie instantanée
 Amélioration du menu de pagination
-Nouvelle visionneuse d'images (Rotation, Diaporama, Vignettes, etc)
+Nouvelle visionneuse d'images (Rotation, Diaporama, Vignettes, etc.)
 Simplification des éditions d'evenements et sélection/affectation aux agendas
 Optimisation de l'affichage des menus responsives
 Optimisation de la gestion des droits d'accès aux objets
@@ -46,7 +71,7 @@ Mise à jour de PHPMailer en v6.10.0
 Improved menu for selecting displayed calendars
 Improved instant messaging display
 Improved pagination menu
-New images viewer (Rotate, Slideshow, Thumbnails, etc)
+New images viewer (Rotate, Slideshow, Thumbnails, etc.)
 Simplification of events editing and selection/affectation to calendars
 Optimized responsive menus display
 Optimization of object access rights management
@@ -62,7 +87,7 @@ PHPMailer updated to v6.10.0
 
 
 VERSION 25.3.3
----------------
+--------------
 Nouvelle fonction de drag/drop en vue "semaine" pour déplacer l'heure/date d'un événement
 Nouvel affichage des fenêtres de confirmation (JS "confirm()")
 Nouvelle présentation du menu principal
@@ -103,7 +128,7 @@ PHPMailer updated to v6.9.3
 
 
 VERSION 25.1.0
----------------
+--------------
 Amélioration de l'import de contacts via Google People
 Fusion des champs de paramétrage général "gPeopleApiKey" et "mapApiKey" via "gApiKey"
 Corrections et optimisations diverses
@@ -150,7 +175,7 @@ Fixed display of weekly calendars on Mac Safari
 
 
 VERSION 24.8.3
----------------
+--------------
 Amélioration de l'ergonomie et performances d'affichage des agendas
 Meilleure prise en charge de l'affichage des agendas en mode sombre
 Optimisation de l'affichage pour les événements se chevauchant
@@ -173,7 +198,7 @@ Jquery.timepicker updated to v1.14.1
 
 
 VERSION 24.6.4
----------------
+--------------
 Nouvelle option du paramétrage général pour afficher/masquer l'email des utilisateurs
 Amélioration du menu de paramétrage général
 Amélioration de la présentation des sujets et messages du forum
@@ -202,7 +227,7 @@ Updating the Ical library for importing calendars
 
 
 VERSION 24.4.5
----------------
+--------------
 Nouveau menu d'affichage des Catégories d'événement, Themes du forum et Status des Tâches
 Nouvelle interface d'édition des Catégories d'événement, Themes du forum et Status des Tâches
 Nouvelle présentation du forum, plus épuré et ergonomique
@@ -221,8 +246,8 @@ PHP version 7.0 or more required, instead of PHP 5.6
 
 
 VERSION 24.2.3
----------------
-Nouvelle option des tâches pour attribuer un état "A faire", "En cours", "Terminé", etc
+--------------
+Nouvelle option des tâches pour attribuer un état "A faire", "En cours", "Terminé", etc.
 Nouvelle option pour réordonner les thèmes du forum et catégories d'événement
 Amélioration de la gestion des thèmes du forum et catégories d'événement (colorPicker, ergonomie)
 Amélioration du menu des "agendas disponibles"
@@ -329,7 +354,7 @@ Nouvelle option pour ajouter des destinataires dans les emails de notification
 Optimisation de la fonction sendMail() 
 Amélioration de l'affichage des dates de l'agenda
 Amélioration de l'ergonomie de la page de connexion
-Mise à jour de la fonction OAuth Google Identity
+Mise à jour de Google OAuth
 Mise à jour de PHPMailer en v6.7.1
 Mise à jour de l'éditeur TinyMce en v6.3.1
 -----
@@ -337,7 +362,7 @@ Optimization of the sendMail() function
 Option to add recipients in notification emails
 Improved calendar dates display
 Improved login page
-OAuth Google Identity Update
+Google OAuth Update
 PHPMailer updated to version 6.7.1
 TinyMce updated to version 6.3.1 
 
@@ -457,7 +482,7 @@ Improvement of the display "line" of elements
 Improvement of search engine results and news
 Improvement of the validation menu for user registrations to spaces
 Correction of display of accented characters in "plugins" (new, search, shortcuts)
-Various corrections and optimizations ("Txt::clean()", "Txt::reduce()", etc)
+Various corrections and optimizations ("Txt::clean()", "Txt::reduce()", etc.)
 New right for space administrators to manage user assignments
 Changing the numbering mode of AP versions
 PHPMailer updated to version 6.5.0
@@ -570,7 +595,7 @@ VERSION 3.7.1 (2020-04)
 ------------------------
 Ajout d'une option "copier l'adresse d'accès" dans le menu contextuel d'un élément
 Amélioration de l'affichage du menu principal (sur mobile et petites résolutions)
-Amélioration du messenger et des livecounters (Optimisation, prise en charge des emojis sur mobile, etc)
+Amélioration du messenger et des livecounters (Optimisation, prise en charge des emojis sur mobile, etc.)
 Les plugins des dossiers (Nouveautés/Raccourcis/recherche) sont désormais redirigés vers leur contenu
 Correction de l'affichage des sujets du forum dans les nouveautés
 Corrections et optimisations diverses
@@ -597,7 +622,7 @@ Messenger : amélioration de l'ergonomie
 Vue responsive (mobile & interfaces tactiles) :
 - nouvelle possibilité de "swiper" d'une période à l'autre dans le module Agenda
 - menu principal plus ergonomique et optimisé (liste des modules et options du module courant)
-- nouveaux boutons en bas de chaque page pour l'ajout d'elements (News, fichiers, Événements, etc)
+- nouveaux boutons en bas de chaque page pour l'ajout d'elements (News, fichiers, Événements, etc.)
 - ajout du menu contextuel dans l'affichage détaillé d'un evenement, contact, tache, etc.
 Corrections et optimisations diverses
 ------
@@ -763,7 +788,7 @@ Possibilité de liker/commenter également les dossiers (fichiers/contacts/tâch
 Meilleur affichage des likes/commentaires des objets
 Amélioration de la présentation et de la rapidité d'affichage en mode Responsive/Mobile
 Clic sur le mail d'un utilisateur/contact : redirection vers le module mail (si activé)
-Amélioration du paramétrage de l'espace lors de l'installation (ajout d’éléments  par défaut, etc)
+Amélioration du paramétrage de l'espace lors de l'installation (ajout d’éléments  par défaut, etc.)
 Ajout du nom de l'espace courant dans la signature des mails
 Simplification du menu de tri de chaque module
 Optimisation et simplification des css/styles
@@ -882,7 +907,7 @@ VERSION 3.2.0  (12-2016)
 Nouveaux menus et affichage "responsives" : adapté pour les mobiles/tablettes
 Optimisation de l'application : calcul et affichage jusqu'à 50% plus rapide
 Nouvelle messagerie instantanée : plus ergonomique
-Optimisations diverses (menus contextuels, css, etc)
+Optimisations diverses (menus contextuels, css, etc.)
 Diverses corrections (sélection dans le menu contextuel & co)
 
 
@@ -993,7 +1018,7 @@ correction de verif de l'extension Imagick sur les environnements Xampp
 VERSION 3.0.5 (03-2016)
 -----------------------
 Simplification des droits d'accès en écriture au dossier racine : désormais réduit à une simple option dans le paramétrage de l'espace
-Amélioration et simplification des certains menus : Barre principale de menu, Ajout de dossiers, etc
+Amélioration et simplification des certains menus : Barre principale de menu, Ajout de dossiers, etc.
 Correction de mise à jour sur des bases de données multiples
 
 
@@ -1014,7 +1039,7 @@ VERSION 3.0.3 (02-2016)
 -----------------------
 Correction du bug concernant les themes des forums sous PHP 5.4
 Correction de la mise à jour de vignettes d'image (non créées sous v2.17)
-Correction de l'installation sur les environnements MAC (AMPPS, XAMPP, etc)
+Correction de l'installation sur les environnements MAC (AMPPS, XAMPP, etc.)
 optimisations diverses
 
 
@@ -1036,7 +1061,7 @@ Correction de mise à jour sur les version inférieures à 2.12
 
 VERSION 3.0.0 (12-2015)
 -----------------------
-Nouvelle architecture entièrement en Programmation Orienté Objet : jusqu’à 5x plus rapide!
+Nouvelle architecture entièrement en Programmation Orienté Objet : jusqu’à 5x plus rapide
 Architecture MVC (Modèle-Vue-Contrôleur) pour un code plus clair, connexions MySQL basé sur la librairie PDO.
 Nouvelle visionneuse d’image et de vidéos : plus simple, rapide et mieux adaptée aux terminaux mobiles
 Nouveaux timePickers pour les sélections de dates et heures (module Calendar, Task, etc.)

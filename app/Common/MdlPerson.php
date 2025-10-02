@@ -127,7 +127,7 @@ class MdlPerson extends MdlObject
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		//Tri par défaut en fonction du prénom (cf. parametrage general) : switch "name" et "firstName"
@@ -155,71 +155,77 @@ class MdlPerson extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * AFFICHAGE L'EMAIL DE L'USER ?
+	 * AFFICHE / MASQUE L'EMAIL DE L'USER  (Contact || "userMailDisplay" activé || Accès ecriture)
 	 ********************************************************************************************************/
 	public function userMailDisplay()
 	{
-		//Affiche l'email si :  l'objet est un contact  ||  On peut éditer l'objet  ||  l'option "userMailDisplay" est activée
-		return (static::objectType=="contact" || $this->editRight() || !empty(Ctrl::$agora->userMailDisplay));
+		return (static::objectType=="contact" || !empty(Ctrl::$agora->userMailDisplay) || $this->editRight());
 	}
 
 	/********************************************************************************************************
-	 * AFFICHE LES INFOS SUR LA PERSONNE  ($mode : block / line / profile / edit)
+	 * AFFICHE LES INFOS SUR LA PERSONNE  ($mode : index / profile / edit)
 	 ********************************************************************************************************/
 	public function getFields($mode)
 	{
-		$labels=null;
-		//Affichage en page principale ("display mode" block || line)
-		if($mode=="block" || $mode=="line")
-		{
-			if($this->userMailDisplay())  {$labels.=$this->getField("mail",$mode);}
-			$labels.=	$this->getField("companyOrganization",$mode).
-						$this->getField("function",$mode).
-						$this->getField("telephone",$mode).
-						$this->getField("telmobile",$mode).
-						$this->getField("fullAdress",$mode);
+		$labels="";
+		//Edition
+		if($mode=="edit"){
+			$labels.=	$this->getField("civility",$mode).
+						$this->getField("name",$mode).
+						$this->getField("firstName",$mode).
+						"<hr>";
 		}
-		//Affichage du profil (vue / édition)
-		elseif($mode=="profile" || $mode=="edit")
-		{
-			if($mode=="edit")  				{$labels.=$this->getField("civility",$mode).$this->getField("name",$mode).$this->getField("firstName",$mode)."<hr>";}
-			if($this->userMailDisplay())	{$labels.=$this->getField("mail",$mode);}
-			$labels.=	$this->getField("telmobile",$mode).
-						$this->getField("telephone",$mode).
-						$this->getField("adress",$mode).
+		//Tous les $mode : mail + tel + etc
+		$labels.=	$this->getField("mail",$mode).
+					$this->getField("telmobile",$mode).
+					$this->getField("telephone",$mode).
+					$this->getField("companyOrganization",$mode).
+					$this->getField("function",$mode);
+		//Page principale : adresse en une ligne
+		if($mode=="index"){
+			$labels.=$this->getField("fullAdress",$mode);
+		}
+		//mode Profile ou Edition : adresse détaillée + commentaire
+		elseif($mode=="profile" || $mode=="edit"){
+			$labels.=	$this->getField("adress",$mode).
 						$this->getField("postalCode",$mode).
 						$this->getField("city",$mode).
 						$this->getField("country",$mode).
-						$this->getField("function",$mode).
-						$this->getField("companyOrganization",$mode).
 						$this->getField("comment",$mode);
 		}
-		//Date de dernière connexion
-		if(static::objectType=="user" && $mode!="edit" && Ctrl::$curUser->isSpaceAdmin())  {$labels.=$this->getField("lastConnection",$mode);}
+		//Dernière connexion : user + mode Profile ou Index + admin d'espace
+		if(static::objectType=="user" && ($mode=="profile" || $mode=="index") && Ctrl::$curUser->isSpaceAdmin()){
+			$labels.=$this->getField("lastConnection",$mode);
+		}
 		//Retourne le résultat
 		return $labels;
 	}
 
 	/********************************************************************************************************
-	 * AFFICHE UNE INFO SUR LA PERSONNE  ($mode : "block", "line", "profile", "edit")
+	 * AFFICHE UNE INFO SUR LA PERSONNE  ($mode : index / profile / edit)
 	 ********************************************************************************************************/
-	public function getField($fieldName, $mode)
+	protected function getField($fieldName, $mode)
 	{
-		//Cast la valeur du champ
+		//Valeur du champ
 		$fieldVal=(string)$this->$fieldName;
-		//Edition du champ
+		//Input d'édition
 		if($mode=="edit"){
 			if($fieldName=="comment")	{$fieldVal='<textarea name="'.$fieldName.'">'.strip_tags($fieldVal).'</textarea>';}
 			else						{$fieldVal='<input type="text" name="'.$fieldName.'" value="'.strip_tags($fieldVal).'">';}
 		}
-		//Mail : redirige vers le module mail ou un simple "mailto"
-		elseif($fieldName=="mail" && !empty($fieldVal)){
-			$mailtoUrl=Ctrl::$curSpace->moduleEnabled("mail")  ?  'onclick="window.top.redir(\'?ctrl=mail&checkedMailto='.$this->$fieldName.'\')"'  :  'href="mailto:'.$this->$fieldName.'"';
-			$fieldVal='<a '.$mailtoUrl.' '.Txt::tooltip("sendMail").'>'.$this->$fieldName.'</a>';
+		//Mail
+		elseif($fieldName=="mail"){
+			if($this->userMailDisplay()==false || empty($fieldVal))  {$fieldVal="";}//Tjs vide si on masque l'email de l'user
+			else{
+				$sendMailTo=Txt::trad("sendMailTo").' '.$this->getLabel().' : '.$fieldVal;																								//Label et email du destinataire
+				if(Ctrl::$curSpace->moduleEnabled("mail"))	{$mailLink='onclick="window.top.confirmRedir(\'?ctrl=mail&checkMail='.$fieldVal.'\', \''.addslashes($sendMailTo).'\')"';}	//Module Mail
+				else										{$mailLink='href="mailto:'.$fieldVal.'"';}																					//Mailto
+				$fieldVal='<a '.$mailLink.' '.Txt::tooltip($sendMailTo).'>'.$fieldVal.'</a>';
+			}
 		}
 		//Dernière connexion
 		elseif($fieldName=="lastConnection"){
-			if($mode=="profile" && empty($fieldVal))						{$fieldVal=Txt::trad("notConnected");}
+			if(empty($fieldVal) && $mode=="profile")						{$fieldVal=Txt::trad("notConnected");}
 			elseif(!empty($fieldVal) && date("Ymd")==date("Ymd",$fieldVal))	{$fieldVal=Txt::trad("connectedToday");}
 			elseif(!empty($fieldVal))										{$fieldVal=Txt::trad("connectedThe").' '.Txt::dateLabel($fieldVal,"dateBasic");}
 		}
@@ -233,9 +239,8 @@ class MdlPerson extends MdlObject
 		}
 		//Retourne le champ dans son conteneur
 		if(!empty($fieldVal)){
-			if($mode=="block")		{return '<div class="objPersonDetail">'.$fieldVal.'</div>';}
-			elseif($mode=="line")	{return '<div class="objPersonDetail">'.$fieldVal.'</div><img src="app/img/separator.png" class="objPersonDetailSeparator">';}
-			else					{return '<div class="objField"><div><img src="app/img/person/'.$fieldName.'.png"> '.Txt::trad($fieldName).'</div><div>'.$fieldVal.'</div></div>';}
+			if($mode=="index")	{return '<div class="personField">'.$fieldVal.'</div><img src="app/img/separator.png" class="personFieldSeparator">';}
+			else				{return '<div class="objField"><div><img src="app/img/person/'.$fieldName.'.png"> '.Txt::trad($fieldName).'</div><div>'.$fieldVal.'</div></div>';}
 		}
 	}
 
@@ -251,10 +256,9 @@ class MdlPerson extends MdlObject
 	/********************************************************************************************************
 	 * IMAGE DE PROFIL : PATH
 	 ********************************************************************************************************/
-	public function profileImgPath($defaultImg=false)
+	public function profileImgPath()
 	{
-		if($this->profileImgExist())	{return $this->pathImgThumb().($this->dateModif?"?time=".strtotime($this->dateModif):null);}	//Img avec un "time" pour updater si besoin le cache du browser
-		elseif($defaultImg==true)		{return 'app/img/person/personDefault.png';}													//Img par défaut (si demandé)
+		if($this->profileImgExist())  {return $this->pathImgThumb();}
 	}
 
 	/********************************************************************************************************
@@ -262,7 +266,7 @@ class MdlPerson extends MdlObject
 	 ********************************************************************************************************/
 	public function profileImg($openProfile=false, $smallImg=false)
 	{
-		$imgPath=$this->profileImgPath(false);
+		$imgPath=$this->profileImgPath();
 		if(!empty($imgPath)){
 			$personImg='<img src="'.$imgPath.'" class="personImg '.($smallImg==true?"personImgSmall":null).'">';
 			if($openProfile==true)  {$personImg='<a onclick="'.$this->openVue().'" '.Txt::tooltip("displayProfil").'>'.$personImg.'</a>';}

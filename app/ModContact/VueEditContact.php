@@ -4,7 +4,7 @@
 	
 	<!--IMAGE-->
 	<div class="objField">
-		<div><?= $curObj->profileImgExist()  ?  "<div class='personLabelImg'>".$curObj->profileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("picture") ?></div>
+		<div><?= $curObj->profileImgExist()  ?  "<div class='personProfileImg'>".$curObj->profileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("picture") ?></div>
 		<div><?= $curObj->profileImgMenu() ?></div>
 	</div>
 

@@ -54,9 +54,11 @@ class CtrlLink extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->editRecord("adress=".Db::param("adress").", description=".Db::param("description"));
+			$adress=Txt::clean(Req::param("adress"),"min");
+			if(!stristr($adress,"http"))  {$adress="http://".$adress;}
+			$curObj=$curObj->editRecord("adress=".Db::format($adress).", description=".Db::param("description"));
 			//Notifie par mail & Ferme la page
-			$curObj->sendMailNotif("<a href=\"".$curObj->adress."\" target='_blank'><b>".$curObj->adress."</b></a>");
+			$curObj->sendMailNotif('<a href="'.$curObj->adress.'" target="_blank"><b>'.$curObj->adress.'</b></a>');
 			static::lightboxRedir();
 		}
 		////	Affiche la vue

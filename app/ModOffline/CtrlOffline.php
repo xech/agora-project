@@ -130,13 +130,12 @@ class CtrlOffline extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * AJAX : AUTHENTIFICATION VIA GOOGLE IDENTITY / OAUTH 
-	 * https://developers.google.com/identity/gsi/web/guides/overview
+	 * AJAX : AUTHENTIFICATION VIA GOOGLE OAUTH 
 	 ********************************************************************************************************/
-	public static function actionGIdentityControl()
+	public static function actiongOAuthControl()
 	{
-		require_once 'app/misc/google-api-php-client/vendor/autoload.php';										//Charge l'API Google Identity/Oauth
-		$gClient=new Google_Client(["client_id"=>Ctrl::$agora->gIdentityClientId]);								//Créé un client Google Identity
+		require_once 'app/misc/google-api-php-client/vendor/autoload.php';										//Charge l'API Google Oauth
+		$gClient=new Google_Client(["client_id"=>Ctrl::$agora->gIdentityClientId]);								//Créé un client Google Oauth
 		$gClientUser=$gClient->verifyIdToken(Req::param("credential"));											//Vérifie le token du client et récupère ses infos
 		if(!empty($gClientUser)){																				//Client Google authentifié par l'API ?
 			$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($gClientUser["email"]));		//Verif si un user existe déjà avec le même email
@@ -185,14 +184,14 @@ class CtrlOffline extends Ctrl
 
 				////	CREE LA BASE DE DONNEES DU NOUVEL ESPACE  &&  PUIS ON S'Y CONNECTE !
 				if($dbControl=="dbAbsent"){
-					$pdoSpace=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
-					$pdoSpace->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
+					$objPDO=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
+					$objPDO->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
 				}
 				//Se connecte au sgbd && Importe la Bdd
-				$pdoSpace=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
+				$objPDO=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
 				$handle=fopen($dbFile,"r");
 				foreach(explode(";",fread($handle,filesize($dbFile))) as $tmpQuery){
-					if(strlen($tmpQuery)>5)  {$pdoSpace->query($tmpQuery);}
+					if(strlen($tmpQuery)>5)  {$objPDO->query($tmpQuery);}
 				}
 				//Supprime le fichier Sql après l'import
 				//File::rm($dbFile);
@@ -210,7 +209,7 @@ class CtrlOffline extends Ctrl
 					"adminMailLogin"=>		Req::param("adminMailLogin"),
 					"adminPassword"=>		password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT)
 				];
-				DbInstall::initParams($pdoSpace, $installParams);
+				DbInstall::initParams($objPDO, $installParams);
 
 				//REDIRECTION AVEC NOTIFICATION
 				$result="installOk";

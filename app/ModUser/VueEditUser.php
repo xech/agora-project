@@ -45,7 +45,7 @@ select[name="connectionSpace"]			{width:100%}
 
 	<!--IMAGE-->
 	<div class="objField">
-		<div><?= $curObj->profileImgExist()  ?  "<div class='personLabelImg'>".$curObj->profileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
+		<div><?= $curObj->profileImgExist()  ?  "<div class='personProfileImg'>".$curObj->profileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
 		<div><?= $curObj->profileImgMenu() ?></div>
 	</div>
 	<hr>

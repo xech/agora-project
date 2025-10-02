@@ -12,7 +12,6 @@
  */
 class MdlTask extends MdlObject
 {
-	private $_isDelayed=null;
 	const moduleName="task";
 	const objectType="task";
 	const dbTable="ap_task";
@@ -31,6 +30,17 @@ class MdlTask extends MdlObject
 	public static $searchFields=["title","description"];
 	public static $sortFields=["dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc","_idUser@@asc","_idUser@@desc","title@@asc","title@@desc","description@@asc","description@@desc","priority@@asc","priority@@desc","advancement@@asc","advancement@@desc","dateBegin@@asc","dateBegin@@desc","dateEnd@@asc","dateEnd@@desc"];
 
+
+	/********************************************************************************************************
+	 * SURCHARGE : CONSTRUCTEUR
+	*******************************************************************************************/
+	public function __construct($objIdOrValues=null)
+	{
+		parent::__construct($objIdOrValues);
+		$this->isFinished=($this->dateEnd && strtotime($this->dateEnd) < time());						//Tache terminée
+		$this->isDelayed =($this->isFinished==true && $this->advancement && $this->advancement < 100);	//Tache en retard (passée et advancement < 100%)
+	}
+
 	/********************************************************************************************************
 	 * COULEUR & LABEL "PRIORITY"
 	 ********************************************************************************************************/
@@ -41,104 +51,76 @@ class MdlTask extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * TACHE EN RETARD : DATE DE FIN PASSÉE ET TACHE INACHEVÉE (ADVANCEMENT < 100%)
+	 * PROGRESS-BAR :  PERSONNES ASSIGNÉES
 	 ********************************************************************************************************/
-	public function isDelayed($displayLabel=false)
-	{
-		if($this->_isDelayed===null){
-			$this->_isDelayed=(!empty($this->advancement) && !empty($this->dateEnd) && strtotime($this->dateEnd)<time() && (int)$this->advancement<100);
-		}
-		if($displayLabel==true && $this->_isDelayed==true)	{return Txt::trad("TASK_advancementLate")." <img src='app/img/important.png'>";}
-		else												{return $this->_isDelayed;}
-	}
-
-	/********************************************************************************************************
-	 * ICONE-BARRE :  PERSONNES ASSIGNÉES A LA TACHE
-	 ********************************************************************************************************/
-	public function responsiblePersons($isVueTask=false)
+	public function responsiblePersons($labelFull=false)
 	{
 		if(!empty($this->responsiblePersons)){
-			//// Récup chaque personnes assignées
-			$barLabel=$barTooltip=Txt::trad("TASK_assignedTo")." ";
+			//// Liste des users responsables
+			$usersTooltip=$usersLabel=null;
 			foreach(Txt::txt2tab($this->responsiblePersons) as $userId){
 				$tmpUser=Ctrl::getObj("user",$userId);
-				$barTooltip.=$tmpUser->getLabel().", ";				//prenoms + noms
-				$barLabel  .=$tmpUser->getLabel("firstName").", ";	//prenoms uniqument
+				$usersTooltip.=$tmpUser->getLabel().', ';				//Prénom et Nom
+				$usersLabel  .=$tmpUser->getLabel("firstName").', ';	//Prenom ou Nom uniquement
 			}
-			$barLabel=trim($barLabel,", ");
-			$barTooltip=trim($barTooltip,", ");
-			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<span class="cursorHelp" '.Txt::tooltip($barTooltip).'><img src="app/img/user/iconSmall.png"></span>';}
-			else{
-				if($isVueTask==false)  {$barLabel=Txt::reduce($barLabel,40);}
-				return Tool::progressBar("<img src='app/img/user/iconSmall.png'> ".$barLabel, $barTooltip);
+			//// Label full/reduced des users
+			$usersTooltip=trim($usersTooltip,', ');
+			$usersLabel=trim($usersLabel,', ');
+			$usersLabel=($labelFull==true)  ?  $usersTooltip  :  Txt::reduce($usersLabel,35);
+			//// Tooltip / Label
+			$barTooltip='<img src="app/img/task/responsiblePersons.png"> '.Txt::trad("TASK_assignedTo").' &nbsp;:&nbsp; '.$usersTooltip;
+			$barLabel='<img src="app/img/task/responsiblePersons.png"> <span class="progressBarLabel">'.Txt::trad("TASK_assignedTo").' '.$usersLabel.'</span>';
+			//// Retourne la "progressBar"
+			return Tool::progressBar($barLabel, $barTooltip);
+		}
+	}
+
+	/********************************************************************************************************
+	 * PROGRESS-BAR DE DEBUT-FIN
+	 ********************************************************************************************************/
+	public function progressBeginEnd($barLabelFull=false)
+	{
+		if($this->dateBegin || $this->dateEnd){
+			//// Label
+			$barLabel=($barLabelFull==true)  ?  Txt::dateLabel($this->dateBegin,"dateFull",$this->dateEnd)  :  Txt::dateLabel($this->dateBegin,"dateMini",$this->dateEnd);
+			$barLabel='<img src="app/img/task/date.png"> <span class="progressBarLabel">'.$barLabel.'</span>';
+			//// Tooltip
+			$barTooltip=$this->title;
+			if($this->dateBegin && $this->dateEnd)	{$barTooltip.='<hr>'.Txt::trad("beginEnd").' : '.Txt::dateLabel($this->dateBegin,"dateFull",$this->dateEnd);}
+			elseif($this->dateBegin)				{$barTooltip.='<hr>'.Txt::trad("begin").' : '.Txt::dateLabel($this->dateBegin,"dateFull");}
+			elseif($this->dateEnd)					{$barTooltip.='<hr>'.Txt::trad("end").' : '.Txt::dateLabel($this->dateEnd,"dateFull");}
+			if($this->advancement)					{$barTooltip.='<hr>'.$this->advancementLabel();}
+			//// Pourcentage de progression debut/fin
+			$barPercent=0;
+			if($this->dateBegin && $this->dateEnd){
+				$timeBegin=strtotime($this->dateBegin);
+				$timeEnd  =strtotime($this->dateEnd);
+				if($this->isFinished==true)		{$barPercent=100;}
+				elseif($timeBegin < $timeEnd)	{$barPercent=floor(100 * ((time()-$timeBegin) / ($timeEnd-$timeBegin)));}
 			}
+			//// Retourne la "progressBar"
+			return Tool::progressBar($barLabel, $barTooltip, $barPercent, $this->isDelayed);
 		}
 	}
 
 	/********************************************************************************************************
-	 * ICONE-BARRE :  ETAT D'AVANCEMENT EN %
+	 * PROGRESS-BAR DU % D'AVANCEMENT
 	 ********************************************************************************************************/
-	public function advancement($isVueTask=false)
+	public function progressAdvancement($barLabelFull=false)
 	{
-		if(!empty($this->advancement)){
-			$advancementIcon="<img src='app/img/task/advancement".($this->isDelayed()?"Delayed":null).".png'>";
-			$barTooltip=Txt::trad("TASK_advancement")." : ".$this->advancement." %"." <br>".$this->isDelayed(true);
-			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<span class="cursorHelp" '.Txt::tooltip($barTooltip).'>'.$advancementIcon.'</span>';}
-			else														{return Tool::progressBar($advancementIcon." ".Txt::trad("TASK_advancement")." ".$this->advancement."%", $barTooltip, $this->advancement, $this->isDelayed());}
+		if($this->advancement){
+			$barLabel=($barLabelFull==true)  ?  Txt::trad("TASK_advancement").' : '  :  null;
+			$barLabel  ='<img src="app/img/task/advancement.png"> <span class="progressBarLabel">'.$barLabel.$this->advancement.' %</span>';
+			return Tool::progressBar($barLabel, $this->advancementLabel(), $this->advancement, $this->isDelayed);
 		}
 	}
 
 	/********************************************************************************************************
-	 * ICONE-BARRE :  DATE DE DEBUT/FIN
+	 * LABEL DU % D'AVANCEMENT
 	 ********************************************************************************************************/
-	public function dateBeginEnd($isVueTask=false)
+	public function advancementLabel()
 	{
-		//// Vérif si ya une date de début  OU  une date de fin
-		if(!empty($this->dateBegin) || !empty($this->dateEnd)){
-			//// Date de début et/ou de fin && Tooltip
-			$barLabel=Txt::dateLabel($this->dateBegin,"default",$this->dateEnd);
-			if(!empty($this->dateBegin) && !empty($this->dateEnd))	{$barTooltip=Txt::trad("beginEnd")." : &nbsp; ";}
-			elseif(!empty($this->dateBegin))						{$barTooltip=Txt::trad("begin")." : &nbsp; ";}
-			elseif(!empty($this->dateEnd))							{$barTooltip=null;}//Txt::trad("end") récup via "dateLabel()" ci-dessus
-			$barTooltip.=$barLabel."<br>".$this->isDelayed(true);
-			//// Affichage "icone" ou "progressBar"
-			if($isVueTask==false && static::getDisplayMode()=="block")	{return '<img src="app/img/task/date.png" class="cursorHelp" '.Txt::tooltip($barTooltip).'>';}
-			else														{return Tool::progressBar('<img src="app/img/task/date.png"> '.$barLabel, $barTooltip, $this->timeProgressPercent(), $this->isDelayed());}
-		}
-	}
-
-	/********************************************************************************************************
-	 * BARRE DE PROGESSION GANTT :  TITRE  +  DATE DE DEBUT/FIN  +  ETAT D'AVANCEMENT
-	 ********************************************************************************************************/
-	public function timelineGanttBar()
-	{
-		//Vérif si ya une date de début  ET  une date de fin
-		if(!empty($this->dateBegin) && !empty($this->dateEnd)){
-			$barLabel="&nbsp;";//jamais vide
-			$barTooltip=$this->title."<hr>".Txt::trad("beginEnd")." : ".Txt::dateLabel($this->dateBegin,"dateBasic",$this->dateEnd);
-			//Avancement de la tâche
-			if(!empty($this->advancement)){
-				$advancementIcon='<img src="app/img/task/advancement'.($this->isDelayed()?'Delayed':null).'.png">';
-				$barLabel.=$advancementIcon.' '.$this->advancement.'%';
-				$barTooltip.='<br>'.$advancementIcon.' '.Txt::trad("TASK_advancement").' : '.$this->advancement.' % '.$this->isDelayed(true);
-			}
-			//Affiche la barre de progression : 100% de width en fonction de la durée de la tâche (cf. "colspan" des cellules)
-			return Tool::progressBar($barLabel, $barTooltip, $this->timeProgressPercent(), $this->isDelayed());
-		}
-	}
-
-	/********************************************************************************************************
-	 * POURCENTAGE DE PROGRESSION DANS LE TEMPS
-	 ********************************************************************************************************/
-	public function timeProgressPercent()
-	{
-		if(!empty($this->dateBegin) && !empty($this->dateEnd)){														//Vérif si ya une date de début et de fin
-			$timeBegin=strtotime($this->dateBegin);																	//Timestamp de début
-			$timeEnd  =strtotime($this->dateEnd);																	//Timestamp de fin
-			if($timeEnd < time())			{return 100;}															//"100%" si la date de fin est déjà passée
-			elseif($timeBegin < $timeEnd)	{return floor(100 * ((time()-$timeBegin) / ($timeEnd-$timeBegin)));}	//"n%" d'avancement (ex: "30%" si la tâche se déroule sur 10 jours et qu'on est au 3eme)
-		}
+		if($this->isDelayed==true)  {return '<span class="progressBarDelayed">'.Txt::trad("TASK_advancementDelayed").' : '.$this->advancement.' %</span>';}
+		else						{return Txt::trad("TASK_advancement").' '.$this->advancement.' %';}
 	}
 }

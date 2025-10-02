@@ -27,7 +27,7 @@ class Trad extends Txt
 			"requiredFields"=>"Merci de remplir le champ",
 			"inaccessibleElem"=>"L'élément demandé n'est pas accessible",
 			"warning"=>"Attention",
-			"elemEditedByAnotherUser"=>"Ce formulaire est actuellement édité par",
+			"elemEditedByAnotherUser"=>"Attention : cet élément est actuellement édité par",
 			"yes"=>"oui",
 			"no"=>"non",
 			"none"=>"aucun",
@@ -44,6 +44,7 @@ class Trad extends Txt
 			"mapLocalizationFailure"=>"Echec de la localisation de l'adresse suivante",
 			"mapLocalizationFailure2"=>"Merci de vérifier que l'adresse existe bien sur www.google.fr/maps ou www.openstreetmap.org",
 			"sendMail"=>"Envoyer un email",
+			"sendMailTo"=>"Envoyer un email à",
 			"mailInvalid"=>"L'email n'est pas valide",
 			"element"=>"élément",
 			"elements"=>"éléments",
@@ -93,7 +94,7 @@ class Trad extends Txt
 			"connect"=>"Connexion",
 			"connectAuto"=>"Rester connecté",
 			"connectAutoTooltip"=>"Mémoriser mes identifiants pour une connexion automatique",
-			"gIdentityUserUnknown"=>"n'est pas enregistré sur l'espace",
+			"gOAuthUserUnknown"=>"n'est pas enregistré sur l'espace",
 			"connectSpaceSwitch"=>"Me connecter à un autre espace",
 			"guestAccess"=>"Connexion invité",
 			"guestAccessTooltip"=>"Me connecter à cet espace en tant qu'invité",
@@ -108,7 +109,7 @@ class Trad extends Txt
 			"passwordToModify2"=>"Mot de passe (à modifier si besoin sur votre profil utilisateur)",
 			"passwordVerif"=>"Confirmer mot de passe",
 			"passwordTooltip"=>"Remplir les champs uniquement si vous souhaitez changer de mot de passe",
-			"passwordInvalid"=>"Votre mot de passe doit comporter des chiffres, lettres et au moins 6 caractères",
+			"passwordInvalid"=>"Le mot de passe doit comporter 6 caractères minimum, avec au moins une majuscule, une minuscule et un chiffre",
 			"passwordVerifError"=>"Votre confirmation de mot de passe n'est pas valide",
 			"specifyPassword"=>"Merci de spécifier un mot de passe",
 			"resetPassword"=>"Mot de passe oublié ?",
@@ -292,7 +293,7 @@ class Trad extends Txt
 			"downloadFolder"=>"Télécharger le dossier",
 			"diskSpaceUsed"=>"Espace disque utilisé",
 			"diskSpaceUsedModFile"=>"Espace disque utilisé sur le module fichier",
-			"downloadAlert"=>"Votre archive est trop volumineuse pour être téléchargée en journée (--ARCHIVE_SIZE--). Merci de relancer le download après",
+			"downloadAlert"=>"Votre archive est trop volumineuse pour être téléchargée en journée (--ARCHIVE_SIZE--). Merci de relancer le download à partir de",
 			"downloadBackToApp"=>"Retour à l'application",
 
 			////	Infos sur une personne
@@ -418,10 +419,9 @@ class Trad extends Txt
 			"VISIO_urlCopy"=>"Copier le lien de la visioconférence",
 			"VISIO_urlDelete"=>"Supprimer le lien de la visioconférence",
 			"VISIO_launch"=>"Lancer la visioconférence",
-			"VISIO_launchJitsi"=>"Lancer la visioconférence <br>avec l'application Jitsi",
+			"VISIO_launchJitsi"=>"Lancer la visioconférence <br> avec l'application Jitsi",
 			"VISIO_launchFromEvent"=>"Lancer la visioconférence de l'événement",
-			"VISIO_launchTooltip"=>"Pensez à autoriser l'accès à votre webcam et microphone",
-			"VISIO_launchTooltip2"=>"Problèmes de caméra ou de micro avec votre visioconférence ? Suivez le guide <img src='app/img/pdf.png'>",
+			"VISIO_launchGuide"=>"Problèmes de caméra ou de micro : suivez le guide",
 			"VISIO_launchServerTooltip"=>"Choisissez le serveur secondaire si le serveur principal ne fonctionne pas correctement :<br>Important : vos interlocuteurs devront sélectionner le même serveur que vous.",
 			"VISIO_launchServerMain"=>"Serveur de visio principal",
 			"VISIO_launchServerAlt"=>"Serveur de visio secondaire",
@@ -475,15 +475,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Votre espace a été correctement installé",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espace de partage et de travail collaboratif",
-			"INSTALL_dataDashboardNews"=>  "<h3>Bienvenue sur votre nouvel espace de partage !</h3>
-											<h4 onclick=\"redir('?ctrl=file')\"><img src='app/img/file/iconSmall.png'> Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</h4>
-											<h4 onclick=\"redir('?ctrl=calendar')\"><img src='app/img/calendar/iconSmall.png'> Créez des événements sur votre agenda partagé ou votre agenda personnel</h4>
-											<h4 onclick=\"redir('?ctrl=dashboard')\"><img src='app/img/dashboard/iconSmall.png'> Utilisez le fil d'actualité pour diffuser des informations sur votre activité</h4>
-											<h4 onclick=\"redir('?ctrl=forum')\"><img src='app/img/messenger.png'> Communiquez via le forum, la messagerie ou les visioconférences</h4>
-											<h4 onclick=\"redir('?ctrl=task')\"><img src='app/img/task/iconSmall.png'> Gérez vos tâches et projets pour organiser votre activité</h4>
-											<h4 onclick=\"redir('?ctrl=mail')\"><img src='app/img/mail/iconSmall.png'> Envoyez des newsletters pour diffuser des mails d'information sur votre activité.</h4>
-											<h4 onclick=\"lightboxOpen('docs/DOCUMENTATION_FR.pdf?displayFile=true')\"><img src='app/img/documentation.png'> Consulter le guide d'utilisation pour découvrir votre espace</h4>
-											<h4 onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\"><img src='app/img/mail.png'> Envoyer des invitations par email pour rejoindre l'espace</h4>",
+			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre nouvel espace de partage !</h3>
+											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png"> Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
+											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Créez des événements sur votre agenda partagé ou votre agenda personnel</a></h4>
+											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilisez le fil d"actualité pour diffuser des informations sur votre activité</a></h4>
+											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png"> Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
+											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png"> Gérez vos tâches et projets pour organiser votre activité</a></h4>
+											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Envoyez des newsletters pour diffuser des mails d\'information sur votre activité.</a></h4>
+											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Consulter le guide d\'utilisation pour découvrir votre espace</a></h4>
+											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png"> Envoyer des invitations par email pour rejoindre l\'espace</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Que pensez-vous du fil d'actualité ?",
 			"INSTALL_dataDashboardPollA"=>"Très intéressant !",
 			"INSTALL_dataDashboardPollB"=>"Intéressant",
@@ -511,7 +511,7 @@ class Trad extends Txt
 			"AGORA_diskSpaceInvalid"=>"L'espace disque pour les fichiers doit être un entier",
 			"AGORA_visioHostInvalid"=>"L'URL du serveur de visioconférence est invalide : elle doit commencer par 'https'",
 			"AGORA_gApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
-			"AGORA_gIdentityKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
+			"AGORA_gOAuthKeyInvalid"=>"Si vous choisissez la connexion optionnelle via Google, vous devez y spécifier un 'API Key' pour Google SignIn",
 			"AGORA_confirmModif"=>"Confirmer les modifications ?",
 			"AGORA_name"=>"Nom de l'espace principal",
 			"AGORA_nameTooltip"=>"Nom affiché en page de connexion, dans les emails, etc.",
@@ -548,10 +548,10 @@ class Trad extends Txt
 			"AGORA_mapToolTooltip"=>"Outil de cartographie pour voir les utilisateurs et contacts sur une carte",
 			"AGORA_gApiKey"=>"Google API Key pour Maps",
 			"AGORA_gApiKeyTooltip"=>"Parametrage obligatoire pour Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
-			"AGORA_gIdentity"=>"Connexion via un compte Google Gmail",
-			"AGORA_gIdentityTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
-			"AGORA_gIdentityClientId"=>"API Key pour la connexion via Google",
-			"AGORA_gIdentityClientIdTooltip"=>"Parametrage obligatoire pour la connexion via un compte Google :<br> https://developers.google.com/identity/protocols/oauth2",
+			"AGORA_gOAuth"=>"Connexion via un compte Google Gmail",
+			"AGORA_gOAuthTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
+			"AGORA_gOAuthClientId"=>"Client ID pour la connexion via Google",
+			"AGORA_gOAuthClientIdTooltip"=>"Parametrage obligatoire pour la connexion via un compte Google :<br> https://developers.google.com/identity/protocols/oauth2",
 			"AGORA_messengerDisplay"=>"Messagerie",
 			"AGORA_personsSort"=>"Trier les utilisateurs et contacts par",
 			//SMTP
@@ -760,7 +760,7 @@ class Trad extends Txt
 			"DASHBOARD_votedPollNotif"=>"Attention : dès que le sondage a commencé à être voté, il n'est plus possible de modifier le titre et les réponses du sondage",
 			"DASHBOARD_voteNoResponse"=>"Merci de sélectionner une réponse",
 			"DASHBOARD_exportPoll"=>"Télécharger le résultat du sondage en pdf",
-			"DASHBOARD_exportPollDate"=>"résultat du sondage en date du",
+			"DASHBOARD_exportPollDate"=>"Résultat du sondage à la date du",
 
 			////	MOD : FILE
 			////
@@ -941,7 +941,7 @@ class Trad extends Txt
 			"TASK_priority2"=>"Normale",
 			"TASK_priority3"=>"Haute",
 			"TASK_assignedTo"=>"Assigné à",
-			"TASK_advancementLate"=>"Avancement en retard",
+			"TASK_advancementDelayed"=>"Avancement en retard",
 			"TASK_folderDateBeginEnd"=>"Debut au plus tôt / Fin au plus tard",
 
 			////	MOD : CONTACT

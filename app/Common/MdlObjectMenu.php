@@ -90,7 +90,7 @@ trait MdlObjectMenu
 			////	URL D'ACCES EXTERNE
 			if(Ctrl::$curUser->isUser() && static::objectType!="space")  {$vDatas["getUrlExternal"]=$this->getUrlExternal();}
 			////	AUTEUR/DATE DE CREATION/MODIF
-			$vDatas["autorDateCrea"] =(!empty($this->dateCrea))   ?  $this->autorDate()  :  null;
+			$vDatas["autorDateCrea"] =(!empty($this->dateCrea))   ?  $this->autorDate(false)  :  null;
 			$vDatas["autorDateModif"]=(!empty($this->dateModif))  ?  $this->autorDate(true)  :  null;
 			////	SUPPRIMER
 			if($this->deleteRight()){
@@ -269,7 +269,7 @@ trait MdlObjectMenu
 	 ********************************************************************************************************/
 	public function isSelectable()
 	{
-		//Menu de sélection d'objets affiché  +  l'objet n'est pas le conteneur/dossier courant (cf. ".pathMenu")
+		//Menu de sélection d'objets affiché  +  l'objet n'est pas le conteneur/dossier courant
 		return (static::menuSelectDisplay()  &&  (empty(Ctrl::$curContainer) || Ctrl::$curContainer->_typeId!=$this->_typeId));
 	}
 

@@ -71,13 +71,13 @@ ready(function(){
 function moduleDisplay()
 {
 	if(typeof moduleDisplayTimeout!="undefined")  {clearTimeout(moduleDisplayTimeout);}//Un seul timeout
-	moduleDisplayTimeout=setTimeout(function(){																									//Timeout pour récupérer les dimensions globales (cf. affichage sur mobile)
-		$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );				//Synthese des agendas : width des cellules des jours
-		$(".vCalMain").outerHeight( (windowHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?0:65 ?>), true);	//Hauteur des vCalMain en fonction du height de #livecounterMain (chargé via Ajax)
-		$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());												//Hauteur des vues Month/Week en fonction de vCalMain
-		$(".vEvtBlock").each(function(){ $(this).css("background-color",$(this).attr("data-eventColor")); });									//Bgcolor de chaque evt
-		calendarDisplay();																														//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
-		$(".vCalMain").css("visibility","visible");																								//Affiche les agendas après calendarDisplay()
+	moduleDisplayTimeout=setTimeout(function(){																												//Timeout pour récupérer les dimensions globales (cf. affichage sur mobile)
+		$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );							//Synthese des agendas : width des cellules des jours
+		$(".vCalMain").outerHeight( (window.top.windowHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?0:65 ?>), true);	//Hauteur en fonction du height de #livecounterMain (cf. Ajax)
+		$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());															//Hauteur des vues Month/Week en fonction de vCalMain
+		$(".vEvtBlock").each(function(){ $(this).css("background-color",$(this).attr("data-eventColor")); });												//Bgcolor de chaque evt
+		calendarDisplay();																																	//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
+		$(".vCalMain").css("visibility","visible");																											//Affiche les agendas après calendarDisplay()
 	},20);
 }
 </script>
@@ -125,6 +125,7 @@ function moduleDisplay()
 .vCalVue										{max-width:100%; width:100%;}
 .vCalHeader										{display:table; width:100%;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
+.vCalHeaderTitle								{vertical-align:middle; margin-inline:5px; font-size:1.1rem;}
 .vCalHeaderCenter								{text-align:center;}
 .vCalHeaderCenter .vCalPrevNext					{padding:12px; border-radius:5px;}
 .vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
@@ -141,14 +142,14 @@ function moduleDisplay()
 .vEvtLabel										{overflow:hidden; font-size:0.9rem; font-weight:normal; color:white!important;}
 .vEvtLabel img									{margin-left:5px;}
 
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
-	.vCalHeader>div								{padding:4px; width:auto; font-size:0.9rem; text-transform:lowercase;}
-	.vCalHeaderTitle							{vertical-align:middle; max-width:150px; display:inline-block; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
+	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}
+	.vCalHeaderTitle							{display:inline-block; font-size:1rem; max-width:150px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalHeaderTitle::first-letter				{text-transform:uppercase}
-	.vCalHeaderCenter .vCalPrevNext				{padding:4px;}
+	.vCalHeaderCenter .vCalPrevNext				{padding:3px;}
 	.vCalHeaderRight>span						{margin-left:5px;}
 	.vCalHeaderRight>span img					{min-height:18px;}
 	.vEvtBlock									{height:25px; min-height:25px; overflow:hidden; padding-right:0px;}/*padding-right : pas menu burger*/
@@ -282,7 +283,7 @@ function moduleDisplay()
 				<div class="vCalHeaderLeft">
 					<?php
 					$calLabel='<span class="vCalHeaderTitle" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';														//Label/Title de l'agenda
-					if($tmpCal->type=="user")  {$calLabel.='&nbsp;'.Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}													//Icone de l'user
+					if($tmpCal->type=="user")  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}															//Icone de l'user
 					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["launcherIcon"=>(Req::isMobile()?"inlineSmall":"inlineBig"),"launcherLabel"=>$calLabel])  :  $calLabel;	//Ajoute le label au launcher du menu ?
 					?>
 				</div>

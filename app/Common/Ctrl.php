@@ -156,10 +156,6 @@ abstract class Ctrl
 				//// Reinitialise le token de connexion auto
 				if($connectViaToken==true || $connectViaCookieOld==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
 					{self::userAuthToken("create",self::$curUser->_id);}
-
-				//// Notif si le compte est connecté via une autre ip : controle des accès hors mobile => vérifier l'OS
-				////////////////////////////////////!!!!!!!!!!!!!!!!	if(Req::isMobile()==false  &&  Db::getVal("SELECT count(*) FROM ap_userLivecouter WHERE _idUser=".Db::format($tmpUser["_id"])." AND `date`>".Db::format(time()-60)." AND ipAdress NOT LIKE ".Db::format($_SERVER["REMOTE_ADDR"])) > 0)
-				////////////////////////////////////!!!!!!!!!!!!!!!!		{self::notify(Txt::trad("NOTIF_presentIp")." -> ".$_SERVER["REMOTE_ADDR"]);}
 			}
 			////	USER NON-AUTHENTIFIÉ
 			else{

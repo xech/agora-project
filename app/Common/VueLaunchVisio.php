@@ -1,7 +1,7 @@
 <script>
 ////	Lance la visio
 ready(function(){
-	$(".launchVisio").on("click",function(){
+	$("button[data-visioURL]").on("click",function(){
 		visioURL=$(this).attr("data-visioURL");																										// Visio via le browser ou l'appli Jitsi
 		if($("#visioHostServer").val()=="alt")  {visioURL=visioURL.replace("<?= Ctrl::$agora->visioHost ?>","<?= Ctrl::$agora->visioHostAlt ?>");}	// Url du serveur alternatif
 		window.open(visioURL);																														// Lance la visio !
@@ -10,33 +10,33 @@ ready(function(){
 </script>
 
 <style>
-.divOptions						{margin:40px 0px; text-align:center; font-size:1.1rem;}
-.divOptions .launchVisio		{width:320px; height:80px; padding:10px 5px; font-size:1.2rem;}
-.divOptions .launchVisio img	{margin:5px;}
-.divOptions .launchVisioIcon	{float:left; margin:10px;}
+#visioOptions>div					{margin-block:30px; text-align:center;}
+#visioOptions button				{width:350px; padding:15px; font-size:1.2rem; line-height:30px;}
+#visioOptions img[src*=visioSmall]	{float:left; margin:5px;}
+#visioGuide							{margin-top:50px!important;}
 </style>
 
 
-<div>
-	<!--LANCE LA VISIO VIA L'APPLI JITSI-->
-	<?php if(Req::isMobileApp()){ ?>
-		<div class="divOptions">
-			<button class="launchVisio" data-visioURL="<?= $visioURLJitsi ?>"><img src="app/img/visioSmall.png" class="launchVisioIcon"><?= Txt::trad("VISIO_launchJitsi") ?><img src="app/img/jitsi.png"></button>
-		</div>
-	<?php } ?>
+<div id="visioOptions">
 	<!--LANCE LA VISIO-->
-	<div class="divOptions">
-		<button class="launchVisio" data-visioURL="<?= $visioURL ?>"><img src="app/img/visioSmall.png" class="launchVisioIcon"><?= Txt::trad("VISIO_launch") ?></button>
+	<div>
+		<button data-visioURL="<?= $visioURL ?>"><img src="app/img/visioSmall.png"><?= Txt::trad("VISIO_launch") ?></button>
 	</div>
+	<!--LANCE LA VISIO VIA JITSI-->
+	<?php if(Req::isMobileApp()){ ?>
+	<div>
+		<button data-visioURL="<?= $visioURLJitsi ?>"><img src="app/img/visioSmall.png"><?= Txt::trad("VISIO_launchJitsi") ?> <img src="app/img/jitsi.png"></button>
+	</div>
+	<?php } ?>
 	<!--SERVEURS DE VISIO-->
-	<div class="divOptions" <?= empty(Ctrl::$agora->visioHostAlt) ? 'style="display:none"' : null ?> >
+	<div <?= empty(Ctrl::$agora->visioHostAlt) ? 'style="display:none"' : null ?> >
 		<select id="visioHostServer" <?= Txt::tooltip("VISIO_launchServerTooltip") ?>>
-			<option value="main" selected><?= Txt::trad("VISIO_launchServerMain") ?></option>
-			<option value="alt"><?= Txt::trad("VISIO_launchServerAlt") ?></option>
+			<option value="main" selected><?= Txt::trad("VISIO_launchServerMain") ?> : <?= str_replace('https://','',Ctrl::$agora->visioHost) ?></option>
+			<option value="alt"><?= Txt::trad("VISIO_launchServerAlt") ?> : <?= str_replace('https://','',Ctrl::$agora->visioHostAlt) ?></option>
 		</select>
 	</div>
 	<!--GUIDE PDF-->
-	<div class="divOptions">
-		<a href="docs/VISIO.pdf?displayFile=true" target="_blank" <?= Txt::tooltip("VISIO_launchTooltip2") ?>><img src="app/img/pdf.png">&nbsp; <?= Txt::trad("VISIO_launchTooltip") ?></a>
+	<div id="visioGuide">
+		<div onclick="lightboxOpen('docs/VISIO.pdf')"><?= Txt::trad("VISIO_launchGuide") ?> <img src="app/img/pdf.png"></div>
 	</div>
 </div>

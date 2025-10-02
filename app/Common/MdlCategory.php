@@ -20,7 +20,7 @@
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		$this->spaceIds=Txt::txt2tab($this->_idSpaces);	//Espaces où l'objet est visible

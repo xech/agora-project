@@ -24,7 +24,7 @@
 	if(!empty($contentVisibility))		{echo '<hr><div class="vEvtDetails" '.Txt::tooltip("CALENDAR_visibilityTooltip").'><img src="app/img/displayHide.png">'.$contentVisibility.'</div>';}
 
 	////	VISIOCONFERENCE / FICHIERS JOINTS
-	if(!empty($curObj->visioUrl))		{echo '<hr><div class="vEvtDetails" onclick="launchVisio(\''.$curObj->visioUrl.'\')"><img src="app/img/visioSmall.png">'.Txt::trad("VISIO_launchFromEvent").'</div>';}
+	if(!empty($curObj->visioUrl))		{echo '<hr><a href="?ctrl=misc&action=LaunchVisio&visioURL='.urlencode($curObj->visioUrl).'" class="vEvtDetails lightboxOpenHref"><img src="app/img/visioSmall.png">'.Txt::trad("VISIO_launchFromEvent").'</a>';}
 	echo $curObj->attachedFileMenu();
 	?>
 </div>

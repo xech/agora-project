@@ -19,7 +19,7 @@ class MdlAgora extends MdlObject
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct()
+	public function __construct()
 	{
 		//Récupère les paramètres en Bdd
 		parent::__construct(Db::getLine("select * from ap_agora"));
@@ -62,11 +62,11 @@ class MdlAgora extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * GOOGLE IDENTITY/OAUTH : VERIF S'IL EST ACTIVÉ
+	 * GOOGLE OAUTH : VERIF S'IL EST ACTIVÉ
 	 ********************************************************************************************************/
-	public function gIdentityEnabled()
+	public function gOAuthEnabled()
 	{
-		return (Req::isMobileApp()==false && !empty($this->gIdentityClientId) && !empty($this->gIdentity));
+		return (Req::isMobileApp()==false && !empty($this->gIdentity) && !empty($this->gIdentityClientId));
 	}
 
 	/********************************************************************************************************

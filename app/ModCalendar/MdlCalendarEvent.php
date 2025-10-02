@@ -30,7 +30,7 @@ class MdlCalendarEvent extends MdlObject
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	*******************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		//Timestamp du dateBegin / dateEnd

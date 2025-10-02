@@ -220,13 +220,15 @@ class CtrlObject extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * FICHIER JOINT : DOWNLOAD D'UN FICHIER ("nameMd5" : cf. "actionExternalGetFile()")
+	 * FICHIER JOINT : DOWNLOAD D'UN FICHIER
 	 ********************************************************************************************************/
 	public static function actionAttachedFileDownload()
 	{
-		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"])  &&  ($curFile["containerObj"]->readRight() || md5($curFile["name"])==Req::param("nameMd5")))
-			{File::download($curFile["name"],$curFile["path"]);}
+		if(is_numeric(Req::param("_id"))){
+			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
+			if(is_file($curFile["path"])  &&  ($curFile["parentObj"]->readRight() || CtrlMisc::controlMobileFileDownload($curFile["name"])))
+				{File::download($curFile["name"],$curFile["path"]);}
+		}
 	}
 
 	/********************************************************************************************************
@@ -234,9 +236,11 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionAttachedFileDisplay()
 	{
-		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"]) && $curFile["containerObj"]->readRight())
-			{File::display($curFile["path"]);}
+		if(is_numeric(Req::param("_id"))){
+			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
+			if(is_file($curFile["path"]) && $curFile["parentObj"]->readRight())
+				{File::display($curFile["path"]);}
+		}
 	}
 
 	/********************************************************************************************************
@@ -244,10 +248,12 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionAttachedFileDelete()
 	{
-		$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-		if(is_file($curFile["path"]) && $curFile["containerObj"]->editRight()){
-			$deleteResult=$curFile["containerObj"]->attachedFileDelete($curFile);
-			if($deleteResult==true)  {echo "true";}
+		if(is_numeric(Req::param("_id"))){
+			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
+			if(is_file($curFile["path"]) && $curFile["parentObj"]->editRight()){
+				$deleteResult=$curFile["parentObj"]->attachedFileDelete($curFile);
+				if($deleteResult==true)  {echo "true";}
+			}
 		}
 	}
 

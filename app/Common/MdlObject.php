@@ -7,7 +7,7 @@
 */
 
 
-/** Autorise la création dynamique des propriétés, récupérées en bdd (cf. "__construct()") **/
+/**Création dynamique de propriété ("dynamic property")**/
 #[\AllowDynamicProperties]
 
 
@@ -54,7 +54,7 @@ class MdlObject
 	/********************************************************************************************************
 	 * CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		////	Init l'id
 		$this->_id=0;
@@ -363,7 +363,7 @@ class MdlObject
 		//Controle l'accès en écriture  &&  Notif si un autre user édite le même objet (cf. "messengerUpdate()")
 		if($this->editRight()==false)  {Ctrl::noAccessExit();}
 		$otherUserEdit=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editTypeId=".Db::param("typeId")." AND `date` > ".(time()-30));
-		if($this->isNew()==false && !empty($otherUserEdit))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser")." ".Ctrl::getObj("user",$otherUserEdit)->getLabel()." !");}
+		if($this->isNew()==false && !empty($otherUserEdit))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser").' '.Ctrl::getObj("user",$otherUserEdit)->getLabel());}
 	}
 
 	/********************************************************************************************************
@@ -667,8 +667,7 @@ class MdlObject
 		////	PLUGINS DASHBOARD / SHORTCUT / SEARCH
 		if($params["type"]=="dashboard")	{return "dateCrea BETWEEN ".Db::format($params["dateTimeBegin"])." AND ".Db::format($params["dateTimeEnd"]);}
 		elseif($params["type"]=="shortcut")	{return "shortcut=1";}
-		elseif($params["type"]=="search")
-		{
+		elseif($params["type"]=="search"){
 			////	Init la requete SQL et Les champs de recherche (tous ou uniquement ceux demandés)
 			$returnSql=null;
 			$objSearchFields=(!empty($params["searchFields"]))  ?  array_intersect(static::$searchFields,$params["searchFields"])  :  static::$searchFields;
@@ -676,7 +675,7 @@ class MdlObject
 			if($params["searchMode"]=="exactPhrase"){
 				foreach($objSearchFields as $tmpField){																											//Recherche sur chaque champ de l'objet
 					$searchText=($tmpField=="description" && static::descriptionEditor==true) ?  htmlentities($params["searchText"])  :  $params["searchText"];	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-					$returnSql.=" `".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";																//"sqlLike" délimite le texte avec "%"  &&  "OR" pour rechercher sur le champ suivant
+					$returnSql.=" `".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";																//"sqlLike" pour délimiter le texte &&  "OR" pour rechercher le champ suivant
 				}
 			}
 			////	Recherche "n'importe quel mot"  ||  Recherche "Tous les mots"
@@ -687,7 +686,7 @@ class MdlObject
 					$sqlWords=null;																										//Init la sous-requete pour chaque mot
 					foreach($searchWords as $tmpWord){																					//Sélection SQL pour chaque mot recherché
 						$tmpWord=($tmpField=="description" && static::descriptionEditor==true)  ?  htmlentities($tmpWord)  :  $tmpWord;	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;								//"sqlLike" délimite le texte avec "%"  
+						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;								//"sqlLike" pour délimiter le texte
 					}	
 					$returnSql.=" (".trim($sqlWords,$operatorWords).") OR ";															//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
 				}
@@ -705,29 +704,31 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * AUTEUR DE CRÉATION/MODIF
+	 * AUTEUR DE L'OBJET : CRÉATION
 	 ********************************************************************************************************/
-	public function autorLabel($isModif=false)
+	public function autorLabel()
 	{
-		if($isModif==false && !empty($this->guest))  			{return $this->guest.' ('.Txt::trad("guest").')';}				//Auteur "guest" (création uniquement)
-		elseif($isModif==true && !empty($this->_idUserModif))	{return Ctrl::getObj("user",$this->_idUserModif)->getLabel();}	//Auteur de la modification
-		else													{return Ctrl::getObj("user",$this->_idUser)->getLabel();}		//Auteur de la création	
+		if(!empty($this->guest))	{return $this->guest.' ('.Txt::trad("guest").')';}			//GUEST
+		else						{return Ctrl::getObj("user",$this->_idUser)->getLabel();}	//USER
 	}
 
 	/********************************************************************************************************
-	 * AUTEUR + DATE DE CRÉATION / MODIFICATION
+	 * AUTEUR & DATE : CRÉATION || MODIFICATION
 	 ********************************************************************************************************/
-	public function autorDate($isModif=false, $profileImg=false)
+	public function autorDate($isModif=true, $profileImg=false)
 	{
-		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;																	//Date de créa/modif
-		$autorLabel=$this->autorLabel($isModif);																															//Label de l'auteur
-		if($isModif==false && !empty($this->guestMail) && Ctrl::$curUser->isSpaceAdmin())  {$autorLabel='<span '.Txt::tooltip($this->guestMail).'>'.$autorLabel.'<span>';}	//GUEST : Ajoute le "guestMail" (création et admin)
-		else{																																								//USER :
-			$objUser=($isModif==true && !empty($this->_idUserModif))  ?  Ctrl::getObj("user",$this->_idUserModif)  :  Ctrl::getObj("user",$this->_idUser);					//Obj de l'user
-			if($profileImg==true)  {$autorLabel=$objUser->profileImg(true,true).' &nbsp;'.$autorLabel;}																		//Image de l'auteur
-			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  																					//Lien vers le profil
+		if(!empty($this->guestMail)){																					//GUEST
+			$tooltipMail=(Ctrl::$curUser->isSpaceAdmin())  ?  Txt::tooltip($this->guestMail)  :  null;					//Affiche le Mail?
+			$autorLabel='<span '.$tooltipMail.'>'.$this->autorLabel().'<span>';
+		}else{																											//USER
+			if($isModif==true && !empty($this->_idUserModif))	{$objUser=Ctrl::getObj("user",$this->_idUserModif);}	//Auteur de la modif
+			else												{$objUser=Ctrl::getObj("user",$this->_idUser);}			//Auteur de la création
+			if($profileImg==true)	{$autorLabel=$objUser->profileImg(false,true).' &nbsp;'.$objUser->getLabel();}		//Image + Label
+			else					{$autorLabel=$objUser->getLabel();}													//Label uniquement
+			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  								//Lien vers le profil de l'user
 		}
-		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">'.Txt::dateLabel($dateEdit,"labelFull");
+		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;				//Date de créa/modif
+		return $autorLabel.'<img src="app/img/arrowRightSmall.png">'.Txt::dateLabel($dateEdit,"labelFull");				//Return
 	}
 
 	/********************************************************************************************************
@@ -768,14 +769,16 @@ class MdlObject
 	public static function attachedFileInfos($file)
 	{
 		if(!empty($file)){
-			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}			//Si besoin, récupère les infos en bdd
-			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);								//Path/chemin réel du fichier
-			$file["downloadUrl"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
-			if(Req::isMobileApp())  {$file["downloadUrl"]=CtrlMisc::urlExternalGetFile($file["downloadUrl"],$file["name"]);}	//Url de download externe : bascule sur une page spécifique
-			$file["containerObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
-			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier ou de l'image (cf "actionAttachedFileDisplay()")
-			if(File::isType("imageBrowser",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf "descriptionMail()")
-			return $file;
+			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}				//Si besoin, récupère les infos en bdd
+			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);									//Path/chemin réel du fichier
+			if(is_file($file["path"])){																								//Vérifie que le fichier est bien accessible
+				$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
+				if(Req::isMobileApp())  {$file["urlDownload"]=CtrlMisc::urlMobileFileDownload($file["urlDownload"],$file["name"]);}	//Url de download via CtrlMisc
+				$file["parentObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
+				$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier ou de l'image (cf "actionAttachedFileDisplay()")
+				if(File::isType("editorImage",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf "descriptionMail()")
+				return $file;
+			}
 		}
 	}
 
@@ -810,7 +813,7 @@ class MdlObject
 		if($this->_attachedFileMenu===null){
 			$this->_attachedFileMenu="";
 			foreach($this->attachedFileList() as $tmpFile){
-				$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["downloadUrl"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
+				$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["urlDownload"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
 												<img src="app/img/attachment.png"> '.$tmpFile["name"].'
 											</div>';
 			}

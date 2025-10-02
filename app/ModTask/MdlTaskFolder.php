@@ -18,16 +18,15 @@ class MdlTaskFolder extends MdlFolder
 	const MdlObjectContent="MdlTask";
 
 	/********************************************************************************************************
-	 * SURCHARGE :  POURCENTAGE DE PROGRESSION DANS LA TIMELINE
+	 * SURCHARGE :  DATES AU + TÔT / AU + TARD SUR LES TÂCHES DU DOSSIER
 	 ********************************************************************************************************/
-	public function folderOtherDetails()
+	public function folderDetails()
 	{
-		//Affiche la barre s'il ya une date au plus tôt et au plus tard sur l'ensemble des tâches du dossier
-		$tasks=Db::getLine("SELECT  MIN(dateBegin) as dateBeginMin,  MAX(dateEnd) as dateEndMax  FROM  ".MdlTask::dbTable."  WHERE  _idContainer=".$this->_id);
-		if(!empty($tasks["dateBeginMin"]) && !empty($tasks["dateEndMax"])){
-			$barLabel="<img src='app/img/task/date.png'> ".Txt::dateLabel($tasks["dateBeginMin"],"dateBasic",$tasks["dateEndMax"]);
-			$barTooltip=Txt::trad("TASK_folderDateBeginEnd")." : &nbsp; ".Txt::dateLabel($tasks["dateBeginMin"],"dateBasic",$tasks["dateEndMax"]);
-			return Tool::progressBar($barLabel, $barTooltip);//Pas de $percentProgress (cf. "isDelayed()" multiple)
+		$tasks=Db::getLine("SELECT MIN(dateBegin) as dateMin,  MAX(dateEnd) as dateMax FROM ".MdlTask::dbTable." WHERE _idContainer=".$this->_id);
+		if(!empty($tasks["dateMin"]) && !empty($tasks["dateMax"])){
+			$barLabel="<img src='app/img/task/date.png'> ".Txt::dateLabel($tasks["dateMin"],"dateMini",$tasks["dateMax"]);
+			$barTooltip=Txt::trad("TASK_folderDateBeginEnd")." :<br>".Txt::dateLabel($tasks["dateMin"],"dateFull",$tasks["dateMax"]);
+			return Tool::progressBar($barLabel, $barTooltip);
 		}
 	}
 }

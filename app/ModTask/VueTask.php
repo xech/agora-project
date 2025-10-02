@@ -1,16 +1,18 @@
 <style>
-.priorityLabel, .categoryLabel	{display:inline-block; margin-left:20px; line-height:40px;}	/*Label de la priorité et du statut (surcharges)*/
-.vTaskDetails					{text-align:center; margin:20px 0px;}						/*Ligne des détails*/
+.lightboxTitleInfos > span	{display:inline-block; margin:10px 10px 0px;}
+.vProgressBars				{text-align:center;}
+.progressBar				{margin:10px; padding:8px;}
 </style>
 
 <div>
-	<?php
-	////	MENU CONTEXTUEL/D'EDITION  &&  TITRE
-	echo "<div class='lightboxTitle'>".$curObj->lightboxMenu().$curObj->title."<br>".$curObj->categoryLabel().$curObj->priorityLabel()."</div>";
+	<!--MENU CONTEXT  /  TITRE  /  CATEGORIE  /  PRIORITE-->
+	<div class="lightboxTitle">
+		<?= $curObj->lightboxMenu().$curObj->title ?>
+		<div class="lightboxTitleInfos"><?= $curObj->categoryLabel().$curObj->priorityLabel() ?></div>
+	</div>
 
-	////	DESCRIPTION  +  PERS. RESPONSABLES / AVANCEMENT / DATES DEBUT & FIN + FICHIERS JOINTS
-	echo $curObj->description.
-		 "<div class='vTaskDetails'>".$curObj->responsiblePersons(true).$curObj->advancement(true).$curObj->dateBeginEnd(true)."</div>".
-		$curObj->attachedFileMenu();
-	?>
+	<!--DESCRIPTION  /  RESPONSABLES  /  AVANCEMENT  /  DATES DEBUT & FIN  /  FICHIERS JOINTS-->
+	<?= $curObj->description ?>
+	<div class="vProgressBars"><?= $curObj->responsiblePersons(true).$curObj->progressAdvancement(true).$curObj->progressBeginEnd(true) ?></div>
+	<?= $curObj->attachedFileMenu() ?>
 </div>

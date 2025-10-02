@@ -5,7 +5,7 @@
 <!--CONTENEUR DE LA CARTE -->
 <div id="mapid"></div>
 
-<!--LIBRAIRIE GOOGLE MAPS / LEAFLET-OPENSTREETMAP-->
+<!--LIBRAIRIE GOOGLE MAPS / OPENSTREETMAP-->
 <?php if($mapTool=="gmap"){ ?>
 	<script src="https://maps.googleapis.com/maps/api/js?key=<?= Ctrl::$agora->gApiKey ?>"></script>
 <?php }else{ ?>
@@ -21,7 +21,7 @@
 ready(function(){
 	//// Init l'affichage
 	mapTool="<?= $mapTool ?>";//"gmap" ou "leaflet"
-	$("#mapid").css("width",windowWidth).css("height",windowHeight-(isMobile()?0:80));//Redimensionne le div de la carte
+	$("#mapid").css("width",window.top.windowWidth).css("height",window.top.windowHeight-(isMobile()?0:80));//Redimensionne le div de la carte
 
 	//// Instancie la carte Google Map
 	if(mapTool=="gmap"){
@@ -29,7 +29,7 @@ ready(function(){
 		geocoder=new google.maps.Geocoder();										//Init le géocodeur
 		bounds	=new google.maps.LatLngBounds();									//bornes la carte (latitude/longitude)
 	}
-	//// Instancie la carte Leaflet-Openstreetmap
+	//// Instancie la carte Openstreetmap
 	else{
 		leafletMap=L.map("mapid").setView([45,-20], 14);																//Créé une nouvelle carte (par défaut sur l'Atlantique)
 		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'OpenStreetMap'}).addTo(leafletMap);	//Ajoute les tuiles/vues d'Openstreetmap	
@@ -90,7 +90,7 @@ function displayAdress(adressKey)
 			}
 		});
 	}
-	//// LEAFLET-OPENSTREETMAP
+	//// OPENSTREETMAP
 	else{
 		//// Géocode et marque chaque adresse
 		$.ajax({url:"https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(tmpAdress.adress), dataType:"json"}).done(function(result){

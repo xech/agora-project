@@ -7,6 +7,9 @@
 * Author:  Olivier PLATHEY                                                     *
 *******************************************************************************/
 
+/**Création dynamique de propriété ("dynamic property")**/
+#[\AllowDynamicProperties]
+
 class FPDF
 {
 const VERSION = '1.86';

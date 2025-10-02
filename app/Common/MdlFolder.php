@@ -28,7 +28,7 @@
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		if($this->_id==1)  {$this->name=Txt::trad("rootFolder");}
@@ -260,5 +260,5 @@
 	/********************************************************************************************************
 	 * DÉTAILS COMPLÉMENTAIRES SUR LE DOSSIER => À SURCHARGER !
 	 ********************************************************************************************************/
-	public function folderOtherDetails(){}
+	public function folderDetails(){}
 }

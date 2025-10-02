@@ -29,7 +29,7 @@ ready(function(){
 @media screen and (min-width:1025px) and (max-width:1350px){
 	.vHeaderModule label					{margin-top:7px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
 	#headerMenuLeft							{padding-left:50px; padding-right:10px;}/*"padding-left" en fonction du width du "logoSmall.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/

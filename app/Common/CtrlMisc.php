@@ -16,13 +16,12 @@ class CtrlMisc extends Ctrl
 	protected static $initCtrlFull=false;
 
 	/********************************************************************************************************
-	 * AJAX : UPDATE DU MESSENGER & LIVECOUNTER
+	 * AJAX : UPDATE LE MESSENGER & LIVECOUNTER
 	 ********************************************************************************************************/
 	public static function actionMessengerUpdate()
 	{
-		//Messenger activé?
-		if(self::$curUser->messengerEnabled())
-		{
+		/////	MESSENGER ACTIVÉ
+		if(self::$curUser->messengerEnabled()){
 			////	UPDATE LE LIVECOUNTER DE L'USER COURANT EN BDD :  SPECIFIE SI ON EST EN TRAIN DE MODIFIER UN OBJET (via "editTypeId")  &&  ENREGISTRE SI BESOIN LE CONTENU DE L'EDITEUR (via "editorDraft")
 			$sqlValues="_idUser=".(int)self::$curUser->_id.", ipAdress=".Db::format($_SERVER["REMOTE_ADDR"]).", editTypeId=".Db::param("editTypeId").", `date`=".Db::format(time());
 			if(Req::isParam("editorDraft"))  {$sqlValues.=", editorDraft=".Db::param("editorDraft").", draftTypeId=".Db::param("editTypeId");}//Vérifie si "editorDraft" est spécifié (pour pas l'effacer..)
@@ -33,10 +32,9 @@ class CtrlMisc extends Ctrl
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
 				$_SESSION["livecounterUsersHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				//Supprime les anciens livecounters d'users déconnectés et les anciens messages du messenger (> 60 jours) +  et les anciens messages  de visio (> 1 heure)
-				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".intval(time()-TIME_2MONTHS));
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE `date` < ".intval(time()-TIME_2MONTHS));
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE message LIKE '%launchVisio%' AND `date` < ".intval(time()-3600));
+				//Suppression :  livecounters d'users > 1 heure  +  messages de visio > 2 heures  +  anciens messages > 2 mois
+				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".(time()-3600));
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE  (`date` < ".(time()-7200)." AND `message` LIKE '%launchVisio%')  OR  `date` < ".(time()-TIME_2MONTHS));
 				//Garde en session les users qui rendent visible leur messenger (cf. paramétrage dans "ap_userMessenger")
 				$idsUsersVisibles=[0];//Ajoute un pseudo user '0'
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsersVisibles[]=$tmpUser->_id;}
@@ -140,8 +138,7 @@ class CtrlMisc extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMessengerPost()
 	{
-		if(self::$curUser->messengerEnabled())
-		{
+		if(self::$curUser->messengerEnabled()){
 			//Init les destinataires du message et le message
 			$usersIds=Req::param("messengerUsers");
 			$usersIds[]=self::$curUser->_id;
@@ -176,8 +173,7 @@ class CtrlMisc extends Ctrl
 			}
 		}
 		//// Resultat de recherche
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			//Paramétrage de la récupération des plugins
 			$vDatas["pluginsList"]=[];
 			$pluginParams=array("type"=>"search", "searchText"=>Req::param("searchText"), "searchMode"=>Req::param("searchMode"), "creationDate"=>Req::param("creationDate"), "searchFields"=>Req::param("searchFields"), "searchModules"=>Req::param("searchModules"));
@@ -201,8 +197,8 @@ class CtrlMisc extends Ctrl
 		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));																// Url de la visioconf
 		if(is_object(Ctrl::$curUser))  {$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	// Ajoute le nom de l'user courant dans l'Url
 		if(Req::isMobileApp()){																								// Appli mobile
-			$vDatas["visioURL"].="#frommobileapp_getfile";																	// - Lance la visio via le browser system (cf. contrôle de l'Url via "main.dart")
-			$vDatas["visioURLJitsi"]="org.jitsi.meet://".str_replace("https://","",$vDatas["visioURL"]);					// - Lance la visio depuis l'appli Jitsi (bouton secondaire)
+			$vDatas["visioURL"].="#frommobileapp";																			// - Lance la visio via le browser system (cf. contrôles via "main.dart")
+			$vDatas["visioURLJitsi"]="org.jitsi.meet://".str_replace("https://","",$vDatas["visioURL"]);					// - Lance la visio via l'appli Jitsi (bouton secondaire)
 		}
 		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
@@ -303,7 +299,7 @@ class CtrlMisc extends Ctrl
 		$vDatas["wallpaperList"]=[];
 		$filesList=array_merge(scandir(PATH_WALLPAPER_DEFAULT),scandir(PATH_WALLPAPER_CUSTOM));
 		foreach($filesList as $tmpFile){
-			if(!in_array($tmpFile,['.','..']) && File::isType("imageBrowser",$tmpFile)){
+			if(!in_array($tmpFile,['.','..']) && File::isType("editorImage",$tmpFile)){
 				if(is_file(PATH_WALLPAPER_DEFAULT.$tmpFile))	{$path=PATH_WALLPAPER_DEFAULT.$tmpFile;		$value=WALLPAPER_DEFAULT_DB_PREFIX.$tmpFile;	$sortName=str_replace(File::extension($tmpFile),"",$tmpFile);}//Tri en fonction de la valeur numérique
 				else											{$path=PATH_WALLPAPER_CUSTOM.$tmpFile;		$value=$tmpFile;								$sortName="zz".$tmpFile;}//Place les wallpapers customs à la fin
 				$vDatas["wallpaperList"][]=["path"=>$path, "value"=>$value, "name"=>$tmpFile, "sortName"=>$sortName];
@@ -338,36 +334,44 @@ class CtrlMisc extends Ctrl
 		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 
-	/****************************************************************************************************************************************************
-	 * URL : DOWNLOAD EXTERNE -> MOBILEAPP OU NOTIF MAIL
-	 * exple:		"?ctrl=file&action=GetFile&typeId=file-1"
-	 * devient : 	"?ctrl=misc&action=ExternalGetFile&typeId=file-55&ctrlBis=file&nameMd5=184dfd315adbbed13729076606b1afac&fileName=Documentation.pdf"
-	 ****************************************************************************************************************************************************/
-	public static function urlExternalGetFile($urlDownload, $fileName)
+	/****************************************************************************************************************************
+	 * URL : DOWNLOAD VIA MOBILEAPP D'UN FICHIER OU FICHIER JOINT
+	 * exple:	"?ctrl=file&action=FileDownload&typeId=file-55"
+	 *    => 	"?ctrl=misc&action=MobileFileDownload&typeId=file-55&ctrlBis=file&fileNameMd5=XYZ&fileName=Documentation.pdf"
+	 ****************************************************************************************************************************/
+	public static function urlMobileFileDownload($url, $fileName)
 	{
-		$ctrlBis=stristr($urlDownload,"ctrl=file")  ?  "file"  :  "object";														//Défini d'abord le controleur secondaire : "file" ou "object" ("attachedFile")
-		$urlDownload=str_ireplace(["ctrl=file","ctrl=object"], "ctrl=misc", $urlDownload);										//Puis switch sur le controleur "misc" (cf. "$initCtrlFull=false")
-		$urlDownload=str_ireplace(["action=GetFile","action=AttachedFileDownload"], "action=ExternalGetFile", $urlDownload);	//Puis switch sur l'action "ExternalGetFile"
-		return $urlDownload."&ctrlBis=".$ctrlBis."&nameMd5=".md5($fileName)."&fileName=".urlencode($fileName);					//Retourne l'url avec le "nameMd5" pour le controle d'accès + le nom du fichier urlencodé
+		$ctrlBis=stristr($url,"ctrl=file")  ?  "file"  :  "object";															//Controleur secondaire en 1er
+		$url=preg_replace('/ctrl=(file|object)/i', 'ctrl=misc', $url);														//Switch sur "ctrl=misc"
+		$url=preg_replace('/action=(FileDownload|AttachedFileDownload)/i', 'action=MobileFileDownload', $url);				//Switch sur "action=MobileFileDownload"
+		return $url.'&ctrlBis='.$ctrlBis.'&fileNameMd5='.md5($fileName).'&fileName='.urlencode($fileName).'&getfile=true';	//Url avec "fileNameMd5" de controle + "fileName" du VueMobileFileDownload  +  "getfile" du MOBILEAPP
+	}
+
+	/********************************************************************************************************
+	 * CONTROLE L'ACCES EXTERNE AU FICHIER  ($fileName doit être récupéré en interne)
+	 ********************************************************************************************************/
+	public static function controlMobileFileDownload($fileName)
+	{
+		return (md5($fileName)==Req::param("fileNameMd5"));
 	}
 
 	/********************************************************************************************************
 	 * ACTION : DOWNLOAD EXTERNE -> MOBILEAPP OU NOTIF MAIL  (cf. contrôle de l'Url via "main.dart")
 	 ********************************************************************************************************/
-	public static function actionExternalGetFile()
+	public static function actionMobileFileDownload()
 	{
 		////	Download/Affiche le fichier (pdf/img/video)
 		if(Req::isParam("launchDownload") || Req::isParam("displayFile")){
-			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionGetFile();}					//Download un fichier du ModFile
+			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionFileDownload();}				//Download un fichier du ModFile
 			else								{CtrlObject::actionAttachedFileDownload();}		//Download le fichier joint d'un objet
 		}
-		////	Affiche le bouton de download depuis le browser system
+		////	Vue avec un button "download" via le browser system
 		else{
 			static::$isMainPage=true;
 			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";	//Url de download du fichier ("launchDownload" pour lancer le download ci-dessus)
 			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']))	{$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";}
 			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT']))				{$vDatas["appUrl"]="http://play.google.com/store/apps/details?id=fr.omnispace.www";}
-			static::displayPage(Req::commonPath."VueExternalGetFile.php", $vDatas);
+			static::displayPage(Req::commonPath."VueMobileFileDownload.php", $vDatas);
 		}
 	}
 }

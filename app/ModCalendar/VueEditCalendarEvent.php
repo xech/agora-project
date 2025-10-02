@@ -29,8 +29,8 @@ ready(function(){
 	////	VISIO : "AJOUTER UNE VISIO"
 	$("#visioUrlAdd").on("click", async function(){
 		if(await confirmAlt("<?= Txt::trad("VISIO_urlAddConfirm") ?>")){
-			$("#visioOptions").show();										//Affiche l'input / copy / delete
-			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>");		//Spécifie l'URL d'une visio avec un identifiant aléatoire
+			$("#visioUrlInput").val("<?= Ctrl::$agora->visioUrl() ?>");		//Spécifie l'URL de la visio
+			$("#visioInputs").show();										//Affiche l'input & co
 			$(this).hide();													//Masque "Ajouter une visio"
 		}
 	});
@@ -38,25 +38,17 @@ ready(function(){
 	////	VISIO : COPIE L'URL DANS LE PRESSE PAPIER
 	$("#visioUrlCopy").on("click", async function(){
 		if(await confirmAlt("<?= Txt::trad("VISIO_urlCopy") ?>")){
-			let visioUrlVal=$("#visioUrlInput").val();							//Récupère l'Url
-			navigator.clipboard.writeText(visioUrlVal).then(()=>{				//Copie l'url dans le clipboard (Presse-papiers)
-				notify(visioUrlVal+" <br> <?= Txt::trad("copyUrlNotif") ?>");	//Notify "L'url a bien été copiée"
-			});
+			navigator.clipboard.writeText($("#visioUrlInput").val()).then(()=>{  notify("<?= Txt::trad("copyUrlNotif") ?>");  });
 		}
 	});
 
 	////	VISIO : SUPPRIME L'URL
 	$("#visioUrlDelete").on("click", async function(){
 		if(await confirmAlt("<?= Txt::trad("VISIO_urlDelete") ?>")){
-			$("#visioUrlInput").val("");	//Réinit l'url de la visio
-			$("#visioOptions").hide();		//Affiche l'input / copy / delete
-			$("#visioUrlAdd").show();		//Affiche le label "Ajouter une visio"
+			$("#visioUrlInput").val("");	//Réinit l'url
+			$("#visioInputs").hide();		//Masque l'input & co
+			$("#visioUrlAdd").show();		//Affiche "Ajouter une visio"
 		}
-	});
-
-	////	VISIO : LANCE LA VISIO DEPUIS L'UNPUT
-	$("#visioUrlInput").on("click",function(){
-		launchVisio(this.value);
 	});
 
 	////	SELECTION D'AGENDA : ADD/REMOVE LA CLASS "optionSelect" ET VERIF LES CRÉNEAUX HORAIRES OCCUPÉS
@@ -95,9 +87,9 @@ function timeSlotBusy()
 						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
 						"&_evtId=<?= $curObj->_id ?>";
 			$(".vCalInput:checked").each(function(){ ajaxUrl+="&calendarIds[]="+this.value; });
-			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
+			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé (mainTriggers() : Update les tooltips)
 			$.ajax(ajaxUrl).done(function(txtResult){
-				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  tooltipDisplay();}
+				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainTriggers();}
 				else					{$("#timeSlotBusy").fadeOut();}
 			});
 		}
@@ -139,7 +131,7 @@ input[name='guestMail']				{margin-left:20px;}
 /*VISIOCONFERENCE*/
 #visioUrlAdd						{line-height:35px;}
 #visioUrlInput						{width:250px; font-size:0.9rem;}
-<?= empty($curObj->visioUrl) ? "#visioOptions{display:none;}" : "#visioUrlAdd{display:none;}" ?>/*masque "Ajouter une visio"  ||  masque l'input de la visio*/
+<?= empty($curObj->visioUrl)?'#visioInputs':'#visioUrlAdd' ?>	{display:none;}/*masque l'input de la visio OU "Ajouter une visio"*/
 
 /*AFFECTATION AUX AGENDAS*/
 #calAffectationsOverflow			{max-height:500px; overflow-y:auto;}
@@ -262,8 +254,8 @@ input[name='guestMail']				{margin-left:20px;}
 	<?php if(Ctrl::$agora->visioEnabled()){ ?>
 	<div class="vEvtOptionInline vEvtGuestHide">
 		<span id="visioUrlAdd" class="sLink" <?= Txt::tooltip("VISIO_urlAddConfirm") ?>><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
-		<span id="visioOptions">
-			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" class="sLink" <?= Txt::tooltip("VISIO_launchFromEvent") ?> readonly>
+		<span id="visioInputs">
+			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" readonly>
 			<img src="app/img/copy.png" id="visioUrlCopy" class="sLink" <?= Txt::tooltip("VISIO_urlCopy") ?>>
 			<img src="app/img/delete.png" id="visioUrlDelete" class="sLink" <?= Txt::tooltip("VISIO_urlDelete") ?>>
 		</span>

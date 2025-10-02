@@ -353,7 +353,7 @@ class DbUpdate extends Db
 					//Nouveau chemin des fichiers joint (images, mp3, videos)
 					foreach(self::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".$objectType."'") as $tmpFile)
 					{
-						if(File::isType("imageBrowser",$tmpFile["name"]) || File::isType("mp3",$tmpFile["name"]) || File::isType("videoBrowser",$tmpFile["name"]))
+						if(File::isType("editorImage",$tmpFile["name"]) || File::isType("mp3",$tmpFile["name"]) || File::isType("editorVideo",$tmpFile["name"]))
 						{
 							//chemin du fichier joint
 							$fileExtension=".".File::extension($tmpFile["name"]);
@@ -361,7 +361,7 @@ class DbUpdate extends Db
 							$newPath="index.php?ctrl=object&action=AttachedFileDisplay&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObject.php"
 							//Mp3 ("url_encode" : lecteur mp3)  ||  Videos 
 							if(File::isType("mp3",$tmpFile["name"]))  {$newPath=urlencode($newPath);}
-							elseif(File::isType("videoBrowser",$tmpFile["name"])){
+							elseif(File::isType("editorVideo",$tmpFile["name"])){
 								$oldPath="../".$oldPath;//Racine depuis le player : "../../"
 								$newPath="../".str_replace("fichiers_objet","objectAttachment",$oldPath);//Racine depuis le player : "../../../"
 							}
@@ -869,7 +869,7 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("23.2.3"))
 			{
-				//Renomme les champs "gSignin" et "gSigninClientId" en "gIdentity" et "gIdentityClientId"
+				//Renomme les champs "gSignin" et "gSigninClientId" en "gIdentity" et "gIdentityClientId" (cf. Google OAuth)
 				if(self::fieldExist("ap_agora","gSignin"))  		{self::query("ALTER TABLE ap_agora CHANGE `gSignin` `gIdentity` tinyint DEFAULT NULL");}
 				if(self::fieldExist("ap_agora","gSigninClientId"))  {self::query("ALTER TABLE ap_agora CHANGE `gSigninClientId` `gIdentityClientId` varchar(255) DEFAULT NULL");}
 			}
@@ -990,6 +990,14 @@ class DbUpdate extends Db
 				//// Correction de libellé de catégorie d'evt
 				self::query("UPDATE `ap_calendarCategory` SET title='réunion' WHERE title='rÃ©union'");
 				self::query("UPDATE `ap_calendarCategory` SET title='congés' WHERE title='congÃ©s'");
+			}
+
+			if(self::updateVersion("25.10.1"))
+			{
+				//Remplace dans les News lightboxOpen() par .lightboxOpenHref
+				$newsSearch ='href="javascript:lightboxOpen(\'?ctrl=user&action=SendInvitation\')"';
+				$newsReplace='href="?ctrl=user&amp;action=SendInvitation" class="lightboxOpenHref"';
+				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`, ".self::format($newsSearch).", ".self::format($newsReplace).") ");
 			}
 
 			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

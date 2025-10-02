@@ -29,7 +29,7 @@ class MdlCalendar extends MdlObject
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		//Libellé de l'agenda perso

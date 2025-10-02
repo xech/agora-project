@@ -10,29 +10,36 @@ function moduleDisplay(){
 
 <style>
 /*LABEL/DETAILS DES TACHES*/
-.objBlocks .priorityLabel, .objBlocks .categoryLabel	{display:block; margin-top:7px;}											/*Label de la priorité et du statut (surcharges)*/
-.objLines  .priorityLabel, .objLines .categoryLabel		{display:inline-block; margin-left:20px;}									/*Idem*/
-.objBlocks .objDetails.vObjTaskDetails					{display:inline-block!important; position:absolute; left:50px; bottom:5px;}	/*Surcharge : détails des taches en affichage "block"*/
-.objBlocks .objDetails img								{max-height:20px; margin-right:10px;}										/*Icones des détails*/
+.vObjTasks .objLabelInfos				{margin-top:10px; font-size:0.95rem;}		/*.categoryLabel et .priorityLabel*/
+.vObjTasks .objLabelInfos span			{display:inline-block; margin-right:10px;}
+.vObjTasks .categoryColor				{width:14px; height:14px;}					/*.categoryColor idem .priorityLabel*/
+.objFolders .progressBar				{margin-top:5px;}							/*Dossiers : margin des .progressBar avec le nb d'elements du dossier*/
+.objLines .objContainer					{height:70px;}								/*Line : surcharge la hauteur*/
+.objLines .vObjTasks .progressBar		{margin-left:15px;}							/*Line : affichage des .progressBar*/
+.objBlocks .vObjTasks .objIconOpacity	{display:none;}								/*Block : masque l'icone*/
+.objBlocks .vObjTasks .objDetails		{display:table-cell!important; width:40px; text-align:right;}	/*Block : affiche les .objDetails*/
+.objBlocks .vObjTasks .progressBar		{margin-bottom:5px; padding:2px 5px;}		/*Block : .progressBar au format icone -> sans label*/
+.objBlocks .vObjTasks .progressBarLabel	{display:none;}								/*Idem*/
+.progressBarDelayed						{color:#740;}
 
 /*TIMELINE*/
-.vTimelineSeparator					{visibility:hidden; width:100%;}
-.vTimelineMain						{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px;}
-.vTimelineMain table				{border-collapse:collapse;}
-.vTimelineMain td					{vertical-align:middle; white-space:nowrap;}
-.vTimelineMonths					{padding-bottom:8px;}/*Label des mois*/
-.vTimelineDays						{padding-left:3px; cursor:help;}
-.vTimelineTitle						{padding:0px 10px;}	/*Label de la tâche*/
-.vTimelineMain td:not(:first-child)	{min-width:25px;}	/*Cell des jours*/
-.vTimelineLeftBorder				{border-left:#ccc solid 1px;}
-.vTimelineLeftBorder2				{border-left:#eee solid 1px;}
-.vTimelineToday						{color:#c00; font-size:1.1em}
-.vTimelineMain .progressBar			{width:100%; text-align:left; padding:0px 3px;}	/*surcharge : 100% de width en fonction de la durée de la tâche (cf. "colspan" des cellules)*/
+.vTimelineSeparator						{visibility:hidden; width:100%;}
+.vTimelineMain							{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px;}
+.vTimelineMain table					{border-collapse:collapse;}
+.vTimelineMain td						{vertical-align:middle; white-space:nowrap;}
+.vTimelineMonths						{padding-bottom:8px;}/*Label des mois*/
+.vTimelineDays							{padding-left:3px; cursor:help;}
+.vTimelineTitle							{padding:0px 10px;}	/*Label de la tâche*/
+.vTimelineMain td:not(:first-child)		{min-width:30px;}	/*Cell des jours*/
+.vTimelineLeftBorder					{border-left:#ccc solid 1px;}
+.vTimelineLeftBorder2					{border-left:#eee solid 1px;}
+.vTimelineMain .progressBar				{width:100%; padding:5px 3px; text-align:left; font-size:0.85rem;}/*100% de width (cf. durée de la tâche et "colspan" des cellules)*/
+.vTimelineMain .progressBar img[src*=date]	{display:none;}
 
 /*RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:490px){
-	.vTimelineMain td:not(:first-child)		{min-width:22px;}
-	.vTimelineMain img						{display:none;}
+	.vTimelineMain td:not(:first-child)	{min-width:22px;}
+	.vTimelineMain img					{display:none;}
 }
 </style>
 
@@ -66,10 +73,13 @@ function moduleDisplay(){
 			echo $tmpTask->objContainerMenu();
 		?>
 				<div class="objContainerScroll">
-					<div class="objContent">
+					<div class="objContent vObjTasks">
 						<div class="objIcon objIconOpacity"><img src="app/img/task/iconSmall.png"></div>
-						<div class="objLabel" onclick="<?= $tmpTask->openVue() ?>"><?= ucfirst($tmpTask->title).$tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
-						<div class="objDetails vObjTaskDetails"><?= $tmpTask->responsiblePersons().$tmpTask->advancement().$tmpTask->dateBeginEnd() ?></div>
+						<div class="objLabel" onclick="<?= $tmpTask->openVue() ?>">
+							<?= ucfirst($tmpTask->title) ?>
+							<div class="objLabelInfos"><?= $tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
+						</div>
+						<div class="objDetails"><?= $tmpTask->responsiblePersons().$tmpTask->progressAdvancement().$tmpTask->progressBeginEnd() ?></div>
 						<div class="objAutorDate"><?= $tmpTask->autorDate() ?></div>
 					</div>
 				</div>
@@ -93,7 +103,8 @@ function moduleDisplay(){
 					$timelineHeaderMonths=$timelineHeaderDays=null;
 					foreach($timelineDays as $tmpDay){
 						if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.='<td class="vTimelineMonths" colspan="'.$tmpDay["newMonthColspan"].'">'.$tmpDay["newMonthLabel"].'</td>';}
-						$timelineHeaderDays.='<td class="vTimelineDays '.$tmpDay["vTimelineToday"].' '.$tmpDay["classLeftBorder"].'" '.Txt::tooltip($tmpDay["dayLabelTitle"]).'>'.$tmpDay["dayLabel"].'</td>';
+						if($tmpDay["curDate"]==date('Y-m-d'))	{$tmpDay["dayLabel"]='<span class="circleNb">'.$tmpDay["dayLabel"].'</span>';}
+						$timelineHeaderDays.='<td class="vTimelineDays '.$tmpDay["classLeftBorder"].'" '.Txt::tooltip($tmpDay["dayLabelTitle"]).'>'.$tmpDay["dayLabel"].'</td>';
 					}
 					echo '<tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderMonths.'</tr>
 						  <tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderDays.'</tr>';
@@ -106,7 +117,7 @@ function moduleDisplay(){
 							$isTaskBegin=($tmpTask->dateBegin==$tmpDay["curDate"]);//La tâche commence la cellule du jour affichée ($tmpDay)
 							if($isTaskBegin==true || $tmpDay["dayTimeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["dayTimeBegin"]){
 								$tmpCellColspan=($isTaskBegin==true)  ?  "colspan='".$tmpTask->timelineColspan."'"  :  null;
-								$tmpCellLabel  =($isTaskBegin==true)  ?  $tmpTask->timelineGanttBar()  :  "&nbsp;";
+								$tmpCellLabel  =($isTaskBegin==true)  ?  $tmpTask->progressBeginEnd()  :  "&nbsp;";
 								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["classLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}
 						}
 						//Affiche toute la timeline de la tâche courante

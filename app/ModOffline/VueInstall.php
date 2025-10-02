@@ -28,13 +28,13 @@ ready(function(){
 	
 		//// Formulaire validé et confirmé : "Post" via Ajax
 		if(await confirmAlt("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
-			submitLoading();																		//Img "loading"
-			$.ajax({url:"index.php",data:$(this).serialize(),type:"POST"}).done(function(result){	//Submit Ajax
-				if(/installOk/i.test(result)==false)	{notify(result);}							//Erreur
-				else{																				//Install Ok
-					notify("<?= Txt::trad("INSTALL_installOk") ?>");								//Notify
-					confirmCloseForm=false;															//Reinit confirmCloseForm
-					setTimeout(function(){ redir("index.php?ctrl=offline&disconnect=1"); },3000);	//Redir en page d'accueil avec un Timeout de 3sec minimum
+			submitLoading();																			//Img "loading"
+			$.ajax({url:"index.php", data:$(this).serialize(), method:"POST"}).done(function(result){	//Submit Ajax
+				if(/installOk/i.test(result)==false)	{notify(result);}								//Erreur
+				else{																					//Install Ok
+					notify("<?= Txt::trad("INSTALL_installOk") ?>");									//Notify
+					window.top.confirmCloseForm=false;													//Reinit confirmCloseForm
+					setTimeout(function(){ redir("index.php?ctrl=offline&disconnect=1"); },3000);		//Redir en page d'accueil avec un Timeout de 3sec minimum
 				}												
 			});
 		}

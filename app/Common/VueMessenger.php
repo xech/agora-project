@@ -21,9 +21,9 @@ function messengerUpdate()
 	//// Init le messenger ?
 	initMessenger=(typeof initMessenger=="undefined");
 
-	//// Page affichée : update le pageVisibilityTime  ||  Return "false" si la page n'est pas affichée depuis + de 30mn (soit 1800000 ms. Evite ainsi les requetes Ajax inutiles)
-	if(document.visibilityState=="visible")				{pageVisibilityTime=Date.now();}
-	else if((Date.now()-pageVisibilityTime)>1800000)	{return false;}
+	//// Page affichée : update/Init le pageVisibilityTime  ||  Return "false" si la page n'est pas affichée depuis + de 15mn (900'000ms) pour eviter les requetes Ajax inutiles
+	if(document.visibilityState=="visible" || initMessenger==true)	{pageVisibilityTime=Date.now();}
+	else if((Date.now()-pageVisibilityTime)>900000)					{return false;}
 
 	//// Url du "MessengerUpdate" (Ajax)
 	var updateUrl="?ctrl=misc&action=MessengerUpdate";
@@ -47,7 +47,7 @@ function messengerUpdate()
 			if(result.livecounterUsersHtml.length>0){
 				$("#livecounterUsers").html(result.livecounterUsersHtml);												//Affiche d'abord les users du livecounter principal
 				if($(".vLivecounterUser").length>=2)  {$("#messengerMultiUsers").show();}								//Affiche l'icone pour discuter à plusieurs (et voir les anciens messages)
-				$("#livecounterMain").css("left", (windowWidth/2)-($("#livecounterMain").outerWidth(true)/2) ).show();	//Affiche enfin le livecounter centré sur la page
+				$("#livecounterMain").css("left", (window.top.windowWidth/2)-($("#livecounterMain").outerWidth(true)/2) ).show();//Affiche enfin le livecounter centré sur la page
 			}
 			//Update les users du messenger (checkboxes)
 			$("#messengerFormUsers>div").html("<div class='vMessengerUser'><?= Txt::trad("MESSENGER_chatWithMulti") ?></div>"+result.livecounterFormHtml);
@@ -55,7 +55,7 @@ function messengerUpdate()
 
 		//// Finalise l'affichage
 		if(result.messengerUpdate==true || result.livecounterUpdate==true)  {messengerDisplayUser();}					//Affiche uniquement les messages d'un user OU les messages de tous les users
-		if(result.livecounterUsersHtml.length>0 || result.messengerMessagesHtml.length>0)  {tooltipDisplay();}			//Update les tooltips
+		if(result.livecounterUsersHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainTriggers();}			//Update les tooltips
 		messengerCheckedUsers=result.messengerCheckedUsers;																//Update la liste des users "checked" (après post d'un message dans une discussion à plusieurs)
 
 		//// Pulsate & alerte sonore des users ayant posté un nouveau message
@@ -73,7 +73,7 @@ function messengerDisplay(messengerDisplayModeNew)
 {
 	//// MessengerDisplayMode
 	messengerDisplayMode=($("#messengerMain").isDisplayed() && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;	//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
-	if(messengerDisplayMode!="none")  {$.ajax({url:"?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode});}		//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
+	if(messengerDisplayMode!="none")  {$.ajax("?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode);}				//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
 
 	//// Masque le messenger principal
 	if(messengerDisplayMode=="none"){
@@ -89,8 +89,8 @@ function messengerDisplay(messengerDisplayModeNew)
 			messengerMobileDisplay();										//Messenger en pleine page.
 			$(window).on("resize",function(){ messengerMobileDisplay(); });	//Idem si on resize la page (change d'orientation ou affiche le clavier virtuel)
 		}else{
-			var messengerLeftPos=(windowWidth/2)-($("#messengerMain").outerWidth(true)/2);	//Position Left du messenger, pour pouvoir le centrer ("outerWidth(true)" pour prendre en compte le "margin")
-			$("#messengerMain").css("left",messengerLeftPos).resizable({handles:"e,w"});	//Centre le messenger && le rend "resizable" en largeur uniquement
+			var messengerLeftPos=(window.top.windowWidth/2)-($("#messengerMain").outerWidth(true)/2);	//Position Left du messenger, pour pouvoir le centrer ("outerWidth(true)" pour prendre en compte le "margin")
+			$("#messengerMain").css("left",messengerLeftPos).resizable({handles:"e,w"});				//Centre le messenger && le rend "resizable" en largeur uniquement
 		}
 	
 		//// Affiche le messenger  &&  Check un ou plusieurs users
@@ -118,7 +118,7 @@ function messengerDisplay(messengerDisplayModeNew)
 }
 
 /********************************************************************************************************
- *	AFFICHE UNIQUEMENT LES MESSAGES D'UN USER OU LES MESSAGES DE TOUS LES USERS
+ *	AFFICHE LES MESSAGES D'UN USER || DE TOUS LES USERS
 *********************************************************************************************************/
 function messengerDisplayUser()
 {
@@ -141,20 +141,21 @@ function messengerDisplayUser()
 		//Affiche "Personne n'est connecté"  ||  Affiche le formulaire pour poster un message
 		if($(".messengerUserCheckbox").isEmpty())	{$("#messengerNobodyDiv").show();  $("#messengerPostDiv,#messengerFormUsers").hide();}
 		else										{$("#messengerNobodyDiv").hide();  $("#messengerPostDiv").show();}
-		//Scroll jusqu'aux derniers messages  &&  Pulsate le dernier message s'il s'agit d'une proposition de visio
+		//Scroll jusqu'aux derniers messages  &&  Pulsate le dernier message s'il s'agit d'une proposition de visioconf
 		$("#messengerMessagesList>div").scrollTop($("#messengerMessagesList>div").prop("scrollHeight"));												
-		$(".vMessengerMessage:last-child .launchVisioMessage").pulsate(3);
+		$(".vMessengerMessage:last-child .lightboxOpenHref").pulsate(3);
+		mainTriggers();//Update les liens "lightboxOpenHref"
 	}
 }
 
-/**********************************************************************************************************************
- *	MESSENGER AFFICHA SUR MOBILE EN FULL PAGE  (Tester avec 5 users connectés, changements d'orientation, etc)
-***********************************************************************************************************************/
+/********************************************************************************************************
+ *	AFFICHAGE DU MESSENGER SUR MOBILE : FULL PAGE  (tests : 5 users online & orientation change)
+*********************************************************************************************************/
 function messengerMobileDisplay(){
-	setTimeout(function(){																			//Timeout après affichage du clavier virtuel
-		$("#messengerFormMain").css('padding-bottom', $("#livecounterMain").outerHeight(true) +15);	//Margin-bottom du "#messengerFormMain" pour afficher le #livecounterMain
-		let contentHeight=windowHeight-$("#messengerHeader,#messengerFormMain").totalHeight() -15;	//Hauteur du contenu principal : messages
-		$(".vMessengerContent,.vMessengerContent>div").height(contentHeight);						//Resize les divs principaux et divs scrollables
+	setTimeout(function(){																						//Timeout après affichage du clavier virtuel
+		$("#messengerFormMain").css('padding-bottom', $("#livecounterMain").outerHeight(true) +15);				//Margin-bottom du "#messengerFormMain" pour afficher le #livecounterMain
+		let contentHeight=window.top.windowHeight-$("#messengerHeader,#messengerFormMain").totalHeight() -15;	//Hauteur du contenu principal : messages
+		$("#messengerContent,#messengerContent>div").height(contentHeight);										//Resize les divs principaux et divs scrollables
 	},50);
 }
 
@@ -179,20 +180,20 @@ function messengerPost(event)
 /********************************************************************************************************
  *	PROPOSITION DE VISIO : POST UN MESSAGE AVEC LE LIEN DE VISIO
 *********************************************************************************************************/
-async function proposeVisio()
+async function launchVisioPropose()
 {
 	//Vérif qu'au moins un user est sélectionné
 	if($(".messengerUserCheckbox:checked").length==0)  {notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	//Confirme la visio (cf. tooltip "visioButtonLabel")
-	if(await confirmAlt(visioButtonLabel+" ?")){
+	if(await confirmAlt(visioButtonLabel+"&nbsp;?")){
 		visioUsers	="<?= Ctrl::$curUser->getLabel("firstName") ?>";												//Init la liste des destinaires avec l'user courant
 		visioURL	="<?= Ctrl::$agora->visioUrl()."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";	//Init l'Url de la visio avec l'user courant
 		$(".messengerUserCheckbox:checked").each(function(){														//Label de chaque user sélectionné :
 			visioUsers	+=" & "+$(this).attr("data-user-label");													//Ajoute dans la liste des destinaires
 			visioURL	+="-"+$(this).attr("data-user-label-visio");												//Ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "visioId"
 		});
-		var visioMessage="<?= Txt::trad("MESSENGER_visioProposeToUsers") ?> "+visioUsers+'<img src="app/img/visioSmall.png">';				//Message "Cliquez ici pour lancer la visioconférence : Will & Boby"
-		$("#messengerFormInput").val('<a href="javascript:launchVisio(\''+visioURL+'\')" class="launchVisioMessage">'+visioMessage+'</a>');	//Post le message avec le "launchVisio()" (tester car filtré via "Db::format()")
+		//Post le lien de la visio pour l'ouvrir via une lightbox (cf. HTMLPurifier)
+		$("#messengerFormInput").val('<a href="?ctrl=misc&action=LaunchVisio&visioURL='+encodeURIComponent(visioURL)+'" class="lightboxOpenHref"><?= Txt::trad("MESSENGER_visioProposeToUsers") ?> '+visioUsers+'<img src="app/img/visioSmall.png"></a>');
 		messengerPost();
 	}
 }
@@ -204,49 +205,53 @@ async function proposeVisio()
 #livecounterMain, #messengerMain  				{display:none; position:fixed; max-width:100%!important; max-height:100%!important; color:#ddd!important;}
 
 /*Livecounter principal*/
-#livecounterMain								{z-index:121;/*idem #menuMobileMain +1*/ bottom:5px; background:#222; padding:3px 20px; border-radius:20px;}
+#livecounterMain								{z-index:121;/*idem #menuMobileMain +1*/ bottom:5px; background:#222; padding:8px 25px; border-radius:20px;}
 #livecounterIcon								{margin-right:15px;}
 #messengerMultiUsers							{margin-left:10px; padding:3px;}
 .vLivecounterUser								{display:inline-block; line-height:35px; padding:2px 5px; margin-left:10px; border:solid 1px transparent; color:white!important;}/*Label des users (cf. "actionMessengerUpdate()")*/
 .vLivecounterUser:hover,.vLivecounterUserSelect	{background:#393939; border:solid 1px #777; border-radius:10px;}/*Label d'un user sélectionné*/
 .vLivecounterUser .personImg					{width:35px; height:35px; margin-right:8px;}/*Image des users (cf. "actionMessengerUpdate()")*/
 
-/*Messenger : contenu principal*/
+/*Messenger principal*/
 #messengerMain									{z-index:120;/*idem #menuMobileMain*/ bottom:0px; background:#222; padding:10px; width:800px; min-width:300px; border-radius:5px; border:0px;}/*z-index idem .menuContext*/
 #messengerMain td								{vertical-align:top;}
 #messengerHeader								{height:22px;}
 #messengerMove									{float:left; width:95%; cursor:move; background-image:url(app/img/messengerMove.png); background-repeat:repeat-x;}
 #messengerClose									{float:right;}
+#messengerContent, #messengerContent>div		{height:500px;}				/*Height prédéfini pour éviter que "#messengerContent>div"*/
+#messengerContent>div							{overflow-y:auto;}			/*divs scrollables*/
+#messengerContent>div::-webkit-scrollbar		{background:transparent;}	/*scrollbar : background*/
+#messengerContent>div::-webkit-scrollbar-thumb	{background:#555;}			/*scrollbar : bar*/
+
+/*Formulaire des users*/
 #messengerFormUsers								{width:200px;}
+.vMessengerUser									{margin:10px;}
+.vMessengerUser input							{display:none;}
+.vMessengerUser input:checked+label				{color:#679cd8;}/*Idem .linkSelect de black.css*/
+.vMessengerUser .personImg						{width:22px; height:22px; margin-right:5px;}/*img des users dans le form de selection (cf. "actionMessengerUpdate()")*/
+
+/*Liste des messages*/
 #messengerMessagesList							{background-image:url(app/img/messengerBackground.png); background-repeat:no-repeat; background-position:50% 50%;}
-.vMessengerContent, .vMessengerContent>div		{height:500px;}				/*Height prédéfini pour éviter que ".vMessengerContent>div" ne puissent agrandir automatiquement le <table>*/
-.vMessengerContent>div							{overflow-y:auto;}			/*divs scrollables : tester avec de nombreux messages*/
-.vMessengerContent>div::-webkit-scrollbar		{background:transparent;}	/*background du scrollbar*/
-.vMessengerContent>div::-webkit-scrollbar-thumb	{background:#555;}			/*couleur du scrollbar*/
 .vMessengerMessage								{width:100%;}
 .vMessengerMessage tr:hover						{background:#393939;}
 .vMessengerMessage td							{padding:4px; cursor:help; vertical-align:middle;}
 .vMessengerMessageDateAutor						{min-width:80px; width:1%; white-space:nowrap; vertical-align:top; color:#888; font-size:0.9rem;}/*Heure/label de l'auteur. Width ajusté via 'nowrap'*/
 .vMessengerMessage .personImg					{width:22px; height:22px; margin-left:8px;}	/*image des users dans les messages (cf. "actionMessengerUpdate()")*/
 .vMessengerMessage .iconUsersMultiple			{height:18px; margin-bottom:5px;}			/*Icone de discussion à plusieurs*/
-.vMessengerMessage a							{color:white;}								/*lien des visios*/
-.vMessengerUser									{margin:10px;}
-.vMessengerUser input							{display:none;}
-.vMessengerUser input:checked+label				{color:#679cd8;}/*Idem .linkSelect de black.css*/
-.vMessengerUser .personImg						{width:22px; height:22px; margin-right:5px;}/*img des users dans le form de selection (cf. "actionMessengerUpdate()")*/
+.vMessengerMessage .lightboxOpenHref						{color:white;}/*surcharge la balise <a> des visios*/
+.vMessengerMessage .lightboxOpenHref img[src*='visioSmall']	{margin-left:10px;}
 
 /*Messenger : formulaire*/
 #messengerFormUsers>div, #messengerPostDiv, #messengerNobodyDiv	 {background:#393939; border-radius:5px;}
-#messengerFormMain								{height:50px; padding-bottom:60px; text-align:center;}/*60px de padding-bottom pour afficher du "#livecounterMain" qui s'y supperpose*/
+#messengerFormMain								{height:50px; padding-bottom:70px; text-align:center;}/*60px de padding-bottom pour afficher du "#livecounterMain" qui s'y supperpose*/
 #messengerPostDiv								{padding:10px;}
 #messengerFormInput, #messengerFormButton		{height:40px; box-shadow:none; border-radius:10px;}
 #messengerFormInput								{width:400px; max-width:60%;}
 #messengerFormButton							{width:100px; margin-left:5px; margin-bottom:3px;}
-#launchVisioButton								{margin-left:20px; cursor:pointer;}
-.launchVisioMessage img[src*='visioSmall']		{margin-left:10px;}
+#launchVisioButton								{cursor:pointer; margin-left:20px;}
 #messengerNobodyDiv								{padding:20px;}
 
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
 	.vLivecounterUser							{margin-inline:0px; padding-block:10px;}
 	.vLivecounterUser .personImg				{display:none;}
@@ -277,27 +282,26 @@ async function proposeVisio()
 <!--MESSENGER : LISTE DES MESSAGES & FORMULAIRE-->
 <form id="messengerForm">
 	<table id="messengerMain">
+		<!--DRAG/DROP & CLOSE DU MESSENGER-->
 		<tr>
-			<td colspan="2" id="messengerHeader">
-				<!--DRAG/DROP & CLOSE DU MESSENGER-->
+			<td id="messengerHeader" colspan="2">
 				<div id="messengerMove">&nbsp;</div>
 				<img src="app/img/messengerClose.png" id="messengerClose" onclick="messengerDisplay('none')" <?= Txt::tooltip("close") ?> >
 			</td>
 		</tr>
-		<tr>
-			<!--SELECTION DES USERS ("hidden" par défaut)  &  LISTE DES MESSAGES-->
-			<td id="messengerFormUsers" class="vMessengerContent"><div>&nbsp;</div></td>		
-			<td id="messengerMessagesList" class="vMessengerContent"><div>&nbsp;</div></td>
+		<!--SELECTION DES USERS &  LISTE DES MESSAGES-->
+		<tr id="messengerContent">
+			<td id="messengerFormUsers"><div>&nbsp;</div></td>		
+			<td id="messengerMessagesList"><div>&nbsp;</div></td>
 		</tr>
+		<!--INPUT & BUTTONS DU FORM || "PERSONNE N'EST CONNECTÉ"-->
 		<tr>
-			<td colspan="2" id="messengerFormMain">
-				<!--INPUT TEXT & BUTTON DU FORMULAIRE-->
+			<td id="messengerFormMain" colspan="2">
 				<div id="messengerPostDiv">
 					<input type="text" name="message" id="messengerFormInput" maxlength="1000">
-					<button id="messengerFormButton" onclick="messengerPost(event);"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
-					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="proposeVisio()" <?= Txt::tooltip("MESSENGER_visioProposeToSelection") ?> ><?php } ?>
+					<button id="messengerFormButton" onclick="messengerPost(event)"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
+					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="launchVisioPropose()" <?= Txt::tooltip("MESSENGER_visioProposeToSelection") ?> ><?php } ?>
 				</div>
-				<!--"Personne connecté actuellement"-->
 				<div id="messengerNobodyDiv">
 					<?= Txt::trad("MESSENGER_nobody") ?>
 				</div>

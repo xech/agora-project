@@ -19,16 +19,16 @@ ready(function(){
 .vTitle:empty					{display:none;}
 .vDescription					{margin:15px 0px; font-weight:normal; user-select:text;}/*description des sujets/messages*/
 .vDetails						{display:table!important; width:100%;}
-.vDetails>div					{display:table-cell; vertical-align:middle;}
+.vDetails>div					{display:table-cell; vertical-align:middle; line-height:25px;}/*'line-height' : cf '.personImgSmall'*/
 .vDetails>div:last-child		{text-align:right;}
-.vLastMessage					{margin-top:10px;}
+.vLastMessage					{margin-top:5px;}
 
 /*Messages & citation de message : "quote"*/
 .vMessages						{border-left:5px solid #bbb; border-radius:8px;}
 .vMessageQuoted					{position:relative; display:block; overflow:auto; max-height:100px; margin:15px 0px; padding:10px; padding-left:40px; font-style:italic;}/*"position:relative" : cf. "vMessageQuotedImg" */
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
 	.vMessages					{border-radius:5px;}
 	.vDetails, .vDetails>div	{display:block;}
@@ -78,7 +78,7 @@ ready(function(){
 				$messagesNb=Db::getVal("SELECT COUNT(*) FROM ap_forumMessage WHERE _idContainer=".$tmpSubject->_id);									//Nb de messages pour le sujet
 				if(!empty($messagesNb)){																												//Auteur/date du dernier message
 					$lastMessage=Ctrl::getObj("forumMessage", Db::getVal("SELECT MAX(_id) FROM ap_forumMessage WHERE _idContainer=".$tmpSubject->_id));	//Dernier message posté
-					$subjectLastMessage='<div class="vLastMessage">'.$messagesNb.' '.(Txt::trad($messagesNb>1?'FORUM_messages':'FORUM_message')).' : '.Txt::trad("FORUM_lastMessageFrom").' '.$lastMessage->autorDate().'</div>';
+					$subjectLastMessage='<div class="vLastMessage">'.$messagesNb.' '.(Txt::trad($messagesNb>1?'FORUM_messages':'FORUM_message')).' : '.Txt::trad("FORUM_lastMessageFrom").' '.$lastMessage->autorDate(false).'</div>';
 				}
 			}
 			echo $tmpSubject->objContainerMenu().

@@ -27,7 +27,7 @@ class Trad extends Txt
 			"requiredFields"=>"Bitte füllen Sie das Feld aus",
 			"inaccessibleElem"=>"Das angeforderte Element ist nicht zugänglich",
 			"warning"=>"Achtung",
-			"elemEditedByAnotherUser"=>"Dieses Formular wird derzeit bearbeitet von",
+			"elemEditedByAnotherUser"=>"Achtung : dieses element wird derzeit bearbeitet von",
 			"yes"=>"ja",
 			"no"=>"nein",
 			"none"=>"keine",
@@ -44,6 +44,7 @@ class Trad extends Txt
 			"mapLocalizationFailure"=>"Folgende Adresse konnte nicht gefunden werden",
 			"mapLocalizationFailure2"=>"Bitte überprüfen Sie, ob die Adresse auf www.google.fr/maps oder www.openstreetmap.org existiert",
 			"sendMail"=>"E-Mail senden",
+			"sendMailTo"=>"Senden Sie eine E-Mail an",
 			"mailInvalid"=>"Die E-Mail ist ungültig",
 			"element"=>"Element",
 			"elements"=>"Elemente",
@@ -93,7 +94,7 @@ class Trad extends Txt
 			"connect"=>"Verbindung",
 			"connectAuto"=>"Verbunden bleiben",
 			"connectAutoTooltip"=>"Meine Anmeldedaten für automatische Verbindung speichern",
-			"gIdentityUserUnknown"=>"ist nicht auf dem Space registriert",
+			"gOAuthUserUnknown"=>"ist nicht auf dem Space registriert",
 			"connectSpaceSwitch"=>"Verbinde mich mit einem anderen Space",
 			"guestAccess"=>"Gast-Login",
 			"guestAccessTooltip"=>"Melden Sie sich in diesem Bereich als Gast an",
@@ -108,7 +109,7 @@ class Trad extends Txt
 			"passwordToModify2"=>"Passwort (muss bei Bedarf in Ihrem Benutzerprofil geändert werden)",
 			"passwordVerif"=>"Passwort bestätigen",
 			"passwordTooltip"=>"Bitte füllen Sie die Felder nur aus, wenn Sie Ihr Passwort ändern möchten",
-			"passwordInvalid"=>"Ihr Passwort muss Zahlen, Buchstaben und mindestens 6 Zeichen enthalten",
+			"passwordInvalid"=>"Das Passwort muss mindestens 6 Zeichen lang sein und mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten.",
 			"passwordVerifError"=>"Ihre Passwortbestätigung ist ungültig",
 			"specifyPassword"=>"Bitte geben Sie ein Passwort an",
 			"resetPassword"=>"Passwort vergessen?",
@@ -292,7 +293,7 @@ class Trad extends Txt
 			"downloadFolder"=>"Download-Ordner",
 			"diskSpaceUsed"=>"Benutzter Speicherplatz",
 			"diskSpaceUsedModFile"=>"Vom Dateimodul verwendeter Speicherplatz",
-			"downloadAlert"=>"Ihr Archiv ist zu groß, um es tagsüber herunterzuladen (--ARCHIVE_SIZE--). Bitte starten Sie den Download nach",
+			"downloadAlert"=>"Ihr Archiv ist zu groß, um es tagsüber herunterzuladen (--ARCHIVE_SIZE--). Bitte starten Sie den Download ab",
 			"downloadBackToApp"=>"Zurück zur Anwendung",
 
 			////	Infos sur une personne
@@ -420,8 +421,7 @@ class Trad extends Txt
 			"VISIO_launch"=>"Videokonferenz starten",
 			"VISIO_launchJitsi"=>"Starten Sie die Videokonferenz <br>mit der Jitsi-Anwendung",
 			"VISIO_launchFromEvent"=>"Event-Videokonferenz starten",
-			"VISIO_launchTooltip"=>"Denken Sie daran, den Zugriff auf Ihre Webcam und Ihr Mikrofon zuzulassen",
-			"VISIO_launchTooltip2"=>"Probleme mit der Kamera oder dem Mikrofon bei Ihrer Videokonferenz? Folgen Sie der Anleitung <img src='app/img/pdf.png'>",
+			"VISIO_launchGuide"=>"Probleme mit der Kamera oder dem Mikrofon: Folgen Sie der Anleitung",
 			"VISIO_launchServerTooltip"=>"Wählen Sie den sekundären Server, wenn der primäre Server nicht richtig funktioniert:<br>Wichtig: Ihre Gesprächspartner müssen denselben Server wie Sie auswählen.",
 			"VISIO_launchServerMain"=>"Haupt-Visio-Server",
 			"VISIO_launchServerAlt"=>"Sekundärer Videoserver",
@@ -475,15 +475,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Ihr Space wurde erfolgreich installiert",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Freigabe- und gemeinsamer Arbeitsbereich",
-			"INSTALL_dataDashboardNews"=>  "<h3>Willkommen in Ihrem neuen Freigabebereich!</h3>
-											<h4 onclick=\"redir('?ctrl=file')\"><img src='app/img/file/iconSmall.png'>Teilen Sie Ihre Dateien mit Ihrem Team im Dateimanager</h4>
-											<h4 onclick=\"redir('?ctrl=calendar')\"><img src='app/img/calendar/iconSmall.png'> Erstellen Sie Ereignisse in Ihrem freigegebenen Kalender oder persönlichen Kalender</h4>
-											<h4 onclick=\"redir('?ctrl=dashboard')\"><img src='app/img/dashboard/iconSmall.png'> Verwenden Sie den Newsfeed, um Informationen über Ihre Aktivitäten zu verbreiten</h4>
-											<h4 onclick=\"redir('?ctrl=forum')\"><img src='app/img/messenger.png'>Kommunizieren Sie über Forum, Messaging oder Videokonferenzen</h4>
-											<h4 onclick=\"redir('?ctrl=task')\"><img src='app/img/task/iconSmall.png'>Verwalten Sie Ihre Aufgaben und Projekte, um Ihre Aktivitäten zu organisieren</h4>
-											<h4 onclick=\"redir('?ctrl=mail')\"><img src='app/img/mail/iconSmall.png'> Senden Sie Newsletter, um Informations-E-Mails über Ihre Aktivitäten zu verteilen.</h4>
-											<h4 onclick=\"lightboxOpen('docs/DOCUMENTATION_FR.pdf?displayFile=true')\"><img src='app/img/documentation.png'> Konsultieren Sie das Benutzerhandbuch, um Ihren Bereich zu entdecken</h4>
-											<h4 onclick=\"lightboxOpen('?ctrl=user&action=SendInvitation')\"><img src='app/img/mail.png'> Senden Sie E-Mail-Einladungen zum Beitritt zum Space</h4>",
+			"INSTALL_dataDashboardNews"=>  '<h3>Willkommen in Ihrem neuen Freigabebereich!</h3>
+											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png">Teilen Sie Ihre Dateien mit Ihrem Team im Dateimanager</a></h4>
+											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Erstellen Sie Ereignisse in Ihrem freigegebenen Kalender oder persönlichen Kalender</a></h4>
+											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Verwenden Sie den Newsfeed, um Informationen über Ihre Aktivitäten zu verbreiten</a></h4>
+											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png">Kommunizieren Sie über Forum, Messaging oder Videokonferenzen</a></h4>
+											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png">Verwalten Sie Ihre Aufgaben und Projekte, um Ihre Aktivitäten zu organisieren</a></h4>
+											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Senden Sie Newsletter, um Informations-E-Mails über Ihre Aktivitäten zu verteilen.</a></h4>
+											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Konsultieren Sie das Benutzerhandbuch, um Ihren Bereich zu entdecken</a></h4>
+											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png"> Senden Sie E-Mail-Einladungen zum Beitritt zum Space</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Was halten Sie vom Newsfeed?",
 			"INSTALL_dataDashboardPollA"=>"Sehr interessant!",
 			"INSTALL_dataDashboardPollB"=>"Interessant",
@@ -511,7 +511,7 @@ class Trad extends Txt
 			"AGORA_diskSpaceInvalid"=>"Der Speicherplatz für Dateien muss eine Ganzzahl sein",
 			"AGORA_visioHostInvalid"=>"Die Adresse des Videokonferenzservers ist ungültig: Sie muss mit 'https' beginnen",
 			"AGORA_gApiKeyInvalid"=>"Wenn Sie Google Map als Kartentool wählen, müssen Sie dort einen 'API-Schlüssel' angeben",
-			"AGORA_gIdentityKeyInvalid"=>"Wenn Sie die optionale Anmeldung über Google wählen, müssen Sie dort einen 'API Key' für Google SignIn angeben",
+			"AGORA_gOAuthKeyInvalid"=>"Wenn Sie die optionale Anmeldung über Google wählen, müssen Sie dort einen 'API Key' für Google SignIn angeben",
 			"AGORA_confirmModif"=>"Änderungen bestätigen?",
 			"AGORA_name"=>"Name des Hauptraums",
 			"AGORA_nameTooltip"=>"Name, der auf der Anmeldeseite, in E-Mails usw. angezeigt wird.",
@@ -548,10 +548,10 @@ class Trad extends Txt
 			"AGORA_mapToolTooltip"=>"Mapping-Tool zum Anzeigen von Benutzern und Kontakten auf einer Karte",
 			"AGORA_gApiKey"=>"Google API-Schlüssel für Maps",
 			"AGORA_gApiKeyTooltip"=>"Obligatorische Einstellung für Google Maps:<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
-			"AGORA_gIdentity"=>"Anmeldung über ein Google Gmail-Konto",
-			"AGORA_gIdentityTooltip"=>"Benutzer mit einem Identifikator mit einer <i>@gmail.com</i>-Adresse können sich auch über ihr Google-Konto anmelden",
-			"AGORA_gIdentityClientId"=>"API-Schlüssel für die Anmeldung über Google",
-			"AGORA_gIdentityClientIdTooltip"=>"Obligatorische Einstellung für die Verbindung über ein Google-Konto:<br> https://developers.google.com/identity/protocols/oauth2",
+			"AGORA_gOAuth"=>"Anmeldung über ein Google Gmail-Konto",
+			"AGORA_gOAuthTooltip"=>"Benutzer mit einem Identifikator mit einer <i>@gmail.com</i>-Adresse können sich auch über ihr Google-Konto anmelden",
+			"AGORA_gOAuthClientId"=>"API-Schlüssel für die Anmeldung über Google",
+			"AGORA_gOAuthClientIdTooltip"=>"Obligatorische Einstellung für die Verbindung über ein Google-Konto:<br> https://developers.google.com/identity/protocols/oauth2",
 			"AGORA_messengerDisplay"=>"Nachrichten",
 			"AGORA_personsSort"=>"Benutzer und Kontakte sortieren nach",
 			//SMTP
@@ -941,7 +941,7 @@ class Trad extends Txt
 			"TASK_priority2"=>"Normal",
 			"TASK_priority3"=>"Hoch",
 			"TASK_assignedTo"=>"Zugewiesen an",
-			"TASK_advancementLate"=>"Fortschritt zu spät",
+			"TASK_advancementDelayed"=>"Fortschritt zu spät",
 			"TASK_folderDateBeginEnd"=>"Frühester Beginn / Spätestes Ende",
 
 			////	MOD : CONTACT

@@ -25,7 +25,7 @@ spl_autoload_register("agoraAutoloader");
 class Req
 {
 	const commonPath="app/Common/";
-	private static $_getPostParams;
+	private static $_paramsGP;
 	private static $_appVersion=null;
 	public static $curCtrl;	
 	public static $curAction;
@@ -33,13 +33,13 @@ class Req
 	/********************************************************************************************
 	 * INIT
 	 ********************************************************************************************/
-	function __construct()
+	public function __construct()
 	{
-		////	Enregistre et filtre les parametres GET/POST
-		foreach(array_merge($_GET,$_POST) as $tmpKey=>$tmpVal){
-			if(is_array($tmpVal)==false)  {self::$_getPostParams[$tmpKey]=self::paramFilter($tmpKey,$tmpVal);}//Valeur simple
+		////	Filtre et enregistre les parametres GET/POST (valeur ou tableau de valeurs)
+		foreach(array_merge($_GET,$_POST) as $key=>$val){
+			if(!is_array($val))  {self::$_paramsGP[$key]=self::paramFilter($key,$val);}
 			else{
-				foreach($tmpVal as $tmpKey2=>$tmpVal2)	{self::$_getPostParams[$tmpKey][$tmpKey2]=self::paramFilter($tmpKey,$tmpVal2);}//Tableau de valeurs : tjs avec $tmpKey dans le paramFilter()
+				foreach($val as $key2=>$val2)  {self::$_paramsGP[$key][$key2]=self::paramFilter($key,$val2);}
 			}
 		}
 		////	Classe du controleur courant (ex: "offline")  &  Methode de l'action courante (ex: "default")
@@ -86,7 +86,7 @@ class Req
 		if(!is_array($keys))  {$keys=[$keys];}
 		//Return false si un des parametres n'est pas spécifié  OU  Sa valeur est vide (mais pas "0")
 		foreach($keys as $key){
-			if(!isset(self::$_getPostParams[$key]) || (empty(self::$_getPostParams[$key]) && self::$_getPostParams[$key]!=="0"))  {return false;}
+			if(!isset(self::$_paramsGP[$key]) || (empty(self::$_paramsGP[$key]) && self::$_paramsGP[$key]!=="0"))  {return false;}
 		}
 		//"True" si toutes les valeurs sont OK
 		return true;
@@ -98,28 +98,46 @@ class Req
 	public static function param($key)
 	{
 		if(self::isParam($key)){
-			if($key=="notify")								{return (array)self::$_getPostParams[$key];}	//"notify" tjs en array, même s'il n'y en a qu'une passée en GET
-			elseif(is_string(self::$_getPostParams[$key]))	{return trim(self::$_getPostParams[$key]);}		//trim sur le texte
-			else											{return self::$_getPostParams[$key];}
+			if($key=="notify")							{return (array)self::$_paramsGP[$key];}	//"notify" tjs en array, même s'il n'y en a qu'une passée en GET
+			elseif(is_string(self::$_paramsGP[$key]))	{return trim(self::$_paramsGP[$key]);}	//trim sur le texte
+			else										{return self::$_paramsGP[$key];}
 		}
 	}
 
-	/*******************************************************************************************************************
-	 * FILTRE UN PARAMETRE (PRÉSERVE DES INSERTION XSS)
-	 * Tester dans une News  &&  Lien de visio dans le messenger  &&  --index.php?notify=<svg/onload=alert(/test/)>--
-	 *******************************************************************************************************************/
-	public static function paramFilter($tmpKey, $text)
+	/***************************************************************************************************************
+	 * FILTRE LES PARAMETRES GET/POST (Cf. XSS / code inject)
+	 * Test rapide :  ?description=<svg/onload=alert(1)>  ||  ?notify[]=HELX");alert(1);//`
+	 ***************************************************************************************************************/
+	private static function paramFilter($key, $val)
 	{
-		if(is_string($text)){																//Verif qu'il s'agit d'un texte
-			$text=preg_replace('/\bon\w+=\S+(?=.*>)/i', '', $text);							//Filtre le javascript inline
-			$text=preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $text);			//Filtre les tags javascript
-			if(preg_match("/notify/i",$tmpKey))  {$text=strip_tags($text,"<br>");}			//Filtre les notif
-			elseif(!preg_match("/^(description|editorDraft|message|objUrl)$/i",$tmpKey)){	//Filtre les tags/entités html (sauf tinyMce, messenger, objUrl)
-				$text=strip_tags($text);													//Filtre les tags html
-				$text=htmlspecialchars($text,ENT_COMPAT);									//Convertit les caractères spéciaux (& " < >) en entités HTML
+		$val=(string)$val;																									//Cast la valeur d'entrée
+		if(!empty($val)){																									//Vérif que la valeur existe (cf 'strip_tags()' error)
+			if(preg_match("/^(description|editorDraft|message)$/i",$key)){													//Filtre le contenu de l'editeur TinyMce ou un Post du messenger
+				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');												//Charge la librairie HTMLPurifier	
+				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs "data-" comme "data-fancybox" sont supprimés)
+				$config->set('Core.Encoding', 'UTF-8');																		//Encodage UTF-8 (conserve les caractères spéciaux)
+				$config->set('Attr.EnableID', true);																		//Autorise les attributs id
+				$config->set('HTML.SafeIframe', true);																		//Autorise les videos Iframes
+				$config->set('HTML.SafeEmbed', true);																		//Autorise les videos Embed
+				$config->set('URI.SafeIframeRegexp', '%(youtube\.com|youtu\.be|twitch\.tv|dailymotion\.com|vimeo\.com)%');	//Regex des vidéos externes
+				$config->set('Attr.AllowedFrameTargets', '_blank');															//Autorise la balise <a target="_blank">
+				$def=$config->getHTMLDefinition(true);																		//Balises spécifiques :
+				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);//Autorise la balise <video> et ses attributs
+				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise la balise <source> et ses attributs (cf balise <video>)
+				$purifier=new HTMLPurifier($config);																		//Crée un $purifier
+				$val=$purifier->purify($val);																				//Filtre le code html
+    			$caracAccent=['à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç',"\xc2\xa0"];						//Liste des caractères accentués et espaces Unicode (cf '<p>&nbsp;</p>' remplacés précédement par '<p> </p>')
+    			$caracHtml  =['&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&nbsp;'];//Equivalents HTML
+				$val=str_replace($caracAccent, $caracHtml, $val);															//Convertit les caractère accentués en entités HTML															
+			}
+			else{																											//Filtre principal
+				$val=strip_tags($val,'<br>');																				//Supprime les tags html (sauf <br> pour les notify)
+				if($key=="objUrl")	{$val=filter_var($val, FILTER_SANITIZE_URL);}											//Filtre une URL
+				else				{$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);}					//Convertit  & " < >  en entité HTML ('false' pour ne pas convertir les entités existantes)
+				$val=str_replace('&lt;br&gt;','<br>',$val);																	//Retranscrit les <br>
 			}
 		}
-		return $text;
+		return $val;
 	}
 
 	/*******************************************************************************************************************************
@@ -173,7 +191,7 @@ class Req
 	 ********************************************************************************************/
 	public static function isDevServer()
 	{
-		return preg_match('/^(omnispace\.local|debian12)$/i', $_SERVER['SERVER_NAME']);
+		return preg_match('/^(omnispace\.local\.net|debian12)$/i', $_SERVER['SERVER_NAME']);
 	}
 
 	/********************************************************************************************

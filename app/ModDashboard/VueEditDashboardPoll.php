@@ -10,8 +10,11 @@ ready(function(){
 async function deleteResponseFile(_idReponse)
 {
 	if(await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){
-		$.ajax({url:"?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->_typeId ?>&_idResponse="+_idReponse}).done(function(result){
-			if(/true/i.test(result))  {$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");}//Remplace le fichier supprimé par un champ "File"
+		$.ajax("?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->_typeId ?>&_idResponse="+_idReponse).done(function(result){
+			if(/true/i.test(result)){
+				$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");//Remplace le fichier supprimé par un champ "File"
+				notify("<?= Txt::trad("confirmDeleteNotify") ?>");
+			}
 		});
 	}
 }

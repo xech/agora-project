@@ -1,5 +1,5 @@
-VERSION 2.16.0
+VERSION 2.18.3
 ##############
 
-- Récupérer la dernière release sur https://github.com/googleapis/google-api-php-client/releases  => prendre la version PHP "7.4" identique au serveur de Prod !
+- Récupérer la dernière release sur https://github.com/googleapis/google-api-php-client/releases  => prendre la version PHP "8.0"
 - Supprimer le contenu du dossier  "\vendor\google\apiclient-services\src\*"  :  sauf les dossier  "IdentityToolkit"  et  "Oauth2"  !

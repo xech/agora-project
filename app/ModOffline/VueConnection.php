@@ -33,8 +33,8 @@ ready(function(){
 	$("#resetPasswordFormUpdate, #invitationPasswordForm").on("submit",function(){
 		let newPassword		=$(this).find("[name='newPassword']").val();
 		let newPasswordVerif=$(this).find("[name='newPasswordVerif']").val();
-		if(!isValidPassword(newPassword))	{notify("<?= Txt::trad("passwordInvalid"); ?>");		return false;}//Password invalide
-		else if(newPassword!=newPasswordVerif)	{notify("<?= Txt::trad("passwordVerifError") ?>");	return false;}//Passwords différents
+		if(isValidPassword(newPassword)==false)		{notify("<?= Txt::trad("passwordInvalid"); ?>");	return false;}//Password invalide
+		else if(newPassword!=newPasswordVerif)		{notify("<?= Txt::trad("passwordVerifError") ?>");	return false;}//Passwords différents
 	});
 
 	/**********************************************************************************************************
@@ -72,7 +72,7 @@ ready(function(){
 .miscContainer								{width:500px; margin:10px auto; padding:25px 10px; border-radius:10px; text-align:center;}/*surcharge*/
 .miscContainer button>img					{margin-right:10px;}
 .miscContainer hr							{margin:30px 0px;}
-.miscContainer input:not([type=checkbox]), .miscContainer button  {width:320px;/*idem .g_id_signin*/ min-height:45px!important;/*cf responsive*/ border-radius:5px; margin-bottom:20px!important;}
+.miscContainer input:not([type=checkbox]), .miscContainer button  {width:320px;/*cf .g_id_signin*/ min-height:45px!important;/*cf responsive*/ border-radius:5px; margin-bottom:20px!important;}
 
 /*Logo custom*/
 #customLogo									{background-color:rgba(250, 250, 250, 40%); padding:10px;}
@@ -87,9 +87,9 @@ ready(function(){
 /*Form de connexion*/
 .vConnectOptions							{display:inline-table;}
 .vConnectOptions>div						{display:table-cell; padding:0px 15px;}
-.g_id_signin								{margin:40px auto!important; width:300px;}/*button gIdentity & Iframe*/
+.g_id_signin								{margin:40px auto!important; width:300px;}/*button gOAuth & Iframe*/
 
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
 	#headerBar								{font-size:1rem;}/*surcharge*/
 	#headerBar span							{display:none;}
@@ -149,24 +149,24 @@ ready(function(){
 			</div>
 		</form>
 
-		<!--BOUTON DE CONNEXION AVEC GOOGLE IDENTITY (https://developers.google.com/identity/gsi/web/guides/overview)-->
-		<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
-			<script src="https://accounts.google.com/gsi/client" async defer></script>	<!--Charge la librairie Google Identity-->
+		<!--BOUTON DE CONNEXION AVEC GOOGLE OAUTH-->
+		<?php if(Ctrl::$agora->gOAuthEnabled()){ ?>
+			<script src="https://accounts.google.com/gsi/client" async defer></script>	<!--Charge la librairie Google Oauth-->
 			<script src="app/js/jwt-decode.js"></script>								<!--Charge le décodeur JSON Web Token (JWT)-->
 			<script>
-			////	Callback pour traiter l'appel à Google Identity
-			function gIdentityResponse(response){
-				const jsonResponse=jwt_decode(response.credential);																		//Décode le JSON Web Token
-				$.ajax("index.php?action=GIdentityControl&credential="+response.credential).done(function(ajaxResult){					//Controle Ajax de la connexion de l'user
-					if(/userConnected/i.test(ajaxResult))	{redir("index.php");}														//User connecté : recharge la page courante
-					else									{notify(jsonResponse.email+" <?= Txt::trad("gIdentityUserUnknown") ?>");}	//Notif d'erreur
+			////	Callback pour traiter l'appel à Google Oauth
+			function gOAuthResponse(response){
+				const jsonResponse=jwt_decode(response.credential);																	//Décode le JSON Web Token
+				$.ajax("index.php?action=gOAuthControl&credential="+response.credential).done(function(ajaxResult){					//Controle Ajax de la connexion de l'user
+					if(/userConnected/i.test(ajaxResult))	{redir("index.php");}													//User connecté : recharge la page courante
+					else									{notify(jsonResponse.email+" <?= Txt::trad("gOAuthUserUnknown") ?>");}	//Notif d'erreur
 				});
 				////DEBUG::notify("ID: "+jsonResponse.sub+"<br>Email: "+jsonResponse.email+"<br>Full Name: "+jsonResponse.name+"<br>Given Name: "+jsonResponse.given_name+"<br>Family Name: "+jsonResponse.family_name);
 			}
 			</script>
-			<div id="g_id_onload" data-client_id="<?= Ctrl::$agora->gIdentityClientId ?>" data-callback="gIdentityResponse" data-auto_prompt="false"></div> <!--Div pour charger l'API ("data-auto_prompt" masque le popup)-->
-			<div class="g_id_signin" data-type="standard" data-shape="circle" data-size="large" data-width="290"></div>										<!--Bouton gIdentity (Iframe avec "data-width" idem "--buttons-width")-->
-		<?php }  ?>
+			<div id="g_id_onload" data-client_id="<?= Ctrl::$agora->gIdentityClientId ?>" data-callback="gOAuthResponse" data-auto_prompt="false"></div>	<!--Div pour charger l'API ("data-auto_prompt" masque le popup)-->
+			<div class="g_id_signin" data-type="standard" data-shape="circle" data-size="large" data-width="290" <?= Txt::tooltip("AGORA_gOAuth") ?>></div>	<!--Bouton gOAuth (Iframe avec "data-width" idem "--buttons-width")-->
+		<?php } ?>
 
 		<!--FORM DE RESET DU PASSWORD -> ETAPE 1 : ENVOI DE L'EMAIL-->
 		<form action="index.php" method="post" id="resetPasswordFormSendmail" class="lightboxInline">

@@ -65,7 +65,6 @@ class CtrlTask extends Ctrl
 					"newMonthLabel"=>$prevDayMonth!=date("m/y",$dayTimeBegin)  ?  Txt::timeLabel($dayTimeBegin,'MMM yyyy')  :  null,
 					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
 					"classLeftBorder"=>$classLeftBorder,
-					"vTimelineToday"=>date('Y-m-d',$dayTimeBegin)==date('Y-m-d')  ?  "vTimelineToday"  :  null,//Label d'aujourd'hui
 					"dayLabel"=>date("j",$dayTimeBegin),
 					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin)
 				);

@@ -1,14 +1,14 @@
-<?php if(Ctrl::$agora->gIdentityEnabled()){ ?><script src="https://apis.google.com/js/api.js"></script><?php } ?>
+<?php if(Ctrl::$agora->gOAuthEnabled()){ ?><script src="https://apis.google.com/js/api.js"></script><?php } ?>
 
 <script>
 ////	INIT
 ready(function(){
-	<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
-	////	Import des contacts via l'API Google People. Doc: https://developers.google.com/people/quickstart/js?hl=fr
+	<?php if(Ctrl::$agora->gOAuthEnabled()){ ?>
+	////	Import des contacts via l'API Google People
 	gapi.load("client", function(){
 		gapi.client.init({
-			apiKey:"<?= Ctrl::$agora->gApiKey ?>",																//Clé de l'Api People
-			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",													//"gIdentityClientId" de OAuth
+			apiKey:"<?= Ctrl::$agora->gApiKey ?>",																//Clé de l'Api Google People
+			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",													//Client ID de Google OAuth
 			scope:"https://www.googleapis.com/auth/contacts.readonly",											//Type de données à récupérer
 			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"]						//Spécification obligatoires
 		}).then(function(){
@@ -28,8 +28,7 @@ ready(function(){
 			gapi.client.people.people.connections.list({resourceName:"people/me", pageSize:100, sortOrder:"FIRST_NAME_ASCENDING", personFields:"names,emailAddresses"}).then(
 				function(response){
 					// Récupère les contacts
-					if(response.result.connections && response.result.connections.length>0)
-					{
+					if(response.result.connections && response.result.connections.length>0){
 						var mailListToControl=[];
 						var contactInputs="";
 						//Récupère et affiche les contacts à importer
@@ -47,9 +46,9 @@ ready(function(){
 						// Affiche les contacts !
 						$("#gPeopleForm").prepend(contactInputs).show();	//Affiche les inputs des contacts importés
 						$("#invitationForm, #gPeopleImportButton").hide();	//Masque le formulaire principal
-						tooltipDisplay();									//Update les tooltips
+						mainTriggers();										//Update les tooltips
 						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts!)
-						$.ajax({url:"?ctrl=user&action=loginExists",data:{mailList:mailListToControl},dataType:"json"}).done(function(resultJson){
+						$.ajax({url:"?ctrl=user&action=loginExists", data:{mailList:mailListToControl}, dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
 								for(var cpt=0; cpt<resultJson.mailListPresent.length; cpt++){
 									var mailTmp=resultJson.mailListPresent[cpt];
@@ -124,7 +123,7 @@ ready(function(){
 	</form>
 
 	<!--INVITATION AVEC IMPORT DES CONTACTS GMAIL-->
-	<?php if(Ctrl::$agora->gIdentityEnabled()){ ?>
+	<?php if(Ctrl::$agora->gOAuthEnabled()){ ?>
 	<div id="gPeopleImportButton">
 		<div class="orLabel"><div><hr></div><div><?= Txt::trad("or") ?></div><div><hr></div></div>
 		<button><img src="app/img/google.png">&nbsp; <?= Txt::trad("USER_gPeopleImport") ?></button>

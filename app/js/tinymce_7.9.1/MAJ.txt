@@ -1,5 +1,5 @@
 
-Télécharger la dernière version "Community" de prod.	-> https://www.tiny.cloud/get-tiny/self-hosted/
+Télécharger la dernière version "Community" de prod.				-> https://www.tiny.cloud/get-tiny/self-hosted/
 Télécharger les traductions "de" + "es" + "fr_FR" + "it" + "pt_PT"	-> https://www.tiny.cloud/download/language-packages/
 Modifier le path dans "/app/Common/VueObjEditor.php"
 Remplacer  "Zone de Texte Riche"  par  "" dans la trad française

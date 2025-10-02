@@ -103,12 +103,12 @@ class Tool
 			}
 
 			////	Sujet & message
-			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".htmlspecialchars_decode(Ctrl::$agora->name)  :  ucfirst($subject);			//"Sujet de mon email - Mon espace"
-			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){													//Footer du message :
-				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																										//Label de l'espace
-				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}			//Ajoute le nom du sous-espace (">> sous-espace")
-				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;								//"Envoyé par boby SMITH"...
-				$message.="<br><br>".$curUserLabel.Txt::trad("MAIL_fromTheSpace")." <a href=\"".Req::getCurUrl()."\" target='_blank'>".$curSpaceLabel."</a>";	//"Depuis <a>mon-espace</a>"
+			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".htmlspecialchars_decode(Ctrl::$agora->name)  :  ucfirst($subject);		//"Sujet de mon email - Mon espace"
+			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){												//Footer du message :
+				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																									//Label de l'espace
+				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}		//Ajoute le nom du sous-espace (">> sous-espace")
+				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//"Envoyé par boby SMITH"...
+				$message.='<br><br>'.$curUserLabel.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::getCurUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Depuis <a>mon-espace</a>"
 			}
 			$mail->msgHTML($message);
 
@@ -242,19 +242,23 @@ class Tool
 	}
 
 	/********************************************************************************************************
-	 * BARRE DE POURCENTAGE
+	 * BARRE DE PROGRESSION EN %
 	 ********************************************************************************************************/
-	public static function progressBar($barLabel, $barTooltip, $barFillPercent=0, $orangeBar=false)
+	public static function progressBar($barLabel, $barTooltip, $barPercent=0, $alertBar=false)
 	{
-		// $barFillPercent de 100% maximum
-		if($barFillPercent>100)  {$barFillPercent=100;}
-		//Image du background
-		if($orangeBar==true)			{$barImg="progressBarAlert";}	//Task "isDelayed" / File "diskSpaceAlert"  => orange
-		elseif($barFillPercent==100)	{$barImg="progressBarFull";}	//Terminé à 100%  => vert
-		else							{$barImg="progressBarCurrent";}	//En cours  => vert clair
-		//Style du background
-		$barStyle=(!empty($barFillPercent))  ?  'style="background-image:url(app/img/'.$barImg.'.png);background-size:'.(int)$barFillPercent.'% 100%;"'  :  null;
+		//Remplissage entre 0% et 100%
+		if($barPercent<0)		{$barPercent=0;}
+		elseif($barPercent>100)	{$barPercent=100;}
+		else					{$barPercent=(int)$barPercent;}
+		//Background : Couleur de progression & couleur par défaut
+		if((empty($barPercent)))  {$barStyle='linear-gradient(white,#DDD)';}			//Couleur par défaut uniquement
+		else{
+			if($alertBar==true)			{$barStyle="linear-gradient(#F8D934,#F8BC34)";}	//Alert		=> orange
+			elseif($barPercent==100)	{$barStyle="linear-gradient(#E7FCDE,#C2F2A9)";}	//Terminé	=> vert clair
+			else						{$barStyle="linear-gradient(#C0F47D,#69BC27)";}	//En cours	=> vert
+			$barStyle.=' 0% / '.$barPercent.'% no-repeat,  linear-gradient(white,#DDD) '.$barPercent.'% / 100% no-repeat';//Couleur de progression & Couleur par défaut
+		}
 		// Renvoie la progressBar
-		return '<div class="progressBar" '.Txt::tooltip($barTooltip).' '.$barStyle.'>'.$barLabel.'</div>';
+		return '<div class="progressBar" style="background:'.$barStyle.'" '.Txt::tooltip($barTooltip).'>'.$barLabel.'</div>';
 	}
 }

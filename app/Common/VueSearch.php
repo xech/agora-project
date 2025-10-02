@@ -13,9 +13,9 @@ ready(function(){
 
 	////	Contrôle du formulaire
 	$("form").on("submit",function(){
-		//Vérif que les mots recherchés (au moins 3 caracteres alphanumeriques)  &&  Au moins un module et champ de recherche sont sélectionnés (cf. recherche avancée)
-		var searchText=$("[name=searchText]").val();
-		if(searchText.length<3 || /[\w]/.test(searchText)==false)													{notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
+		//Vérif qu'il y ait au moins 3 caracteres alphanumeriques (accent espace apostrophe point tiret acceptés)  &&  Au moins un module et champ de recherche sélectionnés (si recherche avancée)
+		const regex = /^[\p{L}\p{M}\d' \-\.]{3,}$/u;
+		if(regex.test($("[name=searchText]").val())==false)															{notify("<?= Txt::trad("searchSpecifyText") ?>");  return false;}
 		else if($("[name='searchModules[]']:checked").isEmpty() || $("[name='searchFields[]']:checked").isEmpty())	{notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 	});
 });
@@ -23,9 +23,8 @@ ready(function(){
 
 
 <style>
-#bodyLightbox						{max-width:700px;}
-input[name="searchText"]			{width:250px; margin-right:5px;}
-#advancedSearchLabel				{margin-left:30px; line-height:30px;}
+input[name="searchText"]			{width:220px; margin-right:5px;}
+#advancedSearchLabel				{display:inline-block; margin-left:20px;}
 .advancedSearchBlock				{display:<?= Req::param("advancedSearch")?"block":"none" ?>;}
 .vAdvancedSearchTab					{display:table; margin-top:20px;}
 .vAdvancedSearchTab>div				{display:table-cell;}

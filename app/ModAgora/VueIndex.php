@@ -33,9 +33,9 @@ ready(function(){
 		if(/\.(jpg|jpeg|png)/i.test(this.value)==false)  {notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
-	/**************************************************************************************************************************************************
-	 *	AFFICHE DU "gApiKeyDiv" SI "MAPTOOL"=="GMAP"  &&   AFFICHE DU "GIDENTITYCLIENTID" SI "GIDENTITY" EST ACTIVÉ  ("TRIGGER()" INITIE L'AFFICHAGE)
-	 ***************************************************************************************************************************************************/
+	/*****************************************************************************************************************************************************************
+	 *	"mapTool"=="gmap" : AFFICHE "gApiKeyDiv"  &&  "gIdentity" ACTIVÉ (GOOGLE OAUTH) :  AFFICHE "gIdentityClientIdDiv"  &&  TRIGGER "change" : INIT DE LA PAGE
+	 *****************************************************************************************************************************************************************/
 	$("select[name='mapTool']").on("change",function(){  this.value=="gmap" ? $("#gApiKeyDiv").fadeIn() : $("#gApiKeyDiv").fadeOut();  }).trigger("change");
 	$("select[name='gIdentity']").on("change",function(){  this.value=="1" ? $("#gIdentityClientIdDiv").fadeIn() : $("#gIdentityClientIdDiv").fadeOut();  }).trigger("change");
 
@@ -52,7 +52,7 @@ ready(function(){
 		if($("input[name='visioHost']").notEmpty() && /^https/.test($("input[name='visioHost']").val())==false)			{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");		return false;}//doit commencer par "https"
 		if($("input[name='visioHostAlt']").notEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");		return false;}//Idem
 		if($("select[name='mapTool']").val()=="gmap" && $("input[name='gApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_gApiKeyInvalid") ?>");		return false;}//Doit avoir un "API Key"
-		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gIdentityKeyInvalid") ?>");	return false;}//Idem
+		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gOAuthKeyInvalid") ?>");	return false;}//Idem
 		<?php } ?>
 		////	Valide le formulaire
 		if(await confirmAlt("<?= Txt::trad("AGORA_confirmModif") ?>"))  {asyncSubmit(this);}
@@ -331,9 +331,9 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				</div>
 			<?php } ?>
 
-			<!--GOOGLE SIGNIN ENABLED/DISABLED-->
-			<div class="objField" <?= Txt::tooltip("AGORA_gIdentityTooltip") ?> >
-				<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentity") ?></div>
+			<!--GOOGLE OAUTH ENABLED/DISABLED-->
+			<div class="objField" <?= Txt::tooltip("AGORA_gOAuthTooltip") ?> >
+				<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gOAuth") ?></div>
 				<div>
 					<?php
 					$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
@@ -342,10 +342,10 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				</div>
 			</div>
 
-			<!--GOOGLE SIGNIN "CLIENT ID" (AUTO-HEBERGEMENT)-->
+			<!--GOOGLE OAUTH "CLIENT ID" (AUTO-HEBERGEMENT)-->
 			<?php if(Req::isHost()==false){ ?>
-				<div class="objField" id="gIdentityClientIdDiv" <?= Txt::tooltip("AGORA_gIdentityClientIdTooltip") ?> >
-					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gIdentityClientId") ?></div>
+				<div class="objField" id="gIdentityClientIdDiv" <?= Txt::tooltip("AGORA_gOAuthClientIdTooltip") ?> >
+					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gOAuthClientId") ?></div>
 					<div><input type="text" name="gIdentityClientId" value="<?= Ctrl::$agora->gIdentityClientId ?>"></div>
 				</div>
 			<?php } ?>

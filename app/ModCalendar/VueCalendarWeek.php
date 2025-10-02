@@ -181,11 +181,11 @@ ready(function(){
 .vEvtLabelDate						{margin-top:2px;}														/*Label de l'heure*/
 .vEvtLabelDate b					{margin-top:20px; font-size:1.2rem;}									/*Label de l'heure en cours de déplacement*/
 
-/*RESPONSIVE SMALL*/
+/*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
-	.vWeekHourLabel						{font-size:0.8rem; font-weight:normal; text-align:center;}/*min & max pour forcer la taille*/
+	.vWeekHourLabel						{font-size:0.8rem; font-weight:normal; text-align:center;}
 	.vWeekCell							{position:relative;}
-	.vWeekCell:active .vMobileAddEvt	{display:block; position:absolute; top:0px; right:0px; padding:7px;}/*Affiche le bouton d'ajout d'evt si on sélectionne le jour*/
+	.vWeekCell:active .vMobileAddEvt	{display:block; position:absolute; top:0px; right:0px; padding:7px;}/*Bouton addEvt si on sélectionne le jour*/
 }
 </style>
 <?php } ?>

@@ -55,8 +55,8 @@ async function attachedFileDelete(fileId)
 <hr>
 <div id="attachedFileList<?= $tmpFile["_id"] ?>" class="lineHover vAttachedFileDiv">
 	<!--LABEL DU FICHIER  &  SI BESOIN THUMB DE L'IMAGE-->
-	<label onclick="confirmRedir('<?= $tmpFile['downloadUrl'] ?>',labelConfirmDownload)"><img src="app/img/attachment.png"> <?= $tmpFile["name"] ?></a>
-	<?php if(File::isType("imageBrowser",$tmpFile["name"])){ ?><img src="<?= $tmpFile["displayUrl"] ?>" class="vAttachedFileThumb"><?php } ?>
+	<label onclick="confirmRedir('<?= $tmpFile['urlDownload'] ?>',labelConfirmDownload)"><img src="app/img/attachment.png"> <?= $tmpFile["name"] ?></a>
+	<?php if(File::isType("editorImage",$tmpFile["name"])){ ?><img src="<?= $tmpFile["displayUrl"] ?>" class="vAttachedFileThumb"><?php } ?>
 	<!--OPTION "INSÉRER DANS LE TEXTE" DE TINYMCE  &  OPTION "SUPPRIMER"-->
 	<?php if($curObj::descriptionEditor==true && File::isType("editorInsert",$tmpFile["name"])){ ?><label onclick="attachedFileInsert(<?= $tmpFile['_id'] ?>,'<?= $tmpFile['displayUrl'] ?>')" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> ><img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?></label><?php } ?>
 	<label onclick="attachedFileDelete(<?= $tmpFile['_id'] ?>)"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></label>

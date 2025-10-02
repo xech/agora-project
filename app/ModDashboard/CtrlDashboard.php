@@ -250,15 +250,15 @@ class CtrlDashboard extends Ctrl
 		////	TITRE & DESCRIPTION DU SONDAGE & DATE DU RESULTAT
 		$pdf->Ln(15);
 		$pdf->SetFont("Arial","B",12);
-		$pdf->Write(5, utf8_decode($curObj->title));
-		$pdf->SetFont("Arial",null,9);
-		$pdf->Write(5, "   ".utf8_decode(Txt::trad("DASHBOARD_exportPollDate")." ".date("d/m/Y")));
+		$pdf->Write(5, Txt::utf8Decode($curObj->title));
+		$pdf->SetFont("Arial","",9);
+		$pdf->Ln(8);
+		$pdf->Write(5, "   ".Txt::utf8Decode(Txt::trad("DASHBOARD_exportPollDate")." ".date("d/m/Y")));
 		$pdf->Ln(10);
-		$pdf->Write(5, utf8_decode(strip_tags($curObj->description)));
+		if($curObj->description)  {$pdf->Write(5, Txt::utf8Decode(strip_tags($curObj->description)));}
 
 		////	RESULTAT DE CHAQUE REPONSES
-		foreach($curObj->getResponses(true) as $tmpResponse)
-		{
+		foreach($curObj->getResponses(true) as $tmpResponse){
 			//Nombre et pourcentage des votes
 			$votesNb=$curObj->votesNb($tmpResponse["_id"]);
 			$votesNbLabel=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_answerVotesNb"));
@@ -267,15 +267,15 @@ class CtrlDashboard extends Ctrl
 			//Affiche la réponse : label + barre de % + users ayant voté la réponse
 			$pdf->Ln(12);
 			$pdf->SetFont("Arial","B",9);
-			$pdf->Write(5, utf8_decode($tmpResponse["label"]));//Label de la réponse
+			$pdf->Write(5, Txt::utf8Decode($tmpResponse["label"]));//Label de la réponse
 			$pdf->Ln(7);
-			$pdf->SetFont("Arial",null,9);
-			$pdf->Cell($progressBarWidth, $progressBarHeight, utf8_decode($votesPercent." %  ".$votesNbLabel), "RLTB", 0, "L", 1);
-			if(!empty($votesNb) && !empty($curObj->publicVote))   {$pdf->Ln(7);  $pdf->Write(5, utf8_decode($curObj->votesUsers($tmpResponse["_id"])));}
+			$pdf->SetFont("Arial","",9);
+			$pdf->Cell($progressBarWidth, $progressBarHeight, Txt::utf8Decode($votesPercent." %  ".$votesNbLabel), "RLTB", 0, "L", 1);
+			if(!empty($votesNb) && !empty($curObj->publicVote))   {$pdf->Ln(7);  $pdf->Write(5, Txt::utf8Decode($curObj->votesUsers($tmpResponse["_id"])));}
 		}
 
 		////	FOOTER DU PDF  &&  DOWNLOAD DU FICHIER
-		$pdf->Image("app/img/logoLabel.png", 150, 270, null, null, null, utf8_decode(OMNISPACE_URL_LABEL));
+		$pdf->Image("app/img/logoLabel.png", 150, 270, null, null, null, Txt::utf8Decode(OMNISPACE_URL_LABEL));
 		$fileName=Txt::clean($curObj->getLabel())."_".date("d-m-Y").".pdf";
 		$pdf->Output($fileName, "D");
 	}

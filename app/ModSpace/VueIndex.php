@@ -1,7 +1,7 @@
 <style>
 /* BLOCKS DE CONTENU */
 #moduleMenu .infos			{text-align:left;}
-.objBlocks .objContainer	{height:200px; width:300px; min-width:300px; max-width:700px; padding:10px;}/*surcharge*/
+.objBlocks .objContainer	{height:200px; min-width:300px; max-width:600px; padding:10px;}/*surcharge*/
 .vSpaceName					{font-size:1.1rem;}
 .vSpaceDescription			{margin-top:10px; font-weight:normal;}
 .vModules					{margin:15px 0px;}

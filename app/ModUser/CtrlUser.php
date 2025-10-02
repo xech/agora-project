@@ -172,19 +172,16 @@ class CtrlUser extends Ctrl
 		////	Controle d'accès && nombre max d'utilisateurs
 		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			//// Export de users
 			if(Req::param("actionImportExport")=="export"){
 				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay().MdlUser::sqlSort());
 				MdlUser::exportPersons($userList, Req::param("exportType"));
 			}
 			//// Import de users
-			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields"))
-			{
+			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields")){
 				$personFields=Req::param("personFields");
-				foreach(Req::param("personsImport") as $personCpt)
-				{
+				foreach(Req::param("personsImport") as $personCpt){
 					//Créé l'user
 					$curObj=new MdlUser();
 					$tmpUser=[];

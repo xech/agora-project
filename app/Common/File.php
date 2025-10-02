@@ -37,50 +37,57 @@ class File
 			}
 		}
 	}
-	
-	/********************************************************************************************************
-	 * EXTENSION DU FICHIER -> SANS LE POINT !
-	 ********************************************************************************************************/
-	public static function extension($fileName)
-	{
-		return strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
-	}
 
 	/********************************************************************************************************
 	 * TABLEAU DES EXTENSIONS DE FICHIERS
 	 ********************************************************************************************************/
 	public static function fileTypes($typeKey)
 	{
-		//Init les types de fichiers en fonction de leur extension
-		if(static::$_fileTypes===null)
-		{
+		////	Init les types de fichiers par catégorie
+		if(static::$_fileTypes===null){
 			static::$_fileTypes=[
-				"textEditor"=>["doc","docx","odt","sxw"],
-				"text"=>["txt","text","rtf"],
-				"pdf"=>["pdf"],
-				"pdfTxt"=>["pdf","txt","text"],
-				"calc"=>["xls","xlsx","ods","sxc"],
-				"presentation"=>["ppt","pptx","pps","ppsx","odp","sxi"],
-				"archive"=>["zip","rar","7z","tar","gz","tgz","iso"],
-				"flash"=>["swf"],
-				"html"=>["htm","html"],
-				"web"=>["htm","html","js","css","php","asp","jsp"],
-				"autocad"=>["dwg","dxf"],
-				"executable"=>["exe","bat","dat","dll","msi"],
-				"image"=>["jpg","jpeg","png","gif","bmp","wbmp","tif","tiff","svg"],
-				"imageResize"=>["jpg","jpeg","png"],
-				"video"=>["mp4","webm","ogg","mkv","flv","avi","qt","mov","wmv","mpg"],
-				"audio"=>["mp3","flac","wma","wav","aac","mid"],
-				"mp3"=>["mp3"],
-				"editorInsert"=>["jpg","jpeg","png","gif","mp4","webm","mp3"],									//Medias pouvant être insérés dans l'éditeur TinyMce
-				"imageBrowser"=>["jpg","jpeg","png","gif","svg"],												//Images : idem
-				"videoBrowser"=>["mp4","webm"],																	//Videos : idem
-				"lightboxPlayer"=>["mp4","webm","mp3"],															//Video/audio via lightbox
-				"forbiddenExt"=>["php","phtml","js","htaccess","sh","so","bin","cgi","rpm","deb","bat","exe"],	//Fichiers non autorisés
+				'pdf'=>['pdf'],
+				'text'=>['txt','md','rtf','epub'],
+				'textEditor'=>['doc','docx','docm','dot','dotx','odt','sxw'],
+				'calc'=>['xls','xlsx','xlsm','xlt','xltx','ods','sxc'],
+				'presentation'=>['ppt','pptx','pptm','pps','ppsx','odp','sxi'],
+				'archive'=>['zip','rar','7z','tar','gz','tgz','bz2'],
+				'web'=>['html','htm','xhtml','css'],
+				'image'=>['jpg','jpeg','png','gif','bmp','tif','tiff','svg','psd','ai','bmp','webp','ico'],
+				'imageResize'=>['jpg','jpeg','png'],
+				'video'=>['mp4','mpg','mpeg','webm','mkv','flv','avi','mov','wmv','ogv'],
+				'audio'=>['mp3','flac','wma','wav','aac','mid','ogg'],
+				'mp3'=>['mp3'],
+				'autocad'=>['dwg','dxf'],
+				'data'=>['json','xml','db','dbf','mdb','accdb'],
+				'misc'=>['csv','log','ics','ical','vcf','ai','yaml','yml','gpx','kml','map'],
+				'editorInsert'=>['jpg','jpeg','png','gif','mp4','webm','mp3'],//Medias intégrables dans l'éditeur TinyMce
+				'editorImage'=>['jpg','jpeg','png','gif','svg'],
+				'editorVideo'=>['mp4','webm'],
+				'lightboxTxt'=>['pdf','txt','text','csv','md'],//Medias affichés via lightbox
+				'lightboxPlayer'=>['mp4','webm','mp3'],
 			];
 		}
-		//renvoie les fichiers correspondant aux types
-		return (array_key_exists($typeKey,static::$_fileTypes))  ?  static::$_fileTypes[$typeKey]  :  [];
+		////	Renvoie tous les types de fichier : whitelist
+		if($typeKey=="allowedExtensions"){
+			$fileTypes=[];
+			foreach(static::$_fileTypes as $tmpTypes)  {$fileTypes=array_merge($fileTypes,$tmpTypes);}
+			return $fileTypes;
+		}
+		////	Renvoie une liste spécifique de types de fichier
+		elseif(array_key_exists($typeKey,static::$_fileTypes)){
+			return static::$_fileTypes[$typeKey];
+		}
+		////	Renvoie un tableau vide
+		return [];
+	}
+
+	/********************************************************************************************************
+	 * EXTENSION DU FICHIER -> SANS LE POINT !
+	 ********************************************************************************************************/
+	public static function extension($fileName)
+	{
+		return strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
 	}
 
 	/********************************************************************************************************
@@ -103,12 +110,12 @@ class File
 			$datasFolderSize=(!empty($tmpDatasFolderSize))  ?  $tmpDatasFolderSize  :  self::datasFolderSize();
 			////	Récupère le type mime du fichier
 			$finfo=finfo_open(FILEINFO_MIME_TYPE);
-			$isForbiddenMimeType=preg_match("/(php|javascript|shell|binary|executable|msdownload|debian)/i", finfo_file($finfo,$tmpFile["tmp_name"]));
+			$isForbiddenType=preg_match("/(php|javascript|shell|x-sh|binary|exec|debian|perl|python|ruby|java|msdownload)/i", finfo_file($finfo,$tmpFile["tmp_name"]));
 			////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
-			if(self::isType("forbiddenExt",$tmpFile["name"]) || $isForbiddenMimeType==true)					{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$tmpFile["name"]);  return false;}
-			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)		{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
-			elseif(($datasFolderSize+$tmpFile["size"]) > limite_espace_disque)								{Ctrl::notify("NOTIF_diskSpace");  return false;}
-			else																							{return true;}
+			if(self::isType("allowedExtensions",$tmpFile["name"])==false || $isForbiddenType==true)		{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$tmpFile["name"]);  return false;}
+			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)	{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
+			elseif(($datasFolderSize+$tmpFile["size"]) > limite_espace_disque)							{Ctrl::notify("NOTIF_diskSpace");  return false;}
+			else																						{return true;}
 		}
 	}
 
@@ -118,25 +125,29 @@ class File
 	public static function download($fileName, $filePath=null, $fileContent=null, $exitScript=true)
 	{
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
-		if(!empty($fileContent) || is_file($filePath))
-		{
+		if(!empty($fileContent) || is_file($filePath)){
 			////	Augmente la duree du script (sauf safemode)
-			@set_time_limit(120);
+			@set_time_limit(1800);
 			////	Headers
+			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
-			header('Cache-Control: no-store');
-			header('Content-Transfer-Encoding: Binary'); 
 			header('Content-Disposition: attachment; filename="'.Txt::clean($fileName).'"');
+			header('Cache-Control: no-store');
+			header('Content-Transfer-Encoding: Binary');
 			if(!empty($filePath))  {header("Content-Length: ".filesize($filePath));}
 			////	Fichier généré à la volée (ex: csv des logs)
 			if(!empty($fileContent)){
 				echo $fileContent;
 			}
-			////	Download d'un fichier > 50Mo par tranche de 1Mo (evite de bloquer la navigation durant le download)
+			////	Fichier > 50Mo : lecture asynchrone pour pas bloquer la navigation durant le download
 			elseif(filesize($filePath) > (self::sizeMo*50)){
 				session_write_close();
 				$handle=fopen($filePath,"rb");
-				while(!feof($handle))  {echo fread($handle,self::sizeMo);}
+				while(!feof($handle)){					//Lecture jusqu'à la fin du fichier
+					echo fread($handle,self::sizeMo);	//Lecture par tranche de 1Mo 
+					ob_flush();							//Vide le buffer de sortie
+    				flush();							//Force l'envoi au navigateur
+				}
 				fclose($handle);
 			}
 			////	Download direct du fichier
@@ -154,9 +165,9 @@ class File
 	public static function display($filePath)
 	{
 		if(is_file($filePath)){
-			if(self::isType("imageBrowser",$filePath))		{header('Content-Type: image/'.self::extension($filePath));}
+			if(self::isType("editorImage",$filePath))		{header('Content-Type: image/'.self::extension($filePath));}
 			elseif(self::isType("pdf",$filePath))			{header('Content-Type: application/pdf');}
-			elseif(self::isType("videoBrowser",$filePath))	{header('Content-Type: video/mpeg');}
+			elseif(self::isType("editorVideo",$filePath))	{header('Content-Type: video/mpeg');}
 			elseif(self::isType("mp3",$filePath))			{header('Content-Type: audio/mpeg');}
 			elseif(self::isType("text",$filePath))			{header('Content-Type: text/plain');}
 			else											{header('Content-Type: application/octet-stream');}
@@ -208,10 +219,10 @@ class File
 	 ********************************************************************************************************/
 	public static function getBytesSize($sizeText)
 	{
-		if(preg_match("/(g|go)$/i",$sizeText))		{return floatval(str_ireplace(["go","g"],"",$sizeText)) * self::sizeGo;}
-		elseif(preg_match("/(m|mo)$/i",$sizeText))	{return floatval(str_ireplace(["mo","m"],"",$sizeText)) * self::sizeMo;}
-		elseif(preg_match("/(k|ko)$/i",$sizeText))	{return floatval(str_ireplace(["ko","k"],"",$sizeText)) * self::sizeKo;}
-		else										{return $sizeText;}
+		if(preg_match("/(g|go)$/i",(string)$sizeText))		{return floatval(str_ireplace(['go','g'],'',$sizeText)) * self::sizeGo;}
+		elseif(preg_match("/(m|mo)$/i",(string)$sizeText))	{return floatval(str_ireplace(['mo','m'],'',$sizeText)) * self::sizeMo;}
+		elseif(preg_match("/(k|ko)$/i",(string)$sizeText))	{return floatval(str_ireplace(['ko','k'],'',$sizeText)) * self::sizeKo;}
+		else												{return $sizeText;}
 	}
 
 	/*********************************************************************************************************************
@@ -242,33 +253,21 @@ class File
 	 ********************************************************************************************************/
 	public static function rm($targetPath, $errorMessage=true)
 	{
-		//suppr le dernier "/"
+		//Suppr le dernier "/"
 		$targetPath=rtrim($targetPath,"/");
-		//Verifie l'accès en écriture (avec message d'erreur au besoin?)
-		if(self::isWritable($targetPath,$errorMessage))
-		{
-			//Supprime un fichier OU Supprime récursivement un dossier
-			if(is_file($targetPath))	{return unlink($targetPath);}
-			elseif(is_dir($targetPath) && $targetPath!=PATH_MOD_FILE)
-			{
-				//Supprime le contenu du dossier (récursivité)
-				foreach(scandir($targetPath) as $tmpFileName){
-					if(in_array($tmpFileName,['.','..'])==false)  {self::rm($targetPath."/".$tmpFileName,$errorMessage);}
+		//Fichier/dossier accessible en écriture
+		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE){
+			if(is_file($targetPath))	{return unlink($targetPath);}											//Supprime un fichier
+			elseif(is_dir($targetPath)){																		//Supprime un dossier :
+				foreach(scandir($targetPath) as $fileName){														//Parcourt le dossier
+					if(!in_array($fileName,['.','..']))  {self::rm($targetPath."/".$fileName,$errorMessage);}	//Lance récursivement le "rm()" sur le contenu du dossier
 				}
-				//Supprime enfin le dossier
-				return rmdir($targetPath);
+				return rmdir($targetPath);																		//Supprime enfin le dossier
 			}
 		}
-	}
-
-	/********************************************************************************************************
-	 * VERIFIE SI UN DOSSIER OU UN FICHIER EST ACCESSIBLE EN ÉCRITURE
-	 ********************************************************************************************************/
-	public static function isWritable($targetPath, $errorMessage=true)
-	{
-		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE)	{return true;}
+		//Return false avec si besoin un message d'erreur
 		else{
-			if($errorMessage==true)  {Ctrl::notify(Txt::trad("NOTIF_fileOrFolderAccess")." : ".str_replace(PATH_MOD_FILE,"",$targetPath));}
+			if($errorMessage==true)  {Ctrl::notify(Txt::trad("NOTIF_fileOrFolderAccess").' -> '.str_replace(PATH_MOD_FILE,"",$targetPath));}
 			return false;
 		}
 	}
@@ -348,20 +347,23 @@ class File
 	/********************************************************************************************************
 	 * GENÈRE UNE ARCHIVE ZIP A PARTIR D'UN TABLEAU DE FICHIERS
 	 ********************************************************************************************************/
-	public static function downloadArchive($filesList, $archiveName)
+	public static function downloadArchive($fileList, $archiveName)
 	{
-		if(!empty($filesList))
-		{
+		if(!empty($fileList)){
 			//temps d'execution
-			@set_time_limit(240);//disabled en safemode
+			@set_time_limit(1800);//disabled en safemode
 			//Création de l'archive
 			$archiveTmpPath=tempnam(self::getTempDir(),"archive".uniqid()).".zip";
 			$zip=new ZipArchive();
 			$zip->open($archiveTmpPath, ZipArchive::CREATE);
-			//Ajout de chaque fichier à l'archive (avec "realPath" & un "zipPath") ou un dossier vide (avec "emptyFolderZipPath")
-			foreach($filesList as $tmpFile){
-				if(isset($tmpFile["emptyFolderZipPath"]))	{$zip->addEmptyDir($tmpFile["emptyFolderZipPath"]);}
-				elseif(is_file($tmpFile["realPath"]))		{$zip->addFile($tmpFile["realPath"],$tmpFile["zipPath"]);}
+			//Ajout de chaque dossier/fichier à l'archive (avec "realPath" & un "zipPath") ou un dossier vide (avec "emptyFolderZipPath")
+			foreach($fileList as $tmpFile){
+				if(isset($tmpFile["emptyFolderZipPath"]))  {$zip->addEmptyDir($tmpFile["emptyFolderZipPath"]);}	//Ajoute un dossier vide
+				elseif(is_file($tmpFile["realPath"])){															//Fichier accessible ?
+					$zip->addFile($tmpFile["realPath"],$tmpFile["zipPath"]);									//Ajoute le fichier
+					$fileIndex=$zip->locateName($tmpFile["zipPath"]);											//Index du fichier dans l'archive
+        			$zip->setCompressionIndex($fileIndex, ZipArchive::CM_STORE);								//Désactive la compression car bien + rapide
+				}
 			}
 			//Ferme l'archive, Download le zip, puis le supprime
 			$zip->close();
@@ -375,11 +377,11 @@ class File
 	 **********************************************************************************************************************************/
 	public static function archiveSizeControl($archiveSize)
 	{
-		$limitSize=(self::sizeGo*2);	//2Go max en heure de pointe
-		$disabledBegin=9;				//debut plage horaire de limitation
-		$disabledEnd  =18;				//fin plage horaire de limitation
-		if(date("G") > $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > $limitSize){
-			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert"))." ".$disabledEnd."H";
+		$limitSize=(self::sizeGo*10);	//10Go max en heure de pointe
+		$disabledBegin=9;				//debut plage horaire limitée
+		$disabledEnd  =16;				//fin   plage horaire limitée
+		if(date("G") >= $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > (int)$limitSize){
+			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert")).' '.($disabledEnd+1).'H';
 			Ctrl::notify($alertLabel, "error");
 			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
 		}
@@ -393,15 +395,14 @@ class File
 		//Dossier temporaire du systeme  ||  Dossier temporaire dans /DATAS
 		if(Req::isHost()){
 			$tmpDir=sys_get_temp_dir();
-			if(is_dir(PATH_TMP) && is_writable(PATH_TMP))  {self::rm(PATH_TMP);}//suppr l'ancien PATH_TMP si besoin
 		}else{
 			$tmpDir=rtrim(PATH_TMP,"/");//Path sans le dernier "/"
 			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé si besoin le dossier
 		}
-		//Supprime les fichiers temporaires de plus de 48h (fichiers tjs présents si le script est interrompu)
-		foreach(scandir($tmpDir) as $tmpFileName){
-			$tmpFile=$tmpDir."/".$tmpFileName;
-			if(in_array($tmpFileName,['.','..'])==false && is_file($tmpFile) && (time()-filemtime($tmpFile))>172800)  {self::rm($tmpFile);}
+		//Supprime les fichiers tmp de plus de 24h
+		foreach(scandir($tmpDir) as $fileName){
+			$filePath=$tmpDir."/".$fileName;
+			if(!in_array($fileName,['.','..']) && is_file($filePath) && (time()-filemtime($filePath))>86400)  {self::rm($filePath);}
 		}
 		//Renvoie le path
 		return $tmpDir;
@@ -427,7 +428,7 @@ class File
 				foreach($configLines as $lineKey=>$lineValue)
 				{
 					//Modifie "limite_nb_utils" : agora v2
-					if(stristr($lineValue,"limite_nb_utils"))  {$lineValue=str_replace("limite_nb_utils","limite_nb_users",$lineValue);}
+					if(stristr($lineValue,"limite_nb_utils"))  {$lineValue=str_replace('limite_nb_utils','limite_nb_users',$lineValue);}
 					//Supprime la constante de la ligne courante ?
 					if(!empty($constantsDelete)){
 						foreach($constantsDelete as $constName){

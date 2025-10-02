@@ -43,9 +43,9 @@ ready(function(){
 function objectFormControl(){
 	return new Promise((resolve)=>{
 		//// Controle le password de l'espace public + le nombre de modules sélectionnés
-		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && $("#publicSpacePassword").val().length < 6)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
-		if($("input[name='moduleList[]']:checked").isEmpty())																		{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
-		else																														{resolve(true);}
+		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && isValidPassword($("#publicSpacePassword").val())==false)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
+		if($("input[name='moduleList[]']:checked").isEmpty())																						{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
+		else																																		{resolve(true);}
 	});
 }
 </script>

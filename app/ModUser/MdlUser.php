@@ -346,9 +346,9 @@ class MdlUser extends MdlPerson
 		{
 			$resetPasswordUrl=Req::getCurUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
 			$mailSubject=Txt::trad("resetPasswordMailTitle");
-			$mailMessage=Txt::trad("MAIL_hello").",<br><br>".
-					 	 "<b>".Txt::trad("resetPasswordMailPassword")." <a href=\"".$resetPasswordUrl."\" target='_blank'>".Txt::trad("resetPasswordMailPassword2")."</a></b>".
-					 	 "<br><br>".Txt::trad("resetPasswordMailLoginRemind")." : <i>".$this->login."</i>";
+			$mailMessage=Txt::trad("MAIL_hello").',<br><br>'.
+					 	 '<b>'.Txt::trad("resetPasswordMailPassword").' <a href="'.$resetPasswordUrl.'" target="_blank">'.Txt::trad("resetPasswordMailPassword2").'</a></b>'.
+					 	 '<br><br>'.Txt::trad("resetPasswordMailLoginRemind").' : <i>'.$this->login.'</i>';
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify","noTimeControl"]);//"noTimeControl" pour l'envoi de mails en série (cf. "actionResetPasswordSendMailUsers()")
 		}
 	}

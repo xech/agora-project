@@ -76,10 +76,10 @@ class MdlFile extends MdlObject
 	 ********************************************************************************************************/
 	public function urlDownload($dateCrea=null)
 	{
-		$urlDownload="?ctrl=file&action=GetFile&typeId=".$this->_typeId;								//Url de base
-		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}						//Download une version spécifique
-		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlExternalGetFile($urlDownload,$this->name);}	//Download depuis l'exterieur : switch sur "ctrl=misc"
-		return $urlDownload;																			//Retourne l'Url
+		$urlDownload="?ctrl=file&action=FileDownload&typeId=".$this->_typeId;								//Url de base
+		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}							//Download une version spécifique
+		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlMobileFileDownload($urlDownload,$this->name);}	//Download via CtrlMisc
+		return $urlDownload;																				//Retourne l'Url
 	}
 
 	/********************************************************************************************************
@@ -199,9 +199,7 @@ class MdlFile extends MdlObject
 		elseif(File::isType("archive",$this->name))			{return $pathFileTypes."archive.png";}
 		elseif(File::isType("audio",$this->name))			{return $pathFileTypes."audio.png";}
 		elseif(File::isType("video",$this->name))			{return $pathFileTypes."video.png";}
-		elseif(File::isType("executable",$this->name))		{return $pathFileTypes."executable.png";}
 		elseif(File::isType("web",$this->name))				{return $pathFileTypes."web.png";}
-		elseif(File::isType("autocad",$this->name))			{return $pathFileTypes."autocad.png";}
 		else												{return $pathFileTypes."misc.png";}
 	}
 

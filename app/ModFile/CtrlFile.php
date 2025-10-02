@@ -29,29 +29,29 @@ class CtrlFile extends Ctrl
 				{Ctrl::notify(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "error");}
 			//Occupation d'espace disque
 			$folderSize=File::folderSize(PATH_MOD_FILE);
-			$barFillPercent=ceil(($folderSize/limite_espace_disque)*100);
-			$barLabel=Txt::trad("diskSpaceUsed")." : ".$barFillPercent."%";
+			$barPercent=ceil(($folderSize/limite_espace_disque)*100);
+			$barLabel=Txt::trad("diskSpaceUsed")." : ".$barPercent."%";
 			$barTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::sizeLabel($folderSize)." ".Txt::trad("from")." ".File::sizeLabel(limite_espace_disque);
-			$vDatas["diskSpaceAlert"]=($barFillPercent>70);
-			$vDatas["diskSpaceBar"]=Tool::progressBar($barLabel, $barTooltip, $barFillPercent, $vDatas["diskSpaceAlert"]);
+			$vDatas["diskSpaceAlert"]=($barPercent>70);
+			$vDatas["diskSpaceBar"]=Tool::progressBar($barLabel, $barTooltip, $barPercent, $vDatas["diskSpaceAlert"]);
 		}
 		////	Dossiers & Fichiers
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer).MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile){
 			////	Url du label/icone
 			$tmpFile->labelLink='onclick="confirmRedir(\''.$tmpFile->urlDownload().'\',\''.Txt::trad("download").' ?\')"';
-			if(File::isType("imageBrowser",$tmpFile->name))			{$tmpFile->iconLink='data-src="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Image
-			elseif(File::isType("pdfTxt",$tmpFile->name))			{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}			//Pdf/txt
+			if(File::isType("editorImage",$tmpFile->name))			{$tmpFile->iconLink='data-src="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Image
+			elseif(File::isType("lightboxTxt",$tmpFile->name))			{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}			//Pdf/txt
 			elseif(File::isType("lightboxPlayer",$tmpFile->name))	{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->filePath().'\')"';}			//Vidéo/Mp3
 			else													{$tmpFile->iconLink=$tmpFile->labelLink;}												//Idem labelLink
 			////	Tooltip
 			$tooltipBase='&nbsp; <i>'.$tmpFile->name.'</i><hr>'.Txt::trad("FILE_fileSize").' : '.File::sizeLabel($tmpFile->octetSize);	//Nom et taille du fichier
 			if(!empty($tmpFile->description))  {$tooltipBase.='<hr>'.$tmpFile->description;}											//Ajoute la description
-			$tmpFile->labelTooltip='<img src="app/img/download.png"> '.Txt::trad("FILE_fileDownload").$tooltipBase;						//Tooltip du label : download
+			$tmpFile->labelTooltip=Txt::trad("FILE_fileDownload").$tooltipBase;															//Tooltip du label : download
 			if(stristr($tmpFile->iconLink,"redir"))	{$tmpFile->iconTooltip=$tmpFile->labelTooltip;}										//Tooltip de l'icone : idem labelTooltip
 			else									{$tmpFile->iconTooltip=Txt::trad("show").$tooltipBase;}								//Tooltip de l'icone : lightboxOpen()
 			////	Fichier image
-			if(File::isType("imageBrowser",$tmpFile->name) && $tmpFile->hasTumb()){
+			if(File::isType("editorImage",$tmpFile->name) && $tmpFile->hasTumb()){
 				list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
 				$tmpFile->iconTooltip.='<br>'.$imgWidth.' x '.$imgHeight.' '.Txt::trad("pixels");	//Ajoute la résolution de l'image
 				$tmpFile->iconClass=($imgWidth>$imgHeight) ? 'thumbLandscape' : 'thumbPortrait';	//"iconClass" en fonction de l'orientation
@@ -82,15 +82,14 @@ class CtrlFile extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * AFFICHAGE/DOWNLOAD D'UN FICHIER DANS LE DATAS
+	 * DOWNLOAD/AFFICHAGE D'UN FICHIER
 	 ********************************************************************************************************/
-	public static function actionGetFile()
+	public static function actionFileDownload()
 	{
-		if(Req::isParam("typeId"))
-		{
-			//Récupère le fichier et controle le droit d'accès ("nameMd5" : cf. "actionExternalGetFile()")
+		if(Req::isParam("typeId")){
+			//Récupère le fichier et controle le droit d'accès
 			$curFile=self::getCurObj();
-			if($curFile->readRight()  ||  md5($curFile->name)==Req::param("nameMd5")){
+			if(is_object($curFile) &&  ($curFile->readRight() || CtrlMisc::controlMobileFileDownload($curFile->name))){
 				//Affiche dans le browser ou l'appli (pdf/img/video)  OU  Download direct du fichier
 				if(Req::isParam("displayFile"))   {File::display($curFile->filePath());}
 				else{
@@ -159,8 +158,7 @@ class CtrlFile extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			//Enregistre & recharge le fichier + update la dernière version
 			$fileName=Req::param("name").Req::param("dotExtension");
 			$curObj=$curObj->editRecord("name=".Db::format($fileName).", description=".Db::param("description"));
@@ -171,8 +169,7 @@ class CtrlFile extends Ctrl
 			static::lightboxRedir();
 		}
 		////	Affiche la vue
-		else
-		{
+		else{
 			$vDatas["curObj"]=$curObj;
 			static::displayPage("VueEditFile.php",$vDatas);
 		}
@@ -183,20 +180,20 @@ class CtrlFile extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionAddEditFiles()
 	{
-		////	Charge l'objet & Controles d'accès
+		////	CHARGE L'OBJET
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		$folderPath=$curObj->containerObj()->folderPath("real");
-		if(!is_dir($folderPath) || !is_writable($folderPath))  {Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess")." : ".$curObj->containerObj()->name);}
-		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		////	CONTROLES D'ACCÈS AU DOSSIER
+		if(is_dir($folderPath) && !is_writable($folderPath) && !preg_match('#^/tmp/#i',$folderPath))
+			{Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess").' : '.$curObj->containerObj()->name);}
+		////	VALIDE LE FORMULAIRE
+		if(Req::isParam("formValidate")){
 			//Init
 			@set_time_limit(240);//disabled en safemode
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	FICHIERS ENVOYÉS VIA "PLUPLOAD"
-			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")))
-			{
+			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
 				$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
 				if(is_dir($tmpDirPath)){
 					foreach(scandir($tmpDirPath) as $tmpFileName){
@@ -206,8 +203,7 @@ class CtrlFile extends Ctrl
 				}
 			}
 			////	FICHIERS ENVOYÉS VIA L'INPUT DE TYPE "FILE" ("addFileVersion"/"addFileSimple")
-			elseif(!empty($_FILES))
-			{
+			elseif(!empty($_FILES)){
 				foreach($_FILES as $tmpFile){
 					if($tmpFile["error"]==0){
 						$newFiles[]=$tmpFile;																					//Ajoute le fichier
@@ -218,8 +214,7 @@ class CtrlFile extends Ctrl
 			}
 			////	AJOUTE CHAQUE FICHIER
 			$tmpDatasFolderSize=File::datasFolderSize();
-			foreach($newFiles as $tmpFile)
-			{
+			foreach($newFiles as $tmpFile){
 				////	Controle du fichier
 				if(File::uploadControl($tmpFile,$tmpDatasFolderSize))
 				{
@@ -270,8 +265,7 @@ class CtrlFile extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
-		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")) && !empty($_FILES))
-		{
+		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")) && !empty($_FILES)){
 			//Init/Crée le dossier temporaire
 			$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
 			if(!is_dir($tmpDirPath))  {mkdir($tmpDirPath);}

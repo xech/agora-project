@@ -8,7 +8,7 @@ ready(function(){
 		else if($("input[name='mail']").isMail()==false)																					{notify("<?= Txt::trad("mailInvalid") ?>","error");  return false;}
 		////	Captcha Ok : Controle et valide le formulaire
 		if(await captchaControl()){
-			$.ajax({url:"index.php",data:$(this).serialize(),method:"POST"}).done(function(result){
+			$.ajax({url:"index.php", data:$(this).serialize(), method:"POST"}).done(function(result){
 				if(/inscriptionOK/i.test(result))	{window.top.redir("index.php?notify=userInscriptionRecorded");}
 				else								{notify(result,"error");}
 			});

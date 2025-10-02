@@ -21,7 +21,7 @@ class MdlUserGroup extends MdlObject
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
 	 ********************************************************************************************************/
-	function __construct($objIdOrValues=null)
+	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
 		//Users affectés au groupe (verif qu'ils sont tous affectés à l'espace via "array_intersect()")

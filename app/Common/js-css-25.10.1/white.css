@@ -1,0 +1,46 @@
+/*** BASIC*/
+body, a, .sLink																				{color:#555;}
+#htmlLightbox, .objContainer, .miscContainer, .menuContext									{background:white;}
+.objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #333; transition:box-shadow 0.3s ease-in-out;}
+.objContainer:hover																			{box-shadow:2px 2px 10px #ccc;}
+.objLines .objContainer																		{border-bottom:solid 1px #ccc;}
+.menuContext,  #messengerMain, .tox-tinymce													{border:solid 1px #ccc;}
+.objLines .objContainer:hover, .menuContext .menuLine:hover, .lineHover:hover				{background:#eee;}
+.objContainerSelect, .lineSelect, #objSelectMenu											{background:#ddd!important;}
+/*RESPONSIVE MEDIUM*/
+@media screen and (max-width:1024px){
+	#htmlMainPage											{background:white url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	.objContainer, .miscContainer							{box-shadow:0px 2px 6px #888;}
+}
+
+/*** LIENS & OPTIONS*/
+a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .optionSelect	{color:#0068bd;}
+.sAccessWrite, .sAccessWriteLimit	{color:#900;}
+.option								{border:solid 1px transparent;}
+.option:hover, .optionSelect		{border:solid 1px #ccc; border-radius:5px;}
+.option:hover						{background:#fcfcfc; }
+.optionSelect						{background:#eaeaea!important;}
+
+/*** MENU CONTEXT RESPONSIVE*/
+#menuMobileMain															{background:white; border:solid 1px #ddd;}
+#menuMobileMain .vHeaderModuleCurrent, #menuMobileMain .miscContainer	{background:#eee!important; border:solid 1px #eee; box-shadow:0px 2px 6px #888;}
+
+/*** INPUTS*/
+input, textarea, select												{color:#555;}
+button																{color:#555; background:linear-gradient(#fff,#eee);}
+button:hover:not(.f-button)											{background:linear-gradient(#fff,#f9f9f9);}
+button:disabled														{color:#888;}
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #ccc; transition:box-shadow 0.3s ease-in-out; border:#bbb 1px solid;}
+input:not([type=radio],[type=checkbox]):hover, textarea:hover		{box-shadow:0px 0px 4px #777;}
+input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0px 4px #0068bd; border:#bcf 1px solid;}
+.tox-tinymce														{box-shadow:0px 0px 4px #ccc!important; border-radius:5px!important;}/*Editeur TinyMCE*/
+
+/*** DIVERS*/
+#headerBar								{background:linear-gradient(180deg,white,#eee); box-shadow:0px 2px 8px #505050;}		/*barre de menu principale*/
+hr										{background:linear-gradient(90deg,#eee,#ccc,#eee);}									/*barre de séparation*/
+fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px;}						 /*fieldset & onglet "VueObjMenuEdit.php"*/
+.fieldsetSub							{background:#ececec; border:1px solid #ccc; border-radius:5px;}						 /*ex: "VueObjMenuEdit.php"*/
+.objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#fafafa,white,white);}								/*"VueObjMenuEdit.php"*/
+::-webkit-scrollbar						{background:#eee; width:12px;}															  /*scrollbar: background et width*/
+::-webkit-scrollbar-thumb				{background:#bbb;}																		  /*scrollbar: couleur de la barre*/
+.jconfirm-box							{box-shadow:0px 2px 6px #555!important;}

@@ -10,7 +10,7 @@
 	echo "<div class='lightboxTitle'>".$curObj->lightboxMenu().$curObj->getLabel("full")."</div>";
 
 	////	IMAGE & DETAILS DE l'USER
-	echo "<div class='personLabelImg'>".$curObj->profileImg()."</div>";
+	echo "<div class='personProfileImg'>".$curObj->profileImg()."</div>";
 	echo "<div class='personVueFields'>".$curObj->getFields("profile")."</div>";
 
 	////	GROUPES D'UTILISATEURS

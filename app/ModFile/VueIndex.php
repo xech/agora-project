@@ -1,6 +1,6 @@
 <style>
-.objBlocks .objContainer										{height:160px; width:160px; min-width:160px; max-width:250px;}						/*surcharge du conteneur "objBlocks"*/
-.objBlocks .objIcon												{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:3px;}/*centre l'icone (dossier, types de fichier, img "fullsize")*/
+.objBlocks .objContainer										{height:150px; min-width:150px; max-width:250px;}									/*surcharge du conteneur "objBlocks"*/
+.objBlocks .objIcon												{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:4px;}/*centre l'icone (dossier, types de fichier, img "fullsize")*/
 .objBlocks .objIcon img											{margin-top:20px;}																	/*idem ...sauf image "fullsize"*/
 .objBlocks .thumbLandscape img, .objBlocks .thumbPortrait img	{min-width:100%; max-width:none; min-height:100%; max-height:none;}					/*images "fullsize" : couvrent tout le Block*/
 .objBlocks .thumbLandscape img									{height:100%;}																		/*images "fullsize" paysage : 100% de haut*/
@@ -9,10 +9,10 @@
 .objBlocks .hasThumb .objMenuContextFloat						{filter:contrast(200%);}															/*vignettes : met en avant le menu context*/
 .objBlocks .hasThumb.objContainerSelect							{border:2px solid #f88;}															/*surcharge la sélection de fichiers avec vignette*/
 .objBlocks .objLabel											{position:absolute; bottom:0px; width:100%; padding:8px 4px; text-align:center;}	/*label "bandeau" d'un dossier/fichier (modFile)*/
-.objBlocks .hasThumb .objLabel									{background:<?= Ctrl::$agora->skin ?>; border-radius:4px;}							/*images/vignettes pdf : background des labels*/
+.objBlocks .objFiles .objLabel a								{font-size:0.95rem; cursor:url('app/img/download.png'),default;}					/*nom des fichiers*/
+.objBlocks .hasThumb .objLabel									{background:<?= Ctrl::$agora->skin ?>; border-radius:0px 0px 4px 4px;}				/*images/vignettes pdf : background des labels*/
 .objLines .objLabel>span										{padding:10px 50px 10px 0px;}														/*Zone clickable élargie*/
 .versionsMenu													{margin-left:20px;}																	/*bouton "versions de fichiers" : cf. "versionsMenu()"*/
-.objFiles .objLabel												{font-size:0.95rem;}																/*nom des fichiers*/
 </style>
 
 

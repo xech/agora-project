@@ -105,23 +105,21 @@ class Db
 	}
 
 	/********************************************************************************************************
-	 * FORMATE UNE VALEUR DANS UNE REQUETE (insert/update/etc)
+	 * FORMATE UNE VALEUR DANS UNE REQUETE INSERT/UPDATE
 	 ********************************************************************************************************/
 	public static function format($value, $options=null)
 	{
-		$value	=trim((string)$value);																						//cast la valeur en "string"
-		$options=trim((string)$options);																					//cast les options en "string"
-		if(empty($value))  {return "NULL";}																					//Retourne "NULL"
+		$value=trim((string)$value);
+		if(empty($value))  {return 'NULL';}
 		else{
-			if(stristr($options,"url") && !stristr($value,"http"))	{$value="http://".$value;}								//URL : ajoute "http://"
-			if(stristr($options,"sqlLike"))							{$value="%".$value."%";}								//Recheche via "LIKE" : délimite $value par des "%" ("sqlPlugins()" and co)
-			if(stristr($options,"inputDate"))						{$value=Txt::formatDate($value,"inputDate","dbDate");}	//Formate la date d'un datepicker
-			return self::objPDO()->quote($value);																			//Retourne le résultat filtré par pdo (addslashes, quotes, etc)
+			if(stristr((string)$options,"sqlLike"))		{$value='%'.Txt::clean($value).'%';}					//Recherche via "LIKE" ("sqlPlugins()", etc)
+			if(stristr((string)$options,"inputDate"))	{$value=Txt::formatDate($value,"inputDate","dbDate");}	//Formate la date d'un datepicker
+			return self::objPDO()->quote($value);																//Résultat filtré par pdo (addslashes, quotes, etc)
 		}
 	}
 
 	/********************************************************************************************
-	 * RECUPERE UNE VALEUR GET/POST PUIS LA FORMATE DANS UNE REQUETE INSERT/UPDATE/ETC
+	 * RECUPERE UNE VALEUR GET/POST PUIS LA FORMATE DANS UNE REQUETE INSERT/UPDATE
 	 ********************************************************************************************/
 	public static function param($keyParam, $options=null)
 	{

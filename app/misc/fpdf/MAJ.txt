@@ -1,0 +1,7 @@
+UPDATE :
+********
+
+AJOUTER JUSTE AVANT DE DECLARER LA CLASSE : 
+
+	/**Création dynamique de propriété : "dynamic property"**/
+	#[\AllowDynamicProperties]

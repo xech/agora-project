@@ -28,8 +28,8 @@
 					<div class="objContent">
 						<div class="objIcon">'.$tmpContact->profileImg(true,false).'</div>
 						<div class="objLabel" onclick="'.$tmpContact->openVue().'">
-							<div class="objPersonDetail">'.$tmpContact->getLabel("full").'</div>
-							<div class="objPersonDetails">'.$tmpContact->getFields(MdlContact::getDisplayMode()).'</div>
+							<div class="personLabel">'.$tmpContact->getLabel("full").'</div>
+							'.$tmpContact->getFields("index").'
 						</div>
 						<div class="objAutorDate">'.$tmpContact->autorDate().'</div>
 					</div>
