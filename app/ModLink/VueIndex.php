@@ -29,8 +29,7 @@
 		echo MdlFolder::menuPath(Txt::trad("LINK_addLink"),MdlLink::getUrlNew()).
 			 CtrlObject::vueFolders();
 		////	LISTE DES LIENS
-		foreach($linkList as $tmpLink)
-		{
+		foreach($linkList as $tmpLink){
 			$linkLabel=(!empty($tmpLink->description))  ?  '<span '.Txt::tooltip($tmpLink->adress).'>'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
 			echo $tmpLink->objContainerMenu().
 				'<div class="objContainerScroll">

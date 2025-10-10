@@ -1,0 +1,49 @@
+/*** BASIC*/
+body, a, .sLink																							{color:#555;}
+#htmlLightbox, .objContainer, .miscContainer, .menuContext, #menuMobileMain								{background:white;}
+#headerBar																								{background:linear-gradient(to bottom,white,#eee);}/*barre principale*/
+#headerBar, .objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #444; transition:box-shadow 0.3s ease-in-out;}
+.objBlocks .objContainer:hover																			{box-shadow:2px 2px 10px #000;}
+.objLines .objContainer																					{border-bottom:solid 1px #ccc;}
+.menuContext,  #messengerMain, .tox-tinymce																{border:solid 1px #ccc;}
+.objLines .objContainer:hover, .menuContext .menuLine:hover, .lineHover:hover							{background:#eee;}
+.objContainerSelect, .lineSelect, #objSelectMenu														{background:#ddd!important;}
+.tooltipster-box																						{background:white!important; box-shadow:0px 0px 12px #333!important;}
+.tooltipster-content																					{color:#555!important; padding:15px!important;}
+/*RESPONSIVE MEDIUM*/
+@media screen and (max-width:1024px){
+	#htmlMainPage					{background:white url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#headerBar						{border-top:solid 1px #bbb;}/*séparation de la "appBar" du main.dart*/
+	.objContainer, .miscContainer	{box-shadow:2px 2px 6px #888;}
+}
+
+/*** LIENS & OPTIONS*/
+a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .optionSelect	{color:#0068bd;}
+.sAccessWrite, .sAccessWriteLimit	{color:#900;}
+.option								{border:solid 1px transparent;}
+.option:hover, .optionSelect		{border:solid 1px #ccc; border-radius:5px;}
+.option:hover						{background:#eee; }
+.optionSelect						{background:#ddd!important;}
+
+/*** MENU DES MODULES*/
+#headerMenuRight *:is(.vHeaderModuleCurrent,.vHeaderModule:hover)	{background:white; border:solid 1px #ddd!important;}
+#menuMobileMain  *:is(.vHeaderModuleCurrent,.miscContainer)			{background:#eee; border:solid 1px #eee; box-shadow:0px 2px 6px #888;}
+
+/*** INPUTS*/
+input, textarea, select												{color:#555;}
+button																{color:#555; background:linear-gradient(#fff,#eee);}
+button:hover:not(.f-button)											{background:linear-gradient(#fff,#f9f9f9);}
+button:disabled														{color:#888;}
+input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #ccc; transition:box-shadow 0.3s ease-in-out; border:#bbb 1px solid;}
+input:not([type=radio],[type=checkbox]):hover, textarea:hover		{box-shadow:0px 0px 4px #777;}
+input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0px 4px #0068bd; border:#bcf 1px solid;}
+.tox-tinymce														{box-shadow:0px 0px 4px #ccc!important; border-radius:5px!important;}/*Editeur TinyMCE*/
+
+/*** DIVERS*/
+hr										{background:linear-gradient(90deg,#eee,#ccc,#eee);}
+fieldset, .objMenuTab, .objMenuOptions	{background:#fafafa; border:1px solid #bbb; border-radius:5px;}/*fieldset & VueObjMenuEdit*/
+.fieldsetSub							{background:#ececec; border:1px solid #ccc; border-radius:5px;}/*VueObjMenuEdit*/
+.objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#fafafa,white,white);}/*"VueObjMenuEdit.php"*/
+::-webkit-scrollbar						{background:#eee; width:12px;}/*background et width*/
+::-webkit-scrollbar-thumb				{background:#bbb;}/*couleur de scrollbar*/
+.jconfirm-box							{box-shadow:0px 2px 6px #555!important;}

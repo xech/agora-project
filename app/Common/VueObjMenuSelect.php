@@ -52,8 +52,8 @@ async function menuSelectAction(urlRedir, lightbox)
 
 
 <style>
-#objSelectMenu							{display:none;}										 /*menu masqué par défaut*/
-#objSelectMenu, .objContainerSelect		{box-shadow:2px 2px 5px rgb(80,80,80)!important;}  /*border des elements sélectionnés*/
+/*menu masqué par défaut*/
+#objSelectMenu	{display:none;}	
 </style>
 
 

@@ -992,7 +992,7 @@ class DbUpdate extends Db
 				self::query("UPDATE `ap_calendarCategory` SET title='congés' WHERE title='congÃ©s'");
 			}
 
-			if(self::updateVersion("25.10.1"))
+			if(self::updateVersion("25.10.2"))
 			{
 				//Remplace dans les News lightboxOpen() par .lightboxOpenHref
 				$newsSearch ='href="javascript:lightboxOpen(\'?ctrl=user&action=SendInvitation\')"';

@@ -9,8 +9,8 @@ ready(function(){
 	////	Edition/suppression d'un commentaire : update le "circleNb"  (idem "usersLikeUpdate()")
 	<?php if(Req::isParam("actionComment")){ ?>
 		var menuId="#usersComment_<?= $curObj->_typeId ?>";																								//Id du menu
-		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("objMenuMiscHide").find(".circleNb").html("");}								//Masque l'icone et le nb de commentaires
-		else								{window.top.$(menuId).removeClass("objMenuMiscHide").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone..
+		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("hide").find(".circleNb").html("");}											//Masque l'icone et le nb de commentaires
+		else								{window.top.$(menuId).removeClass("hide").find(".circleNb").html("<?= count($commentList) ?>").pulsate(1);}	//Affiche l'icone
 		window.top.$(menuId).tooltipUpdate("<?= $commentsTitle ?>");																					//Update le Tooltip
 	<?php } ?>
 

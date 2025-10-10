@@ -707,10 +707,9 @@ function usersLikeUpdate(typeId)
 	if(isValue(typeId)){
 		$.ajax({url:"?ctrl=object&action=usersLike&typeId="+typeId, dataType:"json"}).done(function(result){			//Requête Ajax pour switcher le "like"
 			let menuId="#usersLike_"+typeId;																			//Id du menu
-			if(result.likeNb==0)	{$(menuId).addClass("objMenuMiscHide").find(".circleNb").html("");}					//Masque l'icone et le nb de likes
-			else					{$(menuId).removeClass("objMenuMiscHide").find(".circleNb").html(result.likeNb);}	//Affiche l'icone..
+			if(result.likeNb==0)	{$(menuId).addClass("hide").find(".circleNb").html("");}							//Masque l'icone et le nb de likes
+			else					{$(menuId).removeClass("hide").find(".circleNb").html(result.likeNb).pulsate(1);}	//Affiche l'icone
 			$(menuId).tooltipUpdate(result.likeTooltip);																//Update les tooltips
-			$(menuId).effect("pulsate",{times:1},500);																	//Pulsate du menu
 		});
 	}
 }

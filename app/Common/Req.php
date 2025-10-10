@@ -187,11 +187,11 @@ class Req
 	}
 
 	/********************************************************************************************
-	 * VÉRIF MODE DEV
+	 * VÉRIF MODE DEV ('omnispace.local.net' > Google API || '192.168' > Android Studio)
 	 ********************************************************************************************/
 	public static function isDevServer()
 	{
-		return preg_match('/^(omnispace\.local\.net|debian12)$/i', $_SERVER['SERVER_NAME']);
+		return preg_match('/^(omnispace\.local\.net|192\.168|debian12)/i', $_SERVER['SERVER_NAME']);
 	}
 
 	/********************************************************************************************

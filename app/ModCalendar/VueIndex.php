@@ -3,7 +3,7 @@ ready(function(){
 	/********************************************************************************************************
 	 *	PROPOSITION D'EVT : PULSATE L'ICONE DU MODULE DANS LE "VueHeaderMenu.php"
 	 ********************************************************************************************************/
-	if($(".eventProposition").exist() && $("#headerMobileModule").isDisplayed())  {$("#headerMobileModule").pulsate();}
+	if($(".evtPropositions").exist() && $("#headerMobileModule").isDisplayed())  {$("#headerMobileModule").pulsate();}
 
 	/********************************************************************************************************
 	 *	SUBMIT LA LISTE DES AGENDAS AFFICHES
@@ -13,17 +13,17 @@ ready(function(){
 	/********************************************************************************************************
 	 *	PROPOSITION D'EVT : CONFIRME/ANNULE UNE PROPOSITION
 	 ********************************************************************************************************/
-	$(".eventProposition").on("click",function(){
+	$(".evtPropositions").on("click",function(){
 		//// Init le Confirm
-		let ajaxUrl="?ctrl=calendar&action=eventPropositionConfirm&typeId=calendar-"+$(this).attr("data-idCal")+"&_idEvt="+$(this).attr("data-idEvt");
+		let ajaxUrl="?ctrl=calendar&action=evtPropositionsConfirm&typeId=calendar-"+$(this).attr("data-idCal")+"&_idEvt="+$(this).attr("data-idEvt");
 		let redirUrl="?ctrl=calendar&notify=";
 		let confirmParams={
 			title:"<?= Txt::trad("CALENDAR_evtProposition") ?> :",
 			content:$(this).attr("data-details"),//Détails de l'evt (date, auteur, etc)
 			buttons:{
 				cancel:{text:labelConfirmCancel},
-				reject:{btnClass:"btn-dark",  text:"<?= Txt::trad("CALENDAR_evtProposeDecline") ?>",  action:function(){  $.ajax(ajaxUrl+"&isDeclined=true").done(function(){  redir(redirUrl+"CALENDAR_evtProposeDeclined"); });  }},
 				accept:{btnClass:"btn-green", text:"<?= Txt::trad("CALENDAR_evtProposeConfirm") ?>",  action:function(){  $.ajax(ajaxUrl+"&isConfirmed=true").done(function(){ redir(redirUrl+"CALENDAR_evtProposeConfirmed"); });  }},
+				reject:{btnClass:"btn-dark",  text:"<?= Txt::trad("CALENDAR_evtProposeDecline") ?>",  action:function(){  $.ajax(ajaxUrl+"&isDeclined=true").done(function(){  redir(redirUrl+"CALENDAR_evtProposeDeclined"); });  }},
 			}
 		}
 		//// Lance le Confirm (paramétrage par défaut + spécifique)
@@ -89,9 +89,9 @@ function moduleDisplay()
 #pageFull										{margin-bottom:0px;}
 
 /*Menu du module (gauche)*/
-#eventPropositionPulsate						{float:right; margin:-10px;}
-.eventProposition								{padding:5px; margin-top:5px;}
-.eventProposition hr							{margin:5px;}
+#evtPropositionsPulsate							{float:right; margin:-10px;}
+.evtPropositions								{padding:5px; margin-top:5px;}
+.evtPropositions hr								{margin:5px;}
 #readableCalendarsForm							{max-height:450px; overflow-y:auto;}
 #readableCalendarsTitle 						{margin-bottom:10px;}
 #readableCalsAdmin								{float:right;}
@@ -178,11 +178,11 @@ function moduleDisplay()
 <div id="pageFull">
 	<div id="moduleMenu">
 		<!--PROPOSITIONS D'EVT-->
-		<?php if(!empty($proposedEvents)){ ?>
+		<?php if(!empty($evtPropositions)){ ?>
 			<div class="miscContainer">
-				<legend><?= Txt::trad("CALENDAR_evtProposition") ?><img src="app/img/importantBig.png" id="eventPropositionPulsate" class="pulsate"></legend>
-				<?php foreach($proposedEvents as $evtTmp){ ?>
-					<div class="eventProposition optionSelect" data-idEvt="<?= $evtTmp["_idEvt"] ?>" data-idCal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["dataDetail"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["dataDetail"]) ?> ><?= $evtTmp["details"] ?></div>
+				<legend><?= Txt::trad("CALENDAR_evtProposition") ?><img src="app/img/importantBig.png" id="evtPropositionsPulsate" class="pulsate"></legend>
+				<?php foreach($evtPropositions as $evtTmp){ ?>
+					<div class="evtPropositions optionSelect" data-idEvt="<?= $evtTmp["_idEvt"] ?>" data-idCal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["evtPropDetails"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["evtPropDetails"]) ?> ><?= $evtTmp["evtPropLabel"] ?></div>
 				<?php } ?>
 			</div>
 		<?php } ?>

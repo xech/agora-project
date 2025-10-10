@@ -728,7 +728,7 @@ class MdlObject
 			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  								//Lien vers le profil de l'user
 		}
 		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;				//Date de créa/modif
-		return $autorLabel.'<img src="app/img/arrowRightSmall.png">'.Txt::dateLabel($dateEdit,"labelFull");				//Return
+		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">&nbsp;'.Txt::dateLabel($dateEdit,"labelFull");	//Garder "&nbsp;" au cas où <img> est masqué
 	}
 
 	/********************************************************************************************************

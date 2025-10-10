@@ -4,21 +4,21 @@ html, body, div			{margin:0px; padding:0px;}/*reset*/
 html					{background:#222;}
 body					{background-position:right top; background-repeat:no-repeat;}
 #bodyLightbox			{padding:25px;}
-div, span				{vertical-align:top; box-sizing:border-box; -webkit-tap-highlight-color:transparent;}								/*"box-sizing" : façon dont la largeur est calculée. "tap-highlight-color" couleur de background sur mobile au "touch" d'un élément cliquable*/
-p						{margin:3px;}																										/*Idem balises "<p>" de l'éditeur tinyMce (cf. "editor.css")*/
-abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*remplace balise "acronym" et classe ".acronym"*/
+div, span				{vertical-align:top; box-sizing:border-box; -webkit-tap-highlight-color:transparent;}								/*"box-sizing" pour le calcul des width. "tap-highlight-color" : cf. background au "touch" d'un élément sur mobile*/
+p						{margin:3px;}																										/*Cf éditeur tinyMce et "editor.css"*/
 img						{border:0px; vertical-align:middle;}																				/*alignemment des images*/
 hr						{border:0; height:1px; margin-top:10px; margin-bottom:10px;}														/*lignes de séparateur*/
 video, audio			{max-width:100%; max-height:100%;}																					/*Lecteurs video/audio*/
+abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*idem tag <acronym>*/
 a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
 /*RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:490px){
-	html				{font-size:17px;}
+	html				{font-size:18px;}
 	#bodyLightbox		{padding:25px 12px;}
 }
 
 /*** CONTENEURS PRINCIPAUX DE LA PAGE*/
-#headerBar											{display:table; width:100%; max-width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; background-repeat:repeat-x; user-select:none;}
+#headerBar											{display:table; width:100%; max-width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; user-select:none;}
 #headerBar>div										{display:table-cell; vertical-align:middle!important;}
 #headerBar>div:last-child							{text-align:right;}
 #pageFull, #pageCenter								{display:table; max-width:100%; margin-bottom:70px;}	/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
@@ -68,7 +68,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
 /*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
-	.objContainer									{margin:5px; border-radius:7px!important;}									/*tester affichage de news, fichiers, agendas, tâches*/
+	.objContainer									{margin:5px; margin-bottom:10px; border-radius:7px!important;}				/*tester affichage de news, fichiers, agendas, tâches*/
 	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
 	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller sur mobile*/
 	.objIcon										{width:60px!important;}														/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
@@ -87,31 +87,30 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 }
 
 /*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
-.objMenuContextFloat							{position:absolute; z-index:50; top:7px; right:3px;}							/*Launcher du menu context : Icone "burger" par défaut*/
-.objContainer:not(:hover) .objMenuContextFloat	{opacity:0.75;}																	/*Launcher opaque par défaut (pas moins de 0.75 : cf. images du module fichier)*/
-.objContainer:not(:hover) .objMenuMiscHide		{display:none;}																	/*Masque les .objMenuMiscHide, sauf au survol du ".objContainer"*/
-.objContainer.isSelectable						{cursor:url("../../img/check.png"),default;}									/*Curseur des elements selectionnables*/
-.objSelectCheckbox								{display:none;}																	/*input hidden de sélection/désélection d'objet*/
-.objMenuMisc									{position:absolute; z-index:50; top:35px; right:3px; width:35px; text-align:right;}	/*Likes + Comments + Files + persoAccess*/
-.objMenuMisc>div								{display:inline-block; margin:4px;}												/*'margin-left' pour l'affichage .objLines*/
-.objLines .objMenuMisc							{width:70px;}																	/*Affichage horizontal*/
-.circleNb										{width:22px; height:22px; line-height:22px; display:inline-block; background:#07d; border-radius:50%; color:white; text-align:center;}/*Nb de polls & News*/
-.objMenuMisc .circleNb							{width:14px; height:14px; line-height:14px; position:relative; margin-left:0px; margin-right:-10px; background:#db930c; font-size:0.8rem; font-weight:normal;}/*Nb de likes & comments*/
-.circleNb:empty									{display:none;}																	/*Cercle vide*/
-.attachedFileMenu								{display:inline-block;}															/*Fichiers joints à l'objet*/
-.attachedFileMenu img							{margin-right:0px;}																/*idem*/
-.menuContext .attachedFileMenu					{margin:5px;}																	/*idem*/
-.attachedFileTag								{max-width:100%;}																/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
-video.attachedFileTag							{min-width:600px; min-height:400px;}											/*Vidéo*/
-audio.attachedFileTag							{min-height:100px;}																/*Mp3*/
-.objMenuBottom									{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
-.objMenuBottom>.miscContainer					{display:inline-block; padding:15px; border-radius:10px;}
+.objMenuContextFloat						{position:absolute; z-index:50; top:7px; right:3px;}							/*Launcher du menu context : Icone "burger" par défaut*/
+.objContainer:not(:hover) .objMenuMisc .hide{display:none;}																	/*Masque les .objMenuMisc : sauf au survol d'un .objContainer parent*/
+.objContainer.isSelectable					{cursor:url("../../img/check.png"),default;}									/*Curseur des elements selectionnables*/
+.objSelectCheckbox							{display:none;}																	/*input hidden de sélection/désélection d'objet*/
+.objMenuMisc								{position:absolute; z-index:50; top:35px; right:3px; width:35px; text-align:right;}	/*Likes + Comments + Files + persoAccess*/
+.objMenuMisc>div							{display:inline-block; margin:4px;}												/*'margin-left' pour l'affichage .objLines*/
+.objLines .objMenuMisc						{width:70px;}																	/*Affichage horizontal*/
+.circleNb									{width:22px; height:22px; line-height:22px; display:inline-block; background:#07d; border-radius:50%; color:white; text-align:center;}/*Nb de polls & News*/
+.objMenuMisc .circleNb						{width:14px; height:14px; line-height:14px; position:relative; margin-left:0px; margin-right:-10px; background:#db930c; font-size:0.8rem; font-weight:normal;}/*Nb de likes & comments*/
+.circleNb:empty								{display:none;}																	/*Cercle vide*/
+.attachedFileMenu							{display:inline-block;}															/*Fichiers joints à l'objet*/
+.attachedFileMenu img						{margin-right:0px;}																/*idem*/
+.menuContext .attachedFileMenu				{margin:5px;}																	/*idem*/
+.attachedFileTag							{max-width:100%;}																/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
+video.attachedFileTag						{min-width:600px; min-height:400px;}											/*Vidéo*/
+audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
+.objMenuBottom								{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
+.objMenuBottom>.miscContainer				{display:inline-block; padding:15px; border-radius:10px;}
 /*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
-	.objMenuContextFloat						{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
-	.objMenuMisc>div							{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
-	.attachedFileMenu							{margin:10px;}								/*Fichiers joints à l'objet*/
-	video.attachedFileTag						{min-width:350px;}							/*vidéo*/
+	.objMenuContextFloat					{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
+	.objMenuMisc>div						{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
+	.attachedFileMenu						{margin:10px;}								/*Fichiers joints à l'objet*/
+	video.attachedFileTag					{min-width:350px;}							/*vidéo*/
 }
 
 /*** MENUS CONTEXTUELS & MENUS DE GAUCHE DES MODULES*/
@@ -144,7 +143,7 @@ input[type=radio], input[type=checkbox]				{vertical-align:middle; margin:0px 3p
 input[type=checkbox]								{width:15px; height:15px;}
 input[type=file]									{height:auto;}
 .dateInput, .dateBegin, .dateEnd					{width:80px;}													/*DATEPICKER INPUTS*/
-.ui-datepicker										{box-shadow:0px 0px 8px #888; width:300px; max-width:98%;}		/*DATEPICKER JQUERY :*/
+.ui-datepicker										{width:300px; max-width:98%; box-shadow:0px 2px 6px #888;}		/*DATEPICKER JQUERY ("box-shadow" idem .miscContainer)*/
 .ui-datepicker-header								{background-color:transparent; border:none;}					/*label du mois*/
 .ui-datepicker .ui-state-default					{padding:10px; text-align:center; border:0px;}					/*cellules des jours*/
 .ui-datepicker .ui-state-highlight					{background:#cde; color:black;}						  	/*aujourd'hui*/
@@ -213,9 +212,9 @@ select option										{font-size:1.1rem;}
 
 /*** MENU CONTEXT RESPONSIVE*/
 #menuMobileBg, #menuMobileMain, #menuMobileAddButton	{display:none;}/*Masque par défaut*/
-#menuMobileBg, #menuMobileMain 							{position:fixed; top:0px; right:0px; max-width:100%; height:100%;}
-#menuMobileBg											{z-index:120; width:100%; background:rgba(0,0,0,0.7);}
-#menuMobileMain											{z-index:121; width:430px;/*idem Pro Max*/ overflow:auto; padding:10px;}
+#menuMobileBg, #menuMobileMain 							{position:fixed; top:0px; right:0px; height:100%;}
+#menuMobileBg											{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
+#menuMobileMain											{z-index:121; width:430px;/*idem Pro Max*/  max-width:90%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
 #menuMobileClose										{text-align:right;}
 #menuMobileMain .menuLine>div							{padding:10px 5px;}/*surcharge*/
 #menuMobileContent2										{margin-top:30px;}
@@ -231,7 +230,7 @@ select option										{font-size:1.1rem;}
 .fancybox__slide.has-inline .fancybox__content	{padding:25px;}																				/*surcharge le padding Inline*/
 .f-thumbs__slide__button						{box-shadow:none;}																			/*surcharge les vignettes d'images*/
 [data-fancybox='images'], .fancyboxImages		{cursor:zoom-in;}																			/*Cursor des images à afficher*/
-.lightboxTitle									{margin-bottom:30px; padding-bottom:20px; text-align:center; font-size:1.1rem; line-height:22px; box-shadow:0px 7px 7px -7px #888;}
+.lightboxTitle									{margin-bottom:30px; padding-bottom:20px; text-align:center; font-size:1.1rem; line-height:22px; box-shadow:0px 7px 7px -7px #888;}/*Pseudo <hr> via "box-shadow"*/
 .lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:60px; padding-right:30px;}	/*padding pour .lightboxMenu et .is-close-btn*/
 .lightboxMenu									{position:absolute; top:0px; left:0px;}	/*Icones du menu context + d'édition de l'objet*/
 .lightboxMenu .editButton						{margin-left:15px;}						/*Icone d'édition*/
@@ -253,13 +252,11 @@ select option										{font-size:1.1rem;}
 /*** JQUERY UI & PLUGINS*/
 .toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : notify()*/
 .toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
-.tooltipster-box								{box-shadow:0px 0px 5px #555!important;}								/*TOOLTIPSTER*/
-.tooltipster-content							{color:#555!important; padding:15px!important;}						/*TOOLTIPSTER : texte*/
 .jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
 .jconfirm-box									{border-radius:15px!important; padding:30px 30px 10px 30px!important;}
 .jconfirm-title									{line-height:28px!important; font-size:1.6rem!important;}
 .jconfirm-content								{font-size:1.3rem!important;}
-.jconfirm-content .confirmDeleteAlert			{color:#500!important; margin-bottom:20px!important;}
+.jconfirm-content .confirmDeleteAlert			{color:#a00!important; margin-bottom:20px!important;}
 .jconfirm-buttons								{text-align:center!important;}
 .jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important; font-size:15px!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
@@ -271,7 +268,7 @@ select option										{font-size:1.1rem;}
 
 /*** DIVERS*/
 .infos							{border:dotted 1px #aaa; margin:7px; padding:10px; border-radius:4px; text-align:center; line-height:22px;}
-.progressBar					{display:inline-block; padding:5px; border:solid 1px #ccc; border-radius:8px; text-align:center; font-size:0.95rem; line-height:18px;}
+.progressBar					{display:inline-block; padding:5px; background:linear-gradient(white,#ddd);/*cf. Tool::progressBar()*/ border:solid 1px #ccc; border-radius:8px; text-align:center; color:#555; font-size:0.95rem; line-height:18px;}
 .progressBar>img				{margin-right:2px;}
 .pluginModule					{margin-top:15px;}
 .pluginModule img				{float:right; margin-top:-5px; max-height:24px;}

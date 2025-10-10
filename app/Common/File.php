@@ -59,8 +59,8 @@ class File
 				'audio'=>['mp3','flac','wma','wav','aac','mid','ogg'],
 				'mp3'=>['mp3'],
 				'autocad'=>['dwg','dxf'],
-				'data'=>['json','xml','db','dbf','mdb','accdb'],
-				'misc'=>['csv','log','ics','ical','vcf','ai','yaml','yml','gpx','kml','map'],
+				'data'=>['csv','json','xml','db','dbf','mdb','accdb'],
+				'misc'=>['log','ics','ical','ifb','vcs','vcf','ai','yaml','yml','gpx','kml','map'],
 				'editorInsert'=>['jpg','jpeg','png','gif','mp4','webm','mp3'],//Medias intégrables dans l'éditeur TinyMce
 				'editorImage'=>['jpg','jpeg','png','gif','svg'],
 				'editorVideo'=>['mp4','webm'],

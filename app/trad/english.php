@@ -527,7 +527,7 @@ class Trad extends Txt
 			"AGORA_logsTimeOut"=>"Duration of event history (logs)",
 			"AGORA_logsTimeOutTooltip"=>"The retention period of the events history concerns the addition or modification of the elements. The deletion logs are kept for at least 1 year.",
 			"AGORA_visioHost"=>"Videoconferencing server Jitsi",
-			"AGORA_visioHostTooltip"=>"Jitsi videoconferencing server address. Example: https://meet.jit.si",
+			"AGORA_visioHostTooltip"=>"Jitsi videoconferencing server address. Eg: : https://framatalk.org or https://meet.jit.si",
 			"AGORA_visioHostAlt"=>"Alternative videoconferencing server",
 			"AGORA_visioHostAltTooltip"=>"Alternative videoconferencing server : in case of unavailability of the main video server",
 			"AGORA_skin"=>"Color of the interface",

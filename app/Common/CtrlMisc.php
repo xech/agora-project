@@ -194,12 +194,9 @@ class CtrlMisc extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionLaunchVisio()
 	{
-		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));																// Url de la visioconf
-		if(is_object(Ctrl::$curUser))  {$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	// Ajoute le nom de l'user courant dans l'Url
-		if(Req::isMobileApp()){																								// Appli mobile
-			$vDatas["visioURL"].="#frommobileapp";																			// - Lance la visio via le browser system (cf. contrôles via "main.dart")
-			$vDatas["visioURLJitsi"]="org.jitsi.meet://".str_replace("https://","",$vDatas["visioURL"]);					// - Lance la visio via l'appli Jitsi (bouton secondaire)
-		}
+		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));																	//Url de la visio
+		if(is_object(Ctrl::$curUser))	{$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	//User : nom de l'user
+		if(Req::isMobileApp())			{$vDatas["visioURL"].="#fromMobileApp#getFile";}										//Mobile : params de controle d'URL via "main.dart" (#fromMobileApp: v4.3+ / #getFile: anciennes)
 		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
 
@@ -344,7 +341,7 @@ class CtrlMisc extends Ctrl
 		$ctrlBis=stristr($url,"ctrl=file")  ?  "file"  :  "object";															//Controleur secondaire en 1er
 		$url=preg_replace('/ctrl=(file|object)/i', 'ctrl=misc', $url);														//Switch sur "ctrl=misc"
 		$url=preg_replace('/action=(FileDownload|AttachedFileDownload)/i', 'action=MobileFileDownload', $url);				//Switch sur "action=MobileFileDownload"
-		return $url.'&ctrlBis='.$ctrlBis.'&fileNameMd5='.md5($fileName).'&fileName='.urlencode($fileName).'&getfile=true';	//Url avec "fileNameMd5" de controle + "fileName" du VueMobileFileDownload  +  "getfile" du MOBILEAPP
+		return $url.'&ctrlBis='.$ctrlBis.'&fileNameMd5='.md5($fileName).'&fileName='.urlencode($fileName).'&getfile=true';	//Url avec "fileNameMd5" de controle + "fileName" du VueMobileFileDownload + "getfile" du MOBILEAPP
 	}
 
 	/********************************************************************************************************
@@ -369,8 +366,8 @@ class CtrlMisc extends Ctrl
 		else{
 			static::$isMainPage=true;
 			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";	//Url de download du fichier ("launchDownload" pour lancer le download ci-dessus)
-			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']))	{$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";}
-			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT']))				{$vDatas["appUrl"]="http://play.google.com/store/apps/details?id=fr.omnispace.www";}
+			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']))	{$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";}									//Ouvre l'AppStore
+			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT']))				{$vDatas["appUrl"]="intent:".Req::getCurUrl(false)."#Intent;scheme=omnispace;package=fr.omnispace.www;end";}//Retourne à l'appli via "intent"
 			static::displayPage(Req::commonPath."VueMobileFileDownload.php", $vDatas);
 		}
 	}

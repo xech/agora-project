@@ -7,7 +7,7 @@
 .objBlocks .thumbPortrait img									{width:100%; margin-top:-45%!important;}											/*images "fullsize" portrait : 100% de large + recentré*/
 .objBlocks .hasThumb img										{margin-top:0px!important;}															/*vignettes : pas de margin-top pour les images*/
 .objBlocks .hasThumb .objMenuContextFloat						{filter:contrast(200%);}															/*vignettes : met en avant le menu context*/
-.objBlocks .hasThumb.objContainerSelect							{border:2px solid #f88;}															/*surcharge la sélection de fichiers avec vignette*/
+.objBlocks .hasThumb.objContainerSelect							{border:2px solid #f75;}															/*surcharge la sélection de fichiers avec vignette*/
 .objBlocks .objLabel											{position:absolute; bottom:0px; width:100%; padding:8px 4px; text-align:center;}	/*label "bandeau" d'un dossier/fichier (modFile)*/
 .objBlocks .objFiles .objLabel a								{font-size:0.95rem; cursor:url('app/img/download.png'),default;}					/*nom des fichiers*/
 .objBlocks .hasThumb .objLabel									{background:<?= Ctrl::$agora->skin ?>; border-radius:0px 0px 4px 4px;}				/*images/vignettes pdf : background des labels*/

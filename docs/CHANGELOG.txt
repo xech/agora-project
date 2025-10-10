@@ -3,29 +3,29 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 --------------------------------
 
-VERSION 25.10.1
+VERSION 25.10.2
 ---------------
 Amélioration de la présentation des tâches : responsables, durée, etc.
 Amélioration de la navigation et présentation sur application mobile
 Ajout du contrôle et validation des formulaires via la librairie HTMLPurifier
 Ajout du controle d'upload de fichier via whitelist
+Optimisation du menu de proposition d'événement
 Optimisation des créations d'archive Zip lors du download de dossier
 Optimisation du contrôle des fonctions MobileFileDownload
 Optimisation du controle des champs du moteur de recherche
 Optimisation des filtres d'injection XSS
 OAuth via "google-api-php-client" mis à jour en v2.18.3
-Corrections et optimisations diverses
 -----
-Improved task presentation: responsible persons, Duration, etc.
+Improved task presentation : responsible persons, duration, etc.
 Improved navigation and presentation on the mobile app
 Added form control and validation via the HTMLPurifier library
 Added file upload control via whitelist
+Optimization of the event proposal menu
 Optimized Zip archive creation during file uploads
 Optimized MobileFileDownload function control
 Optimized search engine field control
 Optimized XSS injection filters
 OAuth via "google-api-php-client" updated to v2.18.3
-Various fixes and optimizations
 
 
 VERSION 25.8.1

@@ -9,7 +9,7 @@ ready(function(){
 :root										{--headerMenuBorder:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
 #headerMenuLeft								{padding-left:75px; padding-right:20px; line-height:45px; white-space:nowrap;}/*"padding-left" pour afficher "#headerMainLogo" + "line-height" idem "#headerBar" + "nowrap" des labels sur une seule ligne (ne pas éclater l'affichage!)*/
 #headerMobileModule							{display:none;}
-#headerMainLogo								{content:url('app/img/logo.png'); position:absolute; top:2px; left:0px;}
+#headerMainLogo								{content:url('app/img/logo.png'); position:absolute; left:0px; top:2px;}
 #headerUserLabel, #headerSpaceLabel			{display:inline-block; max-width:250px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
 .headerArrowBottom							{margin-left:5px; margin-right:2px;}
 #headerMenuLeft img[src*=arrowRight]		{margin-left:5px;}
@@ -23,7 +23,6 @@ ready(function(){
 .menuMainShortcut							{max-height:24px; margin-right:10px;}
 #menuMainOmnispace							{border-top:var(--headerMenuBorder); text-align:right; padding-top:10px;}
 .vHeaderModule								{display:inline-block; margin:0px; padding:4px; text-align:center; vertical-align:middle; border:1px solid transparent; border-radius:10px; cursor:pointer;}
-.vHeaderModule:hover,.vHeaderModuleCurrent	{<?= Ctrl::$agora->skin=="black"?"background:#444;border:solid 1px #777;":"background:white;border:solid 1px #ddd;"?>}/*module courant*/
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
 /*RESPONSIVE MEDIUM*/
 @media screen and (min-width:1025px) and (max-width:1350px){
@@ -31,14 +30,15 @@ ready(function(){
 }
 /*RESPONSIVE MEDIUM*/
 @media screen and (max-width:1024px){
-	#headerMenuLeft							{padding-left:50px; padding-right:10px;}/*"padding-left" en fonction du width du "logoSmall.png"*/
+	#headerMenuLeft							{padding-left:40px; padding-right:10px;}/*"padding-left" en fonction du width du "logoXSmall.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
-	#headerMainLogo							{content:url('app/img/logoSmall.png');}
+	#headerMainLogo							{content:url('app/img/logoXSmall.png'); left:0px; top:10px;}
+	#headerMobileModule>img					{max-height:30px;}
 	#headerUserLabel						{display:none;}
 	#headerSpaceLabel						{max-width:180px; text-transform:capitalize;}
 	#menuMainTab, #menuMainTab>div			{display:block; padding:0px; border:none!important;}/*cf. --headerMenuBorder*/
 	#menuMainTab .editButton				{visibility:visible;}/*tjs visible*/
-	#menuMobileMain .vHeaderModule			{display:inline-block; width:49%; margin:5px 0px; padding:5px; text-align:left; font-size:1.2rem;}/*Modules affichés dans "#menuMobileMain"*/
+	#menuMobileMain .vHeaderModule			{display:inline-block; width:49%; margin:5px 0px; padding:5px; text-align:left; font-size:1.1rem;}/*Modules affichés dans "#menuMobileMain"*/
 	#headerMenuRight .vHeaderModule			{display:none;}/*Modules masqués dans le header car affichés dans "#menuMobileMain"*/
 	.vHeaderModule label					{display:inline-block; margin-left:10px;}/*toujours affiché : cf. $moduleLabelDisplay*/
 }

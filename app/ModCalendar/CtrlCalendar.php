@@ -127,17 +127,17 @@ class CtrlCalendar extends Ctrl
 		}
 
 		////	PROPOSITIONS D'EVT (AGENDAS DISPOS EN ECRITURE)
-		$vDatas["proposedEvents"]=[];
+		$vDatas["evtPropositions"]=[];
 		foreach(MdlCalendar::readableCalendars() as $tmpCal){
 			if($tmpCal->editContentRight()){
-				$proposedEvents=Db::getObjTab("calendarEvent", "SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed is null AND T1._idUser!=".Ctrl::$curUser->_id." AND T2._idCal=".$tmpCal->_id);
-				foreach($proposedEvents as $tmpEvt){
+				$evtPropositions=Db::getObjTab("calendarEvent", "SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed is null AND (T1._idUser!=".Ctrl::$curUser->_id." OR guest is not null) AND T2._idCal=".$tmpCal->_id);
+				foreach($evtPropositions as $tmpEvt){
 					if($tmpEvt->isPastEvent(time()-5184000))  {$tmpEvt->affectationDelete($tmpCal->_id);}	//Supprime la proposition si > 60 jours
 					else{																					//Ajoute la proposition d'evt avec les détails pour la confirmation
-						$propDetails=$tmpEvt->title.'<hr>'.Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd);
-						$confirmDetails=htmlspecialchars($propDetails,ENT_COMPAT).'<hr>'.ucfirst(Txt::trad("OBJECTcalendar")).' : '.$tmpCal->title.'<hr>'.Txt::trad("CALENDAR_evtProposedBy").' '.$tmpEvt->autorDate();
-						if($tmpEvt->description)  {$confirmDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}
-						$vDatas["proposedEvents"][]=["_idEvt"=>$tmpEvt->_id, "_idCal"=>$tmpCal->_id, "details"=>$propDetails, "dataDetail"=>$confirmDetails];												
+						$evtPropLabel=$tmpEvt->title.'<hr>'.Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<hr>'.ucfirst(Txt::trad("OBJECTcalendar")).' : '.$tmpCal->title;	//Titre/Date de l'evt + Agenda
+						$evtPropDetails=$evtPropLabel.'<hr>'.Txt::trad("CALENDAR_evtProposedBy").' '.$tmpEvt->autorDate();																		//Idem + Auteur de l'evt
+						if($tmpEvt->description)  {$evtPropDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}											//Idem + Description
+						$vDatas["evtPropositions"][]=["_idEvt"=>$tmpEvt->_id, "_idCal"=>$tmpCal->_id, "evtPropLabel"=>$evtPropLabel, "evtPropDetails"=>$evtPropDetails];												
 					}
 				}
 			}
@@ -358,7 +358,7 @@ class CtrlCalendar extends Ctrl
 	/********************************************************************************************
 	 * AJAX : VALIDE / DECLINE UNE PROPOSITION D'ÉVÉNEMENT
 	 ********************************************************************************************/
-	public static function actionEventPropositionConfirm()
+	public static function actionEvtPropositionsConfirm()
 	{
 		$curCal=Ctrl::getCurObj();																								//Agenda concerné et  (cf. "typeId")
 		if($curCal->editContentRight()){																						//Vérif son droit d'accès

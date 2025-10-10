@@ -244,21 +244,21 @@ class Tool
 	/********************************************************************************************************
 	 * BARRE DE PROGRESSION EN %
 	 ********************************************************************************************************/
-	public static function progressBar($barLabel, $barTooltip, $barPercent=0, $alertBar=false)
+	public static function progressBar($label, $tooltip, $percent=0, $alertBar=false)
 	{
-		//Remplissage entre 0% et 100%
-		if($barPercent<0)		{$barPercent=0;}
-		elseif($barPercent>100)	{$barPercent=100;}
-		else					{$barPercent=(int)$barPercent;}
+		//Init le pourcentage
+		$percent=(int)$percent;
+		if($percent<0)			{$percent=0;}
+		elseif($percent>100)	{$percent=100;}
 		//Background : Couleur de progression & couleur par défaut
-		if((empty($barPercent)))  {$barStyle='linear-gradient(white,#DDD)';}			//Couleur par défaut uniquement
-		else{
-			if($alertBar==true)			{$barStyle="linear-gradient(#F8D934,#F8BC34)";}	//Alert		=> orange
-			elseif($barPercent==100)	{$barStyle="linear-gradient(#E7FCDE,#C2F2A9)";}	//Terminé	=> vert clair
-			else						{$barStyle="linear-gradient(#C0F47D,#69BC27)";}	//En cours	=> vert
-			$barStyle.=' 0% / '.$barPercent.'% no-repeat,  linear-gradient(white,#DDD) '.$barPercent.'% / 100% no-repeat';//Couleur de progression & Couleur par défaut
+		$barStyle=null;
+		if(!empty($percent)){
+			if($alertBar==true)		{$bgColor="linear-gradient(#F8D934,#F8BC34)";}	//Retard / Alert	=> orange
+			elseif($percent==100)	{$bgColor="linear-gradient(#E7FCDE,#C2F2A9)";}	//Terminé / 100%	=> vert clair
+			else					{$bgColor="linear-gradient(#C0F47D,#69BC27)";}	//Défaut / en cours	=> vert
+			$barStyle='style="background:'.$bgColor.' 0% / '.$percent.'% no-repeat,  linear-gradient(white,#DDD) '.$percent.'% / 100% no-repeat"';//Couleur de progression & Couleur par défaut
 		}
 		// Renvoie la progressBar
-		return '<div class="progressBar" style="background:'.$barStyle.'" '.Txt::tooltip($barTooltip).'>'.$barLabel.'</div>';
+		return '<div class="progressBar" '.$barStyle.' '.Txt::tooltip($tooltip).'>'.$label.'</div>';
 	}
 }

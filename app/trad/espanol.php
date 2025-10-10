@@ -527,7 +527,7 @@ class Trad extends Txt
 			"AGORA_logsTimeOut"=>"Duración del historial de eventos (registros)",
 			"AGORA_logsTimeOutTooltip"=>"El período de retención del historial de eventos se refiere a la adición o modificación de los elementos. Los registros de eliminación se mantienen durante al menos 1 año.",
 			"AGORA_visioHost"=>"Servidor de videoconferencia Jitsi",
-			"AGORA_visioHostTooltip"=>"Dirección del servidor de videoconferencia Jitsi. Ejemplo: https://meet.jit.si",
+			"AGORA_visioHostTooltip"=>"Dirección del servidor de videoconferencia Jitsi. Ejemplo: : https://framatalk.org o https://meet.jit.si",
 			"AGORA_visioHostAlt"=>"Servidor de videoconferencia alternativo",
 			"AGORA_visioHostAltTooltip"=>"Servidor de videoconferencia alternativo : en caso de indisponibilidad del servidor de video principal",
 			"AGORA_skin"=>"Color de la interfaz",
