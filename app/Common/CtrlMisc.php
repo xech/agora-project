@@ -357,17 +357,23 @@ class CtrlMisc extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMobileFileDownload()
 	{
-		////	Download/Affiche le fichier (pdf/img/video)
+		////	Download un fichier / Affiche un pdf/img/video
 		if(Req::isParam("launchDownload") || Req::isParam("displayFile")){
-			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionFileDownload();}				//Download un fichier du ModFile
-			else								{CtrlObject::actionAttachedFileDownload();}		//Download le fichier joint d'un objet
+			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionFileDownload();}									//Fichier du ModFile
+			else								{CtrlObject::actionAttachedFileDownload();}							//Fichier joint d'un objet
 		}
-		////	Vue avec un button "download" via le browser system
+		////	Affiche une vue avec un button "download"
 		else{
 			static::$isMainPage=true;
-			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";	//Url de download du fichier ("launchDownload" pour lancer le download ci-dessus)
-			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']))	{$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";}									//Ouvre l'AppStore
-			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT']))				{$vDatas["appUrl"]="intent:".Req::getCurUrl(false)."#Intent;scheme=omnispace;package=fr.omnispace.www;end";}//Retourne à l'appli via "intent"
+			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";									//Url de download du fichier
+			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT'])){								//Sur IOS
+				$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";							//Lien vers l'AppStore
+			}
+			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT'])){											//Sur Android	
+				$intentUrl=Req::curUrl(false).'/index.php?ctrl='.Req::param("ctrl");								//Url à afficher dans l'appli   (ex: "www.mon-espace.net/agora/index.php?ctrl=file")
+				if(Req::isParam("typeId"))  {$intentUrl.='&typeId='.Req::param("typeId");}							//Ajoute si besoin un "typeId"  (ex: "&typeId=fileFolder-3")
+				$vDatas["appUrl"]="intent://".$intentUrl."#Intent;scheme=omnispace;package=fr.omnispace.www;end";	//Lien de retour à l'appli (cf. "intent:")
+			}
 			static::displayPage(Req::commonPath."VueMobileFileDownload.php", $vDatas);
 		}
 	}

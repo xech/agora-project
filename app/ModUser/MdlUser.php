@@ -305,9 +305,9 @@ class MdlUser extends MdlPerson
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else{
 			$passwordLabel=($hidePassword==true)  ?  substr_replace($clearPassword,'*****',-5)  :  $clearPassword;			//Password avec les 5 derniers caractères masqués
-			$connectUrl=Req::getCurUrl()."/index.php?login=".$this->login;													//Url vers l'espace
+			$connectUrl=Req::curUrl()."/index.php?login=".$this->login;													//Url vers l'espace
 			$mailSubject=Txt::trad("USER_mailNotifObject").' '.ucfirst(Ctrl::$agora->name);									//"Bienvenue sur Mon-espace"
-			$mailMessage=Txt::trad("USER_mailNotifContent").' <i>'.Ctrl::$agora->name.' - '.Req::getCurUrl(false).'</i>'.	//"Votre compte utilisateur vient d'être créé sur 'Mon espace - www.mon-espace.net'"
+			$mailMessage=Txt::trad("USER_mailNotifContent").' <i>'.Ctrl::$agora->name.' - '.Req::curUrl(false).'</i>'.	//"Votre compte utilisateur vient d'être créé sur 'Mon espace - www.mon-espace.net'"
 						 '<br><br><a href="'.$connectUrl.'" target="_blank">'.Txt::trad("USER_mailNotifContent2").'</a> :'.	//"Connectez-vous ici avec les coordonnées suivantes"
 						 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$this->login.'</b>'.									//"Login : Mon-login"
 						 '<br>'.Txt::trad("passwordToModify2")." : <b>".$passwordLabel.'</b>'.								//"Mot de passe (à modifier si besoin sur votre profil utilisateur)"
@@ -344,7 +344,7 @@ class MdlUser extends MdlPerson
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else
 		{
-			$resetPasswordUrl=Req::getCurUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
+			$resetPasswordUrl=Req::curUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
 			$mailSubject=Txt::trad("resetPasswordMailTitle");
 			$mailMessage=Txt::trad("MAIL_hello").',<br><br>'.
 					 	 '<b>'.Txt::trad("resetPasswordMailPassword").' <a href="'.$resetPasswordUrl.'" target="_blank">'.Txt::trad("resetPasswordMailPassword2").'</a></b>'.

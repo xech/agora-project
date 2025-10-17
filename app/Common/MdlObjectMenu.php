@@ -319,7 +319,7 @@ trait MdlObjectMenu
 		if(static::isMobileDisplayBlock()==false){
 			$vDatas["displayModes"]=static::$displayModes;
 			$vDatas["curDisplayMode"]=static::getDisplayMode();
-			$vDatas["displayModeUrl"]=Tool::getParamsUrl("displayMode")."&displayMode=";
+			$vDatas["displayModeUrl"]=Tool::paramsUrl("displayMode")."&displayMode=";
 			return Ctrl::getVue(Req::commonPath."VueObjMenuDisplayMode.php",$vDatas);
 		}
 	}

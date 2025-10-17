@@ -18,7 +18,7 @@
 					$classLabel	=($fieldTmp==$curSortField)  ?  "linkSelect"  :  null;
 					$imgAsc		=($fieldTmp==$curSortField && $curSortValue=="asc")   ?  "sortAscSelect.png"  :  "sortAsc.png";
 					$imgDesc	=($fieldTmp==$curSortField && $curSortValue=="desc")  ?  "sortDescSelect.png"  :  "sortDesc.png";
-					$urlSort=Tool::getParamsUrl("sort").$addUrlParams."&sort=".$fieldTmp;
+					$urlSort=Tool::paramsUrl("sort").$addUrlParams."&sort=".$fieldTmp;
 					$fieldLast=$fieldTmp;
 				?>
 					<div class="menuLine">

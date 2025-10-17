@@ -27,6 +27,9 @@ class Req
 	const commonPath="app/Common/";
 	private static $_paramsGP;
 	private static $_appVersion=null;
+	private static $_isDevServer=null;
+	private static $_isMobile=null;
+	private static $_isMobileApp=null;
 	public static $curCtrl;	
 	public static $curAction;
 
@@ -63,17 +66,16 @@ class Req
 		}
 	}
 
-	/********************************************************************************************************
+	/********************************************************************************************
 	 * RÉCUPÈRE LE NUMÉRO DE VERSION DE L'APPLI  &&  MODIF SI BESOIN LES FICHIERS JS/CSS
-	 ********************************************************************************************************/
+	 ********************************************************************************************/
 	public static function appVersion()
 	{
-		if(self::$_appVersion===null){																//Init le cache :
-			self::$_appVersion=trim((string)file_get_contents('app/VERSION.txt'));					//Récupère le numéro de version (tjs avec "trim()")
-			if(!file_exists("app/Common/js-css-".self::$_appVersion))								//Renomme si besoin le dossier des JS/CSS de l'appli
+		if(self::$_appVersion===null){
+			self::$_appVersion=trim((string)file_get_contents('app/VERSION.txt'));	//Récupère le numéro de version (tjs avec "trim()")
+			if(!file_exists("app/Common/js-css-".self::$_appVersion))				//Renomme si besoin le dossier des JS/CSS de l'appli
 				{rename(glob("app/Common/js-css*")[0], "app/Common/js-css-".self::$_appVersion);}
 		}
-		//Retourne le numéro de version
 		return self::$_appVersion;
 	}
 
@@ -104,10 +106,10 @@ class Req
 		}
 	}
 
-	/***************************************************************************************************************
+	/********************************************************************************************
 	 * FILTRE LES PARAMETRES GET/POST (Cf. XSS / code inject)
 	 * Test rapide :  ?description=<svg/onload=alert(1)>  ||  ?notify[]=HELX");alert(1);//`
-	 ***************************************************************************************************************/
+	 ********************************************************************************************/
 	private static function paramFilter($key, $val)
 	{
 		$val=(string)$val;																									//Cast la valeur d'entrée
@@ -157,41 +159,43 @@ class Req
 		return "app/Mod".ucfirst(self::$curCtrl)."/";
 	}
 	
-	/**************************************************************************************************************************************************************
-	 * RECUPÈRE L'URL COURANTE DE BASE (exple  "https://www.mon-espace.net/agora/index.php?ctrl=file&typeId=file-55"  =>  "https://www.mon-espace.net/agora")
-	 **************************************************************************************************************************************************************/
-	public static function getCurUrl($protocol=true)
+	/*****************************************************************************************************************************************
+	 * RECUPÈRE L'URL COURANTE SANS LES PARAMETRES
+	 * Ex:  "https://www.mon-espace.net/agora/index.php?ctrl=file&typeId=file-55"  devient  "www.mon-espace.net/agora" (sans le dernier '/')
+	 *****************************************************************************************************************************************/
+	public static function curUrl($protocol=true)
 	{
-		//Spécifie le protocole dans l'url (vide si affichage simplifié de l'url)
-		if($protocol==false)				{$protocol=null;}
-		elseif(!empty($_SERVER['HTTPS']))	{$protocol="https://";}
-		else								{$protocol="http://";}
-		//Renvoie l'url sans les paramètres ni le dernier "/" (Note : toutes les requêtes passent par "index.php")
-		return $protocol.$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER["PHP_SELF"]),'/');
+		$url=$_SERVER['SERVER_NAME'].dirname($_SERVER["PHP_SELF"]);
+		if($protocol==false)				{return $url;}
+		elseif(empty($_SERVER['HTTPS']))	{return 'http://'.$url;}
+		else								{return 'https://'.$url;}
 	}
 
-	/********************************************************************************************************
+	/********************************************************************************************
 	 * VÉRIF HOSTED SPACE
-	 ********************************************************************************************************/
+	 ********************************************************************************************/
 	public static function isHost()
 	{
 		return defined("HOST_DOMAINE");
 	}
 
-	/********************************************************************************************************
+	/********************************************************************************************
 	 * VÉRIF LINUX
-	 ********************************************************************************************************/
+	 ********************************************************************************************/
 	public static function isLinux()
 	{
 		return preg_match("/linux/i",PHP_OS);
 	}
 
 	/********************************************************************************************
-	 * VÉRIF MODE DEV ('omnispace.local.net' > Google API || '192.168' > Android Studio)
+	 * VÉRIF MODE DEV ('omnispace.local.net' pour Google API || '192.168' pour Android Studio)
 	 ********************************************************************************************/
 	public static function isDevServer()
 	{
-		return preg_match('/^(omnispace\.local\.net|192\.168|debian12)/i', $_SERVER['SERVER_NAME']);
+		if(self::$_isDevServer===null){
+			self::$_isDevServer=preg_match('/^(omnispace.local.net|192.168|debian12)/i', $_SERVER['SERVER_NAME']);
+		}
+		return self::$_isDevServer;
 	}
 
 	/********************************************************************************************
@@ -199,15 +203,21 @@ class Req
 	 ********************************************************************************************/
 	public static function isMobile()
 	{
-		return (isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1024);
+		if(self::$_isMobile===null){
+			self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1024);
+		}
+		return self::$_isMobile;
 	}
 
 	/********************************************************************************************
-	 * VÉRIF AFFICHAGE SUR APP MOBILE (quelquesoit la resolution, 'macintosh' = Ipads récents)
+	 * VÉRIF AFFICHAGE SUR APP MOBILE (quelquesoit la resolution, macintosh=Ipad)
 	 ********************************************************************************************/
 	public static function isMobileApp()
 	{
-		return (!empty($_COOKIE["mobileAppli"]) && preg_match("/(android|iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']));
+		if(self::$_isMobileApp===null){
+			self::$_isMobileApp=(!empty($_COOKIE["mobileAppli"]) && (preg_match('/android|iphone|ipad|ipod/i',$_SERVER['HTTP_USER_AGENT']) || preg_match('/(?=.*macintosh)(?=.*mobile)/i',$_SERVER['HTTP_USER_AGENT'])));
+		}
+		return self::$_isMobileApp;
 	}
 
 	/********************************************************************************************
@@ -219,10 +229,10 @@ class Req
 		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && self::isHost()==false)
 			{Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
-        echo '<h3 style="text-align:center;margin-top:50px;font-size:24px">
-				<img src="app/img/importantBig.png" style="vertical-align:middle;margin-right:20px">'.$exception->getMessage().'
-				<br><br><a href="?ctrl=offline">Retour</a>
-			  </h3>';
+        echo '<div style="text-align:center">
+				<h1 style="line-height:100px"><img src="app/img/importantBig.png"> &nbsp; '.$exception->getMessage().'</h1>
+				<h2><a href="index.php">Retour</a></h2>
+			  </div>';
 		exit;
     }
 

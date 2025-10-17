@@ -152,7 +152,7 @@ function controleFields()
 	////	Charge le Timepicker
 	if(jQuery().timepicker){
 		$(".timeBegin, .timeEnd").timepicker({timeFormat:"H:i", step:15, "orientation":(isMobile()?"rb":"lb")});	//Orientation Right/Left + Bottom
-		if(navigator.maxTouchPoints > 1 && /(iphone|ipad|macintosh)/i.test(navigator.userAgent)){					//Pas sur Iphone/Ipad car utilise le timePicker system ("macintosh" sur les ipads récents)
+		if(navigator.maxTouchPoints > 1 && /iPad|iPhone|iPod|MacIntel/i.test(navigator.userAgent)){					//Iphone/Ipad utilise le timePicker system (MacIntel: Ipads récents)
 			$(".timeBegin, .timeEnd").on("showTimepicker",function(){  $(".timeBegin, .timeEnd").timepicker("hide");  });
 		}
 	}
@@ -245,7 +245,7 @@ function menuContextShow(launcher, event)
 {
 	let menuId="#"+$(launcher).attr("for");																										//Id du menu à afficher : attribut "for" de .menuLauncher
 	$(menuId).css("max-height", (window.top.windowHeight - 20)+"px");																			//Hauteur max en fonction de la page (#menuMobileMain en "overflow:auto")
-	let parentPosition=$(menuId).parents().is(function(){  return (/(relative|absolute)/i.test($(this).css("position")));  });					//Vérif si un des parents est en position relative/absolute
+	let parentPosition=$(menuId).parents().is(function(){  return (/relative|absolute/i.test($(this).css("position")));  });					//Vérif si un des parents est en position relative/absolute
 	if(event.type=="contextmenu")	{var posX=(event.pageX - $(launcher).offset().left);	var posY=(event.pageY - $(launcher).offset().top);}	//Position en fonction du click droit sur .objContainer
 	else if(parentPosition==true)	{var posX=$(launcher).position().left;			 		var posY=$(launcher).position().top;}				//Position en fonction de .launcher par rapport au parent
 	else							{var posX=$(launcher).offset().left;					var posY=$(launcher).offset().top;}					//Position en fonction de .launcher par rapport au document
@@ -466,16 +466,15 @@ function asyncSubmit(thisForm)
 	$(thisForm).off("submit").submit();	//Validation finale du formulaire  ("off()" réinitialise les précédents triggers "submit")
 }
 
-/**************************************************************************************************
- * OUVRE UNE LIGHTBOX
- **************************************************************************************************/
+/*******************************************************************************************************************
+ * OUVRE UNE LIGHTBOX  (ex: "?ctrl=file&action=FileDownload&typeId=file-1&displayFile=true&extension=pdf")
+ *******************************************************************************************************************/
 function lightboxOpen(fileSrc)
 {
 	if(isMainPage==false)						{window.top.lightboxOpen(fileSrc);}													//Relance lightboxOpen() depuis la page "parent"
 	else if(/pdf/i.test(fileSrc) && isMobile())	{window.top.open(fileSrc);}															//Pdf sur mobile
-	else if(/(pdf|txt)/i.test(fileSrc))			{Fancybox.show([{type:"iframe", src:fileSrc, width:1200, height:2000}]);}			//Pdf/Txt sur desktop
-	else if(/(mp4|webm)$/i.test(fileSrc))		{Fancybox.show([{type:"html5video", src:fileSrc}]);}								//Video
-	else if(/mp3$/i.test(fileSrc))				{Fancybox.show([{type:"html", src:'<audio controls autoplay><source src="'+fileSrc+'" type="audio/mpeg">Audio</audio>'}]);}//Mp3
+	else if(/pdf|txt/i.test(fileSrc))			{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:2000}]);}			//Pdf/Txt sur desktop
+	else if(/mp4|mp3|webm/i.test(fileSrc))		{Fancybox.show([{src:fileSrc, type:"html5video"}]);}								//Video/Audio
 	else{
 		Fancybox.show([{type:"iframe", src:fileSrc}],
 			{

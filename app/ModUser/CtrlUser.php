@@ -299,7 +299,7 @@ class CtrlUser extends Ctrl
 				{
 					$_idInvitation=uniqId();
 					$password=Txt::defaultPassword();
-					$confirmUrl=Req::getCurUrl()."/index.php?ctrl=offline&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
+					$confirmUrl=Req::curUrl()."/index.php?ctrl=offline&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
 					//Envoi du mail d'invitation
 					$mailSubject=Txt::trad("USER_mailInvitationObject").' '.Ctrl::$curUser->getLabel();														//"Invitation de Jean DUPOND"
 					$mailMessage='<b>'.Ctrl::$curUser->getLabel().' '.Txt::trad("USER_mailInvitationFromSpace").' <i>'.Ctrl::$curSpace->name.' :</i></b>'.	//"Jean DUPOND vous invite sur l'espace 'Espace Bidule'"
@@ -416,7 +416,7 @@ class CtrlUser extends Ctrl
 				}
 				//Invalide l'inscription et demande d'envoie la notif "Votre compte n'a pas été validé.."
 				elseif(Req::isParam(["submitInvalidate","inscriptionNotify"])){
-					$mailSubject=$mailMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::getCurUrl(false).")";
+					$mailSubject=$mailMessage=Txt::trad("userInscriptionInvalidateMail")." ''".Ctrl::$agora->name."'' (".Req::curUrl(false).")";
 					Tool::sendMail($tmpInscription["mail"], $mailSubject, $mailMessage);
 				}
 				//Supprime l'inscription

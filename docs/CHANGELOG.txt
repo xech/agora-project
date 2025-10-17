@@ -3,7 +3,7 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 --------------------------------
 
-VERSION 25.10.2
+VERSION 25.10.3
 ---------------
 Amélioration de la présentation des tâches : responsables, durée, etc.
 Amélioration de la navigation et présentation sur application mobile

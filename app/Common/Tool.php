@@ -108,7 +108,7 @@ class Tool
 				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																									//Label de l'espace
 				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}		//Ajoute le nom du sous-espace (">> sous-espace")
 				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//"Envoyé par boby SMITH"...
-				$message.='<br><br>'.$curUserLabel.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::getCurUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Depuis <a>mon-espace</a>"
+				$message.='<br><br>'.$curUserLabel.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::curUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Depuis <a>mon-espace</a>"
 			}
 			$mail->msgHTML($message);
 
@@ -149,20 +149,20 @@ class Tool
 	}
 
 	/********************************************************************************************************
-	 * URL FILTRÉ DES PARAMETRES PASSÉS EN GET
+	 * FILTRE UNE URL EN ENLEVANT CERTAINS PARAMETRES
 	 ********************************************************************************************************/
-	public static function getParamsUrl($paramsExclude=null)
+	public static function paramsUrl($paramsExclude=null)
 	{
 		//Init
-		$getParamsUrl=[];
-		$paramsExclude=(!empty($paramsExclude)) ? explode(",",$paramsExclude) : array();
-		//Filtre les parametres passés en Get
-		parse_str($_SERVER["QUERY_STRING"],$getParams);//$getParams est retourné par "parse_str()"
-		foreach($getParams as $paramKey=>$paramVal){
-			if(!in_array($paramKey,$paramsExclude))  {$getParamsUrl[$paramKey]=$paramVal;}
+		$paramsUrl=$paramsExclude=[];
+		if(!empty($paramsExclude))	{$paramsExclude=explode(",",$paramsExclude);}
+		//Enlève les $paramsExclude de l'url courante ("parse_str()" retourne $paramsList)
+		parse_str($_SERVER["QUERY_STRING"],$paramsList);
+		foreach($paramsList as $key=>$value){
+			if(!in_array($key,$paramsExclude))  {$paramsUrl[$key]=$value;}
 		}
 		//Renvoie l'url à partir du tableau
-		return "?".http_build_query($getParamsUrl);
+		return "?".http_build_query($paramsUrl);
 	}
 
 	/********************************************************************************************************

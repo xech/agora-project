@@ -14,7 +14,7 @@ function objectFormControl(){
 
 <style>
 [name='name']			{width:65%;}/*surcharge*/
-[name='dotExtension']	{width:40px!important;}
+[name='dotExtension']	{width:45px!important;}
 [name='fileContent']	{height:200px;}
 [name='fileContentOld']	{display:none;}
 </style>

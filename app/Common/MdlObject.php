@@ -400,7 +400,7 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function getUrlExternal()
 	{
-		return Req::getCurUrl().'/index.php?ctrl=offline&_idSpaceAccess='.Ctrl::$curSpace->_id.'&objUrl='.urlencode($this->getUrl());
+		return Req::curUrl().'/index.php?ctrl=offline&_idSpaceAccess='.Ctrl::$curSpace->_id.'&objUrl='.urlencode($this->getUrl());
 	}
 
 	/********************************************************************************************************

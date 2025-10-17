@@ -30,7 +30,7 @@ ready(function(){
 	 *	VÉRIF LE TYPE DU FICHIER
 	 ********************************************************************************************************/
 	$("#logoFile,#logoConnectFile,#wallpaperFile").on("change",function(){
-		if(/\.(jpg|jpeg|png)/i.test(this.value)==false)  {notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
+		if(/\.(jpg|jpeg|png)$/i.test(this.value)==false)  {notify("<?= Txt::trad("AGORA_wallpaperLogoError") ?>");}
 	});
 
 	/*****************************************************************************************************************************************************************
