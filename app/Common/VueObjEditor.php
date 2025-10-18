@@ -93,10 +93,10 @@
 	********************************************************************************************/
 	function isType(fileType, fileName)
 	{
-		if(fileType=="editorInsert")		{var fileTypes=["<?= implode("','",File::fileTypes("editorInsert")) ?>"];}	//Images/vidéos/Mp3
-		else if(fileType=="editorImage")	{var fileTypes=["<?= implode("','",File::fileTypes("editorImage")) ?>"];}	//Images
-		else if(fileType=="editorVideo")	{var fileTypes=["<?= implode("','",File::fileTypes("editorVideo")) ?>"];}	//Vidéos
-		else if(fileType=="mp3")			{var fileTypes=["<?= implode("','",File::fileTypes("mp3")) ?>"];}			//Mp3
+		if(fileType=="editorInsert")		{var fileTypes=["<?= implode('","',File::fileTypes("editorInsert")) ?>"];}	//Images/vidéos/Mp3
+		else if(fileType=="editorImage")	{var fileTypes=["<?= implode('","',File::fileTypes("editorImage")) ?>"];}	//Images
+		else if(fileType=="editorVideo")	{var fileTypes=["<?= implode('","',File::fileTypes("editorVideo")) ?>"];}	//Vidéos
+		else if(fileType=="mp3")			{var fileTypes=["<?= implode('","',File::fileTypes("mp3")) ?>"];}			//Mp3
 		else								{var fileTypes=[];}
 		return fileTypes.includes(extension(fileName));
 	}
