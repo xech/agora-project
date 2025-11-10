@@ -7,7 +7,7 @@ p							{margin:3px;}
 video.attachedFileTag		{min-width:600px; min-height:400px;}	/*vidéo*/
 audio.attachedFileTag		{min-height:100px;}						/*Mp3*/
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.mce-content-body	{font-size:17px!important;}
 }

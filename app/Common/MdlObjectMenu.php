@@ -20,7 +20,7 @@ trait MdlObjectMenu
 	 ********************************************************************************************************/
 	public function uniqId($prefix)
 	{
-		if(empty($this->objUniqId))  {$this->objUniqId=uniqid();}	//Un seul ID par instance de l'objet (tester avec les événements périodiques de l'agenda)
+		if(empty($this->objUniqId))  {$this->objUniqId=uniqid();}	//Un seul ID par instance de l'objet (cf. evt répétés)
 		return $prefix.$this->objUniqId;							//Retourne l'id avec un prefix : "objContainer", "objMenu", "objCheckbox", "objAttachment", etc
 	}
 

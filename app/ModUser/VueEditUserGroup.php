@@ -30,7 +30,7 @@ input[name='title']				{width:50%;}
 .vAutorSubmit>div:first-child	{font-style:italic; font-weight:normal;}
 .vAutorSubmit>div:last-child	{text-align:right;}
 .vAutorSubmit button			{width:120px; margin-right:10px;}
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vAutorSubmit, .vAutorSubmit>div  {display:block; margin-top:20px;}
 	.userListUser	{width:48%; padding:5px;}

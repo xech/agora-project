@@ -185,7 +185,7 @@ class MdlSpace extends MdlObject
 		if($this->deleteRight())
 		{
 			//Supprime les objets affectés uniquement à l'espace courant
-			$objectsOnlyInCurSpace=Db::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".$this->_id." AND concat(objectType,_idObject) NOT IN (select concat(objectType,_idObject) from ap_objectTarget where _idSpace!=".$this->_id." or _idSpace is null) ORDER BY objectType, _idObject");
+			$objectsOnlyInCurSpace=Db::getTab("SELECT * FROM ap_objectTarget WHERE _idSpace=".$this->_id." AND concat(objectType,_idObject) NOT IN (select concat(objectType,_idObject) from ap_objectTarget where _idSpace!=".$this->_id." or _idSpace IS NULL) ORDER BY objectType, _idObject");
 			foreach($objectsOnlyInCurSpace as $tmpObject){
 				//Charge l'objet et le supprime (sauf les dossiers racine et agendas persos)
 				$tmpObj=Ctrl::getObj($tmpObject["objectType"],$tmpObject["_idObject"]);

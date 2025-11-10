@@ -858,14 +858,14 @@ class Trad extends Txt
 			"CALENDAR_visibilityTooltip"=>"Para personas que solo tienen acceso de lectura al calendario: <br>- Visibilidad de franja horaria : muestra solo la franja horaria ocupada por el evento y oculta los detalles<br>- Visualización privada: no muestra el evento",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Calendario compartido del espacio",
-			"CALENDAR_noPeriodicity"=>"Una vez",
+			"CALENDAR_noRepeat"=>"Una vez",
 			"CALENDAR_period_weekDay"=>"Cada semana",
 			"CALENDAR_period_month"=>"Todos los meses",
 			"CALENDAR_period_monthDetail"=>"Cada --DATE-- del mes",
 			"CALENDAR_period_year"=>"Todos los años",
 			"CALENDAR_period_yearDetail"=>"Cada --DATE-- del año",
-			"CALENDAR_periodDateExceptions"=>"Excepción de repetición",
-			"CALENDAR_periodDateEnd"=>"Fin de repetición",
+			"CALENDAR_periodDateExceptions"=>"Fecha de excepción de repetición",
+			"CALENDAR_periodDateEnd"=>"Fecha de fin de repetición",
 			"CALENDAR_calendarAffectations"=>"Asignación a los calendarios",
 			"CALENDAR_addEvt"=>"Añadir un evento",
 			"CALENDAR_addEvtTooltip"=>"Añadir un evento",
@@ -996,10 +996,10 @@ class Trad extends Txt
 		$dateList[$year."-12-26"]="Sant Esteve";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date('Y-m-d',$easterTime-(86400*3))]	="Jueves Santo";
-			$dateList[date('Y-m-d',$easterTime-(86400*2))]	="Viernes Santo";
-			$dateList[date('Y-m-d',$easterTime)]			="Pâques";
-			$dateList[date('Y-m-d',$easterTime+86400)]		="Lunes de Pascua";
+			$dateList[date('Y-m-d',strtotime("-3 days",$easterTime))]	="Jueves Santo";
+			$dateList[date('Y-m-d',strtotime("-2 days",$easterTime))]	="Viernes Santo";
+			$dateList[date('Y-m-d',$easterTime)]						="Pascua";
+			$dateList[date('Y-m-d',strtotime("+1 days",$easterTime))]	="Lunes de Pascua";
 		}
 		$tmpDates=Txt::timeChangeDates($year);
 		$dateList[$tmpDates["summer"]]="Horario de verano";

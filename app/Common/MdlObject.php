@@ -243,7 +243,7 @@ class MdlObject
 			//Réinitialise les droits, uniquement sur les espaces auxquels l'user courant a accès
 			if($this->isNew()==false){
 				$sqlSpaces="_idSpace IN (".implode(",",Ctrl::$curUser->spaceList("ids")).")";
-				if(Ctrl::$curUser->isGeneralAdmin())	{$sqlSpaces="(".$sqlSpaces." OR _idSpace is null)";}
+				if(Ctrl::$curUser->isGeneralAdmin())	{$sqlSpaces="(".$sqlSpaces." OR _idSpace IS NULL)";}
 				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND ".$sqlSpaces);
 			}
 			//Ajoute les nouveaux droits d'accès : passés en paramètre / provenant du formulaire

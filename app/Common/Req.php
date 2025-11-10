@@ -7,9 +7,9 @@
 */
 
 
-/********************************************************************************************
+/********************************************************************************************************
  * AUTOLOADER DE CLASSE DE CONTROLEUR
- ********************************************************************************************/
+ ********************************************************************************************************/
 function agoraAutoloader($className)
 {
 	if(is_file(Req::commonPath.$className.".php"))	{require_once Req::commonPath.$className.".php";}
@@ -33,9 +33,9 @@ class Req
 	public static $curCtrl;	
 	public static $curAction;
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * INIT
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public function __construct()
 	{
 		////	Filtre et enregistre les parametres GET/POST (valeur ou tableau de valeurs)
@@ -45,30 +45,33 @@ class Req
 				foreach($val as $key2=>$val2)  {self::$_paramsGP[$key][$key2]=self::paramFilter($key,$val2);}
 			}
 		}
-		////	Classe du controleur courant (ex: "offline")  &  Methode de l'action courante (ex: "default")
-		self::$curCtrl=(self::isParam("ctrl")) ? self::param("ctrl") : "offline";
-		self::$curAction=(self::isParam("action")) ? self::param("action") : "default";
-		$CtrlClass="Ctrl".ucfirst(self::$curCtrl);
-		$ActionMethod="action".ucfirst(self::$curAction);
-		////	Init le temps d'execution & charge les Params + Config
+		////	Tps d'execution  &&  Class du ctrl courant  &&  Class de l'action courante
 		define("TPS_EXEC_BEGIN",microtime(true));
-		require_once self::commonPath."Params.php";
-		require_once PATH_DATAS."config.inc.php";
+		self::$curCtrl=(self::isParam("ctrl")) ? 		self::param("ctrl")		: "offline";
+		self::$curAction=(self::isParam("action")) ?	self::param("action")	: "default";
+		$curClass="Ctrl".ucfirst(self::$curCtrl);
+		$curMethod="action".ucfirst(self::$curAction);
 		////	Lance l'action demandée
 		try{
-			if(self::isInstalling()==false)				{$CtrlClass::initCtrl();}														//Controleur principal
-			if(method_exists($CtrlClass,$ActionMethod))	{$CtrlClass::$ActionMethod();}													//Controleur demandé
-			else										{throw new Exception("Page introuvable : Action '".$ActionMethod."'");  exit;}	//Lance une Exception
+			$pathParams=self::commonPath."Params.php";																		//Fichier de Params : PATH_DATAS & CO
+			if(is_file($pathParams))	{require_once $pathParams;}															//Include le fichier (ou Exception)
+			else						{throw new Exception("Params error");  exit;}
+			$pathConfig=PATH_DATAS."config.inc.php";																		//Fichier de config
+			if(is_file($pathConfig))	{require_once $pathConfig;}															//Include le fichier (ou Exception)
+			else						{throw new Exception("Config error");  exit;}
+			if(method_exists(self::class,'isInstalling')==false || self::isInstalling()==false)  {$curClass::initCtrl();}	//Controleur principal
+			if(method_exists($curClass,$curMethod))	{$curClass::$curMethod();}												//Controleur demandé (ou Exception)
+			else									{throw new Exception("Page introuvable");  exit;}
 		}
 		////	Gestion des exceptions
-		catch(Exception $error){
-			$this->displayExeption($error);
+		catch(Exception $except){
+			$this->displayExeption($except);
 		}
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * RÉCUPÈRE LE NUMÉRO DE VERSION DE L'APPLI  &&  MODIF SI BESOIN LES FICHIERS JS/CSS
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function appVersion()
 	{
 		if(self::$_appVersion===null){
@@ -79,9 +82,9 @@ class Req
 		return self::$_appVersion;
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VERIFIE SI TOUS LES PARAMETRES GET/POST ONT ÉTÉ SPÉCIFIÉS ET NE SONT PAS VIDES
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isParam($keys)
 	{
 		//Keys au format "array"
@@ -94,9 +97,9 @@ class Req
 		return true;
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * RECUPERE UN PARAMETRE GET/POST
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function param($key)
 	{
 		if(self::isParam($key)){
@@ -106,10 +109,10 @@ class Req
 		}
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * FILTRE LES PARAMETRES GET/POST (Cf. XSS / code inject)
 	 * Test rapide :  ?description=<svg/onload=alert(1)>  ||  ?notify[]=HELX");alert(1);//`
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	private static function paramFilter($key, $val)
 	{
 		$val=(string)$val;																									//Cast la valeur d'entrée
@@ -128,8 +131,8 @@ class Req
 				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise la balise <source> et ses attributs (cf balise <video>)
 				$purifier=new HTMLPurifier($config);																		//Crée un $purifier
 				$val=$purifier->purify($val);																				//Filtre le code html
-    			$caracAccent=['à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç',"\xc2\xa0"];						//Liste des caractères accentués et espaces Unicode (cf '<p>&nbsp;</p>' remplacés précédement par '<p> </p>')
-    			$caracHtml  =['&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&nbsp;'];//Equivalents HTML
+    			$caracAccent=['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç',"\xc2\xa0"];					//Caractères accentués (HTMLPurifier remplace  <p>&nbsp;</p>  par  <p>\xc2\xa0</p>)
+    			$caracHtml  =['&rsquo;','&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&nbsp;'];//Equivalents HTML
 				$val=str_replace($caracAccent, $caracHtml, $val);															//Convertit les caractère accentués en entités HTML															
 			}
 			else{																											//Filtre principal
@@ -151,9 +154,9 @@ class Req
 		if(!empty($majWords[2]))	{return "app/Mod".ucfirst($majWords[2])."/".$className.".php";}
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * RECUPÈRE LE CHEMIN DU MODULE COURANT
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function curModPath()
 	{
 		return "app/Mod".ucfirst(self::$curCtrl)."/";
@@ -171,25 +174,25 @@ class Req
 		else								{return 'https://'.$url;}
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF HOSTED SPACE
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isHost()
 	{
 		return defined("HOST_DOMAINE");
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF LINUX
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isLinux()
 	{
 		return preg_match("/linux/i",PHP_OS);
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF MODE DEV ('omnispace.local.net' pour Google API || '192.168' pour Android Studio)
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isDevServer()
 	{
 		if(self::$_isDevServer===null){
@@ -198,9 +201,9 @@ class Req
 		return self::$_isDevServer;
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF AFFICHAGE MOBILE/RESPONSIVE <= 1024PX  (Idem CSS & JS)
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isMobile()
 	{
 		if(self::$_isMobile===null){
@@ -209,9 +212,9 @@ class Req
 		return self::$_isMobile;
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF AFFICHAGE SUR APP MOBILE (quelquesoit la resolution, macintosh=Ipad)
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isMobileApp()
 	{
 		if(self::$_isMobileApp===null){
@@ -220,17 +223,17 @@ class Req
 		return self::$_isMobileApp;
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * AFFICHE UNE ERREUR D'EXECUTION
-	 ********************************************************************************************/
-    private function displayExeption(Exception $exception)
+	 ********************************************************************************************************/
+    private function displayExeption(Exception $except)
 	{
 		////	Install d'Agora-Project en Auto-hébergement
-		if(preg_match("/dbInstall/i",$exception->getMessage()) && self::isInstalling()==false && self::isHost()==false)
+		if(preg_match("/dbInstall/i",$except->getMessage()) && self::isInstalling()==false && self::isHost()==false)
 			{Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
         echo '<div style="text-align:center">
-				<h1 style="line-height:100px"><img src="app/img/importantBig.png"> &nbsp; '.$exception->getMessage().'</h1>
+				<h1 style="line-height:100px"><img src="app/img/importantBig.png"> &nbsp; '.$except->getMessage().'</h1>
 				<h2><a href="index.php">Retour</a></h2>
 			  </div>';
 		exit;
@@ -242,33 +245,33 @@ class Req
 	/***************************************************************************************************************************/
 
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * SWITCH D'ESPACE : BOUTON DE RETOUR AU MENU DE RECHERCHE (APP MOBILE OU HOST)
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isSpaceSwitch()
 	{
 		return (self::isMobileApp() || self::isHost());
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * SWITCH D'ESPACE : URL DE RETOUR AU MENU DE RECHERCHE
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function connectSpaceSwitchUrl()
 	{
 		return OMNISPACE_URL_PUBLIC."/index.php?ctrl=offline&action=connectSpace&connectSpaceSwitch=true";
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF SI L'APPLI EST EN COUR D'INSTALL
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function isInstalling()
 	{
 		return (self::$curCtrl=="offline" && stristr(self::$curAction,"install"));
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * VÉRIF LA VERSION DE PHP
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function verifPhpVersion()
 	{
 		$versionPhpMinimum="7.4";

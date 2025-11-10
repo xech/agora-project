@@ -10,11 +10,11 @@ body, a, .sLink																							{color:#555;}
 .objContainerSelect, .lineSelect, #objSelectMenu														{background:#ddd!important;}
 .tooltipster-box																						{background:white!important; box-shadow:0px 0px 12px #333!important;}
 .tooltipster-content																					{color:#555!important; padding:15px!important;}
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
-	#htmlMainPage					{background:white url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#htmlMainPage					{background:white url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 	#headerBar						{border-top:solid 1px #bbb;}/*séparation de la "appBar" du main.dart*/
-	.objContainer, .miscContainer	{box-shadow:2px 2px 6px #888;}
+	.objContainer, .miscContainer	{box-shadow:0px 2px 6px #bbb;}
 }
 
 /*** LIENS & OPTIONS*/

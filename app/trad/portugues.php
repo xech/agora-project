@@ -858,7 +858,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityTooltip"=>"Para pessoas que apenas têm acesso de leitura ao calendário: <br>- Visibilidade de intervalo de tempo : mostrar a hora ocupada pelo evento e ocultar os detalhes<br>- Visualização privada: não apresentar o evento",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Calendario compartilhado do espaço",
-			"CALENDAR_noPeriodicity"=>"Uma vez",
+			"CALENDAR_noRepeat"=>"Uma vez",
 			"CALENDAR_period_weekDay"=>"Cada semana",
 			"CALENDAR_period_month"=>"Todos os meses",
 			"CALENDAR_period_monthDetail"=>"Todo o --DATE-- do mês",
@@ -996,9 +996,9 @@ class Trad extends Txt
 		$dateList[$year."-12-25"]="Natal";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date('Y-m-d',$easterTime-(86400*2))]	="Sexta-feira Santa";
-			$dateList[date('Y-m-d',$easterTime)]			="Domingo de Páscoa";
-			$dateList[date('Y-m-d',$easterTime+(86400*60))]	="Corpo de Deus";
+			$dateList[date('Y-m-d',strtotime("-2 days",$easterTime))]	="Sexta-feira Santa";
+			$dateList[date('Y-m-d',$easterTime)]						="Domingo de Páscoa";
+			$dateList[date('Y-m-d',strtotime("+60 days",$easterTime))]	="Corpo de Deus";
 		}
 		$tmpDates=Txt::timeChangeDates($year);
 		$dateList[$tmpDates["summer"]]="Horário de verão";

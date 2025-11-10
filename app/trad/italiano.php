@@ -858,7 +858,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityTooltip"=>"Per le persone che hanno accesso solo in lettura al calendario e all'evento:<br>- Visualizzazione della fascia oraria: mostra solo la fascia occupata e nasconde i dettagli<br>- Visualizzazione privata: non mostrare l'evento",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Calendario condiviso dello spazio",
-			"CALENDAR_noPeriodicity"=>"Solo una volta",
+			"CALENDAR_noRepeat"=>"Solo una volta",
 			"CALENDAR_period_weekDay"=>"Ogni settimana",
 			"CALENDAR_period_month"=>"Ogni mese",
 			"CALENDAR_period_monthDetail"=>"Ogni --DATE-- del mese",
@@ -996,8 +996,8 @@ class Trad extends Txt
 		$dateList[$year."-12-26"]="Santo Stefano";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date('Y-m-d',$easterTime)]		="Pasqua";
-			$dateList[date('Y-m-d',$easterTime+86400)]	="Lunedì di Pasquetta";
+			$dateList[date('Y-m-d',$easterTime)]						="Pasquetta";
+			$dateList[date('Y-m-d',strtotime("+1 days",$easterTime))]	="Lunedì di Pasquetta";
 		}
 		$tmpDates=Txt::timeChangeDates($year);
 		$dateList[$tmpDates["summer"]]="Ora legale";

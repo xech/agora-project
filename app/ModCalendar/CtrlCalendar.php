@@ -100,18 +100,18 @@ class CtrlCalendar extends Ctrl
 			elseif($tmpCal->affectationAddRight())	{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_proposeEvtTooltip");}
 			else									{$tmpCal->addEvtTooltip=null;}
 			//// EVENEMENTS POUR CHAQUE JOUR
-			$tmpCal->evtListDays=[];																													//Init la liste des evts pour chaque jour affiché
-			$tmpCal->evtListDisplayed=$tmpCal->evtList($showTimeBegin, $showTimeEnd, 1, true);															//Evts sur la période affichée ($accessRightMin=1, $categoryFilter=true)
-			foreach($vDatas["periodDays"] as $dayYmd=>$tmpDay){
-				$tmpCal->evtListDays[$dayYmd]=[];																										//Init la liste des evts de l'agenda
-				$evtListDay=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);							//Récupère uniquement les evts de la journée
-				foreach($evtListDay as $tmpEvt){																										//Parcourt chaque événement du jour :
-					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"labelFull",$tmpEvt->timeEnd);								//Tooltip avec title et date détaillée
-					if(!empty($tmpEvt->important))	{$tmpEvt->title.='<img src="app/img/calendar/importantSmall.png">';}								//Icone d'evt important
-					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='<img src="app/img/calendar/periodSmall.png">';}									//Icone d'evt periodique
-					$tmpEvt->evtAttributes=$tmpEvt->attributes("string", $tmpDay["dayTimeBegin"], $tmpDay["dayTimeEnd"]);								//Attributs de l'evt
-					$tmpEvt->contextMenuOptions=["launcherIcon"=>"floatSmall", "_idCal"=>$tmpCal->_id, "curDateTime"=>strtotime($tmpEvt->dateBegin)];	//Options du menu contextuel
-					$tmpCal->evtListDays[$dayYmd][]=$tmpEvt;																							//Ajoute l'evt à la liste !
+			$tmpCal->evtListDays=[];																											//Init la liste des evts pour chaque jour de la période affichée
+			$tmpCal->evtListDisplayed=$tmpCal->evtList($showTimeBegin, $showTimeEnd, 1, true);													//Evts sur toute la période affichée ($accessRightMin=1, $categoryFilter=true)
+			foreach($vDatas["periodDays"] as $dayYmd=>$tmpDay){																					//Récupère les Evt pour chaque jour :
+				$tmpCal->evtListDays[$dayYmd]=[];																								//Init les evts du jour
+				$evtListDay=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);					//Récupère uniquement les evts du jour
+				foreach($evtListDay as $tmpEvt){																								//Parcourt chaque événement du jour :
+					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"labelFull",$tmpEvt->timeEnd);						//Tooltip avec title et date détaillée
+					if(!empty($tmpEvt->important))	{$tmpEvt->title.='<img src="app/img/calendar/importantSmall.png">';}						//Icone d'evt important
+					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='<img src="app/img/calendar/periodSmall.png">';}							//Icone d'evt répété
+					$tmpEvt->evtAttributes=$tmpEvt->attributes("string", $tmpDay["dayTimeBegin"], $tmpDay["dayTimeEnd"]);						//Attributs de l'evt
+					$tmpEvt->contextMenuOptions=["launcherIcon"=>"floatSmall", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
+					$tmpCal->evtListDays[$dayYmd][]=$tmpEvt;																					//Ajoute l'evt à la liste !
 				}
 				////	Tri des evts par Heure: Minute
 				usort($tmpCal->evtListDays[$dayYmd],function($objA,$objB){
@@ -130,7 +130,7 @@ class CtrlCalendar extends Ctrl
 		$vDatas["evtPropositions"]=[];
 		foreach(MdlCalendar::readableCalendars() as $tmpCal){
 			if($tmpCal->editContentRight()){
-				$evtPropositions=Db::getObjTab("calendarEvent", "SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed is null AND (T1._idUser!=".Ctrl::$curUser->_id." OR guest is not null) AND T2._idCal=".$tmpCal->_id);
+				$evtPropositions=Db::getObjTab("calendarEvent", "SELECT T1.* FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2.confirmed IS NULL AND (T1._idUser!=".Ctrl::$curUser->_id." OR guest IS NOT NULL) AND T2._idCal=".$tmpCal->_id);
 				foreach($evtPropositions as $tmpEvt){
 					if($tmpEvt->isPastEvent(time()-5184000))  {$tmpEvt->affectationDelete($tmpCal->_id);}	//Supprime la proposition si > 60 jours
 					else{																					//Ajoute la proposition d'evt avec les détails pour la confirmation
@@ -191,7 +191,7 @@ class CtrlCalendar extends Ctrl
 		$pluginsList=[];
 		//// Liste des agendas accessibles en lecture
 		foreach(MdlCalendar::readableCalendars() as $tmpCal){
-			//// Liste des evts ($durationBegin=null, $durationEnd=null, $accessRightMin=1, $categoryFilter=false, $pluginParams=$params)
+			//// Liste des evts ($periodBegin=null, $periodEnd=null, $accessRightMin=1, $categoryFilter=false, $pluginParams=$params)
 			foreach($tmpCal->evtList(null, null, 1, false, $params) as $tmpEvt){
 				//// Vérif si l'evt n'a pas déjà été ajouté (car peut être affecté à plusieurs agendas) && se limite à 100 evt max (cf. affichage des nouveaux evt après import de fichier Ical)
 				if(empty($pluginsList[$tmpEvt->_typeId]) && count($pluginsList)<100){
@@ -331,9 +331,8 @@ class CtrlCalendar extends Ctrl
 			foreach(Req::param("calendarIds") as $calId){											//Parcourt les agendas sélectionnés (sans "getCurObjects()", sinon on récupère pas les agendas pour "proposition")
 				$tmpCal=self::getObj("calendar", $calId);											//Récupère l'agenda
 				$timeSlotBusyCal=null;																//Init le TimeSlotBusy de l'agenda
-				foreach($tmpCal->evtList($timeSlotDayBegin, $timeSlotDayEnd, 0) as $tmpEvt){									//Evts sur le jour du timeSlot ($accessRightMin=0) : récupère ainsi les evts périodiques
-					if(MdlCalendar::evtInDuration($tmpEvt,$timeSlotBegin,$timeSlotEnd) && $tmpEvt->_id!=Req::param("_evtId")){	//Vérif si l'evt s'il est sur le timeSlot (pas celui en cours d'édition : cf. modif d'evt)
-						$evtTitle=($tmpCal->readRight())  ?  " - ".Txt::reduce($tmpEvt->title,80)  :  null;						//Title de l'evt si accès en lecture à l'agenda (pas une proposition)
+				foreach($tmpCal->evtList($timeSlotDayBegin, $timeSlotDayEnd, 0) as $tmpEvt){									//Evts sur le jour du timeSlot ($accessRightMin=0) : récupère ainsi les evts répétés
+					if(MdlCalendar::evtInPeriod($tmpEvt,$timeSlotBegin,$timeSlotEnd) && $tmpEvt->_id!=Req::param("_evtId")){	//Vérif si l'evt s'il est sur le timeSlot (pas celui en cours d'édition : cf. modif d'evt)
 						$evtTooltip=Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<br>'.$tmpEvt->title;		//Tooltip de l'evt
 						$timeSlotBusyCal.='<div '.Txt::tooltip($evtTooltip).'>'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,80).'</div>';
 					}
@@ -418,7 +417,7 @@ class CtrlCalendar extends Ctrl
 					//// Parcourt chaque evt parsé par Ical.php
 					foreach($ical->cal["VEVENT"] as $tmpEvt)
 					{
-						//// S'il manque de date/titre/UID || Si l'evt a déjà été ajouté (cf. evts périodiques de Google) : on zappe l'evt!
+						//// S'il manque de date/titre/UID || Si l'evt a déjà été ajouté (cf. evts répétés de Google) : on zappe l'evt!
 						if(empty($tmpEvt["DTSTART"]) || empty($tmpEvt["SUMMARY"]) || empty($tmpEvt["UID"]) || isset($vDatas["eventList"][$tmpEvt["UID"]]) || strtotime($tmpEvt["DTSTART"])<$ignoreOldEvtTime)  {continue;}
 						//// Init les valeurs importées en Bdd
 						$tmpEvt["dbDateBegin"]=$tmpEvt["dbDateEnd"]=$tmpEvt["dbTitle"]=$tmpEvt["dbDescription"]=$tmpEvt["dbPeriodType"]=$tmpEvt["dbPeriodValues"]=$tmpEvt["dbPeriodDateEnd"]=$tmpEvt["isPresent"]=null;
@@ -430,7 +429,7 @@ class CtrlCalendar extends Ctrl
 						}
 						$tmpEvt["dbTitle"]=Txt::clean($tmpEvt["SUMMARY"],"min");
 						if(!empty($tmpEvt["DESCRIPTION"]))  {$tmpEvt["dbDescription"]=Txt::clean($tmpEvt["DESCRIPTION"],"min");}
-						//// Evenement périodique
+						//// Evenement répétés
 						if(!empty($tmpEvt["RRULE"]))
 						{
 							//init
@@ -517,7 +516,7 @@ class CtrlCalendar extends Ctrl
 		}
 		////	Agenda spécifié : récupère ses événements
 		elseif($curObj::objectType=="calendar"){
-			$eventList=$curObj->evtList(null, null, 1);//$durationBegin=null, $durationEnd=null, $accessRightMin=1
+			$eventList=$curObj->evtList(null, null, 1);//$periodBegin=null, $periodEnd=null, $accessRightMin=1
 			$objCalendar=$curObj;
 		}
 

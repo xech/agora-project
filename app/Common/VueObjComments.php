@@ -33,7 +33,7 @@ form button				{width:120px;}
 .vCommentOptions img	{margin-left:10px;}
 .submitButtonInline		{padding-top:10px;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vCommentsTable, .vCommentsRow, .vCommentsRow>div	{display:block; width:100%;}
 	.vCommentsRow			{margin-bottom:15px!important;}

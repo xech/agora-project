@@ -23,8 +23,11 @@ ready(function(){
 
 
 <style>
-input[name="searchText"]			{width:220px; margin-right:5px;}
-#advancedSearchLabel				{display:inline-block; margin-left:20px;}
+#searchMainField					{text-align:center; padding:10px;}
+#searchMainField *:is(input,button)	{height:40px; margin:10px;}
+#searchMainField input				{width:250px;}
+#searchMainField button				{width:200px;}
+#advancedSearchLabel				{margin-top:20px;}
 .advancedSearchBlock				{display:<?= Req::param("advancedSearch")?"block":"none" ?>;}
 .vAdvancedSearchTab					{display:table; margin-top:20px;}
 .vAdvancedSearchTab>div				{display:table-cell;}
@@ -38,12 +41,10 @@ input[name="searchText"]			{width:220px; margin-right:5px;}
 .vPluginNews						{display:none; padding:5px; background:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
 .emptyContainer						{margin-top:20px;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){	
-	#searchMainField			{text-align:center;}
-	input[name="searchText"]	{margin-bottom:15px;}
-	#advancedSearchLabel		{display:block; margin-top:15px;}
-	.vAdvancedSearchOption		{width:48%;}
+#searchMainField *:is(input,button)	{width:300px;}
+	.vAdvancedSearchOption			{width:48%;}
 }
 </style>
 
@@ -53,20 +54,19 @@ input[name="searchText"]			{width:220px; margin-right:5px;}
 	<div class="lightboxTitle"><?= Txt::trad("searchOnSpace") ?></div>
 
 	<div id="searchMainField">
-		<?= Txt::trad("keywords") ?>
-		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>">
+		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>" placeholder="<?= Txt::trad("keywords") ?>">
 		<?= Txt::submitButton("search",false) ?>
-		<label id="advancedSearchLabel"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></label>
+		<div id="advancedSearchLabel" class="sLink"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></div>
 		<input type="hidden" name="advancedSearch" value="<?= Req::param("advancedSearch") ?>">
 	</div>
 
 	<div class="advancedSearchBlock">
-		<!--MODE DE RECHERCHE-->
+		<!--ETENDUE DE DE RECHERCHE-->
 		<div class="vAdvancedSearchTab">
 			<div><?= Txt::trad("search") ?></div>
 			<div>
 				<select name="searchMode">
-					<?php foreach(["anyWord","allWords","exactPhrase"] as $tmpOption)	{echo "<option value=\"".$tmpOption."\" ".(Req::param("searchMode")==$tmpOption?'selected':null).">".Txt::trad("advancedSearch".ucfirst($tmpOption))."</option>";} ?>
+					<?php foreach(["allWords","anyWord","exactPhrase"] as $tmpOption)	{echo "<option value=\"".$tmpOption."\" ".(Req::param("searchMode")==$tmpOption?'selected':null).">".Txt::trad("advancedSearch".ucfirst($tmpOption))."</option>";} ?>
 				</select>
 			</div>
 		</div>

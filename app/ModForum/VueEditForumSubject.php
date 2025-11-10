@@ -24,7 +24,7 @@ function objectFormControl(){
 [name="_idTheme"]		{min-width:200px; margin-left:30px;}
 .descriptionTextarea	{margin-top:30px!important;}/*surcharge*/
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	[name='title'], [name="_idTheme"]	{width:100%;}
 	[name="_idTheme"]					{margin-left:0px; margin-top:20px;}

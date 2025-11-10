@@ -858,7 +858,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityTooltip"=>"Für Personen mit Nur-Lese-Zugriff auf Kalender und Termin: <br>- Zeitfensteranzeige: Nur belegten Termin anzeigen und Details ausblenden<br>- Private Anzeige: Termin nicht anzeigen",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Gemeinsamer Kalender des Spaces",
-			"CALENDAR_noPeriodicity"=>"Nur einmal",
+			"CALENDAR_noRepeat"=>"Nur einmal",
 			"CALENDAR_period_weekDay"=>"Jede Woche",
 			"CALENDAR_period_month"=>"Jeden Monat",
 			"CALENDAR_period_monthDetail"=>"Jeden --DATE-- des Monats",
@@ -989,8 +989,8 @@ class Trad extends Txt
 		$dateList[$year."-12-26"]="Zweiter Weihnachtsfeiertag";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date('Y-m-d',$easterTime)]		="Ostern";
-			$dateList[date('Y-m-d',$easterTime+86400)]	="Ostermontag";			
+			$dateList[date('Y-m-d',$easterTime)]						="Ostern";
+			$dateList[date('Y-m-d',strtotime("+1 days",$easterTime))]	="Ostermontag";			
 		}
 		$tmpDates=Txt::timeChangeDates($year);
 		$dateList[$tmpDates["summer"]]="Sommerzeit";

@@ -33,8 +33,8 @@ class MdlDashboardNews extends MdlObject
 	{
 		// Archive/désarchive automatiquement les news
 		if(empty($_SESSION["dashboardNewsUpdated"])){
-			Db::query("UPDATE ".static::dbTable."  SET offline=1     WHERE dateOffline is not null  AND UNIX_TIMESTAMP(dateOffline)<".time());
-			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline is not null   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline IS NULL OR UNIX_TIMESTAMP(dateOffline)>".time().")");
+			Db::query("UPDATE ".static::dbTable."  SET offline=1     WHERE dateOffline IS NOT NULL  AND UNIX_TIMESTAMP(dateOffline)<".time());
+			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline IS NOT NULL   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline IS NULL OR UNIX_TIMESTAMP(dateOffline)>".time().")");
 			$_SESSION["dashboardNewsUpdated"]=true;
 		}
 		// Init/Switch l'affichage des news archivées

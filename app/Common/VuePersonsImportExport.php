@@ -57,7 +57,7 @@ ready(function(){
 
 
 <style>
-#bodyLightbox 					{max-width:<?= Req::isParam("actionImportExport") ? '1800px' : '800px' ?>;}
+#bodyLightbox 						{max-width:<?= Req::isParam("actionImportExport") ? '1800px' : '800px' ?>;}
 form								{text-align:center;}
 #importLdapDn						{width:350px;}
 #importLdapFilter					{width:200px;}

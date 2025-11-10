@@ -24,11 +24,11 @@ ready(function(){
 #menuMainOmnispace							{border-top:var(--headerMenuBorder); text-align:right; padding-top:10px;}
 .vHeaderModule								{display:inline-block; margin:0px; padding:4px; text-align:center; vertical-align:middle; border:1px solid transparent; border-radius:10px; cursor:pointer;}
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (min-width:1025px) and (max-width:1350px){
 	.vHeaderModule label					{margin-top:7px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	#headerMenuLeft							{padding-left:40px; padding-right:10px;}/*"padding-left" en fonction du width du "logoXSmall.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
@@ -61,10 +61,11 @@ ready(function(){
 				<?php if(Ctrl::$curUser->sendInvitationRight()){ ?><div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=SendInvitation')" <?= Txt::tooltip("USER_sendInvitationTooltip") ?>><div class="menuIcon"><img src="app/img/mail.png"></div><div><?= Txt::trad("USER_sendInvitation") ?></div></div><?php } ?>
 				<div class="menuLine" onclick="lightboxOpen('<?= File::docFile() ?>')"><div class="menuIcon"><img src="app/img/documentation.png"></div><div><?= Txt::trad("HEADER_documentation") ?></div></div>
 				<hr>
-				<!--MODIF DU PROFIL  +  MESSENGER DE L'USER  +  DECONNEXION DE L'ESPACE PRINCIPAL-->
+				<!--MODIF DU PROFIL  +  MESSENGER DE L'USER  +  DECONNEXION DE L'ESPACE PRINCIPAL  +  SWITCH D'ESPACE-->
 				<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curUser->getUrl('edit') ?>')"><div class="menuIcon"><img src="app/img/edit.png"></div><div><?= Txt::trad("USER_myProfilEdit") ?> &nbsp; <?= Ctrl::$curUser->profileImg(false,true) ?></div></div>
 				<?php if(MdlUser::agoraMessengerEnabled()){ ?><div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=<?= Ctrl::$curUser->_typeId ?>')"><div class="menuIcon"><img src="app/img/messenger.png"></div><div><?= Txt::trad("USER_livecounterVisibility") ?></div></div><?php } ?>
 				<div class="menuLine" onclick="confirmRedir('?disconnect=1','<?= Txt::trad('disconnectSpaceConfirm',true) ?>')"><div class="menuIcon"><img src="app/img/logout.png"></div><div><?= Txt::trad("disconnectSpace") ?></div></div>
+				<?php if(Req::isSpaceSwitch()){ ?><div class="menuLine" onclick="confirmRedir('<?= Req::connectSpaceSwitchUrl() ?>','<?= Txt::trad('connectSpaceSwitch',true) ?>')"><div class="menuIcon"><img src="app/img/switch.png"></div><div><?= Txt::trad("connectSpaceSwitch") ?></div></div><?php } ?>
 				<!--ADMIN GENERAL :  EDIT TOUS LES USERS  +  PARAMETRAGE GENERAL  +  HISTORIQUE DES EVENEMENTS (LOGS)-->
 				<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 				<hr>
@@ -72,8 +73,6 @@ ready(function(){
 				<div class="menuLine" onclick="redir('?ctrl=user&displayUsers=all')"><div class="menuIcon"><img src="app/img/user/iconSmall.png"></div><div><?= Txt::trad("USER_allUsers") ?></div></div>
 				<div class="menuLine" onclick="redir('?ctrl=agora')"><div class="menuIcon"><img src="app/img/settingsGeneral.png"></div><div><?= Txt::trad("AGORA_generalSettings") ?></div></div>
 				<?php } ?>
-				<!--SWITCH D'ESPACE-->
-				<?php if(Req::isSpaceSwitch()){ ?><hr><div class="menuLine" onclick="confirmRedir('<?= Req::connectSpaceSwitchUrl() ?>','<?= Txt::trad('connectSpaceSwitch',true) ?>')"><div class="menuIcon"><img src="app/img/switch.png"></div><div><?= Txt::trad("connectSpaceSwitch") ?></div></div><?php } ?>
 			</div>
 			<?php } ?>
 

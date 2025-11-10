@@ -11,10 +11,11 @@ hr						{border:0; height:1px; margin-top:10px; margin-bottom:10px;}												
 video, audio			{max-width:100%; max-height:100%;}																					/*Lecteurs video/audio*/
 abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*idem tag <acronym>*/
 a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	html				{font-size:18px;}
 	#bodyLightbox		{padding:25px 12px;}
+	::-webkit-scrollbar	{width:8px!important;}
 }
 
 /*** CONTENEURS PRINCIPAUX DE LA PAGE*/
@@ -27,11 +28,10 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 #moduleMenu, #pageContent							{display:table-cell;}
 #moduleMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
 #pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
-	#pageCenter										{width:100%;}
-	#pageContent, #pageCenter #pageContent			{width:100%; min-width:100%; max-width:100%;}
-	#pageContent .objBlocks							{padding-right:0px;}
+	#pageFull, #pageCenter, #pageContent	{display:block; max-width:100%;}
+	#pageContent .objBlocks					{padding-right:0px;}
 }
 /*** PRINT*/
 @media print{
@@ -41,7 +41,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 }
 
 /*** DIV "CONTENEUR" DES OBJETS*/
-.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; box-sizing:border-box; border-radius:5px; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
+.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; border-radius:5px; box-sizing:border-box; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
 .objContainer										{height:100px; min-height:100px; position:relative; padding:0px;}			/*"height"+"min-height" pour l'overflow" du "objContainerScroll""*/
 .objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
 .miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
@@ -66,9 +66,9 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objLines .objAutorDate								{text-align:right; width:185px; font-size:0.9rem; line-height:20px;}		/*Auteur/Date : tester avec "lun. 30 septembre 2024"*/
 .objLines .objAutorDate span						{display:block;}															/*Auteur et Date sur 2 lignes*/
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
-	.objContainer									{margin:5px; margin-bottom:10px; border-radius:7px!important;}				/*tester affichage de news, fichiers, agendas, tâches*/
+	.objContainer, .miscContainer					{margin:5px; border-radius:8px!important;}									/*tester affichage de news, fichiers, agendas, tâches*/
 	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
 	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller sur mobile*/
 	.objIcon										{width:60px!important;}														/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
@@ -81,7 +81,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
 .pathMenu>div:first-child		{width:50px; white-space:nowrap;}/*icone de dossier ou "top"*/
 .pathMenuAdd					{width:50px; text-align:right;}/*icone d'ajout d'element*/
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	.pathMenu.miscContainer		{width:98%; max-width:100%; margin:0px 4px 25px 4px; padding:5px; border-radius:10px;}
 }
@@ -105,7 +105,7 @@ video.attachedFileTag						{min-width:600px; min-height:400px;}											/*Vid�
 audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
 .objMenuBottom								{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
 .objMenuBottom>.miscContainer				{display:inline-block; padding:15px; border-radius:10px;}
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	.objMenuContextFloat					{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
 	.objMenuMisc>div						{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
@@ -128,7 +128,7 @@ audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
 .menuContext hr								{margin:3px 0px!important;}
 .menuContextSpecificLabels					{padding:5px; line-height:20px;}	/*cf. affectations des agendas*/
 .menuContextTxtLeft							{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*cf. menuContext : Auteur, Droits d'accès..*/
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
 	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
@@ -167,7 +167,7 @@ select option										{font-size:1.1rem;}
 .submitButtonInline	button							{min-width:100px; min-height:30px;}							/*height idem input[type=text]*/
 .submitButtonInline .submitLoading					{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
 .submitLoading										{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:40px; padding:8px 5px;}
 	.inputTitleName									{width:100%;}
@@ -182,7 +182,7 @@ select option										{font-size:1.1rem;}
 .objField input[type=text]					{width:100%;}
 .objField input[type=checkbox]				{margin-right:10px;}
 .objField .personImg						{max-width:100%; max-height:150px;}
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.objField, .objField>div				{display:block; width:100%!important;}
 	.objField>div							{padding-top:5px;}
@@ -203,7 +203,7 @@ select option										{font-size:1.1rem;}
 .spaceAffectLine img						{max-width:15px;}
 .spaceAffectLine>*							{display:table-cell; padding:8px;}	/*label ou div pour de checkbox*/
 .spaceAffectLine>div						{text-align:center; width:130px;}	/*checkboxes*/
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.objBlocks .objContainer.objPerson		{height:140px; min-height:140px;}
 	.spaceAffectLine img					{display:none;}
@@ -214,7 +214,7 @@ select option										{font-size:1.1rem;}
 #menuMobileBg, #menuMobileMain, #menuMobileAddButton	{display:none;}/*Masque par défaut*/
 #menuMobileBg, #menuMobileMain 							{position:fixed; top:0px; right:0px; height:100%;}
 #menuMobileBg											{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
-#menuMobileMain											{z-index:121; width:430px;/*idem Pro Max*/  max-width:90%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
+#menuMobileMain											{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
 #menuMobileClose										{text-align:right;}
 #menuMobileMain .menuLine>div							{padding:10px 5px;}/*surcharge*/
 #menuMobileContent2										{margin-top:30px;}
@@ -239,13 +239,13 @@ select option										{font-size:1.1rem;}
 .lightboxAddElem button							{width:230px; height:50px;}
 .lightboxInline									{display:none; width:400px; text-align:center}/*<form> en page de connexion*/
 .lightboxInline input, .lightboxInline button:not([data-fancybox-close])  {height:45px!important; width:80%!important; margin:10px auto!important;}/*Width des input (sauf "data-fancybox-close")*/
-/*RESPONSIVE MEDIUM*/
-@media screen and (max-width:1024px){
+/*AFFICHAGE SMARTPHONE*/
+@media screen and (max-width:490px){
 	.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:0px; box-shadow:none;}
-	.fancybox__slide							{padding:0px!important;}/*surcharge*/
-	.fancybox__slide, .fancybox__content		{width:100%!important; height:100%!important; margin:0px!important;}
-	.fancybox__iframe							{margin:0px auto;}/*iframe centré*/
-	.fancybox__slide:not(.has-image) button[data-fancybox-close]	 	{width:45px!important; height:45px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
+	.fancybox__slide																	{padding:0px!important;}/*surcharge*/
+	.fancybox__slide, .fancybox__content												{width:100%!important; height:100%!important; margin:0px!important;}
+	.fancybox__iframe																	{margin:0px auto;}/*iframe centré*/
+	.fancybox__slide:not(.has-image) button[data-fancybox-close]		{width:45px!important; height:45px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
 	.fancybox__slide:not(.has-image) button[data-fancybox-close] svg	{display:none;}/*Masque le svg "close" par défaut*/
 }
 
@@ -260,7 +260,7 @@ select option										{font-size:1.1rem;}
 .jconfirm-buttons								{text-align:center!important;}
 .jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important; font-size:15px!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.jconfirm-buttons							{width:100%!important;}
 	.jconfirm-buttons button					{min-width:80%!important;}

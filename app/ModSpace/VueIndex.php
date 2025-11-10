@@ -11,7 +11,7 @@
 .vSpaceAffectation			{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.9rem;}
 .vSpaceAffectation img		{max-height:20px;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vSpaceAffectation	{width:48%;}
 }

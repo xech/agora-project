@@ -36,7 +36,7 @@ function moduleDisplay(){
 .vTimelineMain .progressBar				{width:100%; padding:5px 3px; text-align:left; font-size:0.85rem;}/*100% de width (cf. durée de la tâche et "colspan" des cellules)*/
 .vTimelineMain .progressBar img[src*=date]	{display:none;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vTimelineMain td:not(:first-child)	{min-width:22px;}
 	.vTimelineMain img					{display:none;}

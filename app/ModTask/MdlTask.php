@@ -37,7 +37,12 @@ class MdlTask extends MdlObject
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		$this->isFinished=($this->dateEnd && strtotime($this->dateEnd) < time());						//Tache terminée
+		//Timestamp du dateBegin / dateEnd
+		if($this->dateBegin && $this->dateEnd){
+			$this->timeBegin=strtotime($this->dateBegin);
+			$this->timeEnd=strtotime($this->dateEnd);
+		}
+		$this->isFinished=($this->timeEnd && $this->timeEnd < time());									//Tache terminée
 		$this->isDelayed =($this->isFinished==true && $this->advancement && $this->advancement < 100);	//Tache en retard (passée et advancement < 100%)
 	}
 
@@ -92,11 +97,9 @@ class MdlTask extends MdlObject
 			if($this->advancement)					{$barTooltip.='<hr>'.$this->advancementLabel();}
 			//// Pourcentage de progression debut/fin
 			$barPercent=0;
-			if($this->dateBegin && $this->dateEnd){
-				$timeBegin=strtotime($this->dateBegin);
-				$timeEnd  =strtotime($this->dateEnd);
-				if($this->isFinished==true)		{$barPercent=100;}
-				elseif($timeBegin < $timeEnd)	{$barPercent=floor(100 * ((time()-$timeBegin) / ($timeEnd-$timeBegin)));}
+			if($this->timeBegin && $this->timeEnd){
+				if($this->isFinished==true)					{$barPercent=100;}
+				elseif($this->timeBegin < $this->timeEnd)	{$barPercent=floor(100 * ((time()-$this->timeBegin) / ($this->timeEnd-$this->timeBegin)));}
 			}
 			//// Retourne la "progressBar"
 			return Tool::progressBar($barLabel, $barTooltip, $barPercent, $this->isDelayed);

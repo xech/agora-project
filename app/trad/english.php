@@ -858,14 +858,14 @@ class Trad extends Txt
 			"CALENDAR_visibilityTooltip"=>"For people with read-only access to the calendar: <br>- Time slot display : show only the time slot occupied by the event and hide the details<br>- Private display: do not display the event",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Shared calendar of the space",
-			"CALENDAR_noPeriodicity"=>"Only once",
+			"CALENDAR_noRepeat"=>"Only once",
 			"CALENDAR_period_weekDay"=>"Every week",
 			"CALENDAR_period_month"=>"Every month",
 			"CALENDAR_period_monthDetail"=>"Every --DATE-- of the month",
 			"CALENDAR_period_year"=>"Every year",
 			"CALENDAR_period_yearDetail"=>"Every --DATE-- of the year",
-			"CALENDAR_periodDateExceptions"=>"Repeat exception",
-			"CALENDAR_periodDateEnd"=>"Repeat end",
+			"CALENDAR_periodDateExceptions"=>"Repeat exception date",
+			"CALENDAR_periodDateEnd"=>"Repeat end date",
 			"CALENDAR_calendarAffectations"=>"Assign to the following calendars",
 			"CALENDAR_addEvt"=>"Add an event",
 			"CALENDAR_addEvtTooltip"=>"Add an event",
@@ -989,8 +989,8 @@ class Trad extends Txt
 		$dateList[$year."-12-26"]="Boxing Day";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date('Y-m-d',$easterTime)]		="Easter";
-			$dateList[date('Y-m-d',$easterTime+86400)]	="Easter Monday";			
+			$dateList[date('Y-m-d',$easterTime)]						="Easter";
+			$dateList[date('Y-m-d',strtotime("+1 days",$easterTime))]	="Easter Monday";			
 		}
 		$tmpDates=Txt::timeChangeDates($year);
 		$dateList[$tmpDates["summer"]]="Daylight saving time";

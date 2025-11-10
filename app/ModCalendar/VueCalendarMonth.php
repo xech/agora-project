@@ -35,7 +35,7 @@ function calendarDisplay(isPrint)
 .vEvtLabel									{white-space:nowrap;}					/*Texte sur une seule ligne*/
 .vEvtLabelDate								{margin-left:3px; margin-right:5px;}
 
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	.vMonthDayLabel							{font-size:0.8em; font-weight:normal;}
 	.vMonthDayLabel .vMonthAddEvt			{margin:0px;}

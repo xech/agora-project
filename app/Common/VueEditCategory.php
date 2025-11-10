@@ -84,7 +84,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 .vLabelAllSpaces					{font-style:italic;}
 .submitButtonMain					{margin-top:30px;}/*surcharge du button*/
 .changeOrderShadow					{height:50px;}/*surcharge*/
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vSpaceList>div 					{display:block; width:100%; margin:15px 0px;}
 	.vCategoryModif, .vCategoryDelete	{font-size:0.9rem;}

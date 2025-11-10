@@ -83,7 +83,7 @@ ready(function(){
 #mailOptions img[src*=dependency]	{display:none;}
 .submitButtonMain					{text-align:right;}
 .submitButtonMain button			{width:200px; height:50px;}
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}

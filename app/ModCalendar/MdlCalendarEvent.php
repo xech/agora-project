@@ -43,7 +43,7 @@ class MdlCalendarEvent extends MdlObject
 		//Visibilité par défaut
 		if(empty($this->contentVisible))  {$this->contentVisible="public";}
 		//Masque le title/description si besoin
-		if($this->accessRight()==1 && $this->contentVisible=="public_cache"){
+		if($this->readRight()==false || ($this->accessRight()==1 && $this->contentVisible=="public_cache")){
 			$this->title="<i>".Txt::trad("CALENDAR_evtPrivate")."</i>";
 			$this->description=null;
 		}
@@ -93,12 +93,12 @@ class MdlCalendarEvent extends MdlObject
 	 ********************************************************************************************************/
 	public function delete()
 	{
-		////	Supprime sur un agenda spécifique
+		////	Supprime l'affectation à un agenda spécifique
 		if(Req::isParam("_idCalDeleteAffectation") && $this->affectationDeleteRight(Req::param("_idCalDeleteAffectation"))){
 			$this->affectationDelete(Req::param("_idCalDeleteAffectation"));
 		}
-		////	Supprime à une date spécifique (evt périodique)
-		elseif($this->editRight() && Req::isParam("periodDateExceptionsAdd")){
+		////	Supprime à une date spécifique (cf. evt répétés)
+		elseif(Req::isParam("periodDateExceptionsAdd") && $this->editRight()){
 			$periodDateExceptions=Txt::txt2tab($this->periodDateExceptions);
 			$periodDateExceptions[]=Req::param("periodDateExceptionsAdd");
 			Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format(Txt::tab2txt($periodDateExceptions))." WHERE _id=".$this->_id);
@@ -107,8 +107,9 @@ class MdlCalendarEvent extends MdlObject
 		elseif($this->editRight()){
 			Db::query("DELETE FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id);
 		}
-		////	Suppression complete si affecté à aucun agenda (quelquesoit la méthode)
-		if(Db::getVal("SELECT count(*) FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id)==0)  {parent::delete();}
+		////	Suppression complete si l'evt n'est affecté à aucun agenda (cf. suppression d'affectation)
+		if(Db::getVal("SELECT count(*) FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id)==0)
+			{parent::delete();}
 	}
 
 	/***********************************************************************************************************************
@@ -139,14 +140,27 @@ class MdlCalendarEvent extends MdlObject
 	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		////	"Supprimer l'événement"  ||  "Enlever l'événement de cet agenda"
+		////	Options  "Supprimer l'événement" && "Enlever l'événement de cet agenda"
 		if(!empty($options["_idCal"])){
-			if($this->affectationDeleteRight($options["_idCal"]) && count($this->affectedCalendars())>=2)	{$options["specificOptions"][]=["actionJs"=>"confirmRedir('".$this->getUrl("delete")."&_idCalDeleteAffectation=".$options["_idCal"]."')", "iconSrc"=>"calendar/deleteEvtCal.png", "label"=>Txt::trad("CALENDAR_evtDeleteCal")];}
-			if($this->deleteRight())																		{$options["deleteLabel"]=Txt::trad("CALENDAR_evtDelete");}
+			if($this->deleteRight()){
+				$options["deleteLabel"]=Txt::trad("CALENDAR_evtDelete");
+			}
+			if($this->affectationDeleteRight($options["_idCal"]) && count($this->affectedCalendars())>=2){
+				$options["specificOptions"][]=[
+					"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&_idCalDeleteAffectation=".$options["_idCal"]."')",
+					"iconSrc"=>"calendar/deleteEvtCal.png",
+					"label"=>Txt::trad("CALENDAR_evtDeleteCal")
+				];
+			}			
 		}
-		////	"Enlever l'événement à cette date" (Evt périodique)
-		if(!empty($options["curDateTime"]) && !empty($this->periodType) && $this->editRight())			
-			{$options["specificOptions"][]=["actionJs"=>"confirmRedir('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date('Y-m-d',$options["curDateTime"])."')", "iconSrc"=>"calendar/deleteEvtCal.png", "label"=>Txt::trad("CALENDAR_evtDeleteDate")];}
+		////	Option "Enlever l'événement à cette date" (cf. Evt répétés)
+		if(!empty($options["evtDeleteTime"]) && !empty($this->periodType) && $this->editRight()){
+			$options["specificOptions"][]=[
+				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date('Y-m-d',$options["evtDeleteTime"])."')",
+				"iconSrc"=>"calendar/deleteEvtCal.png",
+				"label"=>Txt::trad("CALENDAR_evtDeleteDate")
+			];
+		}
 		////	Agendas où est affecté l'evenement  &&  Retourne le menu
 		$options["specificLabels"][]=["label"=>$this->affectedCalendarsLabel()];
 		return parent::contextMenu($options);															
@@ -195,7 +209,7 @@ class MdlCalendarEvent extends MdlObject
 			'dayTimeEnd'	=>$dayTimeEnd,
 			'dayYmd'		=>date('Y-m-d',$dayTimeBegin),					//Date à laquelle l'evt est affiché
 			'pastEvent'		=>($this->timeEnd < time() ? 'true' : 'false'),	//Evt dans le passé ?
-			'isDraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Evt "Draggable" : sauf si périodique ou plusieurs jour
+			'isDraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Evt "Draggable" : sauf si répété ou sur plusieurs jours
 		];
 		//// Time depuis le début du jour && Durée de l'evt sur la journée
 		$evtDayBefore=($this->timeBegin < $dayTimeBegin);																	//Evt commence avant le jour courant ?
@@ -223,7 +237,7 @@ class MdlCalendarEvent extends MdlObject
 		if($this->_confirmedCalendars===null){
 			$sqlAffectations="SELECT * FROM ap_calendar WHERE _id in (select _idCal as _id from ap_calendarEventAffectation T2 WHERE _idEvt=".$this->_id;
 			$this->_confirmedCalendars=Db::getObjTab("calendar",$sqlAffectations." and confirmed=1)");				//Evts confirmés
-			$this->_propositionCalendars=Db::getObjTab("calendar", $sqlAffectations." and confirmed is null)");		//Evts proposés
+			$this->_propositionCalendars=Db::getObjTab("calendar", $sqlAffectations." and confirmed IS NULL)");		//Evts proposés
 		}
 		if($confirmed===true)		{return $this->_confirmedCalendars;}											//Retourne les evts confirmés
 		elseif($confirmed===false)	{return $this->_propositionCalendars;}											//Retourne les evts proposés

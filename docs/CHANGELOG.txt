@@ -3,6 +3,20 @@
 CHANGELOG - JOURNAL DES VERSIONS 
 --------------------------------
 
+
+VERSION 25.11.1
+---------------
+Amélioration et diverses corrections d'affichage sur mobile et tablette
+Optimisation d'affichage des événements périodiques et des événements privés
+Correction du double affichage d'evenement périodique dû au changement d'heure été/hiver
+Correction de l'affichage d'un évenement récurrent après suppression d'occurrence
+-----
+Various display improvements and fixes on mobile and tablet devices
+Optimization of display of periodic events and private events
+Fixed the issue of duplicate display of periodic events due to the summer/winter time change
+Fixed the display of a recurring event after deletion of an occurrence
+
+
 VERSION 25.10.4
 ---------------
 Amélioration de la présentation des tâches : responsables, durée, etc.

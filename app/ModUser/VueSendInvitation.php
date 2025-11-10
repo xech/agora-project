@@ -99,9 +99,10 @@ ready(function(){
 <style>
 #bodyLightbox									{max-width:500px;}
 #invitationForm input, #invitationForm textarea	{width:100%; margin-bottom:10px;}
+button											{width:330px; height:55px;}
 .orLabel										{margin:40px 0px;}/*surcharge*/
 #gPeopleImportButton							{text-align:center;}
-#gPeopleImportButton button						{height:50px; width:350px; margin-bottom:30px;}
+#gPeopleImportButton button						{margin-bottom:30px;}
 #gPeopleForm, #invitationListDiv				{display:none;}
 #gPeopleForm .contactLine						{display:inline-block; width:50%; margin-bottom:10px;}
 #gPeopleForm textarea							{margin-top:15px;}

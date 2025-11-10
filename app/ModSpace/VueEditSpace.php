@@ -67,7 +67,7 @@ label[for='allUsers']					{font-size:1.1rem;}
 .vModuleLineIcon						{vertical-align:middle; margin-left:5px;}
 div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut les options*/
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vModuleLineIcon	{display:none!important;}
 }

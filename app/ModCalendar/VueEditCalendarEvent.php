@@ -123,8 +123,8 @@ input[name='guestMail']				{margin-left:20px;}
 /*PÉRIODICITÉ*/
 #periodFieldset					 	{display:none; margin:20px 0px;}
 #periodFieldset>div					{margin-bottom:20px; line-height:30px;}/*blocks principaux*/
-.vPeriodCheckboxDays				{display:inline-block; width:14%;}
-.vPeriodCheckboxMonths				{display:inline-block; width:16%;}
+.vPeriodCheckboxDays				{display:inline-block; width:13%;}
+.vPeriodCheckboxMonths				{display:inline-block; width:15%;}
 .vPeriodDateExceptionsInput			{display:inline-block; margin:0px 10px;}
 .vPeriodDateExceptionsInput:has(input[value=''])	{display:none;}
 
@@ -146,7 +146,7 @@ input[name='guestMail']				{margin-left:20px;}
 #timeSlotBusy table:first-child		{margin-top:10px;}
 #timeSlotBusy table td:first-child	{min-width:130px; vertical-align:top; padding-right:20px;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	#beginEndSeparator								{visibility:hidden; display:block;}
 	.beginEndLabel									{display:inline-block; width:50px;}
@@ -184,7 +184,7 @@ input[name='guestMail']				{margin-left:20px;}
 	<!--PERIODICITE : SELECTION DU TYPE-->
 	<div class="vEvtOptionInline vEvtGuestHide">
 		<select name="periodType">
-			<option value=""><?= Txt::trad("CALENDAR_noPeriodicity") ?></option>
+			<option value=""><?= Txt::trad("CALENDAR_noRepeat") ?></option>
 			<option value="weekDay"><?= Txt::trad("CALENDAR_period_weekDay") ?></option>
 			<option value="month"><?= Txt::trad("CALENDAR_period_month") ?></option>
 			<option value="year"><?= Txt::trad("CALENDAR_period_year") ?></option>

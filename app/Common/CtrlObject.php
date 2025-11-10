@@ -34,29 +34,23 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionDelete()
 	{
-		// Init
-		$redirUrl=$updateDatasFolderSize=$notDeletedObjects=null;
+		////	Liste des objets à supprimer
+		$redirUrl=$datasFolderSize=$notDeletedObjects=null;
 		if(Req::isParam("objectsTypeId"))	{$objectList=self::getCurObjects();}
 		else								{$objectList=[self::getCurObj()];}
-		////	Supprime le/les objets
+		////	Supprime chaque objet
 		foreach($objectList as $cptObj=>$tmpObj){
-			//Enregistre l'Url de redirection après le delete
-			if(empty($redirUrl)){
-				if($tmpObj::isInContainer())	{$redirUrl=$tmpObj->getUrl();}					//Suppr un "content" : raffiche le "container"
-				elseif($tmpObj::isFolder==true)	{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Suppr un dossier : affiche le dossier parent 
-				else							{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
+			if(empty($redirUrl)){																						//Url de redirection après le delete :
+				if($tmpObj::isInContainer() || $tmpObj::isFolder==true)	{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Affiche le container parent (delete un "content" ou un dossier)
+				else													{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
 			}
-			//Enregistre si on doit mettre à jour le "datasFolderSize()"
-			if($tmpObj::moduleName=="file")  {$updateDatasFolderSize=true;}
-			//Delete si on a les droits  ||  Label de l'objet non supprimé (10 max)
-			if($tmpObj->deleteRight())	{$tmpObj->delete();}																		
-			elseif($cptObj<10)			{$notDeletedObjects.=$tmpObj->getLabel().'<br>';}	
+			if($tmpObj::moduleName=="file")  {$datasFolderSize=true;}													//Update datasFolderSize() ?
+			if($tmpObj->deleteRight())	{$tmpObj->delete();}															//Verif le droit d'accès puis Delete !
+			elseif($cptObj<10)			{$notDeletedObjects.=$tmpObj->getLabel().'<br>';}								//Objet non supprimé (liste 10 max)
 		}
-		////	Update le "datasFolderSize()" en session
-		if($updateDatasFolderSize==true)  {File::datasFolderSize(true);}
-		////	Objets non supprimés : affiche une notif "Certains éléments n'ont pas été supprimé.."
-		if(!empty($notDeletedObjects))  {Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete").' :<br><br>'.$notDeletedObjects);}
-		////	Redirection
+		////	FolderSize + Notif + Redirection
+		if($datasFolderSize==true)		{File::datasFolderSize(true);}																//Update le "datasFolderSize()" en session
+		if(!empty($notDeletedObjects))	{Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete").' :<br><br>'.$notDeletedObjects);}	//Notify si des objets non pas été supprimés
 		self::redir($redirUrl);
 	}
 
@@ -166,10 +160,10 @@ class CtrlObject extends Ctrl
 	{
 		if(Req::isParam(["typeId","controledName"])){
 			$curObj=Ctrl::getCurObj();																										//Récupère l'objet courant 
-			$sqlSelectors=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");	//Recherche sur le nom ou le titre
-			if(Req::isParam("typeIdContainer"))  {$sqlSelectors.=" AND _idContainer=".Ctrl::getCurObj(Req::param("typeIdContainer"))->_id;}	//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
+			$sqlSelect=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");	//Recherche sur le nom ou le titre
+			if(Req::isParam("typeIdContainer"))  {$sqlSelect.=" AND _idContainer=".Ctrl::getCurObj(Req::param("typeIdContainer"))->_id;}	//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
 			//Recherche les doublons dans les objets affectés à l'espace courant
-			$queryDuplicate="SELECT count(*) FROM ".$curObj::dbTable." WHERE ".$sqlSelectors." AND _id!=".$curObj->_id." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")";
+			$queryDuplicate="SELECT count(*) FROM ".$curObj::dbTable." WHERE ".$sqlSelect." AND _id!=".$curObj->_id." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")";
 			if(Db::getVal($queryDuplicate) > 0)  {echo "duplicateName";}
 		}
 	}

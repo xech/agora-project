@@ -85,7 +85,7 @@
 		#pageFooterHtml						{bottom:15px; left:15px; font-weight:normal; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
 		#pageFooterIcon						{bottom:5px; right:5px;}
 		#pageFooterIcon img					{max-height:70px; max-width:200px;}
-		/*RESPONSIVE MEDIUM*/
+		/*AFFICHAGE SMARTPHONE + TABLET*/
 		@media screen and (max-width:1024px){
 			#pageFooterHtml, #pageFooterIcon	{display:none;}
 		}

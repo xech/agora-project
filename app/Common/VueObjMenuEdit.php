@@ -160,8 +160,9 @@ ready(function(){ labelRightStyle(); });
 #notifMailSelectList>div				{display:inline-block; width:50%; padding:7px;}
 #notifMailUsersPlus, #notifMailSelectList, #notifMailOptions  {display:none;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
+	#objMenuTabs											{font-size:0.85rem;}
 	.objMenuTab[for='objMenuAccessRight']					{min-width:100px;}/*onglet des droits d'accès*/
 	.objMenuOptions											{padding:25px 8px;}
 	.vSpaceTable											{font-size:0.9rem;}/*Nom de l'espace et label des "targets"*/

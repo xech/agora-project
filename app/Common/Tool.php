@@ -119,7 +119,7 @@ class Tool
 				$mail->msgHTML($message.'<br><br><img src="cid:logoFooterId" style="max-height:100px">');
 			}
 
-			////	Fichiers joints à ajouter
+			////	Fichiers joints
 			if(!empty($attachedFiles)){
 				$fileSizeCpt=0;
 				foreach($attachedFiles as $tmpFile){
@@ -196,9 +196,11 @@ class Tool
 		}
 	}
 
+
 	/***************************************************************************************************************************/
 	/*******************************************	SPECIFIC METHODS	********************************************************/
 	/***************************************************************************************************************************/
+
 
 	/********************************************************************************************************
 	 *  TABLEAU DES TIMESZONES
@@ -231,7 +233,24 @@ class Tool
 		"Asia/Magadan"=>"11:00",
 		"Pacific/Fiji"=>"12:00",
 		"Pacific/Tongatapu"=>"13:00"
-	);	
+	);
+
+	/******************************************************************************************************************************
+	 *  LISTE DES JOURS SUR D'UNE PERIODE DONNEE, AVEC TIME DE DEBUT/FIN POUR CHAQUE JOUR (EVITE LES DECALAGES D'HEURE ETE/HIVER)
+	 ******************************************************************************************************************************/
+	public static function periodDays($timePeriodBegin, $timePeriodEnd)
+	{
+		$days=[];															//Init les jours
+		$nbDays=round(($timePeriodEnd-$timePeriodBegin)/86400);				//Nombre de jours sur la période
+		for($cptDays=0; $cptDays<$nbDays; $cptDays++){						//Parcourt chaque jour de la période
+			$timeDay=strtotime('+'.$cptDays.' day', $timePeriodBegin);		//Timestamp du jour courant
+			$days[date('Y-m-d',$timeDay)]=[									//Ajoute le jour courant avec la date 'Y-m-d' en clé
+				"timeBegin"=>strtotime(date('Y-m-d 00:00:00',$timeDay)),	//Time de debut du jour
+				"timeEnd"=>strtotime(date('Y-m-d 23:59:59',$timeDay))		//Time de fin du jour
+			];
+		}
+		return $days;
+	}
 
 	/********************************************************************************************************
 	 * ENVOI DES MAILS ACTIVÉ SUR LE SERVEUR

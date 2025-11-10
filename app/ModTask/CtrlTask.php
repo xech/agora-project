@@ -24,54 +24,51 @@ class CtrlTask extends Ctrl
 	{
 		////	LISTE DES TÂCHES
 		$vDatas["tasksList"]=Db::getObjTab("task", "SELECT * FROM ap_task WHERE ".MdlTask::sqlDisplay(self::$curContainer).MdlTaskStatus::sqlCategoryFilter().MdlTask::sqlSort());
-		////	TIMELINE/GANTT
+		////	TIMELINE/GANTT : LISTE DES TASKS
 		$timelineBegin=$timelineEnd=null;
 		$vDatas["timelineTasks"]=$vDatas["timelineDays"]=[];
 		//Si ya des taches qui sont sur une période : détermine la période de la timeline
-		foreach($vDatas["tasksList"] as $tmpTask)
-		{
-			//Ajoute la tache?
-			if(!empty($tmpTask->dateBegin) && !empty($tmpTask->dateEnd))
-			{
+		foreach($vDatas["tasksList"] as $tmpTask){
+			if(!empty($tmpTask->dateBegin) && !empty($tmpTask->dateEnd)){
 				//Prépare le début/fin de la timeline
-				if(empty($timelineBegin) || strtotime($tmpTask->dateBegin)<$timelineBegin)	{$timelineBegin=strtotime(date("Y-m-d 00:00",strtotime($tmpTask->dateBegin)));}
-				if(empty($timelineEnd) || strtotime($tmpTask->dateEnd)>$timelineEnd)		{$timelineEnd=strtotime(date("Y-m-d 23:59",strtotime($tmpTask->dateEnd)));}
+				if(empty($timelineBegin) || $tmpTask->timeBegin < $timelineBegin)	{$timelineBegin=strtotime(date("Y-m-d 00:00",$tmpTask->timeBegin));}
+				if(empty($timelineEnd)   || $tmpTask->timeEnd > $timelineEnd)		{$timelineEnd  =strtotime(date("Y-m-d 23:59",$tmpTask->timeEnd));}
 				//Prépare la Tache de la timeline
-				$tmpTask->timeBegin=strtotime(date("Y-m-d 00:00",strtotime($tmpTask->dateBegin)));
-				$tmpTask->timeEnd=strtotime(date("Y-m-d 23:59",strtotime($tmpTask->dateEnd)));
+				$tmpTask->timeBegin=strtotime(date("Y-m-d 00:00",$tmpTask->timeBegin));
+				$tmpTask->timeEnd=strtotime(date("Y-m-d 23:59",$tmpTask->timeEnd));
 				$tmpTask->timelineColspan=ceil(($tmpTask->timeEnd-$tmpTask->timeBegin)/86400);
 				$vDatas["timelineTasks"][]=$tmpTask;
 			}
 		}
-		//Timeline / Gantt (si besoin)
-		if(!empty($timelineBegin))
-		{
+		////	TIMELINE / GANTT
+		if(!empty($timelineBegin)){
 			//Tri les tasks de la timeline par "dateBegin"
 			usort($vDatas["timelineTasks"],function($objA,$objB){
-				return (strtotime($objA->dateBegin)-strtotime($objB->dateBegin));
+				return ($objA->timeBegin-$objB->timeBegin);
 			});
-			//Timeline sur 80 jours minimum
-			$timelineSeconds=86400 * 80;
-			if(($timelineEnd-$timelineBegin) < $timelineSeconds)   {$timelineEnd=$timelineBegin+$timelineSeconds;}
+			//Timeline sur 40 jours minimum
+			$timelineDuration=86400 * 40;
+			if(($timelineEnd-$timelineBegin) < $timelineDuration)   {$timelineEnd=$timelineBegin+$timelineDuration;}
 			//Mois et Jours du header de la timeline
 			$prevDayMonth=null;
-			for($dayTimeBegin=$timelineBegin; $dayTimeBegin<=$timelineEnd; $dayTimeBegin+=86400){
-				if($dayTimeBegin==$timelineBegin || date("j",$dayTimeBegin)==1)	{$classLeftBorder="vTimelineLeftBorder";}	//début de tableau / début de mois : bordure de gauche pour la cellule du jour
-				elseif(date("N",$dayTimeBegin)==1)								{$classLeftBorder="vTimelineLeftBorder2";}	//début de semaine : bordure de gauche plus fine
+			foreach(Tool::periodDays($timelineBegin,$timelineEnd) as $dateDay=>$tmpDay){									//Parcourt chaque jour de la période
+				$timeDayBegin=$tmpDay['timeBegin'];																			//Debut du jour courant
+				if($timeDayBegin==$timelineBegin || date("j",$timeDayBegin)==1)	{$classLeftBorder="vTimelineLeftBorder";}	//Bordure gauche de cellule (bold)  : début de tableau ou de mois
+				elseif(date("N",$timeDayBegin)==1)								{$classLeftBorder="vTimelineLeftBorder2";}	//Bordure gauche de cellule (light) : début de semaine 
 				else															{$classLeftBorder=null;}
-				$vDatas["timelineDays"][]=array(
-					"curDate"=>date('Y-m-d',$dayTimeBegin),
-					"dayTimeBegin"=>$dayTimeBegin,
-					"newMonthLabel"=>$prevDayMonth!=date("m/y",$dayTimeBegin)  ?  Txt::timeLabel($dayTimeBegin,'MMM yyyy')  :  null,
-					"newMonthColspan"=>(date("t",$dayTimeBegin)-date("j",$dayTimeBegin)+1),
+				$vDatas["timelineDays"][]=[
+					"curDate"=>$dateDay,
+					"dayTimeBegin"=>$timeDayBegin,
+					"newMonthLabel"=>$prevDayMonth!=date("m/y",$timeDayBegin)  ?  Txt::timeLabel($timeDayBegin,'MMM yyyy')  :  null,
+					"newMonthColspan"=>(date("t",$timeDayBegin)-date("j",$timeDayBegin)+1),
 					"classLeftBorder"=>$classLeftBorder,
-					"dayLabel"=>date("j",$dayTimeBegin),
-					"dayLabelTitle"=>Txt::dateLabel($dayTimeBegin)
-				);
-				$prevDayMonth=date("m/y",$dayTimeBegin);
+					"dayLabel"=>date("j",$timeDayBegin),
+					"dayLabelTitle"=>Txt::dateLabel($timeDayBegin)
+				];
+				$prevDayMonth=date("m/y",$timeDayBegin);
 			}
 		}
-		////	Affiche la vue
+		////	AFFICHE LA VUE
 		$vDatas["timelineBegin"]=$timelineBegin;
 		$vDatas["timelineEnd"]=$timelineEnd;
 		static::displayPage("VueIndex.php",$vDatas);

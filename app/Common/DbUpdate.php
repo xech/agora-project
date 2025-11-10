@@ -272,7 +272,7 @@ class DbUpdate extends Db
 				self::query("UPDATE ap_agora SET dateUpdateDb=null WHERE dateUpdateDb='0'");
 				self::query("ALTER TABLE ap_agora CHANGE `dateUpdateDb` `dateUpdateDb` DATE DEFAULT NULL");
 				self::query("UPDATE ap_agora SET skin='black' WHERE skin='noir'");
-				self::query("UPDATE ap_agora SET skin='white' WHERE skin='blanc' OR skin is null");
+				self::query("UPDATE ap_agora SET skin='white' WHERE skin='blanc' OR skin IS NULL");
 				self::query("UPDATE ap_agora SET timezone=REPLACE(timezone,'.',':')");//"-5.00" devient "-5:00"
 				//Supprime les doublons?
 				$nbRows=self::getVal("select count(*) from ap_agora");
@@ -298,7 +298,7 @@ class DbUpdate extends Db
 
 				////	MODIF LES "_idContainer" EMPTY
 				$containerContentTables=array("ap_file","ap_link","ap_task","ap_contact");
-				foreach($containerContentTables as $tmpTable)	{self::query("UPDATE ".$tmpTable." SET _idContainer='1' WHERE _idContainer is null or _idContainer='0'");}
+				foreach($containerContentTables as $tmpTable)	{self::query("UPDATE ".$tmpTable." SET _idContainer='1' WHERE _idContainer IS NULL or _idContainer='0'");}
 
 				////	MODIF LES LOGS & REINIT LES PREFERENCES DES USERS
 				self::query("UPDATE ap_log SET action='add' WHERE action='ajout'");
@@ -383,7 +383,7 @@ class DbUpdate extends Db
 
 				////	MAJ "ap_calendar" ET "ap_calendarEvent"
 				self::query("UPDATE ap_calendar SET type='user' WHERE type='utilisateur'");
-				foreach(self::getTab("SELECT * FROM ap_calendarEvent WHERE periodValues is not null") as $tmpEvt){
+				foreach(self::getTab("SELECT * FROM ap_calendarEvent WHERE periodValues IS NOT NULL") as $tmpEvt){
 					$newTmpValues=[];
 					foreach(explode(",",$tmpEvt["periodValues"]) as $tmpVal)	{$newTmpValues[]=(int)$tmpVal;}
 					self::query("UPDATE ap_calendarEvent SET periodValues=".self::formatTab2txt($newTmpValues)." WHERE _id=".$tmpEvt["_id"]);
@@ -394,7 +394,7 @@ class DbUpdate extends Db
 				self::query("UPDATE ap_calendarEvent SET periodType='year' WHERE periodType='annee'");
 
 				////	MAJ "ap_forumSubject"
-				foreach(self::getTab("SELECT * FROM ap_forumSubject WHERE usersConsultLastMessage is not null OR usersNotifyLastMessage is not null") as $tmpSubject){
+				foreach(self::getTab("SELECT * FROM ap_forumSubject WHERE usersConsultLastMessage IS NOT NULL OR usersNotifyLastMessage IS NOT NULL") as $tmpSubject){
 					if(!empty($tmpSubject["usersConsultLastMessage"]))	{$tmpSubject["usersConsultLastMessage"]=explode("uu",trim($tmpSubject["usersConsultLastMessage"],"u"));}
 					if(!empty($tmpSubject["usersNotifyLastMessage"]))	{$tmpSubject["usersNotifyLastMessage"]=explode("uu",trim($tmpSubject["usersNotifyLastMessage"],"u"));}
 					self::query("UPDATE ap_forumSubject SET usersConsultLastMessage=".self::formatTab2txt($tmpSubject["usersConsultLastMessage"]).", usersNotifyLastMessage=".self::formatTab2txt($tmpSubject["usersNotifyLastMessage"])." WHERE _id=".self::format($tmpSubject["_id"]));
@@ -563,8 +563,8 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.2.0"))
 			{
 				//Modifie l'affichage du label des modules dans la barre de menu
-				self::query("UPDATE ap_agora SET moduleLabelDisplay='hide' WHERE moduleLabelDisplay is null");
-				self::query("UPDATE ap_agora SET moduleLabelDisplay=null WHERE moduleLabelDisplay is not null AND moduleLabelDisplay NOT LIKE 'hide'");
+				self::query("UPDATE ap_agora SET moduleLabelDisplay='hide' WHERE moduleLabelDisplay IS NULL");
+				self::query("UPDATE ap_agora SET moduleLabelDisplay=null WHERE moduleLabelDisplay IS NOT NULL AND moduleLabelDisplay NOT LIKE 'hide'");
 				//Fichiers joints : 'downloadsNb' doit avoir une valeur par défaut
 				self::query("ALTER TABLE ap_objectAttachedFile CHANGE `downloadsNb` `downloadsNb` smallint NOT NULL DEFAULT '0'");
 				//Enleve la selection de couleur dans le messenger

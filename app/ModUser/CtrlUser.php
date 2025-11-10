@@ -305,7 +305,7 @@ class CtrlUser extends Ctrl
 					$mailMessage='<b>'.Ctrl::$curUser->getLabel().' '.Txt::trad("USER_mailInvitationFromSpace").' <i>'.Ctrl::$curSpace->name.' :</i></b>'.	//"Jean DUPOND vous invite sur l'espace 'Espace Bidule'"
 								 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$invitationTmp["mail"].'</b>'.													//"Email / Identifiant de connexion : truc@bidule.com"
 								 '<br>'.Txt::trad("passwordToModify").' : <b>'.$password.'</b>'.															//"Mot de passe temporaire (à modifier en page de connexion) : XXXXX"
-								 '<br><br><a href="'.$confirmUrl.'" target="_blank"><u><b>'.Txt::trad("USER_mailInvitationConfirm").'</u></b></a>'; 		//"Cliquez ici pour confirmer l'invitation"
+								 '<br><br><a href="'.$confirmUrl.'" target="_blank"><u><b>'.Txt::trad("USER_mailInvitationConfirm").'</u></b></a>'; 		//"Merci de confirmer l'invitation"
 					if(Req::isParam("comment"))  {$mailMessage.='<br><br>'.Txt::trad("comment").':<br>'.Req::param("comment");}								//"Mon commentaire..."
 					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage, ["noTimeControl"]);										//"noTimeControl" pour l'envoi de mails en série
 					//On ajoute l'invitation temporaire

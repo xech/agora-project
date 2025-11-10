@@ -18,11 +18,14 @@ function ready(thisFunction){
  * VARIABLES ET FONCTIONS PRINCIPALES
  **************************************************************************************************/
 ready(function(){
-	mainDisplay();													//Affichage principal
-	window.addEventListener("resize",function(){ mainDisplay(); });	//Relance si windows resize (ou changeorientation)
-	mainTriggers();													//Triggers principaux
-	menuContext();													//Affichage des menus contextuels
-	controleFields();												//Affichage et controle des champs de formulaire
+	mainDisplay();															//Affichage principal
+	window.addEventListener("resize",function(){ mainDisplay(); });			//Relance si windows resize ou orientationchange
+	mainTriggers();															//Triggers principaux
+	menuContext();															//Affichage des menus contextuels
+	controleFields();														//Affichage et controle des champs de formulaire
+	window.addEventListener("orientationchange",function(){					//Reload si orientationchange sur mobile/tablette
+		if(window.top.confirmCloseForm==false)  {window.location.reload();}
+	});
 });
 
 /**************************************************************************************************
@@ -59,7 +62,7 @@ function mainDisplay()
 		mainDisplayTimeout=setTimeout(function(){																				//Timeout le tps de finaliser un window resize (tps supérieur à $.fx.speeds)
 			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";			//Path courant
 			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";	//Path racine
-		},150);
+		},200);
 	}
 }
 
@@ -203,8 +206,9 @@ function menuContext()
 {
 	////	Affichages / Masquages principaux
 	$(".menuLauncher").on("click",function(event){  isMobile() ? menuMobileShow(this) : menuContextShow(this,event);  });	//Affiche si click sur .menuLauncher
-	$(".menuContext").on("mouseleave",function(){  $(".menuContext").hide();  });											//Masque si mouseleave sur .menuContext
-	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });										//Masque si click sur #menuMobileClose ou #menuMobileBg
+	$(".menuContext").on("mouseleave",function(){  $(".menuContext").hide();  });											//Masque le menu si mouseleave sur .menuContext
+	$(document).on("click",function(){  $(".menuContext").hide();  });														//Masque si click sur la page, hors du menu (cf Tablette mode paysage)
+	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });										//Masque si click sur #menuMobileClose ou #menuMobileBg (black opacity)
 	$(".menuLauncher,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });				//Pas de propagation de click (evite un download ou une sélection via "objSelectSwitch()")
 	if(!isMobile() && window.top.windowWidth>=1400){																		//Click droit sur .objContainer
 		$(".objContainer").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });				//"return false" pour annuler le menu du browser
@@ -212,17 +216,17 @@ function menuContext()
 
 	////	Swipe sur mobile
 	if(isMobile()){
-		pageScrolled=false;
-		swipeMenuActive=true;
+		pageScrolled=false;																									//Scroll en cours ?
+		swipeMenuActive=true;																								//Active le swipe par défaut (désactive sur le modCalendar)
 		document.addEventListener("touchstart",function(event){																//Début de swipe :
 			swipeXstart=event.touches[0].clientX;																			//Position X de départ
 			swipeYstart=event.touches[0].clientY;																			//Position Y de départ
 		});	
-		document.addEventListener("touchmove",function(event){																//Swipe en cours :
-			if(pageScrolled==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){									//Aucun scroll en cours && swipe d'amplitude verticale < 50px
-				let swipeDiff=(swipeXstart - event.touches[0].clientX);														//Diff entre la position X de départ et celle de fin
-				if(swipeMenuActive==true && swipeDiff > 100 && (window.top.windowWidth-swipeXstart)<250)  {menuMobileShow();}							//Swipe gauche > 100px et < 250px du bord de page : affiche
-				else if(swipeDiff < -10)																  {menuMobileClose(event.touches[0].clientX);}	//swipe droit > 10px : masque le menu (meme si swipeMenuActive==false)
+		document.addEventListener("touchmove",function(event){																							//Swipe en cours :
+			if(pageScrolled==false && $(".fancybox__content").isDisplayed()==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){				//Aucun scroll en cours && Aucune Lightbox && swipe d'amplitude verticale < 50px
+				let swipeDiff=(swipeXstart - event.touches[0].clientX);																					//Diff entre la position X de départ et celle de fin
+				if(swipeMenuActive==true && swipeDiff > 100 && (window.top.windowWidth-swipeXstart) < 250)	{menuMobileShow();}							//Swipe gauche > 100px et < 250px du bord de page : affiche
+				else if(swipeDiff < -10)																	{menuMobileClose(event.touches[0].clientX);}//swipe droit > 10px : masque le menu (meme si swipeMenuActive==false)
 			}
 		});
 		document.addEventListener("touchend",function(){																	//Fin de swipe :
@@ -301,7 +305,7 @@ function menuMobileClose(swipeXcurrent)
 }
 
 /**************************************************************************************************
- * VÉRIF AFFICHAGE MOBILE/RESPONSIVE <= 1024PX (Idem CSS & JS)
+ * VÉRIF AFFICHAGE SMARTPHONE + TABLET <= 1024PX (Idem CSS & JS)
  **************************************************************************************************/
 function isMobile()
 {
@@ -495,6 +499,21 @@ function lightboxOpen(fileSrc)
 }
 
 /**************************************************************************************************
+ * RELOAD LA PAGE PRINCIPALE DEPUIS UNE LIGHTBOX (ex: après edit d'objet)
+ **************************************************************************************************/
+function lightboxRedir(urlNotify)
+{
+	const urlObj=new URL(window.top.location.href);												//Url de la page principale (Objet)
+	const paramList=["typeId","curTime","dashboardPoll"]										//Params à récupérer ("ctrl" du module, "typeId" du dossier, "curTime" de l'agenda, affichage "dashboardPoll")
+	const urlParams=urlObj.searchParams;														//Parametres à rechercher (Objet)
+	let urlRedir=urlObj.origin + urlObj.pathname + "?ctrl="+urlParams.get("ctrl").toString();	//Url sans ses paramètres, excepté "ctrl"
+	paramList.forEach(function(param){															//Parcours chaque parametre recherché
+		if(urlParams.has(param))  {urlRedir+="&"+param+"="+urlParams.get(param).toString();}	//Ajoute le param dans urlRedir
+	});
+	window.top.location.href=urlRedir+urlNotify;												//Reload la page principale avec les nouvelles notifications
+}
+
+/**************************************************************************************************
  * WIDTH DE LA LIGHTBOX (cf max-width du body)  +  HEIGHT DYNAMIQUE  (cf show() toggle() etc.)
  **************************************************************************************************/
 function lightboxResize()
@@ -512,32 +531,15 @@ function lightboxResize()
 				if(Number.isInteger(lightboxWidth)==false) 		{lightboxWidth=650;}											//Width par défaut si "max-width" non spécifié (idem app.css)
 				if(/%/.test(cssWidth))							{lightboxWidth=(window.top.windowWidth/100) * lightboxWidth;}	//Width en % de windowWidth
 				else if(lightboxWidth > window.top.windowWidth)	{lightboxWidth=window.top.windowWidth;}							//Width doit être inférieur à windowWidth
-				lightboxContent.style.width =lightboxWidth+"px";																//Applique le width à lightboxContent
-				lightboxIframe.style.width  =lightboxWidth+"px";																//Applique le width à lightboxIframe
-				let lightboxHeight=document.body.scrollHeight;																	//Height du body de l'iframe
+				lightboxContent.style.width=lightboxIframe.style.width=lightboxWidth+"px";										//Applique le width à lightboxContent & lightboxIframe
+				let lightboxHeight=(window.top.windowWidth <= 490) ? window.top.windowHeight : document.body.scrollHeight;		//Toute la hauteur sur smartphone (cf. fancybox en fullpage) || Height du body de l'iframe
 				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){								//Init ou ajuste le lightboxHeight (après show(), fadeIn(), etc)
-					lightboxContent.style.height =lightboxHeight+"px";															//Applique le height à lightboxContent
-					lightboxIframe.style.height	 =lightboxHeight+"px";															//Applique le height à lightboxIframe
+					lightboxContent.style.height=lightboxIframe.style.height=lightboxHeight+"px";								//Applique le height à lightboxContent & lightboxIframe
 					lightboxHeightLast=lightboxHeight;																			//Enregistre le height
 				}
-			},150);
+			},200);
 		}
 	});
-}
-
-/**************************************************************************************************
- * RELOAD LA PAGE PRINCIPALE DEPUIS UNE LIGHTBOX (ex: après edit d'objet)
- **************************************************************************************************/
-function lightboxRedir(urlNotify)
-{
-	const urlObj=new URL(window.top.location.href);												//Url de la page principale (Objet)
-	const paramList=["typeId","curTime","dashboardPoll"]										//Params à récupérer ("ctrl" du module, "typeId" du dossier, "curTime" de l'agenda, affichage "dashboardPoll")
-	const urlParams=urlObj.searchParams;														//Parametres à rechercher (Objet)
-	let urlRedir=urlObj.origin + urlObj.pathname + "?ctrl="+urlParams.get("ctrl").toString();	//Url sans ses paramètres, excepté "ctrl"
-	paramList.forEach(function(param){															//Parcours chaque parametre recherché
-		if(urlParams.has(param))  {urlRedir+="&"+param+"="+urlParams.get(param).toString();}	//Ajoute le param dans urlRedir
-	});
-	window.top.location.href=urlRedir+urlNotify;												//Reload la page principale avec les nouvelles notifications
 }
 
 /**************************************************************************************************

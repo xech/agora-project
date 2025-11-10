@@ -18,7 +18,7 @@ ready(function(){
 #fieldsetResponsiblePersons	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
 .divResponsiblePerson		{display:inline-block; width:33%; padding:5px;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vTaskOptions			{display:block; margin:30px 0px 0px 0px;}
 	.divResponsiblePerson	{width:100%;}	

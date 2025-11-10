@@ -51,10 +51,10 @@ ready(function(){
 	 ********************************************************************************************************/
 	if(isMobile()){
 		////	SWIPE GAUCHE/DROITE POUR AFFICHER LA PERIODE PRECEDENTE/SUIVANTE
-		swipeMenuActive=false;																						//Params désactivé : cf menuContext()
+		swipeMenuActive=false;																						//Désactive l'affichage du menu context via swipe : cf menuContext()
 		document.addEventListener("touchstart",function(event){ buttonPeriod=null; });								//Début de swipe
 		document.addEventListener("touchmove",function(event){														//Lance le swipe de navigation
-			if($("#menuMobileMain").isDisplayed()==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){	//Menu contextuel masqué && Swipe < 50px d'amplitude verticale
+			if($("#menuMobileMain").isDisplayed()==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){	//Menu context masqué && Swipe < 50px d'amplitude verticale
 				if((event.touches[0].clientX - swipeXstart) > 100)		{buttonPeriod=".vCalPrev";}					//Swipe à gauche > 100px : période précédente
 				else if((swipeXstart - event.touches[0].clientX) > 100)	{buttonPeriod=".vCalNext";}					//Swipe à droite > 100px : période suivante
 			}
@@ -142,8 +142,9 @@ function moduleDisplay()
 .vEvtLabel										{overflow:hidden; font-size:0.9rem; font-weight:normal; color:white!important;}
 .vEvtLabel img									{margin-left:5px;}
 
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
+	.vCalMain.miscContainer						{margin:0px;}/*surcharge .miscContainer*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
 	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}

@@ -89,7 +89,7 @@ ready(function(){
 .vConnectOptions>div						{display:table-cell; padding:0px 15px;}
 .g_id_signin								{margin:40px auto!important; width:300px;}/*button gOAuth & Iframe*/
 
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
 	#headerBar								{font-size:1rem;}/*surcharge*/
 	#headerBar span							{display:none;}

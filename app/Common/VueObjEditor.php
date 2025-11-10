@@ -170,7 +170,7 @@
 .descriptionTextarea	{margin-bottom:20px; <?= ($toggleButton==true && empty($curObj->description)) ?"display:none;":null ?>}	/*Textarea masqué par défaut ?*/
 .tox-promotion			{display:none;}/*Masque le bouton "Upgrade !"*/
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.descriptionToggle	{display:block; margin:0px; margin-top:20px; margin-bottom:10px!important;}
 }

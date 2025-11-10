@@ -7,7 +7,7 @@
 .vLogAction img			{max-height:16px;}
 .vNoLogs				{padding:15px; text-align:center;}
 
-/*RESPONSIVE SMARTPHONE*/
+/*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.vLogsRow, .vLogsRow>div	{display:block!important; width:100%!important;}
 	.vLogsRow					{margin-bottom:20px;}

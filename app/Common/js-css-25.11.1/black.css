@@ -2,7 +2,7 @@
 body, a, .sLink																							{color:#ccc;}
 #htmlLightbox, .objContainer, .miscContainer, .menuContext, #menuMobileMain								{background:black;}
 #headerBar																								{background:linear-gradient(to bottom,black,#222);}/*barre principale*/
-#headerBar, .objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #aaa; transition:box-shadow 0.3s ease-in-out;}
+#headerBar, .objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #555; transition:box-shadow 0.3s ease-in-out;}
 .objBlocks .objContainer:hover																			{box-shadow:2px 2px 10px #fff;}
 .objLines .objContainer																					{border-bottom:solid 1px #555;}
 .menuContext,  #messengerMain, .tox-tinymce																{border:solid 1px #444;}
@@ -10,11 +10,11 @@ body, a, .sLink																							{color:#ccc;}
 .objContainerSelect, .lineSelect, #objSelectMenu														{background:#444!important;}
 .tooltipster-box																						{background:black!important; box-shadow:0px 0px 12px #bbb!important;}
 .tooltipster-content																					{color:#eee!important; padding:15px!important;}
-/*RESPONSIVE MEDIUM*/
+/*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
-	#htmlMainPage					{background:#222 url(../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#htmlMainPage					{background:#222 url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 	#headerBar						{border-top:solid 1px #ddd;}/*séparation de la "appBar" du main.dart*/
-	.objContainer, .miscContainer	{box-shadow:2px 2px 6px #aaa;}
+	.objContainer, .miscContainer	{box-shadow:0px 2px 6px #555;}
 }
 
 /*** LIENS & OPTIONS*/
@@ -27,7 +27,7 @@ a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button
 
 /*** MENU DES MODULES*/
 #headerMenuRight *:is(.vHeaderModuleCurrent,.vHeaderModule:hover)	{background:black; border:solid 1px #444!important;}
-#menuMobileMain  *:is(.vHeaderModuleCurrent,.miscContainer)			{background:#333; border:solid 1px #ddd; box-shadow:0px 2px 6px #555;}
+#menuMobileMain  *:is(.vHeaderModuleCurrent,.miscContainer)			{background:#333; border:solid 1px #555; box-shadow:0px 2px 6px #555;}
 
 /*** INPUTS*/
 input, textarea, select												{color:#ccc; background:#333; border:1px solid #555;}

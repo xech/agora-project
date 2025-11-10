@@ -95,7 +95,7 @@ class Trad extends Txt
 			"connectAuto"=>"Rester connecté",
 			"connectAutoTooltip"=>"Mémoriser mes identifiants pour une connexion automatique",
 			"gOAuthUserUnknown"=>"n'est pas enregistré sur l'espace",
-			"connectSpaceSwitch"=>"Me connecter à un autre espace",
+			"connectSpaceSwitch"=>"Changer d'espace Omnispace",
 			"guestAccess"=>"Connexion invité",
 			"guestAccessTooltip"=>"Me connecter à cet espace en tant qu'invité",
 			"publicSpacePasswordError"=>"Mot de passe erroné",
@@ -663,13 +663,13 @@ class Trad extends Txt
 			"USER_sendInvitationTooltip"=>"Envoyer des mails d'invitation à rejoindre l'espace courant :<br> Dès qu'une invitation est validée, un compte utilisateur est automatiquement créé pour la personne concernée.",
 			"USER_mailInvitationObject"=>"Invitation de",
 			"USER_mailInvitationFromSpace"=>"vous invite sur l'espace",
-			"USER_mailInvitationConfirm"=>"Cliquez ici pour confirmer l'invitation",
+			"USER_mailInvitationConfirm"=>"Merci de confirmer l'invitation",
 			"USER_mailInvitationWait"=>"Invitation(s) en attente de confirmation",
 			"USER_exired_idInvitation"=>"Le lien de votre invitation a expiré...",
 			"USER_invitPassword"=>"Confirmez votre invitation",
 			"USER_invitPassword2"=>"Choisissez votre mot de passe puis validez votre invitation",
 			"USER_invitationValidated"=>"Votre invitation a été validée !",
-			"USER_gPeopleImport"=>"Importer mes contacts Google / Gmail",
+			"USER_gPeopleImport"=>"Importer mes contacts Gmail",
 			"USER_quotaExceeded"=>"Quota du nombre d'utilisateur atteint. Merci de contacter l'administrateur de l'espace.",
 			"USER_importQuotaExceeded"=>"Vous êtes limité à --USERS_QUOTA_REMAINING-- nouveaux comptes utilisateurs, sur un total de --LIMITE_NB_USERS-- utilisateurs",
 			// groupes
@@ -858,14 +858,14 @@ class Trad extends Txt
 			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda : <br>- ''Affichage de la plage horaire'' : montre le créneau occupé mais masque les détails de l'événement<br>- ''Affichage privé'' : masque l'événement dans l'agenda",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Agenda partagé de l'espace",
-			"CALENDAR_noPeriodicity"=>"Une seule fois",
+			"CALENDAR_noRepeat"=>"Une seule fois",
 			"CALENDAR_period_weekDay"=>"Toutes les semaines",
 			"CALENDAR_period_month"=>"Tous les mois",
 			"CALENDAR_period_monthDetail"=>"Tous les --DATE-- du mois",
 			"CALENDAR_period_year"=>"Tous les ans",
 			"CALENDAR_period_yearDetail"=>"Tous les --DATE-- de l'année",
-			"CALENDAR_periodDateExceptions"=>"Exception de répétition",
-			"CALENDAR_periodDateEnd"=>"Fin de répétition",
+			"CALENDAR_periodDateExceptions"=>"Date d'exception de répétition",
+			"CALENDAR_periodDateEnd"=>"Date de fin de répétition",
 			"CALENDAR_calendarAffectations"=>"Affectation aux agendas",
 			"CALENDAR_addEvt"=>"Nouvel événement",
 			"CALENDAR_addEvtTooltip"=>"Ajouter un événement à l'agenda",
@@ -994,11 +994,11 @@ class Trad extends Txt
 		$dateList[$year."-12-25"]="Noël";
 		if(function_exists("easter_date")){
 			$easterTime=easter_date($year);
-			$dateList[date('Y-m-d',$easterTime)]			="Pâques";
-			$dateList[date('Y-m-d',$easterTime+86400)]		="Lundi de Pâques";
-			$dateList[date('Y-m-d',$easterTime+(86400*39))]	="Jeudi de l'Ascension";
-			$dateList[date('Y-m-d',$easterTime+(86400*49))]	="Pentecôte";
-			$dateList[date('Y-m-d',$easterTime+(86400*50))]	="Lundi de pentecôte";
+			$dateList[date('Y-m-d',$easterTime)]						="Pâques";
+			$dateList[date('Y-m-d',strtotime("+1 days",$easterTime))]	="Lundi de Pâques";
+			$dateList[date('Y-m-d',strtotime("+39 days",$easterTime))]	="Jeudi de l'Ascension";
+			$dateList[date('Y-m-d',strtotime("+49 days",$easterTime))]	="Pentecôte";
+			$dateList[date('Y-m-d',strtotime("+50 days",$easterTime))]	="Lundi de pentecôte";
 		}
 		$tmpDates=Txt::timeChangeDates($year);
 		$dateList[$tmpDates["summer"]]="Heure d'été";
