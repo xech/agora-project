@@ -36,9 +36,9 @@ class MdlForumSubject extends MdlObject
 		return Db::getObjTab("forumMessage", "SELECT * FROM ap_forumMessage WHERE _idContainer=".$this->_id." ".MdlForumMessage::sqlSort());
 	}
 
-	/************************************************************************************************
+	/********************************************************************************************************
 	 * L'USER COURANT VIENT DE CONSULTER LE SUJET ET LE DERNIER MESSAGE : AJOUTE A LA LISTE EN BDD
-	 ************************************************************************************************/
+	 ********************************************************************************************************/
 	public function usersConsultUpdate()
 	{
 		if(Ctrl::$curUser->isUser() && $this->alreadyConsulted()==false){

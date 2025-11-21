@@ -43,16 +43,16 @@ class MdlSpace extends MdlObject
  
 	 /********************************************************************************************************
 	  * SURCHARGE : DROIT DE SUPPRESSION DE L'ESPACE POUR L'USER COURANT
-	  *******************************************************************************************/
+	  ********************************************************************************************************/
 	 public function deleteRight()
 	 {
 		 return (Ctrl::$curUser->isGeneralAdmin() && $this->isCurSpace()==false);
 	 }
 
-	/*****************************************************************************************************************
+	/*********************************************************************************************************
 	 * DROIT D'ACCÈS D'UN USER À L'ESPACE
 	 * admin => 2 || user lambda ou guest => 1 || aucun accès => 0
-	 *****************************************************************************************************************/
+	 *********************************************************************************************************/
 	public function accessRightUser($objUser)
 	{
 		if(empty($this->_usersAccessRight[$objUser->_id])){									//Init "_usersAccessRight" si pas encore en "cache"
@@ -64,9 +64,9 @@ class MdlSpace extends MdlObject
 		return $this->_usersAccessRight[$objUser->_id];										//Renvoie le droit d'accès
 	}
 
-	/*****************************************************************************************************************
+	/*********************************************************************************************************
 	 * AFFECTATION D'UN USER À L'ESPACE : DROIT MAXI || "allUsers" SELECTIONNÉ
-	*****************************************************************************************************************/
+	**********************************************************************************************************/
 	public function userAffectation($objUser)
 	{
 		return (int)Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");

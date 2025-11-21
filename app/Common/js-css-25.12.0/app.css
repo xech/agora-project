@@ -18,29 +18,17 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 	::-webkit-scrollbar	{width:8px!important;}
 }
 
-/*** CONTENEURS PRINCIPAUX DE LA PAGE*/
+/*** CONTENEURS PRINCIPAUX  && "CONTENEUR" DES OBJETS*/
 #headerBar											{display:table; width:100%; max-width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; user-select:none;}
 #headerBar>div										{display:table-cell; vertical-align:middle!important;}
 #headerBar>div:last-child							{text-align:right;}
-#pageFull, #pageCenter								{display:table; max-width:100%; margin-bottom:70px;}	/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
-#pageFull											{width:100%;}											/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
-#pageCenter											{margin-left:auto; margin-right:auto;}					/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage entre 1024px et 1366px*/
+#pageFull, #pageCenter								{display:table; max-width:100%; margin-bottom:70px;}						/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
+#pageFull											{width:100%;}																/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
+#pageCenter											{margin-left:auto; margin-right:auto;}										/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage entre 1024px et 1366px*/
 #moduleMenu, #pageContent							{display:table-cell;}
 #moduleMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
 #pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
-/*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
-	#pageFull, #pageCenter, #pageContent	{display:block; max-width:100%;}
-	#pageContent .objBlocks					{padding-right:0px;}
-}
-/*** PRINT*/
-@media print{
-	html, body				{background-image:none; background-color:white!important; color:#333;}
-	#pageFull, #pageCenter	{margin:0px!important; margin-top:30px!important;}
-	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
-}
-
-/*** DIV "CONTENEUR" DES OBJETS*/
+/*** OBJETS */
 .objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; border-radius:5px; box-sizing:border-box; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
 .objContainer										{height:100px; min-height:100px; position:relative; padding:0px;}			/*"height"+"min-height" pour l'overflow" du "objContainerScroll""*/
 .objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
@@ -68,11 +56,18 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
 /*AFFICHAGE SMARTPHONE + TABLET*/
 @media screen and (max-width:1024px){
-	.objContainer, .miscContainer					{margin:5px; border-radius:8px!important;}									/*tester affichage de news, fichiers, agendas, tâches*/
-	.objContainer *									{max-width:100%!important; word-break:break-word!important;}				/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
-	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller sur mobile*/
+	#pageFull, #pageCenter, #pageContent			{display:block; max-width:100%!important; word-break:break-word!important;}	/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
+	.miscContainer, .objContainer					{margin:7px; border-radius:8px!important;}									/*tester affichage de news, fichiers, agendas, tâches*/
+	#pageContent.miscContainer						{margin:0px!important;}														/*cf site public*/
+	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller vertical sur mobile*/
 	.objIcon										{width:60px!important;}														/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
 	.objIconOpacity, .objDetails, .objAutorDate		{display:none;}																/*toujours masqué*/
+}
+/*AFFICHAGE PRINT*/
+@media print{
+	html, body				{background-image:none; background-color:white!important; color:#333;}
+	#pageFull, #pageCenter	{margin:0px!important; margin-top:30px!important;}
+	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
 }
 
 /*** MENU PATH DES OBJETS (PATH D'UN DOSSIER, DU FORUM, MENU DASHBOARD)*/
@@ -202,7 +197,7 @@ select option										{font-size:1.1rem;}
 .spaceAffectLine							{display:table; width:100%; max-width:100%;}/*Input d'affectation d'user à un espace*/
 .spaceAffectLine img						{max-width:15px;}
 .spaceAffectLine>*							{display:table-cell; padding:8px;}	/*label ou div pour de checkbox*/
-.spaceAffectLine>div						{text-align:center; width:130px;}	/*checkboxes*/
+.spaceAffectLine>div						{text-align:center; width:140px;}	/*checkboxes*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.objBlocks .objContainer.objPerson		{height:140px; min-height:140px;}

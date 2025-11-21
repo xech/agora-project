@@ -47,21 +47,21 @@ function mainDisplay()
 
 		////	Width des objets en affichage "block"
 		if($(".objBlocks .objContainer").exist()){
-			let marginRight=parseInt($(".objContainer").css("margin-right"));									//Marges de l'objet (cf. "app.css")
-			let widthMin=parseInt($(".objContainer").css("min-width")) + marginRight;							//width Min
-			let widthMax=parseInt($(".objContainer").css("max-width")) + marginRight;							//width Max
-			let lineNbObjs=Math.ceil(containerWidth / widthMax);												//Nb maxi d'objets par ligne : tester sur mobile !
-			if(containerWidth < (widthMin*2))				{widthObj=containerWidth;}							//On peut afficher qu'un objet par ligne : prend toute la largeur
-			else if($(".objContainer").length<lineNbObjs)	{widthObj=widthMax;}								//Pas assez d'objets pour remplir la 1ère ligne : largeur max
-			else											{widthObj=Math.floor(containerWidth/lineNbObjs);}	//Width en fonction du width disponible et du nb d'objets par ligne
-			$(".objContainer").outerWidth(widthObj,true);														//Applique le width des objets (true pour prendre en compte les margins)
+			let objMargins=parseFloat($(".objContainer").css("margin-left")) + parseFloat($(".objContainer").css("margin-right"));	//Marges de l'objet (cf. "app.css")
+			let widthMin  =parseFloat($(".objContainer").css("min-width")) + objMargins;											//width Min
+			let widthMax  =parseFloat($(".objContainer").css("max-width")) + objMargins;											//width Max
+			let lineNbObjs=Math.ceil(containerWidth / widthMax);																	//Nb maxi d'objets par ligne : tester sur mobile !
+			if(containerWidth < (widthMin*2))				{widthObj=containerWidth;}												//On peut afficher qu'un objet par ligne : prend toute la largeur
+			else if($(".objContainer").length<lineNbObjs)	{widthObj=widthMax;}													//Pas assez d'objets pour remplir la 1ère ligne : largeur max
+			else											{widthObj=Math.floor(containerWidth/lineNbObjs);}						//Width en fonction du width disponible et du nb d'objets par ligne
+			$(".objContainer").outerWidth(widthObj,true);																			//Applique le width des objets (true = includeMargin)
 		}
 
 		////	Width de la fenêtre enregistré dans un Cookie
-		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}											//Un seul timeout
-		mainDisplayTimeout=setTimeout(function(){																				//Timeout le tps de finaliser un window resize (tps supérieur à $.fx.speeds)
-			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";			//Path courant
-			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";	//Path racine
+		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}												//Un seul timeout
+		mainDisplayTimeout=setTimeout(function(){																					//Timeout le tps de finaliser un window resize (tps supérieur à $.fx.speeds)
+			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";				//Path courant
+			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";		//Path racine
 		},200);
 	}
 }

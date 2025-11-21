@@ -555,7 +555,7 @@ INSERT INTO `ap_space` SET `_id`=1, `name`='Agora', `usersInvitation`=1;
 
 INSERT INTO `ap_user` SET `_id`=1, `generalAdmin`=1, `dateCrea`=NOW(), `_idUser`=1;
 
-INSERT INTO `ap_userMessenger` SET `_idUserMessenger`=1, `allUsers`=1;
+INSERT INTO `ap_userMessenger` SET `_idUserMessenger`=1, `allUsers`=1;é
 
 INSERT INTO `ap_joinSpaceUser` SET `_idSpace`=1, `allUsers`=1, `accessRight`=1;
 
@@ -579,7 +579,7 @@ INSERT INTO `ap_calendarCategory` (`_id`, `color`, `title`) VALUES
 (2,'#000088','Reunion'), 
 (3,'#dd7700','Vacances'), 
 (4,'#007700','Personnel'), 
-(5,'#bf0073','Evenement répété');
+(5,'#bf0073','Evenement r&eacute;p&eacute;t&eacute;');
 
 INSERT INTO `ap_contactFolder` SET `_id`=1, `_idContainer`=0;
 INSERT INTO `ap_fileFolder` SET `_id`=1, `_idContainer`=0;

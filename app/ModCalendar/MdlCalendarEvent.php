@@ -23,13 +23,14 @@ class MdlCalendarEvent extends MdlObject
 	const hasNotifMail=true;
 	public static $requiredFields=["title","dateBegin","timeBegin","dateEnd","timeEnd"];
 	public static $searchFields=["title","description"];
+	private $_affectedCalendars=null;
 	private $_confirmedCalendars=null;
-	private $_propositionCalendars=null;
+	private $_proposedCalendars=null;
 	private $_mainCalendarObj=null;
 
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
-	*******************************************************************************************/
+	*********************************************************************************************************/
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
@@ -42,7 +43,7 @@ class MdlCalendarEvent extends MdlObject
 		$this->eventColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555";
 		//Visibilité par défaut
 		if(empty($this->contentVisible))  {$this->contentVisible="public";}
-		//Masque le title/description si besoin
+		//Masque le détail aux users n'ayant qu'un accès en lecture (voir aucun accès)
 		if($this->readRight()==false || ($this->accessRight()==1 && $this->contentVisible=="public_cache")){
 			$this->title="<i>".Txt::trad("CALENDAR_evtPrivate")."</i>";
 			$this->description=null;
@@ -55,14 +56,14 @@ class MdlCalendarEvent extends MdlObject
 	public function accessRight()
 	{
 		if($this->_accessRight===null){
-			////	ACCES TOTAL POUR L'AUTEUR ET L'ADMIN GENERAL
-			if(parent::accessRight()==3)	{return 3;}
+			////	ACCES TOTAL : AUTEUR & ADMIN GENERAL
+			if(parent::accessRight()==3)  {return 3;}
 			////	DROIT EN FONCTION DES AGENDAS AUQUELS L'EVT EST AFFECTÉ
 			else{
 				$editCalsCpt=$readCalsCpt=0;
 				foreach($this->affectedCalendars() as $objCalendar){								//Parcourt les affectations aux agendas
-					if($objCalendar->editRight())		{$editCalsCpt++;}							//Droit d'éditer l'agenda
-					elseif($objCalendar->readRight())	{$readCalsCpt++;}							//Droit de lecture
+					if($objCalendar->editContentRight())	{$editCalsCpt++;}						//Droit d'éditer le contenu
+					elseif($objCalendar->readRight())		{$readCalsCpt++;}						//Droit de lecture
 				}
 				if(count($this->affectedCalendars())==$editCalsCpt)		{$this->_accessRight=2;}	//Droit en écriture : affecté uniquement à des agendas "writable"
 				elseif(!empty($editCalsCpt) || !empty($readCalsCpt))	{$this->_accessRight=1;}	//Droit en lecture  : affecté à des agendas "writable" et/ou "readable"
@@ -119,7 +120,7 @@ class MdlCalendarEvent extends MdlObject
 	{
 		if($this->_mainCalendarObj===null){
 			$accessRightMax=0;																														//Init le droit d'accès le + élevé
-			foreach($this->affectedCalendars(true) as $tmpCal){																						//Parcours la liste des agendas où est affecté l'événement
+			foreach($this->affectedCalendars(true) as $tmpCal){																						//Liste des agendas où l'affectation de l'evt est confirmé
 				if($tmpCal->isMyPersoCalendar())					{$this->_mainCalendarObj=$tmpCal;	break;}										//Renvoie l'agenda perso && stop la boucle
 				elseif($accessRightMax < $tmpCal->accessRight())	{$this->_mainCalendarObj=$tmpCal;	$accessRightMax=$tmpCal->accessRight();}	//Sinon récupère l'agenda avec le droit d'accès le + élevé
 			}
@@ -195,9 +196,9 @@ class MdlCalendarEvent extends MdlObject
 		}
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * PROPRIETES DES L'EVT (cf .vEvtBlock)
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public function attributes($return, $dayTimeBegin, $dayTimeEnd)
 	{
 		//// Attributs de l'evt
@@ -234,14 +235,15 @@ class MdlCalendarEvent extends MdlObject
 	 ********************************************************************************************************/
 	public function affectedCalendars($confirmed="all")
 	{
-		if($this->_confirmedCalendars===null){
+		if($this->_affectedCalendars===null){
 			$sqlAffectations="SELECT * FROM ap_calendar WHERE _id in (select _idCal as _id from ap_calendarEventAffectation T2 WHERE _idEvt=".$this->_id;
-			$this->_confirmedCalendars=Db::getObjTab("calendar",$sqlAffectations." and confirmed=1)");				//Evts confirmés
-			$this->_propositionCalendars=Db::getObjTab("calendar", $sqlAffectations." and confirmed IS NULL)");		//Evts proposés
+			$this->_confirmedCalendars	=Db::getObjTab("calendar",$sqlAffectations." and confirmed=1)");		//Evts déjà confirmés
+			$this->_proposedCalendars	=Db::getObjTab("calendar", $sqlAffectations." and confirmed IS NULL)");	//Evts proposés
+			$this->_affectedCalendars	=array_merge($this->_confirmedCalendars, $this->_proposedCalendars);	//Evts confirmés & proposés
 		}
-		if($confirmed===true)		{return $this->_confirmedCalendars;}											//Retourne les evts confirmés
-		elseif($confirmed===false)	{return $this->_propositionCalendars;}											//Retourne les evts proposés
-		elseif($confirmed=="all")	{return array_merge($this->_confirmedCalendars,$this->_propositionCalendars);}	//Retourne les evts confirmés + proposés
+		if($confirmed==="all")		{return $this->_affectedCalendars;}
+		elseif($confirmed===true)	{return $this->_confirmedCalendars;}
+		elseif($confirmed===false)	{return $this->_proposedCalendars;}
 	}
 
 	/********************************************************************************************************

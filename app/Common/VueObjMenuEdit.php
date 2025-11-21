@@ -162,11 +162,10 @@ ready(function(){ labelRightStyle(); });
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	#objMenuTabs											{font-size:0.85rem;}
-	.objMenuTab[for='objMenuAccessRight']					{min-width:100px;}/*onglet des droits d'accès*/
-	.objMenuOptions											{padding:25px 8px;}
-	.vSpaceTable											{font-size:0.9rem;}/*Nom de l'espace et label des "targets"*/
-	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}/*colonne des checkboxes*/
+	#objMenuTabs, .objMenuOptions							{font-size:0.85rem;}	/*menu des option + Détail des options*/
+	.objMenuOptions											{padding:25px 10px;}	/*détail des options*/
+	.vSpaceTable>div>div									{padding:3px;}		/*cellules du tableau des droits d'accès*/
+	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}		/*colonne des checkboxes des droits d'accès*/
 	.objMenuTab img, .vSpaceTable img, .vSpaceTargetIcon	{display:none;}
 }
 </style>
@@ -174,8 +173,7 @@ ready(function(){ labelRightStyle(); });
 
 <?php
 ////	MENU DES DROITS D'ACCES ET DES OPTIONS
-if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNotifMail) || !empty($objMenuAttachedFile) || !empty($objMenuShortcut)))
-{
+if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNotifMail) || !empty($objMenuAttachedFile) || !empty($objMenuShortcut))){
 	////	ONGLETS DES MENUS (droits d'accès / fichier joint / notif mail / shortcut)
 	echo '<div id="objMenuTabs">';
 		if(!empty($objMenuAccessRight))  	{echo '<div for="objMenuAccessRight"  class="objMenuTab"><img src="app/img/accessRight.png">'.$objMenuAccessRightLabel.'</div>';}
@@ -185,12 +183,10 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 	echo '</div>';
 
 	////	MENU DES DROITS D'ACCES (OBJETS INDEPENDANTS)
-	if(!empty($objMenuAccessRight))
-	{
+	if(!empty($objMenuAccessRight)){
 		echo '<div class="objMenuOptions" id="objMenuAccessRight">';
 		//DROITS D'ACCES DE CHAQUE ESPACE
-		foreach($accessRightSpaces as $tmpSpace)
-		{
+		foreach($accessRightSpaces as $tmpSpace){
 			//BLOCK + TABLEAU + ENTETE DE L'ESPACE (nom de l'espace + entete des droits d'acces)
 			echo '<div class="vSpaceTable">
 						<div class="vSpaceHeader">
@@ -200,8 +196,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 							<div class="vSpaceWrite" '.Txt::tooltip("accessWriteTooltip").'>'.Txt::trad("accessWrite").'</div>
 						</div>';
 			//TARGETS DE L'ESPACE (id des checkboxes deja dans "boxProp"!)
-			foreach($tmpSpace->targetLines as $targetLine)
-			{
+			foreach($tmpSpace->targetLines as $targetLine){
 				$targetHide=(!empty($targetLine["isChecked"]) || ($tmpSpace->isCurSpace() && count($tmpSpace->targetLines)<5))  ?  null  :  "vSpaceTargetHide";		//Affiche les targets "checked"" ou toutes celles de l'espace courant s'il compte moins de 5 users
 				$targetIconAdmin=(!empty($targetLine["onlyFullAccess"]))  ?  "vSpaceTargetIconAdmin"  :  null;														//Icone d'un admin de l'espace?
 				$targetIcon=(!empty($targetLine["icon"]))  ?  '<img src="app/img/'.$targetLine["icon"].'" class="vSpaceTargetIcon '.$targetIconAdmin.'">'  : null;	//Icone spécifiée pour la target?
@@ -222,8 +217,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		echo '</div>';
 	}
 	////	MENU DES NOTIFS MAIL
-	if(!empty($objMenuNotifMail))
-	{
+	if(!empty($objMenuNotifMail)){
 		echo '<div class="objMenuOptions" id="objMenuNotifMail">';
 		//CHECKBOX PRINCIPALE & BLOCK DES OPTIONS
 		$notifMailTooltip=$curObj->tradObject("EDIT_notifMailTooltip");

@@ -4,6 +4,25 @@ CHANGELOG - JOURNAL DES VERSIONS
 --------------------------------
 
 
+VERSION 25.12.0
+---------------
+Amélioration du menu d'upload de fichier
+Amélioration du contrôle d'extensions des fichiers uploadés
+Amélioration du menu des droits d'accès sur mobile
+Optimisation du module Historique des événements
+Librairie Datatable mise à jour en v2.3.5 (module Historique des événements)
+Réhabilitation du droit d'édition d'un événement pour les users étant ni auteur ni administrateur
+Correction d'affichage sur l'application IOS pour Ipad
+-----
+Improved file upload menu
+Improved file extension control for uploaded files
+Improved mobile access rights menu
+Event History module optimization
+Datatable library updated to v2.3.5 (Event History module)
+Reinstatement of the right to edit an event for users who are neither author nor administrator
+Display correction on the iOS iPad app
+
+
 VERSION 25.11.1
 ---------------
 Amélioration et diverses corrections d'affichage sur mobile et tablette
@@ -507,9 +526,9 @@ VERSION 3.8.0 (2021-03)
 -----------------------
 Nouvelle option pour ajouter une visio aux newsletters
 Nouvelle option pour récupérer/renvoyer d'anciennes newsletters, depuis l'historique
-Nouvelle option de notification par e-mail pour les demandes d'inscription à un espace
-Nouvelle option de notification par e-mail pour les propositions d'événements des agendas (utilisateurs/invités)
-Nouvelle option de notification par e-mail pour les dossiers
+Nouvelle option de notification par email pour les demandes d'inscription à un espace
+Nouvelle option de notification par email pour les propositions d'événements des agendas (utilisateurs/invités)
+Nouvelle option de notification par email pour les dossiers
 Nouvelle option "Répondre à" dans les notifications par mail
 Nouvelle option de tri des utilisateurs en fonction de la dernière connexion ou la date de création
 Nouvelle option d'export de contacts/utilisateurs au format Vcard

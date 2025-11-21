@@ -218,7 +218,7 @@ class Req
 	public static function isMobileApp()
 	{
 		if(self::$_isMobileApp===null){
-			self::$_isMobileApp=(!empty($_COOKIE["mobileAppli"]) && (preg_match('/android|iphone|ipad|ipod/i',$_SERVER['HTTP_USER_AGENT']) || preg_match('/(?=.*macintosh)(?=.*mobile)/i',$_SERVER['HTTP_USER_AGENT'])));
+			self::$_isMobileApp=(!empty($_COOKIE["mobileAppli"]) && preg_match("/(android|iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT']));
 		}
 		return self::$_isMobileApp;
 	}

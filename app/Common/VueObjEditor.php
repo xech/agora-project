@@ -69,9 +69,9 @@
 		});
 	});
 
-	/********************************************************************************************************
+	/******************************************************************************************
 	 *	VERIFIE SI LE CONTENU DE L'EDITEUR EST VIDE
-	********************************************************************************************/
+	*******************************************************************************************/
 	function isEmptyEditor()
 	{
 		var content=tinymce.activeEditor.getContent();	//Récupère le contenu de l'éditeur
@@ -79,31 +79,30 @@
 		return ($.trim(content).length==0);				//Renvoie "true" si l'éditeur est vide
 	}
 
-	/********************************************************************************************************
+	/******************************************************************************************
 	 *	RENVOIE LE CONTENU DE L'EDITEUR  (cf. "editorDraft")
-	********************************************************************************************/
+	*******************************************************************************************/
 	function editorContent()
 	{
 		var content=tinymce.activeEditor.getContent();
 		if(/attachedFileTagTmp/i.test(content)==false)  {return content;}//Verif s'il ya un fichier temporaire (format "Blob" trop lourd)
 	}
 
-	/********************************************************************************************************
+	/******************************************************************************************
 	 *	VERIFIE SI LE FICHIER PEUT ETRE INSEREES DANS L'EDITEUR : IMG / VIDEO / MP3
-	********************************************************************************************/
+	*******************************************************************************************/
 	function isType(fileType, fileName)
 	{
-		if(fileType=="editorInsert")		{var fileTypes=["<?= implode('","',File::fileTypes("editorInsert")) ?>"];}	//Images/vidéos/Mp3
-		else if(fileType=="editorImage")	{var fileTypes=["<?= implode('","',File::fileTypes("editorImage")) ?>"];}	//Images
-		else if(fileType=="editorVideo")	{var fileTypes=["<?= implode('","',File::fileTypes("editorVideo")) ?>"];}	//Vidéos
-		else if(fileType=="mp3")			{var fileTypes=["<?= implode('","',File::fileTypes("mp3")) ?>"];}			//Mp3
+		if(fileType=="editorInsert")		{var fileTypes=[<?= "'".implode("','",File::fileTypes("editorInsert"))."'" ?>];}	//Images/vidéos/Mp3
+		else if(fileType=="editorImage")	{var fileTypes=[<?= "'".implode("','",File::fileTypes("editorImage"))."'" ?>];}		//Images
+		else if(fileType=="editorVideo")	{var fileTypes=[<?= "'".implode("','",File::fileTypes("editorVideo"))."'" ?>];}		//Vidéos
 		else								{var fileTypes=[];}
 		return fileTypes.includes(extension(fileName));
 	}
 
-	/****************************************************************************************************************************************************
+	/***********************************************************************************************
 	 *	FICHIER JOINT : INSERE UNE IMAGE/VIDEO/MP3 DANS L'EDITEUR  (cf. "VueObjAttachedFile.php")
-	*****************************************************************************************************************************************************/
+	************************************************************************************************/
 	function attachedFileInsert(fileId, displayUrl)
 	{
 		fileId=fileId.toString().replace("attachedFileInput","");					//Id de l'input ou du fichier en Bdd
@@ -133,9 +132,9 @@
 		else  {tinymce.activeEditor.selection.setContent(fileTag);}
 	}
 
-	/****************************************************************************************************************************************************
+	/*********************************************************************************************************************************
 	 *	FICHIER JOINT : REMPLACE LE "SRC" TEMPORAIRE AU FORMAT "BLOB", PAR UN ID TEMPORAIRE MODIFIÉ ENSUITE VIA "attachedFileAdd()"
-	*****************************************************************************************************************************************************/
+	**********************************************************************************************************************************/
 	$("form").on("submit",function(){
 		$(tinymce.activeEditor.getBody()).find("[id*=attachedFileTagTmp]").each(function(){	//Récupère le contenu de l'éditeur : parcourt les balises avec un Id "attachedFileTagTmp"
 			let fileSrcTmp=this.id.replace("attachedFileTagTmp","attachedFileSrcTmp");		//Init le src du fichier temporaire, à partir de son Id  (ex: "attachedFileTagTmpXX" -> "attachedFileSrcTmpXX")
@@ -144,9 +143,9 @@
 		});
 	});
 
-	/****************************************************************************************************************************************************
-	 *	FICHIER JOINT : AJOUTE VIA DRAG-DROP DANS L'ÉDITEUR  (Tjs charger avant "tinymce.init")
-	*****************************************************************************************************************************************************/
+	/******************************************************************************************
+	 *	FICHIER JOINT : AJOUTE VIA DRAG-DROP DANS L'ÉDITEUR  (charger avant "tinymce.init")
+	*******************************************************************************************/
 	const imageUploadHandler = (blobInfo, progress) => new Promise((resolve, reject) => {
 		let fileName=blobInfo.blob().name;																				//Récupère le fileName du fichier "dropped"
 		if(fileName!=undefined && isType("editorImage",fileName)){														//Affiche un nouvel "attachedFileInput" et y ajoute les datas de l'image

@@ -12,8 +12,8 @@
  */
 class CtrlLog extends Ctrl
 {
-	public static $fieldsList=["date","userName","spaceName","moduleName","action","objectType","comment"];
 	const moduleName="log";
+	public static $logFields=["date","userName","moduleName","objectType","action","comment"];
 
 	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -21,66 +21,43 @@ class CtrlLog extends Ctrl
 	public static function actionDefault()
 	{
 		if(Ctrl::$curUser->isSpaceAdmin()==false)  {self::noAccessExit();}
-		static::displayPage("VueIndex.php");
+		$vDatas["logList"]=self::logList();
+		static::displayPage("VueIndex.php",$vDatas);
 	}
 
 	/********************************************************************************************************
-	 * LISTE DES LOGS DE TOUT LE SITE / DE L'ESPACE
+	 * LISTE DES LOGS DE L'ESPACE COURANT
 	 ********************************************************************************************************/
 	public static function logList()
 	{
-		$results=[];
-		//Filtre uniquement les logs de l'espace (simple admin d'espace et plus d'un espace disponible)
-		$sqlCurSpace=(Ctrl::$curUser->isGeneralAdmin()==false && Db::getVal("select count(*) from ap_space")>1)  ?  "WHERE _idSpace=".Ctrl::$curSpace->_id  :  null;
-		//Renvoie la liste des logs 
-		foreach(Db::getTab("SELECT * FROM ap_log ".$sqlCurSpace." ORDER BY date desc") as $tmpLog)
-		{
-			//Init
-			$curLog=[];
-			//Ajoute chaque champ du log
-			foreach(static::$fieldsList as $tmpField)
-			{
-				if($tmpField=="date")			{$curLog["date"]=substr($tmpLog["date"],0,16);}
-				elseif($tmpField=="userName")	{$curLog["userName"]=Ctrl::getObj("user",$tmpLog["_idUser"])->getLabel();}
-				elseif($tmpField=="spaceName")	{$curLog["spaceName"]=Ctrl::getObj("space",$tmpLog["_idSpace"])->name;}
-				elseif($tmpField=="moduleName"){
-					$moduleTrad=strtoupper($tmpLog["moduleName"])."_MODULE_NAME";
-					$curLog["moduleName"]=(Txt::isTrad($moduleTrad))  ?  Txt::trad($moduleTrad)  :  $tmpLog["moduleName"];
-				}
-				elseif($tmpField=="action"){
-					$actionTrad="LOG_".$tmpLog["action"];
-					$curLog["action"]=Txt::isTrad($actionTrad)  ?  Txt::trad($actionTrad)  :  $tmpLog["action"];
-				}
-				elseif($tmpField=="objectType"){
-					if(!empty($tmpLog["objectType"]) && stristr($tmpLog["objectType"],"folder"))	{$curLog["objectType"]=Txt::trad("OBJECTfolder");}//dossier
-					elseif(Txt::isTrad("OBJECT".$tmpLog["objectType"]))								{$curLog["objectType"]=Txt::trad("OBJECT".$tmpLog["objectType"]);}//autre objet
-					else																			{$curLog["objectType"]=null;}
-				}else{
-					$curLog[$tmpField]=$tmpLog[$tmpField];
-				}
-			}
-			//Ajoute le log
-			$results[]=$curLog;
+		$logList=Db::getTab("SELECT * FROM ap_log WHERE _idSpace=".Ctrl::$curSpace->_id." ORDER BY date desc");				//Récupère les logs de l'espace courant
+		foreach($logList as $logKey=>$log){
+			if(!empty($log["date"]))		{$log["date"]=substr($log["date"],0,16);}										//Label des heures
+			if(!empty($log["_idUser"]))		{$log["userName"]=Ctrl::getObj("user",$log["_idUser"])->getLabel();}			//Label des users
+			if(!empty($log["moduleName"]))	{$log["moduleName"]=Txt::trad(strtoupper($log["moduleName"])."_MODULE_NAME");}	//label des modules
+			if(!empty($log["objectType"]))	{$log["objectType"]=Txt::trad("OBJECT".$log["objectType"]);}					//Label du type d'objet
+			if(!empty($log["action"]))		{$log["action"]=Txt::trad("LOG_".$log["action"]);}								//Label des actions
+			$logList[$logKey]=$log;																							//Update le log
 		}
-		return $results;
+		return $logList;
 	}
 
 	/********************************************************************************************************
-	 * INPUT "SELECT" POUR FILTER LES LOGS EN FONCTION D'UN CHAMP DES LOGS
+	 * INPUT <SELECT> POUR FILTRER LES LOGS EN FONCTION D'UN CHAMP
 	 ********************************************************************************************************/
-	public static function fieldFilterSelect($fieldName)
+	public static function selectFilter($logList, $fieldName)
 	{
-		//Récupère les options du menu
-		$optionsFilter=null;
-		$sqlGetVals=($fieldName=="spaceName")  ?  "SELECT DISTINCT `name` FROM ap_space ORDER BY `name` asc"  :  "SELECT DISTINCT ".$fieldName." FROM ap_log ORDER BY ".$fieldName." asc";
-		foreach(Db::getCol($sqlGetVals)  as  $tmpVal){
-			if(Txt::isTrad("LOG_".$tmpVal))									{$tmpLabel=Txt::trad("LOG_".$tmpVal);}//"action"
-			elseif(Txt::isTrad(strtoupper($tmpVal)."_MODULE_NAME"))	{$tmpLabel=Txt::trad(strtoupper($tmpVal)."_MODULE_NAME");}//"moduleName"
-			else															{$tmpLabel=$tmpVal;}//"spaceName"
-			$optionsFilter.="<option value=\"".$tmpLabel."\">".$tmpLabel."</option>";
+		$selectValues=[];																			//Liste des valeurs du champ
+		foreach($logList as $log){																	//Parcourt chaque logs de la liste
+			$logVal=$log[$fieldName];																//Valeur du champs du logs courant
+			if(!empty($logVal) && !in_array($logVal,$selectValues))  {$selectValues[]=$logVal;}		//Incrémente si besoin la liste des valeurs
 		}
-		//renvoie le "select" du champ
-		return "<select name=\"search_".Txt::trad("LOG_".$fieldName)."\" class='searchInit'><option value=''>".Txt::trad("LOG_filter")." ".Txt::trad("LOG_".$fieldName)."</option>".$optionsFilter."</select>";
+		$selectOptions='<option value="">'.Txt::trad("LOG_".$fieldName).'</option>';				//Init les options du <select>
+		foreach($selectValues as $value){															//Ajoute chaque option
+			$selectOptions.='<option value="'.$value.'">'.$value.'</option>';
+		}
+		$selectTooltip=Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_".$fieldName));	//Tooltip du <select>
+		return '<select '.$selectTooltip.'>'.$selectOptions.'</select>';							//Renvoie le filtre <select>
 	}
 
 	/********************************************************************************************************
@@ -89,15 +66,13 @@ class CtrlLog extends Ctrl
 	public static function actionLogsDownload()
 	{
 		if(Ctrl::$curUser->isSpaceAdmin()==false)  {self::noAccessExit();}
-		//Init le fichier & Entete des logs
-		$fileContent=null;
-		foreach(CtrlLog::$fieldsList as $tmpFieldId)	{$fileContent.='"'.Txt::trad("LOG_".$tmpFieldId).'";';}
-		$fileContent.="\n";
-		//Liste des logs
-		foreach(self::logList() as $tmpLog){
-			foreach($tmpLog as $tmpLogVal)	{$fileContent.='"'.$tmpLogVal.'";';}
-			$fileContent.="\n";
+		$csv=null;																							//Init le csv
+		foreach(static::$logFields as $fieldName)	{$csv.='"'.Txt::trad("LOG_".$fieldName).'";';}			//Entete : champs des logs
+		$csv.="\n";																							//Retour à la ligne
+		foreach(self::logList() as $tmpLog){																//Ajoute chaque logs
+			foreach(static::$logFields as $fieldName)	{$csv.='"'.Txt::clean($tmpLog[$fieldName]).'";';}	//Ajoute chaque champ du log
+			$csv.="\n";																						//Retour à la ligne
 		}
-		File::download(Ctrl::$agora->name." - LOGS.csv", false, $fileContent);
+		File::download('LOGS - '.Ctrl::$agora->name.' - '.Ctrl::$curSpace->getLabel().'.csv', false, $csv);	//Download le CSV
 	}
 }

@@ -41,7 +41,7 @@ class CtrlFile extends Ctrl
 			////	Url du label/icone
 			$tmpFile->labelLink='onclick="confirmRedir(\''.$tmpFile->urlDownload().'\',\''.Txt::trad("download").' ?\')"';
 			if(File::isType("editorImage",$tmpFile->name))			{$tmpFile->iconLink='data-src="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Image
-			elseif(File::isType("lightboxTxt",$tmpFile->name))			{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}			//Pdf/txt
+			elseif(File::isType("lightboxTxt",$tmpFile->name))		{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}			//Pdf/txt
 			elseif(File::isType("lightboxPlayer",$tmpFile->name))	{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->filePath().'\')"';}			//Vidéo/Mp3
 			else													{$tmpFile->iconLink=$tmpFile->labelLink;}												//Idem labelLink
 			////	Tooltip
@@ -194,10 +194,10 @@ class CtrlFile extends Ctrl
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	FICHIERS ENVOYÉS VIA "PLUPLOAD"
 			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
-				$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
-				if(is_dir($tmpDirPath)){
-					foreach(scandir($tmpDirPath) as $tmpFileName){
-						$tmpFilePath=$tmpDirPath.$tmpFileName;
+				$tmpFolderPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
+				if(is_dir($tmpFolderPath)){
+					foreach(scandir($tmpFolderPath) as $tmpFileName){
+						$tmpFilePath=$tmpFolderPath.$tmpFileName;
 						if(is_file($tmpFilePath))  {$newFiles[]=["error"=>0, "tmp_name"=>$tmpFilePath, "name"=>$tmpFileName, "size"=>filesize($tmpFilePath)];}//Parametres idem à $_FILES
 					}
 				}
@@ -216,8 +216,7 @@ class CtrlFile extends Ctrl
 			$tmpDatasFolderSize=File::datasFolderSize();
 			foreach($newFiles as $tmpFile){
 				////	Controle du fichier
-				if(File::uploadControl($tmpFile,$tmpDatasFolderSize))
-				{
+				if(File::uploadControl($tmpFile,$tmpDatasFolderSize)){
 					////	Vérifie si un autre fichier existe déjà avec le meme nom
 					if(Db::getVal("SELECT count(*) FROM ap_file WHERE _idContainer=".(int)$curObj->_idContainer." AND _id!=".$curObj->_id." AND name=".Db::format($tmpFile["name"]))>0)
 						{Ctrl::notify(Txt::trad("NOTIF_fileName")." :<br><br>".$tmpFile["name"]);}
@@ -249,7 +248,7 @@ class CtrlFile extends Ctrl
 			}
 			////	Notifie par mail?  &&  Supprime le dossier temporaire?  &&  Maj du nouveau "datasFolderSize" (force)  &&  Ferme la page
 			if(!empty($lastObjFile))  {$lastObjFile->sendMailNotif(implode("<br><br>",$notifFilesLabel), $notifFiles);}
-			if(!empty($tmpDirPath) && is_dir($tmpDirPath))  {File::rm($tmpDirPath);}
+			if(!empty($tmpFolderPath) && is_dir($tmpFolderPath))  {File::rm($tmpFolderPath);}
 			File::datasFolderSize(true);
 			static::lightboxRedir();
 		}
@@ -265,14 +264,15 @@ class CtrlFile extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
-		if(Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName")) && !empty($_FILES)){
-			//Init/Crée le dossier temporaire
-			$tmpDirPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
-			if(!is_dir($tmpDirPath))  {mkdir($tmpDirPath);}
-			//Vérifie l'accès au dossier temporaire && y place chaque fichier correctement uploadé
-			if(is_writable($tmpDirPath)){
+		if(!empty($_FILES) && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
+			////	Init/Crée le dossier temporaire
+			$tmpFolderPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
+			if(!file_exists($tmpFolderPath))  {mkdir($tmpFolderPath);}
+			////	Vérifie l'accès au dossier 
+			if(is_writable($tmpFolderPath)){
 				foreach($_FILES as $tmpFile){
-					if(File::uploadControl($tmpFile))  {move_uploaded_file($tmpFile["tmp_name"], $tmpDirPath.$tmpFile["name"]);}
+					//place chaque fichier correctement uploadé
+					if(File::uploadControl($tmpFile))  {move_uploaded_file($tmpFile["tmp_name"], $tmpFolderPath.$tmpFile["name"]);}
 				}
 			}
 		}

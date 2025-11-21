@@ -23,10 +23,10 @@ class Txt
 	{
 		//Charge les trads en session
 		if(empty(self::$trad)){
-			if(Req::isParam("curTrad") && preg_match('/^[a-zA-Z]$/',Req::param("curTrad")))		{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
-			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))						{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad de la config de l'user
-			elseif(!empty(Ctrl::$agora->lang))													{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad de la config générale
-			elseif(empty($_SESSION["curTrad"])){																								//Trad du browser
+			if(Req::isParam("curTrad") && preg_match('/^[A-Z]+$/i',Req::param("curTrad")))	{$_SESSION["curTrad"]=Req::param("curTrad");}	//Trad demandée
+			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))					{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad de la config de l'user
+			elseif(!empty(Ctrl::$agora->lang))												{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad de la config générale
+			elseif(empty($_SESSION["curTrad"])){																							//Trad du browser
 				$browserTrad=(!empty($_SERVER["HTTP_ACCEPT_LANGUAGE"]))  ?  $_SERVER["HTTP_ACCEPT_LANGUAGE"]  :  null;
 				if(preg_match("/^en/i",$browserTrad))		{$_SESSION["curTrad"]="english";}
 				elseif(preg_match("/^es/i",$browserTrad))	{$_SESSION["curTrad"]="espanol";}
@@ -84,9 +84,9 @@ class Txt
 		}
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * AFFICHE UN TITLE / TOOLTIP DANS UNE BALISE
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function tooltip($text, $titleAttr=true)
 	{
 		if(!empty($text)){

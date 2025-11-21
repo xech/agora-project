@@ -367,7 +367,7 @@ class CtrlMisc extends Ctrl
 			static::$isMainPage=true;
 			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";									//Url de download du fichier
 			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT'])){								//Sur IOS
-				$vDatas["appUrl"]="http://apps.apple.com/fr/app/omnispace/id1296301531";							//Lien vers l'AppStore
+				$vDatas["appUrl"]="https://apps.apple.com/fr/app/omnispace/id1296301531";							//Lien vers l'AppStore
 			}
 			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT'])){											//Sur Android	
 				$intentUrl=Req::curUrl(false).'/index.php?ctrl='.Req::param("ctrl");								//Url à afficher dans l'appli   (ex: "www.mon-espace.net/agora/index.php?ctrl=file")

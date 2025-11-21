@@ -199,7 +199,6 @@ class MdlFile extends MdlObject
 		elseif(File::isType("archive",$this->name))			{return $pathFileTypes."archive.png";}
 		elseif(File::isType("audio",$this->name))			{return $pathFileTypes."audio.png";}
 		elseif(File::isType("video",$this->name))			{return $pathFileTypes."video.png";}
-		elseif(File::isType("web",$this->name))				{return $pathFileTypes."web.png";}
 		else												{return $pathFileTypes."misc.png";}
 	}
 

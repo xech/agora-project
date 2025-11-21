@@ -166,7 +166,7 @@ ready(function(){
 .vWeekScroller						{position:relative; overflow-y:scroll; overflow-x:hidden;}				/*Partie visible de l'agenda*/
 .vWeekHeader, .vWeekTable			{width:100%; border-collapse:collapse;}									/*Tableau du libellé des jours et de la grille des heures*/
 .vCalLabelDays span					{margin-left:5px;}														/*Nb du jour du mois*/
-.vPublicHoliday						{margin-left:5px; vertical-align:top;}									/*Icone du jour férié*/
+.vPublicHoliday						{margin-left:10px;}														/*Icone du jour férié*/
 .vWeekHeaderScrollbar				{width:12px;}															/*Width "fantome" de la scrollbar de .vWeekScroller*/
 .vWeekHourLabel						{width:35px; vertical-align:top; color:#888; font-size:0.9rem;}			/*Libellé des heures sur la 1ere colonne du tableau*/
 .vWeekCell							{vertical-align:top; font-size:0.1rem; padding:0px; border:0px solid <?= Ctrl::$agora->skin=="white"?"#dededf" : "#333" ?>; border-left-width:1px;}/*Cellule des créneaux de 15mn*/

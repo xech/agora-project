@@ -22,9 +22,6 @@ ready(function(){
 .vDetails>div					{display:table-cell; vertical-align:middle; line-height:25px;}/*'line-height' : cf '.personImgSmall'*/
 .vDetails>div:last-child		{text-align:right;}
 .vLastMessage					{margin-top:5px;}
-
-/*Messages & citation de message : "quote"*/
-.vMessages						{border-left:5px solid #bbb; border-radius:8px;}
 .vMessageQuoted					{position:relative; display:block; overflow:auto; max-height:100px; margin:15px 0px; padding:10px; padding-left:40px; font-style:italic;}/*"position:relative" : cf. "vMessageQuotedImg" */
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 

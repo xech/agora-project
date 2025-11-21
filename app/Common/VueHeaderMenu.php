@@ -69,7 +69,6 @@ ready(function(){
 				<!--ADMIN GENERAL :  EDIT TOUS LES USERS  +  PARAMETRAGE GENERAL  +  HISTORIQUE DES EVENEMENTS (LOGS)-->
 				<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 				<hr>
-				<div class="menuLine" onclick="redir('?ctrl=log')"><div class="menuIcon"><img src="app/img/log.png"></div><div><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></div></div>
 				<div class="menuLine" onclick="redir('?ctrl=user&displayUsers=all')"><div class="menuIcon"><img src="app/img/user/iconSmall.png"></div><div><?= Txt::trad("USER_allUsers") ?></div></div>
 				<div class="menuLine" onclick="redir('?ctrl=agora')"><div class="menuIcon"><img src="app/img/settingsGeneral.png"></div><div><?= Txt::trad("AGORA_generalSettings") ?></div></div>
 				<?php } ?>
@@ -101,6 +100,7 @@ ready(function(){
 					<?= $spaceListMenu==true ? '<hr>' : null ?>
 					<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curSpace->getUrl('edit') ?>')"><div class="menuIcon"><img src="app/img/settingsCurSpace.png"></div><div><?= Txt::trad("SPACE_config") ?> <i><?= Txt::reduce(Ctrl::$curSpace->name,35) ?></i></div></div>
 					<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?><div class="menuLine" onclick="redir('?ctrl=space')" <?= Txt::tooltip("SPACE_moduleTooltip") ?> ><div class="menuIcon"><img src="app/img/settingsSpaces.png"></div><div><?= Txt::trad("SPACE_manageAllSpaces") ?></div></div><?php } ?>
+					<div class="menuLine" onclick="redir('?ctrl=log')"><div class="menuIcon"><img src="app/img/log.png"></div><div><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></div></div>
 					<div class="menuLine <?= empty($_SESSION['displayAdmin'])?'option':'optionSelect' ?>" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>><div class="menuIcon"><img src="app/img/eye.png"></div><div><?= Txt::trad("HEADER_displayAdmin") ?></div></div>
 				<?php } ?>
 			</div>

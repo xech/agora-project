@@ -331,8 +331,7 @@ abstract class Ctrl
 			$moduleName=Req::$curCtrl;
 			$sqlObjectType=$sqlObjectId=null;
 			////	Element : ajoute les détails (nom, titre, chemin, etc)
-			if(MdlObject::isObject($curObj))
-			{
+			if(MdlObject::isObject($curObj)){
 				//init
 				$moduleName=$curObj::moduleName;
 				$sqlObjectType=$curObj::objectType;

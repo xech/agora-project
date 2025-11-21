@@ -39,7 +39,7 @@ class File
 	}
 
 	/********************************************************************************************************
-	 * TABLEAU DES EXTENSIONS DE FICHIERS
+	 * TYPES DE FICHIERS ET LEURS EXTENSIONS ASSOCIÉES
 	 ********************************************************************************************************/
 	public static function fileTypes($typeKey)
 	{
@@ -52,7 +52,6 @@ class File
 				'calc'=>['xls','xlsx','xlsm','xlt','xltx','ods','sxc'],
 				'presentation'=>['ppt','pptx','pptm','pps','ppsx','odp','sxi'],
 				'archive'=>['zip','rar','7z','tar','gz','tgz','bz2'],
-				'web'=>['html','htm','xhtml','css'],
 				'image'=>['jpg','jpeg','png','gif','bmp','tif','tiff','svg','psd','ai','bmp','webp','ico'],
 				'imageResize'=>['jpg','jpeg','png'],
 				'video'=>['mp4','mpg','mpeg','webm','mkv','flv','avi','mov','wmv','ogv'],
@@ -61,20 +60,21 @@ class File
 				'autocad'=>['dwg','dxf'],
 				'data'=>['csv','json','xml','db','dbf','mdb','accdb'],
 				'misc'=>['log','ics','ical','ifb','vcs','vcf','ai','yaml','yml','gpx','kml','map'],
-				'editorInsert'=>['jpg','jpeg','png','gif','mp4','webm','mp3'],//Medias intégrables dans l'éditeur TinyMce
+				'editorInsert'=>['jpg','jpeg','png','gif','mp4','webm'],//Gérés via TinyMce
 				'editorImage'=>['jpg','jpeg','png','gif','svg'],
 				'editorVideo'=>['mp4','webm'],
-				'lightboxTxt'=>['pdf','txt','text','csv','md'],//Medias affichés via lightbox
-				'lightboxPlayer'=>['mp4','webm','mp3'],
+				'lightboxTxt'=>['pdf','txt','text','csv','md'],//Affichés via Fancybox
+				'lightboxPlayer'=>['mp4','webm','mp3']
+				////'forbidden'=>['html','htm','shtml','xhtml','css','js','jse','php','phtml','php3','php4','php5','php7','php8','asp','aspx','jsp','jspx','htaccess','sql','apk','deb','dmg','rpm','sh','pkg','app','appx','ipa','cgi','conf','config','ini','exe','dll','com','bat','msi','msix','bin','cmd','run','jar','elf','so','iso','scr','vbs','vbe','pl','py','pyc','pyo','lnk','bak','swp','wsf','sys','bundle','plugin']
 			];
 		}
-		////	Renvoie tous les types de fichier : whitelist
-		if($typeKey=="allowedExtensions"){
+		////	Renvoie tous les fichiers : "allowed" whitelist
+		if($typeKey=='allowed'){
 			$fileTypes=[];
-			foreach(static::$_fileTypes as $tmpTypes)  {$fileTypes=array_merge($fileTypes,$tmpTypes);}
+			foreach(static::$_fileTypes as $tmpExtensions)	{$fileTypes=array_merge($fileTypes,$tmpExtensions);}
 			return $fileTypes;
 		}
-		////	Renvoie une liste spécifique de types de fichier
+		////	Renvoie les fichiers d'un type spécifique
 		elseif(array_key_exists($typeKey,static::$_fileTypes)){
 			return static::$_fileTypes[$typeKey];
 		}
@@ -83,7 +83,7 @@ class File
 	}
 
 	/********************************************************************************************************
-	 * EXTENSION DU FICHIER -> SANS LE POINT !
+	 * EXTENSION DU FICHIER -> SANS LE POINT
 	 ********************************************************************************************************/
 	public static function extension($fileName)
 	{
@@ -103,19 +103,19 @@ class File
 	 *******************************************************************************************************/
 	public static function uploadControl($tmpFile, $tmpDatasFolderSize=null)
 	{
-		//Controle l'accès au fichier (tjs "clearstatcache" avant "is_file" des fichiers temporaires)
+		////	Controle l'accès au fichier ("clearstatcache" des fichiers temporaires : tjs avant "is_file")
 		clearstatcache();
 		if($tmpFile["error"]==0 && is_file($tmpFile["tmp_name"])){
 			////	Init le $datasFolderSize
 			$datasFolderSize=(!empty($tmpDatasFolderSize))  ?  $tmpDatasFolderSize  :  self::datasFolderSize();
-			////	Récupère le type mime du fichier
+			////	Type mime du fichier (en complément du controle d'extension)
 			$finfo=finfo_open(FILEINFO_MIME_TYPE);
-			$isForbiddenType=preg_match("/(php|javascript|shell|x-sh|binary|exec|debian|perl|python|ruby|java|msdownload)/i", finfo_file($finfo,$tmpFile["tmp_name"]));
+			$forbiddenTypeMime=preg_match("/(php|javascript|shell|x-sh|binary|exec|debian|perl|python|ruby|java|msdownload)/i", finfo_file($finfo,$tmpFile["tmp_name"]));
 			////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
-			if(self::isType("allowedExtensions",$tmpFile["name"])==false || $isForbiddenType==true)		{Ctrl::notify(Txt::trad("NOTIF_fileVersionForbidden")." : ".$tmpFile["name"]);  return false;}
-			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)	{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
-			elseif(($datasFolderSize+$tmpFile["size"]) > limite_espace_disque)							{Ctrl::notify("NOTIF_diskSpace");  return false;}
-			else																						{return true;}
+			if(self::isType("allowed",$tmpFile["name"])==false || $forbiddenTypeMime==true)					{Ctrl::notify($tmpFile["name"].' : '.Txt::trad("NOTIF_fileNotAllowed"));  return false;}
+			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)		{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
+			elseif(($datasFolderSize+$tmpFile["size"]) > limite_espace_disque)								{Ctrl::notify("NOTIF_diskSpace");  return false;}
+			else																							{return true;}
 		}
 	}
 

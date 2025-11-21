@@ -51,7 +51,7 @@ class MdlPerson extends MdlObject
 				"firstName"=>"Given Name",
 				"name"=>"Name",
 				"name"=>"Family Name",
-				"mail"=>"E-mail 1 - Value",
+				"mail"=>"Email 1 - Value",
 				"telmobile"=>"Phone 1 - Value",
 				"function"=>"Organization 1 - Title",
 				"companyOrganization"=>"Société",
@@ -99,7 +99,7 @@ class MdlPerson extends MdlObject
 				"country"=>"Home Country",
 				"telephone"=>"Home Phone",
 				"telmobile"=>"Mobile Phone",
-				"mail"=>"E-mail Address",
+				"mail"=>"Email Address",
 				"comment"=>"Notes"
 			)
 		),
