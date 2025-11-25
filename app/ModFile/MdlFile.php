@@ -78,7 +78,7 @@ class MdlFile extends MdlObject
 	{
 		$urlDownload="?ctrl=file&action=FileDownload&typeId=".$this->_typeId;								//Url de base
 		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}							//Download une version spécifique
-		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlMobileFileDownload($urlDownload,$this->name);}	//Download via CtrlMisc
+		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlDownloadMobileApp($urlDownload,$this->name);}	//Download via CtrlMisc
 		return $urlDownload;																				//Retourne l'Url
 	}
 

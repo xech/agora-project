@@ -773,7 +773,7 @@ class MdlObject
 			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);									//Path/chemin réel du fichier
 			if(is_file($file["path"])){																								//Vérifie que le fichier est bien accessible
 				$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
-				if(Req::isMobileApp())  {$file["urlDownload"]=CtrlMisc::urlMobileFileDownload($file["urlDownload"],$file["name"]);}	//Url de download via CtrlMisc
+				if(Req::isMobileApp())  {$file["urlDownload"]=CtrlMisc::urlDownloadMobileApp($file["urlDownload"],$file["name"]);}	//Url de download via CtrlMisc
 				$file["parentObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
 				$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier ou de l'image (cf "actionAttachedFileDisplay()")
 				if(File::isType("editorImage",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf "descriptionMail()")

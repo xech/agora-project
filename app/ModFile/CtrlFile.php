@@ -89,7 +89,7 @@ class CtrlFile extends Ctrl
 		if(Req::isParam("typeId")){
 			//Récupère le fichier et controle le droit d'accès
 			$curFile=self::getCurObj();
-			if(is_object($curFile) &&  ($curFile->readRight() || CtrlMisc::controlMobileFileDownload($curFile->name))){
+			if(is_object($curFile) &&  ($curFile->readRight() || CtrlMisc::controlDownloadMobileApp($curFile->name))){
 				//Affiche dans le browser ou l'appli (pdf/img/video)  OU  Download direct du fichier
 				if(Req::isParam("displayFile"))   {File::display($curFile->filePath());}
 				else{

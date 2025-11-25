@@ -82,10 +82,10 @@ function mainTriggers()
 	Fancybox.bind("[data-fancybox='images'],.fancyboxImages", {l10n:fancyboxLang, Thumbs:fancyboxThumbs, Toolbar:fancyboxToolbar});
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
 
-	////	Click d'objet : sélection  ||  DblClick : édition
-	$(".objContainer").off("click dblclick").on("click dblclick",function(event){	//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
-		if(event.type=="dblclick" && $(this).attr("data-urlEdit"))			{lightboxOpen($(this).attr("data-urlEdit"));}
-		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
+	////	DblClick : édition  ||  Click : sélection
+	$(".objContainer").off("click dblclick").on("click dblclick",function(event){																//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
+		if(event.type=="dblclick" && $(this).attr("data-urlEdit") && isTouchDevice()==false)	{lightboxOpen($(this).attr("data-urlEdit"));}	//Pas de "dblclick" pour sur app mobile
+		else if(event.type=="click" && $(".objSelectCheckbox").exist())							{objSelectSwitch(this.id);}
 	});
 
 	////	Menu du module flottant
@@ -214,8 +214,8 @@ function menuContext()
 		$(".objContainer").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });				//"return false" pour annuler le menu du browser
 	}
 
-	////	Swipe sur mobile
-	if(isMobile()){
+	////	Affichage swipe sur mobile
+	if(isTouchDevice()){
 		pageScrolled=false;																									//Scroll en cours ?
 		swipeMenuActive=true;																								//Active le swipe par défaut (désactive sur le modCalendar)
 		document.addEventListener("touchstart",function(event){																//Début de swipe :
@@ -374,7 +374,7 @@ function notify(curMessage, notifType)
 ready(function(){
 	confirmParamsDefault={
 		animation:"zoom",							//Animation en entrée/sortie
-		boxWidth: isMobile() ? "380px" : "500px",	//Width de la box
+		boxWidth: isMobile() ? "390px" : "500px",	//Width de la box
 		closeIcon:true,								//Icone "close"
 		useBootstrap:false,							//Pas de dépendence à bootstrap
 	}
@@ -475,10 +475,10 @@ function asyncSubmit(thisForm)
  *******************************************************************************************************************/
 function lightboxOpen(fileSrc)
 {
-	if(isMainPage==false)						{window.top.lightboxOpen(fileSrc);}													//Relance lightboxOpen() depuis la page "parent"
-	else if(/pdf/i.test(fileSrc) && isMobile())	{window.top.open(fileSrc);}															//Pdf sur mobile
-	else if(/pdf|txt/i.test(fileSrc))			{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:2000}]);}			//Pdf/Txt sur desktop
-	else if(/mp4|mp3|webm/i.test(fileSrc))		{Fancybox.show([{src:fileSrc, type:"html5video"}]);}								//Video/Audio
+	if(isMainPage==false)								{window.top.lightboxOpen(fileSrc);}											//Relance lightboxOpen() depuis la page "parent"
+	else if(/pdf/i.test(fileSrc) && isTouchDevice())	{window.top.open(fileSrc);}													//Pdf sur mobile app
+	else if(/pdf|txt/i.test(fileSrc))					{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:2000}]);}	//Pdf/Txt sur desktop
+	else if(/mp4|mp3|webm/i.test(fileSrc))				{Fancybox.show([{src:fileSrc, type:"html5video"}]);}						//Video/Audio
 	else{
 		Fancybox.show([{type:"iframe", src:fileSrc}],
 			{

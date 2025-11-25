@@ -555,7 +555,7 @@ INSERT INTO `ap_space` SET `_id`=1, `name`='Agora', `usersInvitation`=1;
 
 INSERT INTO `ap_user` SET `_id`=1, `generalAdmin`=1, `dateCrea`=NOW(), `_idUser`=1;
 
-INSERT INTO `ap_userMessenger` SET `_idUserMessenger`=1, `allUsers`=1;é
+INSERT INTO `ap_userMessenger` SET `_idUserMessenger`=1, `allUsers`=1;
 
 INSERT INTO `ap_joinSpaceUser` SET `_idSpace`=1, `allUsers`=1, `accessRight`=1;
 

@@ -220,7 +220,7 @@ class CtrlObject extends Ctrl
 	{
 		if(is_numeric(Req::param("_id"))){
 			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(is_file($curFile["path"])  &&  ($curFile["parentObj"]->readRight() || CtrlMisc::controlMobileFileDownload($curFile["name"])))
+			if(is_file($curFile["path"])  &&  ($curFile["parentObj"]->readRight() || CtrlMisc::controlDownloadMobileApp($curFile["name"])))
 				{File::download($curFile["name"],$curFile["path"]);}
 		}
 	}

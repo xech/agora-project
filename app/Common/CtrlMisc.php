@@ -332,11 +332,11 @@ class CtrlMisc extends Ctrl
 	}
 
 	/****************************************************************************************************************************
-	 * URL : DOWNLOAD VIA MOBILEAPP D'UN FICHIER OU FICHIER JOINT
+	 * URL DE DOWNLOAD D'UN FICHIER VIA L'APPLI MOBILE
 	 * exple:	"?ctrl=file&action=FileDownload&typeId=file-55"
 	 *    => 	"?ctrl=misc&action=MobileFileDownload&typeId=file-55&ctrlBis=file&fileNameMd5=XYZ&fileName=Documentation.pdf"
 	 ****************************************************************************************************************************/
-	public static function urlMobileFileDownload($url, $fileName)
+	public static function urlDownloadMobileApp($url, $fileName)
 	{
 		$ctrlBis=stristr($url,"ctrl=file")  ?  "file"  :  "object";															//Controleur secondaire en 1er
 		$url=preg_replace('/ctrl=(file|object)/i', 'ctrl=misc', $url);														//Switch sur "ctrl=misc"
@@ -345,9 +345,9 @@ class CtrlMisc extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE L'ACCES EXTERNE AU FICHIER  ($fileName doit être récupéré en interne)
+	 * CONTROLE LE DOWNLOAD D'UN FICHIER VIA L'APPLI MOBILE  ($fileName doit être récupéré en interne)
 	 ********************************************************************************************************/
-	public static function controlMobileFileDownload($fileName)
+	public static function controlDownloadMobileApp($fileName)
 	{
 		return (md5($fileName)==Req::param("fileNameMd5"));
 	}
@@ -359,20 +359,19 @@ class CtrlMisc extends Ctrl
 	{
 		////	Download un fichier / Affiche un pdf/img/video
 		if(Req::isParam("launchDownload") || Req::isParam("displayFile")){
-			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionFileDownload();}									//Fichier du ModFile
-			else								{CtrlObject::actionAttachedFileDownload();}							//Fichier joint d'un objet
+			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionFileDownload();}								//Fichier du ModFile
+			else								{CtrlObject::actionAttachedFileDownload();}						//Fichier joint d'un objet
 		}
 		////	Affiche une vue avec un button "download"
 		else{
 			static::$isMainPage=true;
-			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";									//Url de download du fichier
-			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT'])){								//Sur IOS
-				$vDatas["appUrl"]="https://apps.apple.com/fr/app/omnispace/id1296301531";							//Lien vers l'AppStore
-			}
-			elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT'])){											//Sur Android	
-				$intentUrl=Req::curUrl(false).'/index.php?ctrl='.Req::param("ctrl");								//Url à afficher dans l'appli   (ex: "www.mon-espace.net/agora/index.php?ctrl=file")
-				if(Req::isParam("typeId"))  {$intentUrl.='&typeId='.Req::param("typeId");}							//Ajoute si besoin un "typeId"  (ex: "&typeId=fileFolder-3")
-				$vDatas["appUrl"]="intent://".$intentUrl."#Intent;scheme=omnispace;package=fr.omnispace.www;end";	//Lien de retour à l'appli (cf. "intent:")
+			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";								//Url de download du fichier
+			$appUrl=Req::curUrl(false).'/index.php?ctrl='.Req::param("ctrl");									//Url de retour à l'appli	(ex: "www.mon-agora.net/index.php?ctrl=file")
+			if(Req::isParam("typeId"))  {$appUrl.='&typeId='.Req::param("typeId");}								//Ajoute un "typeId"		(ex: "&typeId=fileFolder-3")
+			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT'])){							//IOS
+				$vDatas["appUrl"]="omnispace://".$appUrl;
+			}elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT'])){										//Android
+				$vDatas["appUrl"]="intent://".$appUrl."#Intent;scheme=omnispace;package=fr.omnispace.www;end";
 			}
 			static::displayPage(Req::commonPath."VueMobileFileDownload.php", $vDatas);
 		}

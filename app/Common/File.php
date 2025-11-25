@@ -59,7 +59,7 @@ class File
 				'mp3'=>['mp3'],
 				'autocad'=>['dwg','dxf'],
 				'data'=>['csv','json','xml','db','dbf','mdb','accdb'],
-				'misc'=>['log','ics','ical','ifb','vcs','vcf','ai','yaml','yml','gpx','kml','map'],
+				'misc'=>['log','ics','ical','ifb','vcs','vcf','ai','yaml','yml','gpx','kml','map','gan'],
 				'editorInsert'=>['jpg','jpeg','png','gif','mp4','webm'],//Gérés via TinyMce
 				'editorImage'=>['jpg','jpeg','png','gif','svg'],
 				'editorVideo'=>['mp4','webm'],
