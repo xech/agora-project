@@ -163,27 +163,28 @@ ready(function(){
 
 <style>
 .vCalVue							{height:100%;}
-.vWeekScroller						{position:relative; overflow-y:scroll; overflow-x:hidden;}				/*Partie visible de l'agenda*/
-.vWeekHeader, .vWeekTable			{width:100%; border-collapse:collapse;}									/*Tableau du libellé des jours et de la grille des heures*/
-.vCalLabelDays span					{margin-left:5px;}														/*Nb du jour du mois*/
-.vPublicHoliday						{margin-left:10px;}														/*Icone du jour férié*/
-.vWeekHeaderScrollbar				{width:12px;}															/*Width "fantome" de la scrollbar de .vWeekScroller*/
-.vWeekHourLabel						{width:35px; vertical-align:top; color:#888; font-size:0.9rem;}			/*Libellé des heures sur la 1ere colonne du tableau*/
+.vWeekScroller						{position:relative; overflow-y:scroll; overflow-x:hidden;}								/*Partie visible de l'agenda*/
+.vWeekHeader, .vWeekTable			{width:100%; border-collapse:collapse;}													/*Tableau du libellé des jours et de la grille des heures*/
+.vCalLabelDays span					{margin-left:5px;}																		/*Nb du jour du mois*/
+.vPublicHoliday						{margin-left:10px;}																		/*Icone du jour férié*/
+.vWeekHeaderScrollbar				{width:12px;}																			/*Width "fantome" de la scrollbar de .vWeekScroller*/
+.vWeekHourLabel						{width:40px; text-align:center; vertical-align:top; color:#888; font-size:0.9rem; font-weight:normal;}		/*Libellé des heures sur la 1ere colonne du tableau*/
 .vWeekCell							{vertical-align:top; font-size:0.1rem; padding:0px; border:0px solid <?= Ctrl::$agora->skin=="white"?"#dededf" : "#333" ?>; border-left-width:1px;}/*Cellule des créneaux de 15mn*/
-.vWeekCell[data-cellMinutes='00']	{border-top-width:1px;}													/*Cellules du début des heures avec border-top*/
-.vWeekCellRedLine					{border-top:solid 1px #f00;}											/*Heure courante : ligne rouge*/
-.vWeekCell .vMobileAddEvt			{display:none;}															/*Bouton d'ajout d'evt masqué par défaut (cf. mobile)*/
-.vLineNotTimeSlot					{background:<?= Ctrl::$agora->skin=="white"?"#fbfbfb" : "#222" ?>}	/*Heures en dehors du TimeSlot*/
-.vEvtBlock							{position:absolute;}													/*Tester un evt de 15mn*/
-.vEvtBlockSuperposed				{box-shadow:0px 0px 3px white;}											/*Evt superposé*/
-.vEvtBlock .objMenuContextFloat		{top:4px;}																/*Replace le menu "burger"*/
-.vEvtBlockMoved						{cursor:move!important;}												/*Evt en cours de déplacement*/
-.vEvtLabelDate						{margin-top:2px;}														/*Label de l'heure*/
-.vEvtLabelDate b					{margin-top:20px; font-size:1.2rem;}									/*Label de l'heure en cours de déplacement*/
+.vWeekCell[data-cellMinutes='00']	{border-top-width:1px;}																	/*Cellules du début des heures avec border-top*/
+.vWeekCellRedLine					{border-top:solid 1px #f00;}															/*Heure courante : ligne rouge*/
+.vWeekCell .vMobileAddEvt			{display:none;}																			/*Bouton d'ajout d'evt masqué par défaut (cf. mobile)*/
+.vLineNotTimeSlot					{background:<?= Ctrl::$agora->skin=="white"?"#fbfbfb" : "#222" ?>}					/*Heures en dehors du TimeSlot*/
+.vEvtBlock							{position:absolute;}																	/*Tester un evt de 15mn*/
+.vEvtBlockSuperposed				{box-shadow:0px 0px 3px white;}															/*Evt superposé*/
+.vEvtBlock .objMenuContextFloat		{top:4px;}																				/*Replace le menu "burger"*/
+.vEvtBlockMoved						{cursor:move!important;}																/*Evt en cours de déplacement*/
+.vEvtLabelDate						{margin-top:2px;}																		/*Label de l'heure*/
+.vEvtLabelDate b					{margin-top:20px; font-size:1.2rem;}													/*Label de l'heure en cours de déplacement*/
 
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
-	.vWeekHourLabel						{font-size:0.8rem; font-weight:normal; text-align:center;}
+@media screen and (max-width:1200px){
+	.vWeekHourLabel						{width:25px; font-size:0.8rem;}
+	.vWeekHour00						{display:none;}
 	.vWeekCell							{position:relative;}
 	.vWeekCell:active .vMobileAddEvt	{display:block; position:absolute; top:0px; right:0px; padding:7px;}/*Bouton addEvt si on sélectionne le jour*/
 }
@@ -213,18 +214,18 @@ ready(function(){
 	<div class="vWeekScroller">
 		<table class="vWeekTable">
 		<?php
-			for($tmp15mn=0; $tmp15mn<96; $tmp15mn++){																			//BOUCLE SUR DES CRÉNEAUX DE 15MN (96 dans la journée)
-				$lineNotTimeslot=($tmp15mn < ($tmpCal->timeSlotBegin*4) || ($tmpCal->timeSlotEnd*4) <= $tmp15mn)  ?  'class="vLineNotTimeSlot"'  :  null;//Créneau horaire sur le "TimeSlot" ?
-				echo '<tr '.$lineNotTimeslot.'>';																				//Début de ligne des heures
-					if($tmp15mn % 4===0)  {echo '<td class="vWeekHourLabel" rowspan="4">'.($tmp15mn/4).':00'.'</td>';}			//Label des heures sur la 1ere colonne (multiple de 4 via l'operateur modulo '%')
-					foreach($periodDays as $dayYmd=>$tmpDay){																	//BOUCLE SUR LES JOURS
-						$cellTimeBegin=$tmpDay["dayTimeBegin"]+($tmp15mn*900);													//Timestamp du début du créneau de 15mn
-						$cellTimeEnd=$cellTimeBegin+900;																		//Timestamp de fin
-						$cellMinutes=date("i",$cellTimeBegin);																	//Minutes de l'heure ("00" à "59")
-						$classRedLine=($cellTimeBegin < time() && time() < $cellTimeEnd) ? "vWeekCellRedLine" : null;			//Heure en cours : ligne rouge
+			for($tmp15mn=0; $tmp15mn<96; $tmp15mn++){																										//BOUCLE SUR DES CRÉNEAUX DE 15MN (96 dans la journée)
+				$lineNotTimeslot=($tmp15mn < ($tmpCal->timeSlotBegin*4) || ($tmpCal->timeSlotEnd*4) <= $tmp15mn)  ?  'class="vLineNotTimeSlot"'  :  null;	//Créneau horaire sur le "TimeSlot" ?
+				echo '<tr '.$lineNotTimeslot.'>';																											//Début de ligne des heures
+					if($tmp15mn % 4===0)  {echo '<td class="vWeekHourLabel" rowspan="4">'.($tmp15mn/4).':<span class="vWeekHour00">00</span>'.'</td>';}		//Label des heures (multiple de 4 via l'operateur modulo '%')
+					foreach($periodDays as $dayYmd=>$tmpDay){																								//BOUCLE SUR LES JOURS
+						$cellTimeBegin=$tmpDay["dayTimeBegin"]+($tmp15mn*900);																				//Timestamp du début du créneau de 15mn
+						$cellTimeEnd=$cellTimeBegin+900;																									//Timestamp de fin
+						$cellMinutes=date("i",$cellTimeBegin);																								//Minutes de l'heure ("00" à "59")
+						$classRedLine=($cellTimeBegin < time() && time() < $cellTimeEnd) ? "vWeekCellRedLine" : null;										//Heure en cours : ligne rouge
 						$cellAttributes='data-cellLabelBegin="'.Txt::dateLabel($cellTimeBegin,"labelFull").'" data-cellTimeBegin="'.$cellTimeBegin.'" data-cellTimeEnd="'.$cellTimeEnd.'" data-cellMinutes="'.$cellMinutes.'" data-dayYmd="'.$dayYmd.'" data-idCal="'.$tmpCal->_id.'" data-timeChangeSummer="'.$tmpDay["timeChangeSummer"].'" data-timeChangeWinter="'.$tmpDay["timeChangeWinter"].'" ';
 						$mobileAddEvt=(Req::isMobile() && $cellMinutes=="00") ? '<div class="vMobileAddEvt" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.$cellTimeBegin.'\')"><img src="app/img/plus.png"></div>'  :  null;
-						echo '<td class="vWeekCell '.$classRedLine.'" '.$cellAttributes.'>'.$mobileAddEvt.'</td>';	//Affiche la cellule
+						echo '<td class="vWeekCell '.$classRedLine.'" '.$cellAttributes.'>'.$mobileAddEvt.'</td>';											//Affiche la cellule
 					}
 				echo '</tr>';
 			}

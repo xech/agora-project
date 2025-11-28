@@ -11,7 +11,7 @@ ready(function(){
 	/**********************************************************************************************************
 	 *	CONTRÔLE DU FORMULAIRE DE CONNEXION
 	 **********************************************************************************************************/
-	$("#formConnect").on("submit",function(){
+	$("#connectFormSpace").on("submit",function(){
 		let connectLogin=$("[name=connectLogin]");
 		let connectPassword=$("[name=connectPassword]");
 		if(connectLogin.isEmpty() || connectLogin.val()==connectLogin.attr("placeholder") || connectPassword.isEmpty() || connectPassword.val()==connectPassword.attr("placeholder")){
@@ -42,11 +42,12 @@ ready(function(){
 	 **********************************************************************************************************/
 	$(".publicSpaceOption").click(function(){
 		if($(this).attr("data-hasPassword")==="true"){
-			$("#publicSpaceForm [name='_idSpaceAccess']").val($(this).attr("data-idSpace"));
-			$("#publicSpaceForm #publicSpaceName").html($(this).attr("data-spaceName"));
+			$("#spaceNamePublic").html($(this).attr("data-spaceName"));
+			$("#idSpacePublic").val($(this).attr("data-idSpace"));
 			Fancybox.show([{type:"inline",src:"#publicSpaceForm"}]);
 		}else{
-			redir("index.php?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+encodeURIComponent($("#formConnect [name='objUrl']").val()));
+			let objUrl=encodeURIComponent($("#objUrlExternal").val());
+			redir("index.php?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+objUrl);
 		}
 	});
 
@@ -55,45 +56,38 @@ ready(function(){
 	 **********************************************************************************************************/
 	$("#publicSpaceForm").on("submit",function(event){
 		event.preventDefault();
-		let idSpaceAccess=$("#publicSpaceForm [name='_idSpaceAccess']").val();
-		let objUrl=encodeURIComponent($("#formConnect [name='objUrl']").val());																			//"objUrl" du form de connexion
-		let password=encodeURIComponent($("#publicSpacePassword").val());																				//Récupère le password
-		$.ajax("index.php?action=PublicSpacePasswordControl&_idSpaceAccessControl="+idSpaceAccess+"&passwordControl="+password).done(function(result){	//Controle Ajax du password (pas '_idSpaceAccess=' dans l'URL!)
-			if(/passwordOK/i.test(result))	{redir("index.php?_idSpaceAccess="+idSpaceAccess+"&password="+password+"&objUrl="+objUrl);}					//Redir vers l'espace demandé
-			else							{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}													//Notif d'erreur de password
+		let idSpacePublic=$("#idSpacePublic").val();																							//idSpace
+		let password=encodeURIComponent($("#publicSpacePassword").val());																		//space password
+		let objUrl=encodeURIComponent($("#objUrlExternal").val());																				//Url de l'objet
+		$.ajax("index.php?action=PublicSpacePasswordControl&idSpacePublic="+idSpacePublic+"&passwordControl="+password).done(function(result){	//Controle Ajax du password (pas '_idSpaceAccess=' dans l'URL!)
+			if(/passwordOK/i.test(result))	{redir("index.php?_idSpaceAccess="+idSpacePublic+"&password="+password+"&objUrl="+objUrl);}			//Redir vers l'espace demandé
+			else							{notify("<?= Txt::trad("publicSpacePasswordError") ?>");}											//Notif d'erreur de password
 		});
 	});
 });
 </script>
 
 <style>
-#headerBar									{line-height:50px; text-align:center;}/*surcharge*/
-#pageCenter									{margin-top:100px;}
-.miscContainer								{width:500px; margin:10px auto; padding:25px 10px; border-radius:10px; text-align:center;}/*surcharge*/
-.miscContainer button>img					{margin-right:10px;}
-.miscContainer hr							{margin:30px 0px;}
-.miscContainer input:not([type=checkbox]), .miscContainer button  {width:320px;/*cf .g_id_signin*/ min-height:45px!important;/*cf responsive*/ border-radius:5px; margin-bottom:20px!important;}
-
-/*Logo custom*/
-#customLogo									{background-color:rgba(250, 250, 250, 40%); padding:10px;}
-#customLogo img								{max-width:100%; max-height:180px;}
-
-/*Accès invité*/
-#publicSpaceTab								{display:inline-table;} 
-#publicSpaceTab>div							{display:table-cell; text-align:left; width:50%; line-height:25px;}
-#publicSpaceTab>div:first-child				{text-align:right;}
-.publicSpaceOption							{padding:0px 10px;}
-
-/*Form de connexion*/
-.vConnectOptions							{display:inline-table;}
-.vConnectOptions>div						{display:table-cell; padding:0px 15px;}
-.g_id_signin								{margin:40px auto!important; width:300px;}/*button gOAuth & Iframe*/
+#headerBar							{line-height:50px; text-align:center;}/*surcharge*/
+#pageCenter							{margin-top:100px;}
+.miscContainer						{margin-bottom:20px; padding:30px 80px; border-radius:12px!important; text-align:center;}/*surcharge*/
+.miscContainer button>img			{margin-right:10px;}
+.miscContainer hr					{margin:30px 0px;}
+#customLogo							{background-color:rgba(250, 250, 250, 40%); padding:10px;}
+#customLogo img						{max-width:100%; max-height:180px;}
+#publicSpaceTab						{display:inline-table;} 
+#publicSpaceTab>div					{display:table-cell; text-align:left; width:50%; line-height:25px;}
+#publicSpaceTab>div:first-child		{text-align:right;}
+.publicSpaceOption					{padding:0px 10px;}
+.vConnectOptions					{display:inline-table;}
+.vConnectOptions>div				{display:table-cell; padding:0px 15px;}
+.g_id_signin						{margin-inline:auto; margin-top:50px; width:300px;}/*button gOAuth : width idem ".connectForm button"*/
 
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	#headerBar								{font-size:1rem;}/*surcharge*/
 	#headerBar span							{display:none;}
-	.miscContainer							{width:95%; margin-top:30px!important; border-radius:10px!important;}/*surcharge*/
+	.miscContainer							{margin-bottom:30px; padding:30px;}/*surcharge*/
 	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%; text-align:left!important;}
 	.publicSpaceOption						{margin-left:40px; margin-top:10px;}
 	.vConnectOptions>div					{font-size:0.9rem;}
@@ -126,30 +120,30 @@ ready(function(){
 		</div>
 	</div>
 	<form id="publicSpaceForm" class="lightboxInline">
-		<div class="lightboxTitle"><?= Txt::trad("guestAccess") ?> : <span id="publicSpaceName"></span></div>
+		<div class="lightboxTitle"><?= Txt::trad("guestAccess") ?> : <span id="spaceNamePublic"></span></div>
 		<input type="password" id="publicSpacePassword" placeholder="<?= Txt::trad("password") ?>" required>
-		<input type="hidden" name="_idSpaceAccess">
+		<input type="hidden" name="_idSpaceAccess" id="idSpacePublic">
 		<?= Txt::submitButton("validate",false) ?>
 	</form>
 	<?php }  ?>
 
 
-	<!--AUTHENTIFICATION & OPTIONS-->
+	<!--FORMULAIRE DE CONNEXION-->
 	<div class="miscContainer">
-		<!--FORMULAIRE DE CONNEXION-->
-		<form action="index.php" method="post" id="formConnect">
-			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("mailLlogin") ?>" <?= Txt::tooltip("mailLlogin") ?>  class="isAutocomplete">
-			<input type="password" name="connectPassword" value="<?= Req::param("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>" <?= Txt::tooltip("password") ?> class="isAutocomplete">
-			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>">					<!--accès direct à un objet via "getUrlExternal()"-->
-			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">	<!--idem-->
-			<button type="submit"><?= Txt::trad("connect") ?></button>
+		<form action="index.php" method="post" id="connectFormSpace" class="connectForm">
+			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" placeholder="<?= Txt::trad("mailLlogin") ?>" <?= Txt::tooltip("mailLlogin") ?>  class="isAutocomplete" required>
+			<br>
+			<input type="password" name="connectPassword" value="<?= Req::param("newPassword") ?>" placeholder="<?= Txt::trad("password") ?>" <?= Txt::tooltip("password") ?> class="isAutocomplete" required>
+			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>" id="objUrlExternal">		<!--accès direct à un objet via "getUrlExternal()"-->
+			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">			<!--idem-->
+			<?= Txt::submitButton("connect") ?>
 			<div class="vConnectOptions">
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked>&nbsp;<label for="boxRememberMe" <?= Txt::tooltip("connectAutoTooltip") ?> ><?= Txt::trad("connectAuto") ?></label></div>
 				<div><a data-fancybox="inline" data-src="#resetPasswordFormSendmail" id="resetPasswordLabel"><?= Txt::trad("resetPassword") ?></a></div><!--Afficher le form ci-dessous-->
 			</div>
 		</form>
 
-		<!--BOUTON DE CONNEXION AVEC GOOGLE OAUTH-->
+		<!--CONNEXION VIA GOOGLE OAUTH-->
 		<?php if(Ctrl::$agora->gOAuthEnabled()){ ?>
 			<script src="https://accounts.google.com/gsi/client" async defer></script>	<!--Charge la librairie Google Oauth-->
 			<script src="app/js/jwt-decode.js"></script>								<!--Charge le décodeur JSON Web Token (JWT)-->
@@ -168,7 +162,7 @@ ready(function(){
 			<div class="g_id_signin" data-type="standard" data-shape="circle" data-size="large" data-width="290" <?= Txt::tooltip("AGORA_gOAuth") ?>></div>	<!--Bouton gOAuth (Iframe avec "data-width" idem "--buttons-width")-->
 		<?php } ?>
 
-		<!--FORM DE RESET DU PASSWORD -> ETAPE 1 : ENVOI DE L'EMAIL-->
+		<!--RESET DU PASSWORD -> ETAPE 1 : ENVOI DE L'EMAIL-->
 		<form action="index.php" method="post" id="resetPasswordFormSendmail" class="lightboxInline">
 			<div class="lightboxTitle"><?= Txt::trad("resetPassword2") ?></div>
 			<input type="text" name="resetPasswordMail" placeholder="<?= Txt::trad("mail") ?>" required>
@@ -176,7 +170,7 @@ ready(function(){
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
-		<!--FORM DE RESET DU PASSWORD -> ETAPE 2 : MODIF DU PASSWORD-->
+		<!--RESET DU PASSWORD -> ETAPE 2 : MODIF DU PASSWORD-->
 		<?php if(!empty($resetPasswordIdOk) && Req::isParam("newPassword")==false){ ?>
 			<div data-fancybox="inline" data-src="#resetPasswordFormUpdate"><?= Txt::trad("passwordModify") ?></div>
 			<form action="index.php" method="post" id="resetPasswordFormUpdate" class="lightboxInline">
@@ -191,7 +185,7 @@ ready(function(){
 			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#resetPasswordFormUpdate"}]); }); </script>		<!--Affichage initial-->
 		<?php } ?>
 
-		<!--FORM DE VALIDATION D'INVITATION : INIT DU PASSWORD-->
+		<!--VALIDATION D'INVITATION : INIT DU PASSWORD-->
 		<?php if(Req::isParam("_idInvitation") && Req::isParam("newPassword")==false){ ?>
 			<div><a data-fancybox="inline" data-src="#invitationPasswordForm"><?= Txt::trad("USER_invitPassword") ?></a></div>
 			<form action="index.php" method="post" id="invitationPasswordForm" class="lightboxInline">
@@ -206,13 +200,16 @@ ready(function(){
 		<?php } ?>
 
 		<!--INSCRIPTION D'USER  ||  SWITCH D'ESPACE-->
-		<?= (!empty($isUserInscription) || Req::isSpaceSwitch())  ?  "<hr>"  :  null ?>
-		<?php if(!empty($isUserInscription)){ ?>
-			<button onclick="lightboxOpen('?action=userInscription')" <?= Txt::tooltip("userInscriptionTooltip") ?> ><img src="app/img/user/subscribe.png"><?= Txt::trad("userInscription") ?></button>
-		<?php }
-		if(Req::isSpaceSwitch()){ ?>
-			<button onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.png"><?= Txt::trad("connectSpaceSwitch") ?></button>
+		<?php if(!empty($isUserInscription) || Req::isSpaceSwitch()){ ?>
+			<hr>
+			<div class="connectForm">
+				<?php if(!empty($isUserInscription)){ ?>
+					<button onclick="lightboxOpen('?action=userInscription')" <?= Txt::tooltip("userInscriptionTooltip") ?> ><img src="app/img/user/subscribe.png"><?= Txt::trad("userInscription") ?></button><br>
+				<?php }
+				if(Req::isSpaceSwitch()){ ?>
+					<button onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.png"><?= Txt::trad("connectSpaceSwitch") ?></button><br>
+				<?php }  ?>
+			</div>
 		<?php }  ?>
-
 	</div>
 </div>

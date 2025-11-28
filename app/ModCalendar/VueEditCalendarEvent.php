@@ -115,7 +115,7 @@ function objectFormControl()
 legend			 					{font-size:1.05em; text-align: center!important;}
 .vEvtOptionInline					{display:inline-block; margin:25px 25px 0px 0px;}
 .beginEndLabel						{display:none}
-#beginEndSeparator					{margin:0px 5px;}
+#beginEndSeparator					{display:inline-block; padding-block:10px;}
 #guestMenu							{text-align:center;}
 input[name='guestMail']				{margin-left:20px;}
 <?= Ctrl::$curUser->isGuest() ? '.vEvtGuestHide {display:none;}' : null ?>

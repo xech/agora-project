@@ -86,7 +86,7 @@
 		#pageFooterIcon						{bottom:5px; right:5px;}
 		#pageFooterIcon img					{max-height:70px; max-width:200px;}
 		/*AFFICHAGE SMARTPHONE + TABLET*/
-		@media screen and (max-width:1024px){
+		@media screen and (max-width:1200px){
 			#pageFooterHtml, #pageFooterIcon	{display:none;}
 		}
 		</style>

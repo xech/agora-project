@@ -125,15 +125,15 @@ function moduleDisplay()
 .vCalVue										{max-width:100%; width:100%;}
 .vCalHeader										{display:table; width:100%;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
+.vCalHeaderLeft									{width:250px;}
 .vCalHeaderTitle								{vertical-align:middle; margin-inline:5px; font-size:1.1rem;}
-.vCalHeaderCenter								{text-align:center;}
+.vCalHeaderCenter								{width:250px; text-align:center;}
 .vCalHeaderCenter .vCalPrevNext					{padding:12px; border-radius:5px;}
 .vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
-.vCalHeaderRight								{text-align:right; width:500px;}/*Largeur fixe*/
+.vCalHeaderRight								{width:480px; text-align:right;}
 .vCalHeaderRight>span							{margin-left:8px;}
-.vCalHeaderRight button							{height:33px; border-radius:5px;}
 .vCalLabelDays									{height:25px; padding:4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
@@ -143,16 +143,16 @@ function moduleDisplay()
 .vEvtLabel img									{margin-left:5px;}
 
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.vCalMain.miscContainer						{margin:0px;}/*surcharge .miscContainer*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
 	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}
-	.vCalHeaderTitle							{display:inline-block; font-size:1rem; max-width:150px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
+	.vCalHeaderTitle							{display:inline-block; font-size:1rem; max-width:140px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalHeaderTitle::first-letter				{text-transform:uppercase}
 	.vCalHeaderCenter .vCalPrevNext				{padding:3px;}
-	.vCalHeaderRight>span						{margin-left:5px;}
-	.vCalHeaderRight>span img					{min-height:18px;}
+	.vCalHeaderRight>span						{margin-left:0px; line-height:35px; vertical-align:middle;}
+	.vCalHeaderRight>span img					{max-height:35px;}
 	.vEvtBlock									{height:25px; min-height:25px; overflow:hidden; padding-right:0px;}/*padding-right : pas menu burger*/
 	.vEvtLabel									{text-transform:lowercase; white-space:normal!important;}/*longs mots splités sur plusieurs lignes*/
 	.vCalHeader .personImgSmall, .vEvtLabelDate, .vEvtBlock .objMenuContextFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
@@ -313,7 +313,7 @@ function moduleDisplay()
 					</div>
 					<?php if($tmpCal->affectationAddRight()){ ?>
 					<span onclick="lightboxOpen('<?= MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id ?>')" <?= $tmpCal->addEvtTooltip ?> >
-						<?= Req::isMobile() ? '<img src="app/img/plusSmall.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
+						<?= Req::isMobile() ? '<img src="app/img/plus.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
 					</span>
 					<?php } ?>
 				</div>

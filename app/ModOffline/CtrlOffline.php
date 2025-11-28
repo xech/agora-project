@@ -125,7 +125,7 @@ class CtrlOffline extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionPublicSpacePasswordControl()
 	{
-		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("_idSpaceAccessControl")." AND BINARY `password`=".Db::param("passwordControl"));
+		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("idSpacePublic")." AND BINARY `password`=".Db::param("passwordControl"));
 		if(!empty($passwordValid))  {echo "passwordOK";}
 	}
 

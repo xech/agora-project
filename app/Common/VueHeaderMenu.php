@@ -1,7 +1,7 @@
 <script>
 ready(function(){
 	//// Margin-top du contenu de la page en fonction de #headerBar
-	$("#pageFull, #pageCenter").css("margin-top", ($("#headerBar").outerHeight() + 30));
+	$("#pageFull,#pageCenter").css("margin-top", ($("#headerBar").outerHeight()+30));
 });
 </script>
 
@@ -11,7 +11,6 @@ ready(function(){
 #headerMobileModule							{display:none;}
 #headerMainLogo								{content:url('app/img/logo.png'); position:absolute; left:0px; top:2px;}
 #headerUserLabel, #headerSpaceLabel			{display:inline-block; max-width:250px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
-.headerArrowBottom							{margin-left:5px; margin-right:2px;}
 #headerMenuLeft img[src*=arrowRight]		{margin-left:5px;}
 #headerBar>#menuMainContext					{display:none; padding:5px; box-shadow:0px 0px 15px black; border-radius:10px; top:5px!important; left:5px!important;}/*surcharge "#headerBar>div" de app.css*/
 #menuMainTab								{display:table;}
@@ -29,7 +28,7 @@ ready(function(){
 	.vHeaderModule label					{margin-top:7px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	#headerMenuLeft							{padding-left:40px; padding-right:10px;}/*"padding-left" en fonction du width du "logoXSmall.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
 	#headerMainLogo							{content:url('app/img/logoXSmall.png'); left:0px; top:10px;}
@@ -132,7 +131,7 @@ ready(function(){
 	<div id="headerMenuLeft" class="menuLauncher" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
 		<img src="app/img/logo.png" id="headerMainLogo">
 		<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRight.png"></div><?php } ?>
-		<div id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?></div><img src="app/img/arrowBottom.png" class="headerArrowBottom">
+		<span id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?></span>&nbsp;<img src="app/img/menuSmall.png">
 		<?php if($userInscriptionValidate==true){ ?><img src="app/img/user/subscribe.png" class="pulsate" <?= Txt::tooltip("userInscriptionValidateTooltip") ?>><?php } ?>
 	</div>
 
@@ -161,6 +160,6 @@ ready(function(){
 		</div>
 
 		<!--MENU MOBILE : LABEL DU MODULE COURANT-->
-		<div id="headerMobileModule" class="menuLauncher" for="headerMenuRight"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?><img src="app/img/arrowBottom.png" class="headerArrowBottom"></div>
+		<div id="headerMobileModule" class="menuLauncher" for="headerMenuRight"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?>&nbsp;<img src="app/img/menuSmall.png">&nbsp;</div>
 	</div>
 </div>

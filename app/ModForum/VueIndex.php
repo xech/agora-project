@@ -26,7 +26,7 @@ ready(function(){
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.vMessages					{border-radius:5px;}
 	.vDetails, .vDetails>div	{display:block;}
 	.vDetails>div:last-child	{text-align:left; margin-top:15px;}
@@ -59,7 +59,7 @@ ready(function(){
 		////	SUJET COURANT : MENU "RETOUR VERS L'ACCUEIL"
 		if($forumDisplay=="suject"){
 			echo '<div class="pathMenu miscContainer">
-					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">&nbsp; '.Txt::trad("FORUM_forumRoot").'</div>
+					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">'.Txt::trad("FORUM_forumRoot").'</div>
 					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/plus.png"></div>' : null).'
 					</div>';
 		}

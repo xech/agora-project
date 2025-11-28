@@ -114,7 +114,7 @@ function dashboardPollVote()
 #underMenus								{display:inline-block; width:<?= $isPolls==true?'33.33%':'50%' ?>; height:5px; margin-bottom:-8px; padding:0px; background:tomato; transition:0.1s ease-in-out;}/*Surligne les options du module*/
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.pathMenu.miscContainer				{width:98%;}/*surcharge : idem app.css*/
 	#tabMenus							{padding:10px;}
 	#underMenus							{display:none;}
@@ -137,7 +137,7 @@ function dashboardPollVote()
 .vNewsDescription h4 img				{max-width:33px!important; margin-left:10px; margin-right:10px;}/*cf. width réel des "iconSmall.png"*/
 .vNewsDescription h4:last-child			{margin-bottom:20px;}
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.vNewsDescription h3				{font-size:1.3rem;}									/*New par défaut*/
 	.vNewsDescription h4				{font-size:1.05rem; clear:left;}					/*Idem. "clear:left" pour aligner avec l'image float : tester width 500px*/
 	.vNewsDescription h4>img			{float:left; margin-left:0px; margin-bottom:30px;}	/*Idem*/
@@ -165,7 +165,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
 .vPollsResultBar100						{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.vPollsContainer ul		{padding-left:0px!important;}
 	.vPollsDetails>div		{display:block; margin:8px;}
 }

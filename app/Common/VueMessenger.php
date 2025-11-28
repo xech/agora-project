@@ -252,7 +252,7 @@ async function launchVisioPropose()
 #messengerNobodyDiv								{padding:20px;}
 
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.vLivecounterUser							{margin-inline:0px; padding-block:10px;}
 	.vLivecounterUser .personImg				{display:none;}
 	#messengerMain								{width:100%!important; height:100%!important; border:none!important; box-shadow:none!important; border-radius:0px; padding:0px; font-size:0.9rem;}

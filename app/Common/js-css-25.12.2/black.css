@@ -11,7 +11,7 @@ body, a, .sLink																							{color:#ccc;}
 .tooltipster-box																						{background:black!important; box-shadow:0px 0px 12px #bbb!important;}
 .tooltipster-content																					{color:#eee!important; padding:15px!important;}
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	#htmlMainPage					{background:#222 url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 	#headerBar						{border-top:solid 1px #ddd;}/*séparation de la "appBar" du main.dart*/
 	.objContainer, .miscContainer	{box-shadow:0px 2px 6px #555;}

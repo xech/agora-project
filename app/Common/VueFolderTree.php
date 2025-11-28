@@ -63,7 +63,7 @@ function folderMove(newFolderId){
 .vIconOpened						{transform:rotate(40deg); filter:brightness(0);}
 
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrow" d'ouverture de dossier sont en position absolute*/
 }
 </style>

@@ -146,20 +146,18 @@ class CtrlDashboard extends Ctrl
 				//Ajoute/modifie les responses possibles
 				foreach($responses as $_idResponse=>$reponseLabel)
 				{
-					if(!empty($reponseLabel))
-					{
+					if(!empty($reponseLabel)){
 						//Enregistre en Bdd
 						$reponseRank=(empty($reponseRank)) ? 1 : ($reponseRank+1);
 						$sqlValues="_id=".Db::format($_idResponse).", _idPoll=".(int)$curObj->_id.", label=".Db::format($reponseLabel).", `rank`=".(int)$reponseRank;
 						Db::query("INSERT INTO ap_dashboardPollResponse SET ".$sqlValues." ON DUPLICATE KEY UPDATE ".$sqlValues);
 						//Enregistre si besoin le fichier de la réponse
-						if(!empty($_FILES["responsesFile".$_idResponse]))
-						{
+						if(!empty($_FILES["responsesFile".$_idResponse])){
 							$tmpFile=$_FILES["responsesFile".$_idResponse];
 							if(File::uploadControl($tmpFile)){
 								$responseFilePath=$curObj->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
 								move_uploaded_file($tmpFile["tmp_name"],$responseFilePath);
-								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1024);}//1024px max
+								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1200);}//1200px max
 								Db::query("UPDATE ap_dashboardPollResponse SET fileName=".Db::format($tmpFile["name"])." WHERE _id=".Db::format($_idResponse));
 							}
 						}

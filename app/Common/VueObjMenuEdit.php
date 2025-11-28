@@ -164,8 +164,8 @@ ready(function(){ labelRightStyle(); });
 @media screen and (max-width:490px){
 	#objMenuTabs, .objMenuOptions							{font-size:0.85rem;}	/*menu des option + Détail des options*/
 	.objMenuOptions											{padding:25px 10px;}	/*détail des options*/
-	.vSpaceTable>div>div									{padding:3px;}		/*cellules du tableau des droits d'accès*/
-	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}		/*colonne des checkboxes des droits d'accès*/
+	.vSpaceTable>div>div									{padding:7px 3px;}		/*cellules du tableau des droits d'accès*/
+	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}			/*colonne des checkboxes des droits d'accès*/
 	.objMenuTab img, .vSpaceTable img, .vSpaceTargetIcon	{display:none;}
 }
 </style>

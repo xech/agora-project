@@ -202,12 +202,12 @@ class Req
 	}
 
 	/********************************************************************************************************
-	 * VÉRIF AFFICHAGE MOBILE/RESPONSIVE <= 1024PX  (Idem CSS & JS)
+	 * VÉRIF AFFICHAGE MOBILE/RESPONSIVE <= 1200px  (Idem CSS & JS)
 	 ********************************************************************************************************/
 	public static function isMobile()
 	{
 		if(self::$_isMobile===null){
-			self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1024);
+			self::$_isMobile=(isset($_COOKIE["windowWidth"]) && $_COOKIE["windowWidth"]<=1200);
 		}
 		return self::$_isMobile;
 	}

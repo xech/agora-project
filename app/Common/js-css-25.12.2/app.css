@@ -3,14 +3,15 @@ html					{font-size:14px; font-family:Arial,Helvetica,sans-serif; font-weight:bo
 html, body, div			{margin:0px; padding:0px;}/*reset*/
 html					{background:#222;}
 body					{background-position:right top; background-repeat:no-repeat;}
-#bodyLightbox			{padding:25px;}
-div, span				{vertical-align:top; box-sizing:border-box; -webkit-tap-highlight-color:transparent;}								/*"box-sizing" pour le calcul des width. "tap-highlight-color" : cf. background au "touch" d'un élément sur mobile*/
+body *					{box-sizing:border-box;}																							/*Calcul du width avec prise en compte de la bordure*/
+div, span				{vertical-align:top; -webkit-tap-highlight-color:transparent;}														/*tap-highlight-color" : cf. background au "touch" d'un élément sur mobile*/
 p						{margin:3px;}																										/*Cf éditeur tinyMce et "editor.css"*/
 img						{border:0px; vertical-align:middle;}																				/*alignemment des images*/
 hr						{border:0; height:1px; margin-top:10px; margin-bottom:10px;}														/*lignes de séparateur*/
 video, audio			{max-width:100%; max-height:100%;}																					/*Lecteurs video/audio*/
 abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*idem tag <acronym>*/
 a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
+#bodyLightbox			{padding:25px;}																										/*contenu des lightbox*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	html				{font-size:18px;}
@@ -22,14 +23,14 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 #headerBar											{display:table; width:100%; max-width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; user-select:none;}
 #headerBar>div										{display:table-cell; vertical-align:middle!important;}
 #headerBar>div:last-child							{text-align:right;}
-#pageFull, #pageCenter								{display:table; max-width:100%; margin-bottom:70px;}						/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
+#pageFull, #pageCenter								{display:table; max-width:100%; padding-bottom:70px;}						/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
 #pageFull											{width:100%;}																/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
-#pageCenter											{margin-left:auto; margin-right:auto;}										/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage entre 1024px et 1366px*/
+#pageCenter											{margin-left:auto; margin-right:auto;}										/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage smarthone et tablet paysage*/
 #moduleMenu, #pageContent							{display:table-cell;}
 #moduleMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
 #pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
 /*** OBJETS */
-.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; border-radius:5px; box-sizing:border-box; user-select:none;}/*Calcul du width avec prise en compte de la bordure : "box-sizing:border-box"*/
+.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; border-radius:5px; user-select:none;}
 .objContainer										{height:100px; min-height:100px; position:relative; padding:0px;}			/*"height"+"min-height" pour l'overflow" du "objContainerScroll""*/
 .objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
 .miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
@@ -55,13 +56,13 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objLines .objAutorDate span						{display:block;}															/*Auteur et Date sur 2 lignes*/
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
-	#pageFull, #pageCenter, #pageContent			{display:block; max-width:100%!important; word-break:break-word!important;}	/*évite le scroller horizontal. "break-word" évite qu'une URL éclate l'affichage*/
-	.miscContainer, .objContainer					{margin:7px; border-radius:8px!important;}									/*tester affichage de news, fichiers, agendas, tâches*/
-	#pageContent.miscContainer						{margin:0px!important;}														/*cf site public*/
-	.objContainerScroll								{overflow-y:hidden;}														/*pas de scroller vertical sur mobile*/
-	.objIcon										{width:60px!important;}														/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
-	.objIconOpacity, .objDetails, .objAutorDate		{display:none;}																/*toujours masqué*/
+@media screen and (max-width:1200px){
+	#pageFull, #pageCenter, #pageContent			{display:block; max-width:100%!important; word-break:break-word!important; margin-inline:auto;}	/*"break-word" évite qu'une URL éclate l'affichage*/
+	.miscContainer, .objContainer					{margin:7px; border-radius:8px!important;}														/*tester affichage de news, fichiers, agendas, tâches*/
+	#pageContent.miscContainer						{margin:0px!important;}																			/*cf site public*/
+	.objContainerScroll								{overflow-y:hidden;}																			/*pas de scroller vertical sur mobile*/
+	.objIcon										{width:60px!important;}																			/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
+	.objIconOpacity, .objDetails, .objAutorDate		{display:none;}																					/*toujours masqué*/
 }
 /*AFFICHAGE PRINT*/
 @media print{
@@ -71,14 +72,14 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 }
 
 /*** MENU PATH DES OBJETS (PATH D'UN DOSSIER, DU FORUM, MENU DASHBOARD)*/
-.pathMenu.miscContainer			{display:table; margin-bottom:15px; padding:5px 10px;}
-.pathMenu img					{max-height:30px;}
+.pathMenu.miscContainer			{display:table; margin-bottom:15px; padding:5px;}
+.pathMenu img					{max-height:30px; margin-inline:5px;}
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
 .pathMenu>div:first-child		{width:50px; white-space:nowrap;}/*icone de dossier ou "top"*/
 .pathMenuAdd					{width:50px; text-align:right;}/*icone d'ajout d'element*/
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
-	.pathMenu.miscContainer		{width:98%; max-width:100%; margin:0px 4px 25px 4px; padding:5px; border-radius:10px;}
+@media screen and (max-width:1200px){
+	.pathMenu.miscContainer		{width:97%; max-width:97%; padding:3px;}
 }
 
 /*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
@@ -101,7 +102,7 @@ audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
 .objMenuBottom								{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
 .objMenuBottom>.miscContainer				{display:inline-block; padding:15px; border-radius:10px;}
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	.objMenuContextFloat					{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
 	.objMenuMisc>div						{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
 	.attachedFileMenu						{margin:10px;}								/*Fichiers joints à l'objet*/
@@ -124,47 +125,48 @@ audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
 .menuContextSpecificLabels					{padding:5px; line-height:20px;}	/*cf. affectations des agendas*/
 .menuContextTxtLeft							{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*cf. menuContext : Auteur, Droits d'accès..*/
 /*AFFICHAGE SMARTPHONE + TABLET*/
-@media screen and (max-width:1024px){
+@media screen and (max-width:1200px){
 	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
 	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
 }
 
 /*** INPUTS*/
-input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:33px; max-width:100%; padding:4px; border-radius:3px; outline:none; font-weight:normal; font-size:inherit; font-family:inherit; box-sizing:border-box;}/*"box-sizing" pour intégrer les padding/border dans le "height"*/
+input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:35px; max-width:100%; padding:5px; border-radius:4px; font-size:1rem; font-weight:normal; font-family:inherit; outline:none;}
+::placeholder 										{padding-left:5px; color:#aaa;}/*texte par défaut des inputs/textarea*/
 input:disabled, textarea:disabled					{opacity:0.7;}
-input:read-only, textarea:read-only					{background:#ddd;}
-::placeholder 										{font-weight:normal; padding-left:5px; color:#aaa;}/*placeholder des inputs/textarea (texte par défaut)*/
+input:read-only, textarea:read-only					{background:#ccc;}
 input[type=radio], input[type=checkbox]				{vertical-align:middle; margin:0px 3px;}
 input[type=checkbox]								{width:15px; height:15px;}
 input[type=file]									{height:auto;}
-.dateInput, .dateBegin, .dateEnd					{width:80px;}													/*DATEPICKER INPUTS*/
+textarea											{width:100%; height:70px;}
+select option										{font-size:1.05rem;}
+button												{border-radius:7px; font-weight:bold; cursor:pointer; vertical-align:middle;}
+.dateInput, .dateBegin, .dateEnd					{width:90px;}													/*DATEPICKER INPUTS*/
 .ui-datepicker										{width:300px; max-width:98%; box-shadow:0px 2px 6px #888;}		/*DATEPICKER JQUERY ("box-shadow" idem .miscContainer)*/
 .ui-datepicker-header								{background-color:transparent; border:none;}					/*label du mois*/
 .ui-datepicker .ui-state-default					{padding:10px; text-align:center; border:0px;}					/*cellules des jours*/
 .ui-datepicker .ui-state-highlight					{background:#cde; color:black;}						  	/*aujourd'hui*/
 .ui-datepicker .ui-state-active						{background:#007fff; color:white;}		 				  /*jour sélectionné*/
-input[type=time]									{width:70px;}													/*TIMEPICKER INPUTS*/
+input[type=time]									{width:80px;}													/*TIMEPICKER INPUTS*/
 input[type=time]::-webkit-calendar-picker-indicator	{margin:0px; filter: invert(48%) sepia(20%) saturate(2000%) hue-rotate(150deg) brightness(95%) contrast(80%);}/*icone "horloge"*/
 .ui-timepicker-wrapper								{max-height:400px;}												/*pseudo <select>*/
 .ui-timepicker-list li 								{padding:10px;}													/*liste des heures*/
 fieldset											{margin-top:30px; padding:10px;}
 legend												{padding:5px 20px;}
-textarea											{width:100%; height:70px;}
-button												{border-radius:5px; padding:0px 10px; font-weight:bold; cursor:pointer; vertical-align:middle;}
-select option										{font-size:1.1rem;}
 .inputTitleName										{width:75%;}/*Title ou Name d'un objet*/
 .focusPulsate										{animation:focusPulsate 1.5s linear infinite;}
 @keyframes focusPulsate 							{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
-.submitButtonMain									{margin-top:40px; margin-bottom:10px; text-align:center;}	/*div du bouton principal*/
-.submitButtonMain button							{min-width:180px; min-height:45px;}							/*bouton principal*/
+.submitButtonMain									{margin-top:30px; text-align:center;}						/*div du bouton principal*/
+.submitButtonMain button							{height:50px; min-width:200px;}								/*bouton principal*/
 .submitButtonMain .submitLoading					{max-width:40px; margin-right:-40px;}						/*icone "loading" du button principal*/
 .submitButtonInline									{display:inline-block;}										/*div du button inline : form de recherche & co*/
-.submitButtonInline	button							{min-width:100px; min-height:30px;}							/*height idem input[type=text]*/
+.submitButtonInline	button							{min-width:100px;}											/*height idem input[type=text]*/
 .submitButtonInline .submitLoading					{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
 .submitLoading										{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
+.connectForm *:is(input[type=text],input[type=password],button)  {display:inline-block; width:330px; height:50px; border-radius:7px; margin-bottom:20px;}
+.connectForm .submitButtonMain						{margin-top:0px;}/*surcharge*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:40px; padding:8px 5px;}
 	.inputTitleName									{width:100%;}
 	.dateInput, .dateBegin, .dateEnd				{margin-left:10px; width:110px;}/*Datepicker + grand*/
 	input[type=time]								{margin-left:10px; width:90px; padding-block:8px!important;}/*Timepicker + grand*/
@@ -248,12 +250,13 @@ select option										{font-size:1.1rem;}
 .toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : notify()*/
 .toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
 .jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
-.jconfirm-box									{border-radius:15px!important; padding:30px 30px 10px 30px!important;}
-.jconfirm-title									{line-height:28px!important; font-size:1.6rem!important;}
-.jconfirm-content								{font-size:1.3rem!important;}
-.jconfirm-content .confirmDeleteAlert			{color:#a00!important; margin-bottom:20px!important;}
-.jconfirm-buttons								{text-align:center!important;}
-.jconfirm-buttons button						{margin:10px!important; padding:10px 15px!important; font-size:15px!important;}
+.jconfirm-box									{border-radius:15px!important; padding:35px 20px 10px 20px!important;}
+.jconfirm-title-c								{text-align:center; font-size:1.5rem!important; line-height:30px!important;}
+.jconfirm-content								{text-align:center; font-size:1.3rem!important;}
+.jconfirm-content-pane							{margin-bottom:5px!important;}
+.jconfirm-content .confirmDeleteAlert			{color:#800!important; margin-bottom:20px!important;}
+.jconfirm-buttons								{display:inline-block; width:100%; text-align:center!important;}
+.jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
