@@ -20,7 +20,7 @@
 <div id="pageFull">
 	<div id="moduleMenu">
 		<div class="miscContainer">
-			<div class="menuLine" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')" <?= Txt::tooltip("SPACE_moduleTooltip") ?>><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
+			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')" <?= Txt::tooltip("SPACE_moduleTooltip") ?>><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
 			<div class="infos"><?= Txt::trad("SPACE_moduleTooltip") ?></div>

@@ -12,7 +12,7 @@
 			<!--ADD USER /  INVITATIONS  /  IMPORTER DES USERS  /  ENVOI DES CREDENTIALS  /  AFFECT USER -->
 			<?php
 			$affectNewUsers=(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
 			if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
 			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=ResetPasswordSendMailUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/user/connection.png"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
 			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=EditPersonsImportExport\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_user").'</div></div>';}

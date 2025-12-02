@@ -1,16 +1,16 @@
 /*** BASIC*/
 body, a, .sLink																							{color:#ccc;}
-#htmlLightbox, .objContainer, .miscContainer, .menuContext, #menuMobileMain								{background:black;}
+#htmlLightbox, .objContainer, .miscContainer, .menuContext, #menuMobileMain								{background:#222;}
 #headerBar																								{background:linear-gradient(to bottom,black,#222);}/*barre principale*/
 #headerBar, .objContainer, .miscContainer, .menuContext, #livecounterMain, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #555; transition:box-shadow 0.3s ease-in-out;}
 .objBlocks .objContainer:hover																			{box-shadow:2px 2px 10px #fff;}
 .objLines .objContainer																					{border-bottom:solid 1px #555;}
 .menuContext,  #messengerMain, .tox-tinymce																{border:solid 1px #444;}
-.objLines .objContainer:hover, .menuContext .menuLine:hover, .lineHover:hover							{background:#333;}
-.objContainerSelect, .lineSelect, #objSelectMenu														{background:#444!important;}
+.objLines .objContainer:hover, .menuContext .menuLine:hover, .lineHover:hover, .lineSelect				{background:#333;}
+.objContainerSelect, #objSelectMenu																		{background:#444!important;}
 .tooltipster-box																						{background:black!important; box-shadow:0px 0px 12px #bbb!important;}
 .tooltipster-content																					{color:#eee!important; padding:15px!important;}
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#htmlMainPage					{background:#222 url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
 	#headerBar						{border-top:solid 1px #ddd;}/*séparation de la "appBar" du main.dart*/
@@ -40,10 +40,10 @@ input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0
 .tox-tinymce														{box-shadow:0px 0px 4px #777!important; border-radius:5px!important;}/*Editeur TinyMCE*/
 
 /*** DIVERS*/
+.objMenuTab, fieldset, .objMenuMain		{background:#333; border:1px solid #444; border-radius:8px;}	   /*VueObjMenuEdit + fieldset*/
+.objMenuTab								{background:transparent;}											 /*VueObjMenuEdit : onglet non sélectionnés*/
+.objMenuTab:hover, .objMenuTabSelect	{background:#333;}													/*VueObjMenuEdit : onglet sélectionnés/survolé*/
 hr										{background:linear-gradient(90deg,#555,#999,#555);}
-fieldset, .objMenuTab, .objMenuOptions	{background:#333; border:1px solid #444; border-radius:5px;}/*fieldset & VueObjMenuEdit*/
-.fieldsetSub							{background:#444; border:1px solid #414141; border-radius:5px;}/*VueObjMenuEdit*/
-.objMenuTab:hover, .objMenuTabSelect	{background:linear-gradient(0deg,#333,black);}/*"VueObjMenuEdit.php"*/
-::-webkit-scrollbar						{background:#333; width:12px;}/*background et width*/
-::-webkit-scrollbar-thumb				{background:#888;}/*couleur de scrollbar*/
-.jconfirm-box							{border:solid 1px #555!important; background:#333!important; }
+.jconfirm-box							{background:#222!important; box-shadow:0px 2px 6px #555!important;}
+::-webkit-scrollbar						{background:#333; width:12px;}		/*background et width*/
+::-webkit-scrollbar-thumb				{background:#888;}					 /*couleur de scrollbar*/

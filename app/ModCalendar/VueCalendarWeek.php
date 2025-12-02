@@ -181,7 +181,7 @@ ready(function(){
 .vEvtLabelDate						{margin-top:2px;}																		/*Label de l'heure*/
 .vEvtLabelDate b					{margin-top:20px; font-size:1.2rem;}													/*Label de l'heure en cours de déplacement*/
 
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.vWeekHourLabel						{width:25px; font-size:0.8rem;}
 	.vWeekHour00						{display:none;}

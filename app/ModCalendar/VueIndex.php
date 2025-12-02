@@ -85,6 +85,7 @@ function moduleDisplay()
 
 <style>
 /*Réduit la taille du footer + du livecounter principal*/
+#pageContent									{padding-bottom:0px!important;}/*Surcharge VueStructure.php pour ne pas avoir de marge sous l'agenda*/
 #pageFooterHtml, #pageFooterIcon				{display:none;}
 #pageFull										{margin-bottom:0px;}
 
@@ -125,10 +126,10 @@ function moduleDisplay()
 .vCalVue										{max-width:100%; width:100%;}
 .vCalHeader										{display:table; width:100%;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
-.vCalHeaderLeft									{width:250px;}
-.vCalHeaderTitle								{vertical-align:middle; margin-inline:5px; font-size:1.1rem;}
-.vCalHeaderCenter								{width:250px; text-align:center;}
-.vCalHeaderCenter .vCalPrevNext					{padding:12px; border-radius:5px;}
+.vCalHeaderLeft, .vCalHeaderCenter				{min-width:250px;}
+.vCalHeaderLeftLabel							{vertical-align:middle; margin-inline:5px; font-size:1.1rem;}
+.vCalHeaderCenter								{text-align:center;}
+.vCalHeaderCenter .vCalPrevNext					{padding:10px 15px; border-radius:5px;}
 .vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
@@ -142,17 +143,17 @@ function moduleDisplay()
 .vEvtLabel										{overflow:hidden; font-size:0.9rem; font-weight:normal; color:white!important;}
 .vEvtLabel img									{margin-left:5px;}
 
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.vCalMain.miscContainer						{margin:0px;}/*surcharge .miscContainer*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
 	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}
-	.vCalHeaderTitle							{display:inline-block; font-size:1rem; max-width:140px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
-	.vCalHeaderTitle::first-letter				{text-transform:uppercase}
+	.vCalHeaderLeft, .vCalHeaderCenter			{min-width:100px;}
+	.vCalHeaderLeftLabel						{display:inline-block; font-size:1rem; max-width:140px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
+	.vCalHeaderLeftLabel::first-letter			{text-transform:uppercase}
 	.vCalHeaderCenter .vCalPrevNext				{padding:3px;}
-	.vCalHeaderRight>span						{margin-left:0px; line-height:35px; vertical-align:middle;}
-	.vCalHeaderRight>span img					{max-height:35px;}
+	.vCalHeaderRight>span						{display:inline-block; margin-left:3px; line-height:35px; vertical-align:middle;}
 	.vEvtBlock									{height:25px; min-height:25px; overflow:hidden; padding-right:0px;}/*padding-right : pas menu burger*/
 	.vEvtLabel									{text-transform:lowercase; white-space:normal!important;}/*longs mots splités sur plusieurs lignes*/
 	.vCalHeader .personImgSmall, .vEvtLabelDate, .vEvtBlock .objMenuContextFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
@@ -283,9 +284,9 @@ function moduleDisplay()
 				<!--TITRE DE L'AGENDA-->
 				<div class="vCalHeaderLeft">
 					<?php
-					$calLabel='<span class="vCalHeaderTitle" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';														//Label/Title de l'agenda
-					if($tmpCal->type=="user")  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}															//Icone de l'user
-					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["launcherIcon"=>(Req::isMobile()?"inlineSmall":"inlineBig"),"launcherLabel"=>$calLabel])  :  $calLabel;	//Ajoute le label au launcher du menu ?
+					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';													//Label de l'agenda
+					if($tmpCal->type=="user")  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}															//Ajoute l'icone de l'user ?
+					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["launcherIcon"=>(Req::isMobile()?"inlineSmall":"inlineBig"),"launcherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda, avec menu context?
 					?>
 				</div>
 				<!--PERIODE AFFICHEE  &  PRECEDENT/SUIVANT  &  MENU CONTEXT MONTHS/YEARS-->

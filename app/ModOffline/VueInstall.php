@@ -43,13 +43,14 @@ ready(function(){
 </script>
 
 <style>
-#pageCenter							{margin-top:50px;}
-form								{padding:20px;}
- #formTitle							{margin-bottom:40px;}
- #formTitle	span					{font-size:1.4rem; margin:0px 20px;}
- #formTitle img[src*='logoLabel']	{float:right; margin-top:-10px}
-form h3								{margin:40px 0px 10px; padding-bottom:5px; border-bottom:#ddd solid 1px;}
-#spaceDiskLimit						{width:50px;}
+#pageCenter					{margin-top:50px;}
+form						{padding:20px;}
+ #formTitle					{display:table; width:100%; margin-bottom:40px;}
+ #formTitle>div				{display:table-cell; font-size:1.4rem; vertical-align:middle;}
+ #formTitle>div:first-child	{width:80px;}
+ #formTitle>div:last-child	{text-align:right;}
+form h3						{margin:40px 0px 10px; padding-bottom:5px; border-bottom:#ddd solid 1px;}
+#spaceDiskLimit				{width:50px;}
 </style>
 
 
@@ -62,7 +63,11 @@ form h3								{margin:40px 0px 10px; padding-bottom:5px; border-bottom:#ddd sol
 		?>
 			<form action="index.php" method="post" id="installForm" enctype="multipart/form-data">
 				<!--HEADER-->
-				<div id="formTitle"><img src="app/img/install.png"><span>Installation</span><?= MdlAgora::selectTrad("install",Req::param("curTrad")) ?><img src="app/img/logoLabel.png"></div>
+				<div id="formTitle">
+					<div><img src="app/img/install.png"></div>
+					<div>Installation &nbsp; <?= MdlAgora::selectTrad("install",Req::param("curTrad")) ?></div>
+					<div><img src="app/img/logo.png"></div>
+				</div>
 				<!--CONFIG DB-->
 				<h3><?= Txt::trad("INSTALL_dbConnect") ?></h3>
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbHost") ?></div><div><input type="text" name="db_host"></div></div>

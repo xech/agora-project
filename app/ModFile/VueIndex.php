@@ -22,7 +22,7 @@
 		<div class="miscContainer">
 			<!--AJOUT D'ELEMENTS-->
 			<?php if(Ctrl::$curContainer->addContentRight()){ ?>
-				<div class="menuLine" onclick="lightboxOpen('<?= MdlFile::urlAddFiles() ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("FILE_addFile") ?></div></div>
+				<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlFile::urlAddFiles() ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("FILE_addFile") ?></div></div>
 				<div class="menuLine" onclick="lightboxOpen('<?= MdlFileFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div><?= Txt::trad("addFolder") ?></div></div>
 				<hr>
 			<?php } ?>

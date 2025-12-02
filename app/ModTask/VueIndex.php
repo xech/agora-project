@@ -51,7 +51,7 @@ function moduleDisplay(){
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
+				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
 					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div>'.Txt::trad("addFolder").'</div></div>
 					  <hr>';
 			}

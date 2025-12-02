@@ -46,7 +46,7 @@ ready(function(){
 	 **********************************************************************************************************/
 	$("#showAllUsers").on("click",function(){
 		$(".vSpaceTargetHide").removeClass("vSpaceTargetHide");		//Affiche tous les users et espaces masqués
-		$(".vSpaceTable").addClass("fieldsetSub");					//Affiche un block distinct pour chaque espace (gris foncé)
+		$(".vSpaceTable").addClass("objSubMenu");					//Affiche un block distinct pour chaque espace (gris foncé)
 		$(this).hide();												//Masque le menu qui vient d'être cliqué
 		labelRightStyle();											//Style des labels
 		lightboxResize();											//Resize le lightbox
@@ -132,14 +132,15 @@ ready(function(){ labelRightStyle(); });
 <style>
 /*OPTIONS D'EDITION (cf. white.css & black.css) */
 #objMenuTabs							{margin-top:35px; margin-bottom:-35px; display:table; width:100%; max-width:100%;}
-.objMenuTab								{user-select:none; -webkit-user-select:none; display:table-cell; width:auto; padding:10px 5px; opacity:0.75; text-align:center; cursor:pointer; border-radius:5px 5px 0px 0px;}
+.objMenuTab								{user-select:none; -webkit-user-select:none; display:table-cell; width:auto; padding:10px 5px; opacity:0.75; text-align:center; cursor:pointer; border-radius:8px 8px 0px 0px;}
 .objMenuTabSelect						{opacity:1; border-bottom:none;}
 .objMenuTab img							{margin-right:10px;}
-.objMenuTab[for='objMenuAccessRight']	{min-width:150px;}/*onglet des droits d'accès*/
-.objMenuOptions							{margin-top:35px; padding:25px; border-top:0px; border-radius:0px 0px 5px 5px; text-align:left;}
-#objMenuAccessRight						{text-align:center;}/*Tableau des droits d'accès*/
+.objMenuTab[for='objMenuAccessRight']	{min-width:150px;}		/*onglet des droits d'accès*/
+.objMenuMain							{margin-top:35px; padding:25px; border-top:0px; border-radius:0px 0px 8px 8px; text-align:left;}
+.objSubMenu								{border:1px solid <?= Ctrl::$agora->skin=='white'?'#ddd':'#555' ?>; border-radius:8px;}	/*sous-menu ("afficher tous les utilisateurs", etc) */
 
 /*DROITS D'ACCÈS*/
+#objMenuAccessRight						{text-align:center;}/*Tableau des droits d'accès*/
 .vSpaceTable							{display:inline-table; user-select:none; -webkit-user-select:none; max-width:600px; margin-bottom:30px;}
 .vSpaceTable>div						{display:table-row;}
 .vSpaceTable>div>div					{display:table-cell; padding:6px; text-align:center;}
@@ -154,16 +155,15 @@ ready(function(){ labelRightStyle(); });
 #showAllUsers, #extendToSubfoldersDiv	{cursor:pointer;}
 
 /*MENU DES NOTIFICATIONS PAR MAIL*/
-#notifMailOptions>div					{padding-left:15px; padding-top:12px;}
-#notifMailOptions>div input				{margin-right:10px;}/*surcharge "VueSendMailOptions.php"*/
-#notifMailSelectList					{padding-left:10px; border-radius:3px;}
-#notifMailSelectList>div				{display:inline-block; width:50%; padding:7px;}
+#notifMailOptions>div					{margin-left:15px; margin-top:12px;}
+#notifMailOptions>div input				{margin-right:8px;}/*surcharge "VueSendMailOptions.php"*/
+#notifMailSelectList>div				{display:inline-block; width:250px; padding:7px;}
 #notifMailUsersPlus, #notifMailSelectList, #notifMailOptions  {display:none;}
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	#objMenuTabs, .objMenuOptions							{font-size:0.85rem;}	/*menu des option + Détail des options*/
-	.objMenuOptions											{padding:25px 10px;}	/*détail des options*/
+	#objMenuTabs, .objMenuMain								{font-size:0.85rem;}	/*menu des option + Détail des options*/
+	.objMenuMain											{padding:25px 10px;}	/*détail des options*/
 	.vSpaceTable>div>div									{padding:7px 3px;}		/*cellules du tableau des droits d'accès*/
 	.vSpaceRead,.vSpaceWrite,.vSpaceWriteLimit				{width:55px;}			/*colonne des checkboxes des droits d'accès*/
 	.objMenuTab img, .vSpaceTable img, .vSpaceTargetIcon	{display:none;}
@@ -184,7 +184,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 
 	////	MENU DES DROITS D'ACCES (OBJETS INDEPENDANTS)
 	if(!empty($objMenuAccessRight)){
-		echo '<div class="objMenuOptions" id="objMenuAccessRight">';
+		echo '<div class="objMenuMain" id="objMenuAccessRight">';
 		//DROITS D'ACCES DE CHAQUE ESPACE
 		foreach($accessRightSpaces as $tmpSpace){
 			//BLOCK + TABLEAU + ENTETE DE L'ESPACE (nom de l'espace + entete des droits d'acces)
@@ -218,7 +218,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 	}
 	////	MENU DES NOTIFS MAIL
 	if(!empty($objMenuNotifMail)){
-		echo '<div class="objMenuOptions" id="objMenuNotifMail">';
+		echo '<div class="objMenuMain" id="objMenuNotifMail">';
 		//CHECKBOX PRINCIPALE & BLOCK DES OPTIONS
 		$notifMailTooltip=$curObj->tradObject("EDIT_notifMailTooltip");
 		if($curObj::objectType=="calendarEvent")  {$notifMailTooltip.=Txt::trad("EDIT_notifMailTooltipCal");}//"la notification ne sera envoyée qu'aux propriétaires de ces agendas"
@@ -230,7 +230,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 			echo MdlObject::sendMailBasicOptions();
 			//Option "Choisir les destinataires"
 			echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailSelect" id="boxNotifMailSelect" value="1" onclick="$(\'#notifMailSelectList\').slideToggle();"><label for="boxNotifMailSelect">'.Txt::trad("EDIT_notifMailSelect").' <img src="app/img/user/accessAll.png"></label></div>';
-			echo '<div id="notifMailSelectList" class="fieldsetSub">';
+			echo '<div id="notifMailSelectList" class="objSubMenu">';
 				//Groupe d'users de l'espace courant
 				foreach($curSpaceUserGroups as $tmpGroup){
 					echo '<div '.Txt::tooltip(Txt::trad("selectUnselect")." : ".$tmpGroup->usersLabel).'>
@@ -253,11 +253,11 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 	}
 	////	MENU D'EDITION DES FICHIERS JOINTS
 	if(!empty($objMenuAttachedFile)){
-		echo '<div class="objMenuOptions" id="objMenuAttachedFile">'.$curObj->attachedFileEdit().'</div>';
+		echo '<div class="objMenuMain" id="objMenuAttachedFile">'.$curObj->attachedFileEdit().'</div>';
 	}
 	////	MENU DES SHORTCUT
 	if(!empty($objMenuShortcut)){
-		echo '<div class="objMenuOptions" id="objMenuShortcut"><input type="checkbox" name="shortcut" id="boxShortcut" value="1" '.($curObj->shortcut?'checked':null).'> <label for="boxShortcut">'.Txt::trad("EDIT_shortcutInfo").'</label></div>';
+		echo '<div class="objMenuMain" id="objMenuShortcut"><input type="checkbox" name="shortcut" id="boxShortcut" value="1" '.($curObj->shortcut?'checked':null).'> <label for="boxShortcut">'.Txt::trad("EDIT_shortcutInfo").'</label></div>';
 	}
 }
 

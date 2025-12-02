@@ -83,7 +83,7 @@ ready(function(){
 .vConnectOptions>div				{display:table-cell; padding:0px 15px;}
 .g_id_signin						{margin-inline:auto; margin-top:50px; width:300px;}/*button gOAuth : width idem ".connectForm button"*/
 
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#headerBar								{font-size:1rem;}/*surcharge*/
 	#headerBar span							{display:none;}

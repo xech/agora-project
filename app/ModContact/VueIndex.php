@@ -5,14 +5,14 @@
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlContact::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("CONTACT_addContact")."</div></div>
-					  <div class='menuLine' onclick=\"lightboxOpen('".MdlContactFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>";
-				if(Ctrl::$curUser->isSpaceAdmin())	{echo "<div class='menuLine' onclick=\"lightboxOpen('?ctrl=contact&action=EditPersonsImportExport&typeId=".Ctrl::$curContainer->_typeId."');\"><div class='menuIcon'><img src='app/img/dataImportExport.png'></div><div>".Txt::trad("importExport_contact")."</div></div>";}
+				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlContact::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("CONTACT_addContact").'</div></div>
+					  <div class="menuLine" onclick="lightboxOpen(\''.MdlContactFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div>'.Txt::trad("addFolder").'</div></div>';
+				if(Ctrl::$curUser->isSpaceAdmin())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=contact&action=EditPersonsImportExport&typeId='.Ctrl::$curContainer->_typeId.'\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_contact").'</div></div>';}
 				echo "<hr>";
 			}
 			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlContactFolder::menuTree().MdlContact::menuDisplayMode().MdlContact::menuSort().
-				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
+				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>
 		</div>
 	</div>

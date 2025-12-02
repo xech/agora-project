@@ -55,10 +55,10 @@
 
 		////	Au chargement de la page
 		ready(function(){
-			//// Mobile : Bouton "Add" du footer ("plusBig.png")
-			if(isMobile()){
-				var addElemButton=$("#moduleMenu img[src*='plus']").first().parents(".menuLine");								//Sélectionne le premier bouton "Add"
-				if(addElemButton.exist())  {$("#menuMobileAddButton").attr("onclick",addElemButton.attr("onclick")).show();}	//Ajoute l'attribut "onclick" et affiche le bouton
+			//// Mobile : Bouton "+" en bas de page pour ajouter un élément
+			if(isMobile() && $(".forMobileAddElem").exist()){
+				let onclickAttr=$(".forMobileAddElem").attr("onclick");	//Attribut "onclick" du bouton principal d'ajout d'element
+				$("#mobileAddElem").show().attr("onclick",onclickAttr);	//Affiche le "+" et ajoute le "onclick"
 			}
 			//// Affiche des notifs
 			<?php foreach(Ctrl::$notify as $tmpNotif){ ?>
@@ -81,13 +81,19 @@
 		<?= (Req::isMobile()==false && isset($pathWallpaper)) ? "html  {background:url('".addslashes($pathWallpaper)."') no-repeat center fixed;background-size:cover;}" : null ?>
 
 		/*Init*/
-		#pageFooterHtml, #pageFooterIcon	{position:fixed; z-index:100;}/*z-index idem #headerBar*/
+		:root								{--footerHeight:80px;}
+		#pageContent						{padding-bottom:var(--footerHeight);}/*Surcharge pour l'affichage de #pageFooterIcon (pas de padding : cf. responsive)*/
+		#pageFooterHtml, #pageFooterIcon	{position:fixed; z-index:100; max-height:var(--footerHeight);}/*z-index idem #headerBar*/
 		#pageFooterHtml						{bottom:15px; left:15px; font-weight:normal; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
 		#pageFooterIcon						{bottom:5px; right:5px;}
-		#pageFooterIcon img					{max-height:70px; max-width:200px;}
-		/*AFFICHAGE SMARTPHONE + TABLET*/
+		#pageFooterIcon img					{max-height:var(--footerHeight); max-width:200px;}
+		/*AFFICHAGE RESPONSIVE*/
 		@media screen and (max-width:1200px){
-			#pageFooterHtml, #pageFooterIcon	{display:none;}
+			#pageFooterHtml, #pageFooterIcon	{display:none!important;}
+		}
+		/*AFFICHAGE PRINT*/
+		@media print{
+			#pageFooterHtml, #pageFooterIcon	{display:none!important;}
 		}
 		</style>
 	</head>
@@ -107,7 +113,7 @@
 			<div id="pageFooterIcon"><a href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a></div>
 		<?php } ?>
 
-		<!--MENU CONTEXT RESPONSIVE (cf. app.js / app.css)-->
+		<!--MENU CONTEXT SUR MOBILE (cf. app.js / app.css)-->
 		<div id="menuMobileBg"></div>
 		<div id="menuMobileMain">
 			<div id="menuMobileClose"><img src="app/img/close.png"></div>
@@ -115,8 +121,8 @@
 			<div id="menuMobileContent2"></div>
 		</div>
 
-		<!--BOUTON "AJOUTER" SUR MOBILE-->
-		<div id="menuMobileAddButton"><img src="app/img/plusBig.png"></div>
+		<!--BOUTON "+" SUR MOBILE EN BAS DE PAGE-->
+		<div id="mobileAddElem"><img src="app/img/plusBig.png"></div>
 
 	</body>
 </html>

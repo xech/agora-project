@@ -65,9 +65,9 @@ function objectFormControl(){
 
 <style>
 fieldset								{text-align:center; margin:0px; padding:30px;}										/*surcharge tt les fieldset*/
-fieldset#uploadMultiple					{padding:0px;}																		/*fieldset Plupload*/
+fieldset#uploadMultiple					{padding:0px; border-radius:7px;}													/*fieldset Plupload*/
 .plupload_wrapper						{min-width:100%!important; max-width:100%!important;}								/*surcharge pour eviter le scroll horizontal*/
-.plupload_container						{height:220px; min-height:220px; max-width:100%; background-color:transparent;}		/*conteneur principal*/
+.plupload_container						{height:220px; min-height:220px; max-width:100%; background-color:transparent; border:0px;}		/*conteneur principal*/
 .plupload_content						{top:0px; height:160px;}															/*dropzone & liste des fichiers (160px minimum)*/
 .plupload_droptext						{font-size:1rem; opacity:0.5;}														/*dropzone*/
 .plupload_filelist_content				{text-align:left; font-size:0.95rem;}												/*liste des fichiers*/

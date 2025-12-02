@@ -14,7 +14,7 @@ ready(function(){
 
 <style>
 /*Affichage des sujets & messages*/
-.objContainer					{height:auto!important; min-height:auto!important; vertical-align:top; padding:15px 50px 15px 15px;}/*surcharge : hauteur variable des sujets/messages en fonction du texte affiché*/
+.objContainer					{height:auto!important; min-height:auto!important; vertical-align:top; padding:15px 40px 15px 15px;}/*surcharge : hauteur variable des sujets/messages en fonction du texte affiché*/
 .objContent>div					{display:block; width:100%;}/*surcharge*/
 .vTitle:empty					{display:none;}
 .vDescription					{margin:15px 0px; font-weight:normal; user-select:text;}/*description des sujets/messages*/
@@ -25,7 +25,7 @@ ready(function(){
 .vMessageQuoted					{position:relative; display:block; overflow:auto; max-height:100px; margin:15px 0px; padding:10px; padding-left:40px; font-style:italic;}/*"position:relative" : cf. "vMessageQuotedImg" */
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.vMessages					{border-radius:5px;}
 	.vDetails, .vDetails>div	{display:block;}
@@ -41,12 +41,12 @@ ready(function(){
 		<?php
 		////	LISTE DES SUJETS :  AJOUT DE SUJET  &  MENU DES THEMES  &  TRI D'AFFICHAGE  &  NB DE SUJETS
 		if($forumDisplay=="subjectList"){
-			if(MdlForumSubject::addRight())  {echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlForumSubject::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addSubject").'</div></div><hr>';}
+			if(MdlForumSubject::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumSubject::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addSubject").'</div></div><hr>';}
 			echo MdlForumTheme::displayMenu().MdlForumSubject::menuSort().'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.$subjectsTotalNb.' '.Txt::trad($subjectsTotalNb>1?"FORUM_subjects":"FORUM_subject").'</div></div>';
 		}
 		////	SUJET & MESSAGES ASSOCIES :  AJOUT DE MESSAGE  &  NOTIF PAR MAIL  &  TRI D'AFFICHAGE  &  NB DE MESSAGES
 		elseif($forumDisplay=="suject"){
-			if($curSubject->addContentRight())  {echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
+			if($curSubject->addContentRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
 			if(!empty(Ctrl::$curUser->mail))  	{echo '<div class="menuLine sLink '.($curSubject->curUserNotifyLastMessage()?'optionSelect':'option').'" id="notifyLastMessage" '.Txt::tooltip("FORUM_notifyLastPostTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("FORUM_notifyLastPost").'</div></div>';}
 			echo "<hr>".MdlForumMessage::menuSort();
 		}

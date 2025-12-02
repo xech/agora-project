@@ -69,8 +69,8 @@ class Tool
 			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);						//Nom de l'expediteur (Ex: "monespace.fr")
 			$mail->SetFrom($setFromMail, $setFromName);																					//"SetFrom" fixe (cf. score des antispams)
 			//Controles de base
-			if(in_array("noTimeControl",$options)==false && (time()-@$_SESSION["sendMailTime"])<10)	{echo "please wait 10 sec."; exit;}	//Temps minimum entre chaque mail
-			else																					{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
+			if(in_array("noTimeControl",$options)==false && !empty($_SESSION["sendMailTime"]) && (time()-@$_SESSION["sendMailTime"])<5)	{echo "please wait 5 sec."; exit;}	//Temps minimum entre chaque mail
+			else																														{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
 			if(empty($_SESSION["sendMailCounter"][date("Y-m-d-H")]))	{$_SESSION["sendMailCounter"][date("Y-m-d-H")]=1;}				//Init le compteur de nb max de mail/heure
 			elseif($_SESSION["sendMailCounter"][date("Y-m-d-H")]>100)	{echo "100 mails maximum par heure et par personne"; exit;}		//- quota dépassé
 			else														{$_SESSION["sendMailCounter"][date("Y-m-d-H")]++;}				//- incrémente le compteur

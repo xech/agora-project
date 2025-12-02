@@ -107,7 +107,7 @@ class Trad extends Txt
 			"passwordModify"=>"Modifier le mot de passe",
 			"passwordToModify"=>"Mot de passe temporaire (à modifier en page de connexion)",
 			"passwordToModify2"=>"Mot de passe (à modifier si besoin sur votre profil utilisateur)",
-			"passwordVerif"=>"Confirmer mot de passe",
+			"passwordVerif"=>"Confirmer le mot de passe",
 			"passwordTooltip"=>"Remplir les champs uniquement si vous souhaitez changer de mot de passe",
 			"passwordInvalid"=>"Le mot de passe doit comporter 6 caractères minimum, avec au moins une majuscule, une minuscule et un chiffre",
 			"passwordVerifError"=>"Votre confirmation de mot de passe n'est pas valide",
@@ -429,7 +429,7 @@ class Trad extends Txt
 
 			////	VueObjMenuEdit.php
 			"EDIT_notifNoSelection"=>"Vous devez sélectionner au moins une personne ou un espace",
-			"EDIT_notifNoPersoAccess"=>"Vous n'êtes pas affecté à l'élément. valider tout de même ?",
+			"EDIT_notifNoPersoAccess"=>"Vous n'êtes pas affecté à l'élément.<br>valider tout de même ?",
 			"EDIT_parentFolderAccessError"=>"Vérifiez les droits d'accès du dossier parent  <br><i>--FOLDER_NAME--</i><br><br>  Il doit aussi y avoir un droit d'accès pour  <br><i>--SPACE_LABEL--</i> : <i>--TARGET_LABEL--</i><br><br>  Sans quoi le présent dossier ne sera pas accessible !",
 			"EDIT_accessRight"=>"Droits d'accès",
 			"EDIT_accessRightContent"=>"Droits d'accès au contenu",

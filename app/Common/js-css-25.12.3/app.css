@@ -15,7 +15,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	html				{font-size:18px;}
-	#bodyLightbox		{padding:25px 12px;}
+	#bodyLightbox		{padding:10px; padding-top:38px;}
 	::-webkit-scrollbar	{width:8px!important;}
 }
 
@@ -23,7 +23,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 #headerBar											{display:table; width:100%; max-width:100%; height:50px; position:fixed; z-index:100; top:0px; left:0px; user-select:none;}
 #headerBar>div										{display:table-cell; vertical-align:middle!important;}
 #headerBar>div:last-child							{text-align:right;}
-#pageFull, #pageCenter								{display:table; max-width:100%; padding-bottom:70px;}						/*Conteneur de la page : "margin-bottom" cf. #pageFooterIcon*/
+#pageFull, #pageCenter								{display:table; max-width:100%;}											/*Conteneur de la page*/
 #pageFull											{width:100%;}																/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
 #pageCenter											{margin-left:auto; margin-right:auto;}										/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage smarthone et tablet paysage*/
 #moduleMenu, #pageContent							{display:table-cell;}
@@ -55,9 +55,9 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objLines .objAutorDate								{text-align:right; width:185px; font-size:0.9rem; line-height:20px;}		/*Auteur/Date : tester avec "lun. 30 septembre 2024"*/
 .objLines .objAutorDate span						{display:block;}															/*Auteur et Date sur 2 lignes*/
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	#pageFull, #pageCenter, #pageContent			{display:block; max-width:100%!important; word-break:break-word!important; margin-inline:auto;}	/*"break-word" évite qu'une URL éclate l'affichage*/
+	#pageFull, #pageCenter, #pageContent			{word-break:break-word!important; margin-inline:auto;}	/*"break-word" évite qu'une URL éclate l'affichage*/
 	.miscContainer, .objContainer					{margin:7px; border-radius:8px!important;}														/*tester affichage de news, fichiers, agendas, tâches*/
 	#pageContent.miscContainer						{margin:0px!important;}																			/*cf site public*/
 	.objContainerScroll								{overflow-y:hidden;}																			/*pas de scroller vertical sur mobile*/
@@ -68,7 +68,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 @media print{
 	html, body				{background-image:none; background-color:white!important; color:#333;}
 	#pageFull, #pageCenter	{margin:0px!important; margin-top:30px!important;}
-	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
+	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml	{display:none!important;}
 }
 
 /*** MENU PATH DES OBJETS (PATH D'UN DOSSIER, DU FORUM, MENU DASHBOARD)*/
@@ -77,7 +77,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
 .pathMenu>div:first-child		{width:50px; white-space:nowrap;}/*icone de dossier ou "top"*/
 .pathMenuAdd					{width:50px; text-align:right;}/*icone d'ajout d'element*/
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.pathMenu.miscContainer		{width:97%; max-width:97%; padding:3px;}
 }
@@ -101,7 +101,7 @@ video.attachedFileTag						{min-width:600px; min-height:400px;}											/*Vid�
 audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
 .objMenuBottom								{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
 .objMenuBottom>.miscContainer				{display:inline-block; padding:15px; border-radius:10px;}
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.objMenuContextFloat					{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
 	.objMenuMisc>div						{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
@@ -124,10 +124,12 @@ audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
 .menuContext hr								{margin:3px 0px!important;}
 .menuContextSpecificLabels					{padding:5px; line-height:20px;}	/*cf. affectations des agendas*/
 .menuContextTxtLeft							{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*cf. menuContext : Auteur, Droits d'accès..*/
-/*AFFICHAGE SMARTPHONE + TABLET*/
+#mobileAddElem								{display:none;}/*Bouton "Plus" en bas de page*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
 	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
+	#mobileAddElem							{z-index:100;/*idem #headerBar*/ position:fixed; bottom:12px; right:12px;}/*Bouton "Plus" en bas de page*/
 }
 
 /*** INPUTS*/
@@ -140,7 +142,7 @@ input[type=checkbox]								{width:15px; height:15px;}
 input[type=file]									{height:auto;}
 textarea											{width:100%; height:70px;}
 select option										{font-size:1.05rem;}
-button												{border-radius:7px; font-weight:bold; cursor:pointer; vertical-align:middle;}
+button												{border-radius:8px; font-weight:bold; cursor:pointer; vertical-align:middle;}
 .dateInput, .dateBegin, .dateEnd					{width:90px;}													/*DATEPICKER INPUTS*/
 .ui-datepicker										{width:300px; max-width:98%; box-shadow:0px 2px 6px #888;}		/*DATEPICKER JQUERY ("box-shadow" idem .miscContainer)*/
 .ui-datepicker-header								{background-color:transparent; border:none;}					/*label du mois*/
@@ -163,7 +165,7 @@ legend												{padding:5px 20px;}
 .submitButtonInline	button							{min-width:100px;}											/*height idem input[type=text]*/
 .submitButtonInline .submitLoading					{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
 .submitLoading										{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
-.connectForm *:is(input[type=text],input[type=password],button)  {display:inline-block; width:330px; height:50px; border-radius:7px; margin-bottom:20px;}
+.connectForm *:is(input[type=text],input[type=password],button)  {display:inline-block; width:330px; height:50px; border-radius:8px; margin-bottom:20px;}
 .connectForm .submitButtonMain						{margin-top:0px;}/*surcharge*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
@@ -207,16 +209,15 @@ legend												{padding:5px 20px;}
 	.spaceAffectLine>div					{width:100px; font-size:0.95rem;}/*checkboxes*/
 }
 
-/*** MENU CONTEXT RESPONSIVE*/
-#menuMobileBg, #menuMobileMain, #menuMobileAddButton	{display:none;}/*Masque par défaut*/
-#menuMobileBg, #menuMobileMain 							{position:fixed; top:0px; right:0px; height:100%;}
-#menuMobileBg											{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
-#menuMobileMain											{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
-#menuMobileClose										{text-align:right;}
-#menuMobileMain .menuLine>div							{padding:10px 5px;}/*surcharge*/
-#menuMobileContent2										{margin-top:30px;}
-#menuMobileContent2 .miscContainer						{padding:5px;}
-#menuMobileAddButton									{z-index:100;/*idem #headerBar*/ position:fixed; bottom:15px; right:15px;}
+/*** MENU CONTEXT MOBILE (CF SWIPE)*/
+#menuMobileBg, #menuMobileMain				{display:none;}/*Masque par défaut*/
+#menuMobileBg, #menuMobileMain 				{position:fixed; top:0px; right:0px; height:100%;}
+#menuMobileBg								{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
+#menuMobileMain								{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
+#menuMobileClose							{text-align:right;}
+#menuMobileMain .menuLine>div				{padding:10px 5px;}/*surcharge*/
+#menuMobileContent2							{margin-top:30px;}
+#menuMobileContent2 .miscContainer			{padding:5px;}
 
 /*** FANCYBOX*/
 .f-zoomInUp										{animation:var(--f-transition-duration, 0.1s) ease 0.1s both f-zoomInUp}					/*surcharge la durée d'affichage des lightboxes (fadein)*/
@@ -234,16 +235,16 @@ legend												{padding:5px 20px;}
 .lightboxTitleDetail							{font-size:0.9rem; margin-top:15px;}	/*libellé détaillé*/
 .lightboxAddElem								{text-align:center;}					/*exple: "Ajouter un  groupe"*/
 .lightboxAddElem button							{width:230px; height:50px;}
-.lightboxInline									{display:none; width:400px; text-align:center}/*<form> en page de connexion*/
-.lightboxInline input, .lightboxInline button:not([data-fancybox-close])  {height:45px!important; width:80%!important; margin:10px auto!important;}/*Width des input (sauf "data-fancybox-close")*/
+.lightboxInline									{display:none; width:400px; text-align:center}														/*<form> en page de connexion*/
+.lightboxInline input, .lightboxInline button:not([data-fancybox-close])  {height:45px!important; width:80%!important; margin:10px auto!important;}	/*Width des input (sauf "data-fancybox-close")*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:0px; box-shadow:none;}
 	.fancybox__slide																	{padding:0px!important;}/*surcharge*/
 	.fancybox__slide, .fancybox__content												{width:100%!important; height:100%!important; margin:0px!important;}
 	.fancybox__iframe																	{margin:0px auto;}/*iframe centré*/
-	.fancybox__slide:not(.has-image) button[data-fancybox-close]		{width:45px!important; height:45px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
-	.fancybox__slide:not(.has-image) button[data-fancybox-close] svg	{display:none;}/*Masque le svg "close" par défaut*/
+	.fancybox__slide:not(.has-image) button[data-fancybox-close]		{width:40px!important; height:40px!important; right:10px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
+	.fancybox__slide:not(.has-image) button[data-fancybox-close] svg	{display:none;}/*Masque le "close" par défaut*/
 }
 
 /*** JQUERY UI & PLUGINS*/
@@ -256,7 +257,7 @@ legend												{padding:5px 20px;}
 .jconfirm-content-pane							{margin-bottom:5px!important;}
 .jconfirm-content .confirmDeleteAlert			{color:#800!important; margin-bottom:20px!important;}
 .jconfirm-buttons								{display:inline-block; width:100%; text-align:center!important;}
-.jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important;}
+.jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important; font-size:1.3rem!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){

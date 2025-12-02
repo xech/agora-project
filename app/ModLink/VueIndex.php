@@ -12,13 +12,13 @@
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo "<div class='menuLine' onclick=\"lightboxOpen('".MdlLink::getUrlNew()."');\"><div class='menuIcon'><img src='app/img/plus.png'></div><div>".Txt::trad("LINK_addLink")."</div></div>
-					  <div class='menuLine' onclick=\"lightboxOpen('".MdlLinkFolder::getUrlNew()."')\"><div class='menuIcon'><img src='app/img/folder/folderAdd.png'></div><div>".Txt::trad("addFolder")."</div></div>
-					  <hr>";
+				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlLink::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("LINK_addLink").'</div></div>
+					  <div class="menuLine" onclick="lightboxOpen(\''.MdlLinkFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div>'.Txt::trad("addFolder").'</div></div>
+					  <hr>';
 			}
 			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlLinkFolder::menuTree().MdlLink::menuDisplayMode().MdlLink::menuSort().
-				"<div class='menuLine'><div class='menuIcon'><img src='app/img/info.png'></div><div>".Ctrl::$curContainer->contentDescription()."</div></div>";
+				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>
 		</div>
 	</div>

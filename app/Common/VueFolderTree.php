@@ -62,7 +62,7 @@ function folderMove(newFolderId){
 .vTreeFolder:first-child .vIconOpen	{display:none!important;}								/*dossier root : pas d'icone de d'ouverture du dossier*/
 .vIconOpened						{transform:rotate(40deg); filter:brightness(0);}
 
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrow" d'ouverture de dossier sont en position absolute*/
 }

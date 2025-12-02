@@ -305,7 +305,7 @@ function menuMobileClose(swipeXcurrent)
 }
 
 /**************************************************************************************************
- * VÉRIF AFFICHAGE SMARTPHONE + TABLET <= 1200px (Idem CSS & JS)
+ * VÉRIF AFFICHAGE RESPONSIVE <= 1200px (Idem CSS & JS)
  **************************************************************************************************/
 function isMobile()
 {

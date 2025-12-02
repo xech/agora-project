@@ -23,11 +23,11 @@ ready(function(){
 #menuMainOmnispace							{border-top:var(--headerMenuBorder); text-align:right; padding-top:10px;}
 .vHeaderModule								{display:inline-block; margin:0px; padding:4px; text-align:center; vertical-align:middle; border:1px solid transparent; border-radius:10px; cursor:pointer;}
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (min-width:1025px) and (max-width:1350px){
 	.vHeaderModule label					{margin-top:7px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#headerMenuLeft							{padding-left:40px; padding-right:10px;}/*"padding-left" en fonction du width du "logoXSmall.png"*/
 	#headerMenuLeft, #headerMobileModule	{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/

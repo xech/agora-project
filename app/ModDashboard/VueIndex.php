@@ -113,7 +113,7 @@ function dashboardPollVote()
 #tabMenus .circleNb						{margin-left:5px; font-size:0.9rem;}
 #underMenus								{display:inline-block; width:<?= $isPolls==true?'33.33%':'50%' ?>; height:5px; margin-bottom:-8px; padding:0px; background:tomato; transition:0.1s ease-in-out;}/*Surligne les options du module*/
 #contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.pathMenu.miscContainer				{width:98%;}/*surcharge : idem app.css*/
 	#tabMenus							{padding:10px;}
@@ -136,7 +136,7 @@ function dashboardPollVote()
 .vNewsDescription h3					{text-align:center;}							
 .vNewsDescription h4 img				{max-width:33px!important; margin-left:10px; margin-right:10px;}/*cf. width réel des "iconSmall.png"*/
 .vNewsDescription h4:last-child			{margin-bottom:20px;}
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.vNewsDescription h3				{font-size:1.3rem;}									/*New par défaut*/
 	.vNewsDescription h4				{font-size:1.05rem; clear:left;}					/*Idem. "clear:left" pour aligner avec l'image float : tester width 500px*/
@@ -164,7 +164,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
 .vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
 .vPollsResultBar100						{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
-/*AFFICHAGE SMARTPHONE + TABLET*/
+/*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.vPollsContainer ul		{padding-left:0px!important;}
 	.vPollsDetails>div		{display:block; margin:8px;}
@@ -187,7 +187,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			////	MENU CONTEXT DES ACTUALITÉS
 			echo "<div id='modMenuNews'>";
 				//// Ajoute une news / Affiche les news "Offline"  /  Tri des news
-				if(MdlDashboardNews::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
+				if(MdlDashboardNews::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
 				echo '<div class="menuLine '.(!empty($_SESSION["offlineNews"])?'optionSelect':'option').'" onclick="redir(\'?ctrl=dashboard&offlineNews='.(empty($_SESSION["offlineNews"])?'true':'false').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").'</div></div>'.
 					  '<hr>'.MdlDashboardNews::menuSort();
 				//// Affichage des sondages (option "newsDisplay")
@@ -201,8 +201,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			if($isPolls==true){
 				echo "<div id='modMenuPolls'>";
 					//Ajoute un sondage  /  Voir uniquement les sondages à voter  /  Tri des sondages 
-					if(MdlDashboardPoll::addRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\');"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
-					if(!empty($pollsVotedNb))			{echo '<div class="menuLine '.($_SESSION["pollsVotedShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&dashboardPoll=true&pollsVotedShow='.($_SESSION["pollsVotedShow"]==true?'false':'true').'\')" '.Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")).'><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("DASHBOARD_pollsVoted").($_SESSION["pollsVotedShow"]==true?'&nbsp; <img src="app/img/check.png">':null).'</div></div>';}
+					if(MdlDashboardPoll::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
+					if(!empty($pollsVotedNb))		  {echo '<div class="menuLine '.($_SESSION["pollsVotedShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&dashboardPoll=true&pollsVotedShow='.($_SESSION["pollsVotedShow"]==true?'false':'true').'\')" '.Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")).'><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("DASHBOARD_pollsVoted").($_SESSION["pollsVotedShow"]==true?'&nbsp; <img src="app/img/check.png">':null).'</div></div>';}
 					echo MdlDashboardPoll::menuSort("&dashboardPoll=true");
 				echo "</div>";
 			}
