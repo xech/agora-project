@@ -36,7 +36,7 @@ class MdlFileFolder extends MdlFolder
 		//Créé un nouveau dossier sur le disque?
 		if(!file_exists($reloadedObj->folderPath("real"))){
 			$isCreated=mkdir($reloadedObj->folderPath("real"));
-			if($isCreated==false)	{self::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess"));}
+			if($isCreated==false)	{self::noAccessExit("NOTIF_fileOrFolderAccess");}
 			else					{File::setChmod($reloadedObj->folderPath("real"));}
 		}
 		////	Retourne l'objet rechargé

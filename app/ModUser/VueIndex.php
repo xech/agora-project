@@ -32,7 +32,7 @@
 			<!--"USERS DE L'ESPACE" / "TOUS LES USERS"-->
 			<?php if($menuDisplayUsers==true){ ?>
 				<hr>
-				<select name="displayUsers" id="displayUsersSelect" <?= Txt::tooltip("USER_spaceOrAllUsersTooltip").($_SESSION["displayUsers"]=="all"?'class="vDisplayUsersSelectAll"':null) ?> onChange="redir('?ctrl=user&displayUsers='+this.value)">
+				<select name="displayUsers" id="displayUsersSelect" <?= Txt::tooltip("USER_spaceOrAllUsersTooltip").($_SESSION["displayUsers"]=="all"?'class="vDisplayUsersSelectAll"':null) ?> onchange="redir('?ctrl=user&displayUsers='+this.value)">
 					<option value="space"><?= Txt::trad("USER_spaceUsers") ?></option>
 					<option value="all" <?= $_SESSION["displayUsers"]=="all"?"selected":null ?> ><?= Txt::trad("USER_allUsers") ?></option>
 				</select>

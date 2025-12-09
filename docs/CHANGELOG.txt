@@ -4,7 +4,7 @@ CHANGELOG - JOURNAL DES VERSIONS
 --------------------------------
 
 
-VERSION 25.12.3
+VERSION 25.12.4
 ---------------
 Amélioration du menu d'upload de fichier
 Amélioration du contrôle d'extensions des fichiers uploadés
@@ -12,7 +12,9 @@ Amélioration du menu des droits d'accès sur mobile
 Optimisation du module Historique des événements
 Librairie Datatable mise à jour en v2.3.5 (module Historique des événements)
 Réhabilitation du droit d'édition d'un événement pour les users étant ni auteur ni administrateur
-Correction d'affichage sur l'application IOS pour Ipad
+Correction de l'affichage de menus sur l'application IOS pour Ipad
+Correction de l'affichage des propositions d'événements avec notification par mail
+Correction du positionnement des menus contextuels en bas de page d'iframes
 -----
 Improved file upload menu
 Improved file extension control for uploaded files
@@ -20,7 +22,9 @@ Improved mobile access rights menu
 Event History module optimization
 Datatable library updated to v2.3.5 (Event History module)
 Reinstatement of the right to edit an event for users who are neither author nor administrator
-Display correction on the iOS iPad app
+Fixed menu display on the iOS app for iPad
+Fixed display of event suggestions with email notifications
+Fixed positioning of context menus at the bottom of iframes
 
 
 VERSION 25.11.1
@@ -953,7 +957,7 @@ VERSION 3.1.12 (09-2016)
 ------------------------
 Nouveau controle AJAX des droits d'accès sur les affections des dossiers
 Amélioration du controle de créneau horaire pour l'édition d'evenement des agendas
-Amélioration de la procédure de renvoie des coordonnées de connexion aux utilisateurs
+Amélioration de la procédure de renvoi des coordonnées de connexion aux utilisateurs
 Optimisations et corrections diverses
 
 

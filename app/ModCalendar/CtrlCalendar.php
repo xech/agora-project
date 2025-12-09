@@ -274,14 +274,14 @@ class CtrlCalendar extends Ctrl
 					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$_idUsersMail=array_merge($_idUsersMail,$tmpCal->affectedUserIds(true));}			//Notif d'une proposition pour les proprios de l'agenda
 				}
 			}
-			//// NOTIFIE PAR MAIL LA PROPOSITION D'EVT (AUX GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
+			//// NOTIFIE PAR MAIL LA PROPOSITION D'EVT (GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
 			if(!empty($_idUsersMail)){
 				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
 				Tool::sendMail($_idUsersMail, $mailSubject, $mailMessage, ["noNotify"]);
 			}
-			//// NOTIFIE PAR MAIL LA CREATION D'EVT (AUX PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
+			//// NOTIFIE PAR MAIL LA CREATION D'EVT (PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
 			if(Req::isParam("notifMail") && $curObj->editRight()){
 				$objLabel=Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
@@ -350,7 +350,8 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMyEvents()
 	{
-		$vDatas["myEvents"]=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY dateBegin");
+		$vDatas["sortEvents"]=Req::isParam("sortEvents")  ?  Req::param("sortEvents")  :  "dateCrea";
+		$vDatas["myEvents"]=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY ".$vDatas["sortEvents"]." DESC");
 		static::displayPage("VueMyEvents.php",$vDatas);
 	}
 
@@ -520,18 +521,22 @@ class CtrlCalendar extends Ctrl
 			$objCalendar=$curObj;
 		}
 
-		////	Créé un fichier Ical avec les événements
-		if(!empty($eventList))
-		{
+		////	Fichier Ical avec les événements
+		if(!empty($eventList)){
+			////	Label de l'agenda
+			if(is_object($objCalendar)){
+				$icalCalendar='NAME:'.Txt::clean($objCalendar->title).$RL.
+							  'DESCRIPTION:'.Txt::clean($objCalendar->description).$RL.
+							  'X-WR-CALNAME:'.Txt::clean($objCalendar->title).$RL;
+			}
+
 			////	Entête
 			$ical=  'BEGIN:VCALENDAR'.$RL.
 					'VERSION:2.0'.$RL.
 					'PRODID:-//Omnispace.fr//Omnispace Calendar//EN'.$RL.
 					'CALSCALE:GREGORIAN'.$RL.
 					'METHOD:PUBLISH'.$RL.
-					'NAME:'.Txt::clean($objCalendar->title).$RL.
-					'DESCRIPTION:'.Txt::clean($objCalendar->description).$RL.
-					'X-WR-CALNAME:'.Txt::clean($objCalendar->title).$RL.
+					$icalCalendar.
 					'X-WR-TIMEZONE:'.self::$curTimezone.$RL.
 					'BEGIN:VTIMEZONE'.$RL.
 					'TZID:'.self::$curTimezone.$RL.
@@ -550,8 +555,7 @@ class CtrlCalendar extends Ctrl
 					"END:VTIMEZONE".$RL;
 
 			////	Ajoute chaque evenement (plusieurs fois si l'evt est périodique)
-			foreach($eventList as $tmpEvt)
-			{
+			foreach($eventList as $tmpEvt){
 				//// Init
 				$evtDescription=$evtCategory=$evtPeriod=$evtPeriodExcept=null;
 				//// Description
@@ -609,7 +613,8 @@ class CtrlCalendar extends Ctrl
 			}
 			////	Affiche directement le fichier .Ical
 			else{
-				$icsFilename='Calendar_'.Txt::clean($objCalendar->title,"max").'_export-'.date("d-m-Y").'.ics';
+				$calendarLabel=(is_object($objCalendar))  ?  Txt::clean($objCalendar->title,"max")  :  null;
+				$icsFilename='Calendar_'.$calendarLabel.'_export-'.date("d-m-Y").'.ics';
 				header("Content-type: text/calendar; charset=utf-8");
 				header("Content-Disposition: inline; filename=".$icsFilename);
 				echo $ical;

@@ -164,9 +164,9 @@ class CtrlOffline extends Ctrl
 		////	CONTROLES :  Version PHP  &&  Install déjà réalisée  &&  Accès à "db.sql"
 		Req::verifPhpVersion();
 		if(defined("db_host") && defined("db_login") && defined("db_password") && defined("db_name") && DbInstall::dbControl(db_host,db_login,db_password,db_name)=="errorDbExist")
-			{self::noAccessExit(Txt::trad("INSTALL_errorDbExist"));}
+			{self::noAccessExit("INSTALL_errorDbExist");}
 		elseif(is_file($dbFile)==false)
-			{self::noAccessExit(Txt::trad("INSTALL_errorDbNoSqlFile"));}
+			{self::noAccessExit("INSTALL_errorDbNoSqlFile");}
 
 		////	VALIDE LE FORMULAIRE
 		if(Req::isParam("formValidate"))

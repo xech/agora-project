@@ -250,19 +250,18 @@ legend												{padding:5px 20px;}
 /*** JQUERY UI & PLUGINS*/
 .toast-item										{padding:30px 20px;}													 /*TOASTMESSAGE : notify()*/
 .toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
-.jconfirm-bg									{opacity:0.4!important;}												/*JCONFIRM*/
-.jconfirm-box									{border-radius:15px!important; padding:35px 20px 10px 20px!important;}
-.jconfirm-title-c								{text-align:center; font-size:1.5rem!important; line-height:30px!important;}
+.jconfirm-bg									{opacity:0.5!important;}												/*JCONFIRM*/
+.jconfirm-box									{border-radius:15px!important; padding-top:30px!important;}
+.jconfirm-title-c								{text-align:center; font-size:1.4rem!important; line-height:30px!important;}
 .jconfirm-content								{text-align:center; font-size:1.3rem!important;}
-.jconfirm-content-pane							{margin-bottom:5px!important;}
-.jconfirm-content .confirmDeleteAlert			{color:#800!important; margin-bottom:20px!important;}
-.jconfirm-buttons								{display:inline-block; width:100%; text-align:center!important;}
-.jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important; font-size:1.3rem!important;}
+.jconfirm-content .confirmDeleteAlert			{color:#700!important; margin-bottom:30px!important;}
+.jconfirm-buttons								{display:inline-block; width:100%; padding-block:20px 30px!important; text-align:center!important;}
+.jconfirm-buttons button						{margin:0px 10px!important; padding:10px 25px!important; font-size:1.1rem!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.jconfirm-buttons							{width:100%!important;}
-	.jconfirm-buttons button					{min-width:80%!important;}
+	.jconfirm-buttons button					{min-width:80%!important; margin:10px 0px!important;}
 }
 
 /*** DIVERS*/

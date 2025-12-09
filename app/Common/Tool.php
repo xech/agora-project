@@ -25,7 +25,7 @@ class Tool
 	 * -"addReplyTo":		Ajoute l'email de l'expériteur dans le "replyTo"
 	 * -"receptionNotif":	Demande un accusé de réception pour l'user/expéditeur
 	 * -"noFooter": 		Masque le footer du message (la signature) : label de l'expéditeur, lien vers l'espace, logo du footer de l'espace
-	 * -"noNotify": 		Pas de notification concernant le succès ou l'échec de l'envoi du mail (cf. "notify()")
+	 * -"noNotify": 		Pas de "notify()" concernant le succès ou l'échec de l'envoi du mail
 	 * -"objectNotif": 		Affiche "L'email de notification a bien été envoyé"  au lieu de  "L'email a bien été envoyé" (cf notif d'edition d'un objet)
 	 * Notes :
 	 * - toujours mettre en place un SPF, DKIM et REVERS DNS (évite la spambox)
@@ -68,15 +68,15 @@ class Tool
 			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "no-reply@".$serverName;				//Email du paramétrage général OU du domaine courant
 			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);						//Nom de l'expediteur (Ex: "monespace.fr")
 			$mail->SetFrom($setFromMail, $setFromName);																					//"SetFrom" fixe (cf. score des antispams)
-			//Controles de base
-			if(in_array("noTimeControl",$options)==false && !empty($_SESSION["sendMailTime"]) && (time()-@$_SESSION["sendMailTime"])<5)	{echo "please wait 5 sec."; exit;}	//Temps minimum entre chaque mail
-			else																														{$_SESSION["sendMailTime"]=time();}	//Enregistre le timestamp de l'envoi
+
+			////	Controles de base
 			if(empty($_SESSION["sendMailCounter"][date("Y-m-d-H")]))	{$_SESSION["sendMailCounter"][date("Y-m-d-H")]=1;}				//Init le compteur de nb max de mail/heure
 			elseif($_SESSION["sendMailCounter"][date("Y-m-d-H")]>100)	{echo "100 mails maximum par heure et par personne"; exit;}		//- quota dépassé
 			else														{$_SESSION["sendMailCounter"][date("Y-m-d-H")]++;}				//- incrémente le compteur
 			if(Req::isHost())  {Host::sendMailControl($message);}																		//Controle des spambots
 			$fromUserWithMail=(isset(Ctrl::$curUser) && Ctrl::$curUser->isUser() && !empty(Ctrl::$curUser->mail));						//Verif que l'expediteur est un user authentifié avec un email
-			//Ajoute si besoin l'email de l'user en replyTo ou pour une demande de notif de lecture
+
+			////	Email de l'user en replyTo  ||  Demande de notif de lecture
 			if($fromUserWithMail==true){
 				if(in_array("addReplyTo",$options))		{$mail->AddReplyTo(Ctrl::$curUser->mail, Ctrl::$curUser->getLabel());}			//Ajoute si besoin un "ReplyTo" avec son email (tjs en option: cf. score des antispams)
 				if(in_array("receptionNotif",$options))	{$mail->ConfirmReadingTo=Ctrl::$curUser->mail;}									//Ajoute une demande de notification de lecture (envoyé à l'expéditeur du présent mail)

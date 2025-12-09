@@ -37,6 +37,7 @@ button:disabled														{color:#888;}
 input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #777; transition:box-shadow 0.3s ease-in-out; border:#585858 1px solid;}
 input:not([type=radio],[type=checkbox]):hover, textarea:hover		{box-shadow:0px 0px 4px #505050;}
 input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0px 4px #0068bd; border:#bcf 1px solid;}
+input:read-only, textarea:read-only									{background:#555;}
 .tox-tinymce														{box-shadow:0px 0px 4px #777!important; border-radius:5px!important;}/*Editeur TinyMCE*/
 
 /*** DIVERS*/

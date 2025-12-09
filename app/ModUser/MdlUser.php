@@ -338,18 +338,17 @@ class MdlUser extends MdlPerson
 	 ********************************************************************************************************/
 	public function resetPasswordSendMail()
 	{
-		//Récupère l'email (login en priorité)
+		//Récupère l'email (champ login ou mail)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
 		//Email non spécifié / Envoi du mail de reset de password
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
-		else
-		{
+		else{
 			$resetPasswordUrl=Req::curUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
 			$mailSubject=Txt::trad("resetPasswordMailTitle");
 			$mailMessage=Txt::trad("MAIL_hello").',<br><br>'.
 					 	 '<b>'.Txt::trad("resetPasswordMailPassword").' <a href="'.$resetPasswordUrl.'" target="_blank">'.Txt::trad("resetPasswordMailPassword2").'</a></b>'.
 					 	 '<br><br>'.Txt::trad("resetPasswordMailLoginRemind").' : <i>'.$this->login.'</i>';
-			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify","noTimeControl"]);//"noTimeControl" pour l'envoi de mails en série (cf. "actionResetPasswordSendMailUsers()")
+			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);
 		}
 	}
 }

@@ -157,7 +157,8 @@ ready(function(){ labelRightStyle(); });
 /*MENU DES NOTIFICATIONS PAR MAIL*/
 #notifMailOptions>div					{margin-left:15px; margin-top:12px;}
 #notifMailOptions>div input				{margin-right:8px;}/*surcharge "VueSendMailOptions.php"*/
-#notifMailSelectList>div				{display:inline-block; width:250px; padding:7px;}
+#notifMailSelectList>div				{display:inline-block; width:230px; padding:5px 2px;}
+#notifMailSelectList>div input			{margin-right:5px; margin-bottom:5px;}
 #notifMailUsersPlus, #notifMailSelectList, #notifMailOptions  {display:none;}
 
 /*AFFICHAGE SMARTPHONE*/
@@ -222,7 +223,7 @@ if(Ctrl::$curUser->isUser() && (!empty($objMenuAccessRight) || !empty($objMenuNo
 		//CHECKBOX PRINCIPALE & BLOCK DES OPTIONS
 		$notifMailTooltip=$curObj->tradObject("EDIT_notifMailTooltip");
 		if($curObj::objectType=="calendarEvent")  {$notifMailTooltip.=Txt::trad("EDIT_notifMailTooltipCal");}//"la notification ne sera envoyée qu'aux propriétaires de ces agendas"
-		echo '<input type="checkbox" name="notifMail" id="boxNotifMail" value="1" onChange="$(\'#notifMailOptions\').slideToggle();"> <label for="boxNotifMail" '.Txt::tooltip($notifMailTooltip).'>'.Txt::trad("EDIT_notifMail2").'</label>';
+		echo '<input type="checkbox" name="notifMail" id="boxNotifMail" value="1" onchange="$(\'#notifMailOptions\').slideToggle();"> <label for="boxNotifMail" '.Txt::tooltip($notifMailTooltip).'>'.Txt::trad("EDIT_notifMail2").'</label>';
 		echo '<div id="notifMailOptions">';
 			//Option du module "File" : "Joindre les fichiers à la notification"
 			if($curObj::objectType=="file")  {echo '<div><img src="app/img/dependency.png"><input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles"><label for="boxNotifMailAddFiles" '.Txt::tooltip(Txt::trad("FILE_fileSizeLimit")." ".File::sizeLabel(File::mailMaxFilesSize)).'>'.Txt::trad("EDIT_notifMailAddFiles").' <img src="app/img/attachment.png"></label></div>';}

@@ -136,14 +136,16 @@ function controleFields()
 		}
 	});
 
-	////	Couleur de background des options d'un <select>
-	$("select option[data-color]").each(function(){
-		$(this).css("background",$(this).attr("data-color")).css("color","white");
+	////	<select> :  background de chaque <option> et du select parent
+	$("select option").each(function(){
+		let bgColor=$(this).attr("data-color");
+		if(isValue(bgColor))	{$(this).css({background:bgColor,color:'white'});}
+		else					{$(this).css({background:'white',color:'grey'});}
 	});
 	$("select").on("change",function(){
 		let bgColor=$(this).find("option:selected").attr("data-color");
-		if(isValue(bgColor))	{$(this).css({color:'white',background:bgColor});}
-		else					{$(this).css({color:'black',background:'white'});}
+		if(isValue(bgColor))	{$(this).css({background:bgColor,color:'white'});}
+		else					{$(this).css({background:'inherit',color:'inherit'});}
 	});
 
 	////	Charge le Datepicker
@@ -247,20 +249,21 @@ function menuContext()
  **************************************************************************************************/
 function menuContextShow(launcher, event)
 {
-	let menuId="#"+$(launcher).attr("for");																										//Id du menu à afficher : attribut "for" de .menuLauncher
-	$(menuId).css("max-height", (window.top.windowHeight - 20)+"px");																			//Hauteur max en fonction de la page (#menuMobileMain en "overflow:auto")
-	let parentPosition=$(menuId).parents().is(function(){  return (/relative|absolute/i.test($(this).css("position")));  });					//Vérif si un des parents est en position relative/absolute
-	if(event.type=="contextmenu")	{var posX=(event.pageX - $(launcher).offset().left);	var posY=(event.pageY - $(launcher).offset().top);}	//Position en fonction du click droit sur .objContainer
-	else if(parentPosition==true)	{var posX=$(launcher).position().left;			 		var posY=$(launcher).position().top;}				//Position en fonction de .launcher par rapport au parent
-	else							{var posX=$(launcher).offset().left;					var posY=$(launcher).offset().top;}					//Position en fonction de .launcher par rapport au document
-	let posRight =posX + $(menuId).outerWidth(true);																							//Position du bord right du menu
-	let posBottom=posY + $(menuId).outerHeight(true);																							//Position du bord bottom du menu
-	if(parentPosition==true)  {posRight+=$(menuId).parent().offset().left;  posBottom+=$(menuId).parent().offset().top;}						//Ajoute si besoin la position du parent
-	let pageBottomPosition=(window.top.windowHeight + $(window).scrollTop());																	//Vérif si le menu est près du bottom de la fenêtre
-	if(window.top.windowWidth < posRight)	{posX-=(posRight - window.top.windowWidth);}														//Décale le menu s'il est au bord droit de la fenêtre
-	if(pageBottomPosition < posBottom)		{posY-=(posBottom - pageBottomPosition);}															//Décale le menu s'il est en bas de la fenêtre
-	$(menuId).css({left:posX-8, top:posY-8}).fadeIn(200);																						//Affiche le menu (recentré de 8px)
-	$(".menuContext").not(menuId).hide();																										//Masque les autres menus
+	let menuId="#"+$(launcher).attr("for");																											//Id du menu à afficher (.menuLauncher et attribut "for")
+	$(menuId).css("max-height", (window.innerHeight-10)+"px");																						//Hauteur max en fonction de la page (#menuMobileMain avec "overflow:auto")
+	let isRelativePos=$(menuId).parents().is(function(){  return (/relative|absolute/i.test($(this).css("position")));  });							//Div parent en position relative/absolute
+	if(event.type=="contextmenu")	{var posLeft=(event.pageX - $(launcher).offset().left);	var posTop=(event.pageY - $(launcher).offset().top);}	//Position du click droit de la souris
+	else if(isRelativePos==true)	{var posLeft=$(launcher).position().left;			 	var posTop=$(launcher).position().top;}					//Position du .launcher par rapport au parent
+	else							{var posLeft=$(launcher).offset().left;					var posTop=$(launcher).offset().top;}					//Position du .launcher par rapport au document
+	let posRight =posLeft + $(menuId).outerWidth(true);																								//Position du bord right du menu
+	let posBottom=posTop + $(menuId).outerHeight(true);																								//Position du bord bottom du menu
+	if(isRelativePos==true)   {posRight+=$(menuId).parent().offset().left;  posBottom+=$(menuId).parent().offset().top;}							//Ajoute si besoin la position du parent
+	let posRightPage =(window.innerWidth  + window.pageXOffset);																					//"right"  position de la page affiché
+	let posBottomPage=(window.innerHeight + window.pageYOffset);																					//"bottom" position de la page affiché
+	if(posRight > posRightPage)		{posLeft-=(posRight - posRightPage);}																			//Décale le menu s'il est au bord droit de la fenêtre
+	if(posBottom > posBottomPage)	{posTop-=(posBottom - posBottomPage);}																			//Décale le menu s'il est en bas de la fenêtre
+	$(menuId).css({left:posLeft-10, top:posTop-10}).fadeIn(200);																					//Affiche le menu (recentré de 10px)
+	$(".menuContext").not(menuId).hide();																											//Masque les autres menus
 }
 
 /**************************************************************************************************
@@ -413,7 +416,7 @@ async function confirmRedir(locationUrl, confirmTitle)
  **************************************************************************************************/
 async function confirmDelete(deleteUrl, confirmContentAdd, ajaxControlUrl)
 {
-	let confirmContent='<div class="confirmDeleteAlert">'+labelConfirmDeleteAlert+'</div>';											// Détail du confirm "Attention : cette action est définitive !"
+	let confirmContent='<div class="confirmDeleteAlert">'+labelConfirmDeleteAlert+'</div>';											// Détail du confirm "cette action est définitive"
 	if(isValue(confirmContentAdd))  {confirmContent+='<img src="app/img/arrowRight.png"> '+confirmContentAdd;}						// Ajoute le label de l'objet, le nb d'objets sélectionnés, etc.
 	if(await confirmAlt(labelConfirmDelete,confirmContent)){																		// Confirm "Confirmer la suppression ?"
 		if(!isValue(ajaxControlUrl))  {window.location.href=deleteUrl;}																// Suppression directe (pas de "window.top.location" : cf. lightbox des commentaires ou autre)
@@ -477,7 +480,7 @@ function lightboxOpen(fileSrc)
 {
 	if(isMainPage==false)								{window.top.lightboxOpen(fileSrc);}											//Relance lightboxOpen() depuis la page "parent"
 	else if(/pdf/i.test(fileSrc) && isTouchDevice())	{window.top.open(fileSrc);}													//Pdf sur mobile app
-	else if(/pdf|txt/i.test(fileSrc))					{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:2000}]);}	//Pdf/Txt sur desktop
+	else if(/pdf|txt/i.test(fileSrc))					{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:1200}]);}	//Pdf/Txt sur desktop
 	else if(/mp4|mp3|webm/i.test(fileSrc))				{Fancybox.show([{src:fileSrc, type:"html5video"}]);}						//Video/Audio
 	else{
 		Fancybox.show([{type:"iframe", src:fileSrc}],
@@ -524,20 +527,20 @@ function lightboxResize()
 		lightboxIframe =window.top.document.querySelector(".fancybox__iframe");
 		if(isMainPage==false && lightboxIframe){
 			//// Width/Height de la lightbox
-			if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}											//Un seul timeout
-			lightboxTimeout=setTimeout(function(){																				//Timeout le tps de lancer les show(), fadeIn(), etc. (tps supérieur à $.fx.speeds)
-				let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");								//"max-width" de "#bodyLightbox" ("px" ou "%")
-				let lightboxWidth=parseInt(cssWidth);																			//Parse le width en Integer
-				if(Number.isInteger(lightboxWidth)==false) 		{lightboxWidth=650;}											//Width par défaut si "max-width" non spécifié (idem app.css)
-				if(/%/.test(cssWidth))							{lightboxWidth=(window.top.windowWidth/100) * lightboxWidth;}	//Width en % de windowWidth
-				else if(lightboxWidth > window.top.windowWidth)	{lightboxWidth=window.top.windowWidth;}							//Width doit être inférieur à windowWidth
-				lightboxContent.style.width=lightboxIframe.style.width=lightboxWidth+"px";										//Applique le width à lightboxContent & lightboxIframe
-				let lightboxHeight=(window.top.windowWidth <= 490) ? window.top.windowHeight : document.body.scrollHeight;		//Toute la hauteur sur smartphone (cf. fancybox en fullpage) || Height du body de l'iframe
-				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){								//Init ou ajuste le lightboxHeight (après show(), fadeIn(), etc)
-					lightboxContent.style.height=lightboxIframe.style.height=lightboxHeight+"px";								//Applique le height à lightboxContent & lightboxIframe
-					lightboxHeightLast=lightboxHeight;																			//Enregistre le height
+			if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}												//Un seul timeout
+			lightboxTimeout=setTimeout(function(){																					//Timeout le tps de lancer les show(), fadeIn(), etc : toujours supérieur à $.fx.speeds
+				let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");									//Width de la page : "max-width" de #bodyLightbox en "px" ou "%"
+				let lightboxWidth=parseInt(cssWidth);																				//Parse le width en Integer
+				if(Number.isInteger(lightboxWidth)==false) 		{lightboxWidth=650;}												//Width par défaut si "max-width" non spécifié (idem "app.css" et ".fancybox__content")
+				if(/%/.test(cssWidth))							{lightboxWidth=(window.top.windowWidth/100) * lightboxWidth;}		//Width en % de windowWidth
+				else if(lightboxWidth > window.top.windowWidth)	{lightboxWidth=window.top.windowWidth;}								//Width doit être inférieur à windowWidth
+				lightboxContent.style.width=lightboxIframe.style.width=lightboxWidth+"px";											//Applique le width à lightboxContent & lightboxIframe
+				let lightboxHeight=(window.top.windowWidth <= 490)  ?  window.top.windowHeight  :  document.body.scrollHeight+10;	//Toute la hauteur sur smartphone (cf. fancybox en fullpage) || Height du body de l'iframe
+				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){									//Init le Height OU Agrandit le Height après un show(), fadeIn(), etc
+					lightboxContent.style.height=lightboxIframe.style.height=lightboxHeight+"px";									//Applique le height à lightboxContent & lightboxIframe
+					lightboxHeightLast=lightboxHeight;																				//Enregistre le height
 				}
-			},200);
+			},150);
 		}
 	});
 }
@@ -736,6 +739,6 @@ function userGroupSelect(thisGroup, idContainerUsers)
 			});
 		}
 		//Check l'user courant
-		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//"trigger" pour le style du label
+		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//"trigger" pour initialiser
 	}
 }

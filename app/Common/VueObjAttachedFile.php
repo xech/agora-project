@@ -33,7 +33,7 @@ async function attachedFileDelete(fileId)
 <style>
 .vAttachedFileDiv								{margin-top:10px; padding:5px;}							/*Inputs d'ajout de fichiers & Fichiers joints existants*/
 .vAttachedFileThumb								{max-width:80px!important; max-height:60px!important;}	/*Vignettes des images*/
-.vAttachedFileThumb, .vAttachedFileDiv label	{margin-left:15px;}										/*Vignettes & options des fichiers existants*/
+.vAttachedFileThumb, .vAttachedFileDiv label	{margin-left:15px; white-space:nowrap;}					/*Vignettes & options des fichiers existants*/
 [id^=attachedFileAdd]:not(#attachedFileAdd1), [id^=attachedFileInsert]  {display:none;}					/*Masque tous les inputs (sauf le premier)  &  Masque l'option "insérer dans le texte" des inputs*/
 </style>
 
@@ -54,11 +54,14 @@ async function attachedFileDelete(fileId)
 <?php foreach($curObj->attachedFileList() as $tmpFile){ ?>
 <hr>
 <div id="attachedFileList<?= $tmpFile["_id"] ?>" class="lineHover vAttachedFileDiv">
-	<!--LABEL DU FICHIER  &  SI BESOIN THUMB DE L'IMAGE-->
-	<label onclick="confirmRedir('<?= $tmpFile['urlDownload'] ?>',labelConfirmDownload)"><img src="app/img/attachment.png"> <?= $tmpFile["name"] ?></a>
+	<!--LABEL DU FICHIER  & THUMB DE L'IMAGE-->
+	<label onclick="confirmRedir('<?= $tmpFile['urlDownload'] ?>',labelConfirmDownload)"><img src="app/img/attachment.png"> <?= $tmpFile["name"] ?></label>
 	<?php if(File::isType("editorImage",$tmpFile["name"])){ ?><img src="<?= $tmpFile["displayUrl"] ?>" class="vAttachedFileThumb"><?php } ?>
-	<!--OPTION "INSÉRER DANS LE TEXTE" DE TINYMCE  &  OPTION "SUPPRIMER"-->
-	<?php if($curObj::descriptionEditor==true && File::isType("editorInsert",$tmpFile["name"])){ ?><label onclick="attachedFileInsert(<?= $tmpFile['_id'] ?>,'<?= $tmpFile['displayUrl'] ?>')" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> ><img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?></label><?php } ?>
+	<!--"INSÉRER DANS LE TEXTE" DE TINYMCE-->
+	<?php if($curObj::descriptionEditor==true && File::isType("editorInsert",$tmpFile["name"])){ ?>
+		<label onclick="attachedFileInsert(<?= $tmpFile['_id'] ?>,'<?= $tmpFile['displayUrl'] ?>')" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> ><img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?></label>
+	<?php } ?>
+	<!--OPTION "SUPPRIMER"-->
 	<label onclick="attachedFileDelete(<?= $tmpFile['_id'] ?>)"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></label>
 </div>
 <?php } ?>

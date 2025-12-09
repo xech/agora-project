@@ -124,7 +124,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * VERIF : OBJET DANS UNE ARBORESCENCE  (file/contact/task/link/FOLDERS)
+	 * VERIF : OBJET DANS UNE ARBORESCENCE  (FOLDERS/file/contact/task/link)
 	 ********************************************************************************************************/
 	public static function isInArbo(){
 		return (static::isFolderContent==true || static::isFolder==true);
@@ -166,12 +166,12 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * OBJET "CONTENEUR" DE L'OBJET COURANT  (file/contact/task/link/FOLDERS)
+	 * CONTENEUR DE L'OBJET COURANT  (FOLDERS/file/contact/task/link)
 	 ********************************************************************************************************/
 	public function containerObj()
 	{
 		if(!empty($this->_idContainer)){
-			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;//Dossier courant || Objet parent
+			$MdlObjectContainer=(static::isFolder==true)  ?  get_class($this)  :  static::MdlObjectContainer;
 			return Ctrl::getObj($MdlObjectContainer::objectType, $this->_idContainer);
 		}
 	}
@@ -382,7 +382,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * URL D'ACCÈS À L'OBJET  :  $display => "vue"/ "edit" / "delete" / accès direct
+	 * URL D'ACCÈS À L'OBJET  :  $display => "vue"/ "edit" / "delete" / accès depuis la page principale
 	*********************************************************************************************************/
 	public function getUrl($display=null)
 	{
@@ -791,7 +791,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * FICHIERS JOINTS : LISTE DES FICHIERS
+	 * FICHIERS JOINTS : LISTE LES FICHIERS JOINTS
 	 ********************************************************************************************************/
 	public function attachedFileList()
 	{
@@ -805,17 +805,19 @@ class MdlObject
 		return (array)$this->_attachedFileList;
 	}
 
-	/******************************************************************************************************************
-	 * FICHIERS JOINTS : AFFICHE LES FICHIERS DE L'OBJET (Menu contextuel / Vue "inline" + propose le téléchargement)
-	 ******************************************************************************************************************/
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : AFFICHE LES FICHIERS JOINTS  (dans un .menuContext OU .objContainer)
+	 ********************************************************************************************************/
 	public function attachedFileMenu($separator="<hr>")
 	{
 		if($this->_attachedFileMenu===null){
 			$this->_attachedFileMenu="";
 			foreach($this->attachedFileList() as $tmpFile){
-				$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["urlDownload"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
-												<img src="app/img/attachment.png"> '.$tmpFile["name"].'
-											</div>';
+				if(!empty($tmpFile["urlDownload"])){
+					$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["urlDownload"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
+													<img src="app/img/attachment.png"> '.$tmpFile["name"].'
+												</div>';
+				}
 			}
 		}
 		if($this->_attachedFileMenu)  {return $separator.$this->_attachedFileMenu;}

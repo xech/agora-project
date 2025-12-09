@@ -220,7 +220,7 @@ class CtrlObject extends Ctrl
 	{
 		if(is_numeric(Req::param("_id"))){
 			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(is_file($curFile["path"])  &&  ($curFile["parentObj"]->readRight() || CtrlMisc::controlDownloadMobileApp($curFile["name"])))
+			if(!empty($curFile["path"]) && is_file($curFile["path"])  &&  ($curFile["parentObj"]->readRight() || CtrlMisc::controlDownloadMobileApp($curFile["name"])))
 				{File::download($curFile["name"],$curFile["path"]);}
 		}
 	}
@@ -232,7 +232,7 @@ class CtrlObject extends Ctrl
 	{
 		if(is_numeric(Req::param("_id"))){
 			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(is_file($curFile["path"]) && $curFile["parentObj"]->readRight())
+			if(!empty($curFile["path"]) && is_file($curFile["path"]) && $curFile["parentObj"]->readRight())
 				{File::display($curFile["path"]);}
 		}
 	}
@@ -244,7 +244,7 @@ class CtrlObject extends Ctrl
 	{
 		if(is_numeric(Req::param("_id"))){
 			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(is_file($curFile["path"]) && $curFile["parentObj"]->editRight()){
+			if(!empty($curFile["path"]) && is_file($curFile["path"]) && $curFile["parentObj"]->editRight()){
 				$deleteResult=$curFile["parentObj"]->attachedFileDelete($curFile);
 				if($deleteResult==true)  {echo "true";}
 			}

@@ -21,7 +21,7 @@ body, a, .sLink																							{color:#555;}
 a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .optionSelect	{color:#0068bd;}
 .sAccessWrite, .sAccessWriteLimit	{color:#900;}
 .option								{border:solid 1px transparent;}
-.option:hover, .optionSelect		{border:solid 1px #ccc;}
+.option:hover, .optionSelect		{border:solid 1px #ccc; border-radius:5px;}
 .option:hover						{background:#eee; }
 .optionSelect						{background:#ddd!important;}
 
@@ -37,6 +37,7 @@ button:disabled														{color:#888;}
 input:not([type=radio],[type=checkbox]), textarea, select, button	{box-shadow:0px 0px 4px #ccc; transition:box-shadow 0.3s ease-in-out; border:#bbb 1px solid;}
 input:not([type=radio],[type=checkbox]):hover, textarea:hover		{box-shadow:0px 0px 4px #777;}
 input:not([type=radio],[type=checkbox]):focus, textarea:focus		{box-shadow:0px 0px 4px #0068bd; border:#bcf 1px solid;}
+input:read-only, textarea:read-only									{background:#ccc;}
 .tox-tinymce														{box-shadow:0px 0px 4px #ccc!important; border-radius:8px!important;}/*Editeur TinyMCE*/
 
 /*** DIVERS*/

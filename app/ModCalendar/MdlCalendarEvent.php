@@ -26,7 +26,7 @@ class MdlCalendarEvent extends MdlObject
 	private $_affectedCalendars=null;
 	private $_confirmedCalendars=null;
 	private $_proposedCalendars=null;
-	private $_mainCalendarObj=null;
+	private $_containerObj=null;
 
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
@@ -113,19 +113,19 @@ class MdlCalendarEvent extends MdlObject
 			{parent::delete();}
 	}
 
-	/***********************************************************************************************************************
-	 * SURCHARGE : RECUPÈRE L'AGENDA PRINCIPAL DE L'ÉVÉNEMENT  (agenda perso || agenda avec le droit d'accès le + élevé)
-	 ***********************************************************************************************************************/
+	/********************************************************************************************************
+	 * SURCHARGE : RECUPÈRE L'AGENDA PRINCIPAL DE L'ÉVÉNEMENT
+	 ********************************************************************************************************/
 	public function containerObj()
 	{
-		if($this->_mainCalendarObj===null){
-			$accessRightMax=0;																														//Init le droit d'accès le + élevé
-			foreach($this->affectedCalendars(true) as $tmpCal){																						//Liste des agendas où l'affectation de l'evt est confirmé
-				if($tmpCal->isMyPersoCalendar())					{$this->_mainCalendarObj=$tmpCal;	break;}										//Renvoie l'agenda perso && stop la boucle
-				elseif($accessRightMax < $tmpCal->accessRight())	{$this->_mainCalendarObj=$tmpCal;	$accessRightMax=$tmpCal->accessRight();}	//Sinon récupère l'agenda avec le droit d'accès le + élevé
+		if($this->_containerObj===null){
+			$accessRightMax=0;																													//Init le droit d'accès le + élevé
+			foreach($this->affectedCalendars() as $tmpCal){																						//Agendas où l'evt est affecté : confirmé ou pas encore confirmé (cf. édition d'evt et notifs mail)
+				if($tmpCal->isMyPersoCalendar())					{$this->_containerObj=$tmpCal;	break;}										//Agenda perso : stop la boucle
+				elseif($accessRightMax < $tmpCal->accessRight())	{$this->_containerObj=$tmpCal;	$accessRightMax=$tmpCal->accessRight();}	//Agenda avec un droit d'accès + élevé
 			}
 		}
-		return $this->_mainCalendarObj;
+		return $this->_containerObj;
 	}
 
 	/********************************************************************************************************

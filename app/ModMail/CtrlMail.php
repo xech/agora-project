@@ -66,9 +66,11 @@ class CtrlMail extends Ctrl
 				$curObj=Ctrl::getCurObj($curObj->_typeId);
 			}
 			////	Envoi du mail
-			$message=$curObj->descriptionMail();																			//Description avec intégration des images (ex: <img src="cid:attachedFileXX">) 
-			Tool::sendMail($mailTo, Req::param("title"), $message, Req::param("mailOptions"), $curObj->attachedFileList());	//Envoie l'email
-			Ctrl::redir("?ctrl=mail");																						//Redirige vers la mage principal (évite un re-post..)
+			$subject=Txt::clean(Req::param("title"),"min");										//Sujet
+			$message=$curObj->descriptionMail();												//Description avec intégration des images (ex: <img src="cid:attachedFileXX">) 
+			$options=(array)Req::param("mailOptions");											//Options
+			Tool::sendMail($mailTo, $subject, $message, $options, $curObj->attachedFileList());	//Envoie l'email !
+			Ctrl::redir("?ctrl=mail");															//Redir en page principale (évite un repost)
 		}
 		////	Liste des espaces et users associés
 		$vDatas["containerList"]=[];

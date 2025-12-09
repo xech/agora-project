@@ -278,10 +278,9 @@ class CtrlUser extends Ctrl
 	public static function actionSendInvitation()
 	{
 		////	Droit d'envoyer des invitations?  Nb max d'utilisateurs dépassé?
-		if(Ctrl::$curUser->sendInvitationRight()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
+		if(Ctrl::$curUser->sendInvitationRight()==false || MdlUser::usersQuotaOk()==false)   {static::lightboxRedir();}
 		////	Validation du formulaire (Ajax)
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			$invitList=[];
 			//Contacts du formulaire simple
 			if(Txt::isMail(Req::param("mail")))  {$invitList[]=["firstName"=>Req::param("firstName"), "name"=>Req::param("name"), "mail"=>Req::param("mail")];}
@@ -293,10 +292,8 @@ class CtrlUser extends Ctrl
 				}
 			}
 			//Envoi de chaque invitation
-			if(!empty($invitList))
-			{
-				foreach($invitList as $invitationTmp)
-				{
+			if(!empty($invitList)){
+				foreach($invitList as $invitationTmp){
 					$_idInvitation=uniqId();
 					$password=Txt::defaultPassword();
 					$confirmUrl=Req::curUrl()."/index.php?ctrl=offline&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
@@ -307,7 +304,7 @@ class CtrlUser extends Ctrl
 								 '<br>'.Txt::trad("passwordToModify").' : <b>'.$password.'</b>'.															//"Mot de passe temporaire (à modifier en page de connexion) : XXXXX"
 								 '<br><br><a href="'.$confirmUrl.'" target="_blank"><u><b>'.Txt::trad("USER_mailInvitationConfirm").'</u></b></a>'; 		//"Merci de confirmer l'invitation"
 					if(Req::isParam("comment"))  {$mailMessage.='<br><br>'.Txt::trad("comment").':<br>'.Req::param("comment");}								//"Mon commentaire..."
-					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage, ["noTimeControl"]);										//"noTimeControl" pour l'envoi de mails en série
+					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage);															//Envoie l'email
 					//On ajoute l'invitation temporaire
 					if($isSendMail==true)  {Db::query("INSERT INTO ap_invitation SET _idInvitation=".Db::format($_idInvitation).", _idSpace=".(int)Ctrl::$curSpace->_id.", name=".Db::format($invitationTmp["name"]).", firstName=".Db::format($invitationTmp["firstName"]).", mail=".Db::format($invitationTmp["mail"]).", `password`=".Db::format($password).", dateCrea=".Db::dateNow().", _idUser=".Ctrl::$curUser->_id);}
 				}

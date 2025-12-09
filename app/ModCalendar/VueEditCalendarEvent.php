@@ -134,7 +134,7 @@ input[name='guestMail']				{margin-left:20px;}
 <?= empty($curObj->visioUrl)?'#visioInputs':'#visioUrlAdd' ?>	{display:none;}/*masque l'input de la visio OU "Ajouter une visio"*/
 
 /*AFFECTATION AUX AGENDAS*/
-#calAffectationsOverflow			{max-height:500px; overflow-y:auto;}
+#calAffectationsOverflow			{max-height:400px; overflow-y:auto;}
 .vCalAffectation					{display:inline-block; width:32%; margin:2px;}
 .vCalAffectation .vCalInput			{display:none;}
 .vCalAffectation label				{display:inline-block; margin:3px; width:80%;}/*label rattaché à ".vCalInput"*/

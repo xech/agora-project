@@ -124,22 +124,24 @@ class Txt
 	 *********************************************************************************************************************/
 	public static function clean($text, $scope="normal", $charReplace="_")
 	{
-		//Supprime les balises html et décode les caractères html (ex: '&amp;' de TinyMce devient '&')  &&  Supprime les '&nbsp;', espaces multiples, tabulations et sauts de ligne
-		$text=html_entity_decode(strip_tags($text));
-		$text=preg_replace(['/&nbsp;/','/\s+/'], ' ', $text);
-		//Remplace les caractères accentués
-		if($scope=="max"){
-			$charsAccent=['/[àáâãäå]/u', '/[ç]/u', '/[èéêë]/u', '/[ìíîï]/u', '/[ñ]/u', '/[òóôõö]/u', '/[ùúûü]/u', '/[ÀÁÂÃÄÅ]/u', '/[Ç]/u', '/[ÈÉÊË]/u', '/[ÌÍÎÏ]/u', '/[Ñ]/u', '/[ÒÓÔÕÖ]/u', '/[ÙÚÛÜ]/u', '/[Ý]/u'];
-			$charsBasic =['a', 'c', 'e', 'i', 'n', 'o', 'u', 'A', 'C', 'E', 'I', 'N', 'O', 'U', 'Y'];
-			$text=preg_replace($charsAccent, $charsBasic, $text);
+		if(!empty($text)){
+			//Supprime les balises html et décode les caractères html (ex: '&amp;' de TinyMce devient '&')  &&  Supprime les '&nbsp;', espaces multiples, tabulations et sauts de ligne
+			$text=html_entity_decode(strip_tags($text));
+			$text=preg_replace(['/&nbsp;/','/\s+/'], ' ', $text);
+			//Remplace les caractères accentués
+			if($scope=="max"){
+				$charsAccent=['/[àáâãäå]/u', '/[ç]/u', '/[èéêë]/u', '/[ìíîï]/u', '/[ñ]/u', '/[òóôõö]/u', '/[ùúûü]/u', '/[ÀÁÂÃÄÅ]/u', '/[Ç]/u', '/[ÈÉÊË]/u', '/[ÌÍÎÏ]/u', '/[Ñ]/u', '/[ÒÓÔÕÖ]/u', '/[ÙÚÛÜ]/u', '/[Ý]/u'];
+				$charsBasic =['a', 'c', 'e', 'i', 'n', 'o', 'u', 'A', 'C', 'E', 'I', 'N', 'O', 'U', 'Y'];
+				$text=preg_replace($charsAccent, $charsBasic, $text);
+			}
+			//Conserve les caractères alphanumériques et certains caractères spéciaux
+			$charsSpec='\.\-\_';																//conserve les caractères spéciaux  . - _ 
+			if($scope!="max")	{$charsSpec.='\s\'\,\(\)\[\]';}									//conserve aussi les espaces  ' , ( ) [ ]
+			if($scope=="min")	{$charsSpec.='\*\:\<\>\@\&\?\!\#"\/\\\\';  $charReplace=' ';}	//conserve aussi les  * : < > @ & ? ! # " / \   ('\' doit être échappé 2 fois)
+			$text=preg_replace('/[^\p{L}0-9'.$charsSpec.']/u', $charReplace, $text);			//Conserve les lettres (même accentuées) via  \p{L}  +  chiffres via  0-9  + caractère spéciaux
+			//Renvoie le résultat
+			return trim($text);
 		}
-		//Conserve les caractères alphanumériques et certains caractères spéciaux
-		$charsSpec='\.\-\_';																//conserve les caractères spéciaux  . - _ 
-		if($scope!="max")	{$charsSpec.='\s\'\,\(\)\[\]';}									//conserve aussi les espaces  ' , ( ) [ ]
-		if($scope=="min")	{$charsSpec.='\*\:\<\>\@\&\?\!\#"\/\\\\';  $charReplace=' ';}	//conserve aussi les  * : < > @ & ? ! # " / \   ('\' doit être échappé 2 fois)
-		$text=preg_replace('/[^\p{L}0-9'.$charsSpec.']/u', $charReplace, $text);			//Conserve les lettres (même accentuées) via  \p{L}  +  chiffres via  0-9  + caractère spéciaux
-		//Renvoie le résultat
-		return trim($text);
 	}
 
 	/********************************************************************************************************
@@ -147,8 +149,10 @@ class Txt
 	 ********************************************************************************************************/
 	public static function utf8Encode($text)
 	{
-		$encoding=mb_detect_encoding($text, ['UTF-8','ISO-8859-1','ISO-8859-15','Windows-1252','ASCII'], true);	//Détection de l'encodage
-		return ($encoding!='UTF-8')  ?  mb_convert_encoding($text, 'UTF-8', $encoding)  :  $text;				//Return le texte encodé en UTF-8  || Return le texte déjà en UTF-8
+		if(!empty($text)){
+			$encoding=mb_detect_encoding($text, ['UTF-8','ISO-8859-1','ISO-8859-15','Windows-1252','ASCII'], true);	//Détection de l'encodage
+			return ($encoding!='UTF-8')  ?  mb_convert_encoding($text, 'UTF-8', $encoding)  :  $text;				//Return le texte encodé en UTF-8  || Return le texte déjà en UTF-8
+		}
 	}
 
 	/********************************************************************************************************
@@ -156,7 +160,9 @@ class Txt
 	 ********************************************************************************************************/
 	public static function utf8Decode($text)
 	{
-		return mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
+		if(!empty($text)){
+			return mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8');
+		}
 	}
 
 	/********************************************************************************************************

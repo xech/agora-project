@@ -77,24 +77,28 @@ abstract class Ctrl
 					{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
 			}
 
-			////	Switch l'affichage administrateur
-			if(self::$curUser->isSpaceAdmin() && Req::isParam("displayAdmin")){
+			////	Affichage des utilisateurs de l'espace courant / tous les users  &&  Affichage administrateur activé/désactivé
+			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
+			if(Req::isParam("displayAdmin") && self::$curUser->isSpaceAdmin()){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
 				if($_SESSION["displayAdmin"]==true)	{self::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
 				else								{self::notify("HEADER_displayAdminDisabled");}
 			}
 
-			////	Affichage des utilisateurs  &&  Charge l'objet courant
-			if(empty($_SESSION["displayUsers"]))	{$_SESSION["displayUsers"]="space";}				//"space" pour les users de l'espace courant || "all" pour tous les users
-			if(Req::isParam("typeId"))				{$curObj=self::getCurObj();}						//Objet demandé (passé en GET)
-			elseif(static::$folderObjType!=null)	{$curObj=self::getObj(static::$folderObjType,1);}	//Dossier racine par défaut
+			////	Charge l'objet courant : Objet passé en GET || Dossier racine par défaut
+			if(Req::isParam("typeId"))				{$curObj=self::getCurObj();}
+			elseif(static::$folderObjType!=null)	{$curObj=self::getObj(static::$folderObjType,1);}
 
-			////	Controle d'accès à l'objet courant  &&  Conteneur courant
+			////	Controle d'accès à l'objet courant  &&  Charge le container courant 
 			if(!empty($curObj) && $curObj->isNew()==false){
-				if($curObj->readRight()==false)  {static::$isMainPage==true  ?  self::redir("index.php?ctrl=".Req::$curCtrl)  :  self::noAccessExit();}			//Pas accès à l'objet : redir Ctrl principal || notif d'erreur
-				if($curObj::isContainer())			{self::$curContainer=$curObj;}																				//Conteneur courant (dossier/agenda..)
-				elseif($curObj::isInContainer())	{self::$curContainer=$curObj->containerObj();}																//Conteneur de l'objet demandé (fichier/task..)
-				if(self::$curContainer!=null && self::$curContainer::isFolder==true)  {self::$curRootFolder=self::getObj(self::$curContainer::objectType,1);}	//Dossier root du module courant
+				if($curObj->readRight()==false){																				//Pas accès à l'objet :
+					if(static::$isMainPage==true)	{self::redir("index.php?ctrl=".Req::$curCtrl."&notify=inaccessibleElem");}	//- redir en page principale du module + notif
+					else							{self::noAccessExit();}														//- message d'erreur + fin de script
+				}
+				elseif($curObj::isContainer())		{self::$curContainer=$curObj;}												//Charge le conteneur courant : dossier, agenda, etc
+				elseif($curObj::isInContainer())	{self::$curContainer=$curObj->containerObj();}								//Charge le conteneur de l'objet courant : fichier, task, etc
+				if(is_object(self::$curContainer) && self::$curContainer::isFolder==true)										//Arborescence : récupère le dossier root du module courant
+					{self::$curRootFolder=self::getObj(self::$curContainer::objectType,1);}
 			}
 		}
 	}
@@ -383,7 +387,7 @@ abstract class Ctrl
 
 	/********************************************************************************************************
 	 * RECUPÈRE L'OBJET EN GET/POST OU $typeId (ex: "file-55")
-	 ******************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getCurObj($typeId=null)
 	{
 		if(Req::isParam("typeId") || !empty($typeId)){
@@ -437,9 +441,9 @@ abstract class Ctrl
 		exit;
 	}
 
-	/********************************************************************************************
+	/********************************************************************************************************
 	 * AJOUTE SI BESOIN LES "NOTIFY()" COURANTE À UNE URL DE REDIRECTION
-	 ********************************************************************************************/
+	 ********************************************************************************************************/
 	public static function urlNotify()
 	{
 		$urlNotify=null;
@@ -460,12 +464,11 @@ abstract class Ctrl
 	}
 
 	/********************************************************************************************************
-	 * AFFICHE "ELEMENT INACCESSIBLE" (OU AUTRE) & FIN DE SCRIPT
+	 * AFFICHE UN MESSAGE D'ERREUR  +  FIN DE SCRIPT
 	 ********************************************************************************************************/
-	public static function noAccessExit($message=null)
+	public static function noAccessExit($keyTrad="inaccessibleElem")
 	{
-		if($message===null)  {$message=Txt::trad("inaccessibleElem");}
-		echo "<h2><img src='app/img/important.png'> ".$message."</h2>";
+		echo "<h2><img src='app/img/important.png'> ".Txt::trad($keyTrad)."</h2>";
 		exit;
 	}
 }
