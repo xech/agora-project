@@ -8,7 +8,7 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function objectFormControl(){
+function mainFormControl(){
 	return new Promise((resolve)=>{
 		//// Retourne false s'il n'y a que des accès en lecture
 		if($("[name='objectRight[]']:checked").length==$("[name='objectRight[]'][value$='_1']:checked").length)	 {notify("<?= Txt::trad("FORUM_notifOnlyReadAccess") ?>");  resolve(false);}

@@ -1,11 +1,32 @@
 
---------------------------------
-CHANGELOG - JOURNAL DES VERSIONS 
---------------------------------
+-----------------------------------
+CHANGELOG - HISTORIQUE DES VERSIONS 
+-----------------------------------
 
 
-VERSION 25.12.4
----------------
+VERSION 26.2
+------------
+Amelioration et Optimisation de l'édition des droits d'accès des éléments 
+Amélioration de l'affichage des droits d'accès dans les menus contextuels
+Amélioration de l'affichage des résultats dans le moteur de recherche
+Amélioration du menu d'affectation des utilisateurs aux espaces
+Nouvelle option pour afficher/masquer le password en page de connexion
+Nouveau menu d'édition des mots de passe, désormais avec 8 caractères minimum
+Optimisation de l'import et l'export des fichiers .iCal (module calendar)
+Corrections diverses : log de connexion, url avec params, renommage de fichiers, etc
+-----
+Improved access rights editing menu
+Improved display of access rights in context menus
+Improved display of search results in the search engine
+Improved menu for assigning users to spaces
+New option to show/hide the password on the login page
+New password editing menu, now with a minimum of 8 characters
+Optimization of import and export of .iCal files (calendar module)
+Various corrections: connection log, url with params, file renaming, etc.
+
+
+VERSION 25.12
+-------------
 Amélioration du menu d'upload de fichier
 Amélioration du contrôle d'extensions des fichiers uploadés
 Amélioration du menu des droits d'accès sur mobile
@@ -27,8 +48,8 @@ Fixed display of event suggestions with email notifications
 Fixed positioning of context menus at the bottom of iframes
 
 
-VERSION 25.11.1
----------------
+VERSION 25.11
+-------------
 Amélioration et diverses corrections d'affichage sur mobile et tablette
 Optimisation d'affichage des événements périodiques et des événements privés
 Correction du double affichage d'evenement périodique dû au changement d'heure été/hiver
@@ -40,8 +61,8 @@ Fixed the issue of duplicate display of periodic events due to the summer/winter
 Fixed the display of a recurring event after deletion of an occurrence
 
 
-VERSION 25.10.4
----------------
+VERSION 25.10
+-------------
 Amélioration de la présentation des tâches : responsables, durée, etc.
 Amélioration de la navigation et présentation sur application mobile
 Ajout du contrôle et validation des formulaires via la librairie HTMLPurifier
@@ -65,8 +86,8 @@ Optimized XSS injection filters
 OAuth via "google-api-php-client" updated to v2.18.3
 
 
-VERSION 25.8.1
---------------
+VERSION 25.8
+------------
 Affichage direct d'un element (fichier, evenement, etc.) depuis une URL de partage (URL externe)
 Optimisation des fonctions de controle de texte
 Optimisation de l'affichage des lightboxes
@@ -86,8 +107,8 @@ Fixed default calendar display
 Documentation update
 
 
-VERSION 25.6.4
----------------
+VERSION 25.6
+------------
 Amélioration du menu de sélection des agendas affichés
 Amélioration de la messagerie instantanée
 Amélioration du menu de pagination
@@ -123,8 +144,8 @@ TinyMce editor update to v7.9.1
 PHPMailer updated to v6.10.0
 
 
-VERSION 25.3.3
---------------
+VERSION 25.3
+------------
 Nouvelle fonction de drag/drop en vue "semaine" pour déplacer l'heure/date d'un événement
 Nouvel affichage des fenêtres de confirmation (JS "confirm()")
 Nouvelle présentation du menu principal
@@ -164,8 +185,8 @@ TinyMce editor updated to v7.7.2
 PHPMailer updated to v6.9.3
 
 
-VERSION 25.1.0
---------------
+VERSION 25.1
+------------
 Amélioration de l'import de contacts via Google People
 Fusion des champs de paramétrage général "gPeopleApiKey" et "mapApiKey" via "gApiKey"
 Corrections et optimisations diverses
@@ -175,8 +196,8 @@ Merged general setting fields "gPeopleApiKey" and "mapApiKey" via "gApiKey"
 Various fixes and optimizations
 
 
-VERSION 24.12.1
----------------
+VERSION 24.12
+-------------
 Optimisation de l'affichage des agendas
 Nouvelle traduction en Italien
 Optimisation de l'affichage des cartes via GMaps
@@ -188,8 +209,8 @@ Map display optimizations via GMaps
 Various fixes and optimizations
 
 
-VERSION 24.11.2
----------------
+VERSION 24.11
+-------------
 Nouvel affichage des agendas sur 7 jours consécutifs (en + de "semaine")
 Amélioration de l'impression des agendas mois/semaine
 Amélioration de l'affichage des créneaux occupés lors de l'édition d'un événement
@@ -211,8 +232,8 @@ Fixed display with the IPad application
 Fixed display of weekly calendars on Mac Safari
 
 
-VERSION 24.8.3
---------------
+VERSION 24.8
+------------
 Amélioration de l'ergonomie et performances d'affichage des agendas
 Meilleure prise en charge de l'affichage des agendas en mode sombre
 Optimisation de l'affichage pour les événements se chevauchant
@@ -234,8 +255,8 @@ JQuery-UI updated to v1.14.0
 Jquery.timepicker updated to v1.14.1
 
 
-VERSION 24.6.4
---------------
+VERSION 24.6
+------------
 Nouvelle option du paramétrage général pour afficher/masquer l'email des utilisateurs
 Amélioration du menu de paramétrage général
 Amélioration de la présentation des sujets et messages du forum
@@ -263,8 +284,8 @@ TinyMce updated to v7.1.2
 Updating the Ical library for importing calendars
 
 
-VERSION 24.4.5
---------------
+VERSION 24.4
+------------
 Nouveau menu d'affichage des Catégories d'événement, Themes du forum et Status des Tâches
 Nouvelle interface d'édition des Catégories d'événement, Themes du forum et Status des Tâches
 Nouvelle présentation du forum, plus épuré et ergonomique
@@ -282,8 +303,8 @@ Optimizing for PHP 8.3
 PHP version 7.0 or more required, instead of PHP 5.6
 
 
-VERSION 24.2.3
---------------
+VERSION 24.2
+------------
 Nouvelle option des tâches pour attribuer un état "A faire", "En cours", "Terminé", etc.
 Nouvelle option pour réordonner les thèmes du forum et catégories d'événement
 Amélioration de la gestion des thèmes du forum et catégories d'événement (colorPicker, ergonomie)
@@ -315,8 +336,8 @@ TinyMce updated to v6.8.2
 JQuery-UI updated to v1.13.2
 
 
-VERSION 23.10.3
----------------
+VERSION 23.10
+-------------
 Amélioration du menu principal
 Amélioration de la gestion des "Screen orientation" sur mobile
 Fichiers joints dans les menus d'edition des objets : ajout d'une vignette pour les images
@@ -340,8 +361,8 @@ JQuery updated to v3.7.1
 OAuth via "google-api-php-client" updated to v2.15.1
 
 
-VERSION 23.7.3
----------------
+VERSION 23.7
+------------
 Nouvelle option pour copier/coller des images directement dans l'éditeur TinyMce
 Mise à jour de l'éditeur TinyMce en 6.6.0
 Amélioration du moteur de recherche et de la présentation des résultats
@@ -359,8 +380,8 @@ Improved security checks on uploaded files
 Improved auto connection via "userAuthToken"
 
 
-VERSION 23.5.0
----------------
+VERSION 23.5
+------------
 Ajout du nom de l'élément  dans les confirmations de suppression
 Optimisation du processus de mise à jour de l'appli
 Correction du téléchargement de dossier
@@ -370,8 +391,8 @@ Optimization of the app update process
 Fixed folder download issue
 
 
-VERSION 23.4.2
----------------
+VERSION 23.4
+------------
 Meilleure ergonomie du menu de navigation dans l'arborescence de dossiers
 Mise en cache des arborescences de dossier pour un affichage plus rapide (jusqu'à 20x plus rapide)
 Amélioration du contrôle des fichiers joints aux notifications par mail
@@ -385,8 +406,8 @@ Improved security of auto connections via password_hash(), Bcrypt and temporary 
 Improved installation form controls
 
 
-VERSION 23.2.3
----------------
+VERSION 23.2
+------------
 Nouvelle option pour ajouter des destinataires dans les emails de notification
 Optimisation de la fonction sendMail() 
 Amélioration de l'affichage des dates de l'agenda
@@ -404,8 +425,8 @@ PHPMailer updated to version 6.7.1
 TinyMce updated to version 6.3.1 
 
 
-VERSION 22.12.0
----------------
+VERSION 22.12
+-------------
 Optimisation du download de fichiers
 Correction de la creation de vignette des .Pdf protégés par password
 Optimisation du menu principal et de la messagerie instantanée
@@ -419,8 +440,8 @@ PHPMailer updated to version 6.6.5
 PlUpload updated to version 3.1.5 
 
 
-VERSION 22.9.2
---------------
+VERSION 22.9
+------------
 Optimisation de la fonction de formatage des dates/heures
 Optimisation de compatibilités avec PHP 8.1
 Conversion en Utf8 des anciennes tables en Latin1
@@ -432,8 +453,8 @@ Conversion to Utf8 of old tables in Latin1*
 Fixed import of events on Thunderbird Calendar
 
 
-VERSION 22.3.1
----------------
+VERSION 22.3
+------------
 Amélioration des emails de notifications
 Amélioration de l'affichage des droits d'accès aux objets
 Amélioration de l'affichage des affectations aux agendas dans l'édition d'événements
@@ -457,8 +478,8 @@ Fixed display of Emojis in descriptions and emails
 Various fixes and optimizations
 
 
-VERSION 21.12.2
----------------
+VERSION 21.12
+-------------
 Amélioration du menu des droits d'accès des objets et des notifications email
 Amélioration du menu de sélection des objets
 Amélioration de la connexion et l'import LDAP
@@ -498,7 +519,7 @@ Ical Parser updated to version 2.2.2
 
 
 VERSION 21.6
--------------
+------------
 Nouvelle option pour ajouter des pièces jointes aux sondages
 Nouvelle option d'export PDF des résultats d'un sondage
 Nouvelle option de paramétrage général pour l'affichage par défaut des dossiers : Block ou Liste
@@ -524,584 +545,3 @@ New right for space administrators to manage user assignments
 Changing the numbering mode of AP versions
 PHPMailer updated to version 6.5.0
 Fancybox updated to version 3.5.7 
-
-
-VERSION 3.8.0 (2021-03)
------------------------
-Nouvelle option pour ajouter une visio aux newsletters
-Nouvelle option pour récupérer/renvoyer d'anciennes newsletters, depuis l'historique
-Nouvelle option de notification par email pour les demandes d'inscription à un espace
-Nouvelle option de notification par email pour les propositions d'événements des agendas (utilisateurs/invités)
-Nouvelle option de notification par email pour les dossiers
-Nouvelle option "Répondre à" dans les notifications par mail
-Nouvelle option de tri des utilisateurs en fonction de la dernière connexion ou la date de création
-Nouvelle option d'export de contacts/utilisateurs au format Vcard
-Amélioration du menu de validation/invalidation des proposition d'événements
-Amélioration du menu contextuel des éléments
-Amélioration de l'affichage du messenger et de l'accès aux anciennes discussions
-Amélioration du lancement des visioconférence depuis le messenger
-Correction des visioconférences sur mobile/appli
-Correction de la cartographie via OpenStreeMap
-Correction de l'import des contacts CSV dans le dossier racine
-Corrections et optimisations diverses
-Mise à jour du Jquery en v3.6.0
-Mise à jour de TinyMce en v4.9.11
-Mise à jour du TimePicker Jquery en v1.13.16
-Mise à jour du Tooltipster Jquery en v4.2.8
-------
-New option to add a videoconferencing to newsletters
-New option to retrieve/resend old newsletters (from history)
-New email notification option for space registration requests
-New email notification option for event proposals on calendars (users/guests)
-New email notification option on folders
-New "Reply to" option in email notifications
-New option to sort users based on last login or creation date
-New option to export contacts/users in Vcard format
-Improvement of the validation / invalidation menu for event proposals
-Improved context menu of items
-Improved messenger display and access to old messages
-Improved launch of videoconferencing
-Correction of videoconferences on mobile/app
-Correction of cartography on OpenStreetMap
-Correction of import of CSV contacts in root folder
-Various corrections and optimizations
-Jquery update to 3.6.0 version
-TinyMce update to 4.9.11 version
-TimePicker Jquery update to 1.13.16 version
-Tooltipster Jquery update to 4.2.8 version
-
-
-VERSION 3.7.4 (2020-12)
------------------------
-Nouvelle option pour ajouter une visioconférence dans les événements du module agenda
-Nouvelle option "Ajouter 'Répondre à'" dans le module des Newsletters
-Optimisation et correction de l'envoi des mails
-Optimisation de l'export de contacts/users .csv vers Gmail
-Correction de la sélection du fond d'écran dans le paramétrage général
-Corrections et optimisations diverses
-Mise à jour de PHPMailer en v6.2
-------
-New option to add a videoconference in the events of the calendar module
-New option "Add 'Reply to'" in the "Email" module
-Optimization and correction of email sending
-Optimization of the export of contacts/users .csv to Gmail
-Correction of wallpapers in the general settings
-Various corrections and optimizations
-PHPMailer update to version 6.2
-
-
-VERSION 3.7.3 (2020-10)
------------------------
-Optimisations de l'affichage responsive
-Amélioration de l'affichage des droits d'accès des menus contextuels
-Amélioration des menus d'édition des événements des Agendas
-Amélioration des menus "fil d'Ariane" dans les arborescences de dossiers
-Correction de l'affichage de la recherche sur Firefox
-Corrections de traduction
-Mise à jour de la documentation
-Mise à jour de PHPMailer en v6.1.8
-Mise à jour de Jquery en v3.5.1
-Corrections et optimisations diverses
-------
-Responsive display optimizations
-Improved display of access rights for contextual menus
-Improvement of the edition menus of Calendar events
-Improvement of "breadcrumb" menus in folder trees
-Fixed the search display on Firefox
-Translation corrections
-Documentation update
-PHPMailer update to version 6.1.8
-Jquery update to 3.5.1 version
-Various corrections and optimizations
-
-
-VERSION 3.7.2 (2020-05)
------------------------
-Nouvelle option pour l'ajout d'un serveur de visioconférences Jitsi, accessible depuis la messagerie intantanée (cf. paramétrage général)
-Amélioration de l'affichage des modules Liens et Forum
-Diverses corrections en affichage responsive
-Corrections et optimisations diverses
-------
-New option for adding a Jitsi server to launch videoconferencing from the messenger (general configuration option)
-Improved display of the Link and Forum modules
-Various fixes for the responsive display
-Various corrections and optimizations
-
-
-VERSION 3.7.1 (2020-04)
-------------------------
-Ajout d'une option "copier l'adresse d'accès" dans le menu contextuel d'un élément
-Amélioration de l'affichage du menu principal (sur mobile et petites résolutions)
-Amélioration du messenger et des livecounters (Optimisation, prise en charge des emojis sur mobile, etc.)
-Les plugins des dossiers (Nouveautés/Raccourcis/recherche) sont désormais redirigés vers leur contenu
-Correction de l'affichage des sujets du forum dans les nouveautés
-Corrections et optimisations diverses
-------
-Add option "copy access address" in the context menu of an element
-Improvement of the main menu display (on mobile and small resolutions)
-Improved messenger and livecounters (Optimization, emojis support on mobile, etc.)
-The plugins of the folders (News / Shortcuts / search) are now redirected to their content
-Correction of the display of forum topics in news
-Various corrections and optimizations
-
-
-VERSION 3.7.0 (2020-03)
-------------------------
-Ajout de l'éditeur TinyMce dans la description des Sondages
-Amélioration du menu principal
-Amélioration de l'ergonomie du Forum et de l'Agenda (surtout sur mobile/responsive)
-Module Actualité : ajout de la période "dernière connexion" dans les nouveaux éléments
-Meilleure présentation des Barres des tâches
-Intégration de l'icone de recherche dans la barre de menu principale
-Amélioration du menu d'upload de fichiers
-Optimisation des menus contextuels des éléments
-Messenger : amélioration de l'ergonomie 
-Vue responsive (mobile & interfaces tactiles) :
-- nouvelle possibilité de "swiper" d'une période à l'autre dans le module Agenda
-- menu principal plus ergonomique et optimisé (liste des modules et options du module courant)
-- nouveaux boutons en bas de chaque page pour l'ajout d'elements (News, fichiers, Événements, etc.)
-- ajout du menu contextuel dans l'affichage détaillé d'un evenement, contact, tache, etc.
-Corrections et optimisations diverses
-------
-Addition of the TinyMce editor in the description of the Polls
-Improvement to the ergonomics of the main menu
-Improvement to the ergonomics of the Forum and the Agenda (especially on mobile / responsive)
-News module: addition of the "last connection" period in the list of new elements
-Better presentation of taskbars
-Integration of the search icon in the main menu bar
-Improvement of the file upload menu
-Optimization of context menus of elements
-Messenger: Improvement of the ergonomics
-Responsive view (mobile & tactile interfaces):
-- new possibility to "swipe" from one period to another in the Agenda module
-- main menu more ergonomic and optimized (list of modules and options of the current module)
-- new buttons at the bottom of each page for adding elements (News, files, Events, etc.)
-- addition of the contextual menu in the detailed display of an event, contact, task, etc.
-Various corrections and optimizations
-
-
-VERSION 3.6.5 (09-2019)
------------------------
-Nouvelle option de sélection des groupes d'utilisateurs dans les notifications par email
-Sondages: affichage du nombre total des votes dans le menu contextuel d'un sondage, et affichage des personnes ayant voté (admin uniquement)
-Sondages: nouvelle option de "vote public", pour pouvoir afficher si besoin le choix de chaque votant
-Fichiers: amélioration de l'affichage du nombre de téléchargements d'un fichier
-Fichiers: nouvel affichage des personnes ayant téléchargé le fichier (admin uniquement et comptage à partir de cette version)
-Liens: Amélioration de l'affichage des liens et des débordements de bloc
-Ajout des groupes aux exports .csv des utilisateurs
-Amélioration du menu des droits d'accès des objets
-Amélioration de la documentation Pdf
-Correction des propositions d'événements par les invités dans les agendas
-Corrections et optimisations diverses
-------
-New option to select user groups in email notifications
-Polls: display of the total number of votes in the context menu of a poll, and display of people who voted (admin only)
-Polls: new option "public vote", to display if necessary the choice of each voter
-Files: better display of the number of downloads of a file
-Files: display of people who downloaded the file (admin only)
-Links: better display of links and block overflows
-Adding groups to users' .csv exports
-Improvement of the access rights menu of objects
-Improvement of the Pdf documentation
-Correction of event proposals by guests (calendar module)
-Various corrections and optimizations
-
-
-VERSION 3.6.4 (07-2019)
------------------------
-Gestionnaire de fichiers : Amélioration de l'affichage des vignettes d'image et du menu d'upload de fichiers
-Messenger : Amélioration de l'ergonomie et correction de l'affichage du formulaire sur mobile (Responsive)
-Amélioration de l'affichage des nouveaux éléments dans les Actualités
-Mise à jour de Jquery en v3.4.1
-Mise à jour de Jquery UI en v1.12.1
-Mise à jour de l'éditeur TinyMce en v4.9.5
-Corrections et optimisations diverses
-------
-File Manager: Improved image thumbnail display and file upload menu
-Messenger: Improvement of the ergonomics and correction of the display of the form on mobile (Responsive)
-Improved display of new elements in the News module
-Update of Jquery in v3.4.1
-Update of Jquery UI in v1.12.1
-Update of TinyMce in v4.9.5
-Various corrections and optimizations
-
-
-VERSION 3.6.3 (04-2019)
------------------------
-Amélioration de la présentation et l'ergonomie du menu principal
-Consolidation des processus de contrôle/validation des formulaires via Ajax
-Optimisation de la procédure d'inscription d'un utilisateur sur l'espace 
-Amélioration du menu d'envoi de fichier (ajout d'un formulaire simple)
-Menu du chemin d'un dossier : nouvelles options d'ajout d'un element ou dossier
-Amélioration du menu du chemin d'un dossier en mode mobile/responsive
-Amélioration de la procédure d'installation de l'application
-Meilleure présentation des propositions d'événement pour les agendas
-Amélioration du fonctionnement du moteur de recherche, notamment sur les Actualités
-Amélioration de l'édition des thèmes du forum / catégories d'événements / groupes d'utilisateurs
-Simplification des droits d'affectation aux agendas lors de l'édition d'un événement
-Simplification des droits d'accès pour les guests/invités
-Optimisation des "triggers" JQuery au chargement des pages
-Correction d'affichage de l'option "Deplacer vers un autre dossier" des menus contextuels
-Corrections et optimisations diverses
-------
-Improved presentation and ergonomics of the main menu
-Consolidation of forms control / validation processes via Ajax
-Optimizing the registration process of a user on the space
-Improvement of the file sending menu (addition of a simple form)
-Folder path menu: new options for adding an item or folder
-Improvement of the path menu of a folder in mobile / responsive mode
-Improved the application installation process
-Best presentation of event proposals for calendars
-Improved how the search engine works, especially on News
-Improvement of the edition of the themes of the forum / categories of events / groups of users
-Simplifying calendar assignment rights when editing an event
-Simplification of access rights for guests / guests
-Optimizing JQuery "triggers" to load pages
-Fixed the display of the option "Move to another folder" from context menus
-Various corrections and optimizations
-
-
-VERSION 3.5.0.1 (12-2018)
--------------------------
-Nouvel outil de sondage/vote dans le module Dashboard/News
-Nouvelle option d'export d'agenda un format .ics via une url
-Amélioration de la présentation des actualités et des nouveaux éléments
-Amélioration du processus de réinitialisation du mot de passe et d'envoi d'invitations
-Amélioration des emails de notifications de création/modif d'element
-Amélioration du controle des types de fichiers uploadé/ajoutés
-Amélioration du paramétrage des espaces et affectations des utilisateurs
-Nouvelles icônes dans le gestionnaire de fichiers (types mimes)
-Mise à jour de TinyMce v4.9.2
-Corrections et optimisations diverses
-
-
-VERSION 3.4.4 (08-2018)
------------------------
-Optimisation de l'envoi de mails avec pièces jointes
-Les notifications de création/modif d'objet (News, Evenements, etc.) intègrent désormais les images en pièces jointes
-Nouvelle fonction de mémorisation automatique du texte de l'éditeur (TinyMce), pour pouvoir le rappeler par la suite, par exemple si la page d'édition est fermée par erreur..
-Correction de l'affichage d'événements avec créneaux imbriqués dans le module Agenda
-Correction de la création de vignette PDF sous PHP7
-Corrections et optimisations diverses
-Mise à jour de PHPMailer v5.2.26
-Mise à jour de Fancybox v3.4.0
-Mise à jour de TinyMce v4.8.2
-Mise à jour de PlUpload v3.1.2
-
-
-VERSION 3.4.3 (06-2018)
------------------------
-Amélioration des controles de sortie de formulaires en cours d'édition
-Ajout du fichier "Changelog.txt" dans le module "Parametrage général"
-Correction d'import/export de fichier .ical : événements périodiques
-Corrections et optimisations diverses
-Mise à jour JQuery en v3.3.1
-
-
-VERSION 3.4.2.1 (04-2018)
--------------------------
-Nouvelle ergonomie en page de connexion
-Amélioration de la gestion des "API" de cartographie : Google Maps & Leaflet/OpenStreetMap (Open source)
-Module Dashboard/News : Ouverture des images des News (fichiers joints) avec une lightBox
-Amélioration de l'affichage des fichiers joints et menus contextuels des objets
-Amélioration de l'affichage du messenger, notamment responsive
-Nouvelle option de connexion via Google Signin via le protocole OAuth (necessite la création d'un "client_ID" Google)
-Nouvelle option de récupération des contacts Gmail pour l'envoi d'invitations (necessite la création d'un "API_KEY" pour l'API Google "People", avec validation de domaine)
-Mise à jour du timePicker Jquery
-Correction des confirmations d'invitation
-Corrections et optimisations diverses
-
-
-VERSION 3.4.1 (02-2018)
------------------------
-Nouvel outil de cartographie OpenSource Leaflet basée sur Openstreetmap (alternative à Google Map)
-Ajout de l'API Key de Google Map depuis le paramétrage général
-
-
-VERSION 3.4.0 (02-2018)
------------------------
-Nouvel affichage progressif des news, chargés via infinite scroll (blocs de 10)
-Possibilité de liker/commenter également les dossiers (fichiers/contacts/tâches/liens)
-Meilleur affichage des likes/commentaires des objets
-Amélioration de la présentation et de la rapidité d'affichage en mode Responsive/Mobile
-Clic sur le mail d'un utilisateur/contact : redirection vers le module mail (si activé)
-Amélioration du paramétrage de l'espace lors de l'installation (ajout d’éléments  par défaut, etc.)
-Ajout du nom de l'espace courant dans la signature des mails
-Simplification du menu de tri de chaque module
-Optimisation et simplification des css/styles
-Corrections et optimisations diverses
-
-
-VERSION 3.3.5 (12-2017)
------------------------
-Amélioration des menus des sujets du Forum
-Amélioration du menu des droits d'accès, simplifié et plus clair
-Meilleur affichage des événements : 2 evt sur le même créneau (agendas de semaine), vue détaillée d'un evt, etc.
-Mode responsive : ouverture du menu principal via un simple glissé depuis le bord droit de la page
-Affichage des dates de connexion des users en page principale (uniquement les admins d'espace)
-Nouvelle présentation des mails de notification de créa/modif d'objet
-Corrections de l'affichage en mode "Black" des messages du messenger et des destinataires des notifications
-Correction des menus contextuel via clic droit dans les agendas semaine
-Corrections et optimisations diverses
-
-
-VERSION 3.3.4 (10-2017)
------------------------
-Mises à jour d'icones dans les modules Fichier / Agenda / Contact / Utilisateur / Mail
-Evenements des agendas de semaine : ajout d'un décalage d'affichage si plusieurs événements se chevauchent
-Ajout des icones de dossier personalisables
-Amélioration de l'affichage des événements semaine/mois
-Meilleure ergonomie pour l'ajout de fichiers
-Ajout de nouveaux wallpapers
-Upgrade de Tooltipster en v4.0
-Correction diverses sur la version Mobile
-Correction de lecture de mp3 et videos (parametrage player & fancybox)
-Correction des imports d'evenements via fichier .ical (evenements "jours complet" et décalages de Timezones)
-
-
-VERSION 3.3.3  (09-2017)
-------------------------
-Optimisations diverses du CSS et Javascript
-Optimisation de l'affichage responsive (js & css)
-Meilleur affichage des evenements de calendrier
-Corrections diverses d'affichage en mode "Black"
-Correction des sauvegardes sur perso.free.fr
-Mise à jour de Fancybox en v3.1.24
-
-
-VERSION 3.3.2  (09-2017)
-------------------------
-Amélioration de l'ergonomie du menu principal (header) en mode responsive
-Amélioration générale et divers correctifs de l'affichage responsive en mode tablette
-Amélioration du menu d'affectation des éléments (droits d'accès)
-Amélioration du menu d'affectation des événements (affectation aux agendas)
-Meilleure compatibilité avec perso.free.fr
-Optimisations et corrections diverses
-
-
-VERSION 3.3.1  (08-2017)
-------------------------
-Optimisations et corrections diverses
-
-
-VERSION 3.3.0  (07-2017)
-------------------------
-Nouvelle option "aimer" & "commenter" des elements
-mise à jour jQuery v2.1.4 à 3.2.1
-mise à jour fancybox v2.2 à v3.1
-mise à jour jquery.touchSwipe
-Optimisations diverses
-Correction XSS
-
-
-VERSION 3.2.4  (05-2017)
-------------------------
-Optimisations des menus responsives
-Optimisations diverses
-Mise à jour de tinyMce en v4.5.7
-
-
-VERSION 3.2.3  (04-2017)
-------------------------
-Meilleure ergonomie du menu principal en mode Mobile/Responsive
-Optimisations CSS & Responsive Design
-Optimisation du messenger & livecounter
-Ajout d'une double confirmation pour les suppressions de conteneurs
-Ajout d'une demande de confirmation de téléchargement des fichiers
-Ajout de nouveaux wallpapers
-Amélioration du menu du chemin des dossiers et du forum
-Amélioration du menu des notifications de création/modif d'element
-Amélioration de l'affichage du forum
-Amélioration du menu de selection des agendas
-Transfert dans les contacts de 'fax', 'website', 'skills', 'hobbies' dans 'comment'
-Correction de l'affichage du module logs
-Correction d'affichage des agendas réservés aux admins (icone "+")
-Correction de l'invertion des selections d'agenda dans l'édition d'un événenement
-Correction de l'affichage des player video Mp4/Webm
-Mise à jour DataTable 1.10.13 pour le module "Logs"
-Mise à jour PlUpload en v2.3.1
-
-
-VERSION 3.2.2  (02-2017)
-------------------------
-Améliorations d'affichage en mode "mobile"/"tablette" (CSS & Responsive Design)
-Paramétrage général : Option de configuration SMTP et Option de logo en page de connexion
-Agenda : ajout de l'affichage sur 3 jours
-Amélioration de l'affichage des Agendas imprimés
-Suppression auto des propositions d’événements passés et non confirmées
-Mise à jour PHPmailer en v5.2.22
-Mise à jour TinyMce en v4.5.2
-Mise à jour PlUpload en v2.2.1
-
-
-VERSION 3.2.1  (12-2016)
-------------------------
-Correction diverses : CSS & Responsive Design
-
-
-VERSION 3.2.0  (12-2016)
-------------------------
-Nouveaux menus et affichage "responsives" : adapté pour les mobiles/tablettes
-Optimisation de l'application : calcul et affichage jusqu'à 50% plus rapide
-Nouvelle messagerie instantanée : plus ergonomique
-Optimisations diverses (menus contextuels, css, etc.)
-Diverses corrections (sélection dans le menu contextuel & co)
-
-
-VERSION 3.1.13 (09-2016)
-------------------------
-Corrections diverses (pour PHP 5.4 and Co)
-
-
-VERSION 3.1.12 (09-2016)
-------------------------
-Nouveau controle AJAX des droits d'accès sur les affections des dossiers
-Amélioration du controle de créneau horaire pour l'édition d'evenement des agendas
-Amélioration de la procédure de renvoi des coordonnées de connexion aux utilisateurs
-Optimisations et corrections diverses
-
-
-VERSION 3.1.11 (09-2016)
-------------------------
-Amélioration de la procédure de contrôle des mises à jour
-Correction des problèmes d'install ou mise à jour sous Wampserver avec MySql "mode Strict" activé par défaut
-
-
-VERSION 3.1.10 (09-2016)
-------------------------
-Ajout d'un controle de double édition : pour qu'un element/objet ne soit pas édité par deux personnes en même temps
-Amélioration de l'affichage des Logs et du fichier logs téléchargé
-Amélioration de la fonction de mise à jour de la config
-Modification de la durée de conservation des conversations du messenger : de 4h à 12h
-Optimisation du livecounter et du messenger
-Optimisation de l'Agenda et des evenements périodiques
-Mise à jour du timePicker Jquery
-
-
-VERSION 3.1.9 (07-2016)
------------------------
-correction de l'ouverture des fichiers pdf sur les appareils tactiles
-Optimisation de l'application
-
-
-VERSION 3.1.8 (05-2016)
------------------------
-meilleure ergonomie des affectations d'agendas dans l'édition des evenements
-Optimisations et corrections diverses
-
-
-VERSION 3.1.7 (05-2016)
------------------------
-Correctif pour Internet Explorer 11 (uniquement..) pour l'affichage des liens "href" dans le menu principal
-
-
-VERSION 3.1.6 (04-2016)
------------------------
-Optimisation de l'affichage des calendriers "semaine"
-Amélioration de la vue "synthèse" des agendas
-Optimisations et corrections diverses
-
-
-VERSION 3.1.5 (04-2016)
------------------------
-Amélioration de la présentation de l'Agendas et du Messenger
-Amélioration des notifications de mise à jour
-Corrections diverses
-
-
-VERSION 3.1.4 (04-2016)
------------------------
-Ajout des vignettes d'images dans les lightboxes d'images
-Ajout de la fonction "tout sélectionner" dans le menu du module newsletter
-Mise à jour de l'éditeur TinyMce en v4.3.10
-Amélioration de la présentation du forum
-Corrections diverses
-
-
-VERSION 3.1.3 (04-2016)
------------------------
-Correction des exports de contacts/users au format "csv_agora"
-Correction de création de table "ap_userGroup" à l'install pour les bdd ne supportant pas les indexes > 1000
-
-
-VERSION 3.1.2 (04-2016)
------------------------
-Corrections de l'affichage des fichiers joints dans le détail des événements, contacts et tâches
-Correction de l'affichage du menu contextuel des contacts pour les users lambda
-Ajout des vignettes dans la visualisation des images du gestionnaire de fichiers
-
-
-VERSION 3.1.1 (03-2016)
------------------------
-Mise à jour et intégration de la documentation dans le menu principal
-Optimisations et corrections diverses
-
-
-VERSION 3.1.0 (03-2016)
------------------------
-Nouveau script d'affichage des menus contextuels : meilleur positionnement en bordure de page et sur des petites résolutions
-Amélioration diverses d'ergonomie, notamment des modules Dashboard et Calendar
-Amélioration de la confirmation de fermeture des iframes d'édition d'objet
-Correction de l'enregistrement des preferences des invités (ex: affichage des agendas)
-Optimisations diverses
-
-
-VERSION 3.0.6 (03-2016)
------------------------
-Correction des imports de contacts dans le dossier racine
-correction de verif de l'extension Imagick sur les environnements Xampp
-
-
-VERSION 3.0.5 (03-2016)
------------------------
-Simplification des droits d'accès en écriture au dossier racine : désormais réduit à une simple option dans le paramétrage de l'espace
-Amélioration et simplification des certains menus : Barre principale de menu, Ajout de dossiers, etc.
-Correction de mise à jour sur des bases de données multiples
-
-
-VERSION 3.0.4 (02-2016)
------------------------
-Amélioration de la gestion des affectations aux groupes dans le module Mail et Agenda
-Amélioration de la création des vignettes d'image et de leur orientation
-Ajout des descriptions pour le nouveaux fichiers uploadés
-optimisations diverses du code et de l'ergonomie générale
-optimisation du telechargement de très grosses archives
-optimisation du controle des types de fichiers uploadés
-Correction de l'affichage des dates si le module PHP "easter-date" n'a pas été pré-compilé
-correction sur la gestion des versions de fichiers
-Correction d'anciennes mises à jour (depuis v2.2)
-
-
-VERSION 3.0.3 (02-2016)
------------------------
-Correction du bug concernant les themes des forums sous PHP 5.4
-Correction de la mise à jour de vignettes d'image (non créées sous v2.17)
-Correction de l'installation sur les environnements MAC (AMPPS, XAMPP, etc.)
-optimisations diverses
-
-
-VERSION 3.0.2 (02-2016)
------------------------
-Diverses optimisations javascript
-Correction de l'accès aux historiques de mail
-Correction de l'affichage des .pdf dans le gestionnaire de fichier sous Firefox
-Correction de l'affichage du menu des thèmes du forum
-Correction de la désactivation des raccourcis
-Correction de la période par défaut du dashboard
-
-
-VERSION 3.0.1 (01-2016)
------------------------
-Correction mineure sur l'accès au formulaire d'install
-Correction de mise à jour sur les version inférieures à 2.12
-
-
-VERSION 3.0.0 (12-2015)
------------------------
-Nouvelle architecture entièrement en Programmation Orienté Objet : jusqu’à 5x plus rapide
-Architecture MVC (Modèle-Vue-Contrôleur) pour un code plus clair, connexions MySQL basé sur la librairie PDO.
-Nouvelle visionneuse d’image et de vidéos : plus simple, rapide et mieux adaptée aux terminaux mobiles
-Nouveaux timePickers pour les sélections de dates et heures (module Calendar, Task, etc.)
-Accès direct aux éléments depuis les notifications mail (création/modification).
-Nouvelle version de TinyMce en v4.3.2 et PlUpload en v2.1.8
-Nouvelle version jQuery en v2.1.4 et jQuery UI en v1.11.4

@@ -283,11 +283,11 @@ class MdlCalendarEvent extends MdlObject
 			elseif($this->periodType=="year")	{$periodLabel=str_replace("--DATE--", date("d/m",$this->timeBegin), Txt::trad("CALENDAR_period_yearDetail"));}	//"Tous les ans, le 15/10"
 			//// Jours / Mois de la périodicité
 			if(!empty($this->periodValues)){
-				$periodLabel.=' : &nbsp;';
+				$periodLabel.=' : ';
 				foreach(Txt::txt2tab($this->periodValues) as $tmpKey=>$tmpVal){
 					if($tmpKey>0)  {$periodLabel.=", ";}
-					if($this->periodType=="weekDay")	{$periodLabel.=Txt::trad("day_".$tmpVal);}		//Exple : "lundi, mardi, etc"
-					elseif($this->periodType=="month")	{$periodLabel.=Txt::trad("month_".$tmpVal);}	//Exple : "janvier, février, etc"
+					if($this->periodType=="weekDay")	{$periodLabel.=Txt::trad("day_".$tmpVal);}		//ex: "lundi, mardi, etc"
+					elseif($this->periodType=="month")	{$periodLabel.=Txt::trad("month_".$tmpVal);}	//ex: "janvier, février, etc"
 				}
 			}
 			//// Exceptions de périodicité
@@ -300,7 +300,7 @@ class MdlCalendarEvent extends MdlObject
 			}
 			//// Fin de périodicité
 			if(!empty($this->periodDateEnd)){
-				$periodLabel.=' <br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel($this->periodDateEnd,"dateFull"));
+				$periodLabel.='<br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel($this->periodDateEnd,"dateFull"));
 			}
 			//// Renvoie le résultat
 			return $periodLabel;

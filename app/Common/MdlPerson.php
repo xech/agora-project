@@ -170,9 +170,9 @@ class MdlPerson extends MdlObject
 		$labels="";
 		//Edition
 		if($mode=="edit"){
-			$labels.=	$this->getField("civility",$mode).
-						$this->getField("name",$mode).
+			$labels.=	$this->getField("name",$mode).
 						$this->getField("firstName",$mode).
+						$this->getField("civility",$mode).
 						"<hr>";
 		}
 		//Tous les $mode : mail + tel + etc

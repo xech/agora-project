@@ -160,7 +160,7 @@ class CtrlFile extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge le fichier + update la dernière version
-			$fileName=Req::param("name").Req::param("dotExtension");
+			$fileName=Txt::clean(Req::param("name").Req::param("dotExtension"));
 			$curObj=$curObj->editRecord("name=".Db::format($fileName).", description=".Db::param("description"));
 			$lastVersion=$curObj->getVersion();
 			Db::Query("UPDATE ap_fileVersion SET name=".Db::format($fileName).", description=".Db::param("description")." WHERE _idFile=".$lastVersion["_idFile"]." AND dateCrea=".Db::format($lastVersion["dateCrea"]));

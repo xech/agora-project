@@ -44,7 +44,7 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function objectFormControl(){
+function mainFormControl(){
 	return new Promise((resolve)=>{
 		// "Merci de sélectionner au moins un fichier"
 		let isPlupload=$("#uploadMultiple").isDisplayed();
@@ -64,8 +64,8 @@ function objectFormControl(){
 
 
 <style>
-fieldset								{text-align:center; margin:0px; padding:30px;}										/*surcharge tt les fieldset*/
-fieldset#uploadMultiple					{padding:0px; border-radius:7px;}													/*fieldset Plupload*/
+#uploadMultiple							{padding:0px;}																		/*fieldset Plupload*/
+#uploadAddVersion, #uploadSimple		{text-align:center; margin:0px; padding:30px;}										/*fieldset input[file]*/
 .plupload_wrapper						{min-width:100%!important; max-width:100%!important;}								/*surcharge pour eviter le scroll horizontal*/
 .plupload_container						{height:220px; min-height:220px; max-width:100%; background-color:transparent; border:0px;}		/*conteneur principal*/
 .plupload_content						{top:0px; height:160px;}															/*dropzone & liste des fichiers (160px minimum)*/

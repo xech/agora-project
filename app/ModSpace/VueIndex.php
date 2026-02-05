@@ -1,19 +1,19 @@
 <style>
 /* BLOCKS DE CONTENU */
 #moduleMenu .infos			{text-align:left;}
-.objBlocks .objContainer	{height:200px; min-width:300px; max-width:600px; padding:10px;}/*surcharge*/
+.objBlocks .objContainer	{height:220px; min-width:400px; max-width:700px;}/*surcharge*/
+.objContainerScroll			{padding:10px;}
 .vSpaceName					{font-size:1.1rem;}
 .vSpaceDescription			{margin-top:10px; font-weight:normal;}
 .vModules					{margin:15px 0px;}
-.vModules img				{max-height:30px; margin-right:10px;}
-.vSpaceAffectationLabel		{margin:12px 0px 8px 3px;}
-.vSpaceAffectations			{overflow-y:auto; height:70px;}
-.vSpaceAffectation			{display:inline-block; min-width:150px; width:32%; padding:0px 5px 5px 0px; font-size:0.9rem;}
-.vSpaceAffectation img		{max-height:20px;}
+.vModules img				{max-height:25px; margin-inline:5px;}
+.vSpaceAffectation			{display:inline-block; width:32%; padding:5px; font-size:0.85rem;}
+.vSpaceAffectation img		{max-height:17px;}
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	.vSpaceAffectation	{width:48%;}
+	.vSpaceAffectation		{width:48%;}
+	.vSpaceAffectation img	{max-height:15px;}
 }
 </style>
 
@@ -28,33 +28,38 @@
 	</div>
 
 	<div id="pageContent" class="objBlocks">
-		<?php
-		////	LISTE DES ESPACES
-		foreach($spaceList as $tmpSpace)
-		{
-			////	CONTENEUR
-			echo $tmpSpace->objContainerMenu();
-				////	NOM & DESCRIPTION & MODULES AFFECTES
-				$moduleList=null;
-				foreach($tmpSpace->moduleList(true) as $tmpModule)  {$moduleList.='<img src="app/img/'.$tmpModule["moduleName"].'/icon.png" '.Txt::tooltip($tmpModule["description"]).'>';}
-				echo '<div class="vSpaceName">'.$tmpSpace->name.'</div>
-					  <div class="vSpaceDescription" '.Txt::tooltip($tmpSpace->description).'>'.Txt::reduce($tmpSpace->description,80).'</div>
-					  <div class="vModules">'.$moduleList.'</div><hr>';
-				////	AFFECTATIONS
-				echo '<div class="vSpaceAffectations">';
-					//Droit d'accès à definir  /  Espace public  /  Tous les users affectes
-					if(count($tmpSpace->getUsers())==0 && $tmpSpace->allUsersAffected()==false && empty($tmpSpace->public))  {echo '<div class="infos">'.Txt::trad("SPACE_accessRightUndefined").'</div>';}
-					if($tmpSpace->allUsersAffected())	{echo '<div class="vSpaceAffectation"><img src="app/img/user/iconSmall.png"> '.Txt::trad("SPACE_allUsers").'</div>';}
-					if(!empty($tmpSpace->public))		{echo '<div class="vSpaceAffectation"><img src="app/img/user/guest.png"> '.Txt::trad("SPACE_publicSpace").'</div>';}
-					//Users affectes
-					foreach($tmpSpace->getUsers() as $tmpUser){
-						$accessRightUser=$tmpSpace->accessRightUser($tmpUser);
-						if($tmpSpace->allUsersAffected() && $accessRightUser==1)  {continue;}//Pas d'affichage si simple user et tous les users sont affectés
-						echo '<div class="vSpaceAffectation" onclick="'.$tmpUser->openVue().'"><img src="app/img/user/'.($accessRightUser==2?"userAdminSpace.png":"user.png").'"> '.$tmpUser->getLabel().'</div>';
-					}
-				echo '</div>
-			</div>';
-		}
-		?>
+		<!--LISTE DES ESPACES-->
+		<?php foreach($spaceList as $tmpSpace){ ?>
+			<?= $tmpSpace->objContainerMenu() ?>
+				<div class="objContainerScroll">
+					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
+					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>
+					<div class="vModules"><?php foreach($tmpSpace->moduleList(true) as $tmpModule)  {echo '<img src="app/img/'.$tmpModule["moduleName"].'/iconSmall.png" '.Txt::tooltip($tmpModule["description"]).'>';} ?></div>
+					<hr>
+					<!--"DROIT D'ACCÈS À DEFINIR"-->
+					<?php if(count($tmpSpace->getUsers())==0 && empty($tmpSpace->public) && $tmpSpace->allUsersAffected()==false){ ?>
+						<div class="infos"><?= Txt::trad("SPACE_accessRightUndefined") ?></div>
+					<?php } ?>
+
+					<!--"ESPACE PUBLIC"-->
+					<?php if(!empty($tmpSpace->public)){ ?>
+						<div class="vSpaceAffectation"><img src="app/img/user/accessGuest.png"> <?= Txt::trad("SPACE_publicSpace") ?></div>
+					<?php } ?>
+
+					<!--"TOUS LES UTILISATEURS"-->
+					<?php if($tmpSpace->allUsersAffected()){ ?>
+						<div class="vSpaceAffectation"><img src="app/img/user/accessAllUsers.png"> <?= Txt::trad("SPACE_allUsers") ?></div>
+					<?php } ?>
+
+					<!--LISTE DES USERS AFFECTES-->
+					<?php foreach($tmpSpace->getUsers() as $tmpUser){
+						$accessRight=$tmpSpace->accessRightUser($tmpUser);
+						if($tmpSpace->allUsersAffected() && $accessRight==1)  {continue;}//Simple user et tous les users affectés à l'espace
+					?>
+						<div class="vSpaceAffectation" onclick="<?= $tmpUser->openVue() ?>"><img src="app/img/user/<?= $accessRight==2?"userAdminSpace.png":"accessUser.png" ?>"> <?= $tmpUser->getLabel() ?></div>
+					<?php } ?>
+				</div>
+			</div>
+		<?php } ?>
 	</div>
 </div>

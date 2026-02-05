@@ -31,18 +31,17 @@ abstract class Ctrl
 	 ********************************************************************************************************/
 	public static function initCtrl()
 	{
-		////	Lance la session
-		if(defined("db_name"))  {session_name("SESSION_".db_name);}//Correspondant à db_name
+		////	Mise en cache désactivée  &&  Lancement de session  &&  Réinit de session
+		session_cache_limiter("nocache");
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}
 		session_start();
-
-		////	Déconnexion demandée
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
 			self::userAuthToken("delete");
 		}
 
-		////	Récup le parametrage général (après "session_start()")  &&  Lance si besoin la mise à jour de la DB
+		////	Parametrage général  &&  Update de BDD
 		self::$agora=new MdlAgora();
 		if(Req::isHost())  {Host::getParams();}
 		DbUpdate::lauchUpdate();
@@ -70,10 +69,11 @@ abstract class Ctrl
 				$_COOKIE["mobileAppli"]="true";
 			}
 
-			////	Affiche une page principale  &&  Controle d'accès au module (sauf modules sans affectation spécifique)
+			////	Affiche une page principale : controle d'accès au module demandé
 			if(Req::$curAction=="default"){
 				static::$isMainPage=true;
-				if(!in_array(Req::$curCtrl,["agora","log","offline","space","user"])  &&  !array_key_exists(Req::$curCtrl,self::$curSpace->moduleList()))
+				//Module demandé pas affecté à l'espace courant (et pas un module "global") : redirection vers le 1er module de l'espace
+				if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false  &&  self::$curSpace->moduleEnabled(Req::$curCtrl)==false)
 					{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
 			}
 
@@ -89,7 +89,7 @@ abstract class Ctrl
 			if(Req::isParam("typeId"))				{$curObj=self::getCurObj();}
 			elseif(static::$folderObjType!=null)	{$curObj=self::getObj(static::$folderObjType,1);}
 
-			////	Controle d'accès à l'objet courant  &&  Charge le container courant 
+			////	Controle d'accès à l'objet/container courant 
 			if(!empty($curObj) && $curObj->isNew()==false){
 				if($curObj->readRight()==false){																				//Pas accès à l'objet :
 					if(static::$isMainPage==true)	{self::redir("index.php?ctrl=".Req::$curCtrl."&notify=inaccessibleElem");}	//- redir en page principale du module + notif
@@ -329,8 +329,7 @@ abstract class Ctrl
 	public static function addLog($action, $curObj=null, $comment=null)
 	{
 		//S'il s'agit d'une action d'un user ou d'un invité qui ajoute un élément
-		if(self::$curUser->isUser() || $action=="add")
-		{
+		if(self::$curUser->isUser() || $action=="add"){
 			////	Init la requête Sql
 			$moduleName=Req::$curCtrl;
 			$sqlObjectType=$sqlObjectId=null;

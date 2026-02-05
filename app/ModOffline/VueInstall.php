@@ -21,11 +21,10 @@ ready(function(){
 		if(installEmptyField==true)   {notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 	
 		//// Controle le nom de la DB & le mail & le password
-		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)   				{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>");  $("[name='db_name']").focusPulsate();  return false;}
-		if($("[name='adminMailLogin']").isMail()==false)  								{notify("<?= Txt::trad("mailInvalid") ?>");			return false;}
-		if(isValidPassword($("[name='adminPassword']").val())==false)					{notify("<?= Txt::trad("passwordInvalid") ?>");		return false;}
-		if($("[name='adminPassword']").val()!=$("[name='adminPasswordVerif']").val())	{notify("<?= Txt::trad("passwordVerifError") ?>");	return false;}
-	
+		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)  	{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>");  $("[name='db_name']").focusPulsate();  return false;}
+		if($("[name='adminMailLogin']").isMail()==false)  				{notify("<?= Txt::trad("mailInvalid") ?>");			return false;}
+		if($("[name='adminPassword']").isPassword()==false)				{notify("<?= Txt::trad("passwordInvalid") ?>");		return false;}
+
 		//// Formulaire validé et confirmé : "Post" via Ajax
 		if(await confirmAlt("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
 			submitLoading();																			//Img "loading"
@@ -50,7 +49,7 @@ form						{padding:20px;}
  #formTitle>div:first-child	{width:80px;}
  #formTitle>div:last-child	{text-align:right;}
 form h3						{margin:40px 0px 10px; padding-bottom:5px; border-bottom:#ddd solid 1px;}
-#spaceDiskLimit				{width:50px;}
+input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 </style>
 
 
@@ -73,14 +72,13 @@ form h3						{margin:40px 0px 10px; padding-bottom:5px; border-bottom:#ddd solid
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbHost") ?></div><div><input type="text" name="db_host"></div></div>
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbName") ?></div><div><input type="text" name="db_name"></div></div>
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbLogin") ?></div><div><input type="text" name="db_login"></div></div>
-				<div class="objField"><div><?= Txt::trad("password") ?></div><div><input type="password" name="db_password"></div></div>
+				<div class="objField"><div><?= Txt::trad("password") ?></div><div><?= Txt::inputPassword("db_password",true) ?></div></div>
 				<!--ADMIN GENERAL DE L'ESPACE-->
 				<h3><?= Txt::trad("INSTALL_adminAgora") ?></h3>
 				<div class="objField"><div><?= Txt::trad("name") ?></div><div><input type="text" name="adminName"></div></div>
 				<div class="objField"><div><?= Txt::trad("firstName") ?></div><div><input type="text" name="adminFirstName"></div></div>
 				<div class="objField"><div><?= Txt::trad("mailLlogin") ?></div><div><input type="text" name="adminMailLogin"></div></div>
-				<div class="objField"><div><?= Txt::trad("password") ?></div><div><input type="password" name="adminPassword"></div></div>
-				<div class="objField"><div><?= Txt::trad("passwordVerif") ?></div><div><input type="password" name="adminPasswordVerif"></div></div>
+				<div class="objField"><div><?= Txt::trad("password") ?></div><div><?= Txt::inputPassword("adminPassword",true) ?></div></div>
 				<!--PARAMETRAGE GENERAL DE L'ESPACE-->
 				<h3><?= Txt::trad("AGORA_generalSettings") ?></h3>
 				<div class="objField">

@@ -115,8 +115,7 @@ class Req
 	 ********************************************************************************************************/
 	private static function paramFilter($key, $val)
 	{
-		$val=(string)$val;																									//Cast la valeur d'entrée
-		if(!empty($val)){																									//Vérif que la valeur existe (cf 'strip_tags()' error)
+		if(!empty($val) && is_string($val)){																				//Vérif la valeur
 			if(preg_match("/^(description|editorDraft|message)$/i",$key)){													//Filtre le contenu de l'editeur TinyMce ou un Post du messenger
 				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');												//Charge la librairie HTMLPurifier	
 				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs "data-" comme "data-fancybox" sont supprimés)
@@ -131,14 +130,14 @@ class Req
 				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise la balise <source> et ses attributs (cf balise <video>)
 				$purifier=new HTMLPurifier($config);																		//Crée un $purifier
 				$val=$purifier->purify($val);																				//Filtre le code html
-    			$caracAccent=['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç',"\xc2\xa0"];					//Caractères accentués (HTMLPurifier remplace  <p>&nbsp;</p>  par  <p>\xc2\xa0</p>)
+    			$caracAccent=['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç',"\xc2\xa0"];					//Caractères accentués (HTMLPurifier remplace &nbsp; par \xc2\xa0)
     			$caracHtml  =['&rsquo;','&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&nbsp;'];//Equivalents HTML
 				$val=str_replace($caracAccent, $caracHtml, $val);															//Convertit les caractère accentués en entités HTML															
 			}
 			else{																											//Filtre principal
-				$val=strip_tags($val,'<br>');																				//Supprime les tags html (sauf <br> pour les notify)
-				if($key=="objUrl")	{$val=filter_var($val, FILTER_SANITIZE_URL);}											//Filtre une URL
-				else				{$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);}					//Convertit  & " < >  en entité HTML ('false' pour ne pas convertir les entités existantes)
+				$val=strip_tags($val,'<br>');																				//Supprime les tags html (<br> pour les notify)
+				if($key=="objUrl")	{$val=filter_var($val, FILTER_SANITIZE_URL);}											//Filtre une "objUrl"
+				else				{$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);}					//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
 				$val=str_replace('&lt;br&gt;','<br>',$val);																	//Retranscrit les <br>
 			}
 		}

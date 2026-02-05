@@ -97,7 +97,7 @@ function timeSlotBusy()
 }
 
 ////	Controle spécifique (cf. "VueObjMenuEdit.php")
-function objectFormControl()
+function mainFormControl()
 {
 	return new Promise((resolve)=>{
 		if($(".vCalInput:checked").isEmpty())															{notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");  resolve(false);}	//Aucune affectation aux agendas

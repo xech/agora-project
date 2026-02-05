@@ -8,8 +8,8 @@
 ready(function(){
 	////	Init le tableau
 	var logTable=$("#logTable").DataTable({
-        "iDisplayLength": 50,									//Nb de lignes par page par défaut
-        "aLengthMenu": [50,100,300],							//Menu du nb de lignes par page
+        "iDisplayLength": 100,									//Nb de lignes par page par défaut
+        "aLengthMenu": [100,250,500],							//Menu du nb de lignes par page
         "aaSorting": [[0,"desc"]],								//Tri par défaut sur la 1ere colonne
         "oLanguage":{											//Libellés du menu :
             "sLengthMenu": "_MENU_ logs / page",				//<select> du nb de lignes par page (header)
@@ -32,8 +32,8 @@ ready(function(){
 #pageContent						{width:1250px!important;}							/*width par défaut du tableau (verif en responsive)*/
 #logTitle, #logsDownload			{padding:10px; text-align:center;}					/*entête du tableau et Download de l'historique*/
 #logTable thead .dt-column-title	{text-align:left!important;}						/*label des colonnes*/
-#logTable td, #logTable th			{text-align:left; padding:4px; vertical-align:top;}	/*cellules du tableau*/
-table.dataTable td:first-child		{width:100px!important;}							/*width de la 1ere colonne*/
+#logTable td, #logTable th			{text-align:left; padding:5px; vertical-align:top;}	/*cellules du tableau*/
+table.dataTable td:first-child		{width:130px!important;}							/*width de la 1ere colonne*/
 tfoot select, tfoot input			{width:100%!important; font-size:0.95rem;}			/*filtres select/input du footer*/	
 tfoot select option[value=""]		{background-color:#bbb;}							/*Option par défaut : vide*/
 </style>
@@ -66,11 +66,11 @@ tfoot select option[value=""]		{background-color:#bbb;}							/*Option par défa
 			<tfoot>
 				<tr>
 					<th><input type="text" <?= Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_date")) ?> placeholder="<?= Txt::trad("LOG_date") ?>"></th>
-					<th><?= CtrlLog::selectFilter($logList,"userName") ?></th>
-					<th><?= CtrlLog::selectFilter($logList,"moduleName") ?></th>
-					<th><?= CtrlLog::selectFilter($logList,"objectType") ?></th>
 					<th><?= CtrlLog::selectFilter($logList,"action") ?></th>
+					<th><?= CtrlLog::selectFilter($logList,"userName") ?></th>
+					<th><?= CtrlLog::selectFilter($logList,"objectType") ?></th>
 					<th><input type="text" <?= Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_comment")) ?> placeholder="<?= Txt::trad("LOG_comment") ?>"></th>
+					<th><?= CtrlLog::selectFilter($logList,"moduleName") ?></th>
 				</tr>
 			</tfoot>
 		</table>

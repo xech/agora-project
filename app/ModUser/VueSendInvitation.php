@@ -7,7 +7,6 @@ ready(function(){
 	////	Import des contacts via l'API Google People
 	gapi.load("client", function(){
 		gapi.client.init({
-			apiKey:"<?= Ctrl::$agora->gApiKey ?>",																//Clé de l'Api Google People
 			clientId:"<?= Ctrl::$agora->gIdentityClientId ?>",													//Client ID de Google OAuth
 			scope:"https://www.googleapis.com/auth/contacts.readonly",											//Type de données à récupérer
 			discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/people/v1/rest"]						//Spécification obligatoires

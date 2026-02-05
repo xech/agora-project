@@ -58,9 +58,9 @@ class Trad extends Txt
 			"objNew"=>"Nouvel élément",
 			"objNewTooltip"=>"Créé aujourd'hui ou depuis ma précédente connexion",
 			"personalAccess"=>"Accès personnel",
-			"copyUrl"=>"Copier l'URL de partage",
-			"copyUrlTooltip"=>"Permet d'accéder à l'élément depuis un email, un blog, etc.",
-			"copyUrlNotif"=>"L'URL a bien été copiée",
+			"copyUrl"=>"Copier le lien de partage",
+			"copyUrlTooltip"=>"Copier le lien (URL) pour partager l'élément par email, messagerie, etc.",
+			"copyUrlNotif"=>"Le lien a bien été copiée",
 
 			////	Confirm et Suppression
 			"confirm"=>"Confirmer",
@@ -89,7 +89,7 @@ class Trad extends Txt
 			////	Connexion
 			"specifyLoginPassword"=>"Merci de spécifier un identifiant et un mot de passe",
 			"specifyLogin"=>"Merci de spécifier un email/identifiant (sans espaces)",
-			"mailLloginNotif"=>"Il est conseillé d'utiliser un email comme identifiant de connexion",
+			"mailLloginNotif"=>"Utilisez de préférence un email comme identifiant de connexion (plus sécurisé)",
 			"mailLlogin"=>"Email / Identifiant de connexion",
 			"connect"=>"Connexion",
 			"connectAuto"=>"Rester connecté",
@@ -102,23 +102,21 @@ class Trad extends Txt
 			"disconnectSpace"=>"Me déconnecter de l'espace",
 			"disconnectSpaceConfirm"=>"Me déconnecter de l'espace ?",
 
-			////	Password : connexion d'user / edition d'user / reset du password
+			////	Password : connexion / modification / reset
 			"password"=>"Mot de passe",
-			"passwordModify"=>"Modifier le mot de passe",
-			"passwordToModify"=>"Mot de passe temporaire (à modifier en page de connexion)",
-			"passwordToModify2"=>"Mot de passe (à modifier si besoin sur votre profil utilisateur)",
-			"passwordVerif"=>"Confirmer le mot de passe",
-			"passwordTooltip"=>"Remplir les champs uniquement si vous souhaitez changer de mot de passe",
-			"passwordInvalid"=>"Le mot de passe doit comporter 6 caractères minimum, avec au moins une majuscule, une minuscule et un chiffre",
-			"passwordVerifError"=>"Votre confirmation de mot de passe n'est pas valide",
-			"specifyPassword"=>"Merci de spécifier un mot de passe",
+			"passwordDisplay"=>"Afficher / masquer le mot de passe",
+			"passwordOptional"=>"Remplir ce champ uniquement si vous souhaitez modifier votre mot de passe",
+			"passwordInvalid"=>"Le mot de passe doit avoir au moins 8 caractères alphanumeriques <br> de préférence avec chiffres, lettres et caractères spéciaux",
+			"passwordModif"=>"Modifier le mot de passe",
+			"passwordTmp"=>"Mot de passe temporaire (à modifier en page de connexion)",
+			"passwordByDefault"=>"Mot de passe par défaut (à modifier si besoin sur votre profil)",
 			"resetPassword"=>"Mot de passe oublié ?",
 			"resetPassword2"=>"Indiquez votre adresse email pour réinitialiser votre mot de passe de connection",
-			"resetPasswordNotif"=>"Un email vient de vous être envoyé pour réinitialiser votre mot de passe. Si vous ne l'avez pas reçu, vérifiez que votre email a correctement été saisi.",
+			"resetPasswordNotif"=>"L'email vient d'être envoyé pour réinitialiser votre mot de passe.<br>Si vous ne l'avez pas reçu, vérifiez la saisie de votre email",
 			"resetPasswordMailTitle"=>"Réinitialiser votre mot de passe",
 			"resetPasswordMailPassword"=>"Pour réinitialiser votre mot de passe et vous reconnecter",
 			"resetPasswordMailPassword2"=>"merci de cliquer ici",
-			"resetPasswordMailLoginRemind"=>"Rappel de votre identifiant de connexion",
+			"resetPasswordMailLoginRemind"=>"Rappel de votre identifiant de connexion / login",
 			"resetPasswordIdExpired"=>"Le lien pour régénérer le mot de passe a expiré. Merci de recommencer la procédure",
 
 			////	Type d'affichage
@@ -224,39 +222,65 @@ class Trad extends Txt
 			"objHistory"=>"Historique de l'élément",
 			"all"=>"tous",
 			"deletedUser"=>"Ancien compte utilisateur",
-			"folderContent"=>"contenu",
-			"accessRead"=>"Lecture",
-			"accessReadTooltip"=>"Accès en lecture",
-			"accessWriteLimit"=>"Ecriture limitée",
-			"accessWriteLimitTooltip"=>"Accès en écriture limité : chaque utilisateur ne peut modifier ou supprimer que les -OBJCONTENT-s qu'il a créé dans ce/cet --OBJLABEL--.",//"Ce dossier"/"cet agenda"
-			"accessWrite"=>"Ecriture",
-			"accessWriteTooltip"=>"Accès en écriture",
-			"accessWriteTooltipContainer"=>"Accès en écriture : possibilité de modifier ou supprimer tous les -OBJCONTENT-s dans ce/cet --OBJLABEL--",//"Ce dossier"/"cet agenda"
-			"accessAutorPrivilege"=>"Seul l'auteur et les administrateurs peuvent modifier ou supprimer ce/cet --OBJLABEL--",//"Ce dossier"/"cet agenda"
-			"accessRightsInherited"=>"Droits d'accès hérités du --OBJLABEL-- parent",
 			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",
 			"categoryNotifChangeOrder"=>"L'ordre d'affichage a bien été modifié",
+			"folderContent"=>"Contenu",
 
-			////	Libellé des objets (cf. "MdlObject::objectType")
-			"OBJECTcontainer"=>"conteneur",
-			"OBJECTelement"=>"élément",
-			"OBJECTfolder"=>"dossier",
-			"OBJECTdashboardNews"=>"actualité",
-			"OBJECTdashboardPoll"=>"sondage",
-			"OBJECTfile"=>"fichier",
-			"OBJECTfileFolder"=>"dossier de fichiers",
-			"OBJECTcalendar"=>"agenda",
-			"OBJECTcalendarEvent"=>"événement",
-			"OBJECTforumSubject"=>"sujet du forum",
-			"OBJECTforumMessage"=>"message du forum",
-			"OBJECTcontact"=>"contact",
-			"OBJECTcontactFolder"=>"dossier de contacts",
-			"OBJECTlink"=>"favori",
-			"OBJECTlinkFolder"=>"dossier de favoris",
-			"OBJECTtask"=>"tâche",
-			"OBJECTtaskFolder"=>"dossier de tâches",
-			"OBJECTuser"=>"utilisateur",
-			"OBJECTmail"=>"email",
+			////	Droit d'accès d'un Objet
+			"accessRead"=>"Lecture",
+			"accessReadTooltip"=>"Accès --OBJ_LABEL_TO-- en lecture seule",
+			"accessWriteLimit"=>"Ecriture limitée",
+			"accessWriteLimitTooltip"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture limité :<br> Droit d'ajouter, modifier et supprimer uniquement --OBJ_LABEL_CONTENT-- que l'on a créé",
+			"accessWrite"=>"Ecriture",
+			"accessWriteTooltip" =>"Accès --OBJ_LABEL_TO-- en lecture et écriture",
+			"accessWriteTooltipContainer"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture :<br> Droit d'ajouter, modifier et supprimer tous --OBJ_LABEL_CONTENT--",
+			"accessFullTooltip"=>"Administrateur et Auteur : <br> Edition et accès complet --OBJ_LABEL_TO--",
+			"accessAllUsers"=>"Tout les utilisateurs",
+			"accessAllUsersTooltip"=>"Droit d'accès pour les utilisateurs de l'espace <i>--SPACENAME--</i>",
+			"accessAllUsersGuests"=>"Tout les utilisateurs et invités",
+			"accessAllUsersGuestsTooltip"=>"Droit d'accès pour les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Limité en lecture seule pour les invités (sans compte utilisateur)",
+
+			////	Libellé des objets (cf. "::objectType")
+			"OBJ_space"=>"Espace",								//ModSpace
+			"OBJ_space_TO"=>"à l'espace",
+			"OBJ_user"=>"utilisateur",							//ModUser
+			"OBJ_user_TO"=>"à l'utilisateur",
+			"OBJ_mail"=>"email",								//ModMail
+			"OBJ_mail_TO"=>"à l'email",
+			"OBJ_dashboardNews"=>"actualité",					//ModDashboard
+			"OBJ_dashboardNews_TO"=>"à l'actualité",
+			"OBJ_dashboardPoll"=>"sondage",
+			"OBJ_dashboardPoll_TO"=>"au sondage",
+			"OBJ_fileFolder"=>"dossier de fichiers",			//ModFile
+			"OBJ_fileFolder_TO"=>"au dossier de fichiers",
+			"OBJ_file"=>"fichier",
+			"OBJ_file_TO"=>"au fichier",
+			"OBJ_file_CONTENT"=>"les fichiers",
+			"OBJ_contactFolder"=>"dossier de contacts",			//ModContact
+			"OBJ_contactFolder_TO"=>"au dossier de contacts",
+			"OBJ_contact"=>"contact",
+			"OBJ_contact_TO"=>"au contact",
+			"OBJ_contact_CONTENT"=>"les contacts",
+			"OBJ_linkFolder"=>"dossier de favoris",				//ModLink
+			"OBJ_linkFolder_TO"=>"au dossier de favoris",
+			"OBJ_link"=>"favori",
+			"OBJ_link_TO"=>"au favori",
+			"OBJ_link_CONTENT"=>"les favoris",
+			"OBJ_taskFolder"=>"dossier de tâches",				//ModTask
+			"OBJ_taskFolder_TO"=>"au dossier de tâches",
+			"OBJ_task"=>"tâche",
+			"OBJ_task_TO"=>"à la tâche",
+			"OBJ_task_CONTENT"=>"les tâches",
+			"OBJ_calendar"=>"agenda",							//ModCalendar
+			"OBJ_calendar_TO"=>"à l'agenda",
+			"OBJ_calendarEvent"=>"événement",
+			"OBJ_calendarEvent_TO"=>"à l'événement",
+			"OBJ_calendarEvent_CONTENT"=>"les événements",
+			"OBJ_forumSubject"=>"sujet du forum",				//ModForum
+			"OBJ_forumSubject_TO"=>"au sujet du forum",
+			"OBJ_forumMessage"=>"message du forum",
+			"OBJ_forumMessage_TO"=>"au message du sujet",
+			"OBJ_forumMessage_CONTENT"=>"les messages du sujet",
 
 			////	Envoi d'un email
 			"MAIL_sendOk"=>"L'email a bien été envoyé",
@@ -266,11 +290,11 @@ class Trad extends Txt
 			"MAIL_hideRecipients"=>"Masquer les destinataires",
 			"MAIL_hideRecipientsTooltip"=>"Mettre tous les destinataires en copie caché",
 			"MAIL_addReplyTo"=>"Mettre mon email en réponse",
-			"MAIL_addReplyToTooltip"=>"Ajouter mon email dans le champ ''Répondre à'' <br><span style='font-size:1.5em'>&#9888;</span> Attention : avec cette option les emails peuvent arriver en spam sur certaines messageries",
+			"MAIL_addReplyToTooltip"=>"Ajouter mon email dans le champ ''Répondre à'' <hr> Attention : avec cette option les emails peuvent arriver en spam sur certaines messageries",
 			"MAIL_noFooter"=>"Ne pas signer le message",
 			"MAIL_noFooterTooltip"=>"Ne pas signer la fin du message : nom de l'expéditeur et lien vers l'espace",
 			"MAIL_receptionNotif"=>"Accusé de reception",
-			"MAIL_receptionNotifTooltip"=>"Demander un accusé de réception à l'ouverture de l'email <br><span style='font-size:1.5em'>&#9888;</span> Attention : de nombreuses messageries ne prennent pas en charge cette fonctionnalité",
+			"MAIL_receptionNotifTooltip"=>"Demander un accusé de réception à l'ouverture de l'email <hr> Attention : de nombreuses messageries ne prennent pas en charge cette fonctionnalité",
 			"MAIL_specificMails"=>"Ajouter des adresses email",
 			"MAIL_specificMailsTooltip"=>"Ajouter des adresses email non répertoriées sur l'espace",
 			"MAIL_maxFileSizeConfirm"=>"L'ensemble des fichiers joints dépasse la limite de réception de certaines boites mails (--MAXFILESSIZE--)<br><br> Envoyer tout de même ?",
@@ -279,8 +303,8 @@ class Trad extends Txt
 			"MAIL_sendBy"=>"Envoyé par",
 			"MAIL_sendNotif"=>"L'email de notification a bien été envoyé",
 			"MAIL_fromTheSpace"=>"depuis l'espace",
-			"MAIL_elemCreatedBy"=>"--OBJLABEL-- créé(e) par",
-			"MAIL_elemModifiedBy"=>"--OBJLABEL-- modifié(e) par",
+			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- créé par",
+			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modifié par",
 			"MAIL_elemAccessLink"=>"Voir sur mon espace",
 			
 			////	Dossier & fichier
@@ -367,7 +391,7 @@ class Trad extends Txt
 			"exportFormat"=>"au format",
 			"specifyFile"=>"Merci de spécifier un fichier",
 			"fileExtension"=>"Le type de fichier n'est pas valide. Il doit être de type",
-			"importContactRootFolder"=>"Les contacts importés dans le dossier principal sont affectés par défaut à &quot;tous les utilisateurs de l'espace&quot;",
+			"importContactRootFolder"=>"Les contacts importés dans le dossier principal sont affectés par défaut à <i>Tous les utilisateurs de l'espace</i>",
 			"importInfo"=>"Sélectionnez les champs Agora à cibler grâce aux listes déroulantes de chaque colonne",
 			"importNotif1"=>"Merci de sélectionner la colonne 'nom' dans les listes déroulante",
 			"importNotif2"=>"Merci de sélectionner au moins un élément à importer",
@@ -434,21 +458,16 @@ class Trad extends Txt
 			"EDIT_accessRight"=>"Droits d'accès",
 			"EDIT_accessRightContent"=>"Droits d'accès au contenu",
 			"EDIT_spaceNoModule"=>"Le module courant n'a pas encore été ajouté à cet espace",
-			"EDIT_allUsers"=>"Tout les utilisateurs",
-			"EDIT_allUsersTooltip"=>"Droit d'accès pour tous les utilisateurs de l'espace <i>--SPACENAME--</i>",
-			"EDIT_allUsersAndGuests"=>"Tout les utilisateurs et invités",
-			"EDIT_allUsersAndGuestsTooltip"=>"Droit d'accès pour tous les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Les invités n'ont qu'un accès en lecture à l'espace (connexion sans compte utilisateur)",
-			"EDIT_adminSpace"=>"Administrateur : accès total à tous les éléments de l'espace",
 			"EDIT_showAllUsers"=>"Afficher tous les utilisateurs",
-			"EDIT_showAllUsersAndSpaces"=>"Afficher tous les utilisateurs et espaces",
+			"EDIT_showAllSpaces"=>"Afficher tous les espaces",
 			"EDIT_notifMail"=>"Notifier par email",
 			"EDIT_notifMail2"=>"Envoyer une notification par email",
-			"EDIT_notifMailTooltip"=>"Envoyer une notification par email aux personnes affectées à l'élément (--OBJLABEL--)",
+			"EDIT_notifMailTooltip"=>"Envoyer une notification par email aux personnes affectées --OBJ_LABEL_TO--",
 			"EDIT_notifMailTooltipCal"=>"<hr>Si vous affectez l'événement à des agendas personnels, alors la notification ne sera envoyée qu'aux propriétaires de ces agendas (accès en écriture).",
 			"EDIT_notifMailAddFiles"=>"Joindre le/les fichiers à la notification",
 			"EDIT_notifMailSelect"=>"Choisir les destinataires des notifications",
-			"EDIT_accessRightSubFolders"=>"Donner les mêmes droits d'accès aux sous-dossiers",
-			"EDIT_accessRightSubFoldersTooltip"=>"Etendre les droits d'accès aux sous-dossiers (uniquement ceux accessibles en écriture)",
+			"EDIT_extendSubfolders"=>"Donner les mêmes droits d'accès aux sous-dossiers",
+			"EDIT_extendSubfoldersTooltip"=>"Etendre les droits d'accès aux sous-dossiers (uniquement ceux accessibles en écriture)",
 			"EDIT_shortcut"=>"Raccourci",
 			"EDIT_shortcutInfo"=>"Afficher un raccourci dans la barre de menu",
 			"EDIT_attachedFile"=>"Fichiers joints",
@@ -476,15 +495,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Votre espace a été correctement installé",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espace de partage et de travail collaboratif",
-			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre nouvel espace de partage !</h3>
-											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png"> Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
-											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Créez des événements sur votre agenda partagé ou votre agenda personnel</a></h4>
-											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilisez le fil d"actualité pour diffuser des informations sur votre activité</a></h4>
-											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png"> Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
-											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png"> Gérez vos tâches et projets pour organiser votre activité</a></h4>
-											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Envoyez des newsletters pour diffuser des mails d\'information sur votre activité.</a></h4>
-											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Consulter le guide d\'utilisation pour découvrir votre espace</a></h4>
-											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png"> Envoyer des invitations par email pour rejoindre l\'espace</a></h4>',
+			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre nouvel espace de partage et de travail collaboratif !</h3>
+											<h4><img src="app/img/file/iconSmall.png"> <a href="?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
+											<h4><img src="app/img/calendar/iconSmall.png"> <a href="?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
+											<h4><img src="app/img/dashboard/iconSmall.png"> <a href="?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
+											<h4><img src="app/img/task/iconSmall.png"> <a href="?ctrl=task">Gérez vos tâches et projets pour organiser votre activité</a></h4>
+											<h4><img src="app/img/messengerSmall.png"> <a href="?ctrl=forum">Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
+											<h4><img src="app/img/mail/iconSmall.png"> <a href="?ctrl=mail">Envoyez des newsletters pour diffuser des mails d\'information.</a></h4>
+											<h4><img src="app/img/documentation.png"> <a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref">Consultez le guide d\'utilisation pour découvrir le fonctionnement votre espace</a></h4>
+											<h4><img src="app/img/mailBig.png"> <a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Que pensez-vous du fil d'actualité ?",
 			"INSTALL_dataDashboardPollA"=>"Très intéressant !",
 			"INSTALL_dataDashboardPollB"=>"Intéressant",
@@ -549,7 +568,7 @@ class Trad extends Txt
 			"AGORA_mapToolTooltip"=>"Outil de cartographie pour voir les utilisateurs et contacts sur une carte",
 			"AGORA_gApiKey"=>"Google API Key pour Maps",
 			"AGORA_gApiKeyTooltip"=>"Parametrage obligatoire pour Google Maps :<br> https://developers.google.com/maps/documentation/javascript/get-api-key",
-			"AGORA_gOAuth"=>"Connexion via un compte Google Gmail",
+			"AGORA_gOAuth"=>"Connexion avec mon adresse Gmail",
 			"AGORA_gOAuthTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
 			"AGORA_gOAuthClientId"=>"Client ID pour la connexion via Google",
 			"AGORA_gOAuthClientIdTooltip"=>"Parametrage obligatoire pour la connexion via un compte Google :<br> https://developers.google.com/identity/protocols/oauth2",
@@ -602,6 +621,7 @@ class Trad extends Txt
 
 			////	MOD : SPACE
 			////
+			"SPACE_MODULE_NAME"=>"Espaces",
 			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (alias ''sous-espace'')",
 			"SPACE_manageAllSpaces"=>"Gérer tous les espaces de travail",
 			"SPACE_config"=>"Gérer l'espace de travail",
@@ -611,19 +631,20 @@ class Trad extends Txt
 			"SPACE_modules"=>"Modules",
 			"SPACE_addSpace"=>"Nouvel espace",
 			//Edit
-			"SPACE_userAdminAccess"=>"Utilisateurs et Administrateurs de l'espace",
+			"SPACE_userAdminAccess"=>"Utilisateurs et administrateurs de l'espace",
 			"SPACE_selectModule"=>"Vous devez sélectionner au moins un module",
 			"SPACE_spaceModules"=>"Modules de l'espace",
-			"SPACE_publicSpace"=>"Espace public : accès invité",
-			"SPACE_publicSpaceTooltip"=>"Un espace public est ouvert aux personnes n'ayant pas de compte utilisateur (invités). Ils pourront alors accéder à l'espace depuis la page d'accueil. Vous pouvez spécifier un mot de passe pour protéger l'accès à cet espace public. Les modules 'Email' et 'Utilisateurs' ne sont pas disponibles pour les invités.",
+			"SPACE_publicSpace"=>"Espace public (accès invité)",
+			"SPACE_publicSpaceTooltip"=>"Un espace public est ouvert aux personnes n'ayant pas de compte utilisateur (invités) :<br> Les invités accèdent à un espace via la page de connexion, si besoin avec un mot de passe.<hr> Les modules <i>Email</i> et <i>Utilisateurs</i> ne sont pas accessibles aux invités.",
 			"SPACE_publicSpaceNotif"=>"Si votre espace public contient des données personnelles (téléphone, adresse, etc) pensez à spécifier un mot de passe pour être conforme à la RGPD : Règlement Général sur la Protection des Données",
 			"SPACE_usersInvitation"=>"Les utilisateurs peuvent envoyer des invitations par email",
 			"SPACE_usersInvitationTooltip"=>"Tous les utilisateurs peuvent envoyer des invitations par email pour rejoindre l'espace",
 			"SPACE_allUsers"=>"Tous les utilisateurs",
+			"SPACE_allUsersTooltip"=>"Affecter tous les utilisateurs à l'espace",
 			"SPACE_user"=>"Utilisateur",
-			"SPACE_userTooltip"=>"Accès normal à l'espace",
+			"SPACE_userTooltip"=>"Accès à l'espace en tant que simple utilisateur",
 			"SPACE_admin"=>"Administrateur",
-			"SPACE_adminTooltip"=>"L'administrateur peut éditer/supprimer tous les élements présents sur l'espace.<br>Il peut également paramétrer l'espace, créer de nouveaux utilisateurs ou groupes d'utilisateurs, envoyer des invitations par mail, etc.",
+			"SPACE_adminTooltip"=>"Accès à l'espace en tant qu'administrateur, pour pouvoir notamment :<br>- Paramétrer l'espace.<br>- Créer de nouveaux utilisateurs.<br>- Envoyer des invitations par mail.<br>- Editer les groupes d'utilisateurs.<br>- Editer et supprimer tous les élements présents sur l'espace.",
 
 			////	MOD : USER
 			////
@@ -638,8 +659,6 @@ class Trad extends Txt
 			"USER_deleteFromCurSpaceConfirm"=>"Supprimer/désaffecter l'utilisateur de l'espace courant ?",
 			"USER_user"=>"Utilisateur",
 			"USER_users"=>"utilisateurs",
-			"USER_addExistUser"=>"Ajouter un utilisateur existant",
-			"USER_addExistUserTitle"=>"Ajouter à l'espace courant un utilisateur déjà existant (affecter à l'espace courant)",
 			"USER_addUser"=>"Nouvel utilisateur",
 			"USER_addUserSite"=>"Créer un utilisateur : affecté par défaut à aucun espace !",
 			"USER_addUserSpace"=>"Créer un utilisateur pour l'espace courant",
@@ -677,14 +696,11 @@ class Trad extends Txt
 			"USER_groupEditInfo"=>"Liste des groupes que je peux éditer : auteur du groupe ou administrateur de l'espace",
 			"USER_addGroup"=>"Nouveau groupe",
 			"USER_userGroups"=>"Groupes de l'utilisateur",
-			// Utilisateur_affecter
-			"USER_searchPrecision"=>"Merci de préciser un nom, un prénom ou une adresse email",
+			// Recherche/Affectation d'users
+			"USER_allUsersOnSpace"=>"Tous les utilisateurs sont affectés à l'espace",
 			"USER_userAffectConfirm"=>"Confirmer les affectations ?",
-			"USER_userSearch"=>"Rechercher des utilisateurs pour les ajouter à l'espace",
-			"USER_allUsersOnSpace"=>"Tous les utilisateurs sont affectés à l'espace courant",
-			"USER_usersSpaceAffectation"=>"Affecter des utilisateurs à l'espace :",
-			"USER_usersSearchNoResult"=>"Aucun utilisateur pour cette recherche",
-			"USER_usersSearchBack"=>"Retour",
+			"USER_addExistUser"=>"Ajouter des utilisateurs existants",
+			"USER_addExistUserTitle"=>"Affecter des utilisateurs existants à l'espace",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Langue",
 			"USER_persoCalendarDisabled"=>"Agenda personnel désactivé",
@@ -814,12 +830,12 @@ class Trad extends Txt
 			"CALENDAR_addSharedCalendar"=>"Nouvel agenda partagé",
 			"CALENDAR_addSharedCalendarTooltip"=>"Créer un agenda partagé : pour les réservation d'une salle, véhicule, vidéoprojecteur, etc.",
 			"CALENDAR_exportIcal"=>"Exporter les événements au format iCal",
-			"CALENDAR_icalUrl"=>"Copier l'URL pour voir/synchroniser l'agenda via une appli externe",
-			"CALENDAR_icalUrlCopy"=>"Permet un accès en lecture à l'agenda depuis une application externe : Outlook, Thunderbird, Google Calendar, etc.",
+			"CALENDAR_icalUrl"=>"Copier le lien pour consulter l'agenda via une appli externe",
+			"CALENDAR_icalUrlCopy"=>"Copier le lien (URL) pour pouvoir consulter l'agenda depuis une application externe.<br> Exemple: Outlook, Thunderbird, Google Calendar, etc.",
 			"CALENDAR_importIcal"=>"Importer des événements au format iCal",
-			"CALENDAR_ignoreOldEvt"=>"Ne pas importer les événements de plus d'un an",
-			"CALENDAR_importIcalPresent"=>"Déjà présent ?",
-			"CALENDAR_importIcalPresentInfo"=>"Evenement déjà présent dans l'agenda ?",
+			"CALENDAR_importIgnoreOldEvt"=>"Ne pas importer les événements de plus d'un an",
+			"CALENDAR_importEvtPresent"=>"Déjà présent",
+			"CALENDAR_importEvtPresentInfo"=>"Evenement déjà présent dans l'agenda ?",
 			"CALENDAR_display_1Day"=>"1 jour",
 			"CALENDAR_display_3Days"=>"3 jours",
 			"CALENDAR_display_7Days"=>"7 jours",
@@ -872,13 +888,13 @@ class Trad extends Txt
 			"CALENDAR_addEvt"=>"Nouvel événement",
 			"CALENDAR_addEvtTooltip"=>"Ajouter un événement à l'agenda",
 			"CALENDAR_addEvtTooltip2"=>"Ajouter l'événement à l'agenda",
-			"CALENDAR_proposeEvtTooltip"=>"Proposer l'événement pour cet agenda (accessible en lecture seule) :<br>l'événement devra être validé par le propriétaire de l'agenda",
-			"CALENDAR_proposeOptionTooltip"=>"Option pour proposer l'événement pour cet agenda :<br>l'événement devra être validé par le propriétaire de l'agenda",
+			"CALENDAR_proposeEvtTooltip"=>"Proposer l'événement pour cet agenda (accessible en lecture seule) :<br>l'événement sera ensuite validé/invalidé par le propriétaire de l'agenda",
+			"CALENDAR_proposeOptionTooltip"=>"Option pour proposer l'événement pour cet agenda :<br>l'événement devra être validé/invalidé par le propriétaire de l'agenda",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_busyTimeSlot"=>"Créneau déjà occupé sur l'agenda :",
 			"CALENDAR_timeSlot"=>"Plage horaire pour l'affichage ''semaine''",
 			"CALENDAR_propositionNotif"=>"Me notifier par email à chaque propositions d'événement",
-			"CALENDAR_propositionNotifTooltip"=>"Chaque proposition d'événement sera validé ou invalidé par l'administrateur de l'agenda.",
+			"CALENDAR_propositionNotifTooltip"=>"Chaque proposition d'événement devra être validé/invalidé par le propriétaire de l'agenda (auteur ou administrateur)",
 			"CALENDAR_propositionGuest"=>"Les invités peuvent proposer des événements",
 			"CALENDAR_propositionGuestTooltip"=>"Pensez à sélectionnez 'tous les utilisateur et invités' dans les droits d'accès ci-dessous.",
 			"CALENDAR_propositionEmailSubject"=>"Nouvel événement proposé par",

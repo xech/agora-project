@@ -8,9 +8,9 @@
 
 
 ////	URLS
-$OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "https://".$_SERVER['SERVER_NAME']."/omnispace"  :  "https://www.omnispace.fr";//IP de dev (Flutter and Co) || IP de Prod
+$OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "https://".$_SERVER['SERVER_NAME']  :  "https://www.omnispace.fr";//"https": cf. mobileApp
 define("OMNISPACE_URL_PUBLIC", $OMNISPACE_URL_PUBLIC);
-define("OMNISPACE_URL_LABEL","www.omnispace.fr");
+define("OMNISPACE_URL_LABEL","Omnispace.fr");
 
 ////    PATH DES "DATAS" & PATHS SPÉCIFIQUES
 if(is_file("Host.php"))	{require_once "Host.php";  Host::initHost();}

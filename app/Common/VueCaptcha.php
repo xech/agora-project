@@ -32,5 +32,5 @@ ready(function(){
 	<img src="?ctrl=misc&action=CaptchaImg" id="captchaImg">
 	<img src="app/img/arrowRightSmall.png" id="captchaArrow">
 	<input type="text" name="captcha" id="captchaText" placeholder="<?= Txt::trad("captcha") ?>" <?= Txt::tooltip("captchaTooltip") ?> required>
-	<img src="app/img/reload.png" id="captchaReload" title="Change captcha" onclick="$('#captchaImg').attr('src','?ctrl=misc&action=CaptchaImg&rand='+Math.random())">
+	<img src="app/img/reload.png" title="Change captcha" onclick="$('#captchaImg').attr('src','?ctrl=misc&action=CaptchaImg&rand='+Math.random())">
 </div>

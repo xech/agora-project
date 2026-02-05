@@ -30,7 +30,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	if(!empty($logUrl))  {echo '<div class="menuLine" onclick="lightboxOpen(\''.$logUrl.'\')"><div class="menuIcon"><img src="app/img/log.png"></div><div>'.Txt::trad("objHistory").'</div></div>';}
 
 	////	COPIER L'URL DE PARTAGE
-	if(!empty($getUrlExternal))  {echo '<div class="menuLine" onclick="navigator.clipboard.writeText(\''.$getUrlExternal.'\');notify(labeCopyUrlNotif);" '.Txt::tooltip("copyUrlTooltip").'><div class="menuIcon"><img src="app/img/link.png"></div><div>'.Txt::trad("copyUrl").'</div></div>';}
+	if(!empty($getUrlExternal))  {echo '<div class="menuLine" onclick="navigator.clipboard.writeText(\''.$getUrlExternal.'\');notify(labeCopyUrlNotif);" '.Txt::tooltip("copyUrlTooltip").'><div class="menuIcon"><img src="app/img/share.png"></div><div>'.Txt::trad("copyUrl").'</div></div>';}
 
 	////	OPTIONS SPECIFIQUES (surcharge "contextMenu()") : METTRE JUSTE AVANT L'OPTION DE SUPPRESSION
 	if(!empty($options["specificOptions"])){
@@ -45,7 +45,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	////	SUPPRIMER L'OBJET (dernière option)
 	if(!empty($deleteLabel))  {echo '<div class="menuLine" onclick="'.$confirmDeleteJs.'"><div class="menuIcon"><img src="app/img/delete.png"></div><div>'.$deleteLabel.'</div></div>';}
 
-	////	LABELS SPECIFIQUES (Ex: "Agenda affecté à Bob, Will")
+	////	LABELS SPECIFIQUES (ex: "Agenda affecté à Bob, Will")
 	if(!empty($options["specificLabels"])){
 		foreach($options["specificLabels"] as $tmpLabel){
 			$tooltipTmp =(!empty($tmpLabel["tooltip"]))  ?  Txt::tooltip($tmpLabel["tooltip"])  :  null;
@@ -73,7 +73,7 @@ echo '<div id="'.$objMenuId.'" class="menuContext">';
 	if(!empty($affectLabels)){
 		echo '<hr>';
 		if(!empty($affectLabels["2"]))		{echo '<div class="menuLine sAccessWrite" '.Txt::tooltip($affectTooltips["2"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessWrite").'</div><div>'.$affectLabels["2"].'</div></div>';}
-		if(!empty($affectLabels["1.5"]))	{echo '<div class="menuLine sAccessWriteLimit" '.Txt::tooltip($affectTooltips["1.5"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessWriteLimit").'</div><div>'.$affectLabels["1.5"].'</div></div>';}
+		if(!empty($affectLabels["1.5"]))	{echo '<div class="menuLine sAccessWrite" '.Txt::tooltip($affectTooltips["1.5"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessWriteLimit").'</div><div>'.$affectLabels["1.5"].'</div></div>';}
 		if(!empty($affectLabels["1"]))		{echo '<div class="menuLine sAccessRead" '.Txt::tooltip($affectTooltips["1"]).'><div class="menuContextTxtLeft">'.Txt::trad("accessRead").'</div><div>'.$affectLabels["1"].'</div></div>';}
 	}
 

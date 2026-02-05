@@ -18,15 +18,16 @@ body, a, .sLink																							{color:#555;}
 }
 
 /*** LIENS & OPTIONS*/
-a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .sAccessRead, .optionSelect	{color:#0068bd;}
-.sAccessWrite, .sAccessWriteLimit	{color:#900;}
+a:hover, .sLink:hover, .linkSelect, .menuLauncher:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .optionSelect	{color:#0068bd;}
+.sAccessRead						{color:#008;}
+.sAccessWrite						{color:#800;}
 .option								{border:solid 1px transparent;}
 .option:hover, .optionSelect		{border:solid 1px #ccc; border-radius:5px;}
 .option:hover						{background:#eee; }
 .optionSelect						{background:#ddd!important;}
 
 /*** MENU DES MODULES*/
-#headerMenuRight *:is(.vHeaderModuleCurrent,.vHeaderModule:hover)	{background:white; border:solid 1px #ddd!important;}
+#headerRightMenu *:is(.vHeaderModuleCurrent,.vHeaderModule:hover)	{background:white; border:solid 1px #ddd!important;}
 #menuMobileMain  *:is(.vHeaderModuleCurrent,.miscContainer)			{background:#eee; border:solid 1px #eee; box-shadow:0px 2px 6px #888;}
 
 /*** INPUTS*/

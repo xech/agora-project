@@ -81,7 +81,7 @@ class CtrlUser extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$sqlFields="civility=".Db::param("civility").", name=".Db::param("name").", firstName=".Db::param("firstName").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang");
+			$sqlFields="name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang");
 			if($curObj->editAdminGeneralRight())	{$sqlFields.=", generalAdmin=".Db::param("generalAdmin");}
 			if(Ctrl::$curUser->isGeneralAdmin())	{$sqlFields.=", calendarDisabled=".Db::param("calendarDisabled");}
 			$curObj=$curObj->editRecord($sqlFields, Req::param("login"), Req::param("password"));//Ajoute login/password pour les controles standards
@@ -273,7 +273,7 @@ class CtrlUser extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * VUE : ENVOI D'INVITATION
+	 * VUE : ENVOI D'INVITATION PAR EMAIL
 	 ********************************************************************************************************/
 	public static function actionSendInvitation()
 	{
@@ -300,8 +300,8 @@ class CtrlUser extends Ctrl
 					//Envoi du mail d'invitation
 					$mailSubject=Txt::trad("USER_mailInvitationObject").' '.Ctrl::$curUser->getLabel();														//"Invitation de Jean DUPOND"
 					$mailMessage='<b>'.Ctrl::$curUser->getLabel().' '.Txt::trad("USER_mailInvitationFromSpace").' <i>'.Ctrl::$curSpace->name.' :</i></b>'.	//"Jean DUPOND vous invite sur l'espace 'Espace Bidule'"
-								 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$invitationTmp["mail"].'</b>'.													//"Email / Identifiant de connexion : truc@bidule.com"
-								 '<br>'.Txt::trad("passwordToModify").' : <b>'.$password.'</b>'.															//"Mot de passe temporaire (à modifier en page de connexion) : XXXXX"
+								 '<br><br>'.Txt::trad("mailLlogin").' : <b>'.$invitationTmp["mail"].'</b>'.													//"Email / Identifiant de connexion"
+								 '<br>'.Txt::trad("passwordTmp").' : <b>'.$password.'</b>'.																	//"Mot de passe temporaire"
 								 '<br><br><a href="'.$confirmUrl.'" target="_blank"><u><b>'.Txt::trad("USER_mailInvitationConfirm").'</u></b></a>'; 		//"Merci de confirmer l'invitation"
 					if(Req::isParam("comment"))  {$mailMessage.='<br><br>'.Txt::trad("comment").':<br>'.Req::param("comment");}								//"Mon commentaire..."
 					$isSendMail=Tool::sendMail($invitationTmp["mail"], $mailSubject, $mailMessage);															//Envoie l'email

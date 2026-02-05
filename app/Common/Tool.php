@@ -66,7 +66,7 @@ class Tool
 			////	Expediteur
 			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);																	//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
 			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "no-reply@".$serverName;				//Email du paramétrage général OU du domaine courant
-			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);						//Nom de l'expediteur (Ex: "monespace.fr")
+			$setFromName=Req::isHost() ? ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE) : ucfirst($serverName);						//Nom de l'expediteur (ex: "monespace.fr")
 			$mail->SetFrom($setFromMail, $setFromName);																					//"SetFrom" fixe (cf. score des antispams)
 
 			////	Controles de base

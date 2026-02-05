@@ -42,7 +42,10 @@ function mainDisplay()
 
 	////	Fenêtre principale
 	if(isMainPage==true){
-		////	Affichage spécifique d'un module (Ex: ModCalendar, ModTask)
+		////	Marge entre la headerbar et le contenu de la page
+		$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));
+
+		////	Affichage spécifique d'un module (ex: ModCalendar, ModTask)
 		if(typeof moduleDisplay=="function")  {moduleDisplay();}
 
 		////	Width des objets en affichage "block"
@@ -67,7 +70,7 @@ function mainDisplay()
 }
 
 /***************************************************************************************************************
- * PRINCIPAUX TRIGGERS :  FANCYBOX  +  CLICK / DBLCLICK D'OBJETS  +  MENUS FLOTTANT  +  TOOLTIPSTER  +  VISIOS
+ * PRINCIPAUX TRIGGERS :  FANCYBOX  +  CLICK / DBLCLICK D'OBJETS  +  MENUS FLOTTANT  +  TOOLTIPSTER
  ***************************************************************************************************************/
 function mainTriggers()
 {
@@ -77,7 +80,7 @@ function mainTriggers()
 	////	Fancybox : images & inline (mode "Declarative")
 	let fancyboxThumbs=isMobile() ? false : {type:"classic"};
 	let fancyboxToolbar={
-		display:{left:[], center:["zoomIn","rotateCW","slideshow","fullscreen","thumbs","close"]}
+		display:{left:[], right:["zoomIn","rotateCW","slideshow","fullscreen","thumbs","close"]}
 	};
 	Fancybox.bind("[data-fancybox='images'],.fancyboxImages", {l10n:fancyboxLang, Thumbs:fancyboxThumbs, Toolbar:fancyboxToolbar});
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
@@ -101,7 +104,7 @@ function mainTriggers()
 	}
 
 	////	Tooltipster : init/update les "title"
-	tooltipParams={theme:'tooltipster-shadow',contentAsHTML:true};							//Theme et Affichage Html
+	tooltipParams={theme:'tooltipster-shadow',delay:500,contentAsHTML:true};				//Theme et Affichage Html
 	let timeoutDuration=$(".tooltipstered").exist() ? 1000 : 50;							//Timeout plus long si update des tooltips via ajax (ex: "messengerUpdate()")
 	if(typeof tooltipDisplayTimeout!="undefined")  {clearTimeout(tooltipDisplayTimeout);}	//Un seul timeout
 	tooltipDisplayTimeout=setTimeout(function(){											//Timeout le tps de charger
@@ -112,6 +115,13 @@ function mainTriggers()
 	$("a.lightboxOpenHref").off("click").on("click",function(event){	//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
 		event.preventDefault();
 		lightboxOpen($(this).attr("href"));
+	});
+
+	////	Affiche/Masque le password
+	$("img.passwordDisplay").on("click",function(){
+		let inputPassword="#"+this.getAttribute("for");
+		if($(inputPassword).attr("type")==="password")	{$(inputPassword).attr("type","text");		$("img.passwordDisplay").addClass("passwordDisplayHide");}		//Affiche le password
+		else											{$(inputPassword).attr("type","password");	$("img.passwordDisplay").removeClass("passwordDisplayHide");}	//Masque le password
 	});
 }
 
@@ -212,7 +222,7 @@ function menuContext()
 	$(document).on("click",function(){  $(".menuContext").hide();  });														//Masque si click sur la page, hors du menu (cf Tablette mode paysage)
 	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });										//Masque si click sur #menuMobileClose ou #menuMobileBg (black opacity)
 	$(".menuLauncher,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });				//Pas de propagation de click (evite un download ou une sélection via "objSelectSwitch()")
-	if(!isMobile() && window.top.windowWidth>=1400){																		//Click droit sur .objContainer
+	if(window.top.windowWidth>=1300){																						//Click droit sur .objContainer si width > 1300px
 		$(".objContainer").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });				//"return false" pour annuler le menu du browser
 	}
 
@@ -276,8 +286,8 @@ function menuMobileShow(launcher)
 		if($("#menuMobileMain").isDisplayed()){															//Menu mobile déjà affiché : Affiche un sous-menu
 			$("#"+$(launcher).attr("for")).addClass("menuMobileSubMenu").slideToggle();					
 		}else{																							//Affiche le Menu mobile :
-			idMenuMobile1=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerMenuRight";			//idMenuMobile1 : attr. "for" du launcher ou #headerMenuRight si swipe (liste des modules ou autre)
-			idMenuMobile2=(idMenuMobile1=="#headerMenuRight")  ?  "#moduleMenu"  :  null;				//Affiche aussi #moduleMenu (menu de gauche)
+			idMenuMobile1=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerRightMenu";			//idMenuMobile1 : attr. "for" du launcher ou #headerRightMenu si swipe (liste des modules ou autre)
+			idMenuMobile2=(idMenuMobile1=="#headerRightMenu")  ?  "#moduleMenu"  :  null;				//Affiche aussi #moduleMenu (menu de gauche)
 			if($(idMenuMobile1).exist()){																//Vérif l'exisence de idMenuMobile1
 				$(idMenuMobile1+">*").appendTo("#menuMobileContent1");									//Déplace le contenu de idMenuMobile1 dans menuMobileContent1
 				if($(idMenuMobile2).exist())  {$(idMenuMobile2+">*").appendTo("#menuMobileContent2");}	//Déplace le contenu de idMenuMobile2 dans #menuMobileContent2
@@ -336,16 +346,17 @@ function isValue(value)
  **************************************************************************************************/
 function isMail(mail)
 {
-	let mailRegex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	return mailRegex.test(mail);
+	let regex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return regex.test(mail);
 }
 
-/***********************************************************************************************************************
- * CONTROLE LA VALIDITE D'UN PASSWORD : 6 CARACTÈRES MINIMUM, AVEC AU MOINS UNE MAJUSCULE, UNE MINUSCULE ET UN CHIFFRE
- ***********************************************************************************************************************/
-function isValidPassword(password)
+/**************************************************************************************************
+ * CONTROLE LA VALIDITE D'UN PASSWORD : 8 CARACTERES MINIMUM, AVEC MINUSCULE ET CHIFFRE
+ **************************************************************************************************/
+function isPassword(password)
 {
-	return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(password);
+	let regex=/^(?=.*[a-z])(?=.*\d).{8,}$/;
+	return regex.test(password);
 }
 
 /**************************************************************************************************
@@ -452,7 +463,7 @@ ready(function(){
 });
 
 /********************************************************************************************************************************
- * SUBMIT UN FORMULAIRE : AFFICHE L'IMG "LOADING" + "DISABLE" LES BUTTONS SUBMIT (2 sec max : cf ajax form record)
+ * SUBMIT UN FORMULAIRE : AFFICHE L'IMG "LOADING" + "DISABLE" LES BUTTONS SUBMIT
  ********************************************************************************************************************************/
 function submitLoading()
 {
@@ -461,7 +472,7 @@ function submitLoading()
 	setTimeout(function(){
 		$(".submitLoading").css("visibility","hidden");
 		$("button[type='submit']").css("background","initial").prop("disabled",false);
-	 },4000);
+	 },3000);//3 sec max : cf ajax form record
 }
 
 /**************************************************************************************************
@@ -479,12 +490,11 @@ function asyncSubmit(thisForm)
 function lightboxOpen(fileSrc)
 {
 	if(isMainPage==false)								{window.top.lightboxOpen(fileSrc);}											//Relance lightboxOpen() depuis la page "parent"
-	else if(/pdf/i.test(fileSrc) && isTouchDevice())	{window.top.open(fileSrc);}													//Pdf sur mobile app
-	else if(/pdf|txt/i.test(fileSrc))					{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:1200}]);}	//Pdf/Txt sur desktop
+	else if(/pdf/i.test(fileSrc) && isTouchDevice())	{window.top.open(fileSrc);}													//Pdf sur mobile app :  nouvelle fenetre
+	else if(/pdf|txt/i.test(fileSrc))					{Fancybox.show([{src:fileSrc, type:"iframe", width:1200, height:1200}]);}	//Pdf/Txt sur desktop : nouvel iframe
 	else if(/mp4|mp3|webm/i.test(fileSrc))				{Fancybox.show([{src:fileSrc, type:"html5video"}]);}						//Video/Audio
 	else{
-		Fancybox.show([{type:"iframe", src:fileSrc}],
-			{
+		Fancybox.show([{type:"iframe", src:fileSrc}],{
 				l10n:fancyboxLang,																									//Charge les traductions des boutons
 				closeExisting:/edit/i.test(fileSrc),																				//Ferme au besoin une Fancybox dejà ouverte
 				dragToClose:false,																									//Désactive la fermeture de Fancybox via "drop"
@@ -517,32 +527,27 @@ function lightboxRedir(urlNotify)
 }
 
 /**************************************************************************************************
- * WIDTH DE LA LIGHTBOX (cf max-width du body)  +  HEIGHT DYNAMIQUE  (cf show() toggle() etc.)
+ * WIDTH / HEIGHT DE LA LIGHTBOX : LANCEE DEPUIS SON CONTENU VIA mainTriggers(), show(), etc.
  **************************************************************************************************/
 function lightboxResize()
 {
-	ready(function(){
-		//// Contenu/Iframe du lightbox
-		lightboxContent=window.top.document.querySelector(".fancybox__content");
-		lightboxIframe =window.top.document.querySelector(".fancybox__iframe");
-		if(isMainPage==false && lightboxIframe){
-			//// Width/Height de la lightbox
-			if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}												//Un seul timeout
-			lightboxTimeout=setTimeout(function(){																					//Timeout le tps de lancer les show(), fadeIn(), etc : toujours supérieur à $.fx.speeds
-				let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");									//Width de la page : "max-width" de #bodyLightbox en "px" ou "%"
-				let lightboxWidth=parseInt(cssWidth);																				//Parse le width en Integer
-				if(Number.isInteger(lightboxWidth)==false) 		{lightboxWidth=650;}												//Width par défaut si "max-width" non spécifié (idem "app.css" et ".fancybox__content")
-				if(/%/.test(cssWidth))							{lightboxWidth=(window.top.windowWidth/100) * lightboxWidth;}		//Width en % de windowWidth
-				else if(lightboxWidth > window.top.windowWidth)	{lightboxWidth=window.top.windowWidth;}								//Width doit être inférieur à windowWidth
-				lightboxContent.style.width=lightboxIframe.style.width=lightboxWidth+"px";											//Applique le width à lightboxContent & lightboxIframe
-				let lightboxHeight=(window.top.windowWidth <= 490)  ?  window.top.windowHeight  :  document.body.scrollHeight+10;	//Toute la hauteur sur smartphone (cf. fancybox en fullpage) || Height du body de l'iframe
-				if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){									//Init le Height OU Agrandit le Height après un show(), fadeIn(), etc
-					lightboxContent.style.height=lightboxIframe.style.height=lightboxHeight+"px";									//Applique le height à lightboxContent & lightboxIframe
-					lightboxHeightLast=lightboxHeight;																				//Enregistre le height
-				}
-			},150);
-		}
-	});
+	if(isMainPage==false && window.top.$(".fancybox__iframe").exist()){
+		if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}										//Un seul timeout
+		lightboxTimeout=setTimeout(function(){																			//Timeout le temps de lancer les show(), fadeIn(), etc (toujours > à $.fx.speeds)
+			let windowTopWidth=window.top.windowWidth;																	//With de la fenêtre principale
+			let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");							//Width du contenu de l'iframe : cf. "max-width" de #bodyLightbox (en "px" ou "%")
+			let resizeWidth=parseInt(cssWidth);																			//resizeWidth en Integer
+			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=650;}												//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
+			if(/%/.test(cssWidth))						{resizeWidth=(windowTopWidth/100) * resizeWidth;}				//resizeWidth en % de width de la page principale
+			else if(resizeWidth > windowTopWidth)		{resizeWidth=windowTopWidth;}									//resizeWidth toujours <= à windowTopWidth
+			window.top.$(".fancybox__content,.fancybox__iframe").css("width",resizeWidth+"px");							//Applique le width au fancybox
+			let lightboxHeight=(windowTopWidth <= 490)  ?  window.top.windowHeight  :  document.body.scrollHeight+10;	//Toute la hauteur sur smartphone (fullpage) || Height du body de l'iframe
+			if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){							//Init le height OU agrandit le height après un show(), fadeIn(), etc
+				window.top.$(".fancybox__content,.fancybox__iframe").css("height",lightboxHeight+"px");					//Applique le height à lightboxContent & lightboxIframe
+				lightboxHeightLast=lightboxHeight;																		//Enregistre le height
+			}
+		},200);
+	}
 }
 
 /**************************************************************************************************
@@ -603,6 +608,10 @@ $.fn.isDisplayed=function(){
 $.fn.isMail=function(){
 	return isMail(this.val());
 };
+////	Verifie si l'element est un password (cf. "isPassword()")
+$.fn.isPassword=function(){
+	return isPassword(this.val());
+};
 ////	Clignotement / "Blink" d'un element (toute les secondes et 4 fois par défaut : cf. "times")
 $.fn.pulsate=function(pTimes){
 	if(typeof pTimes=="undefined")  {var pTimes=4;}
@@ -629,7 +638,7 @@ $.fn.totalHeight=function(){
 };
 ////	Scroll vers un element de la page
 $.fn.scrollTo=function(){
-	let scrollTopPos=$(this).offset().top - parseInt($("#headerBar,#headerBarCenter").height()) - 15;//Soustrait la barre de menu principale
+	let scrollTopPos=($(this).offset().top - $("#headerBar").outerHeight() - 20);
 	$("html,body").animate({scrollTop:scrollTopPos},300);
 };
 ////	Update le title et reload les tooltips
@@ -645,50 +654,59 @@ $.fn.tooltipUpdate=function(title){
 
 
 /**************************************************************************************************
- * AFFECTATIONS DES SPACES<->USERS : "VueSpaceEdit.php" & "VueUserEdit.php"
+ * AFFECTATIONS USER <=> SPACE  :  TRIGGERS (cf. "VueSpaceEdit.php" & "VueUserEdit.php")
  **************************************************************************************************/
-function spaceAffectations()
-{
-	//// Click le Label d'une affectation (sauf "allUsers")
-	$(".spaceAffectLabel").on("click",function(){
-		//init
-		let _idTarget=$(this).parent().attr("id").replace("targetLine","");	//Id de l'user ou espace dans le div parent contenant "targetLine" (ex: "targetLine55" -> "55")
-		let box1=".spaceAffectInput[value='"+_idTarget+"_1']";				//Checkbox "user"
-		let box2=".spaceAffectInput[value='"+_idTarget+"_2']";				//Checkbox "admin"
-		//Switch de checkbox
-		var boxToCheck=null;
-		if($(box1).prop("checked")==false && $(box2).prop("checked")==false)	{boxToCheck=box1;}	//Check la box "user"
-		else if($(box1).prop("checked") && $(box2).prop("checked")==false)		{boxToCheck=box2;}	//Check la box "admin"
-		//Uncheck toutes les boxes (sauf celles "disabled")  &&  Check la box sélectionnée  &&  Stylise les labels
-		$(".spaceAffectInput[value^='"+_idTarget+"_']:not(:disabled)").prop("checked",false);
-		if(boxToCheck!=null)  {$(boxToCheck).prop("checked",true);}
-		spaceAffectationsLabel();
-	});
+ready(function(){
+	////	Verif
+	if($(".spaceAffectLabel").exist()){
+		////	Style des labels des targets : Init
+		spaceAffectStyle();
 
-	//// Click la checkbox d'une affectation
-	$(".spaceAffectInput").on("change",function(){
-		let targetId=this.value.split("_")[0];																//Id de l'user ou espace (ex: "55_2" -> "55")
-		$("[name='spaceAffect[]'][value^='"+targetId+"_']:not(:disabled)").not(this).prop("checked",false);	//Uncheck les autres box de l'user ou espace (sauf celles disabled)
-		spaceAffectationsLabel();																			//Stylise les labels
-	});
+		////	Click le label d'une affecation
+		$(".spaceAffectLabel").on("click",function(){
+			let targetLineId="#"+$(this).closest(".spaceAffectLine").attr("id");
+			let boxUser =targetLineId+" input[value$='_1']";
+			let boxAdmin=targetLineId+" input[value$='_2']";
+			let available  	=":not(:checked):not(:disabled)";
+			let boxToCheck	=null;
+			if($(boxUser).is(available) && $(boxAdmin).is(":not(:checked)"))	{boxToCheck=boxUser;}					//boxUser  dispo et boxAdmin décochée
+			else if($(boxAdmin).is(available))									{boxToCheck=boxAdmin;}					//boxAdmin dispo
+			if(boxToCheck!=null)	{$(boxToCheck).prop("checked",true).trigger("change");}								//Check avec trigger pour spaceAffectStyle()
+			else					{$(targetLineId+" input:not(:disabled)").prop("checked",false).trigger("change");}	//Uncheck les autres box de la ligne (non disabled)
+		});
 
-	//// Init le style des labels
-	spaceAffectationsLabel();
-};
+		////	Click l'input d'une affecation
+		$(".spaceAffectBox input").on("change",function(){
+			let targetLineId="#"+$(this).closest(".spaceAffectLine").attr("id");		//Id de la ligne
+			$(targetLineId+" input:not(:disabled)").not(this).prop("checked",false);	//Uncheck les autres box de la ligne (non disabled)
+			spaceAffectStyle();															//Style des labels des targets
+		});
+
+		////	Sélectionne "Tous les utilisateurs"
+		$("#spaceAffecAllUsers").on("click",async function(){
+			let notChecked=$(this).find("input").is(":not(:checked)");															//Box not checked
+			let labelConfirm=(notChecked==true) ? this.getAttribute("data-selectAll") : this.getAttribute("data-selectNone");	//Label "Tout sélectionner ?" ou "Tout déselectionner ?"
+			if(await confirmAlt(labelConfirm+" ?")){																			//Confirm validé ?
+				$(this).find("input").prop("checked",notChecked);																//Check/uncheck la box de la ligne
+				$(".spaceAffectLine input[value$='_1']").prop("checked",notChecked).prop("disabled",notChecked);				//Toutes les Box "disabled" + "checked" ?
+				spaceAffectStyle();																								//Style des labels des targets
+			}
+		});
+	}
+});
 
 /**************************************************************************************************
- * APPLIQUE UN STYLE À CHAQUE LABEL, EN FONCTION DE LA CHECKBOX COCHÉE
+ * AFFECTATIONS USER <=> SPACE : STYLE DES AFFECTATIONS
  **************************************************************************************************/
-function spaceAffectationsLabel()
+function spaceAffectStyle()
 {
-	//Réinit le style des affectations
-	$(".spaceAffectLine").removeClass("lineSelect sAccessRead sAccessWrite");
-	//Stylise les labels && la ligne sélectionnées
-	$(".spaceAffectInput:checked").each(function(){
-		let targetId   =this.value.split("_")[0];	//Id de l'user ou espace (ex: "55_2" -> "55")
-		let targetRight=this.value.split("_")[1];	//Droit "user" ou "admin" (ex: "55_2" -> "2")
-		if(targetRight=="1")		{$("#targetLine"+targetId).addClass("lineSelect sAccessRead");}		//Sélectionne la box "user"
-		else if(targetRight=="2")	{$("#targetLine"+targetId).addClass("lineSelect sAccessWrite");}	//Sélectionne la box "admin"
+	$(".spaceAffectLine").removeClass("lineSelect sAccessRead sAccessWrite");	//Réinit le style des lignes
+	$(".spaceAffectLine:has(input:checked)").each(function(){					//Style chaque ligne sélectionnée
+		if(this.id){
+			let lineId="#"+this.id;
+			if($(lineId+" input[value$='_2']").is(":checked"))	{$(lineId).addClass("lineSelect sAccessWrite");}
+			else												{$(lineId).addClass("lineSelect sAccessRead");}
+		}
 	});
 }
 

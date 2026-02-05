@@ -357,7 +357,7 @@ class DbUpdate extends Db
 						{
 							//chemin du fichier joint
 							$fileExtension=".".File::extension($tmpFile["name"]);
-							$oldPath="../".(Req::isHost()?PATH_DATAS:'stock_fichiers/')."fichiers_objet/".$tmpFile["_id"].$fileExtension;//exple : "../stock_fichiers/fichiers_objet/123.jpg"
+							$oldPath="../".(Req::isHost()?PATH_DATAS:'stock_fichiers/')."fichiers_objet/".$tmpFile["_id"].$fileExtension;//ex: "../stock_fichiers/fichiers_objet/123.jpg"
 							$newPath="index.php?ctrl=object&action=AttachedFileDisplay&_id=".$tmpFile["_id"]."&extension=".$fileExtension;//cf. "MdlObject.php"
 							//Mp3 ("url_encode" : lecteur mp3)  ||  Videos 
 							if(File::isType("mp3",$tmpFile["name"]))  {$newPath=urlencode($newPath);}

@@ -24,9 +24,9 @@ class MdlObject
 	const objectType=null;
 	const dbTable=null;
 	//Propriétés des catégories / conteneurs / contenus
-	const MdlCategory=null;						//Objet catégorie rattaché à l'objet courant	(Ex: "MdlForumTheme", "MdlCalendarCategory", "MdlTaskStatus"...)
-	const MdlObjectContainer=null;				//Objet conteneur rattaché à l'objet courant	(Ex: "MdlFileFolder", "MdlTaskFolder", "MdlCalendar"...)
-	const MdlObjectContent=null;				//Objets contenu rattachés à l'objet courant	(Ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
+	const MdlCategory=null;						//Objet catégorie rattaché à l'objet courant	(ex: "MdlForumTheme", "MdlCalendarCategory", "MdlTaskStatus"...)
+	const MdlObjectContainer=null;				//Objet conteneur rattaché à l'objet courant	(ex: "MdlFileFolder", "MdlTaskFolder", "MdlCalendar"...)
+	const MdlObjectContent=null;				//Objets contenu rattachés à l'objet courant	(ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
 	const isFolder=false;						//L'Objet courant est un dossier
 	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier
 	protected static $_hasAccessRight=null;		//Pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
@@ -54,20 +54,20 @@ class MdlObject
 	/********************************************************************************************************
 	 * CONSTRUCTEUR
 	 ********************************************************************************************************/
-	public function __construct($objIdOrValues=null)
+	public function __construct($objProperties=null)
 	{
-		////	Init l'id
+		////	_id par défaut (cf"isNew()")
 		$this->_id=0;
-		////	Assigne des propriétés à l'objet : Objet déjà créé / Objet à créer
-		if(!empty($objIdOrValues)){
-			//Récupère les propriétés en BDD ou celles passées en paramètre
-			$objValues=(is_numeric($objIdOrValues))  ?  Db::getLine("SELECT * FROM ".static::dbTable." WHERE _id=".(int)$objIdOrValues)  :  $objIdOrValues;
+		////	Assigne les propriétés (objet existant ou nouvel objet)
+		if(!empty($objProperties)){
+			//Récupère les propriétés en BDD ($objProperties==_id)  ||  Récupère les propriétés en paramètre
+			$objValues=(is_numeric($objProperties))  ?  Db::getLine("SELECT * FROM ".static::dbTable." WHERE _id=".(int)$objProperties)  :  $objProperties;
 			//Assigne chaque propriété
 			if(!empty($objValues)){
-				foreach($objValues as $propertieKey=>$propertieVal)  {$this->$propertieKey=$propertieVal;}
+				foreach($objValues as $fieldName=>$fieldValue)  {$this->$fieldName=$fieldValue;}
 			}
 		}
-		////	Cast l'id en Interger  + Init l'identifiant générique (ex: "fileFolder-19")
+		////	Cast l'id en Interger  + Init le _typeId (ex: "fileFolder-55")
 		$this->_id=(int)$this->_id;
 		$this->_typeId=static::objectType."-".$this->_id;
 	}
@@ -216,12 +216,12 @@ class MdlObject
 			}
 			////	Label des affectations
 			foreach($affects as $aff){
-				//Exple : User "Jean Dupont"  || Groupe "Bidule" || "Tous les utilisateurs > Espace XJ200"
+				//ex: User "Jean Dupont"  || Groupe "Bidule" || "Tous les utilisateurs > Espace XJ200"
 				$targetKey=$aff["_idSpace"].'_'.$aff["target"];
 				$aff["targetType"]= $aff["targetId"]=$aff["label"]=null;
 				if(preg_match("/^U/",$aff["target"]))		{$aff["targetType"]="user";			$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("user",$aff["targetId"])->getLabel();}
 				elseif(preg_match("/^G/",$aff["target"]))	{$aff["targetType"]="group";		$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("userGroup",$aff["targetId"])->getLabel();}
-				elseif($aff["target"]=="spaceUsers")		{$aff["targetType"]="spaceUsers";	$aff["targetId"]=(int)$aff["_idSpace"];			 $aff["label"]=Txt::trad("EDIT_allUsers");}
+				elseif($aff["target"]=="spaceUsers")		{$aff["targetType"]="spaceUsers";	$aff["targetId"]=(int)$aff["_idSpace"];			 $aff["label"]=Txt::trad("accessAllUsers");}
 				//Label de l'espace : "tous les utilisateurs" || affectation sur un autre espace
 				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRightSmall.png">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
 				//Ajoute l'affectation
@@ -249,7 +249,7 @@ class MdlObject
 			//Ajoute les nouveaux droits d'accès : passés en paramètre / provenant du formulaire
 			$newAccessRight=Req::isParam("objectRight")  ?  Req::param("objectRight")  :  $objectRightSpecific;
 			foreach($newAccessRight as $tmpRight){
-				$tmpRight=explode("_",$tmpRight);//exple :  "55_U33_2"  devient ["_idSpace"=>"5","target"=>"U3","accessRight"=>"2"]  correspond à droit "2" sur l'user "33" de l'espace "55"
+				$tmpRight=explode("_",$tmpRight);//ex:  "55_U33_2"  devient ["_idSpace"=>"5","target"=>"U3","accessRight"=>"2"]  correspond à droit "2" sur l'user "33" de l'espace "55"
 				Db::query($sqlInsertBase." _idSpace=".Db::format($tmpRight[0]).", target=".Db::format($tmpRight[1]).", accessRight=".Db::format($tmpRight[2]));
 			}
 		}
@@ -624,8 +624,7 @@ class MdlObject
 		$sqlDisplay=(!empty($conditions))  ?  "(".implode(" AND ",$conditions).")"  :  $_idKey." IS NULL";
 		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a accès (dossiers/sujets/evt..)
 		if($containerObj==null && static::isInContainer()){
-			$MdlObjectContainer=static::MdlObjectContainer;
-			$sqlDisplay="(".$sqlDisplay." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
+			$sqlDisplay="(".$sqlDisplay." OR ".static::MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
 		}
 		////	Renvoie le résultat (avec des espaces avant/après)
 		return " ".$sqlDisplay." ";
@@ -732,24 +731,18 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * LIBELLE DE L'OBJET (CHANGE --OBJLABEL-- & CO)
+	 * LIBELLE DE L'OBJET
 	 ********************************************************************************************************/
 	public function tradObject($tradKey)
 	{
 		//// Traduction principale
 		$trad=Txt::trad($tradKey);
-		//// Remplace le label principal de l'objet (ex: "news", "fichier", "dossier")
-		$trad=str_replace("--OBJLABEL--", Txt::trad("OBJECT".static::objectType), $trad);
-		//// Remplace le label du contenu de l'objet (ex: "fichier" si l'objet courant est un dossier)
-		if(static::isContainer()){
-			$MdlObjectContent=static::MdlObjectContent;
-			$trad=str_replace("-OBJCONTENT-", Txt::trad("OBJECT".$MdlObjectContent::objectType), $trad);
-		}
-		//// Remplace le label du conteneur de l'objet (ex: "agenda" si l'objet courant est un evt)
-		if(static::isInContainer()){
-			$MdlObjectContainer=static::MdlObjectContainer;
-			$trad=str_replace("-OBJCONTAINER-", Txt::trad("OBJECT".$MdlObjectContainer::objectType), $trad);
-		}
+		$type=static::objectType;
+		//// Label de l'objet
+		$trad=str_replace(["--OBJ_LABEL--","--OBJ_LABEL_TO--"], [Txt::trad("OBJ_".$type),Txt::trad("OBJ_".$type."_TO")], $trad);								//Ex: "--OBJ_LABEL--"=>"actualité" / "--OBJ_LABEL_TO--"=>"à l'actualité"
+		//// Label du contenu de l'objet
+		if(static::isContainer())		{$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".static::MdlObjectContent::objectType."_CONTENT"), $trad);}	//Ex: "les fichiers" du dossier, "les événements" de l'agenda
+		elseif(static::isInContainer())	{$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".static::objectType."_CONTENT"), $trad);}					//Ex: "les messages" du sujet
 		/// Retourne la trad
 		return $trad;
 	}

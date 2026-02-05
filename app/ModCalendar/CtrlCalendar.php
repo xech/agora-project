@@ -395,100 +395,88 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionImportEvents()
 	{
-		//Charge et controle
+		////	Init
 		$objCalendar=Ctrl::getCurObj();
 		if($objCalendar->editContentRight()==false)  {Ctrl::noAccessExit();}
 		$vDatas=[];
-		////	Valide le formulaire : sélection du fichier / des evt à importer
-		if(Req::isParam("formValidate"))
-		{
+		////	VALIDE LE FORMULAIRE (sélection du fichier ou des evts à importer)
+		if(Req::isParam("formValidate")){
 			////	PRÉPARE LE TABLEAU D'IMPORT
-			if(isset($_FILES["importFile"]) && is_file($_FILES["importFile"]["tmp_name"]))
-			{
-				//// Importe les événements via le Parser Ical.php
+			if(isset($_FILES["importFile"]) && is_file($_FILES["importFile"]["tmp_name"])){
 				require 'ICalParser.php';
-				$ical=new ICal($_FILES["importFile"]["tmp_name"]);
+				$ICAL=new ICal($_FILES["importFile"]["tmp_name"]);
 				//// Formate les evenements à importer
-				if(empty($ical->cal["VEVENT"]))  {Ctrl::notify("Ical import error");}
-				else
-				{
-					//// Init la liste des evt à importer && Ignore les evt de plus d'un an ?
+				if(empty($ICAL->cal["VEVENT"]))  {Ctrl::notify("Ical import error");}
+				else{
+					//// Init la liste des evt
 					$vDatas["eventList"]=[];
-					$ignoreOldEvtTime=Req::isParam("ignoreOldEvt") ? strtotime("-1 year") : strtotime("-10 year");
-					//// Parcourt chaque evt parsé par Ical.php
-					foreach($ical->cal["VEVENT"] as $tmpEvt)
-					{
-						//// S'il manque de date/titre/UID || Si l'evt a déjà été ajouté (cf. evts répétés de Google) : on zappe l'evt!
-						if(empty($tmpEvt["DTSTART"]) || empty($tmpEvt["SUMMARY"]) || empty($tmpEvt["UID"]) || isset($vDatas["eventList"][$tmpEvt["UID"]]) || strtotime($tmpEvt["DTSTART"])<$ignoreOldEvtTime)  {continue;}
-						//// Init les valeurs importées en Bdd
-						$tmpEvt["dbDateBegin"]=$tmpEvt["dbDateEnd"]=$tmpEvt["dbTitle"]=$tmpEvt["dbDescription"]=$tmpEvt["dbPeriodType"]=$tmpEvt["dbPeriodValues"]=$tmpEvt["dbPeriodDateEnd"]=$tmpEvt["isPresent"]=null;
-						//// Prépare l'evt (attention au décalage des timezones dans le fihier .ics : mais corrigé via le "strtotime()")
-						$tmpEvt["dbDateBegin"]=date("Y-m-d H:i",strtotime($tmpEvt["DTSTART"]));
-						if(!empty($tmpEvt["DTEND"])){
-							$tmpEvt["dbDateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTEND"]));
-							if(strlen($tmpEvt["DTEND"])==8)  {$tmpEvt["dbDateEnd"]=date("Y-m-d H:i",(strtotime($tmpEvt["DTEND"])-86400));}//Les événements "jour" sont importés avec un jour de trop (cf. exports depuis G-Calendar)
-						}
-						$tmpEvt["dbTitle"]=Txt::clean($tmpEvt["SUMMARY"],"min");
-						if(!empty($tmpEvt["DESCRIPTION"]))  {$tmpEvt["dbDescription"]=Txt::clean($tmpEvt["DESCRIPTION"],"min");}
-						//// Evenement répétés
-						if(!empty($tmpEvt["RRULE"]))
-						{
-							//init
-							$rruleTab=explode(";",$tmpEvt["RRULE"]);
-							//Périodique : semaine
-							if(stristr($tmpEvt["RRULE"],"FREQ=WEEKLY") && stristr($tmpEvt["RRULE"],"BYDAY=")){
-								$tmpEvt["dbPeriodType"]="weekDay";
-								foreach($rruleTab as $rruleTmp){//Jours de la période
-									if(stristr($rruleTmp,"BYDAY="))  {$tmpEvt["dbPeriodValues"]=str_replace(['BYDAY=',',','MO','TU','WE','TH','FR','SA','SU'], ['','@@',1,2,3,4,5,6,7], $rruleTmp);}
+					$timeMaxEvt=Req::isParam("ignoreOldEvt") ? strtotime("-1 year") : strtotime("-10 year");
+					//// Parcourt chaque evt parsé :  vérif les infos de base, que l'evt n'a pas déjà été ajouté et qu'il n'est pas obsolète
+					foreach($ICAL->cal["VEVENT"] as $tmpEvt){
+						if(isset($tmpEvt["DTSTART"]) && isset($tmpEvt["SUMMARY"]) && isset($tmpEvt["UID"]) && empty($vDatas["eventList"][$tmpEvt["UID"]]) && strtotime($tmpEvt["DTSTART"]) > $timeMaxEvt){
+							//// TITRE / DESCRIPTION
+							$tmpEvt["db_title"]=Txt::clean($tmpEvt["SUMMARY"],"min");
+							$tmpEvt["db_description"]=(!empty($tmpEvt["DESCRIPTION"]))  ?  Txt::clean($tmpEvt["DESCRIPTION"],"min")  :  null;
+							//// DEBUT / FIN DE L'EVT
+							$tmpEvt["db_dateBegin"]=$tmpEvt["db_dateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTSTART"]));
+							if(isset($tmpEvt["DTEND"])){
+								$tmpEvt["db_dateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTEND"]));
+								if(strlen($tmpEvt["DTEND"])==8)  {$tmpEvt["db_dateEnd"]=date("Y-m-d H:i",(strtotime($tmpEvt["DTEND"])-86400));}//Cf evt "full day" de G-Calendar
+							}
+							//// EVT PÉRIODIQUE
+							$tmpEvt["db_periodType"]=$tmpEvt["db_periodValues"]=$tmpEvt["db_periodDateEnd"]=null;
+							if(!empty($tmpEvt["RRULE"])){
+								$tmpRRULE=$tmpEvt["RRULE"];
+								$tabRRULE=explode(";",$tmpRRULE);
+								if(stristr($tmpRRULE,"FREQ=WEEKLY") && stristr($tmpRRULE,"BYDAY=")){			////Chaque jour de semaine
+									$tmpEvt["db_periodType"]="weekDay";
+									foreach($tabRRULE as $rruleValue){//Jours de la période
+										if(stristr($rruleValue,"BYDAY="))  {$tmpEvt["db_periodValues"]=str_replace(['BYDAY=',',','MO','TU','WE','TH','FR','SA','SU'], ['','@@',1,2,3,4,5,6,7], $rruleValue);}
+									}
+								}
+								elseif(stristr($tmpRRULE,"FREQ=MONTHLY")){										////Chaque mois
+									$tmpEvt["db_periodType"]="month";
+									$tmpEvt["db_periodValues"]="@@1@@2@@3@@4@@5@@6@@7@@8@@9@@10@@11@@12@@";
+								}
+								elseif(stristr($tmpRRULE,"FREQ=YEARLY")){										////Chaque mois
+									$tmpEvt["db_periodType"]="year";
+									$tmpEvt["db_periodValues"]=null;
+								}
+								if(stristr($tmpRRULE,"UNTIL=")){												////Fin de périodicité
+									foreach($tabRRULE as $rruleValue){
+										if(stristr($rruleValue,"UNTIL=")){
+											$tmpEvt["db_periodDateEnd"]=substr(intval(str_replace('UNTIL=','',$rruleValue)), 0, 8);
+											$tmpEvt["db_periodDateEnd"]=date('Y-m-d', strtotime($tmpEvt["db_periodDateEnd"]));
+										}
+									}
 								}
 							}
-							//Périodique : mois
-							if(stristr($tmpEvt["RRULE"],"FREQ=MONTHLY")){
-								$tmpEvt["dbPeriodType"]="month";
-								$tmpEvt["dbPeriodValues"]="@@1@@2@@3@@4@@5@@6@@7@@8@@9@@10@@11@@12@@";//sélectionne tous les mois
-							}
-							//Périodique : année
-							if(stristr($tmpEvt["RRULE"],"FREQ=YEARLY")){
-								$tmpEvt["dbPeriodType"]="year";
-								$tmpEvt["dbPeriodValues"]=null;
-							}
-							//Périodicité : Fin de périodicité
-							if(stristr($tmpEvt["RRULE"],"UNTIL=")){
-								foreach($rruleTab as $rruleTmp){//Fin de période
-									if(stristr($rruleTmp,"UNTIL=")){
-										$tmpEvt["dbPeriodDateEnd"]=substr(intval(str_replace('UNTIL=','',$rruleTmp)), 0, 8);
-										$tmpEvt["dbPeriodDateEnd"]=date('Y-m-d', strtotime($tmpEvt["dbPeriodDateEnd"]));}
-								}
-							}
+							//// Verif si l'evt est dejà present en Bdd
+							$tmpEvt["isPresent"]=(Db::getVal("SELECT count(*) FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2._idCal=".$objCalendar->_id." AND T1.title=".Db::format($tmpEvt["db_title"])." AND T1.dateBegin=".Db::format($tmpEvt["db_dateBegin"])." AND T1.dateEnd=".Db::format($tmpEvt["db_dateEnd"])) > 0);
+							//// Ajoute l'evt à la liste
+							$vDatas["eventList"][$tmpEvt["UID"]]=$tmpEvt;
 						}
-						//// Etat de l'événement : à importer OU dejà present (..donc ne pas importer)
-						$tmpEvt["isPresent"]=(Db::getVal("SELECT count(*) FROM ap_calendarEvent T1, ap_calendarEventAffectation T2 WHERE T1._id=T2._idEvt AND T2._idCal=".$objCalendar->_id." AND T1.title=".Db::format($tmpEvt["dbTitle"])." AND T1.dateBegin=".Db::format($tmpEvt["dbDateBegin"])." AND T1.dateEnd=".Db::format($tmpEvt["dbDateEnd"])) > 0);
-						//// Ajoute l'evt
-						$vDatas["eventList"][$tmpEvt["UID"]]=$tmpEvt;
 					}
 				}
 			}
-			////	IMPORTE LES ÉVÉNEMENTS
-			elseif(Req::isParam("eventList"))
-			{
-				//Import de chaque événement
-				foreach(Req::param("eventList") as $tmpEvt)
-				{
-					//Import sélectionné?
+			////	IMPORTE LES ÉVÉNEMENTS SELECTIONNES
+			elseif(Req::isParam("eventList")){
+				foreach(Req::param("eventList") as $tmpEvt){
 					if(!empty($tmpEvt["checked"])){
-						//Créé et enregistre l'événement
+						//// Créé et enregistre l'événement
 						$curObj=new MdlCalendarEvent();
-						$curObj=$curObj->editRecord("title=".Db::format($tmpEvt["dbTitle"]).", description=".Db::format($tmpEvt["dbDescription"]).", dateBegin=".Db::format($tmpEvt["dbDateBegin"]).", dateEnd=".Db::format($tmpEvt["dbDateEnd"]).", periodType=".Db::format($tmpEvt["dbPeriodType"]).", periodValues=".Db::format($tmpEvt["dbPeriodValues"]).", periodDateEnd=".Db::format($tmpEvt["dbPeriodDateEnd"]));
+						$tmpEvt["db_description"]=str_replace('\n','<br>',$tmpEvt["db_description"]);
+						$curObj=$curObj->editRecord("title=".Db::format($tmpEvt["db_title"]).", description=".Db::format($tmpEvt["db_description"]).", dateBegin=".Db::format($tmpEvt["db_dateBegin"]).", dateEnd=".Db::format($tmpEvt["db_dateEnd"]).", periodType=".Db::format($tmpEvt["db_periodType"]).", periodValues=".Db::format($tmpEvt["db_periodValues"]).", periodDateEnd=".Db::format($tmpEvt["db_periodDateEnd"]));
 						//Affecte à l'agenda courant
 						Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$objCalendar->_id.", confirmed=1");
 					}
 				}
-				//Ferme la page
+				//// Ferme la page
 				static::lightboxRedir();
 			}
 		}
 		////	Affiche le menu d'Import/Export
-		static::displayPage("VueCalendarImportEvt.php",$vDatas);
+		static::displayPage("VueImportEvents.php",$vDatas);
 	}
 
 	/********************************************************************************************************
@@ -508,7 +496,7 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function getIcal($curObj, $tmpFile=false)
 	{
-		////	Retour à la ligne
+		////	Retour à la Ligne
 		$RL="\r\n";
 		////	Evenement spécifié : récupère l'agenda principal
 		if($curObj::objectType=="calendarEvent"){
@@ -517,26 +505,27 @@ class CtrlCalendar extends Ctrl
 		}
 		////	Agenda spécifié : récupère ses événements
 		elseif($curObj::objectType=="calendar"){
-			$eventList=$curObj->evtList(null, null, 1);//$periodBegin=null, $periodEnd=null, $accessRightMin=1
+			$timePeriodBegin=time()-TIME_1YEAR;
+			$eventList=$curObj->evtList($timePeriodBegin, null, 1);//$timePeriodBegin=1an, $timePeriodEnd=null, $accessRightMin=1
 			$objCalendar=$curObj;
 		}
 
 		////	Fichier Ical avec les événements
 		if(!empty($eventList)){
 			////	Label de l'agenda
-			if(is_object($objCalendar)){
-				$icalCalendar='NAME:'.Txt::clean($objCalendar->title).$RL.
-							  'DESCRIPTION:'.Txt::clean($objCalendar->description).$RL.
-							  'X-WR-CALNAME:'.Txt::clean($objCalendar->title).$RL;
+			if(!is_object($objCalendar))  {$icalName=null;}
+			else{
+				$icalName = 'NAME:'.Txt::clean($objCalendar->title).$RL.
+							'DESCRIPTION:'.Txt::clean($objCalendar->description).$RL.
+							'X-WR-CALNAME:'.Txt::clean($objCalendar->title).$RL;
 			}
-
-			////	Entête
-			$ical=  'BEGIN:VCALENDAR'.$RL.
+			////	DEBUT DU ICAL
+			$ICAL = 'BEGIN:VCALENDAR'.$RL.
 					'VERSION:2.0'.$RL.
 					'PRODID:-//Omnispace.fr//Omnispace Calendar//EN'.$RL.
 					'CALSCALE:GREGORIAN'.$RL.
 					'METHOD:PUBLISH'.$RL.
-					$icalCalendar.
+					$icalName.
 					'X-WR-TIMEZONE:'.self::$curTimezone.$RL.
 					'BEGIN:VTIMEZONE'.$RL.
 					'TZID:'.self::$curTimezone.$RL.
@@ -553,40 +542,10 @@ class CtrlCalendar extends Ctrl
 					"TZNAME:EDT".$RL.
 					"END:DAYLIGHT".$RL.
 					"END:VTIMEZONE".$RL;
-
-			////	Ajoute chaque evenement (plusieurs fois si l'evt est périodique)
+			////	Liste des evenements
 			foreach($eventList as $tmpEvt){
-				//// Init
-				$evtDescription=$evtCategory=$evtPeriod=$evtPeriodExcept=null;
-				//// Description
-				if(!empty($tmpEvt->description)){
-					$evtDescription=Txt::clean($tmpEvt->description,"min");														//Anlève les balises etc. (attention : peut renvoyer une chaine vide!)
-					if($tmpEvt->periodLabel())	{$evtDescription.="\\n".Txt::clean($tmpEvt->periodLabel(),"min");}				//Détails de périodicité dans la description ("\n" explicite)
-					if(!empty($evtDescription))  {$evtDescription="DESCRIPTION:".wordwrap($evtDescription, 60, $RL."  ").$RL;}	//Ajoute la description pas vide
-				}
-				//// Categorie de l'agenda
-				if(!empty($tmpEvt->_idCat))
-					{$evtCategory='CATEGORIES:'.Ctrl::getObj("calendarCategory",$tmpEvt->_idCat)->title.$RL;}
-				//// Périodicité / répétition
-				if(!empty($tmpEvt->periodType)){
-					if($tmpEvt->periodType=="year")			{$evtPeriod='RRULE:FREQ=YEARLY;INTERVAL=1';}										//Chaque année
-					elseif($tmpEvt->periodType=="month")	{$evtPeriod='RRULE:FREQ=MONTHLY;INTERVAL=1';}										//Chaque mois
-					elseif($tmpEvt->periodType=="weekDay" && !empty($tmpEvt->periodValues)){													//Chaque semaine
-						$tmpEvtBYDAY=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));	//Jours de la semaine
-						$evtPeriod='RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY='.implode(',',$tmpEvtBYDAY);												//Ajoute le "RRULE"
-					}
-					if(!empty($evtPeriod)){
-						if(!empty($tmpEvt->periodDateEnd))  {$evtPeriod.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}			//Ajoute si besoin la date de fin (avec l'heure à 23:59:59)
-						$evtPeriod.=$RL;																										//Fin de ligne du "RRULE"
-					}	
-				}
-				//// Exceptions de périodicité
-				if(!empty($tmpEvt->periodDateExceptions)){
-					$periodDateExceptions=Txt::txt2tab(str_replace('-','',$tmpEvt->periodDateExceptions));//2024-07-14 => 20240714
-					$evtPeriodExcept.="EXDATE;VALUE=DATE:".implode(',',$periodDateExceptions).$RL;
-				}
-				//// Ajoute l'evenement !
-				$ical.= 'BEGIN:VEVENT'.$RL.
+				//// DEBUT DU VEVENT
+				$ICAL.= 'BEGIN:VEVENT'.$RL.
 						'UID:'.$tmpEvt->md5Id().$RL.
 						'SEQUENCE:0'.$RL.
 						'STATUS:CONFIRMED'.$RL.
@@ -595,19 +554,55 @@ class CtrlCalendar extends Ctrl
 						"DTSTAMP:".self::icalDate(date("Y-m-d H:i")).$RL.
 						'DTSTART;TZID='.self::icalDate($tmpEvt->dateBegin,true).$RL.
 						'DTEND;TZID='.self::icalDate($tmpEvt->dateEnd,true).$RL.
-						'SUMMARY:'.Txt::clean($tmpEvt->title,"min").$RL.
-						$evtDescription.$evtCategory.$evtPeriod.$evtPeriodExcept.
-						'END:VEVENT'.$RL;
+						'SUMMARY:'.Txt::clean($tmpEvt->title,"min").$RL;
+				//// DESCRIPTION
+				if(!empty($tmpEvt->description)){
+					$description=Txt::clean($tmpEvt->description,"min");											//Description principale (sans html & co)
+					if($tmpEvt->periodLabel()){																		//Ajoute la périodicité
+						$periodLabel=str_replace('<br>', '\n', $tmpEvt->periodLabel());								//Remplace les <br> du $periodLabel
+						$description.='\n\n'.Txt::clean($periodLabel,"min");										//Ajoute à la description (sans html & co)
+					}
+					$description=str_replace(['\\', ',', ';', '\\\\n'], ['\\\\', '\,', '\;', '\n'], $description);	//Echappement de caractères : iCal => RFC 5545
+					$description=wordwrap($description, 60, "\r\n ", true);											//Wordwrap < 75 caractère max par ligne
+					$ICAL.='DESCRIPTION:'.$description.$RL;
+				}
+				//// CATEGORIES (calendarCategory)
+				if(!empty($tmpEvt->_idCat)){
+					$calendarCategory=Ctrl::getObj("calendarCategory",$tmpEvt->_idCat);
+					$ICAL.='CATEGORIES:'.$calendarCategory->title.$RL;
+				}
+				//// RRULE (periodType)
+				if(!empty($tmpEvt->periodType)){
+					//RRULE principal
+					$RRULE=null;
+					if($tmpEvt->periodType=="year")			{$RRULE='FREQ=YEARLY;INTERVAL=1';}		//Chaque année
+					elseif($tmpEvt->periodType=="month")	{$RRULE='FREQ=MONTHLY;INTERVAL=1';}		//Chaque mois
+					elseif($tmpEvt->periodType=="weekDay" && !empty($tmpEvt->periodValues)){		//Chaque jour de semaine
+						$tmpBYDAY=str_replace([1,2,3,4,5,6,7], ['MO','TU','WE','TH','FR','SA','SU'], Txt::txt2tab($tmpEvt->periodValues));
+						$RRULE='FREQ=WEEKLY;INTERVAL=1;BYDAY='.implode(',',$tmpBYDAY);
+					}
+					//Ajoute un exceptions de périodicité
+					if(!empty($tmpEvt->periodDateExceptions)){
+						$periodDateExceptions=Txt::txt2tab(str_replace('-','',$tmpEvt->periodDateExceptions));//ex: "2024-07-14"=>"20240714"
+						$RRULE.=";EXDATE;VALUE=DATE:".implode(',',$periodDateExceptions).$RL;
+					}
+					//Ajoute une date de fin
+					if(!empty($tmpEvt->periodDateEnd))
+						{$RRULE.=';UNTIL='.self::icalDate($tmpEvt->periodDateEnd." 23:59:59");}			
+					//Ajoute la ligne RRULE
+					$ICAL.='RRULE:'.$RRULE.$RL;																								
+				}
+				//// FIN DU VEVENT
+				$ICAL.='END:VEVENT'.$RL;
 			}
-
-			////	Fin du fichier ical
-			$ical.="END:VCALENDAR";
+			////	FIN DU ICAL
+			$ICAL.="END:VCALENDAR";
 
 			////	Enregistre un fichier Ical temporaire et on renvoie son "Path"
 			if($tmpFile==true){
 				$tmpFilePath=tempnam(File::getTempDir(),"exportIcal".uniqid());
 				$fp=fopen($tmpFilePath, "w");
-				fwrite($fp,$ical);
+				fwrite($fp,$ICAL);
 				fclose($fp);
 				return $tmpFilePath;
 			}
@@ -617,7 +612,7 @@ class CtrlCalendar extends Ctrl
 				$icsFilename='Calendar_'.$calendarLabel.'_export-'.date("d-m-Y").'.ics';
 				header("Content-type: text/calendar; charset=utf-8");
 				header("Content-Disposition: inline; filename=".$icsFilename);
-				echo $ical;
+				echo $ICAL;
 			}
 		}
 	}
@@ -629,9 +624,9 @@ class CtrlCalendar extends Ctrl
 	{
 		if(!empty($dateTime)){
 			$timestamp=strtotime($dateTime);
-			$icalDate=date("Ymd",$timestamp).'T'.date("His",$timestamp);		//exple:  20301231T235959
-			if($addTimezone==true)	{return self::$curTimezone.':'.$icalDate;}	//exple:  Europe/Paris:20301231T235959
-			else					{return $icalDate.'Z';}						//exple:  20301231T235959Z
+			$icalDate=date("Ymd",$timestamp).'T'.date("His",$timestamp);		//ex:  20301231T235959
+			if($addTimezone==true)	{return self::$curTimezone.':'.$icalDate;}	//ex:  Europe/Paris:20301231T235959
+			else					{return $icalDate.'Z';}						//ex:  20301231T235959Z
 		}
 	}
 	

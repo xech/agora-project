@@ -165,9 +165,8 @@ class CtrlMisc extends Ctrl
 				foreach($tmpModule["ctrl"]::$MdlObjects as $tmpMdlObject){	//Parcourt chaque type d'objet du module
 					foreach($tmpMdlObject::$searchFields as $tmpField){		//Parcourt chaque champ de l'objet
 						$vDatas["searchFields"][$tmpField]["checked"]=(!Req::isParam("searchFields") || in_array($tmpField,Req::param("searchFields")))  ?  "checked"  :  null;	//Sélectionne si besoin la checkbox du champ
-						if(empty($vDatas["searchFields"][$tmpField]["title"]))	{$vDatas["searchFields"][$tmpField]["title"]="";}												//"title" de la checkbox (objets concernés)
-						if($tmpMdlObject::isFolder==true)	{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECTfolder")."<br>";}					  			//Précise qu'il s'agit d'un dossier
-						else								{$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJECT".$tmpMdlObject::objectType)."<br>";}			//Précise le type d'objet : Fichier, Contact..
+						$vDatas["searchFields"][$tmpField]["title"]=isset($vDatas["searchFields"][$tmpField]["title"]) ?? "";													//"title" de la checkbox (objets concernés)
+						$vDatas["searchFields"][$tmpField]["title"].=" - ".Txt::trad("OBJ_".$tmpMdlObject::objectType)."<br>";													//Type d'objet : "Fichier", "Dossier de fichier", etc
 					}
 				}
 			}

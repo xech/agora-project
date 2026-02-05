@@ -118,27 +118,21 @@ class Txt
 
 	/*********************************************************************************************************************
 	 * CLEAN DE TEXTE : SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
-	 * $scope="min" 	-> parametres de fichier Ical, etc :			"l'été &amp; (!?)"  ->  "l'été & (!?)"
-	 * $scope="normal"	-> noms de fichier, recherche d'objets, etc :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
-	 * $scope="max"		-> identifiants, noms en bdd, etc :				"l'été &amp; (!?)"  ->  "l_ete_"
+	 * $scope="min" 	-> fichiers Ical :							"l'été &amp; (!?)"  ->  "l'été & (!?)"
+	 * $scope="normal"	-> noms de fichier, moteur de recherche :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
+	 * $scope="max"		-> identifiants, noms en bdd :				"l'été &amp; (!?)"  ->  "l_ete_"
 	 *********************************************************************************************************************/
-	public static function clean($text, $scope="normal", $charReplace="_")
+	public static function clean($text, $scope="normal", $replacement="_")
 	{
 		if(!empty($text)){
-			//Supprime les balises html et décode les caractères html (ex: '&amp;' de TinyMce devient '&')  &&  Supprime les '&nbsp;', espaces multiples, tabulations et sauts de ligne
-			$text=html_entity_decode(strip_tags($text));
-			$text=preg_replace(['/&nbsp;/','/\s+/'], ' ', $text);
-			//Remplace les caractères accentués
-			if($scope=="max"){
-				$charsAccent=['/[àáâãäå]/u', '/[ç]/u', '/[èéêë]/u', '/[ìíîï]/u', '/[ñ]/u', '/[òóôõö]/u', '/[ùúûü]/u', '/[ÀÁÂÃÄÅ]/u', '/[Ç]/u', '/[ÈÉÊË]/u', '/[ÌÍÎÏ]/u', '/[Ñ]/u', '/[ÒÓÔÕÖ]/u', '/[ÙÚÛÜ]/u', '/[Ý]/u'];
-				$charsBasic =['a', 'c', 'e', 'i', 'n', 'o', 'u', 'A', 'C', 'E', 'I', 'N', 'O', 'U', 'Y'];
-				$text=preg_replace($charsAccent, $charsBasic, $text);
-			}
-			//Conserve les caractères alphanumériques et certains caractères spéciaux
-			$charsSpec='\.\-\_';																//conserve les caractères spéciaux  . - _ 
-			if($scope!="max")	{$charsSpec.='\s\'\,\(\)\[\]';}									//conserve aussi les espaces  ' , ( ) [ ]
-			if($scope=="min")	{$charsSpec.='\*\:\<\>\@\&\?\!\#"\/\\\\';  $charReplace=' ';}	//conserve aussi les  * : < > @ & ? ! # " / \   ('\' doit être échappé 2 fois)
-			$text=preg_replace('/[^\p{L}0-9'.$charsSpec.']/u', $charReplace, $text);			//Conserve les lettres (même accentuées) via  \p{L}  +  chiffres via  0-9  + caractère spéciaux
+			$text=html_entity_decode(strip_tags($text));										//Supprime les balises html et décode les caractères html (cf TinyMce: "&amp;"=>"&")
+			$text=preg_replace(['/&nbsp;/','/\s+/'], " ", $text);								//Supprime les "&nbsp;", espaces en double, tabulations et sauts de ligne via  \s+
+			if($scope=="max")	{$text=iconv('UTF-8', 'ASCII//TRANSLIT', $text);}				//Remplace les caractères accentués (ex: "èéêë"=>"e")
+			//Conserve les chiffres, lettres et certains caractères spéciaux
+			$charsKeep='\p{L}0-9\.\_\-';														//min-normal-max	=> garde les lettres Unicodes (même accentuées), les chiffres et caractères   . _ - 
+			if($scope!="max")	{$charsKeep.='\s\'()\[\]';}										//min-normal		=> garde aussi les espaces (via \s) et les caractères   ' ( ) [ ]
+			if($scope=="min")	{$charsKeep.=',;"€$=+%:<>@&?!#\*\/\\\\';  $replacement=" ";}	//min 				=> garde aussi les caractères   , ; " € $ = + % : < > @ & ? ! # * / \   ('\' est échappé 2 fois)
+			$text=preg_replace('/[^'.$charsKeep.']/u', $replacement, $text);					//Replace			=> [^...] pour exclure les caractères absents de la liste et "/u" pour les caractères Unicode
 			//Renvoie le résultat
 			return trim($text);
 		}
@@ -186,12 +180,12 @@ class Txt
 		return (!empty($email) && filter_var($email,FILTER_VALIDATE_EMAIL));
 	}
 
-	/***********************************************************************************************************************
-	 * CONTROLE LA VALIDITE D'UN PASSWORD : 6 CARACTÈRES MINIMUM, AVEC AU MOINS UNE MAJUSCULE, UNE MINUSCULE ET UN CHIFFRE
-	 ***********************************************************************************************************************/
-	public static function isValidPassword($password)
+	/********************************************************************************************************
+	 * CONTROLE LA VALIDITE D'UN PASSWORD : 8 CARACTERES MINIMUM, AVEC MINUSCULE ET CHIFFRE
+	 ********************************************************************************************************/
+	public static function isPassword($password)
 	{
-		return preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/', $password);
+		return preg_match('/^(?=.*[a-z])(?=.*\d).{8,}$/', $password);
 	}
 
 	/********************************************************************************************************
@@ -200,6 +194,21 @@ class Txt
 	public static function defaultPassword()
 	{
 		return substr(uniqid(),0,8);
+	}
+
+	/********************************************************************************************************
+	 * INPUT PASSWORD
+	 ********************************************************************************************************/
+	public static function inputPassword($inputName, $isRequired, $isAutocomplete=false)
+	{
+		$optionTooltip=($isRequired==false) ?  Txt::trad("passwordOptional")  : null;
+		$required =($isRequired==true) ?  'required'  : null;
+		$divOption=($isRequired==false) ?  '<div class="infos">'.Txt::trad("passwordOptional") .'</div>'  : null;
+		$autocomplete=($isAutocomplete==true) ?  'class="isAutocomplete"'  : null;
+		return '<div class="passwordDiv" '.Txt::tooltip($optionTooltip).'>
+					<input type="password" name="'.$inputName.'" id="input_'.$inputName.'" placeholder="'.Txt::trad("password").'" '.$required.' '.$autocomplete.'>
+					<img class="passwordDisplay" '.Txt::tooltip("passwordDisplay").' for="input_'.$inputName.'">
+				</div>'.$divOption;
 	}
 
 	/***************************************************************************************************************************/
@@ -252,14 +261,14 @@ class Txt
 				//Formatage de la date via "setPattern()" :  https://unicode-org.github.io/icu/userguide/format_parse/datetime/
 				$label=$pattern="";																								//Init (pas de "null")
 				if($format!="mini" && empty($timeEnd) && date("Ymd",$timeBegin)==date("Ymd"))	{$label=self::trad("today");}	//"Aujourd'hui" (pas dans le $pattern)
-				elseif($format=="default")														{$pattern="d MMMM";}			//Exple: "8 fevrier"
-				elseif($formatFull==true)														{$pattern="eee d MMMM";}		//Exple: "lun. 8 fevrier"
-				elseif($format=="dateBasic")													{$pattern="dd/MM/yyyy";}		//Exple: "08/02/2050"
-				elseif($format=="dateMini")														{$pattern="dd/MM";}				//Exple: "08/02"
-				elseif($format=="mini" && $diffDays==true)										{$pattern="d MMM";}				//Exple: "8 fev."
-				//Ajoute l'année si différente de celle en cours (Ex: "8 juin 2001")
+				elseif($format=="default")														{$pattern="d MMMM";}			//ex: "8 fevrier"
+				elseif($formatFull==true)														{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
+				elseif($format=="dateBasic")													{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
+				elseif($format=="dateMini")														{$pattern="dd/MM";}				//ex: "08/02"
+				elseif($format=="mini" && $diffDays==true)										{$pattern="d MMM";}				//ex: "8 fev."
+				//Ajoute l'année si différente de celle en cours (ex: "8 juin 2001")
 				if(($format=="default" || $formatFull==true)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y'))))   {$pattern.=" yyyy";}
-				//Ajoute l'heure si on affiche pas que la date (Ex: "9:05")
+				//Ajoute l'heure si on affiche pas que la date (ex: "9:05")
 				if($onlyDate==false)  {$pattern.=" H:mm";}
 				//Instancie le pattern via la "IntlDateFormatter()" avec la "lang" et "timezone" locale
 				$formatter->setPattern($pattern);

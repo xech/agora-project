@@ -13,7 +13,7 @@
 class CtrlLog extends Ctrl
 {
 	const moduleName="log";
-	public static $logFields=["date","userName","moduleName","objectType","action","comment"];
+	public static $logFields=["date","action","userName","objectType","comment","moduleName"];
 
 	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -30,14 +30,17 @@ class CtrlLog extends Ctrl
 	 ********************************************************************************************************/
 	public static function logList()
 	{
-		$logList=Db::getTab("SELECT * FROM ap_log WHERE _idSpace=".Ctrl::$curSpace->_id." ORDER BY date desc");				//Récupère les logs de l'espace courant
+		$sqlLogs="_idSpace=".Ctrl::$curSpace->_id;																	//Logs de l'espace
+		if(Ctrl::$curUser->isGeneralAdmin())  {$sqlLogs.=" OR action='connexion'";}									//Ajoute les connexion d'users (admin général)
+		$logList=Db::getTab("SELECT * FROM ap_log WHERE ".$sqlLogs." ORDER BY date desc");							//Récupère les logs de l'espace courant
 		foreach($logList as $logKey=>$log){
-			if(!empty($log["date"]))		{$log["date"]=substr($log["date"],0,16);}										//Label des heures
-			if(!empty($log["_idUser"]))		{$log["userName"]=Ctrl::getObj("user",$log["_idUser"])->getLabel();}			//Label des users
-			if(!empty($log["moduleName"]))	{$log["moduleName"]=Txt::trad(strtoupper($log["moduleName"])."_MODULE_NAME");}	//label des modules
-			if(!empty($log["objectType"]))	{$log["objectType"]=Txt::trad("OBJECT".$log["objectType"]);}					//Label du type d'objet
-			if(!empty($log["action"]))		{$log["action"]=Txt::trad("LOG_".$log["action"]);}								//Label des actions
-			$logList[$logKey]=$log;																							//Update le log
+			$moduleTradKey=strtoupper($log["moduleName"])."_MODULE_NAME";											//Traduction du module
+			if(!empty($log["date"]))		{$log["date"]=substr($log["date"],0,16);}								//Label date
+			if(!empty($log["action"]))		{$log["action"]=Txt::trad("LOG_".$log["action"]);}						//Label de l'action : "ajout", "suppression", etc
+			if(!empty($log["_idUser"]))		{$log["userName"]=Ctrl::getObj("user",$log["_idUser"])->getLabel();}	//Label de l'user
+			if(!empty($log["objectType"]))	{$log["objectType"]=Txt::trad("OBJ_".$log["objectType"]);}				//Label du type d'objet : "Fichier", "Dossier de fichier", etc
+			if(Txt::isTrad($moduleTradKey))	{$log["moduleName"]=Txt::trad($moduleTradKey);}							//label des modules
+			$logList[$logKey]=$log;																					//Update le log
 		}
 		return $logList;
 	}

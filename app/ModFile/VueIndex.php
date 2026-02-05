@@ -1,5 +1,5 @@
 <style>
-.objBlocks .objContainer										{height:150px; min-width:150px; max-width:250px;}									/*surcharge du conteneur "objBlocks"*/
+.objBlocks .objContainer										{height:150px; min-width:150px; max-width:250px;}									/*surcharge*/
 .objBlocks .objIcon												{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:4px;}/*centre l'icone (dossier, types de fichier, img "fullsize")*/
 .objBlocks .objIcon img											{margin-top:20px;}																	/*idem ...sauf image "fullsize"*/
 .objBlocks .thumbLandscape img, .objBlocks .thumbPortrait img	{min-width:100%; max-width:none; min-height:100%; max-height:none;}					/*images "fullsize" : couvrent tout le Block*/
@@ -23,7 +23,7 @@
 			<!--AJOUT D'ELEMENTS-->
 			<?php if(Ctrl::$curContainer->addContentRight()){ ?>
 				<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlFile::urlAddFiles() ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("FILE_addFile") ?></div></div>
-				<div class="menuLine" onclick="lightboxOpen('<?= MdlFileFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div><?= Txt::trad("addFolder") ?></div></div>
+				<div class="menuLine" onclick="lightboxOpen('<?= MdlFileFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div><?= Txt::trad("addFolder") ?></div></div>
 				<hr>
 			<?php } ?>
 			<!--ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU  &  ESPACE DISQUE-->

@@ -54,7 +54,7 @@ class CtrlLink extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$adress=Txt::clean(Req::param("adress"),"min");
+			$adress=filter_var(Req::param("adress"), FILTER_SANITIZE_URL);
 			if(!stristr($adress,"http"))  {$adress="http://".$adress;}
 			$curObj=$curObj->editRecord("adress=".Db::format($adress).", description=".Db::param("description"));
 			//Notifie par mail & Ferme la page

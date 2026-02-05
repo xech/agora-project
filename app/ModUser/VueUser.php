@@ -1,7 +1,7 @@
 <style>
 .vAdminLabel		{text-align:center;}
-.vAdminLabel hr		{margin-top:30px; margin-bottom:10px;}
-.vAdminLabel span	{font-style:italic; margin-left:5px;}
+.vAdminLabel hr		{margin-block:20px;}
+.vAdminLabel img	{margin-right:10px;}
 </style>
 
 <div>
@@ -15,11 +15,11 @@
 
 	////	GROUPES D'UTILISATEURS
 	$groupsLabel=null;
-	foreach(MdlUserGroup::getGroups(null,$curObj) as $tmpGroup)  {$groupsLabel.="<img src='app/img/arrowRightSmall.png'> ".$tmpGroup->title."<br>";}
+	foreach(MdlUserGroup::getGroups(null,$curObj) as $tmpGroup)  {$groupsLabel.=ucfirst($tmpGroup->title)."<br>";}
 	if(!empty($groupsLabel))  {echo "<div class='objField'><div><img src='app/img/user/userGroup.png'> ".Txt::trad("USER_userGroups")."</div><div>".$groupsLabel."</div></div>";}
-	
+
 	////	ADMIN GENERAL/D'ESPACE
 	if($curObj->isGeneralAdmin())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminGeneral.png'> ".Txt::trad("USER_adminGeneral")."</div>";}
-	elseif($curObj->isSpaceAdmin())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminSpace.png'> ".Txt::trad("USER_adminSpace")." <span>".Ctrl::$curSpace->name."</span></div>";}
+	elseif($curObj->isSpaceAdmin())	{echo "<div class='vAdminLabel'><hr><img src='app/img/user/userAdminSpace.png'> ".Txt::trad("USER_adminSpace")." &nbsp;<i>".Ctrl::$curSpace->name."</i></div>";}
 	?>
 </div>

@@ -7,11 +7,11 @@ ready(function(){
 <?php } ?>
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function objectFormControl(){
+function mainFormControl(){
 	return new Promise((resolve)=>{
 		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&controledName="+encodeURIComponent($("[name='title']").val());
 		$.ajax(ajaxUrl).done(function(result){
-			if(/duplicateName/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}//"Un autre element porte le même nom"
+			if(/duplicateName/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}//"Un element avec le même nom existe déjà"
 			else								{resolve(true);}
 		});
 	});

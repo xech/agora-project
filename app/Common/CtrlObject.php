@@ -97,12 +97,11 @@ class CtrlObject extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			//Enregistre et recharge l'objet
 			$curObj=$curObj->editRecord("name=".Db::param("name").", description=".Db::param("description").", icon=".Db::param("icon"));
 			//Etend les droits aux sous dossiers?
-			if(Req::isParam("extendToSubfolders")){
+			if(Req::isParam("extendSubfolders")){
 				foreach($curObj->folderTree("all") as $tmpObj)	{$tmpObj->setAffectations();}
 			}
 			//Notifie par mail & Ferme la page
@@ -110,8 +109,7 @@ class CtrlObject extends Ctrl
 			static::lightboxRedir();
 		}
 		////	Affiche la vue
-		else
-		{
+		else{
 			$vDatas["curObj"]=$curObj;
 			static::displayPage(Req::commonPath."VueEditFolder.php",$vDatas);
 		}
@@ -188,7 +186,7 @@ class CtrlObject extends Ctrl
 	public static function actionAccessRightParentFolder()
 	{
 		$objFolder=Ctrl::getCurObj();							//Récupère le dossier parent
-		$objectRight=explode("_",Req::param("objectRight"));	//Droit d'accès sélectionné pour le dossier édité (Ex: "1_U2_2" ou "1_spaceUsers_1.5")
+		$objectRight=explode("_",Req::param("objectRight"));	//Droit d'accès sélectionné pour le dossier édité (ex: "1_U2_2" ou "1_spaceUsers_1.5")
 		$_idSpace=(int)$objectRight[0];							//Espace du droit d'accès
 		$target=(string)$objectRight[1];						//Target du droit d'accès
 		if($objFolder::isFolder==true && $objFolder->isRootFolder()==false && count($objectRight)==3){
@@ -197,7 +195,7 @@ class CtrlObject extends Ctrl
 				$spaceLabel=Ctrl::getObj("space",$_idSpace)->getLabel();															//Label de l'espace du droit d'accès
 				if(preg_match("/^G/",$target))		{$targetLabel=self::getObj("userGroup",str_ireplace("G","",$target))->title;}	//Label du Groupe
 				elseif(preg_match("/^U/",$target))	{$targetLabel=self::getObj("user",str_ireplace("U","",$target))->getLabel();}	//Label de l'user spécifique
-				else								{$targetLabel=Txt::trad("EDIT_allUsers");}										//"Tous les utilisateurs"
+				else								{$targetLabel=Txt::trad("accessAllUsers");}										//"Tous les utilisateurs"
 				$result["errorMessage"]=str_replace(["--SPACE_LABEL--","--TARGET_LABEL--","--FOLDER_NAME--"], [$spaceLabel,$targetLabel,$objFolder->name], Txt::trad("EDIT_parentFolderAccessError"));
 				echo json_encode($result);
 			}

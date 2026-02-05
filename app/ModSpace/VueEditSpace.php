@@ -28,24 +28,18 @@ ready(function(){
 	////	Change l'ordre d'affichage des modules ("hightlight" : module fantome & "y" : déplacemnt vertical)
 	if(isMobile())	{$(".changeOrder").hide();}
 	else			{$("#modulesList").sortable({handle:".changeOrder",placeholder:"changeOrderShadow",axis:"y"});}
-
-	////	Sélectionne "allUsers" : toutes les checkboxes "user" sont alors "disabled" & "checked" (sinon on les réactive et uncheck)
-	$("input#allUsers").on("click",function(){
-		$(".spaceAffectInput[value$='_1']").prop("disabled",this.checked).prop("checked",this.checked);	//checkboxes "lecture : "disabled"+"check" || "enabled"+"uncheck"
-		spaceAffectationsLabel();																		//Stylise les labels
-	});
-
-	////	Init les affectations des Spaces<->Users (cf. "app.js")
-	spaceAffectations();
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function objectFormControl(){
+function mainFormControl(){
 	return new Promise((resolve)=>{
 		//// Controle le password de l'espace public + le nombre de modules sélectionnés
-		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && isValidPassword($("#publicSpacePassword").val())==false)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
-		if($("input[name='moduleList[]']:checked").isEmpty())																						{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
-		else																																		{resolve(true);}
+		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && $("#publicSpacePassword").isPassword()==false)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
+		if($("input[name='moduleList[]']:checked").isEmpty())																			{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
+		else{
+			$("#spaceAffecAllUsers input").prop("disabled",false);
+			resolve(true);
+		}
 	});
 }
 </script>
@@ -155,34 +149,36 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 		</div>
 	</fieldset>
 
-	<!--USERS DE L'ESPACE-->
+	<!--SPACE <=> USERS-->
 	<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?>
 	<fieldset>
-		<legend <?= Txt::tooltip("SPACE_adminTooltip") ?> ><img src="app/img/info.png"> <?= Txt::trad("SPACE_userAdminAccess") ?></legend>
+		<legend><?= Txt::trad("SPACE_userAdminAccess") ?></legend>
+		<!--ENTETE-->
 		<div class="spaceAffectLine">
-			<label>&nbsp;</label>
-			<div <?= Txt::tooltip("SPACE_userTooltip") ?> ><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
-			<div <?= Txt::tooltip("SPACE_adminTooltip") ?> ><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
+			<div>&nbsp;</div>
+			<div><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
+			<div><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
-		<div class="spaceAffectLine lineHover">
-			<label for="allUsers"><?= Txt::trad("SPACE_allUsers") ?></label>
-			<div <?= Txt::tooltip("SPACE_userTooltip") ?> ><input type="checkbox" name="allUsers" value="allUsers" id="allUsers" <?= ($curObj->allUsersAffected())?'checked':null ?>></div>
+		<!--TOUS LES USERS-->
+		<div class="spaceAffectLine" id="spaceAffecAllUsers" data-selectAll="<?= Txt::trad("selectAll") ?>" data-selectNone="<?= Txt::trad("selectNone") ?>" <?= Txt::tooltip(Txt::trad("SPACE_allUsersTooltip").' <i>'.$curObj->getLabel().'</i>') ?>>
+			<div><img src="app/img/user/accessAllUsers.png"> <?= ucfirst(Txt::trad("SPACE_allUsers")) ?></div>
+			<div><input type="checkbox" name="allUsers" value="allUsers" disabled <?= $curObj->allUsersAffected()?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>
+		<!--LISTE DES USERS-->
 		<?php
-		//Affectations des utilisateurs
-		foreach($userList as $tmpUser)
-		{
-			$userChecked =($curObj->userAffectation($tmpUser)==1) ? "checked" : null;	//Sélectionne la box "user"
-			$adminChecked=($curObj->userAffectation($tmpUser)==2) ? "checked" : null;	//Sélectionne la box "admin"
-			$userDisabled=($curObj->allUsersAffected()) ? "disabled" : null;			//Désactive la checkbox "user" si "allUsers" est sélectionné
-			echo '<div class="spaceAffectLine lineHover" id="targetLine'.$tmpUser->_id.'">
-					<label class="spaceAffectLabel">'.$tmpUser->getLabel().'</label>
-					<div '.Txt::tooltip("SPACE_userTooltip").'> <input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_1" '.$userChecked.' '.$userDisabled.'></div>
-					<div '.Txt::tooltip("SPACE_adminTooltip").'><input type="checkbox" name="spaceAffect[]" class="spaceAffectInput" value="'.$tmpUser->_id.'_2" '.$adminChecked.'></div>
-				  </div>';
-		}
+		foreach($userList as $tmpUser){
+			$inputAttr_1=$inputAttr_2=null;
+			if($curObj->accessRightUser($tmpUser)==2)									{$inputAttr_2=" checked";}	//Admin checked
+			if($curObj->allUsersAffected() || $curObj->accessRightUser($tmpUser)==1)	{$inputAttr_1=" checked";}	//User  checked
+			if($curObj->allUsersAffected())   											{$inputAttr_1.=" disabled";}//Tous les users : disabled
 		?>
+			<div class="spaceAffectLine lineHover" id="targetLine_<?= $tmpUser->_id ?>">
+				<div class="spaceAffectLabel"><?= $tmpUser->getLabel() ?></div>
+				<div class="spaceAffectBox" <?= Txt::tooltip("SPACE_userTooltip") ?>> <input type="checkbox" name="spaceAffect[]" value="<?= $tmpUser->_id ?>_1" <?= $inputAttr_1 ?> ></div>
+				<div class="spaceAffectBox" <?= Txt::tooltip("SPACE_adminTooltip") ?>><input type="checkbox" name="spaceAffect[]" value="<?= $tmpUser->_id ?>_2" <?= $inputAttr_2 ?> ></div>
+			</div>
+		<?php } ?>
 	</fieldset>
 	<?php } ?>
 

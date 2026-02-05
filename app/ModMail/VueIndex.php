@@ -98,7 +98,7 @@ ready(function(){
 		<div id="moduleMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
 			<div id="recipientMainMenu" class="miscContainer" >
-				<div id="recipientLabel"><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
+				<div id="recipientLabel"><img src="app/img/mailBig.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS & CONTACTS
 				foreach($containerList as $tmpContainer)

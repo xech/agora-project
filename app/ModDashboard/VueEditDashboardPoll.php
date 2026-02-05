@@ -20,7 +20,7 @@ async function deleteResponseFile(_idReponse)
 }
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function objectFormControl(){
+function mainFormControl(){
 	return new Promise((resolve)=>{
 		let responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return this.value; }).length;	//Nombre de "Réponses" spécifiées
 		if(responsesNb < 2)		{notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");	 resolve(false);}				//Au moins 2 réponses au sondage

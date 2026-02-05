@@ -23,6 +23,7 @@ ready(function(){
 
 
 <style>
+#bodyLightbox						{max-width:800px;}
 #searchMainField					{text-align:center; padding:10px;}
 #searchMainField *:is(input,button)	{height:40px; margin:10px;}
 #searchMainField input				{width:250px;}
@@ -35,9 +36,8 @@ ready(function(){
 .vAdvancedSearchOption				{display:inline-block; width:32%; padding:3px;}
 .vModuleLabel						{text-align:center; padding-top:20px;}
 .vModuleLabel img					{max-height:28px; margin-right:8px;}
-.menuLine							{padding:5px;}
-.menuLine mark						{padding:2px;}/*mots de la recherche surlignés*/
-.menuLine .vContextMenu				{width:50px; vertical-align:top;}
+.menuLine .vContextMenu				{width:30px; padding-top:10px; vertical-align:top;}
+.menuLine mark						{padding:4px 2px;}/*mots surlignés dans les résultats de la recherche*/
 .vPluginNews						{display:none; padding:5px; background:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
 .emptyContainer						{margin-top:20px;}
 

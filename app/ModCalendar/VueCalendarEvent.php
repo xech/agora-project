@@ -2,7 +2,7 @@
 .vEvtDetails						{margin-top:15px;}
 .vEvtDetails img, .categoryColor	{margin-right:15px;}
 .vEvtDetails img					{max-width:24px;}
-.vEvtDetails div					{margin-left:30px;}/*Exple: jours/mois des périodicités*/
+.vEvtDetails div					{margin-left:30px;}/*ex: jours/mois des périodicités*/
 .categoryColor						{width:20px; height:20px;}
 </style>
 

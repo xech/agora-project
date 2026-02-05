@@ -21,7 +21,7 @@
 			<img src="app/img/plus.png" class="menuLauncher" for="folderPathAddMenu">
 			<div id="folderPathAddMenu" class="menuContext">
 				<div class="menuLine" onclick="lightboxOpen('<?= $addElemUrl ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= $addElemLabel ?></div></div>
-				<div class="menuLine" onclick="lightboxOpen('<?= $curFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/folder/folderAdd.png"></div><div><?= Txt::trad("addFolder") ?></div></div>
+				<div class="menuLine" onclick="lightboxOpen('<?= $curFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div><?= Txt::trad("addFolder") ?></div></div>
 			</div>
 		</div>
 	<?php }	?>

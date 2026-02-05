@@ -5,17 +5,17 @@
 		<meta charset="UTF-8">
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 		<meta http-equiv="content-language" content="<?= Txt::trad("CURLANG") ?>">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"><!--Pas de zoom sur mobile-->
 		<link rel="icon" type="image/png" href="app/img/favicon.png">
-		<!--REFERENCEMENT-->
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,<?= Req::isMobileApp()?'user-scalable=no':'maximum-scale=2.0' ?>">
+		<!--REFERENCEMENT/SEO-->
 		<title><?= !empty(Ctrl::$agora->name) ? Ctrl::$agora->name : "Omnispace.fr - Agora-Project" ?></title>
-		<meta name="Description" content="<?= !empty(Ctrl::$agora->description) ? Ctrl::$agora->description : "Omnispace.fr - Agora-Project" ?>">
 		<meta name="application-name" content="Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
+		<meta name="Description" content="Agora-Project : a workspace to share your files, calendars, tasks and projects with your team.">
 		<!--  JQUERY -->
 		<script src="app/js/jquery-3.7.1.min.js"></script>
 		<script src="app/js/jquery-ui_1.14.0/jquery-ui.min.js"></script>
-		<script src="app/js/jquery-ui_1.14.0/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script><!--traduction-->
+		<script src="app/js/jquery-ui_1.14.0/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script>
 		<link rel="stylesheet" href="app/js/jquery-ui_1.14.0/jquery-ui.css">
 		<!-- LIBRAIRIES JS -->
 		<script src="app/js/fancybox_5.0.36/fancybox.umd.js"></script>

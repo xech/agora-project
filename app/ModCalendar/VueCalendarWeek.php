@@ -72,7 +72,7 @@ function calendarDisplay(isPrint)
 		},
 		//// Durant le Draggable
 		drag:function(event,ui){
-			let evtTmptHM=Number.parseFloat((ui.position.top / (weekCellHeight * 4))).toFixed(2);	//Heure flottante à 2 décimales	(Ex: 9:45 => 9,75)
+			let evtTmptHM=Number.parseFloat((ui.position.top / (weekCellHeight * 4))).toFixed(2);	//Heure flottante à 2 décimales	(ex: 9:45 => 9,75)
 			let evtTmpH=Math.floor(evtTmptHM);														//Heure "integer"	(9,75 => 9)
 			let evtTmpM=Math.round((evtTmptHM-evtTmpH) * 60);										//Minutes décimales (0,75 => 45)
 			let evtLabelDate=evtTmpH+":"+String(evtTmpM).padStart(2,'0');							//Label final

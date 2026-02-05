@@ -53,8 +53,7 @@ trait MdlObjectMenu
 		$vDatas["options"]=$options;
 
 		////	OBJET USER
-		if(static::objectType=="user")
-		{
+		if(static::objectType=="user"){
 			////	RETOURNE "FALSE" SI ON EST PAS PROPRIO DE L'OBJET NI ADMIN D'ESPACE
 			if($this->isAutor()==false && Ctrl::$curUser->isSpaceAdmin()==false)  {return false;}
 			////	MODIFIER L'OBJET  &  MODIF MESSENGER
@@ -79,8 +78,7 @@ trait MdlObjectMenu
 			}
 		}
 		////	OBJET LAMBDA
-		else
-		{
+		else{
 			////	MODIFIER L'OBJET  &  LOGS/HISTORIQUE  &  DEPLACER L'OBJET DANS UN AUTRE DOSSIER (si ya pas que le dossier racine)
 			if($this->editRight()){
 				$vDatas["editLabel"]=($this->hasAccessRight())  ?  Txt::trad("modifyAndAccesRight")  :  Txt::trad("modify");
@@ -99,27 +97,97 @@ trait MdlObjectMenu
 				$vDatas["deleteLabel"]=(!empty($options["deleteLabel"]))  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 			}
 			////	LIBELLES DES DROITS D'ACCESS : AFFECTATION AUX ESPACES, USERS, ETC  (droit d'accès de l'objet OU du conteneur d'un objet)
-			if($this->hasAccessRight() || $this->hasContainerAccessRight())
-			{
-				//Récupère les affectations (de l'objet OU de son conteneur)  &&  Ajoute le label des affectations pour chaque type de droit d'accès (lecture/ecriture limité/ecriture)
-				$objAffects=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
+			if($this->hasAccessRight() || $this->hasContainerAccessRight()){
+				//Récupère les affectations de l'objet ou de son conteneur
+				$objAffectations=($this->hasAccessRight())  ?  $this->getAffectations()  :  $this->containerObj()->getAffectations();
+				//Ajoute le label des affectations pour chaque droit d'accès ("1","1.5","2")
 				$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
-				foreach($objAffects as $tmpAffect)  {$vDatas["affectLabels"][(string)$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
+				foreach($objAffectations as $tmpAffect)  {$vDatas["affectLabels"][(string)$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
 				//Affiche si l'objet est personnel ("isPersoAccess")
-				$firstAffect=reset($objAffects);//Récup la première affectation du tableau
-				$vDatas["isPersoAccess"]=(count($objAffects)==1 && $firstAffect["targetType"]=="user" && $firstAffect["targetId"]==Ctrl::$curUser->_id);
-				//Tooltip spécifique
-				if(static::isContainer())  					{$tooltipDetail=$this->tradObject("accessAutorPrivilege")."<hr>";}					//"Seul l'auteur ou l'admin peuvent modifier/supprimer le -dossier-"
-				elseif($this->hasContainerAccessRight())	{$tooltipDetail=$this->containerObj()->tradObject("accessRightsInherited")."<hr>";}	//"Droits d'accès hérité du -dossier- parent"
-				else										{$tooltipDetail=null;}
-				//Tooltip : description de chaque droit d'accès
-				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]=$tooltipDetail.Txt::trad("accessReadTooltip");}
-				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$tooltipDetail.$this->tradObject("accessWriteLimitTooltip");}
-				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]=(static::isContainer())  ?  $tooltipDetail.$this->tradObject("accessWriteTooltipContainer")  :  $tooltipDetail.Txt::trad("accessWriteTooltip");}
+				$firstAffect=reset($objAffectations);//Récup la première affectation du tableau
+				$vDatas["isPersoAccess"]=(count($objAffectations)==1 && $firstAffect["targetType"]=="user" && $firstAffect["targetId"]==Ctrl::$curUser->_id);
+				//Tooltip : description des droits d'accès
+				if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]  =$this->tradObject("accessReadTooltip");}
+				if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObject("accessWriteLimitTooltip");}
+				if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]  =static::isContainer() ? $this->tradObject("accessWriteTooltipContainer") : $this->tradObject("accessWriteTooltip");}
 			}
 		}
 		////	Affichage
 		return Ctrl::getVue(Req::commonPath."VueObjMenuContext.php",$vDatas);
+	}
+
+	/********************************************************************************************************
+	 * VUE : MENU D'ÉDITION PRINCIPAL (droits d'accès, fichiers joints, etc)
+	 ********************************************************************************************************/
+	public function editMenuSubmit()
+	{
+		////	MENU DES AFFECTATIONS / DROITS D'ACCES
+		if($this->hasAccessRight()){
+			////	Affectations en BDD  +  Labels des droits d'accès
+			$objAffectations=$this->getAffectations();
+			$vDatas["menuAccessRight"]=true;
+			$accessFullTooltip				=Txt::tooltip($this->tradObject("accessFullTooltip"));
+			$vDatas["affectTooltips"]["1"]	=Txt::tooltip($this->tradObject("accessReadTooltip"));
+			$vDatas["affectTooltips"]["1.5"]=static::isContainer()  ?  Txt::tooltip($this->tradObject("accessWriteLimitTooltip"))  :  null;
+			$vDatas["affectTooltips"]["2"]	=static::isContainer()  ?  Txt::tooltip($this->tradObject("accessWriteTooltipContainer"))  :  Txt::tooltip($this->tradObject("accessWriteTooltip"));
+			$vDatas["extendSubfolders"]=(static::isFolder==true  &&  $this->isNew()==false  &&  Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);
+			////	Liste des affectations disponibles pour chaque espace
+			$vDatas["spaceAffectations"]=[];
+			foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
+				if($tmpSpace->moduleEnabled(static::moduleName)){
+					$tmpSpace->targetLines=[];
+					////	Ligne "Tous les utilisateurs"
+					$targetId=$tmpSpace->_id."_spaceUsers";//ex: "1_spaceUsers"
+					if(empty($tmpSpace->public))	{$targetLabel=Txt::trad("accessAllUsers");			$targetTooltip=Txt::tooltip("accessAllUsersTooltip");}
+					else							{$targetLabel=Txt::trad("accessAllUsersGuests");	$targetTooltip=Txt::tooltip("accessAllUsersGuestsTooltip");}
+					$tmpSpace->targetLines[$targetId]=["icon"=>"accessAllUsers.png", "label"=>$targetLabel, "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$targetTooltip)];
+					////	Lignes des groupes d'users de l'espace
+					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
+						$targetId=$tmpSpace->_id."_G".$tmpGroup->_id;//ex: "1_G5"
+						$tmpSpace->targetLines[$targetId]=["icon"=>"accessGroup.png", "label"=>$tmpGroup->title, "tooltip"=>Txt::tooltip($tmpGroup->usersLabel)];
+					}
+					////	Lignes des users de l'espace
+					foreach($tmpSpace->getUsers() as $tmpUser){
+						$targetId=$tmpSpace->_id."_U".$tmpUser->_id;//ex: "1_U55"
+						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="accessFull.png";	$targetTooltip=$accessFullTooltip;	$accessFull=true;}//Auteur/Admin
+						else																				{$targetIcon="accessUser.png";	$targetTooltip=null;				$accessFull=false;}
+						$tmpSpace->targetLines[$targetId]=["icon"=>$targetIcon, "label"=>$tmpUser->getLabel(), "tooltip"=>$targetTooltip, "accessFull"=>$accessFull];
+					}
+					////	Checkboxes de chaque target
+					$accessRightList=static::isContainer()  ?  ["1","1.5","2"]  :  ["1","2"];
+					foreach($tmpSpace->targetLines as $targetId=>$targetTmp){
+						foreach($accessRightList as $tmpRight){
+							$tmpAttr=' value="'.$targetId.'_'.$tmpRight.'"';																				//Value de la checkbox
+							if(!empty($targetTmp["accessFull"]) && $tmpRight!="2")												{$tmpAttr.=" disabled";}	//Disabled si "accessFull" : Auteur/Admin
+							if(!empty($objAffectations[$targetId]) && $objAffectations[$targetId]["accessRight"]==$tmpRight)	{$tmpAttr.=" checked";}		//Checked si dejà enregistrée en BDD
+							$tmpSpace->targetLines[$targetId]["checkboxes"][$tmpRight]=$tmpAttr;															//Ajoute la checkbox à la target
+						}
+					}
+					////	Enregistre les targets de l'espace
+					$vDatas["spaceAffectations"][$tmpSpace->_id]=$tmpSpace;
+				}
+			}
+		}
+		////	MENU DES NOTIFS MAIL
+		if(static::hasNotifMail==true && Tool::mailEnabled()){
+			$vDatas["menuNotifMail"]=true;
+			$vDatas["notifMailUsers"]=Ctrl::$curUser->usersVisibles(true);
+			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");
+			$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
+			$vDatas["notifMailTooltip"]=$this->tradObject("EDIT_notifMailTooltip");
+			if($this::objectType=="calendarEvent")  {$vDatas["notifMailTooltip"].=Txt::trad("EDIT_notifMailTooltipCal");}//"notif envoyée aux propriétaires des agendas"
+		}
+		////	MENU DES FICHIERS JOINTS
+		if(static::hasAttachedFiles==true){
+			$vDatas["menuAttachedFile"]=true;
+			$vDatas["attachedFilesNb"]=count($this->attachedFileList());
+		}
+		////	MENU DES SHORTCUT
+		if(static::hasShortcut==true)
+			{$vDatas["menuShortcut"]=true;}
+		////	AFFICHE LA VUE
+		$vDatas["curObj"]=$this;
+		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
 
 	/********************************************************************************************************
@@ -139,7 +207,7 @@ trait MdlObjectMenu
 	}
 
 	/********************************************************************************************************
-	 * VUE : TITRE DE L'OBJET SUR MOBILE (Ex: "Nouveau dossier", "Mon dossier")
+	 * VUE : TITRE DE L'OBJET SUR MOBILE (ex: "Nouveau dossier", "Mon dossier")
 	 ********************************************************************************************************/
 	public function titleMobile($keyTrad)
 	{
@@ -158,87 +226,6 @@ trait MdlObjectMenu
 		$vDatas["editorDraft"]=(string)Db::getVal("SELECT editorDraft FROM ap_userLivecouter WHERE _idUser=".Ctrl::$curUser->_id." AND ".$sqlTypeId);
 		//Affiche la vue
 		return Ctrl::getVue(Req::commonPath."VueObjEditor.php",$vDatas);
-	}
-
-	/********************************************************************************************************
-	 * VUE : MENU D'ÉDITION PRINCIPAL (droits d'accès, fichiers joints, etc)
-	 ********************************************************************************************************/
-	public function editMenuSubmit()
-	{
-		////	Menu des droits d'accès
-		if($this->hasAccessRight())
-		{
-			////	Init & Labels
-			$vDatas["objMenuAccessRight"]=true;
-			$vDatas["objMenuAccessRightLabel"]=(static::isContainer())  ?  '<span title="'.$this->tradObject("accessAutorPrivilege").'<hr>'.$this->tradObject("accessWriteLimitTooltip").'">'.Txt::trad("EDIT_accessRightContent").' <img src="app/img/info.png"></span>'  :  Txt::trad("EDIT_accessRight");
-			$vDatas["accessWriteLimitTooltip"]=$this->tradObject("accessWriteLimitTooltip");
-			$vDatas["extendToSubfolders"]=(static::isFolder==true && $this->isNew()==false && Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);//dossier avec des sous-dossiers
-			////	Droits d'accès pour chaque espace ("targets")
-			$vDatas["accessRightSpaces"]=[];
-			foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
-				//// Verif si le module de l'objet est bien activé sur l'espace
-				if(array_key_exists(static::moduleName,$tmpSpace->moduleList())){
-					////	Init les "targetLines"
-					$tmpSpace->targetLines=[];
-					////	"Tous les utilisateurs"  OU  "Tous les utilisateurs et invités"
-					if(empty($tmpSpace->public))	{$allUsersLabel=Txt::trad("EDIT_allUsers");				$allUsersLabelInfo=Txt::trad("EDIT_allUsersTooltip");}
-					else							{$allUsersLabel=Txt::trad("EDIT_allUsersAndGuests");	$allUsersLabelInfo=Txt::trad("EDIT_allUsersAndGuestsTooltip");}
-					$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_spaceUsers", "label"=>$allUsersLabel, "icon"=>"user/accessAll.png", "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$allUsersLabelInfo)];
-					////	Groupe d'utilisateurs de l'espace
-					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
-						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_G".$tmpGroup->_id, "label"=>$tmpGroup->title, "icon"=>"user/accessGroup.png", "tooltip"=>Txt::reduce($tmpGroup->usersLabel)];
-					}
-					////	Chaque user de l'espace
-					foreach($tmpSpace->getUsers() as $tmpUser){
-						if($tmpSpace->accessRightUser($tmpUser)==2)	{$tmpUserFullAccess=true;	$tmpUserIcon="user/accessUserAdmin.png";	$tmpUserTooltip=Txt::trad("EDIT_adminSpace");}	//Admin d'espace
-						else										{$tmpUserFullAccess=false;	$tmpUserIcon="user/accessUser.png";			$tmpUserTooltip=null;}							//User lambda
-						$tmpSpace->targetLines[]=["targetId"=>$tmpSpace->_id."_U".$tmpUser->_id, "label"=>$tmpUser->getLabel(), "icon"=>$tmpUserIcon, "tooltip"=>$tmpUserTooltip, "onlyFullAccess"=>$tmpUserFullAccess, "isUser"=>true];
-					}
-					////	Ajoute l'espace
-					$vDatas["accessRightSpaces"][]=$tmpSpace;
-				}
-			}
-			////	Prépare les affectations possibles de chaque espace (targets)
-			$objAffects=$this->getAffectations();
-			foreach($vDatas["accessRightSpaces"] as $tmpSpaceKey=>$tmpSpace)
-			{
-				foreach($tmpSpace->targetLines as $targetKey=>$targetLine)
-				{
-					//Init les propriétés des checkboxes (pas de "class"!). Utilise des "id" pour une sélection rapide des checkboxes par jQuery
-					$targetId=$targetLine["targetId"];//exple : "1_spaceUsers" ou "2_G4
-					foreach(["1","1.5","2"] as $tmpRight)
-						{$targetLine["boxProp"][$tmpRight]="value=\"".$targetId."_".$tmpRight."\"  id=\"objectRightBox_".$targetId."_".str_replace('.','',$tmpRight)."\"";}//"_15" au lieu de "_1.5" à cause du selector jQuery
-					//Check une des boxes ?
-					if(isset($objAffects[$targetId])){
-						$tmpRight=(string)$objAffects[$targetId]["accessRight"];//Toujours typer les index en 'string', pas en 'float'
-						$targetLine["boxProp"][$tmpRight].=" checked";
-						$targetLine["isChecked"]=true;
-					}
-					//Donne uniquement accès à la checkbox "write" (cf. administrateurs)
-					if(!empty($targetLine["onlyFullAccess"]))	{$targetLine["boxProp"]["1"].=" disabled";  $targetLine["boxProp"]["1.5"].=" disabled";}
-					//Met à jour les propriétés de la target ($targetKey est la concaténation des champs "_idSpace" et "target")
-					$vDatas["accessRightSpaces"][$tmpSpaceKey]->targetLines[$targetKey]=$targetLine;
-				}
-			}
-		}
-		////	OPTIONS NOTIFICATION PAR MAIL
-		if(static::hasNotifMail==true && Tool::mailEnabled()){
-			$vDatas["objMenuNotifMail"]=true;
-			$vDatas["notifMailUsers"]=Ctrl::$curUser->usersVisibles(true);
-			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");
-			$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
-		}
-		////	OPTION "FICHIERS JOINTS"
-		if(static::hasAttachedFiles==true){
-			$vDatas["objMenuAttachedFile"]=true;
-		}
-		////	OPTION "SHORTCUT"
-		if(static::hasShortcut==true){
-			$vDatas["objMenuShortcut"]=true;
-		}
-		////	AFFICHE LA VUE
-		$vDatas["curObj"]=$this;
-		return Ctrl::getVue(Req::commonPath."VueObjMenuEdit.php",$vDatas);
 	}
 
 	/********************************************************************************************************

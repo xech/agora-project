@@ -67,7 +67,7 @@ class MdlSpace extends MdlObject
 	/*********************************************************************************************************
 	 * AFFECTATION D'UN USER À L'ESPACE : DROIT MAXI || "allUsers" SELECTIONNÉ
 	**********************************************************************************************************/
-	public function userAffectation($objUser)
+	private function userAffectation($objUser)
 	{
 		return (int)Db::getVal("SELECT MAX(accessRight) FROM ap_joinSpaceUser WHERE _idSpace=".$this->_id." AND (_idUser=".(int)$objUser->_id." OR allUsers=1)");
 	}
@@ -101,7 +101,7 @@ class MdlSpace extends MdlObject
 			if($return=="idsTab")  {return $idsList;}								//Retourne une liste d'_id
 			elseif($return=="idsSql"){												//Retourne une liste d'identifiants pour les requêtes SQL
 				$idsList[]=0;														//Ajoute un pseudo user pour pas avoir d'erreur SQL si la liste est vide
-				return implode(",",$idsList);										//Exple: "WHERE _idUser IN (1,3,5,0)")
+				return implode(",",$idsList);										//ex: "WHERE _idUser IN (1,3,5,0)")
 			}
 		}
 	}
