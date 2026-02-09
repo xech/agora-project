@@ -61,6 +61,7 @@ class Trad extends Txt
 			"copyUrl"=>"Copy the share link",
 			"copyUrlTooltip"=>"Copy the share link (URL) to send it via email, messaging, etc.",
 			"copyUrlNotif"=>"The link has been successfully copied",
+			"footerGeneratedTime"=>"Page generated in",
 
 			////	Confirm et Suppression
 			"confirm"=>"Confirm",
@@ -313,7 +314,7 @@ class Trad extends Txt
 			"kiloOctet"=>"KB",
 			"rootFolder"=>"Root folder",
 			"rootFolderTooltip"=>"Open the the space settings to change the access rights to the root folder",
-			"addFolder"=>"add a folder",
+			"addFolder"=>"New folder",
 			"download"=>"Download file",
 			"downloadFolder"=>"Download folder",
 			"diskSpaceUsed"=>"Disk space used",
@@ -462,8 +463,8 @@ class Trad extends Txt
 			"EDIT_showAllSpaces"=>"Display all spaces",
 			"EDIT_notifMail"=>"Notify",
 			"EDIT_notifMail2"=>"Send a notification of creation/modification by email",
-			"EDIT_notifMailTooltip"=>"The notification will be sent to the people assigned --OBJ_LABEL_TO--",
-			"EDIT_notifMailTooltipCal"=>"<hr>If you assign the event to personal calendars, then the notification will only be sent to the owners of these calendars (write access).",
+			"EDIT_notifMailTooltip"=>"Send an email notification to people with access --OBJ_LABEL_TO--",
+			"EDIT_notifMailTooltipCal"=>"<hr>Personal calendar: sent only to people who can edit the calendar.<br>Shared calendar: sent to anyone who can view the calendar.",
 			"EDIT_notifMailAddFiles"=>"Attach files to the notification",
 			"EDIT_notifMailSelect"=>"Select the recipients of notifications",
 			"EDIT_extendSubfolders"=>"Assign the same access rights to the under-folders",

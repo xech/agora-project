@@ -173,7 +173,10 @@ class MdlCalendarEvent extends MdlObject
 	public function affectedUserIds($accessWrite=false)
 	{
 		$affectedUserIds=[];
-		foreach($this->affectedCalendars() as $tmpCal)  {$affectedUserIds=array_merge($affectedUserIds, $tmpCal->affectedUserIds($accessWrite));}
+		foreach($this->affectedCalendars() as $tmpCal){
+			$calUserIds=($tmpCal->isPersonal())  ?  $tmpCal->affectedUserIds(true)  :  $tmpCal->affectedUserIds($accessWrite);
+			$affectedUserIds=array_merge($affectedUserIds,$calUserIds);
+		}
 		return array_unique($affectedUserIds);
 	}
 

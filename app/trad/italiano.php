@@ -61,6 +61,7 @@ class Trad extends Txt
 			"copyUrl"=>"Copia il link di condivisione",
 			"copyUrlTooltip"=>"Copia il link di condivisione (URL) per inviarlo tramite email, messaggio, ecc.",
 			"copyUrlNotif"=>"Il link è stato copiato correttamente",
+			"footerGeneratedTime"=>"Pagina generata in",
 		
 			////	Confirm et Suppression
 			"confirm"=>"Conferma",
@@ -462,8 +463,8 @@ class Trad extends Txt
 			"EDIT_showAllSpaces"=>"Visualizza tutti gli spazi",
 			"EDIT_notifMail"=>"Notifica via email",
 			"EDIT_notifMail2"=>"Invia una notifica via email",
-			"EDIT_notifMailTooltip"=>"Invia una notifica via email alle persone assegnate --OBJ_LABEL_TO--",
-			"EDIT_notifMailTooltipCal"=>"<hr>Se si assegna l'evento ai calendari personali, la notifica verrà inviata solo ai proprietari di questi calendari (accesso in scrittura).",
+			"EDIT_notifMailTooltip"=>"Inviare una notifica via email alle persone che hanno accesso --OBJ_LABEL_TO--",
+			"EDIT_notifMailTooltipCal"=>"<hr>Calendario personale: inviato solo alle persone che possono modificare il calendario.<br>Calendario condiviso: inviato a chiunque possa visualizzare il calendario.",
 			"EDIT_notifMailAddFiles"=>"Allega file alla notifica",
 			"EDIT_notifMailSelect"=>"Seleziona i destinatari delle notifiche",
 			"EDIT_extendSubfolders"=>"Assegna gli stessi diritti di accesso alle sottocartelle",

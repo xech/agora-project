@@ -270,33 +270,33 @@ abstract class Ctrl
 	}
 
 	/********************************************************************************************************
-     * GÉNÈRE UNE VUE  (cf. paramètres $datas)
+     * GÉNÈRE UNE VUE
      ********************************************************************************************************/
-	public static function getVue($filePath, $datas=array())
+	public static function getVue($vuePath, $vDatas=[])
 	{
-		if(file_exists($filePath)){
-			ob_start();				//Démarre la temporisation de sortie
-			extract($datas);		//On rend les $datas accessibles à la vue ($data["monParametre"] devient $monParametre)
-			require $filePath;		//Inclut le fichier vue
+		if(file_exists($vuePath)){
+			ob_start();				//Temporisation de sortie
+			extract($vDatas);		//$vDatas["var"] => $var
+			require $vuePath;		//Inclut le fichier vue
 			return ob_get_clean();	//Renvoie du tampon de sortie
 		}
-		else{throw new Exception("File '".$filePath."' unreachable");}
+		else{throw new Exception("File '".$vuePath."' unreachable");}
 	}
 
 	/********************************************************************************************************
 	 * AFFICHE UNE PAGE COMPLETE (ENSEMBLE DE VUES)
 	 ********************************************************************************************************/
-	public static function displayPage($fileMainVue, $vDatasMainVue=array())
+	public static function displayPage($vuePathMain, $vDatasMain=[])
 	{
 		////	PAGE PRINCIPALE : AFFICHE LE HEADER, WALLPAPER, ETC.
-		if(static::$isMainPage==true)
-		{
+		if(static::$isMainPage==true){
 			//// HEADER & MESSENGER (sauf si ctrl externe)
 			if(!in_array(Req::$curCtrl,["offline","misc"])){
 				//Plugins "shortcuts" des modules
 				$vDatasHeader["pluginsShortcut"]=[];
 				foreach(self::$curSpace->moduleList() as $tmpModule){
-					if(method_exists($tmpModule["ctrl"],"getPlugins"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"], $tmpModule["ctrl"]::getPlugins(["type"=>"shortcut"]));}
+					$modCtrl=$tmpModule["ctrl"];
+					if(method_exists($modCtrl,"getPlugins"))  {$vDatasHeader["pluginsShortcut"]=array_merge($vDatasHeader["pluginsShortcut"], $modCtrl::getPlugins(["type"=>"shortcut"]));}
 				}
 				//HeaderMenu : Liste des espaces et modules +  Inscription d'utilisateurs  +  Affichage du label des modules
 				$vDatasHeader["spaceList"]=self::$curUser->spaceList();
@@ -313,12 +313,12 @@ abstract class Ctrl
 			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 			$vDatas["footerLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			$vDatas["footerLogoTooltip"]=OMNISPACE_URL_LABEL.'<hr> generated in '.round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
+			$vDatas["footerLogoTooltip"]=Txt::trad("footerGeneratedTime")." ".round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
 		}
-		////	NOTIFS (GET/POST)  +  AFFICHE LA VUE
+		////	NOTIFS  +  RECUPERE LA VUE PRINCIPALE  +  AFFICHE LA VUE COMPLETE
 		foreach((array)Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}
-		$pathVue=(strstr($fileMainVue,Req::commonPath)==false)  ?  Req::curModPath()  :  null;//"app/Common/" déjà précisé?
-		$vDatas["mainContent"]=self::getVue($pathVue.$fileMainVue, $vDatasMainVue);
+		if(strstr($vuePathMain,Req::commonPath)==false)  {$vuePathMain=Req::curModPath().$vuePathMain;}//Path du module courant
+		$vDatas["mainContent"]=self::getVue($vuePathMain, $vDatasMain);
 		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
 	}
 

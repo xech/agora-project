@@ -61,6 +61,7 @@ class Trad extends Txt
 			"copyUrl"=>"Link zum Teilen kopieren",
 			"copyUrlTooltip"=>"Link (URL) zum Teilen kopieren und per E-Mail, Messenger usw. versenden.",
 			"copyUrlNotif"=>"Link erfolgreich kopiert.",
+			"footerGeneratedTime"=>"Zeit zum Generieren der Seite:",
 
 			////	Confirm et Suppression
 			"confirm"=>"Bestätigen",
@@ -462,8 +463,8 @@ class Trad extends Txt
 			"EDIT_showAllSpaces"=>"Alle Benutzer und Bereiche anzeigen",
 			"EDIT_notifMail"=>"Per Email benachrichtigen",
 			"EDIT_notifMail2"=>"Email-Benachrichtigung senden",
-			"EDIT_notifMailTooltip"=>"Die Benachrichtigung wird an die Personen gesendet, denen --OBJ_LABEL_TO-- zugewiesen ist.",
-			"EDIT_notifMailTooltipCal"=>"<hr>Wenn Sie den Termin persönlichen Kalendern zuordnen, dann wird die Benachrichtigung nur an die Besitzer dieser Kalender gesendet (Schreibzugriff).",
+			"EDIT_notifMailTooltip"=>"Eine E-Mail-Benachrichtigung an Personen mit Zugriff --OBJ_LABEL_TO-- senden.",
+			"EDIT_notifMailTooltipCal"=>"<hr>Persönlicher Kalender: Wird nur an Personen gesendet, die den Kalender bearbeiten können.<br>Geteilter Kalender: Wird an alle Personen gesendet, die den Kalender einsehen können.",
 			"EDIT_notifMailAddFiles"=>"Datei(en) an die Benachrichtigung anhängen",
 			"EDIT_notifMailSelect"=>"Benachrichtigungsempfänger auswählen",
 			"EDIT_extendSubfolders"=>"Unterordnern dieselben Zugriffsrechte geben",

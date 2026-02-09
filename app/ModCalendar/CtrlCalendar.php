@@ -264,22 +264,22 @@ class CtrlCalendar extends Ctrl
 				}
 			}
 			//// (RE)ATTRIBUE LES AFFECTATIONS AUX AGENDAS
-			$_idUsersMail=[];
+			$affectedUserIds=[];
 			foreach(Req::param("affectationCalendars") as $tmpId){
 				$tmpCal=Ctrl::getObj("calendar",$tmpId);																											//Récupère l'agenda
-				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){																							//Verif si l'evt peut être affecté à cet agenda
+				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){																							//Verif si l'evt peut être affecté à l'agenda
 					$proposeOptionChecked=(Req::isParam("proposeOptionCalendars") && in_array($tmpId,Req::param("proposeOptionCalendars")));						//Option de proposition cochée
-					$isConfirmed=($proposeOptionChecked==false && ($tmpCal->addContentRight() || in_array($tmpId,$alreadyConfirmedCals)));							//Agenda accessible en écriture / Proposition déjà confirmée
+					$isConfirmed=($proposeOptionChecked==false && ($tmpCal->addContentRight() || in_array($tmpId,$alreadyConfirmedCals)));							//Verif si l'evt est confirmé
 					Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$tmpCal->_id.", confirmed=".Db::format($isConfirmed));	//Affectation à l'agenda
-					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$_idUsersMail=array_merge($_idUsersMail,$tmpCal->affectedUserIds(true));}			//Notif d'une proposition pour les proprios de l'agenda
+					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$affectedUserIds=array_merge($affectedUserIds,$tmpCal->affectedUserIds(true));}	//Notif d'une proposition pour les proprios de l'agenda
 				}
 			}
 			//// NOTIFIE PAR MAIL LA PROPOSITION D'EVT (GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
-			if(!empty($_idUsersMail)){
+			if(!empty($affectedUserIds)){
 				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
-				Tool::sendMail($_idUsersMail, $mailSubject, $mailMessage, ["noNotify"]);
+				Tool::sendMail($affectedUserIds, $mailSubject, $mailMessage, ["noNotify"]);
 			}
 			//// NOTIFIE PAR MAIL LA CREATION D'EVT (PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
 			if(Req::isParam("notifMail") && $curObj->editRight()){
@@ -298,12 +298,12 @@ class CtrlCalendar extends Ctrl
 		foreach($vDatas["affectationCalendars"] as $tmpCal){
 			$tmpCal->inputAttr=null;
 			if($tmpCal->_id==Req::param("_idCal") || $curObj->isAffectedCalendar($tmpCal))	{$tmpCal->inputAttr.=" checked";}								//Check si présélectionné / déjà affecté
-			if($tmpCal->type=="user")														{$tmpCal->inputAttr.=' data-idUser="'.$tmpCal->_idUser.'"';}	//Cf "userGroupSelect()"
+			if($tmpCal->isPersonal())														{$tmpCal->inputAttr.=' data-idUser="'.$tmpCal->_idUser.'"';}	//Cf "userGroupSelect()"
 			$tmpCal->inputType=($tmpCal->addContentRight())  ?  "affectation"  :  "proposition";															//Affectation / proposition d'evt
 			$tmpCal->tooltip=($tmpCal->inputType=="proposition")  ?  Txt::trad("CALENDAR_proposeEvtTooltip")  :  Txt::trad("CALENDAR_addEvtTooltip2");		//Tooltip du label : "Proposer" / "Ajouter l'événement"
 			if(!empty($tmpCal->description))  {$tmpCal->tooltip.="<hr>".$tmpCal->description;}																//Ajoute la description de l'agenda
 			if($tmpCal->inputType=="proposition")  {$tmpCal->title.=" &ast;";}																				//Title : ajoute un asterisk pour les proposition
-			$tmpCal->proposeOption=($tmpCal->type=="user" && $tmpCal->addContentRight() && $tmpCal->isMyPersoCalendar()==false);							//Option de proposition d'evt : agenda perso "writable"
+			$tmpCal->proposeOption=($tmpCal->isPersonal() && $tmpCal->addContentRight() && $tmpCal->isMyPersoCalendar()==false);							//Option de proposition d'evt : agenda perso "writable"
 		}
 		//// Nouvel evt : dates par défaut
 		if($curObj->isNew()){

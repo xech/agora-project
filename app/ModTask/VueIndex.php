@@ -94,8 +94,7 @@ function moduleDisplay(){
 		}
 
 		////	TIMELINE
-		if(!empty($timelineBegin))
-		{
+		if(!empty($timelineBegin)){
 			//// INIT LA TIMELINE
 			echo '<hr class="vTimelineSeparator">
 				  <div class="vTimelineMain miscContainer"><table>';

@@ -285,7 +285,7 @@ function moduleDisplay()
 				<div class="vCalHeaderLeft">
 					<?php
 					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';													//Label de l'agenda
-					if($tmpCal->type=="user")  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}															//Ajoute l'icone de l'user ?
+					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}															//Ajoute l'icone de l'user ?
 					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["launcherIcon"=>(Req::isMobile()?"inlineSmall":"inlineBig"),"launcherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda, avec menu context?
 					?>
 				</div>

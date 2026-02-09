@@ -175,7 +175,7 @@ trait MdlObjectMenu
 			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");
 			$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 			$vDatas["notifMailTooltip"]=$this->tradObject("EDIT_notifMailTooltip");
-			if($this::objectType=="calendarEvent")  {$vDatas["notifMailTooltip"].=Txt::trad("EDIT_notifMailTooltipCal");}//"notif envoyée aux propriétaires des agendas"
+			if($this::objectType=="calendarEvent")  {$vDatas["notifMailTooltip"].=Txt::trad("EDIT_notifMailTooltipCal");}//"Agenda personnel : envoyé uniquement au propriétaire de l'agenda"
 		}
 		////	MENU DES FICHIERS JOINTS
 		if(static::hasAttachedFiles==true){

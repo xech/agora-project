@@ -277,7 +277,7 @@ class MdlObject
 			elseif($this->isRootFolder() || $this->md5IdControl())							 {$this->_accessRight=1;}									 //LECTURE : DOSSIER RACINE (DROIT PAR DEFAUT) / VUE EXTERNE DE L'OBJET
 			elseif($this->hasContainerAccessRight())										 {$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
 			elseif($this->hasAccessRight()){																											 //EN FONCTION DES AFFECTATIONS EN BDD
-				$isPersonalCalendar=(static::objectType=="calendar" && $this->type=="user");
+				$isPersonalCalendar=(static::objectType=="calendar" && $this->isPersonal());
 				$sqlSelect="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;
 				//// ACCES TOTAL :  admin de l'espace et objet affecté à l'espace (sauf agendas persos : pas de privilège admin)
 				if(Ctrl::$curUser->isSpaceAdmin()  &&  Db::getVal("SELECT COUNT(*) ".$sqlSelect)>0  &&  $isPersonalCalendar==false){
@@ -507,26 +507,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * LISTE DES USERS AFFECTÉS À L'OBJET ($accessWrite==true pour filtrer uniquement les accès en écriture )
-	 ********************************************************************************************************/
-	public function affectedUserIds($accessWrite=false)
-	{
-		//Init les users et l'objet de référence des affectations (ex: dossier parent d'un fichier)
-		$userIds=[];
-		$refObject=($this->hasAccessRight())  ?  $this :  $this->containerObj();
-		//Récupère les users de chaque affectation
-		foreach($refObject->getAffectations() as $affect){
-			if($accessWrite==true && $affect["accessRight"]<2)	{continue;}																						//Uniquement accès en écriture ? (cf. agendas perso)
-			elseif($affect["targetType"]=="spaceUsers")			{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["targetId"])->getUsers("idsTab"));}//Ajoute tous les users de l'espace
-			elseif($affect["targetType"]=="group")				{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->userIds);}		//Ajoute les users du groupe
-			elseif($affect["targetType"]=="user")				{$userIds[]=$affect["targetId"];}																//Ajoute l'user
-		}
-		//Retourne la liste des users
-		return array_unique($userIds);
-	}
-
-	/********************************************************************************************************
-	 * AJOUT/MODIF D'OBJET
+	 * ENREGISTRE L'EDITION D'UN OBJET
 	 ********************************************************************************************************/
 	public function editRecord($sqlFields)
 	{
@@ -547,6 +528,25 @@ class MdlObject
 			Ctrl::addLog(($curObj->isNewRecord()?"add":"modif"), $curObj);																			//Enregistre dans les Logs
 			return Ctrl::getObj(static::objectType, $_id, true);																					//Renvoie l'objet (cache updated)
 		}
+	}
+
+	/********************************************************************************************************
+	 * LISTE DES USERS AFFECTÉS À L'OBJET ($accessWrite==true pour filtrer uniquement les accès en écriture )
+	 ********************************************************************************************************/
+	public function affectedUserIds($accessWrite=false)
+	{
+		//Init les users et l'objet de référence des affectations (ex: dossier parent d'un fichier)
+		$userIds=[];
+		$refObject=($this->hasAccessRight())  ?  $this :  $this->containerObj();
+		//Récupère les users de chaque affectation
+		foreach($refObject->getAffectations() as $affect){
+			if($accessWrite==true && $affect["accessRight"]<=1)	{continue;}																							//Uniquement accès écriture ("MdlCalendarEvent->affectedUserIds()")
+			elseif($affect["targetType"]=="spaceUsers")			{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["targetId"])->getUsers("idsTab"));}	//Ajoute tous les users de l'espace
+			elseif($affect["targetType"]=="group")				{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->userIds);}			//Ajoute les users du groupe
+			elseif($affect["targetType"]=="user")				{$userIds[]=$affect["targetId"];}																	//Ajoute l'user
+		}
+		//Retourne la liste des users
+		return array_unique($userIds);
 	}
 
 	/********************************************************************************************************
@@ -624,7 +624,8 @@ class MdlObject
 		$sqlDisplay=(!empty($conditions))  ?  "(".implode(" AND ",$conditions).")"  :  $_idKey." IS NULL";
 		////	Selection de "plugin" : selectionne les objets des conteneurs auquel on a accès (dossiers/sujets/evt..)
 		if($containerObj==null && static::isInContainer()){
-			$sqlDisplay="(".$sqlDisplay." OR ".static::MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
+			$MdlObjectContainer=static::MdlObjectContainer;
+			$sqlDisplay="(".$sqlDisplay." OR ".$MdlObjectContainer::sqlDisplay(null,"_idContainer").")";//Appel récursif avec "_idContainer" comme $_idKey
 		}
 		////	Renvoie le résultat (avec des espaces avant/après)
 		return " ".$sqlDisplay." ";
@@ -735,15 +736,21 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function tradObject($tradKey)
 	{
-		//// Traduction principale
+		////	Traduction principale
 		$trad=Txt::trad($tradKey);
-		$type=static::objectType;
-		//// Label de l'objet
-		$trad=str_replace(["--OBJ_LABEL--","--OBJ_LABEL_TO--"], [Txt::trad("OBJ_".$type),Txt::trad("OBJ_".$type."_TO")], $trad);								//Ex: "--OBJ_LABEL--"=>"actualité" / "--OBJ_LABEL_TO--"=>"à l'actualité"
-		//// Label du contenu de l'objet
-		if(static::isContainer())		{$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".static::MdlObjectContent::objectType."_CONTENT"), $trad);}	//Ex: "les fichiers" du dossier, "les événements" de l'agenda
-		elseif(static::isInContainer())	{$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".static::objectType."_CONTENT"), $trad);}					//Ex: "les messages" du sujet
-		/// Retourne la trad
+		$objType=static::objectType;
+		////	Label de l'objet  (ex:  --OBJ_LABEL-->actualité  ou  --OBJ_LABEL_TO-->à l'actualité)
+		$trad=str_replace(["--OBJ_LABEL--","--OBJ_LABEL_TO--"], [Txt::trad("OBJ_".$objType),Txt::trad("OBJ_".$objType."_TO")], $trad);
+		////	Label du contenu d'un objet conteneur  (ex: "Accès au fichier")
+		if(static::isInContainer()){
+			$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".$objType."_CONTENT"), $trad);
+		}
+		////	Label du conteneur  (ex: "Accès au dossier de fichiers")
+		elseif(static::isContainer()){
+			$MdlObjectContent=static::MdlObjectContent;
+			$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".$MdlObjectContent::objectType."_CONTENT"), $trad);
+		}
+		////	Retourne la trad
 		return $trad;
 	}
 

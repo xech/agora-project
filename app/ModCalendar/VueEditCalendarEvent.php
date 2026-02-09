@@ -271,7 +271,7 @@ input[name='guestMail']				{margin-left:20px;}
 				<div class="vCalAffectation option">
 					<!--AFFECTATION A L'AGENDA-->
 					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="box<?= $tmpCal->_typeId ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
-					<label for="box<?= $tmpCal->_typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->type=="ressource"?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					<label for="box<?= $tmpCal->_typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
 					<!--OPTION DE PROPOSITION-->
 					<?php if($tmpCal->proposeOption==true){ ?>
 					<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> class="vCalProposeOption" <?= Txt::tooltip("CALENDAR_proposeOptionTooltip") ?>>
