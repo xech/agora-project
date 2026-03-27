@@ -21,7 +21,7 @@
 ready(function(){
 	//// Init l'affichage
 	mapTool="<?= $mapTool ?>";//"gmap" ou "leaflet"
-	$("#mapid").css("width",window.top.windowWidth).css("height",window.top.windowHeight-(isMobile()?0:80));//Redimensionne le div de la carte
+	$("#mapid").css("width",windowTopWidth).css("height",windowTopHeight-(isMobile()?0:80));//Redimensionne le div de la carte
 
 	//// Instancie la carte Google Map
 	if(mapTool=="gmap"){

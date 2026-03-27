@@ -2,7 +2,7 @@
 ////	Lance la visio
 ready(function(){
 	$("button[data-visioURL]").on("click",function(){
-		visioURL=$(this).attr("data-visioURL");																										// Visio via le browser ou l'appli Jitsi
+		visioURL=this.getAttribute("data-visioURL");																								// Visio via le browser ou l'appli Jitsi
 		if($("#visioHostServer").val()=="alt")  {visioURL=visioURL.replace("<?= Ctrl::$agora->visioHost ?>","<?= Ctrl::$agora->visioHostAlt ?>");}	// Url du serveur alternatif
 		window.open(visioURL);																														// Lance la visio !
 	});

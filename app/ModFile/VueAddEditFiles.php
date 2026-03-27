@@ -46,18 +46,24 @@ ready(function(){
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function mainFormControl(){
 	return new Promise((resolve)=>{
-		// "Merci de sélectionner au moins un fichier"
-		let isPlupload=$("#uploadMultiple").isDisplayed();
+		//// Sélectionner au moins un fichier
+		let isPlupload=$("#uploadMultiple").isVisible();
 		if( (isPlupload==true && $("#uploadMultiple").plupload("getFiles").length==0)  ||  (isPlupload==false && $("[name='addFileSimple'],[name='addFileVersion']").isEmpty())){
 			notify("<?= Txt::trad("FILE_selectFile") ?>");
 			resolve(false);
 		}
-		//Envoi des fichiers
-		else if(isPlupload==true){																	//Lance Plupload :
-			$(".plupload_add, #uploadOptions").hide();												//Masque le bouton de lancement et les options d'upload
-			$(".plupload_filelist_footer .plupload_file_status").show();							//Affiche le % de progression
-			$("#uploadMultiple").plupload("start").on("complete",function(){  resolve(true);  });	//Retourne true à la fin des uploads
-		} else {resolve(true);}																		//Validation directe du formulaire
+		//// Envoi des fichiers via Plupload
+		else if(isPlupload==true){
+			$(".plupload_add, #uploadOptions").hide();							//Masque le bouton de lancement et les options d'upload
+			$(".plupload_filelist_footer .plupload_file_status").show();		//Affiche le % de progression
+			$("#uploadMultiple").plupload("start").on("complete",function(){	//Valide le formulaire à la fin des uploads
+				resolve(true);
+			});
+		}
+		//// Validation simple de formulaire
+		else{
+			resolve(true);
+		}																		
 	});
 }
 </script>

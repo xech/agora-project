@@ -132,11 +132,11 @@ if(Req::isParam("searchText"))
 						  <div class='vPluginNews' id='pluginNews".$tmpObj->_id."'>".$tmpObj->description."</div>";
 		}
 		//// Surligne le texte ou les mots recherchés
-		$searchText=html_entity_decode(Req::param("searchText"));											//Décode les accents de l'éditeur (&agrave; &egrave; etc)
-		$pluginLabel=preg_replace("/".$searchText."/i", "<mark>".$searchText."</mark>", $pluginLabel);		//Surligne l'expression exacte en gardant la casse (pas avec "str_ireplace")
+		$searchText=html_entity_decode(Req::param("searchText"));										//Décode les accents de l'éditeur (&agrave; &egrave; etc)
+		$pluginLabel=preg_replace("/".$searchText."/i", "<mark>".$searchText."</mark>", $pluginLabel);	//Surligne l'expression exacte en gardant la casse (pas avec "str_ireplace")
 		//// Affiche le plugin
 		echo '<div class="menuLine lineHover">
-				<div class="vContextMenu">'.$tmpObj->contextMenu(["launcherIcon"=>"inlineSmall"]).'</div>
+				<div class="vContextMenu">'.$tmpObj->contextMenu(["burgerLauncher"=>"small-inline"]).'</div>
 				<div onclick="'.$tmpObj->pluginJsIcon.'" class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
 				<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$pluginLabel.'</div>
 			  </div>';

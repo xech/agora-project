@@ -26,7 +26,7 @@ class CtrlFile extends Ctrl
 		if(Ctrl::$curUser->isGeneralAdmin()){
 			//Verif l'accès en écriture
 			if(!is_writable(Ctrl::$curContainer->folderPath("real")))
-				{Ctrl::notify(Txt::trad("FILE_addFileAlert")." (fileFolderId=".Ctrl::$curContainer->_id.")", "error");}
+				{Ctrl::notify(Txt::trad("FILE_folderAccessError")." (fileFolderId=".Ctrl::$curContainer->_id.")", "error");}
 			//Occupation d'espace disque
 			$folderSize=File::folderSize(PATH_MOD_FILE);
 			$barPercent=ceil(($folderSize/limite_espace_disque)*100);

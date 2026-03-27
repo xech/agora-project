@@ -371,31 +371,33 @@ abstract class Ctrl
 	/********************************************************************************************************
 	 * RECUPÈRE UN OBJET (vérif si déjà en cache)
 	 ********************************************************************************************************/
-	public static function getObj($objectType, $objIdOrValues=null, $updateCache=false)
+	public static function getObj($type, $values_id=null, $updateCache=false)
 	{
-		$MdlClass="Mdl".ucfirst($objectType);														//Modèle de l'objet (ex: "MdlFileFolder")
-		if(empty($objIdOrValues))	{return new $MdlClass();}										//Retourne un nouvel objet 
-		else{																						//Retourne un objet existant
-			$objId=(!empty($objIdOrValues["_id"])) ? $objIdOrValues["_id"] : (int)$objIdOrValues;	//Id de l'objet
-			$typeId=$MdlClass::objectType."-".$objId;												//typeId de l'objet en cache (ex: "file-55")
-			if(isset(self::$cacheObjects[$typeId])==false || $updateCache==true)					//Objet absent du cache ou Force l'update du cache 
-				{self::$cacheObjects[$typeId]=new $MdlClass($objIdOrValues);}						//Ajoute ou Update l'objet en cache
-			return self::$cacheObjects[$typeId];													//Retourne l'objet
+		$MdlClass="Mdl".ucfirst($type);												//Modèle de l'objet (ex: "MdlFileFolder")
+		if(!empty($values_id)){														//Objet existant : _id ou valeurs spécifiés
+			$id=(isset($values_id["_id"])) ? $values_id["_id"] : (int)$values_id;	//Id de l'objet
+			$typeId=$type."-".$id;													//typeId de l'objet (ex: "file-55")
+			if(!isset(self::$cacheObjects[$typeId]) || $updateCache==true)			//Init ou Update l'objet en cache 
+				{self::$cacheObjects[$typeId]=new $MdlClass($values_id);}
+			return self::$cacheObjects[$typeId];									//Retourne l'objet en cache
 		}
+		else  {return new $MdlClass();}												//Nouvel objet 
 	}
 
 	/********************************************************************************************************
-	 * RECUPÈRE L'OBJET EN GET/POST OU $typeId (ex: "file-55")
+	 * RECUPÈRE UN OBJET VIA LE PARAMETRE "typeId"  (ex: "file-55")
 	 ********************************************************************************************************/
-	public static function getCurObj($typeId=null)
+	public static function getCurObj($typeIdParam=null)
 	{
-		if(Req::isParam("typeId") || !empty($typeId)){
-			$typeId=(!empty($typeId))  ?  explode("-",$typeId)  :  explode("-",Req::param("typeId"));										//Récupère le "typeId" de l'objet (vérifier en premier si ya un argument!)
-			$isNewObj=(empty($typeId[1]));																									//Vérif si c'est un nouvel objet
-			$curObj=($isNewObj==true)  ?  self::getObj($typeId[0])  :  self::getObj($typeId[0],$typeId[1]);									//Charge un nouvel objet OU un objet existant
-			if($isNewObj==false && $curObj->_id==0)  {self::notify("inaccessibleElem"); self::redir("index.php?ctrl=".static::moduleName);}	//Objet inexistant/supprimé en BDD : renvoie une erreur
-			if($isNewObj==true && Req::isParam("_idContainer"))  {$curObj->_idContainer=Req::param("_idContainer");}						//Ajoute si besoin "_idContainer" pour le controle d'accès d'un nouvel objet (cf. "editRecord()")
-			return $curObj;																													//Renvoie l'objet
+		$typeId=(!empty($typeIdParam)) ? $typeIdParam : Req::param("typeId"); 
+		if(!empty($typeId)){
+			$typeId=explode("-",$typeId);
+			$curObj=self::getObj($typeId[0], $typeId[1] ?? null);	//Objet existant || Nouvel objet ($typeId[1] => 0 ou null)
+			if($curObj->isNew()){																										//Nouvel objet :
+				if(!empty($typeId[1]))  			{self::redir("index.php?ctrl=".static::moduleName."&notify[]=inaccessibleElem");}	//Objet inexistant/supprimé en DB : notif d'erreur
+				if(Req::isParam("_idContainer"))	{$curObj->_idContainer=Req::param("_idContainer");}									//Ajoute "_idContainer" pour le controle d'accès via editRecord()
+			}
+			return $curObj;
 		}
 	}
 

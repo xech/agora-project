@@ -5,7 +5,7 @@
 function captchaControl(){
 	return new Promise((resolve)=>{
 		$.ajax("?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val())).done(function(result){
-			if(/controlOK/i.test(result)==false)	{notify("<?=Txt::trad("captchaError") ?>");  resolve(false);}
+			if(/controlOK/i.test(result)==false)	{resolve(false);  notify("<?=Txt::trad("captchaError") ?>");}
 			else									{resolve(true);}							
 		});
 	});

@@ -46,12 +46,10 @@ class Txt
 	 ********************************************************************************************************/
 	public static function trad($keyTrad, $addSlashes=false)
 	{
-		//charge les traductions?
-		self::loadTrads();
-		//renvoie la trad / le $keyTrad
-		if(self::isTrad($keyTrad) && $addSlashes==false)	{return self::$trad[$keyTrad];}
-		elseif(self::isTrad($keyTrad) && $addSlashes==true)	{return addslashes(self::$trad[$keyTrad]);}
-		else												{return $keyTrad;}
+		self::loadTrads();																				// Charge les traductions
+		if(self::isTrad($keyTrad) && $addSlashes==false)	{return self::$trad[$keyTrad];}				// Traduction demandé
+		elseif(self::isTrad($keyTrad) && $addSlashes==true)	{return addslashes(self::$trad[$keyTrad]);}	// Traduction avec addslashes
+		else												{return $keyTrad;}							// Clé de la trad si indispo
 	}
 
 	/********************************************************************************************************
@@ -90,12 +88,16 @@ class Txt
 	public static function tooltip($text, $titleAttr=true)
 	{
 		if(!empty($text)){
-			if(self::isTrad($text))  {$text=self::$trad[$text];}			//Récupère si besoin une traduction
-			$text=nl2br($text);												//Remplace \n par <br>
-			$text=strip_tags($text,'<br><hr><img><span><i>');				//Enlève les balises (sauf <br><hr><img><span><i>)
-			$text=str_replace('"','&quot;',$text);							//Remplace les doubles quotes
-			if(stristr($text,'http'))  {$text=preg_replace("/(http[s]{0,1}\:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}//Créé un hyperlien (tester dans le modLink)
-			return ($titleAttr==true)  ?  'title="'.$text.'"'  :  $text;	//Retourne le résultat : avec ou sans `title=`
+			if(self::isTrad($text))  {$text=self::$trad[$text];}																//Récupère si besoin une traduction
+			$text=trim($text);																									//Supprime les retours et espaces en début/fin de texte
+			$text=preg_replace('/^(<hr\b[^>]*>|<br\b[^>]*>)+/i', '', $text);													//Supprime les <hr><br> en début de texte
+			$text=preg_replace('/(<hr\b[^>]*>|<br\b[^>]*>)+$/i', '', $text);													//Supprime les <hr><br> en fin de texte
+			$text=nl2br($text);																									//Remplace \n par <br>
+			$text=strip_tags($text,'<br><hr><img><span><i>');																	//Supprime les balises (sauf <br><hr><img><span><i>)
+			$text=str_replace('"','&quot;',$text);																				//Remplace les doubles quotes
+			if(stristr($text,'http'))																							//Créé un hyperlien (tester via modLink)
+				{$text=preg_replace("/(https?:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}
+			return ($titleAttr==true)  ?  'title="'.$text.'"'  :  $text;														//Retourne le résultat : avec ou sans `title=`
 		}
 	}
 
@@ -181,11 +183,11 @@ class Txt
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE LA VALIDITE D'UN PASSWORD : 8 CARACTERES MINIMUM, AVEC MINUSCULE ET CHIFFRE
+	 * CONTROLE UN PASSWORD : AU MOINS 8 CARACTERES > LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
 	 ********************************************************************************************************/
 	public static function isPassword($password)
 	{
-		return preg_match('/^(?=.*[a-z])(?=.*\d).{8,}$/', $password);
+		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/', $password);
 	}
 
 	/********************************************************************************************************
@@ -201,13 +203,13 @@ class Txt
 	 ********************************************************************************************************/
 	public static function inputPassword($inputName, $isRequired, $isAutocomplete=false)
 	{
-		$optionTooltip=($isRequired==false) ?  Txt::trad("passwordOptional")  : null;
+		$optionTooltip=($isRequired==false) ?  self::trad("passwordOptional")  : null;
 		$required =($isRequired==true) ?  'required'  : null;
-		$divOption=($isRequired==false) ?  '<div class="infos">'.Txt::trad("passwordOptional") .'</div>'  : null;
+		$divOption=($isRequired==false) ?  '<div class="infos">'.self::trad("passwordOptional") .'</div>'  : null;
 		$autocomplete=($isAutocomplete==true) ?  'class="isAutocomplete"'  : null;
-		return '<div class="passwordDiv" '.Txt::tooltip($optionTooltip).'>
-					<input type="password" name="'.$inputName.'" id="input_'.$inputName.'" placeholder="'.Txt::trad("password").'" '.$required.' '.$autocomplete.'>
-					<img class="passwordDisplay" '.Txt::tooltip("passwordDisplay").' for="input_'.$inputName.'">
+		return '<div class="passwordDiv" '.self::tooltip($optionTooltip).'>
+					<input type="password" name="'.$inputName.'" id="input_'.$inputName.'" placeholder="'.self::trad("password").'" '.$required.' '.$autocomplete.'>
+					<img class="passwordDisplay" '.self::tooltip("passwordDisplay").' for="input_'.$inputName.'">
 				</div>'.$divOption;
 	}
 
@@ -221,7 +223,7 @@ class Txt
 	public static function dateFormatter()
 	{
 		if(static::$IntlDateFormatter===null){
-			if(class_exists('IntlDateFormatter'))	{static::$IntlDateFormatter=new IntlDateFormatter(Txt::trad("DATELANG"), IntlDateFormatter::SHORT, IntlDateFormatter::SHORT);}
+			if(class_exists('IntlDateFormatter'))	{static::$IntlDateFormatter=new IntlDateFormatter(self::trad("DATELANG"), IntlDateFormatter::SHORT, IntlDateFormatter::SHORT);}
 			else 									{static::$IntlDateFormatter=false;}
 		}
 		return static::$IntlDateFormatter;
@@ -278,7 +280,7 @@ class Txt
 				if(!empty($timeEnd)){																																	//Label de fin :
 					if($diffDays==false && $diffHours==true && $onlyDate==false)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
 					elseif($diffDays==true)											{$label.='<img src="app/img/arrowRightSmall.png">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
-					elseif(empty($timeBegin))										{$label.=Txt::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
+					elseif(empty($timeBegin))										{$label.=self::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 
 				//Retourne le résultat en utf-8

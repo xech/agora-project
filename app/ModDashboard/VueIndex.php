@@ -9,14 +9,14 @@ ready(function(){
 		if(typeof scrollTimeout!="undefined")  {clearTimeout(scrollTimeout);}//Un seul timeout
 		scrollTimeout=setTimeout(function(){
 			//Lance l'infinite scroll quand on arrive en fin de page  (hauteur de page < (scrollTop + hauteur de fenêtre + 20px))
-			if($(document).height() < ($(window).scrollTop() + window.top.windowHeight + 20)){
+			if($(document).height() < ($(window).scrollTop() + windowTopHeight + 20)){
 				//Init le chargement
 				if(typeof loadMoreNews==="undefined"){
 					loadMoreNews=loadMorePolls=true;//Marqueur pour savoir si on doit charger des News/Polls en fin de page
 					newsOffset=pollsOffset=1;	//Compteur des blocs de news/polls déjà affichés (offset). Commence à "1" car le bloc "0" est affiché au chargement de page
 				}
 				//Charge les news suivantes (via ".get()" et non ".ajax")
-				if($("#contentNews").isDisplayed() && loadMoreNews==true){
+				if($("#contentNews").isVisible() && loadMoreNews==true){
 					$("#contentNews").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
 					$.get("?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
 						if(vueNewsList.length==0)  {loadMoreNews=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
@@ -30,7 +30,7 @@ ready(function(){
 					});
 				}
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
-				if($("#contentPolls").isDisplayed() && loadMorePolls==true){
+				if($("#contentPolls").isVisible() && loadMorePolls==true){
 					$("#contentPolls").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
 					$.get("?ctrl=dashboard&action=GetMorePolls&pollsNotVoted=<?= Req::param("pollsNotVoted") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}	//Passe à false si ya plus rien à charger : évite les requêtes inutiles
@@ -45,7 +45,7 @@ ready(function(){
 					});
 				}
 				//Masque si besoin les icones "loading"
-				if($(".infiniteScrollLoading").isDisplayed())  {$(".infiniteScrollLoading").fadeOut(800);}
+				if($(".infiniteScrollLoading").isVisible())  {$(".infiniteScrollLoading").fadeOut(800);}
 			}
 		},300);
 	});
@@ -171,12 +171,12 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 }
 
 /*Nouveaux elements*/
-#modMenuElems>div						{padding:5px;}
-#contentElems .menuLine					{padding:3px;}
-#contentElems .menuIcon					{width:15px;}
-#contentElems .menuIcon img				{max-width:15px;}
-.vContentElemsModuleLabel				{text-align:center;}
-.vContentElemsModuleLabel img			{max-height:28px; margin-right:8px;}
+#modMenuElems>div							{padding:5px;}
+#contentElems .menuLine						{padding:3px;}
+#contentElems .menuIcon						{width:15px;}
+#contentElems .menuIcon img					{max-width:15px;}
+.vContentElemsModuleLabel					{text-align:center;}
+.vContentElemsModuleLabel:not(:first-child)	{margin-top:30px;}
 </style>
 
 
@@ -269,12 +269,11 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			foreach($pluginsList as $tmpObj){
 				//// Libellé du module (séparateur?)
 				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName){
-					if(!empty($tmpModuleName))  {echo "<hr>";}	//Affiche un séparateur
-					$tmpModuleName=$tmpObj::moduleName;			//Enregistre le nom du module courant
-					echo '<div class="vContentElemsModuleLabel"><img src="app/img/'.$tmpModuleName.'/icon.png">'.Txt::trad(strtoupper($tmpModuleName).'_MODULE_NAME').'</div>';
+					$tmpModuleName=$tmpObj::moduleName;
+					echo '<div class="vContentElemsModuleLabel"><img src="app/img/'.$tmpModuleName.'/iconSmall.png">&nbsp; '.Txt::trad(strtoupper($tmpModuleName).'_MODULE_NAME').'<hr></div>';
 				}
 				//// Affiche le plugin
-				if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("createdBy")." ".$tmpObj->autorDate();}
+				if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("createdBy")." ".$tmpObj->autorDate(true);}
 				$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")."<hr>".$tmpObj->pluginTooltip  :  $tmpObj->pluginTooltip;//Ajoute si besoin "Afficher l'element dans son dossier"
 				echo '<div class="menuLine lineHover">
 						<div onclick="'.$tmpObj->pluginJsIcon.'" '.Txt::tooltip($tmpObj->pluginTooltipIcon).' class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>

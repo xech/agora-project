@@ -6,9 +6,9 @@ ready(function(){
 	////	Init l'affichage de l'arborescence
 	$(".vTreeFolder").each(function(){
 		//Init
-		var folderId=parseInt($(this).attr("data-folderId"));
-		var parentFolderId=parseInt($(this).attr("data-parentFolderId"));
-		var folderTreeLevel=parseInt($(this).attr("data-folderTreeLevel"));
+		var folderId=parseInt(this.getAttribute("data-folderId"));
+		var parentFolderId=parseInt(this.getAttribute("data-parentFolderId"));
+		var folderTreeLevel=parseInt(this.getAttribute("data-folderTreeLevel"));
 		//Affiche le dossier racine et les dossiers à la racine (niveau <=1) ET affiche les dossiers du chemin courant
 		if(folderTreeLevel<=1 || $.inArray(parentFolderId,curPathFolderIds)!==-1)  {$(this).css("display","table");}
 		//Ajoute un padding en fonction du niveau du dossier : 15px à gauche à partir du niveau 2
@@ -21,7 +21,7 @@ ready(function(){
 
 	////	Valide le formulaire de déplacement d'un objet dans l'arborescence
 	$("#folderTreeForm").on("submit",function(){
-		$(".vTreeFolder .vNewFolderId").each(function(){ $(this).prop("disabled",false); });
+		$(".vTreeFolder .vNewFolderId").each(function(){  $(this).prop("disabled",false);  });
 	});
 });
 
@@ -32,13 +32,13 @@ function folderTreeDisplay(folderId, toggle)
 	var openIconSelector=".vTreeFolder[data-folderId='"+folderId+"'] .vIconOpen";
 	var subFoldersSelector=".vTreeFolder[data-parentFolderId='"+folderId+"']";
 	//Affiche les sous-dossiers : niveau juste en dessous
-	if(toggle==true && $(subFoldersSelector).isDisplayed()==false){
+	if(toggle==true && $(subFoldersSelector).isVisible()==false){
 		$(subFoldersSelector).slideDown();
 		$(openIconSelector).addClass("vIconOpened");
 	}
 	//Ferme toute l'arborescence de sous-dossiers (de manière récursive)
 	else{
-		$(subFoldersSelector).each(function(){ folderTreeDisplay($(this).attr("data-folderId")); });
+		$(subFoldersSelector).each(function(){ folderTreeDisplay(this.getAttribute("data-folderId")); });
 		$(subFoldersSelector).slideUp();
 		$(openIconSelector).removeClass("vIconOpened");
 	}
@@ -60,7 +60,7 @@ function folderMove(newFolderId){
 .vTreeFolderIcon					{white-space:nowrap;}									/*icone du dossier : pas de retour à la ligne*/
 .vTreeFolderIcon .vIconOpen			{visibility:hidden; margin-right:3px;}					/*icone d'ouverture du dossier (optionnel)*/
 .vTreeFolder:first-child .vIconOpen	{display:none!important;}								/*dossier root : pas d'icone de d'ouverture du dossier*/
-.vIconOpened						{transform:rotate(40deg); filter:brightness(0);}
+.vIconOpened						{transform:rotate(45deg); filter:brightness(0);}
 
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){

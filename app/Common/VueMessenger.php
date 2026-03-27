@@ -9,8 +9,8 @@ ready(function(){
 	messengerAlert.volume=0.5;																		//Volume à 50% par défaut
 	messengerAlert.loop=false;																		//Pas de son en boucle
 	if(isMobile()==false)  {$("#messengerMain").draggable({handle:"#messengerMove",opacity:0.8});}	//Drag/drop du messenger
-	setInterval(function(){ messengerUpdate(); },10000);											//Update le messenger toutes les 10 secondes
-	messengerUpdate();																				//Lance le messenger !
+	messengerUpdate();																				//Lance une première fois
+	setInterval(messengerUpdate, 10000);															//Update le messenger toutes les 10 secondes
 });
 
 /********************************************************************************************************
@@ -45,9 +45,9 @@ function messengerUpdate()
 			$("#livecounterMain,#messengerMultiUsers").hide();
 			//Affiche le livecounter principal
 			if(result.livecounterUsersHtml.length>0){
-				$("#livecounterUsers").html(result.livecounterUsersHtml);												//Affiche d'abord les users du livecounter principal
-				if($(".vLivecounterUser").length>=2)  {$("#messengerMultiUsers").show();}								//Affiche l'icone pour discuter à plusieurs (et voir les anciens messages)
-				$("#livecounterMain").css("left", (window.top.windowWidth/2)-($("#livecounterMain").outerWidth(true)/2) ).show();//Affiche enfin le livecounter centré sur la page
+				$("#livecounterUsers").html(result.livecounterUsersHtml);													//Affiche d'abord les users du livecounter principal
+				if($(".vLivecounterUser").length>=2)  {$("#messengerMultiUsers").show();}									//Affiche l'icone pour discuter à plusieurs (et voir les anciens messages)
+				$("#livecounterMain").css("left", (windowTopWidth/2)-($("#livecounterMain").outerWidth(true)/2) ).show();	//Affiche enfin le livecounter centré sur la page
 			}
 			//Update les users du messenger (checkboxes)
 			$("#messengerFormUsers>div").html("<div class='vMessengerUser'><?= Txt::trad("MESSENGER_chatWithMulti") ?></div>"+result.livecounterFormHtml);
@@ -72,7 +72,7 @@ function messengerUpdate()
 function messengerDisplay(messengerDisplayModeNew)
 {
 	//// MessengerDisplayMode
-	messengerDisplayMode=($("#messengerMain").isDisplayed() && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;	//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
+	messengerDisplayMode=($("#messengerMain").isVisible() && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;	//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
 	if(messengerDisplayMode!="none")  {$.ajax("?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode);}				//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
 
 	//// Masque le messenger principal
@@ -89,8 +89,8 @@ function messengerDisplay(messengerDisplayModeNew)
 			messengerMobileDisplay();										//Messenger en pleine page.
 			$(window).on("resize",function(){ messengerMobileDisplay(); });	//Idem si on resize la page (change d'orientation ou affiche le clavier virtuel)
 		}else{
-			var messengerLeftPos=(window.top.windowWidth/2)-($("#messengerMain").outerWidth(true)/2);	//Position Left du messenger, pour pouvoir le centrer ("outerWidth(true)" pour prendre en compte le "margin")
-			$("#messengerMain").css("left",messengerLeftPos).resizable({handles:"e,w"});				//Centre le messenger && le rend "resizable" en largeur uniquement
+			var messengerLeftPos=(windowTopWidth/2)-($("#messengerMain").outerWidth(true)/2);	//Position Left du messenger, pour pouvoir le centrer ("outerWidth(true)" pour prendre en compte le "margin")
+			$("#messengerMain").css("left",messengerLeftPos).resizable({handles:"e,w"});		//Centre le messenger && le rend "resizable" en largeur uniquement
 		}
 	
 		//// Affiche le messenger  &&  Check un ou plusieurs users
@@ -152,10 +152,10 @@ function messengerDisplayUser()
  *	AFFICHAGE DU MESSENGER SUR MOBILE : FULL PAGE  (tests : 5 users online & orientation change)
 *********************************************************************************************************/
 function messengerMobileDisplay(){
-	setTimeout(function(){																						//Timeout après affichage du clavier virtuel
-		$("#messengerFormMain").css('padding-bottom', $("#livecounterMain").outerHeight(true) +15);				//Margin-bottom du "#messengerFormMain" pour afficher le #livecounterMain
-		let contentHeight=window.top.windowHeight-$("#messengerHeader,#messengerFormMain").totalHeight() -15;	//Hauteur du contenu principal : messages
-		$("#messengerContent,#messengerContent>div").height(contentHeight);										//Resize les divs principaux et divs scrollables
+	setTimeout(function(){																				//Timeout après affichage du clavier virtuel
+		$("#messengerFormMain").css('padding-bottom', $("#livecounterMain").outerHeight(true) +15);		//Margin-bottom du "#messengerFormMain" pour afficher le #livecounterMain
+		let contentHeight=windowTopHeight-$("#messengerHeader,#messengerFormMain").totalHeight() -15;	//Hauteur du contenu principal : messages
+		$("#messengerContent,#messengerContent>div").height(contentHeight);								//Resize les divs principaux et divs scrollables
 	},50);
 }
 
@@ -189,8 +189,8 @@ async function launchVisioPropose()
 		visioUsers	="<?= Ctrl::$curUser->getLabel("firstName") ?>";												//Init la liste des destinaires avec l'user courant
 		visioURL	="<?= Ctrl::$agora->visioUrl()."-".Txt::clean(Ctrl::$curUser->getLabel("firstName"),"max") ?>";	//Init l'Url de la visio avec l'user courant
 		$(".messengerUserCheckbox:checked").each(function(){														//Label de chaque user sélectionné :
-			visioUsers	+=" & "+$(this).attr("data-user-label");													//Ajoute dans la liste des destinaires
-			visioURL	+="-"+$(this).attr("data-user-label-visio");												//Ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "visioId"
+			visioUsers	+=" & "+this.getAttribute("data-user-label");												//Ajoute dans la liste des destinaires
+			visioURL	+="-"+this.getAttribute("data-user-label-visio");											//Ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "visioId"
 		});
 		//Post le lien de la visio pour l'ouvrir via une lightbox (cf. HTMLPurifier)
 		$("#messengerFormInput").val('<a href="?ctrl=misc&action=LaunchVisio&visioURL='+encodeURIComponent(visioURL)+'" class="lightboxOpenHref"><?= Txt::trad("MESSENGER_visioProposeToUsers") ?> '+visioUsers+'<img src="app/img/visioSmall.png"></a>');
@@ -238,7 +238,7 @@ async function launchVisioPropose()
 .vMessengerMessageDateAutor						{min-width:80px; width:1%; white-space:nowrap; vertical-align:top; color:#888; font-size:0.9rem;}/*Heure/label de l'auteur. Width ajusté via 'nowrap'*/
 .vMessengerMessage .personImg					{width:22px; height:22px; margin-left:8px;}	/*image des users dans les messages (cf. "actionMessengerUpdate()")*/
 .vMessengerMessage .iconUsersMultiple			{height:18px; margin-bottom:5px;}			/*Icone de discussion à plusieurs*/
-.vMessengerMessage .lightboxOpenHref						{color:white;}/*surcharge la balise <a> des visios*/
+.vMessengerMessage .lightboxOpenHref			{color:white;}								/*surcharge la balise <a> des visios*/
 .vMessengerMessage .lightboxOpenHref img[src*='visioSmall']	{margin-left:10px;}
 
 /*Messenger : formulaire*/
@@ -299,7 +299,7 @@ async function launchVisioPropose()
 			<td id="messengerFormMain" colspan="2">
 				<div id="messengerPostDiv">
 					<input type="text" name="message" id="messengerFormInput" maxlength="1000">
-					<button id="messengerFormButton" onclick="messengerPost(event)"><img src="app/img/postMessage.png"> <?= Txt::trad("send") ?></button>
+					<button id="messengerFormButton" onclick="messengerPost(event)"><img src="app/img/mailSend.png"> <?= Txt::trad("send") ?></button>
 					<?php if(Ctrl::$agora->visioEnabled()){ ?><img src="app/img/visio.png" id="launchVisioButton" onclick="launchVisioPropose()" <?= Txt::tooltip("MESSENGER_visioProposeToSelection") ?> ><?php } ?>
 				</div>
 				<div id="messengerNobodyDiv">

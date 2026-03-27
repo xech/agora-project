@@ -17,20 +17,20 @@ ready(function(){
 	<?php if(Req::isParam("actionImportExport")==false){ ?>
 		$("#importExportBlock,#importBlock").show();
 		$("#selectImportExport").val("import");
-		$("#selectImportType").val("csv").trigger("change");//trigger pour init l'affichage
+		$("#selectImportType").val("csv").trigger("change");//Init l'affichage
 	<?php } ?>
 
 	////	Tableau d'import: init le background des lignes sélectionnées
-	$(".vPersonImportCheckbox").on("change",function(){
+	$(".vLineImportCheckbox").on("change",function(){
 		$("#rowPerson"+this.value).toggleClass("lineSelect",this.checked);
-	}).trigger("change");//trigger pour init l'affichage
+	}).trigger("change");//Init l'affichage
 
 	////	Tableau d'import: vérifie que le champ agora (<select>) n'est pas déjà sélectionné sur une autre colonne
 	$(".vAgoraFieldSelect").on("change",function(){
 		curField=this.value;
-		curFieldCpt=$(this).attr("data-fieldCpt");
+		curFieldCpt=this.getAttribute("data-fieldCpt");
 		$(".vAgoraFieldSelect").each(function(){
-			if(curField==this.value  &&  this.value!=""  &&  $(this).attr("data-fieldCpt")!=curFieldCpt){
+			if(curField==this.value  &&  this.value!=""  &&  this.getAttribute("data-fieldCpt")!=curFieldCpt){
 				$(".vAgoraFieldSelect[name='agoraFields["+curFieldCpt+"]']").val(null);
 				notify("<?= Txt::trad("importNotif3") ?>");
 				return false;
@@ -39,17 +39,16 @@ ready(function(){
 	});
 
 	////	Contrôle du formulaire
-	$("form").on("submit",function(){
+	$("#mainForm").on("submit",function(){
 		//Controle que le fichier d'import est au format csv
-		if($("#selectImportExport").isDisplayed() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
+		if($("#selectImportExport").isVisible() && $("#selectImportExport").val()=="import" && $("#selectImportType").val()=="csv" && extension($("#importCsvFile").val())!="csv"){
 			notify("<?= Txt::trad("fileExtension") ?> CSV");
 			return false;
 		}
-		//Controle le tableau d'import?
-		if($(".vPersonImportCheckbox").exist()){
-			//Le champ Agora "name" doit être sélectionné  &&  Au moins une personne doit être sélectionnée
+		//Controle le tableau d'import : Le champ Agora "name" doit être sélectionné, et au moins une personne doit être sélectionnée
+		if($(".vLineImportCheckbox").exist()){
 			if($(".vAgoraFieldSelect option[value=name]:checked").length==0)	{notify("<?= Txt::trad("importNotif1") ?>");  return false;}
-			if($(".vPersonImportCheckbox:checked").length==0)					{notify("<?= Txt::trad("importNotif2") ?>");  return false;}
+			if($(".vLineImportCheckbox:checked").length==0)						{notify("<?= Txt::trad("importNotif2") ?>");  return false;}
 		}
 	});
 });
@@ -57,23 +56,23 @@ ready(function(){
 
 
 <style>
-#bodyLightbox 						{max-width:<?= Req::isParam("actionImportExport") ? '1800px' : '800px' ?>;}
-form								{text-align:center;}
-#importLdapDn						{width:350px;}
-#importLdapFilter					{width:200px;}
-#tableImport						{width:100%; margin-top:20px; text-align:left;}
-.vTableImport						{font-size:0.9rem; font-weight:normal;}
-.vTableImport select				{width:130px;}
-.vTableImport img[src*='switch']	{cursor:pointer;}
-.vImportUserOptions					{display:inline-block; text-align:left; margin-top:20px;}
-.vSpaceAffect						{margin-left:20px; margin-top:5px;}
+#bodyLightbox 					{max-width:<?= Req::isParam("actionImportExport") ? '1800px' : '800px' ?>;}
+form							{text-align:center;}
+#importLdapDn					{width:350px;}
+#importLdapFilter				{width:200px;}
+#importTable					{font-size:0.9rem; margin-top:20px; text-align:left; font-weight:normal;}
+#importTable select				{font-size:0.9rem; width:fit-content;}
+#importTable img[src*='switch']	{cursor:pointer;}
+.vImportOptions					{display:inline-block; text-align:left; margin-top:20px;}
+.vSpaceAffect					{margin-left:20px; margin-top:5px;}
 #importExportBlock, #importBlock, #exportBlock, #importCsvFile, #importLdapDn, #importLdapFilter	{display:none;}
 #importExportBlock, #importBlock, #exportBlock														{margin-right:10px;}
 </style>
 
 
-<form action="index.php" method="post" enctype="multipart/form-data">
-	<!--SELECTION D'IMPORT/EXPORT-->
+<form action="index.php" method="post" enctype="multipart/form-data" id="mainForm">
+
+	<!--SELECTION D'IMPORT || EXPORT-->
 	<span id="importExportBlock">
 		<select name="actionImportExport" id="selectImportExport">
 			<option value="import"><?= Txt::trad("import_".Req::$curCtrl) ?></option>
@@ -81,6 +80,7 @@ form								{text-align:center;}
 		</select> &nbsp;
 		<?= Txt::trad("exportFormat") ?>
 	</span>
+
 	<!--INPUTS D'IMPORT-->
 	<span id="importBlock">
 		<select name="importType" id="selectImportType">
@@ -91,26 +91,29 @@ form								{text-align:center;}
 		<input type="text" name="importLdapDn" id="importLdapDn" value="<?= Ctrl::$agora->ldap_base_dn ?>" <?= Txt::tooltip("AGORA_ldapDnTooltip") ?> >
 		<input type="text" name="importLdapFilter" id="importLdapFilter" value="(cn=*)" <?= Txt::tooltip("importLdapFilterTooltip") ?> >
 	</span>
+
 	<!--INPUTS D'EXPORT-->
 	<span id="exportBlock">
 		<select name="exportType">
-			<option value="vcard">VCARD (.vcf)</option>
+			<option value="vcard">VCARD</option>
 			<option value="ldif">LDIF</option>
-			<?php foreach(MdlPerson::$csvFormats as $tmpKey=>$csvFormat)  {echo "<option value='".$tmpKey."'>".strtoupper(str_replace('_',' ',$tmpKey))."</option>";} ?>
+			<option value="csv">CSV</option>
 		</select>
 	</span>
 
+	<!--IMPORT DE CONTACTS : ID DU DOSSIER-->
+	<?php if(isset($curContainer)){ ?>
+		<input type="hidden" name="typeId" value="<?= $curContainer->typeId ?>">
+	<?php } ?>
+
+
+	<!--FORMULAIRE D'IMPORT-->
 	<?php
-	////	TABLEAU D'IMPORT
-	if(Req::param("importType")=="ldap" || (Req::param("importType")=="csv" && !empty($_FILES["importFile"])))
-	{
-		//Init la liste des personnes à importer && Si on importe des Users, on récupère aussi les login/password 
-		$importPersons=[];
-		$importLoginPassword=($curObjClass::objectType=="user");
+	if(Req::param("importType")=="ldap" || (Req::param("importType")=="csv" && !empty($_FILES["importFile"]))){
+		$importList=[];
 
 		////	RECUPERE LES VALEURS DE L'IMPORT CSV
-		if(Req::param("importType")=="csv")
-		{
+		if(Req::param("importType")=="csv"){
 			//Liste des champs (en fonction de la premiere ligne) + définit le delimiteur de champ + nb de champs
 			$csvDelimiters=[";"=>0, ","=>0, "\t"=>0, "|"=>0];
 			$fileHandle=fopen($_FILES["importFile"]["tmp_name"], "r");													//Charge le CSV		
@@ -121,88 +124,98 @@ form								{text-align:center;}
 			$headerFields=[];																							//Init $headerFields
 			foreach(explode($delimiter,$firstLine) as $tmpVal)  {$headerFields[]=trim($tmpVal,"'\"");}					//Parcourt la $firstLine et ajoute chaque valeur au $headerFields (sans quotes)
 			$fileHandle=fopen($_FILES["importFile"]["tmp_name"],"r");													//Charge tout le CSV		
-			while(($data=fgetcsv($fileHandle,10000,$delimiter))!==false)  {$importPersons[]=$data;}						//Ajoute chaque ligne du csv à $importPersons
+			while(($data=fgetcsv($fileHandle,10000,$delimiter))!==false)  {$importList[]=$data;}						//Ajoute chaque ligne du csv à $importList
 		}
 		////	RECUPERE LES VALEURS DE L'IMPORT LDAP
-		elseif(Req::param("importType")=="ldap")
-		{
+		elseif(Req::param("importType")=="ldap"){
 			$ldapSearch=MdlPerson::ldapSearch($importLoginPassword, Req::param("importLdapDn"), Req::param("importLdapFilter"));
 			if(!empty($ldapSearch)){
 				$headerFields=$ldapSearch["headerFields"];	//Récupère chaque champ du header
-				$importPersons=$ldapSearch["ldapPersons"];	//Liste des personnes à importer
+				$importList=$ldapSearch["ldapPersons"];	//Liste des personnes à importer
 			}
 		}
-
-		////	AFFICHE LE TABLEAU D'IMPORT
-		if(empty($importPersons))  {echo '<div class="miscContainer emptyContainer">'.Txt::trad("noResults").'</div>';}//"aucun resultat"
-		else
-		{
-			////	INFOS
-			echo Txt::trad("importInfo")."<hr>";
-
-			////	TABLEAU DES PERSONNES A IMPORTER
-			echo "<div id='tableImport'><table class='vTableImport'>";
-				//HEADER DU TABLEAU : INPUT "SELECT" DES CHAMPS "AGORA"
-				echo "<tr>";
-					//Bouton "switch" la sélection des personnes importées
-					echo "<th><img src='app/img/checkSwitch.png' onclick=\"$('.vPersonImportCheckbox').trigger('click');\" ".Txt::tooltip("selectSwitch")."></th>";
-					//Pour chaque colonne, on affiche un input "select" avec chaque champ "agora" (type "csv_agora")
-					for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){
-						echo "<th><select name='agoraFields[".$fieldCpt."]' class='vAgoraFieldSelect' data-fieldCpt='".$fieldCpt."'><option></option>";	//Début du <select> et option vide (champ pas importé)
-						foreach(MdlPerson::$csvFormats["csv_agora"]["fieldKeys"] as $agoraFieldName){													//Parcourt les champs "agora" disponibles
-							if($importLoginPassword==true || !preg_match("/(login|password)/i",$agoraFieldName)){										//Vérif si c'est un login/password et s'ils sont importables
-								$selectField=(Txt::clean($headerFields[$fieldCpt],"max")==$agoraFieldName)  ?  "selected"  :  null;						//Sélectionne le champ "agora" s'il correspond au champ de l'import 
-								echo "<option value='".$agoraFieldName."' ".$selectField.">".Txt::trad($agoraFieldName)."</option>";					//Affiche l'option du champ "agora"
-							}
-						}
-						echo "</select></th>";
-					}
-				echo "</tr>";
-				//LIGNES DES PERSONNES A IMPORTER
-				foreach($importPersons as $personCpt=>$personValues)
-				{
-					$checkedPerson=($personCpt>0 || Req::param("importType")!="csv") ? "checked" : null;
-					echo "<tr id='rowPerson".$personCpt."' class='vRowPersons'>";
-						echo "<td><input type='checkbox' name='personsImport[]' value='".$personCpt."' class='vPersonImportCheckbox' ".$checkedPerson."></td>";
-						//Affiche chaque champ de chaque personnes
-						foreach($personValues as $fieldCpt=>$fieldValue){
-							$tmpLabel=$tmpValue=Txt::utf8Encode($fieldValue);																					//Convertit si besoin la valeur en UTF8
-							if(preg_match("/^pass/i",$headerFields[$fieldCpt]) && !empty($checkedPerson)){														//Import d'un password?
-								if(strlen($tmpValue)>=32)	{$tmpLabel=$tmpValue=null;}																			//Password déjà crypté non importable
-								else						{$tmpLabel=preg_replace("/./","*",$tmpLabel);}														//Sinon on masque le password
-							}
-							echo "<td>".$tmpLabel."<input type='hidden' name=\"personFields[".$personCpt."][".$fieldCpt."]\" value=\"".$tmpValue."\"></td>";	//Affiche le champ
-						}
-					echo "</tr>";
-				}
-			echo "</table></div>";
-
-			////	IMPORT D'USER : NOTIF PAR MAIL && ESPACES D'AFFECTATION
-			if($curObjClass::objectType=="user")
-			{
-				echo '<div class="vImportUserOptions">';
-					echo '<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser"><label for="notifCreaUser" '.Txt::tooltip("USER_sendCoordsTooltip2").'>'.Txt::trad("USER_sendCoords").'</label><hr>';
-					echo "<div>".Txt::trad("USER_spaceList")." :</div>";
-					foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
-						if($tmpSpace->accessRight()==2){
-							$tmpChecked =($tmpSpace->isCurSpace() || $tmpSpace->allUsersAffected()) ? "checked" : null;	//Affecté à tous les users / espace courant
-							$tmpDisabled=($tmpSpace->allUsersAffected()) ? "disabled" : null;							//Affecté à tous les users
-							echo '<div class="vSpaceAffect">
-									<input type="checkbox" name="spaceAffectList[]" value="'.$tmpSpace->_id.'" id="spaceAffect'.$tmpSpace->_id.'" '.$tmpChecked.' '.$tmpDisabled.'>
-									<label for="spaceAffect'.$tmpSpace->_id.'">'.$tmpSpace->name.'</label>
-								  </div>';
-						}
-					}
-				echo "</div>";
-			}
-			////	IMPORT DE CONTACTS DANS UN DOSSIER RACINE : AFFECTATION PAR DEFAUT A "TOUS LES UTILISATEURS DE L'ESPACE"
-			elseif($curObjClass::objectType=="contact" && $curFolder->isRootFolder())
-				{echo "<div class='vImportUserOptions'><img src='app/img/accessRight.png'>".Txt::trad("importContactRootFolder")." <i>".Ctrl::$curSpace->name."</i></div>";}
-		}
-	}
-
-	////	TYPEID DU DOSSIER CONTENEUR (TYPE "CONTACT")  &&  BOUTON DE VALIDATION
-	if(Req::isParam("typeId"))  {echo '<input type="hidden" name="_idContainer" value="'.Ctrl::getCurObj()->_id.'">';}
-	echo Txt::submitButton("validate");
 	?>
+
+		<!--TABLEAU D'IMPORT-->
+		<?php if(!empty($importList)){ ?>
+			<!--INFOS SUR L'IMPORT-->
+			<?= Txt::trad("importInfo") ?><hr>
+
+			<!--TABLEAU DES PERSONNES A IMPORTER-->
+			<table id="importTable">
+				<!--HEADER DU TABLEAU : BOUTON DE "SWITCH" DE SÉLECTION  &&  INPUTS "SELECT" DE CHAQUE CHAMP "AGORA"-->
+				<tr>
+					<th><img src="app/img/checkSwitch.png" onclick="$('.vLineImportCheckbox').trigger('click');" <?= Txt::tooltip("selectSwitch") ?>></th>
+					<?php for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){ ?>
+					<th>
+						<select name="agoraFields[<?= $fieldCpt ?>]" class="vAgoraFieldSelect" data-fieldCpt="<?= $fieldCpt ?>">
+							<option></option>
+							<?php foreach(MdlPerson::$csvFields["fieldKeys"] as $fieldName){
+								if($objClass::objectType=="contact" && preg_match("/(login|password)/i",$fieldName))  {continue;}//pas de password pour les contacts
+								$selectField=(Txt::clean($headerFields[$fieldCpt],"max")==$fieldName)  ?  "selected"  :  null;
+							?>
+							<option value="<?= $fieldName ?>" <?= $selectField ?>><?= Txt::trad($fieldName) ?></option>
+							<?php } ?>
+						</select>
+					</th>
+					<?php } ?>
+				</tr>
+				
+				<!--LIGNES DES PERSONNES A IMPORTER-->
+				<?php
+				foreach($importList as $lineCpt=>$lineValues){
+					$isChecked=($lineCpt>0) ? 'checked' : null;
+				?>
+					<!--CHECKBOX ET CHAMPS DE CHAQUE PERSONNE À IMPORTER-->
+					<tr id="rowPerson<?= $lineCpt ?>">
+						<td><input type="checkbox" name="personsImport[]" value="<?= $lineCpt ?>" class="vLineImportCheckbox" <?= $isChecked ?>></td>
+						<?php
+						foreach($lineValues as $fieldCpt=>$fieldVal){
+							$fieldVal=$fieldLabel=Txt::utf8Encode($fieldVal);
+							if($headerFields[$fieldCpt]=="password" && !empty($fieldVal) && $fieldVal!="password")  {$fieldLabel="**********";}
+						?>
+							<td><?= $fieldLabel ?><input type="hidden" name="personFields[<?= $lineCpt ?>][<?= $fieldCpt ?>]" value="<?= $fieldVal ?>"></td>
+						<?php } ?>
+					</tr>
+				<?php } ?>
+			</table>
+
+			<!--IMPORT D'USER-->
+			<?php if($objClass::objectType=="user"){ ?>
+				<div class="vImportOptions">
+					<!--NOTIF PAR MAIL-->
+					<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser">
+					<label for="notifCreaUser" <?= Txt::tooltip("USER_sendCoordsTooltip2") ?> ><?= Txt::trad("USER_sendCoords") ?></label>
+					<hr>
+					<!--ESPACES D'AFFECTATION-->
+					<div><?= Txt::trad("USER_spaceList") ?> :</div>
+					<?php
+					foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
+						if($tmpSpace->editRight()==false)  {continue;}
+						$isChecked=$isDisabled=$spaceTooltip=null;
+						if($tmpSpace->isCurSpace() || $tmpSpace->allUsersAffected())  {$isChecked='checked';}
+						if($tmpSpace->allUsersAffected()){
+							$isDisabled='disabled';
+							$spaceTooltip=Txt::tooltip("USER_allUsersOnSpace");
+						}
+					?>
+						<div class="vSpaceAffect" <?= $spaceTooltip ?> >
+							<input type="checkbox" name="spaceAffectList[]" value="<?= $tmpSpace->_id ?>" id="spaceAffect<?= $tmpSpace->_id ?>" <?= $isChecked.' '.$isDisabled ?> >
+							<label for="spaceAffect<?= $tmpSpace->_id ?>"><?= $tmpSpace->name ?></label>
+						</div>
+					<?php } ?>
+				</div>
+			<?php } ?>
+
+			<!--IMPORT DE CONTACTS DANS UN DOSSIER RACINE : AFFECTATION PAR DEFAUT A "TOUS LES UTILISATEURS DE L'ESPACE"-->
+			<?php if(isset($curContainer) && $curContainer->isRootFolder()){ ?>
+				<div class='vImportOptions'><img src="app/img/info.png"> <?= Txt::trad("importContactRootFolder") ?> <i><?= Ctrl::$curSpace->name ?></i></div>
+			<?php } ?>
+		<!--TABLEAU D'IMPORT =>FIN-->
+		<?php } ?>
+	<!--FORMULAIRE D'IMPORT =>FIN-->
+	<?php } ?>
+
+	<!--BOUTON DE VALIDATION-->
+	<?= Txt::submitButton("validate") ?>
 </form>

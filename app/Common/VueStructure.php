@@ -14,9 +14,9 @@
 		<meta name="Description" content="Agora-Project : a workspace to share your files, calendars, tasks and projects with your team.">
 		<!--  JQUERY -->
 		<script src="app/js/jquery-3.7.1.min.js"></script>
-		<script src="app/js/jquery-ui_1.14.0/jquery-ui.min.js"></script>
-		<script src="app/js/jquery-ui_1.14.0/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script>
-		<link rel="stylesheet" href="app/js/jquery-ui_1.14.0/jquery-ui.css">
+		<script src="app/js/jquery-ui_1.14.2/jquery-ui.min.js"></script>
+		<script src="app/js/jquery-ui_1.14.2/datepicker-<?= Txt::trad("CURLANG") ?>.js"></script>
+		<link rel="stylesheet" href="app/js/jquery-ui_1.14.2/jquery-ui.css">
 		<!-- LIBRAIRIES JS -->
 		<script src="app/js/fancybox_5.0.36/fancybox.umd.js"></script>
 		<script src="app/js/fancybox_5.0.36/l10n/<?= Txt::trad("FANCYBOXLANG") ?>.umd.js"></script>
@@ -46,7 +46,7 @@
 		labelConfirmOk			="<?= Txt::trad("confirmOk") ?>";
 		labelConfirmCancel		="<?= Txt::trad("confirmCancel") ?>";
 		labelConfirmDownload	="<?= Txt::trad("confirmDownload") ?>";
-		labelConfirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
+		labelconfirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
 		labelConfirmDelete		="<?= Txt::trad("confirmDelete") ?>";
 		labelConfirmDeleteAlert	="<?= Txt::trad("confirmDeleteAlert") ?>";
 		labelBeginEndError		="<?= Txt::trad("beginEndError") ?>";
@@ -67,7 +67,7 @@
 			//// Affiche la vue d'un objet depuis une Url de partage (cf. "getUrlExternal()" et "typeIdTarget")
 			<?php if(Req::isParam("typeIdTarget")){ ?>
 			setTimeout(function(){
-				//Focus le block de l'objet via son "data-typeId" ("objContainerMenu()")  +  Affiche la vue de l'objet (fichier pdf/img via .typeIdTarget)  +  Exclu. les VueEdit et .menuContext
+				//Focus le block de l'objet via son "data-typeId" ("divContainerMenu()")  +  Affiche la vue de l'objet (fichier pdf/img via .typeIdTarget)  +  Exclu. les VueEdit et .menuContext
 				$("div[data-typeId='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTarget").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
 			}, 500);
 			<?php } ?>

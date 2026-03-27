@@ -1,9 +1,13 @@
+<!--DRAG/DROP SUR MOBILE-->
+<script src="app/js/interact.min.js"></script>
+
+
 <script>
 ready(function(){
 	/********************************************************************************************************
 	 *	PROPOSITION D'EVT : PULSATE L'ICONE DU MODULE DANS LE "VueHeaderMenu.php"
 	 ********************************************************************************************************/
-	if($(".evtPropositions").exist() && $("#headerMobileModule").isDisplayed())  {$("#headerMobileModule").pulsate();}
+	if($(".evtPropositions").exist() && $("#headerMobileModule").isVisible())  {$("#headerMobileModule").pulsate();}
 
 	/********************************************************************************************************
 	 *	SUBMIT LA LISTE DES AGENDAS AFFICHES
@@ -15,11 +19,11 @@ ready(function(){
 	 ********************************************************************************************************/
 	$(".evtPropositions").on("click",function(){
 		//// Init le Confirm
-		let ajaxUrl="?ctrl=calendar&action=evtPropositionsConfirm&typeId=calendar-"+$(this).attr("data-idCal")+"&_idEvt="+$(this).attr("data-idEvt");
+		let ajaxUrl="?ctrl=calendar&action=evtPropositionsConfirm&typeId=calendar-"+this.getAttribute("data-idCal")+"&_idEvt="+this.getAttribute("data-idEvt");
 		let redirUrl="?ctrl=calendar&notify=";
 		let confirmParams={
 			title:"<?= Txt::trad("CALENDAR_evtProposition") ?> :",
-			content:$(this).attr("data-details"),//Détails de l'evt (date, auteur, etc)
+			content:this.getAttribute("data-details"),//Détails de l'evt (date, auteur, etc)
 			buttons:{
 				cancel:{text:labelConfirmCancel},
 				accept:{btnClass:"btn-green", text:"<?= Txt::trad("CALENDAR_evtProposeConfirm") ?>",  action:function(){  $.ajax(ajaxUrl+"&isConfirmed=true").done(function(){ redir(redirUrl+"CALENDAR_evtProposeConfirmed"); });  }},
@@ -31,7 +35,7 @@ ready(function(){
 	});
 
 	/********************************************************************************************************
-	 *	DATEPICKER DU MOIS (menu de gauche & display "week")
+	 *	DATEPICKER JQUERY DU MOIS (menu de gauche & display "week")
 	 ********************************************************************************************************/
 	$("#datepickerCalendar").datepicker({
 		firstDay:1,										//Début de semaine le lundi
@@ -43,24 +47,27 @@ ready(function(){
 	/////	SURLIGNE LA SEMAINE COURANTE
 	<?php foreach($periodDays as $tmpDay){ ?>
 		$(".ui-state-active").removeClass("ui-state-active");//Réinit le style du jour de référence
-		$("[data-month=<?= date("n",$tmpDay["dayTimeBegin"])-1 ?>] [data-date=<?= date("j",$tmpDay["dayTimeBegin"]) ?>]").addClass("ui-state-highlight");//Surligne les jours de la semaine affichée
+		$("[data-month=<?= $tmpDay["monthOfYear"]-1 ?>] [data-date=<?= $tmpDay["dayOfMonth"] ?>]").addClass("ui-state-highlight");//Surligne les jours de la semaine affichée
 	<?php } ?>
 
 	/********************************************************************************************************
 	 *	MOBILE : SWIPE GAUCHE/DROITE  &&  BOUTON "TODAY"
 	 ********************************************************************************************************/
-	if(isMobile()){
+	if(isTouchDevice()){
 		////	SWIPE GAUCHE/DROITE POUR AFFICHER LA PERIODE PRECEDENTE/SUIVANTE
-		swipeMenuActive=false;																						//Désactive l'affichage du menu context via swipe : cf menuContext()
-		document.addEventListener("touchstart",function(event){ buttonPeriod=null; });								//Début de swipe
-		document.addEventListener("touchmove",function(event){														//Lance le swipe de navigation
-			if($("#menuMobileMain").isDisplayed()==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){	//Menu context masqué && Swipe < 50px d'amplitude verticale
-				if((event.touches[0].clientX - swipeXstart) > 100)		{buttonPeriod=".vCalPrev";}					//Swipe à gauche > 100px : période précédente
-				else if((swipeXstart - event.touches[0].clientX) > 100)	{buttonPeriod=".vCalNext";}					//Swipe à droite > 100px : période suivante
+		swipeMenuShowOff=true;																//Désactive l'affichage du menu context via swipe
+		document.addEventListener("touchstart",function(event){ buttonPrevNext=null; });	//Début de swipe
+		document.addEventListener("touchmove",function(event){								//Direction du swipe :
+			if(swipeAmplitudeY < 80){														//Swipe d'amplitude < 80px  (cf "menuContext()")
+				if(swipeToRight > 100)		{buttonPrevNext=".vCalPrev";}					//Affiche la période précédente
+				else if(swipeToLeft > 100)	{buttonPrevNext=".vCalNext";}					//Affiche la période suivante
 			}
 		});
-		document.addEventListener("touchend",function(){															//Fin de swipe :
-			if(buttonPeriod!=null)  {$(buttonPeriod).effect("pulsate",{times:1},1000).trigger("click");}			//Pulsate le bouton de la Prev/Next  && Trigger "Click"
+		document.addEventListener("touchend",function(){													//Fin de swipe :
+			if(buttonPrevNext!=null  && evtIsDragged==false && $("#menuMobileMain").isVisible()==false){	//buttonPrevNext spécifé + Pas de drag/drop en cours + Menu context masqué
+				$(buttonPrevNext).effect("pulsate",{times:2},500);											//Pulsate le bouton de la Prev/Next
+				setTimeout(function(){  $(buttonPrevNext).trigger("click");  },300);						//Trigger "Click" pour afficher la période
+			}
 		});
 	}
 });
@@ -71,13 +78,13 @@ ready(function(){
 function moduleDisplay()
 {
 	if(typeof moduleDisplayTimeout!="undefined")  {clearTimeout(moduleDisplayTimeout);}//Un seul timeout
-	moduleDisplayTimeout=setTimeout(function(){																												//Timeout pour récupérer les dimensions globales (cf. affichage sur mobile)
-		$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );							//Synthese des agendas : width des cellules des jours
-		$(".vCalMain").outerHeight( (window.top.windowHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?0:65 ?>), true);	//Hauteur en fonction du height de #livecounterMain (cf. Ajax)
-		$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());															//Hauteur des vues Month/Week en fonction de vCalMain
-		$(".vEvtBlock").each(function(){ $(this).css("background-color",$(this).attr("data-eventColor")); });												//Bgcolor de chaque evt
-		calendarDisplay();																																	//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
-		$(".vCalMain").css("visibility","visible");																											//Affiche les agendas après calendarDisplay()
+	moduleDisplayTimeout=setTimeout(function(){																										//Timeout pour récupérer les dimensions globales (cf. affichage sur mobile)
+		$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );					//Synthese des agendas : width des cellules des jours
+		$(".vCalMain").outerHeight( (windowTopHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?0:65 ?>), true);	//Hauteur en fonction du height de #livecounterMain (cf. Ajax)
+		$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());													//Hauteur des vues Month/Week en fonction de vCalMain
+		$(".vEvtBlock").each(function(){ $(this).css("background-color",this.getAttribute("data-evtColor")); });									//Bgcolor de chaque evt
+		calendarDisplay();																															//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
+		$(".vCalMain").css("visibility","visible");																									//Affiche les agendas après calendarDisplay()
 	},20);
 }
 </script>
@@ -134,14 +141,14 @@ function moduleDisplay()
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{width:480px; text-align:right;}
-.vCalHeaderRight>span							{margin-left:8px;}
+.vCalHeaderRight>span							{margin-right:8px;}
 .vCalLabelDays									{height:25px; padding:4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
-.vEvtBlock										{height:20px; min-height:20px; margin:0px; padding:3px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:4px!important;}/*padding-right pour le menu burger*/
-.vEvtBlock[data-pastEvent='true']:not(:hover)	{filter:brightness(0.9);}/*événements passés (sauf si survolé : cf. menu context)*/
-.vEvtLabel										{overflow:hidden; font-size:0.9rem; font-weight:normal; color:white!important;}
-.vEvtLabel img									{margin-left:5px;}
+.vEvtBlock										{height:20px; min-height:20px; margin:0px; padding:4px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:4px!important;}/*padding-right pour le menu burger*/
+.vEvtBlock[data-evtIsPast='true']:not(:hover)	{filter:brightness(0.9);}/*événements passés (sauf si survolé : cf. menu context)*/
+.vEvtLabel										{overflow:hidden; white-space:normal; font-weight:normal; color:white!important;}/*white-space: longs mots splités sur plusieurs lignes*/
+.vEvtLabel img									{margin-left:6px; max-height:13px;}
 
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
@@ -153,10 +160,10 @@ function moduleDisplay()
 	.vCalHeaderLeftLabel						{display:inline-block; font-size:1rem; max-width:140px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalHeaderLeftLabel::first-letter			{text-transform:uppercase}
 	.vCalHeaderCenter .vCalPrevNext				{padding:3px;}
-	.vCalHeaderRight>span						{display:inline-block; margin-left:3px; line-height:35px; vertical-align:middle;}
+	.vCalHeaderRight>span						{display:inline-block; margin-right:6px; line-height:35px; vertical-align:middle;}
+	.vCalHeaderRight img						{min-height:20px;}
 	.vEvtBlock									{height:25px; min-height:25px; overflow:hidden; padding-right:0px;}/*padding-right : pas menu burger*/
-	.vEvtLabel									{text-transform:lowercase; white-space:normal!important;}/*longs mots splités sur plusieurs lignes*/
-	.vCalHeader .personImgSmall, .vEvtLabelDate, .vEvtBlock .objMenuContextFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
+	.vCalHeader .personImgSmall, .vEvtBlock .menuContextLaunchFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
 }
 
 /* IMPRESSION */
@@ -170,9 +177,8 @@ function moduleDisplay()
 	.vCalMain:not(:last-child)						{page-break-after:always;}/*saut de page après chaque agenda (sauf le dernier)*/
 	.vCalHeader>div									{padding:0px 10px 0px 20px !important; font-size:1.1rem;}
 	.vCalHeaderCenter								{text-align:right;}
-	.vEvtLabel										{font-size:0.9rem;}
 	.vWeekScroller									{overflow:visible!important;}/*pas d'overflow scroll en affichage "week"*/
-	#synthBlock, .vCalPrevNext, .vCalHeaderRight, .vMonthWeekNbYear	{display:none!important;}
+	#synthBlock, .vCalPrevNext, .vCalHeaderRight, .vMonthWeekNbOfYear	{display:none!important;}
 }
 </style>
 
@@ -193,16 +199,16 @@ function moduleDisplay()
 			<!--AGENDAS DISPONIBLES-->
 			<?php if(!empty($readableCalendars)){ ?>
 				<form action="index.php" id="readableCalendarsForm">
-					<!--TITRE && AFFICHAGE ADMINISTRATEUR-->
+					<!--TITRE + OPTION D'AFFICHAGE ADMIN-->
 					<div id="readableCalendarsTitle">
 						<?= Txt::trad("CALENDAR_readableCalendars") ?> :
-						<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" id="readableCalsAdmin" <?= Txt::tooltip(Txt::trad("HEADER_displayAdmin").' : '.Txt::trad("HEADER_displayAdminInfo")) ?> onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?>
+						<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" id="readableCalsAdmin" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?>
 					</div>
 					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
 					<?php foreach($readableCalendars as $tmpCal){ ?>
-						<div class="readableCalendar" <?= Txt::tooltip($tmpCal->description) ?> >
-							<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->_typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
-							<label for="boxDisplay<?= $tmpCal->_typeId ?>" class="option <?= $tmpCal->isDisplayed==true?'optionSelect':null ?>"><?= $tmpCal->title ?></label>
+						<div class="readableCalendar" <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?> >
+							<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
+							<label for="boxDisplay<?= $tmpCal->typeId ?>" class="option <?= $tmpCal->isDisplayed==true?'optionSelect':null ?>"><?= $tmpCal->title ?></label>
 						</div>
 					<?php } ?>
 					<input type="hidden" name="ctrl" value="<?= Req::$curCtrl ?>">
@@ -238,7 +244,7 @@ function moduleDisplay()
 			</div>
 			<?php } ?>
 
-			<!--CALENDRIER MOIS VIA LE DATEPICKER DE JQUERY-UI-->
+			<!--CALENDRIER MOIS VIA LE DATEPICKER-->
 			<?= $displayMode!="month" ? "<div id='datepickerCalendar'></div>" : null ?>
 		</div>
 	</div>
@@ -257,15 +263,15 @@ function moduleDisplay()
 					<!--AFFICHE CHAQUE AGENDA : LIBELLE & CHAQUE JOUR DE L'AGENDA-->
 					<?php foreach($displayedCalendars as $tmpCal){ ?>
 					<div class="vSynthLine">
-						<div class="vSynthLabel" onclick="$('#calBlock<?= $tmpCal->_typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
+						<div class="vSynthLabel" onclick="$('#calBlock<?= $tmpCal->typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<?php
 						foreach($periodSynthese as $tmpDay){
 							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.Txt::dateLabel($tmpDay["dayTimeBegin"],"dateBasic").' - '.$tmpCal->title.' :<br>';
 							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.='<br>'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,60);}
 							$tmpEvtTooltip.='</div>';
 							$syntheseDayCalWE=$syntheseDayEvts=null;
-							if(date("N",$tmpDay["dayTimeBegin"])>5)	{$syntheseDayCalWE="vSynthDayCalWE";}
-							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$syntheseDayEvts.='<div class="vSynthDayEvt" onclick="'.$tmpEvt->openVue().'" style="background-color:'.$tmpEvt->eventColor.'">&nbsp;</div>';}
+							if($tmpDay["dayOfWeek"]>5)	{$syntheseDayCalWE="vSynthDayCalWE";}
+							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$syntheseDayEvts.='<div class="vSynthDayEvt" onclick="'.$tmpEvt->lightboxVue().'" style="background-color:'.$tmpEvt->evtColor.'">&nbsp;</div>';}
 							echo '<div class="vSynthDay vSynthDayCal '.$syntheseDayCalWE.'">
 									<div class="vSynthDayEvts" '.Txt::tooltip($tmpEvtTooltip).'>'.$syntheseDayEvts.'</div>
 								  </div>';
@@ -279,21 +285,21 @@ function moduleDisplay()
 
 		<!--AFFICHE CHAQUE AGENDA-->
 		<?php foreach($displayedCalendars as $tmpCal){ ?>
-		<div class="vCalMain miscContainer" id="calBlock<?= $tmpCal->_typeId ?>">
+		<div class="vCalMain miscContainer" id="calBlock<?= $tmpCal->typeId ?>">
 			<div class="vCalHeader">
 				<!--TITRE DE L'AGENDA-->
 				<div class="vCalHeaderLeft">
 					<?php
-					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';													//Label de l'agenda
-					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}															//Ajoute l'icone de l'user ?
-					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["launcherIcon"=>(Req::isMobile()?"inlineSmall":"inlineBig"),"launcherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda, avec menu context?
+					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';								//Label de l'agenda
+					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->tagProfileImg(true,true);}									//Ajoute l'icone de l'user ?
+					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["burgerLauncher"=>"big-inline","burgerLauncherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda
 					?>
 				</div>
 				<!--PERIODE AFFICHEE  &  PRECEDENT/SUIVANT  &  MENU CONTEXT MONTHS/YEARS-->
 				<div class="vCalHeaderCenter">
 					<span class="vCalPrevNext vCalPrev" onclick="redir('?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeftNav.png"></span>
-					<span class="menuLauncher vCalHeaderMonth" for="monthsYearsMenu<?= $tmpCal->_typeId ?>"><?= ucfirst($monthLabel) ?></span>
-					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->_typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
+					<span class="menuContextLaunch vCalHeaderMonth" for="monthsYearsMenu<?= $tmpCal->typeId ?>"><?= ucfirst($monthLabel) ?></span>
+					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
 					<span class="vCalPrevNext vCalNext" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRightNav.png"></span>
 				</div>
 				
@@ -302,10 +308,10 @@ function moduleDisplay()
 					<span onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')" <?= Txt::tooltip("displayToday") ?> >
 						<?= Req::isMobile() ? '<img src="app/img/calendar/displayToday.png">' : '<button>'.Txt::trad("today").'</button>' ?>
 					</span>
-					<span class="menuLauncher" for="menuDisplayMode<?= $tmpCal->_typeId ?>">
+					<span class="menuContextLaunch" for="menuDisplayMode<?= $tmpCal->typeId ?>">
 						<?= Req::isMobile() ? '<img src="app/img/calendar/display'.ucfirst($displayMode).'.png">' : '<button>'.Txt::trad("CALENDAR_display_".$displayMode).' <img src="app/img/arrowBottom.png"></button>' ?>
 					</span>
-					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->_typeId ?>">
+					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->typeId ?>">
 						<?php foreach($displayModeList as $displayModeTmp){ ?>
 						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('?ctrl=calendar&calendarDisplayMode=<?= $displayModeTmp ?>')">
 							<div class="menuIcon"><img src="app/img/calendar/display<?= ucfirst($displayModeTmp) ?>.png"></div><div><?= ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp)) ?></div>

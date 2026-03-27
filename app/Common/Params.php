@@ -27,6 +27,7 @@ define("WALLPAPER_DEFAULT_DB_PREFIX","default@@");//Préfixe en DB des wallpaper
 define("PATH_ICON_FOLDER", "app/img/folder/");
 
 ////	INFOS DE TEMPS
+define("TIME_1DAY", 86400);
 define("TIME_2MONTHS", 5356800);
 define("TIME_1YEAR", 31536000);
 define("TIME_3YEARS", 94608000);

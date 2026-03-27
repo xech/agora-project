@@ -1,11 +1,11 @@
 <?php if($tmpCal->isFirstCal==true){ ?>
 <script>
-/********************************************************************************************************
+/******************************************************************************************
  *	AFFICHAGE DES AGENDAS
- *******************************************************************************************/
+ ******************************************************************************************/
 function calendarDisplay(isPrint)
 {
-	let monthCellWidth=Math.floor((containerWidth-$(".vMonthWeekNbYear").width()) / 7) - 2;			//Calcul le width des cellules du mois (containerWidth cf "app.js" puis -2px de border)
+	let monthCellWidth=Math.floor((containerWidth-$(".vMonthWeekNbOfYear").width()) / 7) - 2;		//Calcul le width des cellules du mois (containerWidth cf "app.js" puis -2px de border)
 	$(".vCalLabelDays,.vMonthDayCell,.vEvtBlock").innerWidth(monthCellWidth);						//Width des cellules du mois et des Evts
 	$(".vCalMain").each(function(){																	//Parcours chaque agenda
 		let contentHeight=$(this).find(".vCalHeader").height() + $(this).find(".vCalVue").height();	//Hauteur du contenu de l'agenda
@@ -17,7 +17,7 @@ function calendarDisplay(isPrint)
 <style>
 /*Conteneur principal + header + lignes*/
 .vCalVue									{border-collapse:collapse;}											/*Bordures fusionnées*/
-.vMonthWeekNbYear							{width:15px; font-size:0.9rem; opacity:0.5; text-align:center;}		/*numero des semaines dans l'année*/
+.vMonthWeekNbOfYear							{width:15px; font-size:0.9rem; opacity:0.5; text-align:center;}		/*numero des semaines dans l'année*/
 .vMonthWeek									{height:17%; min-height:17%;}										/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 .vPublicHoliday								{color:#080; font-style:italic; margin-left:15px;}					/*Libellé du jour férié*/
 
@@ -31,62 +31,62 @@ function calendarDisplay(isPrint)
 
 /*evenements*/
 .vEvtBlock									{max-width:98%; margin-bottom:2px;}
-.vEvtBlock .objMenuContextFloat				{top:2px; right:2px;}					/*Surchage le menu "burger"*/
-.vEvtLabel									{white-space:nowrap;}					/*Texte sur une seule ligne*/
-.vEvtLabelDate								{margin-left:3px; margin-right:5px;}
+.vEvtBlock .menuContextLaunchFloat			{top:2px; right:2px;}/*décale le menu "burger"*/
+.vEvtLabel									{font-size:0.85rem; white-space:nowrap;}/*white-space: Texte sur une seule ligne*/
+.vEvtLabelDate								{display:inline;}
 
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	.vMonthDayLabel							{font-size:0.8em; font-weight:normal;}
-	.vMonthDayLabel .vMonthAddEvt			{margin:0px;}
-	.vEvtLabel								{font-size:13px; line-height:11px;}
-	.vMonthWeekNbYear, .vPublicHoliday		{display:none!important;}
+	.vMonthDayLabel											{font-size:0.7em; font-weight:normal;}
+	.vMonthDayLabel .vMonthAddEvt							{margin:0px;}
+	.vEvtLabel												{font-size:0.8rem; line-height:12px;}
+	.vEvtLabelDate, .vMonthWeekNbOfYear, .vPublicHoliday	{display:none!important;}
 }
 </style>
 <?php } ?>
 
 
 <table class="vCalVue">
-	<?php
-	////	HEADER : JOURS DE LA SEMAINE
-	echo '<tr>';
-			for($i=1; $i<=7; $i++)  {echo '<td class="vCalLabelDays">'.(Req::isMobile() ? substr(Txt::trad("day_".$i),0,3) : Txt::trad("day_".$i)).'</td>';}
-			echo '<td class="vMonthWeekNbYear">&nbsp;</td>
-		  </tr>';
+	<!--HEADER : JOURS DE LA SEMAINE-->
+	<tr>
+		<?php for($i=1; $i<=7; $i++){ ?><td class="vCalLabelDays"><?= Req::isMobile() ? substr(Txt::trad("day_".$i),0,3) : Txt::trad("day_".$i) ?></td><?php } ?>
+		<td class="vMonthWeekNbOfYear">&nbsp;</td>
+	</tr>
 
-	////	JOURS DU MOIS
-	foreach($periodDays as $dayYmd=>$tmpDay)
-	{
-		////	PREMIER JOUR DE LA SEMAINE : LIGNE DE LA SEMAINE <TR> 
-		if(date("N",$tmpDay["dayTimeBegin"])==1)  {echo '<tr class="vMonthWeek">';}
+	<!--TABLEAU DES JOURS DU MOIS-->
+	<?php foreach($periodDays as $dayYmd=>$tmpDay){ ?>
+		<!--LIGNE DE LA SEMAINE-->
+		<?php if($tmpDay["dayOfWeek"]==1){ ?><tr class="vMonthWeek"><?php } ?>
 
-		////	INIT LA CELLULE DU JOUR
-		$classDayOtherMonth=(date("m",$tmpDay["dayTimeBegin"])!=date("m",$curTime))  ?  "vMonthDayOtherMonth"  :  null;	//Class du jour du précédent/futur mois
-		if($tmpCal->affectationAddRight()){																				//Proposer/Ajouter un evt
-			$newEvtTimeBegin=strtotime($dayYmd." ".date("H:00"));														//Timestamp du nouvel evt
-			$addEvtButton='<img src="app/img/plusSmall.png" class="vMonthAddEvt" onclick="lightboxOpen(\''.MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.$newEvtTimeBegin.'\')" '.$tmpCal->addEvtTooltip.'>';
-		}else{$addEvtButton=null;}
+			<!--BLOCK DU JOUR-->
+			<td class="vMonthDayCell <?= $tmpDay["monthOfYear"]!=date("n",$curTime)?"vMonthDayOtherMonth":null ?>">
+					<!--LABEL DU JOUR-->
+					<div class="vMonthDayLabel">
+						<span <?= $tmpDay["isToday"]==true?'class="circleNb"':null ?> ><?= $tmpDay["dayOfMonth"] ?></span>
+						<span class="vPublicHoliday"><?= $tmpDay["publicHoliday"] ?></span>
+							<!--PROPOSER/AJOUTER UN EVT-->
+							<?php if($tmpCal->affectationAddRight()){ ?>
+								<img src="app/img/plusSmall.png" class="vMonthAddEvt" <?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $getUrlNewEvt.'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.strtotime($dayYmd.' '.date('H:00')) ?>')">
+							<?php } ?>
+					</div>
+					<!--EVENEMENTS DU JOUR-->
+					<?php foreach($tmpCal->evtListDays[$dayYmd] as $tmpEvt){
+						echo $tmpEvt->divContainerMenu("vEvtBlock",$tmpEvt->evtAttributes,$tmpEvt->contextMenuOptions);
+					?>
+							<div class="vEvtLabel" onclick="<?= $tmpEvt->lightboxVue() ?>" <?= Txt::tooltip($tmpEvt->tooltip) ?>>
+								<div class="vEvtLabelDate"><?= Txt::dateLabel($tmpEvt->timeBegin,"mini") ?></div>
+								<?= $tmpEvt->title ?>
+							</div>
+						</div>
+					<?php } ?>
+			</td>
 
-		////	BLOCK DU JOUR ET EVENEMENTS DU JOUR
-		echo '<td class="vMonthDayCell '.$classDayOtherMonth.'">
-				<div class="vMonthDayLabel">
-					<span '.($dayYmd==date('Y-m-d')?'class="circleNb"':null).'>'.date("j",$tmpDay["dayTimeBegin"]).'</span>
-					<span class="vPublicHoliday">'.$tmpDay["publicHoliday"].'</span>'.$addEvtButton.'
-				</div>';
-				foreach($tmpCal->evtListDays[$dayYmd] as $tmpEvt){
-					echo $tmpEvt->objContainerMenu("vEvtBlock",$tmpEvt->evtAttributes,$tmpEvt->contextMenuOptions).
-							'<div class="vEvtLabel" onclick="'.$tmpEvt->openVue().'" '.Txt::tooltip($tmpEvt->tooltip).'>
-								<span class="vEvtLabelDate">'.Txt::dateLabel($tmpEvt->timeBegin,"mini").'</span>'.$tmpEvt->title.
-							'</div>
-						</div>';
-				}
-		echo '</td>';
-
-		////	DERNIER JOUR DE LA SEMAINE : NUMERO DE SEMAINE DANS L'ANNEE + FIN DE LIGNE DE SEMAINE
-		if(date("N",$tmpDay["dayTimeBegin"])==7){
-			echo '<td class="vMonthWeekNbYear" onclick="redir(\'?ctrl=calendar&calendarDisplayMode=week&curTime='.$tmpDay["dayTimeBegin"].'\')" '.Txt::tooltip(Txt::trad("CALENDAR_yearWeekNum")." ".date("W",$tmpDay["dayTimeBegin"])).'>'.date("W",$tmpDay["dayTimeBegin"]).'</td>
-				</tr>';
-		}
-	}
-	?>
+			<!--LIGNE DE LA SEMAINE : FIN (+ NUM DE SEMAINE DE L'ANNEE)-->
+			<?php if($tmpDay["dayOfWeek"]==7){ ?>
+				<td class="vMonthWeekNbOfYear" <?= Txt::tooltip("CALENDAR_yearWeekNum") ?> onclick="redir('<?= '?ctrl=calendar&calendarDisplayMode=week&curTime='.$tmpDay["dayTimeBegin"] ?>');">
+					<?= date("W",$tmpDay["dayTimeBegin"]) ?>
+				</td>
+			</tr>
+			<?php } ?>
+	<?php } ?>
 </table>

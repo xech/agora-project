@@ -18,12 +18,19 @@ class MdlFileFolder extends MdlFolder
 	const MdlObjectContent="MdlFile";
 
 	/********************************************************************************************************
-	 * SURCHARGE : MENU CONTEXTUEL AVEC L'OPTION "TELECHARGER LE DOSSIER"
+	 * SURCHARGE : MENU CONTEXTUEL
 	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight())
-			{$options["specificOptions"][]=["actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&objectsTypeId[fileFolder]=".$this->_id."')", "iconSrc"=>"download.png", "label"=>Txt::trad("downloadFolder")];}
+		////	"Télécharger le dossier"
+		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight()){
+			$options["objOptions"][]=[
+				"actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&objectsTypeId[fileFolder]=".$this->_id."')",
+				"iconSrc"=>"download.png",
+				"label"=>Txt::trad("downloadFolder")
+			];
+		}
+		////	Menu parent
 		return parent::contextMenu($options);
 	}
 
@@ -33,13 +40,13 @@ class MdlFileFolder extends MdlFolder
 	public function editRecord($sqlFields)
 	{
 		$reloadedObj=parent::editRecord($sqlFields);
-		//Créé un nouveau dossier sur le disque?
+		//// Créé un nouveau dossier sur le disque?
 		if(!file_exists($reloadedObj->folderPath("real"))){
 			$isCreated=mkdir($reloadedObj->folderPath("real"));
 			if($isCreated==false)	{self::noAccessExit("NOTIF_fileOrFolderAccess");}
 			else					{File::setChmod($reloadedObj->folderPath("real"));}
 		}
-		////	Retourne l'objet rechargé
+		//// Retourne l'objet rechargé
 		return $reloadedObj;
 	}
 }

@@ -10,7 +10,7 @@ ready(function(){
 async function deleteResponseFile(_idReponse)
 {
 	if(await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){
-		$.ajax("?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->_typeId ?>&_idResponse="+_idReponse).done(function(result){
+		$.ajax("?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->typeId ?>&_idResponse="+_idReponse).done(function(result){
 			if(/true/i.test(result)){
 				$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");//Remplace le fichier supprimé par un champ "File"
 				notify("<?= Txt::trad("confirmDeleteNotify") ?>");
@@ -23,8 +23,8 @@ async function deleteResponseFile(_idReponse)
 function mainFormControl(){
 	return new Promise((resolve)=>{
 		let responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return this.value; }).length;	//Nombre de "Réponses" spécifiées
-		if(responsesNb < 2)		{notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");	 resolve(false);}				//Au moins 2 réponses au sondage
-		else					{$("input:disabled").prop("disabled",false);  				 resolve(true);}				//Réactive les champs désactivés
+		if(responsesNb < 2)		{resolve(false);  notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");}				//Au moins 2 réponses au sondage
+		else					{resolve(true);   $("input:disabled").prop("disabled",false);}								//Réactive les champs désactivés
 	});
 }
 </script>

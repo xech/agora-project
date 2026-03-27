@@ -112,7 +112,7 @@ button											{width:330px; height:55px;}
 
 
 <div>
-	<div class="lightboxTitle"><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png" <?= Txt::tooltip("USER_sendInvitationTooltip") ?> ></div>
+	<div class="lightboxTitle" <?= Txt::tooltip("USER_sendInvitationTooltip") ?>><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png"></div>
 
 	<!--INVITATION SIMPLE-->
 	<form id="invitationForm">

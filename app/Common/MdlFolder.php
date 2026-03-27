@@ -48,7 +48,7 @@
 	 ********************************************************************************************************/
 	public function getUrl($display=null)
 	{
-		return ($display=="edit")  ?  "?ctrl=object&action=VueEditFolder&typeId=".$this->_typeId  :  parent::getUrl($display);
+		return ($display=="edit")  ?  "?ctrl=object&action=VueEditFolder&typeId=".$this->typeId  :  parent::getUrl($display);
 	}
 
 	/********************************************************************************************************
@@ -261,4 +261,20 @@
 	 * DÉTAILS COMPLÉMENTAIRES SUR LE DOSSIER => À SURCHARGER !
 	 ********************************************************************************************************/
 	public function folderDetails(){}
+
+	
+	/********************************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 ********************************************************************************************************/
+	public function contextMenu($options=null)
+	{
+		////	"Contenu du dossier"
+		$options["objOptions"][]=[
+			"separator"=>"<hr>",
+			"iconSrc"=>"folder/folderSmall.png",
+			"label"=>Txt::trad("folderContent").' : '.$this->contentDescription()
+		];
+		////	Menu parent
+		return parent::contextMenu($options);
+	}
 }

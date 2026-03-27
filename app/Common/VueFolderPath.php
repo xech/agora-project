@@ -9,7 +9,7 @@
 		if(Req::isMobile() && $tmpFolder->_id!=$curFolder->_id)  {continue;}											//Mobile : affiche uniquement le dossier courant
 		$leftIcon=(empty($tmpFolder->_idContainer))  ?  "folder/folderSmall.png"  :  "arrowRight.png";					//Icone "Folder" (dossier racine)  OU  "arrowRight" (sous-dossier)
 		$folderLink=($curFolder->_id!=$tmpFolder->_id)  ?  "onclick=\"redir('".$tmpFolder->getUrl()."')\""  :  null;	//Lien vers le dossier (sauf dossier courant)
-		$contextMenu=($curFolder->isRootFolder()==false && Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id)  ?  $tmpFolder->contextMenu(["launcherIcon"=>"inlineSmall"])  :  null;
+		$contextMenu=($curFolder->isRootFolder()==false && Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id)  ?  $tmpFolder->contextMenu(["burgerLauncher"=>"small-inline"])  :  null;
 		echo '<div '.$folderLink.' '.Txt::tooltip($tmpFolder->description).'>
 				<img src="app/img/'.$leftIcon.'">'.Txt::reduce($tmpFolder->name,40).' '.$contextMenu.'
 			  </div>';
@@ -18,7 +18,7 @@
 	if(!empty($addElemLabel) && $curFolder->addContentRight()){
 	?>
 		<div class="pathMenuAdd">
-			<img src="app/img/plus.png" class="menuLauncher" for="folderPathAddMenu">
+			<img src="app/img/plus.png" class="menuContextLaunch" for="folderPathAddMenu">
 			<div id="folderPathAddMenu" class="menuContext">
 				<div class="menuLine" onclick="lightboxOpen('<?= $addElemUrl ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= $addElemLabel ?></div></div>
 				<div class="menuLine" onclick="lightboxOpen('<?= $curFolder::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div><?= Txt::trad("addFolder") ?></div></div>

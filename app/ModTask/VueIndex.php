@@ -70,17 +70,17 @@ function moduleDisplay(){
 
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask){
-			echo $tmpTask->objContainerMenu();
+			echo $tmpTask->divContainerMenu();
 		?>
 				<div class="objContainerScroll">
 					<div class="objContent vObjTasks">
 						<div class="objIcon objIconOpacity"><img src="app/img/task/iconSmall.png"></div>
-						<div class="objLabel" onclick="<?= $tmpTask->openVue() ?>">
+						<div class="objLabel" onclick="<?= $tmpTask->lightboxVue() ?>">
 							<?= ucfirst($tmpTask->title) ?>
 							<div class="objLabelInfos"><?= $tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
 						</div>
 						<div class="objDetails"><?= $tmpTask->responsiblePersons().$tmpTask->progressAdvancement().$tmpTask->progressBeginEnd() ?></div>
-						<div class="objAutorDate"><?= $tmpTask->autorDate() ?></div>
+						<div class="objAutorDate"><?= $tmpTask->autorDate(true) ?></div>
 					</div>
 				</div>
 			</div>
@@ -120,7 +120,7 @@ function moduleDisplay(){
 								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["classLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}
 						}
 						//Affiche toute la timeline de la tâche courante
-						echo '<tr class="lineHover" onclick="'.$tmpTask->openVue().'">
+						echo '<tr class="lineHover" onclick="'.$tmpTask->lightboxVue().'">
 								<td class="vTimelineTitle" '.Txt::tooltip($tmpTask->title).'>'.Txt::reduce($tmpTask->title,(Req::isMobile()?30:50)).'</td>'.
 								$tmpTaskCells.
 							'</tr>';

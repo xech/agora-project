@@ -26,7 +26,7 @@ class MdlUser extends MdlPerson
 	/********************************************************************************************************
 	 * PHOTO D'UN UTILISATEUR
 	 ********************************************************************************************************/
-	public function pathImgThumb()
+	public function pathProfileImg()
 	{
 		return PATH_MOD_USER.$this->_id."_thumb.jpg";
 	}
@@ -182,9 +182,8 @@ class MdlUser extends MdlPerson
 	 ********************************************************************************************************/
 	public function delete()
 	{
-		if($this->deleteRight())
-		{
-			if($this->profileImgExist())  {unlink($this->pathImgThumb());}
+		if($this->deleteRight()){
+			if($this->isProfileImg())  {unlink($this->pathProfileImg());}
 			// Suppression des tables de jointures et tables annexes
 			Db::query("DELETE FROM ap_joinSpaceUser			WHERE _idUser=".$this->_id);
 			Db::query("DELETE FROM ap_objectTarget			WHERE target=".Db::format("U".$this->_id));
@@ -350,5 +349,55 @@ class MdlUser extends MdlPerson
 					 	 '<br><br>'.Txt::trad("resetPasswordMailLoginRemind").' : <i>'.$this->login.'</i>';
 			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);
 		}
+	}
+
+	/********************************************************************************************************
+	 * SURCHARGE : MENU CONTEXTUEL
+	 ********************************************************************************************************/
+	public function contextMenu($options=null)
+	{
+		////	Pas proprio du compte utilisateur et pas admin d'espace : retourne "false"
+		if($this->isAutor()==false && Ctrl::$curUser->isSpaceAdmin()==false)
+			{return false;}
+		////	"Visibilité sur la messagerie"
+		if($this->editRight()){
+			$options["objOptions"][]=[
+				"actionJs"=>"lightboxOpen('?ctrl=user&action=userEditMessenger&typeId=".$this->typeId."')",
+				"iconSrc"=>"messenger.png",
+				"label"=>Txt::trad("USER_livecounterVisibility")
+			];
+		}
+		////	"Retirer l'utilisateur de l'espace courant ?"
+		if($this->deleteFromCurSpaceRight()){
+			$options["objOptions"][]=[
+				"actionJs"=>"confirmRedir('?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')",
+				"iconSrc"=>"deleteRemove.png",
+				"label"=>Txt::trad("USER_deleteFromCurSpace").' <i>'.Ctrl::$curSpace->getLabel().'</i>'
+			];
+		}
+		////	Espaces de l'utilisateur
+		if(Ctrl::$curUser->isGeneralAdmin()){
+			if(count($this->spaceList())==0)  {$spaceList=Txt::trad("USER_spaceNoAffectation");}
+			else{
+				$spaceList=Txt::trad("USER_spaceList").' : ';
+				foreach($this->spaceList() as $tmpSpace)  {$spaceList.='<br>. '.$tmpSpace->name;}
+			}
+			$options["objOptions"][]=[
+				"separator"=>"<hr>",
+				"iconSrc"=>"space.png",
+				"label"=>$spaceList
+			];
+		}
+		////	Exporter au format vCard
+		$options["objOptions"][]=[
+			"actionJs"=>"redir('?ctrl=user&action=ExportVcard&typeId=".$this->typeId."');",
+			"iconSrc"=>"vcard.png",
+			"label"=>Txt::trad("export_vcard"),
+		];
+		////	"Modifier le profil utilisateur"  et  "Supprimer définitivement"
+		$options["editLabel"]=Txt::trad("USER_profilEdit");
+		$options["deleteLabel"]=Txt::trad("USER_deleteDefinitely");
+		////	Menu parent
+		return parent::contextMenu($options);
 	}
 }

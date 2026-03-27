@@ -37,7 +37,7 @@ class CtrlContact extends Ctrl
 			$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel=$tmpObj->openVue();
+			$tmpObj->pluginJsLabel=$tmpObj->lightboxVue();
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;
@@ -67,7 +67,7 @@ class CtrlContact extends Ctrl
 			//Enregistre & recharge l'objet
 			$curObj=$curObj->editRecord("name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment"));
 			//Ajoute/supprime l'image / Notifie par mail & Ferme la page
-			$curObj->profileImgRecord();
+			$curObj->setProfileImg();
 			$curObj->sendMailNotif($curObj->getLabel());
 			static::lightboxRedir();
 		}
@@ -79,47 +79,53 @@ class CtrlContact extends Ctrl
 	/********************************************************************************************************
 	 * VUE : IMPORT/EXPORT DE CONTACTS
 	 ********************************************************************************************************/
-	public static function actionEditPersonsImportExport()
+	public static function actionVueImportExport()
 	{
-		////	Folder courant  &&  Controle d'accès
-		$curFolder=self::getObj("contactFolder",Req::param("_idContainer"));
+		////	Controle d'accès  && Folder courant 
 		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxRedir();}
+		$curContainer=Ctrl::$curContainer;//cf param "typeId"
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			//// Export de contacts
 			if(Req::param("actionImportExport")=="export"){
-				$contactList=Db::getObjTab("contact", "SELECT * FROM ".MdlContact::dbTable." WHERE ".MdlContact::sqlDisplay(self::$curContainer));
-				MdlContact::exportPersons($contactList, Req::param("exportType"));
+				$contactList=Db::getObjTab("contact", "SELECT * FROM ".MdlContact::dbTable." WHERE ".MdlContact::sqlDisplay($curContainer));
+				MdlContact::exportPersons(Req::param("exportType"), $curContainer->getLabel(), $contactList);
 			}
 			//// Import de contacts
-			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields"))
-			{
+			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields")){
 				$personFields=Req::param("personFields");
-				foreach(Req::param("personsImport") as $personCpt)
-				{
-					//Créé le contact  &&  Spécifie le "_idContainer" pour le controle d'accès (cf. "editRecord()")
+				foreach(Req::param("personsImport") as $personCpt){
+					//// Créé le contact  ("_idContainer" pour le controle d'accès via "editRecord()")
 					$curObj=new MdlContact();
-					$curObj->_idContainer=$curFolder->_id;
-					$sqlFields=null;
-					//Récupère la valeur de chaque champ du contact
-					foreach(Req::param("agoraFields") as $fieldCpt=>$curFieldName){
-						$curFieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
-						if(!empty($curFieldVal) && !empty($curFieldName))  {$sqlFields.="`".$curFieldName."`=".Db::format($curFieldVal).", ";}
+					$sqlFields="`_idContainer`=".Db::format($curContainer->_id).", ";
+					//// Récupère la valeur de chaque champ du contact
+					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){
+						$fieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
+						if(!empty($fieldVal) && !empty($fieldName))  {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}
 					}
-					//Enregistre le nouveau contact !
+					//// Enregistre le nouveau contact !
 					$curObj=$curObj->editRecord($sqlFields);
-					//Nouveau contact du dossier racine : affecte en lecture à "tous les users" de l'espace courant
-					if($curFolder->isRootFolder())  {Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
+					//// Nouveau contact du dossier racine : affecte en lecture à "tous les users" de l'espace courant
+					if($curContainer->isRootFolder())
+						{Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
 				}
-				//Ferme la page
+				//// Ferme la page
 				static::lightboxRedir();
 			}
 		}
 		////	Affiche le menu d'Import/Export
-		$vDatas["curObjClass"]="MdlContact";
-		$vDatas["curFolder"]=$curFolder;
+		$vDatas["objClass"]="MdlContact";
+		$vDatas["curContainer"]=$curContainer;
 		static::displayPage(Req::commonPath."VuePersonsImportExport.php",$vDatas);
+	}
+
+	/********************************************************************************************************
+	 * ACTION : EXPORT D'UN CONTACT AU FORMAT VCARD
+	 ********************************************************************************************************/
+	public static function actionExportVcard()
+	{
+		$curObj=self::getCurObj();
+		MdlContact::exportPersons("vcard", $curObj->getLabel(), [$curObj]);
 	}
 
 	/********************************************************************************************************
@@ -140,7 +146,7 @@ class CtrlContact extends Ctrl
 			$newUser=$newUser->editRecord($sqlFields, $login, $password, Ctrl::$curSpace->_id);
 			if(is_object($newUser)){
 				Ctrl::notify("CONTACT_createUserConfirmed");
-				if(is_file($contactRef->pathImgThumb()))  {copy($contactRef->pathImgThumb(),$newUser->pathImgThumb());}//Récupère l'image?
+				if($contactRef->isProfileImg())  {copy($contactRef->pathProfileImg(),$newUser->pathProfileImg());}//Récupère l'image?
 				$newUser->createCredentialsMail($password);//Mail de notif
 			}
 			//Redirige

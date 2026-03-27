@@ -3,6 +3,30 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
+VERSION 26.4.0
+--------------
+Nouvelle option de suppression groupé des anciens emails du module Mail (cf historique)
+Nouvelle option d'export de contact ou de profil utilisateur au format vCard (cf menu contextuel)
+Ajout des images dans les export de contacts ou de profils utilisateurs au format vCard
+Drag & drop des événements de l'agenda désormais sur mobile
+Amélioration de l'affichage des menus contextuels des éléments
+Optimisation d'affichage des agendas en vue semaine
+Optimisation de sélection des destinataires des notifications
+Correction de l'import de contacts CSV
+Mise à jour de JQuery-UI en v1.14.2
+Mise à jour de Datatable en v2.3.7
+-----
+New feature for bulk deletion of old emails from the Mail module
+New feature to export contacts or user profiles in vCard format (context menu)
+Adding images to contact or user profile exports in vCard format
+Drag & Drop of calendar events available on mobile
+Improved display of context menus for items
+Optimized display of calendars in weekly view
+Optimized selection of notification recipients
+Fix CSV contact import
+JQuery-UI updated to v1.14.2
+Datatable updated to v2.3.7
+
 
 VERSION 26.2
 ------------
@@ -115,7 +139,7 @@ Amélioration du menu de pagination
 Nouvelle visionneuse d'images (Rotation, Diaporama, Vignettes, etc.)
 Simplification des éditions d'evenements et sélection/affectation aux agendas
 Optimisation de l'affichage des menus responsives
-Optimisation de la gestion des droits d'accès aux objets
+Optimisation de la gestion des droits d'accès aux éléments
 Optimisation de l'affichage de l'historique des emails
 Optimisation de la gestion des préférences en Bdd/Session
 Correction des propositions d'événement par les invités

@@ -8,7 +8,7 @@ ready(function(){
 
 	////	Edition/suppression d'un commentaire : update le "circleNb"  (idem "usersLikeUpdate()")
 	<?php if(Req::isParam("actionComment")){ ?>
-		var menuId="#usersComment_<?= $curObj->_typeId ?>";																								//Id du menu
+		var menuId="#usersComment_<?= $curObj->typeId ?>";																								//Id du menu
 		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("hide").find(".circleNb").html("");}											//Masque l'icone et le nb de commentaires
 		else								{window.top.$(menuId).removeClass("hide").find(".circleNb").html("<?= count($commentList) ?>").pulsate(1);}	//Affiche l'icone
 		window.top.$(menuId).tooltipUpdate("<?= $commentsTitle ?>");																					//Update le Tooltip
@@ -63,7 +63,7 @@ form button				{width:120px;}
 				<?php if(MdlObject::userCommentEditRight($tmpComment['_id'])){ ?>
 					<div class="vCommentOptions">
 						<img src="app/img/edit.png" <?= Txt::tooltip("modify") ?> onclick="$('#commentText<?= $tmpComment['_id'] ?> >*').toggle()">
-						<img src="app/img/delete.png" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->_typeId ?>&idComment=<?= $tmpComment['_id'] ?>&actionComment=delete')">
+						<img src="app/img/delete.png" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->typeId ?>&idComment=<?= $tmpComment['_id'] ?>&actionComment=delete')">
 					</div>
 				<?php } ?>
 			</div>

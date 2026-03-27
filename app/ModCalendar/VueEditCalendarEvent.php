@@ -100,9 +100,9 @@ function timeSlotBusy()
 function mainFormControl()
 {
 	return new Promise((resolve)=>{
-		if($(".vCalInput:checked").isEmpty())															{notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");  resolve(false);}	//Aucune affectation aux agendas
-		else if($("input[name='guest']").exist() && $("input[name='guest']").val().length<3)			{notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");  resolve(false);}	//"Merci de préciser un nom ou un pseudo"
-		else if($("input[name='guestMail']").exist() && $("input[name='guestMail']").isMail()==false)	{notify("<?= Txt::trad("mailInvalid") ?>");			 resolve(false);}	//Mail invalide
+		if($(".vCalInput:checked").isEmpty())															{resolve(false);  notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");}	//Aucune affectation aux agendas
+		else if($("input[name='guest']").exist() && $("input[name='guest']").val().length<3)			{resolve(false);  notify("<?= Txt::trad("EDIT_guestNameNotif") ?>");}	//Préciser un nom ou pseudo
+		else if($("input[name='guestMail']").exist() && $("input[name='guestMail']").isMail()==false)	{resolve(false);  notify("<?= Txt::trad("mailInvalid") ?>");}			//Mail invalide
 		else																							{resolve(true);}
 	});
 }
@@ -113,7 +113,7 @@ function mainFormControl()
 /*GENERAL*/
 #bodyLightbox						{max-width:850px;}
 legend			 					{font-size:1.05em; text-align: center!important;}
-.vEvtOptionInline					{display:inline-block; margin:25px 25px 0px 0px;}
+.vEvtOptionInline					{display:inline-block; margin:20px 0px 0px 20px;}
 .beginEndLabel						{display:none}
 #beginEndSeparator					{display:inline-block; padding-block:10px;}
 #guestMenu							{text-align:center;}
@@ -137,9 +137,9 @@ input[name='guestMail']				{margin-left:20px;}
 #calAffectationsOverflow			{max-height:400px; overflow-y:auto;}
 .vCalAffectation					{display:inline-block; width:32%; margin:2px;}
 .vCalAffectation .vCalInput			{display:none;}
-.vCalAffectation label				{display:inline-block; margin:3px; width:80%;}/*label rattaché à ".vCalInput"*/
-.vCalAffectation .vCalProposeOption						{float:right; margin:3px;}/*Option de proposition d'evt*/
-.vCalAffectation:not(.optionSelect) .vCalProposeOption	{display:none;}/*masque l'input de proposition si l'agenda n'est pas sélectionné*/
+.vCalAffectation label				{display:inline-block; margin:3px; width:80%;}
+.vCalAffectation .vCalProposeOption						{float:right; margin:3px;}
+.vCalAffectation:not(.optionSelect) .vCalProposeOption	{display:none;}/*masque si l'agenda n'est pas sélectionné*/
 
 /*AFFICHAGE DE "timeSlotBusy"*/
 #timeSlotBusy						{display:none;}
@@ -148,11 +148,13 @@ input[name='guestMail']				{margin-left:20px;}
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
+	.vEvtOptionInline								{display:block; margin:30px 0px 0px 0px;}
 	#beginEndSeparator								{visibility:hidden; display:block;}
-	.beginEndLabel									{display:inline-block; width:50px;}
+	.beginEndLabel									{display:inline-block; width:60px; line-height:35px;}
 	.vPeriodCheckboxDays, .vPeriodCheckboxMonths	{width:33%!important;}
-	.vCalAffectation								{width:100%; margin:3px 0px;}
+	.vCalAffectation								{width:99%; margin-inline:0px;}
 	.vCalAffectation label							{padding:5px;}
+	.vCalAffectation .vCalProposeOption				{display:none;}
 }
 </style>
 
@@ -174,11 +176,6 @@ input[name='guestMail']				{margin-left:20px;}
 		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("end") ?>>
 		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("end") ?>>
-	</div>
-
-	<!--CATEGORIE DE L'EVT-->
-	<div class="vEvtOptionInline">
-		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
 	</div>
 
 	<!--PERIODICITE : SELECTION DU TYPE-->
@@ -233,6 +230,11 @@ input[name='guestMail']				{margin-left:20px;}
 		</div>
 	</fieldset>
 
+	<!--CATEGORIE DE L'EVT-->
+	<div class="vEvtOptionInline">
+		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
+	</div>
+
 	<!--IMPORTANT-->
 	<div class="vEvtOptionInline vEvtGuestHide">
 		<select name="important">
@@ -270,8 +272,8 @@ input[name='guestMail']				{margin-left:20px;}
 			<?php foreach($affectationCalendars as $tmpCal){ ?>
 				<div class="vCalAffectation option">
 					<!--AFFECTATION A L'AGENDA-->
-					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="box<?= $tmpCal->_typeId ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
-					<label for="box<?= $tmpCal->_typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="box<?= $tmpCal->typeId ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
+					<label for="box<?= $tmpCal->typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
 					<!--OPTION DE PROPOSITION-->
 					<?php if($tmpCal->proposeOption==true){ ?>
 					<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> class="vCalProposeOption" <?= Txt::tooltip("CALENDAR_proposeOptionTooltip") ?>>
@@ -286,8 +288,8 @@ input[name='guestMail']				{margin-left:20px;}
 				</div>
 				<?php foreach($curSpaceUserGroups as $tmpGroup){ ?>
 				<div class="vCalAffectation option" <?=Txt::tooltip(Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel) ?>>
-					<input type="checkbox" name="calUsersGroup[]" value="<?= implode(",",$tmpGroup->userIds) ?>" id="calUsersGroup<?= $tmpGroup->_typeId ?>" onchange="userGroupSelect(this,'#calAffectationsOverflow')">
-					<label for="calUsersGroup<?= $tmpGroup->_typeId ?>"><img src="app/img/user/accessGroup.png"> <?= $tmpGroup->title ?></label>
+					<input type="checkbox" name="calUsersGroup[]" value="<?= implode(",",$tmpGroup->userIds) ?>" id="calUsersGroup<?= $tmpGroup->typeId ?>" onchange="userGroupSelect(this,'#calAffectationsOverflow')">
+					<label for="calUsersGroup<?= $tmpGroup->typeId ?>"><img src="app/img/user/accessGroup.png"> <?= $tmpGroup->title ?></label>
 				</div>
 				<?php } ?>
 			<?php } ?>

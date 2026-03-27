@@ -59,13 +59,12 @@ class File
 				'mp3'=>['mp3'],
 				'autocad'=>['dwg','dxf'],
 				'data'=>['csv','json','xml','db','dbf','mdb','accdb'],
-				'misc'=>['log','ics','ical','ifb','vcs','vcf','ai','yaml','yml','gpx','kml','map','gan'],
 				'editorInsert'=>['jpg','jpeg','png','gif','mp4','webm'],//Gérés via TinyMce
 				'editorImage'=>['jpg','jpeg','png','gif','svg'],
 				'editorVideo'=>['mp4','webm'],
 				'lightboxTxt'=>['pdf','txt','text','csv','md'],//Affichés via Fancybox
-				'lightboxPlayer'=>['mp4','webm','mp3']
-				////'forbidden'=>['html','htm','shtml','xhtml','css','js','jse','php','phtml','php3','php4','php5','php7','php8','asp','aspx','jsp','jspx','htaccess','sql','apk','deb','dmg','rpm','sh','pkg','app','appx','ipa','cgi','conf','config','ini','exe','dll','com','bat','msi','msix','bin','cmd','run','jar','elf','so','iso','scr','vbs','vbe','pl','py','pyc','pyo','lnk','bak','swp','wsf','sys','bundle','plugin']
+				'lightboxPlayer'=>['mp4','webm','mp3'],
+				'misc'=>['log','ics','ical','ifb','vcs','vcf','ldif','ai','yaml','yml','gpx','kml','map','mpp','gan']
 			];
 		}
 		////	Renvoie tous les fichiers : "allowed" whitelist

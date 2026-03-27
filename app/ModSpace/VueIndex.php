@@ -30,7 +30,7 @@
 	<div id="pageContent" class="objBlocks">
 		<!--LISTE DES ESPACES-->
 		<?php foreach($spaceList as $tmpSpace){ ?>
-			<?= $tmpSpace->objContainerMenu() ?>
+			<?= $tmpSpace->divContainerMenu() ?>
 				<div class="objContainerScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>
@@ -56,7 +56,7 @@
 						$accessRight=$tmpSpace->accessRightUser($tmpUser);
 						if($tmpSpace->allUsersAffected() && $accessRight==1)  {continue;}//Simple user et tous les users affectés à l'espace
 					?>
-						<div class="vSpaceAffectation" onclick="<?= $tmpUser->openVue() ?>"><img src="app/img/user/<?= $accessRight==2?"userAdminSpace.png":"accessUser.png" ?>"> <?= $tmpUser->getLabel() ?></div>
+						<div class="vSpaceAffectation" onclick="<?= $tmpUser->lightboxVue() ?>"><img src="app/img/user/<?= $accessRight==2?"userAdminSpace.png":"accessUser.png" ?>"> <?= $tmpUser->getLabel() ?></div>
 					<?php } ?>
 				</div>
 			</div>

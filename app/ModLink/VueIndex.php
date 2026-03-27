@@ -31,12 +31,12 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink){
 			$linkLabel=(!empty($tmpLink->description))  ?  '<span '.Txt::tooltip($tmpLink->adress).'>'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
-			echo $tmpLink->objContainerMenu().
+			echo $tmpLink->divContainerMenu().
 				'<div class="objContainerScroll">
 					<div class="objContent">
 						<div class="objIcon objIconOpacity"><img src="app/img/link/iconSmall.png"></div>
 						<div class="objLabel" onclick="window.open(\''.$tmpLink->adress.(Req::isMobileApp()?"#fromMobileApp":null).'\')"><img src="https://www.google.com/s2/favicons?domain='.$tmpLink->adress.'">'.$linkLabel.'</div>
-						<div class="objAutorDate">'.$tmpLink->autorDate().'</div>
+						<div class="objAutorDate">'.$tmpLink->autorDate(true).'</div>
 					</div>
 				</div>
 			</div>';

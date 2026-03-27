@@ -7,9 +7,11 @@
 <!--LISTE DES CATEGORIES-->
 <?php
 foreach($categoryList as $tmpCat){
+	$urlRedir='?ctrl='.Req::$curCtrl.'&_idCategoryFilter='.$tmpCat->_id;
+	if(Req::isParam("curTime"))  {$urlRedir.='&curTime='.Req::param("curTime");}
 	$catTooltip=(empty($tmpCat->_id))  ?  Txt::trad($tradPrefix."_CAT_showAllTooltip")  :  Txt::trad($tradPrefix."_CAT_menuTooltip").' '.$tmpCat->getLabel().'<br>'.$tmpCat->description;
 ?>
-	<div class="menuLine vMenuCategory" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&_idCategoryFilter=<?= $tmpCat->_id ?>')" <?= Txt::tooltip($catTooltip) ?>>
+	<div class="menuLine vMenuCategory" onclick="redir('<?= $urlRedir ?>')" <?= Txt::tooltip($catTooltip) ?>>
 		<div class="<?= $_idCategoryFilter==$tmpCat->_id ? 'optionSelect' : 'option' ?>"><?= $tmpCat->getLabel() ?></div>
 	</div>
 <?php } ?>

@@ -3,41 +3,65 @@
 ready(function(){
 	////	Option "espace public"
 	$("#publicSpace, #publicSpacePassword").on("change",function(){
-		$("#publicSpacePasswordDiv").toggle($("#publicSpace").prop("checked"));														//#publicSpace checked/unchecked : affiche/masque l'input du password 
-		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").isEmpty())  {$("#publicSpaceNotif").show().pulsate(2);}	//Affiche et Pulsate la notif sur la RGPD
+		////	#publicSpace checked/unchecked : affiche/masque l'input du password 
+		$("#publicSpacePasswordDiv").toggle($("#publicSpace").prop("checked"));
+		////	Affiche et Pulsate la notif sur la RGPD
+		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").isEmpty())  {$("#publicSpaceNotif").show().pulsate(2);}
 	}).trigger("change");//Init l'affichage
 
-	////	Option "Formulaire d'inscription en page de connexion"
+	////	Option "Formulaire d'inscription en page de connexion" : Affiche l'option de notif par email ?
 	$("input[name='userInscription']").on("change",function(){
-		$("#divUserInscriptionNotify").toggle(this.checked);//Affiche l'option de notif par email ?
+		$("#divUserInscriptionNotify").toggle(this.checked);
 	}).trigger("change");//Init l'affichage
 
-	////	Sélectionne/Désélectionne un module
+	////	Check/Uncheck un module
 	$("input[name='moduleList[]']").on("change",function(){
 		//Affiche/masque les options du module en cours
-		$("[name='moduleList[]']").each(function(){	 $(".moduleOptions"+$(this).attr("data-moduleName")).toggle(this.checked);  });
+		$("[name='moduleList[]']").each(function(){	 $(".moduleOptions"+this.getAttribute("data-moduleName")).toggle(this.checked);  });
 		//Si le module "agenda" est désactivé : on affiche "Le module agenda reste toujours accessible.."
 		if(this.id=="moduleInput-calendar")  {$("#moduleCalendarDisabled").toggle(!this.checked);}
 	}).trigger("change");//Init l'affichage
 
-	////	Option "disablePolls" : active/désactive l'option "adminAddPoll"
+	////	Check/Uncheck "adminAddPoll" 
 	$("input[value='disablePolls']").on("change",function(){ 
 		$("input[value='adminAddPoll']").prop("disabled",this.checked);
 	}).trigger("change");//Init l'affichage
 
-	////	Change l'ordre d'affichage des modules ("hightlight" : module fantome & "y" : déplacemnt vertical)
+	////	Change l'ordre d'affichage des modules
 	if(isMobile())	{$(".changeOrder").hide();}
 	else			{$("#modulesList").sortable({handle:".changeOrder",placeholder:"changeOrderShadow",axis:"y"});}
+
+	////	Sélectionne "Tous les utilisateurs"
+	$("#spaceAffecAllUsers").on("change",async function(){
+		////	Confirm "Tout sélectionner" / "Tout déselectionner"
+		let isChecked=$(this).is(":checked");
+		let labelConfirm=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("selectNone") ?>";
+		if(await confirmAlt(labelConfirm+" ?")){
+			$(".spaceAffectLine input[value$='_1']").prop("checked",isChecked).prop("disabled",isChecked);	//Si besoin Check et disabled toutes les Box
+			spaceAffectStyle();																				//Style des .spaceAffectLabel
+		}
+		////	Non confirmé : inverse le "checked" de #spaceAffecAllUsers
+		else{
+			$(this).prop("checked",!isChecked);
+		}
+	});
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function mainFormControl(){
 	return new Promise((resolve)=>{
-		//// Controle le password de l'espace public + le nombre de modules sélectionnés
-		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && $("#publicSpacePassword").isPassword()==false)	{notify("<?= Txt::trad("passwordInvalid") ?>");		resolve(false); }
-		if($("input[name='moduleList[]']:checked").isEmpty())																			{notify("<?= Txt::trad("SPACE_selectModule") ?>");	resolve(false); }
+		////	Password de l'espace public : OK ?
+		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && $("#publicSpacePassword").isPassword()==false){
+			notify("<?= Txt::trad("passwordInvalid") ?>");
+			resolve(false);
+		}
+		////	Nombre de modules sélectionnés : OK ?
+		else if($("input[name='moduleList[]']:checked").isEmpty()){
+			notify("<?= Txt::trad("SPACE_selectModule") ?>");
+			resolve(false);
+		}
+		////	 Formulaire OK
 		else{
-			$("#spaceAffecAllUsers input").prop("disabled",false);
 			resolve(true);
 		}
 	});
@@ -113,12 +137,10 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 		<div id="modulesList">
 		<?php
 		////	AFFICHE CHAQUE MODULE ET SES OPTIONS
-		foreach($moduleList as $moduleName=>$tmpModule)
-		{
+		foreach($moduleList as $moduleName=>$tmpModule){
 			//Prépare chaque option du module
 			$moduleOptions=null;
-			foreach($tmpModule["ctrl"]::$moduleOptions as $optionName)
-			{
+			foreach($tmpModule["ctrl"]::$moduleOptions as $optionName){
 				//Création d'agenda : uniquement pour un nouvel espace
 				if($optionName=="createSpaceCalendar" && $curObj->isNew()==false)  {continue;}
 				//Init l'affichage
@@ -160,12 +182,12 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			<div><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
 		<!--TOUS LES USERS-->
-		<div class="spaceAffectLine" id="spaceAffecAllUsers" data-selectAll="<?= Txt::trad("selectAll") ?>" data-selectNone="<?= Txt::trad("selectNone") ?>" <?= Txt::tooltip(Txt::trad("SPACE_allUsersTooltip").' <i>'.$curObj->getLabel().'</i>') ?>>
-			<div><img src="app/img/user/accessAllUsers.png"> <?= ucfirst(Txt::trad("SPACE_allUsers")) ?></div>
-			<div><input type="checkbox" name="allUsers" value="allUsers" disabled <?= $curObj->allUsersAffected()?'checked':null ?>></div>
+		<div class="spaceAffectLine" <?= Txt::tooltip(Txt::trad("SPACE_allUsersTooltip").' <i>'.$curObj->getLabel().'</i>') ?>>
+			<div><label for="spaceAffecAllUsers"><img src="app/img/user/accessAllUsers.png"> <?= ucfirst(Txt::trad("SPACE_allUsers")) ?></label></div>
+			<div><input type="checkbox" name="allUsers" value="allUsers" id="spaceAffecAllUsers" <?= $curObj->allUsersAffected()?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>
-		<!--LISTE DES USERS-->
+		<!--LISTE DES USERS (cf app.js)-->
 		<?php
 		foreach($userList as $tmpUser){
 			$inputAttr_1=$inputAttr_2=null;
@@ -173,7 +195,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			if($curObj->allUsersAffected() || $curObj->accessRightUser($tmpUser)==1)	{$inputAttr_1=" checked";}	//User  checked
 			if($curObj->allUsersAffected())   											{$inputAttr_1.=" disabled";}//Tous les users : disabled
 		?>
-			<div class="spaceAffectLine lineHover" id="targetLine_<?= $tmpUser->_id ?>">
+			<div class="spaceAffectLine lineHover">
 				<div class="spaceAffectLabel"><?= $tmpUser->getLabel() ?></div>
 				<div class="spaceAffectBox" <?= Txt::tooltip("SPACE_userTooltip") ?>> <input type="checkbox" name="spaceAffect[]" value="<?= $tmpUser->_id ?>_1" <?= $inputAttr_1 ?> ></div>
 				<div class="spaceAffectBox" <?= Txt::tooltip("SPACE_adminTooltip") ?>><input type="checkbox" name="spaceAffect[]" value="<?= $tmpUser->_id ?>_2" <?= $inputAttr_2 ?> ></div>

@@ -52,7 +52,7 @@ input[name='title']				{width:50%;}
 		//Liste des utilisateurs (inputs)
 		$userListInputs=null;
 		foreach($usersList as $tmpUser){
-			$tmpUserId="box_".$tmpGroup->tmpId."_".$tmpUser->_typeId;
+			$tmpUserId="box_".$tmpGroup->tmpId."_".$tmpUser->typeId;
 			$tmpUserChecked=in_array($tmpUser->_id,$tmpGroup->userIds)  ?  "checked"  :  null;
 			$userListInputs.="<div class='userListUser'>
 								<input type='checkbox' name='userList[]' value='".$tmpUser->_id."' id='".$tmpUserId."' ".$tmpUserChecked.">

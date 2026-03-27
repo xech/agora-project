@@ -10,16 +10,17 @@ img						{border:0px; vertical-align:middle;}																				/*alignemment d
 hr						{border:0; height:1px; margin-top:10px; margin-bottom:10px;}														/*lignes de séparateur*/
 video, audio			{max-width:100%; max-height:100%;}																					/*Lecteurs video/audio*/
 abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*idem tag <acronym>*/
-a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
+a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuContextLaunch  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
 #bodyLightbox			{padding:25px;}																										/*contenu des lightbox*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	html				{font-size:18px;}
-	#bodyLightbox		{padding:10px; padding-top:38px;}
+	#bodyLightbox		{padding:45px 15px 30px 15px;}/*padding-top : cf. close.png*/
 	::-webkit-scrollbar	{width:8px!important;}
 }
 
-/*** CONTENEURS PRINCIPAUX  && "CONTENEUR" DES OBJETS*/
+
+/*** CONTENEURS PRINCIPAUX  & "CONTENEUR" DES OBJETS*/
 #headerBarContainer									{display:block; width:100%; position:fixed; z-index:100; top:0px; left:0px;}
 #headerBar											{display:table; width:100%; max-width:100%; height:50px; user-select:none;}
 #headerBar>div										{display:table-cell; vertical-align:middle;}
@@ -31,9 +32,47 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 #moduleMenu, #pageContent							{display:table-cell;}
 #moduleMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
 #pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
-/*** OBJETS */
+
+
+/*** MENU CONTEXTUEL & MENU LATERAL DU MODULE (GAUCHE)*/
+#moduleMenu .miscContainer					{padding:10px;}/*menu latéral du module*/
+#pageFull #moduleMenu .miscContainer		{border-radius:0px 4px 4px 0px;}/*Menus des modules en affichage full*/
+.menuLine									{display:table; width:100%;}
+.menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
+.menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
+.menuIcon img								{max-width:30px!important;}
+.menuContextLaunch							{display:inline-block;}/*launcher du menu context*/
+.menuContextLaunchFloat						{position:absolute; z-index:50; top:8px; right:4px;}/*launcher burger en position absolute top-right*/
+.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:8px;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+.menuContextLabel							{text-align:center; padding:5px 0px;}/*label principal du menu context (cf. VueObjMenuContext)*/
+.menuContext .menuLine>div					{line-height:18px;}
+.menuContext .menuLine>div:last-child		{white-space:nowrap;}/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
+.menuContext hr								{margin:3px 0px!important;}
+.menuContextTxtLeft							{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*Auteu, Date et Droits d'accès (cf. VueObjMenuContext)*/
+#mobileAddElem								{display:none;}/*Bouton "Plus" en bas de page*/
+/*AFFICHAGE RESPONSIVE*/
+@media screen and (max-width:1200px){
+	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
+	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
+	#mobileAddElem							{z-index:100; position:fixed; bottom:12px; right:12px;}/*Bouton "Plus" en bas de page (z-index idem #headerBar)*/
+}
+
+
+/*** MENU CONTEXTUEL MOBILE (SWIPE)*/
+#menuMobileBg, #menuMobileMain				{display:none;}/*Masque par défaut*/
+#menuMobileBg, #menuMobileMain 				{position:fixed; top:0px; right:0px; height:100%;}
+#menuMobileBg								{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
+#menuMobileMain								{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
+#menuMobileClose							{text-align:right;}
+#menuMobileMain .menuLine>div				{padding:10px 5px;}/*surcharge*/
+#menuMobileContent2							{margin-top:30px;}
+#menuMobileContent2 .miscContainer			{padding:5px;}
+
+
+/*** DIV DES OBJETS */
 .objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; border-radius:5px; user-select:none;}
 .objContainer										{position:relative;}
+.objContainer.isSelectable							{cursor:url("../../img/check.png"),default;}								/*Objets selectionnables (cf .objSelectCheckbox)*/
 .objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
 .miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
 .emptyContainer										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
@@ -51,12 +90,21 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 .objBlocks .objIconOpacity							{width:35px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
 .objBlocks .objDetails, .objBlocks .objAutorDate	{display:none;}																/*Details & Auteur/Date : masqués par défaut*/
 /*DIPLAY "LINE"*/
-.objLines .objContainer								{height:60px; margin-bottom:0px; box-shadow:none; padding-right:70px;}/*"padding-right": cf "objMenuMisc"*/
+.objLines .objContainer								{height:60px; margin-bottom:0px; box-shadow:none; padding-right:65px;}		/*"padding-right" : cf ".objLines .menuContextSub"*/
 .objLines .objIcon									{width:45px;}																/*Icone/image de l'objet (fichier, user, etc)*/
 .objLines .objDetails								{text-align:right; max-width:400px;}										/*Details : fichiers, tasks, etc.*/
 .objLines .objAutorDate								{text-align:right; width:185px; font-size:0.9rem; line-height:20px;}		/*Auteur/Date : tester avec "lun. 30 septembre 2024"*/
 .objLines .objAutorDate span						{display:block;}															/*Auteur et Date sur 2 lignes*/
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
+/*MISC*/
+.attachedFileMenu									{display:inline-block;}														/*Fichiers joints */
+.attachedFileMenu img								{margin-right:0px;}															/*idem*/
+.menuContext .attachedFileMenu						{margin:5px;}																/*Fichiers joints du menu context*/
+.attachedFileTag									{max-width:100%;}															/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
+video.attachedFileTag								{min-width:600px; min-height:400px;}										/*Vidéo*/
+audio.attachedFileTag								{min-height:100px;}															/*Mp3*/
+.objMenuBottom										{clear:both; margin-top:30px; text-align:center;}							/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
+.objMenuBottom>.miscContainer						{display:inline-block; padding:15px; border-radius:10px;}
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#pageFull, #pageCenter, #pageContent			{width:100%!important; max-width:100%!important; word-break:break-word!important; margin-inline:auto;}	/*"break-word" => URL du modLink*/
@@ -64,15 +112,31 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 	#pageContent.miscContainer						{margin:0px!important;}													/*cf site public*/
 	.objIcon										{width:60px!important;}													/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
 	.objIconOpacity, .objDetails, .objAutorDate		{display:none;}															/*toujours masqué*/
+	.attachedFileMenu								{margin:10px;}															/*Fichiers joints à l'objet*/
+	video.attachedFileTag							{min-width:350px;}														/*vidéo*/
 }
 /*AFFICHAGE PRINT*/
 @media print{
 	html, body				{background-image:none; background-color:white!important; color:#333;}
 	#pageFull, #pageCenter	{margin:0px!important; margin-top:30px!important;}
-	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-box, #livecounterMain, #pageFooterHtml	{display:none!important;}
+	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-base, #livecounterMain, #pageFooterHtml	{display:none!important;}
 }
 
-/*** MENU PATH DES OBJETS (PATH D'UN DOSSIER, DU FORUM, MENU DASHBOARD)*/
+
+/*** MENUS CONTEXTUELS DES OBJETS*/
+.objContainer:not(:hover) .menuContextSub .hide	{display:none;}																		/*Masque les .menuContextSub : sauf au survol d'un .objContainer parent*/
+.objSelectCheckbox								{display:none;}																		/*input hidden de sélection/désélection d'objet*/
+.menuContextSub									{width:35px; position:absolute; z-index:50; top:35px; right:3px; text-align:right;}	/*Like, Comment, etc*/
+.menuContextSub>div								{display:inline-block; margin:4px;}													/*idem*/
+.objLines .menuContextSub						{width:80px;}																		/*Affichage horizontal*/
+.objLines .menuContextSub>div					{display:inline-block; margin-inline:0px;}											/*idem*/
+.objLines .menuContextSub img					{max-width:15px;}																	/*idem*/
+.circleNb										{width:22px; height:22px; line-height:22px; display:inline-block; background:#07d; border-radius:50%; color:white; text-align:center;}/*Nb de polls & News*/
+.menuContextSub .circleNb						{width:14px; height:14px; line-height:14px; position:relative; margin-left:0px; margin-right:-10px; background:#db930c; font-size:0.8rem; font-weight:normal;}/*Nb de likes & comments*/
+.circleNb:empty									{display:none;}
+
+
+/*** MENU "PATH" DES OBJETS (DOSSIER, FORUM, DASHBOARD)*/
 .pathMenu.miscContainer			{display:table; margin-bottom:15px; padding:5px;}
 .pathMenu img					{max-height:30px; margin-inline:5px;}
 .pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
@@ -83,61 +147,11 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuLauncher 
 	.pathMenu.miscContainer		{width:97%; max-width:97%; padding:3px;}
 }
 
-/*** MENUS DES OBJETS : CONTEXTUELS & MISC*/
-.objMenuContextFloat						{position:absolute; z-index:50; top:7px; right:3px;}							/*Launcher du menu context : Icone "burger" par défaut*/
-.objContainer:not(:hover) .objMenuMisc .hide{display:none;}																	/*Masque les .objMenuMisc : sauf au survol d'un .objContainer parent*/
-.objContainer.isSelectable					{cursor:url("../../img/check.png"),default;}									/*Curseur des elements selectionnables*/
-.objSelectCheckbox							{display:none;}																	/*input hidden de sélection/désélection d'objet*/
-.objMenuMisc								{position:absolute; z-index:50; top:35px; right:3px; width:35px; text-align:right;}	/*Likes + Comments + Files + persoAccess*/
-.objMenuMisc>div							{display:inline-block; margin:4px;}												/*'margin-left' pour l'affichage .objLines*/
-.objLines .objMenuMisc						{width:70px;}																	/*Affichage horizontal*/
-.circleNb									{width:22px; height:22px; line-height:22px; display:inline-block; background:#07d; border-radius:50%; color:white; text-align:center;}/*Nb de polls & News*/
-.objMenuMisc .circleNb						{width:14px; height:14px; line-height:14px; position:relative; margin-left:0px; margin-right:-10px; background:#db930c; font-size:0.8rem; font-weight:normal;}/*Nb de likes & comments*/
-.circleNb:empty								{display:none;}																	/*Cercle vide*/
-.attachedFileMenu							{display:inline-block;}															/*Fichiers joints à l'objet*/
-.attachedFileMenu img						{margin-right:0px;}																/*idem*/
-.menuContext .attachedFileMenu				{margin:5px;}																	/*idem*/
-.attachedFileTag							{max-width:100%;}																/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
-video.attachedFileTag						{min-width:600px; min-height:400px;}											/*Vidéo*/
-audio.attachedFileTag						{min-height:100px;}																/*Mp3*/
-.objMenuBottom								{clear:both; margin-top:30px; text-align:center;}								/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
-.objMenuBottom>.miscContainer				{display:inline-block; padding:15px; border-radius:10px;}
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
-	.objMenuContextFloat					{opacity:1!important; top:10px; right:5px;}	/*Icones sans opacité*/
-	.objMenuMisc>div						{margin-top:8px;}							/*Icones avec plus de margin pour favoriser le "touch"*/
-	.attachedFileMenu						{margin:10px;}								/*Fichiers joints à l'objet*/
-	video.attachedFileTag					{min-width:350px;}							/*vidéo*/
-}
-
-/*** MENUS CONTEXTUELS & MENUS DE GAUCHE DES MODULES*/
-.menuLine									{display:table; width:100%;}
-.menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
-.menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
-.menuIcon img								{max-width:30px!important;}
-#moduleMenu .miscContainer					{padding:10px;}
-#pageFull #moduleMenu .miscContainer		{border-radius:0px 4px 4px 0px;}	/*Menus des modules en affichage full*/
-.menuLauncher								{display:inline-block;}				/*launcher du menu contextuel*/
-.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:8px;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
-.menuContextLabel							{text-align:center; padding:5px 0px;}
-.menuContext .menuLine>div					{line-height:18px;}
-.menuContext .menuLine>div:last-child		{white-space:nowrap;}				/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
-.menuContext hr								{margin:3px 0px!important;}
-.menuContextSpecificLabels					{padding:5px; line-height:20px;}	/*cf. affectations des agendas*/
-.menuContextTxtLeft							{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*cf. menuContext : Auteur, Droits d'accès..*/
-#mobileAddElem								{display:none;}/*Bouton "Plus" en bas de page*/
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
-	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
-	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
-	#mobileAddElem							{z-index:100;/*idem #headerBar*/ position:fixed; bottom:12px; right:12px;}/*Bouton "Plus" en bas de page*/
-}
 
 /*** INPUTS*/
-input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:35px; max-width:100%; padding:5px; border-radius:4px; font-size:1rem; font-weight:normal; font-family:inherit; outline:none;}
-::placeholder 											{padding-left:5px; color:#aaa;}/*texte par défaut des inputs/textarea*/
-input:disabled, textarea:disabled						{opacity:0.7;}
-input:read-only, textarea:read-only						{background:#ccc;}
+input:not([type=radio],[type=checkbox]), textarea, select, button			{min-height:33px; max-width:100%; padding:5px; border-radius:4px; font-size:1rem; font-weight:normal; font-family:inherit; outline:none;}
+*:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled	{opacity:0.85;}	/*input textarea button*/
+::placeholder 											{padding-left:5px; color:#aaa;}	/*texte par défaut*/
 input:is([type=radio],[type=checkbox])					{vertical-align:middle; margin:0px 3px;}
 input[type=checkbox]									{width:18px; height:18px;}
 input[type=file]										{height:auto;}
@@ -173,13 +187,14 @@ legend													{padding:5px 20px;}
 .connectForm .submitButtonMain							{margin-top:0px;}/*surcharge*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
+	.inputTitleName										{width:100%;}/*description en dessous*/
+	.dateInput, .dateBegin, .dateEnd					{height:36px; width:110px;}
 	input[type=checkbox]								{width:20px; height:20px;}
-	.dateInput, .dateBegin, .dateEnd					{margin-left:10px; width:110px;}/*Datepicker + grand*/
-	input[type=time]									{margin-left:10px; width:90px; padding-block:8px!important;}
-	.inputTitleName										{width:100%;}
+	input[type=time]									{height:36px; width:90px;}
 }
 
-/*** LIGNES DE LABEL + VALEUR/INPUT (profil/edit d'user/contact, parametrage general, install, etc)*/
+
+/*** LABEL <=> INPUT (edit d'objet, parametrage general, etc)*/
 .objField												{display:table; width:100%;}
 .objField>div											{display:table-cell; width:50%; vertical-align:top; padding-block:8px;}
 .objField>div img.personImg								{max-width:250px; max-height:150px;}
@@ -192,6 +207,7 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 	.objField, .objField>div							{display:block; width:100%!important;}
 	.objField>div										{padding-top:5px;}
 }
+
 
 /*** PERSONS : CONTACTS / USERS*/
 .objBlocks .objContainer.objPerson			{height:160px; min-height:160px; width:250px; min-width:250px; max-width:450px;}	/*surcharge .objContainer*/
@@ -207,61 +223,53 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 .objBlocks .personFieldSeparator, .personFieldSeparator:last-child	{display:none;}
 .spaceAffectLine							{display:table; width:100%; max-width:100%; user-select:none;}/*Affectations Users <=> Espaces*/
 .spaceAffectLine>div						{display:table-cell; padding:5px;}
-.spaceAffectLine>div:first-child			{cursor:pointer;}/*label*/
-.spaceAffectLine>div:not(:first-child)		{text-align:center; width:140px;}/*checkbox*/
+.spaceAffectLine>div:not(:first-child)		{text-align:center; width:140px;}/*colonne des checkboxes (header aussi)*/
+.spaceAffectLabel							{cursor:pointer;}/*label*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.objBlocks .objContainer.objPerson		{height:140px; min-height:140px;}
 	.spaceAffectLine>div					{font-size:0.8rem; padding:6px 3px;}
+	.spaceAffectLine>div:not(:first-child)	{width:100px;}/*colonne des checkbox*/
 	.spaceAffectLine>div img				{display:none;}
-	.spaceAffectLine>div:not(:first-child)	{width:100px;}/*checkbox*/
 }
 
-/*** MENU CONTEXT MOBILE (CF SWIPE)*/
-#menuMobileBg, #menuMobileMain				{display:none;}/*Masque par défaut*/
-#menuMobileBg, #menuMobileMain 				{position:fixed; top:0px; right:0px; height:100%;}
-#menuMobileBg								{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
-#menuMobileMain								{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
-#menuMobileClose							{text-align:right;}
-#menuMobileMain .menuLine>div				{padding:10px 5px;}/*surcharge*/
-#menuMobileContent2							{margin-top:30px;}
-#menuMobileContent2 .miscContainer			{padding:5px;}
 
 /*** FANCYBOX*/
-.f-zoomInUp										{animation:var(--f-transition-duration, 0.1s) ease 0.1s both f-zoomInUp}					/*surcharge la durée d'affichage des lightboxes (fadein)*/
-.fancybox__backdrop								{background:rgba(0,0,0,0.85);}																/*surcharge l'opacité du background*/
-.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:15px; box-shadow:0px 0px 2px white;}	/*Ajoute un border-radius aux Iframes/Inline*/
-.fancybox__slide.has-iframe						{padding-top:50px; padding-bottom:30px;}													/*surcharge l'espace top/bottom des Iframe full page*/
-.fancybox__slide.has-iframe .fancybox__content	{padding:0px; width:650px;}																	/*surcharge le width par défaut des Iframe : idem lightboxResize()*/
-.fancybox__slide.has-inline .fancybox__content	{padding:25px;}																				/*surcharge le padding Inline*/
-.f-thumbs__slide__button						{box-shadow:none;}																			/*surcharge les vignettes d'images*/
-[data-fancybox='images'], .fancyboxImages		{cursor:zoom-in;}																			/*Cursor des images à afficher*/
-.lightboxTitle									{margin-bottom:30px; padding-bottom:20px; text-align:center; font-size:1.1rem; line-height:22px; box-shadow:0px 7px 7px -7px #888;}/*Pseudo <hr> via "box-shadow"*/
-.lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:60px; padding-right:30px;}	/*padding pour .lightboxMenu et .is-close-btn*/
-.lightboxMenu									{position:absolute; top:0px; left:0px;}	/*Icones du menu context + d'édition de l'objet*/
-.lightboxMenu .editButton						{margin-left:15px;}						/*Icone d'édition*/
-.lightboxTitleDetail							{font-size:0.9rem; margin-top:15px;}	/*libellé détaillé*/
-.lightboxAddElem								{text-align:center;}					/*ex: "Ajouter un  groupe"*/
+.fancybox__backdrop								{background:rgba(0,0,0,0.85);}																		/*surcharge l'opacité du background*/
+.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:15px; box-shadow:0px 0px 2px white;}			/*Ajoute un border-radius aux Iframes/Inline*/
+.fancybox__slide.has-iframe						{padding-top:50px; padding-bottom:30px;}															/*surcharge l'espace top/bottom des Iframe full page*/
+.fancybox__slide.has-iframe .fancybox__content	{padding:0px; width:650px;}																			/*surcharge le width par défaut des Iframe : idem lightboxResize()*/
+.fancybox__slide.has-inline .fancybox__content	{padding:25px;}																						/*surcharge le padding Inline*/
+.f-zoomInUp										{animation:var(--f-transition-duration, 0.1s) ease 0.1s both f-zoomInUp}							/*surcharge la durée d'affichage des lightboxes (fadein)*/
+.f-thumbs__slide__button						{box-shadow:none;}																					/*surcharge les vignettes d'images*/
+[data-fancybox='images'], .fancyboxImages		{cursor:zoom-in;}																					/*Cursor des images à afficher*/
+.lightboxTitle									{margin-bottom:40px; padding-bottom:15px; text-align:center; font-size:1.1rem; line-height:22px;}	/*Titre du lightbox*/
+.lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:60px; padding-right:30px;}											/*padding pour .lightboxMenu et .is-close-btn*/
+.lightboxMenu									{position:absolute; top:0px; left:0px;}																/*Icones du menu context + d'édition de l'objet*/
+.lightboxMenu .editButton						{margin-left:15px;}																					/*Icone d'édition*/
+.lightboxTitleDetail							{font-size:0.9rem; margin-top:15px;}																/*libellé détaillé*/
+.lightboxAddElem								{text-align:center;}																				/*ex: "Ajouter un  groupe"*/
 .lightboxAddElem button							{width:230px; height:50px;}
 .lightboxInline									{display:none; width:400px; text-align:center}														/*<form> en page de connexion*/
 .lightboxInline input, .lightboxInline button:not([data-fancybox-close])  {height:45px!important; width:80%!important; margin:10px auto!important;}	/*Width des input (sauf "data-fancybox-close")*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:0px; box-shadow:none;}
-	.fancybox__slide																	{padding:0px!important;}/*surcharge*/
-	.fancybox__slide, .fancybox__content												{width:100%!important; height:100%!important; margin:0px!important;}
-	.fancybox__iframe																	{margin:0px auto;}/*iframe centré*/
-	.fancybox__slide:not(.has-image) button[data-fancybox-close]		{width:40px!important; height:40px!important; right:10px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
+	.fancybox__slide													{padding:0px!important;}/*surcharge*/
+	.fancybox__slide, .fancybox__content								{width:100%!important; height:100%!important; margin:0px!important;}
+	.fancybox__iframe													{margin:0px auto;}/*iframe centré*/
+	.fancybox__slide:not(.has-image) button[data-fancybox-close]		{width:40px!important; height:40px!important; right:5px!important; background:white url("../../img/close.png"); background-position:center center; background-repeat:no-repeat;}
 	.fancybox__slide:not(.has-image) button[data-fancybox-close] svg	{display:none;}/*Masque le "close" par défaut*/
 }
 
+
 /*** JQUERY UI & PLUGINS*/
-.tooltipster-box								{margin:5px;}
-.toast-item										{padding:20px 30px;}										/*TOASTMESSAGE : notify()*/
-.toast-container 								{width:580px;}
-.toast-position-top-center						{top:25%;}
-.toast-container a, .toast-container a:hover	{text-decoration:underline; color:white;}
-.jconfirm-box									{border-radius:15px!important; padding-block:40px 30px!important;}	/*JCONFIRM*/
+.tooltipster-box								{margin:10px;}/*marge du bord de page*/
+.toast-container 								{width:550px;}/*notify()*/
+.toast-item										{padding:20px 15px;}
+.toast-position-top-center						{top:55px;}/*cf #headerBar height*/
+.toast-container a, .toast-container a:hover	{text-decoration:underline!important;}
+.jconfirm-box									{border-radius:15px!important; padding-block:40px 30px!important;}
 .jconfirm-bg									{opacity:0.5!important;}
 .jconfirm-title-c, .jconfirm-content-pane, .jconfirm-buttons	{width:100%!important; margin:0px!important; padding:0px!important; text-align:center!important; font-size:1.2rem!important;}
 .jconfirm-title-c								{margin-bottom:15px!important; font-size:1.4rem!important;}
@@ -275,6 +283,7 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 	.jconfirm-title-c												{margin-bottom:15px!important; font-size:1.3rem!important;}
 	.jconfirm-buttons button										{min-width:70%!important;}
 }
+
 
 /*** DIVERS*/
 .infos							{display:block; border:dotted 1px #aaa; margin-block:15px; padding:8px; border-radius:5px; text-align:center; line-height:20px;}

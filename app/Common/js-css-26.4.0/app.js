@@ -1,22 +1,24 @@
-/*********************************************************************************
+/************************************************************************************************************
 * This file is part of the Agora-Project Software package
 *
 * @copyleft Agora-Project <https://www.agora-project.net>
 * @license GNU General Public License (GPL-2.0)
-**********************************************************************************/
+ ************************************************************************************************************/
 
 
-/**************************************************************************************************
- * DOM CHARGÉ : LANCE UNE FONCTION
-**************************************************************************************************/
-function ready(thisFunction){
+
+/************************************************************************************************************
+ * DOM CHARGÉ : LANCE UNE FONCTION (equiv. $(document).ready() de JQuery)
+ ************************************************************************************************************/
+function ready(thisFunction)
+{
 	if(document.readyState!="loading")	{thisFunction();}
 	document.addEventListener("DOMContentLoaded",thisFunction);
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * VARIABLES ET FONCTIONS PRINCIPALES
- **************************************************************************************************/
+ ************************************************************************************************************/
 ready(function(){
 	mainDisplay();															//Affichage principal
 	window.addEventListener("resize",function(){ mainDisplay(); });			//Relance si windows resize ou orientationchange
@@ -28,17 +30,17 @@ ready(function(){
 	});
 });
 
-/**************************************************************************************************
+/************************************************************************************************************
  * AFFICHAGE PRINCIPAL
- **************************************************************************************************/
+ ************************************************************************************************************/
 function mainDisplay()
 {
 	////	Variables de base
-	isMainPage=(window.self==window.top);																									//Page principale || Lightbox
-	if(typeof window.top.confirmCloseForm==="undefined")	{window.top.confirmCloseForm=false;}											//Formulaire en cours d'édition : valider la fermeture de Page/Lightbox
-	if(typeof window.top.windowWidth==="undefined")			{window.top.windowWidth=window.top.document.documentElement.clientWidth;}		//Width de la fenêtre principale (sans scrollbar)
-	if(typeof window.top.windowHeight==="undefined")		{window.top.windowHeight=window.top.document.documentElement.clientHeight;}		//Height de la fenêtre principale (idem)
-	containerWidth=isMobile() ?  window.top.windowWidth  :  (window.top.windowWidth - $("#moduleMenu").outerWidth(true) - 12);				//Width du container de la page (-12px de scroolbar)
+	isMainPage=(window.self==window.top);																		//Page principale || Lightbox
+	if(isMainPage==true)  {confirmCloseForm=false;}																//Confirme une redirection si formulaire en cours d'édition
+	windowTopWidth =window.top.document.documentElement.clientWidth;											//Width de la fenêtre principale (sans scrollbar)
+	windowTopHeight=window.top.document.documentElement.clientHeight;											//Height de la fenêtre principale (idem)
+	containerWidth=isMobile() ?  windowTopWidth  :  (windowTopWidth - $("#moduleMenu").outerWidth(true) - 12);	//Width du principal container de la page (-12px de scroolbar)
 
 	////	Fenêtre principale
 	if(isMainPage==true){
@@ -63,8 +65,8 @@ function mainDisplay()
 		////	Width de la fenêtre enregistré dans un Cookie
 		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}												//Un seul timeout
 		mainDisplayTimeout=setTimeout(function(){																					//Timeout le tps de finaliser un window resize (tps supérieur à $.fx.speeds)
-			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";				//Path courant
-			document.cookie="windowWidth="+window.top.windowWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";		//Path racine
+			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";						//Path courant
+			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";				//Path racine
 		},200);
 	}
 }
@@ -86,35 +88,35 @@ function mainTriggers()
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
 
 	////	DblClick : édition  ||  Click : sélection
-	$(".objContainer").off("click dblclick").on("click dblclick",function(event){																//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
-		if(event.type=="dblclick" && $(this).attr("data-urlEdit") && isTouchDevice()==false)	{lightboxOpen($(this).attr("data-urlEdit"));}	//Pas de "dblclick" pour sur app mobile
-		else if(event.type=="click" && $(".objSelectCheckbox").exist())							{objSelectSwitch(this.id);}
+	$(".objContainer").off("click dblclick").on("click dblclick",function(event){												//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
+		if(event.type=="dblclick" && this.hasAttribute("data-urlEdit"))		{lightboxOpen(this.getAttribute("data-urlEdit"));}	//Note : pas de "dblclick" pour sur mobile
+		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
 	});
 
 	////	Menu du module flottant
-	if($("#moduleMenu").isDisplayed()){
+	if($("#moduleMenu").isVisible()){
 		$(window).on("scroll",function(){
-			if(typeof moduleMenuTimeout!="undefined")  {clearTimeout(moduleMenuTimeout);}									//Un seul timeout
-			moduleMenuTimeout=setTimeout(function(){																		//Timeout le tps de finaliser le scroll
-				let menuHeight=$("#moduleMenu").position().top;																//Position top du menu
-				$("#moduleMenu").children().each(function(){ menuHeight+=$(this).outerHeight(true); });						//Ajoute la hauteur de chaque element
-				if(menuHeight < window.top.windowHeight)  {$("#moduleMenu").css("padding-top",$(window).scrollTop()+"px");}	//Repositionne le menu en fonction de la fenêtre
+			if(typeof moduleMenuTimeout!="undefined")  {clearTimeout(moduleMenuTimeout);}							//Un seul timeout
+			moduleMenuTimeout=setTimeout(function(){																//Timeout le tps de finaliser le scroll
+				let menuHeight=$("#moduleMenu").position().top;														//Position top du menu
+				$("#moduleMenu").children().each(function(){ menuHeight+=$(this).outerHeight(true); });				//Ajoute la hauteur de chaque element
+				if(menuHeight < windowTopHeight)  {$("#moduleMenu").css("padding-top",$(window).scrollTop()+"px");}	//Repositionne le menu en fonction de la fenêtre
 			},200);
 		});
 	}
 
 	////	Tooltipster : init/update les "title"
-	tooltipParams={theme:'tooltipster-shadow',delay:500,contentAsHTML:true};				//Theme et Affichage Html
+	tooltipParams={theme:'tooltipster-shadow',delay:700,contentAsHTML:true};				//Theme et Affichage Html
 	let timeoutDuration=$(".tooltipstered").exist() ? 1000 : 50;							//Timeout plus long si update des tooltips via ajax (ex: "messengerUpdate()")
 	if(typeof tooltipDisplayTimeout!="undefined")  {clearTimeout(tooltipDisplayTimeout);}	//Un seul timeout
 	tooltipDisplayTimeout=setTimeout(function(){											//Timeout le tps de charger
-		$("[title]:not([title=''])").tooltipster(tooltipParams);							//Theme "shadow" et Affichage Html
+		$("[title]:not(.notooltip,[title=''])").tooltipster(tooltipParams);					//Theme "shadow" et Affichage Html
 	},timeoutDuration);
 
 	////	Ouvre un lien <a href> via une lightbox (cf. HTMLPurifier)
 	$("a.lightboxOpenHref").off("click").on("click",function(event){	//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
 		event.preventDefault();
-		lightboxOpen($(this).attr("href"));
+		lightboxOpen(this.getAttribute("href"));
 	});
 
 	////	Affiche/Masque le password
@@ -125,9 +127,9 @@ function mainTriggers()
 	});
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  *  CONTROLES DES CHAMPS
- **************************************************************************************************/
+ ************************************************************************************************************/
 function controleFields()
 {
 	////	Pas d'autocomplétion des inputs
@@ -148,7 +150,7 @@ function controleFields()
 
 	////	<select> :  background de chaque <option> et du select parent
 	$("select option").each(function(){
-		let bgColor=$(this).attr("data-color");
+		let bgColor=this.getAttribute("data-color");
 		if(isValue(bgColor))	{$(this).css({background:bgColor,color:'white'});}
 		else					{$(this).css({background:'white',color:'grey'});}
 	});
@@ -211,55 +213,53 @@ function controleFields()
 	});
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * MENU CONTEXTUEL
- **************************************************************************************************/
+ ************************************************************************************************************/
 function menuContext()
 {
 	////	Affichages / Masquages principaux
-	$(".menuLauncher").on("click",function(event){  isMobile() ? menuMobileShow(this) : menuContextShow(this,event);  });	//Affiche si click sur .menuLauncher
+	$(".menuContextLaunch").on("click",function(event){  isMobile() ? menuMobileShow(this) : menuContextShow(this,event);  });	//Affiche si click sur .menuContextLaunch
 	$(".menuContext").on("mouseleave",function(){  $(".menuContext").hide();  });											//Masque le menu si mouseleave sur .menuContext
 	$(document).on("click",function(){  $(".menuContext").hide();  });														//Masque si click sur la page, hors du menu (cf Tablette mode paysage)
 	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });										//Masque si click sur #menuMobileClose ou #menuMobileBg (black opacity)
-	$(".menuLauncher,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });				//Pas de propagation de click (evite un download ou une sélection via "objSelectSwitch()")
-	if(window.top.windowWidth>=1300){																						//Click droit sur .objContainer si width > 1300px
+	$(".menuContextLaunch,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });				//Pas de propagation de click (evite un download ou une sélection via "objSelectSwitch()")
+	if(windowTopWidth>=1300){																								//Click droit sur .objContainer si width > 1300px
 		$(".objContainer").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });				//"return false" pour annuler le menu du browser
 	}
 
-	////	Affichage swipe sur mobile
+	////	Affichage via swipe sur mobile
 	if(isTouchDevice()){
-		pageScrolled=false;																									//Scroll en cours ?
-		swipeMenuActive=true;																								//Active le swipe par défaut (désactive sur le modCalendar)
-		document.addEventListener("touchstart",function(event){																//Début de swipe :
-			swipeXstart=event.touches[0].clientX;																			//Position X de départ
-			swipeYstart=event.touches[0].clientY;																			//Position Y de départ
-		});	
-		document.addEventListener("touchmove",function(event){																							//Swipe en cours :
-			if(pageScrolled==false && $(".fancybox__content").isDisplayed()==false && Math.abs(swipeYstart-event.touches[0].clientY) < 50){				//Aucun scroll en cours && Aucune Lightbox && swipe d'amplitude verticale < 50px
-				let swipeDiff=(swipeXstart - event.touches[0].clientX);																					//Diff entre la position X de départ et celle de fin
-				if(swipeMenuActive==true && swipeDiff > 100 && (window.top.windowWidth-swipeXstart) < 250)	{menuMobileShow();}							//Swipe gauche > 100px et < 250px du bord de page : affiche
-				else if(swipeDiff < -10)																	{menuMobileClose(event.touches[0].clientX);}//swipe droit > 10px : masque le menu (meme si swipeMenuActive==false)
+		swipeMenuOn=true;
+		document.addEventListener("touchstart",(event)=>{
+			touchStartX=event.touches[0].clientX;
+			touchStartY=event.touches[0].clientY;
+			percentToBorderRight=Math.round(((windowTopWidth-touchStartX) / windowTopWidth) * 100);
+		});
+		document.addEventListener("touchmove",(event)=>{
+			swipeToLeft =(touchStartX - event.touches[0].clientX);														//Diff entre la position X de départ et celle en cours (variable globale !)
+			swipeToRight=(event.touches[0].clientX - touchStartX);														//Idem
+			swipeAmplitudeY=Math.abs(touchStartY - event.touches[0].clientY);											//Amplitude verticale du swipe : Math.abs car doit être > 0 (variable globale !)
+			if(swipeMenuOn==true && swipeAmplitudeY < 80 ){																//Swipe actif  + Amplitude verticale < 80px
+				let swipeMenuShow=(typeof swipeMenuShowOff=="undefined" && $("#menuMobileMain").isVisible()==false);	//Affichage du menu pas désactivé (cf calendar)  +  Menu pas encore affiché
+				if(swipeToLeft > 100  &&  swipeMenuShow==true  &&  percentToBorderRight < 35)	{menuMobileShow();}		//swipe vers la gauche > 100px et à moins de 35% du bord droit de la page
+				else if(swipeToRight > 100  &&  $("#menuMobileMain").isVisible())				{menuMobileClose();}	//swipe vers la droite > 100px
 			}
 		});
-		document.addEventListener("touchend",function(){																	//Fin de swipe :
-			if(parseInt($("#menuMobileMain").css("right"))<0)  {$("#menuMobileMain").css("right","0px");}					//Masque si besoin le #menuMobileMain
-			swipeXstart=swipeYstart=0;																						//Réinit les positions
-		});
-		//// Verif si un scroll est en cours sur la page
-		$(window).add("div").on("scroll",function(){																		//Add "div" : cf. menus horizontaux scrollables (Task Gantt, tinyMce mobile, etc)
-			pageScrolled=true;																								//Scroll en cours
-			if(typeof scrollPageTimeout!="undefined")  {clearTimeout(scrollPageTimeout);}									//Un seul timeout
-			scrollPageTimeout=setTimeout(function(){ pageScrolled=false; },500);											//Réinitialise le scroll : Timeout le tps de charger le tinyMce mobile/horizontal
+		$(window).add("div").on("scroll",function(){										//// Scroll en cours (page ou div Task Gantt, tinyMce mobile...)
+			swipeMenuOn=false;																//désactive le swipe durant le scroll
+			if(typeof scrollPageTimeout!="undefined")  {clearTimeout(scrollPageTimeout);}	//Un seul timeout
+			scrollPageTimeout=setTimeout(function(){ swipeMenuOn=true; },500);				//Réinitialise le scroll : Timeout le tps de charger le tinyMce mobile/horizontal
 		});
 	}
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * MENU CONTEXTUEL : AFFICHE SUR DESKTOP
- **************************************************************************************************/
+ ************************************************************************************************************/
 function menuContextShow(launcher, event)
 {
-	let menuId="#"+$(launcher).attr("for");																											//Id du menu à afficher (.menuLauncher et attribut "for")
+	let menuId="#"+$(launcher).attr("for");																											//Id du menu à afficher (.menuContextLaunch et attribut "for")
 	$(menuId).css("max-height", (window.innerHeight-10)+"px");																						//Hauteur max en fonction de la page (#menuMobileMain avec "overflow:auto")
 	let isRelativePos=$(menuId).parents().is(function(){  return (/relative|absolute/i.test($(this).css("position")));  });							//Div parent en position relative/absolute
 	if(event.type=="contextmenu")	{var posLeft=(event.pageX - $(launcher).offset().left);	var posTop=(event.pageY - $(launcher).offset().top);}	//Position du click droit de la souris
@@ -276,14 +276,14 @@ function menuContextShow(launcher, event)
 	$(".menuContext").not(menuId).hide();																											//Masque les autres menus
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * MENU CONTEXTUEL : AFFICHE SUR MOBILE
- **************************************************************************************************/
+ ************************************************************************************************************/
 function menuMobileShow(launcher)
 {
 	if(typeof menuMobileTimeout!="undefined")  {clearTimeout(menuMobileTimeout);}						//Un seul timeout
 	menuMobileTimeout=setTimeout(function(){															//Timeout le tps de finaliser le swipe
-		if($("#menuMobileMain").isDisplayed()){															//Menu mobile déjà affiché : Affiche un sous-menu
+		if($("#menuMobileMain").isVisible()){															//Menu mobile déjà affiché : Affiche un sous-menu
 			$("#"+$(launcher).attr("for")).addClass("menuMobileSubMenu").slideToggle();					
 		}else{																							//Affiche le Menu mobile :
 			idMenuMobile1=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerRightMenu";			//idMenuMobile1 : attr. "for" du launcher ou #headerRightMenu si swipe (liste des modules ou autre)
@@ -299,77 +299,73 @@ function menuMobileShow(launcher)
 	},50);
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * MENU CONTEXTUEL : MASQUE SUR MOBILE
- **************************************************************************************************/
-function menuMobileClose(swipeXcurrent)
+ ************************************************************************************************************/
+function menuMobileClose()
 {
-	if($("#menuMobileMain").isDisplayed()){															//Vérif si le menu mobile est visible
-		if(swipeXcurrent && parseInt($("#menuMobileMain").css("right")) > -100){					//Masque progressivement le menu sur les 100 premiers pixels de swipe :
-			$("#menuMobileMain").css("right", "-"+(swipeXcurrent-swipeXstart)+"px");				//Repositionne en fonction de swipeXstartCurrent
-		}else{
-			$("#menuMobileBg,#menuMobileContent1,#menuMobileContent2").hide();						//Masque complètement le menu
-			$("#menuMobileMain").hide("slide",{direction:"right"});									//Masque #menuMobileMain
-			$("#menuMobileContent1>*").appendTo(idMenuMobile1);										//Replace le contenu de menuMobileContent1 dans son div d'origine 
-			if($(idMenuMobile2).exist())  {$("#menuMobileContent2>*").appendTo(idMenuMobile2);}		//Replace le contenu de menuMobileContent2 dans son div d'origine 
-			$("body").css("overflow","visible");													//Réactive le scroll de page en arriere plan
-		}
+	if($("#menuMobileMain").isVisible()){														//Vérif si le menu mobile est visible
+		$("#menuMobileBg,#menuMobileContent1,#menuMobileContent2").hide();						//Masque complètement le menu
+		$("#menuMobileMain").hide("slide",{direction:"right"});									//Masque #menuMobileMain
+		$("#menuMobileContent1>*").appendTo(idMenuMobile1);										//Replace le contenu de menuMobileContent1 dans son div d'origine 
+		if($(idMenuMobile2).exist())  {$("#menuMobileContent2>*").appendTo(idMenuMobile2);}		//Replace le contenu de menuMobileContent2 dans son div d'origine 
+		$("body").css("overflow","visible");													//Réactive le scroll de page en arriere plan
 	}
 }
 
-/**************************************************************************************************
- * VÉRIF AFFICHAGE RESPONSIVE <= 1200px (Idem CSS & JS)
- **************************************************************************************************/
+/************************************************************************************************************
+ * VÉRIF AFFICHAGE RESPONSIVE : WIDTH FENETRE PRINCIPALE <= 1200px (Idem CSS & JS)
+ ************************************************************************************************************/
 function isMobile()
 {
-	return (window.top.windowWidth <= 1200);
+	return (windowTopWidth <= 1200);
 }
 
-/**************************************************************************************************
- * VÉRIF AFFICHAGE SUR DEVICE TACTILE
- **************************************************************************************************/
+/************************************************************************************************************
+ * VÉRIF AFFICHAGE SUR DEVICE TACTILE  (windowWidth : cf tests)
+ ************************************************************************************************************/
 function isTouchDevice()
 {
-	return (navigator.maxTouchPoints > 1);
+	return (navigator.maxTouchPoints > 1 || windowTopWidth <= 450);
 }
 
-/**************************************************************************************************
- * VÉRIFIE SI UNE VALEURE N'EST PAS VIDE (equiv "isEmpty()")
- **************************************************************************************************/
+/************************************************************************************************************
+ * VÉRIF SI UNE VALEURE N'EST PAS VIDE (equiv "isEmpty()")
+ ************************************************************************************************************/
 function isValue(value)
 {
 	return (typeof value!="undefined" && value!=null && value!="" && value!=0);
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * CONTROLE S'IL S'AGIT D'UN MAIL
- **************************************************************************************************/
+ ************************************************************************************************************/
 function isMail(mail)
 {
 	let regex=/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return regex.test(mail);
 }
 
-/**************************************************************************************************
- * CONTROLE LA VALIDITE D'UN PASSWORD : 8 CARACTERES MINIMUM, AVEC MINUSCULE ET CHIFFRE
- **************************************************************************************************/
+/************************************************************************************************************
+ * CONTROLE UN PASSWORD : AU MOINS 8 CARACTERES > LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+ ************************************************************************************************************/
 function isPassword(password)
 {
-	let regex=/^(?=.*[a-z])(?=.*\d).{8,}$/;
+	let regex=/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
 	return regex.test(password);
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * EXTENSION D'UN FICHIER (SANS LE POINT)
- **************************************************************************************************/
+ ************************************************************************************************************/
 function extension(fileName)
 {
 	if(isValue(fileName))  {return fileName.split(".").pop().toLowerCase();}
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * AFFICHE UNE NOTIFICATION (cf. "toastmessage")
- **************************************************************************************************/
+ ************************************************************************************************************/
 function notify(curMessage, notifType)
 {
 	if(typeof curMessage!="undefined"){
@@ -382,9 +378,9 @@ function notify(curMessage, notifType)
 	}
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * CONFIRM() : PARAMETRAGE PAR DEFAUT
- **************************************************************************************************/
+ ************************************************************************************************************/
 ready(function(){
 	confirmParamsDefault={
 		animation:"zoom",							//Animation en entrée/sortie
@@ -394,18 +390,18 @@ ready(function(){
 	}
 });
 
-/**************************************************************************************************
+/************************************************************************************************************
  * CONFIRM() ALTERNATIF  (utiliser si besoin avec "async function()" puis "await confirmAlt()")
- **************************************************************************************************/
-function confirmAlt(confirmTitle, confirmContent){
+ ************************************************************************************************************/
+function confirmAlt(confirmTitle, confirmDetails){
 	return new Promise((resolve)=>{
 		//// Init le confirm (cf. "labelConfirm" de "VueStructure.php")
 		let confirmParams={
 			title:isValue(confirmTitle) ? confirmTitle : labelConfirm+" ?",
-			content:isValue(confirmContent) ? confirmContent : null,
+			content:isValue(confirmDetails) ? confirmDetails : null,
 			buttons:{
-				cancel:	{text:labelConfirmCancel},//pas de "resolve()"!
-				confirm:{text:labelConfirm,	action:()=>{resolve(true);}, btnClass:'btn-blue'},
+				cancel:	{ btnClass:'btn-default', text:labelConfirmCancel, action:()=>{resolve(false);} },
+				confirm:{ btnClass:'btn-blue',	  text:labelConfirm,	   action:()=>{resolve(true);} },
 			}
 		}
 		//// Lance le Confirm (paramétrage par défaut + spécifique)
@@ -413,23 +409,32 @@ function confirmAlt(confirmTitle, confirmContent){
 	});
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * ASYNC : REDIRECTION A CONFIRMER
- **************************************************************************************************/
+ ************************************************************************************************************/
 async function confirmRedir(locationUrl, confirmTitle)
 {
 	if(await confirmAlt(confirmTitle))
 		{window.top.location.href=locationUrl;}
 }
 
-/**************************************************************************************************
- * CONFIRME UNE SUPPRESSION AVEC REDIRECTION  (labelConfirmDelete de "VueStructure.php")
- **************************************************************************************************/
-async function confirmDelete(deleteUrl, confirmContentAdd, ajaxControlUrl)
+/************************************************************************************************************
+ * ASYNC : REDIRECTION A CONFIRMER SI UN FORMULAIRE EN COURS D'EDITION
+ ************************************************************************************************************/
+async function redir(locationUrl)
 {
-	let confirmContent='<div class="confirmDeleteAlert">'+labelConfirmDeleteAlert+'</div>';											// Détail du confirm "cette action est définitive"
-	if(isValue(confirmContentAdd))  {confirmContent+='<img src="app/img/arrowRight.png"> '+confirmContentAdd;}						// Ajoute le label de l'objet, le nb d'objets sélectionnés, etc.
-	if(await confirmAlt(labelConfirmDelete,confirmContent)){																		// Confirm "Confirmer la suppression ?"
+	if(window.top.confirmCloseForm==false || await confirmAlt(labelconfirmCloseForm))
+		{window.top.location.href=locationUrl;}
+}
+
+/************************************************************************************************************
+ * ASYNC : CONFIRME UNE SUPPRESSION AVEC REDIRECTION  (labelConfirmDelete de "VueStructure.php")
+ ************************************************************************************************************/
+async function confirmDelete(deleteUrl, confirmDetailsBis, ajaxControlUrl)
+{
+	let confirmDetails='<div class="confirmDeleteAlert">'+labelConfirmDeleteAlert+'</div>';											// Détail du confirm "cette action est définitive"
+	if(isValue(confirmDetailsBis))  {confirmDetails+='<img src="app/img/arrowRight.png"> '+confirmDetailsBis;}						// Ajoute le label de l'objet, le nb d'objets sélectionnés, etc.
+	if(await confirmAlt(labelConfirmDelete,confirmDetails)){																		// Confirm "Confirmer la suppression ?"
 		if(!isValue(ajaxControlUrl))  {window.location.href=deleteUrl;}																// Suppression directe (pas de "window.top.location" : cf. lightbox des commentaires ou autre)
 		else{																														// Controle Ajax avant suppression de dossier
 			$.ajax({url:ajaxControlUrl, dataType:"json"}).done(async function(result){												// Lance le controle Ajax
@@ -441,30 +446,21 @@ async function confirmDelete(deleteUrl, confirmContentAdd, ajaxControlUrl)
 	}
 }
 
-/**************************************************************************************************
- * ASYNC : REDIRECTION (CONFIRM SI UN FORMULAIRE EN COURS D'EDITION)
- **************************************************************************************************/
-async function redir(locationUrl)
-{
-	if(window.top.confirmCloseForm==false || await confirmAlt(labelConfirmCloseForm))
-		{window.top.location.href=locationUrl;}
-}
-
-/**************************************************************************************************
+/************************************************************************************************************
  * REDIRECTION HREF : CONFIRMATION ASYNCHRONE SI FORMULAIRE EN COURS D'EDITION
- **************************************************************************************************/
+ ************************************************************************************************************/
 ready(function(){
 	//":not()" :  "_blank" ouvre une nouvelle fenêtre  et  "[data-fancybox]" + "a.lightboxOpenHref" sont lancés via mainTriggers()
 	$("a[href]:not([target='_blank'],[data-fancybox],.lightboxOpenHref)").click(async function(event){
 		event.preventDefault();
-		if(window.top.confirmCloseForm==false || await confirmAlt(labelConfirmCloseForm))
-			{window.top.location.href=$(this).attr("href");}
+		if(window.top.confirmCloseForm==false || await confirmAlt(labelconfirmCloseForm))
+			{window.top.location.href=this.getAttribute("href");}
 	});
 });
 
-/********************************************************************************************************************************
+/************************************************************************************************************
  * SUBMIT UN FORMULAIRE : AFFICHE L'IMG "LOADING" + "DISABLE" LES BUTTONS SUBMIT
- ********************************************************************************************************************************/
+ ************************************************************************************************************/
 function submitLoading()
 {
 	$(".submitLoading").css("visibility","visible");
@@ -472,21 +468,21 @@ function submitLoading()
 	setTimeout(function(){
 		$(".submitLoading").css("visibility","hidden");
 		$("button[type='submit']").css("background","initial").prop("disabled",false);
-	 },3000);//3 sec max : cf ajax form record
+	 },5000);//assez court > erreurs ajax && assez long > upload big files
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * SUBMIT ASYNCHRONE D'UN FORMULAIRE  ("async" et "preventDefault()" préalables)
- **************************************************************************************************/
+ ************************************************************************************************************/
 function asyncSubmit(thisForm)
 {
 	submitLoading();					//Affiche l'img "loading"
 	$(thisForm).off("submit").submit();	//Validation finale du formulaire  ("off()" réinitialise les précédents triggers "submit")
 }
 
-/*******************************************************************************************************************
+/************************************************************************************************************
  * OUVRE UNE LIGHTBOX  (ex: "?ctrl=file&action=FileDownload&typeId=file-1&displayFile=true&extension=pdf")
- *******************************************************************************************************************/
+ ************************************************************************************************************/
 function lightboxOpen(fileSrc)
 {
 	if(isMainPage==false)								{window.top.lightboxOpen(fileSrc);}											//Relance lightboxOpen() depuis la page "parent"
@@ -502,7 +498,7 @@ function lightboxOpen(fileSrc)
 					shouldClose:function(fancybox,slide){																			//Controle à la fermeture du Fancybox
 						if(window.top.confirmCloseForm==true){																		//Formulaire en cours d'édition : fermeture à confirmer
 							slide.preventDefault();																					//- Suspend la fermeture via Fancybox
-							confirmAlt(labelConfirmCloseForm).then(()=>{  window.top.confirmCloseForm=false; fancybox.close();  });	//- Fermeture confirmée : relance récursivement fancybox.close()
+							confirmAlt(labelconfirmCloseForm).then(()=>{  window.top.confirmCloseForm=false; fancybox.close();  });	//- Fermeture confirmée : relance récursivement fancybox.close()
 						}
 					}
 				}
@@ -511,9 +507,9 @@ function lightboxOpen(fileSrc)
 	}
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * RELOAD LA PAGE PRINCIPALE DEPUIS UNE LIGHTBOX (ex: après edit d'objet)
- **************************************************************************************************/
+ ************************************************************************************************************/
 function lightboxRedir(urlNotify)
 {
 	const urlObj=new URL(window.top.location.href);												//Url de la page principale (Objet)
@@ -526,33 +522,32 @@ function lightboxRedir(urlNotify)
 	window.top.location.href=urlRedir+urlNotify;												//Reload la page principale avec les nouvelles notifications
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * WIDTH / HEIGHT DE LA LIGHTBOX : LANCEE DEPUIS SON CONTENU VIA mainTriggers(), show(), etc.
- **************************************************************************************************/
+ ************************************************************************************************************/
 function lightboxResize()
 {
 	if(isMainPage==false && window.top.$(".fancybox__iframe").exist()){
-		if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}										//Un seul timeout
-		lightboxTimeout=setTimeout(function(){																			//Timeout le temps de lancer les show(), fadeIn(), etc (toujours > à $.fx.speeds)
-			let windowTopWidth=window.top.windowWidth;																	//With de la fenêtre principale
-			let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");							//Width du contenu de l'iframe : cf. "max-width" de #bodyLightbox (en "px" ou "%")
-			let resizeWidth=parseInt(cssWidth);																			//resizeWidth en Integer
-			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=650;}												//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
-			if(/%/.test(cssWidth))						{resizeWidth=(windowTopWidth/100) * resizeWidth;}				//resizeWidth en % de width de la page principale
-			else if(resizeWidth > windowTopWidth)		{resizeWidth=windowTopWidth;}									//resizeWidth toujours <= à windowTopWidth
-			window.top.$(".fancybox__content,.fancybox__iframe").css("width",resizeWidth+"px");							//Applique le width au fancybox
-			let lightboxHeight=(windowTopWidth <= 490)  ?  window.top.windowHeight  :  document.body.scrollHeight+10;	//Toute la hauteur sur smartphone (fullpage) || Height du body de l'iframe
-			if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){							//Init le height OU agrandit le height après un show(), fadeIn(), etc
-				window.top.$(".fancybox__content,.fancybox__iframe").css("height",lightboxHeight+"px");					//Applique le height à lightboxContent & lightboxIframe
-				lightboxHeightLast=lightboxHeight;																		//Enregistre le height
+		if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}								//Un seul timeout
+		lightboxTimeout=setTimeout(function(){																	//Timeout le temps de lancer les show(), fadeIn(), etc (toujours > à $.fx.speeds)
+			let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");					//Width du contenu de l'iframe : cf. "max-width" de #bodyLightbox (en "px" ou "%")
+			let resizeWidth=parseInt(cssWidth);																	//resizeWidth en Integer
+			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=650;}										//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
+			if(/%/.test(cssWidth))						{resizeWidth=(windowTopWidth/100) * resizeWidth;}		//resizeWidth en % de width de la page principale
+			else if(resizeWidth > windowTopWidth)		{resizeWidth=windowTopWidth;}							//resizeWidth toujours <= à windowTopWidth
+			window.top.$(".fancybox__content,.fancybox__iframe").css("width",resizeWidth+"px");					//Applique le width au fancybox
+			let lightboxHeight=(windowTopWidth <= 490)  ?  windowTopHeight  :  document.body.scrollHeight+10;	//Toute la hauteur sur smartphone (fullpage) || Height du body de l'iframe
+			if(typeof lightboxHeightLast=="undefined" || lightboxHeight > lightboxHeightLast){					//Init le height OU agrandit le height après un show(), fadeIn(), etc
+				window.top.$(".fancybox__content,.fancybox__iframe").css("height",lightboxHeight+"px");			//Applique le height à lightboxContent & lightboxIframe
+				lightboxHeightLast=lightboxHeight;																//Enregistre le height
 			}
 		},200);
 	}
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * SURCHARGES JQUERY : AJOUTE "lightboxResize()" A CERTAINES FONCTIONS
- **************************************************************************************************/
+ ************************************************************************************************************/
 ready(function(){
 	if(isMainPage==false){
 		let showBASIC=$.fn.show;
@@ -568,9 +563,9 @@ ready(function(){
 	}
 });
 
-/**************************************************************************************************
+/************************************************************************************************************
  * SURCHARGES JQUERY : AJOUTE UN ".fail()" A "$.ajax" POUR AFFICHER LES ERREURS DANS LA CONSOLE
- **************************************************************************************************/
+ ************************************************************************************************************/
 var originalAjax=$.ajax; 											// Sauvegarde la fonction originale
 $.ajax=function(options){											// Surcharge $.ajax
 	if(typeof options==="string")  {options={url:options};}			// Si c'est une URL (forme raccourcie) on le convertit en objet
@@ -583,9 +578,9 @@ $.ajax=function(options){											// Surcharge $.ajax
 	return jqXHR;
 };
 
-/**************************************************************************************************
+/************************************************************************************************************
  * SURCHARGES JQUERY : AJOUTE DE NOUVELLES FONCTIONS
- **************************************************************************************************/
+ ************************************************************************************************************/
 ////	Vitesse par défaut des effets "fadeIn()", "toggle()", etc
 $.fx.speeds._default=100;
 ////	Verifie si l'element existe
@@ -601,7 +596,7 @@ $.fn.notEmpty=function(){
 	return (this.isEmpty()==false);
 };
 ////	Verifie si l'element est affiché
-$.fn.isDisplayed=function(){
+$.fn.isVisible=function(){
 	return this.is(":visible");
 };
 ////	Verifie si l'element est un email (cf. "isMail()")
@@ -617,9 +612,9 @@ $.fn.pulsate=function(pTimes){
 	if(typeof pTimes=="undefined")  {var pTimes=4;}
 	this.effect("pulsate",{times:parseInt(pTimes)},parseInt(pTimes*1000));
 };
-////	Focus alternatif à la fin du texte (sauf sur mobile : cf. clavier virtuel, et uniquement sur certains inputs)
+////	Focus alternatif à la fin du texte (uniquement sur certains inputs & pas sur mobile : cf. clavier virtuel)
 $.fn.focusAlt=function(){
-	if(isTouchDevice()==false && this.is("input[type='text'],input[type='password'],textarea")){
+	if(this.is("input[type='text'],input[type='password'],textarea") && isTouchDevice()==false){
 		this.focus();
 		this[0].setSelectionRange(this[0].value.length,this[0].value.length);//Place le curseur en fin de texte
 	}
@@ -638,8 +633,8 @@ $.fn.totalHeight=function(){
 };
 ////	Scroll vers un element de la page
 $.fn.scrollTo=function(){
-	let scrollTopPos=($(this).offset().top - $("#headerBar").outerHeight() - 20);
-	$("html,body").animate({scrollTop:scrollTopPos},300);
+	let scrollTopPos=($(this).offset().top - $("#headerBar").outerHeight() - 30);
+	$("html,body").animate({scrollTop:scrollTopPos},100);
 };
 ////	Update le title et reload les tooltips
 $.fn.tooltipUpdate=function(title){
@@ -648,71 +643,59 @@ $.fn.tooltipUpdate=function(title){
 
 
 
+
 /**********************************************************************************************************************************
  **************************************************************************************************           FONCTIONS SPECIFIQUES
  **********************************************************************************************************************************/
 
 
-/**************************************************************************************************
- * AFFECTATIONS USER <=> SPACE  :  TRIGGERS (cf. "VueSpaceEdit.php" & "VueUserEdit.php")
- **************************************************************************************************/
+
+/************************************************************************************************************
+ * AFFECTATIONS USER <=> SPACE  :  "VueSpaceEdit.php" & "VueUserEdit.php"
+ ************************************************************************************************************/
 ready(function(){
-	////	Verif
-	if($(".spaceAffectLabel").exist()){
-		////	Style des labels des targets : Init
-		spaceAffectStyle();
-
-		////	Click le label d'une affecation
+	if($(".spaceAffectBox").exist()){
+		////	CLICK LE LABEL D'UNE AFFECATION
 		$(".spaceAffectLabel").on("click",function(){
-			let targetLineId="#"+$(this).closest(".spaceAffectLine").attr("id");
-			let boxUser =targetLineId+" input[value$='_1']";
-			let boxAdmin=targetLineId+" input[value$='_2']";
+			let affectLine=$(this).closest(".spaceAffectLine");
+			let boxUser =$(affectLine).find("input[value$='_1']");
+			let boxAdmin=$(affectLine).find("input[value$='_2']");
 			let available  	=":not(:checked):not(:disabled)";
-			let boxToCheck	=null;
-			if($(boxUser).is(available) && $(boxAdmin).is(":not(:checked)"))	{boxToCheck=boxUser;}					//boxUser  dispo et boxAdmin décochée
-			else if($(boxAdmin).is(available))									{boxToCheck=boxAdmin;}					//boxAdmin dispo
-			if(boxToCheck!=null)	{$(boxToCheck).prop("checked",true).trigger("change");}								//Check avec trigger pour spaceAffectStyle()
-			else					{$(targetLineId+" input:not(:disabled)").prop("checked",false).trigger("change");}	//Uncheck les autres box de la ligne (non disabled)
+			if($(boxUser).is(available) && $(boxAdmin).is(":not(:checked)"))	{boxToCheck=boxUser;}	//boxUser  dispo et boxAdmin décochée
+			else if($(boxAdmin).is(available))									{boxToCheck=boxAdmin;}	//boxAdmin dispo
+			else																{boxToCheck=null;}		//Tout décoché
+			$(affectLine).find("input:not(:disabled)").prop("checked",false);							//Réinit les checkboxes (non disabled)
+			if(boxToCheck!=null)  {$(boxToCheck).prop("checked",true);}									//Sélectionne la boxToCheck
+			spaceAffectStyle();																			//Style des affectations
 		});
 
-		////	Click l'input d'une affecation
+		////	CLICK LA CHECKBOX D'UNE AFFECTATION
 		$(".spaceAffectBox input").on("change",function(){
-			let targetLineId="#"+$(this).closest(".spaceAffectLine").attr("id");		//Id de la ligne
-			$(targetLineId+" input:not(:disabled)").not(this).prop("checked",false);	//Uncheck les autres box de la ligne (non disabled)
-			spaceAffectStyle();															//Style des labels des targets
+			let affectLine=$(this).closest(".spaceAffectLine");
+			$(affectLine).find("input:not(:disabled)").not(this).prop("checked",false);	//Uncheck les autres checkboxes de la ligne (non disabled)
+			spaceAffectStyle();															//Style des affectations
 		});
-
-		////	Sélectionne "Tous les utilisateurs"
-		$("#spaceAffecAllUsers").on("click",async function(){
-			let notChecked=$(this).find("input").is(":not(:checked)");															//Box not checked
-			let labelConfirm=(notChecked==true) ? this.getAttribute("data-selectAll") : this.getAttribute("data-selectNone");	//Label "Tout sélectionner ?" ou "Tout déselectionner ?"
-			if(await confirmAlt(labelConfirm+" ?")){																			//Confirm validé ?
-				$(this).find("input").prop("checked",notChecked);																//Check/uncheck la box de la ligne
-				$(".spaceAffectLine input[value$='_1']").prop("checked",notChecked).prop("disabled",notChecked);				//Toutes les Box "disabled" + "checked" ?
-				spaceAffectStyle();																								//Style des labels des targets
-			}
-		});
+		
+		////	STYLE DES AFFECTATIONS : INIT
+		spaceAffectStyle();
 	}
 });
 
-/**************************************************************************************************
- * AFFECTATIONS USER <=> SPACE : STYLE DES AFFECTATIONS
- **************************************************************************************************/
+/************************************************************************************************************
+ * AFFECTATIONS USER <=> SPACE : STYLE DES LABELS/LIGNES
+ ************************************************************************************************************/
 function spaceAffectStyle()
 {
 	$(".spaceAffectLine").removeClass("lineSelect sAccessRead sAccessWrite");	//Réinit le style des lignes
-	$(".spaceAffectLine:has(input:checked)").each(function(){					//Style chaque ligne sélectionnée
-		if(this.id){
-			let lineId="#"+this.id;
-			if($(lineId+" input[value$='_2']").is(":checked"))	{$(lineId).addClass("lineSelect sAccessWrite");}
-			else												{$(lineId).addClass("lineSelect sAccessRead");}
-		}
+	$(".spaceAffectLine:has(.spaceAffectBox input:checked)").each(function(){	//Parcourt les lignes sélectionnées (.spaceAffectBox uniquement)
+		if($(this).find("input[value$='_2']").is(":checked"))	{$(this).addClass("lineSelect sAccessWrite");}
+		else													{$(this).addClass("lineSelect sAccessRead");}
 	});
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * VALEUR D'UN PARAMETRE DANS UNE URL
- **************************************************************************************************/
+ ************************************************************************************************************/
 function urlParam(param, url)
 {
 	if(typeof url==="undefined")  {url=window.location.href;}				//Url de la page courante
@@ -721,9 +704,9 @@ function urlParam(param, url)
 	else						{return "";}								//Renvoie toujours une chaine vide (pas de null)
 }
 
-/**************************************************************************************************
+/************************************************************************************************************
  * SWITCH LE "LIKE" D'UN OBJET : UPDATE LE "circleNb"
- **************************************************************************************************/
+ ************************************************************************************************************/
 function usersLikeUpdate(typeId)
 {
 	if(isValue(typeId)){
@@ -736,12 +719,12 @@ function usersLikeUpdate(typeId)
 	}
 }
 
-/**************************************************************************************************
+/**************************************************************************************************************************************************************************
  * CHECK/UNCHECK UN GROUPE D'USERS
  * Tester : edition d'evt avec les groupes pour affectation aux agendas ET les groupes pour notification par email
  * Note : les inputs des groupes doivent avoir un "name" spécifique ET les inputs d'user doivent avoir une propriété "data-idUser"
  * On passe en paramètre le "this" de l'input du groupe ET l'id du conteneur des inputs d'users ("idContainerUsers") pour définir le périmère des inputs d'users
- **************************************************************************************************/
+ **************************************************************************************************************************************************************************/
 function userGroupSelect(thisGroup, idContainerUsers)
 {
 	//Check/uncheck chaque users du groupe
@@ -757,6 +740,6 @@ function userGroupSelect(thisGroup, idContainerUsers)
 			});
 		}
 		//Check l'user courant
-		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//"trigger" pour initialiser
+		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//Init l'affichage via trigger
 	}
 }

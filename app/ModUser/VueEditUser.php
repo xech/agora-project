@@ -12,14 +12,14 @@ ready(function(){
 function mainFormControl(){
 	return new Promise((resolve)=>{
 		//// Vérif de base
-		if($("input[name='login']").isEmpty())													{notify("<?= Txt::trad("specifyLogin") ?>");	 resolve(false);}//Login obligatoire
-		if($("[name='password']").notEmpty() && $("[name='password']").isPassword()==false)		{notify("<?= Txt::trad("passwordInvalid") ?>");	 resolve(false);}//Password invalide
+		if($("input[name='login']").isEmpty())													{resolve(false);  notify("<?= Txt::trad("specifyLogin") ?>");}//Login obligatoire
+		if($("[name='password']").notEmpty() && $("[name='password']").isPassword()==false)		{resolve(false);  notify("<?= Txt::trad("passwordInvalid") ?>");}//Password invalide
 		//// Vérif si le Login email est identique à l'email
 		if($("input[name='login']").isMail()  &&  $("input[name='mail']").isMail()  &&  $("input[name='mail']").val()!=$("input[name='login']").val())
-			{notify("<?= Txt::trad("USER_loginAndMailDifferent") ?>");  resolve(false);}
+			{resolve(false);  notify("<?= Txt::trad("USER_loginAndMailDifferent") ?>");}
 		//// Verif Ajax finale : un compte existe déjà avec le même login ?
 		$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(result){
-			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists") ?>");	resolve(false);}
+			if(/true/i.test(result))	{resolve(false);  notify("<?= Txt::trad("USER_loginExists") ?>");}
 			else						{resolve(true);}
 		});
 	});
@@ -38,8 +38,8 @@ function mainFormControl(){
 
 	<!--IMAGE-->
 	<div class="objField">
-		<div><?= $curObj->profileImgExist()  ?  "<div class='personProfileImg'>".$curObj->profileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
-		<div><?= $curObj->profileImgMenu() ?></div>
+		<div><?= $curObj->isProfileImg()  ?  "<div class='personProfileImg'>".$curObj->tagProfileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
+		<div><?= $curObj->menuProfileImg() ?></div>
 	</div>
 	<hr>
 
@@ -109,7 +109,7 @@ function mainFormControl(){
 			<div><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
 			<div><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
-		<!--LISTE DES ESPACES-->
+		<!--LISTE DES ESPACES (cf app.js)-->
 		<?php
 		foreach($spaceList as $tmpSpace){
 			$inputAttr_1=$inputAttr_2=$tootipAllUsers=null;
@@ -117,7 +117,7 @@ function mainFormControl(){
 			if($tmpSpace->allUsersAffected() || $tmpSpace->accessRightUser($curObj)==1)		{$inputAttr_1=" checked";}															//User checked
 			if($tmpSpace->allUsersAffected())   											{$inputAttr_1.=" disabled";  $tootipAllUsers=Txt::tooltip("USER_allUsersOnSpace");}	//Tous les users affectés à l'espace
 		?>
-			<div class="spaceAffectLine lineHover" id="targetLine_<?= $tmpSpace->_id ?>">
+			<div class="spaceAffectLine lineHover">
 				<div class="spaceAffectLabel" <?= $tootipAllUsers ?>><?= $tmpSpace->getLabel() ?></div>
 				<div class="spaceAffectBox" <?= Txt::tooltip("SPACE_userTooltip") ?>> <input type="checkbox" name="spaceAffect[]" value="<?= $tmpSpace->_id ?>_1" <?= $inputAttr_1 ?> ></div>
 				<div class="spaceAffectBox" <?= Txt::tooltip("SPACE_adminTooltip") ?>><input type="checkbox" name="spaceAffect[]" value="<?= $tmpSpace->_id ?>_2" <?= $inputAttr_2 ?> ></div>

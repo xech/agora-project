@@ -55,10 +55,10 @@ class Req
 		try{
 			$pathParams=self::commonPath."Params.php";																		//Fichier de Params : PATH_DATAS & CO
 			if(is_file($pathParams))	{require_once $pathParams;}															//Include le fichier (ou Exception)
-			else						{throw new Exception("Params error");  exit;}
+			else						{throw new Exception("Params file error");  exit;}
 			$pathConfig=PATH_DATAS."config.inc.php";																		//Fichier de config
 			if(is_file($pathConfig))	{require_once $pathConfig;}															//Include le fichier (ou Exception)
-			else						{throw new Exception("Config error");  exit;}
+			else						{throw new Exception("Config file error");  exit;}
 			if(method_exists(self::class,'isInstalling')==false || self::isInstalling()==false)  {$curClass::initCtrl();}	//Controleur principal
 			if(method_exists($curClass,$curMethod))	{$curClass::$curMethod();}												//Controleur demandé (ou Exception)
 			else									{throw new Exception("Page introuvable");  exit;}
@@ -118,7 +118,7 @@ class Req
 		if(!empty($val) && is_string($val)){																				//Vérif la valeur
 			if(preg_match("/^(description|editorDraft|message)$/i",$key)){													//Filtre le contenu de l'editeur TinyMce ou un Post du messenger
 				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');												//Charge la librairie HTMLPurifier	
-				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs "data-" comme "data-fancybox" sont supprimés)
+				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs qui commencent par "data-" sont supprimés)
 				$config->set('Core.Encoding', 'UTF-8');																		//Encodage UTF-8 (conserve les caractères spéciaux)
 				$config->set('Attr.EnableID', true);																		//Autorise les attributs id
 				$config->set('HTML.SafeIframe', true);																		//Autorise les videos Iframes

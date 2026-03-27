@@ -24,6 +24,7 @@ class MdlCalendar extends MdlObject
 	//Valeurs en cache
 	private static $_readableCalendars=null;
 	private static $_affectationCalendars=null;
+	private static $_affectationAddRight=null;
 
 
 	/********************************************************************************************************
@@ -81,31 +82,47 @@ class MdlCalendar extends MdlObject
 	{
 		////	Accès en lecture
 		if($this->readRight()){
-			////	Adresse de partage
-			$actionJsTmp="$('#urlIcal".$this->_typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->_typeId."').hide(); notify('".Txt::trad("copyUrlNotif",true)."');";
-			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->_typeId."' value=\"".Req::curUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->_typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
-			$options["specificOptions"][]=["actionJs"=>$actionJsTmp,  "iconSrc"=>"share.png",  "label"=>$labelTmp,  "tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")];
-			////	Export Ical des evt
-			$options["specificOptions"][]=["actionJs"=>"confirmRedir('?ctrl=calendar&action=exportEvents&typeId=".$this->_typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_exportIcal")];
+			////	"Copier le lien pour consulter l'agenda via une appli externe" : format Ical
+			$actionJsTmp="$('#urlIcal".$this->typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->typeId."').hide(); notify('".Txt::trad("copyUrlNotif",true)."');";
+			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->typeId."' value=\"".Req::curUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
+			$options["objOptions"][]=[
+				"actionJs"=>$actionJsTmp,
+				"iconSrc"=>"share.png",
+				"label"=>$labelTmp,
+				"tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")
+			];
+			////	"Exporter les événements au format Ical"
+			$options["objOptions"][]=[
+				"actionJs"=>"confirmRedir('?ctrl=calendar&action=exportEvents&typeId=".$this->typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",
+				"iconSrc"=>"dataImportExport.png",
+				"label"=>Txt::trad("CALENDAR_exportIcal")
+			];
 		}
-		//// Import Ical des evt
+		////	"Importer les événements au format Ical"
 		if($this->editContentRight()){
-			$options["specificOptions"][]=["actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->_typeId."')",  "iconSrc"=>"dataImportExport.png",  "label"=>Txt::trad("CALENDAR_importIcal")];
+			$options["objOptions"][]=[
+				"actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->typeId."')",
+				"iconSrc"=>"dataImportExport.png",
+				"label"=>Txt::trad("CALENDAR_importIcal")
+			];
 		}
-		//Renvoie le menu surchargé
+		////	Menu parent
 		return parent::contextMenu($options);
 	}
 
 	/********************************************************************************************************
-	 * DROIT DE PROPOSER/AJOUTER UN EVT POUR L'AGENDA COURANT PAR L'USER COURANT
+	 * DROIT DE AJOUTER OU PROPOSER UN EVT POUR L'AGENDA COURANT PAR L'USER COURANT
 	 ********************************************************************************************************/
 	public function affectationAddRight()
 	{
-		return in_array($this,self::affectationCalendars());
+		if(self::$_affectationAddRight===null){
+			self::$_affectationAddRight=in_array($this,self::affectationCalendars());
+		}
+		return self::$_affectationAddRight;
 	}
 
 	/********************************************************************************************************
-	 * DROIT D'AJOUTER  UN AGENDA DE RESSOURCE (pas de type 'user')
+	 * DROIT D'AJOUTER UN AGENDA DE RESSOURCE (pas de type 'user')
 	 ********************************************************************************************************/
 	public static function addRight()
 	{
@@ -252,7 +269,7 @@ class MdlCalendar extends MdlObject
 			foreach(self::$_readableCalendars as $tmpCal){
 				if($tmpCal->editContentRight()){
 					foreach($tmpCal->evtList($timeMin,$timeMax,1) as $tmpEvt){
-						if($tmpEvt->isPastEvent($timeMax))  {$tmpEvt->delete();}
+						if($tmpEvt->evtIsPast($timeMax))  {$tmpEvt->delete();}
 					}
 				}
 			}
@@ -262,7 +279,7 @@ class MdlCalendar extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * AGENDAS ACCESSIBLES POUR AFFECTER/PROPOSER DES ÉVÉNEMENTS PAR L'USER COURANT
+	 * AGENDAS ACCESSIBLES POUR AJOUTER OU PROPOSER DES ÉVÉNEMENTS PAR L'USER COURANT
 	 ********************************************************************************************************/
 	public static function affectationCalendars()
 	{

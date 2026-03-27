@@ -18,111 +18,11 @@ class MdlPerson extends MdlObject
 	//Init le cache
 	private $_profileImg=null;
 	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
-	public static $csvFormats=array(
-		//AGORA
-		"csv_agora"=>array(
-			"delimiter"=>";",
-			"enclosure"=>'"',
-			"fieldKeys"=>array(
-				"civility"=>"civility",
-				"name"=>"name",
-				"firstName"=>"firstName",
-				"companyOrganization"=>"companyOrganization",
-				"function"=>"function",
-				"adress"=>"adress",
-				"postalCode"=>"postalCode",
-				"city"=>"city",
-				"country"=>"country",
-				"telephone"=>"telephone",
-				"telmobile"=>"telmobile",
-				"mail"=>"mail",
-				"comment"=>"comment",
-				"login"=>"login",
-				"password"=>"password"
-			)
-		),
-		//GMAIL
-		"csv_gmail"=>array(
-			"delimiter"=>",",
-			"enclosure"=>"",
-			"fieldKeys"=>array(
-				"civility"=>"Name Prefix",
-				"firstName"=>"Additional Name",
-				"firstName"=>"Given Name",
-				"name"=>"Name",
-				"name"=>"Family Name",
-				"mail"=>"Email 1 - Value",
-				"telmobile"=>"Phone 1 - Value",
-				"function"=>"Organization 1 - Title",
-				"companyOrganization"=>"Société",
-				"adress"=>"Address 1 - Street",
-				"city"=>"Address 1 - City",
-				"postalCode"=>"Address 1 - Postal Code",
-				"country"=>"Address 1 - Country",
-				"comment"=>"Notes"
-			)
-		),
-		//OUTLOOK
-		"csv_outlook"=>array(
-			"delimiter"=>",",
-			"enclosure"=>'"',
-			"fieldKeys"=>array(
-				"firstName"=>"Prénom",
-				"name"=>"Nom",
-				"companyOrganization"=>"Société",
-				"function"=>"Fonction",
-				"adress"=>"Rue (domicile)",
-				"city"=>"Ville (domicile)",
-				"adress"=>"Code postal (domicile)",
-				"country"=>"Pays (domicile)",
-				"telephone"=>"Téléphone (domicile)",
-				"telmobile"=>"Tél. mobile",
-				"mail"=>"Adresse mail",
-				"comment"=>"Notes"
-			)
-		),
-		//HOTMAIL
-		"csv_hotmail"=>array(
-			"delimiter"=>";",
-			"enclosure"=>'"',
-			"fieldKeys"=>array(
-				"civility"=>"Title",
-				"firstName"=>"First Name",
-				"Middle Name"=>"Middle Name",
-				"name"=>"Last Name",
-				"companyOrganization"=>"Company",
-				"Department"=>"Department",
-				"function"=>"Job Title",
-				"adress"=>"Home Street",
-				"city"=>"Home City",
-				"postalCode"=>"Home Postal Code",
-				"country"=>"Home Country",
-				"telephone"=>"Home Phone",
-				"telmobile"=>"Mobile Phone",
-				"mail"=>"Email Address",
-				"comment"=>"Notes"
-			)
-		),
-		//THUNDERBIRD
-		"csv_thunderbird"=>array(
-			"delimiter"=>",",
-			"enclosure"=>"",
-			"fieldKeys"=>array(
-					"firstName"=>"Prénom",
-					"name"=>"Nom de famille",
-					"mail"=>"Première adresse électronique",
-					"telephone"=>"Tél. personnel",
-					"telmobile"=>"Portable",
-					"adress"=>"Adresse privée",
-					"city"=>"Ville",
-					"country"=>"Pays/État",
-					"postalCode"=>"Code postal",
-					"function"=>"Profession",
-					"companyOrganization"=>"Société",
-					"comment"=>"Notes"
-			)
-		)
-	);
+	public static $csvFields=[
+					"delimiter"=>";",
+					"enclosure"=>'"',
+					"fieldKeys"=>["civility","name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment","login","password"]
+				];
 
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
@@ -247,63 +147,56 @@ class MdlPerson extends MdlObject
 	/********************************************************************************************************
 	 * IMAGE DE PROFIL : VERIF L'EXISTENCE
 	 ********************************************************************************************************/
-	public function profileImgExist()
+	public function isProfileImg()
 	{
-		if($this->_profileImg===null)  {$this->_profileImg=is_file($this->pathImgThumb());}
+		if($this->_profileImg===null)  {$this->_profileImg=is_file($this->pathProfileImg());}
 		return $this->_profileImg;
-	}
-
-	/********************************************************************************************************
-	 * IMAGE DE PROFIL : PATH
-	 ********************************************************************************************************/
-	public function profileImgPath()
-	{
-		if($this->profileImgExist())  {return $this->pathImgThumb();}
 	}
 
 	/********************************************************************************************************
 	 *  IMAGE DU PROFIL : BALISE <IMG>
 	 ********************************************************************************************************/
-	public function profileImg($openProfile=false, $smallImg=false)
+	public function tagProfileImg($openProfile=false, $smallImg=false)
 	{
-		$imgPath=$this->profileImgPath();
-		if(!empty($imgPath)){
-			$personImg='<img src="'.$imgPath.'" class="personImg '.($smallImg==true?"personImgSmall":null).'">';
-			if($openProfile==true)  {$personImg='<a onclick="'.$this->openVue().'" '.Txt::tooltip("displayProfil").'>'.$personImg.'</a>';}
-			return $personImg;
+		if($this->isProfileImg()){
+			//Path de l'image avec le param "version" pour l'update du cache
+			$pathProfileImg=$this->pathProfileImg().($this->dateModif ? '?version='.strtotime($this->dateModif) : null);
+			$tagProfileImg='<img src="'.$pathProfileImg.'" class="personImg '.($smallImg==true?"personImgSmall":null).'">';
+			if($openProfile==true)  {$tagProfileImg='<a onclick="'.$this->lightboxVue().'" '.Txt::tooltip("displayProfil").'>'.$tagProfileImg.'</a>';}
+			return $tagProfileImg;
 		}
 	}
 
 	/********************************************************************************************************
 	 * IMAGE DU PROFIL : MENU D'EDITION
 	 ********************************************************************************************************/
-	public function profileImgMenu()
+	public function menuProfileImg()
 	{
 		////	Ajouter un fichier  OU  Fichier à conserver/modifier/supprimer
-		if($this->profileImgExist()!=true)	{return '<input type="file" name="profileImgFile"><input type="hidden" name="profileImgAction" value="change">';}	
-		else{
-			return '<select name="profileImgAction" onchange="if(this.value==\'change\') {$(\'.profileImgFile\').fadeIn();} else {$(\'.profileImgFile\').fadeOut();}">
+		if($this->isProfileImg()!=true){
+			return '<input type="file" name="fileProfileImg"><input type="hidden" name="actionProfileImg" value="change">';
+		}else{
+			return '<select name="actionProfileImg" onchange="if(this.value==\'change\') {$(\'.fileProfileImg\').fadeIn();} else {$(\'.fileProfileImg\').fadeOut();}">
 						<option value="">'.Txt::trad("keepImg").'</option>
 						<option value="change">'.Txt::trad("changeImg").'</option>
 						<option value="delete">'.Txt::trad("delete").'</option>
 					</select>
-					<input type="file" name="profileImgFile" class="profileImgFile" style="display:none;margin-top:10px;">';
+					<input type="file" name="fileProfileImg" class="fileProfileImg" style="display:none;margin-top:10px;">';
 		}
 	}
 
 	/********************************************************************************************************
-	 * IMAGE DU PROFIL : ENREGISTRE / SUPPRIME (cf. "profileImgMenu()")
+	 * IMAGE DU PROFIL : ENREGISTRE / SUPPRIME (cf. "menuProfileImg()")
 	 ********************************************************************************************************/
-	public function profileImgRecord()
+	public function setProfileImg()
 	{
-		if(Req::isParam("profileImgAction"))
-		{
-			// Supprime
-			if(Req::param("profileImgAction")=="delete")	{unlink($this->pathImgThumb());}
-			// Ajoute / change
-			if(Req::param("profileImgAction")=="change" && !empty($_FILES["profileImgFile"]) && File::isType("imageResize",$_FILES["profileImgFile"]["name"])){
-				move_uploaded_file($_FILES["profileImgFile"]["tmp_name"], $this->pathImgThumb());
-				File::imageResize($this->pathImgThumb(),$this->pathImgThumb(),200);
+		if(Req::isParam("actionProfileImg")){
+			// Init (Action "delete" ou "change")
+			if($this->isProfileImg())	{unlink($this->pathProfileImg());}
+			// Ajoute l'image (Action "change")
+			if(Req::param("actionProfileImg")=="change" && !empty($_FILES["fileProfileImg"]) && File::isType("imageResize",$_FILES["fileProfileImg"]["name"])){
+				move_uploaded_file($_FILES["fileProfileImg"]["tmp_name"], $this->pathProfileImg());
+				File::imageResize($this->pathProfileImg(),$this->pathProfileImg(),200);
 			}
 		}
 	}
@@ -311,47 +204,45 @@ class MdlPerson extends MdlObject
 	/********************************************************************************************************
 	 * EXPORTE DES PERSONNES AU FORMAT SPÉCIFIÉ
 	 ********************************************************************************************************/
-	public static function exportPersons($personObjList, $exportType)
+	public static function exportPersons($exportType, $fileName, $personsList)
 	{
-		//Init
 		$fileContent=null;
 		////	EXPORT CSV
-		if(strstr($exportType,"csv"))
-		{
-			//Nom et champs du .csv
-			$csv=static::$csvFormats[$exportType];
-			$fileName=$exportType.".csv";
-			//Enlève la colonne "password" pour tous les exports csv  &&  la colonne "login" pour les contacts 
+		if($exportType=="csv"){
+			//// Nom et champs du .csv
+			$csv=static::$csvFields;
+			$fileName.=".csv";
+			//// Pas d'import du "password", ni du "login" pour les contacts 
 			unset($csv["fieldKeys"]["password"]);
-			if(static::objectType!="user")  {unset($csv["fieldKeys"]["login"]);}
-			//Créé l'entête du fichier CSV (ajoute la colonne "groups" pour les users)
-			foreach($csv["fieldKeys"] as $fieldAgora=>$fieldCsv)  {$fileContent.=$csv["enclosure"].$fieldCsv.$csv["enclosure"].$csv["delimiter"];}
-			if(static::objectType=="user")  {$fileContent.=$csv["enclosure"]."groups".$csv["enclosure"].$csv["delimiter"];}
+			if(static::objectType=="contact")  {unset($csv["fieldKeys"]["login"]);}
+			//// Créé l'entête du fichier CSV (ajoute la colonne "groups" pour les users)
+			foreach($csv["fieldKeys"] as $fieldKey)
+				{$fileContent.=$csv["enclosure"].$fieldKey.$csv["enclosure"].$csv["delimiter"];}
+			if(static::objectType=="user")
+				{$fileContent.=$csv["enclosure"]."groups".$csv["enclosure"].$csv["delimiter"];}
 			$fileContent.="\n";
-			//Ajoute chaque user/contact
-			foreach($personObjList as $tmpPerson)
-			{
-				//Ajoute chaque champ du user/contact
-				foreach($csv["fieldKeys"] as $fieldAgora=>$fieldCsv){
-					if($csv["enclosure"]=="'")	{$tmpPerson->$fieldAgora=addslashes($tmpPerson->$fieldAgora);}//Addslashes de la valeur si besoin
-					$fileContent.=(!empty($tmpPerson->$fieldAgora))  ?  $csv["enclosure"].$tmpPerson->$fieldAgora.$csv["enclosure"].$csv["delimiter"]  :  $csv["delimiter"];
+			//// Ajoute chaque user/contact
+			foreach($personsList as $tmpPerson){
+				//// Ajoute chaque champ du user/contact
+				foreach($csv["fieldKeys"] as $fieldKey){
+					if($csv["enclosure"]=="'")	{$tmpPerson->$fieldKey=addslashes($tmpPerson->$fieldKey);}//Addslashes de la valeur si besoin
+					$fileContent.=(!empty($tmpPerson->$fieldKey))  ?  $csv["enclosure"].$tmpPerson->$fieldKey.$csv["enclosure"].$csv["delimiter"]  :  $csv["delimiter"];
 				}
-				//User : ajoute la liste des groupes
+				//// User : ajoute la liste des groupes
 				if(static::objectType=="user"){
-					foreach(MdlUserGroup::getGroups(null,$tmpPerson) as $tmpGroup)  {$fileContent.=$csv["enclosure"].$tmpGroup->title.$csv["enclosure"].$csv["delimiter"];}
+					foreach(MdlUserGroup::getGroups(null,$tmpPerson) as $tmpGroup)
+						{$fileContent.=$csv["enclosure"].$tmpGroup->title.$csv["enclosure"].$csv["delimiter"];}
 				}
-				//Retour à la ligne
+				//// Retour à la ligne
 				$fileContent.="\n";
 			}
 		}
 		////	EXPORT LDIF
-		elseif($exportType=="ldif")
-		{
+		elseif($exportType=="ldif"){
 			//Init
-			$fileName="contact.ldif";
+			$fileName.=".ldif";
 			//Ajout de chaque personne
-			foreach($personObjList as $tmpPerson)
-			{
+			foreach($personsList as $tmpPerson){
 				$fileContent.="dn: cn=".$tmpPerson->firstName." ".$tmpPerson->name."\n";
 				$fileContent.="objectclass: top\n";
 				$fileContent.="objectclass: person\n";
@@ -374,13 +265,11 @@ class MdlPerson extends MdlObject
 			}
 		}
 		////	EXPORT VCARD (.vcf)
-		elseif($exportType=="vcard")
-		{
+		elseif($exportType=="vcard"){
 			//Init
-			$fileName="contacts_agora.vcf";
+			$fileName.=".vcf";
 			//Ajout de chaque personne au fichier Vcard
-			foreach($personObjList as $tmpPerson)
-			{
+			foreach($personsList as $tmpPerson){
 				$fileContent .="BEGIN:VCARD\n";
 				$fileContent .="VERSION:2.1\n";//V2.1 pour une complatibilité Android
 				$fileContent.="FN:".$tmpPerson->firstName." ".$tmpPerson->name."\n";
@@ -388,14 +277,20 @@ class MdlPerson extends MdlObject
 				if(!empty($tmpPerson->telmobile))			{$fileContent.="TEL;CELL:".$tmpPerson->telmobile."\n";}
 				if(!empty($tmpPerson->telephone))			{$fileContent.="TEL;HOME:".$tmpPerson->telephone."\n";}
 				if(!empty($tmpPerson->mail))				{$fileContent.="EMAIL: ".$tmpPerson->mail."\n";}
-				if(!empty($tmpPerson->adress))				{$fileContent.="ADR;TYPE=home:;;".$tmpPerson->adress.";".$tmpPerson->city.";;".$tmpPerson->postalCode.";".$tmpPerson->country."\n";}
+				if(!empty($tmpPerson->adress))				{$fileContent.="ADR;TYPE=home:;;".$tmpPerson->adress.";".$tmpPerson->city.";".$tmpPerson->postalCode.";".$tmpPerson->country."\n";}
 				if(!empty($tmpPerson->companyOrganization))	{$fileContent.="ORG:".$tmpPerson->companyOrganization."\n";}
 				if(!empty($tmpPerson->function))			{$fileContent.="TITLE:".$tmpPerson->function."\n";}
 				if(!empty($tmpPerson->comment))				{$fileContent.="NOTE:".$tmpPerson->comment."\n";}
+				if($tmpPerson->isProfileImg()){
+					$imageData=file_get_contents($tmpPerson->pathProfileImg());
+					$base64Image=base64_encode($imageData);
+					$fileContent.="PHOTO;ENCODING=b;TYPE=JPEG:".$base64Image."\n";
+				}
 				$fileContent.="END:VCARD\n";
 			}
 		}
 		/////   LANCEMENT DU TELECHARGEMENT
+		$fileName=Txt::clean($fileName);
 		File::download($fileName, null, $fileContent);
 	}
 
@@ -428,8 +323,7 @@ class MdlPerson extends MdlObject
 	public static function ldapSearch($importLoginPassword, $importLdapDn, $importLdapFilter)
 	{
 		$ldapConnect=self::ldapConnect();
-		if($ldapConnect!=false)
-		{
+		if($ldapConnect!=false){
 			// Champs Agora => Attributs LDAP correspondants (Le champ plus plausible en dernier & toujours en minucule!)
 			$ldapFields=array(
 				"civility"				=>["designation","initials"],
@@ -452,11 +346,9 @@ class MdlPerson extends MdlObject
 			}
 			// Récupere les users LDAP
 			$ldapSearch=ldap_search($ldapConnect, $importLdapDn, $importLdapFilter);
-			if($ldapSearch!=false)
-			{
+			if($ldapSearch!=false){
 				$searchPersons=ldap_get_entries($ldapConnect, $ldapSearch);
-				if($searchPersons["count"]>0)
-				{
+				if($searchPersons["count"]>0){
 					////	Champs Agora à utiliser
 					$importedFields=[];
 					foreach($searchPersons as $userAttributes){
@@ -469,13 +361,10 @@ class MdlPerson extends MdlObject
 					}
 					////	Attributs / valeurs de chaque contact
 					$importedPersons=[];
-					foreach($searchPersons as $userKey=>$userAttributes)
-					{
-						if(is_numeric($userKey))
-						{
+					foreach($searchPersons as $userKey=>$userAttributes){
+						if(is_numeric($userKey)){
 							$importedPerson=[];
-							foreach($ldapFields as $agoraField=>$ldapTmpFields)
-							{
+							foreach($ldapFields as $agoraField=>$ldapTmpFields){
 								//Cle du tableau d'entête correspondant au champ visé (tableau d'import: numéro de colonne du champ agora || import direct : nom du champ agora)
 								$fieldCpt=array_search($agoraField,$importedFields);
 								$fieldKey=$fieldCpt;

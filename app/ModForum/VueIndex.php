@@ -4,7 +4,7 @@
 **********************************************************************************************************/
 ready(function(){
 	$("#notifyLastMessage").on("click",function(){
-		$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= isset($curSubject) ? $curSubject->_typeId : null ?>").done(function(result){
+		$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= isset($curSubject) ? $curSubject->typeId : null ?>").done(function(result){
 			$("#notifyLastMessage").toggleClass("optionSelect",(result=="addUser"));
 		});
 	});
@@ -69,7 +69,7 @@ ready(function(){
 		{
 			$newSubjectClass=$subjectLastMessage=$subjectLink=null;
 			if($forumDisplay=="subjectList"){
-				$subjectLink='onclick="redir(\'?ctrl=forum&typeId='.$tmpSubject->_typeId.'\')" '.Txt::tooltip("FORUM_displaySubject");					//Lien vers le sujet et ses messages
+				$subjectLink='onclick="redir(\'?ctrl=forum&typeId='.$tmpSubject->typeId.'\')" '.Txt::tooltip("FORUM_displaySubject");					//Lien vers le sujet et ses messages
 				$tmpSubject->description=Txt::reduce($tmpSubject->description,400);																		//Réduction de la description
 				if($tmpSubject->alreadyConsulted()==false)  {$newSubjectClass="linkSelect";}															//Nouveau sujet en surbrillance
 				$messagesNb=Db::getVal("SELECT COUNT(*) FROM ap_forumMessage WHERE _idContainer=".$tmpSubject->_id);									//Nb de messages pour le sujet
@@ -78,7 +78,7 @@ ready(function(){
 					$subjectLastMessage='<div class="vLastMessage">'.$messagesNb.' '.(Txt::trad($messagesNb>1?'FORUM_messages':'FORUM_message')).' : '.Txt::trad("FORUM_lastMessageFrom").' '.$lastMessage->autorDate(false).'</div>';
 				}
 			}
-			echo $tmpSubject->objContainerMenu().
+			echo $tmpSubject->divContainerMenu().
 				'<div class="objContent '.$newSubjectClass.'" '.$subjectLink.'>
 					<div class="vTitle">'.$tmpSubject->title.'</div>
 					<div class="vDescription">'.$tmpSubject->description.'</div>
@@ -109,7 +109,7 @@ ready(function(){
 				}
 				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" '.Txt::tooltip("FORUM_quoteMessageInfo").'>'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.png"> </div>'  :  null;
 				//Affichage
-				echo $tmpMessage->objContainerMenu("vMessages").
+				echo $tmpMessage->divContainerMenu("vMessages").
 						'<div class="objContent">
 							'.$quotedMessage.'
 							<div class="vTitle">'.$tmpMessage->title.'</div>

@@ -41,7 +41,7 @@
 	<div id="headerBar">
 
 		<!--MENU LEFT : LOGO PRINCIPAL  &  LABEL DE L'USER  &  LABEL L'ESPACE COURANT  &  ICONE DE VALIDATION D'INSCRIPTION-->
-		<div id="headerMenuLeft" class="menuLauncher" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
+		<div id="headerMenuLeft" class="menuContextLaunch" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
 			<img src="app/img/logo.png" id="headerMainLogo">
 			<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRight.png"></div><?php } ?>
 			<span id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?></span>&nbsp;<img src="app/img/menuSmall.png">
@@ -61,8 +61,8 @@
 					<div class="menuLine" onclick="lightboxOpen('<?= File::docFile() ?>')"><div class="menuIcon"><img src="app/img/documentation.png"></div><div><?= Txt::trad("HEADER_documentation") ?></div></div>
 					<hr>
 					<!--MODIF DU PROFIL  +  MESSENGER DE L'USER  +  DECONNEXION DE L'ESPACE PRINCIPAL  +  SWITCH D'ESPACE-->
-					<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curUser->getUrl('edit') ?>')"><div class="menuIcon"><img src="app/img/edit.png"></div><div><?= Txt::trad("USER_myProfilEdit") ?> &nbsp; <?= Ctrl::$curUser->profileImg(false,true) ?></div></div>
-					<?php if(MdlUser::agoraMessengerEnabled()){ ?><div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=<?= Ctrl::$curUser->_typeId ?>')"><div class="menuIcon"><img src="app/img/messenger.png"></div><div><?= Txt::trad("USER_livecounterVisibility") ?></div></div><?php } ?>
+					<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curUser->getUrl('edit') ?>')"><div class="menuIcon"><img src="app/img/edit.png"></div><div><?= Txt::trad("USER_myProfilEdit") ?> &nbsp; <?= Ctrl::$curUser->tagProfileImg(false,true) ?></div></div>
+					<?php if(MdlUser::agoraMessengerEnabled()){ ?><div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=<?= Ctrl::$curUser->typeId ?>')"><div class="menuIcon"><img src="app/img/messenger.png"></div><div><?= Txt::trad("USER_livecounterVisibility") ?></div></div><?php } ?>
 					<div class="menuLine" onclick="confirmRedir('?disconnect=1','<?= Txt::trad('disconnectSpaceConfirm',true) ?>')"><div class="menuIcon"><img src="app/img/logout.png"></div><div><?= Txt::trad("disconnectSpace") ?></div></div>
 					<?php if(Req::isSpaceSwitch()){ ?><div class="menuLine" onclick="confirmRedir('<?= Req::connectSpaceSwitchUrl() ?>','<?= Txt::trad('connectSpaceSwitch',true) ?>')"><div class="menuIcon"><img src="app/img/switch.png"></div><div><?= Txt::trad("connectSpaceSwitch") ?></div></div><?php } ?>
 					<!--ADMIN GENERAL :  EDIT TOUS LES USERS  +  PARAMETRAGE GENERAL  +  HISTORIQUE DES EVENEMENTS (LOGS)-->
@@ -121,7 +121,7 @@
 				<?php } ?>
 			</div>
 			<!--LOGO OMNISPACE-->
-			<div id="menuMainOmnispace" onclick="window.open('<?= OMNISPACE_URL_PUBLIC ?>')" <?= Txt::tooltip(OMNISPACE_URL_LABEL) ?> ><img src="app/img/logoLabel.png"></div>
+			<div id="menuMainOmnispace"><img src="app/img/logoLabel.png" <?= Txt::tooltip(OMNISPACE_URL_LABEL) ?> onclick="window.open('<?= OMNISPACE_URL_PUBLIC ?>')"></div>
 		</div>
 
 		<!--MENU RIGHT : MODULES DISPONIBLES-->
@@ -149,7 +149,7 @@
 			</div>
 
 			<!--MENU MOBILE : LABEL DU MODULE COURANT-->
-			<div id="headerMobileModule" class="menuLauncher" for="headerRightMenu"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?>&nbsp;<img src="app/img/menuSmall.png">&nbsp;</div>
+			<div id="headerMobileModule" class="menuContextLaunch" for="headerRightMenu"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?>&nbsp;<img src="app/img/menuSmall.png">&nbsp;</div>
 		</div>
 	</div>
 </div>

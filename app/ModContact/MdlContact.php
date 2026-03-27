@@ -29,7 +29,7 @@ class MdlContact extends MdlPerson
 	/********************************************************************************************************
 	 * PHOTO D'UN CONTACT
 	 ********************************************************************************************************/
-	public function pathImgThumb()
+	public function pathProfileImg()
 	{
 		return PATH_MOD_CONTACT.$this->_id."_thumb.jpg";
 	}
@@ -40,7 +40,7 @@ class MdlContact extends MdlPerson
 	public function delete()
 	{
 		if($this->deleteRight()){
-			if($this->profileImgExist())  {unlink($this->pathImgThumb());}
+			if($this->isProfileImg())  {unlink($this->pathProfileImg());}
 			parent::delete();
 		}
 	}
@@ -50,11 +50,22 @@ class MdlContact extends MdlPerson
 	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//Ajoute l'option "Créer un utilisateur sur cet espace" : admin général uniquement!
+		////	"Créer un utilisateur sur l'espace"
 		if(Ctrl::$curUser->isGeneralAdmin()){
-			$actionJs="confirmRedir('?ctrl=contact&action=contactAddUser&typeId=".$this->_typeId."', '".Txt::trad("CONTACT_createUserConfirm",true)."');";
-			$options["specificOptions"][]=["actionJs"=>$actionJs, "iconSrc"=>"plusSmall.png", "label"=>Txt::trad("CONTACT_createUser"), "tooltip"=>Txt::trad("CONTACT_createUserConfirm")];
+			$options["objOptions"][]=[
+				"actionJs"=>"confirmRedir('?ctrl=contact&action=contactAddUser&typeId=".$this->typeId."', '".Txt::trad("CONTACT_createUserConfirm",true)."');",
+				"iconSrc"=>"plusSmall.png",
+				"label"=>Txt::trad("CONTACT_createUser"),
+				"tooltip"=>Txt::trad("CONTACT_createUserConfirm")
+			];
 		}
+		////	Exporter au format vCard
+		$options["objOptions"][]=[
+			"actionJs"=>"redir('?ctrl=contact&action=ExportVcard&typeId=".$this->typeId."');",
+			"iconSrc"=>"vcard.png",
+			"label"=>Txt::trad("export_vcard"),
+		];
+		////	Menu parent
 		return parent::contextMenu($options);
 	}
 }

@@ -88,7 +88,7 @@ class CtrlTask extends Ctrl
 			if(!empty($tmpObj->dateBegin))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("begin")." : ".Txt::dateLabel($tmpObj->dateBegin);}
 			if(!empty($tmpObj->dateEnd))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("end")." : ".Txt::dateLabel($tmpObj->dateEnd);}
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel=$tmpObj->openVue();
+			$tmpObj->pluginJsLabel=$tmpObj->lightboxVue();
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;

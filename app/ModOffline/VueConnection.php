@@ -26,13 +26,13 @@ ready(function(){
 	 *	ESPACE PUBLIQUE :  AFFICHE LE FORMULAIRE DU PASSWORD  ||  ACCÈS DIRECT
 	 **********************************************************************************************************/
 	$(".publicSpaceOption").click(function(){
-		if($(this).attr("data-hasPassword")==="true"){
-			$("#spaceNamePublic").html($(this).attr("data-spaceName"));
-			$("#idSpacePublic").val($(this).attr("data-idSpace"));
+		if(this.getAttribute("data-hasPassword")==="true"){
+			$("#spaceNamePublic").html(this.getAttribute("data-spaceName"));
+			$("#idSpacePublic").val(this.getAttribute("data-idSpace"));
 			Fancybox.show([{type:"inline",src:"#publicSpaceForm"}]);
 		}else{
 			let objUrl=encodeURIComponent($("#objUrlExternal").val());
-			redir("index.php?_idSpaceAccess="+$(this).attr("data-idSpace")+"&objUrl="+objUrl);
+			redir("index.php?_idSpaceAccess="+this.getAttribute("data-idSpace")+"&objUrl="+objUrl);
 		}
 	});
 

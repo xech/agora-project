@@ -89,7 +89,7 @@ class MdlDashboardPoll extends MdlObject
 			foreach($this->_responseList as $tmpKey=>$tmpResponse){
 				if(!empty($tmpResponse["fileName"])){
 					$this->_responseList[$tmpKey]["filePath"]=$this->responseFilePath($tmpResponse);
-					$this->_responseList[$tmpKey]["fileUrlDownload"]="?ctrl=dashboard&action=ResponseDownloadFile&typeId=".$this->_typeId."&_idResponse=".$tmpResponse["_id"];
+					$this->_responseList[$tmpKey]["fileUrlDownload"]="?ctrl=dashboard&action=ResponseDownloadFile&typeId=".$this->typeId."&_idResponse=".$tmpResponse["_id"];
 				}
 			}
 		}
@@ -258,14 +258,36 @@ class MdlDashboardPoll extends MdlObject
 	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//// Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
-		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  $this->votesUsers()  :  null;
-		$options["specificOptions"][]=["iconSrc"=>"info.png", "label"=>'<span class="cursorHelp" '.Txt::tooltip($tooltipVotedBy).'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb")).'</span>'];
-		//// Date de fin de vote  &&  Vote est public  &&  Export pdf du résultat d'un sondage
-		if(!empty($this->dateEnd))				{$options["specificOptions"][]=["iconSrc"=>"dateEnd.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"];}
-		if(!empty($this->publicVote))			{$options["specificOptions"][]=["iconSrc"=>"eye.png", "label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"];}
-		if(Ctrl::$curUser->isGeneralAdmin())	{$options["specificOptions"][]=["actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->_typeId."')", "iconSrc"=>"download.png", "label"=>Txt::trad("DASHBOARD_exportPoll")];}
-		//// Retourne le menu contextuel
+		////	Export pdf du résultat d'un sondage
+		if(Ctrl::$curUser->isGeneralAdmin()){
+			$options["objOptions"][]=[
+				"actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->typeId."')",
+				"iconSrc"=>"download.png",
+				"label"=>Txt::trad("DASHBOARD_exportPoll")
+			];
+		}
+		////	Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
+		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  Txt::tooltip($this->votesUsers())  :  null;
+		$options["objOptions"][]=[
+			"separator"=>"<hr>",
+			"iconSrc"=>"info.png",
+			"label"=>'<span class="cursorHelp" '.$tooltipVotedBy.'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb")).'</span>'
+		];
+		////	Date de fin de vote
+		if(!empty($this->dateEnd)){
+			$options["objOptions"][]=[
+				"iconSrc"=>"dateEnd.png",
+				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"
+			];
+		}
+		////	Vote est public
+		if(!empty($this->publicVote)){
+			$options["objOptions"][]=[
+				"iconSrc"=>"eye.png",
+				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"
+			];
+		}
+		////	Menu parent
 		return parent::contextMenu($options);
 	}
 }

@@ -1,7 +1,21 @@
+<!--CHARGE LE COLORPICKER-->
+<script src="app/js/iro.colorpicker.min.js"></script>
+
+
 <script>
-////	INIT
+/**
+ *	MODIF DU COLORPICKER
+ */
+function colorPickerChange(tmpColor, fieldsetId){
+	$(fieldsetId+" input[name='title']").css("background-color",tmpColor.hexString);	//Modif le background du "title"
+	$(fieldsetId+" input[name='color']").val(tmpColor.hexString);						//Modif l'input "hidden"
+}
+
 ready(function(){
-	////	Change l'ordre d'affichage des modules ("hightlight" : module fantome & "y" : déplacemnt vertical)
+
+	/**
+	 * CHANGE L'ORDRE D'AFFICHAGE
+	 */
 	if(isMobile())	{$(".changeOrder").hide();}
 	else{
 		$("#categoryList").sortable({
@@ -18,11 +32,13 @@ ready(function(){
 		});
 	}
 
-	////	Affiche le formulaire d'édition des catégories
+	/**
+	 * AFFICHE LE FORMULAIRE D'ÉDITION
+	 */
 	$(".vCategoryEdit").on("click",function(){																//Click sur le bouton "modifier" ou "ajouter"
 		let selectFieldset="#"+$(this).closest("fieldset").attr("id");										//Sélecteur du fieldset de la catégorie (balise parent via "closest")
 		let selectHeaders=selectFieldset+" .vCategoryMain>div:not(.vCategoryEdit)";							//Sélecteur du header : libellé principal & boutons (sauf "modifier")
-		if($(selectFieldset+" form").isDisplayed()){														//Si le formulaire est déjà visible :
+		if($(selectFieldset+" form").isVisible()){															//Si le formulaire est déjà visible :
 			$(selectHeaders).show();																		//Affiche les boutons delete/changeOrder
 			$(selectFieldset+" form").slideUp();															//Masque le formulaire
 		}else{																								//Si le formulaire n'est pas visible :
@@ -32,14 +48,18 @@ ready(function(){
 		}
 	});
 
-	////	Controle l'affectation aux espaces
+	/**
+	 *  AFFECTATION AUX ESPACES
+	 */
 	$("[name='spaceList[]']").on("change",function(){
 		let selectFieldset="#"+$(this).closest("fieldset").attr("id");																				//Sélecteur du fieldset de la catégorie (balise parent via "closest")
 		if(this.value=="allSpaces" && this.checked==true)	{$(selectFieldset+" [name='spaceList[]']").not(this).prop("checked",false);}			//Déselectionne chaque espace
 		else												{$(selectFieldset+" [name='spaceList[]'][value='allSpaces']").prop("checked",false);}	//Déselectionne "Visible sur tous les espaces"
 	});
 
-	////	Controle du formulaire
+	/**
+	 * CONTROLE DU FORMULAIRE D'EDITION D'UNE CATEGORIE
+	 */
 	$("form").on("submit",function(){
 		//Vérif la présence du titre
 		if($(this).find("input[name='title']").isEmpty()){
@@ -54,16 +74,7 @@ ready(function(){
 		}
 	});
 });
-
-////	MODIF DU COLORPICKER
-function colorPickerChange(tmpColor, fieldsetId){
-	$(fieldsetId+" input[name='title']").css("background-color",tmpColor.hexString);	//Modif le background du "title"
-	$(fieldsetId+" input[name='color']").val(tmpColor.hexString);						//Modif l'input "hidden"
-}
 </script>
-
-<!--CHARGE LE COLORPICKER-->
-<script src="app/js/iro.min.js"></script>
 
 
 <style>
@@ -120,7 +131,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
 			<form action="index.php" method="post">
 				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_id ?>" placeholder="<?= Txt::trad("title") ?>" style="background:<?= $tmpObj->color ?>">
-				<img src="app/img/colorPicker.png" class="menuLauncher" for="colorPickerDiv<?= $tmpObj->_id ?>">
+				<img src="app/img/colorPicker.png" class="menuContextLaunch" for="colorPickerDiv<?= $tmpObj->_id ?>">
 				<div class="colorPicker menuContext" id="colorPickerDiv<?= $tmpObj->_id ?>">
 					<div id="colorPickerMenu<?= $tmpObj->_id ?>"></div>
 					<script>
@@ -154,7 +165,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 					?>
 				</div>
 				<input type="hidden" name="objectType" value="<?= Req::param("objectType") ?>">
-				<input type="hidden" name="typeId" value="<?= $tmpObj->_typeId ?>">
+				<input type="hidden" name="typeId" value="<?= $tmpObj->typeId ?>">
 				<?= Txt::submitButton() ?>
 			</form>
 		</fieldset>

@@ -63,7 +63,7 @@ class CtrlMail extends Ctrl
 				}
 				//Update la description et recharge l'email
 				Db::query("UPDATE ".$curObj::dbTable." SET `description`=".Db::format($curObj->description)." WHERE _id=".$curObj->_id);
-				$curObj=Ctrl::getCurObj($curObj->_typeId);
+				$curObj=Ctrl::getCurObj($curObj->typeId);
 			}
 			////	Envoi du mail
 			$subject=Txt::clean(Req::param("title"),"min");										//Sujet
@@ -93,6 +93,18 @@ class CtrlMail extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMailHistory()
 	{
+		////	Valide le formulaire de suppression d'anciens mails
+		if(Req::isParam(["formValidate","historyDeleteDays"]) && Req::param("historyDeleteDays")>5){
+			$deleteTime=intval(time() - (TIME_1DAY * Req::param("historyDeleteDays")));
+			$mailsDelete=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." AND UNIX_TIMESTAMP(dateCrea) < ".$deleteTime);
+			$mailDeleteNotif=Txt::trad("MAIL_historyDeleteNotif")." : ".count($mailsDelete);
+			foreach($mailsDelete as $tmpMail){
+				$tmpMail->delete();
+			}
+			Ctrl::notify($mailDeleteNotif,"success");
+			static::lightboxRedir();
+		}
+		////	Liste des mails envoyés par l'user courant
 		$vDatas["mailList"]=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY dateCrea desc");
 		static::displayPage("VueMailHistory.php",$vDatas);
 	}

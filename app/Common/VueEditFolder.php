@@ -10,7 +10,7 @@ ready(function(){
 	<?php if($curObj->containerObj()->isRootFolder()==false){ ?>
 	$("[id^=objectRightBox]").on("change",function(){
 		if($(this).prop("checked")){
-			var ajaxUrl="?ctrl=object&action=AccessRightParentFolder&typeId=<?= $curObj->containerObj()->_typeId ?>&objectRight="+this.value;
+			var ajaxUrl="?ctrl=object&action=AccessRightParentFolder&typeId=<?= $curObj->containerObj()->typeId ?>&objectRight="+this.value;
 			$.ajax({url:ajaxUrl,dataType:"json"}).done(function(result){
 				if(result.errorMessage)  {notify(result.errorMessage);}
 			});
@@ -22,9 +22,9 @@ ready(function(){
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function mainFormControl(){
 	return new Promise((resolve)=>{
-		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&controledName="+encodeURIComponent($("input[name='name']").val())+"&typeIdContainer=<?= $curObj->containerObj()->_typeId ?>";
+		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&controledName="+encodeURIComponent($("input[name='name']").val())+"&typeIdContainer=<?= $curObj->containerObj()->typeId ?>";
 		$.ajax(ajaxUrl).done(function(result){
-			if(/duplicateName/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateNameFolder") ?>");  resolve(false);}//"Un element avec le même nom existe déjà"
+			if(/duplicateName/i.test(result))	{resolve(false);  notify("<?= Txt::trad("NOTIF_duplicateNameFolder") ?>");}//"..le nom existe déjà"
 			else								{resolve(true);}
 		});
 	});

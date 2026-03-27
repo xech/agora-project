@@ -11,7 +11,7 @@ ready(function(){
 function mainFormControl(){
 	return new Promise((resolve)=>{
 		//// Retourne false s'il n'y a que des accès en lecture
-		if($("[name='objectRight[]']:checked").length==$("[name='objectRight[]'][value$='_1']:checked").length)	 {notify("<?= Txt::trad("FORUM_notifOnlyReadAccess") ?>");  resolve(false);}
+		if($("[name='objectRight[]']:checked").length==$("[name='objectRight[]'][value$='_1']:checked").length)	 {resolve(false);  notify("<?= Txt::trad("FORUM_notifOnlyReadAccess") ?>");}
 		else																									 {resolve(true);}
 	});
 }

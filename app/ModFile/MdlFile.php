@@ -76,7 +76,7 @@ class MdlFile extends MdlObject
 	 ********************************************************************************************************/
 	public function urlDownload($dateCrea=null)
 	{
-		$urlDownload="?ctrl=file&action=FileDownload&typeId=".$this->_typeId;								//Url de base
+		$urlDownload="?ctrl=file&action=FileDownload&typeId=".$this->typeId;								//Url de base
 		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}							//Download une version spécifique
 		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlDownloadMobileApp($urlDownload,$this->name);}	//Download via CtrlMisc
 		return $urlDownload;																				//Retourne l'Url
@@ -129,10 +129,10 @@ class MdlFile extends MdlObject
 	 ********************************************************************************************************/
 	public function thumbEdit()
 	{
-		//Fichier de moins de 15Mo?
+		//// Fichier de moins de 15Mo?
 		if(filesize($this->filePath()) < (File::sizeMo*15))
 		{
-			//Vignette d'image ou de Pdf
+			//// Vignette d'image || Vignette de Pdf
 			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->thumbPath(),300,300,90);}
 			elseif($this->thumbPdfEnabled())
 			{
@@ -161,7 +161,7 @@ class MdlFile extends MdlObject
 		if($nbVersions>1){
 			$nbVersionsTitle=$nbVersions." ".Txt::trad("FILE_nbFileVersions");
 			$displayLabelIcon=($displayType=="label")  ?  $nbVersionsTitle  :  "<img src='app/img/file/versions.png'>";
-			return '<a class="versionsMenu" onclick="lightboxOpen(\'?ctrl=file&action=FileVersions&typeId='.$this->_typeId.'\')" '.Txt::tooltip($nbVersionsTitle).'>'.$displayLabelIcon.'</a>';
+			return '<a class="versionsMenu" onclick="lightboxOpen(\'?ctrl=file&action=FileVersions&typeId='.$this->typeId.'\')" '.Txt::tooltip($nbVersionsTitle).'>'.$displayLabelIcon.'</a>';
 		}
 	}
 
@@ -170,16 +170,34 @@ class MdlFile extends MdlObject
 	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		//// ADMIN D'ESPACE : "TÉLÉCHARGÉ PAR" + LISTE DES USERS AYANT TELECHARGE LE FICHIER
+		////	Tooltip des users ayant downloadé le fichier (admin)
 		$tooltipDownloadedBy=null;
 		if(Ctrl::$curUser->isSpaceAdmin() && !empty($this->downloadedBy)){
 			foreach(Txt::txt2tab($this->downloadedBy) as $tmpIdUser)  {$tooltipDownloadedBy.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
 			$tooltipDownloadedBy=Txt::tooltip(Txt::trad("FILE_downloadedBy")." : ".trim($tooltipDownloadedBy,", "));
 		}
-		//// "TÉLÉCHARGER LE FICHIER" + TOOLTIP "FICHIER TÉLÉCHARGÉ X FOIS"  &&  "X VERSIONS DU FICHIER"  &&  "AJOUTER UNE NOUVELLE VERSION"
-		$options["specificOptions"][]=["actionJs"=>"redir('".$this->urlDownload()."')", "iconSrc"=>"download.png", "label"=>Txt::trad("download").' &nbsp;<span class="cursorHelp" '.$tooltipDownloadedBy.'>'.str_replace('--NB_DOWNLOAD--',$this->downloadsNb,Txt::trad("FILE_downloadsNb")).'</span>'];
-		if(count($this->getVersions())>1)	{$options["specificOptions"][]=["iconSrc"=>"file/versions.png", "label"=>$this->versionsMenu("label")];}//Avec le lien vers les versions (donc pas de "actionJs"..)
-		if($this->editRight())				{$options["specificOptions"][]=["iconSrc"=>"plusSmall.png", "label"=>Txt::trad("FILE_addFileVersion"), "actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->_typeId)."')"];}
+		////	Download du fichier (+ nb de downloads)
+		$options["objOptions"][]=[
+			"actionJs"=>"redir('".$this->urlDownload()."')",
+			"iconSrc"=>"download.png",
+			"label"=>Txt::trad("download").' &nbsp;<span class="cursorHelp" '.$tooltipDownloadedBy.'>'.str_replace('--NB_DOWNLOAD--',$this->downloadsNb,Txt::trad("FILE_downloadsNb")).'</span>'
+		];
+		////	Ajouter une version
+		if($this->editRight()){
+			$options["objOptions"][]=[
+				"actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->typeId)."')",
+				"iconSrc"=>"plusSmall.png",
+				"label"=>Txt::trad("FILE_addFileVersion")
+			];
+		}
+		////	Nb de versions du fichier (pas de "actionJs" mais lightbox via "versionsMenu()")
+		if(count($this->getVersions())>1){
+			$options["objOptions"][]=[
+				"iconSrc"=>"file/versions.png",
+				"label"=>$this->versionsMenu("label")
+			];
+		}
+		////	Menu parent
 		return parent::contextMenu($options);
 	}
 

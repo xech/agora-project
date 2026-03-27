@@ -4,7 +4,8 @@ ready(function(){
  	*	RECUP UN BACKUP
 	*******************************************************************************************/
 	$(".vButtonBackup").on("click",function(){
-		confirmRedir("?ctrl=agora&action=getBackup&typeBackup="+$(this).attr("data-typeBackup"), "<?= Txt::trad("AGORA_backupConfirm") ?>");
+		let confirmLabel=(this.getAttribute("data-typeBackup")=="all")  ?  "<?= Txt::trad("AGORA_backupConfirm") ?>"  :  null;
+		confirmRedir("?ctrl=agora&action=getBackup&typeBackup="+this.getAttribute("data-typeBackup"), confirmLabel);
 	});
 
 	/********************************************************************************************************
@@ -48,10 +49,10 @@ ready(function(){
 		if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 		////	Contrôle de l'espace disque, l'url de serveur de visio, le gApiKey et gIdentityClientId
 		<?php if(Req::isHost()==false){ ?>
-		if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");		return false;}//doit être un nombre
-		if($("input[name='visioHost']").notEmpty() && /^https/.test($("input[name='visioHost']").val())==false)			{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");		return false;}//doit commencer par "https"
-		if($("input[name='visioHostAlt']").notEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");		return false;}//Idem
-		if($("select[name='mapTool']").val()=="gmap" && $("input[name='gApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_gApiKeyInvalid") ?>");		return false;}//Doit avoir un "API Key"
+		if(isNaN($("#limite_espace_disque").val()))   																	{notify("<?= Txt::trad("AGORA_diskSpaceInvalid") ?>");	return false;}//doit être un nombre
+		if($("input[name='visioHost']").notEmpty() && /^https/.test($("input[name='visioHost']").val())==false)			{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");	return false;}//doit commencer par "https"
+		if($("input[name='visioHostAlt']").notEmpty() && /^https/.test($("input[name='visioHostAlt']").val())==false)	{notify("<?= Txt::trad("AGORA_visioHostInvalid") ?>");	return false;}//Idem
+		if($("select[name='mapTool']").val()=="gmap" && $("input[name='gApiKey']").isEmpty())							{notify("<?= Txt::trad("AGORA_gApiKeyInvalid") ?>");	return false;}//Doit avoir un "API Key"
 		if($("select[name='gIdentity']").val()=="1" && $("input[name='gIdentityClientId']").isEmpty())					{notify("<?= Txt::trad("AGORA_gOAuthKeyInvalid") ?>");	return false;}//Idem
 		<?php } ?>
 		////	Valide le formulaire
@@ -354,7 +355,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AUTO-HEBERGEMENT)-->
 				<?php if(Req::isHost()==false){ ?>
 					<div class="objField" onclick="$('#smtpConfig').slideToggle()">
-						<div><img src="app/img/postMessage.png"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowBottom.png"></div>
+						<div><img src="app/img/mail.png"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowBottom.png"></div>
 					</div>
 					<fieldset id="smtpConfig" <?= empty(Ctrl::$agora->smtpHost)?"style='display:none'":null ?>>
 						<div class="objField">

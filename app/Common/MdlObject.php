@@ -28,7 +28,7 @@ class MdlObject
 	const MdlObjectContainer=null;				//Objet conteneur rattaché à l'objet courant	(ex: "MdlFileFolder", "MdlTaskFolder", "MdlCalendar"...)
 	const MdlObjectContent=null;				//Objets contenu rattachés à l'objet courant	(ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
 	const isFolder=false;						//L'Objet courant est un dossier
-	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier
+	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier ..mais n'est pas un dossier
 	protected static $_hasAccessRight=null;		//Pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
 	//Propriétés d'affichage et d'édition
 	const isSelectable=false;					//Sélection multiple d'objet
@@ -46,7 +46,6 @@ class MdlObject
 	private $_accessRight=null;
 	private $_affectations=null;
 	private $_attachedFileList=null;
-	private $_attachedFileMenu=null;
 	private $_usersComment=null;
 	private $_usersLike=null;
 	protected static $_sqlTargets=null;
@@ -67,9 +66,9 @@ class MdlObject
 				foreach($objValues as $fieldName=>$fieldValue)  {$this->$fieldName=$fieldValue;}
 			}
 		}
-		////	Cast l'id en Interger  + Init le _typeId (ex: "fileFolder-55")
+		////	Cast l'id en Interger  + Init le typeId (ex: "fileFolder-55")
 		$this->_id=(int)$this->_id;
-		$this->_typeId=static::objectType."-".$this->_id;
+		$this->typeId=static::objectType."-".$this->_id;
 	}
 
 	/********************************************************************************************************
@@ -315,7 +314,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * CONTENEUR : DROIT POUR L'USER COURANT D'AJOUTER DU CONTENU AU CONTENEUR
+	 * CONTENEUR : DROIT POUR L'USER COURANT D'AJOUTER DU CONTENU AU CONTENEUR (1.5 ou+)
 	 ********************************************************************************************************/
 	public function addContentRight()
 	{
@@ -323,7 +322,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * CONTENEUR : DROIT POUR L'USER COURANT D'ÉDITER TOUT LE CONTENU DU CONTENEUR
+	 * CONTENEUR : DROIT POUR L'USER COURANT D'ÉDITER TOUT LE CONTENU DU CONTENEUR (2 ou+)
 	 ********************************************************************************************************/
 	public function editContentRight()
 	{
@@ -332,7 +331,7 @@ class MdlObject
 
 	/********************************************************************************************************
 	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET : accessRight==3 POUR LES CONTENEURS
-	********************************************************************************************/
+	 ********************************************************************************************************/
 	public function editRight()
 	{
 		return ($this->accessRight()==3  ||  ($this->accessRight()==2 && static::isContainer()==false));
@@ -387,11 +386,11 @@ class MdlObject
 	public function getUrl($display=null)
 	{
 		$url="?ctrl=".static::moduleName;
-		if($display=="vue")					{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->_typeId;}			//Vue dans une lightbox (Task/User/Contact/etc)
-		elseif($display=="edit")			{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->_typeId;}		//Edition un objet
-		elseif($display=="delete")			{return "?ctrl=object&action=delete&typeId=".$this->_typeId;}								//Suppression d'un objet via "actionDelete()"
-		elseif(static::isInContainer())		{return $url."&typeId=".$this->containerObj()->_typeId."&typeIdTarget=".$this->_typeId;}	//Affichage du conteneur d'un objet (File/Task/CalendarEvent/etc)
-		else								{return $url."&typeId=".$this->_typeId;}													//Affichage par défaut (News/Folder/etc)
+		if($display=="vue")					{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->typeId;}			//Vue dans une lightbox (Task/User/Contact/etc)
+		elseif($display=="edit")			{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->typeId;}		//Edition un objet
+		elseif($display=="delete")			{return "?ctrl=object&action=delete&typeId=".$this->typeId;}								//Suppression d'un objet via "actionDelete()"
+		elseif(static::isInContainer())		{return $url."&typeId=".$this->containerObj()->typeId."&typeIdTarget=".$this->typeId;}	//Affichage du conteneur d'un objet (File/Task/CalendarEvent/etc)
+		else								{return $url."&typeId=".$this->typeId;}													//Affichage par défaut (News/Folder/etc)
 	}
 
 	/********************************************************************************************************
@@ -417,7 +416,7 @@ class MdlObject
 	/********************************************************************************************************
 	 * LIEN POUR AFFICHER LA VUE DE L'OBJET
 	*********************************************************************************************************/
-	public function openVue()
+	public function lightboxVue()
 	{
 		return "lightboxOpen('".$this->getUrl("vue")."');";
 	}
@@ -557,7 +556,7 @@ class MdlObject
 		if(Req::isParam("notifMail") || !empty($addUserIds)){
 			////	Sujet
 			$tradSubject=($this->isNew() || $this->isNewRecord())  ?  "MAIL_elemCreatedBy"  :  "MAIL_elemModifiedBy";//Ex: "Fichier créé par Paul"
-			$subject=ucfirst($this->tradObject($tradSubject))." ".Ctrl::$curUser->getLabel();
+			$subject=ucfirst($this->tradObj($tradSubject))." ".Ctrl::$curUser->getLabel();
 			////	Message : label/description de l'objet
 			$descriptionLabel=in_array('description',static::$requiredFields);			//Label = description (champ principal)
 			if(!empty($specificLabel))			{$message=$specificLabel;}				//Nom des fichiers uploadés, etc
@@ -723,34 +722,26 @@ class MdlObject
 		}else{																											//USER
 			if($isModif==true && !empty($this->_idUserModif))	{$objUser=Ctrl::getObj("user",$this->_idUserModif);}	//Auteur de la modif
 			else												{$objUser=Ctrl::getObj("user",$this->_idUser);}			//Auteur de la création
-			if($profileImg==true)	{$autorLabel=$objUser->profileImg(false,true).' &nbsp;'.$objUser->getLabel();}		//Image + Label
+			if($profileImg==true)	{$autorLabel=$objUser->tagProfileImg(false,true).' &nbsp;'.$objUser->getLabel();}	//Image + Label
 			else					{$autorLabel=$objUser->getLabel();}													//Label uniquement
-			$autorLabel='<span onclick="'.$objUser->openVue().'">'.$autorLabel.'</span>';  								//Lien vers le profil de l'user
+			$autorLabel='<span onclick="'.$objUser->lightboxVue().'">'.$autorLabel.'</span>';  							//Lien vers le profil de l'user
 		}
 		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;				//Date de créa/modif
 		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">&nbsp;'.Txt::dateLabel($dateEdit,"labelFull");	//Garder "&nbsp;" au cas où <img> est masqué
 	}
 
 	/********************************************************************************************************
-	 * LIBELLE DE L'OBJET
+	 * AFFICHE UN TEXT TRADUIT EN FONCTION DU TYPE DE L'OBJET COURANT
 	 ********************************************************************************************************/
-	public function tradObject($tradKey)
+	public function tradObj($tradKey)
 	{
-		////	Traduction principale
-		$trad=Txt::trad($tradKey);
-		$objType=static::objectType;
-		////	Label de l'objet  (ex:  --OBJ_LABEL-->actualité  ou  --OBJ_LABEL_TO-->à l'actualité)
-		$trad=str_replace(["--OBJ_LABEL--","--OBJ_LABEL_TO--"], [Txt::trad("OBJ_".$objType),Txt::trad("OBJ_".$objType."_TO")], $trad);
-		////	Label du contenu d'un objet conteneur  (ex: "Accès au fichier")
-		if(static::isInContainer()){
-			$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".$objType."_CONTENT"), $trad);
-		}
-		////	Label du conteneur  (ex: "Accès au dossier de fichiers")
-		elseif(static::isContainer()){
+		$type=static::objectType;																												// Type de l'objet courant
+		$trad=str_replace(["--OBJ_LABEL--","--OBJ_LABEL_TO--"], [Txt::trad("OBJ_".$type),Txt::trad("OBJ_".$type."_TO")], Txt::trad($tradKey));	// Label de l'objet  (ex: OBJ_LABEL > "actualité" ou OBJ_LABEL_TO > "à l'actualité")
+		if(static::isInContainer())	{$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".$type."_CONTENT"), $trad);}					// Label du contenu d'un conteneur  (ex: "Accès au fichier")
+		elseif(static::isContainer()){																											// Label du conteneur  (ex: "Accès au dossier de fichiers")
 			$MdlObjectContent=static::MdlObjectContent;
 			$trad=str_replace("--OBJ_LABEL_CONTENT--", Txt::trad("OBJ_".$MdlObjectContent::objectType."_CONTENT"), $trad);
 		}
-		////	Retourne la trad
 		return $trad;
 	}
 
@@ -764,25 +755,6 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * FICHIERS JOINTS : INFOS SUR UN FICHIER
-	 ********************************************************************************************************/
-	public static function attachedFileInfos($file)
-	{
-		if(!empty($file)){
-			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}				//Si besoin, récupère les infos en bdd
-			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);									//Path/chemin réel du fichier
-			if(is_file($file["path"])){																								//Vérifie que le fichier est bien accessible
-				$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
-				if(Req::isMobileApp())  {$file["urlDownload"]=CtrlMisc::urlDownloadMobileApp($file["urlDownload"],$file["name"]);}	//Url de download via CtrlMisc
-				$file["parentObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
-				$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier ou de l'image (cf "actionAttachedFileDisplay()")
-				if(File::isType("editorImage",$file["name"]))  {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images intégrées aux emails (cf "descriptionMail()")
-				return $file;
-			}
-		}
-	}
-
-	/********************************************************************************************************
 	 * FICHIERS JOINTS : URL D'AFFICHAGE D'UN FICHIER  (cf "actionAttachedFileDisplay()")
 	 ********************************************************************************************************/
 	public static function attachedFileDisplayUrl($fileId, $fileName)
@@ -791,36 +763,52 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * FICHIERS JOINTS : LISTE LES FICHIERS JOINTS
+	 * FICHIERS JOINTS : INFOS SUR UN FICHIER
+	 ********************************************************************************************************/
+	public static function attachedFileInfos($file)
+	{
+		if(!empty($file)){
+			if(is_numeric($file))   {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}			//Récupère au besoin les infos en bdd
+			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);								//Path/chemin réel du fichier
+			$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
+			$file["parentObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
+			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier/image (cf "actionAttachedFileDisplay()")
+			if(Req::isMobileApp())   {$file["urlDownload"]=CtrlMisc::urlDownloadMobileApp($file["urlDownload"],$file["name"]);}	//Url de download via CtrlMisc
+			if(File::isType("editorImage",$file["name"]))   {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images dans les emails (cf "descriptionMail()")
+			return $file;
+		}
+	}
+
+	/********************************************************************************************************
+	 * FICHIERS JOINTS : ARRAY DES FICHIERS JOINTS
 	 ********************************************************************************************************/
 	public function attachedFileList()
 	{
 		if($this->_attachedFileList===null){
-			if(static::hasAttachedFiles!==true)  {$this->_attachedFileList==[];}
-			else{
-				$this->_attachedFileList=Db::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);	//Récupère les fichiers joints de l'objet en BDD
-				foreach($this->_attachedFileList as $key=>$tmpFile)  {$this->_attachedFileList[$key]=self::attachedFileInfos($tmpFile);}						//Ajoute le "path" et autres infos de chaque fichier joint
-			}
+			//// Récupère les fichiers joints en BDD. Ajoute les infos "path", "urlDownload", etc
+			if(static::hasAttachedFiles==true){
+				$this->_attachedFileList=Db::getTab("SELECT * FROM ap_objectAttachedFile WHERE objectType='".static::objectType."' AND _idObject=".$this->_id);	
+				foreach($this->_attachedFileList as $key=>$tmpFile)  {$this->_attachedFileList[$key]=self::attachedFileInfos($tmpFile);}
+			} else {$this->_attachedFileList==[];}
 		}
 		return (array)$this->_attachedFileList;
 	}
 
 	/********************************************************************************************************
-	 * FICHIERS JOINTS : AFFICHE LES FICHIERS JOINTS  (dans un .menuContext OU .objContainer)
+	 * FICHIERS JOINTS : MENU DES FICHIERS JOINTS  (cf menuContext & Co)
 	 ********************************************************************************************************/
-	public function attachedFileMenu($separator="<hr>")
+	public function attachedFileMenu($separator=true)
 	{
-		if($this->_attachedFileMenu===null){
-			$this->_attachedFileMenu="";
+		if(!empty($this->attachedFileList())){
+			$ListMenu="";
 			foreach($this->attachedFileList() as $tmpFile){
-				if(!empty($tmpFile["urlDownload"])){
-					$this->_attachedFileMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["urlDownload"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
-													<img src="app/img/attachment.png"> '.$tmpFile["name"].'
-												</div>';
-				}
+				$ListMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["urlDownload"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
+								<img src="app/img/attachment.png"> '.$tmpFile["name"].'
+							</div>';
 			}
+			$separator=($separator==true) ? "<hr>" : null; 
+			return $separator.$ListMenu;
 		}
-		if($this->_attachedFileMenu)  {return $separator.$this->_attachedFileMenu;}
 	}
 
 	/********************************************************************************************************

@@ -25,7 +25,7 @@ async function menuSelectAction(urlRedir, lightbox)
 {
 	let objectsSelector=".objSelectCheckbox:checked";																	// Sélecteur JQuery des objets
 	if($(objectsSelector).length>0){																					// Vérif s'il y a des objets sélectionnés
-		let confirmContent=$(objectsSelector).length+" <?= Txt::trad("confirmDeleteSelectNb") ?>";						// Nb d'objets sélectionnés (ex: "55 éléments sélectionnés")
+		let confirmDetails=$(objectsSelector).length+" <?= Txt::trad("confirmDeleteSelectNb") ?>";						// Nb d'objets sélectionnés (ex: "55 éléments sélectionnés")
 		let curTypeId=null;																								// Init curTypeId
 		$(objectsSelector).each(function(){																				// Parcourt chaque objet sélectionné
 			let typeId=this.value.split("-");																			// TypeId en tableau (ex: "file-22" -> ["file",22])
@@ -34,11 +34,11 @@ async function menuSelectAction(urlRedir, lightbox)
 		});
 		//// Désaffectation d'users à l'espace courant
 		if(/deleteFromCurSpace/i.test(urlRedir)){
-			if(await confirmAlt("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?>",confirmContent)==false)  {return false;}
+			if(await confirmAlt("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?>",confirmDetails)==false)  {return false;}
 		}
 		//// Suppression d'objets
 		else if(/delete/i.test(urlRedir)){
-			if(await confirmDelete(urlRedir,confirmContent)==false)  {return false;}
+			if(await confirmDelete(urlRedir,confirmDetails)==false)  {return false;}
 		}
 		//// Redirection (ex: download d'archive)
 		else if(typeof lightbox=="undefined" && await confirmAlt())
@@ -70,7 +70,7 @@ async function menuSelectAction(urlRedir, lightbox)
 
 	<!--"DEPLACER VERS UN AUTRE DOSSIER"-->
 	<?php if($folderMoveOption==true){ ?>
-	<div class="menuLine" onclick="menuSelectAction('?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->_typeId ?>',true)"><div class="menuIcon"><img src="app/img/folder/folderMove.png"></div><div><?= Txt::trad("changeFolder") ?></div></div>
+	<div class="menuLine" onclick="menuSelectAction('?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->typeId ?>',true)"><div class="menuIcon"><img src="app/img/folder/folderMove.png"></div><div><?= Txt::trad("changeFolder") ?></div></div>
 	<?php } ?>
 
 	<!--"DESAFFECTER DE L'ESPACE" (user)-->

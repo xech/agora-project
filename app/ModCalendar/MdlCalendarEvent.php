@@ -40,7 +40,7 @@ class MdlCalendarEvent extends MdlObject
 			$this->timeEnd=strtotime($this->dateEnd);
 		}
 		//Couleur du background de l'evt, en fonction de la categorie (gris par défaut)
-		$this->eventColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555";
+		$this->evtColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555";
 		//Visibilité par défaut
 		if(empty($this->contentVisible))  {$this->contentVisible="public";}
 		//Masque le détail aux users n'ayant qu'un accès en lecture (voir aucun accès)
@@ -141,30 +141,34 @@ class MdlCalendarEvent extends MdlObject
 	 ********************************************************************************************************/
 	public function contextMenu($options=null)
 	{
-		////	Options  "Supprimer l'événement" && "Enlever l'événement de cet agenda"
-		if(!empty($options["_idCal"])){
-			if($this->deleteRight()){
-				$options["deleteLabel"]=Txt::trad("CALENDAR_evtDelete");
-			}
-			if($this->affectationDeleteRight($options["_idCal"]) && count($this->affectedCalendars())>=2){
-				$options["specificOptions"][]=[
-					"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&_idCalDeleteAffectation=".$options["_idCal"]."')",
-					"iconSrc"=>"calendar/deleteEvtCal.png",
-					"label"=>Txt::trad("CALENDAR_evtDeleteCal")
-				];
-			}			
+		////	"Retirer l'événement de l'agenda BIDULE"
+		if(!empty($options["_idCal"])  &&  $this->affectationDeleteRight($options["_idCal"])  &&  count($this->affectedCalendars())>=2){
+			$curCalendar=Ctrl::getObj("calendar",$options["_idCal"]);
+			$options["objOptions"][]=[
+				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&_idCalDeleteAffectation=".$curCalendar->_id."')",
+				"iconSrc"=>"deleteRemove.png",
+				"label"=>Txt::trad("CALENDAR_evtRemoveFromCal").' <i>'.$curCalendar->getLabel().'</i>'
+			];
 		}
-		////	Option "Enlever l'événement à cette date" (cf. Evt répétés)
-		if(!empty($options["evtDeleteTime"]) && !empty($this->periodType) && $this->editRight()){
-			$options["specificOptions"][]=[
+		////	"Retirer l'événement de cette date" (cf. Evt répétés)
+		if(!empty($options["evtDeleteTime"])  &&  !empty($this->periodType)  &&  $this->editRight()){
+			$options["objOptions"][]=[
 				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date('Y-m-d',$options["evtDeleteTime"])."')",
-				"iconSrc"=>"calendar/deleteEvtCal.png",
-				"label"=>Txt::trad("CALENDAR_evtDeleteDate")
+				"iconSrc"=>"deleteRemove.png",
+				"label"=>Txt::trad("CALENDAR_evtRemoveFromDate")
 			];
 		}
 		////	Agendas où est affecté l'evenement  &&  Retourne le menu
-		$options["specificLabels"][]=["label"=>$this->affectedCalendarsLabel()];
-		return parent::contextMenu($options);															
+		$options["objOptions"][]=[
+			"separator"=>"<hr>",
+			"iconSrc"=>"calendar/iconSmall.png",
+			"label"=>$this->affectedCalendarsLabel()
+		];
+		////	"Modifier l'événement et ses affectations aux agendas"  et  "Supprimer l'événement"
+		$options["editLabel"]=Txt::trad("CALENDAR_evtEdit");
+		$options["deleteLabel"]=Txt::trad("CALENDAR_evtDelete");
+		////	Menu parent
+		return parent::contextMenu($options);
 	}
 
 	/********************************************************************************************************
@@ -206,29 +210,28 @@ class MdlCalendarEvent extends MdlObject
 	{
 		//// Attributs de l'evt
 		$attrList=[
-			'eventColor'	=>$this->eventColor,
-			'timeBegin'		=>$this->timeBegin,
-			'timeEnd'		=>$this->timeEnd,
-			'dayTimeBegin'	=>$dayTimeBegin,
-			'dayTimeEnd'	=>$dayTimeEnd,
-			'dayYmd'		=>date('Y-m-d',$dayTimeBegin),					//Date à laquelle l'evt est affiché
-			'pastEvent'		=>($this->timeEnd < time() ? 'true' : 'false'),	//Evt dans le passé ?
-			'isDraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Evt "Draggable" : sauf si répété ou sur plusieurs jours
+			'data-evtColor'			=>$this->evtColor,
+			'data-evtTimeBegin'		=>$this->timeBegin,
+			'data-evtTimeEnd'		=>$this->timeEnd,
+			'data-evtDateLabel'		=>Txt::dateLabel($this->timeBegin,"labelFull"),
+			'data-evtDayYmd'		=>date('Y-m-d',$dayTimeBegin),
+			'data-evtIsPast'		=>($this->timeEnd < time() ? 'true' : 'false'),
+			'data-evtIsDraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Evt "Draggable" si editable et non périodique
 		];
 		//// Time depuis le début du jour && Durée de l'evt sur la journée
-		$evtDayBefore=($this->timeBegin < $dayTimeBegin);																	//Evt commence avant le jour courant ?
-		$evtDayAfter =($this->timeEnd > $dayTimeEnd);																		//Evt termine après le jour courant ?
-		$attrList['timeSinceDayBegin']=($evtDayBefore==false)  ?  ($this->timeBegin-$dayTimeBegin)  :  0;
-		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['timeDuration']=86400;}									//Affiche toute la journée
-		elseif($evtDayBefore==true)						{$attrList['timeDuration']=($this->timeEnd - $dayTimeBegin);}		//Affiche l'evt à partir de 0h00
-		elseif($evtDayAfter==true)						{$attrList['timeDuration']=($dayTimeEnd - $this->timeBegin);}		//Affiche l'evt jusqu'à 23h59
-		else											{$attrList['timeDuration']=($this->timeEnd - $this->timeBegin);}	//Affichage normal
+		$evtDayBefore=($this->timeBegin < $dayTimeBegin);																			//Evt commence avant le jour courant ?
+		$evtDayAfter =($this->timeEnd > $dayTimeEnd);																				//Evt termine après le jour courant ?
+		$attrList['data-evtTimeSinceDayBegin']=($evtDayBefore==false)  ?  ($this->timeBegin-$dayTimeBegin)  :  0;					//Time entre le début du jour et le début de l'evt
+		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['data-evtTimeDuration']=86400;}									//Affiche toute la journée
+		elseif($evtDayBefore==true)						{$attrList['data-evtTimeDuration']=($this->timeEnd - $dayTimeBegin);}		//Affiche l'evt à partir de 0h00
+		elseif($evtDayAfter==true)						{$attrList['data-evtTimeDuration']=($dayTimeEnd - $this->timeBegin);}		//Affiche l'evt jusqu'à 23h59
+		else											{$attrList['data-evtTimeDuration']=($this->timeEnd - $this->timeBegin);}	//Affichage normal
 		//// Retourne un tableau (cf. "actionEvtChangeTime()")
-		if($return=="array")  {return $attrList;}
-		//// Retourne un "string" (ex: <div data-eventColor="#500">)
+		if($return=="array")	{return $attrList;}
+		//// Retourne un "string"
 		else{
 			$attrString='';
-			foreach($attrList as $key=>$value)  {$attrString.=' data-'.$key.'="'.$value.'" ';}
+			foreach($attrList as $attrKey=>$attrValue)  {$attrString.=' '.$attrKey.'="'.$attrValue.'" ';}
 			return $attrString;
 		}
 	}
@@ -311,9 +314,9 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * VÉRIFIE S'IL S'AGIT D'UN EVENEMENT PASSÉ (sans périodicité ou fin de périodicité passée)
+	 * VÉRIFIE SI L'EVENEMENT EST DANS LE PASSÉ (sans périodicité ou fin de périodicité passée)
 	 ********************************************************************************************************/
-	public function isPastEvent($timeMax)
+	public function evtIsPast($timeMax)
 	{
 		return (!empty($timeMax)  &&  strtotime($this->dateEnd) < $timeMax  &&  (empty($this->periodType) || (!empty($this->periodDateEnd) && strtotime($this->periodDateEnd) < $timeMax)));
 	}

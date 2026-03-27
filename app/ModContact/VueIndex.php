@@ -7,7 +7,7 @@
 			if(Ctrl::$curContainer->addContentRight()){
 				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlContact::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("CONTACT_addContact").'</div></div>
 					  <div class="menuLine" onclick="lightboxOpen(\''.MdlContactFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div>'.Txt::trad("addFolder").'</div></div>';
-				if(Ctrl::$curUser->isSpaceAdmin())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=contact&action=EditPersonsImportExport&typeId='.Ctrl::$curContainer->_typeId.'\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_contact").'</div></div>';}
+				if(Ctrl::$curUser->isSpaceAdmin())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=contact&action=vueImportExport&typeId='.Ctrl::$curContainer->typeId.'\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_contact").'</div></div>';}
 				echo "<hr>";
 			}
 			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
@@ -23,15 +23,15 @@
 		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew()).
 			 CtrlObject::vueFolders();
 		foreach($contactList as $tmpContact){
-			echo $tmpContact->objContainerMenu("objPerson").
+			echo $tmpContact->divContainerMenu("objPerson").
 				'<div class="objContainerScroll">
 					<div class="objContent">
-						<div class="objIcon">'.$tmpContact->profileImg(true,false).'</div>
-						<div class="objLabel" onclick="'.$tmpContact->openVue().'">
+						<div class="objIcon">'.$tmpContact->tagProfileImg(true,false).'</div>
+						<div class="objLabel" onclick="'.$tmpContact->lightboxVue().'">
 							<div class="personLabel">'.$tmpContact->getLabel("full").'</div>
 							'.$tmpContact->getFields("index").'
 						</div>
-						<div class="objAutorDate">'.$tmpContact->autorDate().'</div>
+						<div class="objAutorDate">'.$tmpContact->autorDate(true).'</div>
 					</div>
 				</div>
 			</div>';

@@ -6,13 +6,13 @@
 .objBlocks .thumbLandscape img									{height:100%;}																		/*images "fullsize" paysage : 100% de haut*/
 .objBlocks .thumbPortrait img									{width:100%; margin-top:-45%!important;}											/*images "fullsize" portrait : 100% de large + recentré*/
 .objBlocks .hasThumb img										{margin-top:0px!important;}															/*vignettes : pas de margin-top pour les images*/
-.objBlocks .hasThumb .objMenuContextFloat						{filter:contrast(200%);}															/*vignettes : met en avant le menu context*/
-.objBlocks .objContainerSelect									{border:2px solid rgba(255, 139, 85, 1);}															/*surcharge la sélection de fichiers avec vignette*/
+.objBlocks .hasThumb .menuContextLaunchFloat					{filter:contrast(200%);}															/*vignettes : surligne l'icone burger*/
+.objBlocks .objContainerSelect									{border:2px solid rgba(255, 139, 85, 1);}											/*surcharge la sélection de fichiers avec vignette*/
 .objBlocks .objLabel											{position:absolute; bottom:0px; width:100%; padding:8px 4px; text-align:center;}	/*label "bandeau" d'un dossier/fichier (modFile)*/
 .objBlocks .objFiles .objLabel a								{font-size:0.95rem; cursor:url('app/img/download.png'),default;}					/*nom des fichiers*/
 .objBlocks .hasThumb .objLabel									{background:<?= Ctrl::$agora->skin ?>; border-radius:0px 0px 4px 4px;}				/*images/vignettes pdf : background des labels*/
 .objLines .objLabel>span										{padding:10px 50px 10px 0px;}														/*Zone clickable élargie*/
-.versionsMenu													{margin-left:20px;}																	/*bouton "versions de fichiers" : cf. "versionsMenu()"*/
+.objLabel .versionsMenu											{margin-left:10px;}																	/*icone "versionsMenu()"*/
 </style>
 
 
@@ -44,13 +44,13 @@
 		////	LISTE DES FICHIERS
 		foreach($filesList as $tmpFile){
 			$containerClass=$tmpFile->hasTumb() ? "hasThumb" : null;
-			echo $tmpFile->objContainerMenu($containerClass);
+			echo $tmpFile->divContainerMenu($containerClass);
 		?>
 				<div class="objContent objFiles">
 					<div class="objIcon <?= $tmpFile->iconClass ?>" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="typeIdTarget"></div>
 					<div class="objLabel" <?= Txt::tooltip($tmpFile->labelTooltip) ?>><a <?= $tmpFile->labelLink ?> ><?= Txt::reduce($tmpFile->name,$nameLength).$tmpFile->versionsMenu("icon") ?></a></div>
 					<div class="objDetails"><?= File::sizeLabel($tmpFile->octetSize) ?></div>
-					<div class="objAutorDate"><?= $tmpFile->autorDate() ?></div>
+					<div class="objAutorDate"><?= $tmpFile->autorDate(true) ?></div>
 				</div>
 			</div>
 		<?php

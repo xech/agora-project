@@ -1000,6 +1000,12 @@ class DbUpdate extends Db
 				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`, ".self::format($newsSearch).", ".self::format($newsReplace).") ");
 			}
 
+			if(self::updateVersion("26.4.0"))
+			{
+				self::query("ALTER TABLE `ap_file` MODIFY `octetSize` BIGINT");
+				self::query("ALTER TABLE `ap_fileVersion` MODIFY `octetSize` BIGINT");
+			}
+
 			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			////////////////////////////////////////
 			////////////////////////////////////////

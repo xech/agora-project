@@ -18,7 +18,7 @@ ready(function(){
 	 *	INIT L'AFFICHAGE DE L'ARBORESCENCE DE CONTACTS
 	 ********************************************************************************************************/
 	$(".vMailsBlock").each(function(){
-		var folderTreeLevel=$(this).attr("data-folderTreeLevel");
+		var folderTreeLevel=this.getAttribute("data-folderTreeLevel");
 		if(typeof folderTreeLevel!=="undefined" && folderTreeLevel>0)
 			{$(this).css("padding-left",(folderTreeLevel*18)+"px");}
 	});
@@ -27,7 +27,7 @@ ready(function(){
 	 *  AFFICHE/MASQUE LES USERS D'UN ESPACE (SAUF ESPACE COURANT)
 	 ********************************************************************************************************/
 	$(".vMailsLabel").on("click",function(){
-		$("#mailsContainer"+$(this).attr("data-typeId")).slideToggle();
+		$("#mailsContainer"+this.getAttribute("data-typeId")).slideToggle();
 	});
 	
 	/********************************************************************************************************
@@ -77,17 +77,19 @@ ready(function(){
 .vMailsMenu img[src*=check]			{margin-right:4px;}
 /*formulaire principal*/
 #pageContent [name='title']			{width:100%; height:35px; margin-bottom:20px;}
-#mailOptions						{display:table; width:100%; margin-top:20px;}
-#mailOptions>div					{display:table-cell;}/*options et bouton "Envoyer"*/
-#mailOptions>div>div				{margin-top:10px;}/*lignes des options*/
+#mailOptions						{display:table; width:100%; margin-top:30px;}/*tableau d'options*/
+#mailOptions>div					{display:table-cell; width:33%; vertical-align:top;}/*colonnes d'options et bouton "Envoyer"*/
+#mailOptions>div>div				{padding-block:5px;}/*ligne d'option*/
 #mailOptions img[src*=dependency]	{display:none;}
-.submitButtonMain					{text-align:right;}
-.submitButtonMain button			{width:200px; height:50px;}
+.submitButtonMain					{text-align:right; margin-top:0px;}/*surcharge*/
+.submitButtonMain button			{width:220px; height:50px;}
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
-	#mailOptions, #mailOptions>div	{display:block;}
+	#mailOptions, #mailOptions>div	{display:block; width:100%;}
+	#mailOptions>div>div			{padding:10px 5px;}/*ligne d'option*/
+.submitButtonMain					{text-align:center; margin-block:30px;}/*surcharge*/
 }
 </style>
 
@@ -98,7 +100,7 @@ ready(function(){
 		<div id="moduleMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
 			<div id="recipientMainMenu" class="miscContainer" >
-				<div id="recipientLabel"><img src="app/img/mailBig.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
+				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS & CONTACTS
 				foreach($containerList as $tmpContainer)
@@ -106,12 +108,12 @@ ready(function(){
 					////	INIT
 					$cptPerson=0;
 					$tmpGroupsFields=$tmpPersonsFields=$tmpSwitchOption=null;
-					$mailsMenuClass=($tmpContainer->_typeId==Ctrl::$curSpace->_typeId)  ?  "vMailsMenuDisplay"  :  null;//par défaut, on n'affiche que les users de l'espace courant
+					$mailsMenuClass=($tmpContainer->typeId==Ctrl::$curSpace->typeId)  ?  "vMailsMenuDisplay"  :  null;//par défaut, on n'affiche que les users de l'espace courant
 					////	GROUPES D'USERS (prépare l'affichage)
 					if($tmpContainer::objectType=="space"){
 						foreach(MdlUserGroup::getGroups($tmpContainer) as $tmpGroup){
-							$tmpBoxId=$tmpContainer->_typeId.$tmpGroup->_typeId;
-							$tmpGroupsFields.='<div '.Txt::tooltip($tmpGroup->usersLabel).'><input type="checkbox" name="groupList[]" value="'.$tmpGroup->_typeId.'" id="'.$tmpBoxId.'"> <label for="'.$tmpBoxId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label></div>';
+							$tmpBoxId=$tmpContainer->typeId.$tmpGroup->typeId;
+							$tmpGroupsFields.='<div '.Txt::tooltip($tmpGroup->usersLabel).'><input type="checkbox" name="groupList[]" value="'.$tmpGroup->typeId.'" id="'.$tmpBoxId.'"> <label for="'.$tmpBoxId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label></div>';
 						}
 					}
 					////	PERSONNES DU CONTENEUR (prépare l'affichage)
@@ -123,24 +125,24 @@ ready(function(){
 							$personsChecked[$tmpPerson->mail]=$tmpPerson->mail;										//Indique qu'il est déjà sélectionné
 							$mailsMenuClass="vMailsMenuDisplay";													//Affiche le menu (si besoin)
 						}
-						$tmpBoxId=$tmpContainer->_typeId.$tmpPerson->_typeId;
+						$tmpBoxId=$tmpContainer->typeId.$tmpPerson->typeId;
 						$userMailTooltip=($tmpPerson->userMailDisplay())  ?  Txt::tooltip($tmpPerson->mail)  :  null;
-						$tmpPersonsFields.='<div '.$userMailTooltip.'><input type="checkbox" name="personList[]" value="'.$tmpPerson->_typeId.'" id="'.$tmpBoxId.'" '.$tmpPerson->mailChecked.'> <label for="'.$tmpBoxId.'">'.$tmpPerson->getLabel().'</label></div>';
+						$tmpPersonsFields.='<div '.$userMailTooltip.'><input type="checkbox" name="personList[]" value="'.$tmpPerson->typeId.'" id="'.$tmpBoxId.'" '.$tmpPerson->mailChecked.'> <label for="'.$tmpBoxId.'">'.$tmpPerson->getLabel().'</label></div>';
 						$cptPerson++;
 					}
 					////	BOUTON SWITCH LA SELECTION (5 pers. minimum)
 					if(count($tmpContainer->personList)>=5){
-						$boxSelector="'#mailsContainer".$tmpContainer->_typeId." input[name^=personList]'";
+						$boxSelector="'#mailsContainer".$tmpContainer->typeId." input[name^=personList]'";
 						$tmpSwitchOption='<div onclick="$('.$boxSelector.').prop(\'checked\',false).trigger(\'click\')"><img src="app/img/checkAll.png"> '.Txt::trad("selectAll").'</div>
 										  <div onclick="$('.$boxSelector.').trigger(\'click\')"><img src="app/img/checkSwitch.png"> '.Txt::trad("selectSwitch").'</div>';
 					}
 					////	AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
 					echo '<div class="vMailsBlock" '.($tmpContainer::isFolder==true?'data-folderTreeLevel="'.$tmpContainer->treeLevel.'"':null).'>
-							<div class="vMailsLabel sLink" data-typeId="'.$tmpContainer->_typeId.'">
+							<div class="vMailsLabel sLink" data-typeId="'.$tmpContainer->typeId.'">
 								<div><img src="app/img/mail/'.($tmpContainer::objectType=='space'?'user':'contact').'.png"></div>
 								<div>'.$tmpContainer->name.' <img src="app/img/arrowBottom.png"></div>
 							</div>
-							<div class="vMailsMenu '.$mailsMenuClass.'" id="mailsContainer'.$tmpContainer->_typeId.'">'.$tmpGroupsFields.$tmpPersonsFields.$tmpSwitchOption.'</div>
+							<div class="vMailsMenu '.$mailsMenuClass.'" id="mailsContainer'.$tmpContainer->typeId.'">'.$tmpGroupsFields.$tmpPersonsFields.$tmpSwitchOption.'</div>
 						</div>';
 				}
 				?>
@@ -176,7 +178,7 @@ ready(function(){
 						<?php
 						//// Ancien email rappelé via "reloadMailTypeId"  &  Bouton"Submit"
 						if(Req::isParam("reloadMailTypeId"))  {echo '<input type="hidden" name="reloadMailTypeId" value="'.Req::param("reloadMailTypeId").'">';}
-						echo Txt::submitButton("<img src='app/img/postMessage.png'> ".Txt::trad("MAIL_sendMail"));
+						echo Txt::submitButton("<img src='app/img/mailSend.png'> ".Txt::trad("MAIL_sendMail"));
 						?>
 					</div>
 				</div>

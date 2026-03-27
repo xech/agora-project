@@ -6,7 +6,7 @@
 <div class="menuLine">
 	<div class="menuIcon"><img src="app/img/sort.png"></div>
 	<div>
-		<span class="menuLauncher" for="objMenuSort<?= $objectType ?>"><?= Txt::trad("sortBy")." ".Txt::trad("SORT_".$curSortField) ?> <img src="app/img/sort<?= ucfirst($curSortValue)?>.png"></span>
+		<span class="menuContextLaunch" for="objMenuSort<?= $objectType ?>"><?= Txt::trad("sortBy")." ".Txt::trad("SORT_".$curSortField) ?> <img src="app/img/sort<?= ucfirst($curSortValue)?>.png"></span>
 		<div  class="menuContext" id="objMenuSort<?= $objectType ?>">
 			<?php
 			//// Affiche chaque option de Tri

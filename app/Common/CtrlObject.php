@@ -60,7 +60,7 @@ class CtrlObject extends Ctrl
 	public static function actionFolderMove()
 	{
 		//Validation du formulaire
-		if(Req::isParam("formValidate") && Req::isParam("newFolderId")){
+		if(Req::isParam(["formValidate","newFolderId"])){
 			foreach(self::getCurObjects() as $tmpObj)  {$tmpObj->folderMove(Req::param("newFolderId"));}
 			static::lightboxRedir();
 		}

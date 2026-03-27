@@ -1,5 +1,5 @@
-<link rel="stylesheet" type="text/css" href="app/js/datatables_2.3.5/datatables.min.css">
-<script type="text/javascript" src="app/js/datatables_2.3.5/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="app/js/datatables_2.3.7/datatables.min.css">
+<script type="text/javascript" src="app/js/datatables_2.3.7/datatables.min.js"></script>
 
 <script>
 /**********************************************************************************************************

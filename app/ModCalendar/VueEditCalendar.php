@@ -9,9 +9,9 @@ ready(function(){
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
 function mainFormControl(){
 	return new Promise((resolve)=>{
-		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->_typeId ?>&controledName="+encodeURIComponent($("[name='title']").val());
+		var ajaxUrl="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&controledName="+encodeURIComponent($("[name='title']").val());
 		$.ajax(ajaxUrl).done(function(result){
-			if(/duplicateName/i.test(result))	{notify("<?= Txt::trad("NOTIF_duplicateName") ?>");  resolve(false);}//"Un element avec le même nom existe déjà"
+			if(/duplicateName/i.test(result))	{resolve(false);  notify("<?= Txt::trad("NOTIF_duplicateName") ?>");}//"..le nom existe déjà"
 			else								{resolve(true);}
 		});
 	});

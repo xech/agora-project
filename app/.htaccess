@@ -1,20 +1,13 @@
-####	CONTROLE DE LA MISE EN CACHE
+####	CONTROLE DU CACHE
 <IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresDefault "access plus 2 days"
-
-    # Cache des images (2 jours)
-    ExpiresByType image/jpg     "access plus 2 days"
-    ExpiresByType image/jpeg    "access plus 2 days"
-    ExpiresByType image/png     "access plus 2 days"
-    ExpiresByType image/gif     "access plus 2 days"
-    ExpiresByType image/webp    "access plus 2 days"
-    ExpiresByType image/svg+xml "access plus 2 days"
-    ExpiresByType image/ico     "access plus 2 days"
-</IfModule>
-
 <IfModule mod_headers.c>
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
-        Header set Cache-Control "public, max-age=172800, must-revalidate"
+    ExpiresActive On
+    ExpiresByType application/javascript    "access plus 2 days"
+    ExpiresByType text/javascript           "access plus 2 days"
+    ExpiresByType image/*                   "access plus 2 days"
+
+    <FilesMatch "\.(?:jpe?g|png|gif|webp|svg|ico)$">
+        Header set Cache-Control "public, max-age=172800, immutable"
     </FilesMatch>
+</IfModule>
 </IfModule>
