@@ -1,21 +1,20 @@
 <script>
-/********************************************************************************************************
+/************************************************************************************************************
  *	WIDTH DE LA TIMELINE (lancé via "mainDisplay()" cf "app.js")
-*******************************************************************************************/
+*************************************************************************************************************/
 function moduleDisplay(){
-	$(".vTimelineMain").outerWidth(containerWidth,true);
+	$(".vTimelineMain").outerWidth($("#pageContent").width(),true).show();
 }
 </script>
 
 
 <style>
 /*LABEL/DETAILS DES TACHES*/
-.vObjTasks .objLabelInfos				{margin-top:10px; font-size:0.95rem;}		/*.categoryLabel et .priorityLabel*/
-.vObjTasks .objLabelInfos span			{display:inline-block; margin-right:10px;}
+.vObjTasks .objLabelDetail				{margin-top:5px; font-size:0.9rem;}		/*.categoryLabel et .priorityLabel*/
+.vObjTasks .objLabelDetail span			{display:inline-block; margin-right:10px;}
 .vObjTasks .categoryColor				{width:14px; height:14px;}					/*.categoryColor idem .priorityLabel*/
 .objFolders .progressBar				{margin-top:5px;}							/*Dossiers : margin des .progressBar avec le nb d'elements du dossier*/
-.objLines .objContainer					{height:70px;}								/*Line : surcharge la hauteur*/
-.objLines .vObjTasks .progressBar		{margin-left:15px;}							/*Line : affichage des .progressBar*/
+.objLines .vObjTasks .progressBar		{margin-left:15px; padding:2px 5px;}		/*Line : affichage des .progressBar*/
 .objBlocks .vObjTasks .objIconOpacity	{display:none;}								/*Block : masque l'icone*/
 .objBlocks .vObjTasks .objDetails		{display:table-cell!important; width:40px; text-align:right;}	/*Block : affiche les .objDetails*/
 .objBlocks .vObjTasks .progressBar		{margin-bottom:5px; padding:2px 5px;}		/*Block : .progressBar au format icone -> sans label*/
@@ -24,7 +23,7 @@ function moduleDisplay(){
 
 /*TIMELINE*/
 .vTimelineSeparator						{visibility:hidden; width:100%;}
-.vTimelineMain							{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px;}
+.vTimelineMain							{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px; display:none;}/*masqué par défaut*/
 .vTimelineMain table					{border-collapse:collapse;}
 .vTimelineMain td						{vertical-align:middle; white-space:nowrap;}
 .vTimelineMonths						{padding-bottom:8px;}/*Label des mois*/
@@ -45,9 +44,9 @@ function moduleDisplay(){
 
 
 <div id="pageFull">
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<?= MdlTask::menuSelect() ?>
-		<div class="miscContainer">
+		<div class="miscContent">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
@@ -72,12 +71,12 @@ function moduleDisplay(){
 		foreach($tasksList as $tmpTask){
 			echo $tmpTask->divContainerMenu();
 		?>
-				<div class="objContainerScroll">
-					<div class="objContent vObjTasks">
+				<div class="objContentScroll">
+					<div class="objContentTab vObjTasks">
 						<div class="objIcon objIconOpacity"><img src="app/img/task/iconSmall.png"></div>
 						<div class="objLabel" onclick="<?= $tmpTask->lightboxVue() ?>">
 							<?= ucfirst($tmpTask->title) ?>
-							<div class="objLabelInfos"><?= $tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
+							<div class="objLabelDetail"><?= $tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
 						</div>
 						<div class="objDetails"><?= $tmpTask->responsiblePersons().$tmpTask->progressAdvancement().$tmpTask->progressBeginEnd() ?></div>
 						<div class="objAutorDate"><?= $tmpTask->autorDate(true) ?></div>
@@ -90,14 +89,14 @@ function moduleDisplay(){
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($tasksList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><img src="app/img/plus.png"> '.Txt::trad("TASK_addTask").'</div>'  :  null;
-			echo '<div class="miscContainer emptyContainer">'.Txt::trad("TASK_noTask").$addElement.'</div>';
+			echo '<div class="miscContent emptyContent">'.Txt::trad("TASK_noTask").$addElement.'</div>';
 		}
 
 		////	TIMELINE
 		if(!empty($timelineBegin)){
 			//// INIT LA TIMELINE
 			echo '<hr class="vTimelineSeparator">
-				  <div class="vTimelineMain miscContainer"><table>';
+				  <div class="vTimelineMain miscContent"><table>';
 					//// HEADER MOIS & JOURS
 					$timelineHeaderMonths=$timelineHeaderDays=null;
 					foreach($timelineDays as $tmpDay){

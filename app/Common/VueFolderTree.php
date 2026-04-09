@@ -60,6 +60,7 @@ function folderMove(newFolderId){
 .vTreeFolderIcon					{white-space:nowrap;}									/*icone du dossier : pas de retour à la ligne*/
 .vTreeFolderIcon .vIconOpen			{visibility:hidden; margin-right:3px;}					/*icone d'ouverture du dossier (optionnel)*/
 .vTreeFolder:first-child .vIconOpen	{display:none!important;}								/*dossier root : pas d'icone de d'ouverture du dossier*/
+.vTreeFolderLabel.linkSelect		{font-weight:bold;}
 .vIconOpened						{transform:rotate(45deg); filter:brightness(0);}
 
 /*AFFICHAGE RESPONSIVE*/

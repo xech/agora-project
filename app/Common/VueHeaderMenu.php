@@ -1,11 +1,11 @@
 <style>
 :root										{--headerMenuBorder:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
-#headerMenuLeft								{padding-left:75px; padding-right:20px; line-height:45px; white-space:nowrap;}/*"padding-left" pour afficher "#headerMainLogo" + "line-height" idem "#headerBar" + "nowrap" des labels sur une seule ligne (ne pas éclater l'affichage!)*/
+#headerBarLeft								{padding-left:75px; padding-right:20px; line-height:45px; white-space:nowrap;}/*padding-left : cf. #headerMainLogo + line-height idem #headerBar + nowrap des labels sur une seule ligne (ne pas éclater l'affichage!)*/
+#headerBarLeft img[src*=arrowRight]			{margin-left:5px;}
 #headerMobileModule							{display:none;}
-#headerMainLogo								{content:url('app/img/logo.png'); position:absolute; left:0px; top:2px;}
+#headerMainLogo								{position:absolute; left:0px; top:5px;}
 #headerUserLabel, #headerSpaceLabel			{display:inline-block; max-width:250px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
-#headerMenuLeft img[src*=arrowRight]		{margin-left:5px;}
-#headerBar>#menuMainContext					{display:none; padding:5px; box-shadow:0px 0px 15px black; border-radius:10px; top:5px!important; left:5px!important;}/*surcharge "#headerBar>div"*/
+#headerBar>div#menuMainContext				{display:none; padding:5px; border-radius:20px; top:5px!important; left:5px!important;}/*surcharge "#headerBar>div"*/
 #menuMainTab								{display:table;}
 #menuMainTab>div							{display:table-cell; padding:5px;}
 #menuMainTab>div:not(:first-child)			{border-left:var(--headerMenuBorder);}/*Colonnes du menu principal*/
@@ -14,24 +14,25 @@
 #menuMainTab .menuLine:hover .editButton	{visibility:visible;}
 .menuMainShortcut							{max-height:24px; margin-right:10px;}
 #menuMainOmnispace							{border-top:var(--headerMenuBorder); text-align:right; padding-top:10px;}
-.vHeaderModule								{display:inline-block; margin:0px; padding:4px; text-align:center; vertical-align:middle; border:1px solid transparent; border-radius:10px; cursor:pointer;}
+.vHeaderModule								{display:inline-block; margin:0px; padding:6px; border:1px solid transparent; border-radius:20px; text-align:center; vertical-align:middle; cursor:pointer;}
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
+.vHeaderModule img							{margin-inline:3px;}
+.vHeaderModuleCurrent						{font-weight:bold;}
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (min-width:1025px) and (max-width:1350px){
 	.vHeaderModule label					{margin-top:7px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	#headerMenuLeft							{padding-left:40px; padding-right:10px;}/*"padding-left" en fonction du width du "logoXSmall.png"*/
-	#headerMenuLeft, #headerMobileModule	{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
-	#headerMainLogo							{content:url('app/img/logoXSmall.png'); left:0px; top:10px;}
+	#headerBarLeft							{padding-inline:10px;}
+	#headerBarLeft, #headerMobileModule		{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
+	#headerMainLogo, #headerUserLabel		{display:none;}
 	#headerMobileModule>img					{max-height:30px;}
-	#headerUserLabel						{display:none;}
 	#headerSpaceLabel						{max-width:180px; text-transform:capitalize;}
 	#menuMainTab, #menuMainTab>div			{display:block; padding:0px; border:none!important;}/*cf. --headerMenuBorder*/
 	#menuMainTab .editButton				{visibility:visible;}/*tjs visible*/
-	#menuMobileMain .vHeaderModule			{display:inline-block; width:49%; margin:5px 0px; padding:5px; text-align:left; font-size:1.1rem;}/*Modules affichés dans "#menuMobileMain"*/
-	#headerRightMenu .vHeaderModule			{display:none;}/*Modules masqués dans le header car affichés dans "#menuMobileMain"*/
+	#menuMobileMain .vHeaderModule			{display:inline-block; width:47%; margin:5px 2px; text-align:left; font-size:1.1rem;}/*Modules affichés dans "#menuMobileMain"*/
+	#headerBarRight .vHeaderModule			{display:none;}/*Modules masqués dans le header car affichés dans "#menuMobileMain"*/
 	.vHeaderModule label					{display:inline-block; margin-left:10px;}/*toujours affiché : cf. $moduleLabelDisplay*/
 }
 </style>
@@ -41,8 +42,8 @@
 	<div id="headerBar">
 
 		<!--MENU LEFT : LOGO PRINCIPAL  &  LABEL DE L'USER  &  LABEL L'ESPACE COURANT  &  ICONE DE VALIDATION D'INSCRIPTION-->
-		<div id="headerMenuLeft" class="menuContextLaunch" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
-			<img src="app/img/logo.png" id="headerMainLogo">
+		<div id="headerBarLeft" class="menuContextLaunch" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
+			<img src="app/img/logoHeader.png" id="headerMainLogo">
 			<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRight.png"></div><?php } ?>
 			<span id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?></span>&nbsp;<img src="app/img/menuSmall.png">
 			<?php if($userInscriptionValidate==true){ ?><img src="app/img/user/subscribe.png" class="pulsate" <?= Txt::tooltip("userInscriptionValidateTooltip") ?>><?php } ?>
@@ -51,6 +52,7 @@
 		<!--MENU CONTEXT PRINCIPAL-->
 		<div class="menuContext" id="menuMainContext">
 			<div id="menuMainTab">
+
 				<!--COLONNE 1 : OPTIONS PRINCIPALES-->
 				<?php if(Ctrl::$curUser->isUser()){ ?>
 				<div>
@@ -73,6 +75,7 @@
 					<?php } ?>
 				</div>
 				<?php } ?>
+
 				<!--COLONNE 2 : GUEST || LISTE / GESTION DES ESPACES-->
 				<?php if(Ctrl::$curUser->isGuest() || $spaceListMenu==true || Ctrl::$curUser->isSpaceAdmin()){ ?>
 				<div>
@@ -103,6 +106,7 @@
 					<?php } ?>
 				</div>
 				<?php } ?>
+
 				<!--COLONNE 3 : SHORTCUTS-->
 				<?php if(!empty($pluginsShortcut) && Ctrl::$curUser->isUser()){ ?>
 				<div>
@@ -112,21 +116,23 @@
 							<div class="menuIcon menuMainArrow"><img src="app/img/arrowRightSmall.png"></div>
 							<div>
 								<img src="app/img/<?= $tmpObj->pluginIcon ?>" onclick="<?= $tmpObj->pluginJsIcon ?>" class="menuMainShortcut">
-								<span onclick="<?= $tmpObj->pluginJsLabel ?>"><?= $tmpObj->pluginLabel ?></span>
+								<span onclick="<?= $tmpObj->pluginJsLabel ?>"><?= Txt::reduce($tmpObj->pluginLabel,50) ?></span>
 								<?= $tmpObj->editButtom() ?>
 							</div>
 						</div>
 					<?php } ?>
 				</div>
 				<?php } ?>
+
 			</div>
+
 			<!--LOGO OMNISPACE-->
 			<div id="menuMainOmnispace"><img src="app/img/logoLabel.png" <?= Txt::tooltip(OMNISPACE_URL_LABEL) ?> onclick="window.open('<?= OMNISPACE_URL_PUBLIC ?>')"></div>
 		</div>
 
 		<!--MENU RIGHT : MODULES DISPONIBLES-->
 		<div>
-			<div id="headerRightMenu">
+			<div id="headerBarRight">
 				<!--MODULES DE L'ESPACE-->
 				<?php
 				foreach($moduleList as $tmpMod){
@@ -149,7 +155,7 @@
 			</div>
 
 			<!--MENU MOBILE : LABEL DU MODULE COURANT-->
-			<div id="headerMobileModule" class="menuContextLaunch" for="headerRightMenu"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?>&nbsp;<img src="app/img/menuSmall.png">&nbsp;</div>
+			<div id="headerMobileModule" class="menuContextLaunch" for="headerBarRight"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?>&nbsp;<img src="app/img/menuSmall.png">&nbsp;</div>
 		</div>
 	</div>
 </div>

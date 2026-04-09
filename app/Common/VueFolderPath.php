@@ -1,4 +1,4 @@
-<div class="pathMenu miscContainer">
+<div class="pathMenu miscContent">
 	<?php
 	////	Icone du dossier parent (mobile)
 	if(Req::isMobile() && $curFolder->isRootFolder()==false)

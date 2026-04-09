@@ -16,7 +16,7 @@ ready(function(){
 .vTaskOptionsButton			{height:40px;}
 .vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
 #fieldsetResponsiblePersons	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
-.divResponsiblePerson		{display:inline-block; width:33%; padding:5px;}
+.divResponsiblePerson		{display:inline-block; width:32%; padding:5px;}
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
@@ -67,17 +67,18 @@ ready(function(){
 		<img src="app/img/user/iconSmall.png"> <?= Txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
 	</button>
 	<fieldset id="fieldsetResponsiblePersons">
+		<!--USERS DE L'ESPACE-->
 		<?php
-		//Affiche chaque responsable
-		foreach(Ctrl::$curSpace->getUsers() as $tmpUser)
-		{
+		foreach(Ctrl::$curSpace->getUsers() as $tmpUser){
 			$checkedResponsible=in_array($tmpUser->_id,Txt::txt2tab($curObj->responsiblePersons))  ?  "checked"  :  null;
-			echo "<div class='divResponsiblePerson'>
-					<input type='checkbox' name='responsiblePersons[]' value=\"".$tmpUser->_id."\" id=\"responsiblePerson".$tmpUser->_id."\" ".$checkedResponsible." >
-					<label for=\"responsiblePerson".$tmpUser->_id."\">".$tmpUser->getLabel()."</label>
-				  </div>";
-		}
 		?>
+			<div class="divResponsiblePerson">
+				<input type="checkbox" name="responsiblePersons[]" value="<?= $tmpUser->_id ?>" id="responsiblePerson<?= $tmpUser->_id ?>" <?= $checkedResponsible ?> >
+				<label for="responsiblePerson<?= $tmpUser->_id ?>"><?= $tmpUser->getLabel() ?></label>
+			</div>
+		<?php } ?>
+		<!--INVERSE LA SELECTION-->
+		<div class="divResponsiblePerson" onclick="$('.divResponsiblePerson input').trigger('click')"><img src="app/img/checkSwitch.png"> <?= Txt::trad("selectSwitch") ?></div>
 	</fieldset>
 	
 	<!--MENU D'EDITION & VALIDATION DU FORM-->

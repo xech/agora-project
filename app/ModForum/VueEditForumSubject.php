@@ -22,7 +22,7 @@ function mainFormControl(){
 #bodyLightbox			{max-width:900px;}
 [name='title']			{width:45%;}
 [name="_idTheme"]		{min-width:200px; margin-left:30px;}
-.descriptionTextarea	{margin-top:30px!important;}/*surcharge*/
+#descriptionTextarea	{margin-top:30px!important;}/*surcharge*/
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){

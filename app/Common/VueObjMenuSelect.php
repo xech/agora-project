@@ -13,9 +13,9 @@ ready(function(){
 ////	Switch la sélection d'un objet
 function objSelectSwitch(menuId)
 {
-	var menuId=menuId.replace(/(objCheckbox|objContainer)/i,"");											//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
+	var menuId=menuId.replace(/(objCheckbox|objContent)/i,"");											//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
 	$("#objCheckbox"+menuId).prop("checked", !$("#objCheckbox"+menuId).prop("checked"));					//Swich la sélection de la checkbox
-	$("#objContainer"+menuId).toggleClass("objContainerSelect", $("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection/class du block de l'objet
+	$("#objContent"+menuId).toggleClass("objContentSelect", $("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection/class du block de l'objet
 	if($(".objSelectCheckbox:checked").length>0)	{$("#objSelectMenu").slideDown(300);}					//Affiche le menu des objets sélectionnés
 	else											{$("#objSelectMenu").slideUp(300);}						//Affiche le menu des objets sélectionnés
 }
@@ -57,7 +57,7 @@ async function menuSelectAction(urlRedir, lightbox)
 </style>
 
 
-<div id="objSelectMenu" class="miscContainer">
+<div id="objSelectMenu" class="miscContent">
 	<!--"TELECHARGER LES FICHIERS" (file)-->
 	<?php if(Req::$curCtrl=="file"){ ?>
 	<div class="menuLine" onclick="menuSelectAction('?ctrl=file&action=downloadArchive')"><div class="menuIcon"><img src="app/img/download.png"></div><div><?= Txt::trad("FILE_downloadSelection") ?></div></div>

@@ -49,20 +49,22 @@ class CtrlCalendar extends Ctrl
 		////	LISTE DES JOURS AFFICHÉS
 		if($displayMode=="month")	{$showTimeBegin=strtotime("monday this week 00:00:00",$timeBegin);  $showTimeEnd=strtotime("sunday this week 23:59:59",$timeEnd);}//Monday 1st week of month / Sunday last week of month
 		else						{$showTimeBegin=$timeBegin;  $showTimeEnd=$timeEnd;}
-		$publicHolidays =Trad::publicHolidays(date('Y',$curTime));										//Jours fériés de l'année
-		$timeChangeDates=Txt::timeChangeDates(date('Y',$curTime));										//Temps de référence
-		for($dayTimeBegin=$showTimeBegin; $dayTimeBegin<=$showTimeEnd; $dayTimeBegin+=86400){			//Timestamps des jours affichées
-			$dayYmd=date('Y-m-d',$dayTimeBegin);														//Jour Y-m-d
-			$vDatas["periodDays"][$dayYmd]=[															//Ajoute le jour à la liste (Ymd en clé)
-				"dayTimeBegin" 	=>strtotime("today 00:00:00", $dayTimeBegin),							//Timestamp de début du jour
-				"dayTimeEnd"	=>strtotime("today 23:59:59", $dayTimeBegin),							//Timestamp de fin du jour
-				"dayOfWeek"		=>date("N", $dayTimeBegin),												//Jour de la semaine : 1 à 7 (lundi à dimanche)
-				"dayOfMonth"	=>date("j", $dayTimeBegin),												//Jour du mois : 1 à 31
-				"monthOfYear"	=>date("n", $dayTimeBegin),												//Mois de l'année : 1 à 12
-				"isToday"		=>($dayYmd==date('Y-m-d')),												//Date d'aujourd'hui
-				"publicHoliday"	=>(isset($publicHolidays[$dayYmd]) ? $publicHolidays[$dayYmd] : null),	//Label du jour ferie ?
-				"summerChange"	=>($dayYmd==$timeChangeDates["summer"]),								//Jour de changement d'heure d'été
-				"winterChange"	=>($dayYmd==$timeChangeDates["winter"])									//Jour de changement d'heure d'hiver
+		$publicHolidays =Trad::publicHolidays(date('Y',$curTime));											//Jours fériés de l'année
+		$timeChangeDates=Txt::timeChangeDates(date('Y',$curTime));											//Temps de référence
+		$monthCurtime=date("n",$curTime);																	//Mois de la période demandée
+		for($dayTimeBegin=$showTimeBegin; $dayTimeBegin<=$showTimeEnd; $dayTimeBegin+=86400){				//Timestamps des jours affichées
+			$dayYmd=date('Y-m-d',$dayTimeBegin);															//Jour Y-m-d
+			$vDatas["periodDays"][$dayYmd]=[																//Ajoute le jour à la liste, avec Ymd en "key" :
+				"dayTimeBegin" 		=>strtotime("today 00:00:00", $dayTimeBegin),							//Timestamp de début du jour
+				"dayTimeEnd"		=>strtotime("today 23:59:59", $dayTimeBegin),							//Timestamp de fin du jour
+				"dayOfWeek"			=>date("N", $dayTimeBegin),												//Jour de la semaine : 1 à 7 (lundi à dimanche)
+				"dayOfMonth"		=>date("j", $dayTimeBegin),												//Jour du mois : 1 à 31
+				"monthOfYear"		=>date("n", $dayTimeBegin),												//Mois de l'année : 1 à 12
+				"isMonthCurtime"	=>(date("n", $dayTimeBegin)==$monthCurtime),							//Jour sur le mois de la période demandée?
+				"isToday"			=>($dayYmd==date('Y-m-d')),												//Date d'aujourd'hui
+				"publicHoliday"		=>(isset($publicHolidays[$dayYmd]) ? $publicHolidays[$dayYmd] : null),	//Label du jour ferie ?
+				"summerChange"		=>($dayYmd==$timeChangeDates["summer"]),								//Jour de changement d'heure d'été
+				"winterChange"		=>($dayYmd==$timeChangeDates["winter"])									//Jour de changement d'heure d'hiver
 			];
 		}
 
@@ -152,7 +154,7 @@ class CtrlCalendar extends Ctrl
 		if(count($vDatas["displayedCalendars"])>1 && Req::isMobile()==false){
 			$vDatas["periodSynthese"]=[];																													//Jours à afficher pour la synthese
 			foreach($vDatas["periodDays"] as $dayYmd=>$tmpDay){																								//Parcourt chaque jour affiché
-				if($displayMode=="month" && $tmpDay["monthOfYear"]!=date("n",$curTime))  {continue;}														//Continue si le jour est hors période du mois affiché
+				if($displayMode=="month" && $tmpDay["isMonthCurtime"]==false)  {continue;}																	//Continue si le jour est hors période du mois affiché
 				$tmpDay["dayEvtList"]=[];																													//Init les evts du jour
 				foreach($vDatas["displayedCalendars"] as $tmpCal)																							//Parcourt chaque agenda affiché
 					{$tmpDay["dayEvtList"][$tmpCal->_id]=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);}	//Récupère les evts du jour
@@ -171,15 +173,17 @@ class CtrlCalendar extends Ctrl
 	{
 		//// Récupère l'evt et Controle l'accès
 		$curObj=Ctrl::getCurObj();
-		if($curObj->editRight()==false || Req::isParam("newTimeBegin")==false)  {$result["error"]=true;}
+		if($curObj->editRight()==false || Req::isParam("evtNewTimeBegin")==false)  {$result["error"]=true;}
 		else{
 			// Update la date de l'evt en Bdd
-			$timeDiff=strtotime($curObj->dateEnd)-strtotime($curObj->dateBegin);
-			$newTimeBegin=(int)Req::param("newTimeBegin");
-			$newTimeEnd=($newTimeBegin+$timeDiff);
-			$curObj=$curObj->editRecord("dateBegin=".Db::format(date("Y-m-d H:i",$newTimeBegin)).", dateEnd=".Db::format(date("Y-m-d H:i",$newTimeEnd)));
+			$timeBeginEndDiff=strtotime($curObj->dateEnd) - strtotime($curObj->dateBegin);
+			$evtNewTimeBegin=(int)Req::param("evtNewTimeBegin");
+			$evtNewTimeEnd=($evtNewTimeBegin + $timeBeginEndDiff);
+			$dateBegin=date("Y-m-d H:i:s",$evtNewTimeBegin);
+			$dateEnd=date("Y-m-d H:i:s",$evtNewTimeEnd);
+			$curObj=$curObj->editRecord("dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd));
 			//Renvoie les nouvelles propriétés de l'evt
-			$result["attributes"]=$curObj->attributes("array", strtotime("today 00:00:00",$newTimeBegin), strtotime("today 23:59:59",$newTimeBegin));
+			$result["attributes"]=$curObj->attributes("array", strtotime("today 00:00:00",$evtNewTimeBegin), strtotime("today 23:59:59",$evtNewTimeBegin));
 			$result["evtLabelDate"]=Txt::dateLabel($curObj->timeBegin,"mini",$curObj->timeEnd);
 			$result["tooltip"]=$curObj->title.'<br>'.Txt::dateLabel($curObj->timeBegin,"labelFull",$curObj->timeEnd);
 			$result["changed"]=true;
@@ -312,8 +316,8 @@ class CtrlCalendar extends Ctrl
 		}
 		//// Nouvel evt : dates par défaut
 		if($curObj->isNew()){
-			$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	? date("Y-m-d H:i",Req::param("newEvtTimeBegin")) : date("Y-m-d H:00",time()+3600);
-			$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	? date("Y-m-d H:i",Req::param("newEvtTimeEnd"))   : date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);
+			$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	? date("Y-m-d H:i:s",Req::param("newEvtTimeBegin")) : date("Y-m-d H:00",time()+3600);
+			$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	? date("Y-m-d H:i:s",Req::param("newEvtTimeEnd"))   : date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);
 		}
 		//// Affiche la vue
 		$vDatas["curObj"]=$curObj;
@@ -423,10 +427,10 @@ class CtrlCalendar extends Ctrl
 							$tmpEvt["db_title"]=Txt::clean($tmpEvt["SUMMARY"],"min");
 							$tmpEvt["db_description"]=(!empty($tmpEvt["DESCRIPTION"]))  ?  Txt::clean($tmpEvt["DESCRIPTION"],"min")  :  null;
 							//// DEBUT / FIN DE L'EVT
-							$tmpEvt["db_dateBegin"]=$tmpEvt["db_dateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTSTART"]));
+							$tmpEvt["db_dateBegin"]=$tmpEvt["db_dateEnd"]=date("Y-m-d H:i:s",strtotime($tmpEvt["DTSTART"]));
 							if(isset($tmpEvt["DTEND"])){
-								$tmpEvt["db_dateEnd"]=date("Y-m-d H:i",strtotime($tmpEvt["DTEND"]));
-								if(strlen($tmpEvt["DTEND"])==8)  {$tmpEvt["db_dateEnd"]=date("Y-m-d H:i",(strtotime($tmpEvt["DTEND"])-86400));}//Cf evt "full day" de G-Calendar
+								$tmpEvt["db_dateEnd"]=date("Y-m-d H:i:s",strtotime($tmpEvt["DTEND"]));
+								if(strlen($tmpEvt["DTEND"])==8)  {$tmpEvt["db_dateEnd"]=date("Y-m-d H:i:s",(strtotime($tmpEvt["DTEND"])-86400));}//Cf evt "full day" de G-Calendar
 							}
 							//// EVT PÉRIODIQUE
 							$tmpEvt["db_periodType"]=$tmpEvt["db_periodValues"]=$tmpEvt["db_periodDateEnd"]=null;
@@ -556,7 +560,7 @@ class CtrlCalendar extends Ctrl
 						'STATUS:CONFIRMED'.$RL.
 						"CREATED:".self::icalDate($tmpEvt->dateCrea).$RL.
 						"LAST-MODIFIED:".self::icalDate($tmpEvt->dateModif ? $tmpEvt->dateModif : $tmpEvt->dateCrea).$RL.
-						"DTSTAMP:".self::icalDate(date("Y-m-d H:i")).$RL.
+						"DTSTAMP:".self::icalDate(date("Y-m-d H:i:s")).$RL.
 						'DTSTART;TZID='.self::icalDate($tmpEvt->dateBegin,true).$RL.
 						'DTEND;TZID='.self::icalDate($tmpEvt->dateEnd,true).$RL.
 						'SUMMARY:'.Txt::clean($tmpEvt->title,"min").$RL;

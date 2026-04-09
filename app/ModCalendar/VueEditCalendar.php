@@ -2,7 +2,7 @@
 ////	Agenda partagé d'espace : titre et description non modifiable
 <?php if($curObj->isSpacelCalendar()){ ?>
 ready(function(){
-	$(".inputTitleName, .descriptionTextarea textarea").prop("readonly","readonly");
+	$(".inputTitleName, #descriptionTextarea textarea").prop("readonly","readonly");
 });
 <?php } ?>
 

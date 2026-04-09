@@ -14,7 +14,7 @@
 	<?php if(!empty($appUrl)){ ?>
 	<!--Retour à l'appli-->
 	<a href="<?= $appUrl ?>">
-		<button><img src="app/img/logoSmall.png"><?= Txt::trad("downloadBackToApp") ?></button>
+		<button><img src="app/img/logo.png"><?= Txt::trad("downloadBackToApp") ?></button>
 	</a>
 	<?php } ?>
 </div>

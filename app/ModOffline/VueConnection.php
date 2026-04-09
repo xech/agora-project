@@ -56,9 +56,9 @@ ready(function(){
 <style>
 #headerBar>div:first-child			{text-align:center!important;}/*surcharge*/
 #pageCenter							{margin-top:100px;}
-.miscContainer						{margin-bottom:20px; width:500px; padding:30px 20px; border-radius:12px!important; text-align:center;}/*surcharge*/
-.miscContainer button>img			{margin-right:10px;}
-.miscContainer hr					{margin:30px 0px;}
+.miscContent						{margin-bottom:20px; width:500px; padding:30px 20px; border-radius:12px!important; text-align:center;}/*surcharge*/
+.miscContent button>img			{margin-right:10px;}
+.miscContent hr					{margin:30px 0px;}
 #customLogo							{background-color:rgba(250, 250, 250, 40%); padding:10px;}
 #customLogo img						{max-width:100%; max-height:180px;}
 #publicSpaceTab						{display:inline-table;} 
@@ -71,8 +71,8 @@ ready(function(){
 
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	.miscContainer							{width:auto;}
-	.miscContainer							{margin-bottom:30px; padding:30px;}/*surcharge*/
+	.miscContent							{width:auto;}
+	.miscContent							{margin-bottom:30px; padding:30px;}/*surcharge*/
 	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%; text-align:left!important;}
 	.publicSpaceOption						{margin-left:40px; margin-top:10px;}
 	.connectOptions, .connectOptions>div	{display:block;}
@@ -92,12 +92,12 @@ ready(function(){
 
 	<!--LOGO CUSTOM-->
 	<?php if(Ctrl::$agora->pathLogoConnect()) { ?>
-		<div id="customLogo" class="miscContainer"><img src="<?= Ctrl::$agora->pathLogoConnect() ?>"></div>
+		<div id="customLogo" class="miscContent"><img src="<?= Ctrl::$agora->pathLogoConnect() ?>"></div>
 	<?php } ?>
 
 	<!--CONNEXION A UN ESPACE PUBLIC (INVITE)-->
 	<?php if(!empty($objPublicSpaces)){ ?>
-	<div class="miscContainer">
+	<div class="miscContent">
 		<div id="publicSpaceTab">
 			<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRight.png"></div>
 			<div>
@@ -115,7 +115,7 @@ ready(function(){
 	<?php }  ?>
 
 	<!--FORMULAIRE DE CONNEXION-->
-	<div class="miscContainer">
+	<div class="miscContent">
 		<form action="index.php" method="post" id="connectFormSpace" class="connectForm">
 			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>" id="objUrlExternal">	<!--accès direct à un objet via "getUrlExternal()"-->
 			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">		<!--idem-->

@@ -40,7 +40,7 @@ tfoot select option[value=""]		{background-color:#bbb;}							/*Option par défa
 
 
 <div id="pageCenter">
-	<div id="pageContent" class="miscContainer">
+	<div id="pageContent" class="miscContent">
 		<div id="logTitle"><?= Txt::trad("LOG_MODULE_DESCRIPTION").' : '.Ctrl::$curSpace->getLabel() ?></div>
 		<hr>
 		<table id="logTable">

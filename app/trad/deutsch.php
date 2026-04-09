@@ -419,7 +419,7 @@ class Trad extends Txt
 			////	Header
 			"HEADER_displaySpace"=>"Arbeitsbereiche",
 			"HEADER_displayAdmin"=>"Administratoranzeige",
-			"HEADER_displayAdminInfo"=>"Administratoranzeige: Ermöglicht die Anzeige von Elementen des Bereichs, die mir nicht direkt zugewiesen sind: Ordner, Kalender usw.",
+			"HEADER_displayAdminInfo"=>"Administrator-Ansicht: Zeigt alle Elemente im Bereich an (Kalender, Ordner, etc.)",
 			"HEADER_displayAdminEnabled"=>"Anzeigenverwaltung aktiviert",
 			"HEADER_displayAdminDisabled"=>"Administratoranzeige deaktiviert",
 			"HEADER_documentation"=>"Benutzerhandbuch",
@@ -438,7 +438,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Bitte geben Sie eine Nachricht an",
 			"MESSENGER_visioProposeTo"=>"Videokonferenz vorschlagen an",
 			"MESSENGER_visioProposeToSelection"=>"Videokonferenz vorschlagen an ausgewählte Personen Personen",
-			"MESSENGER_visioProposeToUsers"=>"Klicken Sie hier, um die Videokonferenz zu starten",
+			"MESSENGER_visioProposeToUsers"=>"Starten Sie die Videokonferenz zwischen",
 			"MESSENGER_nobody"=>"Derzeit sind keine anderen Benutzer angemeldet",
 
 			////	Lancer une Visio
@@ -829,7 +829,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editAdd"=>"Kategorie hinzufügen",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Benutzer, die ihren persönlichen Kalender in ihrem Benutzerprofil nicht deaktiviert haben, sehen das Kalendermodul weiterhin in der Menüleiste",
 			"CALENDAR_readableCalendars"=>"Verfügbare Kalender",
-			"CALENDAR_displayAdmin"=>"Administrator-Ansicht: zeigt auch Kalender an, die mir nicht zugewiesen sind",
+			"CALENDAR_displayAdmin"=>"Administrator-Ansicht: Zeigt alle Kalender im Bereich an",
 			"CALENDAR_displayHide"=>"Kalender anzeigen / ausblenden",
 			"CALENDAR_printCalendars"=>"Kalender drucken",
 			"CALENDAR_printCalendarsInfos"=>"Seite im Querformat drucken",

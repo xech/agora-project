@@ -236,9 +236,9 @@ class Trad extends Txt
 			"accessWriteTooltip" =>"Accès --OBJ_LABEL_TO-- en lecture et écriture",
 			"accessWriteTooltipContainer"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture :<br> Droit d'ajouter, modifier et supprimer tous --OBJ_LABEL_CONTENT--",
 			"accessFullTooltip"=>"Administrateur et Auteur : <br> Edition et accès complet --OBJ_LABEL_TO--",
-			"accessAllUsers"=>"Tout les utilisateurs",
+			"accessAllUsers"=>"Tous les utilisateurs",
 			"accessAllUsersTooltip"=>"Droit d'accès pour les utilisateurs de l'espace <i>--SPACENAME--</i>",
-			"accessAllUsersGuests"=>"Tout les utilisateurs et invités",
+			"accessAllUsersGuests"=>"Tous les utilisateurs et invités",
 			"accessAllUsersGuestsTooltip"=>"Droit d'accès pour les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Limité en lecture seule pour les invités (sans compte utilisateur)",
 
 			////	Libellé des objets (cf. "::objectType")
@@ -419,7 +419,7 @@ class Trad extends Txt
 			////	Header
 			"HEADER_displaySpace"=>"Espaces de travail",
 			"HEADER_displayAdmin"=>"Affichage Administrateur",
-			"HEADER_displayAdminInfo"=>"Affichage Administrateur : affiche également les éléments qui ne me sont pas attribués : agendas, dossiers, etc",
+			"HEADER_displayAdminInfo"=>"Affichage Administrateur : voir tous les éléments présents sur l'espace (agendas, dossiers, etc)",
 			"HEADER_displayAdminEnabled"=>"Affichage Administrateur activé",
 			"HEADER_displayAdminDisabled"=>"Affichage Administrateur désactivé",
 			"HEADER_documentation"=>"Guide d'utilisation",
@@ -438,7 +438,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Merci de spécifier un message",
 			"MESSENGER_visioProposeTo"=>"Proposer une visioconférence à",
 			"MESSENGER_visioProposeToSelection"=>"Proposer une visioconférence aux personnes sélectionnées",
-			"MESSENGER_visioProposeToUsers"=>"Cliquer ici pour lancer la visioconférence entre",
+			"MESSENGER_visioProposeToUsers"=>"Lancer une visioconférence entre",
 			"MESSENGER_nobody"=>"Aucun autre utilisateur n'est connecté actuellement",
 
 			////	Lancer une Visio
@@ -498,7 +498,7 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Votre espace a été correctement installé",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espace de partage et de travail collaboratif",
-			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre nouvel espace de partage et de travail collaboratif !</h3>
+			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre espace de partage &nbsp; <img src="app/img/logoSmall.png"></h3>
 											<h4><img src="app/img/file/iconSmall.png"> <a href="?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
 											<h4><img src="app/img/calendar/iconSmall.png"> <a href="?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
 											<h4><img src="app/img/dashboard/iconSmall.png"> <a href="?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
@@ -827,7 +827,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editAdd"=>"Ajouter une catégorie",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Les utilisateurs n'ayant pas désactivé leur agenda personnel dans leur profil utilisateur verront toujours le module Agenda dans la barre de menu",
 			"CALENDAR_readableCalendars"=>"Agendas disponibles",
-			"CALENDAR_displayAdmin"=>"Affichage Administrateur : affiche également les agendas qui ne me sont pas attribués",
+			"CALENDAR_displayAdmin"=>"Affichage Administrateur : voir tous les agendas présents sur l'espace",
 			"CALENDAR_displayHide"=>"Afficher / Masquer l'agenda",
 			"CALENDAR_printCalendars"=>"Imprimer l'agenda",
 			"CALENDAR_printCalendarsInfos"=>"Imprimez le/les agendas en mode paysage",
@@ -894,7 +894,7 @@ class Trad extends Txt
 			"CALENDAR_addEvtTooltip"=>"Ajouter un événement à l'agenda",
 			"CALENDAR_addEvtTooltip2"=>"Ajouter l'événement à l'agenda",
 			"CALENDAR_proposeEvtTooltip"=>"Proposer l'événement pour cet agenda (accessible en lecture seule) :<br>l'événement sera ensuite validé/invalidé par le propriétaire de l'agenda",
-			"CALENDAR_proposeOptionTooltip"=>"Proposer l'événement pour cet agenda (option) :<br>L'événement devra être validé/invalidé par le propriétaire de l'agenda",
+			"CALENDAR_proposeOptionTooltip"=>"Option pour proposer l'événement pour cet agenda :<br>L'événement devra être validé/invalidé par le propriétaire de l'agenda",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_busyTimeSlot"=>"Créneau déjà occupé sur l'agenda :",
 			"CALENDAR_timeSlot"=>"Plage horaire pour l'affichage ''semaine''",

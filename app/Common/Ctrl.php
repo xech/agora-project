@@ -81,7 +81,7 @@ abstract class Ctrl
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
 			if(Req::isParam("displayAdmin") && self::$curUser->isSpaceAdmin()){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
-				if($_SESSION["displayAdmin"]==true)	{self::notify(Txt::trad("HEADER_displayAdminEnabled")." : ".Txt::trad("HEADER_displayAdminInfo"));}
+				if($_SESSION["displayAdmin"]==true)	{self::notify(Txt::trad("HEADER_displayAdminEnabled")."<br>".Txt::trad("HEADER_displayAdminInfo"));}
 				else								{self::notify("HEADER_displayAdminDisabled");}
 			}
 

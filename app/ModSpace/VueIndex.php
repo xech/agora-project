@@ -1,8 +1,8 @@
 <style>
 /* BLOCKS DE CONTENU */
-#moduleMenu .infos			{text-align:left;}
-.objBlocks .objContainer	{height:220px; min-width:400px; max-width:700px;}/*surcharge*/
-.objContainerScroll			{padding:10px;}
+#pageMenu .infos			{text-align:left;}
+.objBlocks .objContent	{height:220px; min-width:400px; max-width:700px;}/*surcharge*/
+.objContentScroll			{padding:10px;}
 .vSpaceName					{font-size:1.1rem;}
 .vSpaceDescription			{margin-top:10px; font-weight:normal;}
 .vModules					{margin:15px 0px;}
@@ -18,8 +18,8 @@
 </style>
 
 <div id="pageFull">
-	<div id="moduleMenu">
-		<div class="miscContainer">
+	<div id="pageMenu">
+		<div class="miscContent">
 			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')" <?= Txt::tooltip("SPACE_moduleTooltip") ?>><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
@@ -31,7 +31,7 @@
 		<!--LISTE DES ESPACES-->
 		<?php foreach($spaceList as $tmpSpace){ ?>
 			<?= $tmpSpace->divContainerMenu() ?>
-				<div class="objContainerScroll">
+				<div class="objContentScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>
 					<div class="vModules"><?php foreach($tmpSpace->moduleList(true) as $tmpModule)  {echo '<img src="app/img/'.$tmpModule["moduleName"].'/iconSmall.png" '.Txt::tooltip($tmpModule["description"]).'>';} ?></div>

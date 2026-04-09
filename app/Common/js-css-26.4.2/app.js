@@ -21,7 +21,7 @@ function ready(thisFunction)
  ************************************************************************************************************/
 ready(function(){
 	mainDisplay();															//Affichage principal
-	window.addEventListener("resize",function(){ mainDisplay(); });			//Relance si windows resize ou orientationchange
+	window.addEventListener("resize",function(){ mainDisplay(true); });		//Relance si windows resize ou orientationchange
 	mainTriggers();															//Triggers principaux
 	menuContext();															//Affichage des menus contextuels
 	controleFields();														//Affichage et controle des champs de formulaire
@@ -31,43 +31,45 @@ ready(function(){
 });
 
 /************************************************************************************************************
- * AFFICHAGE PRINCIPAL
+ * AFFICHAGE PRINCIPAL (UPDATED APRES RESIZE)
  ************************************************************************************************************/
-function mainDisplay()
+function mainDisplay(isResize)
 {
 	////	Variables de base
-	isMainPage=(window.self==window.top);																		//Page principale || Lightbox
-	if(isMainPage==true)  {confirmCloseForm=false;}																//Confirme une redirection si formulaire en cours d'édition
-	windowTopWidth =window.top.document.documentElement.clientWidth;											//Width de la fenêtre principale (sans scrollbar)
-	windowTopHeight=window.top.document.documentElement.clientHeight;											//Height de la fenêtre principale (idem)
-	containerWidth=isMobile() ?  windowTopWidth  :  (windowTopWidth - $("#moduleMenu").outerWidth(true) - 12);	//Width du principal container de la page (-12px de scroolbar)
+	isMainPage=(window.self==window.top);								//Page principale || Lightbox
+	if(isMainPage==true)  {confirmCloseForm=false;}						//Confirme une redirection si formulaire en cours d'édition
+	windowTopWidth =window.top.document.documentElement.clientWidth;	//Width de la fenêtre principale (sans scrollbar)
+	windowTopHeight=window.top.document.documentElement.clientHeight;	//Height de la fenêtre principale (idem)
 
 	////	Fenêtre principale
 	if(isMainPage==true){
-		////	Marge entre la headerbar et le contenu de la page
-		$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));
+		////	Timeout le tps de finaliser un window resize
+		let timeoutDuration=(typeof isResize!="undefined" && isResize==true)  ?  50 : 1;
+		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}//Un seul timeout
+		mainDisplayTimeout=setTimeout(function(){
+			////	Marge de entre la headerBar et le contenu de la page
+			$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));
 
-		////	Affichage spécifique d'un module (ex: ModCalendar, ModTask)
-		if(typeof moduleDisplay=="function")  {moduleDisplay();}
+			////	Affichage spécifique d'un module (ex: ModCalendar, ModTask)
+			if(typeof moduleDisplay=="function")  {moduleDisplay();}
 
-		////	Width des objets en affichage "block"
-		if($(".objBlocks .objContainer").exist()){
-			let objMargins=parseFloat($(".objContainer").css("margin-left")) + parseFloat($(".objContainer").css("margin-right"));	//Marges de l'objet (cf. "app.css")
-			let widthMin  =parseFloat($(".objContainer").css("min-width")) + objMargins;											//width Min
-			let widthMax  =parseFloat($(".objContainer").css("max-width")) + objMargins;											//width Max
-			let lineNbObjs=Math.ceil(containerWidth / widthMax);																	//Nb maxi d'objets par ligne : tester sur mobile !
-			if(containerWidth < (widthMin*2))				{widthObj=containerWidth;}												//On peut afficher qu'un objet par ligne : prend toute la largeur
-			else if($(".objContainer").length<lineNbObjs)	{widthObj=widthMax;}													//Pas assez d'objets pour remplir la 1ère ligne : largeur max
-			else											{widthObj=Math.floor(containerWidth/lineNbObjs);}						//Width en fonction du width disponible et du nb d'objets par ligne
-			$(".objContainer").outerWidth(widthObj,true);																			//Applique le width des objets (true = includeMargin)
-		}
+			////	Width des objets en affichage "block"
+			if($(".objBlocks .objContent").exist()){
+				pageContentWidth=$("#pageContent").width();																			//Width du principal container de la page
+				let objMargins=parseFloat($(".objContent").css("margin-left")) + parseFloat($(".objContent").css("margin-right"));	//Marges de l'objet (cf. "app.css")
+				let widthMin  =parseFloat($(".objContent").css("min-width")) + objMargins;											//width Min
+				let widthMax  =parseFloat($(".objContent").css("max-width")) + objMargins;											//width Max
+				let lineObjNb=Math.ceil(pageContentWidth / widthMax);																//Nb d'objets par ligne : tester sur mobile !
+				if(pageContentWidth < (widthMin*2))			{widthObj=pageContentWidth;}											//Un objet par ligne : width 100%
+				else if($(".objContent").length<lineObjNb)	{widthObj=widthMax;}													//Tous les objets sur une seule ligne : largeur max
+				else										{widthObj=Math.floor(pageContentWidth/lineObjNb);}						//Width en fonction de pageContentWidth et lineObjNb
+				$(".objContent").outerWidth(widthObj,true);																			//Applique le width des objets (true pour les margins)
+			}
 
-		////	Width de la fenêtre enregistré dans un Cookie
-		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}												//Un seul timeout
-		mainDisplayTimeout=setTimeout(function(){																					//Timeout le tps de finaliser un window resize (tps supérieur à $.fx.speeds)
-			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";						//Path courant
-			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";				//Path racine
-		},200);
+			////	Width de la fenêtre enregistré dans un Cookie (Path courant & Path racine)
+			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";
+			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";
+		},timeoutDuration);
 	}
 }
 
@@ -88,20 +90,21 @@ function mainTriggers()
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
 
 	////	DblClick : édition  ||  Click : sélection
-	$(".objContainer").off("click dblclick").on("click dblclick",function(event){												//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
+	$(".objContent").off("click dblclick").on("click dblclick",function(event){												//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
 		if(event.type=="dblclick" && this.hasAttribute("data-urlEdit"))		{lightboxOpen(this.getAttribute("data-urlEdit"));}	//Note : pas de "dblclick" pour sur mobile
 		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
 	});
 
 	////	Menu du module flottant
-	if($("#moduleMenu").isVisible()){
+	if($("#pageMenu").isVisible()){
 		$(window).on("scroll",function(){
-			if(typeof moduleMenuTimeout!="undefined")  {clearTimeout(moduleMenuTimeout);}							//Un seul timeout
-			moduleMenuTimeout=setTimeout(function(){																//Timeout le tps de finaliser le scroll
-				let menuHeight=$("#moduleMenu").position().top;														//Position top du menu
-				$("#moduleMenu").children().each(function(){ menuHeight+=$(this).outerHeight(true); });				//Ajoute la hauteur de chaque element
-				if(menuHeight < windowTopHeight)  {$("#moduleMenu").css("padding-top",$(window).scrollTop()+"px");}	//Repositionne le menu en fonction de la fenêtre
-			},200);
+			if(typeof pageMenuTimeout!="undefined")  {clearTimeout(pageMenuTimeout);}								//Un seul timeout
+			pageMenuTimeout=setTimeout(function(){																	//Timeout le tps de finaliser le scroll
+				let menuHeight=$("#pageMenu").position().top;														//Position top du menu
+				$("#pageMenu>*:visible").each(function(){ menuHeight+=$(this).outerHeight(true); });				//Ajoute la hauteur de chaque element
+			console.log(menuHeight);
+				if(menuHeight < windowTopHeight)  {$("#pageMenu").css("padding-top",$(window).scrollTop()+"px");}	//Repositionne le menu en fonction de la fenêtre
+			},50);
 		});
 	}
 
@@ -220,12 +223,12 @@ function menuContext()
 {
 	////	Affichages / Masquages principaux
 	$(".menuContextLaunch").on("click",function(event){  isMobile() ? menuMobileShow(this) : menuContextShow(this,event);  });	//Affiche si click sur .menuContextLaunch
-	$(".menuContext").on("mouseleave",function(){  $(".menuContext").hide();  });											//Masque le menu si mouseleave sur .menuContext
-	$(document).on("click",function(){  $(".menuContext").hide();  });														//Masque si click sur la page, hors du menu (cf Tablette mode paysage)
-	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });										//Masque si click sur #menuMobileClose ou #menuMobileBg (black opacity)
-	$(".menuContextLaunch,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });				//Pas de propagation de click (evite un download ou une sélection via "objSelectSwitch()")
-	if(windowTopWidth>=1300){																								//Click droit sur .objContainer si width > 1300px
-		$(".objContainer").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });				//"return false" pour annuler le menu du browser
+	$(".menuContext").on("mouseleave",function(){  $(".menuContext").hide();  });												//Masque le menu si mouseleave sur .menuContext
+	$(document).on("click",function(){  $(".menuContext").hide();  });															//Masque si click sur la page, hors du menu (cf Tablette mode paysage)
+	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });											//Masque si click sur #menuMobileClose ou #menuMobileBg (black opacity)
+	$(".menuContextLaunch,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });			//Pas de propagation de click (evite un download ou une sélection via "objSelectSwitch()")
+	if(windowTopWidth>=1300){																									//Click droit sur .objContent si width > 1300px
+		$(".objContent").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });					//"return false" pour annuler le menu du browser
 	}
 
 	////	Affichage via swipe sur mobile
@@ -286,8 +289,8 @@ function menuMobileShow(launcher)
 		if($("#menuMobileMain").isVisible()){															//Menu mobile déjà affiché : Affiche un sous-menu
 			$("#"+$(launcher).attr("for")).addClass("menuMobileSubMenu").slideToggle();					
 		}else{																							//Affiche le Menu mobile :
-			idMenuMobile1=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerRightMenu";			//idMenuMobile1 : attr. "for" du launcher ou #headerRightMenu si swipe (liste des modules ou autre)
-			idMenuMobile2=(idMenuMobile1=="#headerRightMenu")  ?  "#moduleMenu"  :  null;				//Affiche aussi #moduleMenu (menu de gauche)
+			idMenuMobile1=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerBarRight";				//idMenuMobile1 : attr. "for" du launcher ou #headerBarRight si swipe (liste des modules ou autre)
+			idMenuMobile2=(idMenuMobile1=="#headerBarRight")  ?  "#pageMenu"  :  null;					//Affiche aussi #pageMenu (menu de gauche)
 			if($(idMenuMobile1).exist()){																//Vérif l'exisence de idMenuMobile1
 				$(idMenuMobile1+">*").appendTo("#menuMobileContent1");									//Déplace le contenu de idMenuMobile1 dans menuMobileContent1
 				if($(idMenuMobile2).exist())  {$(idMenuMobile2+">*").appendTo("#menuMobileContent2");}	//Déplace le contenu de idMenuMobile2 dans #menuMobileContent2
@@ -468,7 +471,7 @@ function submitLoading()
 	setTimeout(function(){
 		$(".submitLoading").css("visibility","hidden");
 		$("button[type='submit']").css("background","initial").prop("disabled",false);
-	 },5000);//assez court > erreurs ajax && assez long > upload big files
+	 },5000);//assez court si erreur de validation ajax, et assez long si upload de big files
 }
 
 /************************************************************************************************************

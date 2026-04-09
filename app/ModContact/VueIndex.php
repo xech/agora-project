@@ -1,7 +1,7 @@
 <div id="pageFull">
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<?= MdlContact::menuSelect() ?>
-		<div class="miscContainer">
+		<div class="miscContent">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
@@ -24,8 +24,8 @@
 			 CtrlObject::vueFolders();
 		foreach($contactList as $tmpContact){
 			echo $tmpContact->divContainerMenu("objPerson").
-				'<div class="objContainerScroll">
-					<div class="objContent">
+				'<div class="objContentScroll">
+					<div class="objContentTab">
 						<div class="objIcon">'.$tmpContact->tagProfileImg(true,false).'</div>
 						<div class="objLabel" onclick="'.$tmpContact->lightboxVue().'">
 							<div class="personLabel">'.$tmpContact->getLabel("full").'</div>
@@ -39,7 +39,7 @@
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($contactList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlContact::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("CONTACT_addContact")."</div>"  :  null;
-			echo '<div class="miscContainer emptyContainer">'.Txt::trad("CONTACT_noContact").$addElement.'</div>';
+			echo '<div class="miscContent emptyContent">'.Txt::trad("CONTACT_noContact").$addElement.'</div>';
 		}
 		?>
 	</div>

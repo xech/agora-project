@@ -20,8 +20,8 @@ ready(function(){
 
 <style>
 #labelSpaceName					{font-style:italic;}
-.miscContainer					{margin-top:40px; border:#999 1px solid;}
-.miscContainer:first-of-type	{display:none; border:#999 2px solid;}/*masque le 1er formulaire : ajout d'element*/
+.miscContent					{margin-top:40px; border:#999 1px solid;}
+.miscContent:first-of-type	{display:none; border:#999 2px solid;}/*masque le 1er formulaire : ajout d'element*/
 input[name='title']				{width:50%;}
 .vUserListMenu					{margin-top:20px; overflow:auto; max-height:150px;}
 .userListUser					{display:inline-block; width:33%; padding:2px;}
@@ -62,7 +62,7 @@ input[name='title']				{width:50%;}
 		//Affichage du formulaire
 		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
 		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
-		echo "<form action='index.php' method='post' class='miscContainer'>
+		echo "<form action='index.php' method='post' class='miscContent'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>
 				<div class='vAutorSubmit'>

@@ -65,8 +65,8 @@ ready(function(){
 /*Menu context de gauche*/
 .vAgoraVersion					{text-align:center; margin-top:10px;}
 .vButtonLogs, .vButtonBackup	{width:90%; height:45px; margin:15px; text-align:left; border-radius:10px;}
-#moduleMenu img					{max-height:25px; margin-right:10px;}
-#moduleMenu hr					{margin:20px 0px;}
+#pageMenu img					{max-height:25px; margin-right:10px;}
+#pageMenu hr					{margin:20px 0px;}
 
 /*Formulaire principal*/
 #vMainFormLabel					{text-align:center;}
@@ -80,13 +80,13 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 
 <div id="pageCenter">
 
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<!--ESPACE DISQUE UTILISÉ-->
-		<div class="miscContainer">
+		<div class="miscContent">
 			<img src="app/img/diskSpace<?= $diskSpaceAlert==true?'Alert':null ?>.png"> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
 		</div>
 		<!--VERSIONS D'AGORA  &&  FONCTIONS PHP DÉSACTIVÉES-->
-		<div class="miscContainer">
+		<div class="miscContent">
 			<div class="vAgoraVersion" title="PHP <?= phpversion().' - '.Db::dbVersion()?>">Agora-Project version <?= Req::appVersion()?> &nbsp;<img src="app/img/info.png"></div>
 			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/info.png"> <?= Txt::trad("AGORA_Changelog") ?></button>
 			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
@@ -95,7 +95,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 		</div>
 		<!--VOPTIONS DE BACKUP-->
 		<?php if(Req::isMobile()==false){ ?>
-		<div class="miscContainer">
+		<div class="miscContent">
 			<button class="vButtonBackup" data-typeBackup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
 			<button class="vButtonBackup" data-typeBackup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
 		</div>
@@ -103,7 +103,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 	</div>
 
 	<div id="pageContent">
-		<div class="miscContainer">
+		<div class="miscContent">
 			<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 				<div id="vMainFormLabel"><img src="app/img/settingsGeneral.png"> <?= Txt::trad("AGORA_generalSettings") ?></div>
 				<hr>

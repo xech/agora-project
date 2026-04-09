@@ -97,9 +97,9 @@ ready(function(){
 
 <div id="pageCenter">
 	<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
-		<div id="moduleMenu">
+		<div id="pageMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
-			<div id="recipientMainMenu" class="miscContainer" >
+			<div id="recipientMainMenu" class="miscContent" >
 				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS & CONTACTS
@@ -149,11 +149,11 @@ ready(function(){
 			</div>
 
 			<!--HISTORIQUE DES MAILS ENVOYES-->
-			<div id="historyLabel" class="miscContainer" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/log.png"> <?= Txt::trad("MAIL_historyTitle") ?></div>
+			<div id="historyLabel" class="miscContent" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/log.png"> <?= Txt::trad("MAIL_historyTitle") ?></div>
 		</div>
 
 		<div id="pageContent">
-			<div class="miscContainer">
+			<div class="miscContent">
 				<!--TITRE / DESCRIPTION / MOBILE : LISTE DES DESTINATAIRES-->
 				<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("MAIL_title") ?>" required>
 				<?= $curObj->descriptionEditor(false) ?>

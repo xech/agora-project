@@ -319,8 +319,8 @@ class Txt
 		$dateValue=trim((string)$dateValue);																											//Cast l'entrée
 		$formatList=["dbDatetime"=>"Y-m-d H:i", "dbDate"=>"Y-m-d", "inputDatetime"=>"d/m/Y H:i", "inputDate"=>"d/m/Y", "inputHM"=>"H:i", "time"=>"U"];	//Liste des formats disponibles
 		if(!empty($dateValue) && array_key_exists($inFormat,$formatList) && array_key_exists($outFormat,$formatList)){									//Controle les params
-			if($inFormat=="inputDatetime" && strlen($dateValue)<16)		{$dateValue.=" 00:00";}															//Ajoute les minutes/sec. si besoin, sinon $date retourne false..
-			elseif($inFormat=="dbDatetime" && strlen($dateValue)>16)	{$dateValue=substr($dateValue,0,16);}											//enlève les microsecondes si besoin, sinon $date retourne false..
+			if($inFormat=="inputDatetime" && strlen($dateValue)<16)		{$dateValue.=" 00:00";}															//Ajoute si besoin les Heures:Minutes (sinon erreur de $dateObj)
+			elseif($inFormat=="dbDatetime" && strlen($dateValue)>16)	{$dateValue=substr($dateValue,0,16);}											//enlève si besoin les microsecondes (idem)
 			$dateObj=DateTime::createFromFormat($formatList[$inFormat], $dateValue);																	//Créé l'objet DateTime
 			$dateObj->setTimeZone(new DateTimeZone(Ctrl::$curTimezone));																				//Applique le bon timezone
 			if(is_object($dateObj)){																													//Controle l'objet

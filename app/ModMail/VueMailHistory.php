@@ -38,7 +38,7 @@ function sendOldMail(typeId){
 		<form action="index.php" method="post" id="deleteMailsForm">
 			<img src="app/img/delete.png"> <?= Txt::trad("MAIL_historyDelete") ?>
 			<select name="historyDeleteDays">
-				<?php foreach([7,15,30,60,90,180,365] as $nbDays){ ?><option value="<?= $nbDays ?>"><?= str_replace("--NB_DAYS--",$nbDays,Txt::trad("MAIL_historyDeleteXDays")) ?></option><?php } ?>
+				<?php foreach([7,15,30,60,90,180,365,730] as $nbDays){ ?><option value="<?= $nbDays ?>"><?= str_replace("--NB_DAYS--",$nbDays,Txt::trad("MAIL_historyDeleteXDays")) ?></option><?php } ?>
 			</select>
 			<?= Txt::submitButton("validate",false) ?>
 		</form>
@@ -52,7 +52,7 @@ function sendOldMail(typeId){
 			<div><?= Txt::trad("MAIL_recipients").' : '.str_replace(',',' - ',$tmpMail->recipients) ?></div>
 			<div class="sLink" onclick="sendOldMail('<?= $tmpMail->typeId ?>')" <?= Txt::tooltip("MAIL_resendInfo") ?>><img src="app/img/mail/resend.png"> <?= Txt::trad("MAIL_resend") ?></div>
 			<div class="sLink" onclick="confirmDelete('<?= $tmpMail->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("MAIL_delete") ?></div>
-			<div class="miscContainer"><?= $tmpMail->description ?></div>
+			<div class="miscContent"><?= $tmpMail->description ?></div>
 		</fieldset>
 	<?php } ?>
 

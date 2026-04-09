@@ -3,17 +3,21 @@
 
 
 <script>
+/************************************************************************************************************
+ *	AFFICHAGE PRINCIPAL + AFFICHAGE DES AGENDAS VIA calendarDisplay()
+*************************************************************************************************************/
+function moduleDisplay()
+{
+	$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );					//Synthese des agendas : width des cellules des jours
+	$(".vCalMain").outerHeight( (windowTopHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?10:75 ?>), true);	//Hauteur en fonction du height disponible (10 ou 80 de margin-bottom)
+	$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());													//Hauteur des vues Month/Week en fonction de vCalMain
+	$(".vEvtBlock").each(function(){ $(this).css("background-color",this.getAttribute("data-evtColor")); });									//Bgcolor de chaque evt
+	calendarDisplay();																															//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
+	evtDraggable();																																//Init le Draggable des evenements
+	$(".vCalMain").css("visibility","visible");																									//Affiche les agendas : après calendarDisplay() !
+}
+
 ready(function(){
-	/********************************************************************************************************
-	 *	PROPOSITION D'EVT : PULSATE L'ICONE DU MODULE DANS LE "VueHeaderMenu.php"
-	 ********************************************************************************************************/
-	if($(".evtPropositions").exist() && $("#headerMobileModule").isVisible())  {$("#headerMobileModule").pulsate();}
-
-	/********************************************************************************************************
-	 *	SUBMIT LA LISTE DES AGENDAS AFFICHES
-	 ********************************************************************************************************/
-	$("input[name='displayedCalendars[]']").on("change",function(){ $("#readableCalendarsForm").submit(); });
-
 	/********************************************************************************************************
 	 *	PROPOSITION D'EVT : CONFIRME/ANNULE UNE PROPOSITION
 	 ********************************************************************************************************/
@@ -35,7 +39,20 @@ ready(function(){
 	});
 
 	/********************************************************************************************************
-	 *	DATEPICKER JQUERY DU MOIS (menu de gauche & display "week")
+	 *	PROPOSITION D'EVT : PULSATE L'ICONE DU MODULE DANS LE "VueHeaderMenu.php"
+	 ********************************************************************************************************/
+	if($(".evtPropositions").exist() && $("#headerMobileModule").isVisible())
+		{$("#headerMobileModule").pulsate();}
+
+	/********************************************************************************************************
+	 *	SUBMIT LA LISTE DES AGENDAS AFFICHES
+	 ********************************************************************************************************/
+	$("input[name='displayedCalendars[]']").on("change",function(){
+		$("#readableCalendarsForm").submit();
+	});
+
+	/********************************************************************************************************
+	 *	DATEPICKER DU MOIS DANS LE MENU DE GAUCHE (cf JQUERY UI)
 	 ********************************************************************************************************/
 	$("#datepickerCalendar").datepicker({
 		firstDay:1,										//Début de semaine le lundi
@@ -44,10 +61,10 @@ ready(function(){
 		dateFormat:"yy-mm-dd",							//Utilisé par "dayYmd" ci-dessous
 		onSelect:function(dayYmd){ let dateObj=new Date(dayYmd);  redir("?ctrl=calendar&curTime="+(dateObj.getTime()/1000));}//Clique sur une date : redirection
 	});
-	/////	SURLIGNE LA SEMAINE COURANTE
+	/////	DATEPICKER : SURLIGNE LES JOURS DE LA SEMAINE AFFICHÉE
 	<?php foreach($periodDays as $tmpDay){ ?>
-		$(".ui-state-active").removeClass("ui-state-active");//Réinit le style du jour de référence
-		$("[data-month=<?= $tmpDay["monthOfYear"]-1 ?>] [data-date=<?= $tmpDay["dayOfMonth"] ?>]").addClass("ui-state-highlight");//Surligne les jours de la semaine affichée
+		$(".ui-state-active").removeClass("ui-state-active");//Réinit le style du jour de ref
+		$("[data-month=<?= $tmpDay["monthOfYear"]-1 ?>] [data-date=<?= $tmpDay["dayOfMonth"] ?>]").addClass("ui-state-highlight");
 	<?php } ?>
 
 	/********************************************************************************************************
@@ -71,28 +88,12 @@ ready(function(){
 		});
 	}
 });
-
-/********************************************************************************************************
- *	AFFICHAGE DES AGENDAS  (lancé via "mainDisplay()" cf "app.js")
-*******************************************************************************************/
-function moduleDisplay()
-{
-	if(typeof moduleDisplayTimeout!="undefined")  {clearTimeout(moduleDisplayTimeout);}//Un seul timeout
-	moduleDisplayTimeout=setTimeout(function(){																										//Timeout pour récupérer les dimensions globales (cf. affichage sur mobile)
-		$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );					//Synthese des agendas : width des cellules des jours
-		$(".vCalMain").outerHeight( (windowTopHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?0:65 ?>), true);	//Hauteur en fonction du height de #livecounterMain (cf. Ajax)
-		$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());													//Hauteur des vues Month/Week en fonction de vCalMain
-		$(".vEvtBlock").each(function(){ $(this).css("background-color",this.getAttribute("data-evtColor")); });									//Bgcolor de chaque evt
-		calendarDisplay();																															//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
-		$(".vCalMain").css("visibility","visible");																									//Affiche les agendas après calendarDisplay()
-	},20);
-}
 </script>
 
 
 <style>
 /*Réduit la taille du footer + du livecounter principal*/
-#pageContent									{padding-bottom:0px!important;}/*Surcharge VueStructure.php pour ne pas avoir de marge sous l'agenda*/
+#pageContent									{padding-bottom:10px!important;}/*Surcharge VueStructure.php pour ne pas avoir de marge sous l'agenda*/
 #pageFooterHtml, #pageFooterIcon				{display:none;}
 #pageFull										{margin-bottom:0px;}
 
@@ -102,7 +103,7 @@ function moduleDisplay()
 .evtPropositions hr								{margin:5px;}
 #readableCalendarsForm							{max-height:450px; overflow-y:auto;}
 #readableCalendarsTitle 						{margin-bottom:10px;}
-#readableCalsAdmin								{float:right;}
+#readableCalsAdmin								{float:right; filter:saturate(0);}
 #readableCalendarsForm:not(:hover) #readableCalsAdmin {visibility:hidden;}
 .readableCalendar input							{display:none;}
 .readableCalendar label							{display:block; padding:4px; margin:2px;}/*Label des agendas : cf ".option"*/
@@ -112,7 +113,7 @@ function moduleDisplay()
 .ui-datepicker .ui-state-default				{padding:7px;}/*Cellules des jours*/
 
 /*Synthese des agendas*/
-#synthBlock.miscContainer						{padding:2px 8px; margin-bottom:20px;}/*surcharge*/
+#synthBlock.miscContent							{padding:2px 8px; margin-bottom:20px;}/*surcharge*/
 #synthTable										{display:table; width:100%; max-width:100%;}
 #synthHeader, .vSynthLine						{display:table-row;}
 #synthHeader									{font-size:0.9em!important;}
@@ -130,11 +131,11 @@ function moduleDisplay()
 /*Agendas : conteneur + menu d'affichage + label des jours*/
 .vCalMain										{min-height:500px; padding:0px; visibility:hidden;}/*Masqué le tps du calcul de l'affichage*/
 .vCalMain:not(:last-child)						{margin-bottom:40px;}
-.vCalVue										{max-width:100%; width:100%;}
-.vCalHeader										{display:table; width:100%;}
+.vCalVue										{max-width:100%; width:100%; user-select:none!important; -webkit-user-select:none!important;}
+.vCalHeader										{display:table; width:100%; font-size:1.1rem;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
 .vCalHeaderLeft, .vCalHeaderCenter				{min-width:250px;}
-.vCalHeaderLeftLabel							{vertical-align:middle; margin-inline:5px; font-size:1.1rem;}
+.vCalHeaderLeftLabel							{margin-right:10px; vertical-align:middle;}
 .vCalHeaderCenter								{text-align:center;}
 .vCalHeaderCenter .vCalPrevNext					{padding:10px 15px; border-radius:5px;}
 .vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
@@ -142,17 +143,20 @@ function moduleDisplay()
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{width:480px; text-align:right;}
 .vCalHeaderRight>span							{margin-right:8px;}
+.vCalHeaderRight button							{box-shadow:none; font-weight:normal;}
 .vCalLabelDays									{height:25px; padding:4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
 .vEvtBlock										{height:20px; min-height:20px; margin:0px; padding:4px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:4px!important;}/*padding-right pour le menu burger*/
 .vEvtBlock[data-evtIsPast='true']:not(:hover)	{filter:brightness(0.9);}/*événements passés (sauf si survolé : cf. menu context)*/
+.vEvtBlockMoved									{z-index:1000; opacity:0.9; box-shadow:0px 0px 4px 4px white;}/*Evt en cours de déplacement*/
 .vEvtLabel										{overflow:hidden; white-space:normal; font-weight:normal; color:white!important;}/*white-space: longs mots splités sur plusieurs lignes*/
 .vEvtLabel img									{margin-left:6px; max-height:13px;}
 
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	.vCalMain.miscContainer						{margin:0px;}/*surcharge .miscContainer*/
+	#pageContent								{padding-inline:0px!important;}/*surcharge app.css*/
+	.vCalMain.miscContent						{margin:0px; margin-bottom:40px;}/*surcharge .miscContent*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
 	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}
@@ -178,16 +182,16 @@ function moduleDisplay()
 	.vCalHeader>div									{padding:0px 10px 0px 20px !important; font-size:1.1rem;}
 	.vCalHeaderCenter								{text-align:right;}
 	.vWeekScroller									{overflow:visible!important;}/*pas d'overflow scroll en affichage "week"*/
-	#synthBlock, .vCalPrevNext, .vCalHeaderRight, .vMonthWeekNbOfYear	{display:none!important;}
+	#synthBlock, .vCalPrevNext, .vCalHeaderRight, .vWeekNbOfYear	{display:none!important;}
 }
 </style>
 
 
 <div id="pageFull">
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<!--PROPOSITIONS D'EVT-->
 		<?php if(!empty($evtPropositions)){ ?>
-			<div class="miscContainer">
+			<div class="miscContent">
 				<legend><?= Txt::trad("CALENDAR_evtProposition") ?><img src="app/img/importantBig.png" id="evtPropositionsPulsate" class="pulsate"></legend>
 				<?php foreach($evtPropositions as $evtTmp){ ?>
 					<div class="evtPropositions optionSelect" data-idEvt="<?= $evtTmp["_idEvt"] ?>" data-idCal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["evtPropDetails"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["evtPropDetails"]) ?> ><?= $evtTmp["evtPropLabel"] ?></div>
@@ -195,7 +199,7 @@ function moduleDisplay()
 			</div>
 		<?php } ?>
 
-		<div class="miscContainer">
+		<div class="miscContent">
 			<!--AGENDAS DISPONIBLES-->
 			<?php if(!empty($readableCalendars)){ ?>
 				<form action="index.php" id="readableCalendarsForm">
@@ -253,7 +257,7 @@ function moduleDisplay()
 
 		<!--SYNTHESE DES AGENDAS -->
 		<?php if(!empty($periodSynthese)){ ?>
-			<div id="synthBlock" class="miscContainer">
+			<div id="synthBlock" class="miscContent">
 				<div id="synthTable">
 					<!--HEADER DE LA SYNTHESE-->
 					<div id="synthHeader">
@@ -285,14 +289,14 @@ function moduleDisplay()
 
 		<!--AFFICHE CHAQUE AGENDA-->
 		<?php foreach($displayedCalendars as $tmpCal){ ?>
-		<div class="vCalMain miscContainer" id="calBlock<?= $tmpCal->typeId ?>">
+		<div class="vCalMain miscContent" id="calBlock<?= $tmpCal->typeId ?>">
 			<div class="vCalHeader">
 				<!--TITRE DE L'AGENDA-->
 				<div class="vCalHeaderLeft">
 					<?php
 					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';								//Label de l'agenda
 					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->tagProfileImg(true,true);}									//Ajoute l'icone de l'user ?
-					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["burgerLauncher"=>"big-inline","burgerLauncherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda
+					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["burgerLauncher"=>"small-inline","burgerLauncherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda
 					?>
 				</div>
 				<!--PERIODE AFFICHEE  &  PRECEDENT/SUIVANT  &  MENU CONTEXT MONTHS/YEARS-->
@@ -332,7 +336,7 @@ function moduleDisplay()
 
 		<!--AUCUN AGENDA-->
 		<?php if(empty($displayedCalendars)){ ?>
-			<div class="miscContainer emptyContainer"><?= Txt::trad("CALENDAR_noCalendarDisplayed") ?></div>
+			<div class="miscContent emptyContent"><?= Txt::trad("CALENDAR_noCalendarDisplayed") ?></div>
 		<?php } ?>
 	</div>
 </div>

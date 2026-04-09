@@ -31,9 +31,10 @@
 			toolbar_mode: "sliding",
 			////	Chargement de l'éditeur : parametrages spécifiques
 			setup: function(editor){
-				////	Met le focus dans l'éditeur (sauf si deja un focus ou si "isTouchDevice()")
+				////	Met le focus dans l'éditeur ()
 				editor.on("init",function(){
-					if($("input:focus").length==0 && isTouchDevice()==false)  {editor.focus();}
+					if($("input:focus").length==0 && isTouchDevice()==false)  {editor.focus();}//Focus sur un autre input ? Sur mobile ?
+					if($("#descriptionToggle").exist() && isEmptyEditor())  {$("#descriptionTextarea").hide();}//Masque l'editeur ?
 				});
 				////	Modif le contenu de l'éditeur
 				editor.on("change keyup",function(){
@@ -165,19 +166,12 @@
 
 
 <style>
-.descriptionToggle		{margin-bottom:20px; display:inline-block; line-height:35px; margin-left:15px;}							/*Label pour afficher/masquer la description d'un objet. Height identique aux inputs text*/
-.descriptionTextarea	{margin-bottom:20px; <?= ($toggleButton==true && empty($curObj->description)) ?"display:none;":null ?>}	/*Textarea masqué par défaut ?*/
-.tox-promotion			{display:none;}/*Masque le bouton "Upgrade !"*/
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
-	.descriptionToggle	{display:block; margin:0px; margin-top:20px; margin-bottom:10px!important;}
-}
 </style>
 
 
 <?php if($toggleButton==true){ ?>
-	<div class="descriptionToggle" onclick="$('.descriptionTextarea').slideToggle()"><img src="app/img/description.png"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label></div>
+	<div id="descriptionToggle" onclick="$('#descriptionTextarea').slideToggle()"><img src="app/img/description.png"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label></div>
 <?php } ?>
 
-<div class="descriptionTextarea"><textarea name="description"><?= $curObj->description ?></textarea></div>
+<div id="descriptionTextarea"><textarea name="description"><?= $curObj->description ?></textarea></div>

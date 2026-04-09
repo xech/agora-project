@@ -1,14 +1,14 @@
 <style>
 #displayUsersSelect		{margin:10px; height:40px; border-radius:5px; font-weight:bold; cursor:pointer;}
-#displayUsersSelect:has(option[value='all'])	{background-color:#059; color:white!important}
+#displayUsersSelect:has(option[value='all']:checked)	{background-color:#059; color:white!important}
 #menuAlphabet>a			{padding:8px;}
 .vAdminIcon				{margin-left:5px;}
 </style>
 
 <div id="pageFull">
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<?= MdlUser::menuSelect() ?>
-		<div class="miscContainer">
+		<div class="miscContent">
 
 			<!--"USERS DE L'ESPACE" / "TOUS LES USERS"-->
 			<?php if($menuDisplayUsers==true){ ?>
@@ -68,8 +68,8 @@
 			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}		//Admin space
 			else								{$adminIcon=null;}
 			echo $tmpUser->divContainerMenu("objPerson").
-				'<div class="objContainerScroll">
-					<div class="objContent">
+				'<div class="objContentScroll">
+					<div class="objContentTab">
 						<div class="objIcon">'.$tmpUser->tagProfileImg(true,false).'</div>
 						<div class="objLabel" onclick="'.$tmpUser->lightboxVue().'">
 							<div class="personLabel">'.$tmpUser->getLabel("full").$adminIcon.'</div>
@@ -80,7 +80,7 @@
 			</div>';
 		}
 		////	AUCUN CONTENU  &&  MENU DE PAGINATION
-		if(empty($displayedUsers))	{echo '<div class="miscContainer emptyContainer">'.Txt::trad("USER_noUser").'</div>';}
+		if(empty($displayedUsers))	{echo '<div class="miscContent emptyContent">'.Txt::trad("USER_noUser").'</div>';}
 		echo MdlUser::menuPagination($usersTotalNb,"alphabet");
 		?>
 	</div>

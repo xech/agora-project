@@ -6,9 +6,9 @@
 </style>
 
 <div id="pageFull">
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<?= MdlLink::menuSelect() ?>
-		<div class="miscContainer">
+		<div class="miscContent">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
@@ -32,8 +32,8 @@
 		foreach($linkList as $tmpLink){
 			$linkLabel=(!empty($tmpLink->description))  ?  '<span '.Txt::tooltip($tmpLink->adress).'>'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
 			echo $tmpLink->divContainerMenu().
-				'<div class="objContainerScroll">
-					<div class="objContent">
+				'<div class="objContentScroll">
+					<div class="objContentTab">
 						<div class="objIcon objIconOpacity"><img src="app/img/link/iconSmall.png"></div>
 						<div class="objLabel" onclick="window.open(\''.$tmpLink->adress.(Req::isMobileApp()?"#fromMobileApp":null).'\')"><img src="https://www.google.com/s2/favicons?domain='.$tmpLink->adress.'">'.$linkLabel.'</div>
 						<div class="objAutorDate">'.$tmpLink->autorDate(true).'</div>
@@ -44,7 +44,7 @@
 		////	AUCUN CONTENU & AJOUTER
 		if(empty(CtrlObject::vueFolders()) && empty($linkList)){
 			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlLink::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("LINK_addLink")."</div>"  :  null;
-			echo '<div class="miscContainer emptyContainer">'.Txt::trad("LINK_noLink").$addElement.'</div>';
+			echo '<div class="miscContent emptyContent">'.Txt::trad("LINK_noLink").$addElement.'</div>';
 		}
 		?>
 	</div>

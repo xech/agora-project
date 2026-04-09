@@ -1,7 +1,7 @@
 <script>
-/********************************************************************************************************
+/************************************************************************************************************
  *	INIT
- *******************************************************************************************/
+ ************************************************************************************************************/
 ready(function(){
 	////	"Infinite scroll" : Affichage progressif des news et sondages
 	$(window).on("scroll",function(){
@@ -61,14 +61,14 @@ ready(function(){
 	dashboardPollVote();
 });
 
-/********************************************************************************************************
- *	MENU ACTUALITÉS / SONDAGES / NOUVEAUTÉS
- *******************************************************************************************/
+/************************************************************************************************************
+ *	MENU ACTUALITÉS / SONDAGES / NOUVEAUX ELEMENTS
+ ************************************************************************************************************/
 function dashboardOption(menuName)
 {
 	//Déselectionne tous les menus -> puis sélectionne le menu demandé
-	$("#tabMenus a").removeClass("linkSelect");
-	$("#tabMenu"+menuName).addClass("linkSelect");
+	$("#tabMenus a").removeClass("optionSelect");
+	$("#tabMenu"+menuName).addClass("optionSelect");
 	//Masque les menus contextuels et les contenus principaux -> puis sélectionne le menu contextuel et le contenu demandé
 	$("div[id^=modMenu], #pageContent>div[id^=content]").hide();
 	$("#modMenu"+menuName).fadeIn();
@@ -80,9 +80,9 @@ function dashboardOption(menuName)
 	$("#underMenus").css("margin-left",underMenusLeft);
 }
 
-/********************************************************************************************************
+/************************************************************************************************************
  *	VOTE D'UN SONDAGE
- *******************************************************************************************/
+ ************************************************************************************************************/
 function dashboardPollVote()
 {
 	////	VOTE UN SONDAGE
@@ -106,36 +106,26 @@ function dashboardPollVote()
 
 
 <style>
-/*Menu Actualités / Sondages / Nouveautés*/
-.pathMenu.miscContainer					{width:99.5%; padding:0px;}/*surcharge*/
-#tabMenus								{display:table; width:100%; padding:0px; padding-top:10px; table-layout:fixed;}/*fixed: même width pour chaque cells*/
-#tabMenus a								{display:table-cell; text-align:center; font-size:1.05rem;}/*label du menu*/
-#tabMenus .circleNb						{margin-left:5px; font-size:0.9rem;}
-#underMenus								{display:inline-block; width:<?= $isPolls==true?'33.33%':'50%' ?>; height:5px; margin-bottom:-8px; padding:0px; background:tomato; transition:0.1s ease-in-out;}/*Surligne les options du module*/
-#contentNews,#contentPolls,#contentElems{width:100%; display:none;}/*Masque par défaut les contenus principaux*/
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
-	.pathMenu.miscContainer				{width:98%;}/*surcharge : idem app.css*/
-	#tabMenus							{padding:10px;}
-	#underMenus							{display:none;}
-}
-
-/*Infinites scrolls : News / Sondages*/
-.infiniteScrollHidden					{display:none;}
-.infiniteScrollLoading					{text-align:center; padding:10px;}
+/*Menu Actualités / Sondages / Nouveaux elements*/
+#tabMenus									{display:table; width:100%; table-layout:fixed;}/*fixed: même width pour chaque cells*/
+#tabMenus a									{display:table-cell; text-align:center;}/*label du menu*/
+#tabMenus a.optionSelect					{padding-block:5px;}
+#tabMenus .circleNb							{margin-left:5px;}
+#contentNews,#contentPolls,#contentElems	{display:none;}/*Masque par défaut les contenus principaux*/
+.infiniteScrollHidden						{display:none;}
+.infiniteScrollLoading						{text-align:center;}
 
 /*News*/
-.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}		/*surcharge de .objContainer : height adapté au contenu*/
+.vNewsContainer.objContent				{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContent : height adapté au contenu*/
 .vNewsDescription						{font-weight:normal;}
-.vNewsDescription a						{text-decoration:underline;}									/*idem editeur*/
+.vNewsDescription h3					{text-align:center;}/*1ere news par défaut : cf. "INSTALL_dataDashboardNews"*/
+.vNewsDescription h4					{font-weight:normal; font-size:1.05rem;}
+.vNewsDescription h4 img				{max-width:30px; max-height:25px; margin-inline:10px;}
+.vNewsDescription h4:last-child			{margin-bottom:30px;}
 .vNewsDetail							{margin-top:20px; margin-bottom:10px; text-align:center;}		/*Détails centrés*/
-.vNewsDetail>div						{display:inline-block; margin-inline:15px; line-height:20px;}	/*"line-height" idem à la taille des img ci-dessous*/
-.vNewsDetail img						{max-height:20px;}												/*Icones des details (à la une, etc)*/
+.vNewsDetail>div						{display:inline-block; margin-inline:15px; line-height:22px;}	/*alignement : "line-height" à la taille des Icones ci-dessous*/
+.vNewsDetail img						{max-height:22px;}												/*Icones des details (à la une, etc)*/
 .vNewsTopNews							{color:#a40;}													/*texte "Actualité à la une"*/
-/*News par défaut (cf. "INSTALL_dataDashboardNews")*/
-.vNewsDescription h3					{text-align:center;}							
-.vNewsDescription h4 img				{max-width:33px!important; margin-left:10px; margin-right:10px;}/*cf. width réel des "iconSmall.png"*/
-.vNewsDescription h4:last-child			{margin-bottom:20px;}
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	.vNewsDescription h3				{font-size:1.3rem;}									/*New par défaut*/
@@ -144,12 +134,12 @@ function dashboardPollVote()
 }
 
 /*Sondages*/
-#moduleMenu .vPollsTitle				{margin:20px 0px; font-size:1.05rem;}
-#moduleMenu .vPollsContainer ul			{padding-left:10px!important;}
-#moduleMenu .submitButtonMain			{margin-top:10px;}
-.vPollsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
-.vPollsTitle,.vPollsDescription			{text-align:center; margin:15px 0px;}/*Titre et Description*/
-#contentPolls .vPollsTitle				{font-size:1.25rem;}/*Titre de l'affichage principal (pas avec les news)*/
+#pageMenu .vPollsTitle					{margin-block:20px 10px; font-weight:bold;}
+#pageMenu .vPollsContainer ul			{padding-left:10px; margin:0px;}
+#pageMenu .submitButtonMain				{margin-block:15px;}
+.vPollsContainer.objContent				{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
+.vPollsTitle, .vPollsDescription		{text-align:center; margin:15px 0px;}/*Titre et Description*/
+#contentPolls .vPollsTitle				{font-size:1.2rem;}/*Titre de l'affichage principal (pas avec les news)*/
 .vPollsDescription img					{max-height:400px;}/*Affichage des images dans la description*/
 .vPollsContainer ul li					{list-style:none; margin-bottom:20px;}
 .vPollsDetails							{margin-top:20px; text-align:center;}
@@ -181,109 +171,153 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 
 
 <div id="pageCenter">
-	<div id="moduleMenu">
-		<div class="miscContainer">
-			<?php
-			////	MENU CONTEXT DES ACTUALITÉS
-			echo "<div id='modMenuNews'>";
-				//// Ajoute une news / Affiche les news "Offline"  /  Tri des news
-				if(MdlDashboardNews::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlDashboardNews::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addNews").'</div></div>';}
-				echo '<div class="menuLine '.(!empty($_SESSION["offlineNews"])?'optionSelect':'option').'" onclick="redir(\'?ctrl=dashboard&offlineNews='.(empty($_SESSION["offlineNews"])?'true':'false').'\')" title="'.$offlineNewsNb." ".Txt::trad("DASHBOARD_offlineNewsNb").'"><div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div><div>'.Txt::trad("DASHBOARD_offlineNews").'</div></div>'.
-					  '<hr>'.MdlDashboardNews::menuSort();
-				//// Affichage des sondages (option "newsDisplay")
-				if(Req::isMobile()==false && !empty($pollsListNewsDisplay)){
-					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll)
-						{echo '<hr><div class="vPollsContainer"><div class="vPollsTitle" '.Txt::tooltip($tmpPoll->description).'>'.$tmpPoll->title.'</div><div class="vPollContent'.$tmpPoll->_id.'">'.$tmpPoll->vuePollForm(true).'</div></div>';}
-				}
-			echo "</div>";
+	<div id="pageMenu">
+		<div class="miscContent">
 
-			////	MENU CONTEXT DES SONDAGES
-			if($isPolls==true){
-				echo "<div id='modMenuPolls'>";
-					//Ajoute un sondage  /  Voir uniquement les sondages à voter  /  Tri des sondages 
-					if(MdlDashboardPoll::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlDashboardPoll::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("DASHBOARD_addPoll").'</div></div>';}
-					if(!empty($pollsVotedNb))		  {echo '<div class="menuLine '.($_SESSION["pollsVotedShow"]==true?'linkSelect':null).'" onclick="redir(\'?ctrl=dashboard&dashboardPoll=true&pollsVotedShow='.($_SESSION["pollsVotedShow"]==true?'false':'true').'\')" '.Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")).'><div class="menuIcon"><img src="app/img/check.png"></div><div>'.Txt::trad("DASHBOARD_pollsVoted").($_SESSION["pollsVotedShow"]==true?'&nbsp; <img src="app/img/check.png">':null).'</div></div>';}
-					echo MdlDashboardPoll::menuSort("&dashboardPoll=true");
-				echo "</div>";
-			}
+			<!--MENU CONTEXT DES ACTUALITÉS-->
+			<div id="modMenuNews">
+				<!--AJOUTE UNE NEWS-->
+				<?php if(MdlDashboardNews::addRight()){ ?>
+				<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardNews::getUrlNew() ?>')">
+					<div class="menuIcon"><img src="app/img/plus.png"></div>
+					<div><?= Txt::trad("DASHBOARD_addNews") ?></div>
+				</div>
+				<?php } ?>
+				<!--NEWS "OFFLINE"-->
+				<div class="menuLine <?= empty($_SESSION["offlineNews"])?"option":"optionSelect" ?>" <?= Txt::tooltip($offlineNewsNb.' '.Txt::trad("DASHBOARD_offlineNewsNb")) ?> >
+					<div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div>
+					<div onclick="redir('?ctrl=dashboard&offlineNews=<?= empty($_SESSION['offlineNews'])?'true':'false' ?>')"><?= Txt::trad("DASHBOARD_offlineNews") ?></div>
+				</div>
+				<hr>
+				<!--TRI DES NEWS-->
+				<?= MdlDashboardNews::menuSort() ?>
+				<!--LISTE DES SONDAGES (OPTION "NEWSDISPLAY")-->
+				<?php
+					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll){
+				?>
+					<hr>
+					<div class="vPollsContainer">
+						<div class="vPollsTitle" <?= Txt::tooltip($tmpPoll->description) ?> ><?= $tmpPoll->title ?></div>
+						<div class="vPollContent<?= $tmpPoll->_id ?>"><?= $tmpPoll->vuePollForm(true) ?></div>
+					</div>
+				<?php
+					}
+				?>
+			</div>
 
-			////	MENU CONTEXT DES NOUVEAUTÉS
-			if($showNewElems==true){
-				echo "<div id='modMenuElems'><div>".Txt::trad("DASHBOARD_plugins")." :</div>";
-				foreach($pluginPeriodOptions as $periodValue=>$tmpPeriod)
-				{
-					$selectedPeriod=($pluginPeriod==$periodValue)  ?  "checked='checked'"  :  null;
+			<!--MENU CONTEXT DES SONDAGES-->
+			<?php if($isPolls==true){ ?>
+				<div id="modMenuPolls">
+					<!--Ajoute un sondage-->
+					<?php if(MdlDashboardPoll::addRight()){ ?>
+						<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardPoll::getUrlNew() ?>')">
+							<div class="menuIcon"><img src="app/img/plus.png"></div>
+							<div><?= Txt::trad("DASHBOARD_addPoll") ?></div>
+						</div>
+					<?php } ?>
+					<!--Voir uniquement les sondages votés-->
+					<?php if(!empty($pollsVotedNb)){ ?>
+						<div class="menuLine <?= $_SESSION["pollsVotedShow"]==true?'optionSelect':null ?>" <?= Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")) ?> >
+							<div class="menuIcon"><img src="app/img/check.png"></div>
+							<div onclick="redir('?ctrl=dashboard&dashboardPoll=true&pollsVotedShow=<?= $_SESSION['pollsVotedShow']==true?'false':'true' ?>')"><?= Txt::trad("DASHBOARD_pollsVoted") ?></div>
+						</div>
+					<?php } ?>
+					<!--Tri des sondages-->
+					<?= MdlDashboardPoll::menuSort("&dashboardPoll=true") ?>
+				</div>
+			<?php } ?>
+
+			<!--MENU CONTEXT DES NOUVEAUX ELEMENTS-->
+			<?php if($showNewElems==true){ ?>
+				<div id="modMenuElems"><div><?= Txt::trad("DASHBOARD_plugins") ?> :</div>
+				<?php
+				foreach($pluginPeriodOptions as $periodValue=>$tmpPeriod){
 					$titlePeriod=($periodValue=="day")  ?  Txt::trad("today")  :  Txt::trad("DASHBOARD_pluginsTooltip2")." ".date("d/m/Y",$tmpPeriod["timeBegin"])." ".Txt::trad("and")." ".date("d/m/Y",$tmpPeriod["timeEnd"]);
-					echo "<div ".Txt::tooltip(Txt::trad("DASHBOARD_pluginsTooltip")." ".$titlePeriod).">
-							<input name='pluginPeriod' type='radio' id='radioPeriod".$periodValue."' ".$selectedPeriod." onclick=\"redir('?ctrl=dashboard&pluginPeriod=".$periodValue."')\">
-							<label for='radioPeriod".$periodValue."'>".Txt::trad("DASHBOARD_plugins_".$periodValue)."</label>
-						  </div>";
-				}
-				echo "</div>";
-			}
-			?>
+				?>
+					<div <?= Txt::tooltip(Txt::trad("DASHBOARD_pluginsTooltip")." ".$titlePeriod) ?> >
+						<input name="pluginPeriod" type="radio" id="radioPeriod<?= $periodValue ?>" <?= $pluginPeriod==$periodValue?'checked="checked"':null ?> onclick="redir('?ctrl=dashboard&pluginPeriod=<?= $periodValue ?>')">
+						<label for="radioPeriod<?= $periodValue ?>"><?= Txt::trad("DASHBOARD_plugins_".$periodValue) ?></label>
+					</div>
+				<?php } ?>
+				</div>
+			<?php } ?>
 		</div>
 	</div>
 
+
 	<div id="pageContent">
-		<?php
-		////	MENU DES ACTUALITÉS / SONDAGES / NOUVEAUTÉS
-		if($isPolls==true || $showNewElems==true){
-			echo '<div class="pathMenu miscContainer">
-					<div id="tabMenus">
-						<a onclick="dashboardOption(\'News\')" id="tabMenuNews">'.Txt::trad("DASHBOARD_menuNews").'</a>
-						'.($isPolls==true ?  '<a onclick="dashboardOption(\'Polls\')" id="tabMenuPolls">'.Txt::trad("DASHBOARD_menuPolls").(!empty($pollsListNewsDisplay)?'<span class="circleNb" '.Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted").' : '.count($pollsListNewsDisplay)).'>'.count($pollsListNewsDisplay).'</span>':null).'</a>'  :  null).'
-						<a onclick="dashboardOption(\'Elems\')" id="tabMenuElems">'.Txt::trad("DASHBOARD_menuElems").(!empty($pluginsList)?'<span class="circleNb">'.count($pluginsList).'</span>':null).'</a>
-					</div>
-					<div id="underMenus">&nbsp;</div>
-				</div>';
-		}
+
+		<!--MENU DU DASHBORAD-->
+		<?php if($isPolls==true || $showNewElems==true){ ?>
+			<div class="pathMenu miscContent">
+				<div id="tabMenus">
+					<!--ACTUALITÉS-->
+					<a onclick="dashboardOption('News')" id="tabMenuNews">
+						<?= Txt::trad("DASHBOARD_menuNews") ?>
+					</a>
+					<!--SONDAGES-->
+					<?php if($isPolls==true){ ?>
+						<a onclick="dashboardOption('Polls')" id="tabMenuPolls">
+							<?= Txt::trad("DASHBOARD_menuPolls") ?>
+							<?php if(!empty($pollsNotVotedNb)){ ?><span <?= Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted").' : '.$pollsNotVotedNb) ?> class="circleNb" > <?= $pollsNotVotedNb ?></span><?php } ?>
+						</a>
+					<?php } ?>
+					<!--NOUVEAUX ELEMENTS-->
+					<a onclick="dashboardOption('Elems')" id="tabMenuElems">
+						<?= Txt::trad("DASHBOARD_menuElems") ?>
+						<?php if(!empty($pluginsList)){ ?><span class="circleNb"><?= count($pluginsList) ?></span><?php } ?>
+					</a>
+				</div>
+			</div>
+		<?php } ?>
+
+		<!--LISTE DES ACTUALITÉS-->
+		<div id="contentNews">
+			<!--PREMIÈRES NEWS (AVANT INFINITE SCROLL)-->
+			<?= $vueNewsListInitial ?>
+			<!--AUCUNE NEWS-->
+			<?php if(empty($vueNewsListInitial)){ ?><div class="miscContent emptyContent"><?= Txt::trad("DASHBOARD_noNews") ?></div><?php } ?>
+		</div>
+
+		<!--LISTE DES SONDAGES-->
+		<?php if($isPolls==true){ ?>
+		<div id="contentPolls">
+			<!--PREMIERS SONDAGES (AVANT INFINITE SCROLL)-->
+			<?= $vuePollsListInitial ?>
+			<!--AUCUN SONDAGE-->
+			<?php if(empty($vuePollsListInitial)){ ?><div class="miscContent emptyContent"><?= Txt::trad("DASHBOARD_noPoll") ?></div><?php } ?>
+		</div>
+		<?php } ?>
 		
-		////	LISTE DES ACTUALITÉS
-		echo "<div id='contentNews'>";
-			//// Premières news avant de "infinite scroll"
-			echo $vueNewsListInitial;
-			//// Aucune news
-			if(empty($vueNewsListInitial)){
-				$addElement=(MdlDashboardNews::addRight())  ?  "<div onclick=\"lightboxOpen('".MdlDashboardNews::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("DASHBOARD_addNews")."</div>"  :  null;
-				echo '<div class="miscContainer emptyContainer">'.Txt::trad("DASHBOARD_noNews").$addElement.'</div>';
-			}
-		echo "</div>";
-		
-		////	LISTE DES SONDAGES
-		if($isPolls==true){
-			echo "<div id='contentPolls'>";
-			//// Premiers sondages avant "infinite scroll"
-			echo $vuePollsListInitial;
-			//// Aucun sondage
-			if(empty($vuePollsListInitial)){
-				$addElement=(MdlDashboardPoll::addRight())  ?  "<div onclick=\"lightboxOpen('".MdlDashboardPoll::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("DASHBOARD_addPoll")."</div>"  :  null;
-				echo '<div class="miscContainer emptyContainer">'.Txt::trad("DASHBOARD_noPoll").$addElement.'</div>';
-			}
-			echo "</div>";
-		}
-		
-		////	LISTE DES NOUVEAUTÉS (PLUGINS)
-		if($showNewElems==true){
-			echo '<div id="contentElems"><div class="miscContainer">';
-			foreach($pluginsList as $tmpObj){
-				//// Libellé du module (séparateur?)
-				if(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName){
+		<!--LISTE DES NOUVEAUX ELEMENTS (PLUGIN)-->
+		<?php if($showNewElems==true){ ?>
+		<div id="contentElems">
+			<div class="miscContent">
+				<!--AFFICHE CHAQUE NOUVEAUTE-->
+				<?php foreach($pluginsList as $tmpObj){
+					$showModuleLabel=(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName);
 					$tmpModuleName=$tmpObj::moduleName;
-					echo '<div class="vContentElemsModuleLabel"><img src="app/img/'.$tmpModuleName.'/iconSmall.png">&nbsp; '.Txt::trad(strtoupper($tmpModuleName).'_MODULE_NAME').'<hr></div>';
-				}
-				//// Affiche le plugin
-				if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.="<hr>".Txt::trad("createdBy")." ".$tmpObj->autorDate(true);}
-				$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")."<hr>".$tmpObj->pluginTooltip  :  $tmpObj->pluginTooltip;//Ajoute si besoin "Afficher l'element dans son dossier"
-				echo '<div class="menuLine lineHover">
-						<div onclick="'.$tmpObj->pluginJsIcon.'" '.Txt::tooltip($tmpObj->pluginTooltipIcon).' class="menuIcon"><img src="app/img/'.$tmpObj->pluginIcon.'"></div>
-						<div onclick="'.$tmpObj->pluginJsLabel.'" '.Txt::tooltip($tmpObj->pluginTooltip).'>'.$tmpObj->pluginLabel.'</div>
-					  </div>';
-			}
-			//// "Aucune nouveauté sur cette période"
-			if(empty($pluginsList))  {echo '<div class="emptyContainer">'.Txt::trad("DASHBOARD_pluginEmpty").'</div>';}
-			echo "</div></div>";
-		}
-		?>
+					if(isset($tmpObj->dateCrea))  {$tmpObj->pluginTooltip.='<hr>'.Txt::trad("createdBy").' '.$tmpObj->autorDate(true);}
+					$tmpObj->pluginTooltipIcon=($tmpObj::isInArbo())  ?  Txt::trad("DASHBOARD_pluginsTooltipRedir")."<hr>".$tmpObj->pluginTooltip  :  $tmpObj->pluginTooltip;//"Afficher l'element dans son dossier"
+				?>
+					<!--LABEL DU MODULE + HR-->
+					<?php if($showModuleLabel==true){ ?>
+						<div class="vContentElemsModuleLabel">
+							<img src="app/img/<?= $tmpObj::moduleName ?>/iconSmall.png">&nbsp; <?= Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME") ?>
+							<hr>
+						</div>
+					<?php } ?>
+					<!--AFFICHE LE PLUGIN-->
+					<div class="menuLine lineHover">
+						<div onclick="<?= $tmpObj->pluginJsIcon ?>" <?= Txt::tooltip($tmpObj->pluginTooltipIcon) ?> class="menuIcon"><img src="app/img/<?= $tmpObj->pluginIcon ?>"></div>
+						<div onclick="<?= $tmpObj->pluginJsLabel ?>" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> ><?= $tmpObj->pluginLabel ?></div>
+					</div>
+				<?php } ?>
+				<!--AUCUN NOUVEL ELEMENT-->
+				<?php if(empty($pluginsList)){ ?><div class="emptyContent"><?= Txt::trad("DASHBOARD_pluginEmpty") ?></div><?php } ?>
+			</div>
+		</div>
+		<?php } ?>
+	
 	</div>
 </div>

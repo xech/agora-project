@@ -419,7 +419,7 @@ class Trad extends Txt
 			////	Header
 			"HEADER_displaySpace"=>"Workspaces",
 			"HEADER_displayAdmin"=>"Administrator display",
-			"HEADER_displayAdminInfo"=>"Administrator display: Allows you to display items in the space that are not directly assigned to me: folders, calendars, etc.",
+			"HEADER_displayAdminInfo"=>"Administrator View: Displays all elements present in the space (calendars, folders, etc.)",
 			"HEADER_displayAdminEnabled"=>"Administrator display enabled",
 			"HEADER_displayAdminDisabled"=>"Administrator display disabled",
 			"HEADER_documentation"=>"Documentation",
@@ -438,7 +438,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Please specify a message",
 			"MESSENGER_visioProposeTo"=>"Propose a video conference to",
 			"MESSENGER_visioProposeToSelection"=>"Propose a video conference to the selected people",
-			"MESSENGER_visioProposeToUsers"=>"Click here to start the video conference between",
+			"MESSENGER_visioProposeToUsers"=>"Start a video conference between",
 			"MESSENGER_nobody"=>"No other users are currently logged in",
 			
 			////	Lancer une Visio
@@ -829,7 +829,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editAdd"=>"Add an event category",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Users who have not deactivated their personal calendar in their user profile will still see the Calendar module in the menu bar",
 			"CALENDAR_readableCalendars"=>"Available calendars",
-			"CALENDAR_displayAdmin"=>"Admin Display: also shows calendars not assigned to me",
+			"CALENDAR_displayAdmin"=>"Administrator View: Displays all calendars present in the space",
 			"CALENDAR_displayHide"=>"Show / Hide Calendar",
 			"CALENDAR_printCalendars"=>"Print calendar(s)",
 			"CALENDAR_printCalendarsInfos"=>"Print in landscape mode",

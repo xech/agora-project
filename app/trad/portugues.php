@@ -419,7 +419,7 @@ class Trad extends Txt
 			////	Header
 			"HEADER_displaySpace"=>"Espaços de trabalho",
 			"HEADER_displayAdmin"=>"Visualização de Administrador",
-			"HEADER_displayAdminInfo"=>"Visualização de Administrador: Permite exibir itens no espaço que não me estão directamente atribuídos : pastas, calendários, etc.",
+			"HEADER_displayAdminInfo"=>"Exibição do Administrador: Exibe todos os elementos presentes no espaço (agendas, pastas, etc.)",
 			"HEADER_displayAdminEnabled"=>"Visualização do administrador ativada",
 			"HEADER_displayAdminDisabled"=>"Visualização do administrador desativada",
 			"HEADER_documentation"=>"Documentação",
@@ -438,7 +438,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Especifique uma mensagem",
 			"MESSENGER_visioProposeTo"=>"Propor uma videoconferência para",
 			"MESSENGER_visioProposeToSelection"=>"Propor uma videoconferência para as pessoas selecionadas",
-			"MESSENGER_visioProposeToUsers"=>"Clique aqui para iniciar a videoconferência entre",
+			"MESSENGER_visioProposeToUsers"=>"Iniciar a videoconferência entre",
 			"MESSENGER_nobody"=>"Nenhum outro utilizador está ligado de momento",
 			
 			////	Lancer une Visio
@@ -829,7 +829,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editAdd"=>"Adicionar uma categoria de evento",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Os usuários que não desativaram seu calendário pessoal em seu perfil de usuário ainda verão o módulo Calendário na barra de menus.",
 			"CALENDAR_readableCalendars"=>"Calendários disponíveis",
-			"CALENDAR_displayAdmin" => "Exibição de Administrador: também mostra calendários não atribuídos a mim",
+			"CALENDAR_displayAdmin" => "Exibição do Administrador: Exibe todos os agendas presentes no espaço",
 			"CALENDAR_displayHide"=>"Exibir / Ocultar calendário",
 			"CALENDAR_printCalendars"=>"Imprimir calendários",
 			"CALENDAR_printCalendarsInfos"=>"imprimir a página no modo horizontal",

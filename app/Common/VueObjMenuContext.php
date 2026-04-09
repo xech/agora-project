@@ -139,9 +139,9 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 </div>
 
 
-<!--ICONES FLOTTANTES-->
+<!--ICONES SOUS LE LAUNCHER DU MENU CONTEXT-->
 <?php if($burgerLauncher=="big-float"){ ?>
-	<div class="menuContextSub">
+	<div class="menuContextUnder">
 
 		<!--FICHIERS JOINTS-->
 		<?php if($curObj->attachedFileMenu()){ ?>

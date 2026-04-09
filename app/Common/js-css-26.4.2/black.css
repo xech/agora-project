@@ -1,0 +1,46 @@
+/*** BASIC*/
+body, a, .sLink																				{color:#ddd;}
+#htmlLightbox, .objContent, .miscContent, .menuContext, #menuMobileMain						{background:#222;}
+#headerBar																					{background:linear-gradient(to bottom,black,#222);}/*barre principale*/
+.objBlocks .objContent:hover																{box-shadow:2px 2px 10px #fff;}
+.objLines .objContent																		{border-bottom:solid 1px #555;}
+.menuContext,  #messengerMain, .tox-tinymce													{border:solid 1px #444;}
+.objLines .objContent:hover, .menuContext .menuLine:hover, .lineHover:hover, .lineSelect	{background:#333;}
+.objContentSelect, #objSelectMenu															{background:#444!important;}
+.tooltipster-box																			{background:#222!important; box-shadow:0px 0px 8px #aaa!important;}
+.tooltipster-content																		{color:#eee!important; padding:15px!important;}
+/*AFFICHAGE RESPONSIVE*/
+@media screen and (max-width:1200px){
+	#htmlMainPage					{background:#222 url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#headerBar						{border-top:solid 1px #ddd;}/*séparation de la "appBar" du main.dart*/
+	.objContent, .miscContent	{box-shadow:0px 2px 6px #555;}
+}
+
+/*** MENU DES MODULES*/
+#headerBarRight *:is(.vHeaderModuleCurrent,.vHeaderModule:hover)	{background:black; border:solid 1px #444!important;}
+#menuMobileMain  *:is(.vHeaderModuleCurrent,.miscContent)			{background:#333;  border:solid 1px #555; box-shadow:0px 2px 6px #555;}
+
+/*** LIENS & OPTIONS*/
+a:hover, .sLink:hover, .linkSelect, .menuContextLaunch:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .optionSelect	{color:#679cd8;}
+.sAccessRead						{color:#9ccaff;}
+.sAccessWrite						{color:rgb(245, 182, 182);}
+.option								{border:solid 1px transparent;}
+.optionSelect, .option:hover 		{background:#444; border:solid 1px #555; border-radius:7px;}
+.optionSelect						{background:#444; font-weight:bold;}
+
+/*** INPUTS*/
+input, textarea, select, button				{color:#ddd; background:#333; border:1px solid #555; transition:box-shadow 0.3s ease-in-out;}
+input:hover, textarea:hover, select:hover	{box-shadow:0px 0px 5px #444;}
+input:focus, textarea:focus, select:focus	{box-shadow:0px 0px 5px #0068bd; border:#bcf 1px solid;}
+button										{background:linear-gradient(#444,#333);}
+button:hover:not(.f-button)					{background:linear-gradient(#444,#3a3a3a);}
+
+/*** DIVERS*/
+.objMenuTab, .objMenuMain, fieldset		{background:#333; border:1px solid #444; border-radius:10px;}	 	  /*VueObjMenuEdit + fieldset*/
+.objMenuTab								{background:transparent;}												 /*VueObjMenuEdit : onglet non sélectionnés*/
+.objMenuTab:hover, .objMenuTabSelect	{background:#333;}														/*VueObjMenuEdit : onglet sélectionnés/survolé*/
+hr										{background:linear-gradient(90deg,#555,#777,#555);}
+.lightboxTitle							{border-bottom:solid 1px #888;}										/*peudo <hr>*/
+.jconfirm-box							{background:#222!important; box-shadow:0px 2px 6px #555!important;}
+::-webkit-scrollbar						{background:#333;}/*chemin de scrollbar*/
+::-webkit-scrollbar-thumb				{background:#888;}/*couleur de scrollbar*/

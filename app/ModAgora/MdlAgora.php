@@ -31,7 +31,7 @@ class MdlAgora extends MdlObject
 	 ********************************************************************************************************/
 	public function pathLogoFooter()
 	{
-		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logoSmall.png";
+		return (!empty($this->logo) && is_file(PATH_DATAS.$this->logo))  ?  PATH_DATAS.$this->logo  :  "app/img/logo.png";
 	}
 
 	/********************************************************************************************************
@@ -48,8 +48,8 @@ class MdlAgora extends MdlObject
 	public function visioUrl()
 	{
 		if(!empty($this->visioHost)){
-			$visioId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");	//$visioId de 6 caractères aléatoires
-			return $this->visioHost."/visio-".substr($visioId,0,6);			//Url avec $visioId
+			$visioId=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");		//$visioId de 6 caractères aléatoires
+			return $this->visioHost."/visio-".substr($visioId,0,6);	//Url avec $visioId
 		}
 	}
 

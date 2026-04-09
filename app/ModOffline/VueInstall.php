@@ -54,7 +54,7 @@ input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 
 
 <div id="pageCenter">
-	<div id="pageContent" class="miscContainer">
+	<div id="pageContent" class="miscContent">
 		<?php
 		////	PAS D'ACCES AU DOSSIER DATAS  ||  FORMULAIRE D'INSTALL
 		if(!is_writable(PATH_DATAS))  {echo '<h2><img src="app/img/importantBig.png"> &nbsp; '.Txt::trad("NOTIF_chmodDATAS").'</h2>';}

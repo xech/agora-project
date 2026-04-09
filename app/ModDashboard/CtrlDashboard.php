@@ -29,14 +29,14 @@ class CtrlDashboard extends Ctrl
 		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isGuest()) ?  false  :  true;
 		if($vDatas["isPolls"]==true){
 			$vDatas["pollsVotedNb"]=MdlDashboardPoll::getPolls("pollsVotedNb");			//Nb de sondages votés
-			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("newsDisplay");	//Sondages non votés et affichés avec les news (menu de gauche)
+			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("newsDisplay");	//Sondages non votés : affichés dans le menu contetuel des News
+			$vDatas["pollsNotVotedNb"]=count($vDatas["pollsListNewsDisplay"]);			//Nombre de sondages non votés
 			$vDatasPolls["pollsList"]=MdlDashboardPoll::getPolls("scroll");				//Affichage principal des sondages "infinite scroll"
 			$vDatas["vuePollsListInitial"]=self::getVue(Req::curModPath()."VuePollsList.php", $vDatasPolls);
 		}
 		////	Plugin des nouveaux éléments (sauf guest)
 		$vDatas["showNewElems"]=(Ctrl::$curUser->isUser());
-		if($vDatas["showNewElems"]==true)
-		{
+		if($vDatas["showNewElems"]==true){
 			//Période en préférence / par défaut
 			$vDatas["pluginPeriod"]=self::getPref("pluginPeriod");
 			if(in_array($vDatas["pluginPeriod"],["day","week","month","previousConnection"])==false)  {$vDatas["pluginPeriod"]="week";}
@@ -48,7 +48,7 @@ class CtrlDashboard extends Ctrl
 			//Récupère les résultats via le "getPlugins()" de chaque module (vérif si la methode existe)
 			$vDatas["pluginsList"]=[];
 			$curPeriod=$vDatas["pluginPeriodOptions"][$vDatas["pluginPeriod"]];//Période affichée
-			$pluginParams=array("type"=>"dashboard", "dateTimeBegin"=>date("Y-m-d H:i",$curPeriod["timeBegin"]), "dateTimeEnd"=>date("Y-m-d H:i",$curPeriod["timeEnd"]));
+			$pluginParams=array("type"=>"dashboard", "dateTimeBegin"=>date("Y-m-d H:i:s",$curPeriod["timeBegin"]), "dateTimeEnd"=>date("Y-m-d H:i:s",$curPeriod["timeEnd"]));
 			foreach(self::$curSpace->moduleList() as $tmpModule){
 				if(method_exists($tmpModule["ctrl"],"getPlugins"))  {$vDatas["pluginsList"]=array_merge($vDatas["pluginsList"], $tmpModule["ctrl"]::getPlugins($pluginParams));}
 			}

@@ -213,14 +213,15 @@ class MdlCalendarEvent extends MdlObject
 			'data-evtColor'			=>$this->evtColor,
 			'data-evtTimeBegin'		=>$this->timeBegin,
 			'data-evtTimeEnd'		=>$this->timeEnd,
+			'data-evtHMSBegin'		=>date("H:i:s",$this->timeBegin),
 			'data-evtDateLabel'		=>Txt::dateLabel($this->timeBegin,"labelFull"),
 			'data-evtDayYmd'		=>date('Y-m-d',$dayTimeBegin),
 			'data-evtIsPast'		=>($this->timeEnd < time() ? 'true' : 'false'),
 			'data-evtIsDraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Evt "Draggable" si editable et non périodique
 		];
 		//// Time depuis le début du jour && Durée de l'evt sur la journée
-		$evtDayBefore=($this->timeBegin < $dayTimeBegin);																			//Evt commence avant le jour courant ?
-		$evtDayAfter =($this->timeEnd > $dayTimeEnd);																				//Evt termine après le jour courant ?
+		$evtDayBefore=($this->timeBegin < $dayTimeBegin);																			//Evt commence avant le jour affiché ?
+		$evtDayAfter =($this->timeEnd > $dayTimeEnd);																				//Evt termine après le jour affiché ?
 		$attrList['data-evtTimeSinceDayBegin']=($evtDayBefore==false)  ?  ($this->timeBegin-$dayTimeBegin)  :  0;					//Time entre le début du jour et le début de l'evt
 		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['data-evtTimeDuration']=86400;}									//Affiche toute la journée
 		elseif($evtDayBefore==true)						{$attrList['data-evtTimeDuration']=($this->timeEnd - $dayTimeBegin);}		//Affiche l'evt à partir de 0h00

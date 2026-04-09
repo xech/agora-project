@@ -14,10 +14,11 @@ ready(function(){
 
 <style>
 /*Affichage des sujets & messages*/
-.objContainer					{height:auto!important; min-height:auto!important; vertical-align:top; padding:15px 40px 15px 15px;}/*surcharge : hauteur variable des sujets/messages en fonction du texte affiché*/
-.objContent>div					{display:block; width:100%;}/*surcharge*/
+.objContent					{height:auto!important; min-height:auto!important; vertical-align:top; padding:15px 40px 15px 15px;}/*surcharge : hauteur variable des sujets/messages en fonction du texte affiché*/
+.objContentTab>div					{display:block; width:100%;}/*surcharge*/
+.vTitle							{font-weight:bold;}
 .vTitle:empty					{display:none;}
-.vDescription					{margin:15px 0px; font-weight:normal; user-select:text;}/*description des sujets/messages*/
+.vDescription					{margin:15px 0px; font-size:0.95rem; user-select:text;}/*description des sujets/messages*/
 .vDetails						{display:table!important; width:100%;}
 .vDetails>div					{display:table-cell; vertical-align:middle; line-height:25px;}/*'line-height' : cf '.personImgSmall'*/
 .vDetails>div:last-child		{text-align:right;}
@@ -35,9 +36,9 @@ ready(function(){
 
 
 <div id="pageCenter">
-	<div id="moduleMenu">
+	<div id="pageMenu">
 		<?= MdlForumSubject::menuSelect() ?>
-		<div class="miscContainer">
+		<div class="miscContent">
 		<?php
 		////	LISTE DES SUJETS :  AJOUT DE SUJET  &  MENU DES THEMES  &  TRI D'AFFICHAGE  &  NB DE SUJETS
 		if($forumDisplay=="subjectList"){
@@ -58,7 +59,7 @@ ready(function(){
 		<?php
 		////	SUJET COURANT : MENU "RETOUR VERS L'ACCUEIL"
 		if($forumDisplay=="suject"){
-			echo '<div class="pathMenu miscContainer">
+			echo '<div class="pathMenu miscContent">
 					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">'.Txt::trad("FORUM_forumRoot").'</div>
 					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/plus.png"></div>' : null).'
 					</div>';
@@ -79,7 +80,7 @@ ready(function(){
 				}
 			}
 			echo $tmpSubject->divContainerMenu().
-				'<div class="objContent '.$newSubjectClass.'" '.$subjectLink.'>
+				'<div class="objContentTab '.$newSubjectClass.'" '.$subjectLink.'>
 					<div class="vTitle">'.$tmpSubject->title.'</div>
 					<div class="vDescription">'.$tmpSubject->description.'</div>
 					<div class="vDetails">
@@ -92,7 +93,7 @@ ready(function(){
 
 		////	LISTE DES SUJETS : "AUCUN CONTENU"  ||  MENU DE PAGINATION
 		if($forumDisplay=="subjectList"){
-			if(empty($subjectList))	{echo '<div class="miscContainer emptyContainer">'.Txt::trad("FORUM_noSubject").'</div>';}
+			if(empty($subjectList))	{echo '<div class="miscContent emptyContent">'.Txt::trad("FORUM_noSubject").'</div>';}
 			else					{echo MdlForumSubject::menuPagination($subjectsTotalNb);}
 		}
 
@@ -110,7 +111,7 @@ ready(function(){
 				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" '.Txt::tooltip("FORUM_quoteMessageInfo").'>'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.png"> </div>'  :  null;
 				//Affichage
 				echo $tmpMessage->divContainerMenu("vMessages").
-						'<div class="objContent">
+						'<div class="objContentTab">
 							'.$quotedMessage.'
 							<div class="vTitle">'.$tmpMessage->title.'</div>
 							<div class="vDescription">'.$tmpMessage->description.'</div>'
@@ -124,7 +125,7 @@ ready(function(){
 			}
 			//"Ajouter un message" en fin de page
 			if($curSubject->addContentRight() && Req::isMobile()==false)
-				{echo '<div class="objMenuBottom"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
+				{echo '<div class="objMenuBottom"><div class="miscContent" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/forum/addMessage.png"> &nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
 		}
 		?>
 	</div>

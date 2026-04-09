@@ -1,97 +1,112 @@
 /*** BASICS*/
-html					{font-size:14px; font-family:Arial,Helvetica,sans-serif; font-weight:bold;}
-html, body, div			{margin:0px; padding:0px;}/*reset*/
-html					{background:#222;}
-body					{background-position:right top; background-repeat:no-repeat;}
-body *					{box-sizing:border-box;}																							/*Calcul du width avec prise en compte de la bordure*/
-div, span				{vertical-align:top; -webkit-tap-highlight-color:transparent;}														/*tap-highlight-color" : cf. background au "touch" d'un élément sur mobile*/
-p						{margin:3px;}																										/*Cf éditeur tinyMce et "editor.css"*/
-img						{border:0px; vertical-align:middle;}																				/*alignemment des images*/
-hr						{border:0; height:1px; margin-top:10px; margin-bottom:10px;}														/*lignes de séparateur*/
-video, audio			{max-width:100%; max-height:100%;}																					/*Lecteurs video/audio*/
-abbr					{border-bottom: 1px dotted #777; cursor:help;}																	   /*idem tag <acronym>*/
-a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuContextLaunch  {cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
-#bodyLightbox			{padding:25px;}																										/*contenu des lightbox*/
+html						{font-size:15px; font-family:Arial,Helvetica,sans-serif; scrollbar-width:auto;}
+html, body, div				{margin:0px; padding:0px;}/*reset*/
+html						{background:#222;}
+body						{background-position:right top; background-repeat:no-repeat;}
+body *						{box-sizing:border-box;}										/*Calcul du width avec prise en compte de la bordure*/
+div, span					{vertical-align:top; -webkit-tap-highlight-color:transparent;}	/*tap-highlight-color" : cf. background au "touch" d'un élément sur mobile*/
+p							{margin-block:3px;}												/*Cf éditeur tinyMce et "editor.css"*/
+img							{border:0px; vertical-align:middle;}							/*alignemment des images*/
+hr							{border:0; height:1px; margin-top:10px; margin-bottom:10px;}	/*lignes de séparateur*/
+video, audio				{max-width:100%; max-height:100%;}								/*Lecteurs video/audio*/
+abbr						{border-bottom: 1px dotted #777; cursor:help;}					/*idem tag <acronym>*/
+::-webkit-scrollbar			{width:14px!important;}											/*largeur de scrollbar*/
+::-webkit-scrollbar-thumb 	{ border-radius:7px!important;}									/*Arrondi de la scrollbar*/
+a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuContextLaunch	{cursor:pointer; text-decoration:none; user-select:none;}	/*Liens et menus*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	html				{font-size:18px;}
-	#bodyLightbox		{padding:45px 15px 30px 15px;}/*padding-top : cf. close.png*/
 	::-webkit-scrollbar	{width:8px!important;}
+}
+/*AFFICHAGE PRINT*/
+@media print{
+	html, body				{background-image:none!important; background-color:white!important; color:black!important;}
+	#pageFull, #pageCenter	{margin:0px!important; margin-top:30px!important;}
+	#headerBar, #pageMenu, img[src*='img/menu'], .tooltipster-base, #livecounterMain, #pageFooterHtml	{display:none!important;}
 }
 
 
-/*** CONTENEURS PRINCIPAUX  & "CONTENEUR" DES OBJETS*/
-#headerBarContainer									{display:block; width:100%; position:fixed; z-index:100; top:0px; left:0px;}
-#headerBar											{display:table; width:100%; max-width:100%; height:50px; user-select:none;}
-#headerBar>div										{display:table-cell; vertical-align:middle;}
-#headerBar>div:first-child							{text-align:left;}
-#headerBar>div:last-child							{text-align:right;}
-#pageFull, #pageCenter								{display:table; max-width:100%;}											/*Conteneur de la page*/
-#pageFull											{width:100%;}																/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
-#pageCenter											{margin-left:auto; margin-right:auto;}										/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage smarthone et tablet paysage*/
-#moduleMenu, #pageContent							{display:table-cell;}
-#moduleMenu											{width:350px; min-width:350px; padding-right:5px; transition:padding-top 0.1s;}	/*Menu de gauche (flottant)*/
-#pageCenter #pageContent							{width:920px;}																	/*Largeur du contenu centré*/
-
-
-/*** MENU CONTEXTUEL & MENU LATERAL DU MODULE (GAUCHE)*/
-#moduleMenu .miscContainer					{padding:10px;}/*menu latéral du module*/
-#pageFull #moduleMenu .miscContainer		{border-radius:0px 4px 4px 0px;}/*Menus des modules en affichage full*/
-.menuLine									{display:table; width:100%;}
-.menuLine>div								{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
-.menuIcon									{width:40px; vertical-align:top!important; text-align:center!important;}
-.menuIcon img								{max-width:30px!important;}
-.menuContextLaunch							{display:inline-block;}/*launcher du menu context*/
-.menuContextLaunchFloat						{position:absolute; z-index:50; top:8px; right:4px;}/*launcher burger en position absolute top-right*/
-.menuContext								{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:8px;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
-.menuContextLabel							{text-align:center; padding:5px 0px;}/*label principal du menu context (cf. VueObjMenuContext)*/
-.menuContext .menuLine>div					{line-height:18px;}
-.menuContext .menuLine>div:last-child		{white-space:nowrap;}/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
-.menuContext hr								{margin:3px 0px!important;}
-.menuContextTxtLeft							{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*Auteu, Date et Droits d'accès (cf. VueObjMenuContext)*/
-#mobileAddElem								{display:none;}/*Bouton "Plus" en bas de page*/
+/*** CONTENEURS PRINCIPAUX */
+#headerBarContainer						{display:block; width:100%; position:fixed; z-index:100; top:0px; left:0px;}
+#headerBar								{display:table; width:100%; max-width:100%; height:50px; user-select:none;}
+#headerBar>div							{display:table-cell; vertical-align:middle;}
+#headerBar>div:first-child				{text-align:left;}
+#headerBar>div:last-child				{text-align:right;}
+#pageFull, #pageCenter					{display:table; max-width:100%;}		/*Conteneur de la page*/
+#pageFull								{width:100%;}							/*Conteneur sur toute la largeur (Mod Files, Tasks, etc)*/
+#pageCenter								{margin-left:auto; margin-right:auto;}	/*Conteneur centré (Mod Dashboard, Forum, Mail, etc). Tester affichage smarthone et tablet paysage*/
+#pageMenu								{display:table-cell; padding-inline:10px 5px; width:350px; min-width:350px; transition:padding-top 0.2s;}/*Menu de gauche du module : menu principal*/
+#pageContent							{display:table-cell; padding-inline:5px 10px;}/*contenu principal de la page*/
+#pageCenter #pageContent				{width:920px;}/*Contenu centré*/
+.miscContent							{padding:10px; border-radius:7px; user-select:none;}
+#pageMenu .miscContent					{margin-bottom:10px;}/*espace entre chaque block*/
+#bodyLightbox							{padding:25px;}/*contenu des lightbox*/
+#headerBar, .objContent, .miscContent, .menuContext, #messengerMain, .tox-tinymce	{box-shadow:2px 2px 10px #444; transition:box-shadow 0.3s ease-in-out;}
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	#moduleMenu								{display:none;}/*cf. "#menuMobileMain"*/
-	.menuMobileSubMenu						{position:relative; margin-top:20px;}/*Idem*/
-	#mobileAddElem							{z-index:100; position:fixed; bottom:12px; right:12px;}/*Bouton "Plus" en bas de page (z-index idem #headerBar)*/
+	#pageFull, #pageCenter, #pageMenu, #pageContent	{width:100%!important; max-width:100%!important; word-break:break-word!important; margin-inline:auto;}	/*"break-word" => URL du modLink*/
+	#pageMenu, #pageContent							{padding-inline:5px;}
+	#pageMenu										{display:none;}/*affiché via #menuMobileMain*/
+	.objContent, .miscContent						{margin:5px;}
+	#pageContent.miscContent						{margin:0px;}/*cf site public*/
+	#bodyLightbox									{padding:45px 15px 30px 15px;}/*padding-top : cf. close.png*/
+}
+
+/*** MENU CONTEXTUEL & MENU LATERAL DU MODULE (GAUCHE)*/
+.menuLine								{display:table; width:100%;}
+.menuLine>div							{display:table-cell; padding:5px; vertical-align:middle; text-align:left; max-width:500px;}
+.menuIcon								{width:40px; vertical-align:top!important; text-align:center!important;}
+.menuIcon img							{max-width:30px!important;}
+.menuContextLaunch						{display:inline-block;}/*launcher du menu context*/
+.menuContextLaunchFloat					{position:absolute; z-index:50; top:8px; right:4px;}/*launcher burger en position absolute top-right*/
+.menuContext							{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:7px; overflow-y:auto; border-radius:10px;}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+#bodyLightbox .menuContext				{overflow-y:visible;}/*Affiche tout le menu dans une petite lightbox : pas de scroll*/
+.menuContextLabel						{text-align:center; padding:5px 0px;}/*label principal du menu context (cf. VueObjMenuContext)*/
+.menuContext .menuLine>div				{line-height:18px;}
+.menuContext .menuLine>div:last-child	{white-space:nowrap;}/*Label d'une option du menu : pas de retour à la ligne (cf. div à droite du .menuIcon)*/
+.menuContext hr							{margin:3px 0px!important;}
+.menuContextTxtLeft						{width:115px; min-width:115px; border-right:solid 1px rgba(150,150,150,0.2); vertical-align:top!important;}/*Auteu, Date et Droits d'accès (cf. VueObjMenuContext)*/
+#mobileAddElem							{display:none;}/*Bouton "Plus" en bas de page*/
+/*AFFICHAGE RESPONSIVE*/
+@media screen and (max-width:1200px){
+	.menuMobileSubMenu					{position:relative; margin-top:20px;}/*Idem*/
+	#mobileAddElem						{z-index:100; position:fixed; bottom:12px; right:12px;}/*Bouton "Plus" en bas de page (z-index idem #headerBar)*/
 }
 
 
 /*** MENU CONTEXTUEL MOBILE (SWIPE)*/
-#menuMobileBg, #menuMobileMain				{display:none;}/*Masque par défaut*/
-#menuMobileBg, #menuMobileMain 				{position:fixed; top:0px; right:0px; height:100%;}
-#menuMobileBg								{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
-#menuMobileMain								{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
-#menuMobileClose							{text-align:right;}
-#menuMobileMain .menuLine>div				{padding:10px 5px;}/*surcharge*/
-#menuMobileContent2							{margin-top:30px;}
-#menuMobileContent2 .miscContainer			{padding:5px;}
+#menuMobileBg, #menuMobileMain			{display:none;}/*Masque par défaut*/
+#menuMobileBg, #menuMobileMain 			{position:fixed; top:0px; right:0px; height:100%;}
+#menuMobileBg							{z-index:120; width:100%; max-width:100%; background:rgba(0,0,0,0.7);}
+#menuMobileMain							{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
+#menuMobileClose						{text-align:right;}
+#menuMobileMain .menuLine>div			{padding:10px 5px;}/*surcharge*/
+#menuMobileContent2						{margin-top:30px;}
+#menuMobileContent2 .miscContent		{padding:5px;}
 
 
 /*** DIV DES OBJETS */
-.objContainer, .miscContainer, .menuContext			{margin:0px 5px 5px 0px; border-radius:5px; user-select:none;}
-.objContainer										{position:relative;}
-.objContainer.isSelectable							{cursor:url("../../img/check.png"),default;}								/*Objets selectionnables (cf .objSelectCheckbox)*/
-.objContainerScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContainer" & permet l'overflow "scroll" du ".objContent" ci-dessous*/
-.miscContainer										{padding:15px;}																/*cf. parametrage general, newsletter, etc.*/
-.emptyContainer										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
-.emptyContainer div									{margin-top:20px;}															/*Idem*/
-.objContent											{display:table; height:inherit; min-height:inherit; width:100%;}			/*Contenu de l'objet*/
-.objContent>div										{display:table-cell; vertical-align:middle;}								/*idem : cellule*/
+.objContent											{position:relative; margin-bottom:7px; border-radius:7px; user-select:none;}
+.objContent.isSelectable							{cursor:url("../../img/check.png"),default;}								/*Objets selectionnables (cf .objSelectCheckbox)*/
+.objContentScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContent" & permet l'overflow "scroll" du ".objContentTab" ci-dessous*/
+.emptyContent										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
+.emptyContent div									{margin-top:20px;}															/*Idem*/
+.objContentTab										{display:table; height:inherit; min-height:inherit; width:100%;}			/*Contenu de l'objet*/
+.objContentTab>div									{display:table-cell; vertical-align:middle;}								/*idem : cellule*/
 .objIcon											{text-align:center; vertical-align:middle;}									/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
 .objIcon img										{max-width:95%!important; max-height:95%!important;}						/*Icone d'objet : folder, objIconOpacity, image d'user, etc*/
 .objIconOpacity img									{filter:opacity(0.2);}														/*Icones opaques : links, tasks, etc*/
 .objLabel											{padding-left:15px; overflow-wrap:break-word; text-overflow:ellipsis;}		/*Cellule du label de l'objet : "break-word" évite qu'une URL éclate l'affichage*/
 /*DIPLAY "BLOCK"*/
-.objBlocks .objContainer							{height:100px; min-width:250px; max-width:450px; padding-right:35px; float:left;}/*"min-width"/"max-width" => mainDisplay()  &&  "padding-right" => menu context*/
+.objBlocks .objContent								{height:100px; min-width:250px; max-width:450px; padding-right:35px; margin-right:7px; float:left;}/*"min-width"/"max-width" => mainDisplay()  &&  "padding-right" => menu context*/
 .objBlocks .objIcon									{width:80px;}																/*Icone/image de l'objet*/
 .objBlocks .objIcon:empty							{width:0px!important;}														/*Cf. Profil Contact/User sans image*/
 .objBlocks .objIconOpacity							{width:35px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
 .objBlocks .objDetails, .objBlocks .objAutorDate	{display:none;}																/*Details & Auteur/Date : masqués par défaut*/
 /*DIPLAY "LINE"*/
-.objLines .objContainer								{height:60px; margin-bottom:0px; box-shadow:none; padding-right:65px;}		/*"padding-right" : cf ".objLines .menuContextSub"*/
-.objLines .objIcon									{width:45px;}																/*Icone/image de l'objet (fichier, user, etc)*/
+.objLines .objContent								{height:55px; margin:0px; box-shadow:none; padding-right:65px;}				/*"padding-right" : cf ".objLines .menuContextUnder"*/
+.objLines .objIcon									{width:55px; max-height:80%;}												/*Icone/image de l'objet (fichier, user, etc)*/
+.objLines .objIcon img								{max-width:50px!important; max-height:45px!important;}						/*Cf vignettes de fichiers*/
 .objLines .objDetails								{text-align:right; max-width:400px;}										/*Details : fichiers, tasks, etc.*/
 .objLines .objAutorDate								{text-align:right; width:185px; font-size:0.9rem; line-height:20px;}		/*Auteur/Date : tester avec "lun. 30 septembre 2024"*/
 .objLines .objAutorDate span						{display:block;}															/*Auteur et Date sur 2 lignes*/
@@ -104,76 +119,69 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuContextLa
 video.attachedFileTag								{min-width:600px; min-height:400px;}										/*Vidéo*/
 audio.attachedFileTag								{min-height:100px;}															/*Mp3*/
 .objMenuBottom										{clear:both; margin-top:30px; text-align:center;}							/*Menus centrés : pagination & co ("clear" le float des .objBlocks)*/
-.objMenuBottom>.miscContainer						{display:inline-block; padding:15px; border-radius:10px;}
+.objMenuBottom>.miscContent							{display:inline-block; padding:15px; border-radius:10px;}
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	#pageFull, #pageCenter, #pageContent			{width:100%!important; max-width:100%!important; word-break:break-word!important; margin-inline:auto;}	/*"break-word" => URL du modLink*/
-	.objContainer, .miscContainer					{margin:7px; border-radius:8px!important;}								/*tester affichage de news, fichiers, agendas, tâches*/
-	#pageContent.miscContainer						{margin:0px!important;}													/*cf site public*/
 	.objIcon										{width:60px!important;}													/*Cellule d'icone d'objet (dossier, fichier, contact, etc)*/
 	.objIconOpacity, .objDetails, .objAutorDate		{display:none;}															/*toujours masqué*/
 	.attachedFileMenu								{margin:10px;}															/*Fichiers joints à l'objet*/
 	video.attachedFileTag							{min-width:350px;}														/*vidéo*/
 }
-/*AFFICHAGE PRINT*/
-@media print{
-	html, body				{background-image:none; background-color:white!important; color:#333;}
-	#pageFull, #pageCenter	{margin:0px!important; margin-top:30px!important;}
-	#headerBar, #moduleMenu, img[src*='img/menu'], .tooltipster-base, #livecounterMain, #pageFooterHtml	{display:none!important;}
-}
 
 
 /*** MENUS CONTEXTUELS DES OBJETS*/
-.objContainer:not(:hover) .menuContextSub .hide	{display:none;}																		/*Masque les .menuContextSub : sauf au survol d'un .objContainer parent*/
-.objSelectCheckbox								{display:none;}																		/*input hidden de sélection/désélection d'objet*/
-.menuContextSub									{width:35px; position:absolute; z-index:50; top:35px; right:3px; text-align:right;}	/*Like, Comment, etc*/
-.menuContextSub>div								{display:inline-block; margin:4px;}													/*idem*/
-.objLines .menuContextSub						{width:80px;}																		/*Affichage horizontal*/
-.objLines .menuContextSub>div					{display:inline-block; margin-inline:0px;}											/*idem*/
-.objLines .menuContextSub img					{max-width:15px;}																	/*idem*/
-.circleNb										{width:22px; height:22px; line-height:22px; display:inline-block; background:#07d; border-radius:50%; color:white; text-align:center;}/*Nb de polls & News*/
-.menuContextSub .circleNb						{width:14px; height:14px; line-height:14px; position:relative; margin-left:0px; margin-right:-10px; background:#db930c; font-size:0.8rem; font-weight:normal;}/*Nb de likes & comments*/
-.circleNb:empty									{display:none;}
+.menuContextUnder					{width:35px; position:absolute; z-index:50; top:35px; right:3px; text-align:right;}	/*Like, Comment, etc*/
+.menuContextUnder>div				{display:inline-block; margin:4px;}													/*idem*/
+.objLines .menuContextUnder			{width:80px; top:30px;}																/*Affichage horizontal*/
+.objLines .menuContextUnder>div		{display:inline-block; margin-inline:0px;}											/*idem*/
+.objLines .menuContextUnder img		{max-width:16px;}																	/*idem*/
+.circleNb							{width:22px; height:22px; line-height:22px; font-size:0.85rem; display:inline-block; background:#07d; border-radius:50%; color:white; text-align:center;}/*Voir aussi menu du Dashboard*/
+.menuContextUnder .circleNb			{width:14px; height:14px; line-height:14px; font-size:0.7rem; position:relative; margin-right:-12px;}/*Nb de likes / commentaires*/
+.objContent:not(:hover) .menuContextUnder .hide, .objSelectCheckbox, .circleNb:empty	{display:none;}/*Masque les .menuContextUnder (par défaut)  && l'input hidden de sélection/désélection d'objet*/
 
 
 /*** MENU "PATH" DES OBJETS (DOSSIER, FORUM, DASHBOARD)*/
-.pathMenu.miscContainer			{display:table; margin-bottom:15px; padding:5px;}
-.pathMenu img					{max-height:30px; margin-inline:5px;}
-.pathMenu>div					{display:table-cell; padding:3px; vertical-align:middle;}
-.pathMenu>div:first-child		{width:50px; white-space:nowrap;}/*icone de dossier ou "top"*/
-.pathMenuAdd					{width:50px; text-align:right;}/*icone d'ajout d'element*/
+.pathMenu					{display:table; margin-bottom:15px; padding:5px;}
+.pathMenu img				{max-height:30px; margin-inline:5px;}
+.pathMenu>div				{display:table-cell; padding:3px; vertical-align:middle;}
+.pathMenu>div:first-child	{width:50px; white-space:nowrap;}/*icone de dossier ou "top"*/
+.pathMenuAdd				{width:50px; text-align:right;}/*icone d'ajout d'element*/
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
-	.pathMenu.miscContainer		{width:97%; max-width:97%; padding:3px;}
+	.pathMenu	{width:98%; max-width:98%; padding:3px;}
 }
 
 
 /*** INPUTS*/
-input:not([type=radio],[type=checkbox]), textarea, select, button			{min-height:33px; max-width:100%; padding:5px; border-radius:4px; font-size:1rem; font-weight:normal; font-family:inherit; outline:none;}
-*:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled	{opacity:0.85;}	/*input textarea button*/
-::placeholder 											{padding-left:5px; color:#aaa;}	/*texte par défaut*/
+input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:33px; max-width:100%; padding:5px; border-radius:4px; font-size:1rem; font-family:inherit; outline:none;}
+*:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled		{opacity:0.85;}
+::placeholder 											{padding-left:5px; color:#aaa;}/*texte par défaut*/
 input:is([type=radio],[type=checkbox])					{vertical-align:middle; margin:0px 3px;}
 input[type=checkbox]									{width:18px; height:18px;}
 input[type=file]										{height:auto;}
+.inputTitleName											{width:75%;}/*Title ou Name d'un objet*/
 textarea												{width:100%; height:60px;}
+#descriptionToggle										{margin-bottom:20px; display:inline-block; line-height:35px; margin-left:15px;}/*Label pour afficher/masquer la description d'un objet. Height identique aux inputs text*/
+#descriptionTextarea									{margin-bottom:20px;}/*Textarea masqué par défaut ?*/
+.tox-tinymce											{border-radius:10px!important;}/*Editeur TinyMCE : idem textarea*/
+.tox-promotion											{display:none;}/*Editeur TinyMCE : masque le bouton "Upgrade"*/
 select option											{font-size:1.05rem;}
 button													{padding:5px 8px; border-radius:8px; font-weight:bold; cursor:pointer; vertical-align:middle;}
 .dateInput, .dateBegin, .dateEnd						{width:90px;}													/*DATEPICKER INPUTS*/
-.ui-datepicker											{width:300px; max-width:98%; box-shadow:0px 2px 6px #888;}	   /*DATEPICKER JQUERY ("box-shadow" idem .miscContainer)*/
+.ui-datepicker											{width:300px; max-width:98%; box-shadow:0px 2px 6px #888;}	   /*DATEPICKER JQUERY ("box-shadow" idem .miscContent)*/
 .ui-datepicker-header									{background-color:transparent; border:none;}					/*label du mois*/
 .ui-datepicker .ui-state-default						{padding:10px; text-align:center; border:0px;}					/*cellules des jours*/
 .ui-datepicker .ui-state-highlight						{background:#cde; color:black;}						  	  /*aujourd'hui*/
 .ui-datepicker .ui-state-active							{background:#007fff; color:white;}		 				  /*jour sélectionné*/
-input[type=time]										{width:80px;}													/*TIMEPICKER INPUTS*/
-input[type=time]::-webkit-calendar-picker-indicator		{margin:0px; filter: invert(48%) sepia(20%) saturate(2000%) hue-rotate(150deg) brightness(95%) contrast(80%);}/*icone "horloge"*/
 .ui-timepicker-wrapper									{max-height:400px;}												/*pseudo <select>*/
 .ui-timepicker-list li 									{padding:10px;}													/*liste des heures*/
+input[type=time]										{width:80px;}													/*TIMEPICKER INPUTS*/
+input[type=time]::-webkit-calendar-picker-indicator		{margin:0px; filter: invert(48%) sepia(20%) saturate(2000%) hue-rotate(150deg) brightness(95%) contrast(80%);}/*icone "horloge"*/
 .passwordDiv											{display:inline-block; position:relative}
 .passwordDisplay										{content:url("../../img/displayShow.png"); position:absolute; top:25%; margin-left:-30px; opacity:0.4; cursor:pointer;}/*Affiche/Masque un password*/
 .passwordDisplayHide									{content:url("../../img/displayHide.png");}
 fieldset												{margin-top:30px; padding:10px;}
 legend													{padding:5px 20px;}
-.inputTitleName											{width:75%;}/*Title ou Name d'un objet*/
 .focusPulsate											{animation:focusPulsate 1.5s linear infinite;}
 @keyframes focusPulsate 								{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
 .submitButtonMain										{margin-top:30px; text-align:center;}						/*div du bouton principal*/
@@ -183,11 +191,12 @@ legend													{padding:5px 20px;}
 .submitButtonInline	button								{min-width:100px;}											/*height idem input[type=text]*/
 .submitButtonInline .submitLoading						{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
 .submitLoading											{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
-.connectForm *:is([type=text],[type=password],button)	{display:inline-block; margin-block:8px; width:330px; height:50px; border-radius:8px;}
+.connectForm *:is(input[type=text],input[type=password],button)	{display:inline-block; margin-block:8px; width:330px; height:45px; border-radius:8px;}
 .connectForm .submitButtonMain							{margin-top:0px;}/*surcharge*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
 	.inputTitleName										{width:100%;}/*description en dessous*/
+	#descriptionToggle									{display:block; margin:0px; margin-top:20px; margin-bottom:10px!important;}
 	.dateInput, .dateBegin, .dateEnd					{height:36px; width:110px;}
 	input[type=checkbox]								{width:20px; height:20px;}
 	input[type=time]									{height:36px; width:90px;}
@@ -210,14 +219,14 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 
 
 /*** PERSONS : CONTACTS / USERS*/
-.objBlocks .objContainer.objPerson			{height:160px; min-height:160px; width:250px; min-width:250px; max-width:450px;}	/*surcharge .objContainer*/
+.objBlocks .objContent.objPerson			{height:160px; min-height:160px; width:250px; min-width:250px; max-width:450px;}	/*surcharge .objContent*/
 .personProfileImg							{text-align:center;}																/*Image du profile*/
 .personProfileImg img						{max-width:100%; max-height:200px;}													/*Idem*/
 .personVueFields							{margin-top:20px;}
 .personImgSmall								{border-radius:50%; height:28px; width:28px;}										/*Image du profile arrondi*/
 .objLines .personImg						{max-width:60px; max-height:70px!important;}										/*Image du profile*/
 .personLabel								{margin-bottom:5px;}																/*Label principal*/
-.personField								{line-height:18px; font-weight:normal;}												/*Détails : email, tel, adresse, etc*/
+.personField								{line-height:18px;}																	/*Détails : email, tel, adresse, etc*/
 .objLines .personField						{display:inline-block; width:fit-content;}											/*Affichage ligne des détails*/
 .objLines .personFieldSeparator				{margin-inline:8px;}
 .objBlocks .personFieldSeparator, .personFieldSeparator:last-child	{display:none;}
@@ -227,7 +236,7 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 .spaceAffectLabel							{cursor:pointer;}/*label*/
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	.objBlocks .objContainer.objPerson		{height:140px; min-height:140px;}
+	.objBlocks .objContent.objPerson		{height:140px; min-height:140px;}
 	.spaceAffectLine>div					{font-size:0.8rem; padding:6px 3px;}
 	.spaceAffectLine>div:not(:first-child)	{width:100px;}/*colonne des checkbox*/
 	.spaceAffectLine>div img				{display:none;}
@@ -244,9 +253,9 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 .f-thumbs__slide__button						{box-shadow:none;}																					/*surcharge les vignettes d'images*/
 [data-fancybox='images'], .fancyboxImages		{cursor:zoom-in;}																					/*Cursor des images à afficher*/
 .lightboxTitle									{margin-bottom:40px; padding-bottom:15px; text-align:center; font-size:1.1rem; line-height:22px;}	/*Titre du lightbox*/
-.lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:60px; padding-right:30px;}											/*padding pour .lightboxMenu et .is-close-btn*/
+.lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:70px; padding-right:30px;}											/*padding-left pour .lightboxMenu / padding-right pour .is-close-btn*/
 .lightboxMenu									{position:absolute; top:0px; left:0px;}																/*Icones du menu context + d'édition de l'objet*/
-.lightboxMenu .editButton						{margin-left:15px;}																					/*Icone d'édition*/
+.lightboxMenu .editButton						{margin-left:10px;}																					/*Icone d'édition*/
 .lightboxTitleDetail							{font-size:0.9rem; margin-top:15px;}																/*libellé détaillé*/
 .lightboxAddElem								{text-align:center;}																				/*ex: "Ajouter un  groupe"*/
 .lightboxAddElem button							{width:230px; height:50px;}

@@ -42,9 +42,9 @@ class CtrlMisc extends Ctrl
 				$_SESSION["messengerUsersSql"]=implode(",", array_merge($messengerUsersSql,[0]));//Ajoute un pseudo user '0'
 			}
 
-			////	RECUPERE LES USERS CONNECTÉS (LIVECOUNTERS) : VERIF SI YA UN CHANGEMENT DU LIVECOUNTER, AVEC CONNEXION OU DECONNECTION (après 40 secondes d'inactivité: l'user est considéré comme "déconnecté")
+			////	RECUPERE LES USERS CONNECTÉS (LIVECOUNTERS) : VERIF SI YA UN CHANGEMENT DU LIVECOUNTER, AVEC CONNEXION OU DECONNECTION (après 120 secondes d'inactivité: l'user est considéré comme "déconnecté")
 			$livercounterUsersOld=$_SESSION["livecounterUsers"];
-			$_SESSION["livecounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".(time()-40));
+			$_SESSION["livecounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".(time()-120));
 			$result["livecounterUpdate"]=(array_keys($livercounterUsersOld)!=array_keys($_SESSION["livecounterUsers"]));//compare les _idUsers (keys)
 
 			////	RECUPERE LES MESSAGES DU MESSENGER : VERIF SI YA DES NOUVEAUX MESSAGES

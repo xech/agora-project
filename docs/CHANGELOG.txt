@@ -3,29 +3,33 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
-VERSION 26.4.0
+VERSION 26.4.2
 --------------
+Drag & drop des événements du module agenda désormais sur mobile et sur la vue "mois"
 Nouvelle option de suppression groupé des anciens emails du module Mail (cf historique)
 Nouvelle option d'export de contact ou de profil utilisateur au format vCard (cf menu contextuel)
 Ajout des images dans les export de contacts ou de profils utilisateurs au format vCard
-Drag & drop des événements de l'agenda désormais sur mobile
 Amélioration de l'affichage des menus contextuels des éléments
+Amélioration de la police d'affichage et de la barre de menu principale
+Amélioration de l'ergonomie de la messagerie instantanée
 Optimisation d'affichage des agendas en vue semaine
 Optimisation de sélection des destinataires des notifications
 Correction de l'import de contacts CSV
 Mise à jour de JQuery-UI en v1.14.2
 Mise à jour de Datatable en v2.3.7
 -----
-New feature for bulk deletion of old emails from the Mail module
-New feature to export contacts or user profiles in vCard format (context menu)
-Adding images to contact or user profile exports in vCard format
-Drag & Drop of calendar events available on mobile
+Drag and drop events from the calendar module are now available on mobile and in the "month" view.
+New option for bulk deletion of old emails in the Mail module (see history)
+New option to export contacts or user profiles in vCard format (see context menu)
+Added images in contact or user profile exports in vCard format
+Improved display font and main menu bar
 Improved display of context menus for items
-Optimized display of calendars in weekly view
+Improved ergonomics of instant messaging
+Optimized display of calendars in week view
 Optimized selection of notification recipients
-Fix CSV contact import
-JQuery-UI updated to v1.14.2
-Datatable updated to v2.3.7
+Fixed CSV contact import
+Updated jQuery-UI to version 1.14.2
+Updated DataTables to version 2.3.7
 
 
 VERSION 26.2

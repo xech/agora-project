@@ -1,0 +1,14 @@
+
+/*** STYLE CHARGÉ DANS L'ÉDITEUR TINYMCE : IDEM "app.css" !*/
+.mce-content-body			{padding:5px!important; font-size:15px;}	/*Texte de l'éditeur*/
+.mce-content-body::before	{padding-left:7px; color:#aaa!important;}	/*Placeholder "Description"*/
+p							{margin-block:3px;}
+.vNewsDescription a			{text-decoration:none;}
+.attachedFileTag			{max-width:100%;}							/*Image/vidéo/Mp3 inséré dans l'éditeur : idem "editor.css"*/
+video.attachedFileTag		{min-width:600px; min-height:400px;}		/*vidéo*/
+audio.attachedFileTag		{min-height:100px;}							/*Mp3*/
+
+/*AFFICHAGE SMARTPHONE*/
+@media screen and (max-width:490px){
+	.mce-content-body	{font-size:18px!important;}
+}

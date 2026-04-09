@@ -39,7 +39,7 @@ ready(function(){
 .menuLine .vContextMenu				{width:30px; padding-top:10px; vertical-align:top;}
 .menuLine mark						{padding:4px 2px;}/*mots surlignés dans les résultats de la recherche*/
 .vPluginNews						{display:none; padding:5px; background:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
-.emptyContainer						{margin-top:20px;}
+.emptyContent						{margin-top:20px;}
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){	
@@ -142,5 +142,5 @@ if(Req::isParam("searchText"))
 			  </div>';
 	}
 	//Aucun résultat à afficher
-	if(empty($pluginsList))  {echo '<div class="miscContainer emptyContainer">'.Txt::trad("noResults").'</div>';}
+	if(empty($pluginsList))  {echo '<div class="miscContent emptyContent">'.Txt::trad("noResults").'</div>';}
 }
