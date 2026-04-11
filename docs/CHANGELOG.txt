@@ -3,7 +3,7 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
-VERSION 26.4.2
+VERSION 26.4.3
 --------------
 Drag & drop des événements du module agenda désormais sur mobile et sur la vue "mois"
 Nouvelle option de suppression groupé des anciens emails du module Mail (cf historique)

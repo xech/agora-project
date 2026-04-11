@@ -7,10 +7,12 @@
 	{
 		////	DIMENSIONNE LES AGENDAS
 		let calendarWidth=isMobile() ?  windowTopWidth  :  (windowTopWidth - $("#pageMenu").outerWidth(true) -14);	//Width du principal container de la page (-14px de scroolbar : cf ::-webkit-scrollbar)
+		let calendarHeight=$(".vCalVue").innerHeight() - $(".vMonthHeader").outerHeight();							//Height des .vMonthTable
+		$(".vMonthTable").outerHeight(calendarHeight);																//Applique le height
 		let monthCellWidth=Math.floor((calendarWidth-$(".vWeekNbOfYear").width()) / 7) - 2;							//Calcul le width des cellules du mois
 		$(".vCalLabelDays,.vMonthDayCell,.vEvtBlock").innerWidth(monthCellWidth);									//Width des cellules du mois et des Evts
 		$(".vCalMain").each(function(){																				//Parcours chaque agenda
-			let contentHeight=$(this).find(".vCalHeader").height() + $(this).find(".vCalVue").height();				//Hauteur du contenu de l'agenda
+			let contentHeight=$(this).find(".vCalHeader").height() + $(this).find(".vMonthHeader").height() + $(this).find(".vMonthTable").height();//Hauteur du contenu de l'agenda
 			if($(this).innerHeight() < contentHeight)  {$(this).innerHeight(contentHeight);}						//Si le Height du conteneur .vCalMain est < au contenu (avec de nombreux evts) : on actualise le Height
 		});
 	}
@@ -23,7 +25,7 @@
 		////	EVT DRAGGABLES
 		interact(".vEvtBlock[data-evtIsDraggable='true']").draggable({
 			////	Limite la dropzone
-			modifiers:[	interact.modifiers.restrictRect({restriction:".vCalVue tbody"}) ],
+			modifiers:[	interact.modifiers.restrictRect({restriction:".vMonthTable"}) ],
 			listeners:{
 				////	Enregistre la cell de départ
 				start(event){
@@ -119,18 +121,19 @@
 	<style>
 	/*Conteneur principal + header + lignes*/
 	.vCalVue									{border-collapse:collapse;}												/*Bordures fusionnées*/
+	.vMonthHeader, .vMonthTable					{width:100%; border-collapse:collapse;}									/*Tableau du libellé des jours et de la grille des heures*/
 	.vWeekNbOfYear								{width:15px; font-size:0.9rem; opacity:0.5; text-align:center;}			/*numero des semaines dans l'année*/
-	.vMonthWeek									{height:17%; min-height:17%;}											/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
-	.vPublicHoliday								{color:#080; font-style:italic; margin-left:15px;}						/*Libellé du jour férié*/
+	.vMonthRow									{height:17%; min-height:17%;}											/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 
 	/*Cellules du jour*/
 	.vMonthDayCell								{vertical-align:top; padding:0px; <?= Ctrl::$agora->skin=="white" ? "background:white;border:1px solid #e2e2e2;color:#222;" : "background:black;border:1px solid #333;color:#fff;" ?>}
 	.vMonthDayCell:hover, .vMonthDayOtherMonth	{background:<?= Ctrl::$agora->skin=="white"?"#eee":"#222" ?>;}	  /*Cell du jour survolée ou d'un autre mois*/
 	.vMonthDayCell.drop-target 					{background:#f7fff7;}													/*Dropzone survolée*/
-	.vMonthDayLabel								{height:30px; padding:3px; line-height:24px;}							/*Label du jour*/
+	.vMonthDayLabel								{height:30px; padding:5px 3px;}											/*Label du jour*/
 	.vMonthDayLabel:hover						{cursor:pointer;}														/*Idem : survol*/
 	.vMonthDayLabel .vMonthAddEvt				{display:none;}															/*Ajout d'evt "Plus" : masqué par défaut*/
 	.vMonthDayLabel:hover .vMonthAddEvt			{display:block; float:right;}											/*Idem : affiche au survol label du jour*/
+	.vPublicHoliday								{color:#080; font-size:0.85rem; margin-left:10px;}						/*Libellé du jour férié*/
 
 	/*evenements*/
 	.vEvtBlock									{max-width:98%; margin-bottom:2px;}
@@ -149,18 +152,21 @@
 <?php } ?>
 
 
-<table class="vCalVue">
+<div class="vCalVue">
+
 	<!--HEADER : JOURS DE LA SEMAINE-->
-	<tr>
-		<?php for($i=1; $i<=7; $i++){ ?><td class="vCalLabelDays"><?= Req::isMobile() ? substr(Txt::trad("day_".$i),0,3) : Txt::trad("day_".$i) ?></td><?php } ?>
-		<td class="vWeekNbOfYear">&nbsp;</td>
-	</tr>
+	<table class="vMonthHeader">
+		<tr>
+			<?php for($i=1; $i<=7; $i++){ ?><td class="vCalLabelDays"><?= Req::isMobile() ? substr(Txt::trad("day_".$i),0,3) : Txt::trad("day_".$i) ?></td><?php } ?>
+			<td class="vWeekNbOfYear">&nbsp;</td>
+		</tr>
+	</table>
 
 	<!--TABLEAU DES JOURS DU MOIS-->
-	<tbody>
+	<table class="vMonthTable">
 		<?php foreach($periodDays as $dayYmd=>$tmpDay){ ?>
 			<!--LIGNE DE SEMAINE => DEBUT-->
-			<?php if($tmpDay["dayOfWeek"]==1){ ?><tr class="vMonthWeek"><?php } ?>
+			<?php if($tmpDay["dayOfWeek"]==1){ ?><tr class="vMonthRow"><?php } ?>
 
 				<!--BLOCK DU JOUR-->
 				<td class="vMonthDayCell <?= $tmpDay["isMonthCurtime"]==false?'vMonthDayOtherMonth':null ?>" data-dayYmd="<?= $dayYmd ?>" data-cellDateLabel="<?= Txt::dateLabel($tmpDay["dayTimeBegin"],"dateFull") ?>">
@@ -193,5 +199,5 @@
 			</tr>
 			<?php } ?>
 		<?php } ?>
-	</tbody>
-</table>
+	</table>
+</div>

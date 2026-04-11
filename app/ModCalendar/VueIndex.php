@@ -130,7 +130,7 @@ ready(function(){
 
 /*Agendas : conteneur + menu d'affichage + label des jours*/
 .vCalMain										{min-height:500px; padding:0px; visibility:hidden;}/*Masqué le tps du calcul de l'affichage*/
-.vCalMain:not(:last-child)						{margin-bottom:40px;}
+.vCalMain:not(:last-child)						{margin-bottom:50px;}
 .vCalVue										{max-width:100%; width:100%; user-select:none!important; -webkit-user-select:none!important;}
 .vCalHeader										{display:table; width:100%; font-size:1.1rem;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
@@ -144,7 +144,7 @@ ready(function(){
 .vCalHeaderRight								{width:480px; text-align:right;}
 .vCalHeaderRight>span							{margin-right:8px;}
 .vCalHeaderRight button							{box-shadow:none; font-weight:normal;}
-.vCalLabelDays									{height:25px; padding:4px; text-align:center; text-transform:capitalize;}
+.vCalLabelDays									{padding:8px 4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
 .vEvtBlock										{height:20px; min-height:20px; margin:0px; padding:4px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:4px!important;}/*padding-right pour le menu burger*/

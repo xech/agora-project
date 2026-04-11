@@ -236,6 +236,7 @@
 
 
 <div class="vCalVue">
+
 	<!--HEADER DES JOURS : FIXE-->
 	<table class="vWeekHeader">
 		<tr>
@@ -307,4 +308,5 @@
 		}
 		?>
 	</div>
+	
 </div>
