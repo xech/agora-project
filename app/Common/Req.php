@@ -115,30 +115,28 @@ class Req
 	 ********************************************************************************************************/
 	private static function paramFilter($key, $val)
 	{
-		if(!empty($val) && is_string($val)){																				//Vérif la valeur
-			if(preg_match("/^(description|editorDraft|message)$/i",$key)){													//Filtre le contenu de l'editeur TinyMce ou un Post du messenger
-				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');												//Charge la librairie HTMLPurifier	
-				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs qui commencent par "data-" sont supprimés)
-				$config->set('Core.Encoding', 'UTF-8');																		//Encodage UTF-8 (conserve les caractères spéciaux)
-				$config->set('Attr.EnableID', true);																		//Autorise les attributs id
-				$config->set('HTML.SafeIframe', true);																		//Autorise les videos Iframes
-				$config->set('HTML.SafeEmbed', true);																		//Autorise les videos Embed
-				$config->set('URI.SafeIframeRegexp', '%(youtube\.com|youtu\.be|twitch\.tv|dailymotion\.com|vimeo\.com)%');	//Regex des vidéos externes
-				$config->set('Attr.AllowedFrameTargets', '_blank');															//Autorise la balise <a target="_blank">
-				$def=$config->getHTMLDefinition(true);																		//Balises spécifiques :
-				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);//Autorise la balise <video> et ses attributs
-				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise la balise <source> et ses attributs (cf balise <video>)
-				$purifier=new HTMLPurifier($config);																		//Crée un $purifier
-				$val=$purifier->purify($val);																				//Filtre le code html
-    			$caracAccent=['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç',"\xc2\xa0"];					//Caractères accentués (HTMLPurifier remplace &nbsp; par \xc2\xa0)
-    			$caracHtml  =['&rsquo;','&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&nbsp;'];//Equivalents HTML
-				$val=str_replace($caracAccent, $caracHtml, $val);															//Convertit les caractère accentués en entités HTML															
+		if(!empty($val) && is_string($val)){																							//Vérif la valeur
+			if(preg_match("/^(description|editorDraft|message)$/i",$key)){																//Filtre le contenu de l'editeur TinyMce ou un Post du messenger
+				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');															//Charge la librairie HTMLPurifier	
+				$config=HTMLPurifier_Config::createDefault();																			//Config par défaut  (note : les attributs qui commencent par "data-" sont supprimés)
+				$config->set('Core.Encoding', 'UTF-8');																					//Encodage UTF-8 (conserve les caractères spéciaux)
+				$config->set('Attr.EnableID', true);																					//Autorise les attributs id
+				$config->set('HTML.SafeIframe', true);																					//Autorise les videos Iframes
+				$config->set('HTML.SafeEmbed', true);																					//Autorise les videos Embed
+				$config->set('URI.SafeIframeRegexp', '%(youtube\.com|youtu\.be|twitch\.tv|dailymotion\.com|vimeo\.com)%');				//Regex des vidéos externes
+				$config->set('Attr.AllowedFrameTargets', '_blank');																		//Autorise la balise <a target="_blank">
+				$def=$config->getHTMLDefinition(true);																					//Balises spécifiques :
+				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);	//Autorise la balise <video> et ses attributs
+				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);										//Autorise la balise <source> et ses attributs (cf balise <video>)
+				$purifier=new HTMLPurifier($config);																					//Crée un $purifier
+				$val=$purifier->purify($val);																							//Filtre le code html
+				$val=mb_encode_numericentity($val, [0x80, 0x024F, 0, 0xFFFF, 0x2010, 0x2030, 0, 0xFFFF], 'UTF-8');						//Convertion des caractères spéciaux et accentués en entités HTML (sauf emojis)
 			}
-			else{																											//Filtre principal
-				$val=strip_tags($val,'<br>');																				//Supprime les tags html (<br> pour les notify)
-				if($key=="objUrl")	{$val=filter_var($val, FILTER_SANITIZE_URL);}											//Filtre une "objUrl"
-				else				{$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);}					//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
-				$val=str_replace('&lt;br&gt;','<br>',$val);																	//Retranscrit les <br>
+			else{																														//Filtre principal
+				$val=strip_tags($val,'<br>');																							//Supprime les tags html (<br> pour les notify)
+				if($key=="objUrl")	{$val=filter_var($val, FILTER_SANITIZE_URL);}														//Filtre une "objUrl"
+				else				{$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);}								//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
+				$val=str_replace('&lt;br&gt;','<br>',$val);																				//Retranscrit les <br>
 			}
 		}
 		return $val;

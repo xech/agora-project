@@ -1,8 +1,8 @@
 <script>
 ////	Lance la visio
 ready(function(){
-	$("button[data-visioURL]").on("click",function(){
-		visioURL=this.getAttribute("data-visioURL");																								// Visio via le browser ou l'appli Jitsi
+	$("button[data-visio-url]").on("click",function(){
+		visioURL=this.getAttribute("data-visio-url");																								// Visio via le browser ou l'appli Jitsi
 		if($("#visioHostServer").val()=="alt")  {visioURL=visioURL.replace("<?= Ctrl::$agora->visioHost ?>","<?= Ctrl::$agora->visioHostAlt ?>");}	// Url du serveur alternatif
 		window.open(visioURL);																														// Lance la visio !
 	});
@@ -20,7 +20,7 @@ ready(function(){
 <div id="visioMenu">
 	<!--LANCE LA VISIO-->
 	<div>
-		<button data-visioURL="<?= $visioURL ?>"><img src="app/img/visioSmall.png"><?= Txt::trad("VISIO_launch") ?></button>
+		<button data-visio-url="<?= $visioURL ?>"><img src="app/img/visioSmall.png"><?= Txt::trad("VISIO_launch") ?></button>
 	</div>
 	<!--SERVEURS DE VISIO-->
 	<div <?= empty(Ctrl::$agora->visioHostAlt) ? 'style="display:none"' : null ?> >

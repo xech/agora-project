@@ -2,7 +2,7 @@
 ////	AFFICHE CHAQUE DOSSIERS DE LA VUE
 foreach($foldersList as $tmpFolder)
 {
-	echo $tmpFolder->divContainerMenu($containerClass).
+	echo $tmpFolder->mainDivMenu($containerClass).
 			'<div class="objContentTab objFolders">
 				<div class="objIcon"><img src="'.$tmpFolder->iconPath().'" onclick="redir(\''.$tmpFolder->getUrl().'\')" '.Txt::tooltip($tmpFolder->description).'></div>
 				<div class="objLabel" onclick="redir(\''.$tmpFolder->getUrl().'\')">'.Txt::reduce($tmpFolder->name,80).'</div>

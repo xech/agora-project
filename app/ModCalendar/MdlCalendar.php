@@ -229,13 +229,17 @@ class MdlCalendar extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * RECUPERE LES EVT D'UNE JOURNEE DONNÉE  (clone si evt sur plusieurs jours : evt répété)
+	 * RECUPERE LES EVT D'UNE PERIODE DONNÉE
 	 ********************************************************************************************************/
 	public static function dayEvtList($evtList, $timePeriodBegin, $timePeriodEnd)
 	{
 		$evtDayList=[];
 		foreach($evtList as $tmpEvt){
-			if(static::evtInPeriod($tmpEvt, $timePeriodBegin, $timePeriodEnd))  {$evtDayList[]=clone $tmpEvt;}
+			if(static::evtInPeriod($tmpEvt, $timePeriodBegin, $timePeriodEnd)){
+				$cloneEvt=clone $tmpEvt;
+				$cloneEvt->ymdDisplayed=date("Y-m-d",$timePeriodBegin);//cf evt sur plusieurs jours
+				$evtDayList[]=$cloneEvt;
+			}
 		}
 		return $evtDayList;
 	}

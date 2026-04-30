@@ -30,7 +30,7 @@
 	<div id="pageContent" class="objBlocks">
 		<!--LISTE DES ESPACES-->
 		<?php foreach($spaceList as $tmpSpace){ ?>
-			<?= $tmpSpace->divContainerMenu() ?>
+			<?= $tmpSpace->mainDivMenu() ?>
 				<div class="objContentScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>

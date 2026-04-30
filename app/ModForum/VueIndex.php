@@ -79,7 +79,7 @@ ready(function(){
 					$subjectLastMessage='<div class="vLastMessage">'.$messagesNb.' '.(Txt::trad($messagesNb>1?'FORUM_messages':'FORUM_message')).' : '.Txt::trad("FORUM_lastMessageFrom").' '.$lastMessage->autorDate(false).'</div>';
 				}
 			}
-			echo $tmpSubject->divContainerMenu().
+			echo $tmpSubject->mainDivMenu().
 				'<div class="objContentTab '.$newSubjectClass.'" '.$subjectLink.'>
 					<div class="vTitle">'.$tmpSubject->title.'</div>
 					<div class="vDescription">'.$tmpSubject->description.'</div>
@@ -110,7 +110,7 @@ ready(function(){
 				}
 				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" '.Txt::tooltip("FORUM_quoteMessageInfo").'>'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.png"> </div>'  :  null;
 				//Affichage
-				echo $tmpMessage->divContainerMenu("vMessages").
+				echo $tmpMessage->mainDivMenu("vMessages").
 						'<div class="objContentTab">
 							'.$quotedMessage.'
 							<div class="vTitle">'.$tmpMessage->title.'</div>

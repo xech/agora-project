@@ -231,9 +231,9 @@ class Txt
 
 	/********************************************************************************************************
 	 * FORMATAGE D'UNE DATE/HEURE EN FONCTION D'UN TIMESTAMP
-	 * $format	=>	"default"	->	8 fevrier"
-	 * 			=>	"dateFull"	->	"lun. 8 fevrier"
-	 * 			=>	"labelFull"	->	"lun. 8 fevrier 9:05"
+	 * $format	=>	"default"	->	8 fev."
+	 * 			=>	"dateFull"	->	"lun. 8 fev."
+	 * 			=>	"labelFull"	->	"lun. 8 fev. 9:05"
 	 * 			=>	"mini"		->	"9:05" ou "8 fev. 9:05" (si $diffDays)
 	 * 			=>	"dateBasic"	->	"08/02/2050"
 	 * 			=>	"dateMini"	->	"08/02"
@@ -263,8 +263,8 @@ class Txt
 				//Formatage de la date via "setPattern()" :  https://unicode-org.github.io/icu/userguide/format_parse/datetime/
 				$label=$pattern="";																								//Init (pas de "null")
 				if($format!="mini" && empty($timeEnd) && date("Ymd",$timeBegin)==date("Ymd"))	{$label=self::trad("today");}	//"Aujourd'hui" (pas dans le $pattern)
-				elseif($format=="default")														{$pattern="d MMMM";}			//ex: "8 fevrier"
-				elseif($formatFull==true)														{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
+				elseif($format=="default")														{$pattern="d MMM";}				//ex: "8 fev."
+				elseif($formatFull==true)														{$pattern="eee d MMM";}			//ex: "lun. 8 fev."
 				elseif($format=="dateBasic")													{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
 				elseif($format=="dateMini")														{$pattern="dd/MM";}				//ex: "08/02"
 				elseif($format=="mini" && $diffDays==true)										{$pattern="d MMM";}				//ex: "8 fev."

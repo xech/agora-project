@@ -9,7 +9,6 @@ ready(function(){
 
 <style>
 #bodyLightbox				{max-width:700px;}
-fieldset					{text-align:left;}
 fieldset label				{margin-left:20px;}
 fieldset li					{line-height:25px;}
 #submitButtons				{text-align:center; margin-top:30px;}

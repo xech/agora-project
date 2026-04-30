@@ -28,9 +28,9 @@ ready(function(){
 	////	Tableau d'import: vérifie que le champ agora (<select>) n'est pas déjà sélectionné sur une autre colonne
 	$(".vAgoraFieldSelect").on("change",function(){
 		curField=this.value;
-		curFieldCpt=this.getAttribute("data-fieldCpt");
+		curFieldCpt=this.getAttribute("data-field-cpt");
 		$(".vAgoraFieldSelect").each(function(){
-			if(curField==this.value  &&  this.value!=""  &&  this.getAttribute("data-fieldCpt")!=curFieldCpt){
+			if(curField==this.value  &&  this.value!=""  &&  this.getAttribute("data-field-cpt")!=curFieldCpt){
 				$(".vAgoraFieldSelect[name='agoraFields["+curFieldCpt+"]']").val(null);
 				notify("<?= Txt::trad("importNotif3") ?>");
 				return false;
@@ -148,7 +148,7 @@ form							{text-align:center;}
 					<th><img src="app/img/checkSwitch.png" onclick="$('.vLineImportCheckbox').trigger('click');" <?= Txt::tooltip("selectSwitch") ?>></th>
 					<?php for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){ ?>
 					<th>
-						<select name="agoraFields[<?= $fieldCpt ?>]" class="vAgoraFieldSelect" data-fieldCpt="<?= $fieldCpt ?>">
+						<select name="agoraFields[<?= $fieldCpt ?>]" class="vAgoraFieldSelect" data-field-cpt="<?= $fieldCpt ?>">
 							<option></option>
 							<?php foreach(MdlPerson::$csvFields["fieldKeys"] as $fieldName){
 								if($objClass::objectType=="contact" && preg_match("/(login|password)/i",$fieldName))  {continue;}//pas de password pour les contacts

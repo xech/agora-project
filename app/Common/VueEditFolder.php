@@ -2,7 +2,7 @@
 ready(function(){
 	////	CHANGE L'ICONE DU DOSSIER
 	$("select[name='icon']").on("change",function(){
-		var iconPath=$("option[value='"+this.value+"']").attr("data-filePath");
+		var iconPath=$("option[value='"+this.value+"']").attr("data-file-path");
 		$("#folderIconImg").attr("src",iconPath);
 	});
 
@@ -60,7 +60,7 @@ function mainFormControl(){
 					if($cpt>0)	{$iconValue="folder".$cpt.".png";	$iconImg=$iconValue;	$iconLabel="folder ".$cpt;}
 					else		{$iconValue=null;					$iconImg="folder.png";	$iconLabel=Txt::trad("byDefault");}
 					$iconSelect=($iconValue==$curObj->icon || ($cpt==0 && empty($curObj->icon)))  ?  "selected"  :  null;
-					echo "<option value=\"".$iconValue."\" data-filePath=\"".PATH_ICON_FOLDER.$iconImg."\" ".$iconSelect.">".$iconLabel."</option>";
+					echo "<option value=\"".$iconValue."\" data-file-path=\"".PATH_ICON_FOLDER.$iconImg."\" ".$iconSelect.">".$iconLabel."</option>";
 				}
 				?>
 			</select>

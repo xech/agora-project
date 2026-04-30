@@ -11,10 +11,48 @@ function moduleDisplay()
 	$(".vSynthDay").outerWidth( ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length );					//Synthese des agendas : width des cellules des jours
 	$(".vCalMain").outerHeight( (windowTopHeight - $("#pageContent").offset().top - <?= empty($_SESSION["livecounterUsers"])?10:75 ?>), true);	//Hauteur en fonction du height disponible (10 ou 80 de margin-bottom)
 	$(".vCalVue").outerHeight( $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight());													//Hauteur des vues Month/Week en fonction de vCalMain
-	$(".vEvtBlock").each(function(){ $(this).css("background-color",this.getAttribute("data-evtColor")); });									//Bgcolor de chaque evt
+	$(".vEvtBlock").each(function(){ $(this).css("background-color",this.getAttribute("data-evt-color")); });									//Bgcolor de chaque evt
 	calendarDisplay();																															//Affichage des agendas (VueCalendarMonth / VueCalendarWeek)
 	evtDraggable();																																//Init le Draggable des evenements
 	$(".vCalMain").css("visibility","visible");																									//Affiche les agendas : après calendarDisplay() !
+}
+
+/******************************************************************************************************************
+ *	DRAG & DROP D'EVT : DESACTIVE LE ONCLICK DES .vEvtLabel  ("true" pour transmettre "event" en 1er à l'écouteur)
+*******************************************************************************************************************/
+document.addEventListener("click", function(event){
+	if($(".vEvtBlockMoved").isVisible()){
+		event.stopPropagation();
+		event.preventDefault();
+	}
+}, true);
+
+/************************************************************************************************************
+ *	DRAG & DROP D'EVT : ENREGISTRE LE NOUVEAU TIMEBEGIN VIA AJAX
+*************************************************************************************************************/
+function evtDraggedRecord(targetEvt, targetCell, evtNewTimeBegin)
+{
+	////	TypeId de l'evt + Url d'enregistrement du nouveau datetime
+	const evtTypeId=targetEvt.getAttribute("data-typeid");																						
+	const ajaxUrl="?ctrl=calendar&action=EvtChangeTime&evtNewTimeBegin="+evtNewTimeBegin+"&typeId="+evtTypeId;
+	$.ajax({url:ajaxUrl,dataType:"json"}).done(function(result){
+		if(result.changed){
+			////	Parcourt chaque instance de l'evt sur chaque agenda affiché
+			$(".vEvtBlock[data-typeid='"+evtTypeId+"']").each(function(){
+				////	Update les attributs de l'evt (timeBegin, timeEnd..)  +  Update le tooltip et le label de la date
+				for(var keyAttr in result.attributes)  {this.setAttribute(keyAttr, result.attributes[keyAttr]);}
+				$(this).find(".vEvtLabel").tooltipUpdate(result.tooltip);
+				$(this).find(".vEvtLabelHM").html(result.evtLabelDate);
+				////	Déplace l'evt dans la .vMonthCell des autres agendas affichés
+				if(targetEvt.id!=this.id && $(".vMonthCell").exist())
+					{$(this).parents(".vMonthTable").find(".vMonthCell[data-cell-ymd="+targetCell.getAttribute("data-cell-ymd")+"]").append(this);}
+			});
+			////	Notif  +  Reload l'affichage
+			notify("<?= Txt::trad("CALENDAR_evtChangeTimeConfirmed") ?>","success");
+			calendarDisplay();
+		}
+		else if(result.error)  {notify("Update error");}
+	});
 }
 
 ready(function(){
@@ -23,13 +61,13 @@ ready(function(){
 	 ********************************************************************************************************/
 	$(".evtPropositions").on("click",function(){
 		//// Init le Confirm
-		let ajaxUrl="?ctrl=calendar&action=evtPropositionsConfirm&typeId=calendar-"+this.getAttribute("data-idCal")+"&_idEvt="+this.getAttribute("data-idEvt");
+		let ajaxUrl="?ctrl=calendar&action=evtPropositionsConfirm&typeId=calendar-"+this.getAttribute("data-idcal")+"&_idEvt="+this.getAttribute("data-idevt");
 		let redirUrl="?ctrl=calendar&notify=";
 		let confirmParams={
 			title:"<?= Txt::trad("CALENDAR_evtProposition") ?> :",
 			content:this.getAttribute("data-details"),//Détails de l'evt (date, auteur, etc)
 			buttons:{
-				cancel:{text:labelConfirmCancel},
+				cancel:{text:"<?= Txt::trad("confirmCancel") ?>"},
 				accept:{btnClass:"btn-green", text:"<?= Txt::trad("CALENDAR_evtProposeConfirm") ?>",  action:function(){  $.ajax(ajaxUrl+"&isConfirmed=true").done(function(){ redir(redirUrl+"CALENDAR_evtProposeConfirmed"); });  }},
 				reject:{btnClass:"btn-dark",  text:"<?= Txt::trad("CALENDAR_evtProposeDecline") ?>",  action:function(){  $.ajax(ajaxUrl+"&isDeclined=true").done(function(){  redir(redirUrl+"CALENDAR_evtProposeDeclined"); });  }},
 			}
@@ -80,10 +118,10 @@ ready(function(){
 				else if(swipeToLeft > 100)	{buttonPrevNext=".vCalNext";}					//Affiche la période suivante
 			}
 		});
-		document.addEventListener("touchend",function(){													//Fin de swipe :
-			if(buttonPrevNext!=null  && evtIsDragged==false && $("#menuMobileMain").isVisible()==false){	//buttonPrevNext spécifé + Pas de drag/drop en cours + Menu context masqué
-				$(buttonPrevNext).effect("pulsate",{times:2},500);											//Pulsate le bouton de la Prev/Next
-				setTimeout(function(){  $(buttonPrevNext).trigger("click");  },300);						//Trigger "Click" pour afficher la période
+		document.addEventListener("touchend",function(){																	//Fin de swipe :
+			if(buttonPrevNext!=null && $(".vEvtBlockMoved").isVisible()==false && $("#menuMobileMain").isVisible()==false){	//buttonPrevNext spécifé + Pas de drag/drop en cours + Menu context masqué
+				$(buttonPrevNext).effect("pulsate",{times:2},500);															//Pulsate le bouton de la Prev/Next
+				setTimeout(function(){  $(buttonPrevNext).trigger("click");  },300);										//Trigger "Click" pour afficher la période
 			}
 		});
 	}
@@ -148,10 +186,11 @@ ready(function(){
 
 /*Evenements*/
 .vEvtBlock										{height:20px; min-height:20px; margin:0px; padding:4px; padding-right:20px; box-shadow:1px 1px 2px #555; border-radius:4px!important;}/*padding-right pour le menu burger*/
-.vEvtBlock[data-evtIsPast='true']:not(:hover)	{filter:brightness(0.9);}/*événements passés (sauf si survolé : cf. menu context)*/
+.vEvtBlock[data-evt-is-past='true']:not(:hover)	{filter:brightness(0.9);}/*événements passés (sauf si survolé : cf. menu context)*/
 .vEvtBlockMoved									{z-index:1000; opacity:0.9; box-shadow:0px 0px 4px 4px white;}/*Evt en cours de déplacement*/
 .vEvtLabel										{overflow:hidden; white-space:normal; font-weight:normal; color:white!important;}/*white-space: longs mots splités sur plusieurs lignes*/
-.vEvtLabel img									{margin-left:6px; max-height:13px;}
+.vEvtLabel img									{max-height:13px;}/*icone important/period*/
+.vEvtConfirmOldDate								{opacity:0.75;}
 
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
@@ -167,6 +206,7 @@ ready(function(){
 	.vCalHeaderRight>span						{display:inline-block; margin-right:6px; line-height:35px; vertical-align:middle;}
 	.vCalHeaderRight img						{min-height:20px;}
 	.vEvtBlock									{height:25px; min-height:25px; overflow:hidden; padding-right:0px;}/*padding-right : pas menu burger*/
+	.vEvtConfirmOldDate							{display:block;}
 	.vCalHeader .personImgSmall, .vEvtBlock .menuContextLaunchFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
 }
 
@@ -194,7 +234,7 @@ ready(function(){
 			<div class="miscContent">
 				<legend><?= Txt::trad("CALENDAR_evtProposition") ?><img src="app/img/importantBig.png" id="evtPropositionsPulsate" class="pulsate"></legend>
 				<?php foreach($evtPropositions as $evtTmp){ ?>
-					<div class="evtPropositions optionSelect" data-idEvt="<?= $evtTmp["_idEvt"] ?>" data-idCal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["evtPropDetails"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["evtPropDetails"]) ?> ><?= $evtTmp["evtPropLabel"] ?></div>
+					<div class="evtPropositions optionSelect" data-idevt="<?= $evtTmp["_idEvt"] ?>" data-idcal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["evtPropDetails"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["evtPropDetails"]) ?> ><?= $evtTmp["evtPropLabel"] ?></div>
 				<?php } ?>
 			</div>
 		<?php } ?>

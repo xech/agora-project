@@ -157,9 +157,9 @@ class CtrlObject extends Ctrl
 	public static function actionControlDuplicateName()
 	{
 		if(Req::isParam(["typeId","controledName"])){
-			$curObj=Ctrl::getCurObj();																										//Récupère l'objet courant 
+			$curObj=Ctrl::getCurObj();																											//Récupère l'objet courant 
 			$sqlSelect=($curObj::objectType=="calendar")  ?  "`title`=".Db::param("controledName")  :  "`name`=".Db::param("controledName");	//Recherche sur le nom ou le titre
-			if(Req::isParam("typeIdContainer"))  {$sqlSelect.=" AND _idContainer=".Ctrl::getCurObj(Req::param("typeIdContainer"))->_id;}	//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
+			if(Req::isParam("typeIdContainer"))  {$sqlSelect.=" AND _idContainer=".Ctrl::getCurObj(Req::param("typeIdContainer"))->_id;}		//Sélectionne le conteneur de l'objet (cf. dossier/fichier)
 			//Recherche les doublons dans les objets affectés à l'espace courant
 			$queryDuplicate="SELECT count(*) FROM ".$curObj::dbTable." WHERE ".$sqlSelect." AND _id!=".$curObj->_id." AND _id IN  (select _idObject as _id from ap_objectTarget where objectType='".$curObj::objectType."' and _idSpace=".Ctrl::$curSpace->_id.")";
 			if(Db::getVal($queryDuplicate) > 0)  {echo "duplicateName";}
@@ -255,7 +255,7 @@ class CtrlObject extends Ctrl
 	public static function actionUsersLike()
 	{
 		if(Ctrl::$curUser->isUser() && Req::isParam("typeId")){																		//Vérif de base
-			$curObj=self::getCurObj();																							//Objet courant
+			$curObj=self::getCurObj();																								//Objet courant
 			$sqlObjectLike="objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." AND _idUser=".Ctrl::$curUser->_id;	//Selecteur SQL
 			$curUserLiked=Db::getVal("SELECT count(*) FROM ap_objectLike WHERE ".$sqlObjectLike);									//Vérif si l'user courant à "liké" l'objet
 			if(!empty($curUserLiked))	{Db::query("DELETE FROM ap_objectLike WHERE ".$sqlObjectLike);}								//Supprime le like de l'user courant ("switch" le like)

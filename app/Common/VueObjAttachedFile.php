@@ -50,18 +50,28 @@ async function attachedFileDelete(fileId)
 </div>
 <?php } ?>
 
+
 <!--FICHIERS JOINTS EXISTANTS-->
 <?php foreach($curObj->attachedFileList() as $tmpFile){ ?>
-<hr>
-<div id="attachedFileList<?= $tmpFile["_id"] ?>" class="lineHover vAttachedFileDiv">
-	<!--LABEL DU FICHIER  & THUMB DE L'IMAGE-->
-	<label onclick="confirmRedir('<?= $tmpFile['urlDownload'] ?>',labelConfirmDownload)"><img src="app/img/attachment.png"> <?= $tmpFile["name"] ?></label>
-	<?php if(File::isType("editorImage",$tmpFile["name"])){ ?><img src="<?= $tmpFile["displayUrl"] ?>" class="vAttachedFileThumb"><?php } ?>
-	<!--"INSÉRER DANS LE TEXTE" DE TINYMCE-->
-	<?php if($curObj::descriptionEditor==true && File::isType("editorInsert",$tmpFile["name"])){ ?>
-		<label onclick="attachedFileInsert(<?= $tmpFile['_id'] ?>,'<?= $tmpFile['displayUrl'] ?>')" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> ><img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?></label>
-	<?php } ?>
-	<!--OPTION "SUPPRIMER"-->
-	<label onclick="attachedFileDelete(<?= $tmpFile['_id'] ?>)"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></label>
-</div>
+	<hr>
+	<div id="attachedFileList<?= $tmpFile["_id"] ?>" class="lineHover vAttachedFileDiv">
+		<!--LABEL DU FICHIER-->
+		<label onclick="confirmRedir('<?= $tmpFile['urlDownload'] ?>','<?= Txt::trad('confirmDownload',true) ?>')">
+			<img src="app/img/attachment.png"> <?= $tmpFile["name"] ?>
+		</label>
+		<!--THUMB DE L'IMAGE-->
+		<?php if(File::isType("editorImage",$tmpFile["name"])){ ?>
+			<img src="<?= $tmpFile["displayUrl"] ?>" class="vAttachedFileThumb">
+		<?php } ?>
+		<!--"INSÉRER DANS LE TEXTE" DE TINYMCE-->
+		<?php if($curObj::descriptionEditor==true && File::isType("editorInsert",$tmpFile["name"])){ ?>
+			<label onclick="attachedFileInsert(<?= $tmpFile['_id'] ?>,'<?= $tmpFile['displayUrl'] ?>')" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> >
+				<img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?>
+			</label>
+		<?php } ?>
+		<!--OPTION "SUPPRIMER"-->
+		<label onclick="attachedFileDelete(<?= $tmpFile['_id'] ?>)">
+			<img src="app/img/delete.png"> <?= Txt::trad("delete") ?>
+		</label>
+	</div>
 <?php } ?>

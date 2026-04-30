@@ -69,7 +69,7 @@ function moduleDisplay(){
 
 		////	LISTE DES TACHES
 		foreach($tasksList as $tmpTask){
-			echo $tmpTask->divContainerMenu();
+			echo $tmpTask->mainDivMenu();
 		?>
 				<div class="objContentScroll">
 					<div class="objContentTab vObjTasks">

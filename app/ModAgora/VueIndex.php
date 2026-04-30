@@ -4,8 +4,8 @@ ready(function(){
  	*	RECUP UN BACKUP
 	*******************************************************************************************/
 	$(".vButtonBackup").on("click",function(){
-		let confirmLabel=(this.getAttribute("data-typeBackup")=="all")  ?  "<?= Txt::trad("AGORA_backupConfirm") ?>"  :  null;
-		confirmRedir("?ctrl=agora&action=getBackup&typeBackup="+this.getAttribute("data-typeBackup"), confirmLabel);
+		let confirmLabel=(this.getAttribute("data-type-backup")=="all")  ?  "<?= Txt::trad("AGORA_backupConfirm") ?>"  :  null;
+		confirmRedir("?ctrl=agora&action=getBackup&typeBackup="+this.getAttribute("data-type-backup"), confirmLabel);
 	});
 
 	/********************************************************************************************************
@@ -63,43 +63,42 @@ ready(function(){
 
 <style>
 /*Menu context de gauche*/
-.vAgoraVersion					{text-align:center; margin-top:10px;}
-.vButtonLogs, .vButtonBackup	{width:90%; height:45px; margin:15px; text-align:left; border-radius:10px;}
-#pageMenu img					{max-height:25px; margin-right:10px;}
-#pageMenu hr					{margin:20px 0px;}
+#pageMenuContent 			{text-align:center; margin-bottom:20px;}
+#pageMenuContent button		{width:95%!important; height:40px; margin-block:10px;}
+#pageMenuContent img		{max-height:25px; margin-right:5px;}
 
 /*Formulaire principal*/
-#vMainFormLabel					{text-align:center;}
-input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + label*/
-#logoImg, #logoConnectImg		{margin:0px 10px; max-width:80px; max-height:40px;}/*surcharge ".objField img"*/
-#logoUrl						{margin-top:10px;}
-#limite_espace_disque			{width:40px;}
-#smtpConfig, #ldapConfig		{padding:10px; margin-bottom:20px;}
+#vMainFormLabel				{text-align:center;}
+input[type='radio']+label	{margin-right:30px;}/*espace entre chaque input + label*/
+#logoImg, #logoConnectImg	{margin:0px 10px; max-width:80px; max-height:40px;}/*surcharge ".objField img"*/
+#logoUrl					{margin-top:10px;}
+#limite_espace_disque		{width:40px;}
+#smtpConfig, #ldapConfig	{padding:10px; margin-bottom:20px;}
+fieldset					{margin-top:10px;}/*surcharge*/
 </style>
 
 
 <div id="pageCenter">
 
 	<div id="pageMenu">
-		<!--ESPACE DISQUE UTILISÉ-->
-		<div class="miscContent">
+		<!--ESPACE DISQUE UTILISÉ & VERSIONS D'AGORA & FONCTIONS PHP DÉSACTIVÉES-->
+		<div class="miscContent" id="pageMenuContent">
 			<img src="app/img/diskSpace<?= $diskSpaceAlert==true?'Alert':null ?>.png"> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
-		</div>
-		<!--VERSIONS D'AGORA  &&  FONCTIONS PHP DÉSACTIVÉES-->
-		<div class="miscContent">
-			<div class="vAgoraVersion" title="PHP <?= phpversion().' - '.Db::dbVersion()?>">Agora-Project version <?= Req::appVersion()?> &nbsp;<img src="app/img/info.png"></div>
-			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/info.png"> <?= Txt::trad("AGORA_Changelog") ?></button>
+			<hr>
+			Agora-Project version <?= Req::appVersion()?>
+			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/description.png"> <?= Txt::trad("AGORA_Changelog") ?></button>
+			PHP <?= phpversion().' - '.Db::dbVersion()?>
 			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
 			<?php if(!function_exists("ldap_connect")){ ?>			<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpLdapDisabled") ?><?php } ?>
+
+			<!--VOPTIONS DE BACKUP-->
+			<?php if(Req::isMobile()==false){ ?>
+				<hr>
+				<button class="vButtonBackup" data-type-backup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
+				<button class="vButtonBackup" data-type-backup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
+			<?php } ?>
 		</div>
-		<!--VOPTIONS DE BACKUP-->
-		<?php if(Req::isMobile()==false){ ?>
-		<div class="miscContent">
-			<button class="vButtonBackup" data-typeBackup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
-			<button class="vButtonBackup" data-typeBackup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
-		</div>
-		<?php } ?>
 	</div>
 
 	<div id="pageContent">
@@ -415,7 +414,7 @@ input[type='radio']+label		{margin-right:20px;}/*espace entre chaque input + lab
 				<?php } ?>
 
 				<!--VALIDATION DU FORMULAIRE-->
-				<?= '<hr>'.Txt::submitButton() ?>
+				<?= Txt::submitButton() ?>
 			</form>
 		</div>
 	</div>

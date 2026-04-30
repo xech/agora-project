@@ -38,6 +38,7 @@ class MdlCalendarEvent extends MdlObject
 		if($this->dateBegin && $this->dateEnd){
 			$this->timeBegin=strtotime($this->dateBegin);
 			$this->timeEnd=strtotime($this->dateEnd);
+			$this->ymdDisplayed=date("Y-m-d",$this->timeBegin);//cf evt sur plusieurs jours
 		}
 		//Couleur du background de l'evt, en fonction de la categorie (gris par défaut)
 		$this->evtColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555";
@@ -206,35 +207,31 @@ class MdlCalendarEvent extends MdlObject
 	/********************************************************************************************************
 	 * PROPRIETES DES L'EVT (cf .vEvtBlock)
 	 ********************************************************************************************************/
-	public function attributes($return, $dayTimeBegin, $dayTimeEnd)
+	public function attributes()
 	{
-		//// Attributs de l'evt
+		////	Attributs de l'evt
 		$attrList=[
-			'data-evtColor'			=>$this->evtColor,
-			'data-evtTimeBegin'		=>$this->timeBegin,
-			'data-evtTimeEnd'		=>$this->timeEnd,
-			'data-evtHMSBegin'		=>date("H:i:s",$this->timeBegin),
-			'data-evtDateLabel'		=>Txt::dateLabel($this->timeBegin,"labelFull"),
-			'data-evtDayYmd'		=>date('Y-m-d',$dayTimeBegin),
-			'data-evtIsPast'		=>($this->timeEnd < time() ? 'true' : 'false'),
-			'data-evtIsDraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Evt "Draggable" si editable et non périodique
+			'data-evt-color'			=>$this->evtColor,
+			'data-evt-time-begin'		=>$this->timeBegin,
+			'data-evt-time-end'			=>$this->timeEnd,
+			'data-evt-hms-begin'		=>date("H:i:s",$this->timeBegin),
+			'data-evt-ymd-displayed'	=>$this->ymdDisplayed,
+			'data-evt-date-label'		=>Txt::dateLabel($this->timeBegin,"labelFull"),
+			'data-evt-is-past'			=>($this->timeEnd < time() ? 'true' : 'false'),
+			'data-evt-is-draggable'		=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//"Draggable" si editable et non périodique
 		];
-		//// Time depuis le début du jour && Durée de l'evt sur la journée
-		$evtDayBefore=($this->timeBegin < $dayTimeBegin);																			//Evt commence avant le jour affiché ?
-		$evtDayAfter =($this->timeEnd > $dayTimeEnd);																				//Evt termine après le jour affiché ?
-		$attrList['data-evtTimeSinceDayBegin']=($evtDayBefore==false)  ?  ($this->timeBegin-$dayTimeBegin)  :  0;					//Time entre le début du jour et le début de l'evt
-		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['data-evtTimeDuration']=86400;}									//Affiche toute la journée
-		elseif($evtDayBefore==true)						{$attrList['data-evtTimeDuration']=($this->timeEnd - $dayTimeBegin);}		//Affiche l'evt à partir de 0h00
-		elseif($evtDayAfter==true)						{$attrList['data-evtTimeDuration']=($dayTimeEnd - $this->timeBegin);}		//Affiche l'evt jusqu'à 23h59
-		else											{$attrList['data-evtTimeDuration']=($this->timeEnd - $this->timeBegin);}	//Affichage normal
-		//// Retourne un tableau (cf. "actionEvtChangeTime()")
-		if($return=="array")	{return $attrList;}
-		//// Retourne un "string"
-		else{
-			$attrString='';
-			foreach($attrList as $attrKey=>$attrValue)  {$attrString.=' '.$attrKey.'="'.$attrValue.'" ';}
-			return $attrString;
-		}
+		////	Durées en fonction de la journée affichée
+		$timeDayBegin=strtotime($this->ymdDisplayed." 00:00:00");																	//Jour affiché : début
+		$timeDayEnd  =strtotime($this->ymdDisplayed." 23:59:59");																	//Jour affiché : fin
+		$evtDayBefore=($this->timeBegin < $timeDayBegin);																			//Evt commence avant le jour affiché ?
+		$evtDayAfter =($this->timeEnd > $timeDayEnd);																				//Evt termine après le jour affiché ?
+		$attrList['data-evt-time-since-day-begin']=($evtDayBefore==false)  ?  ($this->timeBegin-$timeDayBegin)  :  0;				//Temps entre le début du jour affiché et le début de l'evt
+		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['data-evt-time-duration']=86400;}								//Affiche toute la journée
+		elseif($evtDayBefore==true)						{$attrList['data-evt-time-duration']=($this->timeEnd - $timeDayBegin);}		//Affiche l'evt à partir de 0h00
+		elseif($evtDayAfter==true)						{$attrList['data-evt-time-duration']=($timeDayEnd - $this->timeBegin);}		//Affiche l'evt jusqu'à 23h59
+		else											{$attrList['data-evt-time-duration']=($this->timeEnd - $this->timeBegin);}	//Affichage normal
+		////	Retourne le tableau des attributs
+		return $attrList;
 	}
 
 	/********************************************************************************************************

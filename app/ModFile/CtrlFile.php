@@ -75,7 +75,7 @@ class CtrlFile extends Ctrl
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."',labelConfirmDownload)";
+			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."','".Txt::trad("confirmDownload",true)."')";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;

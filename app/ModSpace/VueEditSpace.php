@@ -17,7 +17,7 @@ ready(function(){
 	////	Check/Uncheck un module
 	$("input[name='moduleList[]']").on("change",function(){
 		//Affiche/masque les options du module en cours
-		$("[name='moduleList[]']").each(function(){	 $(".moduleOptions"+this.getAttribute("data-moduleName")).toggle(this.checked);  });
+		$("[name='moduleList[]']").each(function(){	 $(".moduleOptions"+this.getAttribute("data-module-name")).toggle(this.checked);  });
 		//Si le module "agenda" est désactivé : on affiche "Le module agenda reste toujours accessible.."
 		if(this.id=="moduleInput-calendar")  {$("#moduleCalendarDisabled").toggle(!this.checked);}
 	}).trigger("change");//Init l'affichage
@@ -35,8 +35,8 @@ ready(function(){
 	$("#spaceAffecAllUsers").on("change",async function(){
 		////	Confirm "Tout sélectionner" / "Tout déselectionner"
 		let isChecked=$(this).is(":checked");
-		let labelConfirm=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("selectNone") ?>";
-		if(await confirmAlt(labelConfirm+" ?")){
+		let tradSelect=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("selectNone") ?>";
+		if(await confirmAlt(tradSelect+" ?")){
 			$(".spaceAffectLine input[value$='_1']").prop("checked",isChecked).prop("disabled",isChecked);	//Si besoin Check et disabled toutes les Box
 			spaceAffectStyle();																				//Style des .spaceAffectLabel
 		}
@@ -79,7 +79,7 @@ label[for='allUsers']					{font-size:1.1rem;}
 /*modules*/
 #modulesList							{list-style-type:none; margin:0px; padding:0px; width:100%;}
 .vModuleLine							{display:table; width:100%; margin:10px 0px; background:<?= Ctrl::$agora->skin=="black"?"#222":"#f1f1f1" ?>; border:<?= Ctrl::$agora->skin=="black"?"#555":"#ddd" ?> 1px solid;}
-.vModuleLine>div						{display:table-cell; font-weight:bold; padding:10px;}
+.vModuleLine>div						{display:table-cell; padding:10px;}
 .vModuleLine img						{max-height:20px;}
 .vModuleLine img[src*='dependency']		{margin-left:8px;}
 .vModuleLineIcon						{vertical-align:middle; margin-left:5px;}
@@ -160,7 +160,7 @@ div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut 
 			//Affiche le module et ses options
 			echo '<div class="vModuleLine">
 					<div>
-						<input type="checkbox" name="moduleList[]" value="'.$moduleName.'" id="moduleInput-'.$moduleName.'" data-moduleName="'.$moduleName.'" '.(empty($tmpModule["disabled"])?"checked":null).'>
+						<input type="checkbox" name="moduleList[]" value="'.$moduleName.'" id="moduleInput-'.$moduleName.'" data-module-name="'.$moduleName.'" '.(empty($tmpModule["disabled"])?"checked":null).'>
 						<label for="moduleInput-'.$moduleName.'" title="'.$tmpModule["description"].'">'.$tmpModule["label"].' <img src="app/img/'.$moduleName.'/icon.png" class="vModuleLineIcon"></label>
 						'.$moduleOptions.'
 					</div>

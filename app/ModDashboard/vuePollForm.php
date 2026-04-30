@@ -1,18 +1,18 @@
-
-<form id="pollForm<?= $newsDisplay.$curObj->_id ?>">
+<form id="pollForm<?= $formType.$curObj->_id ?>">
 	<ul>
 	<?php
-	//Inputs de chaque réponses
-	foreach($curObj->getResponses() as $tmpResponse)
-	{
-		$inputId="pollResponse".$newsDisplay.$tmpResponse["_id"];//$newsDisplay pour que le formulaire dans les news et le formulaire principal n'interfèrent pas
-		echo "<li class='vPollResponseInput'>
-				<input type=\"".($curObj->multipleResponses==true?'checkbox':'radio')."\" name='pollResponse[]' value='".$tmpResponse["_id"]."' id=\"".$inputId."\">
-				<label for=\"".$inputId."\">".$tmpResponse["label"].$curObj->responseFileDiv($tmpResponse)."</label>
-			  </li>";
-	}
+	////	INPUTS DES RÉPONSES
+	foreach($curObj->getResponses() as $tmpResponse){
+		$inputId="pollResponse".$formType.$tmpResponse["_id"];
 	?>
+		<li class="vPollResponseInput">
+			<input type="<?= $curObj->multipleResponses==true?'checkbox':'radio' ?>" name="pollResponse[]" value="<?= $tmpResponse["_id"] ?>" id="<?= $inputId ?>">
+			<label for="<?= $inputId ?>"><?= $tmpResponse["label"].$curObj->responseFileDiv($tmpResponse) ?></label>
+		</li>
+	<?php } ?>
 	</ul>
 	<input type="hidden" name="typeId" value="<?= $curObj->typeId ?>">
-	<div class="submitButtonMain"><button type="submit" <?= Txt::tooltip($submitButtonTooltip) ?> ><?= Txt::trad("DASHBOARD_vote") ?></button></div>
+	<div class="submitButtonMain">
+		<button type="submit" <?= Txt::tooltip($submitButtonTooltip) ?> ><?= Txt::trad("DASHBOARD_POLLS_voteSubmit") ?></button>
+	</div>
 </form>

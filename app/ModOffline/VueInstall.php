@@ -5,7 +5,7 @@ ready(function(){
 	 **********************************************************************************************************/
 	var curTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	curTimezone=curTimezone.replace("Europe/Berlin","Europe/Paris");
-	$("select option[data-tzName='"+curTimezone+"']").prop("selected", true);
+	$("select option[data-tzname='"+curTimezone+"']").prop("selected", true);
 
 	/**********************************************************************************************************
 	 *	VALIDATION DU FORMULAIRE
@@ -85,7 +85,7 @@ input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 					<div><?= Txt::trad("AGORA_timezone") ?></div>
 					<div>
 						<select name="timezone">
-							<?php foreach(Tool::$tabTimezones as $tzName=>$timezone)  {echo "<option value=\"".$timezone."\" data-tzName='".$tzName."'>[GMT ".($timezone>0?"+":"").$timezone."] ".$tzName."</option>";}?>
+							<?php foreach(Tool::$tabTimezones as $tzName=>$timezone)  {echo "<option value=\"".$timezone."\" data-tzname='".$tzName."'>[GMT ".($timezone>0?"+":"").$timezone."] ".$tzName."</option>";}?>
 						</select>
 					</div>
 				</div>

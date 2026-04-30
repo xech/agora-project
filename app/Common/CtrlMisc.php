@@ -42,9 +42,9 @@ class CtrlMisc extends Ctrl
 				$_SESSION["messengerUsersSql"]=implode(",", array_merge($messengerUsersSql,[0]));//Ajoute un pseudo user '0'
 			}
 
-			////	RECUPERE LES USERS CONNECTÉS (LIVECOUNTERS) : VERIF SI YA UN CHANGEMENT DU LIVECOUNTER, AVEC CONNEXION OU DECONNECTION (après 120 secondes d'inactivité: l'user est considéré comme "déconnecté")
+			////	RECUPERE LES USERS CONNECTÉS (LIVECOUNTERS) : VERIF SI YA UN CHANGEMENT DU LIVECOUNTER, AVEC CONNEXION OU DECONNECTION (après 90 secondes d'inactivité: l'user est considéré comme "déconnecté")
 			$livercounterUsersOld=$_SESSION["livecounterUsers"];
-			$_SESSION["livecounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".(time()-120));
+			$_SESSION["livecounterUsers"]=Db::getObjTab("user", "SELECT DISTINCT T1.* FROM ap_user T1, ap_userLivecouter T2 WHERE T1._id=T2._idUser AND T1._id IN (".$_SESSION["messengerUsersSql"].") AND T2.date > ".(time()-90));
 			$result["livecounterUpdate"]=(array_keys($livercounterUsersOld)!=array_keys($_SESSION["livecounterUsers"]));//compare les _idUsers (keys)
 
 			////	RECUPERE LES MESSAGES DU MESSENGER : VERIF SI YA DES NOUVEAUX MESSAGES
@@ -89,9 +89,9 @@ class CtrlMisc extends Ctrl
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Message affecté à un user connnecté : on retire "vMessengerOldMessage" 
 					}
 					//Affichage du message
-					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" data-idUsers="'.$message["_idUsers"].'" '.Txt::tooltip(rtrim($messageTooltip,", ")).'><tr>
+					$_SESSION["messengerMessagesHtml"].='<table class="vMessengerMessage '.$oldMessageClass.'" data-idusers="'.$message["_idUsers"].'" '.Txt::tooltip(rtrim($messageTooltip,", ")).'><tr>
 															<td class="vMessengerMessageDateAutor">'.$dateAutor.'</td>
-															<td data-idAutor="'.$autorObj->_id.'">'.$message["message"].'</td>
+															<td data-idautor="'.$autorObj->_id.'">'.$message["message"].'</td>
 														 </tr></table>';
 				}
 			}

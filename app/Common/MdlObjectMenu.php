@@ -25,14 +25,20 @@ trait MdlObjectMenu
 	}
 
 	/*******************************************************************************************************************************
-	 * DIV PRINCIPAL (".objContent")  &&  MENU CONTEXTUEL
+	 * DIV PRINCIPAL DE L'OBJET (.objContent)  +  MENU CONTEXTUEL
 	 * objMenu 	: id du menu contextuel via click droit et "menuContext()"
 	 *******************************************************************************************************************************/
-	public function divContainerMenu($classes=null, $attributes=null, $menuOptions=null)
+	public function mainDivMenu($classes=null, $menuOptions=null)
 	{
-		$classes='objContent '.$classes.' '.($this->isSelectable()?'isSelectable':null);		//Classe de base + Classe en paramètre + classe des objets sélectionnables
-		if($this->editRight())  {$attributes.=' data-urlEdit="'.$this->getUrl("edit").'"';}		//Url d'édition via "dblClick"
-		return  '<div id="'.$this->uniqId("objContent").'" class="'.$classes.'" for="'.$this->uniqId("objMenu").'" data-typeId="'.$this->typeId.'" '.$attributes.'>'.
+		////	Classe principale  + Classes en paramètre  + classe si sélectionnables
+		$classes='objContent '.$classes.' '.($this->isSelectable()?'isSelectable':null);		
+		////	Attributs du Div
+		$attributes=$this->editRight()  ?  ' data-url-edit="'.$this->getUrl("edit").'" '  :  "";
+		if(method_exists($this,"attributes")){
+			foreach($this->attributes() as $attrKey=>$attrValue)  {$attributes.=' '.$attrKey.'="'.$attrValue.'" ';}
+		}
+		////	Retourne le Div
+		return  '<div id="'.$this->uniqId("objContent").'" class="'.$classes.'" for="'.$this->uniqId("objMenu").'" data-typeid="'.$this->typeId.'" '.$attributes.'>'.
 					$this->contextMenu($menuOptions);
 	}
 

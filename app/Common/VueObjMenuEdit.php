@@ -112,7 +112,7 @@ function accessRightStyle()
 <style>
 /*OPTIONS D'EDITION (cf. white.css & black.css) */
 #objMenuTabs						{margin-top:35px; margin-bottom:-35px; display:table; width:100%; max-width:100%;}
-.objMenuTab							{display:table-cell; width:auto; height:50px; padding:10px 5px; opacity:0.75; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
+.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.75; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
 .objMenuTabSelect					{opacity:1; border-bottom:none;}
 .objMenuTab[for='menuAccessRight']	{min-width:150px;}/*onglet des droits d'accès*/
 .objMenuTab img						{margin-right:10px;}
@@ -247,7 +247,7 @@ function accessRightStyle()
 					<!--LISTE DE TOUS LES USERS (par défaut ceux de l'espace courant)-->
 					<?php foreach($notifMailUsers as $tmpUser){ ?>
 						<div id="divNotifMailUser<?= $tmpUser->_id ?>" <?= !in_array($tmpUser->_id,$curSpaceUsersIds) ? 'style="display:none"' : null ?>>
-							<input type="checkbox" name="notifMailUsers[]" value="<?= $tmpUser->_id ?>" id="notifMailUsersBox<?= $tmpUser->typeId ?>" data-idUser="<?= $tmpUser->_id ?>">
+							<input type="checkbox" name="notifMailUsers[]" value="<?= $tmpUser->_id ?>" id="notifMailUsersBox<?= $tmpUser->typeId ?>" data-iduser="<?= $tmpUser->_id ?>">
 							<label for="notifMailUsersBox<?= $tmpUser->typeId ?>" <?= $tmpUser->userMailDisplay() ? Txt::tooltip($tmpUser->mail) : null ?> ><?= $tmpUser->getLabel() ?></label>
 						</div>
 					<?php } ?>

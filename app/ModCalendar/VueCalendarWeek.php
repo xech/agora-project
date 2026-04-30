@@ -19,153 +19,129 @@
 		$(".vWeekScroller").scrollTop(calScrollTop);											//Scrolltop de l'agenda
 
 		////	DIMENSIONNE & POSITIONNE LES EVTS DE CHAQUE AGENDA
-		$(".vWeekScroller").each(function(){																													//Parcourt chaque agenda
-			let calSelector=this;																																//Selecteur de l'agenda courant
-			let evtBlockList=$(this).find(".vEvtBlock").sort(function(a,b){ return $(a).attr("data-evtTimeBegin")-$(b).attr("data-evtTimeBegin") });			//Tri les evts de l'agenda par timeBegin (cf. evtDayIndex)
+		$(".vWeekScroller").each(function(){
+			const calSelector=this;																																//Selecteur de l'agenda courant
+			const evtBlockList=$(this).find(".vEvtBlock").sort(function(a,b){  return $(a).attr("data-evt-time-begin") - $(b).attr("data-evt-time-begin")  });	//Tri les evts de l'agenda par timeBegin (cf. evtDayIndex)
 			evtBlockList.each(function(){																														//Parcourt chaque Evt
-				let dayYmd=this.getAttribute("data-evtDayYmd");																									//Date à laquelle l'evt est affiché
-				let dayFirstCell=".vWeekCell[data-cellDayYmd='"+dayYmd+"']:first";																				//Selecteur de la 1ere cellule (0:00) du jour
-				let evtWidth  =$(dayFirstCell).width();																											//Width de l'evt (cf. width jour)
-				let evtPosX=$(dayFirstCell).position().left;																									//Position Left de l'evt (cf. position left du jour)
-				let evtDayIndex=$(evtBlockList).filter("[data-evtDayYmd='"+dayYmd+"']").index(this);															//Index/ordre de l'evt parmi les autres evt du jour
-				let evtSameTime=$(calSelector).find(".vEvtBlock[data-evtDayYmd='"+dayYmd+"'][data-evtTimeBegin='"+this.getAttribute("data-evtTimeBegin")+"']");	//Evts qui commencent en même temps
+				const ymdEvt=this.getAttribute("data-evt-ymd-displayed");										//Date à laquelle l'evt est affiché (cf evt sur plusieurs jours)
+				const dayFirstCell=".vWeekCell[data-cell-ymd='"+ymdEvt+"']:first";								//Selecteur de la 1ere cellule (0:00) du jour
+				const evtDayIndex=$(evtBlockList).filter("[data-evt-ymd-displayed='"+ymdEvt+"']").index(this);	//Index/classement de l'evt parmi les autres evt du jour
+				const evtTimeBegin=this.getAttribute("data-evt-time-begin");
+				let evtWidth=$(dayFirstCell).width();
+				let evtX=$(dayFirstCell).position().left;																						//Position Left de l'evt (cf. position left du jour)
+				let evtSameTime=$(calSelector).find(".vEvtBlock[data-evt-ymd-displayed='"+ymdEvt+"'][data-evt-time-begin='"+evtTimeBegin+"']");	//Evts qui commencent en même temps
 				//// D'autres evts commencent en même temps : split l'evt
 				if(evtSameTime.length > 1){
-					evtWidth=evtWidth / evtSameTime.length;																										//Largeur en fonction du nb d'evt à afficher cote à cote
-					evtPosX+=evtWidth * evtSameTime.index(this);																								//Décale l'evt en fonction de son rang (index) parmi les autres evts
+					evtWidth=evtWidth / evtSameTime.length;		//Largeur en fonction du nb d'evt à afficher cote à cote
+					evtX+=evtWidth * evtSameTime.index(this);	//Décale l'evt en fonction de son rang (index) parmi les autres evts
 				}
 				//// Evt sur le même créneau qu'un autre evt : superpose/décale l'evt
-				else if(evtDayIndex > 0  && (prevEvtTimeEnd > this.getAttribute("data-evtTimeBegin") || prevEvtTimeEnd > this.getAttribute("data-evtTimeEnd"))){
-					$(this).addClass("vEvtBlockSuperposed");																									//Bordure accentuée et z-index
-					evtWidth-=20;																																//Réduit la largeur de l'evt de 20px
-					evtPosX+=20;																																//Décale d'autant sur la droite
+				else if(evtDayIndex > 0  && (prevEvtTimeEnd > evtTimeBegin || prevEvtTimeEnd > this.getAttribute("data-evt-time-end"))){
+					$(this).addClass("vEvtBlockSuperposed");	//Bordure accentuée et z-index
+					evtWidth-=20;								//Réduit la largeur de l'evt de 20px
+					evtX+=20;									//Décale d'autant sur la droite
 				}
 				//// Position / dimensions de l'evt
-				let evtHeight=(weekCellHeight/900) * this.getAttribute("data-evtTimeDuration");																	//Hauteur de l'evt
-				let evtPosY=(weekCellHeight/900) * this.getAttribute("data-evtTimeSinceDayBegin");																//Position top (900s=15mn)
-				if($(dayFirstCell).attr("data-cellSummerChange"))		{evtPosY+=(weekCellHeight*4);}															//Journée de changement en heure d'été : décale d'une heure
-				else if($(dayFirstCell).attr("data-cellWinterChange"))	{evtPosY-=(weekCellHeight*4);}															//Idem pour l'heure d'hiver
-				$(this).css("top",evtPosY).css("left",evtPosX).outerWidth(evtWidth).outerHeight(evtHeight-1);													//Applique les position et dimensions (height-1 pour les distinguer)
-				$(this).find(".vEvtLabel").outerHeight($(this).height());																						//Hauteur au vEvtLabel (pas de css "height:inherit")
+				let evtHeight=(weekCellHeight/900) * this.getAttribute("data-evt-time-duration");		//Hauteur de l'evt
+				let evtY=(weekCellHeight/900) * this.getAttribute("data-evt-time-since-day-begin");		//Position top (900s=15mn)
+				if($(dayFirstCell).attr("data-cell-summer-change"))			{evtY+=(weekCellHeight*4);}	//Journée de changement en heure d'été : décale d'une heure
+				else if($(dayFirstCell).attr("data-cell-winter-change"))	{evtY-=(weekCellHeight*4);}	//Idem pour l'heure d'hiver
+				this.style.left=evtX+'px';																//Positonne l'evt en X
+				this.style.top =evtY+'px';																//Positonne l'evt en Y
+				$(this).outerWidth(evtWidth).outerHeight(evtHeight-1);									//Dimensions de l'evt (height-1 pour les distinguer)
+				$(this).find(".vEvtLabel").outerHeight($(this).height());								//Hauteur au vEvtLabel (pas de css "height:inherit")
 				//// Update de variables
-				if(this.getAttribute("data-evtTimeSinceDayBegin") > 0 && evtPosY < calScrollTop)  {$(calSelector).scrollTop(evtPosY);}							//Scrolltop de l'agenda en fonction de l'evt le plus tôt
-				if(evtDayIndex==0 || prevEvtTimeEnd < this.getAttribute("data-evtTimeEnd"))  {prevEvtTimeEnd=this.getAttribute("data-evtTimeEnd");}				//"prevEvtTimeEnd" pour l'evt suivant : 1er evt du jour ou timeEnd supérieur
+				if(this.getAttribute("data-evt-time-since-day-begin") > 0 && evtY < calScrollTop)  {$(calSelector).scrollTop(evtY);}					//Scrolltop de l'agenda en fonction de l'evt le plus tôt
+				if(evtDayIndex==0 || prevEvtTimeEnd < this.getAttribute("data-evt-time-end"))  {prevEvtTimeEnd=this.getAttribute("data-evt-time-end");}	//"prevEvtTimeEnd" pour l'evt suivant : 1er evt du jour ou timeEnd supérieur
 			});
 		});
 	}
-	
+
 	/******************************************************************************************
-	 * DRAGGABLE DES ÉVÉNEMENTS (POSITION ABSOLUTE)
+	 * DRAGGABLE DES ÉVÉNEMENTS
 	 ******************************************************************************************/
 	function evtDraggable()
 	{
-		evtIsDragged=false;
-		gridWidth=$(".vWeekCell").outerWidth();
-		gridHeight=$(".vWeekCell").outerHeight();
-		interact(".vEvtBlock[data-evtIsDraggable='true']").draggable({
-			////	Config du Draggable
-			transform:'none',															//Repositionne via left/top plutôt que transform:translate()
-			modifiers:[																	//Zone draggable :
-				interact.modifiers.restrictRect({ restriction:".vCalVue" }),			//Restriction de la zone sur la .vCalVue parent
-				interact.modifiers.snap({												//Snap/Accroche :
-					offset:'parent',													//Snap basé sur le parent
-					relativePoints:[{ x:parseInt(weekHourWidth), y:0 }],				//Snap sur les .vWeekCell et décalé par rapport à .vWeekHourLabel
-					targets:[ interact.snappers.grid({ x:gridWidth, y:gridHeight }) ]	//Grid à la dimension des .vWeekCell
+		////	EVT DRAGGABLES
+		interact(".vEvtBlock[data-evt-is-draggable='true']").draggable({
+			////	Mobile: latence pour ne pas deplacer un evt par erreur en scrollant la page
+			hold:isMobile() ? 100 : 0,
+			////	Limite la dropzone + Config la zone de Snap/Accroche
+			modifiers:[
+				interact.modifiers.restrictRect({ restriction:".vCalVue" }),
+				interact.modifiers.snap({
+					offset:'parent',															//Snap basé sur le parent
+					relativePoints:[{ x:weekHourWidth, y:0 }],									//Décalage par rapport à la 1ere colonne .vWeekHourLabel
+					targets:[ interact.snappers.grid({ x:weekCellWidth, y:weekCellHeight }) ]	//Grid à la dimension des .vWeekCell
 				})
 			],
-			////	Gestion des événements
-			listeners:{
+			listeners: {
+				////	Enregistre la position et Label de départ (cf boutton "reject")
 				start(event){
-					//// Init
-					evtIsDragged=true;
-					let evtDragged=event.target;
-					evtStartX=parseFloat(evtDragged.style.left);			//Position left de départ (cf button "reject")
-					evtStartY=parseFloat(evtDragged.style.top);				//Position top (idem)
-					evtStartDate=$(evtDragged).find(".vEvtLabelHM").html();	//LabelDate (idem)
+					targetCell=null;
+					const targetEvt=event.target;
+					evtStartX=parseFloat(targetEvt.style.left);
+					evtStartY=parseFloat(targetEvt.style.top);
+					evtStartDate=$(targetEvt).find(".vEvtLabelHM").html();
 				},
+				////	Déplace l'événement via top/left (position absolute)
 				move(event){
-					//// Repositionne l'evt
-					let evtDragged=event.target;
-					let mouseMoveX=(Math.abs(event.dx) > (gridWidth/2)) ? event.dx : 0;					//Mouvement X relative à la souris : corrigé pour les événements splités (tester 2 evts avec le meme dateBegin)
-					let evtPosX=(parseFloat(evtDragged.style.left) || 0) + mouseMoveX;					//Nouvelle position X relative à la souris
-					let evtPosY=(parseFloat(evtDragged.style.top) || 0) + event.dy;						//Nouvelle position Y (idem)
-					if(evtPosX < weekHourWidth)  {evtPosX=weekHourWidth;}								//Corrige si besoin le décalage sur mobile
-					evtDragged.style.left=evtPosX+'px';													//Repositionne en X
-					evtDragged.style.top =evtPosY+'px';													//Repositionne en Y
-					//// Affichage durant le drag & drop
-					let hourHeight=(gridHeight * 4);													//Hauteur des heures pleines
-					let tmpHM=parseFloat(evtPosY / hourHeight).toFixed(2);								//Heure/Minutes en décimales (ex: 9.75 pour 9:45)
-					let tmpHour=Math.floor(tmpHM);														//Heure pleine	(ex: 9.75 => 9)
-					let tmpMinutes=Math.round((tmpHM - tmpHour) * 60);									//Minutes décimales (ex: 9.75 => 0.75 => 45)
-					let tmpLabel=tmpHour+":"+String(tmpMinutes).padStart(2,'0');						//Label temporaire H:M (minutes sur 2 digits)
-					$(evtDragged).find(".vEvtLabelHM").html('<b class="vEvtDragged">'+tmpLabel+'</b>');	//Affiche le label dans .vEvtLabelHM
-					$(evtDragged).addClass("vEvtBlockMoved");											//Evt en cours de déplacement
-					$(".tooltipster-base").hide();														//Masque le tooltip durant le déplacement
+					const targetEvt=event.target;
+					////	Style durant le déplacement  +  Masque le tooltip
+					targetEvt.classList.add("vEvtBlockMoved");
+					$(".tooltipster-base").hide();
+					////	Déplace le targetEvt en X/Y
+					let mouseMoveX=(Math.abs(event.dx) > (weekCellWidth/2)) ? event.dx : 0;//Mouvement X relative à la souris : corrigé pour les événements splités (tester 2 evts avec le meme dateBegin)
+					const evtX = (parseFloat(targetEvt.style.left) || 0) + mouseMoveX;
+					const evtY = (parseFloat(targetEvt.style.top) || 0) + event.dy;
+					targetEvt.style.left=evtX+'px';
+					targetEvt.style.top =evtY+'px';
+					////	Récupère la .vWeekCell dont la position est la plus proche du targetEvt
+					$(targetEvt).parent().find(".vWeekCell").each(function(){
+						const diffY=(evtY - this.offsetTop);
+						const diffX=(evtX - this.offsetLeft);
+						if(diffY <= 3  && diffX <= (weekCellWidth/2))  {targetCell=this; return false;}
+					});
+					$(targetEvt).find(".vEvtLabelHM").html('<b class="vEvtDragged">'+targetCell.getAttribute("data-cell-hm-label")+'</b>');
 				},
+				////	Fin du drop !
 				end(event){
-					//// Evt déplacé
-					let evtDragged=event.target;
-					let evtPosX=parseFloat(evtDragged.style.left);
-					let evtPosY=parseFloat(evtDragged.style.top);
-					if(parseInt(evtStartX)!=parseInt(evtPosX) || parseInt(evtStartY)!=parseInt(evtPosY)){
-						//// Récupère la .vWeekCell dont la position est la + proche du evtDragged
-						let weekCellRef=null;
-						$(evtDragged).parent().find(".vWeekCell").each(function(){
-							let diffY=(evtPosY-$(this).position().top);
-							let diffX=(evtPosX-$(this).position().left);
-							if(diffY <= 3  && diffX <= (gridWidth/2))	{weekCellRef=this;  return false;}
-						});
-						//// Confirme le déplacement de l'evt
-						if(weekCellRef!==null){
-							let confirmParams={
-								title:"<?= Txt::trad("CALENDAR_evtChangeTime") ?>",
-								content:'<span class="vEvtDateLabelOld"> '+$(evtDragged).attr("data-evtDateLabel")+'</span> <img src="app/img/arrowRight.png"> '+$(weekCellRef).attr("data-cellDateLabel"),
-								buttons:{
-									//// Confirmation rejetée
-									reject:{
-										text:labelConfirmCancel,
-										btnClass:"btn-default",
+					const targetEvt=event.target;
+					////	Réinit le style (timeout : cf stopPropagation du click du .vEvtBlock)
+					setTimeout(function(){ targetEvt.classList.remove("vEvtBlockMoved"); },50);
+					////	Confirme le déplacement de l'evt
+					if(targetCell!=null  &  (Math.abs(parseFloat(targetEvt.style.left) - evtStartX) > 2 || Math.abs(parseFloat(targetEvt.style.top) - evtStartY) > 2)){
+						const confirmParams={
+							title:"<?= Txt::trad("CALENDAR_evtChangeTime") ?>",
+							content:'<span class="vEvtConfirmOldDate">'+targetEvt.getAttribute("data-evt-date-label")+'</span> <img src="app/img/arrowRight.png"> '+targetCell.getAttribute("data-cell-date-label"),
+							buttons:{
+								////	Confirmation rejetée
+								reject:{
+									text:"<?= Txt::trad("confirmCancel") ?>",
+									btnClass:"btn-default",
 										action:function(){
-											$(evtDragged).animate({top:evtStartY,left:evtStartX},100);	//Remet l'evt à sa place d'origine
-											$(evtDragged).find(".vEvtLabelHM").html(evtStartDate);		//Remet le label d'origine
+											$(targetEvt).animate({top:evtStartY,left:evtStartX},100);	//Remet l'evt à sa place d'origine
+											$(targetEvt).find(".vEvtLabelHM").html(evtStartDate);		//Remet le label d'origine
 										}
-									},
-									//// Confirmation acceptée
-									accept:{
-										text:labelConfirm,
-										btnClass:"btn-green",
-										action:function(){																													
-											let evtTypeId=$(evtDragged).attr("data-typeId");
-											let evtNewTimeBegin=$(weekCellRef).attr("data-cellTimeBegin");
-											let ajaxUrl="?ctrl=calendar&action=EvtChangeTime&evtNewTimeBegin="+evtNewTimeBegin+"&typeId="+evtTypeId;
-											$.ajax({url:ajaxUrl,dataType:"json"}).done(function(result){
-												 if(result.changed){																						//Update Ok :
-													$(".vEvtBlock[data-typeId='"+evtTypeId+"']").each(function(){											//Parcourt chaque instance de l'evt pour chaque agenda affiché !
-														for(var keyAttr in result.attributes)  {this.setAttribute(keyAttr, result.attributes[keyAttr]);}	//Update les attributs de l'evt : timeBegin, timeEnd, etc
-														$(this).find(".vEvtLabelHM").html(result.evtLabelDate);												//Update le label de la date 
-														$(this).find(".vEvtLabel").tooltipUpdate(result.tooltip);											//Update le tooltip
-													});
-													notify("<?= Txt::trad("CALENDAR_evtChangeTimeConfirmed") ?>","success");	//Notif de confirmation
-													calendarDisplay();															//Reload l'affichage des agendas
-												}
-												if(result.error)  {notify("Update error");}
-											});
-										}
+								},
+								////  Confirmation acceptée
+								accept:{
+									text:"<?= Txt::trad("confirm") ?>",
+									btnClass:"btn-green",
+									action:function(){
+										//// Enregistre la nouvelle date via Ajax
+										evtDraggedRecord(targetEvt, targetCell, targetCell.getAttribute("data-cell-time-begin"));						
 									}
 								}
 							}
-							//// Lance le Confirm (paramétrage par défaut + spécifique)
-							$.confirm(Object.assign(confirmParamsDefault,confirmParams));
 						}
+						//// Lance le Confirm (paramétrage par défaut + spécifique)
+						$.confirm(Object.assign(confirmParamsDefault,confirmParams));
 					}
-					//// Fin du Drag avec timout (evite le onclick ou swipe)
-					setTimeout(function(){
-						$(evtDragged).removeClass("vEvtBlockMoved");
-						evtIsDragged=false;
-					},300);
 				}
 			}
 		});
+
 	}
 
 	/******************************************************************************************
@@ -177,20 +153,20 @@
 			$(".vWeekCellEvtAdd").on("mousedown mousemove mouseup",function(event){
 				if(event.type=="mousedown"){																				//// Début de sélection : init les valeurs
 					isMouseDown=true;																						// Debut de sélection
-					startDayYmd=this.getAttribute("data-cellDayYmd");														// Jour Ymd
-					startTimeBegin=parseInt(this.getAttribute("data-cellTimeBegin"));										// Time du début de sélection
-					startTimeEnd  =parseInt(this.getAttribute("data-cellTimeEnd"));											// Time de fin de sélection
+					startDayYmd=this.getAttribute("data-cell-ymd");															// Jour Ymd
+					startTimeBegin=parseInt(this.getAttribute("data-cell-time-begin"));										// Time du début de sélection
+					startTimeEnd  =parseInt(this.getAttribute("data-cell-time-end"));										// Time de fin de sélection
 					$(this).addClass("lineSelect");																			// Sélection du .vWeekCell
 				}
-				else if(event.type=="mousemove" && isMouseDown==true && startDayYmd==this.getAttribute("data-cellDayYmd")){	//// Continue la sélection sur le même jour
-					startTimeEnd=parseInt(this.getAttribute("data-cellTimeEnd"));											// Update le Time de fin de sélection
-					$(".vWeekCell[data-cellDayYmd='"+startDayYmd+"']").each(function(){										// Sélection/déselection des .vWeekCell (descend/monte la souris : ajoute/enlève .lineSelect)
-						if(startTimeBegin <= parseInt(this.getAttribute("data-cellTimeBegin"))  &&  parseInt(this.getAttribute("data-cellTimeEnd")) <= startTimeEnd)	{$(this).addClass("lineSelect");}
-						else																																			{$(this).removeClass("lineSelect");}
+				else if(event.type=="mousemove" && isMouseDown==true && startDayYmd==this.getAttribute("data-cell-ymd")){	//// Continue la sélection sur le même jour
+					startTimeEnd=parseInt(this.getAttribute("data-cell-time-end"));											// Update le Time de fin de sélection
+					$(".vWeekCell[data-cell-ymd='"+startDayYmd+"']").each(function(){										// Sélection/déselection des .vWeekCell (descend/monte la souris : ajoute/enlève .lineSelect)
+						if(startTimeBegin <= parseInt(this.getAttribute("data-cell-time-begin"))  &&  parseInt(this.getAttribute("data-cell-time-end")) <= startTimeEnd)	{$(this).addClass("lineSelect");}
+						else																																				{$(this).removeClass("lineSelect");}
 					});
 				}
 				else if(event.type=="mouseup" && startTimeBegin < startTimeEnd){											//// Fin de sélection : ouvre l'édition d'un nouvel événement !
-					lightboxOpen("<?= $getUrlNewEvt ?>&_idCal="+this.getAttribute("data-cellIdCal")+"&newEvtTimeBegin="+startTimeBegin+"&newEvtTimeEnd="+startTimeEnd);
+					lightboxOpen("<?= $getUrlNewEvt ?>&_idCal="+this.getAttribute("data-cell-idcal")+"&newEvtTimeBegin="+startTimeBegin+"&newEvtTimeEnd="+startTimeEnd);
 					$(".vWeekCell").removeClass("lineSelect");																// Réinit .lineSelect
 					isMouseDown=startTimeBegin=startTimeEnd=null;															// Réinit enfin les valeurs
 				}
@@ -218,7 +194,6 @@
 	.vEvtLabel									{font-size:0.9rem;}														/*Label de l'evt*/
 	.vEvtLabelHM								{margin-top:2px;}														/*Label de l'heure*/
 	.vEvtDragged								{font-size:1.2rem; line-height:20px;}									/*Label de l'heure en cours de déplacement*/
-	.vEvtDateLabelOld							{opacity:0.75;}
 	.vMobileEvtAdd								{display:none;}
 
 	/*AFFICHAGE RESPONSIVE*/
@@ -226,7 +201,6 @@
 		.vWeekHourLabel, .vEvtLabel				{font-size:0.8rem;}
 		.vWeekHourLabel							{width:25px;}
 		.vEvtDragged							{font-size:1rem;}
-		.vEvtDateLabelOld						{display:none;}
 		.vWeekCell:active .vMobileEvtAdd		{display:block; position:absolute}/*affiche si on selectionne la ligne*/
 		.vWeekHourLabel00, .vEvtLabelHM			{display:none;}
 		.vEvtBlock 								{touch-action:none;}/*Pas de  scroll de la page durant le drag and drop*/
@@ -273,13 +247,14 @@
 						$cellTimeEnd=$cellTimeBegin+900;															//Time de fin
 						if($cellTimeBegin <= time() && time() <= $cellTimeEnd)	{$cellClass.=" vWeekCellRedLine ";}	//Heure courante : RedLine
 						if($tmpCal->affectationAddRight())  					{$cellClass.=" vWeekCellEvtAdd ";}	//Droit d'ajouter un Evt
-						$cellAttributes='data-cellDateLabel="'.Txt::dateLabel($cellTimeBegin,"labelFull").'" '.
-										'data-cellTimeBegin="'.$cellTimeBegin.'" '.
-										'data-cellTimeEnd="'.$cellTimeEnd.'" '.
-										'data-cellDayYmd="'.$dayYmd.'" '.
-										'data-cellIdCal="'.$tmpCal->_id.'" '.
-										'data-cellSummerChange="'.$tmpDay["summerChange"].'" '.
-										'data-cellWinterChange="'.$tmpDay["winterChange"].'" ';
+						$cellAttributes='data-cell-date-label="'.Txt::dateLabel($cellTimeBegin,"labelFull").'" '.
+										'data-cell-hm-label="'.date("H:i",$cellTimeBegin).'" '.
+										'data-cell-time-begin="'.$cellTimeBegin.'" '.
+										'data-cell-time-end="'.$cellTimeEnd.'" '.
+										'data-cell-ymd="'.$dayYmd.'" '.
+										'data-cell-idcal="'.$tmpCal->_id.'" '.
+										'data-cell-summer-change="'.$tmpDay["summerChange"].'" '.
+										'data-cell-winter-change="'.$tmpDay["winterChange"].'" ';
 					?>
 						<!--CELLULE DU 1/4 D'HEURE & D'AJOUT D'EVT-->
 						<td class="<?= $cellClass ?> " title="<?= date('H:i',$cellTimeBegin) ?>" <?= $cellAttributes ?>>
@@ -296,9 +271,9 @@
 		<?php
 		foreach($tmpCal->evtListDays as $evtList){
 			foreach($evtList as $tmpEvt){
-				echo $tmpEvt->divContainerMenu("vEvtBlock",$tmpEvt->evtAttributes,$tmpEvt->contextMenuOptions);
 		?>
-				<div class="vEvtLabel" onclick="if(evtIsDragged==false) <?= $tmpEvt->lightboxVue() ?>" <?= Txt::tooltip($tmpEvt->tooltip) ?>>
+			<?= $tmpEvt->mainDivMenu("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
+				<div class="vEvtLabel" <?= Txt::tooltip($tmpEvt->tooltip) ?> onclick="<?= $tmpEvt->lightboxVue() ?>">
 					<?= $tmpEvt->title ?>
 					<div class="vEvtLabelHM"><?= Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd) ?></div>
 				</div>

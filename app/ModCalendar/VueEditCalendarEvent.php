@@ -121,7 +121,7 @@ input[name='guestMail']				{margin-left:20px;}
 <?= Ctrl::$curUser->isGuest() ? '.vEvtGuestHide {display:none;}' : null ?>
 
 /*PÉRIODICITÉ*/
-#periodFieldset					 	{display:none; margin:20px 0px;}
+#periodFieldset					 	{display:none; margin-block:15px;}/*surcharge le margin-top du fieldset*/
 #periodFieldset>div					{margin-bottom:20px; line-height:30px;}/*blocks principaux*/
 .vPeriodCheckboxDays				{display:inline-block; width:13%;}
 .vPeriodCheckboxMonths				{display:inline-block; width:15%;}
@@ -148,8 +148,7 @@ input[name='guestMail']				{margin-left:20px;}
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	.vEvtOptionInline								{display:block; margin:30px 0px 0px 0px;}
-	#beginEndSeparator								{visibility:hidden; display:block;}
+	#beginEndSeparator								{visibility:hidden; display:block; padding-block:0px;}
 	.beginEndLabel									{display:inline-block; width:60px; line-height:35px;}
 	.vPeriodCheckboxDays, .vPeriodCheckboxMonths	{width:33%!important;}
 	.vCalAffectation								{width:99%; margin-inline:0px;}
@@ -189,7 +188,7 @@ input[name='guestMail']				{margin-left:20px;}
 	</div>
 
 	<!--PERIODICITE : DETAILS-->
-	<fieldset class="vEvtGuestHide" id="periodFieldset">
+	<fieldset id="periodFieldset" class="vEvtGuestHide">
 		<!--DETAIL DES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
 		<legend>
 			<img src="app/img/calendar/period.png"> <span id="periodLegend"></span>
@@ -265,7 +264,7 @@ input[name='guestMail']				{margin-left:20px;}
 	<?php } ?>
 
 	<!--AFFECTATIONS AUX AGENDAS-->
-	<fieldset class="vEvtGuestHide" id="calAffectations">
+	<fieldset id="calAffectations" class="vEvtGuestHide">
 		<legend><?= Txt::trad("CALENDAR_calendarAffectations") ?></legend>
 		<div id="calAffectationsOverflow">
 			<!--AGENDAS DE RESSOURCES & AGENDAS PERSONNELS-->
@@ -276,7 +275,7 @@ input[name='guestMail']				{margin-left:20px;}
 					<label for="box<?= $tmpCal->typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
 					<!--OPTION DE PROPOSITION-->
 					<?php if($tmpCal->proposeOption==true){ ?>
-					<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> class="vCalProposeOption" <?= Txt::tooltip("CALENDAR_proposeOptionTooltip") ?>>
+					<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> class="vCalProposeOption" <?= Txt::tooltip("CALENDAR_proposeEvtTooltipBis") ?>>
 					<?php } ?>
 				</div>
 			<?php } ?>

@@ -35,7 +35,7 @@ class MdlDashboardPoll extends MdlObject
 	{
 		//Créé les enregistrements si la table est vide
 		if(Db::getVal("SELECT count(*) FROM ".self::dbTable)==0){
-			Db::query("INSERT INTO ap_dashboardPoll SET _id=1, title=".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, newsDisplay=1, dateCrea=NOW()");
+			Db::query("INSERT INTO ap_dashboardPoll SET _id=1, title=".Db::format(Txt::trad("INSTALL_dataDashboardPoll")).", _idUser=1, toVoteWithNews=1, dateCrea=NOW()");
 			Db::query("INSERT INTO ap_dashboardPollResponse (_id, _idPoll, label, `rank`) VALUES ('5bd1903d3df9u8t',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollA")).",1), ('5bd1903d3e11dt5',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollB")).",2), ('5bd1903d3e041p7',1,".Db::format(Txt::trad("INSTALL_dataDashboardPollC")).",3)");
 			Db::query("INSERT INTO ap_objectTarget (objectType, _idObject, _idSpace, `target`, accessRight) VALUES ('dashboardPoll', 1, 1, 'spaceUsers', 1)");
 		}
@@ -43,29 +43,31 @@ class MdlDashboardPoll extends MdlObject
 
 	/**************************************************************************************************************************************************************
 	 * STATIC : SONDAGES À AFFICHER
-	 * $mode :  Nb de sondages déjà votés : "pollsVotedNb"  ||  Sondages non votés et affichés avec les news : "newsDisplay"  ||  Affichage infinite scroll = "scroll"
+	 * $mode =>  "votedNb" : Nb de sondages votés  ||  "toVoteWithNews" : Sondages non votésaffichés avec les news  ||  "scroll" : Affichage infinite scroll
 	 **************************************************************************************************************************************************************/
 	public static function getPolls($mode, $pollsOffset=0)
 	{
-		// Init/Switch l'affichage uniquement des sondages déjà votés
-		if(empty($_SESSION["pollsVotedShow"]) || Req::isParam("pollsVotedShow"))  {$_SESSION["pollsVotedShow"]=(bool)(Req::param("pollsVotedShow")=="true");}
-		// Selection SQL de base
+		////	Affiche uniquement les sondages votés ?
+		if(empty($_SESSION["pollsVotedOnly"]) || Req::isParam("pollsVotedOnly"))
+			{$_SESSION["pollsVotedOnly"]=(Req::param("pollsVotedOnly")=="true");}
+		////	Selection SQL  (filtre si besoin les votés / non votés)
 		$sqlSelect=static::sqlDisplay();
-		// Filtre uniquement les sondages déjà votés (cf. "pollsVoted") ou les sondages non votés (cf. "newsDisplay")
-		if($mode=="newsDisplay" || $mode=="pollsVotedNb" || $_SESSION["pollsVotedShow"]==true){
-			$selector=($mode=="newsDisplay") ? "NOT IN" : "IN";
+		if($mode=="votedNb" || $_SESSION["pollsVotedOnly"]==true || $mode=="toVoteWithNews"){
+			$selector=($mode=="toVoteWithNews")  ?  "NOT IN"  :  "IN";
 			$sqlSelect.=" AND _id ".$selector." (select _idPoll as _id from ap_dashboardPollResponseVote where _idUser=".Ctrl::$curUser->_id.")";
 		}
-		// Nb de sondages déjà votés
-		if($mode=="pollsVotedNb")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".$sqlSelect);}
-		// Récupère les sondages non votés et affichés avec les news (affiche les sondages les + populaires en premier : cf. "nbVotes")
-		elseif($mode=="newsDisplay"){
-			$sqlGroupBy="GROUP BY _id, title, description, dateEnd, multipleResponses, newsDisplay, publicVote, dateCrea, _idUser, dateModif, _idUserModif";//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
-			return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelect." AND newsDisplay IS NOT NULL  ".$sqlGroupBy."  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");
+		////	Nb de sondages déjà votés
+		if($mode=="votedNb"){
+			return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".$sqlSelect);
 		}
-		// Sondages pour l'affichage "infinite scroll"
+		////	Sondages non votés et affichés avec les news (sondages les plus populaires en premier, via "nbVotes")
+		elseif($mode=="toVoteWithNews"){
+			$sqlGroupBy="GROUP BY _id, title, description, dateEnd, multipleResponses, toVoteWithNews, publicVote, dateCrea, _idUser, dateModif, _idUserModif";//Tous les champs dans 'T1' doivent être dans le 'GROUP BY' (cf. "sql_mode=only_full_group_by" du "my.cnf")
+			return Db::getObjTab(static::objectType, "SELECT T1.*, COUNT(T2._idResponse) as nbVotes  FROM ap_dashboardPoll T1 LEFT JOIN ap_dashboardPollResponseVote T2 ON T1._id=T2._idPoll  WHERE ".$sqlSelect." AND toVoteWithNews IS NOT NULL  ".$sqlGroupBy."  ORDER BY nbVotes DESC, T1.dateCrea DESC  LIMIT 10 OFFSET 0");
+		}
+		////	Sondages de l'infinite scroll (par 10)
 		else{
-			$sqlLimit="LIMIT 10 OFFSET ".((int)$pollsOffset * 10);//"infinite scroll" par blocs de 10
+			$sqlLimit="LIMIT 10 OFFSET ".((int)$pollsOffset * 10);
 			return Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlSelect." ".static::sqlSort()." ".$sqlLimit);
 		}
 	}
@@ -133,7 +135,7 @@ class MdlDashboardPoll extends MdlObject
 		if(!empty($usersVoters)){
 			$usersLabel=null;
 			foreach($usersVoters as $tmpIdUser)  {$usersLabel.=Ctrl::getObj("user",$tmpIdUser)->getLabel().", ";}
-			return Txt::trad("DASHBOARD_pollVotedBy")." ".trim($usersLabel,", ");
+			return Txt::trad("DASHBOARD_POLLS_votedBy")." ".trim($usersLabel,", ");
 		}
 	}
 
@@ -182,11 +184,11 @@ class MdlDashboardPoll extends MdlObject
 	/********************************************************************************************************
 	 * RÉCUPÈRE LE FORMULAIRE DE VOTE D'UN SONDAGE
 	 ********************************************************************************************************/
-	public function vuePollForm($newsDisplay=false)
+	public function vuePollForm($toVoteWithNews=false)
 	{
 		$vDatas["curObj"]=$this;
-		$vDatas["newsDisplay"]=($newsDisplay==true)  ?  "newsDisplay"  :  null;
-		$vDatas["submitButtonTooltip"]=(!empty($this->publicVote))  ?  Txt::trad("DASHBOARD_publicVote")  :  Txt::trad("DASHBOARD_voteTooltip");
+		$vDatas["formType"]=($toVoteWithNews==true)  ?  "newsForm"  :  "mainForm";//Différencie le formulaire des news et le principal
+		$vDatas["submitButtonTooltip"]=(!empty($this->publicVote))  ?  Txt::trad("DASHBOARD_POLLS_publicVote")  :  Txt::trad("DASHBOARD_POLLS_voteTooltip");
 		return Ctrl::getVue(Req::curModPath()."vuePollForm.php", $vDatas);
 	}
 
@@ -263,7 +265,7 @@ class MdlDashboardPoll extends MdlObject
 			$options["objOptions"][]=[
 				"actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->typeId."')",
 				"iconSrc"=>"download.png",
-				"label"=>Txt::trad("DASHBOARD_exportPoll")
+				"label"=>Txt::trad("DASHBOARD_POLLS_exportPdf")
 			];
 		}
 		////	Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
@@ -271,20 +273,20 @@ class MdlDashboardPoll extends MdlObject
 		$options["objOptions"][]=[
 			"separator"=>"<hr>",
 			"iconSrc"=>"info.png",
-			"label"=>'<span class="cursorHelp" '.$tooltipVotedBy.'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_pollVotesNb")).'</span>'
+			"label"=>'<span class="cursorHelp" '.$tooltipVotedBy.'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_POLLS_votesNbBis")).'</span>'
 		];
 		////	Date de fin de vote
 		if(!empty($this->dateEnd)){
 			$options["objOptions"][]=[
 				"iconSrc"=>"dateEnd.png",
-				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"
+				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"
 			];
 		}
-		////	Vote est public
+		////	Le vote est public
 		if(!empty($this->publicVote)){
 			$options["objOptions"][]=[
 				"iconSrc"=>"eye.png",
-				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_publicVote")."</span>"
+				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_publicVote")."</span>"
 			];
 		}
 		////	Menu parent

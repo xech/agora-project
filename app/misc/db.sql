@@ -521,7 +521,7 @@ CREATE TABLE `ap_dashboardPoll` (
   `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
   `multipleResponses` tinyint DEFAULT NULL,
-  `newsDisplay` tinyint DEFAULT NULL,
+  `toVoteWithNews` tinyint DEFAULT NULL,
   `publicVote` tinyint DEFAULT NULL,
   `dateCrea` datetime NOT NULL,
   `_idUser` int NOT NULL,

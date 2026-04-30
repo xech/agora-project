@@ -132,7 +132,7 @@ function messengerDisplayUser()
 		}
 		//Affiche uniquement l'user sélectionné
 		else if($.isNumeric(messengerDisplayMode)){
-			$(".vMessengerMessage[data-idUsers*='@"+messengerDisplayMode+"@']").show();		//Affiche uniquement les messages concernant l'user sélectionné
+			$(".vMessengerMessage[data-idusers*='@"+messengerDisplayMode+"@']").show();		//Affiche uniquement les messages concernant l'user sélectionné
 			$("#livecounterUser"+messengerDisplayMode).addClass("vLivecounterUserSelect");	//Surligne dans le livecounter l'user sélectionné
 		}
 		//Affiche "Personne n'est connecté"  ||  Affiche le formulaire pour poster un message

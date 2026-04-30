@@ -31,15 +31,16 @@ class MdlDashboardNews extends MdlObject
 	 **************************************************************************************************/
 	public static function getNews($mode, $newsOffset=0)
 	{
-		// Archive/désarchive automatiquement les news
+		////	Archive/désarchive automatiquement les news
 		if(empty($_SESSION["dashboardNewsUpdated"])){
 			Db::query("UPDATE ".static::dbTable."  SET offline=1     WHERE dateOffline IS NOT NULL  AND UNIX_TIMESTAMP(dateOffline)<".time());
 			Db::query("UPDATE ".static::dbTable."  SET offline=null  WHERE dateOnline IS NOT NULL   AND UNIX_TIMESTAMP(dateOnline)<".time()."  AND (dateOffline IS NULL OR UNIX_TIMESTAMP(dateOffline)>".time().")");
 			$_SESSION["dashboardNewsUpdated"]=true;
 		}
-		// Init/Switch l'affichage des news archivées
-		if(Req::isParam("offlineNews"))  {$_SESSION["offlineNews"]=(bool)(Req::param("offlineNews")=="true");}
-		// Nb de news archivées  &&  News pour l'affichage "infinite scroll"
+		////	Init/Switch l'affichage des news archivées
+		if(Req::isParam("offlineNews"))
+			{$_SESSION["offlineNews"]=(bool)(Req::param("offlineNews")=="true");}
+		////	Nb de news archivées  &&  News pour l'affichage "infinite scroll"
 		if($mode=="offlineNewsNb")	{return Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE ".static::sqlDisplay()." AND offline=1");}
 		else{
 			$sqlOffline=(empty($_SESSION["offlineNews"]))  ?  "AND offline IS NULL"  :  "AND offline='1'";

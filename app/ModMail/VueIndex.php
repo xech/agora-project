@@ -18,7 +18,7 @@ ready(function(){
 	 *	INIT L'AFFICHAGE DE L'ARBORESCENCE DE CONTACTS
 	 ********************************************************************************************************/
 	$(".vMailsBlock").each(function(){
-		var folderTreeLevel=this.getAttribute("data-folderTreeLevel");
+		var folderTreeLevel=this.getAttribute("data-folder-tree-level");
 		if(typeof folderTreeLevel!=="undefined" && folderTreeLevel>0)
 			{$(this).css("padding-left",(folderTreeLevel*18)+"px");}
 	});
@@ -27,7 +27,7 @@ ready(function(){
 	 *  AFFICHE/MASQUE LES USERS D'UN ESPACE (SAUF ESPACE COURANT)
 	 ********************************************************************************************************/
 	$(".vMailsLabel").on("click",function(){
-		$("#mailsContainer"+this.getAttribute("data-typeId")).slideToggle();
+		$("#mailsContainer"+this.getAttribute("data-typeid")).slideToggle();
 	});
 	
 	/********************************************************************************************************
@@ -137,8 +137,8 @@ ready(function(){
 										  <div onclick="$('.$boxSelector.').trigger(\'click\')"><img src="app/img/checkSwitch.png"> '.Txt::trad("selectSwitch").'</div>';
 					}
 					////	AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
-					echo '<div class="vMailsBlock" '.($tmpContainer::isFolder==true?'data-folderTreeLevel="'.$tmpContainer->treeLevel.'"':null).'>
-							<div class="vMailsLabel sLink" data-typeId="'.$tmpContainer->typeId.'">
+					echo '<div class="vMailsBlock" '.($tmpContainer::isFolder==true?'data-folder-tree-level="'.$tmpContainer->treeLevel.'"':null).'>
+							<div class="vMailsLabel sLink" data-typeid="'.$tmpContainer->typeId.'">
 								<div><img src="app/img/mail/'.($tmpContainer::objectType=='space'?'user':'contact').'.png"></div>
 								<div>'.$tmpContainer->name.' <img src="app/img/arrowBottom.png"></div>
 							</div>

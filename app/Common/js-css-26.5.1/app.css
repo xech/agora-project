@@ -81,7 +81,7 @@ a, [onclick], label, .sLink, .linkSelect, .option, .optionSelect, .menuContextLa
 #menuMobileMain							{z-index:121; width:380px;  max-width:100%; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
 #menuMobileClose						{text-align:right;}
 #menuMobileMain .menuLine>div			{padding:10px 5px;}/*surcharge*/
-#menuMobileContent2						{margin-top:30px;}
+#menuMobileContent2						{margin-top:20px;}
 #menuMobileContent2 .miscContent		{padding:5px;}
 
 
@@ -166,31 +166,31 @@ textarea												{width:100%; height:60px;}
 .tox-tinymce											{border-radius:10px!important;}/*Editeur TinyMCE : idem textarea*/
 .tox-promotion											{display:none;}/*Editeur TinyMCE : masque le bouton "Upgrade"*/
 select option											{font-size:1.05rem;}
-button													{padding:5px 8px; border-radius:8px; font-weight:bold; cursor:pointer; vertical-align:middle;}
+button													{padding:5px 8px; border-radius:8px; cursor:pointer; vertical-align:middle;}
 .dateInput, .dateBegin, .dateEnd						{width:90px;}													/*DATEPICKER INPUTS*/
 .ui-datepicker											{width:300px; max-width:98%; box-shadow:0px 2px 6px #888;}	   /*DATEPICKER JQUERY ("box-shadow" idem .miscContent)*/
 .ui-datepicker-header									{background-color:transparent; border:none;}					/*label du mois*/
 .ui-datepicker .ui-state-default						{padding:10px; text-align:center; border:0px;}					/*cellules des jours*/
 .ui-datepicker .ui-state-highlight						{background:#cde; color:black;}						  	  /*aujourd'hui*/
 .ui-datepicker .ui-state-active							{background:#007fff; color:white;}		 				  /*jour sélectionné*/
-.ui-timepicker-wrapper									{max-height:400px;}												/*pseudo <select>*/
-.ui-timepicker-list li 									{padding:10px;}													/*liste des heures*/
+.ui-timepicker-wrapper									{max-height:450px;}												/*pseudo <select>*/
+.ui-timepicker-list li 									{padding:7px 15px;}													/*liste des heures*/
 input[type=time]										{width:80px;}													/*TIMEPICKER INPUTS*/
 input[type=time]::-webkit-calendar-picker-indicator		{margin:0px; filter: invert(48%) sepia(20%) saturate(2000%) hue-rotate(150deg) brightness(95%) contrast(80%);}/*icone "horloge"*/
 .passwordDiv											{display:inline-block; position:relative}
 .passwordDisplay										{content:url("../../img/displayShow.png"); position:absolute; top:25%; margin-left:-30px; opacity:0.4; cursor:pointer;}/*Affiche/Masque un password*/
 .passwordDisplayHide									{content:url("../../img/displayHide.png");}
-fieldset												{margin-top:30px; padding:10px;}
+fieldset												{margin-top:25px; padding:10px;}
 legend													{padding:5px 20px;}
 .focusPulsate											{animation:focusPulsate 1.5s linear infinite;}
 @keyframes focusPulsate 								{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
-.submitButtonMain										{margin-top:30px; text-align:center;}						/*div du bouton principal*/
-.submitButtonMain button								{height:50px; min-width:200px;}								/*bouton principal*/
-.submitButtonMain .submitLoading						{max-width:40px; margin-right:-40px;}						/*icone "loading" du button principal*/
-.submitButtonInline										{display:inline-block;}										/*div du button inline : form de recherche & co*/
-.submitButtonInline	button								{min-width:100px;}											/*height idem input[type=text]*/
-.submitButtonInline .submitLoading						{max-width:25px; margin-right:-25px;}						/*icone "loading" du button inline*/
-.submitLoading											{visibility:hidden;}										/*icone "loading" masqué par défaut, puis affiché à la validation du form*/
+.submitButtonMain										{margin-block:40px 20px; text-align:center;}				/*div du bouton submit principal*/
+.submitButtonMain button								{height:50px; min-width:250px; font-weight:bold;}			/*idem*/
+.submitButtonMain .submitLoading						{max-width:40px; margin-right:-40px;}						/*icone "loading"*/
+.submitButtonInline										{display:inline-block;}										/*div du button submit inline*/
+.submitButtonInline	button								{min-width:100px;}											/*idem*/
+.submitButtonInline .submitLoading						{max-width:25px; margin-right:-25px;}						/*icone "loading"*/
+.submitLoading											{visibility:hidden;}										/*icone affiché à la validation du form*/
 .connectForm *:is(input[type=text],input[type=password],button)	{display:inline-block; margin-block:8px; width:330px; height:45px; border-radius:8px;}
 .connectForm .submitButtonMain							{margin-top:0px;}/*surcharge*/
 /*AFFICHAGE SMARTPHONE*/
@@ -244,7 +244,7 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 
 
 /*** FANCYBOX*/
-.fancybox__backdrop								{background:rgba(0,0,0,0.85);}																		/*surcharge l'opacité du background*/
+.fancybox__backdrop								{background:rgba(0,0,0,0.75);}																		/*surcharge l'opacité du background*/
 .fancybox__slide:is(.has-iframe,.has-inline) .fancybox__content, .fancybox__iframe	{border-radius:15px; box-shadow:0px 0px 2px white;}			/*Ajoute un border-radius aux Iframes/Inline*/
 .fancybox__slide.has-iframe						{padding-top:50px; padding-bottom:30px;}															/*surcharge l'espace top/bottom des Iframe full page*/
 .fancybox__slide.has-iframe .fancybox__content	{padding:0px; width:650px;}																			/*surcharge le width par défaut des Iframe : idem lightboxResize()*/
@@ -274,15 +274,14 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 
 /*** JQUERY UI & PLUGINS*/
 .tooltipster-box								{margin:10px;}/*marge du bord de page*/
-.toast-container 								{width:550px;}/*notify()*/
-.toast-item										{padding:20px 15px;}
-.toast-position-top-center						{top:55px;}/*cf #headerBar height*/
+.toast-item										{padding:15px;}
+.toast-position-top-center						{top:5px;}/*cf #headerBar height*/
 .toast-container a, .toast-container a:hover	{text-decoration:underline!important;}
 .jconfirm-box									{border-radius:15px!important; padding-block:40px 30px!important;}
 .jconfirm-bg									{opacity:0.5!important;}
 .jconfirm-title-c, .jconfirm-content-pane, .jconfirm-buttons	{width:100%!important; margin:0px!important; padding:0px!important; text-align:center!important; font-size:1.2rem!important;}
 .jconfirm-title-c								{margin-bottom:15px!important; font-size:1.4rem!important;}
-.jconfirm-content-pane .confirmDeleteAlert		{margin-block:15px!important; color:#700!important;}
+.jconfirm-content-pane .confirmDeleteInfo		{margin-block:15px!important; color:#600!important;}
 .jconfirm-buttons								{margin-top:15px!important;}
 .jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}

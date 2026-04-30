@@ -46,17 +46,17 @@ form .infos								{margin:0px; margin-bottom:20px;}
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("DASHBOARD_addPoll") ?>
+	<?= $curObj->titleMobile("DASHBOARD_POLLS_addPoll") ?>
 	
 	<!--SONDAGE DEJA VOTÉ : AFFICHE UNE NOTIFICATION "Attention : dès que le sondage est voté la modif des réponses est impossible"-->
-	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.png"> <?= Txt::trad("DASHBOARD_votedPollNotif") ?></div><?php } ?>
+	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.png"> <?= Txt::trad("DASHBOARD_POLLS_votedNotif") ?></div><?php } ?>
 
 	<!--TITRE / DESCRIPTION-->
-	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("DASHBOARD_titleQuestion") ?>">
+	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("DASHBOARD_POLLS_titleQuestion") ?>">
 	<?= $curObj->descriptionEditor() ?>
 
 	<!--LISTE DES REPONSES POSSIBLES (10 maxi)-->
-	<div id="responseListLabel"><?= Txt::trad("DASHBOARD_responseList") ?> :</div>
+	<div id="responseListLabel"><?= Txt::trad("DASHBOARD_POLLS_responseList") ?> :</div>
 	<?php
 	for($tmpKey=0; $tmpKey<=10; $tmpKey++)
 	{
@@ -69,7 +69,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		else							{$respFileHide=null;				$respFileContent="<div id='respFileName".$respId."'><a href=\"".$respTmp["fileUrlDownload"]."\" ".Txt::tooltip("download")."><img src='app/img/attachment.png'> ".$respTmp["fileName"]."</a> &nbsp; <img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"deleteResponseFile('".$respId."');\">";}
 		//Affiche la réponse
 		echo '<div class="vPollResponseDiv '.$respClass.'">
-				<input type="text" name="responses['.$respId.']" value="'.$respValue.'" placeholder="'.Txt::trad("DASHBOARD_responseNb").($tmpKey+1).'">
+				<input type="text" name="responses['.$respId.']" value="'.$respValue.'" placeholder="'.Txt::trad("DASHBOARD_POLLS_responseNb").($tmpKey+1).'">
 				<img src="app/img/attachment.png" onclick="$(\'#responseFile'.$respId.'\').slideToggle()" '.Txt::tooltip("EDIT_attachedFileAdd").'>
 				<div id="responseFile'.$respId.'" class="responseFile '.$respFileHide.'">'.$respFileContent.'</div>
 			  </div>';
@@ -77,25 +77,25 @@ form .infos								{margin:0px; margin-bottom:20px;}
 	?>
 
 	<!--SONDAGE PAS ENCORE VOTÉ : AJOUTER UNE REPONSE-->
-	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_addResponse") ?>&nbsp; <img src="app/img/plusSmall.png"></div><?php } ?>
+	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_POLLS_responseAdd") ?>&nbsp; <img src="app/img/plusSmall.png"></div><?php } ?>
 
 	<!--REPONSES MULTIPLES  &&  VOTE PUBLIC  &&  AFFICHAGE AVEC LES NEWS ("checked" par défaut)  &&  DATE DE FIN-->
 	<br><br>
 	<div class="pollOptions">
 		<input type="checkbox" name="multipleResponses" value="1" id="multipleResponsesInput" <?= !empty($curObj->multipleResponses) ? "checked" : null ?> >
-		<label for="multipleResponsesInput"><?= Txt::trad("DASHBOARD_multipleResponses") ?>
+		<label for="multipleResponsesInput"><?= Txt::trad("DASHBOARD_POLLS_multipleResponses") ?>
 	</div>
-	<div class="pollOptions" <?= Txt::tooltip("DASHBOARD_publicVoteInfos") ?> >
+	<div class="pollOptions" <?= Txt::tooltip("DASHBOARD_POLLS_publicVoteInfo") ?> >
 		<input type="checkbox" name="publicVote" value="1" id="publicVoteInput" <?= (!empty($curObj->publicVote)) ? "checked" : null ?> >
-		<label for="publicVoteInput"><?= Txt::trad("DASHBOARD_publicVote") ?>
+		<label for="publicVoteInput"><?= Txt::trad("DASHBOARD_POLLS_publicVote") ?>
 	</div>
 	<div class="pollOptions">
-		<input type="checkbox" name="newsDisplay" value="1" id="newsDisplayInput" <?= (!empty($curObj->newsDisplay) || $curObj->isNew()) ? "checked" : null ?>>
-		<label for="newsDisplayInput"><?= Txt::trad("DASHBOARD_newsDisplay") ?>
+		<input type="checkbox" name="toVoteWithNews" value="1" id="toVoteWithNewsInput" <?= (!empty($curObj->toVoteWithNews) || $curObj->isNew()) ? "checked" : null ?>>
+		<label for="toVoteWithNewsInput"><?= Txt::trad("DASHBOARD_POLLS_toVoteWithNews") ?>
 	</div>
 	<div class="pollOptions">
 		<img src="app/img/dateEnd.png">
-		<?= Txt::trad("DASHBOARD_dateEnd") ?> :
+		<?= Txt::trad("DASHBOARD_POLLS_dateEnd") ?> :
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>">
 	</div>
 

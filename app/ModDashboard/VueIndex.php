@@ -32,7 +32,7 @@ ready(function(){
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
 				if($("#contentPolls").isVisible() && loadMorePolls==true){
 					$("#contentPolls").append("<div class='infiniteScrollLoading'><img src='app/img/loading.png'></div>");
-					$.get("?ctrl=dashboard&action=GetMorePolls&pollsNotVoted=<?= Req::param("pollsNotVoted") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
+					$.get("?ctrl=dashboard&action=GetMorePolls&pollsToVoteWithNews=<?= Req::param("pollsToVoteWithNews") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}	//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
 							$("#contentPolls").append(vuePollsList);		//Affiche les sondages
@@ -90,12 +90,12 @@ function dashboardPollVote()
 		event.preventDefault();
 		//// Controle et Soumission Ajax du formulaire
 		if($("#"+this.id+" input[name='pollResponse[]']:checked").length==0)
-			{notify("<?= Txt::trad("DASHBOARD_voteNoResponse") ?>");}
+			{notify("<?= Txt::trad("DASHBOARD_POLLS_noResponseNotif") ?>");}
 		//// Valide le vote puis affiche le résultat du sondage
 		else{
 			$.ajax({url:"?ctrl=dashboard&action=pollVote", data:$(this).serialize(), method:"POST", dataType:"json"}).done(function(result){
 				if(result.vuePollResult.length>0){
-					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le form. par le résultat du sondage  (+ au besoin le "newsDisplay")
+					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le form. par le résultat du sondage  (au besoin le "toVoteWithNews")
 					mainTriggers();													//Update les tooltips
 				}
 			});
@@ -191,9 +191,10 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				<hr>
 				<!--TRI DES NEWS-->
 				<?= MdlDashboardNews::menuSort() ?>
-				<!--LISTE DES SONDAGES (OPTION "NEWSDISPLAY")-->
+				<!--SONDAGES A VOTER : OPTION "toVoteWithNews"-->
 				<?php
-					foreach($pollsListNewsDisplay as $tmpKey=>$tmpPoll){
+				if($isPolls==true){
+					foreach($pollsToVoteWithNews as $tmpKey=>$tmpPoll){
 				?>
 					<hr>
 					<div class="vPollsContainer">
@@ -202,6 +203,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					</div>
 				<?php
 					}
+				}
 				?>
 			</div>
 
@@ -212,14 +214,17 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					<?php if(MdlDashboardPoll::addRight()){ ?>
 						<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardPoll::getUrlNew() ?>')">
 							<div class="menuIcon"><img src="app/img/plus.png"></div>
-							<div><?= Txt::trad("DASHBOARD_addPoll") ?></div>
+							<div><?= Txt::trad("DASHBOARD_POLLS_addPoll") ?></div>
 						</div>
 					<?php } ?>
 					<!--Voir uniquement les sondages votés-->
 					<?php if(!empty($pollsVotedNb)){ ?>
-						<div class="menuLine <?= $_SESSION["pollsVotedShow"]==true?'optionSelect':null ?>" <?= Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_pollsVotedNb")) ?> >
+						<div class="menuLine <?= $_SESSION["pollsVotedOnly"]==true?'optionSelect':null ?>" <?= Txt::tooltip($pollsVotedNb." ".Txt::trad("DASHBOARD_POLLS_alreadyVoted")) ?> >
 							<div class="menuIcon"><img src="app/img/check.png"></div>
-							<div onclick="redir('?ctrl=dashboard&dashboardPoll=true&pollsVotedShow=<?= $_SESSION['pollsVotedShow']==true?'false':'true' ?>')"><?= Txt::trad("DASHBOARD_pollsVoted") ?></div>
+							<div onclick="redir('?ctrl=dashboard&dashboardPoll=true&pollsVotedOnly=<?= $_SESSION['pollsVotedOnly']==true?'false':'true' ?>')">
+								<?= Txt::trad("DASHBOARD_POLLS_onlyVoted") ?>
+								<span class="circleNb"><?= $pollsVotedNb ?></span>
+							</div>
 						</div>
 					<?php } ?>
 					<!--Tri des sondages-->
@@ -257,9 +262,9 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					</a>
 					<!--SONDAGES-->
 					<?php if($isPolls==true){ ?>
-						<a onclick="dashboardOption('Polls')" id="tabMenuPolls">
+						<a onclick="dashboardOption('Polls')" id="tabMenuPolls" <?= Txt::tooltip($pollsToVoteNbTooltip) ?>>
 							<?= Txt::trad("DASHBOARD_menuPolls") ?>
-							<?php if(!empty($pollsNotVotedNb)){ ?><span <?= Txt::tooltip(Txt::trad("DASHBOARD_pollsNotVoted").' : '.$pollsNotVotedNb) ?> class="circleNb" > <?= $pollsNotVotedNb ?></span><?php } ?>
+							<?php if(!empty($pollsToVoteNb)){ ?><span class="circleNb"><?= $pollsToVoteNb ?></span><?php } ?>
 						</a>
 					<?php } ?>
 					<!--NOUVEAUX ELEMENTS-->
@@ -285,7 +290,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			<!--PREMIERS SONDAGES (AVANT INFINITE SCROLL)-->
 			<?= $vuePollsListInitial ?>
 			<!--AUCUN SONDAGE-->
-			<?php if(empty($vuePollsListInitial)){ ?><div class="miscContent emptyContent"><?= Txt::trad("DASHBOARD_noPoll") ?></div><?php } ?>
+			<?php if(empty($vuePollsListInitial)){ ?><div class="miscContent emptyContent"><?= Txt::trad("DASHBOARD_POLLS_noPolls") ?></div><?php } ?>
 		</div>
 		<?php } ?>
 		

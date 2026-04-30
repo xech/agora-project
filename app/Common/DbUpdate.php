@@ -1002,11 +1002,20 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("26.4.3"))
 			{
+				//Modifie la taille des champs "octetSize"
 				self::query("ALTER TABLE `ap_file` MODIFY `octetSize` BIGINT");
 				self::query("ALTER TABLE `ap_fileVersion` MODIFY `octetSize` BIGINT");
 			}
 
-			////////////////////////////////////////	MODIFIER   DB.SQL  +  VERSION.TXT  +  CHANGELOG.TXT   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			if(self::updateVersion("26.5.1"))
+			{
+				//Renomme le champ "newsDisplay" en "toVoteWithNews"
+				if(self::fieldExist("ap_dashboardPoll","newsDisplay"))
+					{self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `newsDisplay` `toVoteWithNews` TINYINT(1) UNSIGNED NULL DEFAULT NULL");}
+			}
+
+
+			////////////////////////////////////////	+ UPDATE DB.SQL !
 			////////////////////////////////////////
 			////////////////////////////////////////
 

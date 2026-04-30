@@ -7,7 +7,7 @@
 		//Nombre de votes et users ayant voté (si le vote est public)
 		$votesNb	 =$curObj->votesNb($tmpResponse["_id"]);
 		$votesPercent=$curObj->votesPercent($tmpResponse["_id"]);
-		$responseTitle=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_answerVotesNb"));
+		$responseTitle=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_POLLS_votesNb"));
 		$responseTitle.=(!empty($votesNb) && !empty($curObj->publicVote))  ?  " : ".$curObj->votesUsers($tmpResponse["_id"])  :  null;
 		//Couleur et ID de la pollsResultBar
 		$pollsResultBarId="vPollsResultBar".$tmpResponse["_id"];

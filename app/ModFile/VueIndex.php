@@ -44,7 +44,7 @@
 		////	LISTE DES FICHIERS
 		foreach($filesList as $tmpFile){
 			$containerClass=$tmpFile->hasTumb() ? "hasThumb" : null;
-			echo $tmpFile->divContainerMenu($containerClass);
+			echo $tmpFile->mainDivMenu($containerClass);
 		?>
 				<div class="objContentTab objFiles">
 					<div class="objIcon <?= $tmpFile->iconClass ?>" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="typeIdTarget"></div>

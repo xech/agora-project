@@ -28,10 +28,11 @@ class CtrlDashboard extends Ctrl
 		////	Objets Sondages/Polls (sauf guest)
 		$vDatas["isPolls"]=(Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"disablePolls") || Ctrl::$curUser->isGuest()) ?  false  :  true;
 		if($vDatas["isPolls"]==true){
-			$vDatas["pollsVotedNb"]=MdlDashboardPoll::getPolls("pollsVotedNb");			//Nb de sondages votés
-			$vDatas["pollsListNewsDisplay"]=MdlDashboardPoll::getPolls("newsDisplay");	//Sondages non votés : affichés dans le menu contetuel des News
-			$vDatas["pollsNotVotedNb"]=count($vDatas["pollsListNewsDisplay"]);			//Nombre de sondages non votés
-			$vDatasPolls["pollsList"]=MdlDashboardPoll::getPolls("scroll");				//Affichage principal des sondages "infinite scroll"
+			$vDatas["pollsVotedNb"]=MdlDashboardPoll::getPolls("votedNb");										//Nb de sondages votés
+			$vDatas["pollsToVoteWithNews"]=MdlDashboardPoll::getPolls("toVoteWithNews");						//Sondages à voter, affichés avec les News
+			$vDatas["pollsToVoteNb"]=count($vDatas["pollsToVoteWithNews"]);										//Idem : Nb à voter
+			$vDatas["pollsToVoteNbTooltip"]=$vDatas["pollsToVoteNb"].' '.Txt::trad("DASHBOARD_POLLS_toVoteNb");	//Idem : Tooltip
+			$vDatasPolls["pollsList"]=MdlDashboardPoll::getPolls("scroll");										//Affichage principal des sondages "infinite scroll"
 			$vDatas["vuePollsListInitial"]=self::getVue(Req::curModPath()."VuePollsList.php", $vDatasPolls);
 		}
 		////	Plugin des nouveaux éléments (sauf guest)
@@ -131,12 +132,12 @@ class CtrlDashboard extends Ctrl
 		if(Req::isParam("formValidate"))
 		{
 			//Enregistre & recharge l'objet
-			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", newsDisplay=".Db::param("newsDisplay").", dateEnd=".Db::param("dateEnd","inputDate"));
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", toVoteWithNews=".Db::param("toVoteWithNews").", dateEnd=".Db::param("dateEnd","inputDate"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
 			if($pollIsVoted==false)
 			{
 				//Affiche la notif "Attention : dès que le sondage est voté la modif des réponses est impossible"
-				Ctrl::notify("DASHBOARD_votedPollNotif");
+				Ctrl::notify("DASHBOARD_POLLS_votedNotif");
 				//Récupère les réponses et éventuellement leur fichier associé ("_idResponse" comme clé)
 				$responses=Req::param("responses");
 				//Supprime si besoin les réponses effacées (modif du sondage)
@@ -167,7 +168,7 @@ class CtrlDashboard extends Ctrl
 			//Notif par mail & Ferme la page
 			$pollVote="<ul style='padding-left:20px;'>";
 			foreach($curObj->getResponses() as $tmpResponse)  {$pollVote.="<li style='list-style:none;margin:10px;'><input type='radio' name='myPoll'> ".$tmpResponse["label"]."</li>";}
-			$pollVote.="</ul><a href='".$curObj->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_vote")."</button></a>";
+			$pollVote.="</ul><a href='".$curObj->getUrlExternal()."'><button>".Txt::trad("DASHBOARD_POLLS_voteSubmit")."</button></a>";
 			$curObj->sendMailNotif($pollVote);
 			static::lightboxRedir();
 		}
@@ -251,7 +252,7 @@ class CtrlDashboard extends Ctrl
 		$pdf->Write(5, Txt::utf8Decode($curObj->title));
 		$pdf->SetFont("Arial","",9);
 		$pdf->Ln(8);
-		$pdf->Write(5, "   ".Txt::utf8Decode(Txt::trad("DASHBOARD_exportPollDate")." ".date("d/m/Y")));
+		$pdf->Write(5, "   ".Txt::utf8Decode(Txt::trad("DASHBOARD_POLLS_exportDate")." ".date("d/m/Y")));
 		$pdf->Ln(10);
 		if($curObj->description)  {$pdf->Write(5, Txt::utf8Decode(strip_tags($curObj->description)));}
 
@@ -259,7 +260,7 @@ class CtrlDashboard extends Ctrl
 		foreach($curObj->getResponses(true) as $tmpResponse){
 			//Nombre et pourcentage des votes
 			$votesNb=$curObj->votesNb($tmpResponse["_id"]);
-			$votesNbLabel=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_answerVotesNb"));
+			$votesNbLabel=str_replace("--NB_VOTES--",$votesNb,Txt::trad("DASHBOARD_POLLS_votesNb"));
 			$votesPercent=$curObj->votesPercent($tmpResponse["_id"]);
 			$progressBarWidth=($votesPercent>0)  ?  round(($progressBarWidthMax/100) * $votesPercent)  :  7;
 			//Affiche la réponse : label + barre de % + users ayant voté la réponse

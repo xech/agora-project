@@ -6,16 +6,16 @@ ready(function(){
 	////	Init l'affichage de l'arborescence
 	$(".vTreeFolder").each(function(){
 		//Init
-		var folderId=parseInt(this.getAttribute("data-folderId"));
-		var parentFolderId=parseInt(this.getAttribute("data-parentFolderId"));
-		var folderTreeLevel=parseInt(this.getAttribute("data-folderTreeLevel"));
+		var folderId=parseInt(this.getAttribute("data-folderid"));
+		var parentFolderId=parseInt(this.getAttribute("data-parent-folderid"));
+		var folderTreeLevel=parseInt(this.getAttribute("data-folder-tree-level"));
 		//Affiche le dossier racine et les dossiers à la racine (niveau <=1) ET affiche les dossiers du chemin courant
 		if(folderTreeLevel<=1 || $.inArray(parentFolderId,curPathFolderIds)!==-1)  {$(this).css("display","table");}
 		//Ajoute un padding en fonction du niveau du dossier : 15px à gauche à partir du niveau 2
 		if(folderTreeLevel>=2)  {$(this).find(".vTreeFolderIcon").css("padding-left",((folderTreeLevel-1)*15)+"px");}
 		//Icone d'ouverture du dossier : affiche uniquement s'il ya des sous-dossiers + ajoute la class ".vIconOpened" s'il est déjà ouvert (dans le "path" courant)
-		var openIconSelector=".vTreeFolder[data-folderId='"+folderId+"'] .vIconOpen";
-		if($(".vTreeFolder[data-parentFolderId='"+folderId+"']").length>0)  {$(openIconSelector).css("visibility","visible");}//"visibility" et non "display" pour conserver les espaces
+		var openIconSelector=".vTreeFolder[data-folderid='"+folderId+"'] .vIconOpen";
+		if($(".vTreeFolder[data-parent-folderid='"+folderId+"']").length>0)  {$(openIconSelector).css("visibility","visible");}//"visibility" et non "display" pour conserver les espaces
 		if($.inArray(folderId,curPathFolderIds)!==-1)  {$(openIconSelector).addClass("vIconOpened");}
 	});
 
@@ -29,8 +29,8 @@ ready(function(){
 function folderTreeDisplay(folderId, toggle)
 {
 	//Init
-	var openIconSelector=".vTreeFolder[data-folderId='"+folderId+"'] .vIconOpen";
-	var subFoldersSelector=".vTreeFolder[data-parentFolderId='"+folderId+"']";
+	var openIconSelector=".vTreeFolder[data-folderid='"+folderId+"'] .vIconOpen";
+	var subFoldersSelector=".vTreeFolder[data-parent-folderid='"+folderId+"']";
 	//Affiche les sous-dossiers : niveau juste en dessous
 	if(toggle==true && $(subFoldersSelector).isVisible()==false){
 		$(subFoldersSelector).slideDown();
@@ -38,7 +38,7 @@ function folderTreeDisplay(folderId, toggle)
 	}
 	//Ferme toute l'arborescence de sous-dossiers (de manière récursive)
 	else{
-		$(subFoldersSelector).each(function(){ folderTreeDisplay(this.getAttribute("data-folderId")); });
+		$(subFoldersSelector).each(function(){ folderTreeDisplay(this.getAttribute("data-folderid")); });
 		$(subFoldersSelector).slideUp();
 		$(openIconSelector).removeClass("vIconOpened");
 	}
@@ -47,7 +47,7 @@ function folderTreeDisplay(folderId, toggle)
 ////	Déplacement d'objet(s) dans un autre dossier
 function folderMove(newFolderId){
 	$(".vTreeFolderLabel").removeClass("linkSelect").find(".vNewFolderId").prop("checked",false);											//Réinitialise le label et checkbox de tous les dossiers
-	$(".vTreeFolder[data-folderId='"+newFolderId+"'] .vTreeFolderLabel").addClass("linkSelect").find(".vNewFolderId").prop("checked",true);	//Check le dossier sélectionné
+	$(".vTreeFolder[data-folderid='"+newFolderId+"'] .vTreeFolderLabel").addClass("linkSelect").find(".vNewFolderId").prop("checked",true);	//Check le dossier sélectionné
 }
 </script>
 
@@ -88,7 +88,7 @@ function folderMove(newFolderId){
 		$folderLabelActionJs=($context=="nav")   ?  'redir(\''.$tmpFolder->getUrl().'\')'  :  'folderMove('.$tmpFolder->_id.')';
 		$folderLabelCheckbox=($context=="move" && $isCurFolder==false)  ?  '<input type="checkbox" name="newFolderId" class="vNewFolderId" value="'.$tmpFolder->_id.'" disabled>'  :  null;
 		//Affiche le dossier
-		echo '<div class="vTreeFolder" data-folderId="'.$tmpFolder->_id.'" data-parentFolderId="'.$tmpFolder->_idContainer.'" data-folderTreeLevel="'.$tmpFolder->treeLevel.'" '.Txt::tooltip($folderTooltip).'>
+		echo '<div class="vTreeFolder" data-folderid="'.$tmpFolder->_id.'" data-parent-folderid="'.$tmpFolder->_idContainer.'" data-folder-tree-level="'.$tmpFolder->treeLevel.'" '.Txt::tooltip($folderTooltip).'>
 				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRightSmall.png" class="vIconOpen"><img src="app/img/folder/folderSmall.png"></div>
 				<div class="vTreeFolderLabel '.$folderLabelClass.'" onclick="'.$folderLabelActionJs.'">'.Txt::reduce($tmpFolder->name,80).$folderLabelCheckbox.'</div>
 			  </div>';

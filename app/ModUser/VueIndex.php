@@ -67,7 +67,7 @@
 			if($tmpUser->isGeneralAdmin())		{$adminIcon='<img src="app/img/user/userAdminGeneral.png" '.Txt::tooltip("USER_adminGeneral").' class="vAdminIcon">';}	//Admin general
 			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}		//Admin space
 			else								{$adminIcon=null;}
-			echo $tmpUser->divContainerMenu("objPerson").
+			echo $tmpUser->mainDivMenu("objPerson").
 				'<div class="objContentScroll">
 					<div class="objContentTab">
 						<div class="objIcon">'.$tmpUser->tagProfileImg(true,false).'</div>

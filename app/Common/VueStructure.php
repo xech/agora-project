@@ -36,22 +36,19 @@
 		<link  href="app/Common/js-css-<?= Req::appVersion() ?>/<?= (is_object(Ctrl::$agora) && Ctrl::$agora->skin=="black")?"black.css":"white.css" ?>" rel="stylesheet" type="text/css">
 
 		<script>
-		////	Parametres et labels principaux (cf. app.js)
+		////	Parametres et trads pour app.js
 		isMobileApp				=<?= Req::isMobileApp()==true ? "true" : "false" ?>;
 		fancyboxLang			=Fancybox.l10n.<?= Txt::trad("FANCYBOXLANG") ?>;	
 		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
-		labelUploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
-		labeCopyUrlNotif		="<?= Txt::trad("copyUrlNotif") ?>";
-		labelConfirm			="<?= Txt::trad("confirm") ?>";
-		labelConfirmOk			="<?= Txt::trad("confirmOk") ?>";
-		labelConfirmCancel		="<?= Txt::trad("confirmCancel") ?>";
-		labelConfirmDownload	="<?= Txt::trad("confirmDownload") ?>";
-		labelconfirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
-		labelConfirmDelete		="<?= Txt::trad("confirmDelete") ?>";
-		labelConfirmDeleteAlert	="<?= Txt::trad("confirmDeleteAlert") ?>";
-		labelBeginEndError		="<?= Txt::trad("beginEndError") ?>";
-		labelDateFormatError	="<?= Txt::trad("dateFormatError") ?>";
-		labelTimeFormatError	="<?= Txt::trad("timeFormatError") ?>";
+		TRAD_uploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
+		TRAD_confirm			="<?= Txt::trad("confirm") ?>";
+		TRAD_confirmCancel		="<?= Txt::trad("confirmCancel") ?>";
+		TRAD_confirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
+		TRAD_confirmDelete		="<?= Txt::trad("confirmDelete") ?>";
+		TRAD_confirmDeleteInfo	="<?= Txt::trad("confirmDeleteInfo") ?>";
+		TRAD_beginEndError		="<?= Txt::trad("beginEndError") ?>";
+		TRAD_dateFormatError	="<?= Txt::trad("dateFormatError") ?>";
+		TRAD_timeFormatError	="<?= Txt::trad("timeFormatError") ?>";
 
 		////	Au chargement de la page
 		ready(function(){
@@ -67,8 +64,8 @@
 			//// Affiche la vue d'un objet depuis une Url de partage (cf. "getUrlExternal()" et "typeIdTarget")
 			<?php if(Req::isParam("typeIdTarget")){ ?>
 			setTimeout(function(){
-				//Focus le block de l'objet via son "data-typeId" ("divContainerMenu()")  +  Affiche la vue de l'objet (fichier pdf/img via .typeIdTarget)  +  Exclu. les VueEdit et .menuContext
-				$("div[data-typeId='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTarget").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
+				//Focus le block de l'objet via son "data-typeid" ("mainDivMenu()")  +  Affiche la vue de l'objet (fichier pdf/img via .typeIdTarget)  +  Exclu. les VueEdit et .menuContext
+				$("div[data-typeid='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTarget").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
 			}, 500);
 			<?php } ?>
 			//// Footer & Notify du host

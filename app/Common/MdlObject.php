@@ -802,9 +802,8 @@ class MdlObject
 		if(!empty($this->attachedFileList())){
 			$ListMenu="";
 			foreach($this->attachedFileList() as $tmpFile){
-				$ListMenu.='<div class="attachedFileMenu" onclick="confirmRedir(\''.$tmpFile["urlDownload"].'\',labelConfirmDownload)" '.Txt::tooltip("download").'>
-								<img src="app/img/attachment.png"> '.$tmpFile["name"].'
-							</div>';
+				$onclick="confirmRedir('".$tmpFile["urlDownload"]."', '".Txt::trad("confirmDownload",true)."')";
+				$ListMenu.='<div '.Txt::tooltip("download").' class="attachedFileMenu" onclick="'.$onclick.'"><img src="app/img/attachment.png"> '.$tmpFile["name"].'</div>';
 			}
 			$separator=($separator==true) ? "<hr>" : null; 
 			return $separator.$ListMenu;
@@ -863,11 +862,12 @@ class MdlObject
 	 *****************************************************************************************************************/
 	public function descriptionDOM()
 	{
-		libxml_use_internal_errors(true);													//Evite les erreurs et avertissements
-		$dom=new DOMDocument;																//Créé un nouveau DOMDocument
-		$dom->loadHTML($this->description, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);	//Charge la description HTML de l'objet (sans les éléments html/body...)
-		libxml_clear_errors();																//Vide le buffer d'erreur libxml
-		return $dom;																		//Renvoie le DOM de la description
+		$description='<?xml encoding="UTF-8">'.$this->description;						//Indique explicitement à libxml que le contenu est en UTF‑8 ...sinon il l'interprète en ISO‑8859‑1 !
+		libxml_use_internal_errors(true);												//Evite les avertissements explicites
+		$dom=new DOMDocument;															//Créé un nouveau DOMDocument
+		$dom->loadHTML($description, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);		//Charge la description HTML de l'objet (sans le balises html,body...)
+		libxml_clear_errors();															//Vide le buffer d'erreur libxml
+		return $dom;																	//Renvoie le DOM de la description
 	}
 
 	/*****************************************************************************************************************************

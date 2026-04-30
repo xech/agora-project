@@ -81,7 +81,7 @@ function mainFormControl(){
 .plupload_filelist_footer				{top:145px; border:none; background:none;}											/*Tableau : bouton d'upload et % de progression*/
 .plupload_filelist_footer td			{padding:5px;} 																		/*idem*/
 .plupload_buttons						{width:100%; text-align:center;}													/*idem : boutons de lancement/arrêt*/
-.plupload_button						{width:250px; padding:15px; border-radius:7px; background:linear-gradient(#fff,#eee); font-size:1.05rem; font-weight:bold!important;}/*idem*/
+.plupload_button						{width:250px; padding:15px; border-radius:7px; background:linear-gradient(#fff,#eee); font-size:1rem;}/*idem*/
 .plupload_file_status 					{position:absolute; bottom:15px; right:15px;}										/*% de progression*/
 .ui-state-highlight						{background-color:#d2f5b8!important; border-block-color:#ccc!important;}			/*fichier en cours d'upload*/
 #uploadOptions							{display:table; margin-inline:auto; margin-top:30px;}								/*options d'upload*/

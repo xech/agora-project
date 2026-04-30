@@ -113,10 +113,9 @@ class CtrlCalendar extends Ctrl
 				$tmpCal->evtListDays[$dayYmd]=[];																								//Init les evts du jour
 				$evtListDay=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);					//Récupère uniquement les evts du jour
 				foreach($evtListDay as $tmpEvt){																								//Parcourt chaque événement du jour :
+					if(!empty($tmpEvt->important))	{$tmpEvt->title.='&nbsp;<img src="app/img/important.png">';}								//Evt important
+					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='&nbsp;<img src="app/img/calendar/period.png">';}							//Evt periodique/répété
 					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"labelFull",$tmpEvt->timeEnd);						//Tooltip avec title et date détaillée
-					if(!empty($tmpEvt->important))	{$tmpEvt->title.='<img src="app/img/important.png">';}										//Evt important
-					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='<img src="app/img/calendar/period.png">';}								//Evt répété
-					$tmpEvt->evtAttributes=$tmpEvt->attributes("string", $tmpDay["dayTimeBegin"], $tmpDay["dayTimeEnd"]);						//Attributs de l'evt
 					$tmpEvt->contextMenuOptions=["burgerLauncher"=>"small-float", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
 					$tmpCal->evtListDays[$dayYmd][]=$tmpEvt;																					//Ajoute l'evt à la liste !
 				}
@@ -171,24 +170,25 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionEvtChangeTime()
 	{
-		//// Récupère l'evt et Controle l'accès
+		////	Récupère l'evt et Controle l'accès
 		$curObj=Ctrl::getCurObj();
-		if($curObj->editRight()==false || Req::isParam("evtNewTimeBegin")==false)  {$result["error"]=true;}
-		else{
-			// Update la date de l'evt en Bdd
+		if($curObj->editRight()==false || Req::isParam("evtNewTimeBegin")==false){
+			$result["error"]=true;
+		}else{
+			////	Update la date de l'evt en Bdd
 			$timeBeginEndDiff=strtotime($curObj->dateEnd) - strtotime($curObj->dateBegin);
 			$evtNewTimeBegin=(int)Req::param("evtNewTimeBegin");
 			$evtNewTimeEnd=($evtNewTimeBegin + $timeBeginEndDiff);
 			$dateBegin=date("Y-m-d H:i:s",$evtNewTimeBegin);
 			$dateEnd=date("Y-m-d H:i:s",$evtNewTimeEnd);
 			$curObj=$curObj->editRecord("dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd));
-			//Renvoie les nouvelles propriétés de l'evt
-			$result["attributes"]=$curObj->attributes("array", strtotime("today 00:00:00",$evtNewTimeBegin), strtotime("today 23:59:59",$evtNewTimeBegin));
+			////	Renvoie les nouvelles propriétés de l'evt
+			$result["attributes"]=$curObj->attributes();
 			$result["evtLabelDate"]=Txt::dateLabel($curObj->timeBegin,"mini",$curObj->timeEnd);
 			$result["tooltip"]=$curObj->title.'<br>'.Txt::dateLabel($curObj->timeBegin,"labelFull",$curObj->timeEnd);
 			$result["changed"]=true;
 		}
-		//// Retourne le résultat
+		////	Retourne le résultat
 		echo json_encode($result);
 	}
 
@@ -307,7 +307,7 @@ class CtrlCalendar extends Ctrl
 		foreach($vDatas["affectationCalendars"] as $tmpCal){
 			$tmpCal->inputAttr=null;
 			if($tmpCal->_id==Req::param("_idCal") || $curObj->isAffectedCalendar($tmpCal))	{$tmpCal->inputAttr.=" checked";}								//Check si présélectionné / déjà affecté
-			if($tmpCal->isPersonal())														{$tmpCal->inputAttr.=' data-idUser="'.$tmpCal->_idUser.'"';}	//Cf "userGroupSelect()"
+			if($tmpCal->isPersonal())														{$tmpCal->inputAttr.=' data-iduser="'.$tmpCal->_idUser.'" ';}	//Cf "userGroupSelect()"
 			$tmpCal->inputType=($tmpCal->addContentRight())  ?  "affectation"  :  "proposition";															//Affectation / proposition d'evt
 			$tmpCal->tooltip=($tmpCal->inputType=="proposition")  ?  Txt::trad("CALENDAR_proposeEvtTooltip")  :  Txt::trad("CALENDAR_addEvtTooltip2");		//Tooltip du label : "Proposer" / "Ajouter l'événement"
 			if(!empty($tmpCal->description))  {$tmpCal->tooltip.="<hr>".$tmpCal->description;}																//Ajoute la description de l'agenda

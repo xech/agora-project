@@ -26,13 +26,13 @@ ready(function(){
 	 *	ESPACE PUBLIQUE :  AFFICHE LE FORMULAIRE DU PASSWORD  ||  ACCÈS DIRECT
 	 **********************************************************************************************************/
 	$(".publicSpaceOption").click(function(){
-		if(this.getAttribute("data-hasPassword")==="true"){
-			$("#spaceNamePublic").html(this.getAttribute("data-spaceName"));
-			$("#idSpacePublic").val(this.getAttribute("data-idSpace"));
+		if(this.getAttribute("data-has-password")==="true"){
+			$("#spaceNamePublic").html(this.getAttribute("data-space-name"));
+			$("#idSpacePublic").val(this.getAttribute("data-idspace"));
 			Fancybox.show([{type:"inline",src:"#publicSpaceForm"}]);
 		}else{
 			let objUrl=encodeURIComponent($("#objUrlExternal").val());
-			redir("index.php?_idSpaceAccess="+this.getAttribute("data-idSpace")+"&objUrl="+objUrl);
+			redir("index.php?_idSpaceAccess="+this.getAttribute("data-idspace")+"&objUrl="+objUrl);
 		}
 	});
 
@@ -102,7 +102,7 @@ ready(function(){
 			<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRight.png"></div>
 			<div>
 				<?php foreach($objPublicSpaces as $tmpSpace){ ?>
-					<div class="option publicSpaceOption" data-idSpace="<?= $tmpSpace->_id ?>" data-spaceName="<?= $tmpSpace->name ?>" data-hasPassword="<?= $tmpSpace->password?'true':'false' ?>" <?= Txt::tooltip(Txt::trad("guestAccessTooltip").'<br>'.$tmpSpace->description) ?> ><?= $tmpSpace->name ?></div>
+					<div class="option publicSpaceOption" data-idspace="<?= $tmpSpace->_id ?>" data-space-name="<?= $tmpSpace->name ?>" data-has-password="<?= $tmpSpace->password?'true':'false' ?>" <?= Txt::tooltip(Txt::trad("guestAccessTooltip").'<br>'.$tmpSpace->description) ?> ><?= $tmpSpace->name ?></div>
 				<?php } ?>
 			</div>
 		</div>

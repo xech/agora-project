@@ -60,7 +60,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 
 	<!--URL DE PARTAGE-->
 	<?php if(!empty($getUrlExternal)){ ?>
-		<div class="menuLine" onclick="navigator.clipboard.writeText('<?= $getUrlExternal ?>');notify(labeCopyUrlNotif);" <?= Txt::tooltip("copyUrlTooltip") ?> >
+		<div class="menuLine" onclick="navigator.clipboard.writeText('<?= $getUrlExternal ?>');notify('<?= Txt::trad('copyUrlNotif',true) ?>');" <?= Txt::tooltip("copyUrlTooltip") ?> >
 			<div class="menuIcon"><img src="app/img/share.png"></div>
 			<div><?= Txt::trad("copyUrl") ?></div>
 		</div>
@@ -165,7 +165,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 		<?php if($curObj->hasUsersComment()){
 			$commentNb=(int)count($curObj->getUsersComment());
 			if(empty($commentNb))	{$classHide='hide';	$circleNb=null;}
-			else					{$classHide=null;  	$circleNb=$likeNb;}
+			else					{$classHide=null;  	$circleNb=$commentNb;}
 			$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." : ".Txt::trad("commentAdd");
 			$commentOnclick="lightboxOpen('?ctrl=object&action=UsersComment&typeId=".$curObj->typeId."')";
 		?>

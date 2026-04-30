@@ -55,7 +55,7 @@ function mainDisplay(isResize)
 
 			////	Width des objets en affichage "block"
 			if($(".objBlocks .objContent").exist()){
-				pageContentWidth=$("#pageContent").width();																			//Width du principal container de la page
+				let pageContentWidth=$("#pageContent").width() - (isMobile()?0:15);													//Width du principal container de la page, moins le width du ::-webkit-scrollbar 
 				let objMargins=parseFloat($(".objContent").css("margin-left")) + parseFloat($(".objContent").css("margin-right"));	//Marges de l'objet (cf. "app.css")
 				let widthMin  =parseFloat($(".objContent").css("min-width")) + objMargins;											//width Min
 				let widthMax  =parseFloat($(".objContent").css("max-width")) + objMargins;											//width Max
@@ -63,7 +63,7 @@ function mainDisplay(isResize)
 				if(pageContentWidth < (widthMin*2))			{widthObj=pageContentWidth;}											//Un objet par ligne : width 100%
 				else if($(".objContent").length<lineObjNb)	{widthObj=widthMax;}													//Tous les objets sur une seule ligne : largeur max
 				else										{widthObj=Math.floor(pageContentWidth/lineObjNb);}						//Width en fonction de pageContentWidth et lineObjNb
-				$(".objContent").outerWidth(widthObj,true);																			//Applique le width des objets (true pour les margins)
+				$(".objContent").outerWidth(widthObj,true);																			//Applique le width des objets (true pour prendre en compte les margins)
 			}
 
 			////	Width de la fenêtre enregistré dans un Cookie (Path courant & Path racine)
@@ -90,8 +90,8 @@ function mainTriggers()
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
 
 	////	DblClick : édition  ||  Click : sélection
-	$(".objContent").off("click dblclick").on("click dblclick",function(event){												//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
-		if(event.type=="dblclick" && this.hasAttribute("data-urlEdit"))		{lightboxOpen(this.getAttribute("data-urlEdit"));}	//Note : pas de "dblclick" pour sur mobile
+	$(".objContent").off("click dblclick").on("click dblclick",function(event){													//off("click") annule les triggers précédents à chaque "mainTriggers()"
+		if(event.type=="dblclick" && this.hasAttribute("data-url-edit"))		{lightboxOpen(this.getAttribute("data-url-edit"));}	//Note : pas de "dblclick" pour sur mobile
 		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
 	});
 
@@ -102,7 +102,6 @@ function mainTriggers()
 			pageMenuTimeout=setTimeout(function(){																	//Timeout le tps de finaliser le scroll
 				let menuHeight=$("#pageMenu").position().top;														//Position top du menu
 				$("#pageMenu>*:visible").each(function(){ menuHeight+=$(this).outerHeight(true); });				//Ajoute la hauteur de chaque element
-			console.log(menuHeight);
 				if(menuHeight < windowTopHeight)  {$("#pageMenu").css("padding-top",$(window).scrollTop()+"px");}	//Repositionne le menu en fonction de la fenêtre
 			},50);
 		});
@@ -117,7 +116,7 @@ function mainTriggers()
 	},timeoutDuration);
 
 	////	Ouvre un lien <a href> via une lightbox (cf. HTMLPurifier)
-	$("a.lightboxOpenHref").off("click").on("click",function(event){	//"off()" réinitialise les triggers à chaque relance de "mainTriggers()"
+	$("a.lightboxOpenHref").off("click").on("click",function(event){//off("click") annule les triggers précédents à chaque "mainTriggers()"
 		event.preventDefault();
 		lightboxOpen(this.getAttribute("href"));
 	});
@@ -147,7 +146,7 @@ function controleFields()
 	$("input[type='file']").on("change",function(){
 		if($(this).notEmpty() && this.files[0].size > valueUploadMaxFilesize){
 			$(this).val("");
-			notify(labelUploadMaxFilesize);
+			notify(TRAD_uploadMaxFilesize);
 		}
 	});
 
@@ -177,43 +176,54 @@ function controleFields()
 		}
 	}
 
-	////	Init dateBeginRef + timeBeginRef (en millisecondes!)
-	if($(".dateBegin").notEmpty())  {var dateBeginRef=$(".dateBegin").datepicker("getDate").getTime();}
-	if($(".timeBegin").notEmpty())  {var timeBeginRef=$(".timeBegin").timepicker("getTime").getTime();}
+	////	Récupère un objet Date au format ISO (exemple : 2030-04-21T14:30:45 -> HH:MM:SS en option)
+	const objDate = function(inputDate, inputTime){
+		if($(inputDate).notEmpty()){
+			const [day, month, year] = $(inputDate).val().split("/");
+			const time=$(inputTime).notEmpty()  ?  "T"+$(inputTime).val()+":00"  :  "";
+			return new Date(`${year}-${month}-${day}${time}`);
+		}
+	};
 
-	////	Datepicker/Timepicker : Controle du DateTime
+	////	Controles des Datepicker / Timepicker (option)
 	$(".dateBegin, .dateEnd, .timeBegin, .timeEnd").on("change",function(){
-		//// Controle le format des dates et heures
-		if( ($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"))  &&  $(this).notEmpty()  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)		{notify(labelDateFormatError);}
-		if( ($(this).hasClass("timeBegin") || $(this).hasClass("timeEnd"))  &&  $(this).notEmpty()  &&  /^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false)	{notify(labelTimeFormatError);}
-		//// dateBegin avancé/reculé : dateEnd ajusté
-		if($(this).hasClass("dateBegin") && $(".dateEnd").notEmpty()){
-			let beginDiffTime=($(".dateBegin").datepicker("getDate").getTime() - dateBeginRef);						//Différence entre l'ancienne et la nouvelle .dateBegin (en millisecondes!)
-			let dateEndNew=new Date(($(".dateEnd").datepicker("getDate").getTime() + beginDiffTime));				//Calcule la .dateEnd en fonction de la nouvelle .dateBegin
-			$(".dateEnd").datepicker("setDate",dateEndNew).pulsate(1);												//Applique la nouvelle .dateEnd avec un "pulsate"
+		if($(this).notEmpty()){
+			//// Controle le format jj/mm/yyyy ou hh:mm
+			const isDateInput=($(this).hasClass("dateBegin") || $(this).hasClass("dateEnd"));
+			if(isDateInput==true  &&  /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)==false)		{notify(TRAD_dateFormatError);}
+			if(isDateInput==false &&  /^[0-2][0-9][:][0-5][0-9]$/.test(this.value)==false)	{notify(TRAD_timeFormatError);}
+			//// Objets Datetime
+			const dateBegin = objDate(".dateBegin", ".timeBegin");
+			const dateEnd   = objDate(".dateEnd", ".timeEnd");
+			//// Controles les dates de début / fin
+			if($(".dateBegin").notEmpty() && $(".dateEnd").notEmpty() && typeof lastDateBegin!="undefined"){
+				//// Diff entre l'ancienne et la nouvelle datetime
+				const timeDiff=dateBegin.getTime() - lastDateBegin.getTime();
+				const newDateEnd=new Date( dateEnd.getTime() + timeDiff );
+				//// Modif dateBegin -> ajuste dateEnd
+				if($(this).hasClass("dateBegin") && $(".dateEnd").notEmpty()){
+					$(".dateEnd").datepicker("setDate",newDateEnd).pulsate(1);
+				}
+				//// Modif timeBegin -> ajuste timeEnd
+				else if($(this).hasClass("timeBegin") && $(".dateBegin").val()==$(".dateEnd").val()){
+					$(".timeEnd").timepicker("setTime",newDateEnd).pulsate(1);
+				}
+				//// Modif dateEnd ou timeEnd -> Verif qu'il ne soit pas avant le début
+				if(($(this).hasClass("dateEnd") || $(this).hasClass("timeEnd"))  &&  dateEnd < dateBegin){
+					notify(TRAD_beginEndError);
+					$(".dateEnd").datepicker("setDate",lastDateEnd).pulsate(1);
+					$(".timeEnd").timepicker("setTime",lastDateEnd).pulsate(1);
+				}
+			}
+			//// Enregistre la date de début / fin
+			lastDateBegin = objDate(".dateBegin", ".timeBegin");
+			lastDateEnd   = objDate(".dateEnd", ".timeEnd");
 		}
-		//// timeBegin avancé/reculé : timeEnd ajusté
-		if($(this).hasClass("timeBegin") && $(".dateBegin").val()==$(".dateEnd").val()){							//Verif que .dateBegin == .dateEnd
-			let beginDiffTime=($(".timeBegin").timepicker("getTime").getTime() - timeBeginRef);						//Différence entre l'ancien et la nouveau .timeBegin (en millisecondes!)
-			let timeEndNew=new Date(($(".timeEnd").timepicker("getTime").getTime() + beginDiffTime));				//Calcule le .timeEnd en fonction du nouveau .timeBegin
-			$(".timeEnd").timepicker("setTime",timeEndNew).pulsate(1);												//Applique le nouveau .timeEnd avec un "pulsate"
-		}
-		//// Verif que le datetime de début soit avant celui de fin
-		let dateBegin=$(".dateBegin").val().split("/");																//Date de début au format "dd/MM/yyyy"
-		let dateEnd	 =$(".dateEnd").val().split("/");																//Date de fin
-		let datetimeBegin	=new Date(dateBegin[1]+"/"+dateBegin[0]+"/"+dateBegin[2]+" "+$(".timeBegin").val());	//Objet Date de début au format "MM/dd/yyyy HH:mm"
-		let datetimeEnd		=new Date(dateEnd[1]+"/"+dateEnd[0]+"/"+dateEnd[2]+" "+$(".timeEnd").val());			//Objet Date de fin
-		if(datetimeBegin > datetimeEnd){
-			setTimeout(function(){																					//Timeout le tps de finaliser l'action du Timepicker
-				notify(labelBeginEndError);																			//Notif "La date de début doit précéder la date de fin"
-				$(".dateEnd").val($(".dateBegin").val());															//Date de fin = idem début 
-				$(".timeEnd").val($(".timeBegin").val());															//Time de fin = idem début 
-			},500);
-		}
-		//// PUIS update dateBeginRef + timeBeginRef (en millisecondes!)
-		if($(".dateBegin").notEmpty())  {dateBeginRef=$(".dateBegin").datepicker("getDate").getTime();}
-		if($(".timeBegin").notEmpty())  {timeBeginRef=$(".timeBegin").timepicker("getTime").getTime();}
 	});
+	
+	////	Init les dates de début / fin
+	var lastDateBegin = objDate(".dateBegin", ".timeBegin");
+	var lastDateEnd   = objDate(".dateEnd", ".timeEnd");
 }
 
 /************************************************************************************************************
@@ -398,13 +408,13 @@ ready(function(){
  ************************************************************************************************************/
 function confirmAlt(confirmTitle, confirmDetails){
 	return new Promise((resolve)=>{
-		//// Init le confirm (cf. "labelConfirm" de "VueStructure.php")
+		//// Init le confirm
 		let confirmParams={
-			title:isValue(confirmTitle) ? confirmTitle : labelConfirm+" ?",
+			title:isValue(confirmTitle) ? confirmTitle : TRAD_confirm+" ?",
 			content:isValue(confirmDetails) ? confirmDetails : null,
 			buttons:{
-				cancel:	{ btnClass:'btn-default', text:labelConfirmCancel, action:()=>{resolve(false);} },
-				confirm:{ btnClass:'btn-blue',	  text:labelConfirm,	   action:()=>{resolve(true);} },
+				cancel:	{ btnClass:'btn-default', text:TRAD_confirmCancel, action:()=>{resolve(false);} },
+				confirm:{ btnClass:'btn-blue',	  text:TRAD_confirm,	   action:()=>{resolve(true);} },
 			}
 		}
 		//// Lance le Confirm (paramétrage par défaut + spécifique)
@@ -426,18 +436,18 @@ async function confirmRedir(locationUrl, confirmTitle)
  ************************************************************************************************************/
 async function redir(locationUrl)
 {
-	if(window.top.confirmCloseForm==false || await confirmAlt(labelconfirmCloseForm))
+	if(window.top.confirmCloseForm==false || await confirmAlt(TRAD_confirmCloseForm))
 		{window.top.location.href=locationUrl;}
 }
 
 /************************************************************************************************************
- * ASYNC : CONFIRME UNE SUPPRESSION AVEC REDIRECTION  (labelConfirmDelete de "VueStructure.php")
+ * ASYNC : CONFIRME UNE SUPPRESSION AVEC REDIRECTION
  ************************************************************************************************************/
 async function confirmDelete(deleteUrl, confirmDetailsBis, ajaxControlUrl)
 {
-	let confirmDetails='<div class="confirmDeleteAlert">'+labelConfirmDeleteAlert+'</div>';											// Détail du confirm "cette action est définitive"
+	let confirmDetails='<div class="confirmDeleteInfo">'+TRAD_confirmDeleteInfo+'</div>';											// Détail du confirm "cette action est définitive"
 	if(isValue(confirmDetailsBis))  {confirmDetails+='<img src="app/img/arrowRight.png"> '+confirmDetailsBis;}						// Ajoute le label de l'objet, le nb d'objets sélectionnés, etc.
-	if(await confirmAlt(labelConfirmDelete,confirmDetails)){																		// Confirm "Confirmer la suppression ?"
+	if(await confirmAlt(TRAD_confirmDelete,confirmDetails)){																		// Confirm "Confirmer la suppression ?"
 		if(!isValue(ajaxControlUrl))  {window.location.href=deleteUrl;}																// Suppression directe (pas de "window.top.location" : cf. lightbox des commentaires ou autre)
 		else{																														// Controle Ajax avant suppression de dossier
 			$.ajax({url:ajaxControlUrl, dataType:"json"}).done(async function(result){												// Lance le controle Ajax
@@ -456,7 +466,7 @@ ready(function(){
 	//":not()" :  "_blank" ouvre une nouvelle fenêtre  et  "[data-fancybox]" + "a.lightboxOpenHref" sont lancés via mainTriggers()
 	$("a[href]:not([target='_blank'],[data-fancybox],.lightboxOpenHref)").click(async function(event){
 		event.preventDefault();
-		if(window.top.confirmCloseForm==false || await confirmAlt(labelconfirmCloseForm))
+		if(window.top.confirmCloseForm==false || await confirmAlt(TRAD_confirmCloseForm))
 			{window.top.location.href=this.getAttribute("href");}
 	});
 });
@@ -480,7 +490,7 @@ function submitLoading()
 function asyncSubmit(thisForm)
 {
 	submitLoading();					//Affiche l'img "loading"
-	$(thisForm).off("submit").submit();	//Validation finale du formulaire  ("off()" réinitialise les précédents triggers "submit")
+	$(thisForm).off("submit").submit();	//off("submit") annule le trigger précédent, Puis submit() relance la validation finale
 }
 
 /************************************************************************************************************
@@ -501,7 +511,7 @@ function lightboxOpen(fileSrc)
 					shouldClose:function(fancybox,slide){																			//Controle à la fermeture du Fancybox
 						if(window.top.confirmCloseForm==true){																		//Formulaire en cours d'édition : fermeture à confirmer
 							slide.preventDefault();																					//- Suspend la fermeture via Fancybox
-							confirmAlt(labelconfirmCloseForm).then(()=>{  window.top.confirmCloseForm=false; fancybox.close();  });	//- Fermeture confirmée : relance récursivement fancybox.close()
+							confirmAlt(TRAD_confirmCloseForm).then(()=>{  window.top.confirmCloseForm=false; fancybox.close();  });	//- Fermeture confirmée : relance récursivement fancybox.close()
 						}
 					}
 				}
@@ -610,9 +620,9 @@ $.fn.isMail=function(){
 $.fn.isPassword=function(){
 	return isPassword(this.val());
 };
-////	Clignotement / "Blink" d'un element (toute les secondes et 4 fois par défaut : cf. "times")
+////	Clignotement / "Blink" d'un element (toute les secondes et 3 fois par défaut : cf. "times")
 $.fn.pulsate=function(pTimes){
-	if(typeof pTimes=="undefined")  {var pTimes=4;}
+	if(typeof pTimes=="undefined")  {var pTimes=3;}
 	this.effect("pulsate",{times:parseInt(pTimes)},parseInt(pTimes*1000));
 };
 ////	Focus alternatif à la fin du texte (uniquement sur certains inputs & pas sur mobile : cf. clavier virtuel)
@@ -725,7 +735,7 @@ function usersLikeUpdate(typeId)
 /**************************************************************************************************************************************************************************
  * CHECK/UNCHECK UN GROUPE D'USERS
  * Tester : edition d'evt avec les groupes pour affectation aux agendas ET les groupes pour notification par email
- * Note : les inputs des groupes doivent avoir un "name" spécifique ET les inputs d'user doivent avoir une propriété "data-idUser"
+ * Note : les inputs des groupes doivent avoir un "name" spécifique ET les inputs d'user doivent avoir une propriété "data-iduser"
  * On passe en paramètre le "this" de l'input du groupe ET l'id du conteneur des inputs d'users ("idContainerUsers") pour définir le périmère des inputs d'users
  **************************************************************************************************************************************************************************/
 function userGroupSelect(thisGroup, idContainerUsers)
@@ -743,6 +753,6 @@ function userGroupSelect(thisGroup, idContainerUsers)
 			});
 		}
 		//Check l'user courant
-		$(idContainerUsers+" input[data-idUser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//Init l'affichage via trigger
+		$(idContainerUsers+" input[data-iduser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//Init l'affichage via trigger
 	}
 }

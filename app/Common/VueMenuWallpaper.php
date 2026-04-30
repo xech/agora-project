@@ -7,7 +7,7 @@ ready(function(){
 		$("#wallpaperImg,#wallpaperAdd,#wallpaperDelete").hide();					//Réinit les valeurs
 		if(this.value=="add")  {$("#wallpaperAdd").show();}							//Input pour "Ajouter" un Wallpaper  OU  Affiche la vignette du wallpaper courant
 		else{
-			var filePath=$('option[value="'+this.value+'"]').attr('data-filePath');	//Path du wallpaper courant
+			var filePath=$('option[value="'+this.value+'"]').attr('data-file-path');	//Path du wallpaper courant
 			$("#wallpaperImg img").attr("src",filePath);							//Modifie le "src" du wallpaper
 			$("#wallpaperImg").show();												//Affiche le conteneur wallpaper
 			if(/<?= WALLPAPER_DEFAULT_DB_PREFIX ?>/i.test(this.value)==false && this.value.length>0)  {$("#wallpaperDelete").show();}//Ajoute l'option de suppression si c'est un Wallpaper "custom" (sans "DB_PREFIX")
@@ -41,11 +41,11 @@ option[value='add']				{background:#800;color:white;}
 			<?php
 			//"Ajouter" un wallpaper  (paramétrage général)  OU  Wallpaper "Par défaut" du paramétrage général (edit d'espace)
 			if(Req::$curCtrl=="agora")	{echo "<option value='add'>".Txt::trad("add")."</option>";}
-			else						{echo "<option value='' data-filePath=\"".CtrlMisc::pathWallpaper(Ctrl::$agora->wallpaper)."\" ".(empty($curWallpaper)?"selected":null).">".Txt::trad("byDefault")."</option>";}
+			else						{echo "<option value='' data-file-path=\"".CtrlMisc::pathWallpaper(Ctrl::$agora->wallpaper)."\" ".(empty($curWallpaper)?"selected":null).">".Txt::trad("byDefault")."</option>";}
 			//Liste les wallpapers
 			foreach($wallpaperList as $cpt=>$tmpWallpaper){
 				$tmpWallpaperSelect=($tmpWallpaper["value"]==$curWallpaper || ($cpt==0 && Req::$curCtrl=="agora" && empty($curWallpaper)))  ?  "selected"  :  null;
-				echo "<option value=\"".$tmpWallpaper["value"]."\" data-filePath=\"".$tmpWallpaper["path"]."\" ".$tmpWallpaperSelect.">".$tmpWallpaper["name"]."</option>";
+				echo "<option value=\"".$tmpWallpaper["value"]."\" data-file-path=\"".$tmpWallpaper["path"]."\" ".$tmpWallpaperSelect.">".$tmpWallpaper["name"]."</option>";
 			}
 			?>
 		</select>

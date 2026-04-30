@@ -23,7 +23,7 @@
 		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew()).
 			 CtrlObject::vueFolders();
 		foreach($contactList as $tmpContact){
-			echo $tmpContact->divContainerMenu("objPerson").
+			echo $tmpContact->mainDivMenu("objPerson").
 				'<div class="objContentScroll">
 					<div class="objContentTab">
 						<div class="objIcon">'.$tmpContact->tagProfileImg(true,false).'</div>

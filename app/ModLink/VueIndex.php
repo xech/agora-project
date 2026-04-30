@@ -31,7 +31,7 @@
 		////	LISTE DES LIENS
 		foreach($linkList as $tmpLink){
 			$linkLabel=(!empty($tmpLink->description))  ?  '<span '.Txt::tooltip($tmpLink->adress).'>'.$tmpLink->description.'</span>'  :  '<span class="objLabelUrl">'.Txt::reduce($tmpLink->adress).'</span>';
-			echo $tmpLink->divContainerMenu().
+			echo $tmpLink->mainDivMenu().
 				'<div class="objContentScroll">
 					<div class="objContentTab">
 						<div class="objIcon objIconOpacity"><img src="app/img/link/iconSmall.png"></div>
