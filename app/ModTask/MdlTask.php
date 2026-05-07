@@ -73,7 +73,7 @@ class MdlTask extends MdlObject
 			$usersLabel=trim($usersLabel,', ');
 			$usersLabel=($labelFull==true)  ?  $usersTooltip  :  Txt::reduce($usersLabel,35);
 			//// Tooltip / Label
-			$barTooltip='<img src="app/img/task/responsiblePersons.png"> '.Txt::trad("TASK_assignedTo").' &nbsp;:&nbsp; '.$usersTooltip;
+			$barTooltip='<img src="app/img/task/responsiblePersons.png"> '.Txt::trad("TASK_assignedTo").' :&nbsp; '.$usersTooltip;
 			$barLabel='<img src="app/img/task/responsiblePersons.png"> <span class="progressBarLabel">'.Txt::trad("TASK_assignedTo").' '.$usersLabel.'</span>';
 			//// Retourne la "progressBar"
 			return Tool::progressBar($barLabel, $barTooltip);
@@ -87,13 +87,13 @@ class MdlTask extends MdlObject
 	{
 		if($this->dateBegin || $this->dateEnd){
 			//// Label
-			$barLabel=($barLabelFull==true)  ?  Txt::dateLabel($this->dateBegin,"dateFull",$this->dateEnd)  :  Txt::dateLabel($this->dateBegin,"dateMini",$this->dateEnd);
+			$barLabel=($barLabelFull==true)  ?  Txt::dateLabel("textDate",$this->dateBegin,$this->dateEnd)  :  Txt::dateLabel("textMini",$this->dateBegin,$this->dateEnd);
 			$barLabel='<img src="app/img/task/date.png"> <span class="progressBarLabel">'.$barLabel.'</span>';
 			//// Tooltip
 			$barTooltip=$this->title;
-			if($this->dateBegin && $this->dateEnd)	{$barTooltip.='<hr>'.Txt::trad("beginEnd").' : '.Txt::dateLabel($this->dateBegin,"dateFull",$this->dateEnd);}
-			elseif($this->dateBegin)				{$barTooltip.='<hr>'.Txt::trad("begin").' : '.Txt::dateLabel($this->dateBegin,"dateFull");}
-			elseif($this->dateEnd)					{$barTooltip.='<hr>'.Txt::trad("end").' : '.Txt::dateLabel($this->dateEnd,"dateFull");}
+			if($this->dateBegin && $this->dateEnd)	{$barTooltip.='<hr>'.Txt::trad("beginEnd").' : '.Txt::dateLabel("textDate",$this->dateBegin,$this->dateEnd);}
+			elseif($this->dateBegin)				{$barTooltip.='<hr>'.Txt::trad("begin").' : '.Txt::dateLabel("textDate",$this->dateBegin);}
+			elseif($this->dateEnd)					{$barTooltip.='<hr>'.Txt::trad("end").' : '.Txt::dateLabel("textDate",$this->dateEnd);}
 			if($this->advancement)					{$barTooltip.='<hr>'.$this->advancementLabel();}
 			//// Pourcentage de progression debut/fin
 			$barPercent=0;

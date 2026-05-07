@@ -63,7 +63,7 @@ class CtrlTask extends Ctrl
 					"newMonthColspan"=>(date("t",$timeDayBegin)-date("j",$timeDayBegin)+1),
 					"classLeftBorder"=>$classLeftBorder,
 					"dayLabel"=>date("j",$timeDayBegin),
-					"dayLabelTitle"=>Txt::dateLabel($timeDayBegin)
+					"dayLabelTitle"=>Txt::dateLabel("textMini",$timeDayBegin)
 				];
 				$prevDayMonth=date("m/y",$timeDayBegin);
 			}
@@ -85,8 +85,8 @@ class CtrlTask extends Ctrl
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			if(!empty($tmpObj->description))	{$tmpObj->pluginTooltip.="<hr>".Txt::reduce($tmpObj->description);}
-			if(!empty($tmpObj->dateBegin))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("begin")." : ".Txt::dateLabel($tmpObj->dateBegin);}
-			if(!empty($tmpObj->dateEnd))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("end")." : ".Txt::dateLabel($tmpObj->dateEnd);}
+			if(!empty($tmpObj->dateBegin))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("begin")." : ".Txt::dateLabel("textMini",$tmpObj->dateBegin);}
+			if(!empty($tmpObj->dateEnd))		{$tmpObj->pluginTooltip.="<hr>".Txt::trad("end")." : ".Txt::dateLabel("textMini",$tmpObj->dateEnd);}
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
 			$tmpObj->pluginJsLabel=$tmpObj->lightboxVue();
 			$pluginsList[]=$tmpObj;

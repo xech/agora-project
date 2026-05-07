@@ -26,7 +26,7 @@ ready(function(){
 			<div><input type="text" name="searchFields[<?= $tmpField ?>]" value="<?= $searchFieldsValues[$tmpField] ?? null ?>"></div>
 		 </div>
 	<?php } ?>
-	<?= Txt::submitButton("search") ?>
+	<?= Txt::submitButton("USER_submitSearch") ?>
 </form>
 
 

@@ -99,9 +99,9 @@ trait MdlObjectMenu
 			$vDatas["affectLabels"]=$vDatas["affectTooltips"]=["1"=>null,"1.5"=>null,"2"=>null];
 			foreach($objAffectations as $tmpAffect)  {$vDatas["affectLabels"][(string)$tmpAffect["accessRight"]].=$tmpAffect["label"]."<br>";}
 			//Tooltip : description des droits d'accès
-			if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]  =$this->tradObj("accessReadTooltip");}
-			if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObj("accessWriteLimitTooltip");}
-			if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]  =static::isContainer() ? $this->tradObj("accessWriteTooltipContainer") : $this->tradObj("accessWriteTooltip");}
+			if(!empty($vDatas["affectLabels"]["1"]))	{$vDatas["affectTooltips"]["1"]  =$this->tradObj("accessReadDetail");}
+			if(!empty($vDatas["affectLabels"]["1.5"]))	{$vDatas["affectTooltips"]["1.5"]=$this->tradObj("accessWriteLimitDetail");}
+			if(!empty($vDatas["affectLabels"]["2"]))	{$vDatas["affectTooltips"]["2"]  =static::isContainer() ? $this->tradObj("accessWriteDetailContainer") : $this->tradObj("accessWriteDetail");}
 		}
 
 		////	AFFICHE LA VUE
@@ -118,10 +118,10 @@ trait MdlObjectMenu
 			////	Affectations en BDD  +  Labels des droits d'accès
 			$objAffectations=$this->getAffectations();
 			$vDatas["menuAccessRight"]=true;
-			$accessFullTooltip				=Txt::tooltip($this->tradObj("accessFullTooltip"));
-			$vDatas["affectTooltips"]["1"]	=Txt::tooltip($this->tradObj("accessReadTooltip"));
-			$vDatas["affectTooltips"]["1.5"]=static::isContainer()  ?  Txt::tooltip($this->tradObj("accessWriteLimitTooltip"))  :  null;
-			$vDatas["affectTooltips"]["2"]	=static::isContainer()  ?  Txt::tooltip($this->tradObj("accessWriteTooltipContainer"))  :  Txt::tooltip($this->tradObj("accessWriteTooltip"));
+			$accessFullDetail				=Txt::tooltip($this->tradObj("accessFullDetail"));
+			$vDatas["affectTooltips"]["1"]	=Txt::tooltip($this->tradObj("accessReadDetail"));
+			$vDatas["affectTooltips"]["1.5"]=static::isContainer()  ?  Txt::tooltip($this->tradObj("accessWriteLimitDetail"))  :  null;
+			$vDatas["affectTooltips"]["2"]	=static::isContainer()  ?  Txt::tooltip($this->tradObj("accessWriteDetailContainer"))  :  Txt::tooltip($this->tradObj("accessWriteDetail"));
 			$vDatas["extendSubfolders"]=(static::isFolder==true  &&  $this->isNew()==false  &&  Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);
 			////	Liste des affectations disponibles pour chaque espace
 			$vDatas["spaceAffectations"]=[];
@@ -130,8 +130,8 @@ trait MdlObjectMenu
 					$tmpSpace->targetLines=[];
 					////	Ligne "Tous les utilisateurs"
 					$targetId=$tmpSpace->_id."_spaceUsers";//ex: "1_spaceUsers"
-					if(empty($tmpSpace->public))	{$targetLabel=Txt::trad("accessAllUsers");			$targetTooltip=Txt::tooltip("accessAllUsersTooltip");}
-					else							{$targetLabel=Txt::trad("accessAllUsersGuests");	$targetTooltip=Txt::tooltip("accessAllUsersGuestsTooltip");}
+					if(empty($tmpSpace->public))	{$targetLabel=Txt::trad("accessAllUsers");			$targetTooltip=Txt::tooltip("accessAllUsersDetail");}
+					else							{$targetLabel=Txt::trad("accessAllUsersGuests");	$targetTooltip=Txt::tooltip("accessAllUsersGuestsDetail");}
 					$tmpSpace->targetLines[$targetId]=["icon"=>"accessAllUsers.png", "label"=>$targetLabel, "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$targetTooltip)];
 					////	Lignes des groupes d'users de l'espace
 					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
@@ -141,7 +141,7 @@ trait MdlObjectMenu
 					////	Lignes des users de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$targetId=$tmpSpace->_id."_U".$tmpUser->_id;//ex: "1_U55"
-						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="accessFull.png";	$targetTooltip=$accessFullTooltip;	$accessFull=true;}//Auteur/Admin
+						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="accessFull.png";	$targetTooltip=$accessFullDetail;	$accessFull=true;}//Auteur/Admin
 						else																				{$targetIcon="accessUser.png";	$targetTooltip=null;				$accessFull=false;}
 						$tmpSpace->targetLines[$targetId]=["icon"=>$targetIcon, "label"=>$tmpUser->getLabel(), "tooltip"=>$targetTooltip, "accessFull"=>$accessFull];
 					}

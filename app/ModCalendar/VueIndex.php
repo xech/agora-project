@@ -140,11 +140,16 @@ ready(function(){
 .evtPropositions								{padding:5px; margin-top:5px;}
 .evtPropositions hr								{margin:5px;}
 #readableCalendarsForm							{max-height:450px; overflow-y:auto;}
-#readableCalendarsTitle 						{margin-bottom:10px;}
-#readableCalsAdmin								{float:right; filter:saturate(0);}
-#readableCalendarsForm:not(:hover) #readableCalsAdmin {visibility:hidden;}
-.readableCalendar input							{display:none;}
-.readableCalendar label							{display:block; padding:4px; margin:2px;}/*Label des agendas : cf ".option"*/
+#readableCalendarsTitle							{display:table; width:100%;}
+#readableCalendarsTitle>div						{display:table-cell;}
+#readableCalendarsTitle 						{margin-bottom:5px;}
+#readableCalendarsTitle #readableCalsAdmin				{text-align:right; filter:saturate(0);}
+#readableCalendarsTitle:not(:hover) #readableCalsAdmin	{visibility:hidden;}
+.readableCalendar								{display:table; width:100%; margin-bottom:3px;}
+.readableCalendar>div							{display:table-cell; vertical-align:middle;}
+.readableCalendar label							{display:block; padding:3px; width:100%}
+.readableCalendar .vCalContextMenu				{width:20px;}
+.readableCalendar input, .readableCalendar:not(:hover) .menuContextLaunch	{display:none;}
 #datepickerCalendar								{margin-top:20px; margin-bottom:10px;}
 .ui-datepicker									{box-shadow:none;}/*Datepicker*/
 .ui-datepicker thead							{display:none;}/*pas de libellé des jours*/
@@ -195,6 +200,8 @@ ready(function(){
 /*AFFICHAGE RESPONSIVE*/
 @media screen and (max-width:1200px){
 	#pageContent								{padding-inline:0px!important;}/*surcharge app.css*/
+	#readableCalsAdmin 							{visibility:visible;}
+	.readableCalendar .vCalContextMenu			{display:none;}
 	.vCalMain.miscContent						{margin:0px; margin-bottom:40px;}/*surcharge .miscContent*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
@@ -245,14 +252,17 @@ ready(function(){
 				<form action="index.php" id="readableCalendarsForm">
 					<!--TITRE + OPTION D'AFFICHAGE ADMIN-->
 					<div id="readableCalendarsTitle">
-						<?= Txt::trad("CALENDAR_readableCalendars") ?> :
-						<?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" id="readableCalsAdmin" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?>
+						<div><?= Txt::trad("CALENDAR_readableCalendars") ?> :</div>
+						<div id="readableCalsAdmin"><?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?></div>
 					</div>
 					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
 					<?php foreach($readableCalendars as $tmpCal){ ?>
-						<div class="readableCalendar" <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?> >
-							<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
-							<label for="boxDisplay<?= $tmpCal->typeId ?>" class="option <?= $tmpCal->isDisplayed==true?'optionSelect':null ?>"><?= $tmpCal->title ?></label>
+						<div class="readableCalendar">
+							<div <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?> class="option <?= $tmpCal->isDisplayed==true?'optionSelect':null ?>">
+								<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
+								<label for="boxDisplay<?= $tmpCal->typeId ?>"><?= $tmpCal->title ?></label>
+							</div>
+							<div class="vCalContextMenu"><?= $tmpCal->contextMenu(["burgerLauncher"=>"small-inline"]) ?></div>
 						</div>
 					<?php } ?>
 					<input type="hidden" name="ctrl" value="<?= Req::$curCtrl ?>">
@@ -310,8 +320,8 @@ ready(function(){
 						<div class="vSynthLabel" onclick="$('#calBlock<?= $tmpCal->typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<?php
 						foreach($periodSynthese as $tmpDay){
-							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.Txt::dateLabel($tmpDay["dayTimeBegin"],"dateBasic").' - '.$tmpCal->title.' :<br>';
-							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.='<br>'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,60);}
+							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.Txt::dateLabel("numDate",$tmpDay["dayTimeBegin"]).' - '.$tmpCal->title.' :<br>';
+							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.='<br>'.Txt::dateLabel("mini",$tmpEvt->dateBegin,$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,60);}
 							$tmpEvtTooltip.='</div>';
 							$syntheseDayCalWE=$syntheseDayEvts=null;
 							if($tmpDay["dayOfWeek"]>5)	{$syntheseDayCalWE="vSynthDayCalWE";}
@@ -336,7 +346,7 @@ ready(function(){
 					<?php
 					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';								//Label de l'agenda
 					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->tagProfileImg(true,true);}									//Ajoute l'icone de l'user ?
-					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["burgerLauncher"=>"small-inline","burgerLauncherLabel"=>$calLabel])  :  $calLabel;	//Label de l'agenda
+					echo Ctrl::$curUser->isUser()  ?  $tmpCal->contextMenu(["burgerLauncher"=>"small-inline","burgerLauncherLabel"=>$calLabel])  :  $calLabel;	//Menu de l'agenda avec le label OU Juste le label
 					?>
 				</div>
 				<!--PERIODE AFFICHEE  &  PRECEDENT/SUIVANT  &  MENU CONTEXT MONTHS/YEARS-->

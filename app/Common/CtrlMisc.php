@@ -83,7 +83,7 @@ class CtrlMisc extends Ctrl
 					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}				//Ajoute si besoin l'icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
 					$oldMessageClass="vMessengerOldMessage";
-					$messageTooltip=Txt::dateLabel($message["date"],"labelFull")." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageSentTo")." ";	//Tooltip des détails du message 
+					$messageTooltip=Txt::dateLabel("default",$message["date"])." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageSentTo")." ";	//Tooltip des détails du message 
 					foreach($destList as $_idUserDest){
 						if($_idUserDest!=$autorObj->_id) {$messageTooltip.=self::getObj("user",$_idUserDest)->getLabel().", ";}	//Ajoute le libellé du destinataire
 						if(array_key_exists($_idUserDest,$_SESSION["livecounterUsers"]))  {$oldMessageClass=null;}				//Message affecté à un user connnecté : on retire "vMessengerOldMessage" 

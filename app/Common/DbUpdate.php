@@ -1007,7 +1007,7 @@ class DbUpdate extends Db
 				self::query("ALTER TABLE `ap_fileVersion` MODIFY `octetSize` BIGINT");
 			}
 
-			if(self::updateVersion("26.5.1"))
+			if(self::updateVersion("26.5.2"))
 			{
 				//Renomme le champ "newsDisplay" en "toVoteWithNews"
 				if(self::fieldExist("ap_dashboardPoll","newsDisplay"))

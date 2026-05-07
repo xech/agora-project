@@ -5,15 +5,21 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 
 VERSION 26.5
 ------------
-Optimisation du drag & drop des événements
+Amélioration du drag & drop des événements
+Amélioration du moteur de recherche : ergonomie et rapidité
 Amélioration du contrôle des dates de début/fin d'événements et tâches
+Amélioration de la présentation des tâches en vue détaillée
 Correction de l'encodage des caractères spéciaux dans les notifications envoyées par email
 Correction de l'affichage des sondages, si module désactivé
+OAuth via "google-api-php-client" mis à jour en v2.19.3
 -----
-Optimized drag & drop functionality for events
+Improved drag & drop functionality for events
+Search engine improvements: ergonomics and speed
 Improved control of start/end dates of events and tasks
+Improved presentation of tasks in detailed view
 Correction of special character encoding in email notifications
 Fix display of polls, if disabled module
+OAuth via "google-api-php-client" updated to v2.19.3
 
 
 VERSION 26.4

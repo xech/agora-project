@@ -127,7 +127,7 @@ class MdlPerson extends MdlObject
 		elseif($fieldName=="lastConnection"){
 			if(empty($fieldVal) && $mode=="profile")						{$fieldVal=Txt::trad("notConnected");}
 			elseif(!empty($fieldVal) && date("Ymd")==date("Ymd",$fieldVal))	{$fieldVal=Txt::trad("connectedToday");}
-			elseif(!empty($fieldVal))										{$fieldVal=Txt::trad("connectedThe").' '.Txt::dateLabel($fieldVal,"dateBasic");}
+			elseif(!empty($fieldVal))										{$fieldVal=Txt::trad("connectedThe").' '.Txt::dateLabel("numDate",$fieldVal);}
 		}
 		//Adresse complete : affiche une carte 
 		elseif($fieldName=="fullAdress" && $this->hasAdress()){

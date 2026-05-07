@@ -72,30 +72,24 @@
 				targetCell.appendChild(targetEvt);
 				////	Confirme le déplacement de l'evt
 				if(startCell.getAttribute("data-cell-ymd")!=targetCell.getAttribute("data-cell-ymd")){
-					//// Config le Confirm
 					const confirmParams={
 						title:"<?= Txt::trad("CALENDAR_evtChangeTime") ?>",
 						content:'<span class="vEvtConfirmOldDate">'+startCell.getAttribute("data-cell-date-label")+'</span> <img src="app/img/arrowRight.png"> '+targetCell.getAttribute("data-cell-date-label"),
 						buttons:{
-							////	Confirmation rejetée
+							////	Confirmation rejetée : remet l'evt à sa place d'origine (même agenda)
 							reject:{
 								text:"<?= Txt::trad("confirmCancel") ?>",
 								btnClass:"btn-default",
-								action:function(){
-									//// Remet l'evt à sa place d'origine (même agenda)
-									$(targetEvt).parents(".vMonthTable").find('.vMonthCell[data-cell-ymd="'+startCell.getAttribute("data-cell-ymd")+'"]').append(targetEvt);
-								}
+								action:function(){  $(targetEvt).parents(".vMonthTable").find('.vMonthCell[data-cell-ymd="'+startCell.getAttribute("data-cell-ymd")+'"]').append(targetEvt);  }
 							},
-							////  Confirmation acceptée
+							////	Confirmation acceptée : enregistre la nouvelle date via Ajax
 							accept:{
 								text:"<?= Txt::trad("confirm") ?>",
 								btnClass:"btn-green",
 								action:function(){
-									//// Nouvelle date au format ISO (ex: "2036-04-02T15:30:00"), puis transformée en timestamp
 									let cellYmd=targetCell.getAttribute("data-cell-ymd");
-									let newDateString=cellYmd+"T"+targetEvt.getAttribute("data-evt-hms-begin");
-									let evtNewTimeBegin=new Date(newDateString).getTime() / 1000;
-									//// Enregistre la nouvelle date via Ajax
+									let newDateString=cellYmd+"T"+targetEvt.getAttribute("data-evt-hms-begin");//Date au format ISO (ex: "2036-04-02T15:30:00")
+									let evtNewTimeBegin=new Date(newDateString).getTime() / 1000;//Date transformée en timestamp
 									evtDraggedRecord(targetEvt, targetCell, evtNewTimeBegin);						
 								}
 							}
@@ -161,7 +155,7 @@
 			<?php if($tmpDay["dayOfWeek"]==1){ ?><tr class="vMonthRow"><?php } ?>
 
 				<!--BLOCK DU JOUR-->
-				<td class="vMonthCell <?= $tmpDay["isMonthCurtime"]==false?'vMonthDayOtherMonth':null ?>" data-cell-ymd="<?= $dayYmd ?>" data-cell-date-label="<?= Txt::dateLabel($tmpDay["dayTimeBegin"],"dateFull") ?>">
+				<td class="vMonthCell <?= $tmpDay["isMonthCurtime"]==false?'vMonthDayOtherMonth':null ?>" data-cell-ymd="<?= $dayYmd ?>" data-cell-date-label="<?= Txt::dateLabel("textDate",$tmpDay["dayTimeBegin"]) ?>">
 						<!--LABEL DU JOUR-->
 						<div class="vMonthDayLabel">
 							<span <?= $tmpDay["isToday"]==true?'class="circleNb"':null ?> ><?= $tmpDay["dayOfMonth"] ?></span>
@@ -175,7 +169,7 @@
 						<?php foreach($tmpCal->evtListDays[$dayYmd] as $tmpEvt){ ?>
 							<?= $tmpEvt->mainDivMenu("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
 								<div class="vEvtLabel" onclick="<?= $tmpEvt->lightboxVue() ?>" <?= Txt::tooltip($tmpEvt->tooltip) ?>>
-									<div class="vEvtLabelDate"><?= Txt::dateLabel($tmpEvt->timeBegin,"mini") ?></div>
+									<div class="vEvtLabelDate"><?= Txt::dateLabel("mini",$tmpEvt->timeBegin) ?></div>
 									<?= $tmpEvt->title ?>
 								</div>
 							</div>

@@ -115,7 +115,7 @@ class CtrlCalendar extends Ctrl
 				foreach($evtListDay as $tmpEvt){																								//Parcourt chaque événement du jour :
 					if(!empty($tmpEvt->important))	{$tmpEvt->title.='&nbsp;<img src="app/img/important.png">';}								//Evt important
 					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='&nbsp;<img src="app/img/calendar/period.png">';}							//Evt periodique/répété
-					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.Txt::dateLabel($tmpEvt->timeBegin,"labelFull",$tmpEvt->timeEnd);						//Tooltip avec title et date détaillée
+					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.Txt::dateLabel("default",$tmpEvt->timeBegin,$tmpEvt->timeEnd);						//Tooltip avec title et date détaillée
 					$tmpEvt->contextMenuOptions=["burgerLauncher"=>"small-float", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
 					$tmpCal->evtListDays[$dayYmd][]=$tmpEvt;																					//Ajoute l'evt à la liste !
 				}
@@ -140,7 +140,7 @@ class CtrlCalendar extends Ctrl
 				foreach($evtPropositions as $tmpEvt){
 					if($tmpEvt->evtIsPast(time()-5184000))  {$tmpEvt->affectationDelete($tmpCal->_id);}	//Supprime la proposition si > 60 jours
 					else{																				//Ajoute la proposition d'evt avec les détails pour la confirmation
-						$evtPropLabel=$tmpEvt->title.'<hr>'.Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<hr>'.ucfirst(Txt::trad("OBJECTcalendar")).' : '.$tmpCal->title;	//Titre/Date de l'evt + Agenda
+						$evtPropLabel=$tmpEvt->title.'<hr>'.Txt::dateLabel("default",$tmpEvt->dateBegin,$tmpEvt->dateEnd).'<hr>'.ucfirst(Txt::trad("OBJECTcalendar")).' : '.$tmpCal->title;	//Titre/Date de l'evt + Agenda
 						$evtPropDetails=$evtPropLabel.'<hr>'.Txt::trad("CALENDAR_evtProposedBy").' '.$tmpEvt->autorDate(true);																		//Idem + Auteur de l'evt
 						if($tmpEvt->description)  {$evtPropDetails.="<hr>".ucfirst(Txt::trad("description"))." : ".Txt::reduce($tmpEvt->description);}											//Idem + Description
 						$vDatas["evtPropositions"][]=["_idEvt"=>$tmpEvt->_id, "_idCal"=>$tmpCal->_id, "evtPropLabel"=>$evtPropLabel, "evtPropDetails"=>$evtPropDetails];												
@@ -184,8 +184,8 @@ class CtrlCalendar extends Ctrl
 			$curObj=$curObj->editRecord("dateBegin=".Db::format($dateBegin).", dateEnd=".Db::format($dateEnd));
 			////	Renvoie les nouvelles propriétés de l'evt
 			$result["attributes"]=$curObj->attributes();
-			$result["evtLabelDate"]=Txt::dateLabel($curObj->timeBegin,"mini",$curObj->timeEnd);
-			$result["tooltip"]=$curObj->title.'<br>'.Txt::dateLabel($curObj->timeBegin,"labelFull",$curObj->timeEnd);
+			$result["evtLabelDate"]=Txt::dateLabel("mini",$curObj->timeBegin,$curObj->timeEnd);
+			$result["tooltip"]=$curObj->title.'<br>'.Txt::dateLabel("default",$curObj->timeBegin,$curObj->timeEnd);
 			$result["changed"]=true;
 		}
 		////	Retourne le résultat
@@ -205,8 +205,8 @@ class CtrlCalendar extends Ctrl
 				//// Vérif si l'evt n'a pas déjà été ajouté (car peut être affecté à plusieurs agendas) && se limite à 100 evt max (cf. affichage des nouveaux evt après import de fichier Ical)
 				if(empty($pluginsList[$tmpEvt->typeId]) && count($pluginsList)<100){
 					$tmpEvt->pluginIcon=self::moduleName."/icon.png";
-					$tmpEvt->pluginLabel=Txt::dateLabel($tmpEvt->dateBegin,"dateFull",$tmpEvt->dateEnd)." : ".$tmpEvt->title;
-					$tmpEvt->pluginTooltip=Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
+					$tmpEvt->pluginLabel  =Txt::dateLabel("textDate",$tmpEvt->dateBegin,$tmpEvt->dateEnd)." : ".$tmpEvt->title;
+					$tmpEvt->pluginTooltip=Txt::dateLabel("default",$tmpEvt->dateBegin,$tmpEvt->dateEnd)."<hr>".$tmpEvt->affectedCalendarsLabel();
 					$tmpEvt->pluginJsIcon="window.top.redir('".$tmpEvt->getUrl()."')";//Affiche l'evt dans son principal agenda (surcharge "getUrl()")
 					$tmpEvt->pluginJsLabel=$tmpEvt->lightboxVue();//Affiche l'evt en détail
 					$pluginsList[$tmpEvt->typeId]=$tmpEvt;
@@ -285,14 +285,14 @@ class CtrlCalendar extends Ctrl
 			}
 			//// NOTIFIE PAR MAIL LA PROPOSITION D'EVT (GESTIONNAIRES/AUTEUR DES AGENDAS CONCERNES)
 			if(!empty($affectedUserIds)){
-				$evtTitleDate=$curObj->title." : ".Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd);
+				$evtTitleDate=$curObj->title." : ".Txt::dateLabel("default",$curObj->dateBegin,$curObj->dateEnd);
 				$mailSubject=Txt::trad("CALENDAR_propositionEmailSubject")." ".$curObj->autorLabel();
 				$mailMessage=str_replace(["--AUTOR_LABEL--","--EVT_TITLE_DATE--","--EVT_DESCRIPTION--"], [$curObj->autorLabel(),$evtTitleDate,$curObj->description], Txt::trad("CALENDAR_propositionEmailMessage"));
 				Tool::sendMail($affectedUserIds, $mailSubject, $mailMessage, ["noNotify"]);
 			}
 			//// NOTIFIE PAR MAIL LA CREATION D'EVT (PERSONNES AFFECTEES AUX AGENDAS DE L'EVT)
 			if(Req::isParam("notifMail") && $curObj->editRight()){
-				$objLabel=Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd)." : <b>".$curObj->title."</b>";
+				$objLabel=Txt::dateLabel("default",$curObj->dateBegin,$curObj->dateEnd)." : <b>".$curObj->title."</b>";
 				$icalPath=self::getIcal($curObj, true);
 				$icsFile=[["path"=>$icalPath, "name"=>Txt::clean($curObj->title).".ics"]];
 				$curObj->sendMailNotif($objLabel, $icsFile);
@@ -342,8 +342,8 @@ class CtrlCalendar extends Ctrl
 				$timeSlotBusyCal=null;																//Init le TimeSlotBusy de l'agenda
 				foreach($tmpCal->evtList($timeSlotDayBegin, $timeSlotDayEnd, 0) as $tmpEvt){									//Evts sur le jour du timeSlot ($accessRightMin=0) : récupère ainsi les evts répétés
 					if(MdlCalendar::evtInPeriod($tmpEvt,$timeSlotBegin,$timeSlotEnd) && $tmpEvt->_id!=Req::param("_evtId")){	//Vérif si l'evt s'il est sur le timeSlot (pas celui en cours d'édition : cf. modif d'evt)
-						$evtTooltip=Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd).'<br>'.$tmpEvt->title;		//Tooltip de l'evt
-						$timeSlotBusyCal.='<div '.Txt::tooltip($evtTooltip).'>'.Txt::dateLabel($tmpEvt->dateBegin,"mini",$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,80).'</div>';
+						$evtTooltip=Txt::dateLabel("default",$tmpEvt->dateBegin,$tmpEvt->dateEnd).'<br>'.$tmpEvt->title;		//Tooltip de l'evt
+						$timeSlotBusyCal.='<div '.Txt::tooltip($evtTooltip).'>'.Txt::dateLabel("mini",$tmpEvt->dateBegin,$tmpEvt->dateEnd).' : '.Txt::reduce($tmpEvt->title,80).'</div>';
 					}
 				}
 				//L'agenda est occupé?
@@ -378,7 +378,7 @@ class CtrlCalendar extends Ctrl
 			if(!empty($notifMail)){																																			//Envoi une notif par email
 				$mailSubject=Req::isParam("isConfirmed")  ?  Txt::trad("CALENDAR_evtProposeConfirmedMail")." ".Ctrl::$curUser->getLabel()  :  Txt::trad("CALENDAR_evtProposeDeclinedMail");
 				$mailMessage=$mailSubject." : <br><br>".
-							 $curEvt->title." : ".Txt::dateLabel($curEvt->dateBegin,"labelFull",$curEvt->dateEnd)."<br><br>".
+							 $curEvt->title." : ".Txt::dateLabel("default",$curEvt->dateBegin,$curEvt->dateEnd)."<br><br>".
 							 ucfirst(Txt::trad("OBJECTcalendar"))." : ".$curCal->title;
 				Tool::sendMail($notifMail, $mailSubject, $mailMessage, ["noNotify"]);
 			}

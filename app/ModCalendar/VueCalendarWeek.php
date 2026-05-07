@@ -107,35 +107,29 @@
 				////	Fin du drop !
 				end(event){
 					const targetEvt=event.target;
-					////	Réinit le style (timeout : cf stopPropagation du click du .vEvtBlock)
-					setTimeout(function(){ targetEvt.classList.remove("vEvtBlockMoved"); },50);
+					////	Remet le style et le label d'origine  (timeout : cf stopPropagation du click du .vEvtBlock)
+					setTimeout(function(){  targetEvt.classList.remove("vEvtBlockMoved");  },50);
 					////	Confirme le déplacement de l'evt
 					if(targetCell!=null  &  (Math.abs(parseFloat(targetEvt.style.left) - evtStartX) > 2 || Math.abs(parseFloat(targetEvt.style.top) - evtStartY) > 2)){
 						const confirmParams={
 							title:"<?= Txt::trad("CALENDAR_evtChangeTime") ?>",
 							content:'<span class="vEvtConfirmOldDate">'+targetEvt.getAttribute("data-evt-date-label")+'</span> <img src="app/img/arrowRight.png"> '+targetCell.getAttribute("data-cell-date-label"),
 							buttons:{
-								////	Confirmation rejetée
+								////	Confirmation rejetée : remet l'evt à sa place d'origine
 								reject:{
 									text:"<?= Txt::trad("confirmCancel") ?>",
 									btnClass:"btn-default",
-										action:function(){
-											$(targetEvt).animate({top:evtStartY,left:evtStartX},100);	//Remet l'evt à sa place d'origine
-											$(targetEvt).find(".vEvtLabelHM").html(evtStartDate);		//Remet le label d'origine
-										}
+									action:function(){  $(targetEvt).animate({top:evtStartY,left:evtStartX},100);  $(targetEvt).find(".vEvtLabelHM").html(evtStartDate);  }
 								},
-								////  Confirmation acceptée
+								////	Confirmation acceptée : enregistre la nouvelle date via Ajax
 								accept:{
 									text:"<?= Txt::trad("confirm") ?>",
 									btnClass:"btn-green",
-									action:function(){
-										//// Enregistre la nouvelle date via Ajax
-										evtDraggedRecord(targetEvt, targetCell, targetCell.getAttribute("data-cell-time-begin"));						
-									}
+									action:function(){  evtDraggedRecord(targetEvt, targetCell, targetCell.getAttribute("data-cell-time-begin"));  }
 								}
 							}
 						}
-						//// Lance le Confirm (paramétrage par défaut + spécifique)
+						////	Lance le Confirm (paramétrage par défaut + spécifique)
 						$.confirm(Object.assign(confirmParamsDefault,confirmParams));
 					}
 				}
@@ -247,7 +241,7 @@
 						$cellTimeEnd=$cellTimeBegin+900;															//Time de fin
 						if($cellTimeBegin <= time() && time() <= $cellTimeEnd)	{$cellClass.=" vWeekCellRedLine ";}	//Heure courante : RedLine
 						if($tmpCal->affectationAddRight())  					{$cellClass.=" vWeekCellEvtAdd ";}	//Droit d'ajouter un Evt
-						$cellAttributes='data-cell-date-label="'.Txt::dateLabel($cellTimeBegin,"labelFull").'" '.
+						$cellAttributes='data-cell-date-label="'.Txt::dateLabel("default",$cellTimeBegin).'" '.
 										'data-cell-hm-label="'.date("H:i",$cellTimeBegin).'" '.
 										'data-cell-time-begin="'.$cellTimeBegin.'" '.
 										'data-cell-time-end="'.$cellTimeEnd.'" '.
@@ -275,7 +269,7 @@
 			<?= $tmpEvt->mainDivMenu("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
 				<div class="vEvtLabel" <?= Txt::tooltip($tmpEvt->tooltip) ?> onclick="<?= $tmpEvt->lightboxVue() ?>">
 					<?= $tmpEvt->title ?>
-					<div class="vEvtLabelHM"><?= Txt::dateLabel($tmpEvt->timeBegin,"mini",$tmpEvt->timeEnd) ?></div>
+					<div class="vEvtLabelHM"><?= Txt::dateLabel("mini",$tmpEvt->timeBegin,$tmpEvt->timeEnd) ?></div>
 				</div>
 			</div>
 		<?php

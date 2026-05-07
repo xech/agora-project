@@ -162,24 +162,22 @@ ready(function(){
 				<!--OPTIONS DU MAIL-->
 				<div id="mailOptions">
 					<div>
-						<?php
-						//// Options de base des emails
-						echo MdlObject::sendMailBasicOptions();
-						?>
+						<!--OPTIONS DE BASE DES EMAILS-->
+						<?= MdlObject::sendMailBasicOptions() ?>
 					</div>
 					<div>
-						<?php
-						//// Ajouter une visio & Joindre des fichiers
-						if(Ctrl::$agora->visioEnabled())  {echo '<div id="visioUrlAdd" class="sLink" '.Txt::tooltip("VISIO_urlAddConfirm").'><img src="app/img/visioSmall.png">&nbsp; '.Txt::trad("VISIO_urlAdd").'</div>';}
-						echo $curObj->attachedFileEdit();
-						?>
+						<!--AJOUTER UNE VISIO-->
+						<?php if(Ctrl::$agora->visioEnabled()){ ?>
+							<div id="visioUrlAdd" class="sLink" <?= Txt::tooltip("VISIO_urlAddConfirm") ?> ><img src="app/img/visioSmall.png">&nbsp;<?= Txt::trad("VISIO_urlAdd") ?></div>
+						<?php } ?>
+						<!--JOINDRE DES FICHIERS-->
+						<?= $curObj->attachedFileEdit() ?>
 					</div>
 					<div>
-						<?php
-						//// Ancien email rappelé via "reloadMailTypeId"  &  Bouton"Submit"
-						if(Req::isParam("reloadMailTypeId"))  {echo '<input type="hidden" name="reloadMailTypeId" value="'.Req::param("reloadMailTypeId").'">';}
-						echo Txt::submitButton("<img src='app/img/mailSend.png'> ".Txt::trad("MAIL_sendMail"));
-						?>
+						<!--BOUTON"SUBMIT"-->
+						<?= Txt::submitButton("<img src='app/img/mailSend.png'>&nbsp; ".Txt::trad("MAIL_sendMail")) ?>
+						<!--EMAIL RAPPELÉ (cf "reloadMailTypeId")-->
+						<?php if(Req::isParam("reloadMailTypeId")){ ?><input type="hidden" name="reloadMailTypeId" value="<?= Req::param("reloadMailTypeId") ?>"><?php } ?>
 					</div>
 				</div>
 			</div>

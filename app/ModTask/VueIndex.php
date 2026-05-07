@@ -10,35 +10,36 @@ function moduleDisplay(){
 
 <style>
 /*LABEL/DETAILS DES TACHES*/
-.vObjTasks .objLabelDetail				{margin-top:5px; font-size:0.9rem;}		/*.categoryLabel et .priorityLabel*/
-.vObjTasks .objLabelDetail span			{display:inline-block; margin-right:10px;}
-.vObjTasks .categoryColor				{width:14px; height:14px;}					/*.categoryColor idem .priorityLabel*/
-.objFolders .progressBar				{margin-top:5px;}							/*Dossiers : margin des .progressBar avec le nb d'elements du dossier*/
-.objLines .vObjTasks .progressBar		{margin-left:15px; padding:2px 5px;}		/*Line : affichage des .progressBar*/
-.objBlocks .vObjTasks .objIconOpacity	{display:none;}								/*Block : masque l'icone*/
-.objBlocks .vObjTasks .objDetails		{display:table-cell!important; width:40px; text-align:right;}	/*Block : affiche les .objDetails*/
-.objBlocks .vObjTasks .progressBar		{margin-bottom:5px; padding:2px 5px;}		/*Block : .progressBar au format icone -> sans label*/
-.objBlocks .vObjTasks .progressBarLabel	{display:none;}								/*Idem*/
-.progressBarDelayed						{color:#740;}
+.vObjTasks .objLabelDetail					{margin-top:10px; font-size:0.9rem;}		/*.categoryLabel et .priorityLabel*/
+.vObjTasks .objLabelDetail span				{display:inline-block; margin-right:10px;}	/*idem*/
+.objLines .objContent						{height:65px;}								/*surcharge*/
+.objLines .progressBar						{margin-left:15px;}							/*.progressBar*/
+.objBlocks .objIconOpacity					{display:none;}								/*masque l'icone*/
+.objBlocks .objDetails						{display:table-cell!important; width:40px; text-align:right;}/*cellule des .progressBar*/
+.objBlocks .objDetails .progressBar			{margin-block:2px;}							/*.progressBar au format icone : sans label*/
+.objBlocks .progressBarLabel				{display:none;}								/*idem*/
+.progressBarDelayed							{color:#740;}
 
 /*TIMELINE*/
-.vTimelineSeparator						{visibility:hidden; width:100%;}
-.vTimelineMain							{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px; display:none;}/*masqué par défaut*/
-.vTimelineMain table					{border-collapse:collapse;}
-.vTimelineMain td						{vertical-align:middle; white-space:nowrap;}
-.vTimelineMonths						{padding-bottom:8px;}/*Label des mois*/
-.vTimelineDays							{padding-left:3px; cursor:help;}
-.vTimelineTitle							{padding:0px 10px;}	/*Label de la tâche*/
-.vTimelineMain td:not(:first-child)		{min-width:30px;}	/*Cell des jours*/
-.vTimelineLeftBorder					{border-left:#ccc solid 1px;}
-.vTimelineLeftBorder2					{border-left:#eee solid 1px;}
-.vTimelineMain .progressBar				{width:100%; padding:5px 3px; text-align:left; font-size:0.85rem;}/*100% de width (cf. durée de la tâche et "colspan" des cellules)*/
+.vTimelineSeparator							{visibility:hidden; width:100%;}
+.vTimelineMain								{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px; display:none;}/*masqué par défaut*/
+.vTimelineMain table						{border-collapse:collapse;}
+.vTimelineMain td							{vertical-align:middle; white-space:nowrap;}
+.vTimelineMonths							{padding-bottom:8px;}/*Label des mois*/
+.vTimelineDays								{padding-left:3px; cursor:help;}
+.vTimelineTitle								{max-width:350px; padding:0px 10px; overflow:hidden; text-overflow:ellipsis;}	/*Label de la tâche*/
+.vTimelineMain td:not(:first-child)			{min-width:30px;}	/*Cell des jours*/
+.vTimelineLeftBorder						{border-left:#ccc solid 1px;}
+.vTimelineLeftBorder2						{border-left:#eee solid 1px;}
+.vTimelineMain .progressBar					{width:100%; margin:0px!important; padding:5px 2px;}/*100% de width des cellules : cf "colspan"*/
 .vTimelineMain .progressBar img[src*=date]	{display:none;}
+.vTimelineMain  .progressBarLabel			{display:inline-block;}/*affiche toujours le contenu du .progressBarLabel*/
 
 /*AFFICHAGE SMARTPHONE*/
 @media screen and (max-width:490px){
-	.vTimelineMain td:not(:first-child)	{min-width:22px;}
-	.vTimelineMain img					{display:none;}
+	.vTimelineMain td:not(:first-child)		{min-width:22px;}
+	.vTimelineMain img						{display:none;}
+	.vTimelineTitle							{max-width:200px;}
 }
 </style>
 
@@ -62,12 +63,12 @@ function moduleDisplay(){
 	</div>
 
 	<div id="pageContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
-		<?php
-		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).
-			 CtrlObject::vueFolders();
 
-		////	LISTE DES TACHES
+		<!--PATH DU DOSSIER COURANT & LISTE DES DOSSIERS-->
+		<?= MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).CtrlObject::vueFolders() ?>
+
+		<!--LISTE DES TACHES-->
+		<?php
 		foreach($tasksList as $tmpTask){
 			echo $tmpTask->mainDivMenu();
 		?>
@@ -83,49 +84,56 @@ function moduleDisplay(){
 					</div>
 				</div>
 			</div>
-		<?php
-		}
+		<?php } ?>
 
-		////	AUCUN CONTENU & AJOUTER
-		if(empty(CtrlObject::vueFolders()) && empty($tasksList)){
-			$addElement=(Ctrl::$curContainer->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><img src="app/img/plus.png"> '.Txt::trad("TASK_addTask").'</div>'  :  null;
-			echo '<div class="miscContent emptyContent">'.Txt::trad("TASK_noTask").$addElement.'</div>';
-		}
+		<!--AUCUN CONTENU & AJOUTER-->
+		<?php if(empty(CtrlObject::vueFolders()) && empty($tasksList)){ ?>
+			<div class="miscContent emptyContent">
+				<?= Txt::trad("TASK_noTask") ?>
+				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlTask::getUrlNew() ?>')"><img src="app/img/plus.png"> <?= Txt::trad("TASK_addTask") ?></div><?php } ?>
+			</div>
+		<?php } ?>
 
-		////	TIMELINE
-		if(!empty($timelineBegin)){
-			//// INIT LA TIMELINE
-			echo '<hr class="vTimelineSeparator">
-				  <div class="vTimelineMain miscContent"><table>';
-					//// HEADER MOIS & JOURS
+		<!--TIMELINE-->
+		<?php if(!empty($timelineBegin)){ ?>
+			<hr class="vTimelineSeparator">
+			<div class="vTimelineMain miscContent">
+				<table>
+
+					<?php
+					////	HEADER MOIS & JOURS
 					$timelineHeaderMonths=$timelineHeaderDays=null;
 					foreach($timelineDays as $tmpDay){
-						if($tmpDay["newMonthLabel"])  {$timelineHeaderMonths.='<td class="vTimelineMonths" colspan="'.$tmpDay["newMonthColspan"].'">'.$tmpDay["newMonthLabel"].'</td>';}
+						if($tmpDay["newMonthLabel"])			{$timelineHeaderMonths.='<td class="vTimelineMonths" colspan="'.$tmpDay["newMonthColspan"].'">'.$tmpDay["newMonthLabel"].'</td>';}
 						if($tmpDay["curDate"]==date('Y-m-d'))	{$tmpDay["dayLabel"]='<span class="circleNb">'.$tmpDay["dayLabel"].'</span>';}
 						$timelineHeaderDays.='<td class="vTimelineDays '.$tmpDay["classLeftBorder"].'" '.Txt::tooltip($tmpDay["dayLabelTitle"]).'>'.$tmpDay["dayLabel"].'</td>';
 					}
-					echo '<tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderMonths.'</tr>
-						  <tr><td class="vTimelineTitle">&nbsp;</td>'.$timelineHeaderDays.'</tr>';
-					//// TIMELINE DE CHAQUE TACHE
-					foreach($timelineTasks as $tmpTask)
-					{
-						$tmpTaskCells=null;
+					?>
+					<tr><td class="vTimelineTitle">&nbsp;</td><?= $timelineHeaderMonths ?></tr>
+					<tr><td class="vTimelineTitle">&nbsp;</td><?= $timelineHeaderDays ?></tr>
+
+					<?php
+					////	TIMELINE DE CHAQUE TÂCHE
+					foreach($timelineTasks as $tmpTask){
 						//Affiche chaque jour de la timeline pour la tâche courante (cellule du jour || cellule de la tache si le 1er jour de la tache || jour précédant la tache OU jour suivant la tache)
+						$tmpTaskCells=null;
 						foreach($timelineDays as $tmpDay){
 							$isTaskBegin=($tmpTask->dateBegin==$tmpDay["curDate"]);//La tâche commence la cellule du jour affichée ($tmpDay)
 							if($isTaskBegin==true || $tmpDay["dayTimeBegin"]<$tmpTask->timeBegin || $tmpTask->timeEnd<$tmpDay["dayTimeBegin"]){
 								$tmpCellColspan=($isTaskBegin==true)  ?  "colspan='".$tmpTask->timelineColspan."'"  :  null;
 								$tmpCellLabel  =($isTaskBegin==true)  ?  $tmpTask->progressBeginEnd()  :  "&nbsp;";
-								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["classLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';}
+								$tmpTaskCells.='<td class="vTimelineTaskDays '.$tmpDay["classLeftBorder"].'" '.$tmpCellColspan.'>'.$tmpCellLabel.'</td>';
+							}
 						}
-						//Affiche toute la timeline de la tâche courante
-						echo '<tr class="lineHover" onclick="'.$tmpTask->lightboxVue().'">
-								<td class="vTimelineTitle" '.Txt::tooltip($tmpTask->title).'>'.Txt::reduce($tmpTask->title,(Req::isMobile()?30:50)).'</td>'.
-								$tmpTaskCells.
-							'</tr>';
-					}
-			echo '</table></div>';
-		}
-		?>
+					?>
+					<tr class="lineHover" onclick="<?= $tmpTask->lightboxVue() ?>">
+						<td class="vTimelineTitle" <?= Txt::tooltip($tmpTask->title) ?>><?= $tmpTask->title ?></td>
+						<?= $tmpTaskCells ?>
+					</tr>
+					<?php } ?>
+
+				</table>
+			</div>
+		<?php } ?>
 	</div>
 </div>

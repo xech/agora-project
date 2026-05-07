@@ -130,7 +130,9 @@ class Req
 				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);										//Autorise la balise <source> et ses attributs (cf balise <video>)
 				$purifier=new HTMLPurifier($config);																					//Crée un $purifier
 				$val=$purifier->purify($val);																							//Filtre le code html
-				$val=mb_encode_numericentity($val, [0x80, 0x024F, 0, 0xFFFF, 0x2010, 0x2030, 0, 0xFFFF], 'UTF-8');						//Convertion des caractères spéciaux et accentués en entités HTML (sauf emojis)
+				$caracAcc =['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç','œ','À','Â','Ä','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Û','Ü','Ç','Œ','Æ','æ','«','»',"\xc2\xa0"];//Les espaces sont transformés en "\xc2\xa0" par HTMLPurifier
+				$caracHtml=['&rsquo;','&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&oelig;','&Agrave;','&Acirc;','&Auml;','&Eacute;','&Egrave;','&Ecirc;','&Euml;','&Icirc;','&Iuml;','&Ocirc;','&Ouml;','&Ugrave;','&Ucirc;','&Uuml;','&Ccedil;','&OElig;','&AElig;','&aelig;','&laquo;','&raquo;','&nbsp;'];
+				$val=str_replace($caracAcc, $caracHtml, $val);																			//Convertit les caractère accentués en entités HTML	(pas de htmlentities(), sinon ça converti aussi les balises html...). Test avec "<span style="font-size:200%;color:red">Réservé aux vip & à cœur "EMOJI"</span>"
 			}
 			else{																														//Filtre principal
 				$val=strip_tags($val,'<br>');																							//Supprime les tags html (<br> pour les notify)

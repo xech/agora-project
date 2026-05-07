@@ -669,25 +669,22 @@ class MdlObject
 		elseif($params["type"]=="search"){
 			////	Init la requete SQL et Les champs de recherche (tous ou uniquement ceux demandés)
 			$returnSql=null;
-			$objSearchFields=(!empty($params["searchFields"]))  ?  array_intersect(static::$searchFields,$params["searchFields"])  :  static::$searchFields;
 			////	Recherche "l'expression exacte"
 			if($params["searchMode"]=="exactPhrase"){
-				foreach($objSearchFields as $tmpField){																											//Recherche sur chaque champ de l'objet
-					$searchText=($tmpField=="description" && static::descriptionEditor==true) ?  htmlentities($params["searchText"])  :  $params["searchText"];	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-					$returnSql.=" `".$tmpField."` LIKE ".Db::format($searchText,"sqlLike")." OR ";																//"sqlLike" pour délimiter le texte &&  "OR" pour rechercher le champ suivant
+				foreach(static::$searchFields as $tmpField){																//Recherche sur chaque champ de l'objet
+					$tmpText=$params["searchText"];																			//Text recherché
+					if($tmpField=="description" && static::descriptionEditor==true)  {$tmpText=htmlentities($tmpText);}		//Remplace les caractères accentués en entités html (&agrave; &egrave; etc)
+					$returnSql.=" `".$tmpField."` LIKE ".Db::format($tmpText,"sqlLike")." OR ";								//"sqlLike" pour délimiter le texte + "OR" pour rechercher le champ suivant
 				}
 			}
-			////	Recherche "n'importe quel mot"  ||  Recherche "Tous les mots"
+			////	Recherche "n'importe quel mot"
 			else{
-				$searchWords=explode(" ",$params["searchText"]);																		//Liste des mots clés recherchés
-				$operatorWords=($params["searchMode"]=="anyWord")  ?  " OR "  :  " AND ";												//Opérateur entre chaque mot : "n'importe quel mot" ou "Tous les mots" (laisser les espaces)
-				foreach($objSearchFields as $tmpField){																					//Recherche sur chaque champ de l'objet
-					$sqlWords=null;																										//Init la sous-requete pour chaque mot
-					foreach($searchWords as $tmpWord){																					//Sélection SQL pour chaque mot recherché
-						$tmpWord=($tmpField=="description" && static::descriptionEditor==true)  ?  htmlentities($tmpWord)  :  $tmpWord;	//Texte brut ou avec les accents de l'éditeur (&agrave; &egrave; etc)
-						$sqlWords.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike").$operatorWords;								//"sqlLike" pour délimiter le texte
-					}	
-					$returnSql.=" (".trim($sqlWords,$operatorWords).") OR ";															//Supprime le dernier $operatorWords  &&  Ajoute "OR" pour chercher sur le champ suivant
+				$searchWords=explode(" ",$params["searchText"]);															//Liste des mots clés recherchés
+				foreach(static::$searchFields as $tmpField){																//Recherche sur chaque champ de l'objet
+					foreach($searchWords as $tmpWord){																		//Sélection SQL pour chaque mot recherché
+						if($tmpField=="description" && static::descriptionEditor==true)  {$tmpWord=htmlentities($tmpWord);}	//Remplace les caractères accentués en entités html (&agrave; &egrave; etc)
+						$returnSql.="`".$tmpField."` LIKE ".Db::format($tmpWord,"sqlLike")." OR ";							//"sqlLike" pour délimiter le texte + "OR" pour rechercher le champ et mot suivant
+					}
 				}
 			}
 			////	Supprime le dernier opérateur "OR" entre chaque champ de recherche
@@ -727,7 +724,7 @@ class MdlObject
 			$autorLabel='<span onclick="'.$objUser->lightboxVue().'">'.$autorLabel.'</span>';  							//Lien vers le profil de l'user
 		}
 		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;				//Date de créa/modif
-		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">&nbsp;'.Txt::dateLabel($dateEdit,"labelFull");	//Garder "&nbsp;" au cas où <img> est masqué
+		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">&nbsp;'.Txt::dateLabel("default",$dateEdit);	//Garder "&nbsp;" au cas où <img> est masqué
 	}
 
 	/********************************************************************************************************

@@ -36,12 +36,12 @@
 	</div>
 
 	<div id="pageContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
-		<?php
-		////	PATH DU DOSSIER COURANT & LISTE DES DOSSIERS
-		echo MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles()).
-			 CtrlObject::vueFolders();
 
-		////	LISTE DES FICHIERS
+		<!--PATH DU DOSSIER COURANT & LISTE DES DOSSIERS-->
+		<?= MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles()).CtrlObject::vueFolders() ?>
+
+		<!--LISTE DES FICHIERS-->
+		<?php
 		foreach($filesList as $tmpFile){
 			$containerClass=$tmpFile->hasTumb() ? "hasThumb" : null;
 			echo $tmpFile->mainDivMenu($containerClass);
@@ -53,14 +53,15 @@
 					<div class="objAutorDate"><?= $tmpFile->autorDate(true) ?></div>
 				</div>
 			</div>
-		<?php
-		}
+		<?php } ?>
 
-		////	AUCUN CONTENU & AJOUTER
-		if(empty(CtrlObject::vueFolders()) && empty($filesList)){
-			$addElement=(Ctrl::$curContainer->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlFile::urlAddFiles().'\')"><img src="app/img/plus.png"> '.Txt::trad("FILE_addFile").'</div>'  :  null;
-			echo '<div class="miscContent emptyContent">'.Txt::trad("FILE_noFile").$addElement.'</div>';
-		}
-		?>
+		<!--AUCUN CONTENU & AJOUTER-->
+		<?php if(empty(CtrlObject::vueFolders()) && empty($filesList)){ ?>
+			<div class="miscContent emptyContent">
+				<?= Txt::trad("FILE_noFile") ?>
+				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlFile::urlAddFiles() ?>')"><img src="app/img/plus.png"> <?= Txt::trad("FILE_addFile") ?></div><?php } ?>
+			</div>
+		<?php } ?>
+		
 	</div>
 </div>

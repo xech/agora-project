@@ -31,7 +31,7 @@ async function attachedFileDelete(fileId)
 </script>
 
 <style>
-.vAttachedFileDiv								{margin-top:10px; padding:5px;}							/*Inputs d'ajout de fichiers & Fichiers joints existants*/
+.vAttachedFileDiv								{margin-block:5px;}										/*Inputs d'ajout de fichiers & Fichiers joints existants*/
 .vAttachedFileThumb								{max-width:80px!important; max-height:60px!important;}	/*Vignettes des images*/
 .vAttachedFileThumb, .vAttachedFileDiv label	{margin-left:15px; white-space:nowrap;}					/*Vignettes & options des fichiers existants*/
 [id^=attachedFileAdd]:not(#attachedFileAdd1), [id^=attachedFileInsert]  {display:none;}					/*Masque tous les inputs (sauf le premier)  &  Masque l'option "insérer dans le texte" des inputs*/
@@ -42,12 +42,12 @@ async function attachedFileDelete(fileId)
 <div><img src="app/img/attachment.png"> <?= Txt::trad("EDIT_attachedFileAdd") ?> :</div>
 
 <!--"JOINDRE DES FICHIERS" : LISTE DES INPUTS-->
-<?php for($inputCpt=1; $inputCpt<=20; $inputCpt++){ ?>
-<div id="attachedFileAdd<?= $inputCpt ?>" class="vAttachedFileDiv">
-	<input type="file" name="attachedFile<?= $inputCpt ?>" id="attachedFileInput<?= $inputCpt ?>" class="attachedFileInput">
-	<!--OPTION "INSÉRER DANS LE TEXTE" DE TINYMCE-->
-	<?php if($curObj::descriptionEditor==true){ ?><label onclick="attachedFileInsert(<?= $inputCpt ?>)" id="attachedFileInsert<?= $inputCpt ?>" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> ><img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?></label><?php } ?>
-</div>
+	<?php for($inputCpt=1; $inputCpt<=20; $inputCpt++){ ?>
+	<div id="attachedFileAdd<?= $inputCpt ?>" class="vAttachedFileDiv">
+		<input type="file" name="attachedFile<?= $inputCpt ?>" id="attachedFileInput<?= $inputCpt ?>" class="attachedFileInput">
+		<!--OPTION "INSÉRER DANS LE TEXTE" DE TINYMCE-->
+		<?php if($curObj::descriptionEditor==true){ ?><label onclick="attachedFileInsert(<?= $inputCpt ?>)" id="attachedFileInsert<?= $inputCpt ?>" <?= Txt::tooltip("EDIT_attachedFileInsertTooltip") ?> ><img src="app/img/editorInsert.png"> <?= Txt::trad("EDIT_attachedFileInsert") ?></label><?php } ?>
+	</div>
 <?php } ?>
 
 

@@ -1,7 +1,7 @@
 <style>
 .lightboxTitleInfos > span	{display:inline-block; margin:10px 10px 0px;}
 .vProgressBars				{text-align:center;}
-.progressBar				{margin:10px; padding:8px;}
+.progressBar				{margin:10px; padding:8px 12px;}
 </style>
 
 <div>

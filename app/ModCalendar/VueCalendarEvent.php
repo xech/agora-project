@@ -14,7 +14,7 @@
 	if(!empty($curObj->description))	{echo $curObj->description.'<hr>';}
 
 	////	DATE / PERIODICITE / CATEGORIE
-	echo '<div class="vEvtDetails"><img src="app/img/calendar/clock.png">'.Txt::dateLabel($curObj->dateBegin,"labelFull",$curObj->dateEnd).'</div>';
+	echo '<div class="vEvtDetails"><img src="app/img/calendar/clock.png">'.Txt::dateLabel("default",$curObj->dateBegin,$curObj->dateEnd).'</div>';
 	if(!empty($labelPeriod))			{echo '<hr><div class="vEvtDetails"><img src="app/img/calendar/period.png">'.$labelPeriod.'</div>';}
 	if($curObj->_idCat)					{echo '<hr><div class="vEvtDetails">'.$curObj->categoryLabel().'</div>';}
 

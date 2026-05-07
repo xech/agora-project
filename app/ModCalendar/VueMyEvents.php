@@ -22,7 +22,7 @@
 			<div><?= $tmpEvt->contextMenu(["burgerLauncher"=>"big-inline"]) ?></div>
 			<div><img src="app/img/edit.png" onclick="lightboxOpen('<?= $tmpEvt->getUrl('edit') ?>')"></div>
 			<div onclick="lightboxOpen('<?= $tmpEvt->getUrl('vue') ?>')"><?= $tmpEvt->title ?></div>
-			<div><?= Txt::dateLabel($tmpEvt->dateBegin,"labelFull",$tmpEvt->dateEnd) ?></div>
+			<div><?= Txt::dateLabel("default",$tmpEvt->dateBegin,$tmpEvt->dateEnd) ?></div>
 		</div>
 		<?php } ?>
 	</div>

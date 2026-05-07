@@ -142,7 +142,7 @@ class Trad extends Txt
 			
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", etc.)
 			"from"=>"de",
-			"at"=>"à",
+			"to"=>"à",
 			"begin"=>"Début",
 			"end"=>"Fin",
 			"beginEnd"=>"Début / Fin",
@@ -228,17 +228,17 @@ class Trad extends Txt
 
 			////	Droit d'accès d'un Objet
 			"accessRead"=>"Lecture",
-			"accessReadTooltip"=>"Accès --OBJ_LABEL_TO-- en lecture seule",
+			"accessReadDetail"=>"Accès --OBJ_LABEL_TO-- en lecture seule",
 			"accessWriteLimit"=>"Ecriture limitée",
-			"accessWriteLimitTooltip"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture limité :<br> Droit d'ajouter, modifier et supprimer uniquement --OBJ_LABEL_CONTENT-- que l'on a créé",
+			"accessWriteLimitDetail"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture limité :<br> Droit d'ajouter, modifier et supprimer uniquement --OBJ_LABEL_CONTENT-- que l'on a créé",
 			"accessWrite"=>"Ecriture",
-			"accessWriteTooltip" =>"Accès --OBJ_LABEL_TO-- en lecture et écriture",
-			"accessWriteTooltipContainer"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture :<br> Droit d'ajouter, modifier et supprimer tous --OBJ_LABEL_CONTENT--",
-			"accessFullTooltip"=>"Administrateur et Auteur : <br> Edition et accès complet --OBJ_LABEL_TO--",
+			"accessWriteDetail" =>"Accès --OBJ_LABEL_TO-- en lecture et écriture",
+			"accessWriteDetailContainer"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture :<br> Droit d'ajouter, modifier et supprimer tous --OBJ_LABEL_CONTENT--",
+			"accessFullDetail"=>"Administrateur et Auteur : <br> Edition et accès complet --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"Tous les utilisateurs",
-			"accessAllUsersTooltip"=>"Droit d'accès pour les utilisateurs de l'espace <i>--SPACENAME--</i>",
+			"accessAllUsersDetail"=>"Droit d'accès pour les utilisateurs de l'espace <i>--SPACENAME--</i>",
 			"accessAllUsersGuests"=>"Tous les utilisateurs et invités",
-			"accessAllUsersGuestsTooltip"=>"Droit d'accès pour les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Limité en lecture seule pour les invités (sans compte utilisateur)",
+			"accessAllUsersGuestsDetail"=>"Droit d'accès pour les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Invités (accès libre sans authentification) : accès limité par défaut en lecture seule",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Espace",								//ModSpace
@@ -347,22 +347,19 @@ class Trad extends Txt
 			"captchaError"=>"L'identification visuelle est erronée (5 caractères du captcha)",
 			
 			////	Rechercher
-			"searchSpecifyText"=>"Merci de préciser au moins 3 caractères (alphanumériques et sans caractères spéciaux)",
 			"search"=>"Rechercher",
+			"searchSpecifyText"=>"Merci de préciser au moins 3 caractères (alphanumériques et sans caractères spéciaux)",
 			"searchOnSpace"=>"Rechercher sur l'espace",
 			"searchDateCrea"=>"Date de création",
-			"searchDateCreaDay"=>"moins d'un jour",
-			"searchDateCreaWeek"=>"moins d'une semaine",
-			"searchDateCreaMonth"=>"moins d'un mois",
-			"searchDateCreaYear"=>"moins d'un an",
+			"searchDateCrea_day"=>"moins d'un jour",
+			"searchDateCrea_week"=>"moins d'une semaine",
+			"searchDateCrea_month"=>"moins d'un mois",
+			"searchDateCrea_year"=>"moins d'un an",
 			"advancedSearch"=>"Recherche avancée",
-			"advancedSearchAnyWord"=>"n'importe quel mot",
-			"advancedSearchAllWords"=>"tous les mots",
-			"advancedSearchExactPhrase"=>"l'expression exacte",
+			"advancedSearch_anyWord"=>"n'importe quel mot",
+			"advancedSearch_exactPhrase"=>"l'expression exacte",
 			"keywords"=>"Mots clés",
 			"listModules"=>"Modules",
-			"listFields"=>"Champs",
-			"listFieldsElems"=>"Eléments concernés",
 			"noResults"=>"Aucun résultat",
 
 			////	Inscription d'utilisateur
@@ -418,7 +415,7 @@ class Trad extends Txt
 			////	Header
 			"HEADER_displaySpace"=>"Espaces de travail",
 			"HEADER_displayAdmin"=>"Affichage Administrateur",
-			"HEADER_displayAdminInfo"=>"Affichage Administrateur : voir tous les éléments présents sur l'espace (agendas, dossiers, etc)",
+			"HEADER_displayAdminInfo"=>"Permet d'afficher tous les éléments présents sur l'espace : dossiers, agendas, messages du forum, etc",
 			"HEADER_displayAdminEnabled"=>"Affichage Administrateur activé",
 			"HEADER_displayAdminDisabled"=>"Affichage Administrateur désactivé",
 			"HEADER_documentation"=>"Guide d'utilisation",
@@ -703,6 +700,7 @@ class Trad extends Txt
 			"USER_userAffectConfirm"=>"Confirmer les affectations ?",
 			"USER_addExistUser"=>"Ajouter des utilisateurs existants",
 			"USER_addExistUserTitle"=>"Affecter des utilisateurs existants à l'espace",
+			"USER_submitSearch"=>"Rechercher",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Langue",
 			"USER_persoCalendarDisabled"=>"Agenda personnel désactivé",
@@ -896,11 +894,11 @@ class Trad extends Txt
 			"CALENDAR_proposeEvtTooltipBis"=>"Option pour proposer l'évènement :<br>L'évènement devra être validé par le propriétaire de l'agenda",
 			"CALENDAR_verifCalNb"=>"Merci de sélectionner au moins un agenda",
 			"CALENDAR_busyTimeSlot"=>"Créneau déjà occupé sur l'agenda :",
-			"CALENDAR_timeSlot"=>"Plage horaire pour l'affichage ''semaine''",
+			"CALENDAR_timeSlot"=>"Plage horaire de l'affichage ''semaine''",
 			"CALENDAR_propositionNotif"=>"Me notifier par email à chaque propositions d'évènement",
 			"CALENDAR_propositionNotifTooltip"=>"Chaque proposition d'évènement devra être validé/invalidé par le propriétaire de l'agenda (auteur ou administrateur)",
 			"CALENDAR_propositionGuest"=>"Les invités peuvent proposer des évènements",
-			"CALENDAR_propositionGuestTooltip"=>"Pensez à sélectionnez 'tous les utilisateur et invités' dans les droits d'accès ci-dessous.",
+			"CALENDAR_propositionGuestTooltip"=>"Les invités peuvent proposer des évènements si le droit d'accès ''Tous les utilisateurs et invités'' est en ''Ecriture'' ou ''Ecriture limité'' (cf menu ci-dessous)",
 			"CALENDAR_propositionEmailSubject"=>"Nouvel évènement proposé par",
 			"CALENDAR_propositionEmailMessage"=>"Nouvel évènement proposé par --AUTOR_LABEL-- : &nbsp; <i><b>--EVT_TITLE_DATE--</b></i> <br><i>--EVT_DESCRIPTION--</i> <br>Accédez à votre espace pour confirmer ou annuler cette proposition",
 
@@ -964,7 +962,8 @@ class Trad extends Txt
 			"TASK_priority3"=>"Haute",
 			"TASK_assignedTo"=>"Assigné à",
 			"TASK_advancementDelayed"=>"Avancement en retard",
-			"TASK_folderDateBeginEnd"=>"Debut au plus tôt / Fin au plus tard",
+			"TASK_folderDateBegin"=>"Début au plus tôt",
+			"TASK_folderDateEnd"=>"Fin au plus tard",
 
 			////	MOD : CONTACT
 			////

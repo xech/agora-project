@@ -142,7 +142,7 @@ class Trad extends Txt
 			
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", etc.)
 			"from"=>"of ",
-			"at"=>"to",
+			"to"=>"to",
 			"begin"=>"Begin",
 			"end"=>"End",
 			"beginEnd"=>"Begin / End",
@@ -228,17 +228,17 @@ class Trad extends Txt
 
 			////	Droit d'accès d'un Objet
 			"accessRead"=>"Read",
-			"accessReadTooltip"=>"Read-only access --OBJ_LABEL_TO--",
+			"accessReadDetail"=>"Read-only access --OBJ_LABEL_TO--",
 			"accessWriteLimit"=>"Limited Write",
-			"accessWriteLimitTooltip"=>"Read and <i>limited write</i> access --OBJ_LABEL_TO-- :<br>Right to add, modify, and delete only --OBJ_LABEL_CONTENT-- that we have created",
+			"accessWriteLimitDetail"=>"Read and <i>limited write</i> access --OBJ_LABEL_TO-- :<br>Right to add, modify, and delete only --OBJ_LABEL_CONTENT-- that we have created",
 			"accessWrite"=>"Write",
-			"accessWriteTooltip"=>"Read and write access --OBJ_LABEL_TO--",
-			"accessWriteTooltipContainer"=>"Read and write access --OBJ_LABEL_TO-- :<br>Right to add, modify, and delete all --OBJ_LABEL_CONTENT--",
-			"accessFullTooltip"=>"Administrator and Author:<br>Full read and write access --OBJ_LABEL_TO--",
+			"accessWriteDetail"=>"Read and write access --OBJ_LABEL_TO--",
+			"accessWriteDetailContainer"=>"Read and write access --OBJ_LABEL_TO-- :<br>Right to add, modify, and delete all --OBJ_LABEL_CONTENT--",
+			"accessFullDetail"=>"Administrator and Author:<br>Full read and write access --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"All users",
-			"accessAllUsersTooltip"=>"Access rights for users in the <i>--SPACENAME--</i> space",
+			"accessAllUsersDetail"=>"Access rights for users in the <i>--SPACENAME--</i> space",
 			"accessAllUsersGuests"=>"All users and guests",
-			"accessAllUsersGuestsTooltip"=>"Access rights for users and guests in the <i>--SPACENAME--</i> space.<hr>Read-only for guests (without user account)",
+			"accessAllUsersGuestsDetail"=>"Access rights for users and guests in the <i>--SPACENAME--</i> space.<hr>Read-only for guests (without user account)",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Space", 								//ModSpace
@@ -347,22 +347,19 @@ class Trad extends Txt
 			"captchaError"=>"The visual identification is false",
 			
 			////	Rechercher
-			"searchSpecifyText"=>"Please specify at least 3 characters (alphanumeric and no special characters)",
 			"search"=>"Search",
+			"searchSpecifyText"=>"Please specify at least 3 characters (alphanumeric and no special characters)",
 			"searchOnSpace"=>"Search in this space",
 			"searchDateCrea"=>"Creation date",
-			"searchDateCreaDay"=>"less than one day",
-			"searchDateCreaWeek"=>"less than a week",
-			"searchDateCreaMonth"=>"less than one month",
-			"searchDateCreaYear"=>"less than a year",
+			"searchDateCrea_day"=>"less than one day",
+			"searchDateCrea_week"=>"less than a week",
+			"searchDateCrea_month"=>"less than one month",
+			"searchDateCrea_year"=>"less than a year",
 			"advancedSearch"=>"Advanced Search",
-			"advancedSearchAnyWord"=>"any word",
-			"advancedSearchAllWords"=>"all words",
-			"advancedSearchExactPhrase"=>"exact phrase",
+			"advancedSearch_anyWord"=>"any word",
+			"advancedSearch_exactPhrase"=>"exact phrase",
 			"keywords"=>"Key words",
 			"listModules"=>"Modules",
-			"listFields"=>"Fields",
-			"listFieldsElems"=>"Elements involved",
 			"noResults"=>"No result",
 			
 			////	Inscription d'utilisateur
@@ -661,8 +658,6 @@ class Trad extends Txt
 			"USER_deleteFromCurSpaceConfirm"=>"Unassign the user to the current space?",
 			"USER_user"=>"User",
 			"USER_users"=>"users",
-			"USER_addExistUser"=>"Add an existing user to the space",
-			"USER_addExistUserTitle"=>"Add to the space an already existing user on the site : assignment to the space",
 			"USER_addUser"=>"Add User",
 			"USER_addUserSite"=>"Create a user on the site: by default, assigned to any space!",
 			"USER_addUserSpace"=>"Create a user into the current space",
@@ -705,6 +700,7 @@ class Trad extends Txt
 			"USER_userAffectConfirm"=>"Confirm assignments?",
 			"USER_addExistUser"=>"Add existing users",
 			"USER_addExistUserTitle"=>"Assign existing users to the space",
+			"USER_submitSearch"=>"Search",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Language",
 			"USER_persoCalendarDisabled"=>"Personal calendar disabled",
@@ -966,7 +962,8 @@ class Trad extends Txt
 			"TASK_priority3"=>"High",
 			"TASK_assignedTo"=>"Assigned to",
 			"TASK_advancementDelayed"=>"Progress delayed",
-			"TASK_folderDateBeginEnd"=>"Earliest start date / latest end date",
+			"TASK_folderDateBegin"=>"Earliest start date",
+			"TASK_folderDateEnd"=>"Latest end date",
 
 			////	MOD : CONTACT
 			////

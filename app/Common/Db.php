@@ -112,7 +112,7 @@ class Db
 		$value=trim((string)$value);
 		if(empty($value))  {return 'NULL';}
 		else{
-			if(stristr((string)$options,"sqlLike"))		{$value='%'.Txt::clean($value).'%';}					//Recherche via "LIKE" ("sqlPlugins()", etc)
+			if(stristr((string)$options,"sqlLike"))		{$value='%'.$value.'%';}								//Recherche via "LIKE" ("sqlPlugins()", etc)
 			if(stristr((string)$options,"inputDate"))	{$value=Txt::formatDate($value,"inputDate","dbDate");}	//Formate la date d'un datepicker
 			return self::objPDO()->quote($value);																//Résultat filtré par pdo (addslashes, quotes, etc)
 		}

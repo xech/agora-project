@@ -231,63 +231,62 @@ class Txt
 
 	/********************************************************************************************************
 	 * FORMATAGE D'UNE DATE/HEURE EN FONCTION D'UN TIMESTAMP
-	 * $format	=>	"default"	->	8 fev."
-	 * 			=>	"dateFull"	->	"lun. 8 fev."
-	 * 			=>	"labelFull"	->	"lun. 8 fev. 9:05"
-	 * 			=>	"mini"		->	"9:05" ou "8 fev. 9:05" (si $diffDays)
-	 * 			=>	"dateBasic"	->	"08/02/2050"
-	 * 			=>	"dateMini"	->	"08/02"
 	 * Note : les objets "task" peuvent avoir une $dateEnd sans $timeBegin
+	 * $format	=>	"default"		->	"lun. 8 fevrier 9:05"
+	 * 			=>	"textDate"		->	"lun. 8 fevrier"
+	 * 			=>	"textMini"		->	"8 fev."
+	 * 			=>	"mini"			->	"9:05"  ||  "8 fev. 9:05" ($diffDays)
+	 * 			=>	"numDatetime"	->	"08/02/2050 9:05"
+	 * 			=>	"numDate"		->	"08/02/2050"
 	 ********************************************************************************************************/
-	public static function dateLabel($timeBegin=null, $format="default", $timeEnd=null)
-	{
+	public static function dateLabel($format="default", $timeBegin=null, $timeEnd=null){
 		//Controles de base
-		if((!empty($timeBegin) || !empty($timeEnd)))
-		{
-			//Convertit si besoin un DateTime (Bdd) en Timestamp unix
-			if(!empty($timeBegin) && !is_numeric($timeBegin))	{$timeBegin=strtotime($timeBegin);}
-			if(!empty($timeEnd) && !is_numeric($timeEnd))		{$timeEnd=strtotime($timeEnd);}
+		if((!empty($timeBegin) || !empty($timeEnd))){
+			//Convertit si besoin un DateTime en Timestamp unix
+			if($timeBegin!=null && !is_numeric($timeBegin))		{$timeBegin=strtotime($timeBegin);}
+			if($timeEnd!=null   && !is_numeric($timeEnd))		{$timeEnd=strtotime($timeEnd);}
 
-			//Init "IntlDateFormatter"
-			$onlyDate=($format=="default" || preg_match("/date/i",$format));
-			$formatFull=($format=="dateFull" || $format=="labelFull");
+			//Debut/fin sur plusieurs jours ou heures
 			$formatter=self::dateFormatter();
 			if(is_object($formatter)){
-				//Debut/fin sur plusieurs jours ou heures
+				//Init (pas de "null" pour le pattern!)
+				$label=$pattern="";
+				$withHM=preg_match("/^(default|numDatetime|mini)$/i",$format);
 				$diffDays=$diffHours=false;
-				if(!empty($timeBegin) && !empty($timeEnd)){
+				if($timeBegin!=null && $timeEnd!=null){
 					if(date("Ymd",$timeBegin)!=date("Ymd",$timeEnd))  {$diffDays=true;}
 					if(date("H:i",$timeBegin)!=date("H:i",$timeEnd))  {$diffHours=true;}
 				}
 
-				//Formatage de la date via "setPattern()" :  https://unicode-org.github.io/icu/userguide/format_parse/datetime/
-				$label=$pattern="";																								//Init (pas de "null")
-				if($format!="mini" && empty($timeEnd) && date("Ymd",$timeBegin)==date("Ymd"))	{$label=self::trad("today");}	//"Aujourd'hui" (pas dans le $pattern)
-				elseif($format=="default")														{$pattern="d MMM";}				//ex: "8 fev."
-				elseif($formatFull==true)														{$pattern="eee d MMM";}			//ex: "lun. 8 fev."
-				elseif($format=="dateBasic")													{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
-				elseif($format=="dateMini")														{$pattern="dd/MM";}				//ex: "08/02"
-				elseif($format=="mini" && $diffDays==true)										{$pattern="d MMM";}				//ex: "8 fev."
-				//Ajoute l'année si différente de celle en cours (ex: "8 juin 2001")
-				if(($format=="default" || $formatFull==true)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y'))))   {$pattern.=" yyyy";}
+				//Formatage de la date (https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
+				if(preg_match("/mini/i",$format)==false && date("Ymd",$timeBegin)==date("Ymd"))		{$label=self::trad("today");}	//"Aujourd'hui"
+				elseif(preg_match("/^(default|textDate)$/i",$format))								{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
+				elseif($format=="textMini" || ($format=="mini" && $diffDays==true))					{$pattern="d MMM";}				//ex: "8 fev."
+				elseif(preg_match("/numDate/i",$format))											{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
+				//Année différente de celle en cours
+				if(preg_match("/^(default|textDate)$/i",$format)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y')))){
+					$pattern=str_replace("MMMM","MMM",$pattern)." yyyy";//ex : "8 fevrier" -> "8 fev. 2050"
+				}
 				//Ajoute l'heure si on affiche pas que la date (ex: "9:05")
-				if($onlyDate==false)  {$pattern.=" H:mm";}
-				//Instancie le pattern via la "IntlDateFormatter()" avec la "lang" et "timezone" locale
+				if($withHM==true)  {$pattern.=" H:mm";}
+				//Instancie le pattern (cf "IntlDateFormatter()" et "lang" + "timezone")
 				$formatter->setPattern($pattern);
 
 				//Formate le label de début et/ou de fin
-				if(!empty($timeBegin))	{$label.=$formatter->format($timeBegin);}																						//Label de début
-				if(!empty($timeEnd)){																																	//Label de fin :
-					if($diffDays==false && $diffHours==true && $onlyDate==false)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)											{$label.='<img src="app/img/arrowRightSmall.png">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
-					elseif(empty($timeBegin))										{$label.=self::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
+				if($timeBegin!=null){
+					$label.=$formatter->format($timeBegin);
+				}
+				if($timeEnd!=null){
+					if($diffDays==false && $diffHours==true && $withHM==true)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
+					elseif($diffDays==true)										{$label.='<img src="app/img/arrowRightSmall.png">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
+					elseif($timeBegin==null)									{$label.=self::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 
 				//Retourne le résultat en utf-8
 				return static::utf8Encode($label);
 			}
-			//Si "IntlDateFormatter" non instancié : format "date()"
-			else  {return ($onlyDate==true) ? date("d/m/Y",$timeBegin) : date("d/m/Y H:i",$timeBegin);}
+			//Si $formatter non instancié : format basic
+			else  {return ($withHM==true) ? date("d/m/Y H:i",$timeBegin) : date("d/m/Y",$timeBegin);}
 		}
 	}
 
@@ -301,7 +300,7 @@ class Txt
 			$formatter->setPattern($pattern);										//Instancie le pattern
 			return static::utf8Encode($formatter->format($timestamp));				//Retourne le résultat en utf-8
 		}else{
-			$dateFormat=str_replace(['MMMM','MMM','ccc'], ['F','M','l'], $pattern);	//Format adapté à "date" (mois/jours) 
+			$dateFormat=str_replace(['MMMM','MMM','ccc'], ['F','M','l'], $pattern);	//Format adapté à "date()" (mois/jours) 
 			return date($dateFormat,$timestamp);									//Retourne le résultat via "date()"
 		}
 	}

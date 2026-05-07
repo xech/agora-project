@@ -142,7 +142,7 @@ class Trad extends Txt
 
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", etc.)
 			"from"=>"von",
-			"at"=>"à",
+			"to"=>"à",
 			"begin"=>"Anfang",
 			"end"=>"Ende",
 			"beginEnd"=>"Anfang / Ende",
@@ -228,17 +228,17 @@ class Trad extends Txt
 
 			////	Droit d'accès d'un Objet
 			"accessRead"=>"Lesen",
-			"accessReadTooltip"=>"Nur-Lese-Zugriff --OBJ_LABEL_TO--",
+			"accessReadDetail"=>"Nur-Lese-Zugriff --OBJ_LABEL_TO--",
 			"accessWriteLimit"=>"Eingeschränkter Schreibzugriff",
-			"accessWriteLimitTooltip"=>"Lese- und <i>eingeschränkter Schreibzugriff</i> --OBJ_LABEL_TO--:<br>Berechtigung zum Hinzufügen, Bearbeiten und Löschen nur von --OBJ_LABEL_CONTENT--, die man erstellt hat",
+			"accessWriteLimitDetail"=>"Lese- und <i>eingeschränkter Schreibzugriff</i> --OBJ_LABEL_TO--:<br>Berechtigung zum Hinzufügen, Bearbeiten und Löschen nur von --OBJ_LABEL_CONTENT--, die man erstellt hat",
 			"accessWrite"=>"Schreiben",
-			"accessWriteTooltip"=>"Lese- und Schreibzugriff --OBJ_LABEL_TO--",
-			"accessWriteTooltipContainer"=>"Lese- und Schreibzugriff --OBJ_LABEL_TO--:<br>Berechtigung zum Hinzufügen, Bearbeiten und Löschen aller --OBJ_LABEL_CONTENT--",
-			"accessFullTooltip"=>"Administrator und Autor:<br>Voller Lese- und Schreibzugriff --OBJ_LABEL_TO--",
+			"accessWriteDetail"=>"Lese- und Schreibzugriff --OBJ_LABEL_TO--",
+			"accessWriteDetailContainer"=>"Lese- und Schreibzugriff --OBJ_LABEL_TO--:<br>Berechtigung zum Hinzufügen, Bearbeiten und Löschen aller --OBJ_LABEL_CONTENT--",
+			"accessFullDetail"=>"Administrator und Autor:<br>Voller Lese- und Schreibzugriff --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"Alle Benutzer",
-			"accessAllUsersTooltip"=>"Zugriffsrechte für Benutzer im Bereich <i>--SPACENAME--</i>",
+			"accessAllUsersDetail"=>"Zugriffsrechte für Benutzer im Bereich <i>--SPACENAME--</i>",
 			"accessAllUsersGuests"=>"Alle Benutzer und Gäste",
-			"accessAllUsersGuestsTooltip"=>"Zugriffsrechte für Benutzer und Gäste im Bereich <i>--SPACENAME--</i>.<hr>Nur Lesen für Gäste (ohne Benutzerkonto)",
+			"accessAllUsersGuestsDetail"=>"Zugriffsrechte für Benutzer und Gäste im Bereich <i>--SPACENAME--</i>.<hr>Nur Lesen für Gäste (ohne Benutzerkonto)",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Leerzeichen",						   //ModSpace
@@ -347,22 +347,19 @@ class Trad extends Txt
 			"captchaError"=>"Die visuelle Identifizierung ist falsch: 5 Zeichen des Captchas",
 
 			////	Rechercher
-			"searchSpecifyText"=>"Bitte geben Sie mindestens 3 Zeichen ein (alphanumerisch und ohne Sonderzeichen)",
 			"search"=>"Suchen",
+			"searchSpecifyText"=>"Bitte geben Sie mindestens 3 Zeichen ein (alphanumerisch und ohne Sonderzeichen)",
 			"searchOnSpace"=>"Suche im Projektraum",
 			"searchDateCrea"=>"Erstellungsdatum",
-			"searchDateCreaDay"=>"weniger als ein Tag",
-			"searchDateCreaWeek"=>"weniger als eine Woche",
-			"searchDateCreaMonth"=>"weniger als ein Monat",
-			"searchDateCreaYear"=>"weniger als ein Jahr",
+			"searchDateCrea_day"=>"weniger als ein Tag",
+			"searchDateCrea_week"=>"weniger als eine Woche",
+			"searchDateCrea_month"=>"weniger als ein Monat",
+			"searchDateCrea_year"=>"weniger als ein Jahr",
 			"advancedSearch"=>"Erweiterte Suche",
-			"advancedSearchAnyWord"=>"beliebiges Wort",
-			"advancedSearchAllWords"=>"alle Wörter",
-			"advancedSearchExactPhrase"=>"die genaue Phrase",
+			"advancedSearch_anyWord"=>"beliebiges Wort",
+			"advancedSearch_exactPhrase"=>"die genaue Phrase",
 			"keywords"=>"Schlüsselwörter",
 			"listModules"=>"Module",
-			"listFields"=>"Felder",
-			"listFieldsElems"=>"Betroffene Elemente",
 			"noResults"=>"Keine Ergebnisse",
 
 			////	Inscription d'utilisateur
@@ -661,8 +658,6 @@ class Trad extends Txt
 			"USER_deleteFromCurSpaceConfirm"=>"Benutzer aus aktuellem Bereich löschen/aufheben?",
 			"USER_user"=>"Benutzer",
 			"USER_users"=>"Benutzer",
-			"USER_addExistUser"=>"Vorhandenen Benutzer hinzufügen",
-			"USER_addExistUserTitle"=>"Einen bestehenden Benutzer zum aktuellen Bereich hinzufügen (dem aktuellen Bereich zuweisen)",
 			"USER_addUser"=>"Neuer Benutzer",
 			"USER_addUserSite"=>"Benutzer anlegen: standardmäßig keinem Leerzeichen zugewiesen!",
 			"USER_addUserSpace"=>"Benutzer für den aktuellen Bereich erstellen",
@@ -705,6 +700,7 @@ class Trad extends Txt
 			"USER_userAffectConfirm"=>"Zuweisungen bestätigen?",
 			"USER_addExistUser"=>"Bestehende Benutzer hinzufügen",
 			"USER_addExistUserTitle"=>"Bestehende Benutzer dem Bereich zuweisen",
+			"USER_submitSearch"=>"Suchen",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Sprache",
 			"USER_persoCalendarDisabled"=>"Persönlicher Kalender deaktiviert",
@@ -966,7 +962,8 @@ class Trad extends Txt
 			"TASK_priority3"=>"Hoch",
 			"TASK_assignedTo"=>"Zugewiesen an",
 			"TASK_advancementDelayed"=>"Fortschritt zu spät",
-			"TASK_folderDateBeginEnd"=>"Frühester Beginn / Spätestes Ende",
+			"TASK_folderDateBegin"=>"Frühester Beginn",
+			"TASK_folderDateEnd"=>"Spätestes Ende",
 
 			////	MOD : CONTACT
 			////

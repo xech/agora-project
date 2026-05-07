@@ -279,7 +279,7 @@ class MdlDashboardPoll extends MdlObject
 		if(!empty($this->dateEnd)){
 			$options["objOptions"][]=[
 				"iconSrc"=>"dateEnd.png",
-				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_dateEnd")." : ".Txt::dateLabel($this->dateEnd,"dateFull")."</span>"
+				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_dateEnd")." : ".Txt::dateLabel("textDate",$this->dateEnd)."</span>"
 			];
 		}
 		////	Le vote est public

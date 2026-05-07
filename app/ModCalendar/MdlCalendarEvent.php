@@ -159,12 +159,20 @@ class MdlCalendarEvent extends MdlObject
 				"label"=>Txt::trad("CALENDAR_evtRemoveFromDate")
 			];
 		}
-		////	Agendas où est affecté l'evenement  &&  Retourne le menu
+		////	Agendas où est affecté l'evenement
 		$options["objOptions"][]=[
 			"separator"=>"<hr>",
 			"iconSrc"=>"calendar/iconSmall.png",
 			"label"=>$this->affectedCalendarsLabel()
 		];
+		////	Acces en lecture seule
+		if($this->editRight()==false){
+			$options["objOptions"][]=[
+				"separator"=>"<hr>",
+				"iconSrc"=>"info.png",
+				"label"=>$this->tradObj("accessReadDetail")
+			];
+		}
 		////	"Modifier l'événement et ses affectations aux agendas"  et  "Supprimer l'événement"
 		$options["editLabel"]=Txt::trad("CALENDAR_evtEdit");
 		$options["deleteLabel"]=Txt::trad("CALENDAR_evtDelete");
@@ -216,7 +224,7 @@ class MdlCalendarEvent extends MdlObject
 			'data-evt-time-end'			=>$this->timeEnd,
 			'data-evt-hms-begin'		=>date("H:i:s",$this->timeBegin),
 			'data-evt-ymd-displayed'	=>$this->ymdDisplayed,
-			'data-evt-date-label'		=>Txt::dateLabel($this->timeBegin,"labelFull"),
+			'data-evt-date-label'		=>Txt::dateLabel("default",$this->timeBegin),
 			'data-evt-is-past'			=>($this->timeEnd < time() ? 'true' : 'false'),
 			'data-evt-is-draggable'		=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//"Draggable" si editable et non périodique
 		];
@@ -299,12 +307,12 @@ class MdlCalendarEvent extends MdlObject
 				$periodLabel.='<br><br><img src="app/img/calendar/periodDateExceptions.png"> '.Txt::trad("CALENDAR_periodDateExceptions").' : ';
 				foreach(array_filter(Txt::txt2tab($this->periodDateExceptions)) as $tmpKey=>$tmpVal){	//"array_filter" enlève les valeurs vides
 					if($tmpKey>0)  {$periodLabel.=", ";}
-					$periodLabel.=ucfirst(Txt::dateLabel($tmpVal,"dateFull"));
+					$periodLabel.=ucfirst(Txt::dateLabel("textDate",$tmpVal));
 				}
 			}
 			//// Fin de périodicité
 			if(!empty($this->periodDateEnd)){
-				$periodLabel.='<br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel($this->periodDateEnd,"dateFull"));
+				$periodLabel.='<br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel("textDate",$this->periodDateEnd));
 			}
 			//// Renvoie le résultat
 			return $periodLabel;

@@ -142,7 +142,7 @@ class Trad extends Txt
 			
 			////	Temps ("de 11h à 12h", "le 25-01-2007 à 10h30", ecc.)
 			"from"=>"di ",
-			"at"=>"al",
+			"to"=>"al",
 			"begin"=>"Inizio",
 			"end"=>"End",
 			"beginEnd"=>"Inizio/Fine",
@@ -228,17 +228,17 @@ class Trad extends Txt
 
 			////	Droit d'accès d'un Objet
 			"accessRead"=>"Lettura",
-			"accessReadTooltip"=>"Accesso in sola lettura --OBJ_LABEL_TO--",
+			"accessReadDetail"=>"Accesso in sola lettura --OBJ_LABEL_TO--",
 			"accessWriteLimit"=>"Scrittura limitata",
-			"accessWriteLimitTooltip"=>"Accesso in lettura e <i>scrittura limitata</i> --OBJ_LABEL_TO-- :<br>Diritto di aggiungere, modificare ed eliminare solo --OBJ_LABEL_CONTENT-- che si sono creati",
+			"accessWriteLimitDetail"=>"Accesso in lettura e <i>scrittura limitata</i> --OBJ_LABEL_TO-- :<br>Diritto di aggiungere, modificare ed eliminare solo --OBJ_LABEL_CONTENT-- che si sono creati",
 			"accessWrite"=>"Scrittura",
-			"accessWriteTooltip"=>"Accesso in lettura e scrittura --OBJ_LABEL_TO--",
-			"accessWriteTooltipContainer"=>"Accesso in lettura e scrittura --OBJ_LABEL_TO-- :<br>Diritto di aggiungere, modificare ed eliminare tutti i --OBJ_LABEL_CONTENT--",
-			"accessFullTooltip"=>"Amministratore e Autore:<br>Accesso completo in lettura e scrittura --OBJ_LABEL_TO--",
+			"accessWriteDetail"=>"Accesso in lettura e scrittura --OBJ_LABEL_TO--",
+			"accessWriteDetailContainer"=>"Accesso in lettura e scrittura --OBJ_LABEL_TO-- :<br>Diritto di aggiungere, modificare ed eliminare tutti i --OBJ_LABEL_CONTENT--",
+			"accessFullDetail"=>"Amministratore e Autore:<br>Accesso completo in lettura e scrittura --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"Tutti gli utenti",
-			"accessAllUsersTooltip"=>"Diritti di accesso per gli utenti dello spazio <i>--SPACENAME--</i>",
+			"accessAllUsersDetail"=>"Diritti di accesso per gli utenti dello spazio <i>--SPACENAME--</i>",
 			"accessAllUsersGuests"=>"Tutti gli utenti e ospiti",
-			"accessAllUsersGuestsTooltip"=>"Diritti di accesso per utenti e ospiti dello spazio <i>--SPACENAME--</i>.<hr>Limitato a sola lettura per gli ospiti (senza account utente)",
+			"accessAllUsersGuestsDetail"=>"Diritti di accesso per utenti e ospiti dello spazio <i>--SPACENAME--</i>.<hr>Limitato a sola lettura per gli ospiti (senza account utente)",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Spazio",								//ModSpace
@@ -347,22 +347,19 @@ class Trad extends Txt
 			"captchaError"=>"L'identificazione visiva è falsa",
 			
 			////	Rechercher
+			"search"=>"Cercare",
 			"searchSpecifyText"=>"Specificare almeno 3 caratteri (alfanumerici e non speciali)",
-			"search"=>"Ricerca",
 			"searchOnSpace"=>"Cerca in questo spazio",
 			"searchDateCrea"=>"Data di creazione",
-			"searchDateCreaDay"=>"meno di un giorno",
-			"searchDateCreaWeek"=>"meno di una settimana",
-			"searchDateCreaMonth"=>"meno di un mese",
-			"searchDateCreaYear"=>"meno di un anno",
+			"searchDateCrea_day"=>"meno di un giorno",
+			"searchDateCrea_week"=>"meno di una settimana",
+			"searchDateCrea_month"=>"meno di un mese",
+			"searchDateCrea_year"=>"meno di un anno",
 			"advancedSearch"=>"Ricerca avanzata",
-			"advancedSearchAnyWord"=>"qualsiasi parola",
-			"advancedSearchAllWords"=>"tutte le parole",
-			"advancedSearchExactPhrase"=>"frase esatta",
+			"advancedSearch_anyWord"=>"qualsiasi parola",
+			"advancedSearch_exactPhrase"=>"frase esatta",
 			"keywords"=>"Parole chiave",
 			"listModules"=>"Moduli",
-			"listFields"=>"Campi",
-			"listFieldsElems"=>"Elementi coinvolti",
 			"noResults"=>"Nessun risultato",
 			
 			////	Inscription d utilisateur
@@ -661,8 +658,6 @@ class Trad extends Txt
 			"USER_deleteFromCurSpaceConfirm"=>"Disassegnare l'utente allo spazio corrente?",
 			"USER_user"=>"Utente",
 			"USER_users"=>"Utenti",
-			"USER_addExistUser"=>"Aggiungi un utente esistente allo spazio",
-			"USER_addExistUserTitle"=>"Aggiungi allo spazio un utente già esistente sul sito: assegnazione allo spazio",
 			"USER_addUser"=>"Aggiungi utente",
 			"USER_addUserSite"=>"Crea un utente sul sito: per impostazione predefinita, assegnato a qualsiasi spazio!",
 			"USER_addUserSpace"=>"Crea un utente nello spazio corrente",
@@ -705,6 +700,7 @@ class Trad extends Txt
 			"USER_userAffectConfirm"=>"Confermare le assegnazioni?",
 			"USER_addExistUser"=>"Aggiungi utenti esistenti",
 			"USER_addExistUserTitle"=>"Assegna utenti esistenti allo spazio",
+			"USER_submitSearch"=>"Ricerca",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Lingua",
 			"USER_persoCalendarDisabled"=>"Calendario personale disabilitato",
@@ -966,7 +962,8 @@ class Trad extends Txt
 			"TASK_priority3"=>"Alta",
 			"TASK_assignedTo"=>"Assegnato a",
 			"TASK_advancementDelayed"=>"Avanzamento ritardato",
-			"TASK_folderDateBeginEnd"=>"Data di inizio più precoce / data di fine più recente",
+			"TASK_folderDateBegin"=>"Data di inizio più precoce",
+			"TASK_folderDateEnd"=>"Data di fine più recente",
 
 			////	MOD : CONTACT
 			////

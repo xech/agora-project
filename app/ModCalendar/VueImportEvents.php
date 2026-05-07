@@ -63,8 +63,8 @@ form							{text-align:center;}
 				$evtPresent=$evtCheck=null;
 				if(!empty($tmpEvt["isPresent"]))	{$evtPresent=Txt::trad("CALENDAR_importEvtPresent");} 
 				else								{$evtCheck="checked";}
-				$evtDates		=Txt::dateLabel($tmpEvt["db_dateBegin"],"default",$tmpEvt["db_dateEnd"]);
-				$evtDatesTooltip=Txt::dateLabel($tmpEvt["db_dateBegin"],"labelFull",$tmpEvt["db_dateEnd"]);
+				$evtDates		=Txt::dateLabel("textMini",$tmpEvt["db_dateBegin"],$tmpEvt["db_dateEnd"]);
+				$evtDatesTooltip=Txt::dateLabel("default",$tmpEvt["db_dateBegin"],$tmpEvt["db_dateEnd"]);
 			 ?>
 				<tr class="evtLine lineHover">
 					<td class="evtCheckbox">

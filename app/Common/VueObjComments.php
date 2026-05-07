@@ -50,7 +50,7 @@ form button				{width:120px;}
 	<?php foreach($commentList as $tmpComment){ ?>
 		<div class="vCommentsTable">
 			<div class="vCommentsRow lineHover">
-				<div class="vCommentDateUser"><?= Ctrl::getObj("user",$tmpComment['_idUser'])->getLabel() ?><div><?= Txt::dateLabel($tmpComment['dateCrea'],"labelFull") ?></div></div>
+				<div class="vCommentDateUser"><?= Ctrl::getObj("user",$tmpComment['_idUser'])->getLabel() ?><div><?= Txt::dateLabel("default",$tmpComment['dateCrea']) ?></div></div>
 				<div class="vCommentText" id="commentText<?= $tmpComment['_id'] ?>">
 					<div><?= $tmpComment['comment'] ?></div>
 					<form action="index.php" method="post">
