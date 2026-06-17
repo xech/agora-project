@@ -12,7 +12,7 @@ ready(function(){
 <style>
 #visioMenu						{text-align:center;}
 #visioMenu>div					{margin-block:40px 20px;}
-#visioMenu button				{width:350px; padding:25px; font-size:1.2rem; line-height:20px; border-radius:10px;}
+#visioMenu button				{width:350px; padding:25px; font-size:1.2rem; line-height:20px;}
 #visioMenu img[src*=visioSmall]	{float:left; margin-inline:5px;}
 </style>
 

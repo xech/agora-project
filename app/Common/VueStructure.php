@@ -50,50 +50,34 @@
 		TRAD_dateFormatError	="<?= Txt::trad("dateFormatError") ?>";
 		TRAD_timeFormatError	="<?= Txt::trad("timeFormatError") ?>";
 
-		////	Au chargement de la page
 		ready(function(){
-			//// Mobile : Bouton "+" en bas de page pour ajouter un élément
+			////	Affiche les notify
+			<?php foreach(Ctrl::$notify as $tmpNotif){ ?>
+				notify("<?= Txt::trad($tmpNotif["message"]) ?>","<?= $tmpNotif["type"] ?>");
+			<?php } ?>
+			////	Affiche un objet via l'url de partage ("getUrlExternal()") : Focus le block de l'objet ("data-typeid")  +  Affiche l'objet ou le pdf/img (.typeIdTargetClick)  + Exclu du trigger les VueEdit et .menuContext
+			<?php if(Req::isParam("typeIdTarget")){ ?>
+			setTimeout(function(){
+				$("div[data-typeid='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTargetClick").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
+			}, 300);
+			<?php } ?>
+			////	Footer & Notify d'un host
+			<?php if(Req::isHost()) {Host::footerJsNotify();} ?>
+			////	Mobile : Bouton "+" en bas de page pour ajouter un élément
 			if(isMobile() && $(".forMobileAddElem").exist()){
 				let onclickAttr=$(".forMobileAddElem").attr("onclick");	//Attribut "onclick" du bouton principal d'ajout d'element
 				$("#mobileAddElem").show().attr("onclick",onclickAttr);	//Affiche le "+" et ajoute le "onclick"
 			}
-			//// Affiche des notifs
-			<?php foreach(Ctrl::$notify as $tmpNotif){ ?>
-				notify("<?= Txt::trad($tmpNotif["message"]) ?>","<?= $tmpNotif["type"] ?>");
-			<?php } ?>
-			//// Affiche la vue d'un objet depuis une Url de partage (cf. "getUrlExternal()" et "typeIdTarget")
-			<?php if(Req::isParam("typeIdTarget")){ ?>
-			setTimeout(function(){
-				//Focus le block de l'objet via son "data-typeid" ("mainDivMenu()")  +  Affiche la vue de l'objet (fichier pdf/img via .typeIdTarget)  +  Exclu. les VueEdit et .menuContext
-				$("div[data-typeid='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTarget").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
-			}, 500);
-			<?php } ?>
-			//// Footer & Notify du host
-			<?php if(Req::isHost()) {Host::footerJsNotify();} ?>
 		});
 		</script>
 
-		<style>
-		/*WALLPAPER EN PAGE PRINCIPALE ("background-size:cover" = fullsize)*/
-		<?= (Req::isMobile()==false && isset($pathWallpaper)) ? "html  {background:url('".addslashes($pathWallpaper)."') no-repeat center fixed;background-size:cover;}" : null ?>
-
-		/*Init*/
-		:root								{--footerHeight:80px;}
-		#pageContent						{padding-bottom:var(--footerHeight);}/*Surcharge pour l'affichage de #pageFooterIcon (pas de padding : cf. responsive)*/
-		#pageFooterHtml, #pageFooterIcon	{position:fixed; z-index:100; max-height:var(--footerHeight);}/*z-index idem #headerBar*/
-		#pageFooterHtml						{bottom:15px; left:15px; font-weight:normal; color:#eee; text-shadow:0px 0px 9px #000;}/*"Left:80px" pour pouvoir afficher l'icone du messengerStandby*/
-		#pageFooterIcon						{bottom:5px; right:5px;}
-		#pageFooterIcon img					{max-height:var(--footerHeight); max-width:200px;}
-		/*AFFICHAGE RESPONSIVE*/
-		@media screen and (max-width:1200px){
-			#pageFooterHtml, #pageFooterIcon	{display:none!important;}
-		}
-		/*AFFICHAGE PRINT*/
-		@media print{
-			#pageFooterHtml, #pageFooterIcon	{display:none!important;}
-		}
-		</style>
+		
+		<!--WALLPAPER FULLSIZE-->
+		<?php if(isset($pathWallpaper)){ ?>
+			<style>  html  {background:url('<?= addslashes($pathWallpaper) ?>') no-repeat center fixed; background-size:cover;}  </style>
+		<?php } ?>
 	</head>
+
 
 	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>">
 	
@@ -105,20 +89,20 @@
 		?>
 
 		<!--FOOTER EN PAGE PRINCIPALE-->
-		<?php if(Ctrl::$isMainPage==true && is_object(Ctrl::$agora)){ ?>
+		<?php if(isset($footerLogoUrl)){ ?>
 			<div id="pageFooterHtml"><?= Ctrl::$agora->footerHtml ?></div>
 			<div id="pageFooterIcon"><a href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a></div>
 		<?php } ?>
 
-		<!--MENU CONTEXT SUR MOBILE (cf. app.js / app.css)-->
+		<!--MOBILE : MENU CONTEXT-->
 		<div id="menuMobileBg"></div>
 		<div id="menuMobileMain">
 			<div id="menuMobileClose"><img src="app/img/close.png"></div>
-			<div id="menuMobileContent1"></div>
-			<div id="menuMobileContent2"></div>
+			<div id="menuMobileHeader"></div>
+			<div id="menuMobileContent"></div>
 		</div>
 
-		<!--BOUTON "+" SUR MOBILE EN BAS DE PAGE-->
+		<!--MOBILE : BOUTON "+" EN BAS A DROITE-->
 		<div id="mobileAddElem"><img src="app/img/plusBig.png"></div>
 
 	</body>

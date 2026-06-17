@@ -21,7 +21,7 @@ function ready(thisFunction)
  ************************************************************************************************************/
 ready(function(){
 	mainDisplay();															//Affichage principal
-	window.addEventListener("resize",function(){ mainDisplay(true); });		//Relance si windows resize ou orientationchange
+	window.addEventListener("resize",function(){ mainDisplay(); });			//Relance si windows resize ou orientationchange
 	mainTriggers();															//Triggers principaux
 	menuContext();															//Affichage des menus contextuels
 	controleFields();														//Affichage et controle des champs de formulaire
@@ -33,43 +33,33 @@ ready(function(){
 /************************************************************************************************************
  * AFFICHAGE PRINCIPAL (UPDATED APRES RESIZE)
  ************************************************************************************************************/
-function mainDisplay(isResize)
+function mainDisplay()
 {
 	////	Variables de base
-	isMainPage=(window.self==window.top);								//Page principale || Lightbox
-	if(isMainPage==true)  {confirmCloseForm=false;}						//Confirme une redirection si formulaire en cours d'édition
-	windowTopWidth =window.top.document.documentElement.clientWidth;	//Width de la fenêtre principale (sans scrollbar)
-	windowTopHeight=window.top.document.documentElement.clientHeight;	//Height de la fenêtre principale (idem)
+	isMainPage=(window.self==window.top);																//Page principale || Lightbox
+	if(isMainPage==true)  {confirmCloseForm=false;}														//Confirme une redirection si formulaire en cours d'édition
+	windowTopWidth =window.top.document.documentElement.clientWidth;									//Width de la fenêtre principale (sans scrollbar)
+	windowTopHeight=window.top.document.documentElement.clientHeight;									//Height de la fenêtre principale (idem)
 
 	////	Fenêtre principale
 	if(isMainPage==true){
-		////	Timeout le tps de finaliser un window resize
-		let timeoutDuration=(typeof isResize!="undefined" && isResize==true)  ?  50 : 1;
-		if(typeof mainDisplayTimeout!="undefined")  {clearTimeout(mainDisplayTimeout);}//Un seul timeout
-		mainDisplayTimeout=setTimeout(function(){
-			////	Marge de entre la headerBar et le contenu de la page
-			$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));
+		$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));									//Marge de entre la headerBar et le contenu de la page
+		document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";			//Width de la fenêtre enregistré dans un Cookie 
+		document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";	//Idem pour le path racine
+		if(typeof moduleDisplay=="function")  {moduleDisplay();}													//Affichage spécifique d'un module : ModCalendar, ModTask
 
-			////	Affichage spécifique d'un module (ex: ModCalendar, ModTask)
-			if(typeof moduleDisplay=="function")  {moduleDisplay();}
-
-			////	Width des objets en affichage "block"
-			if($(".objBlocks .objContent").exist()){
-				let pageContentWidth=$("#pageContent").width() - (isMobile()?0:15);													//Width du principal container de la page, moins le width du ::-webkit-scrollbar 
-				let objMargins=parseFloat($(".objContent").css("margin-left")) + parseFloat($(".objContent").css("margin-right"));	//Marges de l'objet (cf. "app.css")
-				let widthMin  =parseFloat($(".objContent").css("min-width")) + objMargins;											//width Min
-				let widthMax  =parseFloat($(".objContent").css("max-width")) + objMargins;											//width Max
-				let lineObjNb=Math.ceil(pageContentWidth / widthMax);																//Nb d'objets par ligne : tester sur mobile !
-				if(pageContentWidth < (widthMin*2))			{widthObj=pageContentWidth;}											//Un objet par ligne : width 100%
-				else if($(".objContent").length<lineObjNb)	{widthObj=widthMax;}													//Tous les objets sur une seule ligne : largeur max
-				else										{widthObj=Math.floor(pageContentWidth/lineObjNb);}						//Width en fonction de pageContentWidth et lineObjNb
-				$(".objContent").outerWidth(widthObj,true);																			//Applique le width des objets (true pour prendre en compte les margins)
-			}
-
-			////	Width de la fenêtre enregistré dans un Cookie (Path courant & Path racine)
-			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";
-			document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";
-		},timeoutDuration);
+		////	Width des objets en affichage "block"
+		if($(".objBlocks .objContent").exist()){
+			let pageContentWidth=$("#pageContent").width() - (isMobile() ? 0 : 14);												//Width de #pageContent - width de ::-webkit-scrollbar
+			let objMargins=parseFloat($(".objContent").css("margin-left")) + parseFloat($(".objContent").css("margin-right"));	//Marges des objets (cf. "app.css")
+			let widthMin  =parseFloat($(".objContent").css("min-width")) + objMargins;											//width Min
+			let widthMax  =parseFloat($(".objContent").css("max-width")) + objMargins;											//width Max
+			let lineObjNb=Math.ceil(pageContentWidth / widthMax);																//Nb d'objets par ligne : tester sur mobile !
+			if(pageContentWidth < (widthMin*2))			{widthObj=pageContentWidth;}											//Un objet par ligne : width 100%
+			else if($(".objContent").length<lineObjNb)	{widthObj=widthMax;}													//Tous les objets sur une seule ligne : largeur max
+			else										{widthObj=Math.floor(pageContentWidth/lineObjNb);}						//Width en fonction de pageContentWidth et lineObjNb
+			$(".objContent").outerWidth(widthObj,true);																			//Applique le width des objets (true pour prendre en compte les margins)
+		}
 	}
 }
 
@@ -91,14 +81,14 @@ function mainTriggers()
 
 	////	DblClick : édition  ||  Click : sélection
 	$(".objContent").off("click dblclick").on("click dblclick",function(event){													//off("click") annule les triggers précédents à chaque "mainTriggers()"
-		if(event.type=="dblclick" && this.hasAttribute("data-url-edit"))		{lightboxOpen(this.getAttribute("data-url-edit"));}	//Note : pas de "dblclick" pour sur mobile
+		if(event.type=="dblclick" && this.hasAttribute("data-url-edit"))	{lightboxOpen(this.getAttribute("data-url-edit"));}	//Note : pas de "dblclick" pour sur mobile
 		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
 	});
 
 	////	Menu du module flottant
 	if($("#pageMenu").isVisible()){
 		$(window).on("scroll",function(){
-			if(typeof pageMenuTimeout!="undefined")  {clearTimeout(pageMenuTimeout);}								//Un seul timeout
+			if(typeof pageMenuTimeout!="undefined")  {clearTimeout(pageMenuTimeout);}								//Non cumul de Timeout
 			pageMenuTimeout=setTimeout(function(){																	//Timeout le tps de finaliser le scroll
 				let menuHeight=$("#pageMenu").position().top;														//Position top du menu
 				$("#pageMenu>*:visible").each(function(){ menuHeight+=$(this).outerHeight(true); });				//Ajoute la hauteur de chaque element
@@ -110,7 +100,7 @@ function mainTriggers()
 	////	Tooltipster : init/update les "title"
 	tooltipParams={theme:'tooltipster-shadow',delay:700,contentAsHTML:true};				//Theme et Affichage Html
 	let timeoutDuration=$(".tooltipstered").exist() ? 1000 : 50;							//Timeout plus long si update des tooltips via ajax (ex: "messengerUpdate()")
-	if(typeof tooltipDisplayTimeout!="undefined")  {clearTimeout(tooltipDisplayTimeout);}	//Un seul timeout
+	if(typeof tooltipDisplayTimeout!="undefined")  {clearTimeout(tooltipDisplayTimeout);}	//Non cumul de Timeout
 	tooltipDisplayTimeout=setTimeout(function(){											//Timeout le tps de charger
 		$("[title]:not(.notooltip,[title=''])").tooltipster(tooltipParams);					//Theme "shadow" et Affichage Html
 	},timeoutDuration);
@@ -124,8 +114,8 @@ function mainTriggers()
 	////	Affiche/Masque le password
 	$("img.passwordDisplay").on("click",function(){
 		let inputPassword="#"+this.getAttribute("for");
-		if($(inputPassword).attr("type")==="password")	{$(inputPassword).attr("type","text");		$("img.passwordDisplay").addClass("passwordDisplayHide");}		//Affiche le password
-		else											{$(inputPassword).attr("type","password");	$("img.passwordDisplay").removeClass("passwordDisplayHide");}	//Masque le password
+		if($(inputPassword).attr("type")==="password")	{$(inputPassword).attr("type","text");		$("img.passwordDisplay").addClass("passwordDisplayShow");}		//Affiche le password
+		else											{$(inputPassword).attr("type","password");	$("img.passwordDisplay").removeClass("passwordDisplayShow");}	//Masque le password
 	});
 }
 
@@ -137,7 +127,7 @@ function controleFields()
 	////	Pas d'autocomplétion des inputs
 	$("form input:not(.isAutocomplete)").attr("autocomplete","off");
 
-	////	Formulaire édité : passe "confirmCloseForm" à true  (Timeout le tps de finaliser les 1ers controles de form)
+	////	Formulaire édité : passe "confirmCloseForm" à true. Timeout le tps de finaliser les controles de form
 	setTimeout(function(){
 		$("#mainForm input, #mainForm select, #mainForm textarea").on("input change keyup",function(){  window.top.confirmCloseForm=true;  });
 	},500);
@@ -150,16 +140,14 @@ function controleFields()
 		}
 	});
 
-	////	<select> :  background de chaque <option> et du select parent
-	$("select option").each(function(){
-		let bgColor=this.getAttribute("data-color");
-		if(isValue(bgColor))	{$(this).css({background:bgColor,color:'white'});}
-		else					{$(this).css({background:'white',color:'grey'});}
-	});
+	////	<select> :  bgColor de l'input et de chaque <option>
 	$("select").on("change",function(){
 		let bgColor=$(this).find("option:selected").attr("data-color");
 		if(isValue(bgColor))	{$(this).css({background:bgColor,color:'white'});}
-		else					{$(this).css({background:'inherit',color:'inherit'});}
+	});
+	$("select option").each(function(){
+		let bgColor=this.getAttribute("data-color");
+		if(isValue(bgColor))	{$(this).css({background:bgColor,color:'white'});}
 	});
 
 	////	Charge le Datepicker
@@ -261,7 +249,7 @@ function menuContext()
 		});
 		$(window).add("div").on("scroll",function(){										//// Scroll en cours (page ou div Task Gantt, tinyMce mobile...)
 			swipeMenuOn=false;																//désactive le swipe durant le scroll
-			if(typeof scrollPageTimeout!="undefined")  {clearTimeout(scrollPageTimeout);}	//Un seul timeout
+			if(typeof scrollPageTimeout!="undefined")  {clearTimeout(scrollPageTimeout);}	//Non cumul de Timeout
 			scrollPageTimeout=setTimeout(function(){ swipeMenuOn=true; },500);				//Réinitialise le scroll : Timeout le tps de charger le tinyMce mobile/horizontal
 		});
 	}
@@ -283,9 +271,9 @@ function menuContextShow(launcher, event)
 	if(isRelativePos==true)   {posRight+=$(menuId).parent().offset().left;  posBottom+=$(menuId).parent().offset().top;}							//Ajoute si besoin la position du parent
 	let posRightPage =(window.innerWidth  + window.pageXOffset);																					//"right"  position de la page affiché
 	let posBottomPage=(window.innerHeight + window.pageYOffset);																					//"bottom" position de la page affiché
-	if(posRight > posRightPage)		{posLeft-=(posRight - posRightPage);}																			//Décale le menu s'il est au bord droit de la fenêtre
-	if(posBottom > posBottomPage)	{posTop-=(posBottom - posBottomPage);}																			//Décale le menu s'il est en bas de la fenêtre
-	$(menuId).css({left:posLeft-10, top:posTop-10}).fadeIn(200);																					//Affiche le menu (recentré de 10px)
+	if(posRight > posRightPage)											{posLeft-=(posRight - posRightPage);}										//Décale le menu s'il est au bord droit de la fenêtre
+	if(posBottom > posBottomPage && $("#bodyLightbox").exist()==false)	{posTop-=(posBottom - posBottomPage);}										//Décale le menu s'il est en bas de la fenêtre (sauf si "lightboxResize()")
+	$(menuId).css("left",(posLeft-10)).css("top",(posTop-10)).fadeIn(200);																			//Affiche le menu (recentré de 10px)
 	$(".menuContext").not(menuId).hide();																											//Masque les autres menus
 }
 
@@ -294,19 +282,20 @@ function menuContextShow(launcher, event)
  ************************************************************************************************************/
 function menuMobileShow(launcher)
 {
-	if(typeof menuMobileTimeout!="undefined")  {clearTimeout(menuMobileTimeout);}						//Un seul timeout
-	menuMobileTimeout=setTimeout(function(){															//Timeout le tps de finaliser le swipe
-		if($("#menuMobileMain").isVisible()){															//Menu mobile déjà affiché : Affiche un sous-menu
-			$("#"+$(launcher).attr("for")).addClass("menuMobileSubMenu").slideToggle();					
-		}else{																							//Affiche le Menu mobile :
-			idMenuMobile1=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerBarRight";				//idMenuMobile1 : attr. "for" du launcher ou #headerBarRight si swipe (liste des modules ou autre)
-			idMenuMobile2=(idMenuMobile1=="#headerBarRight")  ?  "#pageMenu"  :  null;					//Affiche aussi #pageMenu (menu de gauche)
-			if($(idMenuMobile1).exist()){																//Vérif l'exisence de idMenuMobile1
-				$(idMenuMobile1+">*").appendTo("#menuMobileContent1");									//Déplace le contenu de idMenuMobile1 dans menuMobileContent1
-				if($(idMenuMobile2).exist())  {$(idMenuMobile2+">*").appendTo("#menuMobileContent2");}	//Déplace le contenu de idMenuMobile2 dans #menuMobileContent2
-				$("#menuMobileBg,#menuMobileContent1,#menuMobileContent2").show();						//Affiche le/les contenus
-				$("#menuMobileMain").css("right","0px").show("slide",{direction:"right"});				//Réinit la position puis affiche #menuMobileMain
-				$("body").css("overflow","hidden");														//Désactive le scroll de page en arriere plan
+	if(typeof menuMobileTimeout!="undefined")  {clearTimeout(menuMobileTimeout);}								//Non cumul de Timeout
+	menuMobileTimeout=setTimeout(function(){																	//Timeout le tps de finaliser le swipe
+		if($("#menuMobileMain").isVisible()){																	//Menu mobile déjà affiché : Affiche un sous-menu
+			$("#"+$(launcher).attr("for")).addClass("menuMobileSubMenu").slideToggle();
+		}else{																									//Affiche le Menu mobile :
+			menuMobileHeader=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerBarRight";					//menuMobileHeader : attr. "for" du launcher ou #headerBarRight si swipe (liste des modules ou autre)
+			menuMobileContent=(menuMobileHeader=="#headerBarRight")  ?  "#pageMenu"  :  null;					//Affiche aussi #pageMenu (menu de gauche)
+			if($(menuMobileHeader).exist()){																	//Vérif l'exisence de menuMobileHeader
+				$(menuMobileHeader+">*").appendTo("#menuMobileHeader");											//Déplace le contenu de menuMobileHeader dans menuMobileHeader
+				if($(menuMobileContent).exist())  {$(menuMobileContent+">*").appendTo("#menuMobileContent");}	//Déplace le contenu de menuMobileContent dans #menuMobileContent
+				$('#menuMobileHeader .vHeaderModuleCurrent').appendTo('#menuMobileHeader');						//Déplace le module courant à la fin de la liste des modules
+				$("#menuMobileBg,#menuMobileHeader,#menuMobileContent").show();									//Affiche le/les contenus
+				$("#menuMobileMain").css("right","0px").show("slide",{direction:"right"});						//Réinit la position puis affiche #menuMobileMain
+				$("body").css("overflow","hidden");																//Désactive le scroll de page en arriere plan
 			}
 		}
 	},50);
@@ -317,12 +306,12 @@ function menuMobileShow(launcher)
  ************************************************************************************************************/
 function menuMobileClose()
 {
-	if($("#menuMobileMain").isVisible()){														//Vérif si le menu mobile est visible
-		$("#menuMobileBg,#menuMobileContent1,#menuMobileContent2").hide();						//Masque complètement le menu
-		$("#menuMobileMain").hide("slide",{direction:"right"});									//Masque #menuMobileMain
-		$("#menuMobileContent1>*").appendTo(idMenuMobile1);										//Replace le contenu de menuMobileContent1 dans son div d'origine 
-		if($(idMenuMobile2).exist())  {$("#menuMobileContent2>*").appendTo(idMenuMobile2);}		//Replace le contenu de menuMobileContent2 dans son div d'origine 
-		$("body").css("overflow","visible");													//Réactive le scroll de page en arriere plan
+	if($("#menuMobileMain").isVisible()){															//Vérif si le menu mobile est visible
+		$("#menuMobileBg,#menuMobileHeader,#menuMobileContent").hide();								//Masque complètement le menu
+		$("#menuMobileMain").hide("slide",{direction:"right"});										//Masque #menuMobileMain
+		$("#menuMobileHeader>*").appendTo(menuMobileHeader);										//Replace le contenu de menuMobileHeader dans son div d'origine 
+		if($(menuMobileContent).exist())  {$("#menuMobileContent>*").appendTo(menuMobileContent);}	//Replace le contenu de menuMobileContent dans son div d'origine 
+		$("body").css("overflow","visible");														//Réactive le scroll de page en arriere plan
 	}
 }
 
@@ -408,7 +397,6 @@ ready(function(){
  ************************************************************************************************************/
 function confirmAlt(confirmTitle, confirmDetails){
 	return new Promise((resolve)=>{
-		//// Init le confirm
 		let confirmParams={
 			title:isValue(confirmTitle) ? confirmTitle : TRAD_confirm+" ?",
 			content:isValue(confirmDetails) ? confirmDetails : null,
@@ -417,8 +405,7 @@ function confirmAlt(confirmTitle, confirmDetails){
 				confirm:{ btnClass:'btn-blue',	  text:TRAD_confirm,	   action:()=>{resolve(true);} },
 			}
 		}
-		//// Lance le Confirm (paramétrage par défaut + spécifique)
-		$.confirm(Object.assign(confirmParamsDefault,confirmParams));
+		$.confirm(Object.assign(confirmParamsDefault, confirmParams));
 	});
 }
 
@@ -476,12 +463,12 @@ ready(function(){
  ************************************************************************************************************/
 function submitLoading()
 {
-	$(".submitLoading").css("visibility","visible");
-	$("button[type='submit']").css("background","#eee").prop("disabled",true);
+	$(".submitLoading").show();
+	$("button[type='submit']").prop("disabled",true);
 	setTimeout(function(){
-		$(".submitLoading").css("visibility","hidden");
-		$("button[type='submit']").css("background","initial").prop("disabled",false);
-	 },5000);//assez court si erreur de validation ajax, et assez long si upload de big files
+		$(".submitLoading").hide();
+		$("button[type='submit']").prop("disabled",false);
+	 },5000);//tester avec ajax + error, et upload de big files
 }
 
 /************************************************************************************************************
@@ -540,12 +527,13 @@ function lightboxRedir(urlNotify)
  ************************************************************************************************************/
 function lightboxResize()
 {
-	if(isMainPage==false && window.top.$(".fancybox__iframe").exist()){
-		if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}								//Un seul timeout
+	const resizeWidthDefault=650;																				//Width par défaut des lightbox
+	if(isMainPage==false && window.top.$(".fancybox__iframe").exist()){											//Iframe affichée ?
+		if(typeof lightboxTimeout!="undefined")  {clearTimeout(lightboxTimeout);}								//Non cumul de Timeout
 		lightboxTimeout=setTimeout(function(){																	//Timeout le temps de lancer les show(), fadeIn(), etc (toujours > à $.fx.speeds)
 			let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");					//Width du contenu de l'iframe : cf. "max-width" de #bodyLightbox (en "px" ou "%")
 			let resizeWidth=parseInt(cssWidth);																	//resizeWidth en Integer
-			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=650;}										//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
+			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=resizeWidthDefault;}										//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
 			if(/%/.test(cssWidth))						{resizeWidth=(windowTopWidth/100) * resizeWidth;}		//resizeWidth en % de width de la page principale
 			else if(resizeWidth > windowTopWidth)		{resizeWidth=windowTopWidth;}							//resizeWidth toujours <= à windowTopWidth
 			window.top.$(".fancybox__content,.fancybox__iframe").css("width",resizeWidth+"px");					//Applique le width au fancybox
@@ -556,6 +544,19 @@ function lightboxResize()
 			}
 		},200);
 	}
+}
+
+/************************************************************************************************************
+ * COULEUR DE TEXTE EN CONTRASTE AVEC LE BACKGROUND-COLOR (equivalent css de "contrast-color")
+ ************************************************************************************************************/
+function contrastColor(bgColor)
+{
+	const cleanHex=bgColor.replace('#', '');					// On retire le "#" si l'utilisateur l'a mis
+	const r = parseInt(cleanHex.substr(0, 2), 16);				//extrait le Rouge
+	const g = parseInt(cleanHex.substr(2, 2), 16);				//extrait le Vert
+	const b = parseInt(cleanHex.substr(4, 2), 16);				//extrait le Bleu
+	const luminance = (0.299 * r) + (0.587 * g) + (0.114 * b);	//Calcule la luminosité perçue
+	return (luminance > 145) ? '#333' : '#ffffff';		  //Texte en noir ou blanc en fonction de la luminosité
 }
 
 /************************************************************************************************************
@@ -699,10 +700,10 @@ ready(function(){
  ************************************************************************************************************/
 function spaceAffectStyle()
 {
-	$(".spaceAffectLine").removeClass("lineSelect sAccessRead sAccessWrite");	//Réinit le style des lignes
+	$(".spaceAffectLine").removeClass("lineSelect accessRead accessWrite");	//Réinit le style des lignes
 	$(".spaceAffectLine:has(.spaceAffectBox input:checked)").each(function(){	//Parcourt les lignes sélectionnées (.spaceAffectBox uniquement)
-		if($(this).find("input[value$='_2']").is(":checked"))	{$(this).addClass("lineSelect sAccessWrite");}
-		else													{$(this).addClass("lineSelect sAccessRead");}
+		if($(this).find("input[value$='_2']").is(":checked"))	{$(this).addClass("lineSelect accessWrite");}
+		else													{$(this).addClass("lineSelect accessRead");}
 	});
 }
 
@@ -732,27 +733,16 @@ function usersLikeUpdate(typeId)
 	}
 }
 
-/**************************************************************************************************************************************************************************
- * CHECK/UNCHECK UN GROUPE D'USERS
- * Tester : edition d'evt avec les groupes pour affectation aux agendas ET les groupes pour notification par email
- * Note : les inputs des groupes doivent avoir un "name" spécifique ET les inputs d'user doivent avoir une propriété "data-iduser"
- * On passe en paramètre le "this" de l'input du groupe ET l'id du conteneur des inputs d'users ("idContainerUsers") pour définir le périmère des inputs d'users
- **************************************************************************************************************************************************************************/
-function userGroupSelect(thisGroup, idContainerUsers)
+/********************************************************************************************************************
+ * CHECK/UNCHECK DES GROUPES D'USERS  =>  les inputs d'user doivent avoir un attribut "data-iduser" !
+ ********************************************************************************************************************/
+function userGroupSelect(inputselector, idUsers)
 {
-	//Check/uncheck chaque users du groupe
-	let idUsers=$(thisGroup).val().split(",");
-	for(let tmpKey in idUsers){
-		//Groupe "checked" : check l'user du groupe  ||  Sinon on vérifie si l'user est aussi sélectionné dans un autre groupe
-		if($(thisGroup).prop("checked"))  {var userChecked=true;}
-		else{
-			var userChecked=false;
-			$("[name='"+thisGroup.name+"']:checked").not(thisGroup).each(function(){
-				let otherGroupUserIds=this.value.split(",");
-				if($.inArray(idUsers[tmpKey],otherGroupUserIds)!==-1)  {userChecked=true;}
-			});
-		}
-		//Check l'user courant
-		$(idContainerUsers+" input[data-iduser="+idUsers[tmpKey]+"]:enabled").prop("checked",userChecked).trigger("change");//Init l'affichage via trigger
+	////	Selector des inputs d'users  +  User-ids du groupe
+	let inputs=inputselector;
+	let idUsersTab=idUsers.split(",");
+	////	Check chaque user du groupe
+	for(tmpKey in idUsersTab){
+		$(inputs+"[data-iduser='"+idUsersTab[tmpKey]+"']:enabled").prop("checked",true).trigger("change");
 	}
 }

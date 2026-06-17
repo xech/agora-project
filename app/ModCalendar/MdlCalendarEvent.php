@@ -38,10 +38,10 @@ class MdlCalendarEvent extends MdlObject
 		if($this->dateBegin && $this->dateEnd){
 			$this->timeBegin=strtotime($this->dateBegin);
 			$this->timeEnd=strtotime($this->dateEnd);
-			$this->ymdDisplayed=date("Y-m-d",$this->timeBegin);//cf evt sur plusieurs jours
+			$this->ymdBegin=date("Y-m-d",$this->timeBegin);//cf evt sur plusieurs jours
 		}
-		//Couleur du background de l'evt, en fonction de la categorie (gris par défaut)
-		$this->evtColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555";
+		//Couleur du background de l'evt en fonction de la categorie (Couleur par défaut : toujours sur 6 valeurs > cf "contrastColor()")
+		$this->bgColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555555";
 		//Visibilité par défaut
 		if(empty($this->contentVisible))  {$this->contentVisible="public";}
 		//Masque le détail aux users n'ayant qu'un accès en lecture (voir aucun accès)
@@ -219,25 +219,26 @@ class MdlCalendarEvent extends MdlObject
 	{
 		////	Attributs de l'evt
 		$attrList=[
-			'data-evt-color'			=>$this->evtColor,
-			'data-evt-time-begin'		=>$this->timeBegin,
-			'data-evt-time-end'			=>$this->timeEnd,
-			'data-evt-hms-begin'		=>date("H:i:s",$this->timeBegin),
-			'data-evt-ymd-displayed'	=>$this->ymdDisplayed,
-			'data-evt-date-label'		=>Txt::dateLabel("default",$this->timeBegin),
-			'data-evt-is-past'			=>($this->timeEnd < time() ? 'true' : 'false'),
-			'data-evt-is-draggable'		=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//"Draggable" si editable et non périodique
+			'data-timebegin'	=>$this->timeBegin,
+			'data-timeend'		=>$this->timeEnd,
+			'data-datelabel'	=>Txt::dateLabel("dateDefault",$this->timeBegin),
+			'data-ymd'			=>$this->ymdBegin,
+			'data-hm'			=>date("H:i",$this->timeBegin),
+			'data-allday'		=>(!empty($this->allDay) ? 'true' : 'false'),
+			'data-ispast'		=>($this->timeEnd < time() ? 'true' : 'false'),
+			'data-bgcolor'		=>$this->bgColor,
+			'data-isdraggable'	=>($this->editRight() && empty($this->periodType) && date('Y-m-d',$this->timeBegin)==date('Y-m-d',$this->timeEnd) ? 'true' : 'false'),//Editable + non périodique + sur un jour
 		];
 		////	Durées en fonction de la journée affichée
-		$timeDayBegin=strtotime($this->ymdDisplayed." 00:00:00");																	//Jour affiché : début
-		$timeDayEnd  =strtotime($this->ymdDisplayed." 23:59:59");																	//Jour affiché : fin
-		$evtDayBefore=($this->timeBegin < $timeDayBegin);																			//Evt commence avant le jour affiché ?
-		$evtDayAfter =($this->timeEnd > $timeDayEnd);																				//Evt termine après le jour affiché ?
-		$attrList['data-evt-time-since-day-begin']=($evtDayBefore==false)  ?  ($this->timeBegin-$timeDayBegin)  :  0;				//Temps entre le début du jour affiché et le début de l'evt
-		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['data-evt-time-duration']=86400;}								//Affiche toute la journée
-		elseif($evtDayBefore==true)						{$attrList['data-evt-time-duration']=($this->timeEnd - $timeDayBegin);}		//Affiche l'evt à partir de 0h00
-		elseif($evtDayAfter==true)						{$attrList['data-evt-time-duration']=($timeDayEnd - $this->timeBegin);}		//Affiche l'evt jusqu'à 23h59
-		else											{$attrList['data-evt-time-duration']=($this->timeEnd - $this->timeBegin);}	//Affichage normal
+		$timeDayBegin=strtotime($this->ymdBegin." 00:00:00");																	//Jour affiché : début
+		$timeDayEnd  =strtotime($this->ymdBegin." 23:59:59");																	//Jour affiché : fin
+		$evtDayBefore=($this->timeBegin < $timeDayBegin);																		//Evt commence avant le jour affiché ?
+		$evtDayAfter =($this->timeEnd > $timeDayEnd);																			//Evt termine après le jour affiché ?
+		$attrList['data-timefromdaybegin']=($evtDayBefore==false)  ?  ($this->timeBegin-$timeDayBegin)  :  0;					//Temps écoulé depuis le début de journée (0:00)
+		if($evtDayBefore==true && $evtDayAfter==true)	{$attrList['data-timeduration']=86400;}									//Affiche toute la journée
+		elseif($evtDayBefore==true)						{$attrList['data-timeduration']=($this->timeEnd - $timeDayBegin);}		//Affiche l'evt à partir de 0h00
+		elseif($evtDayAfter==true)						{$attrList['data-timeduration']=($timeDayEnd - $this->timeBegin);}		//Affiche l'evt jusqu'à 23h59
+		else											{$attrList['data-timeduration']=($this->timeEnd - $this->timeBegin);}	//Affichage normal
 		////	Retourne le tableau des attributs
 		return $attrList;
 	}
@@ -273,11 +274,28 @@ class MdlCalendarEvent extends MdlObject
 	{
 		if(Ctrl::$curUser->isUser()){
 			$calendarsConfirmed=$calendarsProposed=null;
-			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", <i>".$objCalendar->title."</i>";}
-			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsProposed.=", <i>".$objCalendar->title."</i>";}
-			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." ".trim($calendarsConfirmed,",");}
-			if(!empty($calendarsProposed))	{$calendarsProposed="<hr>".Txt::trad("CALENDAR_evtAffectToConfirm")." ".trim($calendarsProposed,",");}
+			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", ".ucfirst($objCalendar->title);}
+			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsProposed.=", ".ucfirst($objCalendar->title);}
+			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." : ".trim($calendarsConfirmed,",");}
+			if(!empty($calendarsProposed))	{$calendarsProposed="<hr>".Txt::trad("CALENDAR_evtAffectToConfirm")." : ".trim($calendarsProposed,",");}
 			return $calendarsConfirmed.$calendarsProposed;
+		}
+	}
+
+	/********************************************************************************************************
+	 * AFFICHE LA DATE DE L'EVT
+	 ********************************************************************************************************/
+	public function dateLabel($format="default", $monthVue=false)
+	{
+		//// Evt sur un créneau défini
+		if(empty($this->allDay)){
+			$timeEnd=($monthVue==false) ? $this->timeEnd : null;
+			return Txt::dateLabel($format, $this->timeBegin, $timeEnd);
+		}
+		//// Evt "allDay"
+		elseif($format!="mini"){
+			return Txt::dateLabel("dateDefault", $this->timeBegin, $this->timeEnd).
+					'&nbsp;<img src="app/img/arrowRightSmall.png">'.Txt::trad("CALENDAR_allDay").'&nbsp;<img src="app/img/calendar/allDay.png">';
 		}
 	}
 
@@ -307,12 +325,12 @@ class MdlCalendarEvent extends MdlObject
 				$periodLabel.='<br><br><img src="app/img/calendar/periodDateExceptions.png"> '.Txt::trad("CALENDAR_periodDateExceptions").' : ';
 				foreach(array_filter(Txt::txt2tab($this->periodDateExceptions)) as $tmpKey=>$tmpVal){	//"array_filter" enlève les valeurs vides
 					if($tmpKey>0)  {$periodLabel.=", ";}
-					$periodLabel.=ucfirst(Txt::dateLabel("textDate",$tmpVal));
+					$periodLabel.=ucfirst(Txt::dateLabel("dateDefault",$tmpVal));
 				}
 			}
 			//// Fin de périodicité
 			if(!empty($this->periodDateEnd)){
-				$periodLabel.='<br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel("textDate",$this->periodDateEnd));
+				$periodLabel.='<br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel("dateDefault",$this->periodDateEnd));
 			}
 			//// Renvoie le résultat
 			return $periodLabel;

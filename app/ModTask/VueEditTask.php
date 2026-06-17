@@ -1,11 +1,11 @@
-<script>
+ <script>
 ////	INIT
 ready(function(){
 	////	Donne une valeur aux inputs "select"
 	$("[name='advancement']").val("<?= $curObj->advancement ?>");
 	$("[name='priority']").val("<?= $curObj->priority ?>");
 	////	Affiche le block des responsables s'il y en a de sélectionnés
-	if($(":checked[name='responsiblePersons[]']").length>0)	{$("#fieldsetResponsiblePersons").show();}
+	if($(":checked[name='responsiblePersons[]']").length>0)	{$("#responsiblePersonsBlock").show();}
 });
 </script>
 
@@ -15,13 +15,11 @@ ready(function(){
 .vTaskOptions				{display:inline-block; margin:20px 20px 0px 0px;}
 .vTaskOptionsButton			{height:40px;}
 .vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
-#fieldsetResponsiblePersons	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
-.divResponsiblePerson		{display:inline-block; width:32%; padding:5px;}
+#responsiblePersonsBlock	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	.vTaskOptions			{display:block; margin:30px 0px 0px 0px;}
-	.divResponsiblePerson	{width:100%;}	
 }
 </style>
 
@@ -63,22 +61,24 @@ ready(function(){
 	</div>
 
 	<!--ASSIGNATIONS / RESPONSABLES-->
-	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#fieldsetResponsiblePersons').slideToggle();">
+	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#responsiblePersonsBlock').slideToggle();">
 		<img src="app/img/user/iconSmall.png"> <?= Txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
 	</button>
-	<fieldset id="fieldsetResponsiblePersons">
+	<fieldset id="responsiblePersonsBlock">
+
 		<!--USERS DE L'ESPACE-->
 		<?php
 		foreach(Ctrl::$curSpace->getUsers() as $tmpUser){
-			$checkedResponsible=in_array($tmpUser->_id,Txt::txt2tab($curObj->responsiblePersons))  ?  "checked"  :  null;
+			$checkUser=in_array($tmpUser->_id,Txt::txt2tab($curObj->responsiblePersons))  ?  "checked"  :  null;
 		?>
-			<div class="divResponsiblePerson">
-				<input type="checkbox" name="responsiblePersons[]" value="<?= $tmpUser->_id ?>" id="responsiblePerson<?= $tmpUser->_id ?>" <?= $checkedResponsible ?> >
-				<label for="responsiblePerson<?= $tmpUser->_id ?>"><?= $tmpUser->getLabel() ?></label>
+			<div class="userInputDiv">
+				<input type="checkbox" name="responsiblePersons[]" value="<?= $tmpUser->_id ?>" class="vUserInput" id="userInput<?= $tmpUser->_id ?>" data-iduser="<?= $tmpUser->_id ?>" <?= $checkUser ?> >
+				<label for="userInput<?= $tmpUser->_id ?>"><?= $tmpUser->getLabel() ?></label>
 			</div>
 		<?php } ?>
-		<!--INVERSE LA SELECTION-->
-		<div class="divResponsiblePerson" onclick="$('.divResponsiblePerson input').trigger('click')"><img src="app/img/checkSwitch.png"> <?= Txt::trad("selectSwitch") ?></div>
+
+		<!--SELECTION D'USERS ET DES GROUPES D'USERS-->
+		<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, ".vUserInput") ?>
 	</fieldset>
 	
 	<!--MENU D'EDITION & VALIDATION DU FORM-->

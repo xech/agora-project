@@ -12,7 +12,7 @@
  */
 trait MdlObjectMenu
 {
-	public static $nbObjsPerPage=30;	//Nb d'éléments affichés par page : 50 par défaut
+	public static $nbObjsPerPage=30;	//Nb d'éléments affichés par page
 	public static $displayMode=null;	//Type d'affichage en préference (ligne/block)
 
 	/********************************************************************************************************
@@ -28,7 +28,7 @@ trait MdlObjectMenu
 	 * DIV PRINCIPAL DE L'OBJET (.objContent)  +  MENU CONTEXTUEL
 	 * objMenu 	: id du menu contextuel via click droit et "menuContext()"
 	 *******************************************************************************************************************************/
-	public function mainDivMenu($classes=null, $menuOptions=null)
+	public function objContentDiv($classes=null, $menuOptions=null)
 	{
 		////	Classe principale  + Classes en paramètre  + classe si sélectionnables
 		$classes='objContent '.$classes.' '.($this->isSelectable()?'isSelectable':null);		
@@ -134,7 +134,7 @@ trait MdlObjectMenu
 					else							{$targetLabel=Txt::trad("accessAllUsersGuests");	$targetTooltip=Txt::tooltip("accessAllUsersGuestsDetail");}
 					$tmpSpace->targetLines[$targetId]=["icon"=>"accessAllUsers.png", "label"=>$targetLabel, "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$targetTooltip)];
 					////	Lignes des groupes d'users de l'espace
-					foreach(MdlUserGroup::getGroups($tmpSpace) as $tmpGroup){
+					foreach(MdlUserGroup::userGroupList($tmpSpace) as $tmpGroup){
 						$targetId=$tmpSpace->_id."_G".$tmpGroup->_id;//ex: "1_G5"
 						$tmpSpace->targetLines[$targetId]=["icon"=>"accessGroup.png", "label"=>$tmpGroup->title, "tooltip"=>Txt::tooltip($tmpGroup->usersLabel)];
 					}
@@ -165,7 +165,6 @@ trait MdlObjectMenu
 			$vDatas["menuNotifMail"]=true;
 			$vDatas["notifMailUsers"]=Ctrl::$curUser->usersVisibles(true);
 			$vDatas["curSpaceUsersIds"]=Ctrl::$curSpace->getUsers("idsTab");
-			$vDatas["curSpaceUserGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
 			$vDatas["notifMailTooltip"]=$this->tradObj("EDIT_notifMailTooltip");
 			if($this::objectType=="calendarEvent")  {$vDatas["notifMailTooltip"].=Txt::trad("EDIT_notifMailTooltipCal");}//"Agenda personnel : envoyé uniquement au propriétaire de l'agenda"
 		}

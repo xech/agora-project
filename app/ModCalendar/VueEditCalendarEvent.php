@@ -8,10 +8,38 @@ ready(function(){
 	displayPeriodType();
 
 	////	CHANGE DE DATE/HEURE : CONTROLE LES CRÉNEAUX HORAIRES OCCUPÉS
-	$("[name='dateBegin'],[name='timeBegin'],[name='dateEnd'],[name='timeEnd']").on("change",function(){ timeSlotBusy(); });
+	$(".dateBegin,.timeBegin,.dateEnd,.timeEnd").on("change",function(){ timeSlotBusy(); });
+
+	////	EVT SUR TOUTE LA JOURNEE
+	$("#allDayCheckbox").on("change",function(){
+		//// Evt sur toute la journée : masque l'heure de début/fin + enregistre les valeurs d'origine (si retour en arrière) + modif les valeurs
+		if(this.checked){
+			$(".timeBegin,.timeEnd").hide();
+			timeBeginValue=$(".timeBegin").val();
+			timeEndValue=$(".timeEnd").val();
+			$(".timeBegin").val("00:00");
+			$(".timeEnd").val("23:59");
+		}
+		//// Sinon : affiche l'heure de début/fin +  remet les valeurs d'origine OU affiche l'heure courante
+		else{
+			$(".timeBegin,.timeEnd").show();
+			if(typeof timeBeginValue!="undefined"){
+				if(timeBeginValue=="00:00"){
+					const now=new Date();
+					const hoursBegin=String(now.getHours()).padStart(2,'0')+':00';//Exemple: 09:00 et 10:00
+					const hoursEnd  =String(now.getHours()+1).padStart(2,'0')+':00';
+					$(".timeBegin").val(hoursBegin);
+					$(".timeEnd").val(hoursEnd);
+				}else{
+					$(".timeBegin").val(timeBeginValue);
+					$(".timeEnd").val(timeEndValue);
+				}
+			}
+		}
+	}).trigger("change");
 
 	////	PÉRIODICITÉ : AFFICHAGE & DETAILS
-	$("[name='periodType'],[name='dateBegin']").on("change",function(){ displayPeriodType(); });
+	$("[name='periodType'],.dateBegin").on("change",function(){ displayPeriodType(); });
 
 	////	PÉRIODICITÉ : AJOUTE UNE DATE D'EXCEPTION
 	$("#periodDateExceptionsAdd").on("click",function(){
@@ -67,7 +95,7 @@ function displayPeriodType()
 	$("#periodFieldset, #periodLegend, #periodType_weekDay, #periodType_month, #periodDateEnd, #periodDateExceptions").hide();
 	if($("[name='periodType']").notEmpty())  {$("#periodFieldset, #periodLegend, #periodDateEnd, #periodDateExceptions, #periodType_"+$("[name='periodType']").val()).fadeIn();}
 	//Affiche les détails de périodicité (ex: "Tous les mois, le 15")
-	let dateBeginValue=$("[name='dateBegin']").val();
+	let dateBeginValue=$(".dateBegin").val();
 	if($("[name='periodType']").val()=="weekDay")		{$("#periodLegend").html("<?= Txt::trad("CALENDAR_period_weekDay") ?>");}																//"Toutes les semaines"
 	else if($("[name='periodType']").val()=="month")	{$("#periodLegend").html(String("<?= Txt::trad("CALENDAR_period_monthDetail") ?>").replace("--DATE--",dateBeginValue.substr(0,2)));}	//"Tous les 15 du mois"
 	else if($("[name='periodType']").val()=="year")		{$("#periodLegend").html(String("<?= Txt::trad("CALENDAR_period_yearDetail") ?>").replace("--DATE--",dateBeginValue.substr(0,5)));}		//"Tous les ans, le 15/10"
@@ -78,22 +106,22 @@ function displayPeriodType()
 ////	CRÉNEAUX HORAIRES OCCUPÉS SUR LES AGENDAS SÉLECTIONNÉS
 function timeSlotBusy()
 {
-	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}	//Un seul timeout
+	const timeout=(performance.now()>2000) ? 500 : 1;//Page chargée il y a moins de 3sec?
+	if(typeof timeoutTimeSlotBusy!="undefined")  {clearTimeout(timeoutTimeSlotBusy);}//Non cumul de Timeout
 	timeoutTimeSlotBusy=setTimeout(function(){
-		if($("[name='dateBegin']").notEmpty()  &&  $("[name='dateEnd']").notEmpty()  &&  $("[name='dateBegin']").val()==$("[name='dateEnd']").val()){
+		if($(".dateBegin").notEmpty()  &&  $(".dateEnd").notEmpty()  &&  $(".dateBegin").val()==$(".dateEnd").val()){
 			//Init l'url, avec le créneau horaire et les agendas concernés
-			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy"+
-						"&dateTimeBegin="+encodeURIComponent($("[name='dateBegin']").val()+" "+$("[name='timeBegin']").val())+
-						"&dateTimeEnd="+encodeURIComponent($("[name='dateEnd']").val()+" "+$("[name='timeEnd']").val())+
-						"&_evtId=<?= $curObj->_id ?>";
-			$(".vCalInput:checked").each(function(){ ajaxUrl+="&calendarIds[]="+this.value; });
+			let dateTimeBegin=encodeURIComponent($(".dateBegin").val()+" "+$(".timeBegin").val());
+			let dateTimeEnd  =encodeURIComponent($(".dateEnd").val()+" "+$(".timeEnd").val());
+			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy&dateTimeBegin="+dateTimeBegin+"&dateTimeEnd="+dateTimeEnd+"&_evtId=<?= $curObj->_id ?>";
+			$(".vCalInput:checked").each(function(){  ajaxUrl+="&calendarIds[]="+this.value;  });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé (mainTriggers() : Update les tooltips)
 			$.ajax(ajaxUrl).done(function(txtResult){
 				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainTriggers();}
 				else					{$("#timeSlotBusy").fadeOut();}
 			});
 		}
-	}, 1000);//Cf sélect. plusieurs agendas d'affilé
+	}, timeout);
 }
 
 ////	Controle spécifique (cf. "VueObjMenuEdit.php")
@@ -112,12 +140,12 @@ function mainFormControl()
 <style>
 /*GENERAL*/
 #bodyLightbox						{max-width:850px;}
-legend			 					{font-size:1.05em; text-align: center!important;}
-.vEvtOptionInline					{display:inline-block; margin:20px 15px 0px 0px;}
+.vEvtOptionInline					{display:inline-block; margin:10px 20px 10px 0px; line-height:35px;}/*line-height: #allDayCheckbox + #visioUrlAdd*/
 .beginEndLabel						{display:none;}
-#beginEndSeparator					{display:inline-block; padding-block:10px;}
+#beginEndSeparator					{display:inline-block;}
 #guestMenu							{text-align:center;}
 input[name='guestMail']				{margin-left:20px;}
+input[name='location']				{width:400px;}
 <?= Ctrl::$curUser->isGuest() ? '.vEvtGuestHide {display:none;}' : null ?>
 
 /*PÉRIODICITÉ*/
@@ -129,31 +157,35 @@ input[name='guestMail']				{margin-left:20px;}
 .vPeriodDateExceptionsInput:has(input[value=''])	{display:none;}
 
 /*VISIOCONFERENCE*/
-#visioUrlAdd						{line-height:35px;}
 #visioUrlInput						{width:250px; font-size:0.9rem;}
 <?= empty($curObj->visioUrl)?'#visioInputs':'#visioUrlAdd' ?>	{display:none;}/*masque l'input de la visio OU "Ajouter une visio"*/
 
 /*AFFECTATION AUX AGENDAS*/
-#calAffectationsOverflow			{max-height:400px; overflow-y:auto;}
-.vCalAffectation					{display:inline-block; width:32%; margin:2px;}
-.vCalAffectation .vCalInput			{display:none;}
-.vCalAffectation label				{display:inline-block; margin:3px; width:80%;}
-.vCalAffectation .vCalProposeOption						{float:right; margin:3px;}
+#calAffectationsOverflow								{max-height:300px; overflow-y:auto;}
+.vCalAffectation										{display:inline-table!important;}/*surcharge*/
+.vCalAffectation>div									{display:table-cell;}
+.vCalAffectation label									{display:block; line-height:22px;}
+.vCalAffectation .vCalInput								{display:none;}
+.vCalAffectation .vCalProposeOption						{width:30px; text-align:center; cursor:help;}/*curseur "?"*/
+.vCalAffectation .vCalProposeOptionQuestion				{width:20px; height:20px; background-image: url('app/img/dot.png') center no-repeat;}
 .vCalAffectation:not(.optionSelect) .vCalProposeOption	{display:none;}/*masque si l'agenda n'est pas sélectionné*/
 
 /*AFFICHAGE DE "timeSlotBusy"*/
 #timeSlotBusy						{display:none;}
 #timeSlotBusy table:first-child		{margin-top:10px;}
-#timeSlotBusy table td:first-child	{min-width:130px; vertical-align:top; padding-right:20px;}
+#timeSlotBusy table td:first-child	{min-width:150px; vertical-align:top; padding-right:20px;}
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
-	#beginEndSeparator								{visibility:hidden; display:block; padding-block:0px;}
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
+	.vEvtOptionInline								{display:block; margin:20px 0px;}
+	#beginEndSeparator								{display:block; visibility:hidden; line-height:15px;}
 	.beginEndLabel									{display:inline-block; width:60px; line-height:35px;}
 	.vPeriodCheckboxDays, .vPeriodCheckboxMonths	{width:33%!important;}
-	.vCalAffectation								{width:99%; margin-inline:0px;}
-	.vCalAffectation label							{padding:5px;}
+	#timeSeparator									{display:none;}
+	#calAffectations legend							{padding-inline:10px;}
+	.vCalAffectation.option							{width:100%; margin-block}/*surcharge*/
 	.vCalAffectation .vCalProposeOption				{display:none;}
+	#timeSlotBusy table td:first-child				{min-width:100px; vertical-align:top; padding-right:20px;}
 }
 </style>
 
@@ -167,7 +199,7 @@ input[name='guestMail']				{margin-left:20px;}
 	<?= $curObj->descriptionEditor() ?>
 
 	<!--DATE DEBUT & FIN-->
-	<div class="vEvtOptionInline" id="eventDates">
+	<div class="vEvtOptionInline">
 		<span class="beginEndLabel"><?= Txt::trad("begin") ?></span>
 		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("begin") ?>>
 		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("begin") ?>>
@@ -175,6 +207,12 @@ input[name='guestMail']				{margin-left:20px;}
 		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("end") ?>>
 		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("end") ?>>
+	</div>
+
+	<!--TOUTE LA JOURNEE-->
+	<div class="vEvtOptionInline">
+		<input type="checkbox" name="allDay" id="allDayCheckbox" value="1" <?= $curObj->allDay==1?'checked':null ?> >
+		<label for="allDayCheckbox"><?= Txt::trad("CALENDAR_allDay") ?> <img src="app/img/calendar/allDay.png"></label>
 	</div>
 
 	<!--PERIODICITE : SELECTION DU TYPE-->
@@ -190,9 +228,7 @@ input[name='guestMail']				{margin-left:20px;}
 	<!--PERIODICITE : DETAILS-->
 	<fieldset id="periodFieldset" class="vEvtGuestHide">
 		<!--DETAIL DES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
-		<legend>
-			<img src="app/img/calendar/period.png"> <span id="periodLegend"></span>
-		</legend>
+		<legend><img src="app/img/calendar/period.png"> <span id="periodLegend"></span></legend>
 		<!--PERIODICITE : JOURS DE LA SEMAINE-->
 		<div id="periodType_weekDay">
 			<?php for($cpt=1; $cpt<=7; $cpt++){ ?>
@@ -218,7 +254,7 @@ input[name='guestMail']				{margin-left:20px;}
 			<span class="vPeriodDateExceptionsInput">
 				<img src="app/img/arrowRight.png">
 				<input type="text" name="periodDateExceptions[]" value="<?= isset($periodDateExceptions[$cpt]) ? $periodDateExceptions[$cpt] : null ?>" class="dateInput">
-				<img src="app/img/delete.png" class="vPeriodDateExceptionsDelete sLink" <?= Txt::tooltip("delete") ?> >
+				<img src="app/img/delete.png" class="vPeriodDateExceptionsDelete link" <?= Txt::tooltip("delete") ?> >
 			</span>
 			<?php } ?>
 		</div>
@@ -229,6 +265,9 @@ input[name='guestMail']				{margin-left:20px;}
 		</div>
 	</fieldset>
 
+	<!--SEPARATEUR DE FIN DES PARAMETRE DE TEMPS-->
+	<br id="timeSeparator">
+
 	<!--CATEGORIE DE L'EVT-->
 	<div class="vEvtOptionInline">
 		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
@@ -236,10 +275,8 @@ input[name='guestMail']				{margin-left:20px;}
 
 	<!--IMPORTANT-->
 	<div class="vEvtOptionInline vEvtGuestHide">
-		<select name="important">
-			<option value="0"><?= Txt::trad("CALENDAR_importanceNormal") ?></option>
-			<option value="1" data-color="#900"><?= Txt::trad("CALENDAR_importanceHight") ?></option>
-		</select>
+		<input type="checkbox" name="important" id="importantCheckbox" value="1" <?= $curObj->important==1?'checked':null ?> >
+		<label for="importantCheckbox"><?= Txt::trad("CALENDAR_importantEvent") ?> <img src="app/img/important.png"></label>
 	</div>
 
 	<!--VISIBILITE-->
@@ -251,14 +288,19 @@ input[name='guestMail']				{margin-left:20px;}
 		</select>
 	</div>
 
+	<!--ADRESSE-->
+	<div class="vEvtOptionInline">
+		<input type="text" name="location" value="<?= $curObj->location ?>" id="locationInput" placeholder="<?= Txt::trad("adress") ?>" <?= Txt::tooltip("adress") ?> >
+	</div>
+
 	<!--VISIOCONFERENCE-->
 	<?php if(Ctrl::$agora->visioEnabled()){ ?>
 	<div class="vEvtOptionInline vEvtGuestHide">
-		<span id="visioUrlAdd" class="sLink" <?= Txt::tooltip("VISIO_urlAddConfirm") ?>><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
+		<span id="visioUrlAdd" class="link" <?= Txt::tooltip("VISIO_urlAddConfirm") ?>><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
 		<span id="visioInputs">
 			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" readonly>
-			<img src="app/img/copy.png" id="visioUrlCopy" class="sLink" <?= Txt::tooltip("VISIO_urlCopy") ?>>
-			<img src="app/img/delete.png" id="visioUrlDelete" class="sLink" <?= Txt::tooltip("VISIO_urlDelete") ?>>
+			<img src="app/img/copy.png" id="visioUrlCopy" class="link" <?= Txt::tooltip("VISIO_urlCopy") ?>>
+			<img src="app/img/delete.png" id="visioUrlDelete" class="link" <?= Txt::tooltip("VISIO_urlDelete") ?>>
 		</span>
 	</div>
 	<?php } ?>
@@ -267,33 +309,31 @@ input[name='guestMail']				{margin-left:20px;}
 	<fieldset id="calAffectations" class="vEvtGuestHide">
 		<legend><?= Txt::trad("CALENDAR_calendarAffectations") ?></legend>
 		<div id="calAffectationsOverflow">
-			<!--AGENDAS DE RESSOURCES & AGENDAS PERSONNELS-->
-			<?php foreach($affectationCalendars as $tmpCal){ ?>
-				<div class="vCalAffectation option">
+			<?php
+			////	AGENDAS DE RESSOURCES & AGENDAS PERSONNELS
+			foreach($affectationCalendars as $tmpCal){
+				$tmpCalAttr=null;
+				if($tmpCal->_id==Req::param("_idCal") || $curObj->isAffectedCalendar($tmpCal))	{$tmpCalAttr.=' checked ';}
+				if($tmpCal->isPersonal())														{$tmpCalAttr.=' data-iduser="'.$tmpCal->_idUser.'" ';}//cf selectUsersGroups()
+			?>
+				<div class="vCalAffectation option userInputDiv">
 					<!--AFFECTATION A L'AGENDA-->
-					<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" id="box<?= $tmpCal->typeId ?>" class="vCalInput" <?= $tmpCal->inputAttr ?> >
-					<label for="box<?= $tmpCal->typeId ?>" <?= Txt::tooltip($tmpCal->tooltip) ?> ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					<div <?= Txt::tooltip($tmpCal->tooltip) ?>>
+						<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" class="vCalInput" id="calInput<?= $tmpCal->typeId ?>" <?= $tmpCalAttr ?> >
+						<label for="calInput<?= $tmpCal->typeId ?>" ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+					</div>
 					<!--OPTION DE PROPOSITION-->
 					<?php if($tmpCal->proposeOption==true){ ?>
-					<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> class="vCalProposeOption" <?= Txt::tooltip("CALENDAR_proposeEvtTooltipBis") ?>>
+						<div <?= Txt::tooltip("CALENDAR_proposeEvtTooltipBis") ?> class="vCalProposeOption">	
+							<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?>>
+							<span class="vCalProposeOptionQuestion"></span>
+						</div>
 					<?php } ?>
 				</div>
 			<?php } ?>
-			<!--SWITCH LA SELECTION D'UN GROUPE D'USERS-->
-			<?php if(count($affectationCalendars)>2){ ?>
-				<hr>
-				<div class="vCalAffectation option" onclick="$('.vCalInput').trigger('click')">
-					<label><img src="app/img/checkSwitch.png"> <?= Txt::trad("selectSwitch") ?></label>
-				</div>
-				<?php foreach($curSpaceUserGroups as $tmpGroup){ ?>
-				<div class="vCalAffectation option" <?=Txt::tooltip(Txt::trad("selectUnselect")." :<br>".$tmpGroup->usersLabel) ?>>
-					<input type="checkbox" name="calUsersGroup[]" value="<?= implode(",",$tmpGroup->userIds) ?>" id="calUsersGroup<?= $tmpGroup->typeId ?>" onchange="userGroupSelect(this,'#calAffectationsOverflow')">
-					<label for="calUsersGroup<?= $tmpGroup->typeId ?>"><img src="app/img/user/accessGroup.png"> <?= $tmpGroup->title ?></label>
-				</div>
-				<?php } ?>
-			<?php } ?>
 		</div>
-
+		<!--SELECTION D'USERS & GROUPES-->
+		<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, "#calAffectations .vCalInput") ?>
 		<!--CRENEAU HORAIRE DEJA OCCUPE DANS LES AGENDAS SELECTIONNES-->
 		<div id="timeSlotBusy" class="sAccessRead">
 			<hr>

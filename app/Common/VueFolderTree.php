@@ -53,7 +53,7 @@ function folderMove(newFolderId){
 
 
 <style>
-<?= $context=='move' ? '#bodyLightbox {max-width:500px;}' : null ?>
+<?php if($context=='move'){ ?>  #bodyLightbox {max-width:500px;}  <?php } ?>
 #treeFolders						{user-select:none; -webkit-user-select:none; padding:4px;}
 .vTreeFolder						{display:none;}											/*dossier masqué par défaut*/
 .vTreeFolder>div					{display:table-cell; padding:3px; vertical-align:top;}	/*cellules du dossier */
@@ -63,8 +63,8 @@ function folderMove(newFolderId){
 .vTreeFolderLabel.linkSelect		{font-weight:bold;}
 .vIconOpened						{transform:rotate(45deg); filter:brightness(0);}
 
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
 	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrow" d'ouverture de dossier sont en position absolute*/
 }
 </style>

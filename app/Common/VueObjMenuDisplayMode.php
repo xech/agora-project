@@ -1,17 +1,7 @@
-<div class="menuLine">
-	<div class="menuIcon"><img src="app/img/display<?= ucfirst($curDisplayMode) ?>.png"></div>
-	<div>
-		<span class="menuContextLaunch" for="menuDisplayMode"><?= Txt::trad("displayMode")." ".Txt::trad("displayMode_".$curDisplayMode) ?></span>
-		<div  class="menuContext" id="menuDisplayMode">
-			<?php
-			//Options d'affichage
-			foreach($displayModes as $tmpDisplayMode){
-			echo "<div class='menuLine'>
-					<div class='menuIcon'><img src='app/img/display".ucfirst($tmpDisplayMode).".png'></div>
-					<div><a onclick=\"redir('".$displayModeUrl.$tmpDisplayMode."')\" ".($curDisplayMode==$tmpDisplayMode?"class='linkSelect'":null).">".Txt::trad("displayMode")." ".Txt::trad("displayMode_".$tmpDisplayMode)."</a></div>
-				</div>";
-			}
-			?>
-		</div>
+<!--OPTIONS D'AFFICHAGE-->
+<?php foreach($displayModes as $tmpDisplayMode){ ?>
+	<div class="menuLine <?= $curDisplayMode==$tmpDisplayMode?'optionSelect':'option' ?>" onclick="redir('<?= $displayModeUrl.$tmpDisplayMode ?>')">
+		<div class="menuIcon"><img src="app/img/displayMode_<?= $tmpDisplayMode ?>.png"></div>
+		<div><?= Txt::trad("displayMode").' '.Txt::trad("displayMode_".$tmpDisplayMode) ?></div>
 	</div>
-</div>
+<?php } ?>

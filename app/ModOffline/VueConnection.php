@@ -57,8 +57,8 @@ ready(function(){
 #headerBar>div:first-child			{text-align:center!important;}/*surcharge*/
 #pageCenter							{margin-top:100px;}
 .miscContent						{margin-bottom:20px; width:500px; padding:30px 20px; border-radius:12px!important; text-align:center;}/*surcharge*/
-.miscContent button>img			{margin-right:10px;}
-.miscContent hr					{margin:30px 0px;}
+.miscContent button>img				{margin-right:10px;}
+.miscContent hr						{margin:30px 0px;}
 #customLogo							{background-color:rgba(250, 250, 250, 40%); padding:10px;}
 #customLogo img						{max-width:100%; max-height:180px;}
 #publicSpaceTab						{display:inline-table;} 
@@ -69,8 +69,8 @@ ready(function(){
 .connectOptions>div					{display:table-cell; padding:15px;}
 .g_id_signin						{margin-inline:auto; margin-top:40px; width:330px;}/*width idem "data-width" */
 
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
 	.miscContent							{width:auto;}
 	.miscContent							{margin-bottom:30px; padding:30px;}/*surcharge*/
 	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%; text-align:left!important;}

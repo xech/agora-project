@@ -79,7 +79,7 @@ ready(function(){
 
 <style>
 #bodyLightbox						{max-width:700px;}
-fieldset							{margin-top:35px;}/*surcharge*/
+fieldset							{margin-top:30px!important;}/*surcharge*/
 .lightboxTitle img					{margin:0px 15px;}
 .vCategoryMain						{display:table; width:100%;}
 .vCategoryMain>div					{display:table-cell;}
@@ -93,10 +93,10 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 .vSpaceList							{margin-top:10px; max-height:150px; overflow-y:auto;}
 .vSpaceList>div						{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
 .vLabelAllSpaces					{font-style:italic;}
-.submitButtonMain					{margin-top:30px;}/*surcharge du button*/
+.submitButton						{margin-block:25px;}/*surcharge du button*/
 .changeOrderShadow					{height:50px;}/*surcharge*/
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	.vSpaceList>div 					{display:block; width:100%; margin:15px 0px;}
 	.vCategoryModif, .vCategoryDelete	{font-size:0.9rem;}
 }
@@ -118,14 +118,14 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 						<div><?= $tmpObj->getLabel() ?></div>
 						<div class="vCategoryAutor"><?= Txt::trad("createdBy").' '.$tmpObj->autorLabel() ?></div>
 					</div>
-					<div class="vCategoryModif vCategoryEdit sLink"><img src="app/img/edit.png"> <?= Txt::trad("modify") ?></div>
+					<div class="vCategoryModif vCategoryEdit link"><img src="app/img/edit.png"> <?= Txt::trad("modify") ?></div>
 					<div class="vCategoryDelete" onclick="confirmDelete('<?= $tmpObj->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></div>
 					<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?> ><img src="app/img/changeOrder.png"><input type="hidden" name="changeOrderIds[]" value="<?= $tmpObj->_id ?>"></div>
 					<?php } ?>
 				<!--AJOUTER UNE NOUVELLE CATEGORIE-->
 				<?php }else{ ?>
-					<div class="vCategoryAdd vCategoryEdit sLink"><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
+					<div class="vCategoryAdd vCategoryEdit link"><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
 				<?php } ?>
 			</div>
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->

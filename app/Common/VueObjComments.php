@@ -21,24 +21,20 @@ ready(function(){
 
 
 <style>
-form					{text-align:right;}
-form button				{width:120px;}
-.vCommentsTable			{display:table; width:100%; margin-bottom:20px;}
-.vCommentsRow			{display:table-row;}
-.vCommentsRow>div		{display:table-cell; padding:5px;}
-.vCommentDateUser		{width:200px;}
-.vCommentDateUser>div	{font-weight:normal}
-.vCommentText form		{display:none;}
-.vCommentOptions		{width:100px; text-align:right;}
-.vCommentOptions img	{margin-left:10px;}
-.submitButtonInline		{padding-top:10px;}
+fieldset						{margin-bottom:30px!important;}/*surcharge*/
+.vCommentsTable					{display:table; width:100%;}
+.vCommentsTable>div				{display:table-cell;}
+.vCommentDateUser				{width:180px;}
+.vCommentDateUser>div			{margin-top:5px;}
+.vCommentOptions				{width:25px;}
+.vCommentOptions img:last-child	{margin-top:10px;}
+.vCommentForm					{display:none; margin-block:20px;}
+.submitButton					{margin-top:15px;}/*surcharge*/			
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
-	.vCommentsTable, .vCommentsRow, .vCommentsRow>div	{display:block; width:100%;}
-	.vCommentsRow			{margin-bottom:15px!important;}
-	.vCommentText			{border:dotted 1px #ddd; padding:10px!important;}
-	.vCommentOptions img	{max-height:18px; margin-right:5px;}
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
+	.vCommentsTable		{font-size:0.9rem;}
+	.vCommentDateUser	{font-size:0.8rem; width:130px;}
 }
 </style>
 
@@ -48,32 +44,37 @@ form button				{width:120px;}
 
 	<!--AFFICHE CHAQUE COMMENTAIRE-->
 	<?php foreach($commentList as $tmpComment){ ?>
+	<fieldset>
 		<div class="vCommentsTable">
-			<div class="vCommentsRow lineHover">
-				<div class="vCommentDateUser"><?= Ctrl::getObj("user",$tmpComment['_idUser'])->getLabel() ?><div><?= Txt::dateLabel("default",$tmpComment['dateCrea']) ?></div></div>
-				<div class="vCommentText" id="commentText<?= $tmpComment['_id'] ?>">
-					<div><?= $tmpComment['comment'] ?></div>
-					<form action="index.php" method="post">
-						<textarea name="comment" maxlength="200"><?= $tmpComment['comment'] ?></textarea>
-						<input type="hidden" name="idComment" value="<?= $tmpComment['_id'] ?>">
-						<input type="hidden" name="actionComment" value="modif">
-						<?= Txt::submitButton("modify",false) ?>
-					</form>
-				</div>
-				<?php if(MdlObject::userCommentEditRight($tmpComment['_id'])){ ?>
-					<div class="vCommentOptions">
-						<img src="app/img/edit.png" <?= Txt::tooltip("modify") ?> onclick="$('#commentText<?= $tmpComment['_id'] ?> >*').toggle()">
-						<img src="app/img/delete.png" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->typeId ?>&idComment=<?= $tmpComment['_id'] ?>&actionComment=delete')">
-					</div>
-				<?php } ?>
+			<div class="vCommentDateUser">
+				<?= Ctrl::getObj("user",$tmpComment['_idUser'])->getLabel() ?>
+				<div><?= Txt::dateLabel("default",$tmpComment['dateCrea']) ?></div>
 			</div>
+			<div id="commentValue<?= $tmpComment['_id'] ?>">
+				<div><?= $tmpComment['comment'] ?></div>
+			</div>
+			<?php if(MdlObject::userCommentEditRight($tmpComment['_id'])){ ?>
+				<div class="vCommentOptions">
+					<img src="app/img/edit.png" <?= Txt::tooltip("modify") ?> onclick="$('#commentValue<?= $tmpComment['_id'] ?>,#commentForm<?= $tmpComment['_id'] ?>').toggle()">
+					<img src="app/img/delete.png" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->typeId ?>&idComment=<?= $tmpComment['_id'] ?>&actionComment=delete')">
+				</div>
+			<?php } ?>
 		</div>
+		<form action="index.php" method="post" class="vCommentForm" id="commentForm<?= $tmpComment['_id'] ?>">
+			<textarea name="comment" maxlength="200"><?= $tmpComment['comment'] ?></textarea>
+			<input type="hidden" name="idComment" value="<?= $tmpComment['_id'] ?>">
+			<input type="hidden" name="actionComment" value="modif">
+			<?= Txt::submitButton("modify") ?>
+		</form>
+	</fieldset>
 	<?php } ?>
 
 	<!--AJOUT D'UN COMMENTAIRE-->
-	<form action="index.php" method="post">
-		<textarea name="comment" maxlength="200" placeholder="<?= Txt::trad("commentAdd") ?>" class="vCommentAddTextarea"></textarea>
-		<input type='hidden' name='actionComment' value='add'>
-		<?= Txt::submitButton("add",false); ?>
-	</form>
+	<fieldset>
+		<form action="index.php" method="post">
+			<textarea name="comment" maxlength="200" placeholder="<?= Txt::trad("commentAdd") ?>" class="vCommentAddTextarea"></textarea>
+			<input type="hidden" name="actionComment" value="add">
+			<?= Txt::submitButton("add"); ?>
+		</form>
+	</fieldset>
 </div>

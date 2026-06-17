@@ -1,4 +1,5 @@
 <style>
+#bodyLightbox			{max-width:900px;}
 .lightboxTitle select	{float:right; font-size:0.95rem;}
 .vEvtTable				{display:table; width:100%;}
 .vEvtRow				{display:table-row;}
@@ -22,7 +23,7 @@
 			<div><?= $tmpEvt->contextMenu(["burgerLauncher"=>"big-inline"]) ?></div>
 			<div><img src="app/img/edit.png" onclick="lightboxOpen('<?= $tmpEvt->getUrl('edit') ?>')"></div>
 			<div onclick="lightboxOpen('<?= $tmpEvt->getUrl('vue') ?>')"><?= $tmpEvt->title ?></div>
-			<div><?= Txt::dateLabel("default",$tmpEvt->dateBegin,$tmpEvt->dateEnd) ?></div>
+			<div><?= $tmpEvt->dateLabel() ?></div>
 		</div>
 		<?php } ?>
 	</div>

@@ -166,8 +166,8 @@ class Txt
 	 ********************************************************************************************************/
 	public static function submitButton($keyTrad="record", $isMainButton=true)
 	{
-		return '<div class="'.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
-					<button type="submit">'.self::trad($keyTrad).' <img src="app/img/loading.png" class="submitLoading"></button>
+		return '<div class="submitButton '.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
+					<button type="submit">'.self::trad($keyTrad).' <img src="app/img/loading.svg" class="submitLoading"></button>
 				</div>
 				<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
 				<input type="hidden" name="action" value="'.Req::$curAction.'">
@@ -233,13 +233,13 @@ class Txt
 	 * FORMATAGE D'UNE DATE/HEURE EN FONCTION D'UN TIMESTAMP
 	 * Note : les objets "task" peuvent avoir une $dateEnd sans $timeBegin
 	 * $format	=>	"default"		->	"lun. 8 fevrier 9:05"
-	 * 			=>	"textDate"		->	"lun. 8 fevrier"
-	 * 			=>	"textMini"		->	"8 fev."
 	 * 			=>	"mini"			->	"9:05"  ||  "8 fev. 9:05" ($diffDays)
-	 * 			=>	"numDatetime"	->	"08/02/2050 9:05"
-	 * 			=>	"numDate"		->	"08/02/2050"
+	 * 			=>	"dateDefault"	->	"lun. 8 fevrier"
+	 * 			=>	"dateMini"		->	"8 fev."
+	 * 			=>	"dateNum"		->	"08/02/2050"
 	 ********************************************************************************************************/
-	public static function dateLabel($format="default", $timeBegin=null, $timeEnd=null){
+	public static function dateLabel($format, $timeBegin, $timeEnd=null)
+	{
 		//Controles de base
 		if((!empty($timeBegin) || !empty($timeEnd))){
 			//Convertit si besoin un DateTime en Timestamp unix
@@ -251,7 +251,7 @@ class Txt
 			if(is_object($formatter)){
 				//Init (pas de "null" pour le pattern!)
 				$label=$pattern="";
-				$withHM=preg_match("/^(default|numDatetime|mini)$/i",$format);
+				$withHM=preg_match("/^(default|mini)$/i",$format);
 				$diffDays=$diffHours=false;
 				if($timeBegin!=null && $timeEnd!=null){
 					if(date("Ymd",$timeBegin)!=date("Ymd",$timeEnd))  {$diffDays=true;}
@@ -260,11 +260,11 @@ class Txt
 
 				//Formatage de la date (https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
 				if(preg_match("/mini/i",$format)==false && date("Ymd",$timeBegin)==date("Ymd"))		{$label=self::trad("today");}	//"Aujourd'hui"
-				elseif(preg_match("/^(default|textDate)$/i",$format))								{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
-				elseif($format=="textMini" || ($format=="mini" && $diffDays==true))					{$pattern="d MMM";}				//ex: "8 fev."
-				elseif(preg_match("/numDate/i",$format))											{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
+				elseif(preg_match("/^(default|dateDefault)$/i",$format))							{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
+				elseif($format=="dateMini" || ($format=="mini" && $diffDays==true))					{$pattern="d MMM";}				//ex: "8 fev."
+				elseif(preg_match("/dateNum/i",$format))											{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
 				//Année différente de celle en cours
-				if(preg_match("/^(default|textDate)$/i",$format)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y')))){
+				if(preg_match("/^(default|dateDefault)$/i",$format)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y')))){
 					$pattern=str_replace("MMMM","MMM",$pattern)." yyyy";//ex : "8 fevrier" -> "8 fev. 2050"
 				}
 				//Ajoute l'heure si on affiche pas que la date (ex: "9:05")
@@ -278,7 +278,7 @@ class Txt
 				}
 				if($timeEnd!=null){
 					if($diffDays==false && $diffHours==true && $withHM==true)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)										{$label.='<img src="app/img/arrowRightSmall.png">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
+					elseif($diffDays==true)										{$label.='<img src="app/img/arrowRightSmall.png"> '.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
 					elseif($timeBegin==null)									{$label.=self::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 

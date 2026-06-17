@@ -22,8 +22,8 @@ ready(function(){
 #newsOptions			{margin-top:22px; text-align:center;}
 #newsOptions>div		{display:inline-block; line-height:30px; margin-right:25px;}
 .dateBegin, .dateEnd	{width:160px;}/*surcharge pour afficher les placeholders*/
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	#newsOptions>div		{display:block; margin-bottom:20px;}
 	.dateBegin, .dateEnd	{width:230px;}/*surcharge pour afficher les placeholders*/
 }
@@ -41,7 +41,7 @@ ready(function(){
 	<div id="newsOptions">
 		<!--A LA UNE-->
 		<div>
-			<input type="checkbox" name="une" value="1" id="uneCheckbox" <?= $curObj->une==1?"checked":"" ?>>
+			<input type="checkbox" name="une" value="1" id="uneCheckbox" <?= $curObj->une==1?"checked":null ?> >
 			<label for="uneCheckbox" <?= Txt::tooltip("DASHBOARD_topNewsTooltip") ?> ><?= Txt::trad("DASHBOARD_topNews") ?> <img src="app/img/dashboard/topNews.png"></label>	
 		</div>
 		<!--IS OFFLINE-->

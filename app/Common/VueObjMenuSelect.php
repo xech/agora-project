@@ -4,20 +4,19 @@ ready(function(){
 	$("#objSelectAll").on("click",function(){
 		$(".objSelectCheckbox").prop("checked",false).each(function(){ objSelectSwitch(this.id); });
 	});
-	////	Switch la sélection de tous les objets
-	$("#objSelectSwitch").on("click",function(){
-		$(".objSelectCheckbox").each(function(){ objSelectSwitch(this.id); });
+	////	Désélectionne tous les objets : passe tout à "true" puis switch la sélection
+	$("#objUnselectAll").on("click",function(){
+		$(".objSelectCheckbox").prop("checked",true).each(function(){ objSelectSwitch(this.id); });
 	});
 });
 
 ////	Switch la sélection d'un objet
 function objSelectSwitch(menuId)
 {
-	var menuId=menuId.replace(/(objCheckbox|objContent)/i,"");											//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
+	var menuId=menuId.replace(/(objCheckbox|objContent)/i,"");												//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
 	$("#objCheckbox"+menuId).prop("checked", !$("#objCheckbox"+menuId).prop("checked"));					//Swich la sélection de la checkbox
-	$("#objContent"+menuId).toggleClass("objContentSelect", $("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection/class du block de l'objet
+	$("#objContent"+menuId).toggleClass("objContentSelected", $("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection/class du block de l'objet
 	if($(".objSelectCheckbox:checked").length>0)	{$("#objSelectMenu").slideDown(300);}					//Affiche le menu des objets sélectionnés
-	else											{$("#objSelectMenu").slideUp(300);}						//Affiche le menu des objets sélectionnés
 }
 
 ////	Action sur les objets sélectionnés
@@ -84,6 +83,6 @@ async function menuSelectAction(urlRedir, lightbox)
 	<?php } ?>
 
 	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
-	<div class="menuLine sLink" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkAll.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
-	<div class="menuLine sLink" id="objSelectSwitch"><div class='menuIcon'><img src="app/img/checkSwitch.png"></div><div><?= Txt::trad("selectSwitch") ?></div></div>
+	<div class="menuLine link" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSelectAll.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
+	<div class="menuLine link" id="objUnselectAll"><div class='menuIcon'><img src="app/img/checkUnselectAll.png"></div><div><?= Txt::trad("unselectAll") ?></div></div>
 </div>

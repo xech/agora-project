@@ -11,21 +11,26 @@ ready(function(){
 });
 </script>
 
+
 <style>
-.vUserLine	{display:inline-block; width:48%; padding:7px;}
+#bodyLightbox	{max-width:750px;}
 </style>
 
 
 <form action="index.php" method="post">
 	<div class="lightboxTitle"><?= Txt::trad("USER_sendCoordsTooltip") ?></div>
 
-	<!--Liste des users-->
+	<!--LISTE DES USERS-->
 	<?php foreach($usersList as $tmpUser){ ?>
-		<div class="vUserLine"><input type="checkbox" name="usersList[]" value="<?= $tmpUser->_id ?>" id="usersBox<?= $tmpUser->_id ?>">
-			<label for="usersBox<?= $tmpUser->_id ?>" <?= Txt::tooltip($tmpUser->mail) ?> ><?= $tmpUser->getLabel() ?></label>
+		<div class="userInputDiv">
+			<input type="checkbox" name="usersList[]" value="<?= $tmpUser->_id ?>" class="vUserInput" id="userInput<?= $tmpUser->_id ?>" data-iduser="<?= $tmpUser->_id ?>" >
+			<label for="userInput<?= $tmpUser->_id ?>" <?= Txt::tooltip($tmpUser->mail) ?> ><?= $tmpUser->getLabel() ?></label>
 		</div>
 	<?php } ?>
+
+	<!--SELECTION D'USERS ET DES GROUPES D'USERS-->
+	<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, ".vUserInput") ?>
 	
-	<!--Bouton de validation-->
+	<!--BOUTON DE VALIDATION-->
 	<?= Txt::submitButton("send") ?>
 </form>

@@ -1,5 +1,5 @@
 
-/*** STYLE CHARGÉ DANS L'ÉDITEUR TINYMCE : IDEM "app.css" !*/
+/*** STYLE CHARGÉ DANS L'IFRAME DE L'ÉDITEUR TINYMCE (cf app.css)*/
 .mce-content-body			{padding:5px!important; font-size:15px;}	/*Texte de l'éditeur*/
 .mce-content-body::before	{padding-left:7px; color:#aaa!important;}	/*Placeholder "Description"*/
 p							{margin-block:3px;}
@@ -8,7 +8,7 @@ p							{margin-block:3px;}
 video.attachedFileTag		{min-width:600px; min-height:400px;}		/*vidéo*/
 audio.attachedFileTag		{min-height:100px;}							/*Mp3*/
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	.mce-content-body	{font-size:18px!important;}
 }

@@ -1,0 +1,43 @@
+/*** BASIC*/
+body, a, .link																				{color:#333;}
+#htmlLightbox, .objContent, .miscContent, .menuContext, #menuMobileMain						{background:white;}
+#headerBar																					{background:linear-gradient(white,#e8e8e8);}/*barre principale*/
+.objBlocks .objContent:hover																{box-shadow:2px 2px 10px #222;}
+.objLines .objContent																		{border-bottom:solid 1px #ccc;}
+.menuContext,  .tox-tinymce																	{border:solid 1px #ccc!important;}
+.objLines .objContent:hover, .menuContext .menuLine:hover, .lineHover:hover, .lineSelect	{background:#eee;}
+.objContentSelected, #objSelectMenu															{background:#ddd!important;}
+.tooltipster-box																			{background:white!important; box-shadow:0px 0px 10px #444!important;}
+.tooltipster-content																		{color:#555!important; padding:15px!important;}
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
+	#htmlMainPage				{background:white url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
+	#headerBar					{border-top:solid 1px #bbb;}/*séparation de la "appBar" du main.dart*/
+	.objContent, .miscContent	{box-shadow:0px 1px 4px #bbb;}
+}
+
+/*** LIENS & OPTIONS*/
+a:hover, .link:hover, .linkSelect, .menuContextLaunch:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .optionSelect	{color:#015eaa;}
+.accessRead						{color:#007;}
+.accessWrite					{color:#700;}
+.option							{border:solid 1px transparent;}
+.optionSelect, .option:hover 	{border:solid 1px #d5d5d5; border-radius:var(--radius-field);}
+.optionSelect					{background:#eee; font-weight:bold;}
+
+/*** INPUTS*/
+input:not([type=radio],[type=checkbox]), textarea, select, button	{background:#f8f8f8; border:1px solid #ccc; transition:box-shadow 0.3s ease-in-out; color:#444;}
+input:hover, textarea:hover, select:hover							{box-shadow:0px 0px 4px #bbb;}
+input:focus, textarea:focus, select:focus							{box-shadow:0px 0px 4px #0068bd; border:#bcf 1px solid;}
+.tox-edit-area__iframe												{background:#f8f8f8!important;}/*Editeur Tinymce*/
+button																{background:linear-gradient(#fff,#eee);}
+button:hover:not(.f-button)											{background:linear-gradient(#fff,#f9f9f9);}
+
+/*** DIVERS*/
+.objMenuTab, .objMenuMain, fieldset		{background:#fcfcfc; border:solid 1px #ccc; border-radius:var(--radius-block);}/*VueObjMenuEdit + fieldset*/
+.objMenuTab								{background:transparent;}/*VueObjMenuEdit : onglet non sélectionnés*/
+.objMenuTab:hover, .objMenuTabSelect	{background:#fcfcfc;}/*VueObjMenuEdit : onglet sélectionnés/survolé*/
+hr										{background:linear-gradient(90deg,#eee,#ddd,#eee);}
+.lightboxTitle							{border-bottom:solid 1px #ccc;}/*peudo <hr>*/
+.jconfirm-box							{background:white!important; box-shadow:0px 2px 6px #555!important;}
+::-webkit-scrollbar						{background:#eee;}/*chemin de scrollbar*/
+::-webkit-scrollbar-thumb				{background:#888;}/*couleur de scrollbar*/

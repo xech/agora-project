@@ -400,4 +400,15 @@ class MdlUser extends MdlPerson
 		////	Menu parent
 		return parent::contextMenu($options);
 	}
+
+	/********************************************************************************************************
+	 * MENU DE SELECTION D'USERS ET DE GROUPES D'USERS SUR L'ESPACE COURANT
+	 ********************************************************************************************************/
+	public static function selectUsersGroups($objSpace, $inputSelector)
+	{
+		$vDatas["menuId"]=uniqid();											//cf plusieurs menus (ex: calendar d'users + users notifs mail)
+		$vDatas["userGroupList"]=MdlUserGroup::userGroupList($objSpace);	//Groupes d'users de l'espace
+		$vDatas["inputSelector"]=$inputSelector;							//Sélecteur des inputs d'users : avec la class/id du conteneur d'input!
+		return Ctrl::getVue("app/ModUser/VueSelectUsersMenu.php",$vDatas);	//Affiche la vue
+	}
 }

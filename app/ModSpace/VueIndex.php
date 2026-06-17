@@ -10,8 +10,8 @@
 .vSpaceAffectation			{display:inline-block; width:32%; padding:5px; font-size:0.85rem;}
 .vSpaceAffectation img		{max-height:17px;}
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	.vSpaceAffectation		{width:48%;}
 	.vSpaceAffectation img	{max-height:15px;}
 }
@@ -30,7 +30,7 @@
 	<div id="pageContent" class="objBlocks">
 		<!--LISTE DES ESPACES-->
 		<?php foreach($spaceList as $tmpSpace){ ?>
-			<?= $tmpSpace->mainDivMenu() ?>
+			<?= $tmpSpace->objContentDiv() ?>
 				<div class="objContentScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>

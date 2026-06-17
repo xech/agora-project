@@ -22,8 +22,7 @@ class CtrlMail extends Ctrl
 		////	Controle d'accès && Supprime les mails de plus d'un an
 		if(Ctrl::$curUser->isGuest())  {Ctrl::noAccessExit();}
 		////	Envoi un mail
-		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList")))
-		{
+		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList"))){
 			////	Destinataires : users/contacts (personList)
 			$mailTo=null;
 			if(Req::isParam("personList")){
@@ -37,7 +36,7 @@ class CtrlMail extends Ctrl
 				foreach(Req::param("groupList") as $groupTypeId){
 					$groupObj=Ctrl::getCurObj($groupTypeId);
 					if(is_object($groupObj)){
-						foreach($groupObj->userIds as $userId){
+						foreach($groupObj->_idUsersTab as $userId){
 							$tmpUser=Ctrl::getObj("user",$userId);
 							if(!empty($tmpUser->mail))	{$mailTo.=$tmpUser->mail.",";}
 						}

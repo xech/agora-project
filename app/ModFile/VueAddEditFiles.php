@@ -81,7 +81,7 @@ function mainFormControl(){
 .plupload_filelist_footer				{top:145px; border:none; background:none;}											/*Tableau : bouton d'upload et % de progression*/
 .plupload_filelist_footer td			{padding:5px;} 																		/*idem*/
 .plupload_buttons						{width:100%; text-align:center;}													/*idem : boutons de lancement/arrêt*/
-.plupload_button						{width:250px; padding:15px; border-radius:7px; background:linear-gradient(#fff,#eee); font-size:1rem;}/*idem*/
+.plupload_button						{width:250px; padding:15px; border-radius:var(--radius-block); background:linear-gradient(#fff,#eee); font-size:1rem;}/*idem*/
 .plupload_file_status 					{position:absolute; bottom:15px; right:15px;}										/*% de progression*/
 .ui-state-highlight						{background-color:#d2f5b8!important; border-block-color:#ccc!important;}			/*fichier en cours d'upload*/
 #uploadOptions							{display:table; margin-inline:auto; margin-top:30px;}								/*options d'upload*/
@@ -89,8 +89,8 @@ function mainFormControl(){
 #descriptionTextarea					{margin-top:20px;}																	/*textarea description*/
 #uploadSimple, #uploadOptions #resizeImage, #descriptionTextarea, .plupload_progress_container, .plupload_file_status											{display:none;}				/*masque par défaut*/
 .plupload_header, .plupload_filelist_header, .plupload_start, .plupload_filelist_footer td:is(.plupload_file_action,.plupload_file_size), .ui-resizable-handle	{display:none!important;}	/*masque toujours*/
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	.plupload_droptext 	{display:none!important;}
 	#uploadOptions>div	{display:inline-block; padding:10px;}
 }

@@ -1,5 +1,5 @@
 <style>
-#displayUsersSelect		{margin:10px; height:40px; border-radius:5px; font-weight:bold; cursor:pointer;}
+#displayUsersSelect		{margin:10px; height:40px; border-radius:var(--radius-field); font-weight:bold; cursor:pointer;}
 #displayUsersSelect:has(option[value='all']:checked)	{background-color:#059; color:white!important}
 #menuAlphabet>a			{padding:8px;}
 .vAdminIcon				{margin-left:5px;}
@@ -31,10 +31,26 @@
 
 			<!--GROUPES D'UTILISATEURS-->
 			<?php if($_SESSION["displayUsers"]=="space" && (!empty($userGroups) || MdlUserGroup::addRight())){ ?>
-				<hr><div <?= MdlUserGroup::addRight() ?  Txt::tooltip("USER_spaceGroupsEdit").' onclick="lightboxOpen(\'?ctrl=user&action=VueEditUserGroup\')"'  :  null ?>>
-					<div class="menuLine"><div class="menuIcon"><img src='app/img/user/userGroup.png'></div><div><?= Txt::trad("USER_spaceGroups") ?></div></div>
+				<hr>
+				<div>
+					<!--TITRE DU MENU-->
+					<div class="menuLine">
+						<div class="menuIcon"><img src='app/img/user/userGroup.png'></div>
+						<div><?= Txt::trad("USER_spaceGroups") ?></div>
+					</div>
+					<!--LISTE DES GROUPES-->
 					<?php foreach($userGroups as $tmpGroup){ ?>
-						<div class="menuLine"><div class="menuIcon"></div><div><img src='app/img/arrowRightSmall.png'> <?= ucfirst($tmpGroup->title) ?></div></div>
+						<div class="menuLine cursorHelp" <?= Txt::tooltip($tmpGroup->usersLabel) ?>>
+							<div class="menuIcon">&nbsp;</div>
+							<div><img src='app/img/arrowRightSmall.png'> <?= ucfirst($tmpGroup->title) ?></div>
+						</div>
+					<?php } ?>
+					<!--EDITION DES GROUPES-->
+					<?php if(MdlUserGroup::addRight()){ ?>
+						<div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=VueEditUserGroup')" <?= Txt::tooltip("USER_spaceGroupsEditBis") ?> >
+							<div class="menuIcon"><img src="app/img/edit.png"></div>
+							<div><?= Txt::trad("USER_spaceGroupsEdit") ?></div>
+						</div>
 					<?php } ?>
 				</div>
 			<?php } ?>
@@ -67,7 +83,7 @@
 			if($tmpUser->isGeneralAdmin())		{$adminIcon='<img src="app/img/user/userAdminGeneral.png" '.Txt::tooltip("USER_adminGeneral").' class="vAdminIcon">';}	//Admin general
 			elseif($tmpUser->isSpaceAdmin())	{$adminIcon='<img src="app/img/user/userAdminSpace.png" '.Txt::tooltip("USER_adminSpace").' class="vAdminIcon">';}		//Admin space
 			else								{$adminIcon=null;}
-			echo $tmpUser->mainDivMenu("objPerson").
+			echo $tmpUser->objContentDiv("objPerson").
 				'<div class="objContentScroll">
 					<div class="objContentTab">
 						<div class="objIcon">'.$tmpUser->tagProfileImg(true,false).'</div>

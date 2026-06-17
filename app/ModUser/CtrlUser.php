@@ -32,7 +32,7 @@ class CtrlUser extends Ctrl
 		$vDatas["displayedUsers"]=Db::getObjTab("user", $sqlDisplayedUsers." ".MdlUser::sqlPagination());
 		$vDatas["usersTotalNb"]=count(Db::getTab($sqlDisplayedUsers));
 		$vDatas["menuDisplayUsers"]=(Ctrl::$curUser->isGeneralAdmin() && count(Ctrl::$curUser->spaceList())>1);
-		$vDatas["userGroups"]=MdlUserGroup::getGroups(Ctrl::$curSpace);
+		$vDatas["userGroups"]=MdlUserGroup::userGroupList(Ctrl::$curSpace);
 		//Affiche la page
 		static::displayPage("VueIndex.php",$vDatas);
 	}
@@ -64,6 +64,7 @@ class CtrlUser extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;
+		$vDatas["userGroupList"]=MdlUserGroup::userGroupList(null,$curObj);
 		static::displayPage("VueUser.php",$vDatas);
 	}
 
@@ -212,7 +213,7 @@ class CtrlUser extends Ctrl
 			}
 		}
 		////	Affiche le menu d'Import/Export
-		$vDatas["objClass"]="MdlUser";
+		$vDatas["objectType"]="user";
 		static::displayPage(Req::commonPath."VuePersonsImportExport.php",$vDatas);
 	}
 
@@ -367,7 +368,7 @@ class CtrlUser extends Ctrl
 		}
 		////	Users et groupes de l'espace (en 1er un nouveau groupe "vierge")
 		$vDatas["usersList"]=Ctrl::$curSpace->getUsers();
-		$vDatas["groupList"]=array_merge([new MdlUserGroup()], MdlUserGroup::getGroups(Ctrl::$curSpace));
+		$vDatas["groupList"]=array_merge([new MdlUserGroup()], MdlUserGroup::userGroupList(Ctrl::$curSpace));
 		foreach($vDatas["groupList"] as $tmpKey=>$tmpGroup){
 			if($tmpGroup->editRight()==false)	{unset($vDatas["groupList"][$tmpKey]);}
 			else{

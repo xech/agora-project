@@ -34,8 +34,8 @@ ready(function(){
 	////	Sélectionne "Tous les utilisateurs"
 	$("#spaceAffecAllUsers").on("change",async function(){
 		////	Confirm "Tout sélectionner" / "Tout déselectionner"
-		let isChecked=$(this).is(":checked");
-		let tradSelect=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("selectNone") ?>";
+		let isChecked=this.checked;
+		let tradSelect=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("unselectAll") ?>";
 		if(await confirmAlt(tradSelect+" ?")){
 			$(".spaceAffectLine input[value$='_1']").prop("checked",isChecked).prop("disabled",isChecked);	//Si besoin Check et disabled toutes les Box
 			spaceAffectStyle();																				//Style des .spaceAffectLabel
@@ -85,8 +85,8 @@ label[for='allUsers']					{font-size:1.1rem;}
 .vModuleLineIcon						{vertical-align:middle; margin-left:5px;}
 div[class^='moduleOptions']				{display:none; padding:3px;}/*masque par défaut les options*/
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
 	.vModuleLineIcon	{display:none!important;}
 }
 </style>

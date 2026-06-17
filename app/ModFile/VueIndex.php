@@ -1,18 +1,22 @@
 <style>
-.objBlocks .objContent										{height:150px; min-width:150px; max-width:250px;}									/*surcharge*/
-.objBlocks .objIcon												{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:7px;}/*centre l'icone (dossier, types de fichier, img "fullsize")*/
-.objBlocks .objIcon img											{margin-top:15px;}																	/*idem ...sauf image "fullsize"*/
-.objBlocks .thumbLandscape img, .objBlocks .thumbPortrait img	{min-width:100%; max-width:none; min-height:100%; max-height:none;}					/*images "fullsize" : couvrent tout le Block*/
-.objBlocks .thumbLandscape img									{height:100%;}																		/*images "fullsize" paysage : 100% de haut*/
-.objBlocks .thumbPortrait img									{width:100%; margin-top:-45%!important;}											/*images "fullsize" portrait : 100% de large + recentré*/
-.objBlocks .hasThumb img										{margin-top:0px!important;}															/*vignettes : pas de margin-top pour les images*/
-.objBlocks .hasThumb .menuContextLaunchFloat					{filter:contrast(200%);}															/*vignettes : surligne l'icone burger*/
-.objBlocks .objContentSelect									{border:2px solid rgba(255, 139, 85, 1);}											/*surcharge la sélection de fichiers avec vignette*/
-.objBlocks .objLabel											{position:absolute; bottom:0px; width:100%; padding:8px 4px; text-align:center;}	/*label "bandeau" d'un dossier/fichier (modFile)*/
-.objBlocks .objFiles .objLabel a								{font-size:0.95rem; cursor:url('app/img/download.png'),default;}					/*nom des fichiers*/
-.objBlocks .hasThumb .objLabel									{background:<?= Ctrl::$agora->skin ?>; border-radius:0px 0px 5px 5px;}				/*images/vignettes pdf : background des labels*/
-.objLines .objLabel>span										{padding:10px 50px 10px 0px;}														/*Zone clickable élargie*/
-.objLabel .versionsMenu											{margin-left:10px;}																	/*icone "versionsMenu()"*/
+.objBlocks .objContent							{height:150px; min-width:150px; max-width:240px;}					/*surcharge*/
+.objBlocks .objIcon								{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:var(--radius-block);}/*centre l'icone*/
+.objBlocks .objContent:not(.hasThumb) .objIcon	{padding-top:20px;}													/*icone de dossier/fichier*/
+.objBlocks .objIcon img:is(.thumbLandscape,.thumbPortrait)	{min-width:100%!important; min-height:100%!important; max-width:200%!important; max-height:200%!important;}/*surcharge ".objIcon img" : full zize*/
+.objBlocks .objIcon img.thumbLandscape			{height:100%;}														/*image landscape  : 100% de haut + recentré à l'horizontale*/
+.objBlocks .objIcon img.thumbPortrait			{width:100%; margin-top:-30%;}										/*images portrait : 100% de large + recentré à la verticale*/
+.objBlocks .hasThumb .menuContextLaunchFloat	{filter:contrast(200%);}											/*vignettes : surligne l'icone burger*/
+.objBlocks .objContentSelected .objLabel		{background-color:var(--blue-bg)!important;}						/*surcharge la sélection de fichiers avec vignette*/
+.objBlocks .objContentSelected .objLabel a		{color:white!important;}											/*idem pour les liens*/
+.objBlocks .objLabel							{position:absolute; background-color:<?= Ctrl::$agora->skin ?>; bottom:0px; width:100%; padding:8px 4px; text-align:center; border-radius:0px 0px var(--radius-block) var(--radius-block);}	/*label "bandeau" d'un dossier/fichier (modFile)*/
+.objBlocks .objFiles .objLabel a				{font-size:0.95rem; cursor:url('app/img/download.png'),default;}	/*nom des fichiers*/
+.objLines .objLabel>span						{padding:10px 50px 10px 0px;}										/*Zone clickable élargie*/
+.objLabel .versionsMenu							{margin-left:10px;}													/*icone "versionsMenu()"*/
+
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
+	.objBlocks .objContent	{float:left; margin:5px;}/*surcharge*/
+}
 </style>
 
 
@@ -44,10 +48,10 @@
 		<?php
 		foreach($filesList as $tmpFile){
 			$containerClass=$tmpFile->hasTumb() ? "hasThumb" : null;
-			echo $tmpFile->mainDivMenu($containerClass);
+			echo $tmpFile->objContentDiv($containerClass);
 		?>
 				<div class="objContentTab objFiles">
-					<div class="objIcon <?= $tmpFile->iconClass ?>" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="typeIdTarget"></div>
+					<div class="objIcon" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="typeIdTargetClick <?= $tmpFile->iconClass ?>"></div>
 					<div class="objLabel" <?= Txt::tooltip($tmpFile->labelTooltip) ?>><a <?= $tmpFile->labelLink ?> ><?= Txt::reduce($tmpFile->name,$nameLength).$tmpFile->versionsMenu("icon") ?></a></div>
 					<div class="objDetails"><?= File::sizeLabel($tmpFile->octetSize) ?></div>
 					<div class="objAutorDate"><?= $tmpFile->autorDate(true) ?></div>

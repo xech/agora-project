@@ -237,7 +237,7 @@ class MdlCalendar extends MdlObject
 		foreach($evtList as $tmpEvt){
 			if(static::evtInPeriod($tmpEvt, $timePeriodBegin, $timePeriodEnd)){
 				$cloneEvt=clone $tmpEvt;
-				$cloneEvt->ymdDisplayed=date("Y-m-d",$timePeriodBegin);//cf evt sur plusieurs jours
+				$cloneEvt->ymdBegin=date("Y-m-d",$timePeriodBegin);//cf evt sur plusieurs jours
 				$evtDayList[]=$cloneEvt;
 			}
 		}

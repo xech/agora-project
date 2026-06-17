@@ -114,24 +114,28 @@ form							{text-align:center;}
 
 		////	RECUPERE LES VALEURS DE L'IMPORT CSV
 		if(Req::param("importType")=="csv"){
-			//Liste des champs (en fonction de la premiere ligne) + définit le delimiteur de champ + nb de champs
-			$csvDelimiters=[";"=>0, ","=>0, "\t"=>0, "|"=>0];
-			$fileHandle=fopen($_FILES["importFile"]["tmp_name"], "r");													//Charge le CSV		
-			$firstLine=fgets($fileHandle);																				//Récupère la première ligne du csv
-			foreach($csvDelimiters as $tmpDelimiter=>&$count)  {$count=count(str_getcsv($firstLine,$tmpDelimiter));}	//Incrémente chaque valeur de $csvDelimiters via "&$count"
-			$delimiter=array_search(max($csvDelimiters), $csvDelimiters);												//Définit le délimiter en fonction de la plus grande clé
-			//Champs du header et personnes à importer
-			$headerFields=[];																							//Init $headerFields
-			foreach(explode($delimiter,$firstLine) as $tmpVal)  {$headerFields[]=trim($tmpVal,"'\"");}					//Parcourt la $firstLine et ajoute chaque valeur au $headerFields (sans quotes)
-			$fileHandle=fopen($_FILES["importFile"]["tmp_name"],"r");													//Charge tout le CSV		
-			while(($data=fgetcsv($fileHandle,10000,$delimiter))!==false)  {$importList[]=$data;}						//Ajoute chaque ligne du csv à $importList
+			$importFields=[];																	//Init $importFields
+			$enclosure="\"";																	//Caractère d'encadrement
+			$escape="\\";																		//caractères et d'échappement
+			$separatorList=[";"=>0, ","=>0, "\t"=>0, "|"=>0];									//Init les delimiteurs de champs du CSV
+			$fileHandle=fopen($_FILES["importFile"]["tmp_name"], "r");							//Charge le CSV		
+			$firstLine=fgets($fileHandle);														//Récupère la première ligne du csv
+			foreach($separatorList as $separatorTmp=>&$count)									//Parcourt chaque délimiters
+				{$count=count(str_getcsv($firstLine, $separatorTmp, $enclosure, $escape));}		//- Incrémente le nombre de fois ou le délimiteur est présent ('"' et "\\" : caractères d'encadrement et d'échappement)
+			$separator=array_search(max($separatorList), $separatorList, true);					//Définit le délimiter en fonction de la plus grande clé
+			foreach(explode($separator,$firstLine) as $tmpVal){									//Parcourt la $firstLine :
+				$tmpVal=Txt::clean(trim($tmpVal,$enclosure),"min");								//- Clean le champ
+				if(!empty($tmpVal))  {$importFields[]=$tmpVal;}									//- ajoute chaque valeur au $importFields (sans quotes)
+			}
+			while(($data=fgetcsv($fileHandle, null, $separator, $enclosure, $escape))!==false)	//Parcourt chaque ligne du CSV  ('"' et "\\" : caractères et d'échappement)
+				{$importList[]=$data;}															//- Ajoute la ligne du csv à $importList
 		}
 		////	RECUPERE LES VALEURS DE L'IMPORT LDAP
 		elseif(Req::param("importType")=="ldap"){
 			$ldapSearch=MdlPerson::ldapSearch($importLoginPassword, Req::param("importLdapDn"), Req::param("importLdapFilter"));
 			if(!empty($ldapSearch)){
-				$headerFields=$ldapSearch["headerFields"];	//Récupère chaque champ du header
-				$importList=$ldapSearch["ldapPersons"];	//Liste des personnes à importer
+				$importFields=$ldapSearch["headerFields"];	//Récupère chaque champ du header
+				$importList=$ldapSearch["ldapPersons"];		//Liste des personnes à importer
 			}
 		}
 	?>
@@ -143,36 +147,36 @@ form							{text-align:center;}
 
 			<!--TABLEAU DES PERSONNES A IMPORTER-->
 			<table id="importTable">
-				<!--HEADER DU TABLEAU : BOUTON DE "SWITCH" DE SÉLECTION  &&  INPUTS "SELECT" DE CHAQUE CHAMP "AGORA"-->
+				<!--HEADER DU TABLEAU : BOUTON DE SÉLECTION  &&  INPUTS "SELECT" DE CHAQUE CHAMP "AGORA"-->
 				<tr>
-					<th><img src="app/img/checkSwitch.png" onclick="$('.vLineImportCheckbox').trigger('click');" <?= Txt::tooltip("selectSwitch") ?>></th>
-					<?php for($fieldCpt=0; $fieldCpt < count($headerFields); $fieldCpt++){ ?>
+					<th><img src="app/img/checkSelectAll.png" onclick="$('.vLineImportCheckbox').prop('checked',true);" <?= Txt::tooltip("selectAll") ?>></th>
+					<?php for($fieldCpt=0; $fieldCpt < count($importFields); $fieldCpt++){ ?>
 					<th>
 						<select name="agoraFields[<?= $fieldCpt ?>]" class="vAgoraFieldSelect" data-field-cpt="<?= $fieldCpt ?>">
 							<option></option>
-							<?php foreach(MdlPerson::$csvFields["fieldKeys"] as $fieldName){
-								if($objClass::objectType=="contact" && preg_match("/(login|password)/i",$fieldName))  {continue;}//pas de password pour les contacts
-								$selectField=(Txt::clean($headerFields[$fieldCpt],"max")==$fieldName)  ?  "selected"  :  null;
+							<?php
+							////	Parcourt chaque champ à importer
+							foreach(MdlPerson::$csvFields["fieldKeys"] as $fieldName){
+								//// Pas d'import de des groupes, ni de login/password pour les contacts
+								if($fieldName=="groups" || ($objectType=="contact" && preg_match("/(login|password)/i",$fieldName)))   {continue;}
+								//// Sélectionne le champ
+								$selectField=(Txt::clean($importFields[$fieldCpt],"max")==$fieldName)  ?  "selected"  :  null;
 							?>
-							<option value="<?= $fieldName ?>" <?= $selectField ?>><?= Txt::trad($fieldName) ?></option>
+								<option value="<?= $fieldName ?>" <?= $selectField ?>><?= Txt::trad($fieldName) ?></option>
 							<?php } ?>
 						</select>
 					</th>
 					<?php } ?>
 				</tr>
 				
-				<!--LIGNES DES PERSONNES A IMPORTER-->
-				<?php
-				foreach($importList as $lineCpt=>$lineValues){
-					$isChecked=($lineCpt>0) ? 'checked' : null;
-				?>
-					<!--CHECKBOX ET CHAMPS DE CHAQUE PERSONNE À IMPORTER-->
+				<!--CHECKBOX ET CHAMPS DE CHAQUE PERSONNE À IMPORTER-->
+				<?php foreach($importList as $lineCpt=>$lineValues){ ?>
 					<tr id="rowPerson<?= $lineCpt ?>">
-						<td><input type="checkbox" name="personsImport[]" value="<?= $lineCpt ?>" class="vLineImportCheckbox" <?= $isChecked ?>></td>
+						<td><input type="checkbox" name="personsImport[]" value="<?= $lineCpt ?>" class="vLineImportCheckbox" checked="checked"></td>
 						<?php
 						foreach($lineValues as $fieldCpt=>$fieldVal){
 							$fieldVal=$fieldLabel=Txt::utf8Encode($fieldVal);
-							if($headerFields[$fieldCpt]=="password" && !empty($fieldVal) && $fieldVal!="password")  {$fieldLabel="**********";}
+							if(array_key_exists($fieldCpt,$importFields) && $importFields[$fieldCpt]=="password" && $fieldVal!="password")  {$fieldLabel="**********";}
 						?>
 							<td><?= $fieldLabel ?><input type="hidden" name="personFields[<?= $lineCpt ?>][<?= $fieldCpt ?>]" value="<?= $fieldVal ?>"></td>
 						<?php } ?>
@@ -181,7 +185,7 @@ form							{text-align:center;}
 			</table>
 
 			<!--IMPORT D'USER-->
-			<?php if($objClass::objectType=="user"){ ?>
+			<?php if($objectType=="user"){ ?>
 				<div class="vImportOptions">
 					<!--NOTIF PAR MAIL-->
 					<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser">
@@ -211,10 +215,12 @@ form							{text-align:center;}
 			<?php if(isset($curContainer) && $curContainer->isRootFolder()){ ?>
 				<div class='vImportOptions'><img src="app/img/info.png"> <?= Txt::trad("importContactRootFolder") ?> <i><?= Ctrl::$curSpace->name ?></i></div>
 			<?php } ?>
-		<!--TABLEAU D'IMPORT =>FIN-->
-		<?php } ?>
-	<!--FORMULAIRE D'IMPORT =>FIN-->
-	<?php } ?>
+
+	<!--TABLEAU & FORMULAIRE D'IMPORT => FIN-->
+	<?php
+		}
+	}
+	?>
 
 	<!--BOUTON DE VALIDATION-->
 	<?= Txt::submitButton("validate") ?>

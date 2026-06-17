@@ -58,23 +58,28 @@ form .infos								{margin:0px; margin-bottom:20px;}
 	<!--LISTE DES REPONSES POSSIBLES (10 maxi)-->
 	<div id="responseListLabel"><?= Txt::trad("DASHBOARD_POLLS_responseList") ?> :</div>
 	<?php
-	for($tmpKey=0; $tmpKey<=10; $tmpKey++)
-	{
-		//Init la réponse
+	for($tmpKey=0; $tmpKey<=10; $tmpKey++){
 		$respTmp		=(isset($pollResponses[$tmpKey]))  ?  $pollResponses[$tmpKey] : null;	//Réponse courante
 		$respClass		=(empty($respTmp) && $tmpKey>=3)  ?  "vPollResponseHidden"  :  null;	//Masque les champs vides, à partir du 3ème champ
 		$respId			=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["_id"]  :  uniqid();	//Identifiant unique de la réponse
 		$respValue		=(!empty($respTmp))  ?  $pollResponses[$tmpKey]["label"]  :  null;		//Valeur/libellé de la réponse
-		if(empty($respTmp["fileName"]))	{$respFileHide="responseFileHide";	$respFileContent="<input type='file' name=\"responsesFile".$respId."\">";}
-		else							{$respFileHide=null;				$respFileContent="<div id='respFileName".$respId."'><a href=\"".$respTmp["fileUrlDownload"]."\" ".Txt::tooltip("download")."><img src='app/img/attachment.png'> ".$respTmp["fileName"]."</a> &nbsp; <img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"deleteResponseFile('".$respId."');\">";}
-		//Affiche la réponse
-		echo '<div class="vPollResponseDiv '.$respClass.'">
-				<input type="text" name="responses['.$respId.']" value="'.$respValue.'" placeholder="'.Txt::trad("DASHBOARD_POLLS_responseNb").($tmpKey+1).'">
-				<img src="app/img/attachment.png" onclick="$(\'#responseFile'.$respId.'\').slideToggle()" '.Txt::tooltip("EDIT_attachedFileAdd").'>
-				<div id="responseFile'.$respId.'" class="responseFile '.$respFileHide.'">'.$respFileContent.'</div>
-			  </div>';
-	}
+		if(empty($respTmp["fileName"])){
+			$respFileClass="responseFileHide";
+			$respFileContent='<input type="file" name="responsesFile'.$respId.'">';
+		}else{
+			$respFileClass=null;
+			$respFileContent='<div id="respFileName'.$respId.'">
+								<a href="'.$respTmp["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$respTmp["fileName"].'</a> &nbsp; 
+								<img src="app/img/delete.png" '.Txt::tooltip("delete").' onclick="deleteResponseFile(\''.$respId.'\');">
+							  </div>';
+		}
 	?>
+		<div class="vPollResponseDiv <?= $respClass ?>">
+			<input type="text" name="responses[<?= $respId ?>]" value="<?= $respValue ?>" placeholder="<?= Txt::trad("DASHBOARD_POLLS_responseNb").($tmpKey+1) ?>">
+			<img src="app/img/attachment.png" onclick="$('#responseFile<?= $respId ?>').slideToggle()" <?= Txt::tooltip("EDIT_attachedFileAdd") ?>>
+			<div id="responseFile<?= $respId ?>" class="responseFile <?= $respFileClass ?>"><?= $respFileContent ?></div>
+		 </div>
+	<?php } ?>
 
 	<!--SONDAGE PAS ENCORE VOTÉ : AJOUTER UNE REPONSE-->
 	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_POLLS_responseAdd") ?>&nbsp; <img src="app/img/plusSmall.png"></div><?php } ?>

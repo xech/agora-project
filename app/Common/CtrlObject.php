@@ -286,7 +286,7 @@ class CtrlObject extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["commentList"]=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY dateCrea DESC");
+		$vDatas["commentList"]=Db::getTab("SELECT * FROM ap_objectComment WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY dateCrea ASC");
 		$vDatas["commentsTitle"]=count($vDatas["commentList"])." ".(count($vDatas["commentList"])>1 ? Txt::trad("AGORA_usersComments") :  Txt::trad("AGORA_usersComment"));
 		static::displayPage(Req::commonPath."VueObjComments.php",$vDatas);
 	}

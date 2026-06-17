@@ -77,17 +77,16 @@ class DbUpdate extends Db
 		////
 		elseif(version_compare(Ctrl::$agora->version_agora, Req::appVersion(), "<"))
 		{
-			////	VERIF LA VERSION DE PHP & L'ACCES AU FICHIER DE CONFIG
+			////	VERIF LA VERSION DE PHP  +  L'ACCES AU FICHIER DE CONFIG  +  VERROUILAGE DE LA MISE A JOUR
 			Req::verifPhpVersion();
-			if(is_writable(PATH_DATAS."config.inc.php")==false)  {throw new Exception("Update error : Config.inc.php is not writable");}
-			////	VERROUILAGE DE LA MISE A JOUR
 			$updateLock=PATH_DATAS."UPDATE_LOCK.log";
-			if(is_file($updateLock)==false)				{file_put_contents($updateLock,"LOCKED UPDATE - VERROUILAGE DE LA MISE A JOUR");}
-			elseif((time()-filemtime($updateLock))<10)	{throw new Exception("Update in progress : please wait a few seconds");}
-			else										{throw new Exception("Update error : check Apache/PHP logs for details<br><br>When the issue is resolved : delete the '".$updateLock."' file");}
+			if(is_writable(PATH_DATAS."config.inc.php")==false)   {throw new Exception("Update error : Config.inc.php is not writable");}
+			if(is_file($updateLock)==false)				{file_put_contents($updateLock,"Update in progress");}
+			elseif((time()-filemtime($updateLock))<20)	{throw new Exception("Update in progress, please wait");}
+
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
-			@set_time_limit(120);//pas en safemode
+			Tool::setTimeLimit(300);
 			$dumpPath=self::getDump();
 
 			////	MAJ v3.0.0
@@ -547,7 +546,7 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("3.1.9"))
 			{
-				self::query("ALTER TABLE ap_file CHANGE `downloadsNb` `downloadsNb` smallint NOT NULL DEFAULT '0'");
+				self::query("ALTER TABLE ap_file CHANGE `downloadsNb` `downloadsNb` SMALLINT NOT NULL DEFAULT '0'");
 			}
 
 			if(self::updateVersion("3.1.10"))
@@ -566,7 +565,7 @@ class DbUpdate extends Db
 				self::query("UPDATE ap_agora SET moduleLabelDisplay='hide' WHERE moduleLabelDisplay IS NULL");
 				self::query("UPDATE ap_agora SET moduleLabelDisplay=null WHERE moduleLabelDisplay IS NOT NULL AND moduleLabelDisplay NOT LIKE 'hide'");
 				//Fichiers joints : 'downloadsNb' doit avoir une valeur par défaut
-				self::query("ALTER TABLE ap_objectAttachedFile CHANGE `downloadsNb` `downloadsNb` smallint NOT NULL DEFAULT '0'");
+				self::query("ALTER TABLE ap_objectAttachedFile CHANGE `downloadsNb` `downloadsNb` SMALLINT NOT NULL DEFAULT '0'");
 				//Enleve la selection de couleur dans le messenger
 				if(self::fieldExist("ap_userMessengerMessage","color"))  {self::query("ALTER TABLE ap_userMessengerMessage DROP color");}
 				//Enleve la gestion de l'affichage des evts d'agenda
@@ -629,25 +628,25 @@ class DbUpdate extends Db
 			{
 				//Ajoute La table "ap_objectLike"
 				if(self::tableExist("ap_objectLike")==false){
-					self::query("CREATE TABLE ap_objectLike (`objectType` varchar(255) not null, `_idObject` int not null, `_idUser` int not null, `value` tinyint not null) DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_objectLike (`objectType` VARCHAR(255) NOT NULL, `_idObject` int NOT NULL, `_idUser` int NOT NULL, `value` TINYINT NOT NULL) DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_objectLike ADD INDEX `indexes` (`objectType`(255), `_idObject`)");
 				}
 				//Ajoute la table "ap_objectComment"
 				if(self::tableExist("ap_objectComment")==false){
-					self::query("CREATE TABLE ap_objectComment	(_id int not null, objectType varchar(255) not null, _idObject int not null, _idUser int not null, dateCrea datetime not null, comment text not null) DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_objectComment	(_id int NOT NULL, objectType VARCHAR(255) NOT NULL, _idObject int NOT NULL, _idUser int NOT NULL, dateCrea datetime NOT NULL, comment TEXT NOT NULL) DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_objectComment ADD PRIMARY KEY (`_id`), ADD INDEX `indexes` (`_id`,`objectType`(255), `_idObject`)");
 					self::query("ALTER TABLE ap_objectComment MODIFY _id int NOT NULL AUTO_INCREMENT");
 				}
 				//Ajoute  "usersLike" et "usersComment" à la table "ap_agora"
 				if(self::fieldExist("ap_agora", "usersLike")==false){
-					self::fieldExist("ap_agora", "usersLike",	"ALTER TABLE ap_agora ADD usersLike varchar(255) DEFAULT NULL AFTER footerHtml");
-					self::fieldExist("ap_agora", "usersComment","ALTER TABLE ap_agora ADD usersComment tinyint DEFAULT NULL AFTER usersLike");
+					self::fieldExist("ap_agora", "usersLike",	"ALTER TABLE ap_agora ADD usersLike VARCHAR(255) DEFAULT NULL AFTER footerHtml");
+					self::fieldExist("ap_agora", "usersComment","ALTER TABLE ap_agora ADD usersComment TINYINT DEFAULT NULL AFTER usersLike");
 					self::query("UPDATE ap_agora SET usersLike='likeSimple', usersComment=1");
 				}
 				//Change le type "tinytext" en "varchar(255)"
 				foreach(["sendmailFrom","smtpHost","smtpSecure","smtpUsername","smtpPass","editObjId"] as $tmpField){
 					$tmpTable=($tmpField=="editObjId")  ?  "ap_userLivecouter"  :  "ap_agora";
-					self::query("ALTER TABLE `".$tmpTable."` CHANGE `".$tmpField."` `".$tmpField."` varchar(255) DEFAULT NULL");
+					self::query("ALTER TABLE `".$tmpTable."` CHANGE `".$tmpField."` `".$tmpField."` VARCHAR(255) DEFAULT NULL");
 				}
 				//Supprime les logs obsoletes
 				self::query("DELETE FROM ap_log WHERE action='consult2'");
@@ -666,16 +665,16 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.4.1"))
 			{
 				// Ajoute le type d'outil de cartographie utilisé ("gmap ou "leaflet") et l'Identifiant utilisé (pour gmap)
-				self::fieldExist("ap_agora", "mapTool",		"ALTER TABLE ap_agora ADD mapTool varchar(255) DEFAULT 'gmap' AFTER usersComment");
-				self::fieldExist("ap_agora", "mapApiKey",	"ALTER TABLE ap_agora ADD mapApiKey varchar(255) DEFAULT NULL AFTER mapTool");
+				self::fieldExist("ap_agora", "mapTool",		"ALTER TABLE ap_agora ADD mapTool VARCHAR(255) DEFAULT 'gmap' AFTER usersComment");
+				self::fieldExist("ap_agora", "mapApiKey",	"ALTER TABLE ap_agora ADD mapApiKey VARCHAR(255) DEFAULT NULL AFTER mapTool");
 			}
 
 			if(self::updateVersion("3.4.2"))
 			{
 				//Ajoute le parametrage Google Signin
-				self::fieldExist("ap_agora", "gSignin",			"ALTER TABLE ap_agora ADD gSignin tinyint DEFAULT NULL AFTER mapApiKey");
-				self::fieldExist("ap_agora", "gSigninClientId",	"ALTER TABLE ap_agora ADD gSigninClientId varchar(255) DEFAULT NULL AFTER gSignin");//uniquement pour AP
-				self::fieldExist("ap_agora", "gPeopleApiKey",	"ALTER TABLE ap_agora ADD gPeopleApiKey varchar(255) DEFAULT NULL AFTER gSigninClientId");//idem
+				self::fieldExist("ap_agora", "gSignin",			"ALTER TABLE ap_agora ADD gSignin TINYINT DEFAULT NULL AFTER mapApiKey");
+				self::fieldExist("ap_agora", "gSigninClientId",	"ALTER TABLE ap_agora ADD gSigninClientId VARCHAR(255) DEFAULT NULL AFTER gSignin");//uniquement pour AP
+				self::fieldExist("ap_agora", "gPeopleApiKey",	"ALTER TABLE ap_agora ADD gPeopleApiKey VARCHAR(255) DEFAULT NULL AFTER gSigninClientId");//idem
 				if(Req::isHost())  {self::query("UPDATE ap_agora SET gSignin=1");}
 			}
 
@@ -701,18 +700,18 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_user","_idNewPassword"))  {self::query("ALTER TABLE ap_user DROP _idNewPassword");}
 				//Ajoute la table de sondage "ap_dashboardPoll"
 				if(self::tableExist("ap_dashboardPoll")==false){
-					self::query("CREATE TABLE ap_dashboardPoll (_id int NOT NULL,  title varchar(200) NOT NULL,  description varchar(2000) DEFAULT NULL,  dateEnd date DEFAULT NULL,  multipleResponses tinyint DEFAULT NULL,  newsDisplay tinyint DEFAULT NULL,  dateCrea datetime NOT NULL,  _idUser int NOT NULL,  dateModif datetime DEFAULT NULL,  _idUserModif int DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPoll (_id int NOT NULL,  title VARCHAR(200) NOT NULL,  description VARCHAR(2000) DEFAULT NULL,  dateEnd date DEFAULT NULL,  multipleResponses TINYINT DEFAULT NULL,  newsDisplay TINYINT DEFAULT NULL,  dateCrea datetime NOT NULL,  _idUser int NOT NULL,  dateModif datetime DEFAULT NULL,  _idUserModif int DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPoll ADD PRIMARY KEY (_id)");
 					self::query("ALTER TABLE ap_dashboardPoll MODIFY _id int NOT NULL AUTO_INCREMENT");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponse"
 				if(self::tableExist("ap_dashboardPollResponse")==false){
-					self::query("CREATE TABLE ap_dashboardPollResponse (_id varchar(255) NOT NULL,  _idPoll int NOT NULL,  label varchar(500) NOT NULL,  `rank` tinyint NOT NULL,  fileName varchar(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPollResponse (_id VARCHAR(255) NOT NULL,  _idPoll int NOT NULL,  label VARCHAR(500) NOT NULL,  `rank` TINYINT NOT NULL,  fileName VARCHAR(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPollResponse ADD PRIMARY KEY (_id(20))");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponseVote"
 				if(self::tableExist("ap_dashboardPollResponseVote")==false){
-					self::query("CREATE TABLE ap_dashboardPollResponseVote (_idUser int NOT NULL, _idResponse varchar(255) NOT NULL, _idPoll int NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPollResponseVote (_idUser int NOT NULL, _idResponse VARCHAR(255) NOT NULL, _idPoll int NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPollResponseVote ADD PRIMARY KEY (_idUser,_idResponse(20))");
 				}
 				//Créé un exemple de sondage
@@ -754,11 +753,11 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.6.5"))
 			{
 				//Correction du champ "guest" pour les propositions d'événements
-				self::fieldExist("ap_calendarEvent","guest",		"ALTER TABLE ap_calendarEvent ADD guest varchar(255) DEFAULT NULL AFTER _idUser");
+				self::fieldExist("ap_calendarEvent","guest",		"ALTER TABLE ap_calendarEvent ADD guest VARCHAR(255) DEFAULT NULL AFTER _idUser");
 				//Fichiers : Ajoute un champ pour la liste des personnes ayant téléchargé un fichier
-				self::fieldExist("ap_file","downloadedBy",			"ALTER TABLE ap_file ADD downloadedBy varchar(10000) DEFAULT NULL AFTER downloadsNb");
+				self::fieldExist("ap_file","downloadedBy",			"ALTER TABLE ap_file ADD downloadedBy VARCHAR(10000) DEFAULT NULL AFTER downloadsNb");
 				//Sondage : Ajoute une option pour pouvoir afficher le résultat de chaque votant 
-				self::fieldExist("ap_dashboardPoll","publicVote",	"ALTER TABLE ap_dashboardPoll ADD publicVote tinyint DEFAULT NULL AFTER newsDisplay");
+				self::fieldExist("ap_dashboardPoll","publicVote",	"ALTER TABLE ap_dashboardPoll ADD publicVote TINYINT DEFAULT NULL AFTER newsDisplay");
 				//Suppression des affectations obsoletes aux dossiers racine (résiduelles)
 				self::query("DELETE FROM ap_objectTarget WHERE objectType IN ('fileFolder','contactFolder','taskFolder','linkFolder') AND _idObject='1'");
 			}
@@ -784,7 +783,7 @@ class DbUpdate extends Db
 			if(self::updateVersion("3.7.3.1"))
 			{
 				//Ajoute le paramétrage du serveur Jitsi
-				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost varchar(255) DEFAULT NULL AFTER logsTimeOut");
+				self::fieldExist("ap_agora", "visioHost", "ALTER TABLE ap_agora ADD visioHost VARCHAR(255) DEFAULT NULL AFTER logsTimeOut");
 			}
 
 			if(self::updateVersion("3.7.4.2"))
@@ -792,19 +791,19 @@ class DbUpdate extends Db
 				//Supprime si besoin l'ancien fichier PATH_WALLPAPER_CUSTOM/.htaccess
 				if(is_file(PATH_WALLPAPER_CUSTOM.".htaccess"))  {File::rm(PATH_WALLPAPER_CUSTOM.".htaccess");}
 				//Ajoute l'url de visio dans les evenements d'agenda
-				self::fieldExist("ap_calendarEvent", "visioUrl", "ALTER TABLE ap_calendarEvent ADD visioUrl varchar(255) DEFAULT NULL AFTER contentVisible");
+				self::fieldExist("ap_calendarEvent", "visioUrl", "ALTER TABLE ap_calendarEvent ADD visioUrl VARCHAR(255) DEFAULT NULL AFTER contentVisible");
 			}
 
 			if(self::updateVersion("3.8.0"))
 			{
 				//Espace :  Renomme le champ 'usersInscription' en 'userInscription'  &&  Ajoute l'option de notif mail à l'admin après chaque inscription d'un user
-				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` tinyint DEFAULT NULL");}
-				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify tinyint DEFAULT NULL AFTER userInscription");
+				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` TINYINT DEFAULT NULL");}
+				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify TINYINT DEFAULT NULL AFTER userInscription");
 				//Agenda :  Ajoute l'option de notification par email à chaque proposition d'événement  &&  Ajoute l'option de proposition d'événement pour les guests
-				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` varchar(1) DEFAULT NULL AFTER timeSlot");
-				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` varchar(1) DEFAULT NULL AFTER propositionNotify");
+				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` VARCHAR(1) DEFAULT NULL AFTER timeSlot");
+				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` VARCHAR(1) DEFAULT NULL AFTER propositionNotify");
 				//Agenda et proposition d'evenement d'un guest :  Ajoute un champ "guestMail" pour les notifications par mail de validation/invalidation d'evt
-				self::fieldExist("ap_calendarEvent", "guestMail", "ALTER TABLE ap_calendarEvent ADD `guestMail` varchar(255) DEFAULT NULL AFTER guest");
+				self::fieldExist("ap_calendarEvent", "guestMail", "ALTER TABLE ap_calendarEvent ADD `guestMail` VARCHAR(255) DEFAULT NULL AFTER guest");
 				//Agendas affectés à un espace public et avec "tous les users" en écriture : Précoche l'option "propositionGuest" 
 				foreach(self::getCol("SELECT _idObject FROM ap_objectTarget WHERE objectType='calendar' AND `target`='spaceUsers' AND accessRight=2 AND _idSpace IN (select _id as _idSpace from ap_space where public=1)") as $idCalendar)
 					{self::query("UPDATE ap_calendar SET propositionGuest=1 WHERE _id=".(int)$idCalendar);}
@@ -813,13 +812,13 @@ class DbUpdate extends Db
 			if(self::updateVersion("21.6"))
 			{
 				//Ajoute le mode d'affichage par défaut des objets (liste/block)
-				self::fieldExist("ap_agora", "folderDisplayMode", "ALTER TABLE ap_agora ADD `folderDisplayMode` varchar(255) DEFAULT 'block' AFTER moduleLabelDisplay");
+				self::fieldExist("ap_agora", "folderDisplayMode", "ALTER TABLE ap_agora ADD `folderDisplayMode` VARCHAR(255) DEFAULT 'block' AFTER moduleLabelDisplay");
 			}
 
 			if(self::updateVersion("21.10"))
 			{
 				//Ajoute l'url alternative des visios
-				self::fieldExist("ap_agora", "visioHostAlt", "ALTER TABLE ap_agora ADD `visioHostAlt` varchar(255) DEFAULT NULL AFTER visioHost");
+				self::fieldExist("ap_agora", "visioHostAlt", "ALTER TABLE ap_agora ADD `visioHostAlt` VARCHAR(255) DEFAULT NULL AFTER visioHost");
 				//Renomme la table des emails envoyés
 				if(self::tableExist("ap_mailHistory"))  {self::query("RENAME TABLE `ap_mailHistory` TO `ap_mail`");}
 				//Renomme le champ "editObjId" en "editTypeId"
@@ -870,15 +869,15 @@ class DbUpdate extends Db
 			if(self::updateVersion("23.2.3"))
 			{
 				//Renomme les champs "gSignin" et "gSigninClientId" en "gIdentity" et "gIdentityClientId" (cf. Google OAuth)
-				if(self::fieldExist("ap_agora","gSignin"))  		{self::query("ALTER TABLE ap_agora CHANGE `gSignin` `gIdentity` tinyint DEFAULT NULL");}
-				if(self::fieldExist("ap_agora","gSigninClientId"))  {self::query("ALTER TABLE ap_agora CHANGE `gSigninClientId` `gIdentityClientId` varchar(255) DEFAULT NULL");}
+				if(self::fieldExist("ap_agora","gSignin"))  		{self::query("ALTER TABLE ap_agora CHANGE `gSignin` `gIdentity` TINYINT DEFAULT NULL");}
+				if(self::fieldExist("ap_agora","gSigninClientId"))  {self::query("ALTER TABLE ap_agora CHANGE `gSigninClientId` `gIdentityClientId` VARCHAR(255) DEFAULT NULL");}
 			}
 
 			if(self::updateVersion("23.4.2"))
 			{
 				//Ajoute la table pour la connexion auto via token
 				if(self::tableExist("ap_userAuthToken")==false)
-					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` int NOT NULL, `userAuthToken` varchar(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
+					{self::query("CREATE TABLE `ap_userAuthToken` (`_idUser` int NOT NULL, `userAuthToken` VARCHAR(255) NOT NULL, `dateCrea` datetime NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");}
 			}
 
 			if(self::updateVersion("23.10.3"))
@@ -900,15 +899,15 @@ class DbUpdate extends Db
 				self::query("UPDATE `ap_joinSpaceModule` SET `options`=REPLACE(`options`,'@@allUsersAddTheme@@','') WHERE `moduleName`='forum' AND `options` LIKE '%allUsersAddTheme%'");			//PUIS supprime l'ancienne
 				//Task :  Modif la "priority" de "Critical" vers "High"  &&  Modif le type de "dateBegin"/"dateEnd" de "datetime" vers "date"
 				self::query("UPDATE `ap_task` SET `priority`='3' WHERE `priority`='4'");
-				self::query("ALTER TABLE `ap_task` CHANGE `dateBegin` `dateBegin` DATE NULL DEFAULT NULL");
-				self::query("ALTER TABLE `ap_task` CHANGE `dateEnd` `dateEnd` DATE NULL DEFAULT NULL");
+				self::query("ALTER TABLE `ap_task` CHANGE `dateBegin` `dateBegin` DATE DEFAULT NULL");
+				self::query("ALTER TABLE `ap_task` CHANGE `dateEnd` `dateEnd` DATE DEFAULT NULL");
 				//Task Kanban :  Créé le champ `_idStatus` dans la table "ap_task"  &&  Créé la table "ap_TaskStatus" des statuts/colonnes Kanban  &&   Créé les satuts/colonnes kanban de base
 				self::fieldExist("ap_task", "_idStatus",  "ALTER TABLE `ap_task` ADD `_idStatus` int DEFAULT NULL AFTER `description`");
-				self::tableExist("ap_taskStatus",  "CREATE TABLE `ap_taskStatus` (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` text,  `title` varchar(255) DEFAULT NULL,  `description` text,  `color` varchar(255) DEFAULT NULL,  `rank` smallint DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
+				self::tableExist("ap_taskStatus",  "CREATE TABLE `ap_taskStatus` (`_id` int NOT NULL AUTO_INCREMENT,  `_idSpaces` TEXT,  `title` VARCHAR(255) DEFAULT NULL,  `description` TEXT,  `color` VARCHAR(255) DEFAULT NULL,  `rank` SMALLINT DEFAULT NULL,  `dateCrea` datetime DEFAULT NULL,  `_idUser` int DEFAULT NULL,  `dateModif` datetime DEFAULT NULL,  `_idUserModif` int DEFAULT NULL,  PRIMARY KEY (`_id`))  ENGINE=InnoDB DEFAULT CHARSET=utf8");
 				MdlTaskStatus::dbFirstRecord();
 				//Catégories d'evt  &&  Themes du forum : créé le champ `rank`
-				self::fieldExist("ap_calendarEventCategory", "rank",	"ALTER TABLE `ap_calendarEventCategory` ADD `rank` smallint DEFAULT NULL AFTER `color`");
-				self::fieldExist("ap_forumTheme", "rank",  				"ALTER TABLE `ap_forumTheme` ADD `rank` smallint DEFAULT NULL AFTER `color`");
+				self::fieldExist("ap_calendarEventCategory", "rank",	"ALTER TABLE `ap_calendarEventCategory` ADD `rank` SMALLINT DEFAULT NULL AFTER `color`");
+				self::fieldExist("ap_forumTheme", "rank",  				"ALTER TABLE `ap_forumTheme` ADD `rank` SMALLINT DEFAULT NULL AFTER `color`");
 			}
 
 			if(self::updateVersion("24.4.5"))
@@ -916,7 +915,7 @@ class DbUpdate extends Db
 				//Renomme la table des catégories d'événement
 				if(self::tableExist("ap_calendarEventCategory"))  {self::query("RENAME TABLE `ap_calendarEventCategory` TO `ap_calendarCategory`");}
 				//Ajoute le champ "browserId" des tokens de connexion auto
-				self::fieldExist("ap_userAuthToken", "browserId", "ALTER TABLE `ap_userAuthToken` ADD `browserId` varchar(255) AFTER `userAuthToken`");
+				self::fieldExist("ap_userAuthToken", "browserId", "ALTER TABLE `ap_userAuthToken` ADD `browserId` VARCHAR(255) AFTER `userAuthToken`");
 			}
 
 			if(self::updateVersion("24.6.4"))
@@ -964,7 +963,7 @@ class DbUpdate extends Db
 			if(self::updateVersion("25.3.3"))
 			{
 				//Ajoute "shortcut" à la table "ap_calendarEvent"
-				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` tinyint DEFAULT NULL AFTER `periodDateExceptions`");
+				self::fieldExist("ap_calendarEvent", "shortcut", "ALTER TABLE `ap_calendarEvent` ADD `shortcut` TINYINT DEFAULT NULL AFTER `periodDateExceptions`");
 			}
 
 			if(self::updateVersion("25.6.4"))
@@ -1011,13 +1010,17 @@ class DbUpdate extends Db
 			{
 				//Renomme le champ "newsDisplay" en "toVoteWithNews"
 				if(self::fieldExist("ap_dashboardPoll","newsDisplay"))
-					{self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `newsDisplay` `toVoteWithNews` TINYINT(1) UNSIGNED NULL DEFAULT NULL");}
+					{self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `newsDisplay` `toVoteWithNews` TINYINT(1) UNSIGNED DEFAULT NULL");}
 			}
 
-
-			////////////////////////////////////////	+ UPDATE DB.SQL !
-			////////////////////////////////////////
-			////////////////////////////////////////
+			if(self::updateVersion("26.6.1"))
+			{
+				//Ajoute le champ "ap_calendarEvent.allDay" et  "ap_calendarEvent.location"
+				self::fieldExist("ap_calendarEvent", "allDay",   "ALTER TABLE `ap_calendarEvent` ADD `allDay` TINYINT(1) UNSIGNED DEFAULT NULL AFTER `dateEnd`");
+				self::fieldExist("ap_calendarEvent", "location", "ALTER TABLE `ap_calendarEvent` ADD `location` VARCHAR(500) DEFAULT NULL AFTER `allDay`");
+			}
+			////////////////////////////////////////	!!!!!	UPDATE DB.SQL  !!!!!	////////////////////////////////////////
+			////////////////////////////////////////									////////////////////////////////////////
 
 
 			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES

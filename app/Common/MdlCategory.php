@@ -23,8 +23,8 @@
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		$this->spaceIds=Txt::txt2tab($this->_idSpaces);	//Espaces où l'objet est visible
-		if(empty($this->color))  {$this->color="#555";}	//Couleur par défaut
+		$this->spaceIds=Txt::txt2tab($this->_idSpaces);			//Espaces où l'objet est visible
+		if(empty($this->color))  {$this->color="#555555";}		//Couleur par défaut : toujours sur 6 valeurs (cf "contrastColor()")
 	}
 
 	/********************************************************************************************************

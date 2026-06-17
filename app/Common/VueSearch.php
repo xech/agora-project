@@ -29,11 +29,11 @@ ready(function(){
 .vModuleLabel img					{max-height:28px; margin-right:8px;}
 .menuLine .vContextMenu				{width:30px; padding-top:10px; vertical-align:top;}
 .menuLine mark						{padding:4px 2px;}/*mots surlignés dans les résultats de la recherche*/
-.vPluginNews						{display:none; padding:5px; background:#eee; border-radius:5px; cursor:default;}/*affichage complet d'une news*/
+.vPluginNews						{display:none; padding:5px; background:#eee; border-radius:var(--radius-block); cursor:default;}/*affichage complet d'une news*/
 .emptyContent						{margin-top:20px;}
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){	
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){	
 #searchMainField *:is(input,button)	{width:300px;}
 	.vAdvancedSearchTab, .vAdvancedSearchTab>div	{display:block;}
 	.vAdvancedSearchTab								{margin-top:30px;}
@@ -51,7 +51,7 @@ ready(function(){
 	<div id="searchMainField">
 		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>" placeholder="<?= Txt::trad("keywords") ?>">
 		<?= Txt::submitButton("search",false) ?>
-		<div id="advancedSearchLabel" class="sLink" onclick="$('#advancedSearchBlock').show();$('#advancedSearchInput').val(1);"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></div>
+		<div id="advancedSearchLabel" class="link" onclick="$('#advancedSearchBlock').show();$('#advancedSearchInput').val(1);"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></div>
 		<input type="hidden" name="advancedSearch" value="<?= Req::param("advancedSearch") ?>" id="advancedSearchInput">
 	</div>
 

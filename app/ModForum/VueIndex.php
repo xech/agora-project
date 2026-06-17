@@ -26,9 +26,9 @@ ready(function(){
 .vMessageQuoted					{position:relative; display:block; overflow:auto; max-height:100px; margin:15px 0px; padding:10px; padding-left:40px; font-style:italic;}/*"position:relative" : cf. "vMessageQuotedImg" */
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
-	.vMessages					{border-radius:5px;}
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
+	.vMessages					{border-radius:var(--radius-field);}
 	.vDetails, .vDetails>div	{display:block;}
 	.vDetails>div:last-child	{text-align:left; margin-top:15px;}
 }
@@ -48,7 +48,7 @@ ready(function(){
 		////	SUJET & MESSAGES ASSOCIES :  AJOUT DE MESSAGE  &  NOTIF PAR MAIL  &  TRI D'AFFICHAGE  &  NB DE MESSAGES
 		elseif($forumDisplay=="suject"){
 			if($curSubject->addContentRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
-			if(!empty(Ctrl::$curUser->mail))  	{echo '<div class="menuLine sLink '.($curSubject->curUserNotifyLastMessage()?'optionSelect':'option').'" id="notifyLastMessage" '.Txt::tooltip("FORUM_notifyLastPostTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("FORUM_notifyLastPost").'</div></div>';}
+			if(!empty(Ctrl::$curUser->mail))  	{echo '<div class="menuLine '.($curSubject->curUserNotifyLastMessage()?'optionSelect':'option').'" id="notifyLastMessage" '.Txt::tooltip("FORUM_notifyLastPostTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("FORUM_notifyLastPost").'</div></div>';}
 			echo "<hr>".MdlForumMessage::menuSort();
 		}
 		?>
@@ -79,7 +79,7 @@ ready(function(){
 					$subjectLastMessage='<div class="vLastMessage">'.$messagesNb.' '.(Txt::trad($messagesNb>1?'FORUM_messages':'FORUM_message')).' : '.Txt::trad("FORUM_lastMessageFrom").' '.$lastMessage->autorDate(false).'</div>';
 				}
 			}
-			echo $tmpSubject->mainDivMenu().
+			echo $tmpSubject->objContentDiv().
 				'<div class="objContentTab '.$newSubjectClass.'" '.$subjectLink.'>
 					<div class="vTitle">'.$tmpSubject->title.'</div>
 					<div class="vDescription">'.$tmpSubject->description.'</div>
@@ -110,7 +110,7 @@ ready(function(){
 				}
 				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" '.Txt::tooltip("FORUM_quoteMessageInfo").'>'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.png"> </div>'  :  null;
 				//Affichage
-				echo $tmpMessage->mainDivMenu("vMessages").
+				echo $tmpMessage->objContentDiv("vMessages").
 						'<div class="objContentTab">
 							'.$quotedMessage.'
 							<div class="vTitle">'.$tmpMessage->title.'</div>

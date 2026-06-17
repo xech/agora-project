@@ -309,11 +309,13 @@ abstract class Ctrl
 				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}
 			}
 			//// WALLPAPER & FOOTER
-			if(!empty(self::$curSpace->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$curSpace->wallpaper);}
-			elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
-			else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
-			$vDatas["footerLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-			$vDatas["footerLogoTooltip"]=Txt::trad("footerGeneratedTime")." ".round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
+			if(Req::isMobile()==false){
+				if(!empty(self::$curSpace->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$curSpace->wallpaper);}
+				elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
+				else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
+				$vDatas["footerLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
+				$vDatas["footerLogoTooltip"]=Txt::trad("footerGeneratedTime")." ".round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
+			}
 		}
 		////	NOTIFS  +  RECUPERE LA VUE PRINCIPALE  +  AFFICHE LA VUE COMPLETE
 		foreach((array)Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}

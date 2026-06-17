@@ -24,13 +24,13 @@ class MdlUserGroup extends MdlObject
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Users affectés au groupe (verif qu'ils sont tous affectés à l'espace via "array_intersect()")
+		//Users affectés au groupe (verif que chaque user du groupe est bien affecté à l'espace : cf "array_intersect()")
 		$groupUsersIds=Txt::txt2tab($this->_idUsers);
 		$spaceUsersIds=Ctrl::getObj("space",$this->_idSpace)->getUsers("idsTab");
-		$this->userIds=(array)array_intersect($groupUsersIds, $spaceUsersIds);
+		$this->_idUsersTab=(array)array_intersect($groupUsersIds, $spaceUsersIds);
 		//Libellé des users
 		$this->usersLabel=null;
-		foreach($this->userIds as $userId)	{$this->usersLabel.=Ctrl::getObj("user",$userId)->getLabel().", ";}
+		foreach($this->_idUsersTab as $userId)	{$this->usersLabel.=Ctrl::getObj("user",$userId)->getLabel().", ";}
 		$this->usersLabel=@trim($this->usersLabel,", ");
 	}
 
@@ -42,9 +42,17 @@ class MdlUserGroup extends MdlObject
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();
 			//Ajoute l'accès en lecture si :  User courant se trouve dans le groupe  OU  l'espace du groupe fait partie des espaces de l'user (pour les affectations d'objet)
-			if(empty($this->_accessRight) && (in_array(Ctrl::$curUser->_id,$this->userIds) || in_array($this->_idSpace,Ctrl::$curUser->spaceList("ids"))))	{$this->_accessRight=1;}
+			if(empty($this->_accessRight) && (in_array(Ctrl::$curUser->_id,$this->_idUsersTab) || in_array($this->_idSpace,Ctrl::$curUser->spaceList("ids"))))	{$this->_accessRight=1;}
 		}
 		return $this->_accessRight;
+	}
+
+	/********************************************************************************************************
+	 * DROIT D'AJOUTER UN NOUVEAU GROUPE POUR L'USER COURANT
+	 ********************************************************************************************************/
+	public static function addRight()
+	{
+		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddGroup")));
 	}
 
 	/********************************************************************************************************
@@ -67,21 +75,13 @@ class MdlUserGroup extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * GROUPES D'UTILISATEURS (AFFECTÉS À UN ESPACE ET/OU AFFECTÉS À UN UTILISATEUR?)
+	 * GROUPES D'UTILISATEURS : D'UN ESPACE / D'UN UTILISATEUR
 	 ********************************************************************************************************/
-	public static function getGroups($objSpace=null, $objUser=null)
+	public static function userGroupList($objSpace=null, $objUser=null)
 	{
 		$sqlFilter=null;
 		if(is_object($objSpace))	{$sqlFilter.=" AND _idSpace=".$objSpace->_id;}
 		if(is_object($objUser))		{$sqlFilter.=" AND _idUsers LIKE '%@".$objUser->_id."@%'";}
 		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
-	}
-
-	/********************************************************************************************************
-	 * DROIT D'AJOUTER UN NOUVEAU GROUPE POUR L'USER COURANT
-	 ********************************************************************************************************/
-	public static function addRight()
-	{
-		return (Ctrl::$curUser->isSpaceAdmin() || (Ctrl::$curUser->isUser() && Ctrl::$curSpace->moduleOptionEnabled(self::moduleName,"allUsersAddGroup")));
 	}
 }

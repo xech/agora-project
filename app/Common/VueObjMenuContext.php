@@ -73,7 +73,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 		$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  Txt::tooltip($tmpOption["tooltip"])  :  null;
 	?>
 		<?= isset($tmpOption["separator"]) ? $tmpOption["separator"] : null ?>
-		<div class="menuLine" <?= $actionJsTmp.$tooltipTmp ?>>
+		<div class="menuLine menuLineSpecific" <?= $actionJsTmp.$tooltipTmp ?>>
 			<?php if(!empty($tmpOption["iconSrc"])){ ?><div class="menuIcon"><img src="app/img/<?= $tmpOption["iconSrc"] ?>"></div><?php } ?>
 			<div><?= $tmpOption["label"] ?></div>
 		</div>
@@ -112,21 +112,21 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 		<hr>
 		<!--AFFECTATIONS EN ECRITURE-->
 		<?php if(!empty($affectLabels["2"])){ ?>
-			<div class="menuLine sAccessWrite" <?= Txt::tooltip($affectTooltips["2"]) ?> >
+			<div class="menuLine accessWrite" <?= Txt::tooltip($affectTooltips["2"]) ?> >
 				<div class="menuContextTxtLeft"><?= Txt::trad("accessWrite") ?></div>
 				<div><?= $affectLabels["2"] ?></div>
 			</div>
 		<?php } ?>
 		<!--AFFECTATIONS EN ECRITURE LIMITE-->
 		<?php if(!empty($affectLabels["1.5"])){ ?>
-			<div class="menuLine sAccessWrite" <?= Txt::tooltip($affectTooltips["1.5"]) ?> >
+			<div class="menuLine accessWrite" <?= Txt::tooltip($affectTooltips["1.5"]) ?> >
 				<div class="menuContextTxtLeft"><?= Txt::trad("accessWriteLimit") ?></div>
 				<div><?= $affectLabels["1.5"] ?></div>
 			</div>
 		<?php } ?>
 		<!--AFFECTATIONS EN LECTURE-->
 		<?php if(!empty($affectLabels["1"])){ ?>
-			<div class="menuLine sAccessRead" <?= Txt::tooltip($affectTooltips["1"]) ?> >
+			<div class="menuLine accessRead" <?= Txt::tooltip($affectTooltips["1"]) ?> >
 				<div class="menuContextTxtLeft"><?= Txt::trad("accessRead") ?></div>
 				<div><?= $affectLabels["1"] ?></div>
 			</div>

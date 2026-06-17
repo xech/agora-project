@@ -189,9 +189,9 @@ class CtrlFile extends Ctrl
 			{Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess").' : '.$curObj->containerObj()->name);}
 		////	VALIDE LE FORMULAIRE
 		if(Req::isParam("formValidate")){
-			//Init
-			@set_time_limit(240);//disabled en safemode
 			$newFiles=$notifFilesLabel=$notifFiles=[];
+			////	AUGMENTE LE TEMPS D'EXECUTION
+			Tool::setTimeLimit(800);
 			////	FICHIERS ENVOYÉS VIA "PLUPLOAD"
 			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
 				$tmpFolderPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
@@ -241,7 +241,7 @@ class CtrlFile extends Ctrl
 					$tmpDatasFolderSize+=$tmpFile["size"];
 					////	Prepare la notif mail (Affiche le nom des 15 premiers fichiers ..puis le nombre de fichiers restant)
 					if(count($notifFilesLabel)<15)		{$notifFilesLabel[]=$tmpObj->name;}
-					elseif(count($notifFilesLabel)==15)	{$notifFilesLabel[]="... + ".(count($newFiles)-15)." ".Txt::trad("OBJECTfile")."s";}
+					elseif(count($notifFilesLabel)==15)	{$notifFilesLabel[]="... + ".(count($newFiles)-15)." ".Txt::trad("OBJ_file")."s";}
 					////	Joint le fichier à la notif (limite à 20 fichiers)
 					if(Req::isParam("notifMailAddFiles") && count($notifFiles)<=20)  {$notifFiles[]=array("path"=>$tmpObj->filePath(),"name"=>$tmpObj->name);}
 				}

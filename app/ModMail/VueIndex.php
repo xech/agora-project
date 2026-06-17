@@ -22,13 +22,6 @@ ready(function(){
 		if(typeof folderTreeLevel!=="undefined" && folderTreeLevel>0)
 			{$(this).css("padding-left",(folderTreeLevel*18)+"px");}
 	});
-
-	/********************************************************************************************************
-	 *  AFFICHE/MASQUE LES USERS D'UN ESPACE (SAUF ESPACE COURANT)
-	 ********************************************************************************************************/
-	$(".vMailsLabel").on("click",function(){
-		$("#mailsContainer"+this.getAttribute("data-typeid")).slideToggle();
-	});
 	
 	/********************************************************************************************************
 	 *	AJOUTE UNE NOUVELLE UNE URL DE VISIO
@@ -68,31 +61,33 @@ ready(function(){
 #historyLabel						{border-bottom:solid 1px #bbb; margin-top:20px; padding:20px!important;}
 #recipientLabel						{padding:10px;}
 .vMailsBlock						{margin:0px 10px 15px 10px;}
-.vMailsLabel 						{display:table;}
+.vMailsLabel 						{display:table; margin-bottom:10px;}
 .vMailsLabel>div 					{display:table-cell; vertical-align:middle;}
-.vMailsLabel img					{max-width:24px; margin-right:8px;}
-.vMailsMenu							{padding-left:5px!important; display:none;}
-.vMailsMenu.vMailsMenuDisplay		{display:block;}
-.vMailsMenu>div						{padding:7px;}
+.vMailsLabel img					{margin-right:10px;}
+.vMailsMenu							{padding-left:5px!important;}
+.vMailsMenu:not(.vMailsMenuDisplay)	{display:none;}
+.vMailsMenu>div						{padding:5px;}
 .vMailsMenu img[src*=check]			{margin-right:4px;}
+.selectUsersMenu hr:first-child		{margin-block:2px;}
+
 /*formulaire principal*/
 #pageContent [name='title']			{width:100%; height:35px; margin-bottom:20px;}
 #mailOptions						{display:table; width:100%; margin-top:30px;}/*tableau d'options*/
 #mailOptions>div					{display:table-cell; width:33%; vertical-align:top;}/*colonnes d'options et bouton "Envoyer"*/
 #mailOptions>div>div				{padding-block:5px;}/*ligne d'option*/
 #mailOptions img[src*=dependency]	{display:none;}
-.submitButtonMain					{text-align:right; margin-top:0px;}/*surcharge*/
-.submitButtonMain button			{width:220px; height:50px;}
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
+.submitButton						{text-align:right; margin-top:0px;}/*surcharge*/
+.submitButton button				{width:220px;}
+
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
 	#mailOptions, #mailOptions>div	{display:block; width:100%;}
 	#mailOptions>div>div			{padding:10px 5px;}/*ligne d'option*/
-.submitButtonMain					{text-align:center; margin-block:30px;}/*surcharge*/
+	.submitButton					{text-align:center; margin-block:30px;}/*surcharge*/
 }
 </style>
-
 
 
 <div id="pageCenter">
@@ -102,50 +97,41 @@ ready(function(){
 			<div id="recipientMainMenu" class="miscContent" >
 				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
 				<?php
-				////	LISTE DES DESTINATAIRES : USERS & CONTACTS
-				foreach($containerList as $tmpContainer)
-				{
-					////	INIT
-					$cptPerson=0;
-					$tmpGroupsFields=$tmpPersonsFields=$tmpSwitchOption=null;
-					$mailsMenuClass=($tmpContainer->typeId==Ctrl::$curSpace->typeId)  ?  "vMailsMenuDisplay"  :  null;//par défaut, on n'affiche que les users de l'espace courant
-					////	GROUPES D'USERS (prépare l'affichage)
-					if($tmpContainer::objectType=="space"){
-						foreach(MdlUserGroup::getGroups($tmpContainer) as $tmpGroup){
-							$tmpBoxId=$tmpContainer->typeId.$tmpGroup->typeId;
-							$tmpGroupsFields.='<div '.Txt::tooltip($tmpGroup->usersLabel).'><input type="checkbox" name="groupList[]" value="'.$tmpGroup->typeId.'" id="'.$tmpBoxId.'"> <label for="'.$tmpBoxId.'"><img src="app/img/user/accessGroup.png"> '.$tmpGroup->title.'</label></div>';
-						}
-					}
-					////	PERSONNES DU CONTENEUR (prépare l'affichage)
-					foreach($tmpContainer->personList as $tmpPerson)
-					{
-						if(empty($tmpPerson->mail))  {continue;}													//zap les personnes sans mail
-						if(Req::param("checkMail")==$tmpPerson->mail && empty($personsChecked[$tmpPerson->mail])){	//Préselectionne le mail
-							$tmpPerson->mailChecked="checked";														//Checkbox "checked"
-							$personsChecked[$tmpPerson->mail]=$tmpPerson->mail;										//Indique qu'il est déjà sélectionné
-							$mailsMenuClass="vMailsMenuDisplay";													//Affiche le menu (si besoin)
-						}
-						$tmpBoxId=$tmpContainer->typeId.$tmpPerson->typeId;
-						$userMailTooltip=($tmpPerson->userMailDisplay())  ?  Txt::tooltip($tmpPerson->mail)  :  null;
-						$tmpPersonsFields.='<div '.$userMailTooltip.'><input type="checkbox" name="personList[]" value="'.$tmpPerson->typeId.'" id="'.$tmpBoxId.'" '.$tmpPerson->mailChecked.'> <label for="'.$tmpBoxId.'">'.$tmpPerson->getLabel().'</label></div>';
-						$cptPerson++;
-					}
-					////	BOUTON SWITCH LA SELECTION (5 pers. minimum)
-					if(count($tmpContainer->personList)>=5){
-						$boxSelector="'#mailsContainer".$tmpContainer->typeId." input[name^=personList]'";
-						$tmpSwitchOption='<div onclick="$('.$boxSelector.').prop(\'checked\',false).trigger(\'click\')"><img src="app/img/checkAll.png"> '.Txt::trad("selectAll").'</div>
-										  <div onclick="$('.$boxSelector.').trigger(\'click\')"><img src="app/img/checkSwitch.png"> '.Txt::trad("selectSwitch").'</div>';
-					}
-					////	AFFICHE CHAQUE BLOCK D'USERS/CONTACTS
-					echo '<div class="vMailsBlock" '.($tmpContainer::isFolder==true?'data-folder-tree-level="'.$tmpContainer->treeLevel.'"':null).'>
-							<div class="vMailsLabel sLink" data-typeid="'.$tmpContainer->typeId.'">
-								<div><img src="app/img/mail/'.($tmpContainer::objectType=='space'?'user':'contact').'.png"></div>
-								<div>'.$tmpContainer->name.' <img src="app/img/arrowBottom.png"></div>
-							</div>
-							<div class="vMailsMenu '.$mailsMenuClass.'" id="mailsContainer'.$tmpContainer->typeId.'">'.$tmpGroupsFields.$tmpPersonsFields.$tmpSwitchOption.'</div>
-						</div>';
-				}
+				////	LISTE DES DESTINATAIRES : USERS D'UN ESPACE || CONTACTS D'UN DOSSIER
+				foreach($containerList as $tmpContainer){
+					$containerId="mailsContainer".$tmpContainer->typeId;
+					$containerClass=($tmpContainer->typeId==Ctrl::$curSpace->typeId)  ?  "vMailsMenuDisplay"  :  null;//par défaut, on n'affiche que les users de l'espace courant
+					$containerTreeLevel=($tmpContainer::isFolder==true)  ?  'data-folder-tree-level="'.$tmpContainer->treeLevel.'"'  :  null;
 				?>
+					<!--BLOCK D'USERS/CONTACTS-->
+					<div class="vMailsBlock" <?= $containerTreeLevel ?> >
+						<div class="vMailsLabel link" onclick="$('#<?= $containerId ?>').slideToggle();">
+							<div><img src="app/img/mail/<?= $tmpContainer::objectType=="space"?'user.png':'contact.png' ?>"></div>
+							<div><?= $tmpContainer->name ?> <img src="app/img/arrowBottom.png"></div>
+						</div>
+						<div class="vMailsMenu <?= $containerClass ?>" id="<?= $containerId ?>">
+							<?php
+							////	LISTE DES INPUTS DE PERSONNES
+							foreach($tmpContainer->personList as $tmpPerson){
+								if(empty($tmpPerson->mail))  {continue;}																	//zap les personnes sans mail
+								$inputId=$tmpContainer->typeId.$tmpPerson->typeId;															//Id de l'input
+								$inputAttributes=null;																						//Init les Attributs de l'input
+								if(Req::param("checkMail")==$tmpPerson->mail)	{$inputAttributes.=' checked ';}							//Préselectionne le mail
+								if($tmpPerson::objectType=="user")				{$inputAttributes.=' data-iduser="'.$tmpPerson->_id.'" ';}	//cf selectUsersGroups()
+								$personTooltip=($tmpPerson->userMailDisplay())  ?  Txt::tooltip($tmpPerson->mail)  :  null;
+							?>
+								<div <?= $personTooltip ?>>
+									<input type="checkbox" name="personList[]" value="<?= $tmpPerson->typeId ?>" class="vMailPersonInput" id="<?= $inputId ?>" <?= $inputAttributes ?>> 
+									<label for="<?= $inputId ?>"><?= $tmpPerson->getLabel() ?></label>
+								</div>
+							<?php
+							}
+							////	SELECTION D'USERS & GROUPES-->
+							if($tmpContainer::objectType=="space")  {echo MdlUser::selectUsersGroups($tmpContainer, '#'.$containerId.' .vMailPersonInput');}
+							?>
+						</div>
+					</div>
+				<?php } ?>
 			</div>
 
 			<!--HISTORIQUE DES MAILS ENVOYES-->
@@ -168,7 +154,7 @@ ready(function(){
 					<div>
 						<!--AJOUTER UNE VISIO-->
 						<?php if(Ctrl::$agora->visioEnabled()){ ?>
-							<div id="visioUrlAdd" class="sLink" <?= Txt::tooltip("VISIO_urlAddConfirm") ?> ><img src="app/img/visioSmall.png">&nbsp;<?= Txt::trad("VISIO_urlAdd") ?></div>
+							<div id="visioUrlAdd" class="link" <?= Txt::tooltip("VISIO_urlAddConfirm") ?> ><img src="app/img/visioSmall.png">&nbsp;<?= Txt::trad("VISIO_urlAdd") ?></div>
 						<?php } ?>
 						<!--JOINDRE DES FICHIERS-->
 						<?= $curObj->attachedFileEdit() ?>

@@ -184,7 +184,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					<div><?= Txt::trad("AGORA_folderDisplayMode") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"block","trad"=>"displayMode_block","img"=>"displayBlock.png"], ["value"=>"line","trad"=>"displayMode_line","img"=>"displayLine.png"] ];
+						$tabRadios=[ ["value"=>"block","trad"=>"displayMode_block","img"=>"displayMode_block.png"], ["value"=>"line","trad"=>"displayMode_line","img"=>"displayMode_line.png"] ];
 						echo MdlAgora::radioButtons("folderDisplayMode", Ctrl::$agora->folderDisplayMode, $tabRadios);
 						?>
 					</div>

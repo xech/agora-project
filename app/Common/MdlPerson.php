@@ -21,7 +21,7 @@ class MdlPerson extends MdlObject
 	public static $csvFields=[
 					"delimiter"=>";",
 					"enclosure"=>'"',
-					"fieldKeys"=>["civility","name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment","login","password"]
+					"fieldKeys"=>["civility","name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment","login","password","groups"]
 				];
 
 	/********************************************************************************************************
@@ -127,7 +127,7 @@ class MdlPerson extends MdlObject
 		elseif($fieldName=="lastConnection"){
 			if(empty($fieldVal) && $mode=="profile")						{$fieldVal=Txt::trad("notConnected");}
 			elseif(!empty($fieldVal) && date("Ymd")==date("Ymd",$fieldVal))	{$fieldVal=Txt::trad("connectedToday");}
-			elseif(!empty($fieldVal))										{$fieldVal=Txt::trad("connectedThe").' '.Txt::dateLabel("numDate",$fieldVal);}
+			elseif(!empty($fieldVal))										{$fieldVal=Txt::trad("connectedThe").' '.Txt::dateLabel("dateNum",$fieldVal);}
 		}
 		//Adresse complete : affiche une carte 
 		elseif($fieldName=="fullAdress" && $this->hasAdress()){
@@ -209,39 +209,44 @@ class MdlPerson extends MdlObject
 		$fileContent=null;
 		////	EXPORT CSV
 		if($exportType=="csv"){
-			//// Nom et champs du .csv
+			////	Nom et champs du .csv
 			$csv=static::$csvFields;
 			$fileName.=".csv";
-			//// Pas d'import du "password", ni du "login" pour les contacts 
-			unset($csv["fieldKeys"]["password"]);
-			if(static::objectType=="contact")  {unset($csv["fieldKeys"]["login"]);}
-			//// Créé l'entête du fichier CSV (ajoute la colonne "groups" pour les users)
+
+			////	Pas d'import du login-password-groups pour les contacts 
+			if(static::objectType=="contact"){
+				unset($csv["fieldKeys"]["login"]);
+				unset($csv["fieldKeys"]["password"]);
+				unset($csv["fieldKeys"]["groups"]);
+			}
+
+			//// 	Header du CSV
 			foreach($csv["fieldKeys"] as $fieldKey)
 				{$fileContent.=$csv["enclosure"].$fieldKey.$csv["enclosure"].$csv["delimiter"];}
-			if(static::objectType=="user")
-				{$fileContent.=$csv["enclosure"]."groups".$csv["enclosure"].$csv["delimiter"];}
 			$fileContent.="\n";
-			//// Ajoute chaque user/contact
+
+			////	Ajoute chaque user/contact
 			foreach($personsList as $tmpPerson){
-				//// Ajoute chaque champ du user/contact
+				////	Propriétés de l'user/contact
 				foreach($csv["fieldKeys"] as $fieldKey){
-					if($csv["enclosure"]=="'")	{$tmpPerson->$fieldKey=addslashes($tmpPerson->$fieldKey);}//Addslashes de la valeur si besoin
-					$fileContent.=(!empty($tmpPerson->$fieldKey))  ?  $csv["enclosure"].$tmpPerson->$fieldKey.$csv["enclosure"].$csv["delimiter"]  :  $csv["delimiter"];
+					if($fieldKey=="groups")  {continue;}
+					$tmpValue=$tmpPerson->$fieldKey;
+					if($csv["enclosure"]=='"' && !empty($tmpValue))  {$tmpValue=str_replace('"', '\"', $tmpValue);}//Echappe les doubles quotes
+					$fileContent.=(!empty($tmpValue))  ?  $csv["enclosure"].$tmpValue.$csv["enclosure"].$csv["delimiter"]  :  $csv["delimiter"];
 				}
-				//// User : ajoute la liste des groupes
+				////	Ajoute les "groups" de l'user
 				if(static::objectType=="user"){
-					foreach(MdlUserGroup::getGroups(null,$tmpPerson) as $tmpGroup)
-						{$fileContent.=$csv["enclosure"].$tmpGroup->title.$csv["enclosure"].$csv["delimiter"];}
+					$userGroups="";
+					foreach(MdlUserGroup::userGroupList(null,$tmpPerson) as $tmpGroup)  {$userGroups.=$tmpGroup->title.', ';}
+					if(!empty($userGroups))  {$userGroups=Txt::trad("USER_spaceGroups").' : '.trim($userGroups,', ');}
+					$fileContent.=$csv["enclosure"].$userGroups.$csv["enclosure"].$csv["delimiter"];
 				}
-				//// Retour à la ligne
 				$fileContent.="\n";
 			}
 		}
 		////	EXPORT LDIF
 		elseif($exportType=="ldif"){
-			//Init
 			$fileName.=".ldif";
-			//Ajout de chaque personne
 			foreach($personsList as $tmpPerson){
 				$fileContent.="dn: cn=".$tmpPerson->firstName." ".$tmpPerson->name."\n";
 				$fileContent.="objectclass: top\n";
@@ -266,9 +271,7 @@ class MdlPerson extends MdlObject
 		}
 		////	EXPORT VCARD (.vcf)
 		elseif($exportType=="vcard"){
-			//Init
 			$fileName.=".vcf";
-			//Ajout de chaque personne au fichier Vcard
 			foreach($personsList as $tmpPerson){
 				$fileContent .="BEGIN:VCARD\n";
 				$fileContent .="VERSION:2.1\n";//V2.1 pour une complatibilité Android
@@ -289,6 +292,7 @@ class MdlPerson extends MdlObject
 				$fileContent.="END:VCARD\n";
 			}
 		}
+	
 		/////   LANCEMENT DU TELECHARGEMENT
 		$fileName=Txt::clean($fileName);
 		File::download($fileName, null, $fileContent);

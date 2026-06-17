@@ -8,11 +8,6 @@ ready(function(){
 		}
 		submitLoading();
 	});
-
-	////	Switch la sélection
-	$("#checkSwitch").on("click",function(){
-		$(":checkbox[name^=eventList]").trigger("click");
-	});
 });
 </script>
 
@@ -50,7 +45,7 @@ form							{text-align:center;}
 	<?php }else{ ?>
 		<table class="evtListTable">
 			<tr class="evtListHeader">
-				<td class="evtCheckbox" id="checkSwitch" <?= Txt::tooltip("selectSwitch") ?>><img src="app/img/checkSwitch.png"></td>
+				<td class="evtCheckbox" <?= Txt::tooltip("selectAll") ?> onclick="$(':checkbox[name^=eventList]').prop('checked',true)"><img src="app/img/checkSelectAll.png"></td>
 				<td class="evtDates"><?= Txt::trad("begin")."-".Txt::trad("end") ?></td>
 				<td class="evtTitle"><?= Txt::trad("title") ?></td>
 				<td class="evtDescription"><?= Txt::trad("description") ?></td>
@@ -63,7 +58,7 @@ form							{text-align:center;}
 				$evtPresent=$evtCheck=null;
 				if(!empty($tmpEvt["isPresent"]))	{$evtPresent=Txt::trad("CALENDAR_importEvtPresent");} 
 				else								{$evtCheck="checked";}
-				$evtDates		=Txt::dateLabel("textMini",$tmpEvt["db_dateBegin"],$tmpEvt["db_dateEnd"]);
+				$evtDates		=Txt::dateLabel("dateMini",$tmpEvt["db_dateBegin"],$tmpEvt["db_dateEnd"]);
 				$evtDatesTooltip=Txt::dateLabel("default",$tmpEvt["db_dateBegin"],$tmpEvt["db_dateEnd"]);
 			 ?>
 				<tr class="evtLine lineHover">

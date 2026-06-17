@@ -233,11 +233,16 @@ class MdlDashboardPoll extends MdlObject
 	 ********************************************************************************************************/
 	public function responseFileDiv($tmpResponse)
 	{
-		//Il y a un fichier ?
 		if(!empty($tmpResponse["fileName"])){
-			//Image avec un lien pour l'afficher OU Nom du fichier avec un lien de téléchargement
-			if(File::isType("editorImage",$tmpResponse["fileName"]))	{$responseFileDiv='<a href="'.$this->responseFilePath($tmpResponse).'" data-fancybox="images" '.Txt::tooltip($tmpResponse["fileName"]).'><img src="'.$this->responseFilePath($tmpResponse).'"></a>';}
-			else														{$responseFileDiv='<a href="'.$tmpResponse["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$tmpResponse["fileName"].'</a>';}
+			////	Image avec un lien pour l'afficher
+			if(File::isType("editorImage",$tmpResponse["fileName"])){
+				$responseFileDiv='<a href="'.$this->responseFilePath($tmpResponse).'" data-fancybox="images" '.Txt::tooltip($tmpResponse["fileName"]).'><img src="'.$this->responseFilePath($tmpResponse).'"></a>';
+			}
+			////	Nom du fichier avec un lien de téléchargement
+			else{
+				$responseFileDiv='<a href="'.$tmpResponse["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$tmpResponse["fileName"].'</a>';
+			}
+			////	Retour l'image
 			return "<div class='vPollsResponseFile'>".$responseFileDiv."</div>";
 		}
 	}
@@ -279,7 +284,7 @@ class MdlDashboardPoll extends MdlObject
 		if(!empty($this->dateEnd)){
 			$options["objOptions"][]=[
 				"iconSrc"=>"dateEnd.png",
-				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_dateEnd")." : ".Txt::dateLabel("textDate",$this->dateEnd)."</span>"
+				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_dateEnd")." : ".Txt::dateLabel("dateDefault",$this->dateEnd)."</span>"
 			];
 		}
 		////	Le vote est public

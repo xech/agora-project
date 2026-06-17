@@ -29,7 +29,7 @@ fieldset li					{line-height:25px;}
 				<?= $tmpInsc["name"].' '.$tmpInsc["firstName"] ?>
 				<ul>
 					<li><?= $tmpInsc["mail"] ?></li>
-					<li><?= Txt::dateLabel("textMini",$tmpInsc["date"]) ?></li>
+					<li><?= Txt::dateLabel("dateMini",$tmpInsc["date"]) ?></li>
 					<li><?= ucfirst(Txt::trad("SPACE_space")).' : '.Ctrl::getObj("space",$tmpInsc["_idSpace"])->getLabel() ?></li>
 					<?= !empty($tmpInsc["message"]) ?  '<li>'.Txt::trad("description").' : '.$tmpInsc["message"].'</li>'  : null ?>
 				</ul>

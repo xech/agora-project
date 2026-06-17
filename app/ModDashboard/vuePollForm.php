@@ -12,7 +12,7 @@
 	<?php } ?>
 	</ul>
 	<input type="hidden" name="typeId" value="<?= $curObj->typeId ?>">
-	<div class="submitButtonMain">
+	<div class="submitButton submitButtonMain">
 		<button type="submit" <?= Txt::tooltip($submitButtonTooltip) ?> ><?= Txt::trad("DASHBOARD_POLLS_voteSubmit") ?></button>
 	</div>
 </form>

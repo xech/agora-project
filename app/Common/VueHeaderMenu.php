@@ -14,16 +14,17 @@
 #menuMainTab .menuLine:hover .editButton	{visibility:visible;}
 .menuMainShortcut							{max-height:24px; margin-right:10px;}
 #menuMainOmnispace							{border-top:var(--headerMenuBorder); text-align:right; padding-top:10px;}
-.vHeaderModule								{display:inline-block; margin:0px; padding:6px; border:1px solid transparent; border-radius:20px; text-align:center; vertical-align:middle; cursor:pointer;}
+.vHeaderModule								{display:inline-block; margin:0px; padding:7px; border:1px solid transparent; border-radius:20px; text-align:center; vertical-align:middle; cursor:pointer;}
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
-.vHeaderModule img							{margin-inline:3px;}
-.vHeaderModuleCurrent						{font-weight:bold;}
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (min-width:1025px) and (max-width:1350px){
-	.vHeaderModule label					{margin-top:7px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
+.vHeaderModuleCurrent						{font-weight:bold; padding:7px 12px}
+.vHeaderModuleCurrent,.vHeaderModule:hover	{background:<?= Ctrl::$agora->skin=="black"?"#444":"white"?>; border:solid 1px <?= Ctrl::$agora->skin=="black"?"#555":"#d8d8d8"?>!important;}
+/*** RESPONSIVE REDUIT DU HEADER*/
+@media screen and (min-width:1200px) and (max-width:1430px){
+	.vHeaderModule							{padding:4px 12px 5px 12px;}
+	.vHeaderModule label					{margin:0px; margin-top:4px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
 	#headerBarLeft							{padding-inline:10px;}
 	#headerBarLeft, #headerMobileModule		{display:block; line-height:50px; font-size:1.1em!important; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
 	#headerMainLogo, #headerUserLabel		{display:none;}
@@ -31,7 +32,8 @@
 	#headerSpaceLabel						{max-width:180px; text-transform:capitalize;}
 	#menuMainTab, #menuMainTab>div			{display:block; padding:0px; border:none!important;}/*cf. --headerMenuBorder*/
 	#menuMainTab .editButton				{visibility:visible;}/*tjs visible*/
-	#menuMobileMain .vHeaderModule			{display:inline-block; width:47%; margin:5px 2px; text-align:left; font-size:1.1rem;}/*Modules affichés dans "#menuMobileMain"*/
+	.vHeaderModule							{display:inline-block; width:49%; padding:6px 2px; text-align:left;}/*Modules affichés dans "#menuMobileMain"*/
+	.vHeaderModuleCurrent					{width:99%; text-align:center; margin-block:15px;}/*Module courant sur toute la largeur*/
 	#headerBarRight .vHeaderModule			{display:none;}/*Modules masqués dans le header car affichés dans "#menuMobileMain"*/
 	.vHeaderModule label					{display:inline-block; margin-left:10px;}/*toujours affiché : cf. $moduleLabelDisplay*/
 }
@@ -102,7 +104,7 @@
 						<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curSpace->getUrl('edit') ?>')"><div class="menuIcon"><img src="app/img/settingsCurSpace.png"></div><div><?= Txt::trad("SPACE_config") ?> <i><?= Txt::reduce(Ctrl::$curSpace->name,35) ?></i></div></div>
 						<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?><div class="menuLine" onclick="redir('?ctrl=space')" <?= Txt::tooltip("SPACE_moduleTooltip") ?> ><div class="menuIcon"><img src="app/img/settingsSpaces.png"></div><div><?= Txt::trad("SPACE_manageAllSpaces") ?></div></div><?php } ?>
 						<div class="menuLine" onclick="redir('?ctrl=log')"><div class="menuIcon"><img src="app/img/log.png"></div><div><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></div></div>
-						<div class="menuLine <?= empty($_SESSION['displayAdmin'])?'option':'optionSelect' ?>" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>><div class="menuIcon"><img src="app/img/eye.png"></div><div><?= Txt::trad("HEADER_displayAdmin") ?></div></div>
+						<div class="menuLine <?= !empty($_SESSION['displayAdmin'])?'optionSelect':'option' ?>" onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>><div class="menuIcon"><img src="app/img/eye.png"></div><div><?= Txt::trad("HEADER_displayAdmin") ?></div></div>
 					<?php } ?>
 				</div>
 				<?php } ?>

@@ -59,8 +59,8 @@ class MdlObject
 		$this->_id=0;
 		////	Assigne les propriétés (objet existant ou nouvel objet)
 		if(!empty($objProperties)){
-			//Récupère les propriétés en BDD ($objProperties==_id)  ||  Récupère les propriétés en paramètre
-			$objValues=(is_numeric($objProperties))  ?  Db::getLine("SELECT * FROM ".static::dbTable." WHERE _id=".(int)$objProperties)  :  $objProperties;
+			if(is_numeric($objProperties))	{$objValues=Db::getLine("SELECT * FROM ".static::dbTable." WHERE _id=".(int)$objProperties);}	//Objet déjà enregistré en Bdd ($objProperties==_id)
+			else							{$objValues=$objProperties;}																	//Nouvel objet
 			//Assigne chaque propriété
 			if(!empty($objValues)){
 				foreach($objValues as $fieldName=>$fieldValue)  {$this->$fieldName=$fieldValue;}
@@ -541,7 +541,7 @@ class MdlObject
 		foreach($refObject->getAffectations() as $affect){
 			if($accessWrite==true && $affect["accessRight"]<=1)	{continue;}																							//Uniquement accès écriture ("MdlCalendarEvent->affectedUserIds()")
 			elseif($affect["targetType"]=="spaceUsers")			{$userIds=array_merge($userIds, Ctrl::getObj("space",$affect["targetId"])->getUsers("idsTab"));}	//Ajoute tous les users de l'espace
-			elseif($affect["targetType"]=="group")				{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->userIds);}			//Ajoute les users du groupe
+			elseif($affect["targetType"]=="group")				{$userIds=array_merge($userIds, Ctrl::getObj("userGroup",$affect["targetId"])->_idUsersTab);}		//Ajoute les users du groupe
 			elseif($affect["targetType"]=="user")				{$userIds[]=$affect["targetId"];}																	//Ajoute l'user
 		}
 		//Retourne la liste des users
@@ -565,7 +565,7 @@ class MdlObject
 			if($descriptionLabel==false && !empty($this->description))  {$message.='<br><br><b>'.$this->descriptionMail().'</b>';}//Ajoute si besoin la description (ex: fichiers uploadés)
 			////	Message : mise en forme
 			$message='<div style="margin:20px 0px;">'.$subject.' :</div>
-					  <div style="margin:20px 0px;max-width:95%;padding:10px 20px;background:#eee;border:1px solid #bbb;border-radius:5px;">'.$message.'</div>
+					  <div style="margin:20px 0px;max-width:95%;padding:10px 20px;background:#eee;border:1px solid #bbb;border-radius:7px;">'.$message.'</div>
 					  <a href="'.$this->getUrlExternal().'" target="_blank">'.Txt::trad("MAIL_elemAccessLink").'</a>';
 			////	Destinataires de la notif :  Users spécifiés ou affectés à l'objet
 			$mailUserIds=[];
@@ -594,14 +594,14 @@ class MdlObject
 	 ********************************************************************************************************/
 	protected static function sqlAffectations()
 	{
-		if(static::$_sqlTargets===null)
-		{
+		if(static::$_sqlTargets===null){
 			//Objets affectés à tous les users de l'espace (et si besoin les 'guests')
 			static::$_sqlTargets="'spaceUsers'";
 			//Ajoute les objets affectés à l'user courant et ceux affectés à ses groupes
 			if(Ctrl::$curUser->isUser()){
 				static::$_sqlTargets.=",'U".Ctrl::$curUser->_id."'";
-				foreach(MdlUserGroup::getGroups(Ctrl::$curSpace,Ctrl::$curUser) as $tmpGroup)  {static::$_sqlTargets.=",'G".$tmpGroup->_id."'";}
+				foreach(MdlUserGroup::userGroupList(Ctrl::$curSpace,Ctrl::$curUser) as $tmpGroup)
+					{static::$_sqlTargets.=",'G".$tmpGroup->_id."'";}
 			}
 		}
 		return static::$_sqlTargets;

@@ -4,16 +4,19 @@ ready(function(){
 	$("#specificMails").on("click",function(){
 		$(".specificMailsDiv:hidden:first").fadeIn().find("input").focusAlt();
 	});
-	////	Controle un champs "specificMails"
+	////	Controle un champs "specificMails"  :  Notif "email invalide"  +  Class .focusPulsate (pas focusPulsate() sinon on focus en boucle)
 	$("input[name='specificMails[]']").on("focusout",function(){
-		//Notif "email invalide"  +  Class .focusPulsate (pas focusPulsate() sinon on focus en boucle)
-		if($(this).notEmpty() && $(this).isMail()==false)  {notify("<?= Txt::trad("mailInvalid") ?> : "+this.value);  $(this).addClass("focusPulsate");}
+		if($(this).notEmpty() && $(this).isMail()==false){
+			notify("<?= Txt::trad("mailInvalid") ?> : "+this.value);
+			this.classList.add("focusPulsate");
+		}
 	});
 });
 </script>
 
+
 <style>
-input[name*='mailOptions'], #specificMailsPlus	{margin-right:10px;}
+input[name*='mailOptions'], #specificMailsPlus	{margin-inline:5px;}
 #specificMailsPlus								{height:18px;}
 .specificMailsDiv								{display:none;}
 .specificMailsDiv input							{width:300px; max-width:90%;}
@@ -31,5 +34,5 @@ input[name*='mailOptions'], #specificMailsPlus	{margin-right:10px;}
 <?php } ?>
 
 <!--Option "Ajouter des adresses email"-->
-<div id="specificMails" class="sLink" <?= Txt::tooltip("MAIL_specificMailsTooltip") ?> ><img src="app/img/dependency.png"><img src="app/img/plusSmall.png" id="specificMailsPlus"><?= Txt::trad("MAIL_specificMails") ?></div>
+<div id="specificMails" class="link" <?= Txt::tooltip("MAIL_specificMailsTooltip") ?> ><img src="app/img/dependency.png"><img src="app/img/plusSmall.png" id="specificMailsPlus"><?= Txt::trad("MAIL_specificMails") ?></div>
 <?php for($cptMail=1; $cptMail<=20; $cptMail++){ ?><div class="specificMailsDiv"><input type="text" name="specificMails[]"></div><?php } ?>

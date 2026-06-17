@@ -1,138 +1,48 @@
 <?php if($tmpCal->isFirstCal==true){ ?>
 	<script>
-	/******************************************************************************************
-	 *	AFFICHAGE DES AGENDAS
-	 ******************************************************************************************/
+	/************************************************************************************************************
+	 *	DIMENSIONNE & AFFICHE LES AGENDAS
+	 ************************************************************************************************************/
 	function calendarDisplay(isPrint)
 	{
 		////	DIMENSIONNE LES AGENDAS
-		let calendarWidth=isMobile() ?  windowTopWidth  :  (windowTopWidth - $("#pageMenu").outerWidth(true) -14);	//Width du principal container de la page (-14px de scroolbar : cf ::-webkit-scrollbar)
-		let calendarHeight=$(".vCalVue").innerHeight() - $(".vMonthHeader").outerHeight();							//Height des .vMonthTable
-		$(".vMonthTable").outerHeight(calendarHeight);																//Applique le height
-		let monthCellWidth=Math.floor((calendarWidth-$(".vWeekNbOfYear").width()) / 7) - 2;							//Calcul le width des cellules du mois
-		$(".vCalLabelDays,.vMonthCell,.vEvtBlock").innerWidth(monthCellWidth);									//Width des cellules du mois et des Evts
-		$(".vCalMain").each(function(){																				//Parcours chaque agenda
-			let contentHeight=$(this).find(".vCalHeader").height() + $(this).find(".vMonthHeader").height() + $(this).find(".vMonthTable").height();//Hauteur du contenu de l'agenda
-			if($(this).innerHeight() < contentHeight)  {$(this).innerHeight(contentHeight);}						//Si le Height du conteneur .vCalMain est < au contenu (avec de nombreux evts) : on actualise le Height
+		$(".vMonthTable").height( $(".vCalVue").height() - $(".vMonthHeader").height() );	//Height des .vMonthTable
+		$(".vCalMain").each(function(){														//Augmente le Height du .vCalMain des agendas ayant beaucoup d'evts
+			let contentHeight=$(this).find(".vCalHeader").height() + $(this).find(".vMonthHeader").height() + $(this).find(".vMonthTable").height();
+			if($(this).innerHeight() < contentHeight)  {$(this).innerHeight(contentHeight);}
 		});
-	}
-
-	/******************************************************************************************
-	 * DRAGGABLE DES ÉVÉNEMENTS
-	 ******************************************************************************************/
-	function evtDraggable()
-	{
-		////	EVT DRAGGABLES
-		interact(".vEvtBlock[data-evt-is-draggable='true']").draggable({
-			////	Limite la dropzone
-			modifiers:[
-				interact.modifiers.restrictRect({restriction:".vMonthTable"})
-			],
-			listeners:{
-				////	Enregistre le startCell (cf boutton "reject")
-				start(event){
-					startCell=event.target.parentNode;
-				},
-				////	Déplace l'événement via "translate" en fonction du curseur
-				move(event){
-					const targetEvt=event.target;
-					////	Déplace le targetEvt en fonction du curseur  +  Enregistre le décalage X/Y
-					const evtX=(parseFloat(targetEvt.getAttribute('data-x')) || 0) + event.dx;
-					const evtY=(parseFloat(targetEvt.getAttribute('data-y')) || 0) + event.dy;
-					targetEvt.style.transform='translate('+evtX+'px, '+evtY+'px)';
-					targetEvt.setAttribute('data-x', evtX);
-					targetEvt.setAttribute('data-y', evtY);
-					////	Style durant le déplacement  +  Masque le tooltip
-					targetEvt.classList.add("vEvtBlockMoved");
-					$(".tooltipster-base").hide();
-				},
-			}
-		});
-
-		////	DÉFINITION DE LA DROPZONE
-		interact('.vMonthCell').dropzone({
-			accept: '.vEvtBlock',
-			////	Style de la .vMonthCell : en entrée et sortie
-			ondragenter(event){
-				event.target.classList.add("vMonthCellTarget");
-			},
-			ondragleave(event){
-				event.target.classList.remove("vMonthCellTarget");
-			},
-			////	Fin du drop !
-			ondrop(event){
-				const targetEvt=event.relatedTarget;
-				const targetCell=event.target;
-				////	Réinit les styles + Déplace le targetEvt dans la targetCell
-				targetEvt.classList.remove("vEvtBlockMoved");
-				targetEvt.style.transform='';
-				targetEvt.removeAttribute("data-x");
-				targetEvt.removeAttribute("data-y");
-				targetCell.classList.remove("vMonthCellTarget");
-				targetCell.appendChild(targetEvt);
-				////	Confirme le déplacement de l'evt
-				if(startCell.getAttribute("data-cell-ymd")!=targetCell.getAttribute("data-cell-ymd")){
-					const confirmParams={
-						title:"<?= Txt::trad("CALENDAR_evtChangeTime") ?>",
-						content:'<span class="vEvtConfirmOldDate">'+startCell.getAttribute("data-cell-date-label")+'</span> <img src="app/img/arrowRight.png"> '+targetCell.getAttribute("data-cell-date-label"),
-						buttons:{
-							////	Confirmation rejetée : remet l'evt à sa place d'origine (même agenda)
-							reject:{
-								text:"<?= Txt::trad("confirmCancel") ?>",
-								btnClass:"btn-default",
-								action:function(){  $(targetEvt).parents(".vMonthTable").find('.vMonthCell[data-cell-ymd="'+startCell.getAttribute("data-cell-ymd")+'"]').append(targetEvt);  }
-							},
-							////	Confirmation acceptée : enregistre la nouvelle date via Ajax
-							accept:{
-								text:"<?= Txt::trad("confirm") ?>",
-								btnClass:"btn-green",
-								action:function(){
-									let cellYmd=targetCell.getAttribute("data-cell-ymd");
-									let newDateString=cellYmd+"T"+targetEvt.getAttribute("data-evt-hms-begin");//Date au format ISO (ex: "2036-04-02T15:30:00")
-									let evtNewTimeBegin=new Date(newDateString).getTime() / 1000;//Date transformée en timestamp
-									evtDraggedRecord(targetEvt, targetCell, evtNewTimeBegin);						
-								}
-							}
-						}
-					}
-					////	Lance le Confirm (paramétrage par défaut + spécifique)
-					$.confirm(Object.assign(confirmParamsDefault,confirmParams));
-				}
-			}
+		////	POUR CHAQUE JOUR, TRI LES EVTS EN FONCTION DU "timebegin"
+		$(".vMonthDayCell:has(.vEvtBlock)").each(function(){
+			const monthDayCell=this;
+			const evtBlockList=$(this).find(".vEvtBlock").sort(function(a,b){
+				return $(a).attr("data-timebegin") - $(b).attr("data-timebegin")
+			});
+			evtBlockList.each(function(){ monthDayCell.append(this); });
 		});
 	}
 	</script>
 
 
 	<style>
-	/*Conteneur principal + header + lignes*/
-	.vCalVue							{border-collapse:collapse;}											/*Bordures fusionnées*/
-	.vMonthHeader, .vMonthTable			{width:100%; border-collapse:collapse;}								/*Tableau du libellé des jours et de la grille des heures*/
-	.vWeekNbOfYear						{width:15px; font-size:0.9rem; opacity:0.5; text-align:center;}		/*numero des semaines dans l'année*/
-	.vMonthRow							{height:17%; min-height:17%;}										/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
-
+	.vMonthHeader, .vMonthTable				{width:100%; border-collapse:collapse; table-layout:fixed;}					/*Tableau du libellé des jours et de la grille des heures*/
+	.vWeekNbOfYear							{width:18px; font-size:0.8rem; opacity:0.5;}								/*numero des semaines dans l'année*/
+	.vMonthTable .vWeekNbOfYear:hover		{background-color:<?= Ctrl::$agora->skin=="white"?"#eee":"#444" ?>;}	  /*numero des semaines dans l'année*/
+	.vMonthRow								{height:17%; min-height:17%;}												/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 	/*Cellules du jour*/
-	.vMonthCell							{vertical-align:top; padding:0px; <?= Ctrl::$agora->skin=="white" ? "background:white;border:1px solid #e2e2e2;color:#222;" : "background:black;border:1px solid #333;color:#fff;" ?>}
-	.vMonthDayOtherMonth				{background:<?= Ctrl::$agora->skin=="white"?"#fafafa":"#111" ?>;} 				/*Cell des autres mois*/
-	.vMonthCellTarget 					{background:<?= Ctrl::$agora->skin=="white"?"#f7fff7":"#023b02" ?>!important;}	/*Dropzone survolée*/
-	.vMonthDayLabel						{height:30px; padding:5px 3px;}						/*Label du jour*/
-	.vMonthDayLabel:hover				{cursor:pointer;}									/*Idem : survol*/
-	.vMonthDayLabel .vMonthAddEvt		{display:none;}										/*Ajout d'evt "Plus" : masqué par défaut*/
-	.vMonthDayLabel:hover .vMonthAddEvt	{display:block; float:right;}						/*Idem : affiche au survol label du jour*/
-	.vPublicHoliday						{color:#080; font-size:0.85rem; margin-left:10px;}	/*Libellé du jour férié*/
+	.vMonthDayCell							{position:relative; vertical-align:top; padding:0px; <?= Ctrl::$agora->skin=="white" ? "background:white;border:1px solid #e2e2e2;color:#222;" : "background:black;border:1px solid #333;color:#fff;" ?>}
+	.vMonthDayOtherMonth					{background:<?= Ctrl::$agora->skin=="white"?"#fafafa":"#111" ?>;} 	  /*Cell des autres mois*/
+	.vMonthDayHeader						{width:100%; height:25px;}													/*Label du jour + jour ferie + ajout d'evt*/
+	.vMonthDayNb							{width:25px; text-align:center;}											/*Numéro du jour du mois*/
+	.vMonthDayNb .circleNb					{width:25px; height:25px; line-height:25px; font-size:1rem;}				/*surcharge*/
+	.vMonthDayPublicHoliday					{color:#080; font-size:0.85rem;}											/*Libellé du jour férié*/
+	.vMonthDayHeader .vMonthDayAddEvt		{width:25px; visibility:hidden; cursor:pointer;}							/*Ajout d'evt "Plus" : masqué par défaut*/
+	.vMonthDayHeader:hover .vMonthDayAddEvt	{visibility:visible;}														/*Idem : affiche au survol label du jour*/
 
-	/*evenements*/
-	.vEvtBlock							{max-width:98%; margin-bottom:2px;}
-	.vEvtBlock .menuContextLaunchFloat	{top:2px; right:2px;}/*décale le menu "burger"*/
-	.vEvtLabel							{font-size:0.85rem; white-space:nowrap;}/*white-space: Texte sur une seule ligne*/
-	.vEvtLabelDate						{display:inline;}
-
-	/*AFFICHAGE RESPONSIVE*/
-	@media screen and (max-width:1200px){
-		.vMonthDayLabel									{font-size:0.7em; font-weight:normal;}
-		.vMonthDayLabel .vMonthAddEvt					{margin:0px;}
-		.vEvtLabel										{font-size:0.8rem; line-height:12px;}
-		.vEvtLabelDate, .vWeekNbOfYear, .vPublicHoliday	{display:none!important;}
+	/*** RESPONSIVE TABLET-SMARTPHONE*/
+	@media screen and (max-width:1199px){
+		.vMonthDayHeader					{font-size:0.7em; font-weight:normal;}
+		.vEvtLabel							{font-size:0.8rem; line-height:12px;}
+		.vEvtLabelDate, .vWeekNbOfYear, .vMonthDayPublicHoliday	{display:none!important;}
 	}
 	</style>
 <?php } ?>
@@ -155,25 +65,24 @@
 			<?php if($tmpDay["dayOfWeek"]==1){ ?><tr class="vMonthRow"><?php } ?>
 
 				<!--BLOCK DU JOUR-->
-				<td class="vMonthCell <?= $tmpDay["isMonthCurtime"]==false?'vMonthDayOtherMonth':null ?>" data-cell-ymd="<?= $dayYmd ?>" data-cell-date-label="<?= Txt::dateLabel("textDate",$tmpDay["dayTimeBegin"]) ?>">
-						<!--LABEL DU JOUR-->
-						<div class="vMonthDayLabel">
-							<span <?= $tmpDay["isToday"]==true?'class="circleNb"':null ?> ><?= $tmpDay["dayOfMonth"] ?></span>
-							<span class="vPublicHoliday"><?= $tmpDay["publicHoliday"] ?></span>
-								<!--PROPOSER/AJOUTER UN EVT-->
-								<?php if($tmpCal->affectationAddRight()){ ?>
-									<img src="app/img/plusSmall.png" class="vMonthAddEvt" <?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $getUrlNewEvt.'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.strtotime($dayYmd.' '.date('H:00')) ?>')">
-								<?php } ?>
-						</div>
-						<!--EVENEMENTS DU JOUR-->
-						<?php foreach($tmpCal->evtListDays[$dayYmd] as $tmpEvt){ ?>
-							<?= $tmpEvt->mainDivMenu("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
-								<div class="vEvtLabel" onclick="<?= $tmpEvt->lightboxVue() ?>" <?= Txt::tooltip($tmpEvt->tooltip) ?>>
-									<div class="vEvtLabelDate"><?= Txt::dateLabel("mini",$tmpEvt->timeBegin) ?></div>
-									<?= $tmpEvt->title ?>
-								</div>
+				<td class="vMonthDayCell vCellDay <?= $tmpDay["isMonthCurtime"]==false?'vMonthDayOtherMonth':null ?>" data-datelabel="<?= Txt::dateLabel("dateDefault",$tmpDay["dayTimeBegin"]) ?>" data-ymd="<?= $dayYmd ?>">
+					<!--LABEL DU JOUR + JOUR FERIE + AJOUT D'EVT-->
+					<table class="vMonthDayHeader">
+						<tr>
+							<td class="vMonthDayNb"><span class="<?= $tmpDay["isToday"]==true?'circleNb':null ?>"><?= $tmpDay["dayOfMonth"] ?></span></td>
+							<td class="vMonthDayPublicHoliday"><?= $tmpDay["publicHoliday"] ?></td>
+							<?php if($tmpCal->affectationAddRight()){ ?><td class="vMonthDayAddEvt"><img src="app/img/plusSmall.png"<?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $getUrlNewEvt ?>&_idCal=<?= $tmpCal->_id ?>&newEvtTimeBegin=<?= $tmpDay['newEvtTimeBegin'] ?>')"></td><?php } ?>
+						</tr>
+					</table>
+					<!--EVENEMENTS DU JOUR-->
+					<?php foreach($tmpCal->evtListDays[$dayYmd] as $tmpEvt){ ?>
+						<?= $tmpEvt->objContentDiv("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
+							<div class="vEvtLabel" onclick="<?= $tmpEvt->lightboxVue() ?>" <?= Txt::tooltip($tmpEvt->tooltip) ?>>
+								<span class="vEvtLabelDate"><?= $tmpEvt->dateLabel("mini",true) ?></span>
+								<?= $tmpEvt->title ?>
 							</div>
-						<?php } ?>
+						</div>
+					<?php } ?>
 				</td>
 
 			<!--LIGNE DE SEMAINE => FIN + NUM DE SEMAINE DE L'ANNEE-->

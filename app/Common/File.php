@@ -125,8 +125,8 @@ class File
 	{
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
 		if(!empty($fileContent) || is_file($filePath)){
-			////	Augmente la duree du script (sauf safemode)
-			@set_time_limit(1800);
+			////	Augmente le temps d'execution
+			Tool::setTimeLimit(300);
 			////	Headers
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
@@ -349,8 +349,8 @@ class File
 	public static function downloadArchive($fileList, $archiveName)
 	{
 		if(!empty($fileList)){
-			//temps d'execution
-			@set_time_limit(1800);//disabled en safemode
+			//Augmente le temps d'execution
+			Tool::setTimeLimit(800);
 			//Création de l'archive
 			$archiveTmpPath=tempnam(self::getTempDir(),"archive".uniqid()).".zip";
 			$zip=new ZipArchive();

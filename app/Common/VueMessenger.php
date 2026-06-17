@@ -237,17 +237,17 @@ async function launchVisioPropose()
 .vMessengerMessage .lightboxOpenHref img[src*='visioSmall']	{margin-left:10px;}
 
 /*Messenger : formulaire*/
-#messengerFormUsers>div, #messengerNobodyDiv	{background:#444; border-radius:5px;}
+#messengerFormUsers>div, #messengerNobodyDiv	{background:#444;}
 #messengerFormMain								{height:50px; padding-bottom:50px; text-align:center;}/*padding-bottom idem #livecounterMain*/
 #messengerPostDiv								{padding:10px;}
-#messengerFormInput, #messengerFormButton		{height:40px;}
+#messengerFormInput, #messengerFormButton		{height:40px; border-radius:var(--radius-block);}
 #messengerFormInput								{width:65%;}
 #messengerFormButton							{width:120px; margin-left:5px; margin-bottom:3px;}
 #launchVisioButton								{cursor:pointer; margin-left:20px;}
 #messengerNobodyDiv								{padding:20px;}
 
-/*AFFICHAGE RESPONSIVE*/
-@media screen and (max-width:1200px){
+/*** RESPONSIVE TABLET-SMARTPHONE*/
+@media screen and (max-width:1199px){
 	.vLivecounterUser							{margin:0px;}
 	.vLivecounterUser .personImg				{display:none;}
 	#messengerMain								{bottom:0px; width:100%; height:100%; box-shadow:none; border-radius:0px; padding:0px; font-size:0.9rem;}

@@ -87,13 +87,13 @@ class MdlTask extends MdlObject
 	{
 		if($this->dateBegin || $this->dateEnd){
 			//// Label
-			$barLabel=($barLabelFull==true)  ?  Txt::dateLabel("textDate",$this->dateBegin,$this->dateEnd)  :  Txt::dateLabel("textMini",$this->dateBegin,$this->dateEnd);
+			$barLabel=($barLabelFull==true)  ?  Txt::dateLabel("dateDefault",$this->dateBegin,$this->dateEnd)  :  Txt::dateLabel("dateMini",$this->dateBegin,$this->dateEnd);
 			$barLabel='<img src="app/img/task/date.png"> <span class="progressBarLabel">'.$barLabel.'</span>';
 			//// Tooltip
 			$barTooltip=$this->title;
-			if($this->dateBegin && $this->dateEnd)	{$barTooltip.='<hr>'.Txt::trad("beginEnd").' : '.Txt::dateLabel("textDate",$this->dateBegin,$this->dateEnd);}
-			elseif($this->dateBegin)				{$barTooltip.='<hr>'.Txt::trad("begin").' : '.Txt::dateLabel("textDate",$this->dateBegin);}
-			elseif($this->dateEnd)					{$barTooltip.='<hr>'.Txt::trad("end").' : '.Txt::dateLabel("textDate",$this->dateEnd);}
+			if($this->dateBegin && $this->dateEnd)	{$barTooltip.='<hr>'.Txt::trad("beginEnd").' : '.Txt::dateLabel("dateDefault",$this->dateBegin,$this->dateEnd);}
+			elseif($this->dateBegin)				{$barTooltip.='<hr>'.Txt::trad("begin").' : '.Txt::dateLabel("dateDefault",$this->dateBegin);}
+			elseif($this->dateEnd)					{$barTooltip.='<hr>'.Txt::trad("end").' : '.Txt::dateLabel("dateDefault",$this->dateEnd);}
 			if($this->advancement)					{$barTooltip.='<hr>'.$this->advancementLabel();}
 			//// Pourcentage de progression debut/fin
 			$barPercent=0;

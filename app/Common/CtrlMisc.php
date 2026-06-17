@@ -66,9 +66,6 @@ class CtrlMisc extends Ctrl
 															<label for="messengerUserCheckbox'.$tmpUser->_id.'" '.Txt::tooltip(Txt::trad("select")." ".$userTooltip).'>'.$userImg.$userFirstName.'</label>
 													   </div>';
 				}
-				//Ajoute "inverser la sélection" si ya + de 5 users
-				if(count($_SESSION["livecounterUsers"])>5)
-					{$_SESSION["livecounterFormHtml"].='<div class="vMessengerUser"><label onclick="$(\'label[for^=messengerUserCheckbox]\').trigger(\'click\')"><img src="app/img/checkSwitch.png"> &nbsp; '.Txt::trad("selectSwitch").'</label></div>';}
 			}
 
 			////	LISTE DES MESSAGES DU MESSENGER  &&  DES "PULSATES"

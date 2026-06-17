@@ -1,9 +1,10 @@
 <script>
 /************************************************************************************************************
- *	WIDTH DE LA TIMELINE (lancé via "mainDisplay()" cf "app.js")
+ *	WIDTH DE LA TIMELINE (lancé via  "app.js")
 *************************************************************************************************************/
 function moduleDisplay(){
-	$(".vTimelineMain").outerWidth($("#pageContent").width(),true).show();
+	$("#timelineMain").width(1);										//#timelineMain au minimum (pas masqué) pour calculer le width de #pageContent
+	$("#timelineMain").outerWidth( $("#pageContent").width() ,true);	//Affiche le width
 }
 </script>
 
@@ -15,31 +16,33 @@ function moduleDisplay(){
 .objLines .objContent						{height:65px;}								/*surcharge*/
 .objLines .progressBar						{margin-left:15px;}							/*.progressBar*/
 .objBlocks .objIconOpacity					{display:none;}								/*masque l'icone*/
-.objBlocks .objDetails						{display:table-cell!important; width:40px; text-align:right;}/*cellule des .progressBar*/
+.objBlocks .objDetails						{display:table-cell; width:40px; text-align:right;}/*cellule des .progressBar*/
+.objBlocks .objFolders .objDetails			{width:100px;}								/*détail des dossiers*/
 .objBlocks .objDetails .progressBar			{margin-block:2px;}							/*.progressBar au format icone : sans label*/
 .objBlocks .progressBarLabel				{display:none;}								/*idem*/
 .progressBarDelayed							{color:#740;}
 
 /*TIMELINE*/
-.vTimelineSeparator							{visibility:hidden; width:100%;}
-.vTimelineMain								{overflow-x:auto; margin-top:20px; padding:0px; padding-top:10px; display:none;}/*masqué par défaut*/
-.vTimelineMain table						{border-collapse:collapse;}
-.vTimelineMain td							{vertical-align:middle; white-space:nowrap;}
+#timelineSeparator							{visibility:hidden; width:100%;}
+#timelineMain								{overflow-x:auto; padding:0px; padding-top:10px;}
+#timelineMain table							{max-width:100%; border-collapse:collapse; white-space:nowrap;}
+#timelineMain td							{vertical-align:middle;}
 .vTimelineMonths							{padding-bottom:8px;}/*Label des mois*/
 .vTimelineDays								{padding-left:3px; cursor:help;}
 .vTimelineTitle								{max-width:350px; padding:0px 10px; overflow:hidden; text-overflow:ellipsis;}	/*Label de la tâche*/
-.vTimelineMain td:not(:first-child)			{min-width:30px;}	/*Cell des jours*/
+#timelineMain td:not(:first-child)			{min-width:30px;}	/*Cell des jours*/
 .vTimelineLeftBorder						{border-left:#ccc solid 1px;}
 .vTimelineLeftBorder2						{border-left:#eee solid 1px;}
-.vTimelineMain .progressBar					{width:100%; margin:0px!important; padding:5px 2px;}/*100% de width des cellules : cf "colspan"*/
-.vTimelineMain .progressBar img[src*=date]	{display:none;}
-.vTimelineMain  .progressBarLabel			{display:inline-block;}/*affiche toujours le contenu du .progressBarLabel*/
+#timelineMain .progressBar					{width:100%; margin:0px!important; padding:5px 2px;}/*100% de width des cellules : cf "colspan"*/
+#timelineMain .progressBar img[src*=date]	{display:none;}
+#timelineMain  .progressBarLabel			{display:inline-block;}/*affiche toujours le contenu du .progressBarLabel*/
 
-/*AFFICHAGE SMARTPHONE*/
-@media screen and (max-width:490px){
-	.vTimelineMain td:not(:first-child)		{min-width:22px;}
-	.vTimelineMain img						{display:none;}
-	.vTimelineTitle							{max-width:200px;}
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
+	#timelineMain							{font-size:0.9rem;}
+	#timelineMain td:not(:first-child)		{min-width:22px;}
+	#timelineMain img						{display:none;}
+	.vTimelineTitle							{max-width:220px;}
 }
 </style>
 
@@ -70,7 +73,7 @@ function moduleDisplay(){
 		<!--LISTE DES TACHES-->
 		<?php
 		foreach($tasksList as $tmpTask){
-			echo $tmpTask->mainDivMenu();
+			echo $tmpTask->objContentDiv();
 		?>
 				<div class="objContentScroll">
 					<div class="objContentTab vObjTasks">
@@ -96,8 +99,8 @@ function moduleDisplay(){
 
 		<!--TIMELINE-->
 		<?php if(!empty($timelineBegin)){ ?>
-			<hr class="vTimelineSeparator">
-			<div class="vTimelineMain miscContent">
+			<hr id="timelineSeparator">
+			<div id="timelineMain" class="miscContent">
 				<table>
 
 					<?php

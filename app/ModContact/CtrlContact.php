@@ -114,8 +114,8 @@ class CtrlContact extends Ctrl
 			}
 		}
 		////	Affiche le menu d'Import/Export
-		$vDatas["objClass"]="MdlContact";
 		$vDatas["curContainer"]=$curContainer;
+		$vDatas["objectType"]="contact";
 		static::displayPage(Req::commonPath."VuePersonsImportExport.php",$vDatas);
 	}
 
