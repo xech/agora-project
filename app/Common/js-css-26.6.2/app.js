@@ -349,11 +349,11 @@ function isMail(mail)
 }
 
 /************************************************************************************************************
- * CONTROLE UN PASSWORD : AU MOINS 8 CARACTERES > LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+ * CONTROLE UN PASSWORD : AU MOINS 12 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
  ************************************************************************************************************/
 function isPassword(password)
 {
-	let regex=/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+	let regex=/^(?=.*[a-zA-Z])(?=.*\d).{12,}$/;
 	return regex.test(password);
 }
 
@@ -463,10 +463,10 @@ ready(function(){
  ************************************************************************************************************/
 function submitLoading()
 {
-	$(".submitLoading").show();
+	$(".loadingImage").show();
 	$("button[type='submit']").prop("disabled",true);
 	setTimeout(function(){
-		$(".submitLoading").hide();
+		$(".loadingImage").hide();
 		$("button[type='submit']").prop("disabled",false);
 	 },5000);//tester avec ajax + error, et upload de big files
 }
@@ -533,7 +533,7 @@ function lightboxResize()
 		lightboxTimeout=setTimeout(function(){																	//Timeout le temps de lancer les show(), fadeIn(), etc (toujours > à $.fx.speeds)
 			let cssWidth=window.getComputedStyle(document.body).getPropertyValue("max-width");					//Width du contenu de l'iframe : cf. "max-width" de #bodyLightbox (en "px" ou "%")
 			let resizeWidth=parseInt(cssWidth);																	//resizeWidth en Integer
-			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=resizeWidthDefault;}										//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
+			if(Number.isInteger(resizeWidth)==false) 	{resizeWidth=resizeWidthDefault;}						//resizeWidth par défaut si "max-width" non spécifié (même width que ".fancybox__content" dans "app.css")
 			if(/%/.test(cssWidth))						{resizeWidth=(windowTopWidth/100) * resizeWidth;}		//resizeWidth en % de width de la page principale
 			else if(resizeWidth > windowTopWidth)		{resizeWidth=windowTopWidth;}							//resizeWidth toujours <= à windowTopWidth
 			window.top.$(".fancybox__content,.fancybox__iframe").css("width",resizeWidth+"px");					//Applique le width au fancybox

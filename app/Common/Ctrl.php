@@ -72,7 +72,7 @@ abstract class Ctrl
 			////	Affiche une page principale : controle d'accès au module demandé
 			if(Req::$curAction=="default"){
 				static::$isMainPage=true;
-				//Module demandé pas affecté à l'espace courant (et pas un module "global") : redirection vers le 1er module de l'espace
+				//Module demandé pas affecté à l'espace courant (et pas un module "global") : redirection vers le premier module de l'espace
 				if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false  &&  self::$curSpace->moduleEnabled(Req::$curCtrl)==false)
 					{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
 			}

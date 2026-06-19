@@ -131,11 +131,11 @@ class MdlSpace extends MdlObject
 	{
 		//Init "_moduleList" si pas encore en "cache"
 		if(empty($this->_moduleList)){
-			$availableModules=self::availableModules();																							//Modules disponibles
-			foreach(Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY `rank` ASC") as $tmpModule){			//Modules affectés à l'espace (DB)
-				$moduleName=$tmpModule["moduleName"];																							//Nom du module
+			$availableModules=self::availableModules();																					//Modules disponibles
+			foreach(Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY `rank` ASC") as $tmpModule){	//Modules affectés à l'espace (DB)
+				$moduleName=$tmpModule["moduleName"];																					//Nom du module
 				if(Ctrl::$curUser->isGuest() && ($moduleName=="mail" || ($moduleName=="user" && empty($this->password))))  {continue;}	//Pas de module mail/user pour les guests (sauf si user+password)
-				$this->_moduleList[$moduleName]=array_merge($availableModules[$moduleName], $tmpModule);										//Ajoute le module et ses propriétés
+				$this->_moduleList[$moduleName]=array_merge($availableModules[$moduleName], $tmpModule);								//Ajoute le module et ses propriétés
 			}
 			//Ajoute l'agenda perso s'il est activé pour l'user courant et qu'il n'est pas dans la liste des modules
 			if(Ctrl::$curUser->isUser() && empty(Ctrl::$curUser->calendarDisabled) && array_key_exists("calendar",$this->_moduleList)==false)

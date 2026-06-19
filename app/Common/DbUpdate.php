@@ -1013,7 +1013,7 @@ class DbUpdate extends Db
 					{self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `newsDisplay` `toVoteWithNews` TINYINT(1) UNSIGNED DEFAULT NULL");}
 			}
 
-			if(self::updateVersion("26.6.1"))
+			if(self::updateVersion("26.6.2"))
 			{
 				//Ajoute le champ "ap_calendarEvent.allDay" et  "ap_calendarEvent.location"
 				self::fieldExist("ap_calendarEvent", "allDay",   "ALTER TABLE `ap_calendarEvent` ADD `allDay` TINYINT(1) UNSIGNED DEFAULT NULL AFTER `dateEnd`");

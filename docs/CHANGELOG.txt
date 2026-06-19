@@ -14,23 +14,27 @@ Amélioration du menu de sélection des utilisateurs et groupes d'utilisateurs
 Amélioration du sélecteur de date et heure dans l'édition des événements
 Amélioration de l'option "Imprimer l'agenda"
 Amélioration de l'affichage/édition des commentaires des objets
-Amélioration de la gestion des catégories : Evénement du Calendar, Thèmes du Forum, Statut des Tâches
+Amélioration de la gestion des catégories : Types d'événements, Thèmes du Forum, Statut des Tâches
+Amélioration du menu d'édition des espaces
+Optimisation du contrôle des nouveaux mots de passe
 Optimisation de l'affichage des vignettes d'image en mode "portrait" dans le module des Fichiers
 Optimisation de l'affichage des labels "datetime"
 Correction de l'import/export d'utilisateurs au format CSV pour PHP 8.4+
 -----
-Added "All Day" and "Address" options for events in the Calendar module.
-Added "Drag and drop" for "All Day" events into the "Week" view.
-Adjusted event text color to match the background color of their category.
-New "grid"/"line" display menu.
-Improved the main mobile menu.
-Improved the user and user group selection menu.
-Improved the date and time selector in event editing.
-Improved the "Print Calendar" option.
-Improved the display/editing of object comments.
-Improved category management: Calendar Events, Forum Topics, Task Status.
-Optimized the display of image thumbnails in portrait mode in the Files module.
-Optimized the display of datetime labels.
+Added "All Day" and "Address" options for events in the Calendar module
+Added "Drag and drop" for "All Day" events into the "Week" view
+Adjusted event text color to match the background color of their category
+New "grid"/"line" display menu
+Improved the main mobile menu
+Improved the user and user group selection menu
+Improved the date and time selector in event editing
+Improved the "Print Calendar" option
+Improved the display/editing of object comments
+Improved category management: Calendar Events, Forum Topics, Task Status
+Improved space editing menu
+Optimized the control of new passwords
+Optimized the display of image thumbnails in portrait mode in the Files module
+Optimized the display of datetime labels
 Fixed user import/export issue in CSV format for PHP 8.4+
 
 

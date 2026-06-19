@@ -52,7 +52,7 @@ ready(function(){
 		<!--DATE ONLINE-->
 		<div>
 			<input type="text" name="dateOnline" class="dateBegin" value="<?= Txt::formatDate($curObj->dateOnline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOnline") ?>" <?= Txt::tooltip("DASHBOARD_dateOnlineTooltip") ?> >
-			<img src="app/img/dateEnd2.png">
+			<img src="app/img/datePending.png">
 		</div>
 		<!--DATE OFFLINE-->
 		<div>

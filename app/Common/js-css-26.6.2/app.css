@@ -159,8 +159,8 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 .objLines .menuContextUnder			{width:80px; top:30px;}																/*Affichage horizontal*/
 .objLines .menuContextUnder>div		{display:inline-block; margin-inline:0px;}											/*idem*/
 .objLines .menuContextUnder img		{max-width:16px;}																	/*idem*/
-.circleNb							{width:22px; height:22px; line-height:22px; font-size:0.85rem; display:inline-block; background:var(--blue-bg); border-radius:50%; color:white; text-align:center;}/*Voir aussi menu du Dashboard*/
-.menuContextUnder .circleNb			{width:15px; height:15px; line-height:15px; font-size:0.7rem; position:relative; margin-right:-12px;}/*Nb de likes / commentaires*/
+.circleNb							{width:22px; height:22px; line-height:22px; font-size:14px; display:inline-block; background:var(--blue-bg); border-radius:50%; color:white; text-align:center;}/*Voir aussi menu du Dashboard*/
+.menuContextUnder .circleNb			{width:15px; height:15px; line-height:15px; font-size:10px; position:relative; margin-right:-12px;}/*Nb de likes / commentaires*/
 .objContent:not(:hover) .menuContextUnder .hide, .objSelectCheckbox, .circleNb:empty	{display:none;}/*Masque les .menuContextUnder (par défaut)  && l'input hidden de sélection/désélection d'objet*/
 
 
@@ -180,7 +180,7 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 /********** INPUTS*/
 input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:33px; max-width:100%; padding:5px; border-radius:var(--radius-field); font-size:1rem; font-family:inherit; outline:none;}
 *:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled		{opacity:0.85;}
-::placeholder 											{padding-left:3px; font-size:0.95rem; color:#aaa;}/*texte par défaut*/
+::placeholder 											{padding-left:3px; font-size:0.95rem; color:#999;}/*texte par défaut*/
 input:is([type=radio],[type=checkbox])					{vertical-align:middle; margin:0px 3px;}
 input[type=checkbox]									{width:18px; height:18px;}
 input[type=file]										{height:auto;}
@@ -221,10 +221,10 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 .submitButtonInline										{display:inline-block;}
 .submitButtonMain button								{width:250px; height:50px;}
 .submitButtonInline	button								{width:100px; margin-left:10px; border-radius:var(--radius-field);}
-.submitButton .submitLoading							{position:absolute; display:none; top:5px; right:-5px; transform: rotate(90deg);}/*affiché à la validation du form*/
-.submitButtonMain .submitLoading						{height:40px;}
-.submitButtonInline .submitLoading						{height:25px;}
-img[src*='loading.svg']									{height:30px;}
+.loadingImage											{height:40px; filter:contrast(300%);}/*dimensions du svg*/
+.submitButton .loadingImage								{position:absolute; display:none;}/*affiché à la validation du form*/
+.submitButtonMain .loadingImage							{height:40px; top:5px; right:5px;}
+.submitButtonInline .loadingImage						{height:35px; top:3px; right:3px;}
 .connectForm .submitButtonMain							{margin-top:0px;}
 .connectForm *:is(input[type=text],input[type=password],button)  {display:inline-block; margin-block:8px; width:330px; height:45px; border-radius:var(--radius-block);}
 
@@ -313,7 +313,7 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 
 /********** JQUERY UI + PLUGINS*/
 .tooltipster-box								{margin:5px; border-radius:var(--radius-block)!important;}/*Tooltip*/
-.toast-item										{padding:15px; box-shadow:2px 2px 10px #444;}/*Notify*/
+.toast-item										{padding:15px; padding-right:30px; background:#444!important; box-shadow:2px 2px 10px #444;}/*Notify*/
 .toast-position-top-center						{top:10px;}
 .jconfirm-box									{border-radius:15px!important; padding-block:40px 30px!important;}
 .jconfirm-bg									{opacity:0.5!important;}
@@ -334,7 +334,7 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 
 
 /********** DIVERS*/
-.infos							{display:block; border:solid 1px #ddd; background-color:#f8f8f8; color:#555; margin-block:15px; padding:8px; border-radius:var(--radius-field); text-align:center; }
+.infos							{display:block; border:solid 1px #ddd; margin-block:15px; padding:8px; border-radius:var(--radius-field); text-align:center; }
 .pluginModule					{margin-top:15px;}
 .pluginModule img				{float:right; margin-top:-5px; max-height:24px;}
 .changeOrder					{width:30px; vertical-align:middle; text-align:right; cursor:move; user-select:none;}/*Change l'ordre d'affichage d'une liste*/

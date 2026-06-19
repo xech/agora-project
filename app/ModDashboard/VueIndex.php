@@ -17,7 +17,7 @@ ready(function(){
 				}
 				//Charge les news suivantes (via ".get()" et non ".ajax")
 				if($("#contentNews").isVisible() && loadMoreNews==true){
-					$("#contentNews").append("<div class='infiniteScrollLoading'><img src='app/img/loading.svg'></div>");
+					$("#contentNews").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="loadingImage"></div>');
 					$.get("?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
 						if(vueNewsList.length==0)  {loadMoreNews=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
@@ -31,7 +31,7 @@ ready(function(){
 				}
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
 				if($("#contentPolls").isVisible() && loadMorePolls==true){
-					$("#contentPolls").append("<div class='infiniteScrollLoading'><img src='app/img/loading.svg'></div>");
+					$("#contentPolls").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="loadingImage"></div>');
 					$.get("?ctrl=dashboard&action=GetMorePolls&pollsToVoteWithNews=<?= Req::param("pollsToVoteWithNews") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}	//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{

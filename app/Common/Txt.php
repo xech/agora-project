@@ -167,7 +167,7 @@ class Txt
 	public static function submitButton($keyTrad="record", $isMainButton=true)
 	{
 		return '<div class="submitButton '.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
-					<button type="submit">'.self::trad($keyTrad).' <img src="app/img/loading.svg" class="submitLoading"></button>
+					<button type="submit">'.self::trad($keyTrad).' <img src="app/img/loadingCircle.svg" class="loadingImage"></button>
 				</div>
 				<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
 				<input type="hidden" name="action" value="'.Req::$curAction.'">
@@ -183,11 +183,11 @@ class Txt
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE UN PASSWORD : AU MOINS 8 CARACTERES > LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+	 * CONTROLE UN PASSWORD : AU MOINS 12 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
 	 ********************************************************************************************************/
 	public static function isPassword($password)
 	{
-		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{8,}$/', $password);
+		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{12,}$/', $password);
 	}
 
 	/********************************************************************************************************
