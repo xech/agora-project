@@ -100,7 +100,7 @@ class CtrlFile extends Ctrl
 						$sqlDownloadedBy=", downloadedBy=".Db::format(Txt::tab2txt($curFile->downloadedBy));
 					}
 					//Update la table en incrémentant "downloadsNb" et si possible "downloadedBy"
-					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1) ".$sqlDownloadedBy." WHERE _id=".$curFile->_id);
+					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1) ".$sqlDownloadedBy." WHERE `_id`=".$curFile->_id);
 					//Télécharge ensuite le fichier
 					$curVersion=$curFile->getVersion(Req::param("dateCrea"));
 					File::download($curVersion["name"], $curFile->filePath(Req::param("dateCrea")));
@@ -234,7 +234,7 @@ class CtrlFile extends Ctrl
 						File::imageResize($tmpObj->filePath(), $tmpObj->filePath(), 1920);
 						clearstatcache();//Pour mettre à jour le "filesize()"
 						$tmpFile["size"]=(int)filesize($tmpObj->filePath());
-						Db::query("UPDATE ap_file SET octetSize=".Db::format($tmpFile["size"])." WHERE _id=".$tmpObj->_id);
+						Db::query("UPDATE ap_file SET octetSize=".Db::format($tmpFile["size"])." WHERE `_id`=".$tmpObj->_id);
 						Db::query("UPDATE ap_fileVersion SET octetSize=".Db::format($tmpFile["size"])." WHERE _idFile=".$tmpObj->_id." AND realName=".Db::format($sqlVersionFileName));
 					}
 					////	Incrémente la taille temporaire de l'espace disque total

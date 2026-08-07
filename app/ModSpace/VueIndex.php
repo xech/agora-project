@@ -34,7 +34,11 @@
 				<div class="objContentScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>
-					<div class="vModules"><?php foreach($tmpSpace->moduleList(true) as $tmpModule)  {echo '<img src="app/img/'.$tmpModule["moduleName"].'/iconSmall.png" '.Txt::tooltip($tmpModule["description"]).'>';} ?></div>
+					<div class="vModules">
+						<?php foreach($tmpSpace->moduleList(false,true) as $tmpModule){ ?>
+							<img src="app/img/<?= $tmpModule["moduleName"] ?>/iconSmall.png" <?= Txt::tooltip($tmpModule["description"]) ?> >
+						<?php } ?>
+					</div>
 					<hr>
 					<!--"DROIT D'ACCÈS À DEFINIR"-->
 					<?php if(count($tmpSpace->getUsers())==0 && empty($tmpSpace->public) && $tmpSpace->allUsersAffected()==false){ ?>

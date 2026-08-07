@@ -33,6 +33,7 @@ function mainFormControl(){
 
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
+
 	<!--TITRE MOBILE-->
 	<?= $curObj->titleMobile("USER_addUser") ?>
 
@@ -41,7 +42,8 @@ function mainFormControl(){
 		<div><?= $curObj->isProfileImg()  ?  "<div class='personProfileImg'>".$curObj->tagProfileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
 		<div><?= $curObj->menuProfileImg() ?></div>
 	</div>
-	<hr>
+
+	<hr><!--SEPARATE-->
 
 	<!--LOGIN-->
 	<div class="objField">
@@ -54,11 +56,13 @@ function mainFormControl(){
 		<div><?= Txt::trad("password") ?></div>
 		<div><?= Txt::inputPassword("password",$curObj->isNew()) ?></div>
 	</div>
-	<hr>
+
+	<hr><!--SEPARATE-->
 
 	<!-- CHAMPS PRINCIPAUX !-->
 	<?= $curObj->getFields("edit") ?>
-	<hr>
+
+	<hr><!--SEPARATE-->
 
 	<!--ESPACE DE CONNEXION-->
 	<?php if(count($curObj->spaceList())>0){ ?>
@@ -73,7 +77,6 @@ function mainFormControl(){
 		<div><img src="app/img/country.png"><?= Txt::trad("USER_langs") ?></div>
 		<div><?= MdlUser::selectTrad("user",$curObj->lang) ?></div>
 	</div>
-	<hr>
 
 	<!--NOTIF MAIL DE CREATION D'USER-->
 	<?php if(empty($curObj->_id) && Tool::mailEnabled()){ ?>
@@ -93,11 +96,18 @@ function mainFormControl(){
 
 	<!--AGENDA PERSO DESACTIVE-->
 	<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
-	<div class="objField"><div>
-		<input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?>>
-		<label for="calendarDisabled" <?= Txt::tooltip("USER_persoCalendarDisabledTooltip") ?>><?= Txt::trad("USER_persoCalendarDisabled") ?></label>
-	</div></div>
+	<div class="objField">
+		<div>
+			<img src="app/img/calendar/iconSmall.png">
+			<label for="calendarDisabled" <?= Txt::tooltip("USER_persoCalendarDisabledTooltip") ?>><?= Txt::trad("USER_persoCalendarDisabled") ?></label>
+		</div>
+		<div>
+			<input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?>>
+		</div>
+	</div>
 	<?php } ?>
+
+	<hr><!--SEPARATE-->
 
 	<!--USER <=> SPACES-->
 	<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>

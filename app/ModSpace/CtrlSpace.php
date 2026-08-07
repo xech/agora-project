@@ -71,18 +71,10 @@ class CtrlSpace extends Ctrl
 			//Ferme la page
 			static::lightboxRedir();
 		}
-		////	Liste de tous les users et modules disponibles
-		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);
-		$vDatas["moduleList"]=$curObj->moduleList(true);
-		////	Ajoute les modules désactivés
-		foreach(MdlSpace::availableModules() as $moduleName=>$tmpModule){
-			if(empty($vDatas["moduleList"][$moduleName])){
-				$tmpModule["disabled"]=true;
-				$vDatas["moduleList"][$moduleName]=$tmpModule;
-			}
-		}
-		////	Affiche la vue
+		////	Objet courant  +  Liste des users disponibles  + List des modules disponibles
 		$vDatas["curObj"]=$curObj;
+		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);
+		////	Affiche la vue
 		static::displayPage("VueEditSpace.php",$vDatas);
 	}
 }

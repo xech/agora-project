@@ -115,9 +115,9 @@ function timeSlotBusy()
 			let dateTimeEnd  =encodeURIComponent($(".dateEnd").val()+" "+$(".timeEnd").val());
 			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy&dateTimeBegin="+dateTimeBegin+"&dateTimeEnd="+dateTimeEnd+"&_evtId=<?= $curObj->_id ?>";
 			$(".vCalInput:checked").each(function(){  ajaxUrl+="&calendarIds[]="+this.value;  });
-			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé (mainTriggers() : Update les tooltips)
+			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){
-				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);  mainTriggers();}
+				if(txtResult.length>0)	{$("#timeSlotBusy").fadeIn();  $(".timeSlotBusyContent").html(txtResult);}
 				else					{$("#timeSlotBusy").fadeOut();}
 			});
 		}
@@ -140,7 +140,7 @@ function mainFormControl()
 <style>
 /*GENERAL*/
 #bodyLightbox						{max-width:850px;}
-.vEvtOptionInline					{display:inline-block; margin:10px 20px 10px 0px; line-height:35px;}/*line-height: #allDayCheckbox + #visioUrlAdd*/
+.vEvtOptionInline					{display:inline-block; margin-top:20px; margin-right:20px; line-height:35px;}/*line-height: #allDayCheckbox + #visioUrlAdd*/
 .beginEndLabel						{display:none;}
 #beginEndSeparator					{display:inline-block;}
 #guestMenu							{text-align:center;}

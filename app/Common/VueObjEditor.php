@@ -34,7 +34,6 @@
 				////	Met le focus dans l'éditeur ()
 				editor.on("init",function(){
 					if($("input:focus").length==0 && isTouchDevice()==false)  {editor.focus();}//Focus sur un autre input ? Sur mobile ?
-					if($("#descriptionToggle").exist() && isEmptyEditor())  {$("#descriptionTextarea").hide();}//Masque l'editeur ?
 				});
 				////	Modif le contenu de l'éditeur
 				editor.on("change keyup",function(){
@@ -165,13 +164,16 @@
 <?php } ?>
 
 
-<style>
 
-</style>
-
-
+<!--TOOGLE DE DESCRIPTION-->
 <?php if($toggleButton==true){ ?>
-	<div id="descriptionToggle" onclick="$('#descriptionTextarea').slideToggle()"><img src="app/img/description.png"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label></div>
+	<div id="descriptionToggle" onclick="$('#descriptionTextarea').slideToggle()">
+		<img src="app/img/description.png">&nbsp; <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label>
+	</div>
 <?php } ?>
 
-<div id="descriptionTextarea"><textarea name="description"><?= $curObj->description ?></textarea></div>
+
+<!--DESCRIPTION-->
+<div id="descriptionTextarea">
+	<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea>
+</div>

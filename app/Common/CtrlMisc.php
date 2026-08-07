@@ -131,7 +131,7 @@ class CtrlMisc extends Ctrl
 
 	/********************************************************************************************************
 	 * AJAX : POST D'UN MESSAGE SUR LE MESSENGER
-	 * Note : les messages sont encodés en "utf8mb4" pour le support des "emoji"
+	 * Note : messages encodés en "utf8mb4" pour le support des "emoji"
 	 ********************************************************************************************************/
 	public static function actionMessengerPost()
 	{

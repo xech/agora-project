@@ -10,7 +10,7 @@
 				if(Ctrl::$curUser->isSpaceAdmin())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=contact&action=vueImportExport&typeId='.Ctrl::$curContainer->typeId.'\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_contact").'</div></div>';}
 				echo "<hr>";
 			}
-			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlContactFolder::menuTree().MdlContact::menuDisplayMode().MdlContact::menuSort().
 				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>

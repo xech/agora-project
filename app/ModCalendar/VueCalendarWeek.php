@@ -79,7 +79,7 @@
 	ready(function(){
 		if(isMobile()==false){
 			let isMouseDown=startTimeBegin=startTimeEnd=null;
-			$(".vWeekCellEvtAdd").on("mousedown mousemove mouseup",function(event){
+			$(".vWeekCellAddEvt").on("mousedown mousemove mouseup",function(event){
 				if(event.type=="mousedown"){											//// Début de sélection : init les valeurs
 					isMouseDown=true;													// Debut de sélection
 					startYmd=this.getAttribute("data-ymd");								// Jour Ymd
@@ -95,7 +95,7 @@
 					});
 				}
 				else if(event.type=="mouseup" && startTimeBegin < startTimeEnd){	//// Fin de sélection : ouvre l'édition d'un nouvel événement !
-					lightboxOpen("<?= $getUrlNewEvt ?>&_idCal="+this.getAttribute("data-idcal")+"&newEvtTimeBegin="+startTimeBegin+"&newEvtTimeEnd="+startTimeEnd);
+					lightboxOpen("<?= MdlCalendarEvent::getUrlNew() ?>&_idCal="+this.getAttribute("data-idcal")+"&newEvtTimeBegin="+startTimeBegin+"&newEvtTimeEnd="+startTimeEnd);
 					isMouseDown=startTimeBegin=startTimeEnd=null;	// Réinit les valeurs
 					$(".vWeekCell").removeClass("lineSelect");		// Réinit .lineSelect
 				}
@@ -106,7 +106,7 @@
 
 
 	<style>
-	:root											{--table-border:1px solid <?= Ctrl::$agora->skin=='white'?'#dededf':'#3c3c3c' ?>;}
+	:root											{--table-border:1px solid <?= Ctrl::$agora->skin=='white'?'#dededf':'#333' ?>;}
 	.vCalVue										{height:100%;}
 	.vWeekScroller									{position:relative; width:100%; max-width:100%; overflow-y:scroll;}				/*Partie visible de l'agenda*/
 	.vWeekScroller::-webkit-scrollbar, .vWeekHeaderScrollbar	{width:13px;}														/*scrollbar des agendas et Width "fantome"*/
@@ -114,6 +114,7 @@
 	.vWeekDayLabel 									{height:32px; line-height:32px; text-align:center; text-transform:capitalize;}
 	.vWeekDayLabel .circleNb						{width:30px; height:30px; line-height:30px; font-size:1.1rem;}	/*surcharge*/
 	.vWeekDayLabel .vPublicHoliday					{margin-left:10px;}												/*Icone du jour férié*/
+	.vWeekDayLabel:not(:hover) .vWeekDayAddEvt		{visibility:hidden;}											/*Icone pour ajouter un evt sur le jour*/
 	.vWeekHeaderAllday								{display:none;}													/*masque par défaut*/
 	.vWeekHeaderAlldayCell							{vertical-align:top;}
 	.vWeekHourLabel									{width:40px; text-align:center; vertical-align:top; color:#888; font-size:0.9rem;}/*Libellé des heures : 1ere colonne du tableau*/
@@ -127,7 +128,7 @@
 	.vEvtBlockSuperposed							{box-shadow:0px 0px 3px black;}			/*Evts superposés*/
 	.vEvtLabelHM									{margin-top:2px;}						/*Label de l'heure*/
 	.vEvtLabelHMdragged								{font-size:1.2rem; font-weight:bold;}	/*Label durant un drag & drop*/
-	.vMobileEvtAdd									{display:none;}
+	.vMobileAddEvt									{display:none;}
 
 	/*** RESPONSIVE TABLET-SMARTPHONE*/
 	@media screen and (max-width:1199px){
@@ -135,7 +136,7 @@
 		.vWeekHourLabel, .vEvtLabel			{font-size:0.8rem;}
 		.vWeekHourLabel						{width:25px;}
 		.vEvtLabelHMdragged					{font-size:1rem;}
-		.vWeekCell:active .vMobileEvtAdd	{display:block; position:absolute}/*affiche si on selectionne la ligne*/
+		.vWeekCell:active .vMobileAddEvt	{display:block; position:absolute}/*affiche si on selectionne la ligne*/
 		.vWeekHourLabel00					{display:none;}
 		.vEvtBlock 							{touch-action:none;}/*Pas de scroll durant le drag & drop d'evt*/
 		.vEvtBlock:not(:hover) .vEvtLabelHM	{display:none;}
@@ -150,9 +151,17 @@
 	<table class="vWeekHeader">
 		<tr>
 			<td class="vWeekHourLabel">&nbsp;</td>
-			<?php foreach($periodDays as $dayYmd=>$tmpDay){ ?>
-				<!--LABEL/NUMERO DU JOUR DU MOIS + JOUR FERIE-->
-				<td class="vWeekDayLabel" <?= Txt::tooltip($tmpDay["publicHoliday"]) ?> >
+			<?php
+			foreach($periodDays as $dayYmd=>$tmpDay){
+				$dayTooltip=$dayAddEvtLink=null;
+				if($tmpCal->addProposeEvt()){
+					$dayTooltip=Txt::trad("CALENDAR_addEvtTooltip")." : ".Txt::dateLabel("dateDefault",$tmpDay["dayTimeBegin"]);
+					$dayAddEvtLink="onclick=\"lightboxOpen('".$tmpCal->urlNewEvt."&newEvtTimeBegin=".$tmpDay["dayTimeBegin"]."&newEvtAllDay=true')\"";
+				}
+				if(!empty($tmpDay["publicHoliday"]))  {$dayTooltip.='<hr>'.$tmpDay["publicHoliday"];}
+			?>
+				<!--LABEL DU JOUR  +  NUM. DU JOUR DU MOIS  +  JOUR FERIE-->
+				<td class="vWeekDayLabel" <?= $dayAddEvtLink ?> <?= Txt::tooltip($dayTooltip) ?>>
 					<?= Txt::timeLabel($tmpDay["dayTimeBegin"],'ccc') ?>
 					<span class="<?= $tmpDay["isToday"]==true?'circleNb':null ?>"><?= $tmpDay["dayOfMonth"] ?></span>
 					<?php if(!empty($tmpDay["publicHoliday"])){ ?><img src="app/img/calendar/publicHoliday.png" class="vPublicHoliday"><?php } ?>
@@ -191,7 +200,7 @@
 						$cellTimeBegin=$tmpDay["dayTimeBegin"]+($tmp15mn*900);										//Time du début du 1/4 d'heure
 						$cellTimeEnd=$cellTimeBegin+900;															//Time de fin
 						if($cellTimeBegin <= time() && time() <= $cellTimeEnd)	{$cellClass.=" vWeekCellRedLine ";}	//Heure courante : RedLine
-						if($tmpCal->affectationAddRight())  					{$cellClass.=" vWeekCellEvtAdd ";}	//Droit d'ajouter un Evt
+						if($tmpCal->addProposeEvt())  							{$cellClass.=" vWeekCellAddEvt ";}	//Droit d'ajouter un Evt
 						$cellAttributes='data-timebegin="'.$cellTimeBegin.'" '.
 										'data-timeend="'.$cellTimeEnd.'" '.
 										'data-datelabel="'.Txt::dateLabel("dateDefault",$cellTimeBegin).'" '.
@@ -204,7 +213,7 @@
 						<!--CELLULE DU 1/4 D'HEURE & D'AJOUT D'EVT-->
 						<td class="<?= $cellClass ?> " title="<?= date('H:i',$cellTimeBegin) ?>" <?= $cellAttributes ?>>
 							<?php if(Req::isMobile() && $isHourBegin==true){ ?>
-								<img src="app/img/plusSmall.png" class="vMobileEvtAdd" onclick="lightboxOpen('<?= $getUrlNewEvt.'&_idCal='.$tmpCal->_id.'&newEvtTimeBegin='.$cellTimeBegin ?>')">
+								<img src="app/img/plusSmall.png" class="vMobileAddEvt" onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$cellTimeBegin ?>')">
 							<?php } ?>
 						</td>
 					<?php } ?>

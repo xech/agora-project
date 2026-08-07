@@ -64,14 +64,30 @@ function mainDisplay()
 }
 
 /***************************************************************************************************************
- * PRINCIPAUX TRIGGERS :  FANCYBOX  +  CLICK / DBLCLICK D'OBJETS  +  MENUS FLOTTANT  +  TOOLTIPSTER
+ * PRINCIPAUX TRIGGERS :  FANCYBOX  +  CLICK / DBLCLICK D'OBJETS  +  MENUS FLOTTANT  +  TOOLTIP
  ***************************************************************************************************************/
 function mainTriggers()
 {
-	////	Fancybox : resize d'Iframe
+	////	Tippy : affiche les tooltips
+	if(!isMobile()){
+		tippy("[title]:not(.notooltip,[title=''])",{
+			maxWidth : 600,										//Largeur max du tooltip
+			allowHTML: true,									//active le html
+			delay: [400, 100],									//délais d'affichage / masquage
+			theme: 'light',										//theme du tooltip
+			animation: 'shift-toward',							//mode d'affichage
+			content(reference){									//Texte du tooltip
+				const title = reference.getAttribute('title');	//Récupère le title du tag
+				reference.removeAttribute('title');				//Supprime le title par défaut du browser
+				return title;									//Retourne le title à Tippy
+			}
+		});
+	}
+
+	////	Fancybox : resize l'iframe courante
 	lightboxResize();
 
-	////	Fancybox : images & inline (mode "Declarative")
+	////	Fancybox : init le lightbox des images et lightbox inline (mode "Declarative")
 	let fancyboxThumbs=isMobile() ? false : {type:"classic"};
 	let fancyboxToolbar={
 		display:{left:[], right:["zoomIn","rotateCW","slideshow","fullscreen","thumbs","close"]}
@@ -79,13 +95,19 @@ function mainTriggers()
 	Fancybox.bind("[data-fancybox='images'],.fancyboxImages", {l10n:fancyboxLang, Thumbs:fancyboxThumbs, Toolbar:fancyboxToolbar});
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
 
-	////	DblClick : édition  ||  Click : sélection
-	$(".objContent").off("click dblclick").on("click dblclick",function(event){													//off("click") annule les triggers précédents à chaque "mainTriggers()"
-		if(event.type=="dblclick" && this.hasAttribute("data-url-edit"))	{lightboxOpen(this.getAttribute("data-url-edit"));}	//Note : pas de "dblclick" pour sur mobile
+	////	Objets :  Click = sélection  ||  DblClick = édition (sauf mobile)
+	$(".objContent").off("click dblclick").on("click dblclick",function(event){//"off()" annule les triggers précédents si mainTriggers() est relancé 
+		if(event.type=="dblclick" && this.hasAttribute("data-url-edit"))	{lightboxOpen(this.getAttribute("data-url-edit"));}
 		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
 	});
 
-	////	Menu du module flottant
+	////	Ouvre un lien dans une lightbox (cf. HTMLPurifier)
+	$("a.lightboxOpenHref").off("click").on("click",function(event){//"off()" annule les triggers précédents si mainTriggers() est relancé 
+		event.preventDefault();
+		lightboxOpen(this.getAttribute("href"));
+	});
+
+	////	Menu flottant du module courant
 	if($("#pageMenu").isVisible()){
 		$(window).on("scroll",function(){
 			if(typeof pageMenuTimeout!="undefined")  {clearTimeout(pageMenuTimeout);}								//Non cumul de Timeout
@@ -97,21 +119,7 @@ function mainTriggers()
 		});
 	}
 
-	////	Tooltipster : init/update les "title"
-	tooltipParams={theme:'tooltipster-shadow',delay:700,contentAsHTML:true};				//Theme et Affichage Html
-	let timeoutDuration=$(".tooltipstered").exist() ? 1000 : 50;							//Timeout plus long si update des tooltips via ajax (ex: "messengerUpdate()")
-	if(typeof tooltipDisplayTimeout!="undefined")  {clearTimeout(tooltipDisplayTimeout);}	//Non cumul de Timeout
-	tooltipDisplayTimeout=setTimeout(function(){											//Timeout le tps de charger
-		$("[title]:not(.notooltip,[title=''])").tooltipster(tooltipParams);					//Theme "shadow" et Affichage Html
-	},timeoutDuration);
-
-	////	Ouvre un lien <a href> via une lightbox (cf. HTMLPurifier)
-	$("a.lightboxOpenHref").off("click").on("click",function(event){//off("click") annule les triggers précédents à chaque "mainTriggers()"
-		event.preventDefault();
-		lightboxOpen(this.getAttribute("href"));
-	});
-
-	////	Affiche/Masque le password
+	////	Affiche/Masque le texte d'un input password
 	$("img.passwordDisplay").on("click",function(){
 		let inputPassword="#"+this.getAttribute("for");
 		if($(inputPassword).attr("type")==="password")	{$(inputPassword).attr("type","text");		$("img.passwordDisplay").addClass("passwordDisplayShow");}		//Affiche le password
@@ -450,8 +458,7 @@ async function confirmDelete(deleteUrl, confirmDetailsBis, ajaxControlUrl)
  * REDIRECTION HREF : CONFIRMATION ASYNCHRONE SI FORMULAIRE EN COURS D'EDITION
  ************************************************************************************************************/
 ready(function(){
-	//":not()" :  "_blank" ouvre une nouvelle fenêtre  et  "[data-fancybox]" + "a.lightboxOpenHref" sont lancés via mainTriggers()
-	$("a[href]:not([target='_blank'],[data-fancybox],.lightboxOpenHref)").click(async function(event){
+	$("a[href]:not([target='_blank'],[data-fancybox],.lightboxOpenHref)").click(async function(event){//data-fancybox et .lightboxOpenHref : via mainTriggers()
 		event.preventDefault();
 		if(window.top.confirmCloseForm==false || await confirmAlt(TRAD_confirmCloseForm))
 			{window.top.location.href=this.getAttribute("href");}
@@ -477,7 +484,7 @@ function submitLoading()
 function asyncSubmit(thisForm)
 {
 	submitLoading();					//Affiche l'img "loading"
-	$(thisForm).off("submit").submit();	//off("submit") annule le trigger précédent, Puis submit() relance la validation finale
+	$(thisForm).off("submit").submit();	//"off()" annule le trigger d'origine et "submit()" lance la validation finale
 }
 
 /************************************************************************************************************
@@ -650,12 +657,14 @@ $.fn.scrollTo=function(){
 	let scrollTopPos=($(this).offset().top - $("#headerBar").outerHeight() - 30);
 	$("html,body").animate({scrollTop:scrollTopPos},100);
 };
-////	Update le title et reload les tooltips
-$.fn.tooltipUpdate=function(title){
-	$(this).attr("title",title).tooltipster("destroy").tooltipster(tooltipParams);
+////	Update le title du tooltip
+$.fn.tooltipUpdate = function(newTitle) {
+    this.each(function(){
+        if(this._tippy)  {this._tippy.destroy();}
+    });
+	$(this).attr("title",newTitle);
+	mainTriggers();//Relance tippy()
 };
-
-
 
 
 /**********************************************************************************************************************************

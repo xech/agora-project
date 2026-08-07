@@ -21,7 +21,8 @@ class MdlSpace extends MdlObject
 	private $_usersAccessRight=[];
 	private $_allUsersAffected=null;
 	private $_spaceUsers=null;
-	private $_moduleList=[];
+	private $_modulesAvailable=[];
+	private $_modules=[];
 
 
 	
@@ -48,6 +49,14 @@ class MdlSpace extends MdlObject
 	 {
 		 return (Ctrl::$curUser->isGeneralAdmin() && $this->isCurSpace()==false);
 	 }
+
+	/********************************************************************************************************
+	 * VÉRIFIE SI L'ESPACE EN QUESTION EST L'ESPACE COURANT
+	 ********************************************************************************************************/
+	public function isCurSpace()
+	{
+		return ($this->_id==Ctrl::$curSpace->_id);
+	}
 
 	/*********************************************************************************************************
 	 * DROIT D'ACCÈS D'UN USER À L'ESPACE
@@ -107,65 +116,68 @@ class MdlSpace extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * MODULES DISPONIBLES ET LEURS PROPRIÉTÉS DE BASE
+	 * LISTE DES MODULES D'UN ESPACE / LISTE DE TOUS LES MODULES DISPONIBLES
 	 ********************************************************************************************************/
-	public static function availableModules()
+	public function moduleList($allModulesAvailable=false, $removePersonalCalendar=false)
 	{
-		$availableModulesName=["dashboard","file","calendar","forum","task","link","contact","mail","user"];
-		foreach($availableModulesName as $moduleName){
-			$availableModules[$moduleName]=[
-				"moduleName"	=> $moduleName,
-				"ctrl"			=> "Ctrl".ucfirst($moduleName),
-				"url"			=> "?ctrl=".$moduleName.($moduleName=="user"?"&displayUsers=space":null),
-				"label"			=> Txt::trad(strtoupper($moduleName)."_MODULE_NAME"),
-				"description"	=> Txt::trad(strtoupper($moduleName)."_MODULE_DESCRIPTION")
-			];
-		}
-		return $availableModules;
-	}
-
-	/********************************************************************************************************
-	 * LISTE DES MODULES AFFECTÉS A UN ESPACE
-	 ********************************************************************************************************/
-	public function moduleList($persoCalendarSkip=false)
-	{
-		//Init "_moduleList" si pas encore en "cache"
-		if(empty($this->_moduleList)){
-			$availableModules=self::availableModules();																					//Modules disponibles
-			foreach(Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY `rank` ASC") as $tmpModule){	//Modules affectés à l'espace (DB)
-				$moduleName=$tmpModule["moduleName"];																					//Nom du module
-				if(Ctrl::$curUser->isGuest() && ($moduleName=="mail" || ($moduleName=="user" && empty($this->password))))  {continue;}	//Pas de module mail/user pour les guests (sauf si user+password)
-				$this->_moduleList[$moduleName]=array_merge($availableModules[$moduleName], $tmpModule);								//Ajoute le module et ses propriétés
+		////	Cache des modules de l'espace
+		if(empty($this->_modules)){
+			////	MODULES DISPONIBLES
+			$moduleNames=["dashboard","file","calendar","forum","task","link","contact","mail","user"];
+			foreach($moduleNames as $moduleName){
+				$modCtrl="Ctrl".ucfirst($moduleName);
+				$this->_modulesAvailable[$moduleName]=[
+					"moduleName"		=> $moduleName,
+					"ctrl"				=> $modCtrl,
+					"optionsAvailable"	=> $modCtrl::$moduleOptions,
+					"url"				=> "?ctrl=".$moduleName.($moduleName=="user"?"&displayUsers=space":null),
+					"label"				=> Txt::trad(strtoupper($moduleName)."_MODULE_NAME"),
+					"description"		=> Txt::trad(strtoupper($moduleName)."_MODULE_DESCRIPTION"),
+				];
 			}
-			//Ajoute l'agenda perso s'il est activé pour l'user courant et qu'il n'est pas dans la liste des modules
-			if(Ctrl::$curUser->isUser() && empty(Ctrl::$curUser->calendarDisabled) && array_key_exists("calendar",$this->_moduleList)==false)
-				{$this->_moduleList["calendar"]=array_merge($availableModules["calendar"], ["rank"=>100,"options"=>null,"isPersoCalendar"=>true]);}
+			////	MODULES DE L'ESPACE (BDD)
+			$spaceModules=Db::getTab("SELECT * FROM ap_joinSpaceModule WHERE _idSpace=".$this->_id." ORDER BY `rank` ASC");
+			foreach($spaceModules as $tmpModule){
+				$moduleName=$tmpModule["moduleName"];																//Nom du module
+				if(Ctrl::$curUser->isGuest() && preg_match("/(mail|user)/i",$moduleName))  {continue;}				//Guests : pas de module mail/user
+				else{																								//Sinon ajoute le module
+					$tmpModule["enabled"]=true;																		//Module activé
+					$this->_modules[$moduleName]=array_merge($this->_modulesAvailable[$moduleName], $tmpModule);	//Ajoute les propriétés du module dans _modulesAvailable PUIS celles dans $tmpModule
+				}
+			}
+			////	MODULE CALENDAR ABSENT + AGENDA PERSO ACTIVÉ : AJOUTE L'AGENDA PERSO DE L'USER
+			if(empty($this->_modules["calendar"]) && Ctrl::$curUser->isUser() && empty(Ctrl::$curUser->calendarDisabled)){
+				$this->_modules["calendar"]=$this->_modulesAvailable["calendar"];
+				$this->_modules["calendar"]["isPersonalCalendar"]=true;
+			}
+			////	MODULE MAIL ACTIVÉ + OPTION "onlyAdminAccess" ACTIVÉ + PAS ADMIN DE L'ESPACE : ENLEVE LE MODULE MAIL
+			if(!empty($this->_modules["mail"]["options"]) && stristr($this->_modules["mail"]["options"],"onlyAdminAccess") && Ctrl::$curUser->isSpaceAdmin()==false)
+				{unset($this->_modules["mail"]);}
 		}
-		// Renvoie les modules (avec/sans l'agenda perso ?)
-		if($persoCalendarSkip==true && isset($this->_moduleList["calendar"]["isPersoCalendar"])){
-			$moduleList=$this->_moduleList;
-			unset($moduleList["calendar"]);
-			return $moduleList;
-		}else{
-			return $this->_moduleList;
+
+		////	MODULES DE L'ESPACE + AUTRES MODULES DISPONIBLES (VueEditSpace)
+		if($allModulesAvailable==true){
+			$modulesDisabled=array_diff_key($this->_modulesAvailable,$this->_modules);
+			return array_merge($this->_modules, $modulesDisabled);
+		}
+		////	MODULES DE L'ESPACE
+		else{
+			$modules=$this->_modules;
+			if($removePersonalCalendar==true && isset($modules["calendar"]["isPersonalCalendar"]))//Enlève l'agenda perso si on affiche les modules activés l'espace
+				{unset($modules["calendar"]);}
+			return $modules;
 		}
 	}
 
 	/********************************************************************************************************
-	 * VERIF SI UN MODULE EST AFFECTÉ A UN ESPACE
+	 * CONTROLE L'ACCES A UN CONTROLEUR / MODULE
 	 ********************************************************************************************************/
-	public function moduleEnabled($moduleName)
+	public function moduleEnabled($ctrlName)
 	{
-		$moduleList=$this->moduleList();
-		return !empty($moduleList[$moduleName]);
-	}
-
-	/********************************************************************************************************
-	 * VÉRIFIE SI L'ESPACE EN QUESTION EST L'ESPACE COURANT
-	 ********************************************************************************************************/
-	public function isCurSpace()
-	{
-		return ($this->_id==Ctrl::$curSpace->_id);
+		$basicCtrl=in_array($ctrlName,["offline","misc","object"]);																				//Controleurs de base
+		$moduleSpaceAdmin  =(in_array($ctrlName,["log"]) && Ctrl::$curUser->isSpaceAdmin());													//Mod de l'admin d'espace
+		$moduleGeneralAdmin=(in_array($ctrlName,["agora","space"]) && Ctrl::$curUser->isGeneralAdmin());										//Mod de l'admin général
+		return ($basicCtrl==true || $moduleSpaceAdmin==true || $moduleGeneralAdmin==true || array_key_exists($ctrlName,$this->moduleList()));	//Controleur ou Module accessible depuis l'espace courant
 	}
 
 	/********************************************************************************************************
@@ -174,7 +186,7 @@ class MdlSpace extends MdlObject
 	public function moduleOptionEnabled($moduleName, $optionName)
 	{
 		$moduleList=$this->moduleList();
-		return (!empty($moduleList[$moduleName]["options"]) && preg_match("/".$optionName."/i",$moduleList[$moduleName]["options"]));
+		return (!empty($moduleList[$moduleName]["options"]) && stristr($moduleList[$moduleName]["options"],$optionName));
 	}
 
 	/********************************************************************************************************

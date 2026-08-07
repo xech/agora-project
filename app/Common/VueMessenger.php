@@ -52,7 +52,7 @@ function messengerUpdate()
 
 		//// Finalise l'affichage
 		if(result.messengerUpdate==true || result.livecounterUpdate==true)  {messengerDisplayUser();}					//Affiche uniquement les messages d'un user OU les messages de tous les users
-		if(result.livecounterUsersHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainTriggers();}			//Update les tooltips
+		if(result.livecounterUsersHtml.length>0 || result.messengerMessagesHtml.length>0)  {mainTriggers();}			//Update les tooltips & co
 		messengerCheckedUsers=result.messengerCheckedUsers;																//Update la liste des users "checked" (après post d'un message dans une discussion à plusieurs)
 
 		//// Pulsate & alerte sonore des users ayant posté un nouveau message
@@ -141,7 +141,7 @@ function messengerDisplayUser()
 		//Scroll jusqu'aux derniers messages  &&  Pulsate le dernier message s'il s'agit d'une proposition de visioconf
 		$("#messengerMessagesList>div").scrollTop($("#messengerMessagesList>div").prop("scrollHeight"));												
 		$(".vMessengerMessage:last-child .lightboxOpenHref").pulsate(3);
-		mainTriggers();//Update les liens "lightboxOpenHref"
+		mainTriggers();//Update les tooltips & co
 	}
 }
 

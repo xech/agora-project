@@ -266,19 +266,19 @@ class CtrlUser extends Ctrl
 	/********************************************************************************************************
 	 * VUE : ENVOI UN EMAIL POUR REINITIALISER LES COORDONNEES DE CONNEXION D'USERS
 	 ********************************************************************************************************/
-	public static function actionResetPasswordSendMailUsers()
+	public static function actionResetPasswordUsers()
 	{
-		////	Admin general uniquement
+		////	Controle d'accès
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {static::lightboxRedir();}
-		////	Valide le formulaire : envoi de plusieurs mails en série !
+		////	Formulaire validé : envoi un mail pour chaque user
 		if(Req::isParam(["formValidate","usersList"])){
-			foreach(Req::param("usersList") as $userId)  {$isSendmail=Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
-			if($isSendmail==true)  {Ctrl::notify("MAIL_sendOk","success");}
+			foreach(Req::param("usersList") as $userId)   {Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
+			Ctrl::notify("resetPasswordNotif");//Notif spécifique
 			static::lightboxRedir();
 		}
-		////	Affichage du formulaire
-		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." AND LENGTH(mail)>0 AND _id!=".Ctrl::$curUser->_id." ".MdlUser::sqlSort());
-		static::displayPage("VueResetPasswordSendMailUsers.php",$vDatas);
+		////	Liste des users + affiche le formulaire
+		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." AND LENGTH(mail)>0 AND _id!=".(int)Ctrl::$curUser->_id." ".MdlUser::sqlSort());
+		static::displayPage("VueResetPasswordUsers.php",$vDatas);
 	}
 
 	/********************************************************************************************************
@@ -409,7 +409,7 @@ class CtrlUser extends Ctrl
 			////	Traite chaque inscription
 			foreach(Req::param("inscriptionValidate") as $idInscription){
 				//Récupère l'inscription
-				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE _id=".Db::format($idInscription));
+				$tmpInscription=Db::getLine("SELECT * FROM ap_userInscription WHERE `_id`=".Db::format($idInscription));
 				//Valide l'inscription (pas de "submitInvalidate")
 				if(Req::isParam("submitInvalidate")==false){
 					$curObj=new MdlUser();
@@ -423,7 +423,7 @@ class CtrlUser extends Ctrl
 					Tool::sendMail($tmpInscription["mail"], $mailSubject, $mailMessage);
 				}
 				//Supprime l'inscription
-				Db::query("DELETE FROM ap_userInscription WHERE _id=".(int)$idInscription);
+				Db::query("DELETE FROM ap_userInscription WHERE `_id`=".(int)$idInscription);
 			}
 			////	Réinitialise la liste des inscriptions (cf. "userInscriptionValidate()")  &&  Ferme la page
 			unset($_SESSION["userInscriptionValidate"]);

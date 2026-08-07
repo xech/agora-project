@@ -58,7 +58,7 @@ function moduleDisplay(){
 					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div>'.Txt::trad("addFolder").'</div></div>
 					  <hr>';
 			}
-			////	ARBORESCENCE  &  MENU DES STATUS KANBAN  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			////	ARBORESCENCE  &  MENU DES STATUS  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlTaskFolder::menuTree().MdlTaskStatus::displayMenu().MdlTask::menuDisplayMode().MdlTask::menuSort().
 				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>

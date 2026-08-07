@@ -68,7 +68,7 @@ function evtDraggable()
 		ondragenter(event){
 			const evtDrag=event.relatedTarget;
 			const cellDrop=event.target;
-			$(".tooltipster-base").hide();												//Masque tous les tooltips
+			$(".tippy-box").hide();														//Masque les tooltips
 			if($(cellDrop).find(evtDrag).exist()==false)  {cellDrop.append(evtDrag);}	//Autre cellDrop que celle où se trouve l'evt : Déplace en fin de liste
 		},
 		ondrop(event){
@@ -105,7 +105,7 @@ function evtDraggable()
 				setTimeout(function(){  event.target.classList.remove("vEvtDrag");  },200);//Timeout : cf "stopPropagation()"
     		},
 			move(event){
-				$(".tooltipster-base").hide();																	//Masque tous les tooltips
+				$(".tippy-box").hide();																			//Masque les tooltips
 				const weekCellWidthHalf=($(".vWeekCell").outerWidth() / 2);										//Width des evt splités
 				const mouseMoveX=(Math.abs(event.dx) > weekCellWidthHalf) ? event.dx : 0;						//Position X relative à la souris, corrigé pour les evt splités
 				const evtX=(parseFloat(event.target.style.left) || 0) + mouseMoveX;								//Position X de l'evt
@@ -532,8 +532,8 @@ ready(function(){
 						</div>
 						<?php } ?>
 					</div>
-					<?php if($tmpCal->affectationAddRight()){ ?>
-					<span onclick="lightboxOpen('<?= MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id ?>')" <?= $tmpCal->addEvtTooltip ?> >
+					<?php if($tmpCal->addProposeEvt()){ ?>
+					<span onclick="lightboxOpen('<?= $tmpCal->urlNewEvt ?>')" <?= $tmpCal->addEvtTooltip ?> >
 						<?= Req::isMobile() ? '<img src="app/img/plus.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
 					</span>
 					<?php } ?>

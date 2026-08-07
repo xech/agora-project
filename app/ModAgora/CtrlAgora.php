@@ -100,8 +100,9 @@ class CtrlAgora extends Ctrl
 				{MdlPerson::ldapConnect(Req::param("ldap_server"),Req::param("ldap_server_port"),Req::param("ldap_admin_login"),Req::param("ldap_admin_pass"),true);}
 			////	Modif l'espace disque
 			if(Req::isHost()==false && Req::param("limite_espace_disque")>0){
-				$limite_espace_disque=File::getBytesSize(Req::param("limite_espace_disque")."G");//exprimé en Go
-				File::updateConfigFile(array("limite_espace_disque"=>$limite_espace_disque));
+				$limite_espace_disque=File::getBytesSize(Req::param("limite_espace_disque")."G");
+				$paramsEdit=["limite_espace_disque"=>$limite_espace_disque];
+				File::updateConfigFile($paramsEdit);
 			}
 			////	Notif & Relance la page
 			Ctrl::notify("modifRecorded","success");

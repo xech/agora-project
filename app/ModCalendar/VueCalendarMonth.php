@@ -71,7 +71,7 @@
 						<tr>
 							<td class="vMonthDayNb"><span class="<?= $tmpDay["isToday"]==true?'circleNb':null ?>"><?= $tmpDay["dayOfMonth"] ?></span></td>
 							<td class="vMonthDayPublicHoliday"><?= $tmpDay["publicHoliday"] ?></td>
-							<?php if($tmpCal->affectationAddRight()){ ?><td class="vMonthDayAddEvt"><img src="app/img/plusSmall.png"<?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $getUrlNewEvt ?>&_idCal=<?= $tmpCal->_id ?>&newEvtTimeBegin=<?= $tmpDay['newEvtTimeBegin'] ?>')"></td><?php } ?>
+							<?php if($tmpCal->addProposeEvt()){ ?><td class="vMonthDayAddEvt"><img src="app/img/plusSmall.png"<?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$tmpDay['newEvtTimeBegin'] ?>')"></td><?php } ?>
 						</tr>
 					</table>
 					<!--EVENEMENTS DU JOUR-->

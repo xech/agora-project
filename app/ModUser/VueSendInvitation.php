@@ -42,18 +42,18 @@ ready(function(){
 								contactInputs+='<div class="contactLine" title="'+mailTmp+'" data-mail="'+mailTmp+'"><input type="checkbox" name="gPeopleContacts[]" value="'+givenNameTmp+'@@'+familyNameTmp+'@@'+mailTmp+'" id="contact'+cpt+'"> &nbsp; <label for="contact'+cpt+'">'+givenNameTmp+' '+familyNameTmp+'</label></div>';
 							}
 						}
-						// Affiche les contacts !
+						// Affiche les contacts
 						$("#gPeopleForm").prepend(contactInputs).show();	//Affiche les inputs des contacts importés
 						$("#invitationForm, #gPeopleImportButton").hide();	//Masque le formulaire principal
-						mainTriggers();										//Update les tooltips
-						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts!)
+						mainTriggers();										//Update les tooltips & Co
+						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts)
 						$.ajax({url:"?ctrl=user&action=loginExists", data:{mailList:mailListToControl}, dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
 								for(var cpt=0; cpt<resultJson.mailListPresent.length; cpt++){
 									var mailTmp=resultJson.mailListPresent[cpt];
-									var newTitle=mailTmp+" : <?= Txt::trad("USER_mailPresentInAccount") ?>";
-									$(".contactLine[data-mail='"+mailTmp+"'] input").prop("disabled",true);
-									$(".contactLine[data-mail='"+mailTmp+"']").css("opacity","0.8").append("&nbsp; <img src='app/img/info.png'>").attr("title",newTitle).removeClass("tooltipstered");//ajoute de l'opacité et l'icone "info", modif le tooltip, enleve le tooltipster pour ne pas le superposer au title par défaut
+									var newTitle=mailTmp+" : <?= Txt::trad("USER_mailPresentInAccount") ?>";					//"un compte existe déjà avec cet email"
+									$(".contactLine[data-mail='"+mailTmp+"']").css("opacity","0.8").tooltipUpdate(newTitle);	//ajoute de l'opacité + modif le tooltip
+									$(".contactLine[data-mail='"+mailTmp+"'] input").prop("disabled",true);						//Désactive l'input
 								}
 							}
 						});

@@ -59,7 +59,7 @@ class MdlObject
 		$this->_id=0;
 		////	Assigne les propriétés (objet existant ou nouvel objet)
 		if(!empty($objProperties)){
-			if(is_numeric($objProperties))	{$objValues=Db::getLine("SELECT * FROM ".static::dbTable." WHERE _id=".(int)$objProperties);}	//Objet déjà enregistré en Bdd ($objProperties==_id)
+			if(is_numeric($objProperties))	{$objValues=Db::getLine("SELECT * FROM ".static::dbTable." WHERE `_id`=".(int)$objProperties);}	//Objet déjà enregistré en Bdd ($objProperties==_id)
 			else							{$objValues=$objProperties;}																	//Nouvel objet
 			//Assigne chaque propriété
 			if(!empty($objValues)){
@@ -449,7 +449,7 @@ class MdlObject
 			foreach($this->attachedFileList() as $tmpFile)  {$this->attachedFileDelete($tmpFile);}	//Supprime les fichiers joints
 			Ctrl::addLog("delete",$this);															//Ajoute le log de suppression
 			Db::query("DELETE FROM ap_objectTarget ".$sqlSelect);									//Supprime les droits d'accès
-			Db::query("DELETE FROM ".static::dbTable." WHERE _id=".$this->_id);						//Supprime ENFIN l'objet !
+			Db::query("DELETE FROM ".static::dbTable." WHERE `_id`=".$this->_id);						//Supprime ENFIN l'objet !
 		}
 	}
 
@@ -470,7 +470,7 @@ class MdlObject
 		////	Déplacement du dossier Ok
 		else{
 			////	Change le dossier parent en BDD
-			Db::query("UPDATE ".static::dbTable." SET _idContainer=".(int)$newFolderId." WHERE _id=".$this->_id);
+			Db::query("UPDATE ".static::dbTable." SET _idContainer=".(int)$newFolderId." WHERE `_id`=".$this->_id);
 			////	Update les droits d'accès
 			if(static::isFolder==false){
 				//Réinitialise les droits d'accès
@@ -520,7 +520,7 @@ class MdlObject
 				elseif(static::objectType!="mail")	{$sqlFields.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}	//Auteur/Date de modification
 			}
 			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlFields, true);}										//INSERT UN NOUVEL OBJET
-			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE _id=".$this->_id);   $_id=$this->_id;}				//UPDATE L'OBJET
+			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE `_id`=".$this->_id);   $_id=$this->_id;}				//UPDATE L'OBJET
 			$curObj=Ctrl::getObj(static::objectType, $_id, true);																					//Charge les nouvelles propriétés (cache updated)
 			$curObj->setAffectations();																												//Ajoute les droits d'accès
 			$curObj->attachedFileAdd();																												//Ajoute les fichiers joints
@@ -765,7 +765,7 @@ class MdlObject
 	public static function attachedFileInfos($file)
 	{
 		if(!empty($file)){
-			if(is_numeric($file))   {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE _id=".(int)$file);}			//Récupère au besoin les infos en bdd
+			if(is_numeric($file))   {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE `_id`=".(int)$file);}			//Récupère au besoin les infos en bdd
 			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);								//Path/chemin réel du fichier
 			$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
 			$file["parentObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
@@ -831,7 +831,7 @@ class MdlObject
 							$displayUrl=self::attachedFileDisplayUrl($_idFile, $tmpFile["name"]);												//Url d'affichage du fichier
 							$this->description=str_replace("attachedFileSrcTmp".$inputCpt, $displayUrl, $this->description);					//Remplace "attachedFileSrcTmp" par l'url d'affichage du fichier
 							$this->description=str_replace("attachedFileTagTmp".$inputCpt, "attachedFileTag".$_idFile, $this->description);		//Remplace "attachedFileTagTmp" par le "attachedFileTag" final du fichier
-							Db::query("UPDATE ".static::dbTable." SET `description`=".Db::format($this->description)." WHERE _id=".$this->_id);	//Update le texte de l'éditeur !
+							Db::query("UPDATE ".static::dbTable." SET `description`=".Db::format($this->description)." WHERE `_id`=".$this->_id);	//Update le texte de l'éditeur !
 						}
 					}
 				}
@@ -848,7 +848,7 @@ class MdlObject
 		if($this->editRight() && is_array($curFile)){
 			File::rm($curFile["path"]);
 			if(!is_file($curFile["path"])){
-				Db::query("DELETE FROM ap_objectAttachedFile WHERE _id=".(int)$curFile["_id"]);
+				Db::query("DELETE FROM ap_objectAttachedFile WHERE `_id`=".(int)$curFile["_id"]);
 				return true;
 			}
 		}
@@ -910,7 +910,7 @@ class MdlObject
 	public static function userCommentEditRight($_idComment)
 	{
 		if(!empty($_idComment)){
-			$idUser=Db::getVal("SELECT _idUser FROM ap_objectComment WHERE _id=".(int)$_idComment);
+			$idUser=Db::getVal("SELECT _idUser FROM ap_objectComment WHERE `_id`=".(int)$_idComment);
 			return (Ctrl::$curUser->isGeneralAdmin() || $idUser==Ctrl::$curUser->_id);
 		}
 	}

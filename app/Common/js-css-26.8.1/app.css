@@ -4,7 +4,7 @@ html, body, div				{margin:0px; padding:0px;}										/*reset les valeurs par d
 body *						{box-sizing:border-box;}										/*Calcul du width avec prise en compte des borders*/
 div, span					{vertical-align:top; -webkit-tap-highlight-color:transparent;}	/*tap-highlight-color : cf. background lors d'un "touch" sur mobile*/
 img							{border:0px; vertical-align:middle;}							/*alignemment des images*/
-hr							{border:0; height:1px; margin-top:10px; margin-bottom:10px;}	/*lignes de séparateur*/
+hr							{border:0; height:1px; margin-block:12px;}						/*lignes de séparateur*/
 p							{margin-block:3px;}												/*Cf éditeur tinyMce et "editor.css"*/
 video, audio				{max-width:100%; max-height:100%;}								/*Lecteurs video/audio*/
 abbr						{border-bottom: 1px dotted #777; cursor:help;}					/*idem tag <acronym>*/
@@ -22,7 +22,8 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
-	html				{font-size:18px;}
+	html				{font-size:18.5px;}
+	hr					{margin-block:15px;}
 	::-webkit-scrollbar	{width:8px;}
 }
 
@@ -30,7 +31,7 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 @media print{
 	html, body				{background:white; color:black!important;}
 	#pageFull, #pageCenter	{margin:0px!important;}/*reset*/
-	#headerBar, #headerBarMargin, #pageMenu, img[src*='img/menu'], .tooltipster-base, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
+	#headerBar, #headerBarMargin, #pageMenu, img[src*='img/menu'], .tippy-box, #livecounterMain, #pageFooterHtml, #pageFooterIcon	{display:none!important;}
 }
 
 /********** CONTENEURS PRINCIPAUX */
@@ -60,10 +61,10 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 }
 
 /********** OPTION + MENU CONTEXTUEL + MENU LATERAL DU MODULE (GAUCHE)*/
-.menuLine, .option, .optionSelect		{margin-block:2px; padding:3px; border-collapse:separate;}/*"separate" annule l'héritage "collapse" d'un tableau parent, pour conserver les "margin-block" (cf vWeekTable, vMonthTable..)*/
+.menuLine, .option, .optionSelect		{margin-block:2px; padding:4px; border-collapse:separate;}/*"separate" annule l'héritage "collapse" d'un tableau parent, pour conserver les "margin-block" (cf vWeekTable, vMonthTable..)*/
 .menuLine								{display:table; width:100%;}
 .menuLine>div							{display:table-cell; padding-inline:4px; vertical-align:middle; text-align:left; max-width:500px;}
-.menuIcon								{width:40px; vertical-align:top!important; text-align:center!important;}
+.menuIcon								{width:35px; vertical-align:top!important; text-align:center!important;}
 .menuIcon img							{max-width:30px!important;}
 .menuContextLaunch						{display:inline-block;}/*launcher du menu context*/
 .menuContextLaunchFloat					{position:absolute; z-index:50; top:8px; right:4px;}/*launcher burger en position absolute top-right*/
@@ -135,7 +136,7 @@ video.attachedFileTag								{width:600px; height:400px;}												/*Vidéo*/
 audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 .objMenuBottom										{clear:both; margin-top:30px; text-align:center;}							/*Menus centrés : pagination & Co ("clear" le float des .objBlocks)*/
 .objMenuBottom>.miscContent							{display:inline-block; padding:15px; border-radius:var(--radius-block);}
-.progressBar										{display:inline-block; padding:3px 5px; font-size:0.9rem; background:linear-gradient(white,#ddd);/*cf. Tool::progressBar()*/ border:solid 1px #ccc; border-radius:var(--radius-field);}
+.progressBar										{display:inline-block; padding:3px 5px; font-size:0.9rem; color:#444; background:linear-gradient(white,#ddd); border:solid 1px #ccc; border-radius:var(--radius-field);}/*cf. Tool::progressBar()*/
 
 /*** RESPONSIVE TABLET-SMARTPHONE*/
 @media screen and (max-width:1199px){
@@ -163,6 +164,11 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 .menuContextUnder .circleNb			{width:15px; height:15px; line-height:15px; font-size:10px; position:relative; margin-right:-12px;}/*Nb de likes / commentaires*/
 .objContent:not(:hover) .menuContextUnder .hide, .objSelectCheckbox, .circleNb:empty	{display:none;}/*Masque les .menuContextUnder (par défaut)  && l'input hidden de sélection/désélection d'objet*/
 
+/*** RESPONSIVE SMARTPHONE*/
+@media screen and (max-width:499px){
+	.objContent .menuContextUnder {display:none;}
+}
+
 
 /********** MENU "PATH" DES OBJETS (DOSSIER, FORUM, DASHBOARD)*/
 .pathMenu					{display:table; margin-bottom:15px; padding:5px;}
@@ -178,16 +184,17 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 
 
 /********** INPUTS*/
-input:not([type=radio],[type=checkbox]), textarea, select, button	{min-height:33px; max-width:100%; padding:5px; border-radius:var(--radius-field); font-size:1rem; font-family:inherit; outline:none;}
+input:not(input[type=radio],input[type=checkbox]), textarea, select, button		{min-height:33px; max-width:100%; padding:5px; border-radius:var(--radius-field); font-size:1rem; font-family:inherit; outline:none;}
 *:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled		{opacity:0.85;}
-::placeholder 											{padding-left:3px; font-size:0.95rem; color:#999;}/*texte par défaut*/
-input:is([type=radio],[type=checkbox])					{vertical-align:middle; margin:0px 3px;}
+::placeholder 											{padding-left:3px; font-size:0.95rem; color:#a5a5a5;}/*texte par défaut*/
+input:is(input[type=radio],input[type=checkbox])		{vertical-align:middle; margin:2px 5px;}
 input[type=checkbox]									{width:18px; height:18px;}
 input[type=file]										{height:auto;}
-.inputTitleName											{width:75%;}/*Title ou Name d'un objet*/
-textarea												{width:100%; height:60px;}
-#descriptionToggle										{margin-bottom:20px; display:inline-block; line-height:35px; margin-left:15px;}/*Label pour afficher/masquer la description d'un objet. Height identique aux inputs text*/
-#descriptionTextarea									{margin-bottom:20px;}/*Textarea masqué par défaut ?*/
+textarea												{width:100%; height:50px;}
+.inputTitleName											{width:73%;}/*Title/Name d'un objet => tester sur actualité + dossier + fichier + tache + agenda + evenement => mode descktop + responsive*/
+#descriptionToggle										{width:23%; display:inline-block; line-height:33px; margin-left:10px;}/*Label Toogle de description d'un objet (line-height idem .inputTitleName)*/
+#descriptionTextarea									{margin-top:20px;}/*par défaut, textarea masqué si vide*/
+:has(#descriptionToggle) #descriptionTextarea:has(textarea:empty)  {display:none;}/*Masque les descriptions vides, si un #descriptionToggle est présent*/
 .tox-tinymce											{border-radius:10px!important;}/*Editeur TinyMCE : idem textarea*/
 .tox-promotion											{display:none;}/*Editeur TinyMCE : masque le bouton "Upgrade"*/
 select option											{font-size:1.05rem;}
@@ -230,8 +237,9 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
-	.inputTitleName										{width:100%;}/*description en dessous*/
-	#descriptionToggle									{display:block; margin:0px; margin-top:20px; margin-bottom:10px!important;}
+	.inputTitleName										{width:85%;}
+	#descriptionToggle									{width:30px;}/*affiche juste l'icone*/
+	#descriptionToggle label							{display:none;}
 	.dateInput, .dateBegin, .dateEnd					{height:36px; width:110px;}
 	input[type=checkbox]								{width:20px; height:20px;}
 	input[type=time]									{height:36px; width:90px;}
@@ -239,18 +247,18 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 
 
 /********** LABEL <=> INPUT (edit d'objet, parametrage general, etc)*/
-.objField												{display:table; width:100%;}
-.objField>div											{display:table-cell; width:50%; vertical-align:top; padding-block:8px;}
-.objField>div img.personImg								{max-width:250px; max-height:150px;}
-.objField>div img										{max-width:30px; margin-right:8px;}
-.objField>div input[type=checkbox]						{margin-right:10px;}
-form .objField>div:first-child							{padding-top:15px;}/*aligne les labels avec les inputs (cf vueEditUser & Co)*/
-form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],textarea)	{width:100%!important;}
+.objField																{display:table; width:100%; margin-block:10px;}
+.objField>div															{display:table-cell; width:50%; padding:5px; vertical-align:top;}
+.objField>div:not(:has(input[type=text],input[type=password],textarea))	{line-height:30px;}/*aligne les labels et input checkbox/radio avec le min-height des inputs text*/
+.objField>div img.personImg												{max-width:250px; max-height:150px;}
+.objField>div img														{max-width:30px; margin-right:8px;}
+.objField>div input[type=checkbox]										{margin-right:10px;}
+.objField>div *:is(input[type=text],input[type=password],textarea)		{width:100%!important;}
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
-	.objField, .objField>div							{display:block; width:100%!important;}
-	.objField>div										{padding-top:5px;}
+	.objField, .objField>div											{display:block; width:100%!important;}
+	.objField															{margin-block:15px;}
 }
 
 
@@ -312,9 +320,9 @@ form .objField>div *:is(input[type=text],.passwordDiv,input[type=password],texta
 
 
 /********** JQUERY UI + PLUGINS*/
-.tooltipster-box								{margin:5px; border-radius:var(--radius-block)!important;}/*Tooltip*/
-.toast-item										{padding:15px; padding-right:30px; background:#444!important; box-shadow:2px 2px 10px #444;}/*Notify*/
-.toast-position-top-center						{top:10px;}
+.tippy-box										{padding:7px!important; font-size:1rem; border-radius:var(--radius-block)!important;}/*Tooltip*/
+.toast-item										{padding:15px; padding-right:30px;}/*Notify*/
+.toast-position-top-center						{top:5px;}
 .jconfirm-box									{border-radius:15px!important; padding-block:40px 30px!important;}
 .jconfirm-bg									{opacity:0.5!important;}
 .jconfirm-title-c, .jconfirm-content-pane, .jconfirm-buttons	{width:100%!important; margin:0px!important; padding:0px!important; text-align:center!important; font-size:1.2rem!important;}

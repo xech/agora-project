@@ -130,12 +130,12 @@ class Req
 				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);										//Autorise la balise <source> et ses attributs (cf balise <video>)
 				$purifier=new HTMLPurifier($config);																					//Crée un $purifier
 				$val=$purifier->purify($val);																							//Filtre le code html
-				$caracAcc =['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç','œ','À','Â','Ä','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Û','Ü','Ç','Œ','Æ','æ','«','»',"\xc2\xa0"];//Les espaces sont transformés en "\xc2\xa0" par HTMLPurifier
+				$caracAcc =['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç','œ','À','Â','Ä','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Û','Ü','Ç','Œ','Æ','æ','«','»',"\xc2\xa0"];//Espace converti en "\xc2\xa0" par HTMLPurifier
 				$caracHtml=['&rsquo;','&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&oelig;','&Agrave;','&Acirc;','&Auml;','&Eacute;','&Egrave;','&Ecirc;','&Euml;','&Icirc;','&Iuml;','&Ocirc;','&Ouml;','&Ugrave;','&Ucirc;','&Uuml;','&Ccedil;','&OElig;','&AElig;','&aelig;','&laquo;','&raquo;','&nbsp;'];
-				$val=str_replace($caracAcc, $caracHtml, $val);																			//Convertit les caractère accentués en entités HTML	(pas de htmlentities(), sinon ça converti aussi les balises html...). Test avec "<span style="font-size:200%;color:red">Réservé aux vip & à cœur "EMOJI"</span>"
-			}
+				$val=str_replace($caracAcc, $caracHtml, $val);																			//Convertit les caractères en HTML: pas de htmlentities() car converti aussi les balises HTML
+			}																															//-> Tester avec  "<span style="font-size:200%;">Testé avec cœur "EMOJI COEUR"</span>"
 			else{																														//Filtre principal
-				$val=strip_tags($val,'<br>');																							//Supprime les tags html (<br> pour les notify)
+				$val=strip_tags($val,'<br>');																							//Supprime les tags html (<br> : cf notifs)
 				if($key=="objUrl")	{$val=filter_var($val, FILTER_SANITIZE_URL);}														//Filtre une "objUrl"
 				else				{$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);}								//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
 				$val=str_replace('&lt;br&gt;','<br>',$val);																				//Retranscrit les <br>
@@ -247,7 +247,7 @@ class Req
 	/********************************************************************************************************
 	 * SWITCH D'ESPACE : BOUTON DE RETOUR AU MENU DE RECHERCHE (APP MOBILE OU HOST)
 	 ********************************************************************************************************/
-	public static function isSpaceSwitch()
+	public static function connectSpaceSwitch()
 	{
 		return (self::isMobileApp() || self::isHost());
 	}
@@ -273,9 +273,9 @@ class Req
 	 ********************************************************************************************************/
 	public static function verifPhpVersion()
 	{
-		$versionPhpMinimum="7.4";
-		if(version_compare(PHP_VERSION,$versionPhpMinimum,"<=")){
-			echo "<h2><img src='app/img/important.png'> ".str_replace("--CURRENT_VERSION--",static::appVersion(),Txt::trad("INSTALL_PhpOldVersion"))." : ".$versionPhpMinimum." minimum &nbsp; -> current version : ".PHP_VERSION."</h2>";
+		$phpMinVersion="7.4";
+		if(version_compare(PHP_VERSION,$phpMinVersion,"<=")){
+			echo "<h2><img src='app/img/important.png'> ".str_replace("--CURRENT_VERSION--",static::appVersion(),Txt::trad("INSTALL_PhpOldVersion"))." : ".$phpMinVersion." minimum &nbsp; -> current version : ".PHP_VERSION."</h2>";
 			exit;
 		}
 	}

@@ -315,39 +315,51 @@ class MdlUser extends MdlPerson
 		}
 	}
 
-	/*****************************************************************************************************
-	 * PASSWORD HASHÉ (SALT+SHA1)	=> OBSOLETE DEPUIS v23.4 : GARDER POUR RÉTRO-COMPATIBILITÉ TEMPORAIRE
-	 *****************************************************************************************************/
-	public static function passwordSha1($clearPassword)
-	{
-		$passwordSalt=(!defined("AGORA_SALT") || empty(AGORA_SALT))  ?  "Ag0rA-Pr0j3cT"  :  AGORA_SALT;
-		return sha1($passwordSalt.sha1($clearPassword));
-	}
-
 	/********************************************************************************************************
-	 * IDENTIFIANT TEMPORAIRE POUR LA RÉINITIALISATION DU PASSWORD
+	 * RESET DE PASSWORD : IDENTIFIANT UNIQUE
 	 ********************************************************************************************************/
 	public function resetPasswordId()
 	{
-		return sha1($this->login.$this->password);
+		return sha1($this->_id.$this->login.$this->password);
 	}
 
 	/********************************************************************************************************
-	 * ENVOI DU MAIL DE RESET DE PASSWORD
+	 * RESET DE PASSWORD : VERIF L'IDENTIFIANT IDENTIFIANT UNIQUE
+	 ********************************************************************************************************/
+	public function resetPasswordIdVerif()
+	{
+		return Req::param("resetPasswordId")==$this->resetPasswordId();
+	}
+
+	/********************************************************************************************************
+	 * RESET DE PASSWORD : ENVOI DE L'EMAIL
 	 ********************************************************************************************************/
 	public function resetPasswordSendMail()
 	{
-		//Récupère l'email (champ login ou mail)
+		////	Envoie l'email (champ login ou mail)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
-		//Email non spécifié / Envoi du mail de reset de password
-		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
-		else{
+		if(Txt::isMail($mailTo)){
 			$resetPasswordUrl=Req::curUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
 			$mailSubject=Txt::trad("resetPasswordMailTitle");
 			$mailMessage=Txt::trad("MAIL_hello").',<br><br>'.
 					 	 '<b>'.Txt::trad("resetPasswordMailPassword").' <a href="'.$resetPasswordUrl.'" target="_blank">'.Txt::trad("resetPasswordMailPassword2").'</a></b>'.
 					 	 '<br><br>'.Txt::trad("resetPasswordMailLoginRemind").' : <i>'.$this->login.'</i>';
-			return Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);
+			Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);//noNotify : cf notif spécifique + envoie multiple via actionResetPasswordUsers()
+		}
+		////	Aucun compte pour cet email
+		else {Ctrl::notify("resetPasswordMailNotRegistered");}
+	}
+
+	/********************************************************************************************************
+	 * RESET DE PASSWORD : ENREGISTRE LE NOUVEAU PASSWORD
+	 ********************************************************************************************************/
+	public function resetPasswordRecord()
+	{
+		$newPassword=Req::param("newPassword");
+		if($this->resetPasswordIdVerif() && !empty($newPassword)){
+			$passwordHash=password_hash($newPassword,PASSWORD_DEFAULT);
+			Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($passwordHash)." WHERE `_id`=".(int)$this->_id);
+			Ctrl::notify("modifRecorded","success");
 		}
 	}
 
@@ -409,6 +421,6 @@ class MdlUser extends MdlPerson
 		$vDatas["menuId"]=uniqid();											//cf plusieurs menus (ex: calendar d'users + users notifs mail)
 		$vDatas["userGroupList"]=MdlUserGroup::userGroupList($objSpace);	//Groupes d'users de l'espace
 		$vDatas["inputSelector"]=$inputSelector;							//Sélecteur des inputs d'users : avec la class/id du conteneur d'input!
-		return Ctrl::getVue("app/ModUser/VueSelectUsersMenu.php",$vDatas);	//Affiche la vue
+		return Ctrl::getVue("app/ModUser/VueSelectUserGroup.php",$vDatas);	//Affiche la vue
 	}
 }

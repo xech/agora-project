@@ -159,7 +159,7 @@ class CtrlDashboard extends Ctrl
 								$responseFilePath=$curObj->responseFilePath(["_id"=>$_idResponse,"fileName"=>$tmpFile["name"]]);
 								move_uploaded_file($tmpFile["tmp_name"],$responseFilePath);
 								if(File::isType("imageResize",$tmpFile["name"]))  {File::imageResize($responseFilePath,$responseFilePath,1200);}//1200px max
-								Db::query("UPDATE ap_dashboardPollResponse SET fileName=".Db::format($tmpFile["name"])." WHERE _id=".Db::format($_idResponse));
+								Db::query("UPDATE ap_dashboardPollResponse SET fileName=".Db::format($tmpFile["name"])." WHERE `_id`=".Db::format($_idResponse));
 							}
 						}
 					}

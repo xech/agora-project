@@ -92,7 +92,6 @@ ready(function(){
 	if($(".vSpaceTable:visible:has(.vAffectLine:not(:visible))").exist())	{$("#showAllUsers").show();}	//Espaces affichés avec des lignes masquées : #showAllUsers
 	else if($(".vSpaceTable:not(:visible)").exist()) 						{$("#showAllSpaces").show();}	//Espaces masqués : #showAllSpaces
 	accessRightStyle();																						//Style des affectations
-	setTimeout(function(){ lightboxResize(); },1500);														//2ème resize après celui de "mainTriggers()" (si beaucoup de droits d'accès à afficher) 
 });
 
 /**********************************************************************************************************
@@ -111,10 +110,9 @@ function accessRightStyle()
 
 <style>
 /*OPTIONS D'EDITION (cf. white.css & black.css) */
-#objMenuTabs						{margin-top:35px; margin-bottom:-35px; display:table; width:100%; max-width:100%;}
-.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.75; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
+#objMenuTabs						{display:table; table-layout:fixed; margin-top:35px; margin-bottom:-35px; width:100%; max-width:100%;}		/*table-layout: meme largeur pour chaque colonne*/
+.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.8; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
 .objMenuTabSelect					{opacity:1; border-bottom:none;}
-.objMenuTab[for='menuAccessRight']	{min-width:150px;}/*onglet des droits d'accès*/
 .objMenuTab img						{margin-right:5px;}
 #objMenuTabs:has(.objMenuTab:nth-child(4)) img {margin-right:6px;} /*Edit Task : réduit le margin si ya 4 onglets dans le menu*/
 .objMenuMain						{margin-top:35px; padding:25px; border-top:0px; border-radius:0px 0px 8px 8px; text-align:left;}
@@ -139,10 +137,10 @@ function accessRightStyle()
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
-	#objMenuTabs						{font-size:0.95rem; table-layout:fixed;}	/*meme largeur pour chaque colonne*/
+	#objMenuTabs						{font-size:0.9rem;}
 	.objMenuMain						{padding-inline:10px;}						/*détail des options*/
 	.vSpaceTable						{border:0px;}								/*tableau des droits d'accès*/
-	.vSpaceTable>div>div				{padding:8px 3px;}							/*cellules du tableau des droits d'accès*/
+	.vSpaceTable>div>div				{padding:8px 4px;}							/*cellules du tableau des droits d'accès*/
 	.vSpaceHeader .vAffectBox			{font-size:0.85rem;} 						/*entête des droits d'accès*/
 	.vSpaceHeader .vAffectLabel			{padding-left:5px;}							/*Nom de l'espace*/
 	.vAffectBox							{width:50px;}								/*colonne des checkboxes des droits d'accès*/
@@ -187,9 +185,9 @@ function accessRightStyle()
 	<!--MENU DES AFFECTATIONS / DROITS D'ACCES-->
 	<?php if(!empty($menuAccessRight)){ ?>
 		<div class="objMenuMain" id="menuAccessRight">
-			<!--AFFECTATIONS POUR CHAQUE ESPACE-->
+
+			<!--TABLEAUX D'AFFECTATIONS POUR CHAQUE ESPACE-->
 			<?php foreach($spaceAffectations as $tmpSpace){ ?>
-				<!--TABLEAU DE L'ESPACE COURANT-->
 				<div class="vSpaceTable">
 					<!--ENTETE-->
 					<div class="vSpaceHeader">
@@ -210,16 +208,18 @@ function accessRightStyle()
 					<?php } ?>
 				</div>
 			<?php } ?>
+
 			<!--MENU "AFFICHER TOUS LES USERS" + "AFFICHER TOUS LES ESPACES" (+ d'un user ou espace)-->
 			<?php if(count($spaceAffectations)>1 || count($tmpSpace->targetLines)>1){ ?>
 				<div id="showAllUsers" class="link"><?= Txt::trad("EDIT_showAllUsers") ?> <img src="app/img/arrowBottom.png"></div>
-				<div id="showAllSpaces" class="link"> <img src="app/img/space.png"> <?= Txt::trad("EDIT_showAllSpaces") ?> <img src="app/img/arrowBottom.png"></div>
+				<div id="showAllSpaces" class="link"><img src="app/img/space.png">&nbsp; <?= Txt::trad("EDIT_showAllSpaces") ?> <img src="app/img/arrowBottom.png"></div>
 			<?php } ?>
+			
 			<!--MENU "ETENDRE LES DROITS AUX SOUS-DOSSIERS"-->
 			<?php if(!empty($extendSubfolders)){ ?>
 				<hr><input type="checkbox" name="extendSubfolders" value="1" id="extendSubfoldersBox">
 				<label for="extendSubfoldersBox" <?= Txt::tooltip("EDIT_extendSubfoldersTooltip") ?>><?= Txt::trad("EDIT_extendSubfolders") ?></label>
-				<script>$("#extendSubfoldersBox").pulsate(20);</script>
+				<script>$("#extendSubfoldersBox").pulsate(5);</script>
 			<?php } ?>
 		</div>
 	<?php } ?>
@@ -228,13 +228,17 @@ function accessRightStyle()
 	<!--MENU DES NOTIFS MAIL-->
 	<?php if(!empty($menuNotifMail)){ ?>
 		<div class="objMenuMain" id="menuNotifMail">
+
 			<!--CHECKBOX PRINCIPALE-->
 			<input type="checkbox" name="notifMail" value="1" onchange="$('#notifMailOptions').slideToggle()" id="boxNotifMail">
 			<label for="boxNotifMail" <?= Txt::tooltip($notifMailTooltip) ?>><?= Txt::trad("EDIT_notifMail2") ?></label>
+
 			<!--BLOCK DES OPTIONS-->
 			<div id="notifMailOptions">
+
 				<!--OPTIONS DE BASE DES EMAILS-->
-				<?= MdlObject::sendMailBasicOptions() ?>
+				<?= MdlObject::menuSendMail() ?>
+
 				<!--MODFILE : "Joindre les fichiers"-->
 				<?php if($curObj::objectType=="file"){ ?>
 					<div <?= Txt::tooltip(Txt::trad("FILE_fileSizeLimit").' '.File::sizeLabel(File::mailMaxFilesSize)) ?> >
@@ -243,6 +247,7 @@ function accessRightStyle()
 						<label for="boxNotifMailAddFiles"><?= Txt::trad("EDIT_notifMailAddFiles") ?> <img src="app/img/attachment.png"></label>
 					</div>
 				<?php } ?>
+
 				<!--CHOIX DES USERS DESTINATAIRES-->
 				<div>
 					<img src="app/img/dependency.png"><input type="checkbox" name="notifMailSelect" value="1" onclick="$('#notifMailUsers').slideToggle();" id="notifMailSelectBox">
@@ -265,6 +270,7 @@ function accessRightStyle()
 						</div>
 					<?php } ?>
 				</fieldset>
+
 			</div>
 		</div>
 	<?php } ?>

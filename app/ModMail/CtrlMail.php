@@ -13,6 +13,7 @@
 class CtrlMail extends Ctrl
 {
 	const moduleName="mail";
+	public static $moduleOptions=["onlyAdminAccess"];
 
 	/********************************************************************************************************
 	 * VUE : PAGE PRINCIPALE
@@ -61,7 +62,7 @@ class CtrlMail extends Ctrl
 					$curObj->description=$dom->saveHTML();
 				}
 				//Update la description et recharge l'email
-				Db::query("UPDATE ".$curObj::dbTable." SET `description`=".Db::format($curObj->description)." WHERE _id=".$curObj->_id);
+				Db::query("UPDATE ".$curObj::dbTable." SET `description`=".Db::format($curObj->description)." WHERE `_id`=".$curObj->_id);
 				$curObj=Ctrl::getCurObj($curObj->typeId);
 			}
 			////	Envoi du mail

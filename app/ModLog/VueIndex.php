@@ -1,9 +1,9 @@
-<link rel="stylesheet" type="text/css" href="app/js/datatables_2.3.7/datatables.min.css">
-<script type="text/javascript" src="app/js/datatables_2.3.7/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="app/js/datatables_2.3.8/datatables.min.css">
+<script type="text/javascript" src="app/js/datatables_2.3.8/datatables.min.js"></script>
 
 <script>
 /**********************************************************************************************************
- *	PARAMETRAGE DE DATATABLES
+ *	DATATABLES CONFIG
 **********************************************************************************************************/
 ready(function(){
 	////	Init le tableau
@@ -29,55 +29,65 @@ ready(function(){
 </script>
 
 <style>
-#pageContent						{width:1250px!important;}							/*width par défaut du tableau (verif en responsive)*/
-#logTitle, #logsDownload			{padding:10px; text-align:center;}					/*entête du tableau et Download de l'historique*/
-#logTable thead .dt-column-title	{text-align:left!important;}						/*label des colonnes*/
-#logTable td, #logTable th			{text-align:left; padding:5px; vertical-align:top;}	/*cellules du tableau*/
-table.dataTable td:first-child		{width:130px!important;}							/*width de la 1ere colonne*/
-tfoot select, tfoot input			{width:100%!important; font-size:0.95rem;}			/*filtres select/input du footer*/	
-tfoot select option[value=""]		{background-color:#bbb;}							/*Option par défaut : vide*/
+#pageContent						{width:1250px!important;}								/*width par défaut du tableau (verif en responsive)*/
+#logTitle, #logsDownload			{padding:10px; text-align:center;}	/*entête du tableau et Download de l'historique*/
+#logTable thead .dt-column-title	{text-align:left!important;}							/*label des colonnes*/
+#logTable td, #logTable th			{text-align:left; padding:5px; vertical-align:top;}		/*cellules du tableau*/
+table.dataTable td:first-child		{width:160px!important;}								/*width de la 1ere colonne*/
+tfoot select, tfoot input			{width:100%!important; font-size:0.95rem;}				/*filtres select/input du footer*/	
+tfoot select option[value=""]		{background-color:#bbb;}								/*Option par défaut : vide*/
 </style>
 
 
 <div id="pageCenter">
-	<div id="pageContent" class="miscContent">
-		<div id="logTitle"><?= Txt::trad("LOG_MODULE_DESCRIPTION").' : '.Ctrl::$curSpace->getLabel() ?></div>
-		<hr>
-		<table id="logTable">
-			<!--HEADER DU TABLEAU-->
-			<thead>
-				<tr>
-					<?php foreach(CtrlLog::$logFields as $fieldName){ ?>
-						<th><?= Txt::trad("LOG_".$fieldName) ?></th>
-					<?php } ?>
-				</tr>
-			</thead>
-			<!--LISTE DES LOGS-->
-			<tbody>
-				<?php foreach($logList as $tmpLog){ ?>
-					<tr class="lineHover">
-						<?php foreach(CtrlLog::$logFields as $fieldName){ ?>
-							<td><?= $tmpLog[$fieldName] ?></td>
-						<?php } ?>
-					</tr>
-				<?php } ?>
-			</tbody>
-			<!--FOOTER DU TABLEAU-->
-			<tfoot>
-				<tr>
-					<th><input type="text" <?= Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_date")) ?> placeholder="<?= Txt::trad("LOG_date") ?>"></th>
-					<th><?= CtrlLog::selectFilter($logList,"action") ?></th>
-					<th><?= CtrlLog::selectFilter($logList,"userName") ?></th>
-					<th><?= CtrlLog::selectFilter($logList,"objectType") ?></th>
-					<th><input type="text" <?= Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_comment")) ?> placeholder="<?= Txt::trad("LOG_comment") ?>"></th>
-					<th><?= CtrlLog::selectFilter($logList,"moduleName") ?></th>
-				</tr>
-			</tfoot>
-		</table>
 
-		<!--TELECHARGEMENT DES LOGS-->
-		<div id="logsDownload">
-			<a href="?ctrl=log&action=logsDownload"><img src="app/img/download.png"> <?= Txt::trad("LOG_download") ?></a>
+	<div id="pageMenu">
+		<div class="miscContent">
+			<!--TELECHARGEMENT DES LOGS-->
+			<div id="logsDownload">
+				<a href="?ctrl=log&action=logsDownload"><img src="app/img/download.png"> <?= Txt::trad("LOG_download") ?></a>
+			</div>
 		</div>
 	</div>
+
+	<div id="pageContent">
+		<div class="miscContent">
+			<!--TITRE DES LOGS-->
+			<div id="logTitle"><img src="app/img/log.png"> <?= Txt::trad("LOG_MODULE_DESCRIPTION").' : '.Ctrl::$curSpace->getLabel() ?></div>
+			<hr>
+			<!--TABLEAU DES LOGS-->
+			<table id="logTable">
+				<!--HEADER DU TABLEAU-->
+				<thead>
+					<tr>
+						<?php foreach(CtrlLog::$logFields as $fieldName){ ?>
+							<th><?= Txt::trad("LOG_".$fieldName) ?></th>
+						<?php } ?>
+					</tr>
+				</thead>
+				<!--LISTE DES LOGS (sur 6 colonnes!)-->
+				<tbody>
+					<?php foreach($logList as $tmpLog){ ?>
+						<tr class="lineHover">
+							<?php foreach(CtrlLog::$logFields as $fieldName){ ?>
+								<td><?= $tmpLog[$fieldName] ?></td>
+							<?php } ?>
+						</tr>
+					<?php } ?>
+				</tbody>
+				<!--FOOTER DU TABLEAU-->
+				<tfoot>
+					<tr>
+						<th><input type="text" <?= Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_date")) ?> placeholder="<?= Txt::trad("LOG_date") ?>"></th>
+						<th><?= CtrlLog::selectFilter($logList,"action") ?></th>
+						<th><?= CtrlLog::selectFilter($logList,"userName") ?></th>
+						<th><?= CtrlLog::selectFilter($logList,"objectType") ?></th>
+						<th><input type="text" <?= Txt::tooltip(Txt::trad("LOG_filterBy").' '.Txt::trad("LOG_comment")) ?> placeholder="<?= Txt::trad("LOG_comment") ?>"></th>
+						<th><?= CtrlLog::selectFilter($logList,"moduleName") ?></th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+
 </div>

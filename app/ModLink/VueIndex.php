@@ -16,7 +16,7 @@
 					  <div class="menuLine" onclick="lightboxOpen(\''.MdlLinkFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div>'.Txt::trad("addFolder").'</div></div>
 					  <hr>';
 			}
-			////	ARBORESCENCE  &  MENU DU MODE D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
+			////	ARBORESCENCE  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlLinkFolder::menuTree().MdlLink::menuDisplayMode().MdlLink::menuSort().
 				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>

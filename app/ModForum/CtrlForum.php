@@ -79,7 +79,7 @@ class CtrlForum extends Ctrl
 			$usersNotifyLastMessage=Txt::txt2tab($curSubject->usersNotifyLastMessage);
 			if($curSubject->curUserNotifyLastMessage())		{$usersNotifyLastMessage=array_diff($usersNotifyLastMessage,[Ctrl::$curUser->_id]);		echo "removeUser";}
 			else											{$usersNotifyLastMessage[]=Ctrl::$curUser->_id;											echo "addUser";}
-			Db::query("UPDATE ap_forumSubject SET usersNotifyLastMessage=".Db::formatTab2txt($usersNotifyLastMessage)." WHERE _id=".$curSubject->_id);
+			Db::query("UPDATE ap_forumSubject SET usersNotifyLastMessage=".Db::formatTab2txt($usersNotifyLastMessage)." WHERE `_id`=".$curSubject->_id);
 		}
 	}
 
@@ -123,7 +123,7 @@ class CtrlForum extends Ctrl
 			$idMessageParent=Req::isParam("_idMessageParent")  ?  ", _idMessageParent=".Db::param("_idMessageParent")  :  null;//Rattaché à un message parent?
 			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").$idMessageParent);
 			//MAJ "dateLastMessage" & "usersConsultLastMessage" du sujet conteneur
-			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE _id=".$curObj->_idContainer);
+			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE `_id`=".$curObj->_idContainer);
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")
 			if($curObj->isNewRecord()==false)	{$notifUserIds=null;}
 			else{

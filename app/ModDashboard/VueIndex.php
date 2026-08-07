@@ -24,7 +24,7 @@ ready(function(){
 							$("#contentNews").append(vueNewsList);	//Affiche les news
 							$(".vNewsContainer").fadeIn(500);		//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
 							menuContext();							//Update les menus contextuels
-							mainTriggers();							//Update les tooltips
+							mainTriggers();							//Update les tooltips & Co
 							newsOffset++;							//Update le compteur
 						}
 					});
@@ -38,7 +38,7 @@ ready(function(){
 							$("#contentPolls").append(vuePollsList);		//Affiche les sondages
 							$(".vPollsContainer").fadeIn(500);				//"fadeIn()" car masquées par défaut via .infiniteScrollHidden
 							menuContext();									//Update les menus contextuels
-							mainTriggers();									//Update les tooltips
+							mainTriggers();									//Update les tooltips & Co
 							dashboardPollVote();							//Update le "trigger" de vote des sondages
 							pollsOffset++;									//Update le compteur
 						}
@@ -96,7 +96,7 @@ function dashboardPollVote()
 			$.ajax({url:"?ctrl=dashboard&action=pollVote", data:$(this).serialize(), method:"POST", dataType:"json"}).done(function(result){
 				if(result.vuePollResult.length>0){
 					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le form. par le résultat du sondage  (au besoin le "toVoteWithNews")
-					mainTriggers();													//Update les tooltips
+					mainTriggers();													//Update les tooltips & Co
 				}
 			});
 		}

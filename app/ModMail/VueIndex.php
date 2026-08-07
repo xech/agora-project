@@ -60,17 +60,17 @@ ready(function(){
 #historyLabel, #recipientLabel		{text-align:center;}
 #historyLabel						{border-bottom:solid 1px #bbb; margin-top:20px; padding:20px!important;}
 #recipientLabel						{padding:10px;}
-.vMailsBlock						{margin:0px 10px 15px 10px;}
+.vMailsBlock						{margin-bottom:20px;}
 .vMailsLabel 						{display:table; margin-bottom:10px;}
 .vMailsLabel>div 					{display:table-cell; vertical-align:middle;}
 .vMailsLabel img					{margin-right:10px;}
 .vMailsMenu							{padding-left:5px!important;}
-.vMailsMenu:not(.vMailsMenuDisplay)	{display:none;}
+.vMailsMenu:not(.vMailsMenuDisplay,:has(input:checked)) {display:none;}
 .vMailsMenu>div						{padding:5px;}
 .vMailsMenu img[src*=check]			{margin-right:4px;}
-.selectUsersMenu hr:first-child		{margin-block:2px;}
 
 /*formulaire principal*/
+#pageContent .miscContent			{padding:15px;}
 #pageContent [name='title']			{width:100%; height:35px; margin-bottom:20px;}
 #mailOptions						{display:table; width:100%; margin-top:30px;}/*tableau d'options*/
 #mailOptions>div					{display:table-cell; width:33%; vertical-align:top;}/*colonnes d'options et bouton "Envoyer"*/
@@ -100,6 +100,7 @@ ready(function(){
 				////	LISTE DES DESTINATAIRES : USERS D'UN ESPACE || CONTACTS D'UN DOSSIER
 				foreach($containerList as $tmpContainer){
 					$containerId="mailsContainer".$tmpContainer->typeId;
+					$personInputSelector='#'.$containerId.' .vMailPersonInput';
 					$containerClass=($tmpContainer->typeId==Ctrl::$curSpace->typeId)  ?  "vMailsMenuDisplay"  :  null;//par défaut, on n'affiche que les users de l'espace courant
 					$containerTreeLevel=($tmpContainer::isFolder==true)  ?  'data-folder-tree-level="'.$tmpContainer->treeLevel.'"'  :  null;
 				?>
@@ -124,11 +125,15 @@ ready(function(){
 									<input type="checkbox" name="personList[]" value="<?= $tmpPerson->typeId ?>" class="vMailPersonInput" id="<?= $inputId ?>" <?= $inputAttributes ?>> 
 									<label for="<?= $inputId ?>"><?= $tmpPerson->getLabel() ?></label>
 								</div>
-							<?php
-							}
-							////	SELECTION D'USERS & GROUPES-->
-							if($tmpContainer::objectType=="space")  {echo MdlUser::selectUsersGroups($tmpContainer, '#'.$containerId.' .vMailPersonInput');}
-							?>
+							<?php } ?>
+
+							<!--SELECTION D'USERS & GROUPES-->
+							<?= $tmpContainer::objectType=="space" ?  MdlUser::selectUsersGroups($tmpContainer,$personInputSelector)  : null ?>
+							<!--SELECTION DE CONTACTS-->
+							<?php if($tmpContainer::objectType=="contactFolder"){ ?>
+								<div onclick="$('<?= $personInputSelector ?>').prop('checked',false).trigger('click')"><img src="app/img/checkSelectAll.png"> <?= Txt::trad("selectAll") ?></div>
+								<div onclick="$('<?= $personInputSelector ?>').prop('checked',true).trigger('click')"><img src="app/img/checkUnselectAll.png"> <?= Txt::trad("unselectAll") ?></div>
+							<?php } ?>
 						</div>
 					</div>
 				<?php } ?>
@@ -149,7 +154,7 @@ ready(function(){
 				<div id="mailOptions">
 					<div>
 						<!--OPTIONS DE BASE DES EMAILS-->
-						<?= MdlObject::sendMailBasicOptions() ?>
+						<?= MdlObject::menuSendMail() ?>
 					</div>
 					<div>
 						<!--AJOUTER UNE VISIO-->

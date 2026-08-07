@@ -19,47 +19,32 @@ class CtrlOffline extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionDefault()
 	{
-		//Init
-		$vDatas=[];
-
 		////	Reset du password
-		if(Req::isParam("resetPasswordMail"))
-		{
-			// Affiche la notif d'envoie de l'email (que l'email soit bon ou pas, par mesure de sécurité) : "Un email vient de vous être envoyé [...] Si vous ne l'avez pas reçu, vérifiez que l’adresse saisie est bien la bonne"
-			if(Req::isParam("resetPasswordSendMail"))  {Ctrl::notify("resetPasswordNotif");}
-			// Vérif si l'user existe
-			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE mail=".Db::param("resetPasswordMail")." OR `login`=".Db::param("resetPasswordMail"));
-			if(!empty($tmpUser))
-			{
-				// Récupère l'user
+		if(Req::isParam("resetPasswordMail")){
+			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE `mail`=".Db::param("resetPasswordMail")." OR `login`=".Db::param("resetPasswordMail"));
+			if(empty($tmpUser))  {Ctrl::notify("resetPasswordMailNotRegistered");}
+			else{
 				$tmpUser=Ctrl::getObj("user",$tmpUser);
-				// Envoie l'email de reset du password
-				if(Req::isParam("resetPasswordSendMail"))  {$tmpUser->resetPasswordSendMail();}
-				// L'user clique ensuite sur le lien présent dans l'email : affiche puis enregistre le formulaire du nouveau password
-				elseif(Req::isParam("resetPasswordId"))
-				{
-					//Vérifie le "resetPasswordId()"
-					$vDatas["resetPasswordIdOk"]=($tmpUser->resetPasswordId()==Req::param("resetPasswordId"));
-					//Enregistre le nouveau password ("resetPasswordId" OK)					
-					if($vDatas["resetPasswordIdOk"]==true && Req::isParam("newPassword")){
-						$sqlNewPassword=password_hash(Req::param("newPassword"),PASSWORD_DEFAULT);
-						Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($sqlNewPassword)." WHERE _id=".(int)$tmpUser->_id);
-						Ctrl::notify("modifRecorded","success");
-					}
-					//Notify "Le lien de renouvellement de password a expiré" ("resetPasswordId" expiré)
-					elseif($vDatas["resetPasswordIdOk"]!=true)  {self::notify("resetPasswordIdExpired");}
+				////	ETAPE 1 : ENVOI DE L'EMAIL
+				if(Req::isParam("resetPasswordSendMail")){
+					$tmpUser->resetPasswordSendMail();
+					Ctrl::notify("resetPasswordNotif");//Notif spécifique
+				}
+				////	ETAPE 2 : MODIF DU PASSWORD
+				elseif(Req::isParam("resetPasswordId")){
+					if($tmpUser->resetPasswordIdVerif()==false)	{self::notify("resetPasswordIdExpired");}	//resetPasswordId expiré
+					elseif(Req::isParam("newPassword")==false)	{$vDatas["resetPasswordChangeForm"]=true;}	//Formulaire du nouveau password
+					else										{$tmpUser->resetPasswordRecord();}			//Enregistre le nouveau password
 				}
 			}
 		}
-		////	Confirmation d'invitation
-		elseif(Req::isParam(["_idInvitation","mail"]))
-		{
-			//// Infos de l'invitation
+
+		////	Confirme une invitation
+		if(Req::isParam(["_idInvitation","mail"])){
 			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::param("_idInvitation")." AND mail=".Db::param("mail"));
-			//// Invitation expiré  ||  Quota d'users atteint  ||  Valide l'invitation : créé le nouvel user avec le "newPassword"
-			if(empty($tmpInvit))  					{Ctrl::notify("USER_exired_idInvitation");}
-			elseif(MdlUser::usersQuotaOk()==false)  {Ctrl::notify("USER_quotaExceeded");}
-			elseif(Req::isParam("newPassword")){
+			if(empty($tmpInvit))  					{Ctrl::notify("USER_exired_idInvitation");}														//Invitation expiré
+			elseif(MdlUser::usersQuotaOk()==false)  {Ctrl::notify("USER_quotaExceeded");}															//Quota d'users atteint
+			elseif(Req::isParam("newPassword")){																									//Invitation valide : créé un nouvel user avec le "newPassword"
 				$newUser=new MdlUser();
 				$sqlFields="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
 				$newUser=$newUser->editRecord($sqlFields, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
@@ -71,13 +56,13 @@ class CtrlOffline extends Ctrl
 				}
 			}
 		}
-		////	Affiche la page
+	
+		////	Affiche la vue
 		$vDatas["isUserInscription"]=(Db::getVal("select count(*) from ap_space where userInscription=1")>0  &&  Req::isMobileApp()==false);
 		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "select * from ap_space where public=1 order by name");
-		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}//Login par défaut : passé en parametre
-		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}//Login par défaut : en cookie
+		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}		//Login par défaut : en parametre
+		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}	//Login par défaut : en cookie
 		else									{$vDatas["defaultLogin"]=null;}
-		//Affiche la vue
 		static::displayPage("VueConnection.php",$vDatas);
 	}
 
@@ -125,7 +110,7 @@ class CtrlOffline extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionPublicSpacePasswordControl()
 	{
-		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE _id=".Db::param("idSpacePublic")." AND BINARY `password`=".Db::param("passwordControl"));
+		$passwordValid=Db::getVal("SELECT count(*) FROM ap_space WHERE `_id`=".Db::param("idSpacePublic")." AND BINARY `password`=".Db::param("passwordControl"));
 		if(!empty($passwordValid))  {echo "passwordOK";}
 	}
 
@@ -169,18 +154,17 @@ class CtrlOffline extends Ctrl
 			{self::noAccessExit("INSTALL_errorDbNoSqlFile");}
 
 		////	VALIDE LE FORMULAIRE
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			////	CONTROLES LES PARAMS D'ACCES A LA BDD
 			$dbControl=DbInstall::dbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
 			if(preg_match("/error/i",$dbControl))  {$result=Txt::trad("INSTALL_".$dbControl);}
 			////	CONTROLE OK : INSTALL
-			else
-			{
+			else{
 				////	CHMOD DE "PATH_DATAS" & MODIF DU FICHIER DE CONFIG
 				File::setChmod(PATH_DATAS);
 				$spaceDiskLimit=File::getBytesSize(Req::param("spaceDiskLimit")."go");
-				File::updateConfigFile(["db_host"=>Req::param("db_host"), "db_login"=>Req::param("db_login"), "db_password"=>Req::param("db_password"), "db_name"=>Req::param("db_name"), "limite_nb_users"=>"10000", "limite_espace_disque"=>$spaceDiskLimit]);
+				$paramsEdit=["db_host"=>Req::param("db_host"), "db_login"=>Req::param("db_login"), "db_password"=>Req::param("db_password"), "db_name"=>Req::param("db_name"), "limite_nb_users"=>"100000", "limite_espace_disque"=>$spaceDiskLimit];
+				File::updateConfigFile($paramsEdit);
 
 				////	CREE LA BASE DE DONNEES DU NOUVEL ESPACE  &&  PUIS ON S'Y CONNECTE !
 				if($dbControl=="dbAbsent"){

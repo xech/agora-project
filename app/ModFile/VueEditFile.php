@@ -13,14 +13,16 @@ function mainFormControl(){
 </script>
 
 <style>
-[name='name']			{width:380px;}
-[name='dotExtension']	{width:55px;}
+.inputTitleName				{width:60%;}/*surcharge*/
+input[name='dotExtension']	{width:55px;}
 </style>
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
+
 	<!--NOM & DESCRIPTION-->
-	<input type="text" name="name" value="<?= basename($curObj->name,strrchr($curObj->name,".")) ?>" placeholder="<?= Txt::trad("name") ?>">
+	<input type="text" name="name" value="<?= basename($curObj->name,strrchr($curObj->name,".")) ?>" class="inputTitleName" placeholder="<?= Txt::trad("name") ?>">
 	<input type="text" name="dotExtension" value="<?= strrchr($curObj->name,".") ?>" readonly>
+
 	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->descriptionEditor() ?>
 	<?= $curObj->editMenuSubmit() ?>

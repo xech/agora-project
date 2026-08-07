@@ -1,0 +1,6 @@
+https://datatables.net/download/
+- styling : Datatable
+- packages : non
+- core : Datatables
+- Extensions : non
+- installation method : Download

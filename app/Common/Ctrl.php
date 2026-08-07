@@ -14,9 +14,9 @@ abstract class Ctrl
 {
 	//Propriétés de base
 	const moduleName=null;
-	public static $moduleOptions=[];
 	public static $agora, $curUser, $curSpace;	//Parametrage principal
 	public static $isMainPage=false;			//False : Iframe  || True : page principale avec barre de menu, etc
+	public static $moduleOptions=[];			//Options du module courant
 	public static $notify=[];					//Notifications à afficher
 	public static $curTimezone=null;			//Timezone courante
 	public static $userJustConnected=false;		//Controle si l'user vient de s'identifier / connecter
@@ -27,7 +27,7 @@ abstract class Ctrl
 	protected static $cacheObjects=[];			//Objets mis en cache
 
 	/********************************************************************************************************
-	 * INITIALISE LE CONTROLEUR PRINCIPAL (session, parametrages, connexion de l'user, etc)
+	 * INIT LE CONTROLEUR PRINCIPAL (session, parametrages, connexion de l'user, etc)
 	 ********************************************************************************************************/
 	public static function initCtrl()
 	{
@@ -69,12 +69,11 @@ abstract class Ctrl
 				$_COOKIE["mobileAppli"]="true";
 			}
 
-			////	Affiche une page principale : controle d'accès au module demandé
-			if(Req::$curAction=="default"){
-				static::$isMainPage=true;
-				//Module demandé pas affecté à l'espace courant (et pas un module "global") : redirection vers le premier module de l'espace
-				if(in_array(Req::$curCtrl,["agora","log","offline","space","user"])==false  &&  self::$curSpace->moduleEnabled(Req::$curCtrl)==false)
-					{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}
+			////	Page principale d'un module  &&  Controle d'accès au module demandé
+			if(Req::$curAction=="default")  {static::$isMainPage=true;}
+			if(self::$curSpace->moduleEnabled(Req::$curCtrl)==false){													//Pas accès au module :
+				if(static::$isMainPage==true)	{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}	//- redir vers le 1er module de l'espace
+				else							{self::noAccessExit();}													//- message d'erreur + fin de script
 			}
 
 			////	Affichage des utilisateurs de l'espace courant / tous les users  &&  Affichage administrateur activé/désactivé
@@ -110,22 +109,22 @@ abstract class Ctrl
 	{
 		////	INIT
 		$userAuthentified=false;
-		$connectViaForm		=Req::isParam(["connectLogin","connectPassword"]);
-		$connectViaToken	=(!empty($_COOKIE["userAuthToken"]));
-		$connectViaCookieOld=(!empty($_COOKIE["AGORAP_LOG"]) && !empty($_COOKIE["AGORAP_PASS"]));
+		$connectViaForm	=Req::isParam(["connectLogin","connectPassword"]);
+		$connectViaToken=(!empty($_COOKIE["userAuthToken"]));
 
-		////	CONNEXION D'UN USER
-		if(self::$curUser->isGuest() && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true || $connectViaCookieOld==true))
-		{
+		////	CONNEXION D'UN USER (GUEST PAS ENCORE AUTHENTIFIÉ)
+		if(self::$curUser->isGuest() && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true)){
+
 			////	CONNEXION VIA FORMULAIRE
 			if($connectViaForm==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
-				$clearPassword=Req::param("connectPassword");
-				$passwordVerifyHost=(Req::isHost() && Host::passwordVerifyHost($clearPassword));
-				//// Verif si le password correspond à un hash :  "password_verify()" avec hash Bcrypt  ||  "passwordSha1()" : obsolete mais tjs retro-compatible  ||  "passwordVerifyHost()" : specific aux hosts
-				if(!empty($tmpUser)  &&  (password_verify($clearPassword,$tmpUser["password"]) || MdlUser::passwordSha1($clearPassword)==$tmpUser["password"] || $passwordVerifyHost==true)){
-					if($passwordVerifyHost==false)  {Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT))." WHERE _id=".Db::format($tmpUser["_id"]));}// Update le hash ..sauf pour les hosts!
-					$userAuthentified=true;
+				if(!empty($tmpUser)){
+					$connectPassword=Req::param("connectPassword");
+					$passwordVerifiedHash=password_verify($connectPassword,$tmpUser["password"]);				//Password hash vérifié
+					$passwordVerifiedHost=(Req::isHost() && Host::passwordVerifyHost($connectPassword));		//Password du host vérifié
+					if($passwordVerifiedHash==true || $passwordVerifiedHost==true)  {$userAuthentified=true;}	//Authentification OK
+					if($passwordVerifiedHash==true)																//Update le hash Bcrypt : $passwordVerifiedHash uniquement !
+						{Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($connectPassword,PASSWORD_DEFAULT))." WHERE `_id`=".Db::format($tmpUser["_id"]));}
 				}
 			}
 			////	CONNEXION AUTO VIA TOKEN
@@ -134,11 +133,6 @@ abstract class Ctrl
 				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
 				if(!empty($tmpUser))	{$userAuthentified=true;}
 				else					{self::userAuthToken("delete");}
-			}
-			////	CONNEXION AUTO VIA L'ANCIENNE METHODE (obsolete depuis v23.4 mais retro-compatible : cookies supprimés dès que $userAuthentified=true)
-			elseif($connectViaCookieOld==true){
-				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::format($_COOKIE["AGORAP_LOG"])." AND `password`=".Db::format($_COOKIE["AGORAP_PASS"]));	
-				if(!empty($tmpUser))  {$userAuthentified=true;}
 			}
 
 			////	USER AUTHENTIFIE
@@ -151,19 +145,18 @@ abstract class Ctrl
 
 				//// Update "lastconnection" / "previousconnection" (connexion courante / précédente)
 				$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
-				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE _id=".self::$curUser->_id);
+				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE `_id`=".self::$curUser->_id);
 
 				//// Charge les preferences de l'user en session
 				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)
 					{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
 
 				//// Reinitialise le token de connexion auto
-				if($connectViaToken==true || $connectViaCookieOld==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
+				if($connectViaToken==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
 					{self::userAuthToken("create",self::$curUser->_id);}
 			}
-			////	USER NON-AUTHENTIFIÉ
+			////	ERREUR D'AUTHENTIFICATION
 			else{
-				//// Notif d'erreur de credentials
 				if($connectViaForm==true)  {self::notify("NOTIF_identification");}
 				self::redir("index.php?disconnect=1");
 			}
@@ -173,14 +166,13 @@ abstract class Ctrl
 		if(Req::isHost())  {Host::connectStatsHostInfos();}
 
 		////	SELECTION D'UN ESPACE  (Tester switch d'espace + connexion d'user sans espace affecté + connexion de guest avec switch d'espace + accès à un objet depuis notif mail)
-		if(self::$userJustConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess"))))
-		{
+		if(self::$userJustConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess")))){
 			//// Init l'espace sélectionné et les espaces disponibles
 			$idSpaceSelected=null;
 			$userSpaces=self::$curUser->spaceList();
+
 			//// Sélectionne un espace
-			if(!empty($userSpaces))
-			{
+			if(!empty($userSpaces)){
 				//// Espace demandé (Switch d'espace || Accès Guest en page de connexion)
 				if(Req::isParam("_idSpaceAccess")){
 					foreach($userSpaces as $objSpace){
@@ -189,8 +181,7 @@ abstract class Ctrl
 					}
 				}
 				//// Espace par défaut d'un user
-				elseif(self::$curUser->isUser())
-				{
+				elseif(self::$curUser->isUser()){
 					//Espace enregistré dans les préférences de l'user
 					if(!empty(self::$curUser->connectionSpace)){
 						foreach($userSpaces as $objSpace){
@@ -204,6 +195,7 @@ abstract class Ctrl
 					}
 				}
 			}
+
 			//// Espace sélectionné : charge l'espace + redirection
 			if(!empty($idSpaceSelected)){
 				$_SESSION["_idSpace"]=$idSpaceSelected;																		//Charge l'espace courant
@@ -216,7 +208,10 @@ abstract class Ctrl
 			elseif(self::$userJustConnected==true)   {self::notify("NOTIF_noAccessNoSpaceAffected");  self::redir("index.php?disconnect=1");}
 		}
 		////	USER NON IDENTIFIÉ + AUCUN ESPACE PUBLIC DISPONIBLE (notif et déconnexion)
-		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline")  {self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}
+		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline"){
+			self::notify("NOTIF_noAccess");
+			self::redir("index.php?disconnect=1");
+		}
 	}
 
 	/********************************************************************************************************
@@ -300,10 +295,10 @@ abstract class Ctrl
 				}
 				//HeaderMenu : Liste des espaces et modules +  Inscription d'utilisateurs  +  Affichage du label des modules
 				$vDatasHeader["spaceList"]=self::$curUser->spaceList();
-				$vDatasHeader["spaceListMenu"]=(count($vDatasHeader["spaceList"])>=2);
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
 				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
 				$vDatasHeader["moduleLabelDisplay"]=(!empty(self::$agora->moduleLabelDisplay) || Req::isMobile());
+				$vDatasHeader["connectSpaceSwitchLabel"]=Req::connectSpaceSwitch()  ?  Txt::trad('connectSpaceSwitchInfo',true).' '.(Req::isHost()?HOST_DOMAINE:null)  :  null;
 				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
 				//Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
 				if(self::$curUser->messengerEnabled())  {$vDatas["messenger"]=self::getVue(Req::commonPath."VueMessenger.php");}

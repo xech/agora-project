@@ -53,8 +53,8 @@ class DbInstall
 			extract($installParams);
 			//Paramétrage général  +  Espace principal  +  User principal (admin dénéral)
 			$objPDO->query("UPDATE ap_agora SET `name`=".self::format($objPDO,$spaceName).", `version_agora`=".self::format($objPDO,$version_agora).", `timezone`=".self::format($objPDO,$spaceTimeZone).", `lang`=".self::format($objPDO,$spaceLang).", `dateUpdateDb`=NOW()");
-			$objPDO->query("UPDATE ap_space SET `name`=".self::format($objPDO,$spaceName).", `description`=".self::format($objPDO,$spaceDescription).", `public`=".self::format($objPDO,$spacePublic)." WHERE _id=1");
-			$objPDO->query("UPDATE ap_user  SET `login`=".self::format($objPDO,$adminMailLogin).", `password`=".self::format($objPDO,$adminPassword).", `name`=".self::format($objPDO,$adminName).", `firstName`=".self::format($objPDO,$adminFirstName).", `mail`=".self::format($objPDO,$adminMailLogin)." WHERE _id=1");
+			$objPDO->query("UPDATE ap_space SET `name`=".self::format($objPDO,$spaceName).", `description`=".self::format($objPDO,$spaceDescription).", `public`=".self::format($objPDO,$spacePublic)." WHERE `_id`=1");
+			$objPDO->query("UPDATE ap_user  SET `login`=".self::format($objPDO,$adminMailLogin).", `password`=".self::format($objPDO,$adminPassword).", `name`=".self::format($objPDO,$adminName).", `firstName`=".self::format($objPDO,$adminFirstName).", `mail`=".self::format($objPDO,$adminMailLogin)." WHERE `_id`=1");
 		}
 	}
 }

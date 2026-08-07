@@ -120,7 +120,7 @@ class Txt
 
 	/*********************************************************************************************************************
 	 * CLEAN DE TEXTE : SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
-	 * $scope="min" 	-> fichiers Ical :							"l'été &amp; (!?)"  ->  "l'été & (!?)"
+	 * $scope="min" 	-> parametres, fichiers Ical :				"l'été &amp; (!?)"  ->  "l'été & (!?)"
 	 * $scope="normal"	-> noms de fichier, moteur de recherche :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
 	 * $scope="max"		-> identifiants, noms en bdd :				"l'été &amp; (!?)"  ->  "l_ete_"
 	 *********************************************************************************************************************/
@@ -131,9 +131,9 @@ class Txt
 			$text=preg_replace(['/&nbsp;/','/\s+/'], " ", $text);								//Supprime les "&nbsp;", espaces en double, tabulations et sauts de ligne via  \s+
 			if($scope=="max")	{$text=iconv('UTF-8', 'ASCII//TRANSLIT', $text);}				//Remplace les caractères accentués (ex: "èéêë"=>"e")
 			//Conserve les chiffres, lettres et certains caractères spéciaux
-			$charsKeep='\p{L}0-9\.\_\-';														//min-normal-max	=> garde les lettres Unicodes (même accentuées), les chiffres et caractères   . _ - 
-			if($scope!="max")	{$charsKeep.='\s\'()\[\]';}										//min-normal		=> garde aussi les espaces (via \s) et les caractères   ' ( ) [ ]
-			if($scope=="min")	{$charsKeep.=',;"€$=+%:<>@&?!#\*\/\\\\';  $replacement=" ";}	//min 				=> garde aussi les caractères   , ; " € $ = + % : < > @ & ? ! # * / \   ('\' est échappé 2 fois)
+			$charsKeep='\p{L}0-9\.\_\-';														//min/normal/max	=> garde les lettres Unicodes (même accentuées), les chiffres et caractères   . _ - 
+			if($scope!="max")	{$charsKeep.='\s\'()\[\]';}										//min/normal		=> garde aussi les caractères   ' ( ) [ ]   et les espaces (\s)
+			if($scope=="min")	{$charsKeep.=',;"€$=+%:<>@&?!#\*\/\\\\';  $replacement=" ";}	//min 				=> garde aussi les caractères   , ; " € $ = + % : < > @ & ? ! # * / \   (échappe 2 fois les '\')
 			$text=preg_replace('/[^'.$charsKeep.']/u', $replacement, $text);					//Replace			=> [^...] pour exclure les caractères absents de la liste et "/u" pour les caractères Unicode
 			//Renvoie le résultat
 			return trim($text);
@@ -205,7 +205,7 @@ class Txt
 	{
 		$optionTooltip=($isRequired==false) ?  self::trad("passwordOptional")  : null;
 		$required =($isRequired==true) ?  'required'  : null;
-		$divOption=($isRequired==false) ?  '<div class="infos">'.self::trad("passwordOptional") .'</div>'  : null;
+		$divOption=($isRequired==false) ?  '<div class="infos">'.self::trad("passwordOptional").'</div>'  : null;
 		$autocomplete=($isAutocomplete==true) ?  'class="isAutocomplete"'  : null;
 		return '<div class="passwordDiv" '.self::tooltip($optionTooltip).'>
 					<input type="password" name="'.$inputName.'" id="input_'.$inputName.'" placeholder="'.self::trad("password").'" '.$required.' '.$autocomplete.'>

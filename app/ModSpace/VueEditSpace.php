@@ -128,28 +128,28 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 		<legend><?= Txt::trad("SPACE_spaceModules") ?></legend>
 		<div id="modulesList">
 			<!--BLOCK DES MODULES DE L'ESPACE-->
-			<?php foreach($moduleList as $modName=>$module){ ?>
+			<?php foreach($curObj->moduleList(true) as $modName=>$module){ ?>
 				<div class="vModuleTab lineSelect">
 					<div class="vModuleIcon"><img src="app/img/<?= $modName ?>/iconSmall.png"></div>
 					<div>
 						<!--INPUT DU MODULE-->
-						<input type="checkbox" name="moduleList[]" value="<?= $modName ?>" class="moduleInput" id="moduleInput<?= $modName ?>" data-module-name="<?= $modName ?>" <?= empty($module["disabled"])?'checked':null ?> >
+						<input type="checkbox" name="moduleList[]" value="<?= $modName ?>" class="moduleInput" id="moduleInput<?= $modName ?>" data-module-name="<?= $modName ?>" <?= isset($module["enabled"])?'checked':null ?> >
 						<label for="moduleInput<?= $modName ?>" title="<?= $module["description"] ?>"><?= $module["label"] ?></label>
 						<!--OPTIONS DU MODULE-->
 						<?php
-						foreach($module["ctrl"]::$moduleOptions as $optionName){
-							if($optionName=="createSpaceCalendar" && $curObj->isNew()==false)  {continue;}					//Option "Créer un agenda pour l'espace" : uniquement pour un nouvel espace
-							$inputTradId=strtoupper($modName)."_OPTION_".$optionName;										//Trad du label et tooltip  +  Id de l'input
-							$labelTooltip=Txt::isTrad($inputTradId."Info")  ?  Txt::tooltip($inputTradId."Info")  :  null;
-							$checked=($optionName=="createSpaceCalendar"  ||  (!empty($module["options"]) && stristr($module["options"],$optionName)))  ?  "checked"  :  null;
+						foreach($module["optionsAvailable"] as $optionName){
+							if($optionName=="createSpaceCalendar" && $curObj->isNew()==false)  {continue;}						//Option "Créer un agenda pour l'espace" : nouvel espace uniquement
+							$inputTradId=strtoupper($modName)."_OPTION_".$optionName;											//Id de l'input et des Trads
+							$optionTooltip=Txt::isTrad($inputTradId."Info")  ?  Txt::tooltip($inputTradId."Info")  :  null;		//Tooltip
+							$checked=($optionName=="createSpaceCalendar"  ||  (isset($module["options"]) && stristr($module["options"],$optionName)))  ?  "checked"  :  null;//Check l'option
 						?>
 							<div class="moduleOption">
 								<div><img src="app/img/dependency.png"><input type="checkbox" name="<?= $modName ?>_options[]" value="<?= $optionName ?>" id="<?= $inputTradId ?>" <?= $checked ?>></div>
-								<div><label for="<?= $inputTradId ?>" <?= $labelTooltip ?> ><?= Txt::trad($inputTradId) ?></label></div>
+								<div><label for="<?= $inputTradId ?>" <?= $optionTooltip ?> ><?= Txt::trad($inputTradId) ?></label></div>
 							</div>
 						<?php } ?>
 						<!--MODULE CALENDAR "Le module agenda reste toujours accessible.."-->
-						<?php if($modName=="calendar"){ ?><div class="infos" id="moduleCalendarDisabled"><img src="app/img/info.png"> <?= Txt::trad("CALENDAR_moduleAlwaysEnabledInfo") ?></div><?php } ?>
+						<?php if($modName=="calendar"){ ?><div class="infos" id="moduleCalendarDisabled"><img src="app/img/important.png"> <?= Txt::trad("CALENDAR_moduleAlwaysEnabledInfo") ?></div><?php } ?>
 					</div>
 					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?>><img src="app/img/changeOrder.png"></div>
 				</div>

@@ -126,6 +126,7 @@ trait MdlObjectMenu
 			////	Liste des affectations disponibles pour chaque espace
 			$vDatas["spaceAffectations"]=[];
 			foreach(Ctrl::$curUser->spaceList() as $tmpSpace){
+				////	Controle si le module courant est affecté à l'espace
 				if($tmpSpace->moduleEnabled(static::moduleName)){
 					$tmpSpace->targetLines=[];
 					////	Ligne "Tous les utilisateurs"
@@ -391,8 +392,8 @@ trait MdlObjectMenu
 	/********************************************************************************************************
 	 * VUE : AFFICHE LES OPTIONS DE BASE POUR L'ENVOI D'EMAIL (cf. "Tool::sendMail()") 
 	 ********************************************************************************************************/
-	public static function sendMailBasicOptions()
+	public static function menuSendMail()
 	{
-		return Ctrl::getVue(Req::commonPath."VueSendMailOptions.php");
+		return Ctrl::getVue(Req::commonPath."VueObjMenuSendMail.php");
 	}
 }

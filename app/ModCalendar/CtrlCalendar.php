@@ -32,7 +32,6 @@ class CtrlCalendar extends Ctrl
 		$vDatas["displayMode"]=$displayMode;																					//Affichage courant
 		$vDatas["displayModeList"]=($smallDisplay==true)  ?  ["month","3Days","1Day"]  :  ["month","week","workWeek","7Days"];	//Affichages disponibles
 		$vDatas["curTime"]=$curTime=Req::isParam("curTime")  ?  Req::param("curTime")  :  time();								//Temps de référence
-		$vDatas["getUrlNewEvt"]=MdlCalendarEvent::getUrlNew();																	//Url d'ajout d'evt
 	
 		////	HEIGHT DU FOOTER POUR CALCULER LE HEIGHT DES CALENDARS
 		if(!empty($_SESSION["livecounterUsers"]))	{$vDatas["footerHeight"]=80;}
@@ -110,9 +109,10 @@ class CtrlCalendar extends Ctrl
 		////	AGENDAS AFFICHÉS : RECUPÈRE LA VUE (VueCalendarMonth/VueCalendarWeek)  &&  LISTE DES EVENEMENTS
 		foreach($vDatas["displayedCalendars"] as $cptCal=>$tmpCal){
 			//// DROIT D'AJOUTER OU PROPOSER DES EVT
-			if($tmpCal->addContentRight())			{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_addEvtTooltip");}
-			elseif($tmpCal->affectationAddRight())	{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_proposeEvtTooltip");}
-			else									{$tmpCal->addEvtTooltip=null;}
+			$tmpCal->urlNewEvt=MdlCalendarEvent::getUrlNew().'&_idCal='.$tmpCal->_id;
+			if($tmpCal->addContentRight())		{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_addEvtTooltip");}
+			elseif($tmpCal->addProposeEvt())	{$tmpCal->addEvtTooltip=Txt::tooltip("CALENDAR_proposeEvtTooltip");}
+			else								{$tmpCal->addEvtTooltip=null;}
 			//// EVENEMENTS POUR CHAQUE JOUR
 			$tmpCal->evtListDays=[];																											//Init la liste des evts pour chaque jour de la période affichée
 			$tmpCal->evtListDisplayed=$tmpCal->evtList($showTimeBegin, $showTimeEnd, 1, true);													//Evts sur toute la période affichée ($accessRightMin=1, $categoryFilter=true)
@@ -120,7 +120,7 @@ class CtrlCalendar extends Ctrl
 				$tmpCal->evtListDays[$dayYmd]=[];																								//Init les evts du jour
 				$evtListDay=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);					//Récupère uniquement les evts du jour
 				foreach($evtListDay as $tmpEvt){																								//Parcourt chaque événement du jour :
-					if(!empty($tmpEvt->important))	{$tmpEvt->title.='&nbsp;<img src="app/img/importantSmall.png">';}					//Evt important
+					if(!empty($tmpEvt->important))	{$tmpEvt->title.='&nbsp;<img src="app/img/importantSmall.png">';}							//Evt important
 					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='&nbsp;<img src="app/img/calendar/periodSmall.png">';}						//Evt periodique/répété
 					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.$tmpEvt->dateLabel();																//Tooltip avec title et date détaillée
 					$tmpEvt->contextMenuOptions=["burgerLauncher"=>"small-float", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
@@ -322,8 +322,14 @@ class CtrlCalendar extends Ctrl
 		}
 		////	Nouvel evt : dates par défaut
 		if($curObj->isNew()){
-			$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	? date("Y-m-d H:i:s",Req::param("newEvtTimeBegin")) : date("Y-m-d H:00",time()+3600);
-			$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	? date("Y-m-d H:i:s",Req::param("newEvtTimeEnd"))   : date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);
+			if(Req::isParam("newEvtAllDay")){
+				$curObj->allDay=true;
+				$curObj->dateBegin	=date("Y-m-d 00:00:00",Req::param("newEvtTimeBegin"));
+				$curObj->dateEnd	=date("Y-m-d 23:59:59",Req::param("newEvtTimeBegin"));
+			}else{
+				$curObj->dateBegin =Req::isParam("newEvtTimeBegin")	? date("Y-m-d H:i:s",Req::param("newEvtTimeBegin")) : date("Y-m-d H:00",time()+3600);
+				$curObj->dateEnd   =Req::isParam("newEvtTimeEnd")	? date("Y-m-d H:i:s",Req::param("newEvtTimeEnd"))   : date("Y-m-d H:00",strtotime($curObj->dateBegin)+3600);
+			}
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;

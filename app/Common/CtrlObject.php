@@ -146,7 +146,7 @@ class CtrlObject extends Ctrl
 	public static function actionCategoryChangeOrder()
 	{
 		foreach(self::getCurObjects() as $cpt=>$tmpObj){
-			Db::query("UPDATE ".$tmpObj::dbTable." SET `rank`=".Db::format($cpt+1)." WHERE _id=".(int)$tmpObj->_id);
+			Db::query("UPDATE ".$tmpObj::dbTable." SET `rank`=".Db::format($cpt+1)." WHERE `_id`=".(int)$tmpObj->_id);
 		}
 		echo "true";
 	}
@@ -280,7 +280,7 @@ class CtrlObject extends Ctrl
 		}
 		////	Modif / Supprime un commentaire
 		elseif(Req::isParam("idComment") && MdlObject::userCommentEditRight(Req::param("idComment"))){
-			$sqlSelect=" WHERE _id=".Db::param("idComment")." AND objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id;
+			$sqlSelect=" WHERE `_id`=".Db::param("idComment")." AND objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id;
 			if(Req::param("actionComment")=="modif")		{Db::query("UPDATE ap_objectComment SET `comment`=".Db::param("comment")." ".$sqlSelect);}
 			elseif(Req::param("actionComment")=="delete")	{Db::query("DELETE FROM ap_objectComment ".$sqlSelect);}
 		}

@@ -129,23 +129,23 @@ ready(function(){
 
 		<!--RESET DU PASSWORD -> ETAPE 1 : ENVOI DE L'EMAIL-->
 		<form action="index.php" method="post" id="resetPasswordFormSendmail" class="lightboxInline">
-			<div class="lightboxTitle"><?= Txt::trad("resetPassword2") ?></div>
+			<div class="lightboxTitle"><?= Txt::trad("resetPasswordYourMail") ?></div>
 			<input type="text" name="resetPasswordMail" placeholder="<?= Txt::trad("mail") ?>" required>
 			<input type="hidden" name="resetPasswordSendMail" value="1">
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
 		<!--RESET DU PASSWORD -> ETAPE 2 : MODIF DU PASSWORD-->
-		<?php if(!empty($resetPasswordIdOk) && Req::isParam("newPassword")==false){ ?>
+		<?php if(!empty($resetPasswordChangeForm)){ ?>
 			<div data-fancybox="inline" data-src="#resetPasswordFormUpdate"><?= Txt::trad("passwordModif") ?></div>
 			<form action="index.php" method="post" id="resetPasswordFormUpdate" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("passwordModif") ?></div>
-				<input type="hidden" name="resetPasswordMail" value="<?= Req::param("resetPasswordMail") ?>">			<!--email du reset-->
-				<input type="hidden" name="connectLogin" value="<?= Req::param("resetPasswordMail") ?>">				<!--pré-remplissage après reset-->
-				<input type="hidden" name="resetPasswordId" value="<?= Req::param("resetPasswordId") ?>">				<!--ID de vérif-->
+				<input type="hidden" name="resetPasswordMail" value="<?= Req::param("resetPasswordMail") ?>">	<!--email du reset-->
+				<input type="hidden" name="connectLogin" value="<?= Req::param("resetPasswordMail") ?>">		<!--pré-remplissage après reset-->
+				<input type="hidden" name="resetPasswordId" value="<?= Req::param("resetPasswordId") ?>">		<!--ID de vérif-->
 				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>
 			</form>
-			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#resetPasswordFormUpdate"}]); }); </script>	<!--Affichage initial-->
+			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#resetPasswordFormUpdate"}]); }); </script>
 		<?php } ?>
 
 		<!--VALIDATION D'INVITATION : INIT DU PASSWORD-->
@@ -153,11 +153,11 @@ ready(function(){
 			<div><a data-fancybox="inline" data-src="#invitationPasswordForm"><?= Txt::trad("USER_invitPassword") ?></a></div>
 			<form action="index.php" method="post" id="invitationPasswordForm" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("USER_invitPassword2") ?></div>
-				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">										<!--Affichage initial-->
-				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>">					<!--ID de vérif-->
+				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">						<!--Affichage initial-->
+				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>">	<!--ID de vérif-->
 				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>
 			</form>
-			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#invitationPasswordForm"}]); }); </script>	<!--Affichage initial-->
+			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#invitationPasswordForm"}]); }); </script>
 		<?php } ?>
 
 		<!--CONNEXION VIA GOOGLE OAUTH-->
@@ -181,7 +181,7 @@ ready(function(){
 		<?php } ?>
 	
 		<!--INSCRIPTION D'USER  ||  SWITCH D'ESPACE-->
-		<?php if(!empty($isUserInscription) || Req::isSpaceSwitch()){ ?>
+		<?php if(!empty($isUserInscription) || Req::connectSpaceSwitch()){ ?>
 			<hr>
 			<div class="connectForm">
 				<!--INSCRIPTION D'USER-->
@@ -189,7 +189,7 @@ ready(function(){
 					<button onclick="lightboxOpen('?action=userInscription')" <?= Txt::tooltip("userInscriptionTooltip") ?> ><img src="app/img/user/subscribe.png"><?= Txt::trad("userInscription") ?></button>
 				<?php } ?>
 				<!--SWITCH D'ESPACE-->
-				<?php if(Req::isSpaceSwitch()){ ?>
+				<?php if(Req::connectSpaceSwitch()){ ?>
 					<button onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.png"><?= Txt::trad("connectSpaceSwitch") ?></button>
 				<?php } ?>
 			</div>

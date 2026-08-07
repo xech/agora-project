@@ -408,63 +408,61 @@ class File
 	}
 
 	/********************************************************************************************************
-	 * MODIFIE LE FICHIER "config.inc.php"
+	 * EDITION DU FICHIER "config.inc.php"
 	 ********************************************************************************************************/
-	public static function updateConfigFile($constantsEdit=null, $constantsDelete=null)
+	public static function updateConfigFile($paramsEdit=null, $paramsDelete=null, $configFilePath=null)
 	{
-		//Fichier accessible en écriture?
-		$configFilePath=PATH_DATAS."config.inc.php";
-		if(!is_writable($configFilePath))  {throw new Exception("config.inc.php not writable/accessible");}
-		else
-		{
-			//Récupère le fichier sous forme de tableau de lignes
-			$configLines=file($configFilePath);
-			if(count($configLines)>1)
-			{
-				//Liste des constantes modifiées
-				$constantsModified=[];
-				//// Modifie ou supprime des constantes du fichier
-				foreach($configLines as $lineKey=>$lineValue)
-				{
-					//Modifie "limite_nb_utils" : agora v2
-					if(stristr($lineValue,"limite_nb_utils"))  {$lineValue=str_replace('limite_nb_utils','limite_nb_users',$lineValue);}
-					//Supprime la constante de la ligne courante ?
-					if(!empty($constantsDelete)){
-						foreach($constantsDelete as $constName){
-							if(!empty($constName) && stristr($lineValue,'"'.$constName.'"'))  {$lineValue="";}
+		////	Path du fichier de config + Vérif l'accès en écriture
+		$configFile=(!empty($configFilePath))  ?  $configFilePath  :  PATH_DATAS."config.inc.php";
+		if(!is_writable($configFile))  {throw new Exception("config.inc.php not writable");}
+		else{
+			////	Filtre les valeurs des parametres	
+			if(!empty($paramsEdit)){
+				foreach($paramsEdit as $paramName=>$paramValue){
+					if($paramValue===true)				{$paramValue='true';}												//booléen sans guillemet
+					elseif($paramValue===false)			{$paramValue='false';}												//idem
+					elseif($paramName=="db_password")	{$paramValue="'".addslashes(Txt::clean($paramValue,'min'))."'";}	//guillemet simple pour pas interpréter "$" comme une variable
+					else								{$paramValue='"'.Txt::clean($paramValue,'min').'"';}				//guillemet double
+					$paramsEdit[$paramName]=$paramValue;
+				}
+			}
+			////	Init les params modifiés + Charge le fichier
+			$paramsUpdated=[];
+			$configLines=file($configFile);
+			if(count($configLines)>1){
+				////	Update / delete les lignes concernées
+				foreach($configLines as $lineKey=>$lineValue){
+					if(!empty($lineValue)){
+						////	Update la ligne
+						if(!empty($paramsEdit)){
+							foreach($paramsEdit as $paramName=>$paramValue){
+								if(stristr($lineValue,$paramName)){
+									$configLines[$lineKey]='define("'.$paramName.'", '.$paramValue.');'."\n";
+									$paramsUpdated[]=$paramName;
+								}
+							}
 						}
-					}
-					//Modifie la constante de la ligne courante ?
-					if(!empty($constantsEdit)){
-						foreach($constantsEdit as $constName=>$constValue){
-							if(stristr($lineValue,$constName)){
-								if($constName=="db_password")						{$constValue="'".addslashes($constValue)."'";}	//guillemet simple pour les passwords car n'interprete pas les "$" comme des variables
-								elseif($constValue===true || $constName=="true")	{$constValue='true';}							//booléen sans guillemet
-								elseif($constValue===false || $constName=="false")	{$constValue='false';}							//idem
-								else												{$constValue='"'.$constValue.'"';}				//guillemet double
-								$lineValue="define(\"".$constName."\", ".$constValue.");\n";										//modif la constante
-								$constantsModified[]=$constName;																	//ajoute à la liste des constantes modifiées
+						////	Delete la ligne
+						if(!empty($paramsDelete)){
+							foreach($paramsDelete as $paramName){
+								if(stristr($lineValue,$paramName)){
+									unset($configLines[$lineKey]);
+								}
 							}
 						}
 					}
-					//Enregistre la ligne
-					$configLines[$lineKey]=$lineValue;
 				}
-				//// Ajoute des constantes au fichier
-				if(!empty($constantsEdit)){
-					foreach($constantsEdit as $constName=>$constValue){
-						if(!in_array($constName,$constantsModified)){
-							if($constName=="db_password")						{$constValue="'".addslashes($constValue)."'";}	//guillemet simple pour les passwords car n'interprete pas les "$" comme des variables
-							elseif($constValue===true || $constName=="true")	{$constValue='true';}							//booléen sans guillemet
-							elseif($constValue===false || $constName=="false")	{$constValue='false';}							//idem
-							else												{$constValue='"'.$constValue.'"';}				//guillemet double
-							$lineValue="define(\"".$constName."\", ".$constValue.");\n";										//modif la constante
+				////	Ajoute les parametres absent du fichier
+				if(!empty($paramsEdit)){
+					foreach($paramsEdit as $paramName=>$paramValue){
+						if(!in_array($paramName,$paramsUpdated)){
+							$configLines[]='define("'.$paramName.'", '.$paramValue.');'."\n";
 						}
 					}
 				}
 				////	ON REMPLACE LE FICHIER !
 				$fileContent=implode("", $configLines);
-				$fp=fopen($configFilePath, "w");
+				$fp=fopen($configFile, "w");
 				fwrite($fp, $fileContent);
 				fclose($fp);
 			}

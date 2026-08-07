@@ -240,7 +240,7 @@ class MdlFile extends MdlObject
 				$versionList=$this->getVersions();
 				////	Si on supprime la dernière version d'un fichier : update les propriétés principales du fichier (nom/taille/etc) avec celles l'avant dernière version
 				if($deleteVersion==$versionList[0]["dateCrea"] && isset($versionList[1]))
-					{Db::query("UPDATE ap_file SET name=".Db::format($versionList[1]["name"]).", octetSize=".Db::format($versionList[1]["octetSize"]).", dateModif=".Db::format($versionList[1]["dateCrea"]).", _idUserModif=".$versionList[1]["_idUser"]." WHERE _id=".$this->_id);}
+					{Db::query("UPDATE ap_file SET name=".Db::format($versionList[1]["name"]).", octetSize=".Db::format($versionList[1]["octetSize"]).", dateModif=".Db::format($versionList[1]["dateCrea"]).", _idUserModif=".$versionList[1]["_idUser"]." WHERE `_id`=".$this->_id);}
 				////	Supprime les versions demandées du fichier : sur le disque puis dans la table "ap_fileVersion"
 				foreach($versionList as $tmpVersion){
 					if($deleteVersion=="all" || $deleteVersion==$tmpVersion["dateCrea"]){

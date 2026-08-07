@@ -43,7 +43,7 @@ class MdlForumSubject extends MdlObject
 	{
 		if(Ctrl::$curUser->isUser() && $this->alreadyConsulted()==false){
 			$usersConsultLastMessage=array_merge([Ctrl::$curUser->_id], Txt::txt2tab($this->usersConsultLastMessage));
-			Db::query("UPDATE ap_forumSubject SET usersConsultLastMessage=".Db::formatTab2txt($usersConsultLastMessage)." WHERE _id=".$this->_id);
+			Db::query("UPDATE ap_forumSubject SET usersConsultLastMessage=".Db::formatTab2txt($usersConsultLastMessage)." WHERE `_id`=".$this->_id);
 		}
 	}
 

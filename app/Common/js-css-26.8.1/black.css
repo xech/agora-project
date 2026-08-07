@@ -2,13 +2,11 @@
 body, a, .link																				{color:#ddd;}
 #htmlLightbox, .objContent, .miscContent, .menuContext, #menuMobileMain						{background:#222;}
 #headerBar																					{background:linear-gradient(to bottom,black,#222);}/*barre principale*/
-.objBlocks .objContent:hover																{box-shadow:2px 2px 10px #fff;}
 .objLines .objContent																		{border-bottom:solid 1px #555;}
 .menuContext, .tox-tinymce																	{border:solid 1px #696969!important;}
 .objLines .objContent:hover, .menuContext .menuLine:hover, .lineHover:hover, .lineSelect	{background:#333;}
 .objContentSelected, #objSelectMenu															{background:#444!important;}
-.tooltipster-box																			{background:#222!important; box-shadow:0px 0px 8px #aaa!important;}
-.tooltipster-content																		{color:#eee!important; padding:15px!important;}
+.tippy-box																					{background:#222!important; color:#eee!important; box-shadow:0px 0px 8px #888!important;}
 /*** RESPONSIVE TABLET-SMARTPHONE*/
 @media screen and (max-width:1199px){
 	#htmlMainPage				{background:#222 url(../../img/logoMobileBg.png) no-repeat center 95%; height:100%;}
@@ -35,6 +33,7 @@ button:hover:not(.f-button)											{background:linear-gradient(#444,#3a3a3a);
 .objMenuTab, .objMenuMain, fieldset		{background:#333; border:solid 1px #555; border-radius:var(--radius-block);}/*VueObjMenuEdit + fieldset*/
 .objMenuTab								{background:transparent;}/*VueObjMenuEdit : onglet non sélectionnés*/
 .objMenuTab:hover, .objMenuTabSelect	{background:#333;}/*VueObjMenuEdit : onglet sélectionnés/survolé*/
+.objMenuTab:not(.objMenuTabSelect)		{border-color:#444 #444 #555 #444;}
 hr										{background:linear-gradient(90deg,#555,#777,#555);}
 .lightboxTitle							{border-bottom:solid 1px #888;}/*peudo <hr>*/
 .jconfirm-box							{background:#222!important; box-shadow:0px 2px 6px #555!important;}

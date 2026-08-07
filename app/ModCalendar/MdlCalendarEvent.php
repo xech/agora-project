@@ -103,7 +103,7 @@ class MdlCalendarEvent extends MdlObject
 		elseif(Req::isParam("periodDateExceptionsAdd") && $this->editRight()){
 			$periodDateExceptions=Txt::txt2tab($this->periodDateExceptions);
 			$periodDateExceptions[]=Req::param("periodDateExceptionsAdd");
-			Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format(Txt::tab2txt($periodDateExceptions))." WHERE _id=".$this->_id);
+			Db::query("UPDATE ap_calendarEvent SET periodDateExceptions=".Db::format(Txt::tab2txt($periodDateExceptions))." WHERE `_id`=".$this->_id);
 		}
 		////	Suppression complete : supprime d'abord les affectations aux agendas
 		elseif($this->editRight()){

@@ -113,7 +113,7 @@ class MdlCalendar extends MdlObject
 	/********************************************************************************************************
 	 * DROIT DE AJOUTER OU PROPOSER UN EVT POUR L'AGENDA COURANT PAR L'USER COURANT
 	 ********************************************************************************************************/
-	public function affectationAddRight()
+	public function addProposeEvt()
 	{
 		if(self::$_affectationAddRight===null){
 			self::$_affectationAddRight=in_array($this,self::affectationCalendars());

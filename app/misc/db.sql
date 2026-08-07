@@ -36,7 +36,7 @@ CREATE TABLE `ap_agora` (
   `ldap_admin_login` varchar(255) DEFAULT NULL,
   `ldap_admin_pass` varchar(255) DEFAULT NULL,
   `ldap_base_dn` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_calendar` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -51,16 +51,16 @@ CREATE TABLE `ap_calendar` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_calendarEvent` (
   `_id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `dateBegin` datetime DEFAULT NULL,
   `dateEnd` datetime DEFAULT NULL,
   `allDay` tinyint UNSIGNED DEFAULT NULL,
-  `location` varchar(500) DEFAULT NULL,
+  `location` varchar(1000) DEFAULT NULL,
   `_idCat` int DEFAULT NULL,
   `important` tinyint DEFAULT NULL,
   `contentVisible` varchar(255) DEFAULT NULL,
@@ -77,14 +77,14 @@ CREATE TABLE `ap_calendarEvent` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_calendarEventAffectation` (
   `_idEvt` int NOT NULL,
   `_idCal` int NOT NULL,
   `confirmed` tinyint DEFAULT NULL,
   KEY `indexes` (`_idCal`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_calendarCategory` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -98,7 +98,7 @@ CREATE TABLE `ap_calendarCategory` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_contact` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -123,7 +123,7 @@ CREATE TABLE `ap_contact` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_contactFolder` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -138,7 +138,7 @@ CREATE TABLE `ap_contactFolder` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_dashboardNews` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -152,7 +152,7 @@ CREATE TABLE `ap_dashboardNews` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_file` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -161,7 +161,7 @@ CREATE TABLE `ap_file` (
   `description` text DEFAULT NULL,
   `octetSize` bigint DEFAULT NULL,
   `downloadsNb` int NOT NULL DEFAULT '0',
-  `downloadedBy` varchar(10000) DEFAULT NULL,
+  `downloadedBy` TEXT DEFAULT NULL,
   `shortcut` tinyint DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
@@ -169,7 +169,7 @@ CREATE TABLE `ap_file` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_fileFolder` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -184,7 +184,7 @@ CREATE TABLE `ap_fileFolder` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_fileVersion` (
   `_idFile` int NOT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE `ap_fileVersion` (
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
    KEY `indexes` (`_idFile`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_forumMessage` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -209,7 +209,7 @@ CREATE TABLE `ap_forumMessage` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idMessageParent`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_forumSubject` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -217,8 +217,8 @@ CREATE TABLE `ap_forumSubject` (
   `description` text CHARACTER SET utf8mb4,
   `_idTheme` int DEFAULT NULL,
   `dateLastMessage` datetime DEFAULT NULL,
-  `usersConsultLastMessage` varchar(10000) DEFAULT NULL,
-  `usersNotifyLastMessage` varchar(10000) DEFAULT NULL,
+  `usersConsultLastMessage` TEXT DEFAULT NULL,
+  `usersNotifyLastMessage` TEXT DEFAULT NULL,
   `shortcut` tinyint DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
@@ -226,7 +226,7 @@ CREATE TABLE `ap_forumSubject` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idTheme`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_forumTheme` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -240,7 +240,7 @@ CREATE TABLE `ap_forumTheme` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_invitation` (
   `_idInvitation` varchar(255) DEFAULT NULL,
@@ -252,7 +252,7 @@ CREATE TABLE `ap_invitation` (
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   KEY `indexes` (`_idInvitation`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_joinSpaceModule` (
   `_idSpace` int DEFAULT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE `ap_joinSpaceModule` (
   `rank` tinyint DEFAULT NULL,
   `options` text DEFAULT NULL,
   KEY `indexes` (`_idSpace`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_joinSpaceUser` (
   `_idSpace` int DEFAULT NULL,
@@ -268,7 +268,7 @@ CREATE TABLE `ap_joinSpaceUser` (
   `allUsers` tinyint DEFAULT NULL,
   `accessRight` varchar(255) DEFAULT NULL,
   KEY `indexes` (`_idSpace`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_link` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -282,7 +282,7 @@ CREATE TABLE `ap_link` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_linkFolder` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -297,30 +297,30 @@ CREATE TABLE `ap_linkFolder` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_log` (
-  `action` varchar(50) DEFAULT NULL,
-  `moduleName` varchar(50) DEFAULT NULL,
-  `objectType` varchar(50) DEFAULT NULL,
+  `action` varchar(255) DEFAULT NULL,
+  `moduleName` varchar(255) DEFAULT NULL,
+  `objectType` varchar(255) DEFAULT NULL,
   `_idObject` int DEFAULT NULL,
   `date` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   `_idSpace` int DEFAULT NULL,
   `ip` varchar(255) DEFAULT NULL,
-  `comment` text CHARACTER SET utf8mb4 DEFAULT NULL,
+  `comment` text DEFAULT NULL,
   KEY `indexes` (`action`,`_idObject`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_mail` (
   `_id` int NOT NULL AUTO_INCREMENT,
   `recipients` text NOT NULL,
   `title` text DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 NOT NULL,
+  `description` text NOT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_objectAttachedFile` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -329,7 +329,7 @@ CREATE TABLE `ap_objectAttachedFile` (
   `_idObject` int NOT NULL,
   `downloadsNb` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `ap_objectComment` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -339,14 +339,14 @@ CREATE TABLE IF NOT EXISTS `ap_objectComment` (
   `dateCrea` datetime NOT NULL,
   `comment` varchar(1000) NOT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `ap_objectLike` (
   `objectType` varchar(255) NOT NULL,
   `_idObject` int NOT NULL,
   `_idUser` int NOT NULL,
   KEY `indexes` (`objectType`,`_idObject`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_objectTarget` (
   `objectType` varchar(255) NOT NULL,
@@ -355,7 +355,7 @@ CREATE TABLE `ap_objectTarget` (
   `target` varchar(255) NOT NULL,
   `accessRight` float NOT NULL,
   KEY `indexes` (`objectType`,`_idObject`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_space` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -372,13 +372,13 @@ CREATE TABLE `ap_space` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_task` (
   `_id` int NOT NULL AUTO_INCREMENT,
   `_idContainer` int NOT NULL,
   `title` text NOT NULL,
-  `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `_idStatus` int DEFAULT NULL,
   `priority` varchar(255) DEFAULT NULL,
   `advancement` tinyint DEFAULT NULL,
@@ -392,7 +392,7 @@ CREATE TABLE `ap_task` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`), 
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_taskStatus` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -406,7 +406,7 @@ CREATE TABLE `ap_taskStatus` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_taskFolder` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -421,7 +421,7 @@ CREATE TABLE `ap_taskFolder` (
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_user` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -451,14 +451,14 @@ CREATE TABLE `ap_user` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userAuthToken` (
   `_idUser` int NOT NULL,
   `userAuthToken` varchar(255) NOT NULL,
   `browserId` varchar(255),
   `dateCrea` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userGroup` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -470,7 +470,7 @@ CREATE TABLE `ap_userGroup` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userInscription` (
   `_id` int NOT NULL AUTO_INCREMENT,
@@ -483,44 +483,44 @@ CREATE TABLE `ap_userInscription` (
   `message` text DEFAULT NULL,
   `date` datetime DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userLivecouter` (
   `_idUser` int NOT NULL DEFAULT '0',
   `ipAdress` varchar(255) NOT NULL,
   `editTypeId` varchar(255) DEFAULT NULL,
-  `editorDraft` text CHARACTER SET utf8mb4 DEFAULT NULL,
+  `editorDraft` text DEFAULT NULL,
   `draftTypeId` varchar(255) DEFAULT NULL,
   `date` int DEFAULT NULL,
   PRIMARY KEY (`_idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userMessenger` (
   `_idUserMessenger` int NOT NULL,
   `allUsers` tinyint DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   KEY `indexes` (`_idUserMessenger`,`_idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userMessengerMessage` (
   `_idUser` int NOT NULL,
   `_idUsers` text NOT NULL,
-  `message` text CHARACTER SET utf8mb4 NOT NULL,
+  `message` text NOT NULL,
   `date` int DEFAULT NULL,
   KEY `indexes` (`_idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userPreference` (
   `_idUser` int DEFAULT NULL,
   `keyVal` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   KEY `indexes` (`_idUser`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_dashboardPoll` (
   `_id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(200) NOT NULL,
-  `description` text CHARACTER SET utf8mb4 DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `dateEnd` date DEFAULT NULL,
   `multipleResponses` tinyint DEFAULT NULL,
   `toVoteWithNews` tinyint DEFAULT NULL,
@@ -530,23 +530,23 @@ CREATE TABLE `ap_dashboardPoll` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_dashboardPollResponse` (
   `_id` varchar(255) NOT NULL,
   `_idPoll` int NOT NULL,
-  `label` varchar(500) NOT NULL,
+  `label` varchar(1000) NOT NULL,
   `rank` smallint NOT NULL,
-  `fileName` varchar(200) DEFAULT NULL,
+  `fileName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_dashboardPollResponseVote` (
   `_idUser` int NOT NULL,
   `_idResponse` varchar(255) NOT NULL,
   `_idPoll` int NOT NULL,
   PRIMARY KEY (`_idUser`,`_idResponse`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
