@@ -4,7 +4,7 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 -----------------------------------
 
 
-VERSION 26.8.2
+VERSION 26.8.3
 --------------
 Nouvelle disposition du menu principal
 Nouvelle librairie Tippy.js pour l'affichage des tooltips/infobulles

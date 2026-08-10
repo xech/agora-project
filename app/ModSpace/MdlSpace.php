@@ -174,7 +174,7 @@ class MdlSpace extends MdlObject
 	 ********************************************************************************************************/
 	public function moduleEnabled($ctrlName)
 	{
-		$basicCtrl=in_array($ctrlName,["offline","misc","object"]);																				//Controleurs de base
+		$basicCtrl=in_array($ctrlName,["offline","misc","object","user"]);																		//Controleurs de base
 		$moduleSpaceAdmin  =(in_array($ctrlName,["log"]) && Ctrl::$curUser->isSpaceAdmin());													//Mod de l'admin d'espace
 		$moduleGeneralAdmin=(in_array($ctrlName,["agora","space"]) && Ctrl::$curUser->isGeneralAdmin());										//Mod de l'admin général
 		return ($basicCtrl==true || $moduleSpaceAdmin==true || $moduleGeneralAdmin==true || array_key_exists($ctrlName,$this->moduleList()));	//Controleur ou Module accessible depuis l'espace courant

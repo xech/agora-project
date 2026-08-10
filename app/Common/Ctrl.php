@@ -223,6 +223,7 @@ abstract class Ctrl
 			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);																		//Récupère le token du cookie
 			if(!empty($cookieToken[1]))  {Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));}	//Supprime le token correspondant dans la bdd
 			setcookie("userAuthToken", "", -1);																							//Supprime le cookie
+			setcookie("userAuthToken", "", -1, "/");																					//Idem: sur tout le path/domaine (cf. "createHost()")
 			unset($_COOKIE["userAuthToken"]);																							//Idem
 		}
 		////	Créé un nouveau token : enregistre le token en bdd et dans un cookie

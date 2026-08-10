@@ -1018,7 +1018,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_calendarEvent", "location", "ALTER TABLE `ap_calendarEvent` ADD `location` VARCHAR(500) DEFAULT NULL AFTER `allDay`");
 			}
 
-			if(self::updateVersion("26.8.2"))
+			if(self::updateVersion("26.8.3"))
 			{
 				//// Change certains champs de type VARCHAR(5000) en TEXT
 				$fieldsListVarchar=["ap_dashboardPoll"=>"description", "ap_file"=>"downloadedBy", "ap_forumSubject"=>"usersConsultLastMessage", "ap_forumSubject"=>"usersNotifyLastMessage"];
