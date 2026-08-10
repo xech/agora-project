@@ -66,11 +66,11 @@
 	 ********************************************************************************************************/
 	public static function sqlCategoryFilter()
 	{
-		//Initialise le filtre des catégories : cf. "VueCategoryMenu.php"  (static::objectType : "forumTheme", "taskStatus", etc)
-		if(Req::isParam("_idCategoryFilter"))								{$_SESSION["_idCategoryFilter"][static::objectType]=Req::param("_idCategoryFilter");}
+		//// Initialise le filtre des catégories : cf. "VueCategoryMenu.php"  (static::objectType : "forumTheme", "taskStatus", etc)
+		if(Req::isParam("_idCategoryFilter"))								{$_SESSION["_idCategoryFilter"][static::objectType]=(int)Req::param("_idCategoryFilter");}
 		elseif(empty($_SESSION["_idCategoryFilter"][static::objectType]))	{$_SESSION["_idCategoryFilter"][static::objectType]=null;}
-		//Renvoie le filtre SQL, avec un espace avant/après (ex:  " AND `_idTheme`=55 ")
-		if(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  {return " AND `".static::dbParentField."`=".$_SESSION["_idCategoryFilter"][static::objectType]." ";}
+		//// Renvoie le filtre SQL, avec un espace avant/après (ex:  " AND `_idTheme`=55 ")
+		if(!empty($_SESSION["_idCategoryFilter"][static::objectType]))  {return " AND `".static::dbParentField."`=".(int)$_SESSION["_idCategoryFilter"][static::objectType]." ";}
 	}
 
 	/********************************************************************************************************

@@ -36,17 +36,16 @@ ready(function(){
 function mainDisplay()
 {
 	////	Variables de base
-	isMainPage=(window.self==window.top);																//Page principale || Lightbox
-	if(isMainPage==true)  {confirmCloseForm=false;}														//Confirme une redirection si formulaire en cours d'édition
-	windowTopWidth =window.top.document.documentElement.clientWidth;									//Width de la fenêtre principale (sans scrollbar)
-	windowTopHeight=window.top.document.documentElement.clientHeight;									//Height de la fenêtre principale (idem)
+	isMainPage=(window.self==window.top);													//Page principale || Lightbox
+	if(isMainPage==true)  {confirmCloseForm=false;}											//Confirme une redirection si formulaire en cours d'édition
+	windowTopWidth =window.top.document.documentElement.clientWidth;						//Width de la fenêtre principale (sans scrollbar)
+	windowTopHeight=window.top.document.documentElement.clientHeight;						//Height de la fenêtre principale (idem)
 
 	////	Fenêtre principale
 	if(isMainPage==true){
-		$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));									//Marge de entre la headerBar et le contenu de la page
-		document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax;";			//Width de la fenêtre enregistré dans un Cookie 
-		document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; Priority=High; SameSite=lax; path=/;";	//Idem pour le path racine
-		if(typeof moduleDisplay=="function")  {moduleDisplay();}													//Affichage spécifique d'un module : ModCalendar, ModTask
+		document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; SameSite=lax;";	//Width de la fenêtre dans un Cookie d'un an
+		$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));			//Marge de entre la headerBar et le contenu de la page
+		if(typeof moduleDisplay=="function")  {moduleDisplay();}							//Affichage spécifique d'un module : ModCalendar, ModTask
 
 		////	Width des objets en affichage "block"
 		if($(".objBlocks .objContent").exist()){

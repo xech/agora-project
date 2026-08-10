@@ -4,7 +4,7 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 -----------------------------------
 
 
-VERSION 26.8.1
+VERSION 26.8.2
 --------------
 Nouvelle disposition du menu principal
 Nouvelle librairie Tippy.js pour l'affichage des tooltips/infobulles
@@ -15,6 +15,8 @@ Optimisation de la gestion des modules, dans le menu d'édition d'un espace
 Optimisation du processus  de réinitialisation de mot de passe
 Optimisation des contrôles d'accès aux modules des espaces
 Optimisation de la procédure d'installation et du fichier de config
+Optimisation des contrôles de paramètre $_GET / $_POST / $_FILES
+Optimisation de la gestion des Cookies (expires, httponly, samesite, secure)
 Mise à jour de la librairie Datatable en version 2.3.8 pour l'affichage des Logs
 Mise à jour de la librairie PHPMailer en version 7.1.1 et meilleure implémentation de PHP 8.5
 -----
@@ -27,6 +29,8 @@ Optimization of module management in the space editing menu
 Optimization of the password reset process
 Optimization of access controls for space modules
 Optimizing the installation procedure and configuration file
+Optimizing $_GET / $_POST / $_FILES parameter checks
+Cookie management optimization (expires, HttpOnly, SameSite, Secure)
 Datatable library updated to version 2.3.8 for log display
 Updated the PHPMailer library to version 7.1.1 for better support for PHP 8.5.
 

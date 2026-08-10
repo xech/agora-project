@@ -38,7 +38,7 @@ abstract class Ctrl
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
-			self::userAuthToken("delete");
+			self::userAuthToken(false);
 		}
 
 		////	Parametrage général  &&  Update de BDD
@@ -65,7 +65,7 @@ abstract class Ctrl
 
 			////	Enregistre le cookie pour "Req::isMobileApp()"
 			if(!empty($_GET["mobileAppli"])){
-				setcookie("mobileAppli", "true", TIME_COOKIES, "/");//Sur tout le path/domaine
+				setcookie("mobileAppli", "true", COOKIES_OPTIONS);
 				$_COOKIE["mobileAppli"]="true";
 			}
 
@@ -132,7 +132,6 @@ abstract class Ctrl
 				$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
 				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
 				if(!empty($tmpUser))	{$userAuthentified=true;}
-				else					{self::userAuthToken("delete");}
 			}
 
 			////	USER AUTHENTIFIE
@@ -151,9 +150,9 @@ abstract class Ctrl
 				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)
 					{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
 
-				//// Reinitialise le token de connexion auto
+				//// (Re)initialise le token de connexion auto
 				if($connectViaToken==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
-					{self::userAuthToken("create",self::$curUser->_id);}
+					{self::userAuthToken(true,self::$curUser->_id);}
 			}
 			////	ERREUR D'AUTHENTIFICATION
 			else{
@@ -216,32 +215,29 @@ abstract class Ctrl
 
 	/********************************************************************************************************
 	 * SUPPRIME/CREE LE TOKEN DE CONNEXION AUTOMATIQUE
-	 * $action :  "delete"  ||  "create" avec $_idUser
 	 ********************************************************************************************************/
-	public static function userAuthToken($action, $_idUser=null)
+	public static function userAuthToken($create, $_idUser=null)
 	{
-		////	S'il existe déjà un cookie : supprime le token correspondant en bdd
+		////	Supprime un token : "delete" du token OU avant renouvellement du token avec "create"
 		if(!empty($_COOKIE["userAuthToken"])){
 			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);																		//Récupère le token du cookie
 			if(!empty($cookieToken[1]))  {Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));}	//Supprime le token correspondant dans la bdd
-			setcookie("userAuthToken", "", -1);																							//Supprime le cookie sur tout le domaine
-			setcookie("userAuthToken", "", -1, "/");																					//Idem: sur tout le path/domaine (cf. "createHost()")
+			setcookie("userAuthToken", "", -1);																							//Supprime le cookie
 			unset($_COOKIE["userAuthToken"]);																							//Idem
 		}
-		////	Créé un nouveau token au format : enregistre le token en bdd et dans un cookie
-		if($action=="create" && !empty($_idUser)){
+		////	Créé un nouveau token : enregistre le token en bdd et dans un cookie
+		if($create==true && !empty($_idUser)){
 			require_once('app/misc/Browser.php');																						//Charge la classe "Browser()"
-			$browserObj=new Browser();																									//Récup les infos du browser
+			$browserObj=new Browser();																									//Récup les infos du browser (mobile/desktop)
 			$browserId=(is_object($browserObj))  ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  :  null;					//Identifie le browser et l'OS
 			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);																	//Créé un nouveau Token avec l'algo Bcrypt
 			$cookieToken=$_idUser."@@@".$userAuthToken;																					//Créé le token du cookie
-			setcookie("userAuthToken", $cookieToken, TIME_COOKIES);																		//Enregistre le cookie
+			setcookie("userAuthToken", $cookieToken, COOKIES_OPTIONS);																	//Enregistre le cookie
 			$_COOKIE["userAuthToken"]=$cookieToken;																						//Charge le cookie
-			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));					//Supprime en bdd les anciens tokens
-			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", browserId=".Db::format($browserId).", userAuthToken=".Db::format($userAuthToken).", dateCrea=NOW()");	//Enregistre le token en bdd !
+			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));					//Supprime en bdd les tokens expirés du brower
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($userAuthToken).", browserId=".Db::format($browserId).", dateCrea=NOW()");
 		}
-		////	Supprime les cookies de l'ancienne méthode  &&  Supprime les tokens de plus d'un an
-		if(!empty($_COOKIE["AGORAP_PASS"]))  {setcookie("AGORAP_LOG","",-1);  setcookie("AGORAP_PASS","",-1);}
+		////	Supprime les tokens de plus d'un an
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-TIME_1YEAR));
 	}
 

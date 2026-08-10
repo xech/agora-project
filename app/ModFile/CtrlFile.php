@@ -192,13 +192,13 @@ class CtrlFile extends Ctrl
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	AUGMENTE LE TEMPS D'EXECUTION
 			Tool::setTimeLimit(800);
-			////	FICHIERS ENVOYÉS VIA "PLUPLOAD"
+			////	FICHIERS ENVOYÉS VIA "PLUPLOAD" (Parametres idem à $_FILES)
 			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
 				$tmpFolderPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
 				if(is_dir($tmpFolderPath)){
 					foreach(scandir($tmpFolderPath) as $tmpFileName){
 						$tmpFilePath=$tmpFolderPath.$tmpFileName;
-						if(is_file($tmpFilePath))  {$newFiles[]=["error"=>0, "tmp_name"=>$tmpFilePath, "name"=>$tmpFileName, "size"=>filesize($tmpFilePath)];}//Parametres idem à $_FILES
+						if(is_file($tmpFilePath))  {$newFiles[]=["error"=>0, "tmp_name"=>$tmpFilePath, "name"=>$tmpFileName, "size"=>filesize($tmpFilePath)];}
 					}
 				}
 			}

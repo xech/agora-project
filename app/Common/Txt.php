@@ -128,9 +128,8 @@ class Txt
 	{
 		if(!empty($text)){
 			$text=html_entity_decode(strip_tags($text));										//Supprime les balises html et décode les caractères html (cf TinyMce: "&amp;"=>"&")
-			$text=preg_replace(['/&nbsp;/','/\s+/'], " ", $text);								//Supprime les "&nbsp;", espaces en double, tabulations et sauts de ligne via  \s+
+			$text=preg_replace(['/&nbsp;/','/\s+/'], " ", $text);								//Remplace par un espace les "&nbsp;", espaces doubles, tabulations, sauts de ligne, etc. (via '\s+')
 			if($scope=="max")	{$text=iconv('UTF-8', 'ASCII//TRANSLIT', $text);}				//Remplace les caractères accentués (ex: "èéêë"=>"e")
-			//Conserve les chiffres, lettres et certains caractères spéciaux
 			$charsKeep='\p{L}0-9\.\_\-';														//min/normal/max	=> garde les lettres Unicodes (même accentuées), les chiffres et caractères   . _ - 
 			if($scope!="max")	{$charsKeep.='\s\'()\[\]';}										//min/normal		=> garde aussi les caractères   ' ( ) [ ]   et les espaces (\s)
 			if($scope=="min")	{$charsKeep.=',;"€$=+%:<>@&?!#\*\/\\\\';  $replacement=" ";}	//min 				=> garde aussi les caractères   , ; " € $ = + % : < > @ & ? ! # * / \   (échappe 2 fois les '\')
@@ -195,7 +194,8 @@ class Txt
 	 ********************************************************************************************************/
 	public static function defaultPassword()
 	{
-		return substr(uniqid(),0,8);
+		$randomId=bin2hex(random_bytes(16));
+		return substr($randomId,0,12);
 	}
 
 	/********************************************************************************************************

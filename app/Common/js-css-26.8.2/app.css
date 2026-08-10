@@ -187,7 +187,7 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 input:not(input[type=radio],input[type=checkbox]), textarea, select, button		{min-height:33px; max-width:100%; padding:5px; border-radius:var(--radius-field); font-size:1rem; font-family:inherit; outline:none;}
 *:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled		{opacity:0.85;}
 ::placeholder 											{padding-left:3px; font-size:0.95rem; color:#a5a5a5;}/*texte par défaut*/
-input:is(input[type=radio],input[type=checkbox])		{vertical-align:middle; margin:2px 5px;}
+input:is(input[type=radio],input[type=checkbox])		{vertical-align:middle; margin-block:3px 5px;}
 input[type=checkbox]									{width:18px; height:18px;}
 input[type=file]										{height:auto;}
 textarea												{width:100%; height:50px;}

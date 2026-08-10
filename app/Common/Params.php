@@ -31,4 +31,12 @@ define("TIME_1DAY", 86400);
 define("TIME_2MONTHS", 5356800);
 define("TIME_1YEAR", 31536000);
 define("TIME_3YEARS", 94608000);
-define("TIME_COOKIES", (time()+TIME_3YEARS));
+
+////	COOKIE PARAMS
+define("COOKIES_OPTIONS", [
+	'path'		=> Req::isHost() ?  '/'.HOST_DOMAINE.'/'  :  "",	//Path du host courant (cf createHost) ou valeur par défaut
+	'expires'	=> time() + TIME_1YEAR,								//1 an max
+	'secure'	=> true,											//HTTPS uniquement
+	'httponly'	=> true,											//Inaccessible via JavaScript (anti-XSS).
+	'samesite'	=> 'Lax',
+]);

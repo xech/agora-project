@@ -131,7 +131,7 @@ class CtrlOffline extends Ctrl
 					file_put_contents($imgPath, file_get_contents($gClientUser["picture"]));					//Enregistre l'image dans le fichier tmp
 					File::imageResize($imgPath,$objUser->pathProfileImg(),200);									//Redimensionne l'image
 				}
-				self::userAuthToken("create",$objUser->_id);													//Créé le token de connexion auto
+				self::userAuthToken(true,$objUser->_id);														//Créé le token de connexion auto
 				echo "userConnected";																			//Retour OK
 			}
 		}
