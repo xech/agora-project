@@ -698,13 +698,13 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_user","_idNewPassword"))  {self::query("ALTER TABLE ap_user DROP _idNewPassword");}
 				//Ajoute la table de sondage "ap_dashboardPoll"
 				if(self::tableExist("ap_dashboardPoll")==false){
-					self::query("CREATE TABLE ap_dashboardPoll (_id int NOT NULL,  title VARCHAR(200) NOT NULL,  description VARCHAR(2000) DEFAULT NULL,  dateEnd date DEFAULT NULL,  multipleResponses TINYINT DEFAULT NULL,  newsDisplay TINYINT DEFAULT NULL,  dateCrea datetime NOT NULL,  _idUser int NOT NULL,  dateModif datetime DEFAULT NULL,  _idUserModif int DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPoll (_id int NOT NULL,  title VARCHAR(255) NOT NULL,  description VARCHAR(2000) DEFAULT NULL,  dateEnd date DEFAULT NULL,  multipleResponses TINYINT DEFAULT NULL,  newsDisplay TINYINT DEFAULT NULL,  dateCrea datetime NOT NULL,  _idUser int NOT NULL,  dateModif datetime DEFAULT NULL,  _idUserModif int DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPoll ADD PRIMARY KEY (_id)");
 					self::query("ALTER TABLE ap_dashboardPoll MODIFY _id int NOT NULL AUTO_INCREMENT");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponse"
 				if(self::tableExist("ap_dashboardPollResponse")==false){
-					self::query("CREATE TABLE ap_dashboardPollResponse (_id VARCHAR(255) NOT NULL,  _idPoll int NOT NULL,  label VARCHAR(500) NOT NULL,  `rank` TINYINT NOT NULL,  fileName VARCHAR(200) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+					self::query("CREATE TABLE ap_dashboardPollResponse (_id VARCHAR(255) NOT NULL,  _idPoll int NOT NULL,  label VARCHAR(500) NOT NULL,  `rank` TINYINT NOT NULL,  fileName VARCHAR(255) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8");
 					self::query("ALTER TABLE ap_dashboardPollResponse ADD PRIMARY KEY (_id(20))");
 				}
 				//Ajoute la table de sondage "ap_dashboardPollResponseVote"
@@ -798,8 +798,8 @@ class DbUpdate extends Db
 				if(self::fieldExist("ap_space","usersInscription"))  {self::query("ALTER TABLE ap_space CHANGE `usersInscription` `userInscription` TINYINT DEFAULT NULL");}
 				self::fieldExist("ap_space", "userInscriptionNotify", "ALTER TABLE ap_space ADD userInscriptionNotify TINYINT DEFAULT NULL AFTER userInscription");
 				//Agenda :  Ajoute l'option de notification par email à chaque proposition d'événement  &&  Ajoute l'option de proposition d'événement pour les guests
-				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` VARCHAR(1) DEFAULT NULL AFTER timeSlot");
-				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` VARCHAR(1) DEFAULT NULL AFTER propositionNotify");
+				self::fieldExist("ap_calendar", "propositionNotify", "ALTER TABLE ap_calendar ADD `propositionNotify` TINYINT DEFAULT NULL AFTER timeSlot");
+				self::fieldExist("ap_calendar", "propositionGuest",  "ALTER TABLE ap_calendar ADD `propositionGuest` TINYINT DEFAULT NULL AFTER propositionNotify");
 				//Agenda et proposition d'evenement d'un guest :  Ajoute un champ "guestMail" pour les notifications par mail de validation/invalidation d'evt
 				self::fieldExist("ap_calendarEvent", "guestMail", "ALTER TABLE ap_calendarEvent ADD `guestMail` VARCHAR(255) DEFAULT NULL AFTER guest");
 				//Agendas affectés à un espace public et avec "tous les users" en écriture : Précoche l'option "propositionGuest" 
@@ -1008,36 +1008,41 @@ class DbUpdate extends Db
 			{
 				//// Renomme le champ "newsDisplay" en "toVoteWithNews"
 				if(self::fieldExist("ap_dashboardPoll","newsDisplay"))
-					{self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `newsDisplay` `toVoteWithNews` TINYINT(1) UNSIGNED DEFAULT NULL");}
+					{self::query("ALTER TABLE `ap_dashboardPoll` CHANGE `newsDisplay` `toVoteWithNews` TINYINT DEFAULT NULL");}
 			}
 
 			if(self::updateVersion("26.6.2"))
 			{
 				//// Ajoute le champ "ap_calendarEvent.allDay" et  "ap_calendarEvent.location"
-				self::fieldExist("ap_calendarEvent", "allDay",   "ALTER TABLE `ap_calendarEvent` ADD `allDay` TINYINT(1) UNSIGNED DEFAULT NULL AFTER `dateEnd`");
+				self::fieldExist("ap_calendarEvent", "allDay",   "ALTER TABLE `ap_calendarEvent` ADD `allDay` TINYINT DEFAULT NULL AFTER `dateEnd`");
 				self::fieldExist("ap_calendarEvent", "location", "ALTER TABLE `ap_calendarEvent` ADD `location` VARCHAR(500) DEFAULT NULL AFTER `allDay`");
 			}
 
-			if(self::updateVersion("26.8.3"))
+			if(self::updateVersion("26.8.4"))
 			{
-				//// Change certains champs de type VARCHAR(5000) en TEXT
+				//// Change certains champs VARCHAR en TEXT
 				$fieldsListVarchar=["ap_dashboardPoll"=>"description", "ap_file"=>"downloadedBy", "ap_forumSubject"=>"usersConsultLastMessage", "ap_forumSubject"=>"usersNotifyLastMessage"];
 				foreach($fieldsListVarchar as $tableName=>$fieldName){
-					self::query("ALTER TABLE `".$tableName."` CHANGE `".$fieldName."` `".$fieldName."` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL");
-				}
-				//// Parcourt chaque table de la BDD
-				foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName){
-					//// Infos sur sa structure
 					$tableInfo=self::getLine("SHOW TABLE STATUS LIKE '".$tableName."'");
-					//// Convertit la table en INNODB
+					if(!empty($tableInfo['Collation']) && !preg_match("/utf8mb4_unicode_ci/i",$tableInfo['Collation'])){
+						self::query("ALTER TABLE `".$tableName."` CHANGE `".$fieldName."` `".$fieldName."` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+					}
+				}
+				//// Parcourt chaque table et convertit si besoin en INNODB avec l'encodage "utf8mb4_unicode_ci" par défaut
+				foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName){
+					$tableInfo=self::getLine("SHOW TABLE STATUS LIKE '".$tableName."'");
     				if(!empty($tableInfo['Engine']) && !preg_match("/InnoDB/i",$tableInfo['Engine'])){
 						self::query("ALTER TABLE `".$tableName."` ENGINE = InnoDB");
 					}
-					//// Convertit l'encodage par défaut en "utf8mb4_unicode_ci"
 					if(!empty($tableInfo['Collation']) && !preg_match("/utf8mb4_unicode_ci/i",$tableInfo['Collation'])){
 						self::query("ALTER TABLE `".$tableName."` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 					}
 				}
+				//// Change certains champs en booleens/tinyint
+				self::query("ALTER TABLE `ap_calendar` CHANGE `propositionNotify` `propositionNotify` TINYINT DEFAULT NULL");
+				self::query("ALTER TABLE `ap_calendar` CHANGE `propositionGuest` `propositionGuest` TINYINT DEFAULT NULL");
+				//// Ajoute un champ de controle "ap_calendar.externalId"
+				self::fieldExist("ap_calendar", "externalId", "ALTER TABLE `ap_calendar` ADD `externalId` VARCHAR(255) DEFAULT NULL AFTER `timeSlot`");
 			}
 			////////////////////////////////////////	!!!!!	UPDATE DB.SQL  !!!!!	////////////////////////////////////////
 			////////////////////////////////////////									////////////////////////////////////////

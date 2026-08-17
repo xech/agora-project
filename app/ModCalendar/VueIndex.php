@@ -293,7 +293,6 @@ ready(function(){
 #readableCalendarsForm							{max-height:300px; overflow-y:auto;}
 #readableCalendarsTitle							{display:table; width:100%;}
 #readableCalendarsTitle>div						{display:table-cell;}
-#readableCalendarsTitle 						{margin-bottom:5px;}
 #readableCalendarsTitle #readableCalsAdmin		{text-align:right; filter:saturate(0);}
 #readableCalendarsTitle:not(:hover) #readableCalsAdmin	{visibility:hidden;}
 .vReadableCalendar								{display:table; width:100%;}/*idem .menuLine*/

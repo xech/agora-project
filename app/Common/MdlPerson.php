@@ -30,8 +30,12 @@ class MdlPerson extends MdlObject
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Tri par défaut en fonction du prénom (cf. parametrage general) : switch "name" et "firstName"
-		if(Ctrl::$agora->personsSort=="firstName")   {static::$sortFields[0]="firstName@@asc";  static::$sortFields[1]="firstName@@desc";  static::$sortFields[2]="name@@asc"; static::$sortFields[3]="name@@desc";
+		//// Tri par défaut en fonction du prénom (switch "name" et "firstName")
+		if(Ctrl::$agora->personsSort=="firstName"){
+			static::$sortFields[0]="firstName@@asc";
+			static::$sortFields[1]="firstName@@desc";
+			static::$sortFields[2]="name@@asc";
+			static::$sortFields[3]="name@@desc";
 		}
 	}
 

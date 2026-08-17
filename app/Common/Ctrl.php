@@ -131,7 +131,7 @@ abstract class Ctrl
 			elseif($connectViaToken==true){
 				$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
 				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
-				if(!empty($tmpUser))	{$userAuthentified=true;}
+				if(!empty($tmpUser))   {$userAuthentified=true;}
 			}
 
 			////	USER AUTHENTIFIE
@@ -222,8 +222,8 @@ abstract class Ctrl
 		if(!empty($_COOKIE["userAuthToken"])){
 			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);																		//Récupère le token du cookie
 			if(!empty($cookieToken[1]))  {Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));}	//Supprime le token correspondant dans la bdd
-			setcookie("userAuthToken", "", -1);																							//Supprime le cookie
-			setcookie("userAuthToken", "", -1, "/");																					//Idem: sur tout le path/domaine (cf. "createHost()")
+			setcookie("userAuthToken", "", -1);																							//Supprime le cookie du path courant
+			setcookie("userAuthToken", "", -1, COOKIES_OPTIONS_PATH);																	//Idem cf. "createHost()"
 			unset($_COOKIE["userAuthToken"]);																							//Idem
 		}
 		////	Créé un nouveau token : enregistre le token en bdd et dans un cookie
@@ -238,7 +238,7 @@ abstract class Ctrl
 			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));					//Supprime en bdd les tokens expirés du brower
 			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($userAuthToken).", browserId=".Db::format($browserId).", dateCrea=NOW()");
 		}
-		////	Supprime les tokens de plus d'un an
+		////	Supprime les tokens obsoletes
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-TIME_1YEAR));
 	}
 

@@ -271,11 +271,11 @@ class MdlObject
 	public function accessRight()
 	{
 		if($this->_accessRight===null){
-			$this->_accessRight=0;																														 //INIT
-			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight()) {$this->_accessRight=3;}									 //FULL ACCESS : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
-			elseif($this->isRootFolder() || $this->md5IdControl())							 {$this->_accessRight=1;}									 //LECTURE : DOSSIER RACINE (DROIT PAR DEFAUT) / VUE EXTERNE DE L'OBJET
-			elseif($this->hasContainerAccessRight())										 {$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
-			elseif($this->hasAccessRight()){																											 //EN FONCTION DES AFFECTATIONS EN BDD
+			$this->_accessRight=0;																															//INIT
+			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//FULL ACCESS : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
+			elseif($this->isRootFolder() || $this->externalIdControl())							{$this->_accessRight=1;}									//LECTURE : DOSSIER RACINE (DROIT PAR DEFAUT) / ACCES EXTERNE DE L'OBJET
+			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
+			elseif($this->hasAccessRight()){																											 	//EN FONCTION DES AFFECTATIONS EN BDD
 				$isPersonalCalendar=(static::objectType=="calendar" && $this->isPersonal());
 				$sqlSelect="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;
 				//// ACCES TOTAL :  admin de l'espace et objet affecté à l'espace (sauf agendas persos : pas de privilège admin)
@@ -422,19 +422,19 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * IDENTIFIANT "md5()" DE L'OBJET POUR UN ACCÈS EXTERNE
+	 * IDENTIFIANT "md5()" DE L'OBJET
 	 ********************************************************************************************************/
 	public function md5Id()
 	{
 		return md5($this->_id.$this->dateCrea.$this->_idUser);
 	}
-	
+
 	/********************************************************************************************************
-	 * CONTROLE L'IDENTIFIANT MD5 PASSÉ EN PARAMETRE
+	 * CONTROLE L'IDENTIFIANT D'ACCES EXTERNE PASSÉ EN PARAMETRE (md5Id=>OLD)
 	 ********************************************************************************************************/
-	public function md5IdControl()
+	public function externalIdControl()
 	{
-		return (Req::isParam("md5Id") && $this->md5Id()==Req::param("md5Id"));
+		return ( (Req::isParam("externalId") && Req::param("externalId")==$this->externalId)  ||  (Req::isParam("md5Id") && Req::param("md5Id")==$this->md5Id()) );
 	}
 
 	/********************************************************************************************************
@@ -449,7 +449,7 @@ class MdlObject
 			foreach($this->attachedFileList() as $tmpFile)  {$this->attachedFileDelete($tmpFile);}	//Supprime les fichiers joints
 			Ctrl::addLog("delete",$this);															//Ajoute le log de suppression
 			Db::query("DELETE FROM ap_objectTarget ".$sqlSelect);									//Supprime les droits d'accès
-			Db::query("DELETE FROM ".static::dbTable." WHERE `_id`=".$this->_id);						//Supprime ENFIN l'objet !
+			Db::query("DELETE FROM ".static::dbTable." WHERE `_id`=".$this->_id);					//Supprime ENFIN l'objet !
 		}
 	}
 

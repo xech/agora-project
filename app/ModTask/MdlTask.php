@@ -37,13 +37,14 @@ class MdlTask extends MdlObject
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Timestamp du dateBegin / dateEnd
+		//// Timestamp du dateBegin / dateEnd
 		if($this->dateBegin && $this->dateEnd){
 			$this->timeBegin=strtotime($this->dateBegin);
 			$this->timeEnd=strtotime($this->dateEnd);
 		}
-		$this->isFinished=($this->timeEnd && $this->timeEnd < time());									//Tache terminée
-		$this->isDelayed =($this->isFinished==true && $this->advancement && $this->advancement < 100);	//Tache en retard (passée et advancement < 100%)
+		//// Tache terminée  OU  Tache en retard (passée et advancement < 100%)
+		$this->isFinished=($this->timeEnd && $this->timeEnd < time());
+		$this->isDelayed =($this->isFinished==true && $this->advancement && $this->advancement < 100);
 	}
 
 	/********************************************************************************************************

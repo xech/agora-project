@@ -34,17 +34,18 @@ class MdlCalendarEvent extends MdlObject
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Timestamp du dateBegin / dateEnd
+		//// Timestamp du dateBegin / dateEnd
 		if($this->dateBegin && $this->dateEnd){
 			$this->timeBegin=strtotime($this->dateBegin);
 			$this->timeEnd=strtotime($this->dateEnd);
 			$this->ymdBegin=date("Y-m-d",$this->timeBegin);//cf evt sur plusieurs jours
 		}
-		//Couleur du background de l'evt en fonction de la categorie (Couleur par défaut : toujours sur 6 valeurs > cf "contrastColor()")
+		//// Couleur du background de l'evt en fonction de la categorie (Couleur par défaut : toujours sur 6 valeurs > cf "contrastColor()")
 		$this->bgColor=($this->_idCat)  ?  $this->categoryObj()->color  :  "#555555";
-		//Visibilité par défaut
-		if(empty($this->contentVisible))  {$this->contentVisible="public";}
-		//Masque le détail aux users n'ayant qu'un accès en lecture (voir aucun accès)
+		//// Visibilité par défaut
+		if(empty($this->contentVisible))
+			{$this->contentVisible="public";}
+		//// Masque le détail aux users n'ayant qu'un accès en lecture (voir aucun accès)
 		if($this->readRight()==false || ($this->accessRight()==1 && $this->contentVisible=="public_cache")){
 			$this->title="<i>".Txt::trad("CALENDAR_evtPrivate")."</i>";
 			$this->description=null;

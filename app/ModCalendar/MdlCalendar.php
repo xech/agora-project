@@ -33,9 +33,9 @@ class MdlCalendar extends MdlObject
 	public function __construct($objIdOrValues=null)
 	{
 		parent::__construct($objIdOrValues);
-		//Libellé de l'agenda perso
+		//// Libellé de l'agenda perso
 		if($this->isPersonal())  {$this->title=$this->autorLabel();}
-		//Plage horaire de l'agenda
+		//// Plage horaire de l'agenda
 		if(empty($this->timeSlot)){
 			$this->timeSlotBegin=8;
 			$this->timeSlotEnd=20;
@@ -43,6 +43,12 @@ class MdlCalendar extends MdlObject
 			$tmpTimeSlot=explode("-",$this->timeSlot);
 			$this->timeSlotBegin=$tmpTimeSlot[0];
 			$this->timeSlotEnd=$tmpTimeSlot[1];
+		}
+		///// ExternelId de l'agenda
+		if(empty($this->externalId)){
+			$externalId=bin2hex(random_bytes(16));//ID random sur 32 charactères
+			Db::query("UPDATE ap_calendar SET externalId=".Db::format($externalId)." WHERE _id=".$this->_id);
+			$this->externalId=$externalId;
 		}
 	}
 
@@ -84,7 +90,7 @@ class MdlCalendar extends MdlObject
 		if($this->readRight()){
 			////	"Copier le lien pour consulter l'agenda via une appli externe" : format Ical
 			$actionJsTmp="$('#urlIcal".$this->typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->typeId."').hide(); notify('".Txt::trad("copyUrlNotif",true)."');";
-			$labelTmp=Txt::trad("CALENDAR_icalUrl")."<input id='urlIcal".$this->typeId."' value=\"".Req::curUrl()."/index.php?ctrl=misc&action=DisplayIcal&typeId=".$this->typeId."&md5Id=".$this->md5Id()."\" style='display:none;'>";
+			$labelTmp=Txt::trad("CALENDAR_icalUrl").'<input id="urlIcal'.$this->typeId.'" value="'.Req::curUrl().'/index.php?ctrl=misc&action=DisplayIcal&typeId='.$this->typeId.'&externalId='.$this->externalId.'" style="display:none;">';
 			$options["objOptions"][]=[
 				"actionJs"=>$actionJsTmp,
 				"iconSrc"=>"share.png",

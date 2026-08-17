@@ -324,7 +324,7 @@ class CtrlMisc extends Ctrl
 	public static function actionDisplayIcal()
 	{
 		$objCalendar=self::getCurObj();
-		if(is_object($objCalendar) && $objCalendar->md5IdControl())  {CtrlCalendar::getIcal($objCalendar);}
+		if(is_object($objCalendar) && $objCalendar->externalIdControl())  {CtrlCalendar::getIcal($objCalendar);}
 	}
 
 	/****************************************************************************************************************************

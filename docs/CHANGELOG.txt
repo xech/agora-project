@@ -4,7 +4,7 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 -----------------------------------
 
 
-VERSION 26.8.3
+VERSION 26.8.4
 --------------
 Nouvelle disposition du menu principal
 Nouvelle librairie Tippy.js pour l'affichage des tooltips/infobulles
@@ -17,8 +17,10 @@ Optimisation des contrôles d'accès aux modules des espaces
 Optimisation de la procédure d'installation et du fichier de config
 Optimisation des contrôles de paramètre $_GET / $_POST / $_FILES
 Optimisation de la gestion des Cookies (expires, httponly, samesite, secure)
+Amélioration du controle d'accès et de consultation des agendas via une application externe
 Mise à jour de la librairie Datatable en version 2.3.8 pour l'affichage des Logs
 Mise à jour de la librairie PHPMailer en version 7.1.1 et meilleure implémentation de PHP 8.5
+Mise à jour de la librairie google-api-php-client en version 2.19.4
 -----
 New main menu layout
 New Tippy.js library for displaying tooltips
@@ -31,8 +33,10 @@ Optimization of access controls for space modules
 Optimizing the installation procedure and configuration file
 Optimizing $_GET / $_POST / $_FILES parameter checks
 Cookie management optimization (expires, HttpOnly, SameSite, Secure)
+Improved access control to a calendar via an external application
 Datatable library updated to version 2.3.8 for log display
-Updated the PHPMailer library to version 7.1.1 for better support for PHP 8.5.
+PHPMailer library updated to version 7.1.1 for better support for PHP 8.5.
+Google-api-php-client library updated to version 2.19.4
 
 
 VERSION 26.6.2

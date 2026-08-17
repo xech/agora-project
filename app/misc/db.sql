@@ -44,8 +44,9 @@ CREATE TABLE `ap_calendar` (
   `title` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `timeSlot` varchar(255) DEFAULT NULL,
-  `propositionNotify` varchar(1) DEFAULT NULL,
-  `propositionGuest` varchar(1) DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
+  `propositionNotify` tinyint DEFAULT NULL,
+  `propositionGuest` tinyint DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
@@ -457,7 +458,8 @@ CREATE TABLE `ap_userAuthToken` (
   `_idUser` int NOT NULL,
   `userAuthToken` varchar(255) NOT NULL,
   `browserId` varchar(255),
-  `dateCrea` datetime NOT NULL
+  `dateCrea` datetime NOT NULL,
+  KEY `indexes` (`_idUser`,`userAuthToken`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_userGroup` (

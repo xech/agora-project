@@ -96,7 +96,7 @@ class Trad extends Txt
 			"connectAutoTooltip"=>"Mémoriser mes identifiants pour une connexion automatique",
 			"gOAuthUserUnknown"=>"n'est pas enregistré sur l'espace",
 			"connectSpaceSwitch"=>"Changer d'espace Omnispace",
-			"connectSpaceSwitchInfo"=>"Basculer sur un autre espace que",
+			"connectSpaceSwitchInfo"=>"Basculer sur un autre espace et quitter",//"monespace"
 			"guestAccess"=>"Connexion invité",
 			"guestAccessTooltip"=>"Me connecter à cet espace en tant qu'invité",
 			"publicSpacePasswordError"=>"Mot de passe erroné",

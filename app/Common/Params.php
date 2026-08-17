@@ -8,7 +8,7 @@
 
 
 ////	URLS
-$OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "https://".$_SERVER['SERVER_NAME']  :  "https://www.omnispace.fr";//"https": cf. mobileApp
+$OMNISPACE_URL_PUBLIC=(Req::isDevServer())  ?  "https://".$_SERVER['SERVER_NAME']  :  "https://www.omnispace.fr";
 define("OMNISPACE_URL_PUBLIC", $OMNISPACE_URL_PUBLIC);
 define("OMNISPACE_URL_LABEL","Omnispace.fr");
 
@@ -33,10 +33,11 @@ define("TIME_1YEAR", 31536000);
 define("TIME_3YEARS", 94608000);
 
 ////	COOKIE PARAMS
+define("COOKIES_OPTIONS_PATH", (Req::isHost() ? '/'.HOST_DOMAINE.'/' : ''));
 define("COOKIES_OPTIONS", [
-	'path'		=> Req::isHost() ?  '/'.HOST_DOMAINE.'/'  :  "",	//Path du host courant (cf createHost) ou valeur par défaut
-	'expires'	=> time() + TIME_1YEAR,								//1 an max
-	'secure'	=> true,											//HTTPS uniquement
-	'httponly'	=> true,											//Inaccessible via JavaScript (anti-XSS).
+	'path'		=> COOKIES_OPTIONS_PATH,	//Path du host courant (cf createHost) ou valeur par défaut
+	'expires'	=> time() + TIME_1YEAR,		//1 an max
+	'secure'	=> true,					//HTTPS uniquement
+	'httponly'	=> true,					//Inaccessible via JavaScript (anti-XSS).
 	'samesite'	=> 'Lax',
 ]);

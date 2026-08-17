@@ -61,7 +61,7 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 }
 
 /********** OPTION + MENU CONTEXTUEL + MENU LATERAL DU MODULE (GAUCHE)*/
-.menuLine, .option, .optionSelect		{margin-block:2px; padding:4px; border-collapse:separate;}/*"separate" annule l'héritage "collapse" d'un tableau parent, pour conserver les "margin-block" (cf vWeekTable, vMonthTable..)*/
+.menuLine, .option, .optionSelect		{margin-block:1.5px; padding:4px; border-collapse:separate;}/*"separate" annule l'héritage "collapse" d'un tableau parent, pour conserver les "margin-block" (cf vWeekTable, vMonthTable..)*/
 .menuLine								{display:table; width:100%;}
 .menuLine>div							{display:table-cell; padding-inline:4px; vertical-align:middle; text-align:left; max-width:500px;}
 .menuIcon								{width:35px; vertical-align:top!important; text-align:center!important;}
@@ -190,7 +190,7 @@ input:not(input[type=radio],input[type=checkbox]), textarea, select, button		{mi
 input:is(input[type=radio],input[type=checkbox])		{vertical-align:middle; margin-block:3px 5px;}
 input[type=checkbox]									{width:18px; height:18px;}
 input[type=file]										{height:auto;}
-textarea												{width:100%; height:50px;}
+textarea												{width:100%; height:65px;}
 .inputTitleName											{width:73%;}/*Title/Name d'un objet => tester sur actualité + dossier + fichier + tache + agenda + evenement => mode descktop + responsive*/
 #descriptionToggle										{width:23%; display:inline-block; line-height:33px; margin-left:10px;}/*Label Toogle de description d'un objet (line-height idem .inputTitleName)*/
 #descriptionTextarea									{margin-top:20px;}/*par défaut, textarea masqué si vide*/
