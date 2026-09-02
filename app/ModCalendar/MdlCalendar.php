@@ -46,7 +46,7 @@ class MdlCalendar extends MdlObject
 		}
 		///// ExternelId de l'agenda
 		if(empty($this->externalId)){
-			$externalId=bin2hex(random_bytes(16));//ID random sur 32 charactères
+			$externalId=Txt::randomId();
 			Db::query("UPDATE ap_calendar SET externalId=".Db::format($externalId)." WHERE _id=".$this->_id);
 			$this->externalId=$externalId;
 		}
@@ -99,7 +99,7 @@ class MdlCalendar extends MdlObject
 			];
 			////	"Exporter les événements au format Ical"
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('?ctrl=calendar&action=exportEvents&typeId=".$this->typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",
+				"actionJs"=>"confirmRedir('index.php?ctrl=calendar&action=exportEvents&typeId=".$this->typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",
 				"iconSrc"=>"dataImportExport.png",
 				"label"=>Txt::trad("CALENDAR_exportIcal")
 			];

@@ -4,7 +4,7 @@
  **************************************************************************************************/
 function captchaControl(){
 	return new Promise((resolve)=>{
-		$.ajax("?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val())).done(function(result){
+		$.ajax("index.php?ctrl=misc&action=CaptchaControl&captcha="+encodeURIComponent($("#captchaText").val())).done(function(result){
 			if(/controlOK/i.test(result)==false)	{resolve(false);  notify("<?=Txt::trad("captchaError") ?>");}
 			else									{resolve(true);}							
 		});
@@ -29,7 +29,7 @@ ready(function(){
 </style>
 
 <div id="captchaDiv">
-	<img src="?ctrl=misc&action=CaptchaImg" id="captchaImg">
+	<img src="index.php?ctrl=misc&action=CaptchaImg" id="captchaImg">
 	<img src="app/img/arrowRightSmall.png" id="captchaArrow">
 	<input type="text" name="captcha" id="captchaText" placeholder="<?= Txt::trad("captcha") ?>" <?= Txt::tooltip("captchaTooltip") ?> required>
 	<img src="app/img/reload.png" title="Change captcha" onclick="$('#captchaImg').attr('src','?ctrl=misc&action=CaptchaImg&rand='+Math.random())">

@@ -82,12 +82,12 @@ class CtrlCalendar extends Ctrl
 		$vDatas["monthsYearsMenu"]=null;
 		for($monthNb=1; $monthNb<=12; $monthNb++){
 			$monthTime=strtotime(date('Y',$curTime).'/'.$monthNb.'/1');
-			$vDatas["monthsYearsMenu"].='<a onclick="redir(\'?ctrl=calendar&curTime='.$monthTime.'\')" class="'.(date('Y-m',$curTime)==date('Y-m',$monthTime)?'optionSelect':'option').'">'.Txt::timeLabel($monthTime,'MMMM').'</a>';
+			$vDatas["monthsYearsMenu"].='<a onclick="redir(\'index.php?ctrl=calendar&curTime='.$monthTime.'\')" class="'.(date('Y-m',$curTime)==date('Y-m',$monthTime)?'optionSelect':'option').'">'.Txt::timeLabel($monthTime,'MMMM').'</a>';
 		}
 		$vDatas["monthsYearsMenu"].='<hr>';
 		for($yearNb=date('Y')-5; $yearNb<=date('Y')+3; $yearNb++){
 			$yearTime=strtotime($yearNb.'-'.date('m',$curTime).'-01');
-			$vDatas["monthsYearsMenu"].='<a onclick="redir(\'?ctrl=calendar&curTime='.$yearTime.'\')" class="'.(date('Y',$curTime)==$yearNb?'optionSelect':'option').'">'.$yearNb.'</a>';
+			$vDatas["monthsYearsMenu"].='<a onclick="redir(\'index.php?ctrl=calendar&curTime='.$yearTime.'\')" class="'.(date('Y',$curTime)==$yearNb?'optionSelect':'option').'">'.$yearNb.'</a>';
 		}
 
 		////	AGENDAS DISPONIBLES  +  AGENDAS AFFICHÉS

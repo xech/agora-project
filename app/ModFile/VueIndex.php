@@ -41,11 +41,9 @@
 
 	<div id="pageContent" class="<?= MdlFile::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 
-		<!--PATH DU DOSSIER COURANT & LISTE DES DOSSIERS-->
-		<?= MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles()).CtrlObject::vueFolders() ?>
-
-		<!--LISTE DES FICHIERS-->
 		<?php
+		////	PATH DU DOSSIER COURANT  + LISTE DES DOSSIERS  + LISTE DES FICHIERS
+		echo MdlFolder::menuPath(Txt::trad("FILE_addFile"),MdlFile::urlAddFiles()).CtrlObject::vueFolders();
 		foreach($filesList as $tmpFile){
 			$containerClass=$tmpFile->hasTumb() ? "hasThumb" : null;
 			echo $tmpFile->objContentDiv($containerClass);

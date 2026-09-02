@@ -130,7 +130,7 @@ class MdlSpace extends MdlObject
 					"moduleName"		=> $moduleName,
 					"ctrl"				=> $modCtrl,
 					"optionsAvailable"	=> $modCtrl::$moduleOptions,
-					"url"				=> "?ctrl=".$moduleName.($moduleName=="user"?"&displayUsers=space":null),
+					"url"				=> "index.php?ctrl=".$moduleName.($moduleName=="user"?"&displayUsers=space":null),
 					"label"				=> Txt::trad(strtoupper($moduleName)."_MODULE_NAME"),
 					"description"		=> Txt::trad(strtoupper($moduleName)."_MODULE_DESCRIPTION"),
 				];

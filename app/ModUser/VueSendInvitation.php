@@ -47,7 +47,7 @@ ready(function(){
 						$("#invitationForm, #gPeopleImportButton").hide();	//Masque le formulaire principal
 						mainTriggers();										//Update les tooltips & Co
 						// Désactive les mails déjà présents sur l'espace (Controle ajax après récup des contacts)
-						$.ajax({url:"?ctrl=user&action=loginExists", data:{mailList:mailListToControl}, dataType:"json"}).done(function(resultJson){
+						$.ajax({url:"index.php?ctrl=user&action=loginExists", data:{mailList:mailListToControl}, dataType:"json"}).done(function(resultJson){
 							if(resultJson.mailListPresent.length>0){
 								for(var cpt=0; cpt<resultJson.mailListPresent.length; cpt++){
 									var mailTmp=resultJson.mailListPresent[cpt];
@@ -87,7 +87,7 @@ ready(function(){
 		if($("input[name='name']").isEmpty() || $("input[name='firstName']").isEmpty())		{notify("<?= Txt::trad("emptyFields") ?>");  return false;}
 		if($("input[name='mail']").isMail()==false)											{notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
 		////	Vérif si l'user existe déjà
-		$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(result){
+		$.ajax("index.php?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='mail']").val())).done(function(result){
 			if(/true/i.test(result))	{notify("<?= Txt::trad("USER_loginExists"); ?>");}	
 			else						{asyncSubmit($("#invitationForm"));}//Valide le formulaire
 		});

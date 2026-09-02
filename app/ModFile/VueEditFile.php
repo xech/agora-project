@@ -3,7 +3,7 @@
 function mainFormControl(){
 	return new Promise((resolve)=>{
 		let controledName=$("[name='name']").val()+$("[name='dotExtension']").val();
-		let ajaxUrl ="?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&typeIdContainer=<?= $curObj->containerObj()->typeId ?>&controledName="+encodeURIComponent(controledName);
+		let ajaxUrl ="index.php?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&typeIdContainer=<?= $curObj->containerObj()->typeId ?>&controledName="+encodeURIComponent(controledName);
 		$.ajax(ajaxUrl).done(function(result){
 			if(/duplicateName/i.test(result))	{resolve(false);  notify("<?= Txt::trad("NOTIF_duplicateName") ?>");}//"..le nom existe déjà"
 			else								{resolve(true);}

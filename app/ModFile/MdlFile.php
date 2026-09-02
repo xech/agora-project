@@ -68,7 +68,7 @@ class MdlFile extends MdlObject
 	{
 		//Par défaut on spécifie le dossier courant
 		if(empty($urlParams))  {$urlParams="typeId=file&_idContainer=".Ctrl::$curContainer->_id;}
-		return "?ctrl=".static::moduleName."&action=AddEditFiles&".$urlParams;
+		return "index.php?ctrl=".static::moduleName."&action=AddEditFiles&".$urlParams;
 	}
 
 	/********************************************************************************************************
@@ -76,7 +76,7 @@ class MdlFile extends MdlObject
 	 ********************************************************************************************************/
 	public function urlDownload($dateCrea=null)
 	{
-		$urlDownload="?ctrl=file&action=FileDownload&typeId=".$this->typeId;								//Url de base
+		$urlDownload="index.php?ctrl=file&action=FileDownload&typeId=".$this->typeId;						//Url de base
 		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}							//Download une version spécifique
 		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlDownloadMobileApp($urlDownload,$this->name);}	//Download via CtrlMisc
 		return $urlDownload;																				//Retourne l'Url
@@ -133,7 +133,7 @@ class MdlFile extends MdlObject
 		if(filesize($this->filePath()) < (File::sizeMo*15))
 		{
 			//// Vignette d'image || Vignette de Pdf
-			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->thumbPath(),300,300,90);}
+			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->thumbPath(),250,250);}
 			elseif($this->thumbPdfEnabled())
 			{
 				try {
@@ -143,7 +143,7 @@ class MdlFile extends MdlObject
 					$imgTmp->writeImage($this->thumbPath());
 					$imgTmp->clear();
 					$imgTmp->destroy();
-					return File::imageResize($this->thumbPath(),$this->thumbPath(),300);
+					return File::imageResize($this->thumbPath(),$this->thumbPath(),250,250);
 				} catch (Exception $error){
 					Ctrl::notify($this->getLabel()." : Création de vignette non permise / Thumbnail creation not allowed");	//Les .pdf avec password renvoient un "Failed to read the file [..]"
 					//Ctrl::notify($error->getMessage());																	//Message d'erreur complet renvoyé par le serveur

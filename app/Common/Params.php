@@ -27,8 +27,7 @@ define("WALLPAPER_DEFAULT_DB_PREFIX","default@@");//Préfixe en DB des wallpaper
 define("PATH_ICON_FOLDER", "app/img/folder/");
 
 ////	INFOS DE TEMPS
-define("TIME_1DAY", 86400);
-define("TIME_2MONTHS", 5356800);
+define("TIME_3MONTHS", 7776000);
 define("TIME_1YEAR", 31536000);
 define("TIME_3YEARS", 94608000);
 
@@ -36,8 +35,8 @@ define("TIME_3YEARS", 94608000);
 define("COOKIES_OPTIONS_PATH", (Req::isHost() ? '/'.HOST_DOMAINE.'/' : ''));
 define("COOKIES_OPTIONS", [
 	'path'		=> COOKIES_OPTIONS_PATH,	//Path du host courant (cf createHost) ou valeur par défaut
-	'expires'	=> time() + TIME_1YEAR,		//1 an max
+	'expires'	=> (time() + TIME_1YEAR),	//1 an max
 	'secure'	=> true,					//HTTPS uniquement
 	'httponly'	=> true,					//Inaccessible via JavaScript (anti-XSS).
-	'samesite'	=> 'Lax',
+	'samesite'	=> 'Lax'
 ]);

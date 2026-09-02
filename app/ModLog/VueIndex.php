@@ -45,7 +45,7 @@ tfoot select option[value=""]		{background-color:#bbb;}								/*Option par déf
 		<div class="miscContent">
 			<!--TELECHARGEMENT DES LOGS-->
 			<div id="logsDownload">
-				<a href="?ctrl=log&action=logsDownload"><img src="app/img/download.png"> <?= Txt::trad("LOG_download") ?></a>
+				<a href="index.php?ctrl=log&action=logsDownload"><img src="app/img/download.png"> <?= Txt::trad("LOG_download") ?></a>
 			</div>
 		</div>
 	</div>

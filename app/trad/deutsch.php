@@ -111,15 +111,15 @@ class Trad extends Txt
 			"passwordModif"=>"Passwort ändern",
 			"passwordTmp"=>"Temporäres Passwort (auf der Login-Seite zu ändern)",
 			"passwordByDefault"=>"Standardpasswort (bei Bedarf in Ihrem Profil ändern)",
-			"resetPassword"=>"Passwort vergessen ?",
-			"resetPasswordYourMail"=>"Geben Sie Ihre E-Mail-Adresse ein, um Ihr Zugangspasswort zurückzusetzen",
-			"resetPasswordNotif"=>"Die E-Mail zum Zurücksetzen Ihres Passworts wurde erfolgreich gesendet.<br>Falls Sie sie nicht erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner.",
-			"resetPasswordMailTitle"=>"Ihr Passwort zurücksetzen",
-			"resetPasswordMailPassword"=>"Um Ihr Passwort zurückzusetzen und sich erneut anzumelden",
-			"resetPasswordMailPassword2"=>"klicken Sie hier",
-			"resetPasswordMailLoginRemind"=>"Erinnerung an Ihren Login-Benutzernamen",
-			"resetPasswordIdExpired"=>"Der Link zur Passworterneuerung ist abgelaufen. Bitte starten Sie den Vorgang erneut",
-			"resetPasswordMailNotRegistered"=>"Die E-Mail entspricht keinem registrierten Konto",
+			"passwordReset"=>"Passwort vergessen ?",
+			"passwordResetYourMail"=>"Geben Sie Ihre E-Mail-Adresse ein, um Ihr Zugangspasswort zurückzusetzen",
+			"passwordResetNotif"=>"Die E-Mail zum Zurücksetzen Ihres Passworts wurde erfolgreich gesendet.<br>Falls Sie sie nicht erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner.",
+			"passwordResetMailTitle"=>"Ihr Passwort zurücksetzen",
+			"passwordResetMailPassword"=>"Um Ihr Passwort zurückzusetzen und sich erneut anzumelden",
+			"passwordResetMailPassword2"=>"klicken Sie hier",
+			"passwordResetMailLoginRemind"=>"Erinnerung an Ihren Login-Benutzernamen",
+			"passwordResetIdExpired"=>"Der Link zur Passworterneuerung ist abgelaufen. Bitte starten Sie den Vorgang erneut",
+			"passwordResetMailNotRegistered"=>"Die E-Mail entspricht keinem registrierten Konto",
 
 			////	Type d'affichage
 			"displayMode"=>"Anzeige",
@@ -498,14 +498,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Freigabe- und gemeinsamer Arbeitsbereich",
 			"INSTALL_dataDashboardNews"=>  '<h3>Willkommen in Ihrem neuen Freigabebereich!</h3>
-											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png">Teilen Sie Ihre Dateien mit Ihrem Team im Dateimanager</a></h4>
-											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Erstellen Sie Ereignisse in Ihrem freigegebenen Kalender oder persönlichen Kalender</a></h4>
-											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Verwenden Sie den Newsfeed, um Informationen über Ihre Aktivitäten zu verbreiten</a></h4>
-											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png">Kommunizieren Sie über Forum, Messaging oder Videokonferenzen</a></h4>
-											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png">Verwalten Sie Ihre Aufgaben und Projekte, um Ihre Aktivitäten zu organisieren</a></h4>
-											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Senden Sie Newsletter, um Informations-Emails über Ihre Aktivitäten zu verteilen.</a></h4>
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png">Teilen Sie Ihre Dateien mit Ihrem Team im Dateimanager</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Erstellen Sie Ereignisse in Ihrem freigegebenen Kalender oder persönlichen Kalender</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Verwenden Sie den Newsfeed, um Informationen über Ihre Aktivitäten zu verbreiten</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png">Kommunizieren Sie über Forum, Messaging oder Videokonferenzen</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png">Verwalten Sie Ihre Aufgaben und Projekte, um Ihre Aktivitäten zu organisieren</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Senden Sie Newsletter, um Informations-Emails über Ihre Aktivitäten zu verteilen.</a></h4>
 											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Konsultieren Sie das Benutzerhandbuch, um Ihren Bereich zu entdecken</a></h4>
-											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png"> Senden Sie Email-Einladungen zum Beitritt zum Space</a></h4>',
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png"> Senden Sie Email-Einladungen zum Beitritt zum Space</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Was halten Sie vom Newsfeed?",
 			"INSTALL_dataDashboardPollA"=>"Sehr interessant!",
 			"INSTALL_dataDashboardPollB"=>"Interessant",
@@ -656,6 +656,7 @@ class Trad extends Txt
 			"USER_spaceOrAllUsersTooltip"=>"Benutzer des aktuellen Bereichs / Benutzer aller Bereiche (Administratoransicht)",
 			"USER_spaceUsers"=>"Space-Benutzer verwalten",
 			"USER_allUsers"=>"Alle Benutzer verwalten",
+			"USER_allUsersToolip"=>"Benutzer aller Arbeitsbereiche verwalten",
 			"USER_deleteDefinitely"=>"Dauerhaft löschen",
 			"USER_deleteFromCurSpace"=>"Aus dem aktuellen Speicherplatz löschen/freigeben",
 			"USER_deleteFromCurSpaceConfirm"=>"Benutzer aus aktuellem Bereich löschen/aufheben?",

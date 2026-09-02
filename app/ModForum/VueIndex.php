@@ -4,7 +4,7 @@
 **********************************************************************************************************/
 ready(function(){
 	$("#notifyLastMessage").on("click",function(){
-		$.ajax("?ctrl=forum&action=notifyLastMessage&typeId=<?= isset($curSubject) ? $curSubject->typeId : null ?>").done(function(result){
+		$.ajax("index.php?ctrl=forum&action=notifyLastMessage&typeId=<?= isset($curSubject) ? $curSubject->typeId : null ?>").done(function(result){
 			$("#notifyLastMessage").toggleClass("optionSelect",(result=="addUser"));
 		});
 	});
@@ -60,7 +60,7 @@ ready(function(){
 		////	SUJET COURANT : MENU "RETOUR VERS L'ACCUEIL"
 		if($forumDisplay=="suject"){
 			echo '<div class="pathMenu miscContent">
-					<div class="pathMenuHome" onclick="redir(\'?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">'.Txt::trad("FORUM_forumRoot").'</div>
+					<div class="pathMenuHome" onclick="redir(\'index.php?ctrl=forum\')"><img src="app/img/forum/iconSmall.png">'.Txt::trad("FORUM_forumRoot").'</div>
 					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/plus.png"></div>' : null).'
 					</div>';
 		}
@@ -70,7 +70,7 @@ ready(function(){
 		{
 			$newSubjectClass=$subjectLastMessage=$subjectLink=null;
 			if($forumDisplay=="subjectList"){
-				$subjectLink='onclick="redir(\'?ctrl=forum&typeId='.$tmpSubject->typeId.'\')" '.Txt::tooltip("FORUM_displaySubject");					//Lien vers le sujet et ses messages
+				$subjectLink='onclick="redir(\'index.php?ctrl=forum&typeId='.$tmpSubject->typeId.'\')" '.Txt::tooltip("FORUM_displaySubject");					//Lien vers le sujet et ses messages
 				$tmpSubject->description=Txt::reduce($tmpSubject->description,400);																		//Réduction de la description
 				if($tmpSubject->alreadyConsulted()==false)  {$newSubjectClass="linkSelect";}															//Nouveau sujet en surbrillance
 				$messagesNb=Db::getVal("SELECT COUNT(*) FROM ap_forumMessage WHERE _idContainer=".$tmpSubject->_id);									//Nb de messages pour le sujet

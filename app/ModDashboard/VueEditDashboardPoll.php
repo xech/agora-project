@@ -10,7 +10,7 @@ ready(function(){
 async function deleteResponseFile(_idReponse)
 {
 	if(await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){
-		$.ajax("?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->typeId ?>&_idResponse="+_idReponse).done(function(result){
+		$.ajax("index.php?ctrl=dashboard&action=DeleteResponseFile&typeId=<?= $curObj->typeId ?>&_idResponse="+_idReponse).done(function(result){
 			if(/true/i.test(result)){
 				$("#responseFile"+_idReponse).html("<input type='file' name='responsesFile"+_idReponse+"'>");//Remplace le fichier supprimé par un champ "File"
 				notify("<?= Txt::trad("confirmDeleteNotify") ?>");

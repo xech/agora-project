@@ -19,7 +19,7 @@ ready(function(){
 	////	CHARGE PLUPLOAD
 	$("#uploadMultiple").plupload({
 		runtimes:"html5",
-		url:"?ctrl=file&action=UploadTmpFile&tmpFolderName=<?= $tmpFolderName ?>",
+		url:"index.php?ctrl=file&action=UploadTmpFile&tmpFolderName=<?= $tmpFolderName ?>",
 		max_file_size:"<?= (int)ini_get("upload_max_filesize") ?>mb",//remplace 'mo' par 'mb'
 		max_file_count:200,//200 fichiers max
 		unique_names:true,//On n'envoie pas plusieurs fichiers avec le meme nom

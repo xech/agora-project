@@ -48,7 +48,7 @@
 	 ********************************************************************************************************/
 	public function getUrl($display=null)
 	{
-		return ($display=="edit")  ?  "?ctrl=object&action=VueEditFolder&typeId=".$this->typeId  :  parent::getUrl($display);
+		return ($display=="edit")  ?  "index.php?ctrl=object&action=VueEditFolder&typeId=".$this->typeId  :  parent::getUrl($display);
 	}
 
 	/********************************************************************************************************

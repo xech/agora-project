@@ -111,15 +111,15 @@ class Trad extends Txt
 			"passwordModif"=>"Change password",
 			"passwordTmp"=>"Temporary password (to be changed on the login page)",
 			"passwordByDefault"=>"Default password (change it if needed in your profile)",
-			"resetPassword"=>"Forgot your password ?",
-			"resetPasswordYourMail"=>"Enter your email address to reset your password",
-			"resetPasswordNotif"=>"The email to reset your password has been sent successfully.<br>If you haven't received it, check your spam folder.",
-			"resetPasswordMailTitle"=>"Reset your password",
-			"resetPasswordMailPassword"=>"To reset your password and log in again",
-			"resetPasswordMailPassword2"=>"please click here",
-			"resetPasswordMailLoginRemind"=>"Reminder of your login identifier",
-			"resetPasswordIdExpired"=>"The link to regenerate the password has expired. Please restart the procedure",
-			"resetPasswordMailNotRegistered"=>"The email does not match any registered account",
+			"passwordReset"=>"Forgot your password ?",
+			"passwordResetYourMail"=>"Enter your email address to reset your password",
+			"passwordResetNotif"=>"The email to reset your password has been sent successfully.<br>If you haven't received it, check your spam folder.",
+			"passwordResetMailTitle"=>"Reset your password",
+			"passwordResetMailPassword"=>"To reset your password and log in again",
+			"passwordResetMailPassword2"=>"please click here",
+			"passwordResetMailLoginRemind"=>"Reminder of your login identifier",
+			"passwordResetIdExpired"=>"The link to regenerate the password has expired. Please restart the procedure",
+			"passwordResetMailNotRegistered"=>"The email does not match any registered account",
 
 			////	Type d'affichage
 			"displayMode"=>"View",
@@ -498,14 +498,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Space for sharing and collaborative work",
 			"INSTALL_dataDashboardNews"=>  '<h3>Welcome to your new collaborative workspace !</h3>
-											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png"> Share your files with your team in the file manager</a></h4>
-											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Create events on your shared calendar or personal calendar</a></h4>
-											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Use the news feed to broadcast information about your activity</a></h4>
-											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png"> Communicate via the forum, messaging or videoconferences</a></h4>
-											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png"> Manage your tasks and projects to organize your activity</a></h4>
-											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Send newsletters to distribute information emails about your activity.</a></h4>
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png"> Share your files with your team in the file manager</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Create events on your shared calendar or personal calendar</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Use the news feed to broadcast information about your activity</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png"> Communicate via the forum, messaging or videoconferences</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png"> Manage your tasks and projects to organize your activity</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Send newsletters to distribute information emails about your activity.</a></h4>
 											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Consult the user guide to discover your workspace</a></h4>
-											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Send email invitations to join the space</a></h4>',
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Send email invitations to join the space</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"What do you think of the news feed ?",
 			"INSTALL_dataDashboardPollA"=>"Very interesting !",
 			"INSTALL_dataDashboardPollB"=>"Interesting",
@@ -656,6 +656,7 @@ class Trad extends Txt
 			"USER_spaceOrAllUsersTooltip"=>"Current space users / All space users (administrator view)",
 			"USER_spaceUsers"=>"Manage space users",
 			"USER_allUsers"=>"Manage all users",
+			"USER_allUsersToolip"=>"Manage users from all workspaces",
 			"USER_deleteDefinitely"=>"Delete permanently",
 			"USER_deleteFromCurSpace"=>"Unassign to space",
 			"USER_deleteFromCurSpaceConfirm"=>"Unassign the user to the current space?",
@@ -804,7 +805,7 @@ class Trad extends Txt
 			"FILE_imgReduce"=>"Optimize the image",
 			"FILE_updatedName"=>"The filename will be replaced by the new version",
 			"FILE_fileSizeError"=>"File is too large",
-			"FILE_addMultipleFilesTooltip"=>"maximum per file. Select multiple files using the <i>Ctrl</i> key.",
+			"FILE_addMultipleFilesTooltip"=>"maximum per file. Select multiple files using the ''Ctrl'' key.",
 			"FILE_selectFile"=>"Thank you to select at least a file",
 			"FILE_fileContent"=>"Content",
 			// Versions

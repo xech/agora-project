@@ -122,7 +122,7 @@ class MdlPerson extends MdlObject
 			if($this->userMailDisplay()==false || empty($fieldVal))  {$fieldVal="";}//Tjs vide si on masque l'email de l'user
 			else{
 				$sendMailTo=Txt::trad("sendMailTo").' '.$this->getLabel().' : '.$fieldVal;																								//Label et email du destinataire
-				if(Ctrl::$curSpace->moduleEnabled("mail"))	{$mailLink='onclick="window.top.confirmRedir(\'?ctrl=mail&checkMail='.$fieldVal.'\', \''.addslashes($sendMailTo).'\')"';}	//Module Mail
+				if(Ctrl::$curSpace->moduleEnabled("mail"))	{$mailLink='onclick="window.top.confirmRedir(\'index.php?ctrl=mail&checkMail='.$fieldVal.'\', \''.addslashes($sendMailTo).'\')"';}	//Module Mail
 				else										{$mailLink='href="mailto:'.$fieldVal.'"';}																					//Mailto
 				$fieldVal='<a '.$mailLink.' '.Txt::tooltip($sendMailTo).'>'.$fieldVal.'</a>';
 			}

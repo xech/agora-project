@@ -2,7 +2,7 @@
 <!--LISTE DES CATEGORIES-->
 <?php
 foreach($categoryList as $tmpCat){
-	$urlRedir='?ctrl='.Req::$curCtrl.'&_idCategoryFilter='.$tmpCat->_id;
+	$urlRedir='index.php?ctrl='.Req::$curCtrl.'&_idCategoryFilter='.$tmpCat->_id;
 	if(Req::isParam("curTime"))  {$urlRedir.='&curTime='.Req::param("curTime");}
 	$catTooltip=(empty($tmpCat->_id))  ?  Txt::trad($tradPrefix."_CAT_showAllTooltip")  :  Txt::trad($tradPrefix."_CAT_menuTooltip").' '.$tmpCat->getLabel().'<br>'.$tmpCat->description;
 ?>

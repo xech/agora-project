@@ -53,7 +53,7 @@ class MdlContact extends MdlPerson
 		////	"Créer un utilisateur sur l'espace"
 		if(Ctrl::$curUser->isGeneralAdmin()){
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('?ctrl=contact&action=contactAddUser&typeId=".$this->typeId."', '".Txt::trad("CONTACT_createUserConfirm",true)."');",
+				"actionJs"=>"confirmRedir('index.php?ctrl=contact&action=contactAddUser&typeId=".$this->typeId."', '".Txt::trad("CONTACT_createUserConfirm",true)."');",
 				"iconSrc"=>"plusSmall.png",
 				"label"=>Txt::trad("CONTACT_createUser"),
 				"tooltip"=>Txt::trad("CONTACT_createUserConfirm")
@@ -61,7 +61,7 @@ class MdlContact extends MdlPerson
 		}
 		////	Exporter au format vCard
 		$options["objOptions"][]=[
-			"actionJs"=>"redir('?ctrl=contact&action=ExportVcard&typeId=".$this->typeId."');",
+			"actionJs"=>"redir('index.php?ctrl=contact&action=ExportVcard&typeId=".$this->typeId."');",
 			"iconSrc"=>"vcard.png",
 			"label"=>Txt::trad("export_vcard"),
 		];

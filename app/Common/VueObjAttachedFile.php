@@ -19,7 +19,7 @@ ready(function(){
 async function attachedFileDelete(fileId)
 {
 	if(await confirmAlt("<?= Txt::trad("confirmDelete") ?>")){																//Demande confirmation
-		$.ajax("?ctrl=object&action=attachedFileDelete&_id="+fileId).done(function(result){									//Lance la suppression Ajax
+		$.ajax("index.php?ctrl=object&action=attachedFileDelete&_id="+fileId).done(function(result){						//Lance la suppression Ajax
 			if(/true/i.test(result)){																						//Vérif la confirmation de delete
 				$("#attachedFileList"+fileId).fadeOut();																	//Supprime le fichier de la liste
 				if(typeof attachedFileInsert=="function")  {tinymce.activeEditor.dom.remove("attachedFileTag"+fileId);}		//Supprime l'image/video/mp3 dans l'éditeur (cf. VueObjEditor.php)

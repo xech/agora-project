@@ -254,7 +254,7 @@ class CtrlFile extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["tmpFolderName"]="tmpUploadFolder".uniqid(mt_rand());
+		$vDatas["tmpFolderName"]="tmpUploadFolder".Txt::randomId();
 		$vDatas["uploadMaxFilesize"]=File::sizeLabel(File::uploadMaxFilesize());
 		static::displayPage("VueAddEditFiles.php",$vDatas);
 	}

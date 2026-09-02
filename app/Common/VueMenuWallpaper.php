@@ -20,7 +20,7 @@ ready(function(){
 *******************************************************************************************/
 function wallpaperDelete()
 {
-	confirmDelete("?ctrl=<?= Req::$curCtrl ?>&action=<?= Req::$curAction ?>&deleteCustomWallpaper="+$("select[name='wallpaper']").val());
+	confirmDelete("index.php?ctrl=<?= Req::$curCtrl ?>&action=<?= Req::$curAction ?>&deleteCustomWallpaper="+$("select[name='wallpaper']").val());
 }
 </script>
 

@@ -86,10 +86,11 @@
 				</td>
 
 			<!--LIGNE DE SEMAINE => FIN + NUM DE SEMAINE DE L'ANNEE-->
-			<?php if($tmpDay["dayOfWeek"]==7){ ?>
-				<td class="vWeekNbOfYear" <?= Txt::tooltip("CALENDAR_yearWeekNum") ?> onclick="redir('<?= '?ctrl=calendar&calendarDisplayMode=week&curTime='.$tmpDay["dayTimeBegin"] ?>');">
-					<?= date("W",$tmpDay["dayTimeBegin"]) ?>
-				</td>
+			<?php
+			if($tmpDay["dayOfWeek"]==7){
+				$weekUrl="index.php?ctrl=calendar&calendarDisplayMode=week&curTime=".$tmpDay["dayTimeBegin"];
+			?>
+				<td class="vWeekNbOfYear" <?= Txt::tooltip("CALENDAR_yearWeekNum") ?> onclick="redir('<?= $weekUrl ?>');"><?= date("W",$tmpDay["dayTimeBegin"]) ?></td>
 			</tr>
 			<?php } ?>
 		<?php } ?>

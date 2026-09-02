@@ -18,7 +18,7 @@ function mainFormControl(){
 		if($("input[name='login']").isMail()  &&  $("input[name='mail']").isMail()  &&  $("input[name='mail']").val()!=$("input[name='login']").val())
 			{resolve(false);  notify("<?= Txt::trad("USER_loginAndMailDifferent") ?>");}
 		//// Verif Ajax finale : un compte existe déjà avec le même login ?
-		$.ajax("?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(result){
+		$.ajax("index.php?ctrl=user&action=loginExists&mail="+encodeURIComponent($("input[name='login']").val())+"&_idUserIgnore=<?= $curObj->_id ?>").done(function(result){
 			if(/true/i.test(result))	{resolve(false);  notify("<?= Txt::trad("USER_loginExists") ?>");}
 			else						{resolve(true);}
 		});
@@ -48,7 +48,7 @@ function mainFormControl(){
 	<!--LOGIN-->
 	<div class="objField">
 		<div><?= Txt::trad("mailLlogin") ?></div>
-		<div><input type="text" name="login" value="<?= $curObj->login ?>"><div class="infos" id="mailLloginNotif"><?= Txt::trad("mailLloginNotif") ?></div></div>
+		<div><input type="text" name="login" value="<?= $curObj->login ?>"><span class="infos" id="mailLloginNotif"><?= Txt::trad("mailLloginNotif") ?></span></div>
 	</div>
 
 	<!--PASSWORD-->
@@ -80,30 +80,25 @@ function mainFormControl(){
 
 	<!--NOTIF MAIL DE CREATION D'USER-->
 	<?php if(empty($curObj->_id) && Tool::mailEnabled()){ ?>
-	<div class="objField"><div>
-		<input type="checkbox" name="notifMail" id="notifMail" value="1" checked='checked'>
-		<label for="notifMail"><?= Txt::trad("EDIT_notifMail2") ?> <img src="app/img/mail.png"></label>
-	</div></div>
-	<?php } ?>
-
-	<!--ADMIN GENERAL-->
-	<?php if($curObj->editAdminGeneralRight()){ ?>
-	<div class="objField"><div>
-		<input type="checkbox" name="generalAdmin" id="generalAdmin" value="1" <?= !empty($curObj->generalAdmin)?'checked':null ?>>
-		<label for="generalAdmin" <?= Txt::tooltip("USER_adminGeneralTooltip") ?>><?= Txt::trad("USER_adminGeneral") ?> <img src="app/img/user/userAdminGeneral.png"></label>
-	</div></div>
+	<div class="objField">
+		<div><label for="notifMail"><img src="app/img/mail.png"> <?= Txt::trad("EDIT_notifMail2") ?></label></div>
+		<div><input type="checkbox" name="notifMail" id="notifMail" value="1" checked='checked'></div>
+	</div>
 	<?php } ?>
 
 	<!--AGENDA PERSO DESACTIVE-->
 	<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
-	<div class="objField">
-		<div>
-			<img src="app/img/calendar/iconSmall.png">
-			<label for="calendarDisabled" <?= Txt::tooltip("USER_persoCalendarDisabledTooltip") ?>><?= Txt::trad("USER_persoCalendarDisabled") ?></label>
-		</div>
-		<div>
-			<input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?>>
-		</div>
+	<div class="objField" <?= Txt::tooltip("USER_persoCalendarDisabledTooltip") ?>>
+		<div><label for="calendarDisabled"><img src="app/img/calendar/iconSmall.png"> <?= Txt::trad("USER_persoCalendarDisabled") ?></label></div>
+		<div><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?> ></div>
+	</div>
+	<?php } ?>
+
+	<!--ADMIN GENERAL-->
+	<?php if($curObj->editAdminGeneralRight()){ ?>
+	<div class="objField" <?= Txt::tooltip("USER_adminGeneralTooltip") ?>>
+		<div><label for="generalAdmin"><img src="app/img/user/userAdminGeneral.png"> <?= Txt::trad("USER_adminGeneral") ?></label></div>
+		<div><input type="checkbox" name="generalAdmin" id="generalAdmin" value="1" <?= !empty($curObj->generalAdmin)?'checked':null ?>></div>
 	</div>
 	<?php } ?>
 

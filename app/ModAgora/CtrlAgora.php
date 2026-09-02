@@ -69,26 +69,24 @@ class CtrlAgora extends Ctrl
 				if($_FILES["wallpaperFile"]["size"]>409600)  {File::imageResize($wallpaperPath,$wallpaperPath,2000);}//optimise si + de 400ko
 				Db::query("UPDATE ap_agora SET wallpaper=".Db::format($wallpaperName));
 			}
-			////	Logo du footer
-			//Logo par défaut / nouveau logo : réinitialise
+			////	Logo du footer : réinitialise
 			if(Req::isParam("logo")==false || Req::param("logo")=="modify"){
 				Db::query("UPDATE ap_agora SET logo=NULL");
 				if(is_file(PATH_DATAS.Ctrl::$agora->logo))  {File::rm(PATH_DATAS.Ctrl::$agora->logo);}//pas de "pathLogoFooter()" car il renvoie toujours un logo..
 			}
-			//Ajoute un nouveau logo
+			////	Logo du footer : Ajoute / Modif
 			if(isset($_FILES["logoFile"]) && File::isType("imageResize",$_FILES["logoFile"]["name"])){
 				$logoFileName="logo_thumb.".File::extension($_FILES["logoFile"]["name"]);
 				move_uploaded_file($_FILES["logoFile"]["tmp_name"], PATH_DATAS.$logoFileName);
 				File::imageResize(PATH_DATAS.$logoFileName, PATH_DATAS.$logoFileName, 200, 80);
 				Db::query("UPDATE ap_agora SET logo=".Db::format($logoFileName));
 			}
-			////	Logo de la page de connexion
-			//Logo par défaut / nouveau logo : réinitialise
+			////	Logo de la page de connexion : réinitialise
 			if(Req::isParam("logoConnect")==false || Req::param("logoConnect")=="modify"){
 				Db::query("UPDATE ap_agora SET logoConnect=NULL");
 				if(is_file(PATH_DATAS.Ctrl::$agora->logoConnect))  {File::rm(PATH_DATAS.Ctrl::$agora->logoConnect);}
 			}
-			//Ajoute un nouveau logo
+			////	Logo de la page de connexion : Ajoute / Modif
 			if(isset($_FILES["logoConnectFile"]) && File::isType("imageResize",$_FILES["logoConnectFile"]["name"])){
 				$logoConnectFileName="logoConnect.".File::extension($_FILES["logoConnectFile"]["name"]);
 				move_uploaded_file($_FILES["logoConnectFile"]["tmp_name"], PATH_DATAS.$logoConnectFileName);

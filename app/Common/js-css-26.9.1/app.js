@@ -278,8 +278,8 @@ function menuContextShow(launcher, event)
 	if(isRelativePos==true)   {posRight+=$(menuId).parent().offset().left;  posBottom+=$(menuId).parent().offset().top;}							//Ajoute si besoin la position du parent
 	let posRightPage =(window.innerWidth  + window.pageXOffset);																					//"right"  position de la page affiché
 	let posBottomPage=(window.innerHeight + window.pageYOffset);																					//"bottom" position de la page affiché
-	if(posRight > posRightPage)											{posLeft-=(posRight - posRightPage);}										//Décale le menu s'il est au bord droit de la fenêtre
-	if(posBottom > posBottomPage && $("#bodyLightbox").exist()==false)	{posTop-=(posBottom - posBottomPage);}										//Décale le menu s'il est en bas de la fenêtre (sauf si "lightboxResize()")
+	if(posRight > posRightPage)											{posLeft=posLeft - $(menuId).outerWidth(true) + 50;}						//Décale s'il est au bord droit de la fenêtre (avec 10px ce marge)
+	if(posBottom > posBottomPage && $("#bodyLightbox").exist()==false)	{posTop =posTop - $(menuId).outerHeight(true) + 50;}						//Décale s'il est en bas de la fenêtre (sauf si "lightboxResize()")
 	$(menuId).css("left",(posLeft-10)).css("top",(posTop-10)).fadeIn(200);																			//Affiche le menu (recentré de 10px)
 	$(".menuContext").not(menuId).hide();																											//Masque les autres menus
 }
@@ -487,7 +487,7 @@ function asyncSubmit(thisForm)
 }
 
 /************************************************************************************************************
- * OUVRE UNE LIGHTBOX  (ex: "?ctrl=file&action=FileDownload&typeId=file-1&displayFile=true&extension=pdf")
+ * OUVRE UNE LIGHTBOX  (ex: "index.php?ctrl=file&action=FileDownload&typeId=file-1&displayFile=true&extension=pdf")
  ************************************************************************************************************/
 function lightboxOpen(fileSrc)
 {
@@ -732,7 +732,7 @@ function urlParam(param, url)
 function usersLikeUpdate(typeId)
 {
 	if(isValue(typeId)){
-		$.ajax({url:"?ctrl=object&action=usersLike&typeId="+typeId, dataType:"json"}).done(function(result){			//Requête Ajax pour switcher le "like"
+		$.ajax({url:"index.php?ctrl=object&action=usersLike&typeId="+typeId, dataType:"json"}).done(function(result){	//Requête Ajax pour switcher le "like"
 			let menuId="#usersLike_"+typeId;																			//Id du menu
 			if(result.likeNb==0)	{$(menuId).addClass("hide").find(".circleNb").html("");}							//Masque l'icone et le nb de likes
 			else					{$(menuId).removeClass("hide").find(".circleNb").html(result.likeNb).pulsate(1);}	//Affiche l'icone

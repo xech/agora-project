@@ -113,7 +113,7 @@ function timeSlotBusy()
 			//Init l'url, avec le créneau horaire et les agendas concernés
 			let dateTimeBegin=encodeURIComponent($(".dateBegin").val()+" "+$(".timeBegin").val());
 			let dateTimeEnd  =encodeURIComponent($(".dateEnd").val()+" "+$(".timeEnd").val());
-			var ajaxUrl="?ctrl=calendar&action=timeSlotBusy&dateTimeBegin="+dateTimeBegin+"&dateTimeEnd="+dateTimeEnd+"&_evtId=<?= $curObj->_id ?>";
+			var ajaxUrl="index.php?ctrl=calendar&action=timeSlotBusy&dateTimeBegin="+dateTimeBegin+"&dateTimeEnd="+dateTimeEnd+"&_evtId=<?= $curObj->_id ?>";
 			$(".vCalInput:checked").each(function(){  ajaxUrl+="&calendarIds[]="+this.value;  });
 			//Lance le controle Ajax et renvoie les agendas où le créneau est occupé
 			$.ajax(ajaxUrl).done(function(txtResult){

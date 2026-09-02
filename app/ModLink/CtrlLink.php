@@ -53,11 +53,11 @@ class CtrlLink extends Ctrl
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
-			//Enregistre & recharge l'objet
-			$adress=filter_var(Req::param("adress"), FILTER_SANITIZE_URL);
-			if(!stristr($adress,"http"))  {$adress="http://".$adress;}
+			//// Enregistre & reload l'objet
+			$adress=Req::param("adress");
+			$adress=(filter_var($adress,FILTER_VALIDATE_URL))  ?  filter_var($adress,FILTER_SANITIZE_URL)  :  "";//Valide et filtre l'URL
 			$curObj=$curObj->editRecord("adress=".Db::format($adress).", description=".Db::param("description"));
-			//Notifie par mail & Ferme la page
+			//// Notifie par mail & Ferme la page
 			$curObj->sendMailNotif('<a href="'.$curObj->adress.'" target="_blank"><b>'.$curObj->adress.'</b></a>');
 			static::lightboxRedir();
 		}

@@ -123,7 +123,7 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 .objLines .objIcon img								{max-width:50px!important; max-height:45px!important;}						/*Cf vignettes de fichiers*/
 .objLines .objDetails								{text-align:right; max-width:400px;}										/*Details : fichiers, tasks, etc.*/
 .objLines .objDetails>div							{display:inline-block; line-height:22px; margin-bottom:2px;}				/*cf. nb d'éléments des .objFolders + .progressBar*/
-.objLines .objAutorDate								{text-align:right; width:170px; font-size:0.9rem; line-height:20px;}		/*Auteur/Date*/
+.objLines .objAutorDate								{text-align:right; width:200px; font-size:0.9rem; line-height:18px;}		/*Auteur/Date*/
 .objLines .objAutorDate span						{display:block;}															/*Auteur et Date sur 2 lignes*/
 .objLines .objAutorDate img[src*=arrowRight]		{display:none;}																/*Masque la fleche de séparation entre l'Auteur/Date*/
 /*MISC*/
@@ -247,7 +247,7 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 
 
 /********** LABEL <=> INPUT (edit d'objet, parametrage general, etc)*/
-.objField																{display:table; width:100%; margin-block:10px;}
+.objField																{display:table; width:100%; margin-block:3px;}
 .objField>div															{display:table-cell; width:50%; padding:5px; vertical-align:top;}
 .objField>div:not(:has(input[type=text],input[type=password],textarea))	{line-height:30px;}/*aligne les labels et input checkbox/radio avec le min-height des inputs text*/
 .objField>div img.personImg												{max-width:250px; max-height:150px;}

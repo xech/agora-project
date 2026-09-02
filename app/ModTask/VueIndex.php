@@ -67,11 +67,9 @@ function moduleDisplay(){
 
 	<div id="pageContent" class="<?= MdlTask::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 
-		<!--PATH DU DOSSIER COURANT & LISTE DES DOSSIERS-->
-		<?= MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).CtrlObject::vueFolders() ?>
-
-		<!--LISTE DES TACHES-->
 		<?php
+		////	PATH DU DOSSIER COURANT  + LISTE DES DOSSIERS  + LISTE DES TACHES
+		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).CtrlObject::vueFolders();
 		foreach($tasksList as $tmpTask){
 			echo $tmpTask->objContentDiv();
 		?>
@@ -89,7 +87,7 @@ function moduleDisplay(){
 			</div>
 		<?php } ?>
 
-		<!--AUCUN CONTENU & AJOUTER-->
+		<!--AUCUN CONTENU + AJOUTER-->
 		<?php if(empty(CtrlObject::vueFolders()) && empty($tasksList)){ ?>
 			<div class="miscContent emptyContent">
 				<?= Txt::trad("TASK_noTask") ?>

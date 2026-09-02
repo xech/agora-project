@@ -112,7 +112,7 @@
 						</div>
 						<?php } ?>
 						<!--DECONNEXION DE L'ESPACE-->
-						<div class="menuLine" onclick="confirmRedir('?disconnect=1','<?= Txt::trad('disconnectSpaceConfirm',true) ?>')">
+						<div class="menuLine" onclick="confirmRedir('index.php?disconnect=1','<?= Txt::trad('disconnectSpaceConfirm',true) ?>')">
 							<div class="menuIcon"><img src="app/img/logout.png"></div>
 							<div><?= Txt::trad("disconnectSpace") ?></div>
 						</div>
@@ -120,19 +120,19 @@
 						<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 							<hr>
 							<!--GERER TOUS LES USERS-->
-							<div class="menuLine">
+							<div class="menuLine" <?= Txt::tooltip("USER_allUsersToolip") ?>>
 								<div class="menuIcon"><img src="app/img/user/iconSmall.png"></div>
-								<div><a href="?ctrl=user&displayUsers=all"><?= Txt::trad("USER_allUsers") ?></a></div>
+								<div><a href="index.php?ctrl=user&displayUsers=all"><?= Txt::trad("USER_allUsers") ?></a></div>
 							</div>
 							<!--GERER TOUS LES ESPACES-->
 							<div class="menuLine" <?= Txt::tooltip("SPACE_moduleTooltip") ?>>
 								<div class="menuIcon"><img src="app/img/space.png"></div>
-								<div><a href="?ctrl=space"><?= Txt::trad("HEADER_manageAllSpaces") ?></a></div>
+								<div><a href="index.php?ctrl=space"><?= Txt::trad("HEADER_manageAllSpaces") ?></a></div>
 							</div>
 							<!--PARAMETRAGE GENERAL-->
 							<div class="menuLine">
 								<div class="menuIcon"><img src="app/img/settingsGeneral.png"></div>
-								<div><a href="?ctrl=agora"><?= Txt::trad("AGORA_generalSettings") ?></a></div>
+								<div><a href="index.php?ctrl=agora"><?= Txt::trad("AGORA_generalSettings") ?></a></div>
 							</div>
 						<?php } ?>
 					<?php } ?>
@@ -156,15 +156,15 @@
 							</div>
 							<!--USERS DE L'ESPACE-->
 							<div class="menuLine menuMainAdmin">
-								<a href="?ctrl=user&displayUsers=space"><img src="app/img/user/iconSmall.png"><?= Txt::trad("USER_spaceUsers") ?></a>
+								<a href="index.php?ctrl=user&displayUsers=space"><img src="app/img/user/iconSmall.png"><?= Txt::trad("USER_spaceUsers") ?></a>
 							</div>
 							<!--LOGS DE L'ESPACE-->
 							<div class="menuLine menuMainAdmin">
-								<a href="?ctrl=log"><img src="app/img/log.png"><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></a>
+								<a href="index.php?ctrl=log"><img src="app/img/log.png"><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></a>
 							</div>
 							<!--AFFICHAGE ADMIN-->
 							<div class="menuLine menuMainAdmin <?= empty($_SESSION['displayAdmin']) ? null : 'optionSelect' ?>" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>>
-								<a href="?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>"><img src="app/img/eye.png"><?= Txt::trad("HEADER_displayAdmin") ?></a>
+								<a href="index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>"><img src="app/img/eye.png"><?= Txt::trad("HEADER_displayAdmin") ?></a>
 							</div>
 						<?php } ?>
 					<?php } ?>

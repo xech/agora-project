@@ -185,19 +185,23 @@ class CtrlUser extends Ctrl
 				foreach(Req::param("personsImport") as $personCpt){
 					$curObj=new MdlUser();
 					$user=[];
-					//// Récupère la valeur de chaque champ
 					$sqlFields=null;
-					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){
-						$fieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;//valeur correspondante au champ "agora"
-						if(!empty($fieldVal) && !empty($fieldName) && !preg_match("/^(login|pass)/i",$fieldName))//complète la requête (sauf si login/password)
-							{$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}
-						$user[$fieldName]=$fieldVal;//Retient la valeur pour définir le login/password ci-après
+					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){															//Ajoute chaque champ :
+						$fieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;			//Valeur du champ
+						if(empty($fieldVal) || stristr($fieldName,"generalAdmin"))  {continue;}												//Valeur vide OU champ 'generalAdmin' : on passe
+						if(!preg_match("/^(login|password)$/i",$fieldName))  {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}	//Complète la requête (sauf Login/password)
+						$user[$fieldName]=$fieldVal;																						//Retient la valeur pour le login/password/mail/firstName/Name ci-après
 					}
-					//// Login=>email  ||  Login par défaut (Ex:"Jean Durant"->"jdurant")  &&  Password par défaut
-					if(empty($user["login"]) && !empty($user["mail"]))	{$user["login"]=$user["mail"];}
-					if(empty($user["login"]))							{$user["login"]=strtolower( substr(Txt::clean($user["firstName"],"max",""),0,1).substr(Txt::clean($user["name"],"max",""),0,8) );}
-					if(empty($user["password"]))						{$user["password"]=Txt::defaultPassword();}
-					//// Enregistre le nouvel utilisateur
+					if(empty($user["password"]))	{$user["password"]=Txt::defaultPassword();}												//Password par défaut
+					if(empty($user["login"])){																								//Login par défaut :
+						if(!empty($user["mail"]))	{$user["login"]=$user["mail"];}															//Login email
+						else{																												//Login prénom/nom (Ex:"Jean Durant"->"jdurant")
+							$firstNameTmp=(!empty($user["firstName"]))  ?  substr(Txt::clean($user["firstName"],"max"),0,1)  :  "";
+							$nameTmp     =(!empty($user["name"]))  ?  substr(Txt::clean($user["name"],"max"),0,8)  :  "";
+							$user["login"]=strtolower($firstNameTmp.$nameTmp);
+						}
+					}
+					//// Enregistre  &&  Reload le nouvel utilisateur
 					$curObj=$curObj->editRecord($sqlFields, $user["login"], $user["password"]);
 					//// Options :  Notif mail  &&  Affecte si besoin l'utilisateur aux espaces spécifiés
 					if(MdlObject::isObject($curObj)){
@@ -266,19 +270,19 @@ class CtrlUser extends Ctrl
 	/********************************************************************************************************
 	 * VUE : ENVOI UN EMAIL POUR REINITIALISER LES COORDONNEES DE CONNEXION D'USERS
 	 ********************************************************************************************************/
-	public static function actionResetPasswordUsers()
+	public static function actionPasswordResetUsers()
 	{
 		////	Controle d'accès
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {static::lightboxRedir();}
 		////	Formulaire validé : envoi un mail pour chaque user
 		if(Req::isParam(["formValidate","usersList"])){
-			foreach(Req::param("usersList") as $userId)   {Ctrl::getObj("user",$userId)->resetPasswordSendMail();}
-			Ctrl::notify("resetPasswordNotif");//Notif spécifique
+			foreach(Req::param("usersList") as $userId)   {Ctrl::getObj("user",$userId)->passwordResetSendMail();}
+			Ctrl::notify("passwordResetNotif");//Notif spécifique
 			static::lightboxRedir();
 		}
 		////	Liste des users + affiche le formulaire
 		$vDatas["usersList"]=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay()." AND LENGTH(mail)>0 AND _id!=".(int)Ctrl::$curUser->_id." ".MdlUser::sqlSort());
-		static::displayPage("VueResetPasswordUsers.php",$vDatas);
+		static::displayPage("VuePasswordResetUsers.php",$vDatas);
 	}
 
 	/********************************************************************************************************
@@ -381,16 +385,19 @@ class CtrlUser extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * INSCRIPTIONS D'USERS SUR LES ESPACES ADMINISTRÉS PAR L'USER COURANT
+	 * LISTE DES DEMANDES D'INSCRIPTIONS SUR LES ESPACES DE L'USER COURANT (ADMIN)
 	 ********************************************************************************************************/
 	public static function userInscriptionValidate()
 	{
 		////	Mise en cache dans une variable de session
 		if(empty($_SESSION["userInscriptionValidate"])){
 			$_SESSION["userInscriptionValidate"]=[];
-			$userInscriptions=Db::getTab("SELECT * FROM ap_userInscription WHERE _idSpace IN (".implode(",",Ctrl::$curUser->spaceList("ids")).") ORDER BY _idSpace");//Inscriptions sur les espaces de l'user courant
+			$spaceIds=implode(",",Ctrl::$curUser->spaceList("ids"));
+			$userInscriptions=Db::getTab("SELECT * FROM ap_userInscription WHERE _idSpace IN (".$spaceIds.") ORDER BY _idSpace");
 			foreach($userInscriptions as $tmpInscription){
-				if(Ctrl::getObj("space",$tmpInscription["_idSpace"])->editRight())  {$_SESSION["userInscriptionValidate"][]=$tmpInscription;}//Ajoute l'inscription si l'user courant administre l'espace
+				//// Ajoute l'inscription si l'user courant administre l'espace
+				if(Ctrl::getObj("space",$tmpInscription["_idSpace"])->editRight())
+					{$_SESSION["userInscriptionValidate"][]=$tmpInscription;}
 			};
 		}
 		////	Retourne le résultat

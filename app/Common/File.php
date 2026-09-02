@@ -86,7 +86,8 @@ class File
 	 ********************************************************************************************************/
 	public static function extension($fileName)
 	{
-		return strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
+		if(!empty($fileName))
+			{return strtolower(pathinfo($fileName,PATHINFO_EXTENSION));}
 	}
 
 	/********************************************************************************************************
@@ -274,16 +275,15 @@ class File
 	/********************************************************************************************************
 	 * REDIMENSIONNE UNE IMAGE ("imgSrc.png"= "imgDest.jpg")
 	 ********************************************************************************************************/
-	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null, $compressionQuality=85)
+	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null)
 	{
-		// Verifs de base
-		if(self::isType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth))
-		{
+		////	Verifs de base
+		if(self::isType("imageResize",$imgPathSrc) && function_exists("getimagesize") && is_file($imgPathSrc) && is_numeric($maxWidth)){
 			////	Récupère la taile de l'image et vérifie l'intégrité du fichier
 			$getimagesize=@getimagesize($imgPathSrc);
-			if(is_array($getimagesize) && in_array($getimagesize[2],[IMAGETYPE_JPEG,IMAGETYPE_GIF,IMAGETYPE_PNG]))
-			{
-				//Init
+			if(is_array($getimagesize) && in_array($getimagesize[2],[IMAGETYPE_JPEG,IMAGETYPE_GIF,IMAGETYPE_PNG])){
+				////	Init
+				$compressionQuality=85;
 				$resizeReturn=false;
 				list($oldWidth,$oldHeight)=$getimagesize;
 				////	Nouvelle taille de l'image, en fonction du cadre de référence
@@ -291,9 +291,8 @@ class File
 				if($oldWidth<$maxWidth && $oldHeight<$maxHeight)	{$newWidth=$oldWidth;	$newHeight=$oldHeight;}//conserve la taille
 				elseif($oldWidth>$oldHeight)						{$newWidth=$maxWidth;	$newHeight=round(($maxWidth / $oldWidth) * $oldHeight);}//paysage
 				else												{$newHeight=$maxHeight;	$newWidth=round(($maxHeight / $oldHeight) * $oldWidth);}//portrait
-				////	Resize via la lib "Imagick"
-				if(extension_loaded("imagick"))
-				{
+				////	Resize via Imagick
+				if(extension_loaded("imagick")){
 					$imgTmp=new Imagick($imgPathSrc);
 					//Vérifie s'il faut réorienter l'image
 					$imgOrientation=$imgTmp->getImageOrientation();
@@ -311,9 +310,8 @@ class File
 					$imgTmp->destroy();
 					$resizeReturn=true;
 				}
-				////	Resize via la lib "GD"
-				elseif(function_exists("imagecreatefromjpeg"))
-				{
+				////	Resize via GD (old)
+				elseif(function_exists("imagecreatefromjpeg")){
 					// Créé une image temporaire
 					$thumb=imagecreatetruecolor($newWidth,$newHeight);
 					if(preg_match("/jpe?g$/i",$imgPathSrc))		{$source=imagecreatefromjpeg($imgPathSrc);}
@@ -325,8 +323,7 @@ class File
 						$source=imagecreatefrompng($imgPathSrc);
 					}
 					// Resize & Enregistre l'image
-					if($source!=false)
-					{
+					if($source!=false){
 						imagecopyresized($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $oldWidth, $oldHeight);
 						if(preg_match("/jpe?g$/i",$imgPathDest))	{imagejpeg($thumb,$imgPathDest,$compressionQuality);}
 						elseif(preg_match("/gif$/i",$imgPathDest))	{imagegif($thumb,$imgPathDest);}
@@ -378,11 +375,11 @@ class File
 	{
 		$limitSize=(self::sizeGo*10);	//10Go max en heure de pointe
 		$disabledBegin=9;				//debut plage horaire limitée
-		$disabledEnd  =16;				//fin   plage horaire limitée
+		$disabledEnd  =18;				//fin   plage horaire limitée
 		if(date("G") >= $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > (int)$limitSize){
 			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert")).' '.($disabledEnd+1).'H';
 			Ctrl::notify($alertLabel, "error");
-			Ctrl::redir("?ctrl=".Req::$curCtrl);//Redirige en page principale du module (ne pas mettre de "action")
+			Ctrl::redir("index.php?ctrl=".Req::$curCtrl);//Redirige en page principale du module
 		}
 	}
 
@@ -421,7 +418,7 @@ class File
 				foreach($paramsEdit as $paramName=>$paramValue){
 					if($paramValue===true)				{$paramValue='true';}												//booléen sans guillemet
 					elseif($paramValue===false)			{$paramValue='false';}												//idem
-					elseif($paramName=="db_password")	{$paramValue="'".addslashes(Txt::clean($paramValue,'min'))."'";}	//guillemet simple pour pas interpréter "$" comme une variable
+					elseif($paramName=="db_password")	{$paramValue="'".addslashes(Txt::clean($paramValue,'min'))."'";}	//guillemet simple (sinon interprète "$" comme une variable)
 					else								{$paramValue='"'.Txt::clean($paramValue,'min').'"';}				//guillemet double
 					$paramsEdit[$paramName]=$paramValue;
 				}

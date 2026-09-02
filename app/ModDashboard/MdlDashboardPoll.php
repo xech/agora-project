@@ -91,7 +91,7 @@ class MdlDashboardPoll extends MdlObject
 			foreach($this->_responseList as $tmpKey=>$tmpResponse){
 				if(!empty($tmpResponse["fileName"])){
 					$this->_responseList[$tmpKey]["filePath"]=$this->responseFilePath($tmpResponse);
-					$this->_responseList[$tmpKey]["fileUrlDownload"]="?ctrl=dashboard&action=ResponseDownloadFile&typeId=".$this->typeId."&_idResponse=".$tmpResponse["_id"];
+					$this->_responseList[$tmpKey]["fileUrlDownload"]="index.php?ctrl=dashboard&action=ResponseDownloadFile&typeId=".$this->typeId."&_idResponse=".$tmpResponse["_id"];
 				}
 			}
 		}
@@ -268,7 +268,7 @@ class MdlDashboardPoll extends MdlObject
 		////	Export pdf du résultat d'un sondage
 		if(Ctrl::$curUser->isGeneralAdmin()){
 			$options["objOptions"][]=[
-				"actionJs"=>"redir('?ctrl=dashboard&action=ExportPollResult&typeId=".$this->typeId."')",
+				"actionJs"=>"redir('index.php?ctrl=dashboard&action=ExportPollResult&typeId=".$this->typeId."')",
 				"iconSrc"=>"download.png",
 				"label"=>Txt::trad("DASHBOARD_POLLS_exportPdf")
 			];

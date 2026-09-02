@@ -264,7 +264,8 @@ class MdlUser extends MdlPerson
 	 ********************************************************************************************************/
 	public static function usersQuotaRemaining()
 	{
-		if(defined("limite_nb_users"))  {return (int)(limite_nb_users - Db::getVal("SELECT count(*) FROM ap_user"));}
+		if(defined("limite_nb_users"))
+			{return (int)(limite_nb_users - Db::getVal("SELECT count(*) FROM ap_user"));}
 	}
 
 	/********************************************************************************************************
@@ -272,24 +273,20 @@ class MdlUser extends MdlPerson
 	 ********************************************************************************************************/
 	public function editRecord($sqlFields, $login=null, $clearPassword=null, $spaceId=null)
 	{
-		////	Controles : quota atteint ? Login existe déjà ?
-		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}
-		if(self::loginExists($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginExists")." (".$login.")");  return false;}
-		////	Ajoute le login, le password? si l'agenda perso est désactivé?
-		$sqlFields=trim(trim($sqlFields),",");
-		$sqlFields.=", `login`=".Db::format($login);
-		if(!empty($clearPassword))  {$sqlFields.=", `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT));}
-		////	Nouvel User : ajoute le parametrage du messenger, l'agenda perso, et si besoin affecte l'user à un Espace.
-		$reloadedObj=parent::editRecord($sqlFields);
-		if($reloadedObj->isNewRecord()){
-			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");//Affecte l'user à tout le monde sur le messenger
-			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");//créé l'agenda, même si l'agenda est désactivé par défaut
-			if(!empty($spaceId)){
+		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}													//Controles le quota d'users atteint
+		if(self::loginExists($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginExists")." : ".$login);  return false;}	//Controle si le login existe déjà
+		$sqlFields=trim(trim($sqlFields),",");																					//Prépare la requete
+		$sqlFields.=", `login`=".Db::format($login);																			//Ajoute le login
+		if(!empty($clearPassword))  {$sqlFields.=", `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT));}	//Ajoute le password
+		$reloadedObj=parent::editRecord($sqlFields);																			//Enregistre les champs  &&  Reload l'user
+		if($reloadedObj->isNewRecord()){																						//Nouvel User -> paramétrage de base :
+			Db::query("INSERT INTO ap_userMessenger SET _idUserMessenger=".$reloadedObj->_id.", allUsers=1");					//Affecte l'user à tout le monde sur le messenger
+			Db::query("INSERT INTO ap_calendar SET _idUser=".$reloadedObj->_id.", type='user'");								//Créé l'agenda, même si l'agenda est désactivé par défaut
+			if(!empty($spaceId)){																								//Affecte l'user à un Espace
 				$tmpSpace=Ctrl::getObj("space",$spaceId);
 				if($tmpSpace->allUsersAffected()==false)  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$spaceId.", _idUser=".$reloadedObj->_id.", accessRight=1");}
 			}
 		}
-		////	Retourne l'objet rechargé
 		return $reloadedObj;
 	}
 
@@ -316,47 +313,49 @@ class MdlUser extends MdlPerson
 	}
 
 	/********************************************************************************************************
-	 * RESET DE PASSWORD : IDENTIFIANT UNIQUE
+	 * RESET DE PASSWORD : CREE UN TOKEN
 	 ********************************************************************************************************/
-	public function resetPasswordId()
+	public function passwordResetIdCreate()
 	{
-		return sha1($this->_id.$this->login.$this->password);
+		$this->passwordResetId=Txt::randomId();																			//Créé un nouveau Token
+		Db::query("UPDATE ap_user SET passwordResetId=".Db::format($this->passwordResetId)." WHERE _id=".$this->_id);	//Enregistre le token en BDD
+		return $this->passwordResetId;																					//Renvoie le passwordResetId
 	}
 
 	/********************************************************************************************************
-	 * RESET DE PASSWORD : VERIF L'IDENTIFIANT IDENTIFIANT UNIQUE
+	 * RESET DE PASSWORD : VERIF LE TOKEN
 	 ********************************************************************************************************/
-	public function resetPasswordIdVerif()
+	public function passwordResetIdVerif()
 	{
-		return Req::param("resetPasswordId")==$this->resetPasswordId();
+		return Req::param("passwordResetId")==$this->passwordResetId;
 	}
 
 	/********************************************************************************************************
-	 * RESET DE PASSWORD : ENVOI DE L'EMAIL
+	 * RESET DE PASSWORD : ENVOI UN EMAIL AVEC UN NOUVEAU TOKEN
 	 ********************************************************************************************************/
-	public function resetPasswordSendMail()
+	public function passwordResetSendMail()
 	{
 		////	Envoie l'email (champ login ou mail)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
 		if(Txt::isMail($mailTo)){
-			$resetPasswordUrl=Req::curUrl()."/index.php?ctrl=offline&resetPasswordMail=".urlencode($mailTo)."&resetPasswordId=".$this->resetPasswordId();
-			$mailSubject=Txt::trad("resetPasswordMailTitle");
+			$passwordResetUrl=Req::curUrl()."/index.php?ctrl=offline&passwordResetMail=".urlencode($mailTo)."&passwordResetId=".$this->passwordResetIdCreate();
+			$mailSubject=Txt::trad("passwordResetMailTitle");
 			$mailMessage=Txt::trad("MAIL_hello").',<br><br>'.
-					 	 '<b>'.Txt::trad("resetPasswordMailPassword").' <a href="'.$resetPasswordUrl.'" target="_blank">'.Txt::trad("resetPasswordMailPassword2").'</a></b>'.
-					 	 '<br><br>'.Txt::trad("resetPasswordMailLoginRemind").' : <i>'.$this->login.'</i>';
-			Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);//noNotify : cf notif spécifique + envoie multiple via actionResetPasswordUsers()
+					 	 '<b>'.Txt::trad("passwordResetMailPassword").' <a href="'.$passwordResetUrl.'" target="_blank">'.Txt::trad("passwordResetMailPassword2").'</a></b>'.
+					 	 '<br><br>'.Txt::trad("passwordResetMailLoginRemind").' : <i>'.$this->login.'</i>';
+			Tool::sendMail($mailTo, $mailSubject, $mailMessage, ["noNotify"]);//noNotify : cf envoi multiple via actionPasswordResetUsers()
 		}
 		////	Aucun compte pour cet email
-		else {Ctrl::notify("resetPasswordMailNotRegistered");}
+		else {Ctrl::notify("passwordResetMailNotRegistered");}
 	}
 
 	/********************************************************************************************************
 	 * RESET DE PASSWORD : ENREGISTRE LE NOUVEAU PASSWORD
 	 ********************************************************************************************************/
-	public function resetPasswordRecord()
+	public function passwordResetRecord()
 	{
 		$newPassword=Req::param("newPassword");
-		if($this->resetPasswordIdVerif() && !empty($newPassword)){
+		if($this->passwordResetIdVerif()===true && !empty($newPassword)){
 			$passwordHash=password_hash($newPassword,PASSWORD_DEFAULT);
 			Db::query("UPDATE ".MdlUser::dbTable." SET `password`=".Db::format($passwordHash)." WHERE `_id`=".(int)$this->_id);
 			Ctrl::notify("modifRecorded","success");
@@ -382,7 +381,7 @@ class MdlUser extends MdlPerson
 		////	"Retirer l'utilisateur de l'espace courant ?"
 		if($this->deleteFromCurSpaceRight()){
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')",
+				"actionJs"=>"confirmRedir('index.php?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')",
 				"iconSrc"=>"deleteRemove.png",
 				"label"=>Txt::trad("USER_deleteFromCurSpace").' <i>'.Ctrl::$curSpace->getLabel().'</i>'
 			];
@@ -402,7 +401,7 @@ class MdlUser extends MdlPerson
 		}
 		////	Exporter au format vCard
 		$options["objOptions"][]=[
-			"actionJs"=>"redir('?ctrl=user&action=ExportVcard&typeId=".$this->typeId."');",
+			"actionJs"=>"redir('index.php?ctrl=user&action=ExportVcard&typeId=".$this->typeId."');",
 			"iconSrc"=>"vcard.png",
 			"label"=>Txt::trad("export_vcard"),
 		];

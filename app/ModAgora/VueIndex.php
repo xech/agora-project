@@ -5,7 +5,7 @@ ready(function(){
 	*******************************************************************************************/
 	$(".vButtonBackup").on("click",function(){
 		let confirmLabel=(this.getAttribute("data-type-backup")=="all")  ?  "<?= Txt::trad("AGORA_backupConfirm") ?>"  :  null;
-		confirmRedir("?ctrl=agora&action=getBackup&typeBackup="+this.getAttribute("data-type-backup"), confirmLabel);
+		confirmRedir("index.php?ctrl=agora&action=getBackup&typeBackup="+this.getAttribute("data-type-backup"), confirmLabel);
 	});
 
 	/********************************************************************************************************
@@ -282,7 +282,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					<div><img src="app/img/log.png"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
 					<div>
 						<select name="logsTimeOut">
-							<?php foreach([0,30,120,360,720] as $tmpTimeOut){
+							<?php foreach([0,30,120,360] as $tmpTimeOut){
 								$tmpSelected=($tmpTimeOut==Ctrl::$agora->logsTimeOut)  ?  "selected"  :  null;
 								echo "<option value='".$tmpTimeOut."' ".$tmpSelected.">".$tmpTimeOut."</option>";
 							} ?>

@@ -71,7 +71,7 @@ hr:last-of-type					{display:none;}
 	<?php if(!empty($curObj->visioUrl)){ ?>
 		<div class="vEvtDetail">
 			<div class="vEvtDetailIcon"><img src="app/img/visioSmall.png"></div>
-			<div><a href="?ctrl=misc&action=LaunchVisio&visioURL=<?= urlencode($curObj->visioUrl) ?>" class="lightboxOpenHref"><?= Txt::trad("VISIO_launchFromEvent") ?></a></div>
+			<div><a href="index.php?ctrl=misc&action=LaunchVisio&visioURL=<?= urlencode($curObj->visioUrl) ?>" class="lightboxOpenHref"><?= Txt::trad("VISIO_launchFromEvent") ?></a></div>
 		</div><hr>
 	<?php } ?>
 

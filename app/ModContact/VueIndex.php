@@ -19,28 +19,30 @@
 
 	<div id="pageContent" class="<?= MdlContact::getDisplayMode()=="line"?"objLines":"objBlocks" ?>">
 		<?php
-		////	PATH DU DOSSIER COURANT  &  LISTE DES DOSSIERS  &  LISTE DES CONTACTS
-		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew()).
-			 CtrlObject::vueFolders();
+		////	PATH DU DOSSIER COURANT  + LISTE DES DOSSIERS  + LISTE DES CONTACTS
+		echo MdlFolder::menuPath(Txt::trad("CONTACT_addContact"),MdlContact::getUrlNew()).CtrlObject::vueFolders();
 		foreach($contactList as $tmpContact){
-			echo $tmpContact->objContentDiv("objPerson").
-				'<div class="objContentScroll">
+			echo $tmpContact->objContentDiv("objPerson");
+		?>
+				<div class="objContentScroll">
 					<div class="objContentTab">
-						<div class="objIcon">'.$tmpContact->tagProfileImg(true,false).'</div>
-						<div class="objLabel" onclick="'.$tmpContact->lightboxVue().'">
-							<div class="personLabel">'.$tmpContact->getLabel("full").'</div>
-							'.$tmpContact->getFields("index").'
+						<div class="objIcon"><?= $tmpContact->tagProfileImg(true,false) ?></div>
+						<div class="objLabel" onclick="<?= $tmpContact->lightboxVue() ?>">
+							<div class="personLabel"><?= $tmpContact->getLabel("full") ?></div>
+							<?= $tmpContact->getFields("index") ?>
 						</div>
-						<div class="objAutorDate">'.$tmpContact->autorDate(true).'</div>
+						<div class="objAutorDate"><?= $tmpContact->autorDate(true) ?></div>
 					</div>
 				</div>
-			</div>';
-		}
-		////	AUCUN CONTENU & AJOUTER
-		if(empty(CtrlObject::vueFolders()) && empty($contactList)){
-			$addElement=(Ctrl::$curContainer->addContentRight())  ?  "<div onclick=\"lightboxOpen('".MdlContact::getUrlNew()."')\"><img src='app/img/plus.png'> ".Txt::trad("CONTACT_addContact")."</div>"  :  null;
-			echo '<div class="miscContent emptyContent">'.Txt::trad("CONTACT_noContact").$addElement.'</div>';
-		}
-		?>
+			</div>
+		<?php } ?>
+
+		<!--AUCUN CONTENU + AJOUTER-->
+		<?php if(empty(CtrlObject::vueFolders()) && empty($contactList)){ ?>
+			<div class="miscContent emptyContent">
+				<?= Txt::trad("CONTACT_noContact") ?>
+				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlContact::getUrlNew() ?>')"><img src="app/img/plus.png"> <?= Txt::trad("CONTACT_addContact") ?></div><?php } ?>
+			</div>
+		<?php } ?>
 	</div>
 </div>

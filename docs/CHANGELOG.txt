@@ -3,6 +3,24 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
+VERSION 26.9.1
+--------------
+Renforcement des controles de réinitialisation de mot de passe via un token à usage unique
+Renforcement des controles d'Url passés en paramètre : ObjUrl, VisioUrl, etc
+Renforcement des controles de connexion auto via tokens & password_hash()
+Optimisation de la rapidité d'affichage d'agendas multiples
+Optimisation de la gestion des droits d'accès via setAffectations()
+Optimisation de la fonction de nettoyage de texte clean()
+Amélioration de l'affichage des menus contextuels en bord droit ou bas de page
+-----
+Strengthening the password reset procedure using a one-time token
+Strengthening of URL controls for ObjUrl, VisioUrl, etc. parameters
+Strengthening of autologin checks using tokens and password_hash()
+Optimizing the display speed of multiple calendars
+Optimization of access rights management via setAffectations()
+Optimization of the cleaning text function clean()
+Improved display of context menus at the right or bottom edge of the page
+
 
 VERSION 26.8.4
 --------------
@@ -14,7 +32,7 @@ Optimisation des tables de la Bdd : encodage "utf8mb4_unicode_ci" et moteur "INN
 Optimisation de la gestion des modules, dans le menu d'édition d'un espace
 Optimisation du processus  de réinitialisation de mot de passe
 Optimisation des contrôles d'accès aux modules des espaces
-Optimisation de la procédure d'installation et du fichier de config
+Optimisation de la procédure d'installation et l'enregistrement du fichier config.inc.php
 Optimisation des contrôles de paramètre $_GET / $_POST / $_FILES
 Optimisation de la gestion des Cookies (expires, httponly, samesite, secure)
 Amélioration du controle d'accès et de consultation des agendas via une application externe
@@ -30,12 +48,12 @@ Optimization of database tables : "utf8mb4_unicode_ci" encoding and "INNODB" eng
 Optimization of module management in the space editing menu
 Optimization of the password reset process
 Optimization of access controls for space modules
-Optimizing the installation procedure and configuration file
-Optimizing $_GET / $_POST / $_FILES parameter checks
+Optimization of the installation procedure and config.inc.php record
+Optimization of $_GET / $_POST / $_FILES parameter checks
 Cookie management optimization (expires, HttpOnly, SameSite, Secure)
 Improved access control to a calendar via an external application
 Datatable library updated to version 2.3.8 for log display
-PHPMailer library updated to version 7.1.1 for better support for PHP 8.5.
+PHPMailer library updated to version 7.1.1 for better support of PHP 8.5.
 Google-api-php-client library updated to version 2.19.4
 
 

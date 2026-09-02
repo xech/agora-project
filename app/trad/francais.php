@@ -111,15 +111,15 @@ class Trad extends Txt
 			"passwordModif"=>"Modifier le mot de passe",
 			"passwordTmp"=>"Mot de passe temporaire (à modifier en page de connexion)",
 			"passwordByDefault"=>"Mot de passe par défaut (à modifier si besoin sur votre profil)",
-			"resetPassword"=>"Mot de passe oublié ?",
-			"resetPasswordYourMail"=>"Indiquez votre adresse email pour récupérer votre mot de passe",
-			"resetPasswordNotif"=>"L'email de récupération a bien été envoyé.<br><br>Si vous ne l'avez pas reçu, pensez à vérifier le dossier de courrier indésirable de votre messagerie.",
-			"resetPasswordMailTitle"=>"Réinitialiser votre mot de passe",
-			"resetPasswordMailPassword"=>"Pour réinitialiser votre mot de passe,",
-			"resetPasswordMailPassword2"=>"merci de cliquer sur ce lien",
-			"resetPasswordMailLoginRemind"=>"Rappel de votre identifiant de connexion",
-			"resetPasswordIdExpired"=>"Le lien pour régénérer le mot de passe a expiré. Merci de recommencer la procédure",
-			"resetPasswordMailNotRegistered"=>"L'email ne correspond à aucun compte enregistré",
+			"passwordReset"=>"Mot de passe oublié ?",
+			"passwordResetYourMail"=>"Indiquez votre adresse email pour récupérer votre mot de passe",
+			"passwordResetNotif"=>"L'email de récupération de mot de passe a bien été envoyé. <br><br>Au besoin, pensez à vérifier le dossier spam de votre messagerie.",
+			"passwordResetMailTitle"=>"Réinitialiser votre mot de passe",
+			"passwordResetMailPassword"=>"Pour réinitialiser votre mot de passe,",
+			"passwordResetMailPassword2"=>"merci de cliquer sur ce lien",
+			"passwordResetMailLoginRemind"=>"Rappel de votre identifiant de connexion",
+			"passwordResetIdExpired"=>"Le lien pour réinitialiser le mot de passe a expiré. <br> Merci de recommencer la procédure",
+			"passwordResetMailNotRegistered"=>"L'email ne correspond à aucun compte enregistré",
 
 			////	Type d'affichage
 			"displayMode"=>"Disposition",
@@ -415,7 +415,7 @@ class Trad extends Txt
 
 			////	Header
 			"HEADER_spaceSwitch"=>"Afficher cet espace de travail",
-			"HEADER_manageAllSpaces"=>"Gérer tous les espaces de travail",
+			"HEADER_manageAllSpaces"=>"Gérer les espaces de travail",
 			"HEADER_displayAdmin"=>"Affichage Administrateur",
 			"HEADER_displayAdminInfo"=>"Permet d'afficher tous les éléments présents sur l'espace : dossiers, agendas, messages du forum, etc",
 			"HEADER_displayAdminEnabled"=>"Affichage Administrateur activé",
@@ -461,7 +461,7 @@ class Trad extends Txt
 			"EDIT_spaceNoModule"=>"Le module courant n'a pas encore été ajouté à cet espace",
 			"EDIT_showAllUsers"=>"Afficher tous les utilisateurs",
 			"EDIT_showAllUsersInfo"=>"Afficher les utilisateurs de tous les espaces de travail",
-			"EDIT_showAllSpaces"=>"Afficher tous les espaces",
+			"EDIT_showAllSpaces"=>"Afficher tous les espaces de travail",
 			"EDIT_notifMail"=>"Notifier par email",
 			"EDIT_notifMail2"=>"Envoyer une notification par email",
 			"EDIT_notifMailTooltip"=>"Envoyer une notification par email aux personnes ayant accès --OBJ_LABEL_TO--",
@@ -498,14 +498,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espace de partage et de travail collaboratif",
 			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre espace de partage &nbsp; <img src="app/img/logoSmall.png"></h3>
-											<h4><img src="app/img/file/iconSmall.png"> <a href="?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
-											<h4><img src="app/img/calendar/iconSmall.png"> <a href="?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
-											<h4><img src="app/img/dashboard/iconSmall.png"> <a href="?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
-											<h4><img src="app/img/task/iconSmall.png"> <a href="?ctrl=task">Gérez vos tâches et projets pour organiser votre activité</a></h4>
-											<h4><img src="app/img/messengerSmall.png"> <a href="?ctrl=forum">Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
-											<h4><img src="app/img/mail/iconSmall.png"> <a href="?ctrl=mail">Envoyez des newsletters pour diffuser des mails d\'information.</a></h4>
+											<h4><img src="app/img/file/iconSmall.png"> <a href="index.php?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
+											<h4><img src="app/img/calendar/iconSmall.png"> <a href="index.php?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
+											<h4><img src="app/img/dashboard/iconSmall.png"> <a href="index.php?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
+											<h4><img src="app/img/task/iconSmall.png"> <a href="index.php?ctrl=task">Gérez vos tâches et projets pour organiser votre activité</a></h4>
+											<h4><img src="app/img/messengerSmall.png"> <a href="index.php?ctrl=forum">Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
+											<h4><img src="app/img/mail/iconSmall.png"> <a href="index.php?ctrl=mail">Envoyez des newsletters pour diffuser des mails d\'information.</a></h4>
 											<h4><img src="app/img/documentation.png"> <a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref">Consultez le guide d\'utilisation pour découvrir le fonctionnement votre espace</a></h4>
-											<h4><img src="app/img/mailBig.png"> <a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>',
+											<h4><img src="app/img/mailBig.png"> <a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Que pensez-vous du fil d'actualité ?",
 			"INSTALL_dataDashboardPollA"=>"Très intéressant !",
 			"INSTALL_dataDashboardPollB"=>"Intéressant",
@@ -624,14 +624,14 @@ class Trad extends Txt
 			////	MOD : SPACE
 			////
 			"SPACE_MODULE_NAME"=>"Espaces",
-			"SPACE_moduleTooltip"=>"L'espace principal peut être subdivisé en plusieurs espaces (alias ''sous-espace'')",
+			"SPACE_moduleTooltip"=>"L'espace principal peut être composé d'un ou plusieurs espaces de travail.",
 			"SPACE_config"=>"Gérer l'espace de travail",
-			"SPACE_configInfo"=>"Gérer l'espace, ses modules (outils) et les affectations aux utlisateurs",
-			"SPACE_space"=>"espace",
-			"SPACE_spaces"=>"espaces",
+			"SPACE_configInfo"=>"Gérer l'espace de travail, ses modules (outils) et les droits d'accès des utlisateurs",
+			"SPACE_space"=>"espace de travail",
+			"SPACE_spaces"=>"espaces de travail",
 			"SPACE_accessRightUndefined"=>"A définir !",
 			"SPACE_modules"=>"Modules",
-			"SPACE_addSpace"=>"Nouvel espace",
+			"SPACE_addSpace"=>"Nouvel espace de travail",
 			//Edit
 			"SPACE_userAdminAccess"=>"Utilisateurs et administrateurs de l'espace",
 			"SPACE_selectModule"=>"Vous devez sélectionner au moins un module",
@@ -646,16 +646,17 @@ class Trad extends Txt
 			"SPACE_user"=>"Utilisateur",
 			"SPACE_userTooltip"=>"Accès à l'espace en tant que simple utilisateur",
 			"SPACE_admin"=>"Administrateur",
-			"SPACE_adminTooltip"=>"Accès à l'espace en tant qu'administrateur, pour pouvoir notamment :<br>- Paramétrer l'espace.<br>- Créer de nouveaux utilisateurs.<br>- Envoyer des invitations par mail.<br>- Editer les groupes d'utilisateurs.<br>- Editer et supprimer tous les élements présents sur l'espace.",
+			"SPACE_adminTooltip"=>"L'administrateur d'un espace de travail peut : <br>- Paramétrer l'espace. <br>- Créer de nouveaux utilisateurs. <br>- Envoyer des invitations par mail. <br>- Editer les groupes d'utilisateurs. <br>- Editer et supprimer tous les élements présents sur l'espace de travail.",
 
 			////	MOD : USER
 			////
 			"USER_MODULE_NAME"=>"Utilisateurs",
 			"USER_MODULE_DESCRIPTION"=>"Utilisateurs de l'espace",
 			"USER_OPTION_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",
-			"USER_spaceOrAllUsersTooltip"=>"Utilisateurs de l'espace courant / Utilisateurs de tous les espaces (affichage administrateur)",
+			"USER_spaceOrAllUsersTooltip"=>"Utilisateurs de l'espace courant / Utilisateurs de tous les espaces de travail (admin)",
 			"USER_spaceUsers"=>"Gérer les utilisateurs de l'espace",
 			"USER_allUsers"=>"Gérer tous les utilisateurs",
+			"USER_allUsersToolip"=>"Gérer les utilisateurs de tous les espaces de travail",
 			"USER_deleteDefinitely"=>"Supprimer définitivement",
 			"USER_deleteFromCurSpace"=>"Retirer l'utilisateur de l'espace",
 			"USER_deleteFromCurSpaceConfirm"=>"Retirer l'utilisateur de l'espace courant ?",
@@ -673,7 +674,7 @@ class Trad extends Txt
 			"USER_spaceList"=>"Espaces de l'utilisateur",
 			"USER_spaceNoAffectation"=>"L'utilisateur n'est affecté à aucun espace",
 			"USER_adminGeneral"=>"Administrateur principal",
-			"USER_adminGeneralTooltip"=>"Attention : l'Administrateur principal peut éditer/supprimer tous les éléments de l'espace (dossiers, fichiers, agendas, etc) ainsi que tous les utilisateurs et espaces !<br>Il est donc conseillé d'attribuer ce privilège à 2 ou 3 personnes maximum.<br><br>Pour des privilèges plus restreints, choississez le droit ''Administrateur'' (ci-dessous)",
+			"USER_adminGeneralTooltip"=>"L'administrateur principal peut : <br>- Editer et supprimer tous les utilisateurs. <br>- Editer et supprimer tous les espaces de travail. <br>- Editer et supprimer tous les éléments (dossiers, fichiers, agendas, etc). <br>Il est donc conseillé d'attribuer ce privilège à 2 ou 3 personnes maximum ! <br>Pour des privilèges plus restreints, choississez le droit ''Administrateur'' ci-dessous",
 			"USER_adminSpace"=>"Administrateur de l'espace",
 			"USER_userSpace"=>"Utilisateur de l'espace",
 			"USER_profilEdit"=>"Modifier le profil utilisateur",
@@ -708,7 +709,7 @@ class Trad extends Txt
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Langue",
 			"USER_persoCalendarDisabled"=>"Agenda personnel désactivé",
-			"USER_persoCalendarDisabledTooltip"=>"Cocher cette option pour désactiver l'agenda personnel de l'utilisateur.<br><br> Note : un agenda personnel est attribué par défaut à chaque utilisateur. Il reste toujours accessible, quelquesoit l'espace affiché.",
+			"USER_persoCalendarDisabledTooltip"=>"Désactiver l'agenda personnel de l'utilisateur (attribué par défaut à chaque utilisateur).",
 			"USER_connectionSpace"=>"Espace affiché à la connexion",
 			"USER_loginExists"=>"L'identifiant / email existe déjà. Merci d'en spécifier un autre",
 			"USER_mailPresentInAccount"=>"un compte utilisateur existe déjà avec cette adresse email",
@@ -805,7 +806,7 @@ class Trad extends Txt
 			"FILE_imgReduce"=>"Optimiser les images",
 			"FILE_updatedName"=>"Le nom du fichier est différent : celui de la nouvelle version sera donc conservé",
 			"FILE_fileSizeError"=>"Fichier trop volumineux",
-			"FILE_addMultipleFilesTooltip"=>"maximum par fichier. Sélectionnez plusieurs fichiers via la touche <i>Ctrl</i>",
+			"FILE_addMultipleFilesTooltip"=>"maximum par fichier. Sélectionnez plusieurs fichiers via la touche ''Ctrl''",
 			"FILE_selectFile"=>"Merci de sélectionner au moins un fichier",
 			"FILE_fileContent"=>"contenu",
 			// Versions
@@ -878,7 +879,7 @@ class Trad extends Txt
 			"CALENDAR_visibilityPublic"=>"Affichage normal",
 			"CALENDAR_visibilityPublicHide"=>"Afficher la plage horaire",
 			"CALENDAR_visibilityPrivate"=>"Affichage privé",
-			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda : <br>- Afficher la plage horaire : masque le détail de l'événement mais affiche le créneau occupé<br>- Affichage privé : masque totalement l'événement dans l'agenda",
+			"CALENDAR_visibilityTooltip"=>"Pour les personnes n'ayant qu'un accès en lecture à l'agenda : <br>- Afficher la plage horaire : masque le détail de l'événement mais affiche le créneau occupé <br>- Affichage privé : masque totalement l'événement dans l'agenda",
 			// Edit
 			"CALENDAR_sharedCalendarDescription"=>"Agenda partagé de l'espace",
 			"CALENDAR_allDay"=>"Toute la journée",

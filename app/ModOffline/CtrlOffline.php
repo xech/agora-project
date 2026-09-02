@@ -20,21 +20,21 @@ class CtrlOffline extends Ctrl
 	public static function actionDefault()
 	{
 		////	Reset du password
-		if(Req::isParam("resetPasswordMail")){
-			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE `mail`=".Db::param("resetPasswordMail")." OR `login`=".Db::param("resetPasswordMail"));
-			if(empty($tmpUser))  {Ctrl::notify("resetPasswordMailNotRegistered");}
+		if(Req::isParam("passwordResetMail")){
+			$tmpUser=Db::getLine("SELECT * FROM ".MdlUser::dbTable." WHERE `mail`=".Db::param("passwordResetMail")." OR `login`=".Db::param("passwordResetMail"));
+			if(empty($tmpUser))  {Ctrl::notify("passwordResetMailNotRegistered");}
 			else{
 				$tmpUser=Ctrl::getObj("user",$tmpUser);
 				////	ETAPE 1 : ENVOI DE L'EMAIL
-				if(Req::isParam("resetPasswordSendMail")){
-					$tmpUser->resetPasswordSendMail();
-					Ctrl::notify("resetPasswordNotif");//Notif spécifique
+				if(Req::isParam("passwordResetSendMail")){
+					$tmpUser->passwordResetSendMail();
+					Ctrl::notify("passwordResetNotif");//Notif spécifique
 				}
 				////	ETAPE 2 : MODIF DU PASSWORD
-				elseif(Req::isParam("resetPasswordId")){
-					if($tmpUser->resetPasswordIdVerif()==false)	{self::notify("resetPasswordIdExpired");}	//resetPasswordId expiré
-					elseif(Req::isParam("newPassword")==false)	{$vDatas["resetPasswordChangeForm"]=true;}	//Formulaire du nouveau password
-					else										{$tmpUser->resetPasswordRecord();}			//Enregistre le nouveau password
+				elseif(Req::isParam("passwordResetId")){
+					if($tmpUser->passwordResetIdVerif()==false)	{self::notify("passwordResetIdExpired");}	//passwordResetId expiré
+					elseif(Req::isParam("newPassword")==false)	{$vDatas["passwordResetChangeForm"]=true;}	//Formulaire du nouveau password
+					else										{$tmpUser->passwordResetRecord();}			//Enregistre le nouveau password
 				}
 			}
 		}
@@ -86,7 +86,9 @@ class CtrlOffline extends Ctrl
 				$curSpace=Ctrl::getObj("space",Req::param("_idSpace"));
 				if(!empty($curSpace->userInscriptionNotify)){
 					$adminMails=[];
-					foreach($curSpace->getUsers() as $tmpUser)  {if($curSpace->accessRightUser($tmpUser)==2) {$adminMails[]=$tmpUser->mail;}}
+					foreach($curSpace->getUsers() as $tmpUser){
+						if($curSpace->accessRightUser($tmpUser)==2)  {$adminMails[]=$tmpUser->mail;}
+					}
 					if(!empty($adminMails)){
 						$newUserLabel=Req::param("name")." ".Req::param("firstName");
 						$subject=Txt::trad("userInscriptionEmailSubject")." ".$curSpace->name;

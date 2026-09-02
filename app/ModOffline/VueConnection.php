@@ -4,21 +4,21 @@ ready(function(){
 	 *	INIT L'AFFICHAGE
 	 **********************************************************************************************************/
     $("<?= empty($defaultLogin)?'#connectLogin':'#connectPassword' ?>").focusAlt();					//Focus sur l'input du login ou password
-	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::param("notify"))){ ?>	//Pulsate "resetPasswordLabel" si l'authentification est erronée
-		$("#resetPasswordLabel").addClass("linkSelect").pulsate(5);
+	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::param("notify"))){ ?>	//Pulsate "passwordResetLabel" si l'authentification est erronée
+		$("#passwordResetLabel").addClass("linkSelect").pulsate(5);
 	<?php } ?>
 
 	/**********************************************************************************************************
 	 *	CONTROLE L'EMAIL DE RESET DU PASSWORD
 	 **********************************************************************************************************/
-	$("#resetPasswordFormSendmail").on("submit",function(){
-		if($(this).find("[name='resetPasswordMail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
+	$("#passwordResetFormSendmail").on("submit",function(){
+		if($(this).find("[name='passwordResetMail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid") ?>");  return false;}
 	});
 
 	/**********************************************************************************************************
 	 *	FORMULAIRE DE RESET DU PASSWORD ET FORMULAIRE DE VALIDATION D'INVIT. : CONTROLE DES CHAMPS "PASSWORD"
 	 **********************************************************************************************************/
-	$("#resetPasswordFormUpdate, #invitationPasswordForm").on("submit",function(){
+	$("#passwordResetFormUpdate, #invitationPasswordForm").on("submit",function(){
 		if($(this).find("[name='newPassword']").isPassword()==false)   {notify("<?= Txt::trad("passwordInvalid"); ?>");  return false;}//Password invalide
 	});
 
@@ -66,7 +66,7 @@ ready(function(){
 #publicSpaceTab>div:first-child		{text-align:right;}
 .publicSpaceOption					{padding:0px 10px;}
 .connectOptions						{display:inline-table;}
-.connectOptions>div					{display:table-cell; padding:15px;}
+.connectOptions>div					{display:table-cell; padding:20px 10px; line-height:26px;}
 .g_id_signin						{margin-inline:auto; margin-top:40px; width:330px;}/*width idem "data-width" */
 
 /*** RESPONSIVE TABLET-SMARTPHONE*/
@@ -117,35 +117,36 @@ ready(function(){
 	<!--FORMULAIRE DE CONNEXION-->
 	<div class="miscContent">
 		<form action="index.php" method="post" id="connectFormSpace" class="connectForm">
-			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>" id="objUrlExternal">	<!--accès direct à un objet via "getUrlExternal()"-->
-			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">		<!--idem-->
 			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" id="connectLogin" placeholder="<?= Txt::trad("mailLlogin") ?>" <?= Txt::tooltip("mailLlogin") ?>  class="isAutocomplete" required>
-			<?= Txt::inputPassword("connectPassword",true,true).Txt::submitButton("connect") ?>
+			<?= Txt::inputPassword("connectPassword",true,true).Txt::submitButton("connect") ?>			<!--input password + bouton validation-->
+			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>" id="objUrlExternal">	<!--accès direct via "getUrlExternal()"-->
+			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">		<!--idem-->
 			<div class="connectOptions">
+				<!--RESTER CONNECTE & MOT DE PASSE OUBLIE-->
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked>&nbsp;<label for="boxRememberMe" <?= Txt::tooltip("connectAutoTooltip") ?> ><?= Txt::trad("connectAuto") ?></label></div>
-				<div><a data-fancybox="inline" data-src="#resetPasswordFormSendmail" id="resetPasswordLabel"><?= Txt::trad("resetPassword") ?></a></div><!--Afficher le form ci-dessous-->
+				<div><a data-fancybox="inline" data-src="#passwordResetFormSendmail" id="passwordResetLabel"><?= Txt::trad("passwordReset") ?></a></div><!--Afficher le form ci-dessous-->
 			</div>
 		</form>
 
 		<!--RESET DU PASSWORD -> ETAPE 1 : ENVOI DE L'EMAIL-->
-		<form action="index.php" method="post" id="resetPasswordFormSendmail" class="lightboxInline">
-			<div class="lightboxTitle"><?= Txt::trad("resetPasswordYourMail") ?></div>
-			<input type="text" name="resetPasswordMail" placeholder="<?= Txt::trad("mail") ?>" required>
-			<input type="hidden" name="resetPasswordSendMail" value="1">
+		<form action="index.php" method="post" id="passwordResetFormSendmail" class="lightboxInline">
+			<div class="lightboxTitle"><?= Txt::trad("passwordResetYourMail") ?></div>
+			<input type="text" name="passwordResetMail" placeholder="<?= Txt::trad("mail") ?>" required>
+			<input type="hidden" name="passwordResetSendMail" value="1">
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
 		<!--RESET DU PASSWORD -> ETAPE 2 : MODIF DU PASSWORD-->
-		<?php if(!empty($resetPasswordChangeForm)){ ?>
-			<div data-fancybox="inline" data-src="#resetPasswordFormUpdate"><?= Txt::trad("passwordModif") ?></div>
-			<form action="index.php" method="post" id="resetPasswordFormUpdate" class="lightboxInline">
+		<?php if(!empty($passwordResetChangeForm)){ ?>
+			<div data-fancybox="inline" data-src="#passwordResetFormUpdate"><?= Txt::trad("passwordModif") ?></div>
+			<form action="index.php" method="post" id="passwordResetFormUpdate" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("passwordModif") ?></div>
-				<input type="hidden" name="resetPasswordMail" value="<?= Req::param("resetPasswordMail") ?>">	<!--email du reset-->
-				<input type="hidden" name="connectLogin" value="<?= Req::param("resetPasswordMail") ?>">		<!--pré-remplissage après reset-->
-				<input type="hidden" name="resetPasswordId" value="<?= Req::param("resetPasswordId") ?>">		<!--ID de vérif-->
-				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>
+				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>				<!--input password + bouton validation-->
+				<input type="hidden" name="passwordResetMail" value="<?= Req::param("passwordResetMail") ?>">	<!--email du reset-->
+				<input type="hidden" name="passwordResetId" value="<?= Req::param("passwordResetId") ?>">		<!--ID de vérif-->
+				<input type="hidden" name="connectLogin" value="<?= Req::param("passwordResetMail") ?>">		<!--pour le pré-remplissage après reset-->
 			</form>
-			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#resetPasswordFormUpdate"}]); }); </script>
+			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#passwordResetFormUpdate"}]); }); </script>
 		<?php } ?>
 
 		<!--VALIDATION D'INVITATION : INIT DU PASSWORD-->

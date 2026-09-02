@@ -26,7 +26,7 @@ function messengerUpdate()
 	else if((Date.now()-pageVisibilityTime)>900000)					{return false;}
 
 	//// Url du "MessengerUpdate" (Ajax)
-	var updateUrl="?ctrl=misc&action=MessengerUpdate";
+	var updateUrl="index.php?ctrl=misc&action=MessengerUpdate";
 	if(messengerDisplayMode!="none")  {updateUrl+="&messengerDisplayMode="+messengerDisplayMode;}																				//Mode d'affichage du messenger (cf. $_SESSION["messengerDisplayTimes"])
 	if($(".fancybox__iframe").exist() && /edit/i.test($(".fancybox__iframe").attr("src")))  {updateUrl+="&editTypeId="+urlParam("typeId",$(".fancybox__iframe").attr("src"));}	//Vérif si quelqu'un edite déjà l'objet
 	if(typeof tinymce!="undefined"  ||  ($(".fancybox__iframe").exist() && typeof $(".fancybox__iframe")[0].contentWindow.tinymce!="undefined")){								//Vérif si un éditeur Tinymce est affiché (page principale ou lightbox)
@@ -69,8 +69,8 @@ function messengerUpdate()
 function messengerDisplay(messengerDisplayModeNew)
 {
 	//// MessengerDisplayMode
-	messengerDisplayMode=($("#messengerMain").isVisible() && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;	//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
-	if(messengerDisplayMode!="none")  {$.ajax("?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode);}				//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
+	messengerDisplayMode=($("#messengerMain").isVisible() && messengerDisplayModeNew==messengerDisplayMode)  ?  "none"  :  messengerDisplayModeNew;		//"none" si on demande le même "messengerDisplayMode", sinon on enregistre le nouveau "messengerDisplayMode"
+	if(messengerDisplayMode!="none")  {$.ajax("index.php?ctrl=misc&action=MessengerDisplayTimesUpdate&messengerDisplayMode="+messengerDisplayMode);}	//Messenger affiché : update le timestamp du "messengerDisplayMode" courant
 
 	//// Masque le messenger principal
 	if(messengerDisplayMode=="none"){
@@ -167,7 +167,7 @@ function messengerPost(event)
 	if($("#messengerFormInput").isEmpty())  			{notify("<?= Txt::trad("MESSENGER_addMessageNotif") ?>");  return false;}
 	if($(".messengerUserCheckbox:checked").length==0)	{notify("<?= Txt::trad("notifSelectUser") ?>");  return false;}
 	// Poste le message via Ajax
-	$.ajax({url:"?ctrl=misc&action=messengerPost",data:$("#messengerForm").serialize(),method:"POST"}).done(function(){
+	$.ajax({url:"index.php?ctrl=misc&action=messengerPost",data:$("#messengerForm").serialize(),method:"POST"}).done(function(){
 		$("#messengerFormInput").val("");		//Réinit l'input text
 		$("#messengerFormInput").focusAlt();	//Focus à nouveau sur l'input
 		messengerUpdate();						//Update les messages pour afficher le post
@@ -190,7 +190,7 @@ async function launchVisioPropose()
 			visioURL	+="-"+this.getAttribute("data-user-label-visio");											//Ajoute dans l'url de la visio : incorpore le label de chaque participant dans le "visioId"
 		});
 		//Post le lien de la visio pour l'ouvrir via une lightbox (cf. HTMLPurifier)
-		$("#messengerFormInput").val('<a href="?ctrl=misc&action=LaunchVisio&visioURL='+encodeURIComponent(visioURL)+'" class="lightboxOpenHref"><?= Txt::trad("MESSENGER_visioProposeToUsers") ?> '+visioUsers+'<img src="app/img/visioSmall.png"></a>');
+		$("#messengerFormInput").val('<a href="index.php?ctrl=misc&action=LaunchVisio&visioURL='+encodeURIComponent(visioURL)+'" class="lightboxOpenHref"><?= Txt::trad("MESSENGER_visioProposeToUsers") ?> '+visioUsers+'<img src="app/img/visioSmall.png"></a>');
 		messengerPost();
 	}
 }

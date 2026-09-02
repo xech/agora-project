@@ -23,7 +23,7 @@ ready(function(){
 			placeholder:'changeOrderShadow',
 			axis:"y",
 			update:function(){
-				let ajaxUrl="?ctrl=object&action=CategoryChangeOrder&objectsTypeId[<?= Req::param("objectType") ?>]=";
+				let ajaxUrl="index.php?ctrl=object&action=CategoryChangeOrder&objectsTypeId[<?= Req::param("objectType") ?>]=";
 				$("input[name='changeOrderIds[]']").each(function(){  ajaxUrl+=this.value+"-";  });
 				$.ajax(ajaxUrl).done(function(result){
 					if(/true/i.test(result))  {notify("<?= Txt::trad("categoryNotifChangeOrder") ?>","success");}

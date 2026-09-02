@@ -23,10 +23,10 @@ class MdlCalendarEvent extends MdlObject
 	const hasNotifMail=true;
 	public static $requiredFields=["title","dateBegin","timeBegin","dateEnd","timeEnd"];
 	public static $searchFields=["title","description"];
-	private $_affectedCalendars=null;
-	private $_confirmedCalendars=null;
-	private $_proposedCalendars=null;
 	private $_containerObj=null;
+	private $_affectedCalendars=null;
+	private $_confirmedCalendars=[];
+	private $_proposedCalendars=[];
 
 	/********************************************************************************************************
 	 * SURCHARGE : CONSTRUCTEUR
@@ -245,15 +245,18 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * AGENDAS OÙ L'EVT EST AFFECTÉ / PROPOSÉ
+	 * AGENDAS OÙ L'EVT EST AFFECTÉ : CONFIRMÉ ET/OU PROPOSÉ
 	 ********************************************************************************************************/
 	public function affectedCalendars($confirmed="all")
 	{
 		if($this->_affectedCalendars===null){
-			$sqlAffectations="SELECT * FROM ap_calendar WHERE _id in (select _idCal as _id from ap_calendarEventAffectation T2 WHERE _idEvt=".$this->_id;
-			$this->_confirmedCalendars	=Db::getObjTab("calendar",$sqlAffectations." and confirmed=1)");		//Evts déjà confirmés
-			$this->_proposedCalendars	=Db::getObjTab("calendar", $sqlAffectations." and confirmed IS NULL)");	//Evts proposés
-			$this->_affectedCalendars	=array_merge($this->_confirmedCalendars, $this->_proposedCalendars);	//Evts confirmés & proposés
+			$affectationList=Db::getTab("SELECT * FROM ap_calendarEventAffectation WHERE _idEvt=".$this->_id);
+			foreach($affectationList as $affectation){
+				$tmpCalendar=Ctrl::getObj("calendar",$affectation["_idCal"]);							//Récupère l'agenda
+				if(!empty($affectation["confirmed"]))	{$this->_confirmedCalendars[]=$tmpCalendar;}	//Affectation confirmée sur l'agenda
+				else									{$this->_proposedCalendars[] =$tmpCalendar;}	//Affectation proposée sur l'agenda
+			}
+			$this->_affectedCalendars=array_merge($this->_confirmedCalendars, $this->_proposedCalendars);//Affectations confirmés + proposés
 		}
 		if($confirmed==="all")		{return $this->_affectedCalendars;}
 		elseif($confirmed===true)	{return $this->_confirmedCalendars;}
@@ -278,7 +281,7 @@ class MdlCalendarEvent extends MdlObject
 			foreach($this->affectedCalendars(true) as $objCalendar)		{$calendarsConfirmed.=", ".ucfirst($objCalendar->title);}
 			foreach($this->affectedCalendars(false) as $objCalendar)	{$calendarsProposed.=", ".ucfirst($objCalendar->title);}
 			if(!empty($calendarsConfirmed))	{$calendarsConfirmed=Txt::trad("CALENDAR_evtAffects")." : ".trim($calendarsConfirmed,",");}
-			if(!empty($calendarsProposed))	{$calendarsProposed="<hr>".Txt::trad("CALENDAR_evtAffectToConfirm")." : ".trim($calendarsProposed,",");}
+			if(!empty($calendarsProposed))	{$calendarsProposed="<br>".Txt::trad("CALENDAR_evtAffectToConfirm")." : ".trim($calendarsProposed,",");}
 			return $calendarsConfirmed.$calendarsProposed;
 		}
 	}

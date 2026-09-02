@@ -111,15 +111,15 @@ class Trad extends Txt
 			"passwordModif"=>"Modifica la password",
 			"passwordTmp"=>"Password temporanea (da modificare nella pagina di accesso)",
 			"passwordByDefault"=>"Password predefinita (modificala se necessario nel tuo profilo)",
-			"resetPassword"=>"Password dimenticata ?",
-			"resetPasswordYourMail"=>"Inserisci il tuo indirizzo email per reimpostare la password di accesso",
-			"resetPasswordNotif"=>"L'email per reimpostare la password è stata inviate correttamente.<br>Se non l'hai ricevuta, controlla la cartella dello spam.",
-			"resetPasswordMailTitle"=>"Reimposta la tua password",
-			"resetPasswordMailPassword"=>"Per reimpostare la tua password e accedere nuovamente",
-			"resetPasswordMailPassword2"=>"clicca qui",
-			"resetPasswordMailLoginRemind"=>"Promemoria del tuo identificativo di accesso",
-			"resetPasswordIdExpired"=>"Il link per rigenerare la password è scaduto. Per favore, ripeti la procedura",
-			"resetPasswordMailNotRegistered"=>"L'email non corrisponde a nessun account registrato",
+			"passwordReset"=>"Password dimenticata ?",
+			"passwordResetYourMail"=>"Inserisci il tuo indirizzo email per reimpostare la password di accesso",
+			"passwordResetNotif"=>"L'email per reimpostare la password è stata inviate correttamente.<br>Se non l'hai ricevuta, controlla la cartella dello spam.",
+			"passwordResetMailTitle"=>"Reimposta la tua password",
+			"passwordResetMailPassword"=>"Per reimpostare la tua password e accedere nuovamente",
+			"passwordResetMailPassword2"=>"clicca qui",
+			"passwordResetMailLoginRemind"=>"Promemoria del tuo identificativo di accesso",
+			"passwordResetIdExpired"=>"Il link per rigenerare la password è scaduto. Per favore, ripeti la procedura",
+			"passwordResetMailNotRegistered"=>"L'email non corrisponde a nessun account registrato",
 
 			////	Type d'affichage
 			"displayMode"=>"Vista",
@@ -498,14 +498,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Spazio per la condivisione e il lavoro collaborativo",
 			"INSTALL_dataDashboardNews"=>  '<h3>Benvenuti nel vostro nuovo spazio di lavoro collaborativo!</h3>
-											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png">Condividi i tuoi file con il tuo team nel file manager</a></h4>
-											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Crea eventi sul tuo calendario condiviso o sul tuo calendario personale</a></h4>
-											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilizza il feed di notizie per trasmettere informazioni sulla tua attività</a></h4>
-											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png">Comunicare tramite forum, messaggistica o videoconferenze</a></h4>
-											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png"> Gestisci le tue attività e i tuoi progetti per organizzare la tua attività</a></h4>
-											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Invia newsletter per distribuire email informative sulla tua attività.</a></h4>
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png">Condividi i tuoi file con il tuo team nel file manager</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Crea eventi sul tuo calendario condiviso o sul tuo calendario personale</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilizza il feed di notizie per trasmettere informazioni sulla tua attività</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png">Comunicare tramite forum, messaggistica o videoconferenze</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png"> Gestisci le tue attività e i tuoi progetti per organizzare la tua attività</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Invia newsletter per distribuire email informative sulla tua attività.</a></h4>
 											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png">Consulta la guida utente per scoprire il tuo spazio di lavoro</a></h4>
-											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Invia inviti via email per unirti allo spazio</a></h4>',
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Invia inviti via email per unirti allo spazio</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Cosa ne pensi del news feed?",
 			"INSTALL_dataDashboardPollA"=>"Molto interessante!",
 			"INSTALL_dataDashboardPollB"=>"Interessante",
@@ -656,6 +656,7 @@ class Trad extends Txt
 			"USER_spaceOrAllUsersTooltip"=>"Utenti dello spazio corrente / Utenti di tutti gli spazi (visualizzazione amministratore)",
 			"USER_spaceUsers"=>"Gestisci gli utenti dello spazio",
 			"USER_allUsers"=>"Gestisci tutti gli utenti",
+			"USER_allUsersToolip"=>"Gestire gli utenti di tutti gli spazi di lavoro",
 			"USER_deleteDefinitely"=>"Elimina definitivamente",
 			"USER_deleteFromCurSpace"=>"Disassegnare allo spazio",
 			"USER_deleteFromCurSpaceConfirm"=>"Disassegnare l'utente allo spazio corrente?",
@@ -804,7 +805,7 @@ class Trad extends Txt
 			"FILE_imgReduce"=>"Ottimizza l'immagine",
 			"FILE_updatedName"=>"Il nome del file verrà sostituito dalla nuova versione",
 			"FILE_fileSizeError"=>"Il file è troppo grande",
-			"FILE_addMultipleFilesTooltip"=>"massimo per file. Selezionare più file utilizzando il tasto <i>Ctrl</i>.",
+			"FILE_addMultipleFilesTooltip"=>"massimo per file. Selezionare più file utilizzando il tasto ''Ctrl''",
 			"FILE_selectFile"=>"Grazie per aver selezionato almeno un file",
 			"FILE_fileContent"=>"Contenuto",
 			// Versions

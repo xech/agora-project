@@ -119,23 +119,22 @@ class Txt
 	}
 
 	/*********************************************************************************************************************
-	 * CLEAN DE TEXTE : SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
+	 * NETTOYAGE DE TEXTE : SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
 	 * $scope="min" 	-> parametres, fichiers Ical :				"l'été &amp; (!?)"  ->  "l'été & (!?)"
 	 * $scope="normal"	-> noms de fichier, moteur de recherche :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
-	 * $scope="max"		-> identifiants, noms en bdd :				"l'été &amp; (!?)"  ->  "l_ete_"
+	 * $scope="max"		-> login, noms en bdd :						"l'été &amp; (!?)"  ->  "lete"
 	 *********************************************************************************************************************/
-	public static function clean($text, $scope="normal", $replacement="_")
+	public static function clean($text, $scope="normal")
 	{
 		if(!empty($text)){
-			$text=html_entity_decode(strip_tags($text));										//Supprime les balises html et décode les caractères html (cf TinyMce: "&amp;"=>"&")
-			$text=preg_replace(['/&nbsp;/','/\s+/'], " ", $text);								//Remplace par un espace les "&nbsp;", espaces doubles, tabulations, sauts de ligne, etc. (via '\s+')
-			if($scope=="max")	{$text=iconv('UTF-8', 'ASCII//TRANSLIT', $text);}				//Remplace les caractères accentués (ex: "èéêë"=>"e")
-			$charsKeep='\p{L}0-9\.\_\-';														//min/normal/max	=> garde les lettres Unicodes (même accentuées), les chiffres et caractères   . _ - 
-			if($scope!="max")	{$charsKeep.='\s\'()\[\]';}										//min/normal		=> garde aussi les caractères   ' ( ) [ ]   et les espaces (\s)
-			if($scope=="min")	{$charsKeep.=',;"€$=+%:<>@&?!#\*\/\\\\';  $replacement=" ";}	//min 				=> garde aussi les caractères   , ; " € $ = + % : < > @ & ? ! # * / \   (échappe 2 fois les '\')
-			$text=preg_replace('/[^'.$charsKeep.']/u', $replacement, $text);					//Replace			=> [^...] pour exclure les caractères absents de la liste et "/u" pour les caractères Unicode
-			//Renvoie le résultat
-			return trim($text);
+			$text=html_entity_decode(strip_tags($text));							//Supprime les balises html et décode les caractères html (cf TinyMce: "&amp;"=>"&")
+			$text=preg_replace(['/&nbsp;/','/\s+/'], " ", $text);					//Remplace par un espace les "&nbsp;", espaces doubles, tabulations, sauts de ligne, etc. (via '\s+')
+			if($scope=="max")	{$text=iconv('UTF-8', 'ASCII//TRANSLIT', $text);}	//Remplace les caractères accentués (ex: "èéêë"=>"e")
+			$charsKeep='\p{L}0-9\.\_\-';											//TOUS			=> garde les lettres Unicodes (même accentuées), les chiffres et les caractères   . _ - 
+			if($scope!="max")		{$charsKeep.='\s\'()\[\]';}						//min/normal	=> garde aussi les caractères   ' ( ) [ ]   et les espaces (\s)
+			if($scope=="min")		{$charsKeep.=',;"€$=+%:<>@&?!#\*\/\\\\';}		//min 			=> garde aussi les caractères   , ; " € $ = + % : < > @ & ? ! # * / \   (échappe 2 fois les '\')
+			$text=preg_replace('/[^'.$charsKeep.']/u', '', $text);					//Remplace		=> [^...] pour exclure les caractères absents de la liste et "/u" pour les caractères Unicode
+			return trim($text);														//Renvoie le résultat
 		}
 	}
 
@@ -182,11 +181,11 @@ class Txt
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE UN PASSWORD : AU MOINS 12 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+	 * RECUPERE UN IDENTIFIANT RAMDOM SUR 32 CARACTERES
 	 ********************************************************************************************************/
-	public static function isPassword($password)
+	public static function randomId()
 	{
-		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{12,}$/', $password);
+		return bin2hex(random_bytes(16));
 	}
 
 	/********************************************************************************************************
@@ -194,8 +193,15 @@ class Txt
 	 ********************************************************************************************************/
 	public static function defaultPassword()
 	{
-		$randomId=bin2hex(random_bytes(16));
-		return substr($randomId,0,12);
+		return substr(self::randomId(), 0, 12);
+	}
+
+	/********************************************************************************************************
+	 * CONTROLE UN PASSWORD : AU MOINS 12 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+	 ********************************************************************************************************/
+	public static function isPassword($password)
+	{
+		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{12,}$/', $password);
 	}
 
 	/********************************************************************************************************

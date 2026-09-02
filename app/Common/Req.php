@@ -123,9 +123,9 @@ class Req
 	 ********************************************************************************************************/
 	private static function paramFilter($key, $val)
 	{
-		if(!empty($val) && is_string($val)){																							////	Vérif qu'il ya une valeur
-			if(preg_match("/^(objUrl|visioUrl|logoUrl|selfHostUrl)$/i",$key)){
-				$val=filter_var($val, FILTER_SANITIZE_URL);																				////	Filtre une URL
+		if(!empty($val) && is_string($val)){
+			if(preg_match("/^(objUrl|visioUrl|logoUrl|selfHostUrl)$/i",$key)){															////	Filtre une URL
+				$val=(filter_var($val,FILTER_VALIDATE_URL))  ?  filter_var($val,FILTER_SANITIZE_URL)  :  "";							//Valide et filtre l'URL
 			}
 			elseif(preg_match("/^(description|editorDraft)$/i",$key)){																	////	Filtre de l'editeur TinyMce
 				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');															//Charge la librairie HTMLPurifier	
@@ -239,7 +239,7 @@ class Req
 	{
 		////	Install d'Agora-Project en Auto-hébergement
 		if(preg_match("/dbInstall/i",$except->getMessage()) && self::isInstalling()==false && self::isHost()==false)
-			{Ctrl::redir("?ctrl=offline&action=install&disconnect=1");}
+			{Ctrl::redir("index.php?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
         echo '<div style="text-align:center">
 				<h1 style="line-height:100px"><img src="app/img/importantBig.png"> &nbsp; '.$except->getMessage().'</h1>

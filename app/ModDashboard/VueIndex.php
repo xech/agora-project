@@ -18,7 +18,7 @@ ready(function(){
 				//Charge les news suivantes (via ".get()" et non ".ajax")
 				if($("#contentNews").isVisible() && loadMoreNews==true){
 					$("#contentNews").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="loadingImage"></div>');
-					$.get("?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
+					$.get("index.php?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
 						if(vueNewsList.length==0)  {loadMoreNews=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
 							$("#contentNews").append(vueNewsList);	//Affiche les news
@@ -32,7 +32,7 @@ ready(function(){
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
 				if($("#contentPolls").isVisible() && loadMorePolls==true){
 					$("#contentPolls").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="loadingImage"></div>');
-					$.get("?ctrl=dashboard&action=GetMorePolls&pollsToVoteWithNews=<?= Req::param("pollsToVoteWithNews") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
+					$.get("index.php?ctrl=dashboard&action=GetMorePolls&pollsToVoteWithNews=<?= Req::param("pollsToVoteWithNews") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}	//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
 							$("#contentPolls").append(vuePollsList);		//Affiche les sondages
@@ -93,7 +93,7 @@ function dashboardPollVote()
 			{notify("<?= Txt::trad("DASHBOARD_POLLS_noResponseNotif") ?>");}
 		//// Valide le vote puis affiche le résultat du sondage
 		else{
-			$.ajax({url:"?ctrl=dashboard&action=pollVote", data:$(this).serialize(), method:"POST", dataType:"json"}).done(function(result){
+			$.ajax({url:"index.php?ctrl=dashboard&action=pollVote", data:$(this).serialize(), method:"POST", dataType:"json"}).done(function(result){
 				if(result.vuePollResult.length>0){
 					$(".vPollContent"+result._idPoll).html(result.vuePollResult);	//Remplace le form. par le résultat du sondage  (au besoin le "toVoteWithNews")
 					mainTriggers();													//Update les tooltips & Co
@@ -186,7 +186,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				<!--NEWS "OFFLINE"-->
 				<div class="menuLine <?= !empty($_SESSION["offlineNews"])?'optionSelect':'option' ?>" <?= Txt::tooltip("DASHBOARD_offlineNewsInfo") ?> >
 					<div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div>
-					<div onclick="redir('?ctrl=dashboard&offlineNews=<?= empty($_SESSION['offlineNews'])?'true':'false' ?>')">
+					<div onclick="redir('index.php?ctrl=dashboard&offlineNews=<?= empty($_SESSION['offlineNews'])?'true':'false' ?>')">
 						<?= Txt::trad("DASHBOARD_offlineNews").(!empty($offlineNewsNb) ? '<span class="circleNb">'.$offlineNewsNb.'</span>' : null) ?>
 					</div>
 				</div>
@@ -223,7 +223,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					<?php if(!empty($pollsVotedNb)){ ?>
 						<div class="menuLine <?= $_SESSION["pollsVotedOnly"]==true?'optionSelect':'option' ?>" <?= Txt::tooltip("DASHBOARD_POLLS_onlyVotedInfo") ?> >
 							<div class="menuIcon"><img src="app/img/check.png"></div>
-							<div onclick="redir('?ctrl=dashboard&dashboardPoll=true&pollsVotedOnly=<?= $_SESSION['pollsVotedOnly']==true?'false':'true' ?>')">
+							<div onclick="redir('index.php?ctrl=dashboard&dashboardPoll=true&pollsVotedOnly=<?= $_SESSION['pollsVotedOnly']==true?'false':'true' ?>')">
 								<?= Txt::trad("DASHBOARD_POLLS_onlyVoted").(!empty($pollsVotedNb) ? '<span class="circleNb">'.$pollsVotedNb.'</span>' : null) ?>
 							</div>
 						</div>
@@ -241,7 +241,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					$titlePeriod=($periodValue=="day")  ?  Txt::trad("today")  :  Txt::trad("DASHBOARD_pluginsTooltip2")." ".date("d/m/Y",$tmpPeriod["timeBegin"])." ".Txt::trad("and")." ".date("d/m/Y",$tmpPeriod["timeEnd"]);
 				?>
 					<div <?= Txt::tooltip(Txt::trad("DASHBOARD_pluginsTooltip")." ".$titlePeriod) ?> >
-						<input name="pluginPeriod" type="radio" id="radioPeriod<?= $periodValue ?>" <?= $pluginPeriod==$periodValue?'checked="checked"':null ?> onclick="redir('?ctrl=dashboard&pluginPeriod=<?= $periodValue ?>')">
+						<input name="pluginPeriod" type="radio" id="radioPeriod<?= $periodValue ?>" <?= $pluginPeriod==$periodValue?'checked="checked"':null ?> onclick="redir('index.php?ctrl=dashboard&pluginPeriod=<?= $periodValue ?>')">
 						<label for="radioPeriod<?= $periodValue ?>"><?= Txt::trad("DASHBOARD_plugins_".$periodValue) ?></label>
 					</div>
 				<?php } ?>

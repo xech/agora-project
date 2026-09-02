@@ -32,9 +32,9 @@ class CtrlMisc extends Ctrl
 				//Init les variables de session
 				$_SESSION["livecounterUsers"]=$_SESSION["messengerMessages"]=$_SESSION["messengerDisplayTimes"]=$_SESSION["messengerCheckedUsers"]=[];
 				$_SESSION["livecounterUsersHtml"]=$_SESSION["livecounterFormHtml"]=$_SESSION["messengerMessagesHtml"]="";
-				//Suppression :  livecounters d'users > 1 heure  +  messages de visio > 2 heures  +  anciens messages > 2 mois
+				//Suppression :  livecounters d'users > 1 heure  +  messages de visio > 2 heures  +  anciens messages > 3 mois
 				Db::query("DELETE FROM ap_userLivecouter WHERE `date` < ".(time()-3600));
-				Db::query("DELETE FROM ap_userMessengerMessage WHERE  (`date` < ".(time()-7200)." AND `message` LIKE '%launchVisio%')  OR  `date` < ".(time()-TIME_2MONTHS));
+				Db::query("DELETE FROM ap_userMessengerMessage WHERE  (`date` < ".(time()-7200)." AND `message` LIKE '%launchVisio%')  OR  `date` < ".(time()-TIME_3MONTHS));
 				//Garde en session les users qui rendent visible leur messenger (cf. paramétrage dans "ap_userMessenger")
 				$idsUsersVisibles=[0];//Ajoute un pseudo user '0'
 				foreach(self::$curUser->usersVisibles() as $tmpUser)  {$idsUsersVisibles[]=$tmpUser->_id;}
@@ -190,9 +190,11 @@ class CtrlMisc extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionLaunchVisio()
 	{
-		$vDatas["visioURL"]=urldecode(Req::param("visioURL"));																	//Url de la visio
-		if(is_object(Ctrl::$curUser))	{$vDatas["visioURL"].="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	//User : nom de l'user
-		if(Req::isMobileApp())			{$vDatas["visioURL"].="#fromMobileApp#getFile";}										//Mobile : params de controle d'URL via "main.dart" (#fromMobileApp: v4.3+ / #getFile: anciennes)
+		$visioURL=urldecode(Req::param("visioURL"));																//Url de la visio
+		$visioURL=filter_var($visioURL,FILTER_SANITIZE_URL);														//Filtre l'url
+		if(is_object(Ctrl::$curUser))	{$visioURL.="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	//User : nom de l'user
+		if(Req::isMobileApp())			{$visioURL.="#fromMobileApp#getFile";}										//Mobile : params de controle d'URL via "main.dart" (#fromMobileApp: v4.3+ / #getFile: anciennes)
+		$vDatas["visioURL"]=$visioURL;
 		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
 	}
 
@@ -329,8 +331,8 @@ class CtrlMisc extends Ctrl
 
 	/****************************************************************************************************************************
 	 * URL DE DOWNLOAD D'UN FICHIER VIA L'APPLI MOBILE
-	 * exple:	"?ctrl=file&action=FileDownload&typeId=file-55"
-	 *    => 	"?ctrl=misc&action=MobileFileDownload&typeId=file-55&ctrlBis=file&fileNameMd5=XYZ&fileName=Documentation.pdf"
+	 * ex:	"index.php?ctrl=file&action=FileDownload&typeId=file-55"
+	 *		"index.php?ctrl=misc&action=MobileFileDownload&typeId=file-55&ctrlBis=file&fileNameMd5=XYZ&fileName=Documentation.pdf"
 	 ****************************************************************************************************************************/
 	public static function urlDownloadMobileApp($url, $fileName)
 	{

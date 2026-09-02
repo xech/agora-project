@@ -15,7 +15,7 @@ ready(function(){
 
 ////	OPTION POUR RENVOYER UN ANCIEN EMAIL (RELOAD LA PAGE PRINCIPALE)
 function sendOldMail(typeId){
-	window.top.confirmRedir("?ctrl=mail&reloadMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
+	window.top.confirmRedir("index.php?ctrl=mail&reloadMailTypeId="+typeId, "<?= Txt::trad("MAIL_resendInfo") ?>");
 }
 </script>
 

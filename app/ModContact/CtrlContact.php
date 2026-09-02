@@ -133,8 +133,7 @@ class CtrlContact extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionContactAddUser()
 	{
-		if(Ctrl::$curUser->isGeneralAdmin())
-		{
+		if(Ctrl::$curUser->isGeneralAdmin()){
 			//Init
 			$contactRef=Ctrl::getCurObj();
 			$contactRef->editControl();

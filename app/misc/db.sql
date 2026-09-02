@@ -84,7 +84,8 @@ CREATE TABLE `ap_calendarEventAffectation` (
   `_idEvt` int NOT NULL,
   `_idCal` int NOT NULL,
   `confirmed` tinyint DEFAULT NULL,
-  KEY `indexes` (`_idCal`)
+  KEY `_idCal` (`_idCal`),
+  KEY `_idEvt` (`_idEvt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_calendarCategory` (
@@ -268,7 +269,8 @@ CREATE TABLE `ap_joinSpaceUser` (
   `_idUser` int DEFAULT NULL,
   `allUsers` tinyint DEFAULT NULL,
   `accessRight` varchar(255) DEFAULT NULL,
-  KEY `indexes` (`_idSpace`)
+  KEY `indexes` (`_idSpace`),
+  KEY `_idUser` (`_idUser`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_link` (
@@ -332,17 +334,18 @@ CREATE TABLE `ap_objectAttachedFile` (
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `ap_objectComment` (
+CREATE TABLE `ap_objectComment` (
   `_id` int NOT NULL AUTO_INCREMENT,
   `objectType` varchar(255) NOT NULL,
   `_idObject` int NOT NULL,
   `_idUser` int NOT NULL,
   `dateCrea` datetime NOT NULL,
   `comment` varchar(1000) NOT NULL,
-  PRIMARY KEY (`_id`)
+  PRIMARY KEY (`_id`),
+  KEY `indexes` (`objectType`,`_idObject`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `ap_objectLike` (
+CREATE TABLE `ap_objectLike` (
   `objectType` varchar(255) NOT NULL,
   `_idObject` int NOT NULL,
   `_idUser` int NOT NULL,
@@ -431,6 +434,7 @@ CREATE TABLE `ap_user` (
   `firstName` varchar(255) DEFAULT NULL,
   `login` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `passwordResetId` varchar(255) DEFAULT NULL,
   `adress` text DEFAULT NULL,
   `postalCode` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,

@@ -46,6 +46,9 @@ abstract class Ctrl
 		if(Req::isHost())  {Host::getParams();}
 		DbUpdate::lauchUpdate();
 
+		////	Page principale (pas iframe)
+		if(Req::$curAction=="default")  {static::$isMainPage=true;}
+
 		////	Init l'user et l'espace courant
 		$_idUser =(!empty($_SESSION["_idUser"]))  ? $_SESSION["_idUser"]  : null;
 		$_idSpace=(!empty($_SESSION["_idSpace"])) ? $_SESSION["_idSpace"] : null;
@@ -69,8 +72,7 @@ abstract class Ctrl
 				$_COOKIE["mobileAppli"]="true";
 			}
 
-			////	Page principale d'un module  &&  Controle d'accès au module demandé
-			if(Req::$curAction=="default")  {static::$isMainPage=true;}
+			////	Controle d'accès au module demandé
 			if(self::$curSpace->moduleEnabled(Req::$curCtrl)==false){													//Pas accès au module :
 				if(static::$isMainPage==true)	{self::redir("index.php?ctrl=".key(self::$curSpace->moduleList()));}	//- redir vers le 1er module de l'espace
 				else							{self::noAccessExit();}													//- message d'erreur + fin de script
@@ -120,18 +122,26 @@ abstract class Ctrl
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
 				if(!empty($tmpUser)){
 					$connectPassword=Req::param("connectPassword");
-					$passwordVerifiedHash=password_verify($connectPassword,$tmpUser["password"]);				//Password hash vérifié
-					$passwordVerifiedHost=(Req::isHost() && Host::passwordVerifyHost($connectPassword));		//Password du host vérifié
+					$passwordVerifiedHash=password_verify($connectPassword,$tmpUser["password"]);				//Password hash OK
+					$passwordVerifiedHost=(Req::isHost() && Host::passwordVerifyHost($connectPassword));		//Password du host OK
 					if($passwordVerifiedHash==true || $passwordVerifiedHost==true)  {$userAuthentified=true;}	//Authentification OK
-					if($passwordVerifiedHash==true)																//Update le hash Bcrypt : $passwordVerifiedHash uniquement !
+					if($passwordVerifiedHash==true)																//Update le password hash : $passwordVerifiedHash uniquement !
 						{Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($connectPassword,PASSWORD_DEFAULT))." WHERE `_id`=".Db::format($tmpUser["_id"]));}
 				}
 			}
 			////	CONNEXION AUTO VIA TOKEN
 			elseif($connectViaToken==true){
-				$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);
-				$tmpUser=Db::getLine("SELECT T1.*, T2.userAuthToken FROM ap_user T1, ap_userAuthToken T2 WHERE T1._id=T2._idUser AND T1._id=".Db::format($cookieToken[0])." AND T2.userAuthToken=".Db::format($cookieToken[1]));
-				if(!empty($tmpUser))   {$userAuthentified=true;}
+				$cookieValue=explode("@@@",$_COOKIE["userAuthToken"]);
+				$_idUser=(int)$cookieValue[0];
+				$tokenCookie=$cookieValue[1];
+				$tokenList=Db::getCol("SELECT userAuthToken FROM ap_userAuthToken WHERE _idUser=".Db::format($_idUser));	//Récupère la liste des tokens de l'user (un token pour chaque browser/mobile)
+				foreach($tokenList as $tokenHashed){																		//Parcourt chaque token pour le comparer à celui du cookie
+					if(password_verify($tokenCookie,$tokenHashed) || $tokenHashed===$tokenCookie){							//Comparaison direct du token brut pour rétro-compat (temporaire)
+						$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE _id=".Db::format($_idUser));
+						$userAuthentified=true;
+						break;
+					}
+				}
 			}
 
 			////	USER AUTHENTIFIE
@@ -214,32 +224,40 @@ abstract class Ctrl
 	}
 
 	/********************************************************************************************************
-	 * SUPPRIME/CREE LE TOKEN DE CONNEXION AUTOMATIQUE
+	 * SUPPRIME/CREE LE TOKEN DE CONNEXION AUTO
 	 ********************************************************************************************************/
 	public static function userAuthToken($create, $_idUser=null)
 	{
 		////	Supprime un token : "delete" du token OU avant renouvellement du token avec "create"
 		if(!empty($_COOKIE["userAuthToken"])){
-			$cookieToken=explode("@@@",$_COOKIE["userAuthToken"]);																		//Récupère le token du cookie
-			if(!empty($cookieToken[1]))  {Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($cookieToken[1]));}	//Supprime le token correspondant dans la bdd
-			setcookie("userAuthToken", "", -1);																							//Supprime le cookie du path courant
-			setcookie("userAuthToken", "", -1, COOKIES_OPTIONS_PATH);																	//Idem cf. "createHost()"
-			unset($_COOKIE["userAuthToken"]);																							//Idem
+			$cookieValue=explode("@@@",$_COOKIE["userAuthToken"]);											//Récupère le token du cookie
+			if(!empty($cookieValue[1])){																	//Vérif la présence du token
+				$tokenHashed=password_hash($cookieValue[1],PASSWORD_DEFAULT);								//Token hashé
+				Db::query("DELETE FROM ap_userAuthToken WHERE userAuthToken=".Db::format($tokenHashed));	//Supprime le token hashé en bdd
+			}
+			setcookie("userAuthToken", "", -1);																//Supprime le cookie du path courant
+			setcookie("userAuthToken", "", -1, COOKIES_OPTIONS_PATH);										//Cf cookie de "createHost()"
+			unset($_COOKIE["userAuthToken"]);																//Idem
 		}
-		////	Créé un nouveau token : enregistre le token en bdd et dans un cookie
-		if($create==true && !empty($_idUser)){
-			require_once('app/misc/Browser.php');																						//Charge la classe "Browser()"
-			$browserObj=new Browser();																									//Récup les infos du browser (mobile/desktop)
-			$browserId=(is_object($browserObj))  ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  :  null;					//Identifie le browser et l'OS
-			$userAuthToken=password_hash(uniqid(),PASSWORD_DEFAULT);																	//Créé un nouveau Token avec l'algo Bcrypt
-			$cookieToken=$_idUser."@@@".$userAuthToken;																					//Créé le token du cookie
-			setcookie("userAuthToken", $cookieToken, COOKIES_OPTIONS);																	//Enregistre le cookie
-			$_COOKIE["userAuthToken"]=$cookieToken;																						//Charge le cookie
-			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));					//Supprime en bdd les tokens expirés du brower
-			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", userAuthToken=".Db::format($userAuthToken).", browserId=".Db::format($browserId).", dateCrea=NOW()");
+		////	Créé un nouveau token : enregistre le token en bdd + dans un cookie
+		if($create==true && !empty($_idUser) && is_int($_idUser)){
+			require_once('app/misc/Browser.php');																		//Charge la classe "Browser()"
+			$browserObj=new Browser();																					//Récup les infos du browser (mobile/desktop)
+			$browserId=(is_object($browserObj)) ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  : null;	//Identifie le browser et l'OS
+			$tokenCookie=bin2hex(random_bytes(32));																		//Token aléatoire (64 Carac) stocké dans le Cookie
+			$tokenHashed=password_hash($tokenCookie,PASSWORD_DEFAULT);													//Token hashé stocké en DB
+		////$tokenHashed=$tokenCookie;																					//Test OLD $token
+			$cookieValue=$_idUser."@@@".$tokenCookie;																	//Créé le token du cookie
+			$cookieOptions=COOKIES_OPTIONS;																				//Options par défaut des Cookies
+			$cookieOptions['expires']=(time() + TIME_3MONTHS);															//Valide 3 mois max
+			setcookie("userAuthToken", $cookieValue, $cookieOptions);													//Enregistre le cookie
+			$_COOKIE["userAuthToken"]=$cookieValue;																		//Charge le token du cookie pour userConnectionSpaceSelection()
+			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));	//Supprime en bdd les tokens expirés du brower
+			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", browserId=".Db::format($browserId).", userAuthToken=".Db::format($tokenHashed).", dateCrea=NOW()");//Enregistre le nouveau token hashé
+			Db::query("UPDATE ap_user SET passwordResetId=NULL WHERE _id=".$_idUser);									//Réinitialise le passwordResetId à chaque connexion
 		}
 		////	Supprime les tokens obsoletes
-		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-TIME_1YEAR));
+		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-TIME_3MONTHS));
 	}
 
 	/**********************************************************************************************************************
@@ -307,6 +325,7 @@ abstract class Ctrl
 				else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 				$vDatas["footerLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
 				$vDatas["footerLogoTooltip"]=Txt::trad("footerGeneratedTime")." ".round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
+				////self::notify($vDatas["footerLogoTooltip"]);//Debug: Affichage du temps de réponse
 			}
 		}
 		////	NOTIFS  +  RECUPERE LA VUE PRINCIPALE  +  AFFICHE LA VUE COMPLETE
@@ -386,7 +405,7 @@ abstract class Ctrl
 		$typeId=(!empty($typeIdParam)) ? $typeIdParam : Req::param("typeId"); 
 		if(!empty($typeId)){
 			$typeId=explode("-",$typeId);
-			$curObj=self::getObj($typeId[0], $typeId[1] ?? null);	//Objet existant || Nouvel objet ($typeId[1] => 0 ou null)
+			$curObj=self::getObj($typeId[0], $typeId[1] ?? null);																		//Objet existant || Nouvel objet ($typeId[1] => 0 ou null)
 			if($curObj->isNew()){																										//Nouvel objet :
 				if(!empty($typeId[1]))  			{self::redir("index.php?ctrl=".static::moduleName."&notify[]=inaccessibleElem");}	//Objet inexistant/supprimé en DB : notif d'erreur
 				if(Req::isParam("_idContainer"))	{$curObj->_idContainer=Req::param("_idContainer");}									//Ajoute "_idContainer" pour le controle d'accès via editRecord()
@@ -415,14 +434,18 @@ abstract class Ctrl
 	}
 
 	/********************************************************************************************************
-	 * REDIRIGE VERS L'ADRESSE DEMANDÉE : REDIRECTION SIMPLE OU SUR LA PAGE PRINCIPALE (IFRAME)
+	 * REDIRECTION VERS UNE URL
 	 ********************************************************************************************************/
-	public static function redir($url, $urlNotify=true)
+	public static function redir($url, $sameDomain=true)
 	{
 		if(!empty($url)){
-			if($urlNotify==true)  {$url.=self::urlNotify();}				//Ajoute les notifs
-			echo '<script> window.top.location.href="'.$url.'"; </script>';	//Redirection window.top (cf. "lightbox")
-			exit;
+			$parsedUrl=parse_url($url);
+			////	Host non précisé (url commence par "index.php")  ||  Host identique au host courant  ||  Autre domaine : pas de check du Host
+			if(empty($parsedUrl['host'])  ||  strtolower($parsedUrl['host'])==strtolower($_SERVER['HTTP_HOST'])  ||  $sameDomain==false){	
+				if($sameDomain==true)  {$url.=self::urlNotify();}			//Ajoute les notifs
+				header("Location: ".filter_var($url,FILTER_SANITIZE_URL));	//Redirection avec filtre de l'url
+				exit;
+			}
 		}
 	}
 

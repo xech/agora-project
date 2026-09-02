@@ -40,13 +40,13 @@ class CtrlObject extends Ctrl
 		else								{$objectList=[self::getCurObj()];}
 		////	Supprime chaque objet
 		foreach($objectList as $cptObj=>$tmpObj){
-			if(empty($redirUrl)){																						//Url de redirection après le delete :
-				if($tmpObj::isInContainer() || $tmpObj::isFolder==true)	{$redirUrl=$tmpObj->containerObj()->getUrl();}	//Affiche le container parent (delete un "content" ou un dossier)
-				else													{$redirUrl="?ctrl=".$tmpObj::moduleName;}		//Sinon redir en page principale du module
+			if(empty($redirUrl)){																									//Url de redirection après le delete :
+				if($tmpObj::isInContainer() || $tmpObj::isFolder==true)	{$redirUrl=$tmpObj->containerObj()->getUrl();}				//Affiche le container parent (delete un "content" ou un dossier)
+				else													{$redirUrl="index.php?ctrl=".$tmpObj::moduleName;}			//Sinon redir en page principale du module
 			}
-			if($tmpObj::moduleName=="file")  {$datasFolderSize=true;}													//Update datasFolderSize() ?
-			if($tmpObj->deleteRight())	{$tmpObj->delete();}															//Verif le droit d'accès puis Delete !
-			elseif($cptObj<10)			{$notDeletedObjects.=$tmpObj->getLabel().'<br>';}								//Objet non supprimé (liste 10 max)
+			if($tmpObj::moduleName=="file")  {$datasFolderSize=true;}																//Update datasFolderSize() ?
+			if($tmpObj->deleteRight())	{$tmpObj->delete();}																		//Verif le droit d'accès puis Delete !
+			elseif($cptObj<10)			{$notDeletedObjects.=$tmpObj->getLabel().'<br>';}											//Objet non supprimé (liste 10 max)
 		}
 		////	FolderSize + Notif + Redirection
 		if($datasFolderSize==true)		{File::datasFolderSize(true);}																//Update le "datasFolderSize()" en session
@@ -73,12 +73,11 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function vueFolders()
 	{
-		if(self::$vueFolders===null)
-		{
-			//Récupère le dossier courant et les dossiers qu'il contient
+		if(self::$vueFolders===null){
+			//// Récupère le dossier courant et les dossiers qu'il contient
 			$curFolder=Ctrl::$curContainer;
 			$vDatas["foldersList"]=Db::getObjTab($curFolder::objectType, "SELECT * FROM ".$curFolder::dbTable." WHERE ".$curFolder::sqlDisplay($curFolder).$curFolder::sqlSort());
-			//Aucun dossier / Liste des dossiers
+			//// Aucun dossier / Liste des dossiers
 			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
 			else{
 				$vDatas["containerClass"]=$curFolder::moduleName=="contact" ? "objPerson" : null;
@@ -98,13 +97,13 @@ class CtrlObject extends Ctrl
 		$curObj->editControl();
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
-			//Enregistre et recharge l'objet
+			//// Enregistre et recharge l'objet
 			$curObj=$curObj->editRecord("name=".Db::param("name").", description=".Db::param("description").", icon=".Db::param("icon"));
-			//Etend les droits aux sous dossiers?
+			//// Etend les droits aux sous dossiers
 			if(Req::isParam("extendSubfolders")){
 				foreach($curObj->folderTree("all") as $tmpObj)	{$tmpObj->setAffectations();}
 			}
-			//Notifie par mail & Ferme la page
+			//// Notifie par mail & Ferme la page
 			$curObj->sendMailNotif();
 			static::lightboxRedir();
 		}

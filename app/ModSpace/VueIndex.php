@@ -20,17 +20,18 @@
 <div id="pageFull">
 	<div id="pageMenu">
 		<div class="miscContent">
-			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')" <?= Txt::tooltip("SPACE_moduleTooltip") ?>><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
+			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
-			<div class="infos"><?= Txt::trad("SPACE_moduleTooltip") ?></div>
 		</div>
 	</div>
 
 	<div id="pageContent" class="objBlocks">
-		<!--LISTE DES ESPACES-->
-		<?php foreach($spaceList as $tmpSpace){ ?>
-			<?= $tmpSpace->objContentDiv() ?>
+		<?php
+		////	LISTE DES ESPACES
+		foreach($spaceList as $tmpSpace){
+			echo $tmpSpace->objContentDiv();
+		?>
 				<div class="objContentScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>

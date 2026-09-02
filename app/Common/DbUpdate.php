@@ -17,7 +17,7 @@ class DbUpdate extends Db
 	 ********************************************************************************************/
 	public static function fieldExist($tableName, $fieldName, $createQuery=null)
 	{
-		$result=self::getCol("show columns from `".$tableName."` like '".$fieldName."'");
+		$result=self::getCol("SHOW COLUMNS FROM `".$tableName."` LIKE '".$fieldName."'");
 		if(empty($result) && !empty($createQuery))  {self::query($createQuery);}
 		return (!empty($result));
 	}
@@ -27,7 +27,7 @@ class DbUpdate extends Db
 	 ********************************************************************************************/
 	public static function tableExist($tableName, $createQuery=null)
 	{
-		$result=self::getCol("show tables like '".$tableName."'");
+		$result=self::getCol("SHOW TABLES LIKE '".$tableName."'");
 		if(empty($result) && !empty($createQuery))  {self::query($createQuery);}
 		return (!empty($result));
 	}
@@ -993,7 +993,7 @@ class DbUpdate extends Db
 			{
 				//// Remplace dans les News lightboxOpen() par .lightboxOpenHref
 				$newsSearch ='href="javascript:lightboxOpen(\'?ctrl=user&action=SendInvitation\')"';
-				$newsReplace='href="?ctrl=user&amp;action=SendInvitation" class="lightboxOpenHref"';
+				$newsReplace='href="index.php?ctrl=user&amp;action=SendInvitation" class="lightboxOpenHref"';
 				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`, ".self::format($newsSearch).", ".self::format($newsReplace).") ");
 			}
 
@@ -1041,11 +1041,24 @@ class DbUpdate extends Db
 				//// Change certains champs en booleens/tinyint
 				self::query("ALTER TABLE `ap_calendar` CHANGE `propositionNotify` `propositionNotify` TINYINT DEFAULT NULL");
 				self::query("ALTER TABLE `ap_calendar` CHANGE `propositionGuest` `propositionGuest` TINYINT DEFAULT NULL");
-				//// Ajoute un champ de controle "ap_calendar.externalId"
+				//// Ajoute un token de controle "ap_calendar.externalId"
 				self::fieldExist("ap_calendar", "externalId", "ALTER TABLE `ap_calendar` ADD `externalId` VARCHAR(255) DEFAULT NULL AFTER `timeSlot`");
 			}
-			////////////////////////////////////////	!!!!!	UPDATE DB.SQL  !!!!!	////////////////////////////////////////
-			////////////////////////////////////////									////////////////////////////////////////
+
+			if(self::updateVersion("26.9.1"))
+			{
+				//// Ajoute un token de controle "ap_user.passwordResetId"
+				self::fieldExist("ap_user", "passwordResetId", "ALTER TABLE `ap_user` ADD `passwordResetId` VARCHAR(255) DEFAULT NULL AFTER `password`");
+				//// Durée des logs à 360 jours max
+				self::query("UPDATE `ap_agora` SET `logsTimeOut`='360' WHERE `logsTimeOut`='720'");
+				//// Nouvel index d'optimisation de requête
+				$indexExist_idEvt=self::getCol("SHOW INDEX FROM `ap_calendarEventAffectation` WHERE Key_name='_idEvt'");
+				$indexExist_idCal=self::getCol("SHOW INDEX FROM `ap_calendarEventAffectation` WHERE Key_name='_idCal'");
+				if(empty($indexExist_idEvt))	{self::query("ALTER TABLE `ap_calendarEventAffectation` ADD KEY `_idEvt` (`_idEvt`)");}
+				if(empty($indexExist_idCal))	{self::query("ALTER TABLE `ap_calendarEventAffectation` ADD KEY `_idCal` (`_idCal`)");}
+			}
+			///////////////////////		+ UPDATE DB.SQL !
+			///////////////////////
 
 
 			////	CHANGE LES "dateUpdateDb" + "version_agora" PUIS OPTIMISE LES TABLES
@@ -1057,9 +1070,9 @@ class DbUpdate extends Db
 				File::rm($updateLock);
 				File::rm($dumpPath);
 			}
-			////	REINIT LA SESSION & REDIRECTION ..SANS DECONNECTER!
+			////	REINIT LA SESSION MAIS SANS DECONNEXION
 			$_SESSION=[];
-			Ctrl::redir("?ctrl=offline");
+			Ctrl::redir("index.php?ctrl=offline");
 		}
 	}
 }

@@ -12,7 +12,7 @@
 
 			<!--"USERS DE L'ESPACE" / "TOUS LES USERS"-->
 			<?php if($menuDisplayUsers==true){ ?>
-				<select name="displayUsers" id="displayUsersSelect" onchange="redir('?ctrl=user&displayUsers='+this.value)" <?= Txt::tooltip("USER_spaceOrAllUsersTooltip") ?>>
+				<select name="displayUsers" id="displayUsersSelect" onchange="redir('index.php?ctrl=user&displayUsers='+this.value)" <?= Txt::tooltip("USER_spaceOrAllUsersTooltip") ?>>
 					<option value="space"><?= Txt::trad("USER_spaceUsers") ?></option>
 					<option value="all" <?= $_SESSION["displayUsers"]=="all"?"selected":null ?> ><?= Txt::trad("USER_allUsers") ?></option>
 				</select>
@@ -24,7 +24,7 @@
 			$affectNewUsers=(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
 			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
 			if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
-			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=ResetPasswordUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/user/connection.png"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
+			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=PasswordResetUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/user/connection.png"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
 			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=vueImportExport\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_user").'</div></div>';}
 			if($affectNewUsers==true)  					{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=AffectUsers\')" '.Txt::tooltip("USER_addExistUserTitle").'><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("USER_addExistUser").'</div></div>';}
 			?>
@@ -65,9 +65,9 @@
 				<div>
 					<div class="menuContextLaunch" for="menuAlphabet"><?= Txt::trad("alphabetFilter").(Req::isParam("alphabet")?'<img src="app/img/arrowRight.png"><b>'.Req::param("alphabet").'</b>':null) ?></div>
 					<div id="menuAlphabet" class="menuContext">
-						<a <?= Req::isParam("alphabet")?'':'class="linkSelect"' ?> href="?ctrl=user"><?= Txt::trad("displayAll") ?></a>
+						<a <?= Req::isParam("alphabet")?'':'class="linkSelect"' ?> href="index.php?ctrl=user"><?= Txt::trad("displayAll") ?></a>
 						<?php foreach($alphabetList as $letter){ ?>
-							<a <?= Req::param("alphabet")==$letter?'class="linkSelect"':null ?> href="?ctrl=user&alphabet=<?= $letter ?>"><?= $letter ?></a>
+							<a <?= Req::param("alphabet")==$letter?'class="linkSelect"':null ?> href="index.php?ctrl=user&alphabet=<?= $letter ?>"><?= $letter ?></a>
 						<?php } ?>
 					</div>
 				</div>

@@ -66,9 +66,9 @@ class MdlObject
 				foreach($objValues as $fieldName=>$fieldValue)  {$this->$fieldName=$fieldValue;}
 			}
 		}
-		////	Cast l'id en Interger  + Init le typeId (ex: "fileFolder-55")
+		////	Cast l'id en Interger  + Init l'identifiant générique (ex: "fileFolder-19")
 		$this->_id=(int)$this->_id;
-		$this->typeId=static::objectType."-".$this->_id;
+		$this->typeId=static::objectType.'-'.$this->_id;
 	}
 
 	/********************************************************************************************************
@@ -233,23 +233,22 @@ class MdlObject
 	/*****************************************************************************************************************************************
 	 * EDITE LES AFFECTATIONS ET DROITS D'ACCÈS DE L'OBJET (cf."editMenuSubmit()"). Par défaut : accès en lecture à l'espace courant
 	 *****************************************************************************************************************************************/
-	public function setAffectations($objectRightSpecific=null)
+	public function setAffectations()
 	{
-		////	Object indépendant  &&  "objectRight" spécifié OU droit d'accès spécifiques
-		if($this->hasAccessRight()  &&  (Req::isParam("objectRight") || !empty($objectRightSpecific))){
-			//Init
-			$sqlInsertBase="INSERT INTO ap_objectTarget SET objectType=".Db::format(static::objectType).", _idObject=".$this->_id.", ";
-			//Réinitialise les droits, uniquement sur les espaces auxquels l'user courant a accès
+		////	Object indépendant & "objectRight" spécifié
+		if($this->hasAccessRight() && Req::isParam("objectRight")){
+			////	Init
+			$sqlInsert="INSERT INTO ap_objectTarget SET objectType=".Db::format(static::objectType).", _idObject=".$this->_id;
+			////	Réinitialise les droits sur les espaces de l'user
 			if($this->isNew()==false){
-				$sqlSpaces="_idSpace IN (".implode(",",Ctrl::$curUser->spaceList("ids")).")";
-				if(Ctrl::$curUser->isGeneralAdmin())	{$sqlSpaces="(".$sqlSpaces." OR _idSpace IS NULL)";}
-				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND ".$sqlSpaces);
+				$spaceIds=implode(",",Ctrl::$curUser->spaceList("ids"));
+				Db::query("DELETE FROM ap_objectTarget WHERE objectType=".Db::format(static::objectType)." AND _idObject=".$this->_id." AND _idSpace IN (".$spaceIds.")");
 			}
-			//Ajoute les nouveaux droits d'accès : passés en paramètre / provenant du formulaire
-			$newAccessRight=Req::isParam("objectRight")  ?  Req::param("objectRight")  :  $objectRightSpecific;
-			foreach($newAccessRight as $tmpRight){
-				$tmpRight=explode("_",$tmpRight);//ex:  "55_U33_2"  devient ["_idSpace"=>"5","target"=>"U3","accessRight"=>"2"]  correspond à droit "2" sur l'user "33" de l'espace "55"
-				Db::query($sqlInsertBase." _idSpace=".Db::format($tmpRight[0]).", target=".Db::format($tmpRight[1]).", accessRight=".Db::format($tmpRight[2]));
+			////	Ajoute les nouveaux droits d'accès  (ex: "55_U33_2" => Espace 55 + User 33 + Accès 2 / écriture)
+			foreach(Req::param("objectRight") as $tmpRight){
+				$tmpRight=explode("_",$tmpRight);
+				if(Ctrl::getObj("space",$tmpRight[0])->readRight())
+					{Db::query($sqlInsert.", _idSpace=".Db::format($tmpRight[0]).", target=".Db::format($tmpRight[1]).", accessRight=".Db::format($tmpRight[2]));}
 			}
 		}
 	}
@@ -310,7 +309,15 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function readRight()
 	{
-		return ($this->accessRight()>0);
+		return ($this->accessRight() > 0);
+	}
+
+	/********************************************************************************************************
+	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET (CONTENEURS = 3  /  AUTRES = 2)
+	 ********************************************************************************************************/
+	public function editRight()
+	{
+		return ($this->accessRight()==3  ||  (static::isContainer()==false && $this->accessRight()==2));
 	}
 
 	/********************************************************************************************************
@@ -318,7 +325,7 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function addContentRight()
 	{
-		return (static::isContainer() && $this->accessRight()>1);
+		return (static::isContainer() && $this->accessRight() > 1);
 	}
 
 	/********************************************************************************************************
@@ -326,15 +333,7 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function editContentRight()
 	{
-		return (static::isContainer() && $this->accessRight()>=2);
-	}
-
-	/********************************************************************************************************
-	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET : accessRight==3 POUR LES CONTENEURS
-	 ********************************************************************************************************/
-	public function editRight()
-	{
-		return ($this->accessRight()==3  ||  ($this->accessRight()==2 && static::isContainer()==false));
+		return (static::isContainer() && $this->accessRight() >= 2);
 	}
 
 	/********************************************************************************************************
@@ -385,10 +384,10 @@ class MdlObject
 	*********************************************************************************************************/
 	public function getUrl($display=null)
 	{
-		$url="?ctrl=".static::moduleName;
-		if($display=="vue")					{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->typeId;}			//Vue dans une lightbox (Task/User/Contact/etc)
-		elseif($display=="edit")			{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->typeId;}		//Edition un objet
-		elseif($display=="delete")			{return "?ctrl=object&action=delete&typeId=".$this->typeId;}								//Suppression d'un objet via "actionDelete()"
+		$url="index.php?ctrl=".static::moduleName;
+		if($display=="vue")					{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->typeId;}		//Vue dans une lightbox (Task/User/Contact/etc)
+		elseif($display=="edit")			{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->typeId;}	//Edition un objet
+		elseif($display=="delete")			{return "index.php?ctrl=object&action=delete&typeId=".$this->typeId;}					//Suppression d'un objet via "actionDelete()"
 		elseif(static::isInContainer())		{return $url."&typeId=".$this->containerObj()->typeId."&typeIdTarget=".$this->typeId;}	//Affichage du conteneur d'un objet (File/Task/CalendarEvent/etc)
 		else								{return $url."&typeId=".$this->typeId;}													//Affichage par défaut (News/Folder/etc)
 	}
@@ -422,11 +421,12 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * IDENTIFIANT "md5()" DE L'OBJET
+	 * IDENTIFIANT DE L'OBJET (OLD ID POUR RETRO-COMPAT)
 	 ********************************************************************************************************/
-	public function md5Id()
+	public function md5Id($oldId=false)
 	{
-		return md5($this->_id.$this->dateCrea.$this->_idUser);
+		if($oldId==true)	{return md5($this->_id.$this->dateCrea.$this->_idUser);}
+		else				{return md5($this->typeId.'_'.$this->_id.'_'.$this->dateCrea.'_'.$this->_idUser);}
 	}
 
 	/********************************************************************************************************
@@ -434,7 +434,7 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function externalIdControl()
 	{
-		return ( (Req::isParam("externalId") && Req::param("externalId")==$this->externalId)  ||  (Req::isParam("md5Id") && Req::param("md5Id")==$this->md5Id()) );
+		return ( (Req::isParam("externalId") && Req::param("externalId")==$this->externalId)  ||  (Req::isParam("md5Id") && Req::param("md5Id")==$this->md5Id(true)) );
 	}
 
 	/********************************************************************************************************
@@ -520,10 +520,10 @@ class MdlObject
 				elseif(static::objectType!="mail")	{$sqlFields.=", dateModif=".Db::dateNow().", _idUserModif=".Db::format(Ctrl::$curUser->_id);}	//Auteur/Date de modification
 			}
 			if($this->isNew())	{$_id=(int)Db::query("INSERT INTO ".static::dbTable." SET ".$sqlFields, true);}										//INSERT UN NOUVEL OBJET
-			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE `_id`=".$this->_id);   $_id=$this->_id;}				//UPDATE L'OBJET
-			$curObj=Ctrl::getObj(static::objectType, $_id, true);																					//Charge les nouvelles propriétés (cache updated)
-			$curObj->setAffectations();																												//Ajoute les droits d'accès
-			$curObj->attachedFileAdd();																												//Ajoute les fichiers joints
+			else				{Db::query("UPDATE ".static::dbTable." SET ".$sqlFields." WHERE `_id`=".$this->_id);   $_id=$this->_id;}			//UPDATE L'OBJET
+			$curObj=Ctrl::getObj(static::objectType, $_id, true);																					//Charge les propriétés (cache updated)
+			$curObj->setAffectations();																												//Edite les droits d'accès
+			$curObj->attachedFileAdd();																												//Ajoute des fichiers joints
 			Ctrl::addLog(($curObj->isNewRecord()?"add":"modif"), $curObj);																			//Enregistre dans les Logs
 			return Ctrl::getObj(static::objectType, $_id, true);																					//Renvoie l'objet (cache updated)
 		}
@@ -756,7 +756,7 @@ class MdlObject
 	 ********************************************************************************************************/
 	public static function attachedFileDisplayUrl($fileId, $fileName)
 	{
-		return "?ctrl=object&action=AttachedFileDisplay&_id=".$fileId."&extension=.".File::extension($fileName);
+		return "index.php?ctrl=object&action=AttachedFileDisplay&_id=".$fileId."&extension=.".File::extension($fileName);
 	}
 
 	/********************************************************************************************************

@@ -111,15 +111,15 @@ class Trad extends Txt
 			"passwordModif"=>"Alterar a senha",
 			"passwordTmp"=>"Senha temporária (a ser alterada na página de login)",
 			"passwordByDefault"=>"Senha padrão (altere se necessário no seu perfil)",
-			"resetPassword"=>"Esqueceu a senha ?",
-			"resetPasswordYourMail"=>"Informe seu e-mail para redefinir sua senha de acesso",
-			"resetPasswordNotif"=>"O email para redefinir sua senha foi enviado com sucesso.<br>Se não o recebeu, verifique a pasta de lixo eletrônico.",
-			"resetPasswordMailTitle"=>"Redefinir sua senha",
-			"resetPasswordMailPassword"=>"Para redefinir sua senha e se conectar novamente",
-			"resetPasswordMailPassword2"=>"clique aqui",
-			"resetPasswordMailLoginRemind"=>"Lembrete do seu identificador / login",
-			"resetPasswordIdExpired"=>"O link para gerar uma nova senha expirou. Por favor, reinicie o procedimento",
-			"resetPasswordMailNotRegistered"=>"O email não corresponde a nenhuma conta registrada",
+			"passwordReset"=>"Esqueceu a senha ?",
+			"passwordResetYourMail"=>"Informe seu e-mail para redefinir sua senha de acesso",
+			"passwordResetNotif"=>"O email para redefinir sua senha foi enviado com sucesso.<br>Se não o recebeu, verifique a pasta de lixo eletrônico.",
+			"passwordResetMailTitle"=>"Redefinir sua senha",
+			"passwordResetMailPassword"=>"Para redefinir sua senha e se conectar novamente",
+			"passwordResetMailPassword2"=>"clique aqui",
+			"passwordResetMailLoginRemind"=>"Lembrete do seu identificador / login",
+			"passwordResetIdExpired"=>"O link para gerar uma nova senha expirou. Por favor, reinicie o procedimento",
+			"passwordResetMailNotRegistered"=>"O email não corresponde a nenhuma conta registrada",
 
 			////	Type d'affichage
 			"displayMode"=>"Visualização",
@@ -498,14 +498,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espaço para troca e trabalho colaborativo",
 			"INSTALL_dataDashboardNews"=>  '<h3>Bem-vindo ao seu novo espaço de trabalho colaborativo !</h3>
-											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png">Partilhe os seus ficheiros com a sua equipa no gestor de ficheiros</a></h4>
-											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Crie eventos no seu calendário partilhado ou calendário pessoal</a></h4>
-											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilize o feed de notícias para transmitir informação sobre a sua atividade</a></h4>
-											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png"> Comunique através do fórum, mensagens ou videoconferências</a></h4>
-											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png"> Gerir as suas tarefas e projetos para organizar a sua atividade</a></h4>
-											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Envie newsletters para distribuir emails informativos sobre a sua atividade.</a></h4>
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png">Partilhe os seus ficheiros com a sua equipa no gestor de ficheiros</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Crie eventos no seu calendário partilhado ou calendário pessoal</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilize o feed de notícias para transmitir informação sobre a sua atividade</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png"> Comunique através do fórum, mensagens ou videoconferências</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png"> Gerir as suas tarefas e projetos para organizar a sua atividade</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Envie newsletters para distribuir emails informativos sobre a sua atividade.</a></h4>
 											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Consulte o manual do utilizador para descobrir o seu espaço de trabalho</a></h4>
-											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Enviar convites por email para participar no espaço</a></h4>',
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Enviar convites por email para participar no espaço</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"O que você acha da ferramenta de notícias?",
 			"INSTALL_dataDashboardPollA"=>"Muito interessante!",
 			"INSTALL_dataDashboardPollB"=>"Interessante",
@@ -656,6 +656,7 @@ class Trad extends Txt
 			"USER_spaceOrAllUsersTooltip"=>"Gerenciar usuários do espaço atual / Gerenciar usuários de todos os espaços (reservado ao administrador geral)",
 			"USER_spaceUsers"=>"Gerir os utilizadores do espaço",
 			"USER_allUsers"=>"Gerir todos os utilizadores",
+			"USER_allUsersToolip"=>"Gerenciar os usuários de todos os espaços de trabalho",
 			"USER_deleteDefinitely"=>"Deletar definitivamente",
 			"USER_deleteFromCurSpace"=>"Desatribuir ao espaço",
 			"USER_deleteFromCurSpaceConfirm"=>"Cancelar atribuição ao usuário do espaço atual?",
@@ -804,7 +805,7 @@ class Trad extends Txt
 			"FILE_imgReduce"=>"Otimizar a imagem",
 			"FILE_updatedName"=>"O nome do arquivo será substituído pela nova versão",
 			"FILE_fileSizeError"=>"Arquivo muito grande",
-			"FILE_addMultipleFilesTooltip"=>"máx por ficheiro. Selecione vários ficheiros utilizando a tecla <i>Ctrl</i>.",
+			"FILE_addMultipleFilesTooltip"=>"máx por ficheiro. Selecione vários ficheiros utilizando a tecla ''Ctrl''",
 			"FILE_selectFile"=>"Por favor, escolha pelo menos um arquivo",
 			"FILE_fileContent"=>"conteúdo",
 			// Versions

@@ -170,7 +170,7 @@ function evtDropConfirm(evtDrag, cellDrop, newTimeBegin)
 					action:function(){
 						////	TypeId de l'evt + Url d'enregistrement du nouveau datetime
 						let evtTypeId=evtDrag.getAttribute("data-typeid");
-						let ajaxUrl="?ctrl=calendar&action=EvtChangeTime&newTimeBegin="+newTimeBegin+"&typeId="+evtTypeId;
+						let ajaxUrl="index.php?ctrl=calendar&action=EvtChangeTime&newTimeBegin="+newTimeBegin+"&typeId="+evtTypeId;
 						$.ajax({url:ajaxUrl,dataType:"json"}).done(function(result){
 							if(result.changed){
 								////	Parcourt chaque instance de l'evt pour chaque agenda affiché
@@ -209,8 +209,8 @@ ready(function(){
 	 *	PROPOSITION D'EVT : CONFIRME/ANNULE UNE PROPOSITION
 	 ************************************************************************************************************/
 	$(".evtProposition").on("click",function(){
-		let ajaxUrl="?ctrl=calendar&action=evtPropositionConfirm&typeId=calendar-"+this.getAttribute("data-idcal")+"&_idEvt="+this.getAttribute("data-idevt");
-		let redirUrl="?ctrl=calendar&notify=";
+		let ajaxUrl="index.php?ctrl=calendar&action=evtPropositionConfirm&typeId=calendar-"+this.getAttribute("data-idcal")+"&_idEvt="+this.getAttribute("data-idevt");
+		let redirUrl="index.php?ctrl=calendar&notify=";
 		let confirmParams={
 			title:"<?= Txt::trad("CALENDAR_evtProposition") ?> :",
 			content:this.getAttribute("data-details"),//Date, auteur..
@@ -252,7 +252,7 @@ ready(function(){
 		dateFormat:"yy-mm-dd",							//Utilisé par "dayYmd" ci-dessous
 		onSelect:function(dayYmd){						//Sélectionne une date : redirection
 			let dateObj=new Date(dayYmd);
-			redir("?ctrl=calendar&curTime="+(dateObj.getTime()/1000));
+			redir("index.php?ctrl=calendar&curTime="+(dateObj.getTime()/1000));
 		}
 	});
 	/////	DATEPICKER : SURLIGNE LES JOURS DE LA SEMAINE AFFICHÉE
@@ -309,7 +309,7 @@ ready(function(){
 #synthTable										{display:table; width:100%; max-width:100%;}
 #synthHeader, .vSynthLine						{display:table-row;}
 #synthHeader									{font-size:0.9em!important;}
-#synthHeader .vSynthDayCurDay					{color:#c00;}
+#synthHeader .vSynthDayCurDay					{color:#00c; font-weight:bold;}
 .vSynthLabel									{display:table-cell; width:150px; white-space:nowrap; padding-right:10px; vertical-align:middle;}
 .vSynthDay										{display:table-cell; vertical-align:middle; text-align:center; height:22px;}
 .vSynthDayEvts									{display:table; width:100%; height:100%;}
@@ -409,7 +409,7 @@ ready(function(){
 					<!--TITRE + OPTION D'AFFICHAGE ADMIN-->
 					<div id="readableCalendarsTitle">
 						<div><?= Txt::trad("CALENDAR_readableCalendars") ?> :</div>
-						<div id="readableCalsAdmin"><?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?></div>
+						<div id="readableCalsAdmin"><?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?></div>
 					</div>
 					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
 					<?php foreach($readableCalendars as $tmpCal){ ?>
@@ -510,15 +510,15 @@ ready(function(){
 				</div>
 				<!--PERIODE AFFICHEE  +  PRECEDENT/SUIVANT  +  MENU CONTEXT MONTHS/YEARS-->
 				<div class="vCalHeaderCenter">
-					<span class="vCalPrevNext vCalPrev" onclick="redir('?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeftNav.png"></span>
+					<span class="vCalPrevNext vCalPrev" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeftNav.png"></span>
 					<span class="menuContextLaunch vCalHeaderMonth" for="monthsYearsMenu<?= $tmpCal->typeId ?>"><?= ucfirst($monthLabel) ?></span>
 					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
-					<span class="vCalPrevNext vCalNext" onclick="redir('?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRightNav.png"></span>
+					<span class="vCalPrevNext vCalNext" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRightNav.png"></span>
 				</div>
 				
 				<!--PROPOSER/AJOUTER UN EVT  +  "AUJOURD'HUI"  +  AFFICHAGE MONTH/WEEK/ETC-->
 				<div class="vCalHeaderRight">
-					<span onclick="redir('?ctrl=calendar&curTime=<?= time() ?>')" <?= Txt::tooltip("displayToday") ?> >
+					<span onclick="redir('index.php?ctrl=calendar&curTime=<?= time() ?>')" <?= Txt::tooltip("displayToday") ?> >
 						<?= Req::isMobile() ? '<img src="app/img/calendar/displayToday.png">' : '<button>'.Txt::trad("today").'</button>' ?>
 					</span>
 					<span class="menuContextLaunch" for="menuDisplayMode<?= $tmpCal->typeId ?>">
@@ -526,7 +526,7 @@ ready(function(){
 					</span>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->typeId ?>">
 						<?php foreach($displayModeList as $displayModeTmp){ ?>
-						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('?ctrl=calendar&calendarDisplayMode=<?= $displayModeTmp ?>')">
+						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('index.php?ctrl=calendar&calendarDisplayMode=<?= $displayModeTmp ?>')">
 							<div class="menuIcon"><img src="app/img/calendar/display<?= ucfirst($displayModeTmp) ?>.png"></div><div><?= ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp)) ?></div>
 						</div>
 						<?php } ?>

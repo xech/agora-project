@@ -2,7 +2,7 @@
 ////	Confirmation de suppression de version
 function confirmDeleteVersion(dateCrea)
 {
-	confirmRedir("?ctrl=file&action=DeleteFileVersion&typeId=<?= $curObj->typeId ?>&dateCrea="+dateCrea, "<?= Txt::trad("FILE_confirmDeleteVersion")?>");
+	confirmRedir("index.php?ctrl=file&action=DeleteFileVersion&typeId=<?= $curObj->typeId ?>&dateCrea="+dateCrea, "<?= Txt::trad("FILE_confirmDeleteVersion")?>");
 }
 </script>
 

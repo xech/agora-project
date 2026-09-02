@@ -111,15 +111,15 @@ class Trad extends Txt
 			"passwordModif"=>"Modificar la contraseña",
 			"passwordTmp"=>"Contraseña temporal (a modificar en la página de inicio de sesión)",
 			"passwordByDefault"=>"Contraseña predeterminada (modifíquela si es necesario en su perfil)",
-			"resetPassword"=>"¿ Olvidó su contraseña ?",
-			"resetPasswordYourMail"=>"Indique su email para restablecer su contraseña de acceso",
-			"resetPasswordNotif"=>"El correo para restablecer su contraseña ha sido enviado correctamente.<br>Si no lo ha recibido, revise la carpeta de correo no deseado de su bandeja de entrada.",
-			"resetPasswordMailTitle"=>"Restablecer su contraseña",
-			"resetPasswordMailPassword"=>"Para restablecer su contraseña y volver a conectarse",
-			"resetPasswordMailPassword2"=>"haga clic aquí",
-			"resetPasswordMailLoginRemind"=>"Recordatorio de su identificador de inicio de sesión",
-			"resetPasswordIdExpired"=>"El enlace para regenerar la contraseña ha expirado. Por favor, reinicie el procedimiento",
-			"resetPasswordMailNotRegistered"=>"No hay ningún correo registrado para esta cuenta de usuario",
+			"passwordReset"=>"¿ Olvidó su contraseña ?",
+			"passwordResetYourMail"=>"Indique su email para restablecer su contraseña de acceso",
+			"passwordResetNotif"=>"El correo para restablecer su contraseña ha sido enviado correctamente.<br>Si no lo ha recibido, revise la carpeta de correo no deseado de su bandeja de entrada.",
+			"passwordResetMailTitle"=>"Restablecer su contraseña",
+			"passwordResetMailPassword"=>"Para restablecer su contraseña y volver a conectarse",
+			"passwordResetMailPassword2"=>"haga clic aquí",
+			"passwordResetMailLoginRemind"=>"Recordatorio de su identificador de inicio de sesión",
+			"passwordResetIdExpired"=>"El enlace para regenerar la contraseña ha expirado. Por favor, reinicie el procedimiento",
+			"passwordResetMailNotRegistered"=>"No hay ningún correo registrado para esta cuenta de usuario",
 
 			////	Type d'affichage
 			"displayMode"=>"Visualización",
@@ -498,14 +498,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espacio para el intercambio y el trabajo colaborativo",
 			"INSTALL_dataDashboardNews"=>  '<h3>¡Bienvenido a tu nuevo espacio de trabajo colaborativo!</h3>
-											<h4><a href="?ctrl=file"><img src="app/img/file/iconSmall.png">Comparte tus archivos con tu equipo en el administrador de archivos</a></h4>
-											<h4><a href="?ctrl=calendar"><img src="app/img/calendar/iconSmall.png">Crea eventos en tu calendario compartido o calendario personal</a></h4>
-											<h4><a href="?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png">Utilice el canal de noticias para difundir información sobre su actividad</a></h4>
-											<h4><a href="?ctrl=forum"><img src="app/img/messenger.png">Comunícate a través del foro, mensajería o videoconferencias</a></h4>
-											<h4><a href="?ctrl=task"><img src="app/img/task/iconSmall.png">Gestiona tus tareas y proyectos para organizar tu actividad</a></h4>
-											<h4><a href="?ctrl=mail"><img src="app/img/mail/iconSmall.png">Envía boletines informativos para distribuir correos electrónicos con información sobre tu actividad.</a></h4>
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png">Comparte tus archivos con tu equipo en el administrador de archivos</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png">Crea eventos en tu calendario compartido o calendario personal</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png">Utilice el canal de noticias para difundir información sobre su actividad</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png">Comunícate a través del foro, mensajería o videoconferencias</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png">Gestiona tus tareas y proyectos para organizar tu actividad</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png">Envía boletines informativos para distribuir correos electrónicos con información sobre tu actividad.</a></h4>
 											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png">Consulta el manual del usuario para descubrir tu espacio de trabajo</a></h4>
-											<h4><a href="?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Enviar invitaciones por email para unirse al espacio</a></h4>',
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Enviar invitaciones por email para unirse al espacio</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"¿ Qué opinas de la herramienta de noticias ?",
 			"INSTALL_dataDashboardPollA"=>"Muy interesante !",
 			"INSTALL_dataDashboardPollB"=>"Interesante",
@@ -656,6 +656,7 @@ class Trad extends Txt
 			"USER_spaceOrAllUsersTooltip"=>"Usuarios del espacio actual / Usuarios de todos los espacios (vista de administrador)",
 			"USER_spaceUsers"=>"Administrar usuarios del espacio",
 			"USER_allUsers"=>"Administrar todos los usuarios",
+			"USER_allUsersToolip"=>"Gestionar los usuarios de todos los espacios de trabajo",
 			"USER_deleteDefinitely"=>"Eliminar definitivamente",
 			"USER_deleteFromCurSpace"=>"Desasignar al espacio",
 			"USER_deleteFromCurSpaceConfirm"=>"¿ Desasignar el usuario del espacio actual ?",
@@ -804,7 +805,7 @@ class Trad extends Txt
 			"FILE_imgReduce"=>"Optimizar la imagen",
 			"FILE_updatedName"=>"El nombre del archivo será reemplazado por la nueva versión",
 			"FILE_fileSizeError"=>"Archivo demasiado grande",
-			"FILE_addMultipleFilesTooltip"=>"máximo por archivo. Seleccione varios archivos usando la tecla <i>Ctrl</i>.",
+			"FILE_addMultipleFilesTooltip"=>"máximo por archivo. Seleccione varios archivos usando la tecla ''Ctrl''",
 			"FILE_selectFile"=>"Gracias por elegir al menos un archivo",
 			"FILE_fileContent"=>"contenido",
 			// Versions

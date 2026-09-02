@@ -70,9 +70,9 @@ trait MdlObjectMenu
 			else								{$vDatas["editLabel"]=Txt::trad("modify");}
 			////	CHANGER DE DOSSIER
 			if(static::isInArbo() && isset(Ctrl::$curRootFolder) && count(Ctrl::$curRootFolder->folderTree())>1)
-				{$vDatas["moveObjectUrl"]="?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
+				{$vDatas["moveObjectUrl"]="index.php?ctrl=object&action=FolderMove&typeId=".$this->containerObj()->typeId."&objectsTypeId[".static::objectType."]=".$this->_id;}
 			////	HISTORIQUE/LOGS
-			$vDatas["logUrl"]="?ctrl=object&action=logs&typeId=".$this->typeId;
+			$vDatas["logUrl"]="index.php?ctrl=object&action=logs&typeId=".$this->typeId;
 		}
 
 		////	SUPPRIMER
@@ -333,7 +333,7 @@ trait MdlObjectMenu
 		$vDatas["pageNbTotal"]=ceil($objNbDisplayed / static::$nbObjsPerPage);								//Nombre de pages au total 
 		if($vDatas["pageNbTotal"]>1){																		//Affiche le menu s'il ya + d'une page
 			$vDatas["pageNbCur"]=Req::isParam("pageNb") ? (int)Req::param("pageNb") : 1;					//Page courante
-			$vDatas["pageUrl"]="?ctrl=".Req::$curCtrl;														//Url de redirection de base
+			$vDatas["pageUrl"]="index.php?ctrl=".Req::$curCtrl;												//Url de redirection de base
 			if(Req::isParam($paramKey))  {$vDatas["pageUrl"].="&".$paramKey."=".Req::param($paramKey);}		//Ajoute un parametre dans l'url
 			$vDatas["pageUrl"].="&pageNb=";																	//Termine par le parametre "pageNb"
 			$vDatas["pageUrlPrev"]=($vDatas["pageNbCur"] > 1) ?  						'href="'.$vDatas["pageUrl"].($vDatas["pageNbCur"]-1).'"'  :  'class="vMenuPageDisabled"';//Page Précédente : url / disabled
@@ -359,7 +359,7 @@ trait MdlObjectMenu
 		// Langue "francais" par défaut
 		if(empty($selectedLang))	{$selectedLang="francais";}
 		//Ouvre le dossier des langues & init le "Onchange"
-		$onchange=($typeConfig=="install")  ?  "redir('?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&curTrad='+this.value);"  :  "$('.menuTradIcon').attr('src','app/trad/'+this.value+'.png');";
+		$onchange=($typeConfig=="install")  ?  "redir('index.php?ctrl=".Req::$curCtrl."&action=".Req::$curAction."&curTrad='+this.value);"  :  "$('.menuTradIcon').attr('src','app/trad/'+this.value+'.png');";
 		// Affichage
 		$menuLangOptions=null;
 		foreach(scandir("app/trad/") as $tmpFileLang){

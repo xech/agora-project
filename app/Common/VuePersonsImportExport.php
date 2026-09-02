@@ -188,7 +188,7 @@ form							{text-align:center;}
 			<?php if($objectType=="user"){ ?>
 				<div class="vImportOptions">
 					<!--NOTIF PAR MAIL-->
-					<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser">
+					<input type="checkbox" name="notifCreaUser" value="1" id="notifCreaUser" checked>
 					<label for="notifCreaUser" <?= Txt::tooltip("USER_sendCoordsTooltip2") ?> ><?= Txt::trad("USER_sendCoords") ?></label>
 					<hr>
 					<!--ESPACES D'AFFECTATION-->

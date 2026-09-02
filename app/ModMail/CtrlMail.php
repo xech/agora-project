@@ -70,7 +70,7 @@ class CtrlMail extends Ctrl
 			$message=$curObj->descriptionMail();												//Description avec intégration des images (ex: <img src="cid:attachedFileXX">) 
 			$options=(array)Req::param("mailOptions");											//Options
 			Tool::sendMail($mailTo, $subject, $message, $options, $curObj->attachedFileList());	//Envoie l'email !
-			Ctrl::redir("?ctrl=mail");															//Redir en page principale (évite un repost)
+			Ctrl::redir("index.php?ctrl=mail");													//Redir en page principale (évite un repost)
 		}
 		////	Liste des espaces et users associés
 		$vDatas["containerList"]=[];
@@ -95,7 +95,7 @@ class CtrlMail extends Ctrl
 	{
 		////	Valide le formulaire de suppression d'anciens mails
 		if(Req::isParam(["formValidate","historyDeleteDays"]) && Req::param("historyDeleteDays")>5){
-			$deleteTime=intval(time() - (TIME_1DAY * Req::param("historyDeleteDays")));
+			$deleteTime=intval(time() - (86400 * Req::param("historyDeleteDays")));
 			$mailsDelete=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." AND UNIX_TIMESTAMP(dateCrea) < ".$deleteTime);
 			$mailDeleteNotif=Txt::trad("MAIL_historyDeleteNotif")." : ".count($mailsDelete);
 			foreach($mailsDelete as $tmpMail){
