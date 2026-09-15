@@ -111,9 +111,9 @@ class File
 			////	Type mime du fichier (en complément du controle d'extension)
 			$finfo=finfo_open(FILEINFO_MIME_TYPE);
 			$forbiddenTypeMime=preg_match("/(php|javascript|shell|x-sh|binary|exec|debian|perl|python|ruby|java|msdownload)/i", finfo_file($finfo,$tmpFile["tmp_name"]));
-			////	Controle le type du fichier  &&  S'il a été uploadé via HTTP POST  &&  L'espace disque disponible
+			////	Verif le type du fichier  &&  Verif s'il a été uploadé via HTTP POST  &&  Verif l'espace disque disponible
 			if(self::isType("allowed",$tmpFile["name"])==false || $forbiddenTypeMime==true)					{Ctrl::notify($tmpFile["name"].' : '.Txt::trad("NOTIF_fileNotAllowed"));  return false;}
-			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::param("tmpFolderName")==false)		{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
+			elseif(is_uploaded_file($tmpFile["tmp_name"])==false && Req::isParam("tmpFolderName")==false)	{Ctrl::notify("NOTIF_fileOrFolderAccess");  return false;}
 			elseif(($datasFolderSize+$tmpFile["size"]) > limite_espace_disque)								{Ctrl::notify("NOTIF_diskSpace");  return false;}
 			else																							{return true;}
 		}
@@ -388,19 +388,20 @@ class File
 	 ********************************************************************************************************/
 	public static function getTempDir()
 	{
-		//Dossier temporaire du systeme  ||  Dossier temporaire dans /DATAS
+		//// Dossier temporaire du systeme  ||  Dossier temporaire dans /DATAS
 		if(Req::isHost()){
 			$tmpDir=sys_get_temp_dir();
 		}else{
-			$tmpDir=rtrim(PATH_TMP,"/");//Path sans le dernier "/"
-			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé si besoin le dossier
+			$tmpDir=rtrim(PATH_TMP,"/");
+			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé le dossier /DATAS/tmp/
 		}
-		//Supprime les fichiers tmp de plus de 24h
+		//// Supprime les fichiers tmp de + de 24h
 		foreach(scandir($tmpDir) as $fileName){
-			$filePath=$tmpDir."/".$fileName;
-			if(!in_array($fileName,['.','..']) && is_file($filePath) && (time()-filemtime($filePath))>86400)  {self::rm($filePath);}
+			$filePath=$tmpDir.'/'.$fileName;
+			if(!in_array($fileName,['.','..']) && is_file($filePath) && (time()-filemtime($filePath))>86400)
+				{self::rm($filePath);}
 		}
-		//Renvoie le path
+		//// Renvoie le path
 		return $tmpDir;
 	}
 

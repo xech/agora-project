@@ -44,13 +44,13 @@ CREATE TABLE `ap_calendar` (
   `title` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `timeSlot` varchar(255) DEFAULT NULL,
-  `externalId` varchar(255) DEFAULT NULL,
   `propositionNotify` tinyint DEFAULT NULL,
   `propositionGuest` tinyint DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -77,6 +77,7 @@ CREATE TABLE `ap_calendarEvent` (
   `guestMail` varchar(255) DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -123,6 +124,7 @@ CREATE TABLE `ap_contact` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -153,6 +155,7 @@ CREATE TABLE `ap_dashboardNews` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -169,8 +172,10 @@ CREATE TABLE `ap_file` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`),
-  KEY `indexes` (`_id`,`_idContainer`)
+  KEY `indexes` (`_id`,`_idContainer`),
+  KEY `_idContainer` (`_idContainer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_fileFolder` (
@@ -185,7 +190,8 @@ CREATE TABLE `ap_fileFolder` (
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
   PRIMARY KEY (`_id`),
-  KEY `indexes` (`_id`,`_idContainer`)
+  KEY `indexes` (`_id`,`_idContainer`),
+  KEY `_idContainer` (`_idContainer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `ap_fileVersion` (
@@ -209,6 +215,7 @@ CREATE TABLE `ap_forumMessage` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idMessageParent`,`_idContainer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -226,6 +233,7 @@ CREATE TABLE `ap_forumSubject` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idTheme`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -283,6 +291,7 @@ CREATE TABLE `ap_link` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`),
   KEY `indexes` (`_id`,`_idContainer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -322,6 +331,7 @@ CREATE TABLE `ap_mail` (
   `description` text NOT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -394,6 +404,7 @@ CREATE TABLE `ap_task` (
   `_idUser` int DEFAULT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`), 
   KEY `indexes` (`_id`,`_idContainer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -535,6 +546,7 @@ CREATE TABLE `ap_dashboardPoll` (
   `_idUser` int NOT NULL,
   `dateModif` datetime DEFAULT NULL,
   `_idUserModif` int DEFAULT NULL,
+  `externalId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

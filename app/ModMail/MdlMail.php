@@ -17,4 +17,5 @@ class MdlMail extends MdlObject
 	const dbTable="ap_mail";
 	const descriptionEditor=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 }

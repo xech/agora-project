@@ -22,6 +22,7 @@ class MdlTask extends MdlObject
 	const isSelectable=true;
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;

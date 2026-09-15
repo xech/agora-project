@@ -22,6 +22,7 @@ class MdlContact extends MdlPerson
 	const hasUsersComment=true;
 	const hasUsersLike=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	public static $requiredFields=["name"];
 	public static $sortFields=["name@@asc","name@@desc","firstName@@asc","firstName@@desc","civility@@asc","civility@@desc","postalCode@@asc","postalCode@@desc","city@@asc","city@@desc","country@@asc","country@@desc","function@@asc","function@@desc","companyOrganization@@asc","companyOrganization@@desc","_idUser@@asc","_idUser@@desc","dateCrea@@desc","dateCrea@@asc","dateModif@@desc","dateModif@@asc"];

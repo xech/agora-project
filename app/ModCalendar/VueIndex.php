@@ -478,7 +478,7 @@ ready(function(){
 						<div class="vSynthLabel" onclick="$('#calBlock<?= $tmpCal->typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<?php
 						foreach($periodSynthese as $tmpDay){
-							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.$tmpCal->title.'<br>'.Txt::dateLabel("default",$tmpDay["dayTimeBegin"]).' :<br>';
+							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.$tmpCal->title.' <img src="app/img/arrowRight.png"> '.Txt::dateLabel("dateDefault",$tmpDay["dayTimeBegin"]).' :';
 							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.='<br>'.$tmpEvt->dateLabel("mini").' : '.Txt::reduce($tmpEvt->title,60);}
 							$tmpEvtTooltip.='</div>';
 							$syntheseDayCalWE=$syntheseDayEvts=null;

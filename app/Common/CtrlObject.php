@@ -51,7 +51,7 @@ class CtrlObject extends Ctrl
 		////	FolderSize + Notif + Redirection
 		if($datasFolderSize==true)		{File::datasFolderSize(true);}																//Update le "datasFolderSize()" en session
 		if(!empty($notDeletedObjects))	{Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete").' :<br><br>'.$notDeletedObjects);}	//Notify si des objets non pas été supprimés
-		self::redir($redirUrl);
+		self::redir($redirUrl,true);																								//Redirection JS
 	}
 
 	/********************************************************************************************************
@@ -211,15 +211,26 @@ class CtrlObject extends Ctrl
 	}
 
 	/********************************************************************************************************
+	 * FICHIER JOINT : CONTROLE D'ACCES ET RENVOIE DES INFOS
+	 ********************************************************************************************************/
+	public static function getAttachedFile()
+	{
+		////	Récupère les infos du fichier
+		if(is_numeric(Req::param("_id"))){
+			$file=MdlObject::attachedFileInfos(Req::param("_id"));
+			////	Controle l'accès à l'objet parent & l'accès au fichier dans le path
+			if(is_object($file["parentObj"])  && $file["parentObj"]->readRight()  && !empty($file["path"])  && is_file($file["path"]))
+				{return $file;}
+		}
+	}
+
+	/********************************************************************************************************
 	 * FICHIER JOINT : DOWNLOAD D'UN FICHIER
 	 ********************************************************************************************************/
 	public static function actionAttachedFileDownload()
 	{
-		if(is_numeric(Req::param("_id"))){
-			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(!empty($curFile["path"]) && is_file($curFile["path"])  &&  ($curFile["parentObj"]->readRight() || CtrlMisc::controlDownloadMobileApp($curFile["name"])))
-				{File::download($curFile["name"],$curFile["path"]);}
-		}
+		$file=static::getAttachedFile();
+		if(!empty($file))  {File::download($file["name"],$file["path"]);}
 	}
 
 	/********************************************************************************************************
@@ -227,11 +238,8 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionAttachedFileDisplay()
 	{
-		if(is_numeric(Req::param("_id"))){
-			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(!empty($curFile["path"]) && is_file($curFile["path"]) && $curFile["parentObj"]->readRight())
-				{File::display($curFile["path"]);}
-		}
+		$file=static::getAttachedFile();
+		if(!empty($file))  {File::display($file["path"]);}
 	}
 
 	/********************************************************************************************************
@@ -239,12 +247,11 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionAttachedFileDelete()
 	{
-		if(is_numeric(Req::param("_id"))){
-			$curFile=MdlObject::attachedFileInfos(Req::param("_id"));
-			if(!empty($curFile["path"]) && is_file($curFile["path"]) && $curFile["parentObj"]->editRight()){
-				$deleteResult=$curFile["parentObj"]->attachedFileDelete($curFile);
-				if($deleteResult==true)  {echo "true";}
-			}
+		$file=static::getAttachedFile();
+		////	Controle l'accès en écriture à l'objet
+		if(!empty($file) && $file["parentObj"]->editRight()){
+			$deleteResult=$file["parentObj"]->attachedFileDelete($file);
+			if($deleteResult==true)  {echo "true";}
 		}
 	}
 

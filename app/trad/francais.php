@@ -406,7 +406,7 @@ class Trad extends Txt
 			"NOTIF_diskSpace"=>"L'espace pour le stockage de vos fichiers est insuffisant, vous ne pouvez pas ajouter de fichier",
 			"NOTIF_fileNotAllowed"=>"les fichiers sensibles ou non reconnus doivent être zippés/compressés avant d'être ajoutés",
 			"NOTIF_fileVersion"=>"Type de fichier différent de l'original",
-			"NOTIF_folderMove"=>"Vous ne pouvez pas déplacer le dossier à l'intérieur de lui-même !",
+			"NOTIF_folderMove"=>"Vous ne pouvez pas déplacer le dossier à l'intérieur de lui-même",
 			"NOTIF_duplicateName"=>"Un élément ayant le même nom existe déjà : <br> Merci d'en spécifier un autre",
 			"NOTIF_duplicateNameFolder"=>"Un dossier ayant le même nom existe déjà : <br> Merci d'en spécifier un autre",
 			"NOTIF_fileName"=>"Un fichier ayant le même nom existe déjà",

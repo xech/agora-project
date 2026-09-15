@@ -35,6 +35,7 @@ class MdlObject
 	const hasShortcut=false;					//Raccourcis vers l'objet
 	const hasNotifMail=false;					//Notifs d'édition par mail
 	const hasAttachedFiles=false;				//Fichiers joints de l'objet
+	const hasExternalId=false;					//Token d'accès externe à l'objet (+ fichiers joints & Co)
 	const hasUsersLike=false;					//Likes sur l'objet
 	const hasUsersComment=false;				//Commentaires sur l'objet
 	const descriptionEditor=false;				//Editeur html dans la description
@@ -57,7 +58,7 @@ class MdlObject
 	{
 		////	_id par défaut (cf"isNew()")
 		$this->_id=0;
-		////	Assigne les propriétés (objet existant ou nouvel objet)
+		////	Propriétés de l'objet
 		if(!empty($objProperties)){
 			if(is_numeric($objProperties))	{$objValues=Db::getLine("SELECT * FROM ".static::dbTable." WHERE `_id`=".(int)$objProperties);}	//Objet déjà enregistré en Bdd ($objProperties==_id)
 			else							{$objValues=$objProperties;}																	//Nouvel objet
@@ -272,9 +273,9 @@ class MdlObject
 		if($this->_accessRight===null){
 			$this->_accessRight=0;																															//INIT
 			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//FULL ACCESS : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
-			elseif($this->isRootFolder() || $this->externalIdControl())							{$this->_accessRight=1;}									//LECTURE : DOSSIER RACINE (DROIT PAR DEFAUT) / ACCES EXTERNE DE L'OBJET
-			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
-			elseif($this->hasAccessRight()){																											 	//EN FONCTION DES AFFECTATIONS EN BDD
+			elseif($this->isRootFolder() || $this->externalIdControl())							{$this->_accessRight=1;}									//LECTURE : DOSSIER RACINE / ACCES EXTERNE DE L'OBJET
+			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //FONCTION DU CONTENEUR PARENT
+			elseif($this->hasAccessRight()){																											 	//FONCTION DES AFFECTATIONS EN BDD
 				$isPersonalCalendar=(static::objectType=="calendar" && $this->isPersonal());
 				$sqlSelect="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;
 				//// ACCES TOTAL :  admin de l'espace et objet affecté à l'espace (sauf agendas persos : pas de privilège admin)
@@ -393,15 +394,6 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * URL DE PARTAGE D'UN OBJET (NOTIFS MAIL, ETC)
-	 * Via "userConnectionSpaceSelection()"  >  cible l'espace courant  >  puis redir vers l'url de l'objet
-	 ********************************************************************************************************/
-	public function getUrlExternal()
-	{
-		return Req::curUrl().'/index.php?ctrl=offline&_idSpaceAccess='.Ctrl::$curSpace->_id.'&objUrl='.urlencode($this->getUrl());
-	}
-
-	/********************************************************************************************************
 	 * URL D'EDITION D'UN NOUVEL OBJET
 	 ********************************************************************************************************/
 	public static function getUrlNew()
@@ -413,28 +405,52 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
+	 * URL D'ACCES EXTERNE POUR UN USER AUTHENTIFÉ.  EX: NOTIF MAIL
+	 * Contrôle d'accès via "userConnectionSpaceSelection()"  >  Puis redir vers l'objet via "objUrl"
+	 ********************************************************************************************************/
+	public function getUrlExternal()
+	{
+		return Req::curUrl().'/index.php?ctrl=offline&_idSpaceAccess='.Ctrl::$curSpace->_id.'&objUrl='.urlencode($this->getUrl());
+	}
+
+	/********************************************************************************************************
+	 * URL D'ACCES EXTERNE POUR UN USER NON-AUTHENTIFÉ.  EX: DOWNLOAD DE FICHIER, FICHIER JOINTS, ICAL...
+	 * Controle d'accès via  "externalIdControl()"  >  Puis redir vers "Ctrl=misc&action=XXX" via $urlParams
+	 ********************************************************************************************************/
+	public function getUrlExternalDownload($urlParams)
+	{
+		///// Créé si besoin un externalId
+		if(static::hasExternalId==true && empty($this->externalId)){
+			$externalId=Txt::randomId();
+			Db::query("UPDATE ".static::dbTable." SET externalId=".Db::format($externalId)." WHERE _id=".$this->_id);
+			$this->externalId=$externalId;
+		}
+		//// Url finale :  "typeId" (cf "getCurObj()")  + "externalId" (cf "externalIdControl()")  + "getfile" (cf MOBILEAPP)   + $urlParams (ex: "ctrl=misc&action=ExternalFileDownload&fileName=fichier.pdf")
+		return Req::curUrl().'/index.php?typeId='.$this->typeId.'&externalId='.$this->externalId.'&getfile=true&'.$urlParams;
+	}
+
+	/********************************************************************************************************
+	 * CONTROLE L'IDENTIFIANT D'ACCES EXTERNE PASSÉ EN PARAMETRE (md5Id=>retro-compat ical)
+	 ********************************************************************************************************/
+	public function externalIdControl()
+	{
+		return ( (Req::isParam("externalId") && Req::param("externalId")==$this->externalId)  ||  (Req::isParam("md5Id") && Req::param("md5Id")==$this->md5Id() && static::objectType=="calendar") );
+	}
+
+	/********************************************************************************************************
+	 * IDENTIFIANT DE L'OBJET VIA MD5
+	 ********************************************************************************************************/
+	public function md5Id()
+	{
+		return md5($this->_id.$this->dateCrea.$this->_idUser);
+	}
+
+	/********************************************************************************************************
 	 * LIEN POUR AFFICHER LA VUE DE L'OBJET
 	*********************************************************************************************************/
 	public function lightboxVue()
 	{
 		return "lightboxOpen('".$this->getUrl("vue")."');";
-	}
-
-	/********************************************************************************************************
-	 * IDENTIFIANT DE L'OBJET (OLD ID POUR RETRO-COMPAT)
-	 ********************************************************************************************************/
-	public function md5Id($oldId=false)
-	{
-		if($oldId==true)	{return md5($this->_id.$this->dateCrea.$this->_idUser);}
-		else				{return md5($this->typeId.'_'.$this->_id.'_'.$this->dateCrea.'_'.$this->_idUser);}
-	}
-
-	/********************************************************************************************************
-	 * CONTROLE L'IDENTIFIANT D'ACCES EXTERNE PASSÉ EN PARAMETRE (md5Id=>OLD)
-	 ********************************************************************************************************/
-	public function externalIdControl()
-	{
-		return ( (Req::isParam("externalId") && Req::param("externalId")==$this->externalId)  ||  (Req::isParam("md5Id") && Req::param("md5Id")==$this->md5Id(true)) );
 	}
 
 	/********************************************************************************************************
@@ -765,13 +781,18 @@ class MdlObject
 	public static function attachedFileInfos($file)
 	{
 		if(!empty($file)){
-			if(is_numeric($file))   {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE `_id`=".(int)$file);}			//Récupère au besoin les infos en bdd
-			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);								//Path/chemin réel du fichier
-			$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];									//Url de download du fichier
-			$file["parentObj"]=Ctrl::getObj($file["objectType"],$file["_idObject"]);											//Objet auquel est rattaché le fichier
-			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);										//Url d'affichage du fichier/image (cf "actionAttachedFileDisplay()")
-			if(Req::isMobileApp())   {$file["urlDownload"]=CtrlMisc::urlDownloadMobileApp($file["urlDownload"],$file["name"]);}	//Url de download via CtrlMisc
-			if(File::isType("editorImage",$file["name"]))   {$file["cid"]="attachedFile".$file["_id"];}							//"cid" des images dans les emails (cf "descriptionMail()")
+			if(is_numeric($file))  {$file=Db::getLine("SELECT * FROM ap_objectAttachedFile WHERE `_id`=".(int)$file);}		//Récupère au besoin les propriétés en bdd
+			$parentObj=Ctrl::getObj($file["objectType"],$file["_idObject"]);												//Objet auquel est rattaché le fichier
+			$file["parentObj"]=$parentObj;																					//Objet parent
+			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);							//Path/chemin réel du fichier
+			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);									//Url d'affichage du fichier/image (cf "actionAttachedFileDisplay()")
+			$file["cid"]="attachedFile".$file["_id"];																		//"cid" des images intégrées aux emails (cf "descriptionMail()")
+			if(Req::isMobileApp()){   																						//Url de download via CtrlMisc
+				$urlParams='ctrl=misc&action=ExternalFileDownload&_id='.$file["_id"].'&fileName='.urlencode($file["name"]);	//Url de download en mode offline ($urlParams : "action" + "_id" + "fileName")
+				$file["urlDownload"]=$parentObj->getUrlExternalDownload($urlParams);
+			}else{
+				$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];							//Url de download du fichier
+			}
 			return $file;
 		}
 	}

@@ -125,7 +125,7 @@ class Req
 	{
 		if(!empty($val) && is_string($val)){
 			if(preg_match("/^(objUrl|visioUrl|logoUrl|selfHostUrl)$/i",$key)){															////	Filtre une URL
-				$val=(filter_var($val,FILTER_VALIDATE_URL))  ?  filter_var($val,FILTER_SANITIZE_URL)  :  "";							//Valide et filtre l'URL
+				$val=filter_var($val,FILTER_SANITIZE_URL);																				//Filtre l'URL (sans controle via FILTER_VALIDATE_URL)
 			}
 			elseif(preg_match("/^(description|editorDraft)$/i",$key)){																	////	Filtre de l'editeur TinyMce
 				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');															//Charge la librairie HTMLPurifier	
@@ -171,16 +171,14 @@ class Req
 		return "app/Mod".ucfirst(self::$curCtrl)."/";
 	}
 	
-	/*****************************************************************************************************************************************
+	/********************************************************************************************************
 	 * RECUPÈRE L'URL COURANTE SANS LES PARAMETRES
-	 * Ex:  "https://www.mon-espace.net/agora/index.php?ctrl=file&typeId=file-55"  devient  "www.mon-espace.net/agora" (sans le dernier '/')
-	 *****************************************************************************************************************************************/
-	public static function curUrl($protocol=true)
+	 * "https://www.example.com/agora/index.php?ctrl=file"  =>  "www.example.com/agora"
+	 ********************************************************************************************************/
+	public static function curUrl($sheme=true)
 	{
-		$url=$_SERVER['SERVER_NAME'].dirname($_SERVER["PHP_SELF"]);
-		if($protocol==false)				{return $url;}
-		elseif(empty($_SERVER['HTTPS']))	{return 'http://'.$url;}
-		else								{return 'https://'.$url;}
+		$URL=$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER['REQUEST_URI']),'/');//Domaine + dossier sans le '/' de fin
+		return ($sheme==true)  ?  'https://'.$URL  :  $URL;
 	}
 
 	/********************************************************************************************************
@@ -205,7 +203,7 @@ class Req
 	public static function isDevServer()
 	{
 		if(self::$_isDevServer===null){
-			self::$_isDevServer=preg_match('/^(omnispace.local.net|192.168|debian12)/i', $_SERVER['SERVER_NAME']);
+			self::$_isDevServer=preg_match('/^(omnispace.local.net|192.168)/i', $_SERVER['SERVER_NAME']);
 		}
 		return self::$_isDevServer;
 	}
@@ -237,7 +235,7 @@ class Req
 	 ********************************************************************************************************/
     private function displayExeption(Exception $except)
 	{
-		////	Install d'Agora-Project en Auto-hébergement
+		////	Install en Auto-hébergement
 		if(preg_match("/dbInstall/i",$except->getMessage()) && self::isInstalling()==false && self::isHost()==false)
 			{Ctrl::redir("index.php?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"

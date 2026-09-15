@@ -129,7 +129,7 @@ class CtrlAgora extends Ctrl
 		if(Req::param("typeBackup")=="all")
 		{
 			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille de l'archive
-			ini_set("max_execution_time","600");//10mn max
+			ini_set('max_execution_time','600');//10mn max
 			$archiveName="BackupAgora_".date('Y-m-d');
 			//// Sauvegarde via "shell_exec()"
 			if(Req::isLinux() && function_exists('shell_exec')){

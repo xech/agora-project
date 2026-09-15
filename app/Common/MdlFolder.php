@@ -200,32 +200,34 @@
 	public function folderTree($accessRightMin=1, $curFolder=null, $treeLevel=0)
 	{
 		////	Arbo du dossier racine (arbo complete) : renvoie l'arbo en cache?
-		$isRootFolderTree=($this->_id==1 && $accessRightMin==1 && $treeLevel==0);					//Verif si on récupère l'arbo complete du dossier racine
-		if($isRootFolderTree==true){																//Idem
-			$rootFolderTreeSessKey="rootFolderTree_".static::objectType."_".Ctrl::$curSpace->_id;	//Clé de session de l'arbo root   (cf. module et espace courant)
-			$rootFolderTreeSessKeyTime=$rootFolderTreeSessKey."_time";								//Clé de session de son timestamp (cf. verif d'update ci-dessous)
-			$rootFolderTreeLastModifTime=Db::getVal("SELECT MAX(UNIX_TIMESTAMP(date)) FROM ap_log WHERE objectType='".static::objectType."'");								//Date de dernière modif de l'arbo dans les logs
-			if(isset($_SESSION[$rootFolderTreeSessKey]) && $_SESSION[$rootFolderTreeSessKeyTime]>$rootFolderTreeLastModifTime)  {return $_SESSION[$rootFolderTreeSessKey];}	//Renvoie l'arbo en cache !
+		$isRootTree=($this->_id==1 && $accessRightMin==1 && $treeLevel==0);
+		if($isRootTree==true){																												//Récupère l'arbo complete du dossier racine :
+			$rootTreeSessKeyList='rootTree_'.static::objectType.'_'.Ctrl::$curSpace->_id;													//Clé de session de l'arbo root   (cf. module et espace courant)
+			$rootTreeSessKeyTime=$rootTreeSessKeyList.'_time';																				//Clé de session de son timestamp (cf. update ci-dessous)
+			$rootTreeLastModifTime=Db::getVal("SELECT MAX(UNIX_TIMESTAMP(date)) FROM ap_log WHERE objectType='".static::objectType."'");	//Date de dernière modif de l'arbo, via les logs
+			if(isset($_SESSION[$rootTreeSessKeyList]) && $_SESSION[$rootTreeSessKeyTime] > $rootTreeLastModifTime)							//Time de l'arbo en cache > Time last modif : Renvoie l'arbo en cache
+				{return $_SESSION[$rootTreeSessKeyList];}	
 		}
-		////	Init l'arbo finale & Ajoute si besoin le dossier de départ de l'arbo
+		////	Init l'arbo complète  &&  Ajoute le dossier de départ de l'arbo (root ou autre)
 		$curFolderTree=[];
 		if($curFolder==null)  {$curFolder=$this;}
 		////	Ajoute le dossier courant
-		if($accessRightMin=="all" || $curFolder->accessRight()>=$accessRightMin){																	//Vérif le droit d'accès au dossier courant
-			$curFolder->treeLevel=$treeLevel;																										//Ajoute le niveau du dossier courant par rapport au dossier demandé
-			$curFolderTree[]=$curFolder;																											//Ajoute à l'arbo le dossier courant
-			$sqlFilter=($accessRightMin=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);								//Tous les dossiers ("all")  ||  Dossiers en fonction des droits d'accès
-			foreach(Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlFilter." ORDER BY name ASC") as $subFolder){	//Récupère les sous-dossiers du dossier courant (triés par nom)
-				$subFolderTree=$this->folderTree($accessRightMin, $subFolder, $treeLevel+1);														//Lance récursivement la fonction pour récupérer leurs sous-dossiers !
-				$curFolderTree=array_merge($curFolderTree,$subFolderTree);																			//Ajoute tous les sous-dossiers à l'arbo courante
+		if($accessRightMin=="all" || $curFolder->accessRight()>=$accessRightMin){															//Vérif le droit d'accès au dossier courant
+			$curFolder->treeLevel=$treeLevel;																								//Ajoute le niveau du dossier courant par rapport au dossier demandé
+			$curFolderTree[]=$curFolder;																									//Ajoute à l'arbo le dossier courant
+			$sqlFilter=($accessRightMin=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);						//Tous les sous-dossiers  ||  Sous-dossiers en fonction des droits d'accès
+			$subFolderList=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlFilter." ORDER BY name ASC");	//Récupère les sous-dossiers du dossier courant
+			foreach($subFolderList as $subFolder){																							//Ajoute chaque sous-dossiers
+				$subFolderTree=$this->folderTree($accessRightMin, $subFolder, $treeLevel+1);												//Lance récursivement la fonction pour récupérer l'arbo du sous-dossier
+				$curFolderTree=array_merge($curFolderTree,$subFolderTree);																	//Ajoute tous les sous-dossiers à l'arbo courante
 			}
 		}
-		////	Arborescence du dossier racine : met en cache
-		if($isRootFolderTree==true){
-			$_SESSION[$rootFolderTreeSessKey]=$curFolderTree;	//Ajoute en cache l'arbo du dossier racine
-			$_SESSION[$rootFolderTreeSessKeyTime]=time();		//Timestamp de l'arbo mise en cache
+		////	Arbo du dossier racine en cache
+		if($isRootTree==true){
+			$_SESSION[$rootTreeSessKeyList]=$curFolderTree;	//Ajoute en cache l'arbo du dossier racine
+			$_SESSION[$rootTreeSessKeyTime]=time();			//Timestamp de l'arbo mise en cache
 		}
-		////	Renvoie l'arborescence finale
+		////	Renvoie l'arbo complète
 		return $curFolderTree;
 	}
 

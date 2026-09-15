@@ -181,7 +181,7 @@ class Txt
 	}
 
 	/********************************************************************************************************
-	 * RECUPERE UN IDENTIFIANT RAMDOM SUR 32 CARACTERES
+	 * RECUPERE UN IDENTIFIANT RAMDOM SUR 32 CARACTERES (hexadécimaux : 0-9 et a-f))
 	 ********************************************************************************************************/
 	public static function randomId()
 	{

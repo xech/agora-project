@@ -87,23 +87,24 @@ class CtrlFile extends Ctrl
 	public static function actionFileDownload()
 	{
 		if(Req::isParam("typeId")){
-			//Récupère le fichier et controle le droit d'accès
+			////	Récupère le fichier && controle le droit d'accès
 			$curFile=self::getCurObj();
-			if(is_object($curFile) &&  ($curFile->readRight() || CtrlMisc::controlDownloadMobileApp($curFile->name))){
-				//Affiche dans le browser ou l'appli (pdf/img/video)  OU  Download direct du fichier
+			if(is_object($curFile)  &&  $curFile->readRight()){
+				////	Affiche dans le browser (pdf/img/video)
 				if(Req::isParam("displayFile"))   {File::display($curFile->filePath());}
+				////	Download du fichier
 				else{
-					//Ajoute l'user courant à "downloadedBy"
-					$sqlDownloadedBy=null;
+					////	Update en DB les champs "downloadsNb" et "downloadedBy" (ajoute l'user courant)
 					if(Ctrl::$curUser->isUser()){
-						$curFile->downloadedBy=array_unique(array_merge([Ctrl::$curUser->_id], Txt::txt2tab($curFile->downloadedBy)));//"array_unique()" car l'user courant peut avoir déjà téléchargé le fichier
-						$sqlDownloadedBy=", downloadedBy=".Db::format(Txt::tab2txt($curFile->downloadedBy));
+						$downloadedByTab=Txt::txt2tab($curFile->downloadedBy);
+						$downloadedByTab[]=Ctrl::$curUser->_id;
+						$curFile->downloadedBy=Txt::tab2txt(array_unique($downloadedByTab));//"array_unique()" si l'user l'a déjà téléchargé
 					}
-					//Update la table en incrémentant "downloadsNb" et si possible "downloadedBy"
-					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1) ".$sqlDownloadedBy." WHERE `_id`=".$curFile->_id);
-					//Télécharge ensuite le fichier
-					$curVersion=$curFile->getVersion(Req::param("dateCrea"));
-					File::download($curVersion["name"], $curFile->filePath(Req::param("dateCrea")));
+					Db::query("UPDATE ".$curFile::dbTable." SET downloadsNb=(downloadsNb + 1), downloadedBy=".Db::format($curFile->downloadedBy)." WHERE `_id`=".$curFile->_id);
+					////	Download le fichier
+					$fileVersion=$curFile->getVersion(Req::param("dateCrea"));
+					$filePath=$curFile->filePath(Req::param("dateCrea"));
+					File::download($fileVersion["name"], $filePath);
 				}
 			}
 		}
@@ -192,9 +193,9 @@ class CtrlFile extends Ctrl
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	AUGMENTE LE TEMPS D'EXECUTION
 			Tool::setTimeLimit(800);
-			////	FICHIERS ENVOYÉS VIA "PLUPLOAD" (Parametres idem à $_FILES)
-			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
-				$tmpFolderPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
+			////	FICHIERS ENVOYÉS VIA "PLUPLOAD" (mêmes propriétés que $_FILES)  &&  VÉRIF LE NOM ALPHANUMÉRIQUE DU DOSSIER TMP
+			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/^[a-z0-9]+$/i",Req::param("tmpFolderName"))){
+				$tmpFolderPath=File::getTempDir().'/'.Req::param("tmpFolderName").'/';
 				if(is_dir($tmpFolderPath)){
 					foreach(scandir($tmpFolderPath) as $tmpFileName){
 						$tmpFilePath=$tmpFolderPath.$tmpFileName;
@@ -254,7 +255,7 @@ class CtrlFile extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["tmpFolderName"]="tmpUploadFolder".Txt::randomId();
+		$vDatas["tmpFolderName"]="tmpFolder".Txt::randomId();
 		$vDatas["uploadMaxFilesize"]=File::sizeLabel(File::uploadMaxFilesize());
 		static::displayPage("VueAddEditFiles.php",$vDatas);
 	}
@@ -264,9 +265,10 @@ class CtrlFile extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
-		if(!empty($_FILES) && Req::isParam("tmpFolderName") && preg_match("/[a-z0-9]/i",Req::param("tmpFolderName"))){
+		////	Vérif la présence de fichiers uploadés  &&  Vérif le nom alphanumérique du dossier tmp
+		if(!empty($_FILES) && Req::isParam("tmpFolderName") && preg_match("/^[a-z0-9]+$/i",Req::param("tmpFolderName"))){
 			////	Init/Crée le dossier temporaire
-			$tmpFolderPath=File::getTempDir()."/".Req::param("tmpFolderName")."/";
+			$tmpFolderPath=File::getTempDir().'/'.Req::param("tmpFolderName").'/';
 			if(!file_exists($tmpFolderPath))  {mkdir($tmpFolderPath);}
 			////	Vérifie l'accès au dossier 
 			if(is_writable($tmpFolderPath)){

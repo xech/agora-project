@@ -3,23 +3,35 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
-VERSION 26.9.1
+VERSION 26.9.5
 --------------
-Renforcement des controles de réinitialisation de mot de passe via un token à usage unique
-Renforcement des controles d'Url passés en paramètre : ObjUrl, VisioUrl, etc
-Renforcement des controles de connexion auto via tokens & password_hash()
+Renforcement des contrôles de réinitialisation de mot de passe via un token à usage unique
+Renforcement des contrôles d'Url passés en paramètre : ObjUrl, VisioUrl, etc
+Renforcement des contrôles de connexion auto via tokens & password_hash()
+Renforcement des contrôles de sessions via "use_strict_mode" et session_regenerate_id()
+Renforcement des contrôles d'accès aux ExternalFileDownload via token unique
 Optimisation de la rapidité d'affichage d'agendas multiples
-Optimisation de la gestion des droits d'accès via setAffectations()
-Optimisation de la fonction de nettoyage de texte clean()
+Optimisation de la rapidité d'affichage de grandes arborescences de dossiers
+Optimisation de la gestion des droits d'accès via la fonction "setAffectations"
+Optimisation de la fonction de nettoyage de texte via la fonction "clean"
+Optimisation des contrôles d'upload de fichiers et création de dossiers tmp
+Optimisation des contrôles d'accès aux fichiers joints
 Amélioration de l'affichage des menus contextuels en bord droit ou bas de page
+Correction de l'affichage des tooltips des synthèses d'agendas
 -----
 Strengthening the password reset procedure using a one-time token
 Strengthening of URL controls for ObjUrl, VisioUrl, etc. parameters
 Strengthening of autologin checks using tokens and password_hash()
-Optimizing the display speed of multiple calendars
+Strengthening session controls via "use_strict_mode" and session_regenerate_id()
+Strengthening of ExternalFileDownload function controls via token
+Optimization of the display speed of multiple calendars
+Optimization of the display speed for large folder trees
 Optimization of access rights management via setAffectations()
 Optimization of the cleaning text function clean()
+Optimization of file upload checks and creation of tmp folders
+Optimization of Attached files function controls
 Improved display of context menus at the right or bottom edge of the page
+Fixed tooltip display for calendar summaries
 
 
 VERSION 26.8.4

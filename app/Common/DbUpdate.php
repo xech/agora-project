@@ -80,9 +80,8 @@ class DbUpdate extends Db
 			////	VERIF LA VERSION DE PHP  +  L'ACCES AU FICHIER DE CONFIG  +  VERROUILAGE DE LA MISE A JOUR
 			Req::verifPhpVersion();
 			$updateLock=PATH_DATAS."UPDATE_LOCK.log";
-			if(is_writable(PATH_DATAS."config.inc.php")==false)   {throw new Exception("Update error : Config.inc.php is not writable");}
-			if(is_file($updateLock)==false)				{file_put_contents($updateLock,"Update in progress");}
-			elseif((time()-filemtime($updateLock))<20)	{throw new Exception("Update in progress, please wait");}
+			if(is_writable(PATH_DATAS."config.inc.php")==false)   				{throw new Exception("Update error : Config.inc.php is not writable");}
+			if(is_file($updateLock) && (time()-filemtime($updateLock))<120)		{throw new Exception("Update in progress, please wait 2mn max");}
 
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
@@ -1020,42 +1019,57 @@ class DbUpdate extends Db
 
 			if(self::updateVersion("26.8.4"))
 			{
-				//// Change certains champs VARCHAR en TEXT
-				$fieldsListVarchar=["ap_dashboardPoll"=>"description", "ap_file"=>"downloadedBy", "ap_forumSubject"=>"usersConsultLastMessage", "ap_forumSubject"=>"usersNotifyLastMessage"];
-				foreach($fieldsListVarchar as $tableName=>$fieldName){
-					$tableInfo=self::getLine("SHOW TABLE STATUS LIKE '".$tableName."'");
-					if(!empty($tableInfo['Collation']) && !preg_match("/utf8mb4_unicode_ci/i",$tableInfo['Collation'])){
-						self::query("ALTER TABLE `".$tableName."` CHANGE `".$fieldName."` `".$fieldName."` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+				//// Controle la version de MariaDB (11+)
+				preg_match('/^(\d+)\.(\d+)\.(\d+)/', self::getVal("select version()"), $dbVersionMatches);
+				if(!empty($dbVersionMatches[0]) && version_compare($dbVersionMatches[0], 11, ">=")){
+					//// Change certains champs VARCHAR en TEXT utf8mb4_unicode_ci
+					$fieldsListVarchar=["ap_dashboardPoll"=>"description", "ap_file"=>"downloadedBy", "ap_forumSubject"=>"usersConsultLastMessage", "ap_forumSubject"=>"usersNotifyLastMessage"];
+					foreach($fieldsListVarchar as $tableName=>$fieldName){
+						$tableInfo=self::getLine("SHOW TABLE STATUS LIKE '".$tableName."'");
+						if(!empty($tableInfo['Collation']) && !preg_match("/utf8mb4_unicode_ci/i",$tableInfo['Collation'])){
+							self::query("ALTER TABLE `".$tableName."` CHANGE `".$fieldName."` `".$fieldName."` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+						}
 					}
-				}
-				//// Parcourt chaque table et convertit si besoin en INNODB avec l'encodage "utf8mb4_unicode_ci" par défaut
-				foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName){
-					$tableInfo=self::getLine("SHOW TABLE STATUS LIKE '".$tableName."'");
-    				if(!empty($tableInfo['Engine']) && !preg_match("/InnoDB/i",$tableInfo['Engine'])){
-						self::query("ALTER TABLE `".$tableName."` ENGINE = InnoDB");
-					}
-					if(!empty($tableInfo['Collation']) && !preg_match("/utf8mb4_unicode_ci/i",$tableInfo['Collation'])){
-						self::query("ALTER TABLE `".$tableName."` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+					//// Parcourt chaque table et convertit si besoin en INNODB avec l'encodage "utf8mb4_unicode_ci" par défaut
+					foreach(self::getCol("SHOW TABLES LIKE 'ap_%'") as $tableName){
+						$tableInfo=self::getLine("SHOW TABLE STATUS LIKE '".$tableName."'");
+						if(!empty($tableInfo['Engine']) && !preg_match("/InnoDB/i",$tableInfo['Engine'])){
+							self::query("ALTER TABLE `".$tableName."` ENGINE = InnoDB");
+						}
+						if(!empty($tableInfo['Collation']) && !preg_match("/utf8mb4_unicode_ci/i",$tableInfo['Collation'])){
+							self::query("ALTER TABLE `".$tableName."` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+						}
 					}
 				}
 				//// Change certains champs en booleens/tinyint
 				self::query("ALTER TABLE `ap_calendar` CHANGE `propositionNotify` `propositionNotify` TINYINT DEFAULT NULL");
 				self::query("ALTER TABLE `ap_calendar` CHANGE `propositionGuest` `propositionGuest` TINYINT DEFAULT NULL");
 				//// Ajoute un token de controle "ap_calendar.externalId"
-				self::fieldExist("ap_calendar", "externalId", "ALTER TABLE `ap_calendar` ADD `externalId` VARCHAR(255) DEFAULT NULL AFTER `timeSlot`");
+				self::fieldExist("ap_calendar", "externalId", "ALTER TABLE `ap_calendar` ADD `externalId` VARCHAR(255) DEFAULT NULL");
 			}
 
-			if(self::updateVersion("26.9.1"))
+			if(self::updateVersion("26.9.5"))
 			{
 				//// Ajoute un token de controle "ap_user.passwordResetId"
 				self::fieldExist("ap_user", "passwordResetId", "ALTER TABLE `ap_user` ADD `passwordResetId` VARCHAR(255) DEFAULT NULL AFTER `password`");
 				//// Durée des logs à 360 jours max
 				self::query("UPDATE `ap_agora` SET `logsTimeOut`='360' WHERE `logsTimeOut`='720'");
-				//// Nouvel index d'optimisation de requête
-				$indexExist_idEvt=self::getCol("SHOW INDEX FROM `ap_calendarEventAffectation` WHERE Key_name='_idEvt'");
-				$indexExist_idCal=self::getCol("SHOW INDEX FROM `ap_calendarEventAffectation` WHERE Key_name='_idCal'");
-				if(empty($indexExist_idEvt))	{self::query("ALTER TABLE `ap_calendarEventAffectation` ADD KEY `_idEvt` (`_idEvt`)");}
-				if(empty($indexExist_idCal))	{self::query("ALTER TABLE `ap_calendarEventAffectation` ADD KEY `_idCal` (`_idCal`)");}
+				//// Calendar : index d'optimisation de requête
+				$isIndex_idEvt=self::getCol("SHOW INDEX FROM `ap_calendarEventAffectation` WHERE Key_name='_idEvt'");
+				$isIndex_idCal=self::getCol("SHOW INDEX FROM `ap_calendarEventAffectation` WHERE Key_name='_idCal'");
+				if(empty($isIndex_idEvt))	{self::query("ALTER TABLE `ap_calendarEventAffectation` ADD KEY `_idEvt` (`_idEvt`)");}
+				if(empty($isIndex_idCal))	{self::query("ALTER TABLE `ap_calendarEventAffectation` ADD KEY `_idCal` (`_idCal`)");}
+				//// File : index d'optimisation de requête
+				$isIndex_idContainer	=self::getCol("SHOW INDEX FROM `ap_file` WHERE Key_name='_idContainer'");
+				$isIndex_idContainer2	=self::getCol("SHOW INDEX FROM `ap_fileFolder` WHERE Key_name='_idContainer'");
+				$isIndex_idFile			=self::getCol("SHOW INDEX FROM `ap_fileVersion` WHERE Key_name='_idFile'");
+				if(empty($isIndex_idContainer))		{self::query("ALTER TABLE `ap_file` ADD KEY `_idContainer` (`_idContainer`)");}
+				if(empty($isIndex_idContainer2))	{self::query("ALTER TABLE `ap_fileFolder` ADD KEY `_idContainer` (`_idContainer`)");}
+				if(empty($isIndex_idFile))			{self::query("ALTER TABLE `ap_fileVersion` ADD KEY `_idFile` (`_idFile`)");}
+				//// Ajoute un token de controle "externalId" (cf. download de fichier + fichier joints en mode offline)
+				foreach(['ap_calendarEvent','ap_contact','ap_dashboardNews','ap_dashboardPoll','ap_file','ap_forumMessage','ap_forumSubject','ap_link','ap_mail','ap_task'] as $tmpTable){
+					self::fieldExist($tmpTable, "externalId", "ALTER TABLE `".$tmpTable."` ADD `externalId` VARCHAR(255) DEFAULT NULL");
+				}
 			}
 			///////////////////////		+ UPDATE DB.SQL !
 			///////////////////////

@@ -20,6 +20,7 @@ class MdlCalendarEvent extends MdlObject
 	const descriptionEditor=true;
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	public static $requiredFields=["title","dateBegin","timeBegin","dateEnd","timeEnd"];
 	public static $searchFields=["title","description"];

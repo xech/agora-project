@@ -20,9 +20,9 @@ class MdlFile extends MdlObject
 	const dbTable="ap_file";
 	const MdlObjectContainer="MdlFileFolder";
 	const isFolderContent=true;
-	//Propriétés d'IHM
 	const isSelectable=true;
 	const hasShortcut=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	const hasUsersComment=true;
 	const hasUsersLike=true;
@@ -73,17 +73,21 @@ class MdlFile extends MdlObject
 
 	/********************************************************************************************************
 	 * URL DE DOWNLOAD
+	 * $dateCrea = Version spécifique
 	 ********************************************************************************************************/
 	public function urlDownload($dateCrea=null)
 	{
-		$urlDownload="index.php?ctrl=file&action=FileDownload&typeId=".$this->typeId;						//Url de base
-		if(!empty($dateCrea))	{$urlDownload.="&dateCrea=".urlencode($dateCrea);}							//Download une version spécifique
-		if(Req::isMobileApp())	{$urlDownload=CtrlMisc::urlDownloadMobileApp($urlDownload,$this->name);}	//Download via CtrlMisc
-		return $urlDownload;																				//Retourne l'Url
+		$urlDateCrea=(!empty($dateCrea))  ?  "&dateCrea=".urlencode($dateCrea)  :  null;
+		if(Req::isMobileApp()){
+			$urlParams='ctrl=misc&action=ExternalFileDownload&fileName='.urlencode($this->name).$urlDateCrea;
+			return $this->getUrlExternalDownload($urlParams);
+		}else{
+			return 'index.php?ctrl=file&action=FileDownload&typeId='.$this->typeId.$urlDateCrea;
+		}
 	}
 
 	/********************************************************************************************************
-	 * URL D'AFFICHAGE DANS LE BROWSER OU L'APPLI MOBILE (IMG/VIDEO/PDF/TXT)
+	 * URL D'AFFICHAGE DANS LE BROWSER OU L'APPLI MOBILE (PDF / IMG / VIDEO / TXT)
 	 ********************************************************************************************************/
 	public function urlDisplay()
 	{

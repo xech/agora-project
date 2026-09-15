@@ -12,7 +12,7 @@
  */
 class CtrlMisc extends Ctrl
 {
-	//Initialisation limitée du controleur
+	//// Initialisation limitée du controleur
 	protected static $initCtrlFull=false;
 
 	/********************************************************************************************************
@@ -325,53 +325,36 @@ class CtrlMisc extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionDisplayIcal()
 	{
-		$objCalendar=self::getCurObj();
-		if(is_object($objCalendar) && $objCalendar->externalIdControl())  {CtrlCalendar::getIcal($objCalendar);}
-	}
-
-	/****************************************************************************************************************************
-	 * URL DE DOWNLOAD D'UN FICHIER VIA L'APPLI MOBILE
-	 * ex:	"index.php?ctrl=file&action=FileDownload&typeId=file-55"
-	 *		"index.php?ctrl=misc&action=MobileFileDownload&typeId=file-55&ctrlBis=file&fileNameMd5=XYZ&fileName=Documentation.pdf"
-	 ****************************************************************************************************************************/
-	public static function urlDownloadMobileApp($url, $fileName)
-	{
-		$ctrlBis=stristr($url,"ctrl=file")  ?  "file"  :  "object";															//Controleur secondaire en 1er
-		$url=preg_replace('/ctrl=(file|object)/i', 'ctrl=misc', $url);														//Switch sur "ctrl=misc"
-		$url=preg_replace('/action=(FileDownload|AttachedFileDownload)/i', 'action=MobileFileDownload', $url);				//Switch sur "action=MobileFileDownload"
-		return $url.'&ctrlBis='.$ctrlBis.'&fileNameMd5='.md5($fileName).'&fileName='.urlencode($fileName).'&getfile=true';	//Url avec "fileNameMd5" de controle + "fileName" du VueMobileFileDownload + "getfile" du MOBILEAPP
+		$curObj=self::getCurObj();
+		if(is_object($curObj) && $curObj->externalIdControl())
+			{CtrlCalendar::getIcal($curObj);}
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE LE DOWNLOAD D'UN FICHIER VIA L'APPLI MOBILE  ($fileName doit être récupéré en interne)
+	 * ACTION : DOWNLOAD EXTERNE D'UN FICHIER -> NOTIF MAIL OU MOBILEAPP (cf. redir via "main.dart")
 	 ********************************************************************************************************/
-	public static function controlDownloadMobileApp($fileName)
+	public static function actionExternalFileDownload()
 	{
-		return (md5($fileName)==Req::param("fileNameMd5"));
-	}
-
-	/********************************************************************************************************
-	 * ACTION : DOWNLOAD EXTERNE -> MOBILEAPP OU NOTIF MAIL  (cf. contrôle de l'Url via "main.dart")
-	 ********************************************************************************************************/
-	public static function actionMobileFileDownload()
-	{
-		////	Download un fichier / Affiche un pdf/img/video
-		if(Req::isParam("launchDownload") || Req::isParam("displayFile")){
-			if(Req::param("ctrlBis")=="file")	{CtrlFile::actionFileDownload();}								//Fichier du ModFile
-			else								{CtrlObject::actionAttachedFileDownload();}						//Fichier joint d'un objet
-		}
-		////	Affiche une vue avec un button "download"
-		else{
-			static::$isMainPage=true;
-			$vDatas["urlDownload"]=$_SERVER['REQUEST_URI']."&launchDownload=true";								//Url de download du fichier
-			$appUrl=Req::curUrl(false).'/index.php?ctrl='.Req::param("ctrl");									//Url de retour à l'appli	(ex: "www.mon-agora.net/index.php?ctrl=file")
-			if(Req::isParam("typeId"))  {$appUrl.='&typeId='.Req::param("typeId");}								//Ajoute un "typeId"		(ex: "&typeId=fileFolder-3")
-			if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT'])){							//IOS
-				$vDatas["appUrl"]="omnispace://".$appUrl;
-			}elseif(preg_match("/android/i",$_SERVER['HTTP_USER_AGENT'])){										//Android
-				$vDatas["appUrl"]="intent://".$appUrl."#Intent;scheme=omnispace;package=fr.omnispace.www;end";
+		////	Récupère l'objet && Controle d'accès
+		$curObj=self::getCurObj();
+		if(is_object($curObj) && $curObj->externalIdControl()){
+			////	Affiche le fichier dans le browser (pdf/img/etc)  ||  Download un fichier après VueExternalFileDownload
+			if(Req::isParam("displayFile") || Req::isParam("launchDownload")){
+				if($curObj::objectType=="file")		{CtrlFile::actionFileDownload();}			//Fichier du ModFile
+				else								{CtrlObject::actionAttachedFileDownload();}	//Fichier joint d'un objet
 			}
-			static::displayPage(Req::commonPath."VueMobileFileDownload.php", $vDatas);
+			////	Affiche la vue "VueExternalFileDownload" : boutton "download"
+			else{
+				static::$isMainPage=true;
+				$vDatas["urlDownload"]=Req::curUrl().'/'.basename($_SERVER['REQUEST_URI'])."&launchDownload=true";	//Url de download du fichier avec "typeId", "externalId", etc
+				$urlBackToApp=Req::curUrl(false).'/index.php?ctrl=offline&objUrl='.urlencode($curObj->getUrl());	//Url de retour à l'appli et l'objet (ex: "www.mon-agora.net/index.php?ctrl=file")
+				if(preg_match("/(iphone|ipad|macintosh)/i",$_SERVER['HTTP_USER_AGENT'])){							//IOS
+					$vDatas["urlBackToApp"]="omnispace://".$urlBackToApp;
+				}else{																								//ANDROID
+					$vDatas["urlBackToApp"]="intent://".$urlBackToApp."#Intent;scheme=omnispace;package=fr.omnispace.www;end";
+				}
+				static::displayPage(Req::commonPath."VueExternalFileDownload.php", $vDatas);
+			}
 		}
 	}
 }

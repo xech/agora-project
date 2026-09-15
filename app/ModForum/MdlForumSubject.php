@@ -20,6 +20,7 @@ class MdlForumSubject extends MdlObject
 	const descriptionEditor=true;
 	const hasShortcut=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	const isSelectable=true;

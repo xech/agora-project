@@ -101,7 +101,7 @@ class Db
 	public static function dbVersion()
 	{
 		$dbVersion=self::getVal("select version()");												//Ex: "10.5.55-MariaDB-Ubuntu55"
-		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql")." ".strtok($dbVersion, "-");	//Ex: "MariaDb 10.5.55" (MariaDb/Mysql + numero de version simplifié)
+		return (preg_match("/maria/i",$dbVersion)?"MariaDB":"MySql").' '.strtok($dbVersion,'-');	//Ex: "MariaDb 10.5.55" (MariaDb/Mysql + numero de version simplifié)
 	}
 
 	/********************************************************************************************************

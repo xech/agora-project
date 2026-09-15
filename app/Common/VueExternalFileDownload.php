@@ -7,14 +7,16 @@
 
 
 <div id="pageCenter">
+	<!--DOWNLOAD LE FICHIER-->
 	<button onclick="redir('<?= $urlDownload ?>')">
 		<img src="app/img/download.png"><?= Txt::trad("FILE_fileDownload") ?> : <span><?= Req::param("fileName") ?></span>
 	</button>
 	<br><br>
-	<?php if(!empty($appUrl)){ ?>
-	<!--Retour à l'appli-->
-	<a href="<?= $appUrl ?>">
-		<button><img src="app/img/logo.png"><?= Txt::trad("downloadBackToApp") ?></button>
-	</a>
+
+	<!--RETOUR À L'APPLI-->
+	<?php if(!empty($urlBackToApp)){ ?>
+		<a href="<?= $urlBackToApp ?>">
+			<button><img src="app/img/logo.png"><?= Txt::trad("downloadBackToApp") ?></button>
+		</a>
 	<?php } ?>
 </div>

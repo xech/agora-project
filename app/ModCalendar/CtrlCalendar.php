@@ -371,7 +371,7 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMyEvents()
 	{
-		$vDatas["sortEvents"]=Req::isParam("sortEvents")  ?  Req::param("sortEvents")  :  "dateCrea";
+		$vDatas["sortEvents"]=Req::isParam("sortEvents")  ?  Txt::clean(Req::param("sortEvents"),'max')  :  "dateCrea";
 		$vDatas["myEvents"]=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY ".$vDatas["sortEvents"]." DESC");
 		static::displayPage("VueMyEvents.php",$vDatas);
 	}
@@ -627,7 +627,7 @@ class CtrlCalendar extends Ctrl
 				fclose($fp);
 				return $tmpFilePath;
 			}
-			////	Affiche directement le fichier .Ical
+			////	Download/Affiche directement le fichier .Ical
 			else{
 				$calendarLabel=(is_object($objCalendar))  ?  Txt::clean($objCalendar->title,"max")  :  null;
 				$icsFilename='Calendar_'.$calendarLabel.'_export-'.date("d-m-Y").'.ics';

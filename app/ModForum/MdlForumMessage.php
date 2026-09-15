@@ -18,6 +18,7 @@ class MdlForumMessage extends MdlObject
 	const MdlObjectContainer="MdlForumSubject";
 	const descriptionEditor=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	public static $requiredFields=["description"];

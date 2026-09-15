@@ -31,10 +31,14 @@ abstract class Ctrl
 	 ********************************************************************************************************/
 	public static function initCtrl()
 	{
-		////	Mise en cache désactivée  &&  Lancement de session  &&  Réinit de session
-		session_cache_limiter("nocache");
-		if(defined("db_name"))  {session_name("SESSION_".db_name);}
+		////	Lance la session
+		session_cache_limiter("nocache");												//Désactive la mise en cache
+		ini_set('session.use_strict_mode', 1);											//Verif le cookie de session via "Strict mode"
+		session_set_cookie_params(['secure'=>true,'httponly'=>true,'samesite'=>'Lax']);	//Parametrage du cookie de session
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}						//Nomde de la session
 		session_start();
+
+		////	Réinitialise la session
 		if(Req::isParam("disconnect")){
 			$_SESSION=[];
 			session_destroy();
@@ -146,7 +150,8 @@ abstract class Ctrl
 
 			////	USER AUTHENTIFIE
 			if($userAuthentified==true){
-				//// Charge l'user courant (toujours en 1er)
+				//// Recréé l'identifiant de session  &&  Charge l'user (tjs en 1er)
+				session_regenerate_id(true);
 				self::$curUser=self::getObj("user",(int)$tmpUser["_id"]);
 				$_SESSION=["_idUser"=>self::$curUser->_id];
 				self::$userJustConnected=true;
@@ -160,7 +165,7 @@ abstract class Ctrl
 				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)
 					{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
 
-				//// (Re)initialise le token de connexion auto
+				//// Reinitialise le token de connexion auto
 				if($connectViaToken==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
 					{self::userAuthToken(true,self::$curUser->_id);}
 			}
@@ -436,14 +441,16 @@ abstract class Ctrl
 	/********************************************************************************************************
 	 * REDIRECTION VERS UNE URL
 	 ********************************************************************************************************/
-	public static function redir($url, $sameDomain=true)
+	public static function redir($URL, $redirJS=false, $externalDomain=false)
 	{
-		if(!empty($url)){
-			$parsedUrl=parse_url($url);
-			////	Host non précisé (url commence par "index.php")  ||  Host identique au host courant  ||  Autre domaine : pas de check du Host
-			if(empty($parsedUrl['host'])  ||  strtolower($parsedUrl['host'])==strtolower($_SERVER['HTTP_HOST'])  ||  $sameDomain==false){	
-				if($sameDomain==true)  {$url.=self::urlNotify();}			//Ajoute les notifs
-				header("Location: ".filter_var($url,FILTER_SANITIZE_URL));	//Redirection avec filtre de l'url
+		if(!empty($URL)){
+			$parsedUrl=parse_url($URL);
+			////	Host non précisé (commence par "index.php")  ||  Host identique au host courant  ||  Redir vers un autre domaine
+			if(empty($parsedUrl['host'])  ||  strtolower($parsedUrl['host'])==strtolower($_SERVER['HTTP_HOST'])  ||  $externalDomain==true){	
+				if($externalDomain==false)  {$URL.=self::urlNotify();}										//Ajoute les notifs
+				$URL=filter_var($URL,FILTER_SANITIZE_URL);													//Nettoye l'URL
+				if($redirJS==true)	{echo '<script> window.top.location.href="'.$URL.'"; </script>';}		//Redirection JS (cf actionDelete depuis lightbox)
+				else				{header("Location: ".$URL);}											//Redirection Header
 				exit;
 			}
 		}

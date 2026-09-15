@@ -17,6 +17,7 @@ class MdlCalendar extends MdlObject
 	const dbTable="ap_calendar";
 	const MdlObjectContent="MdlCalendarEvent";
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	protected static $_hasAccessRight=true;
 	public static $requiredFields=["title"];
 	public static $searchFields=["title","description"];
@@ -43,12 +44,6 @@ class MdlCalendar extends MdlObject
 			$tmpTimeSlot=explode("-",$this->timeSlot);
 			$this->timeSlotBegin=$tmpTimeSlot[0];
 			$this->timeSlotEnd=$tmpTimeSlot[1];
-		}
-		///// ExternelId de l'agenda
-		if(empty($this->externalId)){
-			$externalId=Txt::randomId();
-			Db::query("UPDATE ap_calendar SET externalId=".Db::format($externalId)." WHERE _id=".$this->_id);
-			$this->externalId=$externalId;
 		}
 	}
 
@@ -90,7 +85,7 @@ class MdlCalendar extends MdlObject
 		if($this->readRight()){
 			////	"Copier le lien pour consulter l'agenda via une appli externe" : format Ical
 			$actionJsTmp="$('#urlIcal".$this->typeId."').show().select(); document.execCommand('copy'); $('#urlIcal".$this->typeId."').hide(); notify('".Txt::trad("copyUrlNotif",true)."');";
-			$labelTmp=Txt::trad("CALENDAR_icalUrl").'<input id="urlIcal'.$this->typeId.'" value="'.Req::curUrl().'/index.php?ctrl=misc&action=DisplayIcal&typeId='.$this->typeId.'&externalId='.$this->externalId.'" style="display:none;">';
+			$labelTmp=Txt::trad("CALENDAR_icalUrl").'<input id="urlIcal'.$this->typeId.'" value="'.$this->getUrlExternalDownload("ctrl=misc&action=DisplayIcal").'" style="display:none;">';
 			$options["objOptions"][]=[
 				"actionJs"=>$actionJsTmp,
 				"iconSrc"=>"share.png",

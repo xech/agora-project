@@ -17,6 +17,7 @@ class MdlDashboardPoll extends MdlObject
 	const dbTable="ap_dashboardPoll";
 	const descriptionEditor=true;
 	const hasAttachedFiles=true;
+	const hasExternalId=true;
 	const hasNotifMail=true;
 	const hasUsersLike=true;
 	const hasUsersComment=true;
