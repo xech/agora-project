@@ -92,10 +92,10 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 /********** MENU CONTEXTUEL MOBILE (SWIPE)*/
 #menuMobileBg, #menuMobileMain			{display:none;/*Masque par défaut*/ position:fixed; top:0px; right:0px; width:100%; height:100%; max-height:100dvh;}/*Cadre à 100% max du Height de la page (Dynamique Vue Height : sans la scrollbar)*/
 #menuMobileBg							{z-index:120; background:rgba(0,0,0,0.7);}
-#menuMobileMain							{z-index:121; width:375px; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}/*border-left : cf .menuMobileBg*/
-#menuMobileMain .miscContent			{padding:0px; border:none; box-shadow:none;}
-#menuMobileMain .menuMobileSubMenu		{position:relative; margin-top:20px;}/*Idem*/
-#menuMobileMain hr						{margin-block:15px;}/*Idem*/
+#menuMobileMain							{z-index:121; width:375px; font-size:1.1rem; overflow:auto; padding:10px; border:solid 1px #ccc; border-left:solid 1px #333;}
+#menuMobileMain .miscContent			{padding:0px; border:none; box-shadow:none;}/*menu contextuel du module*/
+#menuMobileMain .menuMobileSubMenu		{position:relative; margin-top:20px;}/*sous menu contextuel (toggle)*/
+#menuMobileMain hr						{margin-block:15px;}
 #menuMobileClose						{text-align:right; margin-bottom:-5px;}
 
 
@@ -350,7 +350,7 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 .cursorHelp						{cursor:help;}
 .hide							{display:none;}
 .menuTradIcon					{vertical-align:middle;}
-.categoryColor					{display:inline-block; width:16px; height:16px; border-radius:50%; margin-right:8px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
+.categoryColor					{display:inline-block; width:14px; height:14px; border-radius:50%; margin-right:8px; vertical-align:middle;}/*vignette de couleur d'une categorie d'evement / theme du forum / etc*/
 .categoryColorAll				{visibility:hidden;}
 .orLabel						{display:table; width:100%; margin:30px 0px;}
 .orLabel div					{display:table-cell; width:45%; text-align:center;}

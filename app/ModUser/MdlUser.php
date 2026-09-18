@@ -162,9 +162,9 @@ class MdlUser extends MdlPerson
 	public function spaceList($return="objects")
 	{
 		if($this->_userSpaces===null){
-			if($this->isGeneralAdmin())	{$sqlQuery="SELECT * FROM ap_space ORDER BY name ASC";}//Admin général : tous les espaces
-			elseif($this->isUser())		{$sqlQuery="SELECT DISTINCT T1.* FROM ap_space T1 LEFT JOIN ap_joinSpaceUser T2 ON T1._id=T2._idSpace WHERE T2._idUser=".$this->_id." OR T2.allUsers=1 ORDER BY name ASC";}//User lambda : espaces affectés
-			else						{$sqlQuery="SELECT * FROM ap_space WHERE public=1 ORDER BY name ASC";}//Guest : espaces publics
+			if($this->isGeneralAdmin())	{$sqlQuery="SELECT * FROM ap_space ORDER BY `name` ASC";}//Admin général : tous les espaces
+			elseif($this->isUser())		{$sqlQuery="SELECT DISTINCT T1.* FROM ap_space T1 LEFT JOIN ap_joinSpaceUser T2 ON T1._id=T2._idSpace WHERE T2._idUser=".$this->_id." OR T2.allUsers=1 ORDER BY `name` ASC";}//User lambda : espaces affectés
+			else						{$sqlQuery="SELECT * FROM ap_space WHERE public=1 ORDER BY `name` ASC";}//Guest : espaces publics
 			$this->_userSpaces=Db::getObjTab("space",$sqlQuery);
 		}
 		// Retourne un tableau d'objets
@@ -221,7 +221,7 @@ class MdlUser extends MdlPerson
 		if($this->_usersVisibles===null){
 			$idsSql=null;
 			foreach($this->spaceList() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
-			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Ctrl::$agora->personsSort);
+			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Db::format(Ctrl::$agora->personsSort));
 		}
 		//Par défaut, on enlève l'user courant  /  "mailFilter" => garde uniquement les users avec mail (cf. notifMailUsers)
 		$usersVisibles=$this->_usersVisibles;

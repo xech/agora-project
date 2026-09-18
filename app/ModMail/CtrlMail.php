@@ -105,7 +105,7 @@ class CtrlMail extends Ctrl
 			static::lightboxRedir();
 		}
 		////	Liste des mails envoyés par l'user courant
-		$vDatas["mailList"]=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY dateCrea desc");
+		$vDatas["mailList"]=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY dateCrea DESC");
 		static::displayPage("VueMailHistory.php",$vDatas);
 	}
 }

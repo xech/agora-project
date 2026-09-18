@@ -49,7 +49,7 @@ class CtrlMisc extends Ctrl
 
 			////	RECUPERE LES MESSAGES DU MESSENGER : VERIF SI YA DES NOUVEAUX MESSAGES
 			$messengerMessagesListOld=$_SESSION["messengerMessages"];
-			$_SESSION["messengerMessages"]=Db::getTab("SELECT * FROM ap_userMessengerMessage WHERE _idUsers LIKE '%@".self::$curUser->_id."@%' ORDER BY date asc");
+			$_SESSION["messengerMessages"]=Db::getTab("SELECT * FROM ap_userMessengerMessage WHERE _idUsers LIKE '%@".self::$curUser->_id."@%' ORDER BY `date` ASC");
 			$result["messengerUpdate"]=(serialize($messengerMessagesListOld)!=serialize($_SESSION["messengerMessages"]));//compare les messages sérialisés (pas de "count()")
 
 			////	LISTE DES USERS CONNECTÉS (LIVECOUNTERS)

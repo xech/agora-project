@@ -288,9 +288,10 @@ ready(function(){
 #pageFooterHtml, #pageFooterIcon				{display:none;}
 #pageFull										{margin-bottom:0px;}
 #pageContent									{padding-bottom:10px;}/*Surcharge*/
+#pageMenu div:is(.option,.optionSelect)			{padding:2.5px;}/*surcharge .option et .optionSelect*/
 .evtPropositionTitle, .evtProposition			{padding:7px;}
 .evtProposition hr								{margin-block:7px;}
-#readableCalendarsForm							{max-height:300px; overflow-y:auto;}
+#readableCalendarsForm							{max-height:350px; overflow-y:auto;}
 #readableCalendarsTitle							{display:table; width:100%;}
 #readableCalendarsTitle>div						{display:table-cell;}
 #readableCalendarsTitle #readableCalsAdmin		{text-align:right; filter:saturate(0);}
@@ -326,14 +327,14 @@ ready(function(){
 .vCalVue										{max-width:100%; width:100%; user-select:none!important; -webkit-user-select:none!important;}
 .vCalHeader										{display:table; width:100%; font-size:1.1rem;}
 .vCalHeader>div									{display:table-cell; padding:10px; vertical-align:middle;}
-.vCalHeaderLeft, .vCalHeaderCenter				{table-layout:fixed;}/*table-layout pour fixer un width equivalent*/
+.vCalHeaderLeft, .vCalHeaderRight				{table-layout:fixed; width:40%;}/*table-layout pour fixer un width equivalent*/
 .vCalHeaderLeftLabel							{margin-right:10px; vertical-align:middle;}
-.vCalHeaderCenter								{text-align:center;}
+.vCalHeaderCenter								{text-align:center; min-width:250px;}
 .vCalHeaderCenter .vCalPrevNext					{padding:10px 15px; border-radius:var(--radius-field);}
 .vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
-.vCalHeaderRight								{min-width:420px; width:420px; text-align:right;}
+.vCalHeaderRight								{text-align:right; min-width:480px;}/*tester avec "semaine de travail"*/
 .vCalHeaderRight>span							{margin-inline:3px;}
 .vCalHeaderRight button							{box-shadow:none;}
 .vCalLabelDays									{padding:8px 4px; text-align:center; text-transform:capitalize;}

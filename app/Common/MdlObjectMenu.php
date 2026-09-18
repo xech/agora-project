@@ -285,7 +285,7 @@ trait MdlObjectMenu
 		$firstSort=(!empty($firstSort))  ?  $firstSort.", "  :  null;										//Pré-tri ? Exple pour les News: "une desc"
 		$sortTab=Txt::txt2tab(self::getSort());																//Récupère la préférence de tri du conteneur courant (dossier/sujet/etc). Ex: ["name","asc"]
 		$fieldSort=($sortTab[0]=="extension")  ?  "SUBSTRING_INDEX(`name`,'.',-1)"  :  "`".$sortTab[0]."`";	//Tri par type de fichier  : récupère son extension pour le tri 
-		return " ORDER BY ".$firstSort." ".$fieldSort." ".$sortTab[1]." ";									//Renvoie le tri Sql (avec des espaces avant/après)
+		return " ORDER BY ".$firstSort.' '.$fieldSort.' '.$sortTab[1].' ';									//Renvoie le tri Sql (garder les espaces avant/après)
 	}
 
 	/********************************************************************************************************

@@ -651,7 +651,7 @@ class MdlObject
 	 ********************************************************************************************************/
 	public static function getPluginObjects($params)
 	{
-		return (!empty($params))  ?  Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPlugins($params)." AND ".static::sqlDisplay()." ORDER BY dateCrea desc")  :  [];
+		return (!empty($params))  ?  Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".static::sqlPlugins($params)." AND ".static::sqlDisplay()." ORDER BY `dateCrea` DESC")  :  [];
 	}
 
 	/********************************************************************************************************

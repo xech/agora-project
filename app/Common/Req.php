@@ -39,12 +39,7 @@ class Req
 	public function __construct()
 	{
 		////	Filtre et enregistre les parametres $_GET / $_POST
-		foreach(array_merge($_GET,$_POST) as $key=>$val){
-			if(!is_array($val))  {self::$_paramsGP[$key]=self::paramFilter($key,$val);}		//Filtre les valeurs
-			else{																			//Filtre les tableaux de valeurs
-				foreach($val as $key2=>$val2)  {self::$_paramsGP[$key][$key2]=self::paramFilter($key,$val2);}
-			}
-		}
+		self::$_paramsGP=self::paramsFilter(array_merge($_GET, $_POST));
 
 		////	Filtre les parametres FILES
 		if(!empty($_FILES)){
@@ -118,37 +113,43 @@ class Req
 	}
 
 	/********************************************************************************************************
-	 * FILTRE LES PARAMETRES GET/POST (Cf. XSS / code inject)
-	 * Test rapide :  ?description=<svg/onload=alert(1)>  ||  ?notify[]=HELX");alert(1);//`
+	 * FILTRE LES VALEURS PASSEES EN PARAMETRES GET / POST  (FONCTION RECURSIVE POUR LES TABLEAUX)
+	 * Test XSS / code inject :  ?description=<svg/onload=alert(1)>  ||  ?notify[]=HELX");alert(1);//`
 	 ********************************************************************************************************/
-	private static function paramFilter($key, $val)
+	private static function paramsFilter($val, $key=null)
 	{
-		if(!empty($val) && is_string($val)){
-			if(preg_match("/^(objUrl|visioUrl|logoUrl|selfHostUrl)$/i",$key)){															////	Filtre une URL
-				$val=filter_var($val,FILTER_SANITIZE_URL);																				//Filtre l'URL (sans controle via FILTER_VALIDATE_URL)
+		if(is_array($val)){																									////	Filtre un tableau de valeurs de manière récursive
+			foreach($val as $subKey=>$subVal){																				//Parcourt le tableau de valeurs
+				$val[$subKey]=self::paramsFilter($subVal, $subKey);															//Filtre la valeur
 			}
-			elseif(preg_match("/^(description|editorDraft)$/i",$key)){																	////	Filtre de l'editeur TinyMce
-				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');															//Charge la librairie HTMLPurifier	
-				$config=HTMLPurifier_Config::createDefault();																			//Config par défaut  (note : les attributs qui commencent par "data-" sont supprimés)
-				$config->set('Core.Encoding', 'UTF-8');																					//Encodage UTF-8 (conserve les caractères spéciaux)
-				$config->set('Attr.EnableID', true);																					//Autorise les attributs id
-				$config->set('HTML.SafeIframe', true);																					//Autorise les videos Iframes
-				$config->set('HTML.SafeEmbed', true);																					//Autorise les videos Embed
-				$config->set('URI.SafeIframeRegexp', '%(youtube\.com|youtu\.be|twitch\.tv|dailymotion\.com|vimeo\.com)%');				//Regex des vidéos externes
-				$config->set('Attr.AllowedFrameTargets', '_blank');																		//Autorise la balise <a target="_blank">
-				$def=$config->getHTMLDefinition(true);																					//Balises spécifiques :
-				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);	//Autorise la balise <video> et ses attributs
-				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);										//Autorise la balise <source> et ses attributs (cf balise <video>)
-				$purifier=new HTMLPurifier($config);																					//Crée un $purifier
-				$val=$purifier->purify($val);																							//Filtre le code html
+		}
+		elseif(is_string($val) && $key!==null){
+			if(preg_match("/^(objUrl|visioUrl|logoUrl|selfHostUrl)$/i",$key)){												////	Filtre une URL
+				$UrlPattern='%^(?:(?:https?|ftp)://)?[a-zA-Z0-9\-._~:/?#\[\]@!$&\'()*+,;=\%]+$%';							//Pattern d'une URL relative ou absolue
+				$val=preg_match($UrlPattern,$val)  ?  filter_var($val, FILTER_SANITIZE_URL)  :  "";							//Filtre l'URL
+			}
+			elseif(preg_match("/^(description|editorDraft)$/i",$key)){														////	Filtre de l'editeur TinyMce
+				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');												//Charge la librairie HTMLPurifier	
+				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs qui commencent par "data-" sont supprimés)
+				$config->set('Core.Encoding', 'UTF-8');																		//Encodage UTF-8 (conserve les caractères spéciaux)
+				$config->set('Attr.EnableID', true);																		//Autorise les attributs id
+				$config->set('HTML.SafeIframe', true);																		//Autorise les videos Iframes
+				$config->set('HTML.SafeEmbed', true);																		//Autorise les videos Embed
+				$config->set('URI.SafeIframeRegexp', '%(youtube\.com|youtu\.be|twitch\.tv|dailymotion\.com|vimeo\.com)%');	//Regex des vidéos externes
+				$config->set('Attr.AllowedFrameTargets', '_blank');															//Autorise la balise <a target="_blank">
+				$def=$config->getHTMLDefinition(true);																		//Balises spécifiques :
+				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);//Autorise la balise <video> et ses attributs
+				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise la balise <source> et ses attributs (cf balise <video>)
+				$purifier=new HTMLPurifier($config);																		//Crée un $purifier
+				$val=$purifier->purify($val);																				//Filtre le code html
 				$caracAcc =['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç','œ','À','Â','Ä','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Û','Ü','Ç','Œ','Æ','æ','«','»',"\xc2\xa0"];//HTMLPurifier change les espaces en "\xc2\xa0" (espace en UTF8/hexadécimale)
 				$caracHtml=['&rsquo;','&agrave;','&acirc;','&auml;','&eacute;','&egrave;','&ecirc;','&euml;','&icirc;','&iuml;','&ocirc;','&ouml;','&ugrave;','&ucirc;','&uuml;','&ccedil;','&oelig;','&Agrave;','&Acirc;','&Auml;','&Eacute;','&Egrave;','&Ecirc;','&Euml;','&Icirc;','&Iuml;','&Ocirc;','&Ouml;','&Ugrave;','&Ucirc;','&Uuml;','&Ccedil;','&OElig;','&AElig;','&aelig;','&laquo;','&raquo;','&nbsp;'];
-				$val=str_replace($caracAcc, $caracHtml, $val);																			//Convertit les caractères en HTML (pas de htmlentities car converti aussi les balises HTML)
+				$val=str_replace($caracAcc, $caracHtml, $val);																//Convertit les caractères en HTML (pas de htmlentities car converti aussi les balises HTML)
 			}
-			else{																														////	Filtre principal
-				$val=strip_tags($val,'<br>');																							//Supprime les tags html (sauf <br> des notifs)
-				$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);													//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
-				$val=str_replace('&lt;br&gt;','<br>',$val);																				//Retranscrit les <br>
+			else{																											////	Filtre principal
+				$val=strip_tags($val,'<br>');																				//Supprime les tags html (sauf <br> des notifs)
+				$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);										//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
+				$val=str_replace('&lt;br&gt;','<br>',$val);																	//Retranscrit les <br>
 			}
 		}
 		return $val;

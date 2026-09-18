@@ -1048,7 +1048,7 @@ class DbUpdate extends Db
 				self::fieldExist("ap_calendar", "externalId", "ALTER TABLE `ap_calendar` ADD `externalId` VARCHAR(255) DEFAULT NULL");
 			}
 
-			if(self::updateVersion("26.9.5"))
+			if(self::updateVersion("26.9.7"))
 			{
 				//// Ajoute un token de controle "ap_user.passwordResetId"
 				self::fieldExist("ap_user", "passwordResetId", "ALTER TABLE `ap_user` ADD `passwordResetId` VARCHAR(255) DEFAULT NULL AFTER `password`");

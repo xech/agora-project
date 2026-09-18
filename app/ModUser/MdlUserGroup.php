@@ -76,13 +76,13 @@ class MdlUserGroup extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * GROUPES D'UTILISATEURS : D'UN ESPACE / D'UN UTILISATEUR
+	 * GROUPES D'UTILISATEURS : D'UN ESPACE ET/OU D'UN UTILISATEUR
 	 ********************************************************************************************************/
 	public static function userGroupList($objSpace=null, $objUser=null)
 	{
 		$sqlFilter=null;
 		if(is_object($objSpace))	{$sqlFilter.=" AND _idSpace=".$objSpace->_id;}
 		if(is_object($objUser))		{$sqlFilter.=" AND _idUsers LIKE '%@".$objUser->_id."@%'";}
-		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY title");
+		return Db::getObjTab(static::objectType, "SELECT * FROM ".self::dbTable." WHERE 1 ".$sqlFilter." ORDER BY `title`");
 	}
 }

@@ -216,7 +216,7 @@
 			$curFolder->treeLevel=$treeLevel;																								//Ajoute le niveau du dossier courant par rapport au dossier demandé
 			$curFolderTree[]=$curFolder;																									//Ajoute à l'arbo le dossier courant
 			$sqlFilter=($accessRightMin=="all")  ?  "_idContainer=".$curFolder->_id  :  static::sqlDisplay($curFolder);						//Tous les sous-dossiers  ||  Sous-dossiers en fonction des droits d'accès
-			$subFolderList=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlFilter." ORDER BY name ASC");	//Récupère les sous-dossiers du dossier courant
+			$subFolderList=Db::getObjTab(static::objectType, "SELECT * FROM ".static::dbTable." WHERE ".$sqlFilter." ORDER BY `name` ASC");	//Récupère les sous-dossiers du dossier courant
 			foreach($subFolderList as $subFolder){																							//Ajoute chaque sous-dossiers
 				$subFolderTree=$this->folderTree($accessRightMin, $subFolder, $treeLevel+1);												//Lance récursivement la fonction pour récupérer l'arbo du sous-dossier
 				$curFolderTree=array_merge($curFolderTree,$subFolderTree);																	//Ajoute tous les sous-dossiers à l'arbo courante

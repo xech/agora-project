@@ -23,7 +23,7 @@ class CtrlObject extends Ctrl
 		if(Req::isParam("typeId")){
 			$curObj=self::getCurObj();
 			if($curObj->editRight()){
-				$vDatas["logsList"]=Db::getTab("SELECT *, UNIX_TIMESTAMP(date) as `timestamp` FROM ap_log WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY date");
+				$vDatas["logsList"]=Db::getTab("SELECT *, UNIX_TIMESTAMP(date) as `timestamp` FROM ap_log WHERE objectType='".$curObj::objectType."' AND _idObject=".$curObj->_id." ORDER BY `date`");
 				static::displayPage(Req::commonPath."VueObjLogs.php",$vDatas);
 			}
 		}

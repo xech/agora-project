@@ -75,6 +75,7 @@ class CtrlCalendar extends Ctrl
 
 		////	LABEL DU MOIS AFFICHÉ
 		if(date('Ym',$timeBegin)!=date('Ym',$timeEnd))	{$vDatas["monthLabel"]=Txt::timeLabel($timeBegin,'MMM')." / ".Txt::timeLabel($timeEnd,'MMM');}	//"Fev./Mar."	: semaine sur 2 mois
+		elseif(Req::isMobile())							{$vDatas["monthLabel"]=Txt::timeLabel($timeBegin,'MMM');}										//"Fev."		: format réduit mobile
 		else											{$vDatas["monthLabel"]=Txt::timeLabel($timeBegin,'MMMM');}										//"Fevrier"		: format par défaut
 		if(Req::isMobile()==false || date('Y')!=date('Y',$timeBegin))	{$vDatas["monthLabel"].=" ".date((Req::isMobile()?'y':'Y'),$timeBegin);}		//Ajoute l'année (sauf mobile + année courante)
 
@@ -371,7 +372,7 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMyEvents()
 	{
-		$vDatas["sortEvents"]=Req::isParam("sortEvents")  ?  Txt::clean(Req::param("sortEvents"),'max')  :  "dateCrea";
+		$vDatas["sortEvents"]=Req::isParam("sortEvents")  ?  Db::format("sortEvents")  :  "`dateCrea`";
 		$vDatas["myEvents"]=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY ".$vDatas["sortEvents"]." DESC");
 		static::displayPage("VueMyEvents.php",$vDatas);
 	}

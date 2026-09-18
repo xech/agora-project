@@ -828,7 +828,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editInfo"=>"Chaque catégorie peut être modifiée par son auteur ou par l'admin général",
 			"CALENDAR_CAT_editAdd"=>"Ajouter une catégorie",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Par défaut, l'agenda est toujours visible pour pouvoir consulter son agenda personnel. Pour le masquer, cochez l'option dans votre profil utilisateur : ''Agenda personnel désactivé''.",
-			"CALENDAR_readableCalendars"=>"Agendas disponibles",
+			"CALENDAR_readableCalendars"=>"Agendas affichés",
 			"CALENDAR_displayAdmin"=>"Affichage Administrateur : voir tous les agendas présents sur l'espace",
 			"CALENDAR_displayHide"=>"Afficher / Masquer l'agenda",
 			"CALENDAR_printCalendars"=>"Imprimer l'agenda",

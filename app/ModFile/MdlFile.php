@@ -37,7 +37,7 @@ class MdlFile extends MdlObject
 	public function getVersions($forceUpdate=false)
 	{
 		if($this->_versions===null || $forceUpdate==true)
-			{$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea desc");}//"ORDER BY" place la dernière version en 1er
+			{$this->_versions=Db::getTab("SELECT * FROM ap_fileVersion WHERE _idFile=".$this->_id." ORDER BY dateCrea DESC");}//"ORDER BY" place la dernière version en 1er
 		return $this->_versions;
 	}
 

@@ -32,7 +32,7 @@ class CtrlLog extends Ctrl
 	{
 		$sqlLogs="_idSpace=".Ctrl::$curSpace->_id;																	//Logs de l'espace
 		if(Ctrl::$curUser->isGeneralAdmin())  {$sqlLogs.=" OR action='connexion'";}									//Ajoute les connexion d'users (admin général)
-		$logList=Db::getTab("SELECT * FROM ap_log WHERE ".$sqlLogs." ORDER BY date desc");							//Récupère les logs de l'espace courant
+		$logList=Db::getTab("SELECT * FROM ap_log WHERE ".$sqlLogs." ORDER BY `date` DESC");						//Récupère les logs de l'espace courant
 		foreach($logList as $logKey=>$log){
 			$moduleTradKey=strtoupper($log["moduleName"])."_MODULE_NAME";											//Traduction du module
 			if(!empty($log["date"]))		{$log["date"]=substr($log["date"],0,16);}								//Label date

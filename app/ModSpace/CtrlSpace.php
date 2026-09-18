@@ -73,7 +73,7 @@ class CtrlSpace extends Ctrl
 		}
 		////	Objet courant  +  Liste des users disponibles  + List des modules disponibles
 		$vDatas["curObj"]=$curObj;
-		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Ctrl::$agora->personsSort);
+		$vDatas["userList"]=Db::getObjTab("user","SELECT * FROM ap_user ORDER BY ".Db::format(Ctrl::$agora->personsSort));
 		////	Affiche la vue
 		static::displayPage("VueEditSpace.php",$vDatas);
 	}

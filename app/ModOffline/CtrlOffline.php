@@ -59,7 +59,7 @@ class CtrlOffline extends Ctrl
 	
 		////	Affiche la vue
 		$vDatas["isUserInscription"]=(Db::getVal("select count(*) from ap_space where userInscription=1")>0  &&  Req::isMobileApp()==false);
-		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "select * from ap_space where public=1 order by name");
+		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "SELECT * FROM ap_space WHERE public=1 ORDER BY `name`");
 		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}		//Login par défaut : en parametre
 		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}	//Login par défaut : en cookie
 		else									{$vDatas["defaultLogin"]=null;}
