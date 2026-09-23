@@ -57,11 +57,11 @@ class MdlUserGroup extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : DROIT D'ÉDITION DU GROUPE (ACCÈS TOTAL OU ADMIN D'ESPACE)
+	 * SURCHARGE : DROIT D'ÉDITION  =>  ADMIN D'ESPACE  ||  AUTEUR 
 	 ********************************************************************************************************/
 	public function editRight()
 	{
-		return (parent::editRight() || Ctrl::$curUser->isSpaceAdmin());
+		return (parent::editRight() || $this->isAutor());
 	}
 
 	/********************************************************************************************************

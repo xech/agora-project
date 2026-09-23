@@ -93,21 +93,25 @@ class CtrlContact extends Ctrl
 			}
 			//// Import de contacts
 			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields")){
-				$personFields=Req::param("personFields");
+				//// Init
+				$personFieldsParam=Req::param("personFields");
+				$personFieldsCsv=MdlPerson::$csvFields["personFields"];
+				//// Créé chaque contact
 				foreach(Req::param("personsImport") as $personCpt){
-					//// Créé le contact  ("_idContainer" pour le controle d'accès via "editRecord()")
+					//// Init le contact
 					$curObj=new MdlContact();
-					$sqlFields="`_idContainer`=".Db::format($curContainer->_id).", ";
+					$sqlFields="`_idContainer`=".$curContainer->_id.", ";//cf controle d'accès via "editRecord()"
 					//// Récupère la valeur de chaque champ du contact
-					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){
-						$fieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;
-						if(!empty($fieldVal) && !empty($fieldName))  {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}
+					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){																//Ajoute chaque champ :
+						$fieldVal=(!empty($personFieldsParam[$personCpt][$fieldCpt]))  ?  $personFieldsParam[$personCpt][$fieldCpt]  :  null;	//Valeur du champ
+						if(!in_array($fieldName,$personFieldsCsv) || empty($fieldVal))   {continue;}											//Verif le nom du champ + sa valeur
+						if(!empty($fieldVal) && !empty($fieldName))   {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}				//Complète la requête (sauf Login/password)
 					}
 					//// Enregistre le nouveau contact !
 					$curObj=$curObj->editRecord($sqlFields);
 					//// Nouveau contact du dossier racine : affecte en lecture à "tous les users" de l'espace courant
 					if($curContainer->isRootFolder())
-						{Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".(int)$curObj->_id.", _idSpace=".(int)self::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
+						{Db::query("INSERT INTO ap_objectTarget SET objectType=".Db::format($curObj::objectType).", _idObject=".$curObj->_id.", _idSpace=".Ctrl::$curSpace->_id.", target='spaceUsers', accessRight='1'");}
 				}
 				//// Ferme la page
 				static::lightboxRedir();

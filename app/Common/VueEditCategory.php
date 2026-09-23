@@ -89,7 +89,7 @@ fieldset							{margin-top:30px!important;}/*surcharge*/
 .vCategoryAdd						{font-size:1.1rem; text-align:center;}
 form								{display:none; margin-top:25px;}/*masque par défaut*/
 form input[name='title']			{width:300px; max-width:80%; color:white; margin-right:5px;}
-form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;}
+form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5px;}
 .vSpaceList							{margin-top:10px; max-height:150px; overflow-y:auto;}
 .vSpaceList>div						{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
 .vLabelAllSpaces					{font-style:italic;}
@@ -141,7 +141,7 @@ form input[name='description']		{width:100%; margin-top:15px; margin-bottom:5px;
 					</script>
 				</div>
 				<input type="hidden" name="color" value="<?= $tmpObj->color ?>">
-				<input type="text" name="description" value="<?= $tmpObj->description ?>" placeholder="<?= Txt::trad("description") ?>">
+				<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $tmpObj->description ?></textarea>
 				<div class="vSpaceList">
 					<?php
 					////	"VISIBLE TOUS LES ESPACES" (Admin général || Modif d'un user et case déjà cochée)

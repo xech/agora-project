@@ -106,8 +106,8 @@ class Req
 	public static function param($key)
 	{
 		if(self::isParam($key)){
-			if($key=="notify")							{return (array)self::$_paramsGP[$key];}	//"notify" tjs en array, même s'il n'y en a qu'une passée en GET
-			elseif(is_string(self::$_paramsGP[$key]))	{return trim(self::$_paramsGP[$key]);}	//trim sur le texte
+			if($key=="notify")							{return (array)self::$_paramsGP[$key];}	//"notify" tjs en array, même s'il ya qu'une notif
+			elseif(is_string(self::$_paramsGP[$key]))	{return trim(self::$_paramsGP[$key]);}	//trim tjs le texte
 			else										{return self::$_paramsGP[$key];}
 		}
 	}
@@ -125,7 +125,7 @@ class Req
 		}
 		elseif(is_string($val) && $key!==null){
 			if(preg_match("/^(objUrl|visioUrl|logoUrl|selfHostUrl)$/i",$key)){												////	Filtre une URL
-				$UrlPattern='%^(?:(?:https?|ftp)://)?[a-zA-Z0-9\-._~:/?#\[\]@!$&\'()*+,;=\%]+$%';							//Pattern d'une URL relative ou absolue
+				$UrlPattern='%^(?:(?:https?|ftp)://)?[a-zA-Z0-9\-._~:/?#\[\]@!$&\'()*+,;=\%]+$%';							//Pattern d'une URL absolue OU relative (FILTER_VALIDATE_URL: pas avec les URL relatives)
 				$val=preg_match($UrlPattern,$val)  ?  filter_var($val, FILTER_SANITIZE_URL)  :  "";							//Filtre l'URL
 			}
 			elseif(preg_match("/^(description|editorDraft)$/i",$key)){														////	Filtre de l'editeur TinyMce
@@ -135,11 +135,12 @@ class Req
 				$config->set('Attr.EnableID', true);																		//Autorise les attributs id
 				$config->set('HTML.SafeIframe', true);																		//Autorise les videos Iframes
 				$config->set('HTML.SafeEmbed', true);																		//Autorise les videos Embed
-				$config->set('URI.SafeIframeRegexp', '%(youtube\.com|youtu\.be|twitch\.tv|dailymotion\.com|vimeo\.com)%');	//Regex des vidéos externes
-				$config->set('Attr.AllowedFrameTargets', '_blank');															//Autorise la balise <a target="_blank">
+				$config->set('URI.AllowedSchemes', ['http'=>true, 'https'=>true, 'mailto'=>true]);							//Schemes d'URL autorisés
+				$config->set('URI.SafeIframeRegexp', '%^https://(www\.youtube(-nocookie)?\.com/embed/|player\.vimeo\.com/video/|www\.dailymotion\.com/embed/video/|player\.twitch\.tv/\?|clips\.twitch\.tv/embed\?)%');//Regex des vidéos externes
+				$config->set('Attr.AllowedFrameTargets', '_blank');															//Autorise les <a target="_blank">
 				$def=$config->getHTMLDefinition(true);																		//Balises spécifiques :
-				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);//Autorise la balise <video> et ses attributs
-				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise la balise <source> et ses attributs (cf balise <video>)
+				$def->addElement('video','Block','Flow','Common',['controls'=>'Enum#controls','width'=>'Length','height'=>'Length']);//Autorise les <video> et ses attributs
+				$def->addElement('source','Inline','Empty','Common',['src'=>'URI','type'=>'Text']);							//Autorise les <source> et ses attributs (cf <video>)
 				$purifier=new HTMLPurifier($config);																		//Crée un $purifier
 				$val=$purifier->purify($val);																				//Filtre le code html
 				$caracAcc =['’','à','â','ä','é','è','ê','ë','î','ï','ô','ö','ù','û','ü','ç','œ','À','Â','Ä','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Û','Ü','Ç','Œ','Æ','æ','«','»',"\xc2\xa0"];//HTMLPurifier change les espaces en "\xc2\xa0" (espace en UTF8/hexadécimale)
@@ -148,7 +149,7 @@ class Req
 			}
 			else{																											////	Filtre principal
 				$val=strip_tags($val,'<br>');																				//Supprime les tags html (sauf <br> des notifs)
-				$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);										//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités existantes)
+				$val=htmlspecialchars($val, ENT_COMPAT | ENT_HTML5, 'UTF-8', false);										//Convertit  & " < >  en entité HTML ('false' pour pas convertir les entités HTML existantes)
 				$val=str_replace('&lt;br&gt;','<br>',$val);																	//Retranscrit les <br>
 			}
 		}
@@ -179,7 +180,9 @@ class Req
 	public static function curUrl($sheme=true)
 	{
 		$URL=$_SERVER['SERVER_NAME'].rtrim(dirname($_SERVER['REQUEST_URI']),'/');//Domaine + dossier sans le '/' de fin
-		return ($sheme==true)  ?  'https://'.$URL  :  $URL;
+		if($sheme==false)					{return $URL;}
+		elseif(!empty($_SERVER['HTTPS']))	{return 'https://'.$URL;}
+		else								{return 'http://'.$URL;}
 	}
 
 	/********************************************************************************************************

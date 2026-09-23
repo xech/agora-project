@@ -88,11 +88,11 @@ class MdlUser extends MdlPerson
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : DROIT D'ÉDITION => ACCÈS TOTAL
+	 * SURCHARGE : DROIT D'ÉDITION  =>  ADMIN D'ESPACE  ||  AUTEUR (USER EDIT SON PROFIL)
 	 ********************************************************************************************************/
 	public function editRight()
 	{
-		return ($this->accessRight()==3);
+		return (Ctrl::$curUser->isSpaceAdmin() || $this->isAutor());
 	}
 
 	/********************************************************************************************************

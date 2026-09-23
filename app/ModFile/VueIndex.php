@@ -49,7 +49,7 @@
 			echo $tmpFile->objContentDiv($containerClass);
 		?>
 				<div class="objContentTab objFiles">
-					<div class="objIcon" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="typeIdTargetClick <?= $tmpFile->iconClass ?>"></div>
+					<div class="objIcon" <?= Txt::tooltip($tmpFile->iconTooltip) ?>><img src="<?= $tmpFile->typeIcon() ?>" <?= $tmpFile->iconLink ?> class="<?= $tmpFile->iconClass ?> typeIdTargetFile"></div>
 					<div class="objLabel" <?= Txt::tooltip($tmpFile->labelTooltip) ?>><a <?= $tmpFile->labelLink ?> ><?= Txt::reduce($tmpFile->name,$nameLength).$tmpFile->versionsMenu("icon") ?></a></div>
 					<div class="objDetails"><?= File::sizeLabel($tmpFile->octetSize) ?></div>
 					<div class="objAutorDate"><?= $tmpFile->autorDate(true) ?></div>

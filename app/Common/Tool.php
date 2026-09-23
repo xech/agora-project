@@ -129,7 +129,7 @@ class Tool
 						$fileSizeCpt+=filesize($tmpFile["path"]);
 						if($fileSizeCpt > File::mailMaxFilesSize)	{Ctrl::notify(Txt::trad("MAIL_maxFileSizeNotif")." (".File::mailMaxFilesSizeLabel.") : ".$tmpFile["name"]);}//Fichier trop volumineux
 						elseif(!empty($tmpFile["cid"]))				{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Remplace le "src" des images intégrées au message (ex: <img src="cid:attachedFile55">)
-						elseif(!empty($tmpFile["name"]))			{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}		//Ajoute un fichier joint classique
+						elseif(!empty($tmpFile["name"]))			{$mail->AddAttachment($tmpFile["path"],"document.pdf");}		//Ajoute un fichier joint classique
 					}
 				}
 			}

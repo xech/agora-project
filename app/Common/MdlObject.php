@@ -24,9 +24,9 @@ class MdlObject
 	const objectType=null;
 	const dbTable=null;
 	//Propriétés des catégories / conteneurs / contenus
-	const MdlCategory=null;						//Objet catégorie rattaché à l'objet courant	(ex: "MdlForumTheme", "MdlCalendarCategory", "MdlTaskStatus"...)
-	const MdlObjectContainer=null;				//Objet conteneur rattaché à l'objet courant	(ex: "MdlFileFolder", "MdlTaskFolder", "MdlCalendar"...)
-	const MdlObjectContent=null;				//Objets contenu rattachés à l'objet courant	(ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
+	const MdlCategory=null;						//Objet catégorie rattaché à l'objet courant		(ex: "MdlForumTheme", "MdlCalendarCategory", "MdlTaskStatus"...)
+	const MdlObjectContainer=null;				//Objet conteneur rattaché au contenu courant		(ex: "MdlFileFolder", "MdlTaskFolder", "MdlCalendar"...)
+	const MdlObjectContent=null;				//Objets contenus rattachés au conteneur courant	(ex: "MdlFile", "MdlTask", "MdlCalendarEvent"...)
 	const isFolder=false;						//L'Objet courant est un dossier
 	const isFolderContent=false;				//L'Objet courant est contenu dans un dossier ..mais n'est pas un dossier
 	protected static $_hasAccessRight=null;		//Pas en constante car dépend du context (cf. elems d'une arbo à la racine.. ou pas)
@@ -274,18 +274,18 @@ class MdlObject
 			$this->_accessRight=0;																															//INIT
 			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//FULL ACCESS : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
 			elseif($this->isRootFolder() || $this->externalIdControl())							{$this->_accessRight=1;}									//LECTURE : DOSSIER RACINE / ACCES EXTERNE DE L'OBJET
-			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //FONCTION DU CONTENEUR PARENT
-			elseif($this->hasAccessRight()){																											 	//FONCTION DES AFFECTATIONS EN BDD
-				$isPersonalCalendar=(static::objectType=="calendar" && $this->isPersonal());
-				$sqlSelect="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;
-				//// ACCES TOTAL :  admin de l'espace et objet affecté à l'espace (sauf agendas persos : pas de privilège admin)
-				if(Ctrl::$curUser->isSpaceAdmin()  &&  Db::getVal("SELECT COUNT(*) ".$sqlSelect)>0  &&  $isPersonalCalendar==false){
+			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
+			elseif($this->hasAccessRight()){																											 	//EN FONCTION DES AFFECTATIONS
+				$isPersoCalendar=(static::objectType=="calendar" && $this->isPersonal());
+				$sqlSelection="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;//SELECTION SQL DE L'OBJET ET L'ESPACE
+				//// ACCES TOTAL :  ADMIN DE L'ESPACE  +  OBJET AFFECTÉ À L'ESPACE  +  PAS UN AGENDA PERSO (PAS DE PRIVILÈGE ADMIN)
+				if(Ctrl::$curUser->isSpaceAdmin()  &&  Db::getVal("SELECT COUNT(*) ".$sqlSelection)>0  &&  $isPersoCalendar==false){
 					$this->_accessRight=3;
 				}
 				//// ACCES EN FONCTION DES AFFECTATIONS EN BDD
 				else{
-					$this->_accessRight=Db::getVal("SELECT MAX(accessRight) ".$sqlSelect." AND target IN (".static::sqlAffectations().")");	//Droit le + important pour l'user courant
-					if(Ctrl::$curUser->isUser()==false  &&  $this->_accessRight>1)  {$this->_accessRight=1;}								//Droit en lecture pour les Guests
+					$this->_accessRight=Db::getVal("SELECT MAX(accessRight) ".$sqlSelection." AND target IN (".static::sqlAffectations().")");	//Droit le + important pour l'user courant
+					if(Ctrl::$curUser->isUser()==false  &&  $this->_accessRight>1)  {$this->_accessRight=1;}									//Droit en lecture pour les Guests
 				}
 			}
 		}
@@ -314,7 +314,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET (CONTENEURS = 3  /  AUTRES = 2)
+	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET  =>  CONTENEURS = 3  ||  AUTRES = 2
 	 ********************************************************************************************************/
 	public function editRight()
 	{
@@ -606,17 +606,15 @@ class MdlObject
 
 	/********************************************************************************************************
 	 * STATIC SQL : PREPARE LA SELECTION D'OBJETS EN FONCTION DE LEUR AFFECTATION
-	 * "targets" (exple) : "spaceUsers" / "U1" / "G1"
 	 ********************************************************************************************************/
 	protected static function sqlAffectations()
 	{
 		if(static::$_sqlTargets===null){
-			//Objets affectés à tous les users de l'espace (et si besoin les 'guests')
-			static::$_sqlTargets="'spaceUsers'";
-			//Ajoute les objets affectés à l'user courant et ceux affectés à ses groupes
+			static::$_sqlTargets="'spaceUsers'";											//Objets affectés à tous les users (et guests) de l'espace  => "spaceUsers"
 			if(Ctrl::$curUser->isUser()){
-				static::$_sqlTargets.=",'U".Ctrl::$curUser->_id."'";
-				foreach(MdlUserGroup::userGroupList(Ctrl::$curSpace,Ctrl::$curUser) as $tmpGroup)
+				static::$_sqlTargets.=",'U".Ctrl::$curUser->_id."'";						//Objets affectés à l'user courant	=> Ex: "U55"
+				$userGroupList=MdlUserGroup::userGroupList(Ctrl::$curSpace,Ctrl::$curUser);	//Objets affectés aux groupes de l'user courant => Ex: "G55"
+				foreach($userGroupList as $tmpGroup)
 					{static::$_sqlTargets.=",'G".$tmpGroup->_id."'";}
 			}
 		}
@@ -786,13 +784,11 @@ class MdlObject
 			$file["parentObj"]=$parentObj;																					//Objet parent
 			$file["path"]=PATH_OBJECT_ATTACHMENT.$file["_id"].".".File::extension($file["name"]);							//Path/chemin réel du fichier
 			$file["displayUrl"]=self::attachedFileDisplayUrl($file["_id"], $file["name"]);									//Url d'affichage du fichier/image (cf "actionAttachedFileDisplay()")
-			$file["cid"]="attachedFile".$file["_id"];																		//"cid" des images intégrées aux emails (cf "descriptionMail()")
-			if(Req::isMobileApp()){   																						//Url de download via CtrlMisc
-				$urlParams='ctrl=misc&action=ExternalFileDownload&_id='.$file["_id"].'&fileName='.urlencode($file["name"]);	//Url de download en mode offline ($urlParams : "action" + "_id" + "fileName")
-				$file["urlDownload"]=$parentObj->getUrlExternalDownload($urlParams);
-			}else{
-				$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];							//Url de download du fichier
-			}
+			if(File::isType("editorImage",$file["name"]))   {$file["cid"]="attachedFile".$file["_id"];}						//"cid" uniquement pour les images intégrées aux emails (cf "descriptionMail()")
+			if(Req::isMobileApp())   																						//Download offline (parametres "action" + "_id" + "fileName")
+				{$file["urlDownload"]=$parentObj->getUrlExternalDownload('ctrl=misc&action=ExternalFileDownload&_id='.$file["_id"].'&fileName='.urlencode($file["name"]));}
+			else																											//Download direct du fichier
+				{$file["urlDownload"]='?ctrl=object&action=AttachedFileDownload&_id='.$file["_id"];}
 			return $file;
 		}
 	}

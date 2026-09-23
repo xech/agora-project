@@ -296,11 +296,11 @@ ready(function(){
 #readableCalendarsTitle>div						{display:table-cell;}
 #readableCalendarsTitle #readableCalsAdmin		{text-align:right; filter:saturate(0);}
 #readableCalendarsTitle:not(:hover) #readableCalsAdmin	{visibility:hidden;}
-.vReadableCalendar								{display:table; width:100%;}/*idem .menuLine*/
-.vReadableCalendar>div							{display:table-cell; vertical-align:middle;}
-.vReadableCalendar label						{display:block;}/*toute la ligne est clickable*/
-.vReadableCalendar>div:last-child				{width:17px;}/*contextMenu()*/
-.vReadableCalendar input, .vReadableCalendar:not(:hover) .menuContextLaunch	{display:none;}
+.vReadableCalendar								{display:table; width:100%; margin-block:2px;}/*idem .menuLine*/
+.vReadableCalendar>div							{display:table-cell; vertical-align:middle;}  /*idem .menuLine*/
+.vReadableCalendarLabel label					{display:block;}/*toute la ligne clickable*/
+.vReadableCalendarMenu							{width:0px; max-width:20px;}/*masqué par défaut*/
+.vReadableCalendarLabel input, .vReadableCalendar:not(:hover) .vReadableCalendarMenu img	{display:none;}/*.vReadableCalendarMenu : masquer uniquement l'img*/
 .ui-datepicker									{box-shadow:none; width:100%; border:0px!important;}/*surcharge*/
 .ui-datepicker thead							{display:none;}										/*Header: ligne du label des jours*/
 .ui-datepicker .ui-state-default				{padding-block:5px;}								/*surcharge*/
@@ -354,7 +354,7 @@ ready(function(){
 @media screen and (max-width:1199px){
 	#pageContent								{padding:0px!important;}/*surcharge*/
 	#readableCalsAdmin 							{visibility:visible;}
-	.vReadableCalendar>div:last-child			{display:none;}/*contextMenu()*/
+	.vReadableCalendarMenu						{display:none!important;}/*contextMenu()*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
 	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}
@@ -415,13 +415,11 @@ ready(function(){
 					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
 					<?php foreach($readableCalendars as $tmpCal){ ?>
 						<div class="vReadableCalendar">
-							<div>
-								<div class="<?= $tmpCal->isDisplayed==true?'optionSelect':'option' ?>" <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?>>
-									<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
-									<label for="boxDisplay<?= $tmpCal->typeId ?>"><?= $tmpCal->title ?></label>
-								</div>
+							<div class="vReadableCalendarLabel <?= $tmpCal->isDisplayed==true?'optionSelect':'option' ?>" <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?>>
+								<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
+								<label for="boxDisplay<?= $tmpCal->typeId ?>"><?= $tmpCal->title ?></label>
 							</div>
-							<div><?= $tmpCal->contextMenu(["burgerLauncher"=>"small-inline"]) ?></div>
+							<div class="vReadableCalendarMenu"><?= $tmpCal->contextMenu(["burgerLauncher"=>"small-inline"]) ?></div>
 						</div>
 					<?php } ?>
 					<input type="hidden" name="ctrl" value="<?= Req::$curCtrl ?>">

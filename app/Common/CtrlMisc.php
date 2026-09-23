@@ -190,12 +190,14 @@ class CtrlMisc extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionLaunchVisio()
 	{
-		$visioURL=urldecode(Req::param("visioURL"));																//Url de la visio
-		$visioURL=filter_var($visioURL,FILTER_SANITIZE_URL);														//Filtre l'url
-		if(is_object(Ctrl::$curUser))	{$visioURL.="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	//User : nom de l'user
-		if(Req::isMobileApp())			{$visioURL.="#fromMobileApp#getFile";}										//Mobile : params de controle d'URL via "main.dart" (#fromMobileApp: v4.3+ / #getFile: anciennes)
-		$vDatas["visioURL"]=$visioURL;
-		static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
+		$URL=Req::param("visioURL");																				//Url de la visio
+		if(filter_var($URL, FILTER_VALIDATE_URL)){																	//Valide l'url
+			$URL=filter_var($URL, FILTER_SANITIZE_URL);																//Filtre l'url
+			if(is_object(Ctrl::$curUser))	{$URL.="#userInfo.displayName=%22".Ctrl::$curUser->getLabel()."%22";}	//User : nom de l'user
+			if(Req::isMobileApp())			{$URL.="#fromMobileApp#getFile";}										//Mobile : params de controle d'URL via "main.dart" (#fromMobileApp: v4.3+ / #getFile: anciennes)
+			$vDatas["visioURL"]=$URL;
+			static::displayPage(Req::commonPath."VueLaunchVisio.php",$vDatas);
+		}
 	}
 
 	/********************************************************************************************************

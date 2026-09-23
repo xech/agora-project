@@ -51,7 +51,7 @@ class CtrlObject extends Ctrl
 		////	FolderSize + Notif + Redirection
 		if($datasFolderSize==true)		{File::datasFolderSize(true);}																//Update le "datasFolderSize()" en session
 		if(!empty($notDeletedObjects))	{Ctrl::notify(Txt::trad("notifDeleteFolderUncomplete").' :<br><br>'.$notDeletedObjects);}	//Notify si des objets non pas été supprimés
-		self::redir($redirUrl,true);																								//Redirection JS
+		self::redir($redirUrl,true);																								//Redirection en page principale ou depuis lightbox
 	}
 
 	/********************************************************************************************************

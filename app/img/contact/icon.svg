@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Ombre douce sous l'icône -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+
+    <!-- Dégradé bleu moderne pour la couverture -->
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#29B6F6" />
+      <stop offset="100%" stop-color="#0288D1" />
+    </linearGradient>
+
+    <!-- Dégradé pour la reliure -->
+    <linearGradient id="spineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#01579B" />
+      <stop offset="100%" stop-color="#0277BD" />
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <!-- Onglets alphabétiques à droite -->
+    <path d="M 78 12 H 88 A 6 6 0 0 1 94 18 V 82 A 6 6 0 0 1 88 88 H 78 Z" fill="#ECEFF1" />
+    
+    <!-- Séparateurs des onglets -->
+    <line x1="82" y1="31" x2="94" y2="31" stroke="#CFD8DC" stroke-width="1.5" />
+    <line x1="82" y1="50" x2="94" y2="50" stroke="#CFD8DC" stroke-width="1.5" />
+    <line x1="82" y1="69" x2="94" y2="69" stroke="#CFD8DC" stroke-width="1.5" />
+
+    <!-- Lettres sur les onglets -->
+    <text x="88" y="24" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#78909C" text-anchor="middle">A</text>
+    <text x="88" y="43" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#78909C" text-anchor="middle">B</text>
+    <text x="88" y="62" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#78909C" text-anchor="middle">C</text>
+    <text x="88" y="81" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#78909C" text-anchor="middle">D</text>
+
+    <!-- Couverture principale du carnet -->
+    <rect x="22" y="8" width="62" height="84" rx="8" ry="8" fill="url(#blueGradient)" />
+
+    <!-- Reliure à gauche -->
+    <path d="M 14 16 A 8 8 0 0 1 22 8 H 32 V 92 H 22 A 8 8 0 0 1 14 84 Z" fill="url(#spineGradient)" />
+
+    <!-- Symbole Arobase (@) épuré -->
+    <text x="53" y="59" font-family="system-ui, sans-serif" font-size="34" font-weight="500" fill="#FFFFFF" text-anchor="middle">@</text>
+  </g>
+</svg>

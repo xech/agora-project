@@ -17,20 +17,26 @@ class DbInstall
 	 ********************************************************************************************************/
 	public static function dbControl($db_host, $db_login, $db_password, $db_name)
 	{
-		//Instancie PDO
+		//// Instancie PDO
 		try{
-			//Vérif la connexion à la db
-			$objPDO=new PDO("mysql:host=".$db_host.";dbname=".$db_name.";charset=utf8;", $db_login, $db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
-			//Vérif si l'appli est déjà installée sur la db
+			//// Filtre les paramètres (sauf password, filtré par PDO)
+			$db_host =preg_replace('/[^a-zA-Z0-9._:-]/', '', $db_host);
+			$db_name =preg_replace('/[^a-zA-Z0-9_-]/', '', $db_name);
+			$db_login=preg_replace('/[^a-zA-Z0-9_-]/', '', $db_login);
+			//// Mode d'erreur = exceptions  &&  Désactive l'émulation des requêtes préparées pour empêcher les requêtes empilées
+			$pdoOptions=[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES=>false];
+			//// Créé une connexion PDO  ||  Aucune DB spécifiée : dbInstall
+			$objPDO=new PDO("mysql:host=".$db_host.";dbname=".$db_name.";charset=utf8mb4;", $db_login, $db_password, $pdoOptions);
+			//// Vérif si l'appli est déjà installée sur la db
 			$result=$objPDO->query("SHOW TABLES FROM `".$db_name."` WHERE `Tables_in_".$db_name."` LIKE 'gt_%' OR `Tables_in_".$db_name."` LIKE 'ap_%'");
 			if(count($result->fetchAll(PDO::FETCH_COLUMN,0))>0)  {return "errorDbExist";}						//Db et tables déjà créées
 		}
-		//Erreur de connexion à la bdd
+		//// Erreur de connexion à la bdd
 		catch(PDOException $exception){
 			if(preg_match("/(unknown|inconnue)/i",$exception->getMessage()))	{return "dbAbsent";}			//Bdd à créer
 			else																{return "errorDbConnection";}	//Pas de connexion à la Bdd
 		}
-		//Pas d'erreur : Db disponible
+		//// Pas d'erreur : Db disponible
 		return "dbAvailable";
 	}
 

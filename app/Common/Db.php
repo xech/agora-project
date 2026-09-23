@@ -19,16 +19,18 @@ class Db
 	 ********************************************************************************************************/
 	private static function objPDO()
 	{
-		//Instancie PDO
+		//// Instancie PDO
 		if(self::$_objPDO===null){
 			try{
-				//Créé une connexion PDO ("utf8mb4" pour les emojis)  ||  Aucune DB spécifiée : dbInstall
-				if(defined("db_name"))	{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=utf8mb4;", db_login, db_password, array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));}
+				//// Mode d'erreur = exceptions  &&  Désactive l'émulation des requêtes préparées pour empêcher les requêtes empilées
+				$pdoOptions=[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES=>false];
+				//// Créé une connexion PDO  ||  Aucune DB spécifiée : dbInstall
+				if(defined("db_name"))	{self::$_objPDO=new PDO("mysql:host=".db_host.";dbname=".db_name.";charset=utf8mb4;", db_login, db_password, $pdoOptions);}
 				else					{throw new Exception("dbInstall_dbNameUndefined");}
-				//Aucune connexion, ni d'exception : dbInstall
+				//// Aucune connexion, ni d'exception : dbInstall
 				if(!is_object(self::$_objPDO))	{throw new Exception("dbInstall_pdoIsNull");}
 			}
-			//Erreur de PDO : renvoie une exception avec install
+			//// Erreur de PDO : renvoie une exception avec install
 			catch(PDOException $exception){
 				throw new Exception("dbInstall_".$exception);
 			}
@@ -112,14 +114,14 @@ class Db
 		$value=trim((string)$value);
 		if(empty($value))  {return 'NULL';}
 		else{
-			if(stristr((string)$options,"sqlLike"))		{$value='%'.$value.'%';}								//Recherche via "LIKE" ("sqlPlugins()", etc)
+			if(stristr((string)$options,"sqlLike"))		{$value='%'.Txt::clean($value).'%';}					//Recherche via "LIKE" ("sqlPlugins()", etc)
 			if(stristr((string)$options,"inputDate"))	{$value=Txt::formatDate($value,"inputDate","dbDate");}	//Formate la date d'un datepicker
 			return self::objPDO()->quote($value);																//Résultat filtré par pdo (addslashes, quotes, etc)
 		}
 	}
 
 	/********************************************************************************************
-	 * RECUPERE UNE VALEUR GET/POST PUIS LA FORMATE DANS UNE REQUETE INSERT/UPDATE
+	 * RECUPERE UNE VALEUR GET/POST, A FORMATER POUR UNE REQUETE INSERT/UPDATE
 	 ********************************************************************************************/
 	public static function param($keyParam, $options=null)
 	{
@@ -156,7 +158,7 @@ class Db
 		$dumpPath=PATH_DATAS."BackupDatabase_".db_name.".sql";
 		//Récupère le dump via "shell_exec()"
 		if(Req::isLinux() && function_exists('shell_exec')){
-			shell_exec("mysqldump --user=".db_login." --password=".db_password." --host=".db_host." ".db_name." > ".$dumpPath);
+			shell_exec("mysqldump --user=".escapeshellarg(db_login)." --password=".escapeshellarg(db_password)." --host=".escapeshellarg(db_host)." ".escapeshellarg(db_name)." > ".escapeshellarg($dumpPath));
 		}
 		//Créé un dump
 		else{

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Ombre douce sous l'icône -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+    
+    <!-- Dégradé subtil pour le cadran rouge -->
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E53935" />
+      <stop offset="100%" stop-color="#B71C1C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Anneau extérieur blanc avec ombre -->
+  <circle cx="50" cy="50" r="45" fill="#FFFFFF" filter="url(#shadow)" />
+
+  <!-- Cadran rouge principal -->
+  <circle cx="50" cy="50" r="37" fill="url(#redGradient)" />
+
+  <!-- Repères horaires (12, 3, 6, 9 h) -->
+  <line x1="50" y1="18" x2="50" y2="23" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.9" />
+  <line x1="82" y1="50" x2="77" y2="50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.9" />
+  <line x1="50" y1="82" x2="50" y2="77" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.9" />
+  <line x1="18" y1="50" x2="23" y2="50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.9" />
+
+  <!-- Aiguille des heures (pointée vers ~04:00 ou 16:00) -->
+  <line x1="50" y1="50" x2="65" y2="61" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Aiguille des minutes (pointée vers ~01:00) -->
+  <line x1="50" y1="50" x2="62" y2="28" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Point central -->
+  <circle cx="50" cy="50" r="3" fill="#FFFFFF" />
+</svg>

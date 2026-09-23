@@ -35,7 +35,7 @@ class MdlSpace extends MdlObject
  	}
 
 	 /********************************************************************************************************
-	  * SURCHARGE : DROIT D'ÉDITION DE L'ESPACE POUR L'USER COURANT
+	  * SURCHARGE : DROIT D'ÉDITION POUR L'USER COURANT  => ADMIN D'ESPACE
 	 ********************************************************************************************************/
 	 public function editRight()
 	 {
@@ -43,7 +43,7 @@ class MdlSpace extends MdlObject
 	 }
  
 	 /********************************************************************************************************
-	  * SURCHARGE : DROIT DE SUPPRESSION DE L'ESPACE POUR L'USER COURANT
+	  * SURCHARGE : DROIT DE SUPPRESSION POUR L'USER COURANT  => ADMIN GENERAL
 	  ********************************************************************************************************/
 	 public function deleteRight()
 	 {
@@ -60,14 +60,14 @@ class MdlSpace extends MdlObject
 
 	/*********************************************************************************************************
 	 * DROIT D'ACCÈS D'UN USER À L'ESPACE
-	 * admin => 2 || user lambda ou guest => 1 || aucun accès => 0
+	 * Admin => 2  ||  User lambda (ou guest) => 1  ||  Aucun accès => 0
 	 *********************************************************************************************************/
 	public function accessRightUser($objUser)
 	{
-		if(empty($this->_usersAccessRight[$objUser->_id])){									//Init "_usersAccessRight" si pas encore en "cache"
-			if($objUser->isGeneralAdmin())	{$curRight=2;}									//Droit d'admin général (même si aucun affectation à l'espace)
-			elseif($objUser->isUser())		{$curRight=$this->userAffectation($objUser);}	//Droit d'affectation de l'user
-			else							{$curRight=$this->public;}						//Droit d'accès "guest" (espace public)
+		if(empty($this->_usersAccessRight[$objUser->_id])){									//Init le cache
+			if($objUser->isGeneralAdmin())	{$curRight=2;}									//Admin général : toujours accès admin à l'espace
+			elseif($objUser->isUser())		{$curRight=$this->userAffectation($objUser);}	//Droit en fonction de l'affectation de l'user à l'espace
+			else							{$curRight=$this->public;}						//Accès "guest" si l'espace est public
 			$this->_usersAccessRight[$objUser->_id]=(int)$curRight;							//Ajoute le droit d'accès en "cache"
 		}
 		return $this->_usersAccessRight[$objUser->_id];										//Renvoie le droit d'accès

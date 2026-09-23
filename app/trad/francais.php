@@ -22,7 +22,7 @@ class Trad extends Txt
 
 			////	Divers
 			"mainMenu"=>"Menu principal",
-			"menuOptions"=>"Menu des options",
+			"menuOptions"=>"Options",
 			"emptyFields"=>"Merci de remplir les champs du formulaire",
 			"requiredFields"=>"Merci de remplir le champ",
 			"inaccessibleElem"=>"L'élément demandé n'est pas accessible",
@@ -89,7 +89,7 @@ class Trad extends Txt
 			////	Connexion
 			"specifyLoginPassword"=>"Merci de spécifier un identifiant et un mot de passe",
 			"specifyLogin"=>"Merci de spécifier un email/identifiant (sans espaces)",
-			"mailLloginNotif"=>"Utilisez de préférence un email comme identifiant de connexion (plus sécurisé)",
+			"mailLloginNotif"=>"Utilisez de préférence un email pour sécuriser votre connexion",
 			"mailLlogin"=>"Email / Identifiant de connexion",
 			"connect"=>"Connexion",
 			"connectAuto"=>"Rester connecté",
@@ -106,7 +106,7 @@ class Trad extends Txt
 			////	Password : connexion / modification / reset
 			"password"=>"Mot de passe",
 			"passwordDisplay"=>"Afficher / masquer le mot de passe",
-			"passwordOptional"=>"Remplir ce champ uniquement si vous souhaitez changer de mot de passe",
+			"passwordOptional"=>"Complétez ce champ uniquement pour changer de mot de passe",
 			"passwordInvalid"=>"Le mot de passe doit avoir au moins 12 caractères alphanumeriques :<br> de préférence avec chiffres, lettres et caractères spéciaux",
 			"passwordModif"=>"Modifier le mot de passe",
 			"passwordTmp"=>"Mot de passe temporaire (à modifier en page de connexion)",
@@ -704,7 +704,7 @@ class Trad extends Txt
 			"USER_allUsersOnSpace"=>"Tous les utilisateurs sont affectés à l'espace",
 			"USER_userAffectConfirm"=>"Confirmer les affectations ?",
 			"USER_addExistUser"=>"Ajouter des utilisateurs existants",
-			"USER_addExistUserTitle"=>"Affecter des utilisateurs existants à l'espace",
+			"USER_addExistUserTitle"=>"Ajouter à l'espace courant des utilisateurs présents sur d'autres espaces",
 			"USER_submitSearch"=>"Rechercher",
 			// Utilisateur_edit & CO
 			"USER_langs"=>"Langue",

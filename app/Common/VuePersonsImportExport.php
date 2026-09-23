@@ -95,9 +95,9 @@ form							{text-align:center;}
 	<!--INPUTS D'EXPORT-->
 	<span id="exportBlock">
 		<select name="exportType">
+			<option value="csv">CSV</option>
 			<option value="vcard">VCARD</option>
 			<option value="ldif">LDIF</option>
-			<option value="csv">CSV</option>
 		</select>
 	</span>
 
@@ -156,7 +156,7 @@ form							{text-align:center;}
 							<option></option>
 							<?php
 							////	Parcourt chaque champ à importer
-							foreach(MdlPerson::$csvFields["fieldKeys"] as $fieldName){
+							foreach(MdlPerson::$csvFields["personFields"] as $fieldName){
 								//// Pas d'import de des groupes, ni de login/password pour les contacts
 								if($fieldName=="groups" || ($objectType=="contact" && preg_match("/(login|password)/i",$fieldName)))   {continue;}
 								//// Sélectionne le champ

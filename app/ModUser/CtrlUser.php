@@ -73,27 +73,23 @@ class CtrlUser extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionVueEditUser()
 	{
-		//Init
+		////	Récupère l'objet et controle l'accès et le Nb max  d'utilisateurs
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
-		//Nb max d'utilisateurs dépassé?
 		if($curObj->isNew() && MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
 			$sqlFields="name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang");
 			if($curObj->editAdminGeneralRight())	{$sqlFields.=", generalAdmin=".Db::param("generalAdmin");}
 			if(Ctrl::$curUser->isGeneralAdmin())	{$sqlFields.=", calendarDisabled=".Db::param("calendarDisabled");}
 			$curObj=$curObj->editRecord($sqlFields, Req::param("login"), Req::param("password"));//Ajoute login/password pour les controles standards
 			//Objet bien créé/existant : Affectations / Images / etc
-			if(MdlObject::isObject($curObj))
-			{
+			if(MdlObject::isObject($curObj)){
 				//Ajoute/Modifie/Supprime l'image
 				$curObj->setProfileImg();
 				//Affectations aux espaces
-				if(Ctrl::$curUser->isGeneralAdmin())
-				{
+				if(Ctrl::$curUser->isGeneralAdmin()){
 					//Réinit les droits
 					Db::query("DELETE FROM ap_joinSpaceUser WHERE _idUser=".$curObj->_id);
 					//Attribue les affectations
@@ -114,8 +110,7 @@ class CtrlUser extends Ctrl
 			static::lightboxRedir();
 		}
 		////	Affiche le formulaire
-		else
-		{
+		else{
 			$vDatas["curObj"]=$curObj;
 			$vDatas["spaceList"]=Db::getObjTab("space","select * from ap_space");//Espaces disponilbes
 			static::displayPage("VueEditUser.php",$vDatas);
@@ -173,42 +168,52 @@ class CtrlUser extends Ctrl
 		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
-			//// Export de users
+			//// Export d'users
 			if(Req::param("actionImportExport")=="export"){
 				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay().MdlUser::sqlSort());
 				MdlUser::exportPersons(Req::param("exportType"), Ctrl::$curSpace->getLabel(), $userList);
 			}
-			//// Import de users
+			//// Import d'users
 			elseif(Req::param("actionImportExport")=="import" && Req::isParam("personFields")){
-				$personFields=Req::param("personFields");
-				//// Créé chaque nouvel user
+				//// Init
+				$personFieldsParam=Req::param("personFields");
+				$personFieldsCsv=MdlPerson::$csvFields["personFields"];
+				//// Créé chaque user
 				foreach(Req::param("personsImport") as $personCpt){
-					$curObj=new MdlUser();
+					//// Init l'user
 					$user=[];
 					$sqlFields=null;
-					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){															//Ajoute chaque champ :
-						$fieldVal=(!empty($personFields[$personCpt][$fieldCpt]))  ?  $personFields[$personCpt][$fieldCpt]  :  null;			//Valeur du champ
-						if(empty($fieldVal) || stristr($fieldName,"generalAdmin"))  {continue;}												//Valeur vide OU champ 'generalAdmin' : on passe
-						if(!preg_match("/^(login|password)$/i",$fieldName))  {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}	//Complète la requête (sauf Login/password)
-						$user[$fieldName]=$fieldVal;																						//Retient la valeur pour le login/password/mail/firstName/Name ci-après
+					$curObj=new MdlUser();
+					//// Récupère la valeur de chaque champ de l'user
+					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){																//Ajoute chaque champ :
+						$fieldVal=(!empty($personFieldsParam[$personCpt][$fieldCpt]))  ?  $personFieldsParam[$personCpt][$fieldCpt]  :  null;	//Valeur du champ
+						if(!in_array($fieldName,$personFieldsCsv) || empty($fieldVal) || stristr($fieldName,"generalAdmin"))   {continue;}		//Verif le nom du champ + sa valeur + champ 'generalAdmin'
+						if(!preg_match("/^(login|password)$/i",$fieldName))   {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}		//Complète la requête (sauf Login/password)
+						$user[$fieldName]=$fieldVal;																							//Retient la valeur pour le login/password/mail/firstName/Name ci-après
 					}
-					if(empty($user["password"]))	{$user["password"]=Txt::defaultPassword();}												//Password par défaut
-					if(empty($user["login"])){																								//Login par défaut :
-						if(!empty($user["mail"]))	{$user["login"]=$user["mail"];}															//Login email
-						else{																												//Login prénom/nom (Ex:"Jean Durant"->"jdurant")
+					//// Password et Login par défaut
+					if(empty($user["password"]))	{$user["password"]=Txt::defaultPassword();}
+					if(empty($user["login"])){
+						if(!empty($user["mail"]))	{$user["login"]=$user["mail"];}													//Login email
+						else{																										//Login prénom/nom (Ex:"Jean Durant"->"jdurant")
 							$firstNameTmp=(!empty($user["firstName"]))  ?  substr(Txt::clean($user["firstName"],"max"),0,1)  :  "";
 							$nameTmp     =(!empty($user["name"]))  ?  substr(Txt::clean($user["name"],"max"),0,8)  :  "";
 							$user["login"]=strtolower($firstNameTmp.$nameTmp);
 						}
 					}
-					//// Enregistre  &&  Reload le nouvel utilisateur
+					//// Enregistre + Reload le nouvel user
 					$curObj=$curObj->editRecord($sqlFields, $user["login"], $user["password"]);
-					//// Options :  Notif mail  &&  Affecte si besoin l'utilisateur aux espaces spécifiés
+					//// Options
 					if(MdlObject::isObject($curObj)){
-						if(Req::isParam("notifCreaUser"))
+						if(Req::isParam("notifCreaUser"))							//Notif mail avec l'identifiant / password
 							{$curObj->createCredentialsMail($user["password"]);}
-						if(Req::isParam("spaceAffectList")){
-							foreach(Req::param("spaceAffectList") as $_idSpace)  {Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".(int)$_idSpace.", _idUser=".$curObj->_id.", accessRight=1");}
+						if(Req::isParam("spaceAffectList")){						//Affecte l'user aux espaces spécifiés
+							foreach(Req::param("spaceAffectList") as $_idSpace){
+								$objSpace=Ctrl::getObj("space",$_idSpace);
+								if($objSpace->readRight()){
+									Db::query("INSERT INTO ap_joinSpaceUser SET _idSpace=".$objSpace->_id.", _idUser=".$curObj->_id.", accessRight=1");
+								}
+							}
 						}
 					}
 				}
@@ -238,14 +243,13 @@ class CtrlUser extends Ctrl
 		//Administrateur de l'espace courant?
 		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxRedir();}
 		////	Valide l'un des deux formulaires
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			////	Recherche d'users
 			if(Req::isParam("searchFields")){
 				$sqlSearch=null;
 				foreach(Req::param("searchFields") as $fieldName=>$fieldVal){
-					if(!empty($fieldVal)){
-						$sqlSearch.=" OR ".$fieldName." LIKE ".Db::format($fieldVal,"sqlLike");
+					if(!empty($fieldVal) && in_array($fieldName,MdlUser::$searchFields)){
+						$sqlSearch.=" OR `".$fieldName."` LIKE ".Db::format($fieldVal,"sqlLike");
 						$vDatas["searchFieldsValues"][$fieldName]=$fieldVal;
 					}
 				}

@@ -61,11 +61,11 @@
 			<?php foreach(Ctrl::$notify as $tmpNotif){ ?>
 				notify("<?= Txt::trad($tmpNotif["message"]) ?>","<?= $tmpNotif["type"] ?>");
 			<?php } ?>
-			////	Affiche un objet via l'url de partage ("getUrlExternal()") : Focus le block de l'objet ("data-typeid")  +  Affiche l'objet ou le pdf/img (.typeIdTargetClick)  + Exclu du trigger les VueEdit et .menuContext
+			////	Affiche un objet via l'url de partage ("getUrlExternal") :  Sélectionne le block via "data-typeid"  + Affiche la vue (evt/task/etc) OU le fichier via .typeIdTargetClick (image/pdf/etc)
 			<?php if(Req::isParam("typeIdTarget")){ ?>
-			setTimeout(function(){
-				$("div[data-typeid='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue'], .typeIdTargetClick").not("div[onclick*='action=VueEdit'], .menuContext *").trigger("click");
-			}, 300);
+				setTimeout(function(){
+					$("div[data-typeid='<?= Req::param("typeIdTarget") ?>']").trigger("click").find("div[onclick*='action=Vue']:not([onclick*='VueEdit']), .typeIdTargetFile").trigger("click");
+				}, 500);//500ms minimum
 			<?php } ?>
 			////	Footer & Notify d'un host
 			<?php if(Req::isHost())  {Host::footerJsNotify();} ?>
@@ -96,7 +96,7 @@
 
 		<!--FOOTER EN PAGE PRINCIPALE-->
 		<?php if(isset($footerLogoUrl)){ ?>
-			<div id="pageFooterHtml"><?= Ctrl::$agora->footerHtml ?></div>
+			<div id="pageFooterHtml"><?= is_object(Ctrl::$agora) ? Ctrl::$agora->footerHtml : null ?></div>
 			<div id="pageFooterIcon"><a href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a></div>
 		<?php } ?>
 

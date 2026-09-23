@@ -3,7 +3,7 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
-VERSION 26.9.7
+VERSION 26.9.8
 --------------
 Renforcement des contrôles de réinitialisation de mot de passe via un token à usage unique
 Renforcement des contrôles d'Url passés en paramètre : ObjUrl, VisioUrl, etc
@@ -18,7 +18,13 @@ Optimisation des contrôles d'upload de fichiers et création de dossiers tmp
 Optimisation des contrôles d'accès aux fichiers joints
 Optimisation des contrôles des Array passés paramètre $_GET / $_POST
 Amélioration de l'affichage des menus contextuels en bord droit ou bas de page
+Amélioration du controle des URLs des visios
+Amélioration du controle des commandes shell_exec()
+Amélioration du controle des fonctions de redir()
+Amélioration du controle de connexion à PDO
 Correction de l'affichage des tooltips des synthèses d'agendas
+Correction de la recherche sur l'option "Ajouter des utilisateurs existants à l'espace"
+Correction du nom des pièces jointes dans les emails de notification
 -----
 Strengthening the password reset procedure using a one-time token
 Strengthening of URL controls for ObjUrl, VisioUrl, etc. parameters
@@ -33,7 +39,13 @@ Optimization of file upload checks and creation of tmp folders
 Optimization of Attached files function controls
 Optimization of $_GET / $_POST parameter arrays filtering
 Improved display of context menus at the right or bottom edge of the page
-Fixed tooltip display for calendar summaries
+Improved control over videoconference URLs
+Improved control of shell_exec() commands
+Improved control of redir() functions
+Improved connection control to PDO
+Fix for the tooltip display for calendar summaries
+Fix for the search function on the "Add existing users to the space" option
+Correction of attachment names in notification emails
 
 
 VERSION 26.8.4

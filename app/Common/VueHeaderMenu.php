@@ -8,9 +8,8 @@
 #menuMainTab								{display:table;}
 #menuMainTab>div							{display:table-cell; padding:5px;}
 #menuMainTab>div:not(:first-child)			{border-left:var(--headerMenuBorder);}/*Colonnes du menu principal*/
-.menuMainAdmin								{padding-left:40px;}
-.menuMainAdmin img							{max-width:20px; margin-right:10px;}
-.menuMainShortcut							{max-height:24px; margin-right:10px;}
+.menuMainSub								{padding-left:40px;}
+.menuMainSub img							{max-width:20px; margin-right:10px;}
 #menuMainTab .editButton					{visibility:hidden; float:right; cursor:pointer; margin-left:10px; height:20px; transform:scaleX(-1);}/*Image "edit" d'espace. "scaleX" : inverse l'image*/
 #menuMainTab .menuLine:hover .editButton	{visibility:visible;}
 #menuOmnispace								{display:table; width:100%; border-top:var(--headerMenuBorder);}
@@ -51,7 +50,7 @@
 		<!--HEADERBAR LEFT :  LOGO PRINCIPAL  +  LABEL DE L'USER  +  LABEL L'ESPACE  +  VALIDATION D'INSCRIPTION-->
 		<div id="headerBarLeft" class="menuContextLaunch" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
 			<img src="app/img/logoHeader.png" id="headerMainLogo">
-			<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRight.png"></div><?php } ?>
+			<?php if(Ctrl::$curUser->isUser()){ ?><div id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRightSmall.png"></div><?php } ?>
 			<div id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?> <img src="app/img/menuSmall.png"></div>
 			<?php if($userInscriptionValidate==true){ ?><img src="app/img/user/subscribe.png" class="pulsate" <?= Txt::tooltip("userInscriptionValidateTooltip") ?>><?php } ?>
 		</div>
@@ -151,19 +150,19 @@
 						<!--OPTIONS ADMIN D'ESPACE-->
 						<?php if(Ctrl::$curSpace->_id==$tmpSpace->_id && $tmpSpace->editRight()){ ?>
 							<!--GERER L'ESPACE-->
-							<div class="menuLine menuMainAdmin" onclick="lightboxOpen('<?= $tmpSpace->getUrl('edit') ?>')" <?= Txt::tooltip("SPACE_configInfo") ?>>
+							<div class="menuLine menuMainSub" onclick="lightboxOpen('<?= $tmpSpace->getUrl('edit') ?>')" <?= Txt::tooltip("SPACE_configInfo") ?>>
 								<img src="app/img/edit.png"><?= Txt::trad("SPACE_config") ?>
 							</div>
 							<!--USERS DE L'ESPACE-->
-							<div class="menuLine menuMainAdmin">
+							<div class="menuLine menuMainSub">
 								<a href="index.php?ctrl=user&displayUsers=space"><img src="app/img/user/iconSmall.png"><?= Txt::trad("USER_spaceUsers") ?></a>
 							</div>
 							<!--LOGS DE L'ESPACE-->
-							<div class="menuLine menuMainAdmin">
+							<div class="menuLine menuMainSub">
 								<a href="index.php?ctrl=log"><img src="app/img/log.png"><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></a>
 							</div>
 							<!--AFFICHAGE ADMIN-->
-							<div class="menuLine menuMainAdmin <?= empty($_SESSION['displayAdmin']) ? null : 'optionSelect' ?>" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>>
+							<div class="menuLine menuMainSub <?= empty($_SESSION['displayAdmin']) ? null : 'optionSelect' ?>" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>>
 								<a href="index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>"><img src="app/img/eye.png"><?= Txt::trad("HEADER_displayAdmin") ?></a>
 							</div>
 						<?php } ?>
@@ -174,16 +173,16 @@
 				<!--COLONNE 3 : SHORTCUTS-->
 				<?php if(Ctrl::$curUser->isUser() && !empty($pluginsShortcut)){ ?>
 				<div>
-					<div class="menuLine"><div class="menuIcon"><img src="app/img/shortcut.png"></div><div><?= Txt::trad("HEADER_shortcuts") ?> :</div></div>
+					<div class="menuLine">
+						<div class="menuIcon"><img src="app/img/shortcut.png"></div>
+						<div><?= Txt::trad("HEADER_shortcuts") ?> :</div>
+					</div>
 					<?php foreach($pluginsShortcut as $tmpObj){ ?>
-						<div class="menuLine" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> >
-							<div class="menuIcon"><img src="app/img/arrowRight.png"></div>
-							<div>
-								<img src="app/img/<?= $tmpObj->pluginIcon ?>" onclick="<?= $tmpObj->pluginJsIcon ?>" class="menuMainShortcut">
-								<span onclick="<?= $tmpObj->pluginJsLabel ?>"><?= Txt::reduce($tmpObj->pluginLabel,50) ?></span>
-								<?= $tmpObj->editButtom() ?>
-							</div>
-						</div>
+					<div class="menuLine menuMainSub" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> >
+						<img src="app/img/<?= $tmpObj->pluginIcon ?>" onclick="<?= $tmpObj->pluginJsIcon ?>">
+						<span onclick="<?= $tmpObj->pluginJsLabel ?>"><?= Txt::reduce($tmpObj->pluginLabel,50) ?></span>
+						<?= $tmpObj->editButtom() ?>
+					</div>
 					<?php } ?>
 				</div>
 				<?php } ?>

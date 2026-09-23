@@ -17,11 +17,11 @@ class MdlPerson extends MdlObject
 	public static $searchFields=["name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment"];
 	//Init le cache
 	private $_profileImg=null;
-	//Formats .csv  ("fieldKeys" : "nom du champ bdd agora"=>"nom du champ d'export csv")
+	//Formats .csv  ("personFields" : "nom du champ bdd agora"=>"nom du champ d'export csv")
 	public static $csvFields=[
 					"delimiter"=>";",
 					"enclosure"=>'"',
-					"fieldKeys"=>["civility","name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment","login","password","groups"]
+					"personFields"=>["civility","name","firstName","companyOrganization","function","adress","postalCode","city","country","telephone","telmobile","mail","comment","login","password","groups"]
 				];
 
 	/********************************************************************************************************
@@ -219,22 +219,22 @@ class MdlPerson extends MdlObject
 
 			////	Pas d'import du login-password-groups pour les contacts 
 			if(static::objectType=="contact"){
-				unset($csv["fieldKeys"]["login"]);
-				unset($csv["fieldKeys"]["password"]);
-				unset($csv["fieldKeys"]["groups"]);
+				unset($csv["personFields"]["login"]);
+				unset($csv["personFields"]["password"]);
+				unset($csv["personFields"]["groups"]);
 			}
 
 			//// 	Header du CSV
-			foreach($csv["fieldKeys"] as $fieldKey)
-				{$fileContent.=$csv["enclosure"].$fieldKey.$csv["enclosure"].$csv["delimiter"];}
+			foreach($csv["personFields"] as $fieldName)
+				{$fileContent.=$csv["enclosure"].$fieldName.$csv["enclosure"].$csv["delimiter"];}
 			$fileContent.="\n";
 
 			////	Ajoute chaque user/contact
 			foreach($personsList as $tmpPerson){
 				////	Propriétés de l'user/contact
-				foreach($csv["fieldKeys"] as $fieldKey){
-					if($fieldKey=="groups")  {continue;}
-					$tmpValue=$tmpPerson->$fieldKey;
+				foreach($csv["personFields"] as $fieldName){
+					if($fieldName=="groups")  {continue;}
+					$tmpValue=$tmpPerson->$fieldName;
 					if($csv["enclosure"]=='"' && !empty($tmpValue))  {$tmpValue=str_replace('"', '\"', $tmpValue);}//Echappe les doubles quotes
 					$fileContent.=(!empty($tmpValue))  ?  $csv["enclosure"].$tmpValue.$csv["enclosure"].$csv["delimiter"]  :  $csv["delimiter"];
 				}

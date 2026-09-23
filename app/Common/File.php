@@ -417,10 +417,13 @@ class File
 			////	Filtre les valeurs des parametres	
 			if(!empty($paramsEdit)){
 				foreach($paramsEdit as $paramName=>$paramValue){
-					if($paramValue===true)				{$paramValue='true';}												//booléen sans guillemet
-					elseif($paramValue===false)			{$paramValue='false';}												//idem
-					elseif($paramName=="db_password")	{$paramValue="'".addslashes(Txt::clean($paramValue,'min'))."'";}	//guillemet simple (sinon interprète "$" comme une variable)
-					else								{$paramValue='"'.Txt::clean($paramValue,'min').'"';}				//guillemet double
+					if($paramValue===true)		{$paramValue='true';}	//booléen sans quotes
+					elseif($paramValue===false)	{$paramValue='false';}	//idem
+					else{
+						if($paramName!="db_password")											//Filtre sauf si c'est un password, car peut contenir tout type de caractères (même un simple/double quote)
+							{$paramValue=preg_replace('/[^a-zA-Z0-9._:-]/', '', $paramValue);}	//Filtre les valeurs du parametre 
+						$paramValue="'".addslashes($paramValue)."'";							//Delimite par un simple quote pour pas interpréter "$" comme une variable
+					}
 					$paramsEdit[$paramName]=$paramValue;
 				}
 			}

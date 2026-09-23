@@ -393,13 +393,13 @@ abstract class Ctrl
 	{
 		$MdlClass="Mdl".ucfirst($type);												//Modèle de l'objet (ex: "MdlFileFolder")
 		if(!empty($values_id)){														//Objet existant : _id ou valeurs spécifiés
-			$id=(isset($values_id["_id"])) ? $values_id["_id"] : (int)$values_id;	//Id de l'objet
+			$id=(isset($values_id["_id"])) ? $values_id["_id"] : (int)$values_id;	//Récupère l'Id de l'objet
 			$typeId=$type."-".$id;													//typeId de l'objet (ex: "file-55")
 			if(!isset(self::$cacheObjects[$typeId]) || $updateCache==true)			//Init ou Update l'objet en cache 
 				{self::$cacheObjects[$typeId]=new $MdlClass($values_id);}
 			return self::$cacheObjects[$typeId];									//Retourne l'objet en cache
 		}
-		else  {return new $MdlClass();}												//Nouvel objet 
+		else {return new $MdlClass();}												//Retourne un nouvel objet 
 	}
 
 	/********************************************************************************************************
@@ -410,10 +410,10 @@ abstract class Ctrl
 		$typeId=(!empty($typeIdParam)) ? $typeIdParam : Req::param("typeId"); 
 		if(!empty($typeId)){
 			$typeId=explode("-",$typeId);
-			$curObj=self::getObj($typeId[0], $typeId[1] ?? null);																		//Objet existant || Nouvel objet ($typeId[1] => 0 ou null)
-			if($curObj->isNew()){																										//Nouvel objet :
-				if(!empty($typeId[1]))  			{self::redir("index.php?ctrl=".static::moduleName."&notify[]=inaccessibleElem");}	//Objet inexistant/supprimé en DB : notif d'erreur
-				if(Req::isParam("_idContainer"))	{$curObj->_idContainer=Req::param("_idContainer");}									//Ajoute "_idContainer" pour le controle d'accès via editRecord()
+			$curObj=self::getObj($typeId[0], $typeId[1] ?? null);																			//Objet existant || Nouvel objet ($typeId[1] => 0 ou null)
+			if($curObj->isNew()){																											//Nouvel objet :
+				if(!empty($typeId[1]))  			{self::redir("index.php?ctrl=".static::moduleName."&notify[]=inaccessibleElem",true);}	//Objet inexistant/supprimé en DB : notif d'erreur
+				if(Req::isParam("_idContainer"))	{$curObj->_idContainer=Req::param("_idContainer");}										//Ajoute "_idContainer" pour le controle d'accès via editRecord()
 			}
 			return $curObj;
 		}
@@ -441,18 +441,21 @@ abstract class Ctrl
 	/********************************************************************************************************
 	 * REDIRECTION VERS UNE URL
 	 ********************************************************************************************************/
-	public static function redir($URL, $redirJS=false, $externalDomain=false)
+	public static function redir(string $URL, bool $lightboxRedir=false)
 	{
-		if(!empty($URL)){
-			$parsedUrl=parse_url($URL);
-			////	Host non précisé (commence par "index.php")  ||  Host identique au host courant  ||  Redir vers un autre domaine
-			if(empty($parsedUrl['host'])  ||  strtolower($parsedUrl['host'])==strtolower($_SERVER['HTTP_HOST'])  ||  $externalDomain==true){	
-				if($externalDomain==false)  {$URL.=self::urlNotify();}										//Ajoute les notifs
-				$URL=filter_var($URL,FILTER_SANITIZE_URL);													//Nettoye l'URL
-				if($redirJS==true)	{echo '<script> window.top.location.href="'.$URL.'"; </script>';}		//Redirection JS (cf actionDelete depuis lightbox)
-				else				{header("Location: ".$URL);}											//Redirection Header
-				exit;
-			}
+		//// Controle et Init
+		if(empty($URL))  {return;}
+		$parsedUrl   = parse_url($URL);
+		$host        = strtolower($parsedUrl['host'] ?? '');
+		$currentHost = strtolower($_SERVER['HTTP_HOST'] ?? '');
+		$isSameOrigin = (empty($host) || $host===$currentHost);
+		//// Host identique (URL relative)  ||  URL validée (URL absolue)
+		if($isSameOrigin==true || filter_var($URL,FILTER_VALIDATE_URL)){
+			if($isSameOrigin==true)  {$URL.=self::urlNotify();}				//Ajoute les notifs
+			$URL=filter_var($URL,FILTER_SANITIZE_URL);						//Nettoye l'URL
+			if($lightboxRedir==false)	{header("Location: ".$URL);}																	//Redirection Header
+			else						{echo '<script> window.top.location.href="'.htmlspecialchars($URL,ENT_QUOTES).'"; </script>';}	//Redirection en page principale ou depuis lightbox (ex: actionDelete)
+			exit;
 		}
 	}
 

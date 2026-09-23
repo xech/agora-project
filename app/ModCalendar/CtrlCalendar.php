@@ -372,8 +372,8 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionMyEvents()
 	{
-		$vDatas["sortEvents"]=Req::isParam("sortEvents")  ?  Db::format("sortEvents")  :  "`dateCrea`";
-		$vDatas["myEvents"]=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY ".$vDatas["sortEvents"]." DESC");
+		$sqlSortEvents=Req::isParam("sortEvents")  ?  "`".Txt::clean(Req::param("sortEvents"),"max")."`"  :  "`dateCrea`";
+		$vDatas["myEvents"]=Db::getObjTab("calendarEvent","SELECT * FROM ap_calendarEvent WHERE _idUser=".Ctrl::$curUser->_id." ORDER BY ".$sqlSortEvents." DESC");
 		static::displayPage("VueMyEvents.php",$vDatas);
 	}
 

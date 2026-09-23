@@ -72,7 +72,7 @@ function mainTriggers()
 		tippy("[title]:not(.notooltip,[title=''])",{
 			maxWidth : 600,										//Largeur max du tooltip
 			allowHTML: true,									//active le html
-			delay: [400, 100],									//délais d'affichage / masquage
+			delay: [700, 100],									//délais d'affichage / masquage
 			theme: 'light',										//theme du tooltip
 			animation: 'shift-toward',							//mode d'affichage
 			content(reference){									//Texte du tooltip
