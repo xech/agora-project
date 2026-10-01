@@ -139,11 +139,15 @@
 				</div>
 
 				<!--COLONNE 2 : ESPACES-->
-				<?php if(Ctrl::$curUser->isUser() && count($spaceList)>=2 || Ctrl::$curUser->isSpaceAdmin()){ ?>
 				<div>
-					<?php foreach($spaceList as $tmpSpace){ ?>
+					<?php
+					foreach($spaceList as $tmpSpace){
+						$spaceLabelClass=$spaceSwitchTrad=null;
+						if($tmpSpace->isCurSpace())	{$spaceLabelClass='lineSelect';}
+						else						{$spaceSwitchTrad=Txt::trad("HEADER_spaceSwitch")."<hr>";}
+					?>
 						<!--LABEL DE L'ESPACE-->
-						<div class="menuLine <?= $tmpSpace->isCurSpace()?'lineSelect':null ?>"  <?= Txt::tooltip(Txt::trad("HEADER_spaceSwitch")."<hr>".$tmpSpace->description) ?>>
+						<div class="menuLine <?= $spaceLabelClass ?>"  <?= Txt::tooltip($spaceSwitchTrad.$tmpSpace->description) ?>>
 							<div class="menuIcon"><img src="app/img/space.png"></div>
 							<div><a href="?_idSpaceAccess=<?= $tmpSpace->_id ?>"><?= $tmpSpace->name ?></a></div>
 						</div>
@@ -168,7 +172,6 @@
 						<?php } ?>
 					<?php } ?>
 				</div>
-				<?php } ?>
 
 				<!--COLONNE 3 : SHORTCUTS-->
 				<?php if(Ctrl::$curUser->isUser() && !empty($pluginsShortcut)){ ?>

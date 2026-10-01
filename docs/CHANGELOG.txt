@@ -3,6 +3,18 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
+
+VERSION 26.10.0
+--------------
+Nouvelle option de d'authentification à deux facteurs (2FA)
+Liste des destinataires des notifications triés en fonction de l'option du paramétrage général
+Optimisation de la procédure de Backups volumineux (10 Go ou+)
+-----
+New two-factor authentication (2FA) option
+List of notification recipients sorted according to the general setting option
+Optimization of the procedure for large backups (10 GB or more)
+
+
 VERSION 26.9.8
 --------------
 Renforcement des contrôles de réinitialisation de mot de passe via un token à usage unique

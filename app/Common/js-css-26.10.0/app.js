@@ -278,8 +278,8 @@ function menuContextShow(launcher, event)
 	if(isRelativePos==true)   {posRight+=$(menuId).parent().offset().left;  posBottom+=$(menuId).parent().offset().top;}							//Ajoute si besoin la position du parent
 	let posRightPage =(window.innerWidth  + window.pageXOffset);																					//"right"  position de la page affiché
 	let posBottomPage=(window.innerHeight + window.pageYOffset);																					//"bottom" position de la page affiché
-	if(posRight > posRightPage)											{posLeft=posLeft - $(menuId).outerWidth(true) + 50;}						//Décale s'il est au bord droit de la fenêtre (avec 10px ce marge)
-	if(posBottom > posBottomPage && $("#bodyLightbox").exist()==false)	{posTop =posTop - $(menuId).outerHeight(true) + 50;}						//Décale s'il est en bas de la fenêtre (sauf si "lightboxResize()")
+	if(posRight > posRightPage)											{posLeft-=(posRight - posRightPage  + 15);}									//Décale le menu s'il est à droite de la page (tester sur un agenda "Week")
+	if(posBottom > posBottomPage && $("#bodyLightbox").exist()==false)	{posTop-=(posBottom - posBottomPage);}										//Décale le menu s'il est en bas de la page (sauf pour "lightboxResize()")
 	$(menuId).css("left",(posLeft-10)).css("top",(posTop-10)).fadeIn(200);																			//Affiche le menu (recentré de 10px)
 	$(".menuContext").not(menuId).hide();																											//Masque les autres menus
 }
@@ -382,7 +382,7 @@ function notify(curMessage, notifType)
 			text		: curMessage,
 			position	: "top-center",
 			type		: (typeof notifType!="undefined" ? notifType : "notice"),	//Type "notice" / "success" / "warning"
-			stayTime	: (curMessage.length < 100 ? 5000 : 20000)					//5 secondes d'affichage (20 si > 100 caractères)
+			stayTime	: (curMessage.length < 100 ? 8000 : 20000)					//Temps d'affichage
 		});
 	}
 }

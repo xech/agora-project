@@ -70,7 +70,7 @@ class Trad extends Txt
 			"confirmCloseForm"=>"Formular schließen ohne zu speichern?",
 			"delete"=>"Löschen",
 			"confirmDelete"=>"Löschen bestätigen?",
-			"confirmDeleteInfo"=>"Die Löschung ist endgültig.",
+			"confirmDeleteInfo"=>"Endgültig löschen",
 			"confirmDeleteNotify"=>"Die Löschung war erfolgreich",
 			"confirmDeleteSelect"=>"Endgültiges Löschen der ausgewählten Elemente bestätigen?",
 			"confirmDeleteSelectNb"=>"ausgewählte Elemente",
@@ -304,7 +304,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"Email senden",
 			"MAIL_hello"=>"Hallo",
 			"MAIL_sendBy"=>"Gesendet von",
-			"MAIL_fromTheSpace"=>"aus dem Projektraum",
+			"MAIL_fromTheSpace"=>"Zugang zum Bereich",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- erstellt von",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- geändert von",
 			"MAIL_elemAccessLink"=>"Klicken Sie hier, um in Ihrem Bereich darauf zuzugreifen",
@@ -722,6 +722,14 @@ class Trad extends Txt
 			"USER_livecounterAllUsers"=>"Meine Anwesenheit anzeigen, wenn ich angemeldet bin",
 			"USER_livecounterDisabled"=>"Meine Anwesenheit immer verbergen",
 			"USER_livecounterSomeUsers"=>"Einigen Benutzern meine Anwesenheit anzeigen",
+			//Double authentification
+			"USER_dblAuthEnabled"=>"Zwei-Faktor-Authentifizierung per Email",
+			"USER_dblAuthEnabledTooltip"=>"Zwei-Faktor-Authentifizierung per E-Mail aktivieren: Authentifizierung und Anmeldung im Bereich über einen temporären Code, der per E-Mail gesendet wird, validieren",
+			"USER_dblAuthMailSubject"=>"Authentifizierungscode",
+			"USER_dblAuthMailMessage"=>"Authentifizierungscode, der auf der Anmeldeseite einzugeben ist (10 Minuten gültig)",
+			"USER_dblAuthCodeFormTitle"=>"Authentifizierungscode <br> Gesendet an",
+			"USER_dblAuthCodeExpired"=>"Authentifizierungscode abgelaufen",
+			"USER_dblAuthCodeFalse"=>"Falscher Authentifizierungscode",
 
 			////	MOD : DASHBOARD
 			////

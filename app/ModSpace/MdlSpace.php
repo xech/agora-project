@@ -39,7 +39,7 @@ class MdlSpace extends MdlObject
 	 ********************************************************************************************************/
 	 public function editRight()
 	 {
-		 return ($this->accessRight()==2);
+		return ($this->accessRight()==2);
 	 }
  
 	 /********************************************************************************************************
@@ -170,14 +170,14 @@ class MdlSpace extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE L'ACCES A UN CONTROLEUR / MODULE
+	 * CONTROLE L'ACCES A UN MODULE / CONTROLEUR
 	 ********************************************************************************************************/
 	public function moduleEnabled($ctrlName)
 	{
-		$basicCtrl=in_array($ctrlName,["offline","misc","object","user"]);																		//Controleurs de base
-		$moduleSpaceAdmin  =(in_array($ctrlName,["log"]) && Ctrl::$curUser->isSpaceAdmin());													//Mod de l'admin d'espace
-		$moduleGeneralAdmin=(in_array($ctrlName,["agora","space"]) && Ctrl::$curUser->isGeneralAdmin());										//Mod de l'admin général
-		return ($basicCtrl==true || $moduleSpaceAdmin==true || $moduleGeneralAdmin==true || array_key_exists($ctrlName,$this->moduleList()));	//Controleur ou Module accessible depuis l'espace courant
+		$isBasicCtrl		=preg_match("/offline|misc|object|user/i",$ctrlName);																	//Controleurs de base demandé
+		$isSpaceAdminCtrl	=(Ctrl::$curUser->isSpaceAdmin() && preg_match("/log|space/i",$ctrlName));												//Mod de l'admin d'espace
+		$isGeneralAdminCtrl	=(Ctrl::$curUser->isGeneralAdmin() && preg_match("/agora/i",$ctrlName));												//Mod de l'admin général
+		return ($isBasicCtrl==true || $isSpaceAdminCtrl==true || $isGeneralAdminCtrl==true || array_key_exists($ctrlName,$this->moduleList()));		//Controleur ou Module accessible depuis l'espace courant
 	}
 
 	/********************************************************************************************************

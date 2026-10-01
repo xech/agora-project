@@ -85,7 +85,7 @@ class DbUpdate extends Db
 
 			////	ALLONGE L'EXECUTION DU SCRIPT  &&  SAUVEGARDE LA DB
 			ignore_user_abort(true);
-			Tool::setTimeLimit(300);
+			Tool::setTimeLimit(600);
 			$dumpPath=self::getDump();
 
 			////	MAJ v3.0.0
@@ -1068,8 +1068,14 @@ class DbUpdate extends Db
 				if(empty($isIndex_idFile))			{self::query("ALTER TABLE `ap_fileVersion` ADD KEY `_idFile` (`_idFile`)");}
 				//// Ajoute un token de controle "externalId" (cf. download de fichier + fichier joints en mode offline)
 				foreach(['ap_calendarEvent','ap_contact','ap_dashboardNews','ap_dashboardPoll','ap_file','ap_forumMessage','ap_forumSubject','ap_link','ap_mail','ap_task'] as $tmpTable){
-					self::fieldExist($tmpTable, "externalId", "ALTER TABLE `".$tmpTable."` ADD `externalId` VARCHAR(255) DEFAULT NULL");
+					self::fieldExist($tmpTable, "externalId", "ALTER TABLE `".$tmpTable."` ADD `externalId` varchar(255) DEFAULT NULL");
 				}
+			}
+
+			if(self::updateVersion("26.10.0"))
+			{
+				//// Option de double authentification par email
+				self::fieldExist("ap_user", "dblAuthEnabled", "ALTER TABLE `ap_user` ADD `dblAuthEnabled` TINYINT DEFAULT NULL AFTER `connectionSpace`");
 			}
 			///////////////////////		+ UPDATE DB.SQL !
 			///////////////////////

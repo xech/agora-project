@@ -406,7 +406,7 @@ class MdlObject
 
 	/********************************************************************************************************
 	 * URL D'ACCES EXTERNE POUR UN USER AUTHENTIFÉ.  EX: NOTIF MAIL
-	 * Contrôle d'accès via "userConnectionSpaceSelection()"  >  Puis redir vers l'objet via "objUrl"
+	 * Contrôle d'accès via "userAuthControl()"  >  Puis redir vers l'objet via "objUrl"
 	 ********************************************************************************************************/
 	public function getUrlExternal()
 	{

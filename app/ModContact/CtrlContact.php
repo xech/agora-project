@@ -102,10 +102,10 @@ class CtrlContact extends Ctrl
 					$curObj=new MdlContact();
 					$sqlFields="`_idContainer`=".$curContainer->_id.", ";//cf controle d'accès via "editRecord()"
 					//// Récupère la valeur de chaque champ du contact
-					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){																//Ajoute chaque champ :
-						$fieldVal=(!empty($personFieldsParam[$personCpt][$fieldCpt]))  ?  $personFieldsParam[$personCpt][$fieldCpt]  :  null;	//Valeur du champ
-						if(!in_array($fieldName,$personFieldsCsv) || empty($fieldVal))   {continue;}											//Verif le nom du champ + sa valeur
-						if(!empty($fieldVal) && !empty($fieldName))   {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}				//Complète la requête (sauf Login/password)
+					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){														//Ajoute chaque champ :
+						$fieldVal=$personFieldsParam[$personCpt][$fieldCpt]  ??  null;													//Valeur du champ
+						if(!in_array($fieldName,$personFieldsCsv) || empty($fieldVal))   {continue;}									//Verif le nom du champ + sa valeur
+						if(!empty($fieldVal) && !empty($fieldName))   {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}		//Complète la requête (sauf Login/password)
 					}
 					//// Enregistre le nouveau contact !
 					$curObj=$curObj->editRecord($sqlFields);

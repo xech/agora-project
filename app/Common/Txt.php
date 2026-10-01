@@ -27,7 +27,7 @@ class Txt
 			elseif(isset(Ctrl::$curUser) && !empty(Ctrl::$curUser->lang))					{$_SESSION["curTrad"]=Ctrl::$curUser->lang;}	//Trad de la config de l'user
 			elseif(!empty(Ctrl::$agora->lang))												{$_SESSION["curTrad"]=Ctrl::$agora->lang;}		//Trad de la config générale
 			elseif(empty($_SESSION["curTrad"])){																							//Trad du browser
-				$browserTrad=(!empty($_SERVER["HTTP_ACCEPT_LANGUAGE"]))  ?  $_SERVER["HTTP_ACCEPT_LANGUAGE"]  :  null;
+				$browserTrad=$_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? null;
 				if(preg_match("/^en/i",$browserTrad))		{$_SESSION["curTrad"]="english";}
 				elseif(preg_match("/^es/i",$browserTrad))	{$_SESSION["curTrad"]="espanol";}
 				elseif(preg_match("/^pt/i",$browserTrad))	{$_SESSION["curTrad"]="portugues";}
@@ -118,12 +118,12 @@ class Txt
 		}
 	}
 
-	/*********************************************************************************************************************
+	/********************************************************************************************************
 	 * NETTOYAGE DE TEXTE : SUPPRIME LES CARACTERES SPECIAUX ET ACCENTUES
 	 * $scope="min" 	-> parametres, fichiers Ical :				"l'été &amp; (!?)"  ->  "l'été & (!?)"
 	 * $scope="normal"	-> noms de fichier, moteur de recherche :	"l'été &amp; (!?)"  ->  "l'été _ (_)"
 	 * $scope="max"		-> login, noms en bdd :						"l'été &amp; (!?)"  ->  "lete"
-	 *********************************************************************************************************************/
+	 ********************************************************************************************************/
 	public static function clean($text, $scope="normal")
 	{
 		if(!empty($text)){
@@ -219,10 +219,12 @@ class Txt
 				</div>'.$divOption;
 	}
 
-	/***************************************************************************************************************************/
-	/*******************************************	FORMATAGE DES DATES		****************************************************/
-	/***************************************************************************************************************************/
-	
+
+	/********************************************************************************************************
+	 **********************************		FORMATAGE DES DATES		*****************************************
+	 ********************************************************************************************************/
+
+
 	/********************************************************************************************************
 	 * INIT "IntlDateFormatter" POUR FORMATER UN TIMESTAMP EN FONCTION DE LA LANG ET TIMEZONE
 	 ********************************************************************************************************/

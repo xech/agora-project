@@ -461,6 +461,7 @@ CREATE TABLE `ap_user` (
   `generalAdmin` tinyint DEFAULT NULL,
   `lang` varchar(255) DEFAULT NULL,
   `connectionSpace` varchar(255) DEFAULT NULL,
+  `dblAuthEnabled` tinyint DEFAULT NULL,
   `calendarDisabled` tinyint DEFAULT NULL,
   `dateCrea` datetime DEFAULT NULL,
   `_idUser` int DEFAULT NULL,

@@ -149,8 +149,7 @@ class MdlFile extends MdlObject
 					$imgTmp->destroy();
 					return File::imageResize($this->thumbPath(),$this->thumbPath(),250,250);
 				} catch (Exception $error){
-					Ctrl::notify($this->getLabel()." : Création de vignette non permise / Thumbnail creation not allowed");	//Les .pdf avec password renvoient un "Failed to read the file [..]"
-					//Ctrl::notify($error->getMessage());																	//Message d'erreur complet renvoyé par le serveur
+					//Ctrl::notify($this->getLabel().' : '.$error->getMessage());
 				}
 			}
 		}

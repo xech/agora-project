@@ -325,9 +325,9 @@ class MdlPerson extends MdlObject
 		return ($ldapConnect==false)  ?  false  :  $ldapConnectServer;
 	}
 
-	/***************************************************************************************************************
+	/*********************************************************************************************************************
 	 * RECUPERES DES PERSONNES DE L'ANNUAIRE LDAP  (exple de $importLdapFilter -> "(&(samaccountname=MONLOGIN)(cn=*))" )
-	 ***************************************************************************************************************/
+	 *********************************************************************************************************************/
 	public static function ldapSearch($importLoginPassword, $importLdapDn, $importLdapFilter)
 	{
 		$ldapConnect=self::ldapConnect();

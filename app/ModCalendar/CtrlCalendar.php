@@ -286,7 +286,7 @@ class CtrlCalendar extends Ctrl
 			foreach(Req::param("affectationCalendars") as $tmpId){
 				$tmpCal=Ctrl::getObj("calendar",$tmpId);																											//Récupère l'agenda
 				if(in_array($tmpCal,MdlCalendar::affectationCalendars())){																							//Verif si l'evt peut être affecté à l'agenda
-					$proposeOptionChecked=(Req::isParam("proposeOptionCalendars") && in_array($tmpId,Req::param("proposeOptionCalendars")));						//Option de proposition cochée
+					$proposeOptionChecked=(Req::isParam("proposeCalendars") && in_array($tmpId,Req::param("proposeCalendars")));						//Option de proposition cochée
 					$isConfirmed=($proposeOptionChecked==false && ($tmpCal->addContentRight() || in_array($tmpId,$alreadyConfirmedCals)));							//Verif si l'evt est confirmé
 					Db::query("INSERT INTO ap_calendarEventAffectation SET _idEvt=".$curObj->_id.", _idCal=".$tmpCal->_id.", confirmed=".Db::format($isConfirmed));	//Affectation à l'agenda
 					if($isConfirmed==false && $tmpCal->propositionNotify==true)  {$affectedUserIds=array_merge($affectedUserIds,$tmpCal->affectedUserIds(true));}	//Notif d'une proposition pour les proprios de l'agenda

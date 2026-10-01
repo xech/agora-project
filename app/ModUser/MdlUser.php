@@ -130,6 +130,22 @@ class MdlUser extends MdlPerson
 	}
 
 	/********************************************************************************************************
+	 * DOUBLE AUTHENTIFICATION PAR EMAIL ACTIVÉE
+	 ********************************************************************************************************/
+	public function dblAuthEnabled()
+	{
+		return ($this->dblAuthAvailable() && !empty($this->dblAuthEnabled));
+	}
+
+	/********************************************************************************************************
+	 * DOUBLE AUTHENTIFICATION PAR EMAIL DISPONIBLE (USER AVEC UN LOGIN MAIL)
+	 ********************************************************************************************************/
+	public function dblAuthAvailable()
+	{
+		return Txt::isMail($this->login);
+	}
+
+	/********************************************************************************************************
 	 * VERIF SI LE MESSENGER EST ACTIVÉ POUR L'USER COURANT (Cf. "actionUserEditMessenger()")
 	 ********************************************************************************************************/
 	public function messengerEnabled()
@@ -218,12 +234,13 @@ class MdlUser extends MdlPerson
 	 ********************************************************************************************************/
 	public function usersVisibles($mailFilter=false)
 	{
+		////	Cache : Récupère les users des espaces auquels on a accès
 		if($this->_usersVisibles===null){
 			$idsSql=null;
 			foreach($this->spaceList() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
-			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Db::format(Ctrl::$agora->personsSort));
+			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Ctrl::$agora->personsSort);
 		}
-		//Par défaut, on enlève l'user courant  /  "mailFilter" => garde uniquement les users avec mail (cf. notifMailUsers)
+		////	Enlève l'user courant  ||  Uniquement les users avec mail ("mailFilter")
 		$usersVisibles=$this->_usersVisibles;
 		if($mailFilter==false)  {unset($usersVisibles[Ctrl::$curUser->_id]);}
 		else{
@@ -295,9 +312,9 @@ class MdlUser extends MdlPerson
 	 ********************************************************************************************************/
 	public function createCredentialsMail($clearPassword, $hidePassword=false)
 	{
-		//Récupère l'email (login en priorité)
+		//// Récupère l'email (login en priorité)
 		$mailTo=(Txt::isMail($this->login))  ?  $this->login  :  $this->mail;
-		//Email non spécifié / Envoi du mail de reset de password
+		//// Email non spécifié / Envoi du mail de reset de password
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else{
 			$passwordLabel=($hidePassword==true)  ?  substr_replace($clearPassword,'*****',-5)  :  $clearPassword;			//Password avec les 5 derniers caractères masqués
@@ -391,7 +408,7 @@ class MdlUser extends MdlPerson
 			if(count($this->spaceList())==0)  {$spaceList=Txt::trad("USER_spaceNoAffectation");}
 			else{
 				$spaceList=Txt::trad("USER_spaceList").' : ';
-				foreach($this->spaceList() as $tmpSpace)  {$spaceList.='<br>. '.$tmpSpace->name;}
+				foreach($this->spaceList() as $tmpSpace)  {$spaceList.='<br>- '.$tmpSpace->name;}
 			}
 			$options["objOptions"][]=[
 				"separator"=>"<hr>",

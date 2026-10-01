@@ -70,7 +70,7 @@ class Trad extends Txt
 			"confirmCloseForm"=>"Você quer fechar o formulário?",
 			"delete"=>"Deletar",
 			"confirmDelete"=>"Confirmar eliminação ?",
-			"confirmDeleteInfo"=>"A exclusão é permanente",
+			"confirmDeleteInfo"=>"Eliminar permanentemente",
 			"confirmDeleteNotify"=>"A eliminação foi bem-sucedida",
 			"confirmDeleteSelect"=>"Você quer excluir permanentemente a seleção?",
 			"confirmDeleteSelectNb"=>"itens selecionados",
@@ -304,7 +304,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"Enviar email",
 			"MAIL_hello"=>"Olá",
 			"MAIL_sendBy"=>"Enviado por",
-			"MAIL_fromTheSpace"=>"Do espaço",
+			"MAIL_fromTheSpace"=>"Aceder ao espaço",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- criado por",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modificado por",
 			"MAIL_elemAccessLink"=>"Acessar o item no espaço",
@@ -722,6 +722,14 @@ class Trad extends Txt
 			"USER_livecounterAllUsers"=>"Mostrar minha presença quando estou conectado: mensagens / vídeo habilitado",
 			"USER_livecounterDisabled"=>"Esconder minha presença quando estou conectado: mensagens / vídeo desativado",
 			"USER_livecounterSomeUsers"=>"Apenas certos usuários podem me ver quando estou conectado",
+			//Double authentification
+			"USER_dblAuthEnabled"=>"Autenticação de dois fatores por email",
+			"USER_dblAuthEnabledTooltip"=>"Ativar a autenticação de dois fatores por email: validar a autenticação e o login no espaço por meio de um código temporário enviado por email",
+			"USER_dblAuthMailSubject"=>"Código de autenticação",
+			"USER_dblAuthMailMessage"=>"Código de autenticação a introduzir na página de início de sessão (válido por 10 minutos)",
+			"USER_dblAuthCodeFormTitle"=>"Código de autenticação <br> Enviado para",
+			"USER_dblAuthCodeExpired"=>"Código de autenticação expirado",
+			"USER_dblAuthCodeFalse"=>"Código de autenticação incorreto",
 
 			////	MOD : DASHBOARD
 			////	
@@ -828,7 +836,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editAdd"=>"Adicionar uma categoria de evento",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Os usuários que não desativaram seu calendário pessoal em seu perfil de usuário ainda verão o módulo Calendário na barra de menus.",
 			"CALENDAR_readableCalendars"=>"Calendários disponíveis",
-			"CALENDAR_displayAdmin" => "Exibição do Administrador: Exibe todos os agendas presentes no espaço",
+			"CALENDAR_displayAdmin"=>"Exibição do Administrador: Exibe todos os agendas presentes no espaço",
 			"CALENDAR_displayHide"=>"Exibir / Ocultar calendário",
 			"CALENDAR_printCalendars"=>"Imprimir calendários",
 			"CALENDAR_printCalendarsInfos"=>"imprimir a página no modo horizontal",

@@ -32,9 +32,9 @@ class CtrlOffline extends Ctrl
 				}
 				////	ETAPE 2 : MODIF DU PASSWORD
 				elseif(Req::isParam("passwordResetId")){
-					if($tmpUser->passwordResetIdVerif()==false)	{self::notify("passwordResetIdExpired");}	//passwordResetId expiré
-					elseif(Req::isParam("newPassword")==false)	{$vDatas["passwordResetChangeForm"]=true;}	//Formulaire du nouveau password
-					else										{$tmpUser->passwordResetRecord();}			//Enregistre le nouveau password
+					if($tmpUser->passwordResetIdVerif()==false)		{self::notify("passwordResetIdExpired");}	//passwordResetId expiré
+					elseif(Req::isParam("newPassword")==false)		{$vDatas["passwordResetChangeForm"]=true;}	//Affiche le formulaire du nouveau password
+					else											{$tmpUser->passwordResetRecord();}			//Enregistre le nouveau password
 				}
 			}
 		}
@@ -63,6 +63,8 @@ class CtrlOffline extends Ctrl
 		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}		//Login par défaut : en parametre
 		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}	//Login par défaut : en cookie
 		else									{$vDatas["defaultLogin"]=null;}
+		if(Req::isParam("dblAuthCodeForm") && !empty($_SESSION["dblAuthToken"]))					//Double Authentification
+			{$vDatas["dblAuthCodeForm"]=true;}
 		static::displayPage("VueConnection.php",$vDatas);
 	}
 
@@ -134,7 +136,7 @@ class CtrlOffline extends Ctrl
 					File::imageResize($imgPath,$objUser->pathProfileImg(),200);									//Redimensionne l'image
 				}
 				self::userAuthToken(true,$objUser->_id);														//Créé le token de connexion auto
-				echo "userConnected";																			//Retour OK
+				echo "userAuthenticated";																		//User Autentifié
 			}
 		}
 	}

@@ -19,7 +19,7 @@ abstract class Ctrl
 	public static $moduleOptions=[];			//Options du module courant
 	public static $notify=[];					//Notifications à afficher
 	public static $curTimezone=null;			//Timezone courante
-	public static $userJustConnected=false;		//Controle si l'user vient de s'identifier / connecter
+	public static $userAuthentified=false;		//L'user vient de s'authentifier
 	public static $curContainer=null;			//Conteneur courant : dossier / sujet / agenda
 	public static $curRootFolder=null;			//Dossier root du module courant
 	protected static $initCtrlFull=true;		//Initialisation complete du controleur (connexion d'user, selection d'espace, etc)
@@ -45,7 +45,7 @@ abstract class Ctrl
 			self::userAuthToken(false);
 		}
 
-		////	Parametrage général  &&  Update de BDD
+		////	Parametrage général  +  Update de BDD
 		self::$agora=new MdlAgora();
 		if(Req::isHost())  {Host::getParams();}
 		DbUpdate::lauchUpdate();
@@ -54,12 +54,12 @@ abstract class Ctrl
 		if(Req::$curAction=="default")  {static::$isMainPage=true;}
 
 		////	Init l'user et l'espace courant
-		$_idUser =(!empty($_SESSION["_idUser"]))  ? $_SESSION["_idUser"]  : null;
-		$_idSpace=(!empty($_SESSION["_idSpace"])) ? $_SESSION["_idSpace"] : null;
+		$_idUser =$_SESSION["_idUser"] ?? null;
+		$_idSpace=$_SESSION["_idSpace"] ?? null;
 		self::$curUser=self::getObj("user",$_idUser);
 		self::$curSpace=self::getObj("space",$_idSpace);
 
-		////	Header ETag pour le controle du cache des serveurs/browsers  &&  Init le fuseau horaire
+		////	Header ETag (controle du cache)  +  Fuseau horaire
 		header('ETag: "'.md5(Req::appVersion()).'"');
 		self::$curTimezone=array_search(self::$agora->timezone,Tool::$tabTimezones);
 		if(empty(self::$curTimezone))	{self::$curTimezone="Europe/Paris";}
@@ -67,10 +67,11 @@ abstract class Ctrl
 
 		////	Initialisation complète du controleur
 		if(static::$initCtrlFull==true){
-			////	Connection d'un user  &&  selection d'un espace !
-			self::userConnectionSpaceSelection();
+			////	Controle l'authentification d'un user  +  Selection d'un espace
+			self::userAuthControl();
+			self::userSpaceSelect();
 
-			////	Enregistre le cookie pour "Req::isMobileApp()"
+			////	Cookie de l'app mobile "Req::isMobileApp()"
 			if(!empty($_GET["mobileAppli"])){
 				setcookie("mobileAppli", "true", COOKIES_OPTIONS);
 				$_COOKIE["mobileAppli"]="true";
@@ -82,7 +83,7 @@ abstract class Ctrl
 				else							{self::noAccessExit();}													//- message d'erreur + fin de script
 			}
 
-			////	Affichage des utilisateurs de l'espace courant / tous les users  &&  Affichage administrateur activé/désactivé
+			////	Affichage des utilisateurs de l'espace courant / tous les users  +  Affichage administrateur activé/désactivé
 			if(empty($_SESSION["displayUsers"]))  {$_SESSION["displayUsers"]="space";}
 			if(Req::isParam("displayAdmin") && self::$curUser->isSpaceAdmin()){
 				$_SESSION["displayAdmin"]=(Req::param("displayAdmin")=="true");
@@ -109,65 +110,98 @@ abstract class Ctrl
 	}
 
 	/********************************************************************************************************
-	 * CONNECTION D'UN USER  &&  SELECTION D'UN ESPACE
+	 * AUTHENTIFICATION D'UN USER
 	 ********************************************************************************************************/
-	public static function userConnectionSpaceSelection()
+	public static function userAuthControl()
 	{
 		////	INIT
-		$userAuthentified=false;
 		$connectViaForm	=Req::isParam(["connectLogin","connectPassword"]);
+		$connectViaDblAuth=Req::isParam(["dblAuthCode","dblAuthToken","dblAuthUserId","dblAuthUserLogin"]);
 		$connectViaToken=(!empty($_COOKIE["userAuthToken"]));
 
-		////	CONNEXION D'UN USER (GUEST PAS ENCORE AUTHENTIFIÉ)
-		if(self::$curUser->isGuest() && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaToken==true)){
+		////	AUTHENTIFICATION D'UN USER (guest temporaire)
+		if(self::$curUser->isGuest() && Req::isParam("disconnect")==false && ($connectViaForm==true || $connectViaDblAuth==true || $connectViaToken==true)){
 
-			////	CONNEXION VIA FORMULAIRE
+			////	CONNEXION VIA LOGIN/PASSWORD
 			if($connectViaForm==true){
 				$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE `login`=".Db::param("connectLogin"));
-				if(!empty($tmpUser)){
+				$authUser=self::getObj("user",$tmpUser);
+				if(is_object($authUser)){
 					$connectPassword=Req::param("connectPassword");
-					$passwordVerifiedHash=password_verify($connectPassword,$tmpUser["password"]);				//Password hash OK
-					$passwordVerifiedHost=(Req::isHost() && Host::passwordVerifyHost($connectPassword));		//Password du host OK
-					if($passwordVerifiedHash==true || $passwordVerifiedHost==true)  {$userAuthentified=true;}	//Authentification OK
-					if($passwordVerifiedHash==true)																//Update le password hash : $passwordVerifiedHash uniquement !
-						{Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($connectPassword,PASSWORD_DEFAULT))." WHERE `_id`=".Db::format($tmpUser["_id"]));}
+					$passwordVerifiedHash=password_verify($connectPassword, $authUser->password);						//Password hash OK
+					$passwordVerifiedHost=(Req::isHost() && Host::passwordVerifyHost($connectPassword));				//Password du host OK
+					if($passwordVerifiedHash==true || $passwordVerifiedHost==true)  {self::$userAuthentified=true;}		//Authentification OK
+					if($passwordVerifiedHash==true)																		//Update le password hash ($passwordVerifiedHash uniquement !)
+						{Db::query("UPDATE ap_user SET `password`=".Db::format(password_hash($connectPassword,PASSWORD_DEFAULT))." WHERE `_id`=".$authUser->_id);}
 				}
 			}
-			////	CONNEXION AUTO VIA TOKEN
+			////	OU CONNEXION AUTO VIA TOKEN
 			elseif($connectViaToken==true){
 				$cookieValue=explode("@@@",$_COOKIE["userAuthToken"]);
 				$_idUser=(int)$cookieValue[0];
 				$tokenCookie=$cookieValue[1];
-				$tokenList=Db::getCol("SELECT userAuthToken FROM ap_userAuthToken WHERE _idUser=".Db::format($_idUser));	//Récupère la liste des tokens de l'user (un token pour chaque browser/mobile)
-				foreach($tokenList as $tokenHashed){																		//Parcourt chaque token pour le comparer à celui du cookie
-					if(password_verify($tokenCookie,$tokenHashed) || $tokenHashed===$tokenCookie){							//Comparaison direct du token brut pour rétro-compat (temporaire)
-						$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE _id=".Db::format($_idUser));
-						$userAuthentified=true;
+				$tokenList=Db::getCol("SELECT userAuthToken FROM ap_userAuthToken WHERE _idUser=".$_idUser);	//Récupère la liste des tokens de l'user (un token pour chaque browser/mobile)
+				foreach($tokenList as $tokenHashed){															//Parcourt chaque token pour le comparer à celui du cookie
+					if(password_verify($tokenCookie,$tokenHashed) || $tokenHashed===$tokenCookie){				//Comparaison direct du token brut pour rétro-compat (temporaire)
+						$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE _id=".$_idUser);
+						$authUser=self::getObj("user",$tmpUser);
+						self::$userAuthentified=true;
 						break;
 					}
 				}
 			}
 
-			////	USER AUTHENTIFIE
-			if($userAuthentified==true){
-				//// Recréé l'identifiant de session  &&  Charge l'user (tjs en 1er)
+			////	DOUBLE AUTHENTIFICATION -> ETAPE 1 : ENVOIE DE L'EMAIL
+			if($connectViaForm==true && self::$userAuthentified==true && $authUser->dblAuthEnabled()){
+				self::$userAuthentified=false;															//Suspend l'authentification
+				$_SESSION["dblAuthCode"]=random_int(100000,999999);										//code temporaire envoyé par email
+				$_SESSION["dblAuthCodeTime"]=time();													//Timestamp du controle de validité du code
+				$_SESSION["dblAuthToken"]=Txt::randomId();												//Token de validation du code temporaire
+				$_SESSION["dblAuthUserId"]=$authUser->_id;												//User authentifié
+				$_SESSION["dblAuthUserLogin"]=$authUser->login;											//User authentifié
+				$mailsTo=$authUser->login;																//Email de destination
+				$mailSubject=Txt::trad("USER_dblAuthMailSubject");										//Sujet du mail
+				$mailMessage=Txt::trad("MAIL_hello").', <br><br>'.										//Message contenant le code
+								Txt::trad("USER_dblAuthMailMessage").' : <br><br>'.
+								'<b style="font-size:1.5rem">'.$_SESSION["dblAuthCode"].'</b>';
+				Tool::sendMail($mailsTo, $mailSubject, $mailMessage, ["noNotify"]);						//Envoie l'email, sans notif
+				Ctrl::redir("index.php?ctrl=offline&dblAuthCodeForm=true");								//Redir en page d'accueil et affiche le formulaire
+			}
+			////	DOUBLE AUTHENTIFICATION -> ETAPE 2 : VALIDE LA DOUBLE AUTHENTIFICATION
+			elseif($connectViaDblAuth==true){
+				//// Code expiré (10 mn maximum)
+				if((time()-$_SESSION["dblAuthCodeTime"]) > 600)
+					{self::notify("USER_dblAuthCodeExpired");}
+				//// Code erroné
+				elseif(Req::param("dblAuthCode")!=$_SESSION["dblAuthCode"] || Req::param("dblAuthToken")!=$_SESSION["dblAuthToken"])
+					{self::notify("USER_dblAuthCodeFalse");}
+				//// Code validé
+				else{
+					$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE _id=".(int)Req::param("dblAuthUserId")." AND `login`=".Db::param("dblAuthUserLogin"));
+					$authUser=self::getObj("user",$tmpUser);
+					self::$userAuthentified=true;
+				}
+			}
+
+			////	VALIDE L'AUTHENTIFICATION DE L'USER
+			if(self::$userAuthentified==true){
+				//// Recréé l'identifiant de session  +  Charge l'user (tjs en 1er)
 				session_regenerate_id(true);
-				self::$curUser=self::getObj("user",(int)$tmpUser["_id"]);
-				$_SESSION=["_idUser"=>self::$curUser->_id];
-				self::$userJustConnected=true;
+				$_SESSION=["_idUser"=>$authUser->_id];
+				self::$curUser=$authUser;
 				self::addLog("connexion");
 
 				//// Update "lastconnection" / "previousconnection" (connexion courante / précédente)
-				$previousConnection=(!empty($tmpUser["lastConnection"]))  ?  $tmpUser["lastConnection"]  :  time();
-				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE `_id`=".self::$curUser->_id);
+				$previousConnection=(!empty($authUser->lastConnection))  ?  $authUser->lastConnection  :  time();
+				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE `_id`=".$authUser->_id);
 
 				//// Charge les preferences de l'user en session
-				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".self::$curUser->_id) as $tmpPref)
+				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".$authUser->_id) as $tmpPref)
 					{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
 
 				//// Reinitialise le token de connexion auto
 				if($connectViaToken==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
-					{self::userAuthToken(true,self::$curUser->_id);}
+					{self::userAuthToken(true,$authUser->_id);}
 			}
 			////	ERREUR D'AUTHENTIFICATION
 			else{
@@ -176,11 +210,17 @@ abstract class Ctrl
 			}
 		}
 
-		////	STATS DE CONNEXION DU HOST (APRES AUTHENTIFICATION & AVANT SÉLECTION D'ESPACE AVEC REDIRECTION)
-		if(Req::isHost())  {Host::connectStatsHostInfos();}
+		////	CONNEXION AU HOST (tjs en dernier)
+		if(Req::isHost())  {Host::userAuthHost();}
+	}
 
+	/********************************************************************************************************
+	 * SELECTION ET REDIRECTION VERS UN ESPACE
+	 ********************************************************************************************************/
+	public static function userSpaceSelect()
+	{
 		////	SELECTION D'UN ESPACE  (Tester switch d'espace + connexion d'user sans espace affecté + connexion de guest avec switch d'espace + accès à un objet depuis notif mail)
-		if(self::$userJustConnected==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess")))){
+		if(self::$userAuthentified==true  ||  (static::moduleName=="offline" && (self::$curUser->isUser() || Req::isParam("_idSpaceAccess")))){
 			//// Init l'espace sélectionné et les espaces disponibles
 			$idSpaceSelected=null;
 			$userSpaces=self::$curUser->spaceList();
@@ -219,7 +259,7 @@ abstract class Ctrl
 				else							{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace (notif et déconnexion)
 			}
 			//// User identifié mais affecté à aucun espace (notif et déconnexion)
-			elseif(self::$userJustConnected==true)   {self::notify("NOTIF_noAccessNoSpaceAffected");  self::redir("index.php?disconnect=1");}
+			elseif(self::$userAuthentified==true)   {self::notify("NOTIF_noAccessNoSpaceAffected");  self::redir("index.php?disconnect=1");}
 		}
 		////	USER NON IDENTIFIÉ + AUCUN ESPACE PUBLIC DISPONIBLE (notif et déconnexion)
 		elseif(empty(self::$curSpace->_id) && static::moduleName!="offline"){
@@ -227,6 +267,7 @@ abstract class Ctrl
 			self::redir("index.php?disconnect=1");
 		}
 	}
+
 
 	/********************************************************************************************************
 	 * SUPPRIME/CREE LE TOKEN DE CONNEXION AUTO
@@ -256,7 +297,7 @@ abstract class Ctrl
 			$cookieOptions=COOKIES_OPTIONS;																				//Options par défaut des Cookies
 			$cookieOptions['expires']=(time() + TIME_3MONTHS);															//Valide 3 mois max
 			setcookie("userAuthToken", $cookieValue, $cookieOptions);													//Enregistre le cookie
-			$_COOKIE["userAuthToken"]=$cookieValue;																		//Charge le token du cookie pour userConnectionSpaceSelection()
+			$_COOKIE["userAuthToken"]=$cookieValue;																		//Charge le token du cookie pour userAuthControl()
 			Db::query("DELETE FROM ap_userAuthToken WHERE _idUser=".$_idUser." AND browserId=".Db::format($browserId));	//Supprime en bdd les tokens expirés du brower
 			Db::query("INSERT INTO ap_userAuthToken SET _idUser=".$_idUser.", browserId=".Db::format($browserId).", userAuthToken=".Db::format($tokenHashed).", dateCrea=NOW()");//Enregistre le nouveau token hashé
 			Db::query("UPDATE ap_user SET passwordResetId=NULL WHERE _id=".$_idUser);									//Réinitialise le passwordResetId à chaque connexion
@@ -265,9 +306,9 @@ abstract class Ctrl
 		Db::query("DELETE FROM ap_userAuthToken WHERE UNIX_TIMESTAMP(dateCrea) < ".(time()-TIME_3MONTHS));
 	}
 
-	/**********************************************************************************************************************
+	/********************************************************************************************************
 	 * RÉCUPÈRE UNE PRÉFÉRENCE EN GET/POST OU BDD  (mode d'affichage, tri des résultats, etc)
-	 **********************************************************************************************************************/
+	 ********************************************************************************************************/
 	public static function getPref($keyParam, $suffix=null)
 	{
 		$keyBdd=(!empty($suffix))  ?  $keyParam."_".$suffix  :  $keyParam;	//Ajoute le suffixe d'un objet ou d'un type d'objet
@@ -381,9 +422,9 @@ abstract class Ctrl
 	}
 
 
-	/***************************************************************************************************************************/
-	/************************************************   BASIC METHODS   ********************************************************/
-	/***************************************************************************************************************************/
+	/********************************************************************************************************
+	 ******************************************   BASIC METHODS   *******************************************
+	 ********************************************************************************************************/
 
 
 	/********************************************************************************************************

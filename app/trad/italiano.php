@@ -70,7 +70,7 @@ class Trad extends Txt
 			"confirmCloseForm"=>"Sei sicuro di voler chiudere il modulo ?",
 			"delete"=>"Elimina",
 			"confirmDelete"=>"Confermare la cancellazione ?",
-			"confirmDeleteInfo"=>"la cancellazione è permanente",
+			"confirmDeleteInfo"=>"Elimina definitivamente",
 			"confirmDeleteNotify"=>"La cancellazionee è avvenuta con successo",
 			"confirmDeleteSelect"=>"Si desidera eliminare definitivamente la selezione?",
 			"confirmDeleteSelectNb"=>"elementi selezionati",
@@ -304,7 +304,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"Invia email",
 			"MAIL_hello"=>"Ciao",
 			"MAIL_sendBy"=>"Inviato da",
-			"MAIL_fromTheSpace"=>"dallo spazio",
+			"MAIL_fromTheSpace"=>"Accedi all'area",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- creato da",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modificato da",
 			"MAIL_elemAccessLink"=>"Accedervi dal  spazio",
@@ -722,6 +722,14 @@ class Trad extends Txt
 			"USER_livecounterAllUsers"=>"Visualizza la mia presenza quando sono connesso: messaggistica/video abilitati",
 			"USER_livecounterDisabled"=>"Nascondi la mia presenza quando sono connesso: messaggistica/video disattivati",
 			"USER_livecounterSomeUsers"=>"Solo alcuni utenti possono vedermi quando sono connesso",
+			//Double authentification
+			"USER_dblAuthEnabled"=>"Autenticazione a due fattori tramite email",
+			"USER_dblAuthEnabledTooltip"=>"Attivare l'autenticazione a due fattori tramite email: validare l'autenticazione e l'accesso allo spazio tramite un codice temporaneo inviato via email",
+			"USER_dblAuthMailSubject"=>"Codice di autenticazione",
+			"USER_dblAuthMailMessage"=>"Codice di autenticazione da inserire nella pagina di accesso (valido per 10 minuti)",
+			"USER_dblAuthCodeFormTitle"=>"Codice di autenticazione <br> Inviato a",
+			"USER_dblAuthCodeExpired"=>"Codice di autenticazione scaduto",
+			"USER_dblAuthCodeFalse"=>"Codice di autenticazione errato",
 
 			////	MOD : DASHBOARD
 			////	
@@ -828,7 +836,7 @@ class Trad extends Txt
 			"CALENDAR_CAT_editAdd"=>"Aggiungi una categoria di eventi",
 			"CALENDAR_moduleAlwaysEnabledInfo"=>"Gli utenti che non hanno disattivato il calendario personale nel loro profilo utente vedranno comunque il modulo Calendario nella barra dei menu",
 			"CALENDAR_readableCalendars"=>"Calendari disponibili",
-			"CALENDAR_displayAdmin" => "Visualizzazione Amministratore: Mostra tutte le agende presenti nello spazio",
+			"CALENDAR_displayAdmin"=>"Visualizzazione Amministratore: Mostra tutte le agende presenti nello spazio",
 			"CALENDAR_displayHide"=>"Mostra / Nascondi calendario",
 			"CALENDAR_printCalendars"=>"Stampa calendario",
 			"CALENDAR_printCalendarsInfos"=>"Stampa la pagina in modalità orizzontale",

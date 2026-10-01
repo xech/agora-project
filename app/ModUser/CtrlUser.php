@@ -80,7 +80,7 @@ class CtrlUser extends Ctrl
 		////	Valide le formulaire
 		if(Req::isParam("formValidate")){
 			//Enregistre & recharge l'objet
-			$sqlFields="name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang");
+			$sqlFields="name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang").", dblAuthEnabled=".Db::param("dblAuthEnabled");
 			if($curObj->editAdminGeneralRight())	{$sqlFields.=", generalAdmin=".Db::param("generalAdmin");}
 			if(Ctrl::$curUser->isGeneralAdmin())	{$sqlFields.=", calendarDisabled=".Db::param("calendarDisabled");}
 			$curObj=$curObj->editRecord($sqlFields, Req::param("login"), Req::param("password"));//Ajoute login/password pour les controles standards
@@ -186,7 +186,7 @@ class CtrlUser extends Ctrl
 					$curObj=new MdlUser();
 					//// Récupère la valeur de chaque champ de l'user
 					foreach(Req::param("agoraFields") as $fieldCpt=>$fieldName){																//Ajoute chaque champ :
-						$fieldVal=(!empty($personFieldsParam[$personCpt][$fieldCpt]))  ?  $personFieldsParam[$personCpt][$fieldCpt]  :  null;	//Valeur du champ
+						$fieldVal=$personFieldsParam[$personCpt][$fieldCpt]  ??  null;															//Valeur du champ
 						if(!in_array($fieldName,$personFieldsCsv) || empty($fieldVal) || stristr($fieldName,"generalAdmin"))   {continue;}		//Verif le nom du champ + sa valeur + champ 'generalAdmin'
 						if(!preg_match("/^(login|password)$/i",$fieldName))   {$sqlFields.="`".$fieldName."`=".Db::format($fieldVal).", ";}		//Complète la requête (sauf Login/password)
 						$user[$fieldName]=$fieldVal;																							//Retient la valeur pour le login/password/mail/firstName/Name ci-après

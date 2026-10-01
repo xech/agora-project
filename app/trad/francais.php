@@ -70,7 +70,7 @@ class Trad extends Txt
 			"confirmCloseForm"=>"Fermer le formulaire sans enregistrer ?",
 			"delete"=>"Supprimer",
 			"confirmDelete"=>"Confirmer la suppression ?",
-			"confirmDeleteInfo"=>"suppression permanente",
+			"confirmDeleteInfo"=>"supprimer définitivement",
 			"confirmDeleteNotify"=>"La suppression a bien été effectuée",
 			"confirmDeleteSelect"=>"Confirmer la suppression définitive des éléments sélectionnés ?",
 			"confirmDeleteSelectNb"=>"éléments sélectionnés",
@@ -304,7 +304,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"Envoyer l'email",
 			"MAIL_hello"=>"Bonjour",
 			"MAIL_sendBy"=>"Envoyé par",
-			"MAIL_fromTheSpace"=>"depuis l'espace",
+			"MAIL_fromTheSpace"=>"Accéder à l'espace",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- créé par",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modifié par",
 			"MAIL_elemAccessLink"=>"Voir sur mon espace",
@@ -575,7 +575,7 @@ class Trad extends Txt
 			"AGORA_gOAuthClientId"=>"Client ID pour la connexion via Google",
 			"AGORA_gOAuthClientIdTooltip"=>"Parametrage obligatoire pour la connexion via un compte Google :<br> https://developers.google.com/identity/protocols/oauth2",
 			"AGORA_messengerDisplay"=>"Messagerie",
-			"AGORA_personsSort"=>"Trier les utilisateurs et contacts par",
+			"AGORA_personsSort"=>"Tri par défaut des utilisateurs et contacts",
 			//SMTP
 			"AGORA_smtpLabel"=>"Connexion SMTP & sendMail",
 			"AGORA_sendmailFrom"=>"Email 'From'",
@@ -617,7 +617,7 @@ class Trad extends Txt
 			"LOG_noLogs"=>"Aucun historique",
 			"LOG_search"=>"Chercher",
 			"LOG_connexion"=>"connexion",
-			"LOG_add"=>"ajout",
+			"LOG_add"=>"creation",
 			"LOG_delete"=>"suppression",
 			"LOG_modif"=>"modification",
 
@@ -723,6 +723,14 @@ class Trad extends Txt
 			"USER_livecounterAllUsers"=>"Afficher ma présence aux autres utilisateurs quand je suis connecté",
 			"USER_livecounterDisabled"=>"Masquer ma présence aux autres utilisateurs quand je suis connecté",
 			"USER_livecounterSomeUsers"=>"Afficher ma présence pour certains utilisateurs uniquement",
+			//Double authentification
+			"USER_dblAuthEnabled"=>"Double Authentification par email",
+			"USER_dblAuthEnabledTooltip"=>"Activer la double Authentification par email : valider la connexion à l'espace via un code temporaire envoyé par email (login)",
+			"USER_dblAuthMailSubject"=>"Code d'authentification",
+			"USER_dblAuthMailMessage"=>"Voici le code d'authentification à valider en page de connexion (valide 10mn)",
+			"USER_dblAuthCodeFormTitle"=>"Code d'authentification <br><br> Envoyé à",
+			"USER_dblAuthCodeExpired"=>"Code d'authentification expiré",
+			"USER_dblAuthCodeFalse"=>"Code d'authentification erroné",
 
 			////	MOD : DASHBOARD
 			////

@@ -288,7 +288,6 @@ ready(function(){
 #pageFooterHtml, #pageFooterIcon				{display:none;}
 #pageFull										{margin-bottom:0px;}
 #pageContent									{padding-bottom:10px;}/*Surcharge*/
-#pageMenu div:is(.option,.optionSelect)			{padding:2.5px;}/*surcharge .option et .optionSelect*/
 .evtPropositionTitle, .evtProposition			{padding:7px;}
 .evtProposition hr								{margin-block:7px;}
 #readableCalendarsForm							{max-height:350px; overflow-y:auto;}
@@ -296,11 +295,11 @@ ready(function(){
 #readableCalendarsTitle>div						{display:table-cell;}
 #readableCalendarsTitle #readableCalsAdmin		{text-align:right; filter:saturate(0);}
 #readableCalendarsTitle:not(:hover) #readableCalsAdmin	{visibility:hidden;}
-.vReadableCalendar								{display:table; width:100%; margin-block:2px;}/*idem .menuLine*/
+.vReadableCalendar								{display:table; width:100%; margin-block:1.5px;}/*idem .menuLine*/
 .vReadableCalendar>div							{display:table-cell; vertical-align:middle;}  /*idem .menuLine*/
-.vReadableCalendarLabel label					{display:block;}/*toute la ligne clickable*/
+.vReadableCalendarOption label					{display:block; padding-inline:5px;}/*toute la ligne clickable : annule le margin-block de .option*/
 .vReadableCalendarMenu							{width:0px; max-width:20px;}/*masqué par défaut*/
-.vReadableCalendarLabel input, .vReadableCalendar:not(:hover) .vReadableCalendarMenu img	{display:none;}/*.vReadableCalendarMenu : masquer uniquement l'img*/
+.vReadableCalendarOption input, .vReadableCalendar:not(:hover) .vReadableCalendarMenu img	{display:none;}/*.vReadableCalendarMenu : masquer uniquement l'img*/
 .ui-datepicker									{box-shadow:none; width:100%; border:0px!important;}/*surcharge*/
 .ui-datepicker thead							{display:none;}										/*Header: ligne du label des jours*/
 .ui-datepicker .ui-state-default				{padding-block:5px;}								/*surcharge*/
@@ -415,7 +414,7 @@ ready(function(){
 					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
 					<?php foreach($readableCalendars as $tmpCal){ ?>
 						<div class="vReadableCalendar">
-							<div class="vReadableCalendarLabel <?= $tmpCal->isDisplayed==true?'optionSelect':'option' ?>" <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?>>
+							<div class="vReadableCalendarOption <?= $tmpCal->isDisplayed==true?'optionSelect':'option' ?>" <?= Txt::tooltip(Txt::trad("CALENDAR_displayHide").'<hr>'.$tmpCal->description) ?>>
 								<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
 								<label for="boxDisplay<?= $tmpCal->typeId ?>"><?= $tmpCal->title ?></label>
 							</div>

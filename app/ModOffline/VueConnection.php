@@ -114,21 +114,23 @@ ready(function(){
 	</form>
 	<?php }  ?>
 
-	<!--FORMULAIRE DE CONNEXION-->
+
 	<div class="miscContent">
-		<form action="index.php" method="post" id="connectFormSpace" class="connectForm">
+
+		<!--FORMULAIRE D'AUTHENTIFICATION-->
+		<form action="index.php" method="post" class="connectForm">
 			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" id="connectLogin" placeholder="<?= Txt::trad("mailLlogin") ?>" <?= Txt::tooltip("mailLlogin") ?>  class="isAutocomplete" required>
 			<?= Txt::inputPassword("connectPassword",true,true).Txt::submitButton("connect") ?>			<!--input password + bouton validation-->
 			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>" id="objUrlExternal">	<!--accès direct via "getUrlExternal()"-->
 			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">		<!--idem-->
 			<div class="connectOptions">
-				<!--RESTER CONNECTE & MOT DE PASSE OUBLIE-->
+				<!--Option "rememberMe"  +  Affiche le formulaire "passwordReset"-->
 				<div><input type="checkbox" name="rememberMe" value="1" id="boxRememberMe" checked>&nbsp;<label for="boxRememberMe" <?= Txt::tooltip("connectAutoTooltip") ?> ><?= Txt::trad("connectAuto") ?></label></div>
-				<div><a data-fancybox="inline" data-src="#passwordResetFormSendmail" id="passwordResetLabel"><?= Txt::trad("passwordReset") ?></a></div><!--Afficher le form ci-dessous-->
+				<div><a data-fancybox="inline" data-src="#passwordResetFormSendmail" id="passwordResetLabel"><?= Txt::trad("passwordReset") ?></a></div>
 			</div>
 		</form>
 
-		<!--RESET DU PASSWORD -> ETAPE 1 : ENVOI DE L'EMAIL-->
+		<!--RESET DU PASSWORD -> ETAPE 1 : FORMULAIRE D'ENVOI DE L'EMAIL-->
 		<form action="index.php" method="post" id="passwordResetFormSendmail" class="lightboxInline">
 			<div class="lightboxTitle"><?= Txt::trad("passwordResetYourMail") ?></div>
 			<input type="text" name="passwordResetMail" placeholder="<?= Txt::trad("mail") ?>" required>
@@ -136,9 +138,8 @@ ready(function(){
 			<?= Txt::submitButton("send",false) ?>
 		</form>
 
-		<!--RESET DU PASSWORD -> ETAPE 2 : MODIF DU PASSWORD-->
+		<!--RESET DU PASSWORD -> ETAPE 2 : FORMULAIRE DE MODIF DU PASSWORD-->
 		<?php if(!empty($passwordResetChangeForm)){ ?>
-			<div data-fancybox="inline" data-src="#passwordResetFormUpdate"><?= Txt::trad("passwordModif") ?></div>
 			<form action="index.php" method="post" id="passwordResetFormUpdate" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("passwordModif") ?></div>
 				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>				<!--input password + bouton validation-->
@@ -146,18 +147,36 @@ ready(function(){
 				<input type="hidden" name="passwordResetId" value="<?= Req::param("passwordResetId") ?>">		<!--ID de vérif-->
 				<input type="hidden" name="connectLogin" value="<?= Req::param("passwordResetMail") ?>">		<!--pour le pré-remplissage après reset-->
 			</form>
-			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#passwordResetFormUpdate"}]); }); </script>
+			<!--Affiche le formulaire-->
+			<div data-fancybox="inline" data-src="#passwordResetFormUpdate"><b><?= Txt::trad("passwordModif") ?></b></div>
+			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#passwordResetFormUpdate"}]); }); </script><!--Affiche le formulaire-->
 		<?php } ?>
 
-		<!--VALIDATION D'INVITATION : INIT DU PASSWORD-->
+		<!--DOUBLE AUTHENTIFICATION-->
+		<?php if(!empty($dblAuthCodeForm)){ ?>
+			<form action="index.php" method="post" id="dblAuthCodeForm" class="lightboxInline">
+				<div class="lightboxTitle"><?= Txt::trad("USER_dblAuthCodeFormTitle").'&nbsp; '.$_SESSION["dblAuthUserLogin"] ?></div>
+				<input type="text" name="dblAuthCode" required>
+				<input type="hidden" name="dblAuthToken" value="<?= $_SESSION["dblAuthToken"] ?>">
+				<input type="hidden" name="dblAuthUserId" value="<?= $_SESSION["dblAuthUserId"] ?>">
+				<input type="hidden" name="dblAuthUserLogin" value="<?= $_SESSION["dblAuthUserLogin"] ?>">
+				<?= Txt::submitButton("validate") ?>
+			</form>
+			<!--Affiche le formulaire-->
+			<div><a data-fancybox="inline" data-src="#dblAuthCodeForm"><b><?= Txt::trad("USER_dblAuthMailSubject") ?></b></a></div>
+			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#dblAuthCodeForm"}]); }); </script>
+		<?php } ?>
+	
+		<!--VALIDATION D'INVITATION : FORMULAIRE D'INITIALISATION DU PASSWORD-->
 		<?php if(Req::isParam("_idInvitation") && Req::isParam("newPassword")==false){ ?>
-			<div><a data-fancybox="inline" data-src="#invitationPasswordForm"><?= Txt::trad("USER_invitPassword") ?></a></div>
 			<form action="index.php" method="post" id="invitationPasswordForm" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("USER_invitPassword2") ?></div>
 				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">						<!--Affichage initial-->
 				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>">	<!--ID de vérif-->
 				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>
 			</form>
+			<!--Affiche le formulaire-->
+			<div><a data-fancybox="inline" data-src="#invitationPasswordForm"><b><?= Txt::trad("USER_invitPassword") ?></b></a></div>
 			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#invitationPasswordForm"}]); }); </script>
 		<?php } ?>
 
@@ -168,10 +187,10 @@ ready(function(){
 			<script>
 			////	Callback pour traiter l'appel à Google Oauth
 			function gOAuthResponse(response){
-				const jsonResponse=jwt_decode(response.credential);																	//Décode le JSON Web Token
-				$.ajax("index.php?action=gOAuthControl&credential="+response.credential).done(function(ajaxResult){					//Controle Ajax de la connexion de l'user
-					if(/userConnected/i.test(ajaxResult))	{redir("index.php");}													//User connecté : recharge la page courante
-					else									{notify(jsonResponse.email+" <?= Txt::trad("gOAuthUserUnknown") ?>");}	//Notif d'erreur
+				const jsonResponse=jwt_decode(response.credential);																		//Décode le JSON Web Token
+				$.ajax("index.php?action=gOAuthControl&credential="+response.credential).done(function(ajaxResult){						//Controle Ajax de la connexion de l'user
+					if(/userAuthenticated/i.test(ajaxResult))	{redir("index.php");}													//User connecté : recharge la page courante
+					else										{notify(jsonResponse.email+" <?= Txt::trad("gOAuthUserUnknown") ?>");}	//Notif d'erreur
 				});
 			}
 			</script>

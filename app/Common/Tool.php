@@ -108,8 +108,8 @@ class Tool
 			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){												//Footer du message :
 				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																									//Label de l'espace
 				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}		//Ajoute le nom du sous-espace (">> sous-espace")
-				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy")." ".Ctrl::$curUser->getLabel().", "  :  null;							//"Envoyé par boby SMITH"...
-				$message.='<br><br>'.$curUserLabel.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::curUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Depuis <a>mon-espace</a>"
+				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy").' '.Ctrl::$curUser->getLabel().'. '  :  null;							//"Envoyé par boby SMITH"
+				$message.='<br><br>'.$curUserLabel.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::curUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Espace <a>mon-espace</a>"
 			}
 			$message='<html><head><meta charset="UTF-8"></head><body>'.$message.'</body></html>';															//Ajoute les balise <html> (score des mailtesters)
 			$mail->msgHTML($message);																														//Ajoute le message HTML (avant AddEmbeddedImage)
@@ -129,7 +129,7 @@ class Tool
 						$fileSizeCpt+=filesize($tmpFile["path"]);
 						if($fileSizeCpt > File::mailMaxFilesSize)	{Ctrl::notify(Txt::trad("MAIL_maxFileSizeNotif")." (".File::mailMaxFilesSizeLabel.") : ".$tmpFile["name"]);}//Fichier trop volumineux
 						elseif(!empty($tmpFile["cid"]))				{$mail->AddEmbeddedImage($tmpFile["path"],$tmpFile["cid"]);}	//Remplace le "src" des images intégrées au message (ex: <img src="cid:attachedFile55">)
-						elseif(!empty($tmpFile["name"]))			{$mail->AddAttachment($tmpFile["path"],"document.pdf");}		//Ajoute un fichier joint classique
+						elseif(!empty($tmpFile["name"]))			{$mail->AddAttachment($tmpFile["path"],$tmpFile["name"]);}		//Ajoute un fichier joint lambda
 					}
 				}
 			}
@@ -143,7 +143,8 @@ class Tool
 				elseif(!empty($mail->ErrorInfo))	{Ctrl::notify("Email Error :<br>".Txt::clean($mail->ErrorInfo));}												//Erreurs dans l'envoi de l'email
 				elseif($sendReturn==false)			{Ctrl::notify("Email non envoyé / not sent");}																	//Mail non envoyé
 			}
-			return $sendReturn;//Tjs renvoyer
+			////	Renvoyer le résultat : cf Exception
+			return $sendReturn;
 		}
 		////	Exception PHPMailer
 		catch (Exception $error){
@@ -200,7 +201,7 @@ class Tool
 	}
 
 	/********************************************************************************************************
-	 * AUGMENTE LE TEMPS D'EXECUTION D'UN SCRIPT  (pas de safe mode)
+	 * AUGMENTE LE TEMPS D'EXECUTION DU SCRIPT ET MODIFIE LE "max_execution_time" DE PHP  (safe mode "off")
 	 ********************************************************************************************************/
 	public static function setTimeLimit($secondes)
 	{
@@ -210,9 +211,9 @@ class Tool
 	}
 
 
-	/***************************************************************************************************************************/
-	/*******************************************	SPECIFIC METHODS	********************************************************/
-	/***************************************************************************************************************************/
+	/********************************************************************************************************
+	 ************************************	SPECIFIC METHODS	********************************************
+	/********************************************************************************************************/
 
 
 	/********************************************************************************************************

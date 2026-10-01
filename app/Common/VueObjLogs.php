@@ -1,9 +1,9 @@
 <style>
-#bodyLightbox			{max-width:700px;}
+#bodyLightbox			{max-width:1000px;}
 .vLogsRow				{display:table-row;}
 .vLogsRow>div			{display:table-cell; padding:6px;}
 .vLogAction,.vLogUser	{width:120px;}
-.vLogDate				{width:140px;}
+.vLogDate				{width:200px;}
 .vLogAction img			{max-height:16px;}
 .vNoLogs				{padding:15px; text-align:center;}
 

@@ -149,26 +149,28 @@ input[name='location']				{width:400px;}
 <?= Ctrl::$curUser->isGuest() ? '.vEvtGuestHide {display:none;}' : null ?>
 
 /*PÉRIODICITÉ*/
-#periodFieldset					 	{display:none; margin-block:15px;}/*surcharge le margin-top du fieldset*/
-#periodFieldset>div					{margin-bottom:20px; line-height:30px;}/*blocks principaux*/
-.vPeriodCheckboxDays				{display:inline-block; width:13%;}
-.vPeriodCheckboxMonths				{display:inline-block; width:15%;}
-.vPeriodDateExceptionsInput			{display:inline-block; margin:0px 10px;}
+#periodFieldset									 	{display:none; margin-block:15px;}/*surcharge le margin-top du fieldset*/
+#periodFieldset>div									{margin-bottom:20px; line-height:30px;}/*blocks principaux*/
+.vPeriodCheckboxDays								{display:inline-block; width:13%;}
+.vPeriodCheckboxMonths								{display:inline-block; width:15%;}
+.vPeriodDateExceptionsInput							{display:inline-block; margin:0px 10px;}
 .vPeriodDateExceptionsInput:has(input[value=''])	{display:none;}
 
 /*VISIOCONFERENCE*/
-#visioUrlInput						{width:250px; font-size:0.9rem;}
+#visioUrlInput													{width:250px; font-size:0.9rem;}
 <?= empty($curObj->visioUrl)?'#visioInputs':'#visioUrlAdd' ?>	{display:none;}/*masque l'input de la visio OU "Ajouter une visio"*/
 
 /*AFFECTATION AUX AGENDAS*/
-#calAffectationsOverflow								{max-height:300px; overflow-y:auto;}
-.vCalAffectation										{display:inline-table!important;}/*surcharge*/
-.vCalAffectation>div									{display:table-cell;}
-.vCalAffectation label									{display:block; line-height:22px;}
-.vCalAffectation .vCalInput								{display:none;}
-.vCalAffectation .vCalProposeOption						{width:30px; text-align:center; cursor:help;}/*curseur "?"*/
-.vCalAffectation .vCalProposeOptionQuestion				{width:20px; height:20px; background-image: url('app/img/dot.png') center no-repeat;}
-.vCalAffectation:not(.optionSelect) .vCalProposeOption	{display:none;}/*masque si l'agenda n'est pas sélectionné*/
+#calAffectationsOverflow							{max-height:140px; overflow-y:auto;}/*5 lignes d'agendas maximum*/
+.vCalAffectation									{display:inline-table!important; padding:2px;}/*surcharge .option*/
+.vCalAffectation>div								{display:table-cell;}
+.vCalAffectation label								{display:block; line-height:20px; padding-inline:3px;}
+.vCalAffectation input								{margin:0px!important;}/*Surcharge le margin-block des inputs*/
+.vCalAffectation .vCalInput							{display:none;}/*input principal, toujours hidden*/
+.vCalPropose										{width:25px; text-align:right; cursor:help;}
+.vCalPropose input									{position:relative;}/*input de proposition*/
+.vCalPropose input:not(:checked)::before			{content:"?"; color:#999; font-style:italic; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);}/*input de proposition : BG "?" centré*/
+.vCalAffectation:not(.optionSelect) .vCalPropose	{display:none;}/*masque si l'agenda n'est pas sélectionné*/
 
 /*AFFICHAGE DE "timeSlotBusy"*/
 #timeSlotBusy						{display:none;}
@@ -183,8 +185,10 @@ input[name='location']				{width:400px;}
 	.vPeriodCheckboxDays, .vPeriodCheckboxMonths	{width:33%!important;}
 	#timeSeparator									{display:none;}
 	#calAffectations legend							{padding-inline:10px;}
-	.vCalAffectation.option							{width:100%; margin-block}/*surcharge*/
-	.vCalAffectation .vCalProposeOption				{display:none;}
+	#calAffectationsOverflow						{max-height:300px;}
+	.vCalAffectation								{width:100%;}
+	.vCalAffectation label							{line-height:26px;}
+	.vCalAffectation .vCalPropose					{display:none;}
 	#timeSlotBusy table td:first-child				{min-width:100px; vertical-align:top; padding-right:20px;}
 }
 </style>
@@ -324,9 +328,8 @@ input[name='location']				{width:400px;}
 					</div>
 					<!--OPTION DE PROPOSITION-->
 					<?php if($tmpCal->proposeOption==true){ ?>
-						<div <?= Txt::tooltip("CALENDAR_proposeEvtTooltipBis") ?> class="vCalProposeOption">	
-							<input type="checkbox" name="proposeOptionCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?>>
-							<span class="vCalProposeOptionQuestion"></span>
+						<div <?= Txt::tooltip("CALENDAR_proposeEvtTooltipBis") ?> class="vCalPropose">	
+							<input type="checkbox" name="proposeCalendars[]" value="<?= $tmpCal->_id ?>" <?= $curObj->isAffectedCalendar($tmpCal,false)?'checked':null ?> >
 						</div>
 					<?php } ?>
 				</div>

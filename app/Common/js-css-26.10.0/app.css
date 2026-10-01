@@ -61,7 +61,7 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 }
 
 /********** OPTION + MENU CONTEXTUEL + MENU LATERAL DU MODULE (GAUCHE)*/
-.menuLine, .option, .optionSelect		{margin-block:1.5px; padding:4px; border-collapse:separate;}/*"separate" annule l'héritage "collapse" d'un tableau parent, pour conserver les "margin-block" (cf vWeekTable, vMonthTable..)*/
+.menuLine, .option, .optionSelect		{margin-block:1.5px; padding:3px; border-collapse:separate;}/*"separate" annule l'héritage "collapse" d'un tableau parent, pour conserver les "margin-block" (cf vWeekTable, vMonthTable..)*/
 .menuLine								{display:table; width:100%;}
 .menuLine>div							{display:table-cell; padding-inline:4px; vertical-align:middle; text-align:left; max-width:500px;}
 .menuIcon								{width:35px; vertical-align:top!important; text-align:center!important;}
@@ -84,7 +84,7 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
-	.menuLine, .option, .optionSelect	{padding:6px 3px;}
+	.menuLine, .option, .optionSelect	{padding:5px 3px;}
 	.userInputDiv						{width:98%; max-width:98%; padding:5px;}
 }
 
@@ -163,11 +163,6 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 .circleNb							{width:22px; height:22px; line-height:22px; font-size:14px; display:inline-block; background:var(--blue-bg); border-radius:50%; color:white; text-align:center;}/*Voir aussi menu du Dashboard*/
 .menuContextUnder .circleNb			{width:15px; height:15px; line-height:15px; font-size:10px; position:relative; margin-right:-12px;}/*Nb de likes / commentaires*/
 .objContent:not(:hover) .menuContextUnder .hide, .objSelectCheckbox, .circleNb:empty	{display:none;}/*Masque les .menuContextUnder (par défaut)  && l'input hidden de sélection/désélection d'objet*/
-
-/*** RESPONSIVE SMARTPHONE*/
-@media screen and (max-width:499px){
-	.objContent .menuContextUnder {display:none;}
-}
 
 
 /********** MENU "PATH" DES OBJETS (DOSSIER, FORUM, DASHBOARD)*/
@@ -251,7 +246,7 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 .objField>div															{display:table-cell; width:50%; padding:5px; vertical-align:top;}
 .objField>div:not(:has(input[type=text],input[type=password],textarea))	{line-height:30px;}/*aligne les labels et input checkbox/radio avec le min-height des inputs text*/
 .objField>div img.personImg												{max-width:250px; max-height:150px;}
-.objField>div img														{max-width:30px; margin-right:8px;}
+.objField>div img														{max-width:22px; margin-right:8px;}
 .objField>div input[type=checkbox]										{margin-right:10px;}
 .objField>div *:is(input[type=text],input[type=password],textarea)		{width:100%!important;}
 

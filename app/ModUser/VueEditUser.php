@@ -67,7 +67,7 @@ function mainFormControl(){
 	<!--ESPACE DE CONNEXION-->
 	<?php if(count($curObj->spaceList())>0){ ?>
 	<div class="objField">
-		<div><img src="app/img/user/connection.png"><?= Txt::trad("USER_connectionSpace") ?></div>
+		<div><img src="app/img/space.png"><?= Txt::trad("USER_connectionSpace") ?></div>
 		<div><select name="connectionSpace" id="connectionSpace"><?php foreach($curObj->spaceList() as $tmpSpace)  {echo "<option value='".$tmpSpace->_id."' ".($tmpSpace->_id==$curObj->connectionSpace?'selected':null).">".$tmpSpace->name."</option>";} ?></select></div>
 	</div>
 	<?php } ?>
@@ -78,6 +78,14 @@ function mainFormControl(){
 		<div><?= MdlUser::selectTrad("user",$curObj->lang) ?></div>
 	</div>
 
+	<!--DOUBLE AUTHENTIFICATION-->
+	<?php if($curObj->dblAuthAvailable()){ ?>
+	<div class="objField" <?= Txt::tooltip("USER_dblAuthEnabledTooltip") ?>>
+		<div><label for="dblAuthEnabled"><img src="app/img/keys.png"> <?= Txt::trad("USER_dblAuthEnabled") ?></label></div>
+		<div><input type="checkbox" name="dblAuthEnabled" id="dblAuthEnabled" value="1" <?= !empty($curObj->dblAuthEnabled)?'checked':null ?> ></div>
+	</div>
+	<?php } ?>
+
 	<!--NOTIF MAIL DE CREATION D'USER-->
 	<?php if(empty($curObj->_id) && Tool::mailEnabled()){ ?>
 	<div class="objField">
@@ -86,11 +94,11 @@ function mainFormControl(){
 	</div>
 	<?php } ?>
 
-	<!--AGENDA PERSO DESACTIVE-->
+	<!--AGENDA PERSO DESACTIVE (ADMIN GENERAL)-->
 	<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 	<div class="objField" <?= Txt::tooltip("USER_persoCalendarDisabledTooltip") ?>>
 		<div><label for="calendarDisabled"><img src="app/img/calendar/iconSmall.png"> <?= Txt::trad("USER_persoCalendarDisabled") ?></label></div>
-		<div><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= (!empty($curObj->calendarDisabled))?'checked':null ?> ></div>
+		<div><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= !empty($curObj->calendarDisabled)?'checked':null ?> ></div>
 	</div>
 	<?php } ?>
 
@@ -104,7 +112,7 @@ function mainFormControl(){
 
 	<hr><!--SEPARATE-->
 
-	<!--USER <=> SPACES-->
+	<!--USER <=> SPACES (ADMIN GENERAL)-->
 	<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 	<fieldset>
 		<legend><?= Txt::trad("USER_spaceList") ?></legend>

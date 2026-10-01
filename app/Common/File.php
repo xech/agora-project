@@ -127,7 +127,8 @@ class File
 		////	Fichier généré à la volée ($fileContent) OU Fichier dans le dossier DATAS
 		if(!empty($fileContent) || is_file($filePath)){
 			////	Augmente le temps d'execution
-			Tool::setTimeLimit(300);
+			ignore_user_abort(true);
+			Tool::setTimeLimit(1800);
 			////	Headers
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
@@ -347,7 +348,7 @@ class File
 	{
 		if(!empty($fileList)){
 			//Augmente le temps d'execution
-			Tool::setTimeLimit(800);
+			Tool::setTimeLimit(1800);
 			//Création de l'archive
 			$archiveTmpPath=tempnam(self::getTempDir(),"archive".uniqid()).".zip";
 			$zip=new ZipArchive();
@@ -373,11 +374,11 @@ class File
 	 **********************************************************************************************************************************/
 	public static function archiveSizeControl($archiveSize)
 	{
-		$limitSize=(self::sizeGo*10);	//10Go max en heure de pointe
-		$disabledBegin=9;				//debut plage horaire limitée
-		$disabledEnd  =18;				//fin   plage horaire limitée
+		$limitSize=(self::sizeGo*10);	//Concerne les archives > 10 Go
+		$disabledBegin=9;				//debut de plage horaire limitée (:00)
+		$disabledEnd  =17;				//fin   de plage horaire limitée (:00)
 		if(date("G") >= $disabledBegin  &&  date("G") < $disabledEnd  &&  (int)$archiveSize > (int)$limitSize){
-			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert")).' '.($disabledEnd+1).'H';
+			$alertLabel=str_replace("--ARCHIVE_SIZE--", self::sizeLabel($archiveSize), Txt::trad("downloadAlert")).' '.$disabledEnd.'H';
 			Ctrl::notify($alertLabel, "error");
 			Ctrl::redir("index.php?ctrl=".Req::$curCtrl);//Redirige en page principale du module
 		}

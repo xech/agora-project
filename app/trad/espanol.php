@@ -70,7 +70,7 @@ class Trad extends Txt
 			"confirmCloseForm"=>"¿ Cerrar el formulario sin guardar ?",
 			"delete"=>"Eliminar",
 			"confirmDelete"=>"¿ Confirmar eliminación ?",
-			"confirmDeleteInfo"=>"La eliminación es permanente",
+			"confirmDeleteInfo"=>"Eliminar definitivamente",
 			"confirmDeleteNotify"=>"La eliminación fue exitosa",
 			"confirmDeleteSelect"=>"¿ Desea eliminar estos elementos permanentemente ?",
 			"confirmDeleteSelectNb"=>"elementos seleccionados",
@@ -304,7 +304,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"Enviar email",
 			"MAIL_hello"=>"Hola",
 			"MAIL_sendBy"=>"Enviado por",
-			"MAIL_fromTheSpace"=>"desde el espacio",
+			"MAIL_fromTheSpace"=>"Acceder al espacio",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- creado por",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modificado por",
 			"MAIL_elemAccessLink"=>"Ver en mi espacio",
@@ -722,6 +722,14 @@ class Trad extends Txt
 			"USER_livecounterAllUsers"=>"Mostrar mi presencia cuando estoy conectado: mensajería / video habilitado",
 			"USER_livecounterDisabled"=>"Ocultar mi presencia cuando estoy conectado: mensajería / video desactivado",
 			"USER_livecounterSomeUsers"=>"Solo ciertos usuarios pueden verme cuando estoy conectado",
+			//Double authentification
+			"USER_dblAuthEnabled"=>"Autenticación de dos factores por email",
+			"USER_dblAuthEnabledTooltip"=>"Activar la autenticación de dos factores por correo electrónico: validar la autenticación y el inicio de sesión en el espacio mediante un código temporal enviado por correo electrónico",
+			"USER_dblAuthMailSubject"=>"Código de autenticación",
+			"USER_dblAuthMailMessage"=>"Código de autenticación a introducir en la página de inicio de sesión (válido durante 10 minutos)",
+			"USER_dblAuthCodeFormTitle"=>"Código de autenticación <br> Enviado a",
+			"USER_dblAuthCodeExpired"=>"Código de autenticación caducado",
+			"USER_dblAuthCodeFalse"=>"Código de autenticación incorrecto",
 
 			////	MOD : DASHBOARD
 			////	

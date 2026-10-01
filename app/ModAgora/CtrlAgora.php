@@ -22,8 +22,7 @@ class CtrlAgora extends Ctrl
 		////	Controle d'accès
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Req::isParam("formValidate")){
 			////	Update le parametrage
 			Db::query("UPDATE ap_agora SET 
 				`name`=".Db::param("name").",
@@ -60,8 +59,7 @@ class CtrlAgora extends Ctrl
 				ldap_admin_pass=".Db::param("ldap_admin_pass").",
 				ldap_base_dn=".Db::param("ldap_base_dn"));
 			////	Ajoute un Wallpaper
-			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"]))
-			{
+			if(isset($_FILES["wallpaperFile"]) && File::isType("imageResize",$_FILES["wallpaperFile"]["name"])){
 				$wallpaperName=Txt::clean($_FILES["wallpaperFile"]["name"],"max");
 				$wallpaperName=str_replace(".".File::extension($wallpaperName), ".jpg", $wallpaperName);
 				$wallpaperPath=PATH_WALLPAPER_CUSTOM.$wallpaperName;
@@ -126,10 +124,11 @@ class CtrlAgora extends Ctrl
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
 		$dumpPath=Db::getDump();
 		////	Sauvegarde de tout
-		if(Req::param("typeBackup")=="all")
-		{
-			File::archiveSizeControl(File::datasFolderSize(true));//Controle la taille de l'archive
-			ini_set('max_execution_time','600');//10mn max
+		if(Req::param("typeBackup")=="all"){
+			//// Controle la taille de l'archive
+			File::archiveSizeControl(File::datasFolderSize(true));
+			//// Augmente le temps d'execution
+			Tool::setTimeLimit(1800);
 			$archiveName="BackupAgora_".date('Y-m-d');
 			//// Sauvegarde via "shell_exec()"
 			if(Req::isLinux() && function_exists('shell_exec')){

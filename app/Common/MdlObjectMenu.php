@@ -24,10 +24,10 @@ trait MdlObjectMenu
 		return $prefix.$this->objUniqId;							//Retourne l'id avec un prefix : "objContent", "objMenu", "objCheckbox", "objAttachment", etc
 	}
 
-	/*******************************************************************************************************************************
+	/********************************************************************************************************
 	 * DIV PRINCIPAL DE L'OBJET (.objContent)  +  MENU CONTEXTUEL
 	 * objMenu 	: id du menu contextuel via click droit et "menuContext()"
-	 *******************************************************************************************************************************/
+	 ********************************************************************************************************/
 	public function objContentDiv($classes=null, $menuOptions=null)
 	{
 		////	Classe principale  + Classes en paramètre  + classe si sélectionnables

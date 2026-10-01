@@ -192,7 +192,7 @@ class CtrlFile extends Ctrl
 		if(Req::isParam("formValidate")){
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	AUGMENTE LE TEMPS D'EXECUTION
-			Tool::setTimeLimit(800);
+			Tool::setTimeLimit(600);
 			////	FICHIERS ENVOYÉS VIA "PLUPLOAD" (mêmes propriétés que $_FILES)  &&  VÉRIF LE NOM ALPHANUMÉRIQUE DU DOSSIER TMP
 			if(Req::param("uploadForm")=="uploadMultiple" && Req::isParam("tmpFolderName") && preg_match("/^[a-z0-9]+$/i",Req::param("tmpFolderName"))){
 				$tmpFolderPath=File::getTempDir().'/'.Req::param("tmpFolderName").'/';
@@ -265,8 +265,10 @@ class CtrlFile extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionUploadTmpFile()
 	{
-		////	Vérif la présence de fichiers uploadés  &&  Vérif le nom alphanumérique du dossier tmp
+		////	Vérif la présence de fichiers uploadés  &&  Vérif le nom du dossier tmp
 		if(!empty($_FILES) && Req::isParam("tmpFolderName") && preg_match("/^[a-z0-9]+$/i",Req::param("tmpFolderName"))){
+			////	Augmente le temps d'execution
+			Tool::setTimeLimit(600);
 			////	Init/Crée le dossier temporaire
 			$tmpFolderPath=File::getTempDir().'/'.Req::param("tmpFolderName").'/';
 			if(!file_exists($tmpFolderPath))  {mkdir($tmpFolderPath);}

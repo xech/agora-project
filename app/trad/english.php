@@ -70,7 +70,7 @@ class Trad extends Txt
 			"confirmCloseForm"=>"Close the form without saving ?",
 			"delete"=>"Delete",
 			"confirmDelete"=>"Confirm deletion ?",
-			"confirmDeleteInfo"=>"the deletion is permanent",
+			"confirmDeleteInfo"=>"Delete permanently",
 			"confirmDeleteNotify"=>"The deletion was successful",
 			"confirmDeleteSelect"=>"Do you want to permanently delete the selection ?",
 			"confirmDeleteSelectNb"=>"items selected",
@@ -304,7 +304,7 @@ class Trad extends Txt
 			"MAIL_sendMail"=>"Send email",
 			"MAIL_hello"=>"Hello",
 			"MAIL_sendBy"=>"Sent by",
-			"MAIL_fromTheSpace"=>"from the space",
+			"MAIL_fromTheSpace"=>"Access the space",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- created by",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modified by",
 			"MAIL_elemAccessLink"=>"Display on my space",
@@ -722,6 +722,14 @@ class Trad extends Txt
 			"USER_livecounterAllUsers"=>"Show my presence to other users when I'm logged in",
 			"USER_livecounterDisabled"=>"Hide my presence to other users when I'm logged in",
 			"USER_livecounterSomeUsers"=>"Show my presence to certain users",
+			//Double authentification
+			"USER_dblAuthEnabled"=>"Email Two-Factor Authentication",
+			"USER_dblAuthEnabledTooltip"=>"Enable Two-Factor Authentication via email: validate authentication and login using a temporary code sent by email",
+			"USER_dblAuthMailSubject"=>"Authentication code",
+			"USER_dblAuthMailMessage"=>"Authentication code to enter on the login page (valid for 10 minutes)",
+			"USER_dblAuthCodeFormTitle"=>"Authentication code <br> Sent to",
+			"USER_dblAuthCodeExpired"=>"Authentication code expired",
+			"USER_dblAuthCodeFalse"=>"Incorrect authentication code",
 
 			////	MOD : DASHBOARD
 			////	
