@@ -56,8 +56,8 @@ fieldset						{margin-bottom:30px;}/*surcharge*/
 			</div>
 			<?php if(MdlObject::userCommentEditRight($tmpId)){ ?>
 				<div class="vCommentOptions">
-					<img src="app/img/edit.png" <?= Txt::tooltip("modify") ?> onclick="$('#commentValue<?= $tmpId ?>,#commentForm<?= $tmpId ?>').toggle()">
-					<img src="app/img/delete.png" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->typeId ?>&idComment=<?= $tmpId ?>&actionComment=delete')">
+					<img src="app/img/edit.svg" <?= Txt::tooltip("modify") ?> onclick="$('#commentValue<?= $tmpId ?>,#commentForm<?= $tmpId ?>').toggle()">
+					<img src="app/img/delete.svg" <?= Txt::tooltip("delete") ?> onclick="confirmDelete('?ctrl=object&action=UsersComment&typeId=<?= $curObj->typeId ?>&idComment=<?= $tmpId ?>&actionComment=delete')">
 				</div>
 			<?php } ?>
 		</div>

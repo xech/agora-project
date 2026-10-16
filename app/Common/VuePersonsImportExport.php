@@ -149,7 +149,7 @@ form							{text-align:center;}
 			<table id="importTable">
 				<!--HEADER DU TABLEAU : BOUTON DE SÉLECTION  &&  INPUTS "SELECT" DE CHAQUE CHAMP "AGORA"-->
 				<tr>
-					<th><img src="app/img/checkSelectAll.png" onclick="$('.vLineImportCheckbox').prop('checked',true);" <?= Txt::tooltip("selectAll") ?>></th>
+					<th><img src="app/img/checkAll.svg" onclick="$('.vLineImportCheckbox').prop('checked',true);" <?= Txt::tooltip("selectAll") ?>></th>
 					<?php for($fieldCpt=0; $fieldCpt < count($importFields); $fieldCpt++){ ?>
 					<th>
 						<select name="agoraFields[<?= $fieldCpt ?>]" class="vAgoraFieldSelect" data-field-cpt="<?= $fieldCpt ?>">
@@ -213,7 +213,7 @@ form							{text-align:center;}
 
 			<!--IMPORT DE CONTACTS DANS UN DOSSIER RACINE : AFFECTATION PAR DEFAUT A "TOUS LES UTILISATEURS DE L'ESPACE"-->
 			<?php if(isset($curContainer) && $curContainer->isRootFolder()){ ?>
-				<div class='vImportOptions'><img src="app/img/info.png"> <?= Txt::trad("importContactRootFolder") ?> <i><?= Ctrl::$curSpace->name ?></i></div>
+				<div class='vImportOptions'><img src="app/img/info.svg"> <?= Txt::trad("importContactRootFolder") ?> <i><?= Ctrl::$curSpace->name ?></i></div>
 			<?php } ?>
 
 	<!--TABLEAU & FORMULAIRE D'IMPORT => FIN-->

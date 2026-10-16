@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6.88mm" height="6.61mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 688 661" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+ <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
+   <rect width="688" height="661"/>
+  </clipPath></defs>
+ 
+ 
+ 
+  
+ 
+ <g class="SlideGroup" transform="matrix(1.1616 0 0 1.0315 -46.334 -10.425)">
+  
+   
+    <g class="Slide" clip-path="url(#presentation_clip_path)">
+     <g class="Page">
+      <g class="Graphic">
+       
+        <rect class="BoundingBox" x="-14" y="-60" width="729" height="785" fill="none"/><g fill="#595959">
+        
+        
+        
+        
+        <path d="m343 393c-111 0-205 68-205 148 0 103 154 103 205 103 88 0 205-11 205-103 0-80-94-148-205-148z"/>
+        <path d="m343 325h1c36 0 70-16 96-45 25-29 39-67 39-108 0-84-61-152-136-152s-136 68-136 152c0 85 61 153 136 153z"/>
+       </g>
+      </g>
+     </g>
+    </g>
+   
+  
+ </g>
+<g id="add" transform="matrix(.64245 0 0 .64245 191.09 8.6812)"><circle id="background" cx="256" cy="256" r="256" fill="#666"/><path d="m374.41 222.68h-85.09v-85.09a12.59 12.59 0 0 0-12.59-12.59h-41.46a12.59 12.59 0 0 0-12.59 12.59v85.09h-85.09a12.59 12.59 0 0 0-12.59 12.59v41.46a12.59 12.59 0 0 0 12.59 12.59h85.09v85.09a12.59 12.59 0 0 0 12.59 12.59h41.46a12.59 12.59 0 0 0 12.59-12.59v-85.09h85.09a12.59 12.59 0 0 0 12.59-12.59v-41.46a12.59 12.59 0 0 0-12.59-12.59z" fill="#fff"/></g></svg>

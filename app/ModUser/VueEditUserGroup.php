@@ -40,12 +40,12 @@ input[name='title']				{width:50%;}
 <div>
 	
 	<div class="lightboxTitle">
-		<img src="app/img/user/userGroup.png"> <?= Txt::trad("USER_spaceGroupsEditBis") ?> <span id="labelSpaceName"><?= Ctrl::$curSpace->name ?></span>
+		<img src="app/img/usersGroup.svg"> <?= Txt::trad("USER_spaceGroupsEditBis") ?> <span id="labelSpaceName"><?= Ctrl::$curSpace->name ?></span>
 		<div class="lightboxTitleDetail"><?= Txt::trad("USER_groupEditInfo") ?></div>
 	</div>
 
 	<div class="lightboxAddElem">
-		<button onclick="$('form:first-of-type').slideToggle().find('[name=title]').focusAlt()"><img src="app/img/plus.png"> <?= Txt::trad("USER_addGroup") ?></button>	
+		<button onclick="$('form:first-of-type').slideToggle().find('[name=title]').focusAlt()"><img src="app/img/add.svg"> <?= Txt::trad("USER_addGroup") ?></button>	
 	</div>
 
 	<?php
@@ -64,7 +64,7 @@ input[name='title']				{width:50%;}
 		}
 		//Affichage du formulaire
 		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
-		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.png' ".Txt::tooltip("delete")." onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
+		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.svg' ".Txt::tooltip("delete")." onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
 		echo "<form action='index.php' method='post' class='miscContent'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>

@@ -30,7 +30,7 @@ ready(function(){
 
 <div id="captchaDiv">
 	<img src="index.php?ctrl=misc&action=CaptchaImg" id="captchaImg">
-	<img src="app/img/arrowRightSmall.png" id="captchaArrow">
+	<img src="app/img/arrowRightLabel.svg" id="captchaArrow">
 	<input type="text" name="captcha" id="captchaText" placeholder="<?= Txt::trad("captcha") ?>" <?= Txt::tooltip("captchaTooltip") ?> required>
-	<img src="app/img/reload.png" title="Change captcha" onclick="$('#captchaImg').attr('src','?ctrl=misc&action=CaptchaImg&rand='+Math.random())">
+	<img src="app/img/cycle.svg" title="Change captcha" onclick="$('#captchaImg').attr('src','?ctrl=misc&action=CaptchaImg&rand='+Math.random())">
 </div>

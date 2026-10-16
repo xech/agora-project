@@ -31,7 +31,7 @@ select[name='wallpaper']		{height:120px; max-width:180px;}
 #wallpaperImg img 				{height:120px; max-width:none;}/*surcharge ".objField img"*/
 #wallpaperAdd, #wallpaperDelete	{display:none;}
 #wallpaperDelete				{font-size:0.9rem;}
-option[value='add']				{background:#800;color:white;}
+option[value='add']				{background:#800; color:white;}
 </style>
 
 
@@ -52,5 +52,5 @@ option[value='add']				{background:#800;color:white;}
 	</div>
 	<div id="wallpaperImg"><img src="<?= CtrlMisc::pathWallpaper($curWallpaper) ?>"></div>
 	<div id="wallpaperAdd"><input type="file" name="wallpaperFile" id="wallpaperFile"></div>
-	<?php if(Req::$curCtrl=="agora"){ ?><div id="wallpaperDelete" onclick="wallpaperDelete()"><img src="app/img/delete.png"><?= Txt::trad("AGORA_deleteWallpaper") ?></div><?php } ?>
+	<?php if(Req::$curCtrl=="agora"){ ?><div id="wallpaperDelete" onclick="wallpaperDelete()"><img src="app/img/delete.svg"><?= Txt::trad("AGORA_deleteWallpaper") ?></div><?php } ?>
 </div>

@@ -109,16 +109,16 @@ class Tool
 				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																									//Label de l'espace
 				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}		//Ajoute le nom du sous-espace (">> sous-espace")
 				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy").' '.Ctrl::$curUser->getLabel().'. '  :  null;							//"Envoyé par boby SMITH"
-				$message.='<br><br>'.$curUserLabel.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::curUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Espace <a>mon-espace</a>"
+				$message.='<br><br>'.$curUserLabel.'<br>'.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::curUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Espace <a>mon-espace</a>"
 			}
 			$message='<html><head><meta charset="UTF-8"></head><body>'.$message.'</body></html>';															//Ajoute les balise <html> (score des mailtesters)
 			$mail->msgHTML($message);																														//Ajoute le message HTML (avant AddEmbeddedImage)
 
 			////	Logo du footer en fin de mail : logo spécifique ou par défaut avec un "alt" (score des mailtesters)
-			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoLabel.png";
+			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logo.png";
 			if(in_array("noFooter",$options)==false && is_file($logoFooterPath)){
 				$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
-				$mail->msgHTML($message.'<br><br><img src="cid:logoFooterId" style="max-height:100px" alt="Logo Footer">');
+				$mail->msgHTML($message.'<br><img src="cid:logoFooterId" style="max-height:80px" alt="Logo Footer">');
 			}
 
 			////	Fichiers joints
@@ -286,9 +286,8 @@ class Tool
 		//Background : Couleur de progression & couleur par défaut
 		$barStyle=null;
 		if(!empty($percent)){
-			if($alertBar==true)		{$bgColor="linear-gradient(#F8D934,#F8BC34)";}	//Retard / Alert	=> orange
-			elseif($percent==100)	{$bgColor="linear-gradient(#E7FCDE,#C2F2A9)";}	//Terminé / 100%	=> vert clair
-			else					{$bgColor="linear-gradient(#C0F47D,#69BC27)";}	//Défaut / en cours	=> vert
+			if($alertBar==true)		{$bgColor="linear-gradient(#F8D934,#F8BC34)";}	//Alert				=> orange
+			else					{$bgColor="linear-gradient(#d1ff95,#81ed2b)";}	//100% / En cours	=> vert
 			$barStyle='style="background:'.$bgColor.' 0% / '.$percent.'% no-repeat,  linear-gradient(white,#DDD) '.$percent.'% / 100% no-repeat"';//Couleur de progression & Couleur par défaut
 		}
 		// Renvoie la progressBar

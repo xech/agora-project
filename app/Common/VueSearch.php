@@ -51,7 +51,7 @@ ready(function(){
 	<div id="searchMainField">
 		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>" placeholder="<?= Txt::trad("keywords") ?>">
 		<?= Txt::submitButton("search",false) ?>
-		<div id="advancedSearchLabel" class="link" onclick="$('#advancedSearchBlock').show();$('#advancedSearchInput').val(1);"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowBottom.png"></div>
+		<div id="advancedSearchLabel" class="link" onclick="$('#advancedSearchBlock').show();$('#advancedSearchInput').val(1);"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowDown.svg"></div>
 		<input type="hidden" name="advancedSearch" value="<?= Req::param("advancedSearch") ?>" id="advancedSearchInput">
 	</div>
 
@@ -110,7 +110,7 @@ if(Req::isParam("searchText")){
 	foreach($pluginsList as $tmpObj){
 		////	"dashboardNews" : label réduit avec possibilité de l'afficher entièrement
 		if($tmpObj::objectType=="dashboardNews"){
-			$tmpObj->pluginLabel='<div onclick="$(this).hide();$(\'#pluginNews'.$tmpObj->_id.'\').slideDown()">'.Txt::reduce($tmpObj->pluginLabel).' <img src="app/img/arrowBottom.png"></div>
+			$tmpObj->pluginLabel='<div onclick="$(this).hide();$(\'#pluginNews'.$tmpObj->_id.'\').slideDown()">'.Txt::reduce($tmpObj->pluginLabel).' <img src="app/img/arrowDown.svg"></div>
 								  <div class="vPluginNews" id="pluginNews'.$tmpObj->_id.'">'.$tmpObj->description.'</div>';
 		}
 		////	Surligne le texte ou les mots recherchés
@@ -123,7 +123,7 @@ if(Req::isParam("searchText")){
 		else																{$showModuleTitle=false;}
 		?>
 			<?php if($showModuleTitle==true){ ?>
-				<div class="vModuleLabel"><hr><img src="app/img/<?= $tmpObj::moduleName ?>/icon.png"><?= Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME") ?></div>
+				<div class="vModuleLabel"><hr><img src="app/img/<?= $tmpObj::moduleName ?>/icon.svg"><?= Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME") ?></div>
 			<?php } ?>
 			<div class="menuLine lineHover">
 				<div class="vContextMenu"><?= $tmpObj->contextMenu(["burgerLauncher"=>"small-inline"]) ?></div>

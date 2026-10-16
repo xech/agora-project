@@ -81,7 +81,7 @@ class CtrlTask extends Ctrl
 	{
 		$pluginsList=MdlTaskFolder::getPluginFolders($params);
 		foreach(MdlTask::getPluginObjects($params) as $tmpObj){
-			$tmpObj->pluginIcon=self::moduleName."/icon.png";
+			$tmpObj->pluginIcon=self::moduleName."/icon.svg";
 			$tmpObj->pluginLabel=(!empty($tmpObj->title))  ?  $tmpObj->title  :  $tmpObj->description;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			if(!empty($tmpObj->description))	{$tmpObj->pluginTooltip.="<hr>".Txt::reduce($tmpObj->description);}

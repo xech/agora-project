@@ -118,10 +118,10 @@ trait MdlObjectMenu
 			////	Affectations en BDD  +  Labels des droits d'accès
 			$objAffectations=$this->getAffectations();
 			$vDatas["menuAccessRight"]=true;
-			$accessFullDetail				=Txt::tooltip($this->tradObj("accessFullDetail"));
-			$vDatas["affectTooltips"]["1"]	=Txt::tooltip($this->tradObj("accessReadDetail"));
-			$vDatas["affectTooltips"]["1.5"]=static::isContainer()  ?  Txt::tooltip($this->tradObj("accessWriteLimitDetail"))  :  null;
-			$vDatas["affectTooltips"]["2"]	=static::isContainer()  ?  Txt::tooltip($this->tradObj("accessWriteDetailContainer"))  :  Txt::tooltip($this->tradObj("accessWriteDetail"));
+			$accessFullDetail				=$this->tradObj("accessFullDetail");
+			$vDatas["affectTooltips"]["1"]	=$this->tradObj("accessReadDetail");
+			$vDatas["affectTooltips"]["1.5"]=static::isContainer()  ?  $this->tradObj("accessWriteLimitDetail")  :  null;
+			$vDatas["affectTooltips"]["2"]	=static::isContainer()  ?  $this->tradObj("accessWriteDetailContainer")  :  $this->tradObj("accessWriteDetail");
 			$vDatas["extendSubfolders"]=(static::isFolder==true  &&  $this->isNew()==false  &&  Db::getVal("SELECT count(*) FROM ".static::dbTable." WHERE _idContainer=".$this->_id)>0);
 			////	Liste des affectations disponibles pour chaque espace
 			$vDatas["spaceAffectations"]=[];
@@ -129,21 +129,22 @@ trait MdlObjectMenu
 				////	Controle si le module courant est affecté à l'espace
 				if($tmpSpace->moduleEnabled(static::moduleName)){
 					$tmpSpace->targetLines=[];
-					////	Ligne "Tous les utilisateurs"
+					////	Ligne "Tout le monde"
 					$targetId=$tmpSpace->_id."_spaceUsers";//ex: "1_spaceUsers"
-					if(empty($tmpSpace->public))	{$targetLabel=Txt::trad("accessAllUsers");			$targetTooltip=Txt::tooltip("accessAllUsersDetail");}
-					else							{$targetLabel=Txt::trad("accessAllUsersGuests");	$targetTooltip=Txt::tooltip("accessAllUsersGuestsDetail");}
-					$tmpSpace->targetLines[$targetId]=["icon"=>"accessAllUsers.png", "label"=>$targetLabel, "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$targetTooltip)];
+					$targetLabel  =Txt::trad("accessAllUsers");
+					$targetTooltip=Txt::trad("accessAllUsersTooltip");
+					if(!empty($tmpSpace->public))  {$targetTooltip.='<hr>'.Txt::trad("accessAllUsersTooltipGuest");}
+					$tmpSpace->targetLines[$targetId]=["icon"=>"users.svg", "label"=>$targetLabel, "tooltip"=>str_replace("--SPACENAME--",$tmpSpace->name,$targetTooltip)];
 					////	Lignes des groupes d'users de l'espace
 					foreach(MdlUserGroup::userGroupList($tmpSpace) as $tmpGroup){
 						$targetId=$tmpSpace->_id."_G".$tmpGroup->_id;//ex: "1_G5"
-						$tmpSpace->targetLines[$targetId]=["icon"=>"accessGroup.png", "label"=>$tmpGroup->title, "tooltip"=>Txt::tooltip($tmpGroup->usersLabel)];
+						$tmpSpace->targetLines[$targetId]=["icon"=>"usersGroup.svg", "label"=>$tmpGroup->title, "tooltip"=>$tmpGroup->usersLabel];
 					}
 					////	Lignes des users de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$targetId=$tmpSpace->_id."_U".$tmpUser->_id;//ex: "1_U55"
-						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="accessFull.png";	$targetTooltip=$accessFullDetail;	$accessFull=true;}//Auteur/Admin
-						else																				{$targetIcon="accessUser.png";	$targetTooltip=null;				$accessFull=false;}
+						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="userAdmin.svg";	$targetTooltip=$accessFullDetail;	$accessFull=true;}//Auteur/Admin
+						else																				{$targetIcon="user.svg";		$targetTooltip=null;				$accessFull=false;}
 						$tmpSpace->targetLines[$targetId]=["icon"=>$targetIcon, "label"=>$tmpUser->getLabel(), "tooltip"=>$targetTooltip, "accessFull"=>$accessFull];
 					}
 					////	Checkboxes de chaque target
@@ -187,7 +188,7 @@ trait MdlObjectMenu
 	 ********************************************************************************************************/
 	public function editButtom()
 	{
-		if($this->editRight())  {return '<img src="app/img/edit.png" class="editButton" onclick="lightboxOpen(\''.$this->getUrl("edit").'\')" '.Txt::tooltip("modify").'>';}
+		if($this->editRight())  {return '<img src="app/img/edit.svg" class="editButton" onclick="lightboxOpen(\''.$this->getUrl("edit").'\')" '.Txt::tooltip("modify").'>';}
 	}
 
 	/********************************************************************************************************
@@ -382,7 +383,7 @@ trait MdlObjectMenu
 		foreach($tabRadios as $tmpRadio){
 			$inputId=$inputName.'_'.$tmpRadio["value"];
 			$inputChecked=($curValue==$tmpRadio["value"])  ?  "checked"  :  null;
-			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'">'  :  null;
+			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'">&nbsp;'  :  null;
 			$radioButtons.='<input type="radio" name="'.$inputName.'" value="'.$tmpRadio["value"].'" id="'.$inputId.'" '.$inputChecked.'>
 							<label for="'.$inputId.'">'.$inputImg.Txt::trad($tmpRadio["trad"]).'</label>';
 		}

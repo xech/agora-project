@@ -4,6 +4,7 @@ ready(function(){
 	 *	INIT L'AFFICHAGE
 	 **********************************************************************************************************/
     $("<?= empty($defaultLogin)?'#connectLogin':'#connectPassword' ?>").focusAlt();					//Focus sur l'input du login ou password
+	$("#connectLogin").on("input change keyup",function(){  this.value=this.value.trim();  });		//Trim sur le connectLogin
 	<?php if(Req::isParam("notify") && in_array("NOTIF_identification",Req::param("notify"))){ ?>	//Pulsate "passwordResetLabel" si l'authentification est erronée
 		$("#passwordResetLabel").addClass("linkSelect").pulsate(5);
 	<?php } ?>
@@ -62,9 +63,9 @@ ready(function(){
 #customLogo							{background-color:rgba(250, 250, 250, 40%); padding:10px;}
 #customLogo img						{max-width:100%; max-height:180px;}
 #publicSpaceTab						{display:inline-table;} 
-#publicSpaceTab>div					{display:table-cell; text-align:left; width:50%; line-height:25px;}
-#publicSpaceTab>div:first-child		{text-align:right;}
-.publicSpaceOption					{padding:0px 10px;}
+#publicSpaceTab>div					{display:table-cell; text-align:left; line-height:25px;}
+#publicSpaceTab>div:first-child		{width:45%; text-align:right;}
+.publicSpaceOption					{margin:0px; padding:0px 10px;}/*surchage .option*/
 .connectOptions						{display:inline-table;}
 .connectOptions>div					{display:table-cell; padding:20px 10px; line-height:26px;}
 .g_id_signin						{margin-inline:auto; margin-top:40px; width:330px;}/*width idem "data-width" */
@@ -73,7 +74,7 @@ ready(function(){
 @media screen and (max-width:1199px){
 	.miscContent							{width:auto;}
 	.miscContent							{margin-bottom:30px; padding:30px;}/*surcharge*/
-	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%; text-align:left!important;}
+	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%!important; text-align:left!important;}
 	.publicSpaceOption						{margin-left:40px; margin-top:10px;}
 	.connectOptions, .connectOptions>div	{display:block;}
 	.connectOptions>div						{font-size:0.9rem;}
@@ -99,7 +100,7 @@ ready(function(){
 	<?php if(!empty($objPublicSpaces)){ ?>
 	<div class="miscContent">
 		<div id="publicSpaceTab">
-			<div><img src="app/img/user/guest.png"> <?= Txt::trad("guestAccess") ?> &nbsp; <img src="app/img/arrowRight.png"></div>
+			<div><img src="app/img/earth.svg"> <?= Txt::trad("guestAccess") ?> :</div>
 			<div>
 				<?php foreach($objPublicSpaces as $tmpSpace){ ?>
 					<div class="option publicSpaceOption" data-idspace="<?= $tmpSpace->_id ?>" data-space-name="<?= $tmpSpace->name ?>" data-has-password="<?= $tmpSpace->password?'true':'false' ?>" <?= Txt::tooltip(Txt::trad("guestAccessTooltip").'<br>'.$tmpSpace->description) ?> ><?= $tmpSpace->name ?></div>
@@ -139,7 +140,7 @@ ready(function(){
 		</form>
 
 		<!--RESET DU PASSWORD -> ETAPE 2 : FORMULAIRE DE MODIF DU PASSWORD-->
-		<?php if(!empty($passwordResetChangeForm)){ ?>
+		<?php if(!empty($passwordResetFormUpdate)){ ?>
 			<form action="index.php" method="post" id="passwordResetFormUpdate" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("passwordModif") ?></div>
 				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>				<!--input password + bouton validation-->
@@ -153,18 +154,19 @@ ready(function(){
 		<?php } ?>
 
 		<!--DOUBLE AUTHENTIFICATION-->
-		<?php if(!empty($dblAuthCodeForm)){ ?>
-			<form action="index.php" method="post" id="dblAuthCodeForm" class="lightboxInline">
-				<div class="lightboxTitle"><?= Txt::trad("USER_dblAuthCodeFormTitle").'&nbsp; '.$_SESSION["dblAuthUserLogin"] ?></div>
+		<?php if(!empty($dblAuthForm)){ ?>
+			<form action="index.php" method="post" id="dblAuthForm" class="lightboxInline">
+				<div class="lightboxTitle"><?= Txt::trad("USER_dblAuthFormTitle").'&nbsp; '.$_SESSION['dblAuthUserLogin'] ?></div>
 				<input type="text" name="dblAuthCode" required>
-				<input type="hidden" name="dblAuthToken" value="<?= $_SESSION["dblAuthToken"] ?>">
-				<input type="hidden" name="dblAuthUserId" value="<?= $_SESSION["dblAuthUserId"] ?>">
-				<input type="hidden" name="dblAuthUserLogin" value="<?= $_SESSION["dblAuthUserLogin"] ?>">
+				<input type="hidden" name="dblAuthToken" value="<?= $_SESSION['dblAuthToken'] ?>">
+				<input type="hidden" name="dblAuthUserId" value="<?= $_SESSION['dblAuthUserId'] ?>">
+				<input type="hidden" name="dblAuthUserLogin" value="<?= $_SESSION['dblAuthUserLogin'] ?>">
+				<input type="hidden" name="rememberMe" value="<?= $_SESSION['dblAuthRememberMe'] ?>">
 				<?= Txt::submitButton("validate") ?>
 			</form>
 			<!--Affiche le formulaire-->
-			<div><a data-fancybox="inline" data-src="#dblAuthCodeForm"><b><?= Txt::trad("USER_dblAuthMailSubject") ?></b></a></div>
-			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#dblAuthCodeForm"}]); }); </script>
+			<div><a data-fancybox="inline" data-src="#dblAuthForm"><b><?= Txt::trad("USER_dblAuthMailSubject") ?></b></a></div>
+			<script> ready(function(){ Fancybox.show([{type:"inline",src:"#dblAuthForm"}]); }); </script>
 		<?php } ?>
 	
 		<!--VALIDATION D'INVITATION : FORMULAIRE D'INITIALISATION DU PASSWORD-->
@@ -206,13 +208,13 @@ ready(function(){
 			<div class="connectForm">
 				<!--INSCRIPTION D'USER-->
 				<?php if(!empty($isUserInscription)){ ?>
-					<button onclick="lightboxOpen('?action=userInscription')" <?= Txt::tooltip("userInscriptionTooltip") ?> ><img src="app/img/user/subscribe.png"><?= Txt::trad("userInscription") ?></button>
+					<button onclick="lightboxOpen('?action=userInscription')" <?= Txt::tooltip("userInscriptionTooltip") ?> ><img src="app/img/subscribe.svg"><?= Txt::trad("userInscription") ?></button>
 				<?php } ?>
 				<!--SWITCH D'ESPACE-->
 				<?php if(Req::connectSpaceSwitch()){ ?>
-					<button onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.png"><?= Txt::trad("connectSpaceSwitch") ?></button>
+					<button onclick="redir('<?= Req::connectSpaceSwitchUrl() ?>')"><img src="app/img/switch.svg"><?= Txt::trad("connectSpaceSwitch") ?></button>
 				<?php } ?>
 			</div>
-		<?php }  ?>
+		<?php } ?>
 	</div>
 </div>

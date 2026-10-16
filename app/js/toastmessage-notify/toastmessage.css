@@ -27,11 +27,13 @@
 
 .toast-item-close {
     position: absolute;
-    background:url(close.png);
-    width:22px;
-    height:22px;
+    background:url(close.svg) 100% 100% / 22px 22px no-repeat;
+    width:25px;
+    height:25px;
     top:5px;						
     right:5px;
+    filter:brightness(1.5);
+    cursor:pointer;
 }
 
 .toast-item-image {

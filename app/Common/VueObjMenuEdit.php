@@ -111,7 +111,8 @@ function accessRightStyle()
 <style>
 /*OPTIONS D'EDITION (cf. white.css & black.css) */
 #objMenuTabs						{display:table; table-layout:fixed; margin-top:35px; margin-bottom:-35px; width:100%; max-width:100%;}		/*table-layout: meme largeur pour chaque colonne*/
-.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.8; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
+.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.75; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
+
 .objMenuTabSelect					{opacity:1; border-bottom:none;}
 .objMenuTab img						{margin-right:5px;}
 #objMenuTabs:has(.objMenuTab:nth-child(4)) img {margin-right:6px;} /*Edit Task : réduit le margin si ya 4 onglets dans le menu*/
@@ -124,14 +125,14 @@ function accessRightStyle()
 .vSpaceTable>div					{display:table-row;}
 .vSpaceTable>div>div				{display:table-cell; padding:6px; text-align:center;}
 .vSpaceHeader>div					{vertical-align:top; padding-block:10px!important;}
-.vSpaceHeader .vAffectLabel			{padding-left:35px; font-style:italic;}/*Nom de l'espace*/
+.vSpaceHeader .vAffectLabel			{padding-left:35px;}/*Nom de l'espace*/
 .vAffectLabel						{width:300px; text-align:left!important; cursor:pointer;}/*Label d'une target*/
 .vAffectLabel img					{margin-right:8px;}
 .vAffectBox							{width:70px;}/*colonne des checkboxes*/
 #showAllUsers, #showAllSpaces		{display:none; margin-top:-20px;}/*margin-top: cf. vSpaceTable*/
 
 /*MENU DES NOTIFICATIONS PAR MAIL*/
-#notifMailOptions>div				{padding:5px 10px;}
+#notifMailOptions>div				{padding:5px;}
 #notifMailOptions, #notifMailUsers	{margin-top:10px; text-align:left; display:none;}/*surcharge fieldset*/
 #notifMailUsersPlus					{margin-top:15px; text-align:center;}
 
@@ -158,25 +159,25 @@ function accessRightStyle()
 		<!--AFFECTATIONS-->
 		<?php if(!empty($menuAccessRight)){ ?>
 			<div class="objMenuTab" for="menuAccessRight">
-				<img src="app/img/eye.png"> <?= Txt::trad("EDIT_accessRight") ?>
+				<img src="app/img/access.svg"> <?= Txt::trad("EDIT_accessRight") ?>
 			</div>
 		<?php } ?>
 		<!--NOTIF MAIL-->
 		<?php if(!empty($menuNotifMail)){ ?>
 			<div class="objMenuTab" for="menuNotifMail">
-				<img src="app/img/mail.png"> <?= Txt::trad("EDIT_notifMail") ?>
+				<img src="app/img/mail.svg"> <?= Txt::trad("EDIT_notifMail") ?>
 			</div>
 		<?php } ?>
 		<!--FICHIER JOINT-->
 		<?php if(!empty($menuAttachedFile)){ ?>
 			<div class="objMenuTab" for="menuAttachedFile">
-				<img src="app/img/attachment.png"> <?= Txt::trad("EDIT_attachedFileAdd").(!empty($attachedFilesNb) ? '&nbsp;<span class="circleNb">'.$attachedFilesNb.'</span>' : null) ?>
+				<img src="app/img/attachment.svg"> <?= Txt::trad("EDIT_attachedFileAdd").(!empty($attachedFilesNb) ? '&nbsp;<span class="circleNb">'.$attachedFilesNb.'</span>' : null) ?>
 			</div>
 		<?php } ?>
 		<!--SHORTCUT-->
 		<?php if(!empty($menuShortcut)){ ?>
 			<div class="objMenuTab" for="menuShortcut">
-				<img src="app/img/shortcut.png"> <?= Txt::trad("EDIT_shortcut").($curObj->shortcut?' * ':null) ?>
+				<img src="app/img/shortcut.svg"> <?= Txt::trad("EDIT_shortcut").($curObj->shortcut?' * ':null) ?>
 			</div>
 		<?php } ?>
 	</div>
@@ -199,10 +200,10 @@ function accessRightStyle()
 					<!--AFFECTIONS SUR L'ESPACE-->
 					<?php foreach($tmpSpace->targetLines as $targetId=>$targetTmp){ ?>
 						<div class="vAffectLine lineHover" id="targetLine_<?= $targetId ?>">
-							<div class="vAffectLabel" <?= $targetTmp["tooltip"] ?> ><img src="app/img/user/<?= $targetTmp["icon"] ?>"><?= $targetTmp["label"] ?></div>
+							<div class="vAffectLabel" <?= Txt::tooltip($targetTmp["tooltip"]) ?> ><img src="app/img/<?= $targetTmp["icon"] ?>"><?= $targetTmp["label"] ?></div>
 							<!--CHECKBOXES DE LA TARGET-->
 							<?php foreach($targetTmp["checkboxes"] as $tmpRight=>$tmpAttr){ ?>
-								<div class="vAffectBox" <?= $affectTooltips[$tmpRight] ?>><input type="checkbox" name="objectRight[]" <?= $tmpAttr ?>></div>
+								<div class="vAffectBox" <?= Txt::tooltip($affectTooltips[$tmpRight]) ?>><input type="checkbox" name="objectRight[]" <?= $tmpAttr ?>></div>
 							<?php } ?>
 						</div>
 					<?php } ?>
@@ -211,8 +212,8 @@ function accessRightStyle()
 
 			<!--MENU "AFFICHER TOUS LES USERS" + "AFFICHER TOUS LES ESPACES" (+ d'un user ou espace)-->
 			<?php if(count($spaceAffectations)>1 || count($tmpSpace->targetLines)>1){ ?>
-				<div id="showAllUsers" class="link"><?= Txt::trad("EDIT_showAllUsers") ?> <img src="app/img/arrowBottom.png"></div>
-				<div id="showAllSpaces" class="link"><img src="app/img/space.png">&nbsp; <?= Txt::trad("EDIT_showAllSpaces") ?> <img src="app/img/arrowBottom.png"></div>
+				<div id="showAllUsers" class="link"><?= Txt::trad("EDIT_showAllUsers") ?> <img src="app/img/arrowDown.svg"></div>
+				<div id="showAllSpaces" class="link"><img src="app/img/space.svg">&nbsp; <?= Txt::trad("EDIT_showAllSpaces") ?> <img src="app/img/arrowDown.svg"></div>
 			<?php } ?>
 			
 			<!--MENU "ETENDRE LES DROITS AUX SOUS-DOSSIERS"-->
@@ -242,16 +243,16 @@ function accessRightStyle()
 				<!--MODFILE : "Joindre les fichiers"-->
 				<?php if($curObj::objectType=="file"){ ?>
 					<div <?= Txt::tooltip(Txt::trad("FILE_fileSizeLimit").' '.File::sizeLabel(File::mailMaxFilesSize)) ?> >
-						<img src="app/img/dependency.png">
+						<img src="app/img/dependent.svg">
 						<input type="checkbox" name="notifMailAddFiles" value="1" id="boxNotifMailAddFiles">
-						<label for="boxNotifMailAddFiles"><?= Txt::trad("EDIT_notifMailAddFiles") ?> <img src="app/img/attachment.png"></label>
+						<label for="boxNotifMailAddFiles"><?= Txt::trad("EDIT_notifMailAddFiles") ?> <img src="app/img/attachment.svg"></label>
 					</div>
 				<?php } ?>
 
 				<!--CHOIX DES USERS DESTINATAIRES-->
 				<div>
-					<img src="app/img/dependency.png"><input type="checkbox" name="notifMailSelect" value="1" onclick="$('#notifMailUsers').slideToggle();" id="notifMailSelectBox">
-					<label for="notifMailSelectBox"><?= Txt::trad("EDIT_notifMailSelect") ?> <img src="app/img/user/accessAllUsers.png"></label>
+					<img src="app/img/dependent.svg"><input type="checkbox" name="notifMailSelect" value="1" onclick="$('#notifMailUsers').slideToggle();" id="notifMailSelectBox">
+					<label for="notifMailSelectBox"><?= Txt::trad("EDIT_notifMailSelect") ?> <img src="app/img/users.svg"></label>
 				</div>
 				<fieldset id="notifMailUsers">
 					<!--LISTE DE TOUS LES USERS (par défaut ceux de l'espace courant)-->
@@ -266,7 +267,7 @@ function accessRightStyle()
 					<!--AFFICHER LES UTILISATEURS DE TOUS LES ESPACES-->
 					<?php if(count($notifMailUsers)>count($curSpaceUsersIds)){ ?>
 						<div id="notifMailUsersPlus" onclick="$('.userInputDiv').show();$(this).hide();" <?= Txt::tooltip("EDIT_showAllUsersInfo") ?> >
-							<img src="app/img/arrowBottom.png"> <?= Txt::trad("EDIT_showAllUsers") ?>
+							<img src="app/img/arrowDown.svg"> <?= Txt::trad("EDIT_showAllUsers") ?>
 						</div>
 					<?php } ?>
 				</fieldset>
@@ -301,4 +302,4 @@ function accessRightStyle()
 
 
 <!--BOUTON DE VALIDATION-->
-<?= Txt::submitButton() ?>
+<?= Txt::submitButton($curObj->isNew()?"add":"modify") ?>

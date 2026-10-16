@@ -3,7 +3,7 @@ ready(function(){
 	////	RESULTAT DE RECHERCHE D'USERS (async)
 	$("#affectationForm").on("submit",async function(event){
 		event.preventDefault();
-		if($("#affectationForm input:checked").length==0)	{notify("<?= Txt::trad("notifSelectUser") ?>");}
+		if($("#affectationForm input:checked").length==0)							{notify("<?= Txt::trad("notifSelectUser") ?>");}
 		else if(await confirmAlt("<?= Txt::trad("USER_userAffectConfirm") ?>"))		{asyncSubmit(this);}//Valide le formulaire
 	});
 });

@@ -164,7 +164,7 @@
 				<td class="vWeekDayLabel" <?= $dayAddEvtLink ?> <?= Txt::tooltip($dayTooltip) ?>>
 					<?= Txt::timeLabel($tmpDay["dayTimeBegin"],'ccc') ?>
 					<span class="<?= $tmpDay["isToday"]==true?'circleNb':null ?>"><?= $tmpDay["dayOfMonth"] ?></span>
-					<?php if(!empty($tmpDay["publicHoliday"])){ ?><img src="app/img/calendar/publicHoliday.png" class="vPublicHoliday"><?php } ?>
+					<?php if(!empty($tmpDay["publicHoliday"])){ ?><img src="app/img/calendar/holiday.svg" class="vPublicHoliday"><?php } ?>
 				</td>
 			<?php } ?>
 			<td class="vWeekHeaderScrollbar">&nbsp;</td>
@@ -213,7 +213,7 @@
 						<!--CELLULE DU 1/4 D'HEURE & D'AJOUT D'EVT-->
 						<td class="<?= $cellClass ?> " title="<?= date('H:i',$cellTimeBegin) ?>" <?= $cellAttributes ?>>
 							<?php if(Req::isMobile() && $isHourBegin==true){ ?>
-								<img src="app/img/plusSmall.png" class="vMobileAddEvt" onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$cellTimeBegin ?>')">
+								<img src="app/img/add.svg" class="vMobileAddEvt" onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$cellTimeBegin ?>')">
 							<?php } ?>
 						</td>
 					<?php } ?>

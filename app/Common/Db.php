@@ -156,20 +156,20 @@ class Db
 	public static function getDump()
 	{
 		$dumpPath=PATH_DATAS."BackupDatabase_".db_name.".sql";
-		//Récupère le dump via "shell_exec()"
+		//// Récupère le dump via "shell_exec()"
 		if(Req::isLinux() && function_exists('shell_exec')){
 			shell_exec("mysqldump --user=".escapeshellarg(db_login)." --password=".escapeshellarg(db_password)." --host=".escapeshellarg(db_host)." ".escapeshellarg(db_name)." > ".escapeshellarg($dumpPath));
 		}
-		//Créé un dump
+		//// Créé un dump
 		else{
-			// Recupere chaque table
+			//// Recupere chaque table
 			$dumpTxt="";
 			foreach(self::getCol("SHOW TABLES FROM `".db_name."`") as $tableName)
 			{
-				// Structure de la table
+				//// Structure de la table
 				$sqlTmp=self::getLine("SHOW CREATE TABLE `".$tableName."`");
 				$dumpTxt.=$sqlTmp["Create Table"].";\r\n\r\n";
-				// Contenu de la table
+				//// Contenu de la table
 				foreach(self::getTab("SELECT * FROM `".$tableName."`") as $tmpRecord){
 					$dumpTxt.="INSERT INTO `".$tableName."` VALUES(";
 					foreach($tmpRecord as $tmpField){
@@ -179,12 +179,15 @@ class Db
 					$dumpTxt.=");\r\n\r\n";
 				}
 			}
-			// Enregistre le fichier sql
+			//// Enregistre le fichier sql
 			$fp=fopen($dumpPath, "w");
 			fwrite($fp, $dumpTxt);
 			fclose($fp);
 		}
-		//Retourne le path du dump
+		//// Supprime si besoin l'ancien dump
+		$dumpOldPath=str_replace("BackupDatabase","BackupMysql",$dumpPath);
+		if(is_file($dumpOldPath))  {File::rm($dumpOldPath);}
+		//// Retourne le path du dump
 		return $dumpPath;
 	}
 }

@@ -130,18 +130,18 @@ class CtrlAgora extends Ctrl
 			//// Augmente le temps d'execution
 			Tool::setTimeLimit(1800);
 			$archiveName="BackupAgora_".date('Y-m-d');
-			//// Sauvegarde via "shell_exec()"
+			//// Sauvegarde via "shell_exec()"  (plus rapide et efficace : -c=creation -f=path du dossier)
 			if(Req::isLinux() && function_exists('shell_exec')){
 				$archiveTmpPath=tempnam(File::getTempDir(),"backupAgora".uniqid());
-				shell_exec("cd ".PATH_DATAS."; tar -cf ".$archiveTmpPath." *");//-c=creation -f=nom du dossier
+				shell_exec("cd ".escapeshellarg(PATH_DATAS)."; tar -cf ".escapeshellarg($archiveTmpPath)." *");
 				if(is_file($archiveTmpPath)){
-					File::download($archiveName.".tar", $archiveTmpPath, null, false);
+					File::download($archiveName.'.tar', $archiveTmpPath, null, false);
 					File::rm($archiveTmpPath);
 				}
 			}
 			//// Sauvegarde via "pathDatasFilesList()"
 			else{
-				File::downloadArchive(self::pathDatasFilesList(), $archiveName.".zip");
+				File::downloadArchive(self::pathDatasFilesList(), $archiveName.'.zip');
 			}
 		}
 		////	Sauvegarde uniquement la Bdd

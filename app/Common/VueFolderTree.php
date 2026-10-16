@@ -58,10 +58,11 @@ function folderMove(newFolderId){
 .vTreeFolder						{display:none;}											/*dossier masqué par défaut*/
 .vTreeFolder>div					{display:table-cell; padding:3px; vertical-align:top;}	/*cellules du dossier */
 .vTreeFolderIcon					{white-space:nowrap;}									/*icone du dossier : pas de retour à la ligne*/
+.vIconFolder						{max-width:18px; max-height:18px;}
 .vTreeFolderIcon .vIconOpen			{visibility:hidden; margin-right:3px;}					/*icone d'ouverture du dossier (optionnel)*/
 .vTreeFolder:first-child .vIconOpen	{display:none!important;}								/*dossier root : pas d'icone de d'ouverture du dossier*/
 .vTreeFolderLabel.linkSelect		{font-weight:bold;}
-.vIconOpened						{transform:rotate(45deg); filter:brightness(0);}
+.vIconOpened						{transform:rotate(30deg); filter:brightness(0.5);}
 
 /*** RESPONSIVE TABLET-SMARTPHONE*/
 @media screen and (max-width:1199px){
@@ -89,7 +90,7 @@ function folderMove(newFolderId){
 		$folderLabelCheckbox=($context=="move" && $isCurFolder==false)  ?  '<input type="checkbox" name="newFolderId" class="vNewFolderId" value="'.$tmpFolder->_id.'" disabled>'  :  null;
 		//Affiche le dossier
 		echo '<div class="vTreeFolder" data-folderid="'.$tmpFolder->_id.'" data-parent-folderid="'.$tmpFolder->_idContainer.'" data-folder-tree-level="'.$tmpFolder->treeLevel.'" '.Txt::tooltip($folderTooltip).'>
-				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRightSmall.png" class="vIconOpen"><img src="app/img/folder/folderSmall.png"></div>
+				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRightLabel.svg" class="vIconOpen"><img src="app/img/folder.svg" class="vIconFolder"></div>
 				<div class="vTreeFolderLabel '.$folderLabelClass.'" onclick="'.$folderLabelActionJs.'">'.Txt::reduce($tmpFolder->name,80).$folderLabelCheckbox.'</div>
 			  </div>';
 	}

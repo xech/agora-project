@@ -286,7 +286,7 @@ class Txt
 				}
 				if($timeEnd!=null){
 					if($diffDays==false && $diffHours==true && $withHM==true)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)										{$label.='<img src="app/img/arrowRightSmall.png"> '.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
+					elseif($diffDays==true)										{$label.='<img src="app/img/arrowRightLabel.svg">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
 					elseif($timeBegin==null)									{$label.=self::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 

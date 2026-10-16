@@ -16,7 +16,7 @@ ready(function(){
 
 
 <style>
-#specificMailsPlus			{margin-inline:5px; height:18px;}
+#specificMailsPlus			{margin-left:4px; height:20px;}
 .specificMailsDiv			{display:none;}
 .specificMailsDiv input		{width:300px; max-width:90%;}
 </style>
@@ -24,13 +24,13 @@ ready(function(){
 
 <!--"Masquer les destinataires"-->
 <div <?= Txt::tooltip("MAIL_hideRecipientsTooltip") ?> >
-	<img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="hideRecipients" id="hideRecipients">
+	<img src="app/img/dependent.svg"><input type="checkbox" name="mailOptions[]" value="hideRecipients" id="hideRecipients">
 	<label for="hideRecipients"><?= Txt::trad("MAIL_hideRecipients") ?></label>
 </div>
 
 <!--"Ne pas signer le message"-->
 <div <?= Txt::tooltip("MAIL_noFooterTooltip") ?> >
-	<img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="noFooter" id="noFooter">
+	<img src="app/img/dependent.svg"><input type="checkbox" name="mailOptions[]" value="noFooter" id="noFooter">
 	<label for="noFooter"><?= Txt::trad("MAIL_noFooter") ?></label>
 </div>
 
@@ -38,12 +38,12 @@ ready(function(){
 <?php if(!empty(Ctrl::$curUser->mail)){ ?>
 	<!--Options "Mettre mon email en réponse"  &&  "Accusé de reception"-->
 	<div <?= Txt::tooltip("MAIL_addReplyToTooltip") ?> >
-		<img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="addReplyTo" id="addReplyTo">
+		<img src="app/img/dependent.svg"><input type="checkbox" name="mailOptions[]" value="addReplyTo" id="addReplyTo">
 		<label for="addReplyTo"><?= Txt::trad("MAIL_addReplyTo") ?></label>
 	</div>
 	<!--Options "Mettre mon email en réponse"  &&  "Accusé de reception"-->
 	<div <?= Txt::tooltip("MAIL_receptionNotifTooltip") ?> >
-		<img src="app/img/dependency.png"><input type="checkbox" name="mailOptions[]" value="receptionNotif" id="receptionNotif">
+		<img src="app/img/dependent.svg"><input type="checkbox" name="mailOptions[]" value="receptionNotif" id="receptionNotif">
 		<label for="receptionNotif"><?= Txt::trad("MAIL_receptionNotif") ?></label>
 	</div>
 <?php } ?>
@@ -51,7 +51,7 @@ ready(function(){
 
 <!--Option "Ajouter des adresses email"-->
 <div id="specificMails" class="link" <?= Txt::tooltip("MAIL_specificMailsTooltip") ?> >
-	<img src="app/img/dependency.png"><img src="app/img/plusSmall.png" id="specificMailsPlus">
+	<img src="app/img/dependent.svg"><img src="app/img/add.svg" id="specificMailsPlus">
 	<?= Txt::trad("MAIL_specificMails") ?>
 </div>
 

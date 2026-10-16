@@ -10,7 +10,7 @@
 	<?php
 	////	TITRE MOBILE  &&  CITATION D'UN AUTRE MESSAGE (?)
 	echo $curObj->titleMobile("FORUM_addMessage");
-	if(!empty($messageParent))  {echo "<div class='vMessageQuoted'>".$messageParent->title."<br>".$messageParent->description."<img src='app/img/forum/quote.png'></div><br>";}
+	if(!empty($messageParent))  {echo "<div class='vMessageQuoted'>".$messageParent->title."<br>".$messageParent->description."<img src='app/img/forum/quote.svg'></div><br>";}
 
 	////	TITRE DU MESSAGE
 	echo '<input type="text" name="title" value="'.$curObj->title.'" placeholder="'.Txt::trad("title").' '.Txt::trad("optional").'">';

@@ -3,9 +3,14 @@ ready(function(){
 	/********************************************************************************************************
  	*	RECUP UN BACKUP
 	*******************************************************************************************/
-	$(".vButtonBackup").on("click",function(){
-		let confirmLabel=(this.getAttribute("data-type-backup")=="all")  ?  "<?= Txt::trad("AGORA_backupConfirm") ?>"  :  null;
-		confirmRedir("index.php?ctrl=agora&action=getBackup&typeBackup="+this.getAttribute("data-type-backup"), confirmLabel);
+	$(".buttonBackup").on("click", function(){
+		if($(this).prop("disabled")==false){																							//Verif si le bouton n'est pas désactivé
+			let typeBackup=this.getAttribute("data-type-backup");																		//Type de backup
+			let confirmTitle=(typeBackup=="all")  ?  "<?= Txt::trad("AGORA_backupFull") ?>"  :  "<?= Txt::trad("AGORA_backupDb") ?>";	//Label du confirm
+			confirmRedir("index.php?ctrl=agora&action=getBackup&typeBackup="+typeBackup, confirmTitle);									//Lance le confirm
+			$(this).prop("disabled",true);																								//Désactive le button
+			setTimeout(function(){	$(".buttonBackup").prop("disabled",false);  },30000);												//Réactive après quelques sec. (pas de downloads simultanés)
+		}
 	});
 
 	/********************************************************************************************************
@@ -43,7 +48,7 @@ ready(function(){
 	/********************************************************************************************************
 	 *	CONTROLE DU FORMULAIRE
 	 ********************************************************************************************************/
-	$("#mainForm").on("submit",async function(event){
+	$("#mainForm").on("submit", async function(event){
 		event.preventDefault();
 		////	Contrôle le nom de l'espace
 		if($("input[name='name']").isEmpty())   {notify("<?= Txt::trad("emptyFields") ?>");  return false;}
@@ -83,20 +88,20 @@ fieldset					{margin-top:10px;}/*surcharge*/
 	<div id="pageMenu">
 		<!--ESPACE DISQUE UTILISÉ & VERSIONS D'AGORA & FONCTIONS PHP DÉSACTIVÉES-->
 		<div class="miscContent" id="pageMenuContent">
-			<img src="app/img/diskSpace<?= $diskSpaceAlert==true?'Alert':null ?>.png"> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
+			<img src="app/img/disk.svg" <?= $diskSpaceAlert==true?'class="diskSpaceAlert"':null ?>> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
 			<hr>
 			Agora-Project version <?= Req::appVersion()?>
-			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/description.png"> <?= Txt::trad("AGORA_Changelog") ?></button>
+			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/description.svg"> <?= Txt::trad("AGORA_Changelog") ?></button>
 			PHP <?= phpversion().' - '.Db::dbVersion()?>
-			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
-			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
-			<?php if(!function_exists("ldap_connect")){ ?>			<hr><img src="app/img/info.png"><?= Txt::trad("AGORA_phpLdapDisabled") ?><?php } ?>
+			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
+			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
+			<?php if(!function_exists("ldap_connect")){ ?>			<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpLdapDisabled") ?><?php } ?>
 
 			<!--VOPTIONS DE BACKUP-->
 			<?php if(Req::isMobile()==false){ ?>
 				<hr>
-				<button class="vButtonBackup" data-type-backup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupDb") ?></button>
-				<button class="vButtonBackup" data-type-backup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.png"> <?= Txt::trad("AGORA_backupFull") ?></button>
+				<button class="buttonBackup" data-type-backup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.svg"> <?= Txt::trad("AGORA_backupDb") ?></button>
+				<button class="buttonBackup" data-type-backup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.svg"> <?= Txt::trad("AGORA_backupFull") ?></button>
 			<?php } ?>
 		</div>
 	</div>
@@ -104,7 +109,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 	<div id="pageContent">
 		<div class="miscContent">
 			<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
-				<div id="vMainFormLabel"><img src="app/img/settingsGeneral.png"> <?= Txt::trad("AGORA_generalSettings") ?></div>
+				<div id="vMainFormLabel"><img src="app/img/setting.svg"> <?= Txt::trad("AGORA_generalSettings") ?></div>
 				<hr>
 
 				<!--NOM DE L'ESPACE PRINCIPAL-->
@@ -170,7 +175,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--COULEUR DE L'INTERFACE-->
 				<div class="objField">
-					<div><?= Txt::trad("AGORA_skin") ?></div>
+					<div><img src="app/img/eye.svg"><?= Txt::trad("AGORA_skin") ?></div>
 					<div>
 					<?php
 						$tabRadios=[ ["value"=>"white","trad"=>"AGORA_white"], ["value"=>"black","trad"=>"AGORA_black"] ];
@@ -181,10 +186,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--AFFICHAGE PAR DEFAUT DES DOSSIERS (BLOCK/LINE)-->
 				<div class="objField">
-					<div><?= Txt::trad("AGORA_folderDisplayMode") ?></div>
+					<div><img src="app/img/folder.svg"><?= Txt::trad("AGORA_folderDisplayMode") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"block","trad"=>"displayMode_block","img"=>"displayMode_block.png"], ["value"=>"line","trad"=>"displayMode_line","img"=>"displayMode_line.png"] ];
+						$tabRadios=[ ["value"=>"block","trad"=>"displayMode_block","img"=>"displayMode_block.svg"], ["value"=>"line","trad"=>"displayMode_line","img"=>"displayMode_line.svg"] ];
 						echo MdlAgora::radioButtons("folderDisplayMode", Ctrl::$agora->folderDisplayMode, $tabRadios);
 						?>
 					</div>
@@ -192,10 +197,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--AFFICHAGE DU NOM DES MODULES-->
 				<div class="objField">
-					<div><?= Txt::trad("AGORA_moduleLabelDisplay") ?></div>
+					<div><img src="app/img/eye.svg"><?= Txt::trad("AGORA_moduleLabelDisplay") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
+						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
 						echo MdlAgora::radioButtons("moduleLabelDisplay", Ctrl::$agora->moduleLabelDisplay, $tabRadios);
 						?>
 					</div>
@@ -203,10 +208,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--MESSENGER ACTIVE/DESACTIVE-->
 				<div class="objField">
-					<div><img src="app/img/messenger.png"><?= Txt::trad("AGORA_messengerDisplay") ?></div>
+					<div><img src="app/img/chat.svg"><?= Txt::trad("AGORA_messengerDisplay") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
+						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
 						echo MdlAgora::radioButtons("messengerDisplay", Ctrl::$agora->messengerDisplay, $tabRadios);
 						?>
 					</div>
@@ -214,10 +219,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--LIKES ACTIVE/DESACTIVE-->
 				<div class="objField">
-					<div><img src="app/img/usersLike.png"><?= Txt::trad("AGORA_usersLikeLabel") ?></div>
+					<div><img src="app/img/like.svg"><?= Txt::trad("AGORA_usersLikeLabel") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
+						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
 						echo MdlAgora::radioButtons("usersLike", Ctrl::$agora->usersLike, $tabRadios);
 						?>
 					</div>
@@ -225,10 +230,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--COMMENTAIRES ACTIVE/DESACTIVE-->
 				<div class="objField">
-					<div><img src="app/img/usersComment.png"><?= Txt::trad("AGORA_usersCommentLabel") ?></div>
+					<div><img src="app/img/comment.svg"><?= Txt::trad("AGORA_usersCommentLabel") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
+						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
 						echo MdlAgora::radioButtons("usersComment", Ctrl::$agora->usersComment, $tabRadios);
 						?>
 					</div>
@@ -236,10 +241,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--AFFICHAGE DES EMAILS DES UTILISATEURS-->
 				<div class="objField" <?= Txt::tooltip("AGORA_userMailDisplayTooltip") ?> >
-					<div><img src="app/img/mail.png"><?= Txt::trad("AGORA_userMailDisplay") ?></div>
+					<div><img src="app/img/mail.svg"><?= Txt::trad("AGORA_userMailDisplay") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
+						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
 						echo MdlAgora::radioButtons("userMailDisplay", Ctrl::$agora->userMailDisplay, $tabRadios);
 						?>
 					</div>
@@ -247,7 +252,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--TRI DES USERS/CONTACT : NOM OU PRENOM-->
 				<div class="objField">
-					<div><img src="app/img/user/iconSmall.png"><?= Txt::trad("AGORA_personsSort") ?></div>
+					<div><img src="app/img/users.svg"><?= Txt::trad("AGORA_personsSort") ?></div>
 					<div>
 						<?php
 						$tabRadios=[ ["value"=>"firstName","trad"=>"firstName"], ["value"=>"name","trad"=>"name"] ];
@@ -260,13 +265,13 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--LANG-->
 				<div class="objField">
-					<div><img src="app/img/earth.png"><?= Txt::trad("AGORA_lang") ?></div>
+					<div><img src="app/img/earth.svg"><?= Txt::trad("AGORA_lang") ?></div>
 					<div><?= MdlAgora::selectTrad("agora",Ctrl::$agora->lang) ?></div>
 				</div>
 
 				<!--TIMEZONE-->
 				<div class="objField">
-					<div><img src="app/img/earth.png"><?= Txt::trad("AGORA_timezone") ?></div>
+					<div><img src="app/img/earth.svg"><?= Txt::trad("AGORA_timezone") ?></div>
 					<div>
 						<select name="timezone">
 							<?php foreach(Tool::$tabTimezones as $tmpLabel=>$timezone){
@@ -279,7 +284,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 
 				<!--LOGS TIMEOUT-->
 				<div class="objField" <?= Txt::tooltip("AGORA_logsTimeOutTooltip") ?> >
-					<div><img src="app/img/log.png"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
+					<div><img src="app/img/history.svg"><?= Txt::trad("AGORA_logsTimeOut") ?></div>
 					<div>
 						<select name="logsTimeOut">
 							<?php foreach([0,30,120,360] as $tmpTimeOut){
@@ -294,7 +299,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 				<!--DISK SPACE (AUTO-HEBERGEMENT)-->
 				<?php if(Req::isHost()==false){ ?>
 				<div class="objField">
-					<div><img src="app/img/diskSpace.png"><?= Txt::trad("AGORA_diskSpaceLimit") ?></div>
+					<div><img src="app/img/disk.svg"><?= Txt::trad("AGORA_diskSpaceLimit") ?></div>
 					<div><input type="text" name="limite_espace_disque" id="limite_espace_disque" value="<?= round((limite_espace_disque/File::sizeGo),2) ?>"> <?= Txt::trad("gigaOctet")?></div>
 				</div>
 				<?php } ?>
@@ -304,18 +309,18 @@ fieldset					{margin-top:10px;}/*surcharge*/
 				<!--SERVEURS JITSI (AUTO-HEBERGEMENT)-->
 				<?php if(Req::isHost()==false){ ?>
 				<div class="objField" <?= Txt::tooltip("AGORA_visioHostTooltip") ?> >
-					<div><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHost") ?></div>
+					<div><img src="app/img/visio.svg"> <?= Txt::trad("AGORA_visioHost") ?></div>
 					<div><input type="text" name="visioHost" value="<?= Ctrl::$agora->visioHost ?>"></div>
 				</div>
 				<div class="objField" <?= Txt::tooltip("AGORA_visioHostAltTooltip") ?> >
-					<div><img src="app/img/visio.png"><?= Txt::trad("AGORA_visioHostAlt") ?></div>
+					<div><img src="app/img/visio.svg"> <?= Txt::trad("AGORA_visioHostAlt") ?></div>
 					<div><input type="text" name="visioHostAlt" value="<?= Ctrl::$agora->visioHostAlt ?>"></div>
 				</div>
 				<?php } ?>
 
 				<!--CARTOGRAPHIE : OPENSTREETMAP OU GOOGLE MAP-->
 				<div class="objField" <?= Txt::tooltip("AGORA_mapToolTooltip") ?> >
-					<div><img src="app/img/map.png"><?= Txt::trad("AGORA_mapTool") ?></div>
+					<div><img src="app/img/map.svg"><?= Txt::trad("AGORA_mapTool") ?></div>
 					<div>
 						<select name="mapTool">
 							<option value="leaflet">OpenStreetMap</option>
@@ -337,7 +342,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gOAuth") ?></div>
 					<div>
 						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"displayShow.png"], ["value"=>null,"trad"=>"hide","img"=>"displayHide.png"] ];
+						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
 						echo MdlAgora::radioButtons("gIdentity", Ctrl::$agora->gIdentity, $tabRadios);
 						?>
 					</div>
@@ -354,7 +359,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 				<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AUTO-HEBERGEMENT)-->
 				<?php if(Req::isHost()==false){ ?>
 					<div class="objField" onclick="$('#smtpConfig').slideToggle()">
-						<div><img src="app/img/mail.png"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowBottom.png"></div>
+						<div><img src="app/img/mail.svg"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowDown.svg"></div>
 					</div>
 					<fieldset id="smtpConfig" <?= empty(Ctrl::$agora->smtpHost)?"style='display:none'":null ?>>
 						<div class="objField">
@@ -387,7 +392,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 				<!--PARAMETRAGE LDAP-->
 				<?php if(function_exists("ldap_connect")){ ?>
 					<div class="objField" onclick="$('#ldapConfig').slideToggle()" <?= Txt::tooltip("AGORA_ldapLabelTooltip") ?> >
-						<div><img src="app/img/user/ldap.png"> <?= Txt::trad("AGORA_ldapLabel") ?> <img src="app/img/arrowBottom.png"></div>
+						<div><img src="app/img/disk.svg"> <?= Txt::trad("AGORA_ldapLabel") ?> <img src="app/img/arrowDown.svg"></div>
 					</div>
 					<fieldset id="ldapConfig" <?= empty(Ctrl::$agora->ldap_server)?"style='display:none'":null ?>>
 						<div class="objField" <?= Txt::tooltip("AGORA_ldapUriTooltip") ?> >

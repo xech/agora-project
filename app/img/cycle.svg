@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="27.24mm" height="27.24mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 2724 2724" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+ <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
+   <rect width="2724" height="2724"/>
+  </clipPath></defs>
+ 
+ 
+ 
+  
+ 
+ <g class="SlideGroup">
+  
+   
+    <g class="Slide" clip-path="url(#presentation_clip_path)">
+     <g class="Page">
+      <g class="Graphic">
+       
+        <rect class="BoundingBox" width="2724" height="2724" fill="none"/>
+        <path d="m597 1234c39 0 74-27 85-65 32-106 89-202 165-279 120-123 282-197 464-197 181 0 344 74 463 197 4 4 8 8 11 12l-238 285c-6 8-8 19-4 29 5 9 14 15 25 15l995 3c7 0 14-3 19-9s8-14 6-22l-161-1004c-2-11-10-19-20-22s-19 1-26 8l-245 294c-214-209-505-339-823-340h-5c-330 1-629 139-844 359-164 168-281 385-328 627-5 27 2 54 19 76 16 20 42 33 68 33h374zm1903 253h-374c-39 0-74 27-85 65-32 106-89 202-165 280-120 122-282 196-464 196-181 0-344-74-463-196-4-4-8-9-11-13l238-285c6-8 8-19 4-29-5-9-14-15-25-15l-994-3c-8 0-15 3-20 9s-8 14-6 22l161 1005c2 10 10 18 20 21s19-1 26-8l245-294c214 209 505 340 823 340h5c330-1 629-138 845-359 163-168 280-385 327-627 5-27-2-54-19-75-16-21-42-34-68-34z" fill="#068606"/>
+       
+      </g>
+     </g>
+    </g>
+   
+  
+ </g>
+</svg>

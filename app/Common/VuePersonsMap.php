@@ -83,11 +83,8 @@ function displayAdress(adressKey)
 				notify("<?= Txt::trad("mapLocalizationFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapLocalizationFailure2") ?>");
 			}
 			//// Géolocalise l'adresse suivante  OU  Affichage final : recentre et ajuste le zoom en fonction des limites de la carte (bounds)
-			if(getAdressKeyNext(adressKey))  {displayAdress(getAdressKeyNext(adressKey));}
-			else{
-				gMap.fitBounds(bounds);
-				setTimeout(function(){ gMap.setZoom(14); },200);//Dézoom juste après le "fitBounds"
-			}
+			if(getAdressKeyNext(adressKey))			{displayAdress(getAdressKeyNext(adressKey));}
+			else if(typeof bounds!="undefined")		{gMap.fitBounds(bounds);}
 		});
 	}
 	//// OPENSTREETMAP

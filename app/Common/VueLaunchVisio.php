@@ -20,7 +20,7 @@ ready(function(){
 <div id="visioMenu">
 	<!--LANCE LA VISIO-->
 	<div>
-		<button data-visio-url="<?= $visioURL ?>"><img src="app/img/visioSmall.png"><?= Txt::trad("VISIO_launch") ?></button>
+		<button data-visio-url="<?= $visioURL ?>"><img src="app/img/visio.svg">&nbsp; <?= Txt::trad("VISIO_launch") ?></button>
 	</div>
 	<!--SERVEURS DE VISIO-->
 	<div <?= empty(Ctrl::$agora->visioHostAlt) ? 'style="display:none"' : null ?> >
@@ -31,6 +31,6 @@ ready(function(){
 	</div>
 	<!--GUIDE PDF-->
 	<div onclick="lightboxOpen('docs/VISIO.pdf')">
-		<?= Txt::trad("VISIO_launchGuide") ?> <img src="app/img/pdf.png">
+		<?= Txt::trad("VISIO_launchGuide") ?> <img src="app/img/pdf.svg">
 	</div>
 </div>

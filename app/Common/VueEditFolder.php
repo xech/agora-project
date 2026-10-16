@@ -58,7 +58,7 @@ function mainFormControl(){
 				<?php
 				for($cpt=0; $cpt<=18; $cpt++){
 					if($cpt>0)	{$iconValue="folder".$cpt.".png";	$iconImg=$iconValue;	$iconLabel="folder ".$cpt;}
-					else		{$iconValue=null;					$iconImg="folder.png";	$iconLabel=Txt::trad("byDefault");}
+					else		{$iconValue=null;					$iconImg="folder.svg";	$iconLabel=Txt::trad("byDefault");}
 					$iconSelect=($iconValue==$curObj->icon || ($cpt==0 && empty($curObj->icon)))  ?  "selected"  :  null;
 					echo "<option value=\"".$iconValue."\" data-file-path=\"".PATH_ICON_FOLDER.$iconImg."\" ".$iconSelect.">".$iconLabel."</option>";
 				}

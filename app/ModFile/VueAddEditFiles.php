@@ -20,11 +20,11 @@ ready(function(){
 	$("#uploadMultiple").plupload({
 		runtimes:"html5",
 		url:"index.php?ctrl=file&action=UploadTmpFile&tmpFolderName=<?= $tmpFolderName ?>",
-		max_file_size:"<?= (int)ini_get("upload_max_filesize") ?>mb",//remplace 'mo' par 'mb'
-		max_file_count:200,//200 fichiers max
-		unique_names:true,//On n'envoie pas plusieurs fichiers avec le meme nom
-		dragdrop:true,//Fonction de Glisser/deposer de fichiers
-		init:{
+		max_file_size:"<?= (int)ini_get("upload_max_filesize") ?>mb",										//remplace 'mo' par 'mb'
+		max_file_count:200,																					//200 fichiers max
+		unique_names:true,																					//On n'envoie pas plusieurs fichiers avec le meme nom
+		dragdrop:true,																						//Fonction de Glisser/deposer de fichiers
+		init:{																								//Sélection d'un fichier :
 			FilesAdded:function(uploader,tmpFiles){															//Controle chaque fichier sélectionné :
 				$("#uploadMultipleSimple").hide();															//masque la sélection d'envoi simple/multiple
 				let imageResizeTypes=[<?= "'".implode("','",File::fileTypes("imageResize"))."'" ?>];		//types de fichiers 'imageResize'
@@ -54,7 +54,9 @@ function mainFormControl(){
 		}
 		//// Envoi des fichiers via Plupload
 		else if(isPlupload==true){
-			$(".plupload_add, #uploadOptions").hide();							//Masque le bouton de lancement et les options d'upload
+			submitLoading();													//Affiche le "Loading"
+			$(".plupload_add, .plupload_droptext").hide();						//Masque le bouton de lancement et la dropzone
+			$("#uploadOptions").css("visibility","hidden");						//Masque les options d'upload via "hidden" (ne modif pas le height du form)
 			$(".plupload_filelist_footer .plupload_file_status").show();		//Affiche le % de progression
 			$("#uploadMultiple").plupload("start").on("complete",function(){	//Valide le formulaire à la fin des uploads
 				resolve(true);
@@ -63,30 +65,31 @@ function mainFormControl(){
 		//// Validation simple de formulaire
 		else{
 			resolve(true);
-		}																		
+		}
 	});
 }
 </script>
 
 
 <style>
-#uploadMultiple							{padding:0px;}																		/*fieldset Plupload*/
-#uploadAddVersion, #uploadSimple		{text-align:center; margin:0px; padding:30px;}										/*fieldset input[file]*/
-.plupload_wrapper						{min-width:100%!important; max-width:100%!important;}								/*surcharge pour eviter le scroll horizontal*/
-.plupload_container						{height:220px; min-height:220px; max-width:100%; background-color:transparent; border:0px;}		/*conteneur principal*/
-.plupload_content						{top:0px; height:160px;}															/*dropzone & liste des fichiers (160px minimum)*/
-.plupload_droptext						{font-size:1rem; opacity:0.5;}														/*dropzone*/
-.plupload_filelist_content				{text-align:left; font-size:0.95rem;}												/*liste des fichiers*/
-.plupload_file_size						{min-width:70px;}																	/*taille de chaque fichier*/
-.plupload_filelist_footer				{top:145px; border:none; background:none;}											/*Tableau : bouton d'upload et % de progression*/
-.plupload_filelist_footer td			{padding:5px;} 																		/*idem*/
-.plupload_buttons						{width:100%; text-align:center;}													/*idem : boutons de lancement/arrêt*/
-.plupload_button						{width:250px; padding:15px; border-radius:var(--radius-block); background:linear-gradient(#fff,#eee); font-size:1rem;}/*idem*/
-.plupload_file_status 					{position:absolute; bottom:15px; right:15px;}										/*% de progression*/
-.ui-state-highlight						{background-color:#d2f5b8!important; border-block-color:#ccc!important;}			/*fichier en cours d'upload*/
-#uploadOptions							{display:table; margin-inline:auto; margin-top:30px;}								/*options d'upload*/
-#uploadOptions>div						{display:table-cell; padding-inline:20px; vertical-align:middle;}					/*idem*/
-#descriptionTextarea					{margin-top:20px;}																	/*textarea description*/
+#uploadMultiple							{padding:0px;}																				/*fieldset Plupload*/
+#uploadAddVersion, #uploadSimple		{text-align:center; margin:0px; padding:30px;}												/*fieldset input[file]*/
+.plupload_wrapper						{min-width:100%!important; max-width:100%!important;}										/*surcharge pour eviter le scroll horizontal*/
+.plupload_container						{height:220px; min-height:220px; max-width:100%; background-color:transparent; border:0px;}	/*conteneur principal*/
+.plupload_content						{height:160px; top:0px;}																	/*dropzone & liste des fichiers (160px minimum)*/
+.plupload_droptext						{font-size:1rem; opacity:0.5;}																/*dropzone*/
+.plupload_filelist_content				{text-align:left; font-size:0.95rem;}														/*liste des fichiers*/
+.plupload_file_size						{min-width:70px;}																			/*taille de chaque fichier*/
+.plupload_filelist_footer				{height:70px; bottom:0; border:0px; background:transparent;}								/*Bouton d'upload et % de progression. Height: diff entre plupload_container et plupload_content*/
+.plupload_filelist_footer td			{padding:5px;} 																				/*idem*/
+.plupload_buttons						{width:100%; text-align:center;}															/*centre les boutons de lancement/arrêt*/
+.plupload_button						{width:250px; padding:15px; border-radius:var(--radius-block); background:linear-gradient(#fff,#eee); font-size:1rem;}/*surcharge*/
+.plupload_button.plupload_stop			{width:100px;}																				/*Bouton d'arrêt"*/
+.plupload_file_status 					{position:absolute; bottom:15px; right:15px;}												/*% de progression*/
+.ui-state-highlight						{background-color:#d2f5b8!important; border-block-color:#ccc!important;}					/*fichier en cours d'upload*/
+#uploadOptions							{display:table; margin-inline:auto; margin-top:30px;}										/*options d'upload*/
+#uploadOptions>div						{display:table-cell; padding-inline:20px; vertical-align:middle;}							/*idem*/
+#descriptionTextarea					{margin-top:20px;}																			/*textarea description*/
 #uploadSimple, #uploadOptions #resizeImage, #descriptionTextarea, .plupload_progress_container, .plupload_file_status											{display:none;}				/*masque par défaut*/
 .plupload_header, .plupload_filelist_header, .plupload_start, .plupload_filelist_footer td:is(.plupload_file_action,.plupload_file_size), .ui-resizable-handle	{display:none!important;}	/*masque toujours*/
 /*** RESPONSIVE SMARTPHONE*/
@@ -129,7 +132,7 @@ function mainFormControl(){
 			<label for="imageResizeInput"><?= Txt::trad("FILE_imgReduce") ?></label>
 		</div>
 		<div id="uploadDescription" onclick="$('#descriptionTextarea').slideToggle();">
-			<img src="app/img/description.png"> <?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png">
+			<img src="app/img/description.svg"> <?= Txt::trad("description") ?> <img src="app/img/arrowDown.svg">
 		</div>
 	</div>
 	

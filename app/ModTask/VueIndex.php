@@ -16,11 +16,13 @@ function moduleDisplay(){
 .objLines .objContent						{height:65px;}								/*surcharge*/
 .objLines .progressBar						{margin-left:15px;}							/*.progressBar*/
 .objBlocks .objIconOpacity					{display:none;}								/*masque l'icone*/
+.objLines .objIconOpacity img				{width:30px;}								/*surcharge*/
 .objBlocks .objDetails						{display:table-cell; width:40px; text-align:right;}/*cellule des .progressBar*/
 .objBlocks .objFolders .objDetails			{width:100px;}								/*détail des dossiers*/
 .objBlocks .objDetails .progressBar			{margin-block:2px;}							/*.progressBar au format icone : sans label*/
 .objBlocks .progressBarLabel				{display:none;}								/*idem*/
 .progressBarDelayed							{color:#740;}
+.priorityLabel img							{width:16px; height:16px;}
 
 /*TIMELINE*/
 #timelineSeparator							{visibility:hidden; width:100%;}
@@ -54,13 +56,13 @@ function moduleDisplay(){
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
-					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/plusAddFolder.png"></div><div>'.Txt::trad("addFolder").'</div></div>
+				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
+					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/addFolder.svg"></div><div>'.Txt::trad("addFolder").'</div></div>
 					  <hr>';
 			}
 			////	ARBORESCENCE  &  MENU DES STATUS  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
 			echo MdlTaskFolder::menuTree().MdlTaskStatus::displayMenu().MdlTask::menuDisplayMode().MdlTask::menuSort().
-				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
+				'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.svg"></div><div>'.Ctrl::$curContainer->contentDescription().'</div></div>';
 			?>
 		</div>
 	</div>
@@ -75,7 +77,7 @@ function moduleDisplay(){
 		?>
 				<div class="objContentScroll">
 					<div class="objContentTab vObjTasks">
-						<div class="objIcon objIconOpacity"><img src="app/img/task/iconSmall.png"></div>
+						<div class="objIcon objIconOpacity"><img src="app/img/task/icon.svg"></div>
 						<div class="objLabel" onclick="<?= $tmpTask->lightboxVue() ?>">
 							<?= ucfirst($tmpTask->title) ?>
 							<div class="objLabelDetail"><?= $tmpTask->categoryLabel().$tmpTask->priorityLabel() ?></div>
@@ -91,7 +93,7 @@ function moduleDisplay(){
 		<?php if(empty(CtrlObject::vueFolders()) && empty($tasksList)){ ?>
 			<div class="miscContent emptyContent">
 				<?= Txt::trad("TASK_noTask") ?>
-				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlTask::getUrlNew() ?>')"><img src="app/img/plus.png"> <?= Txt::trad("TASK_addTask") ?></div><?php } ?>
+				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlTask::getUrlNew() ?>')"><img src="app/img/add.svg"> <?= Txt::trad("TASK_addTask") ?></div><?php } ?>
 			</div>
 		<?php } ?>
 

@@ -13,7 +13,7 @@ fieldset label				{margin-left:20px;}
 fieldset li					{line-height:25px;}
 #submitButtons				{text-align:center; margin-top:30px;}
 #inscriptionNotify			{margin-bottom:20px;}
-#submitButtons button		{margin:10px; padding:10px; height:60px;}
+#submitButtons button		{margin:10px; padding:10px; width:220px; height:60px;}
 #submitButtons button img	{margin-right:10px;}
 </style>
 
@@ -44,7 +44,7 @@ fieldset li					{line-height:25px;}
 			<label for="boxInscriptionNotify"><?= Txt::trad("EDIT_notifMail2") ?></label>
 		</div>
 		<!--BOUTON D'INVALIDATION  /  BOUTON DE VALIDATION-->
-		<div class="submitButtonInline"><button type="submit" name="submitInvalidate" value="true"><img src="app/img/delete.png"><?= Txt::trad("userInscriptionSelectInvalidate") ?></button></div>
-		<?= Txt::submitButton("<img src='app/img/check.png'>".Txt::trad("userInscriptionSelectValidate"), false) ?>
+		<div class="submitButtonInline"><button type="submit" name="submitInvalidate" value="true"><img src="app/img/delete.svg"><?= Txt::trad("userInscriptionSelectInvalidate") ?></button></div>
+		<?= Txt::submitButton("<img src='app/img/check.svg'>".Txt::trad("userInscriptionSelectValidate"), false) ?>
 	</div>
 </form>

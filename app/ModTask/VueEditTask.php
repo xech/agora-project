@@ -12,10 +12,9 @@ ready(function(){
 
 <style>
 #bodyLightbox				{max-width:800px;}
-.vTaskOptions				{display:inline-block; margin:20px 20px 0px 0px;}
-.vTaskOptionsButton			{height:40px;}
-.vTaskOptionsButton img		{max-height:25px; margin-right:10px;}
-#responsiblePersonsBlock	{display:none; margin-top:5px; overflow:auto; max-height:300px;}
+.vTaskOptions				{display:inline-block; margin:20px 15px 0px 0px;}
+.vTaskOptionsButton img		{max-height:18px;}
+#responsiblePersonsBlock	{display:none; margin-top:15px; overflow:auto; max-height:300px;}
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
@@ -32,17 +31,38 @@ ready(function(){
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>">
 	<?= $curObj->descriptionEditor() ?>
 
-	<!--<SELECT> DE LA COLONNE KANBAN-->
+	<!--DATE DEBUT & FIN-->
+	<div class="vTaskOptions">
+		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" <?= Txt::tooltip("begin") ?> >
+		<img src="app/img/arrowRightLabel.svg">
+		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" <?= Txt::tooltip("end") ?> >
+	</div>
+
+	<!--STATUT / KANBAN-->
 	<div class="vTaskOptions">
 		<?= MdlTaskStatus::selectInput($curObj->_idStatus) ?>
 	</div>
 
-	<!--DATE DEBUT & FIN-->
-	<div class="vTaskOptions">
-		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" <?= Txt::tooltip("begin") ?> >
-		<img src="app/img/arrowRight.png">
-		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" <?= Txt::tooltip("end") ?> >
-	</div>
+	<!--"ASSIGNÉ À..."-->
+	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#responsiblePersonsBlock').slideToggle();">
+		<img src="app/img/users.svg"> <?= Txt::trad("TASK_assignedTo") ?>...
+	</button>
+	<fieldset id="responsiblePersonsBlock">
+		<!--USERS DE L'ESPACE-->
+		<?php
+		foreach(Ctrl::$curSpace->getUsers() as $tmpUser){
+			$checkUser=in_array($tmpUser->_id,Txt::txt2tab($curObj->responsiblePersons))  ?  "checked"  :  null;
+		?>
+			<div class="userInputDiv">
+				<input type="checkbox" name="responsiblePersons[]" value="<?= $tmpUser->_id ?>" class="vUserInput" id="userInput<?= $tmpUser->_id ?>" data-iduser="<?= $tmpUser->_id ?>" <?= $checkUser ?> >
+				<label for="userInput<?= $tmpUser->_id ?>"><?= $tmpUser->getLabel() ?></label>
+			</div>
+		<?php } ?>
+		<!--SELECTION D'USERS ET DES GROUPES D'USERS-->
+		<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, ".vUserInput") ?>
+	</fieldset>
+	
+	<br> 
 
 	<!--PRIORITE-->
 	<div class="vTaskOptions">
@@ -60,27 +80,6 @@ ready(function(){
 		</select>
 	</div>
 
-	<!--ASSIGNATIONS / RESPONSABLES-->
-	<button type="button" class="vTaskOptions vTaskOptionsButton" onclick="$('#responsiblePersonsBlock').slideToggle();">
-		<img src="app/img/user/iconSmall.png"> <?= Txt::trad("TASK_assignedTo") ?> <img src="app/img/arrowBottom.png">
-	</button>
-	<fieldset id="responsiblePersonsBlock">
-
-		<!--USERS DE L'ESPACE-->
-		<?php
-		foreach(Ctrl::$curSpace->getUsers() as $tmpUser){
-			$checkUser=in_array($tmpUser->_id,Txt::txt2tab($curObj->responsiblePersons))  ?  "checked"  :  null;
-		?>
-			<div class="userInputDiv">
-				<input type="checkbox" name="responsiblePersons[]" value="<?= $tmpUser->_id ?>" class="vUserInput" id="userInput<?= $tmpUser->_id ?>" data-iduser="<?= $tmpUser->_id ?>" <?= $checkUser ?> >
-				<label for="userInput<?= $tmpUser->_id ?>"><?= $tmpUser->getLabel() ?></label>
-			</div>
-		<?php } ?>
-
-		<!--SELECTION D'USERS ET DES GROUPES D'USERS-->
-		<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, ".vUserInput") ?>
-	</fieldset>
-	
 	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>
 </form>

@@ -22,11 +22,11 @@
 			<!--ADD USER /  INVITATIONS  /  IMPORTER DES USERS  /  ENVOI DES CREDENTIALS  /  AFFECT USER -->
 			<?php
 			$affectNewUsers=(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/plus.png"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
-			if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.png"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
-			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=PasswordResetUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/keys.png"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=vueImportExport\')"><div class="menuIcon"><img src="app/img/dataImportExport.png"></div><div>'.Txt::trad("importExport_user").'</div></div>';}
-			if($affectNewUsers==true)  					{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=AffectUsers\')" '.Txt::tooltip("USER_addExistUserTitle").'><div class="menuIcon"><img src="app/img/plusSmall.png"></div><div>'.Txt::trad("USER_addExistUser").'</div></div>';}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
+			if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.svg"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
+			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=PasswordResetUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/keys.svg"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=vueImportExport\')"><div class="menuIcon"><img src="app/img/exchange.svg"></div><div>'.Txt::trad("importExport_user").'</div></div>';}
+			if($affectNewUsers==true)  					{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=AffectUsers\')" '.Txt::tooltip("USER_addExistUserTitle").'><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("USER_addExistUser").'</div></div>';}
 			?>
 
 			<!--GROUPES D'UTILISATEURS-->
@@ -35,20 +35,20 @@
 				<div>
 					<!--TITRE DU MENU-->
 					<div class="menuLine">
-						<div class="menuIcon"><img src='app/img/user/userGroup.png'></div>
+						<div class="menuIcon"><img src='app/img/usersGroup.svg'></div>
 						<div><?= Txt::trad("USER_spaceGroups") ?></div>
 					</div>
 					<!--LISTE DES GROUPES-->
 					<?php foreach($userGroups as $tmpGroup){ ?>
 						<div class="menuLine cursorHelp" <?= Txt::tooltip($tmpGroup->usersLabel) ?>>
 							<div class="menuIcon">&nbsp;</div>
-							<div><img src='app/img/arrowRightSmall.png'> <?= ucfirst($tmpGroup->title) ?></div>
+							<div><img src='app/img/arrowRightLabel.svg'> <?= ucfirst($tmpGroup->title) ?></div>
 						</div>
 					<?php } ?>
 					<!--EDITION DES GROUPES-->
 					<?php if(MdlUserGroup::addRight()){ ?>
 						<div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=VueEditUserGroup')" <?= Txt::tooltip("USER_spaceGroupsEditBis") ?> >
-							<div class="menuIcon"><img src="app/img/edit.png"></div>
+							<div class="menuIcon"><img src="app/img/edit.svg"></div>
 							<div><?= Txt::trad("USER_spaceGroupsEdit") ?></div>
 						</div>
 					<?php } ?>
@@ -61,9 +61,9 @@
 			<?= MdlUser::menuDisplayMode().MdlUser::menuSort() ?>
 			<!--FILTRAGE ALPHABET-->
 			<div class="menuLine <?= Req::isParam("alphabet")?'optionSelect':null ?>">
-				<div class="menuIcon"><img src="app/img/alphabet.png"></div>
+				<div class="menuIcon"><img src="app/img/filter.svg"></div>
 				<div>
-					<div class="menuContextLaunch" for="menuAlphabet"><?= Txt::trad("alphabetFilter").(Req::isParam("alphabet")?'<img src="app/img/arrowRight.png"><b>'.Req::param("alphabet").'</b>':null) ?></div>
+					<div class="menuContextLaunch" for="menuAlphabet"><?= Txt::trad("alphabetFilter").(Req::isParam("alphabet")?'<img src="app/img/arrowRight.svg"><b>'.Req::param("alphabet").'</b>':null) ?></div>
 					<div id="menuAlphabet" class="menuContext">
 						<a <?= Req::isParam("alphabet")?'':'class="linkSelect"' ?> href="index.php?ctrl=user"><?= Txt::trad("displayAll") ?></a>
 						<?php foreach($alphabetList as $letter){ ?>
@@ -74,7 +74,7 @@
 			</div>
 			<!--NB D'UTILISATEURS-->
 			<div class="menuLine" <?= Ctrl::$curSpace->allUsersAffected() ? Txt::tooltip("USER_allUsersOnSpace") : null ?> >
-				<div class="menuIcon"><img src="app/img/info.png"></div>
+				<div class="menuIcon"><img src="app/img/info.svg"></div>
 				<div><?= $usersTotalNb." ".Txt::trad("USER_users") ?></div>
 			</div>
 		</div>
@@ -93,9 +93,9 @@
 								<?= $tmpUser->getLabel("full") ?>
 								<!--ADMIN GENERAL || ADMIN SPACE-->
 								<?php if($tmpUser->isGeneralAdmin()){ ?>
-									<img src="app/img/user/userAdminGeneral.png" <?= Txt::tooltip("USER_adminGeneral") ?> class="vAdminIcon">
+									<img src="app/img/userAdminGeneral.svg" <?= Txt::tooltip("USER_adminGeneral") ?> class="vAdminIcon">
 								<?php }elseif($tmpUser->isSpaceAdmin()){ ?>
-									<img src="app/img/user/userAdminSpace.png" <?= Txt::tooltip("USER_adminSpace") ?> class="vAdminIcon">
+									<img src="app/img/userAdmin.svg" <?= Txt::tooltip("USER_adminSpace") ?> class="vAdminIcon">
 								<?php } ?>
 							</div>
 							<?= $tmpUser->getFields("index") ?>

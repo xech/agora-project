@@ -1072,10 +1072,12 @@ class DbUpdate extends Db
 				}
 			}
 
-			if(self::updateVersion("26.10.0"))
+			if(self::updateVersion("26.10.2"))
 			{
 				//// Option de double authentification par email
 				self::fieldExist("ap_user", "dblAuthEnabled", "ALTER TABLE `ap_user` ADD `dblAuthEnabled` TINYINT DEFAULT NULL AFTER `connectionSpace`");
+				//// Remplace les icones dans la description d'install des dashboardNews
+				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`,'iconSmall.png','icon.svg'), `description`=REPLACE(`description`,'postMessage.png','post.svg'), `description`=REPLACE(`description`,'mailBig.png','post.svg'), `description`=REPLACE(`description`,'pdf.png','pdf.svg'), `description`=REPLACE(`description`,'messengerSmall.png','chat.svg'), `description`=REPLACE(`description`,'documentation.png','documentation.svg')");
 			}
 			///////////////////////		+ UPDATE DB.SQL !
 			///////////////////////

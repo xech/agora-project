@@ -128,7 +128,7 @@ class Req
 				$UrlPattern='%^(?:(?:https?|ftp)://)?[a-zA-Z0-9\-._~:/?#\[\]@!$&\'()*+,;=\%]+$%';							//Pattern d'une URL absolue OU relative (FILTER_VALIDATE_URL: pas avec les URL relatives)
 				$val=preg_match($UrlPattern,$val)  ?  filter_var($val, FILTER_SANITIZE_URL)  :  "";							//Filtre l'URL
 			}
-			elseif(preg_match("/^(description|editorDraft)$/i",$key)){														////	Filtre de l'editeur TinyMce
+			elseif(preg_match("/^(description|editorDraft|message)$/i",$key)){												////	Filtre de l'editeur TinyMce et Liens de visios du messenger
 				require_once('app/misc/htmlpurifier/HTMLPurifier.auto.php');												//Charge la librairie HTMLPurifier	
 				$config=HTMLPurifier_Config::createDefault();																//Config par défaut  (note : les attributs qui commencent par "data-" sont supprimés)
 				$config->set('Core.Encoding', 'UTF-8');																		//Encodage UTF-8 (conserve les caractères spéciaux)
@@ -244,7 +244,7 @@ class Req
 			{Ctrl::redir("index.php?ctrl=offline&action=install&disconnect=1");}
 		////	Affiche le message et lien "Retour"
         echo '<div style="text-align:center">
-				<h1 style="line-height:100px"><img src="app/img/importantBig.png"> &nbsp; '.$except->getMessage().'</h1>
+				<h1 style="line-height:100px"><img src="app/img/important.svg"> &nbsp; '.$except->getMessage().'</h1>
 				<h2><a href="index.php">Retour</a></h2>
 			  </div>';
 		exit;
@@ -287,7 +287,7 @@ class Req
 	{
 		$phpMinVersion="7.4";
 		if(version_compare(PHP_VERSION,$phpMinVersion,"<=")){
-			echo "<h2><img src='app/img/important.png'> ".str_replace("--CURRENT_VERSION--",static::appVersion(),Txt::trad("INSTALL_PhpOldVersion"))." : ".$phpMinVersion." minimum &nbsp; -> current version : ".PHP_VERSION."</h2>";
+			echo "<h2><img src='app/img/important.svg'> ".str_replace("--CURRENT_VERSION--",static::appVersion(),Txt::trad("INSTALL_PhpOldVersion"))." : ".$phpMinVersion." minimum &nbsp; -> current version : ".PHP_VERSION."</h2>";
 			exit;
 		}
 	}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+ <g id="Layer_2_00000117668769393167783830000003651702282091554946_" transform="matrix(1.0601 0 0 1 -11.58 0)">
+  <g id="Social_Icon">
+   <g id="Location">
+    <path d="m256 0c-104.9 0-190 85.1-190 190s190 322 190 322 190-217.1 190-322-85.1-190-190-190z" fill="#a00"/>
+    <path d="m256 287c-52.5 0-95-42.5-95-95s42.5-95 95-95 95 42.5 95 95-42.5 95-95 95z" fill="#fff"/>
+   </g>
+  </g>
+ </g>
+</svg>

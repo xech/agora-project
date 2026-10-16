@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="135.73mm" height="135.73mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 13573 13573" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+ <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
+   <rect width="13573" height="13573"/>
+  </clipPath></defs>
+ 
+ 
+ 
+  <g class="Master_Slide">
+   
+   
+  </g>
+ 
+ <g class="SlideGroup">
+  
+   
+    <g class="Slide" clip-path="url(#presentation_clip_path)">
+     <g class="Page">
+      <g class="Graphic">
+       <g>
+        <rect class="BoundingBox" width="13573" height="13573" fill="none"/>
+        <path d="m5093 2271c0-1247 1895-2258 4233-2258s4233 1011 4233 2258-1895 2257-4233 2257-4233-1010-4233-2257zm2601 3208c-767-575-2024-951-3448-951-2338 0-4233 1011-4233 2258s1895 2258 4233 2258 4233-1011 4233-2258c0-16-4-32-4-49h4v49 1129c0 1247-1895 2257-4233 2257s-4233-1010-4233-2257v1129c0 1246 1895 2257 4233 2257s4233-1011 4233-2257v1128c0 1247-1895 2258-4233 2258s-4233-1011-4233-2258v1129c0 1247 1895 2258 4233 2258s4233-1011 4233-2258v-45c274 29 557 45 847 45 2338 0 4233-1011 4233-2257v-1129c0 1196-1745 2172-3951 2250v-1129c2206-78 3951-1053 3951-2250v-1129c0 1196-1745 2173-3951 2250v-1128c2206-78 3951-1054 3951-2251v-1128c0 1246-1895 2257-4233 2257-580 0-1130-65-1632-178z" fill="#595959"/>
+       </g>
+      </g>
+     </g>
+    </g>
+   
+  
+ </g>
+</svg>

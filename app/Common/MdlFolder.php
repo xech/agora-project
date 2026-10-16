@@ -122,7 +122,7 @@
 	 ********************************************************************************************************/
 	public function iconPath()
 	{
-		return (!empty($this->icon))  ?  PATH_ICON_FOLDER.$this->icon  :  PATH_ICON_FOLDER."folder.png";
+		return (!empty($this->icon))  ?  PATH_ICON_FOLDER.$this->icon  :  PATH_ICON_FOLDER.'folder.svg';
 	}
 
 	/********************************************************************************************************
@@ -186,7 +186,7 @@
 			else{
 				$return=null;
 				foreach($foldersList as $cpt=>$objFolder){
-					if($typeReturn=="text")		{$return.=($cpt>0?'<img src="app/img/arrowRight.png">':null).$objFolder->name; }//format "text" : Dossier racine > Mon sous-dossier
+					if($typeReturn=="text")		{$return.=($cpt>0?'<img src="app/img/arrowRightLabel.svg">':null).$objFolder->name; }//format "text" : Dossier racine > Mon sous-dossier
 					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name).'/';}									//format "zip" : Dossier_racine/mon_sous-dossier/
 				}
 				return $return;
@@ -273,7 +273,7 @@
 		////	"Contenu du dossier"
 		$options["objOptions"][]=[
 			"separator"=>"<hr>",
-			"iconSrc"=>"folder/folderSmall.png",
+			"iconSrc"=>"folder.svg",
 			"label"=>Txt::trad("folderContent").' : '.$this->contentDescription()
 		];
 		////	Menu parent

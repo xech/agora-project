@@ -136,8 +136,8 @@ class MdlFile extends MdlObject
 		//// Fichier de moins de 15Mo?
 		if(filesize($this->filePath()) < (File::sizeMo*15))
 		{
-			//// Vignette d'image || Vignette de Pdf
-			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->thumbPath(),250,250);}
+			//// Vignette d'image || Vignette de Pdf =>  tester la qualité avec des images en 16/9eme
+			if(File::isType("imageResize",$this->name))  {return File::imageResize($this->filePath(),$this->thumbPath(),300,300);}
 			elseif($this->thumbPdfEnabled())
 			{
 				try {
@@ -147,7 +147,7 @@ class MdlFile extends MdlObject
 					$imgTmp->writeImage($this->thumbPath());
 					$imgTmp->clear();
 					$imgTmp->destroy();
-					return File::imageResize($this->thumbPath(),$this->thumbPath(),250,250);
+					return File::imageResize($this->thumbPath(),$this->thumbPath(),300,300);
 				} catch (Exception $error){
 					//Ctrl::notify($this->getLabel().' : '.$error->getMessage());
 				}
@@ -163,7 +163,7 @@ class MdlFile extends MdlObject
 		$nbVersions=count($this->getVersions());
 		if($nbVersions>1){
 			$nbVersionsTitle=$nbVersions." ".Txt::trad("FILE_nbFileVersions");
-			$displayLabelIcon=($displayType=="label")  ?  $nbVersionsTitle  :  "<img src='app/img/file/versions.png'>";
+			$displayLabelIcon=($displayType=="label")  ?  $nbVersionsTitle  :  "<img src='app/img/file/versions.svg'>";
 			return '<a class="versionsMenu" onclick="lightboxOpen(\'?ctrl=file&action=FileVersions&typeId='.$this->typeId.'\')" '.Txt::tooltip($nbVersionsTitle).'>'.$displayLabelIcon.'</a>';
 		}
 	}
@@ -181,22 +181,22 @@ class MdlFile extends MdlObject
 		}
 		////	Download du fichier (+ nb de downloads)
 		$options["objOptions"][]=[
-			"actionJs"=>"redir('".$this->urlDownload()."')",
-			"iconSrc"=>"download.png",
+			"actionJs"=>"confirmRedir('".$this->urlDownload()."',TRAD_confirmDownload)",
+			"iconSrc"=>"download.svg",
 			"label"=>Txt::trad("download").' &nbsp;<span class="cursorHelp" '.$tooltipDownloadedBy.'>'.str_replace('--NB_DOWNLOAD--',$this->downloadsNb,Txt::trad("FILE_downloadsNb")).'</span>'
 		];
 		////	Ajouter une version
 		if($this->editRight()){
 			$options["objOptions"][]=[
 				"actionJs"=>"lightboxOpen('".static::urlAddFiles("addVersion=true&typeId=".$this->typeId)."')",
-				"iconSrc"=>"plusSmall.png",
+				"iconSrc"=>"add.svg",
 				"label"=>Txt::trad("FILE_addFileVersion")
 			];
 		}
 		////	Nb de versions du fichier (pas de "actionJs" mais lightbox via "versionsMenu()")
 		if(count($this->getVersions())>1){
 			$options["objOptions"][]=[
-				"iconSrc"=>"file/versions.png",
+				"iconSrc"=>"file/versions.svg",
 				"label"=>$this->versionsMenu("label")
 			];
 		}
@@ -211,14 +211,14 @@ class MdlFile extends MdlObject
 	{
 		$pathFileTypes="app/img/file/fileType/";
 		if($this->hasTumb())								{return $this->thumbPath();}
-		elseif(File::isType("pdf",$this->name))				{return $pathFileTypes."pdf.png";}
-		elseif(File::isType("textEditor",$this->name))		{return $pathFileTypes."textEditor.png";}
-		elseif(File::isType("text",$this->name))			{return $pathFileTypes."text.png";}
-		elseif(File::isType("calc",$this->name))			{return $pathFileTypes."calc.png";}
-		elseif(File::isType("presentation",$this->name))	{return $pathFileTypes."presentation.png";}
-		elseif(File::isType("image",$this->name))			{return $pathFileTypes."image.png";}
-		elseif(File::isType("archive",$this->name))			{return $pathFileTypes."archive.png";}
-		elseif(File::isType("audio",$this->name))			{return $pathFileTypes."audio.png";}
+		elseif(File::isType("pdf",$this->name))				{return $pathFileTypes."pdf.svg";}
+		elseif(File::isType("textEditor",$this->name))		{return $pathFileTypes."doc.svg";}
+		elseif(File::isType("text",$this->name))			{return $pathFileTypes."txt.svg";}
+		elseif(File::isType("calc",$this->name))			{return $pathFileTypes."calc.svg";}
+		elseif(File::isType("presentation",$this->name))	{return $pathFileTypes."ppt.svg";}
+		elseif(File::isType("archive",$this->name))			{return $pathFileTypes."zip.svg";}
+		elseif(File::isType("audio",$this->name))			{return $pathFileTypes."audio.svg";}
+		elseif(File::isType("image",$this->name))			{return $pathFileTypes."img.svg";}
 		elseif(File::isType("video",$this->name))			{return $pathFileTypes."video.png";}
 		else												{return $pathFileTypes."misc.png";}
 	}

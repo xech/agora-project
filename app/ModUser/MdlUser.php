@@ -88,11 +88,20 @@ class MdlUser extends MdlPerson
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : DROIT D'ÉDITION  =>  ADMIN D'ESPACE  ||  AUTEUR (USER EDIT SON PROFIL)
+	 * SURCHARGE : DROIT D'ÉDITION => ACCÈS TOTAL
 	 ********************************************************************************************************/
 	public function editRight()
 	{
-		return (Ctrl::$curUser->isSpaceAdmin() || $this->isAutor());
+		return ($this->accessRight()==3);
+	}
+
+	/********************************************************************************************************
+	 * SURCHARGE : DROIT POUR L'USER COURANT DE CRÉER UN NOUVEL USER (cf "editRight()" => "accessRight()")
+	 ********************************************************************************************************/
+	public function createRight()
+	{
+		if($this->_id==0 &&  (Ctrl::$curUser->isSpaceAdmin() || static::confirmInvitation()))	{return true;}	//Admin d'espace / Invitation valide
+		else																					{return false;}
 	}
 
 	/********************************************************************************************************
@@ -102,6 +111,20 @@ class MdlUser extends MdlPerson
 	{
 		//Accès total  &&  Pas l'user courant  &&  Pas le dernier "generalAdmin"
 		return ($this->editRight()  &&  $this->_id!=Ctrl::$curUser->_id  &&  ($this->isGeneralAdmin()==false || Db::getVal("SELECT count(*) FROM ap_user WHERE generalAdmin=1")>=2));
+	}
+
+	/********************************************************************************************************
+	 * VERIF LA VALIDITE D'UNE INVITATION A CONFIRMER
+	 ********************************************************************************************************/
+	public static function confirmInvitation()
+	{
+		if(Req::isParam(["_idInvitation","mail","newPassword"])){
+			$invitation=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::param("_idInvitation")." AND mail=".Db::param("mail"));	//Récupère l'invitation
+			if(empty($invitation))  				{Ctrl::notify("USER_exired_idInvitation");}														//Invitation expiré
+			elseif(MdlUser::usersQuotaOk()==false)  {Ctrl::notify("USER_quotaExceeded");}															//Quota d'users atteint
+			else									{return $invitation;}																			//Renvoie l'invitation
+		}
+		return false;																																//Sinon renvoie false
 	}
 
 	/********************************************************************************************************
@@ -291,7 +314,10 @@ class MdlUser extends MdlPerson
 	public function editRecord($sqlFields, $login=null, $clearPassword=null, $spaceId=null)
 	{
 		if($this->isNew() && static::usersQuotaOk()==false)  {return false;}													//Controles le quota d'users atteint
-		if(self::loginExists($login,$this->_id))   {Ctrl::notify(Txt::trad("USER_loginExists")." : ".$login);  return false;}	//Controle si le login existe déjà
+		if(self::loginExists($login,$this->_id)){																				//Controle si le login existe déjà
+			Ctrl::notify(Txt::trad("USER_loginExists")." : ".$login);															//Notif "Le login existe déjà"
+			return false;
+		}	
 		$sqlFields=trim(trim($sqlFields),",");																					//Prépare la requete
 		$sqlFields.=", `login`=".Db::format($login);																			//Ajoute le login
 		if(!empty($clearPassword))  {$sqlFields.=", `password`=".Db::format(password_hash($clearPassword,PASSWORD_DEFAULT));}	//Ajoute le password
@@ -317,7 +343,7 @@ class MdlUser extends MdlPerson
 		//// Email non spécifié / Envoi du mail de reset de password
 		if(Txt::isMail($mailTo)==false)  {Ctrl::notify("email not specified");}
 		else{
-			$passwordLabel=($hidePassword==true)  ?  substr_replace($clearPassword,'*****',-5)  :  $clearPassword;			//Password avec les 5 derniers caractères masqués
+			$passwordLabel=($hidePassword==true)  ?  substr_replace($clearPassword,'******',-6)  :  $clearPassword;			//Password avec les 6 derniers caractères masqués
 			$connectUrl=Req::curUrl()."/index.php?login=".$this->login;														//Url vers l'espace
 			$mailSubject=Txt::trad("USER_mailNotifObject").' '.ucfirst(Ctrl::$agora->name);									//"Bienvenue sur Mon-espace"
 			$mailMessage=Txt::trad("USER_mailNotifContent").' <i>'.Ctrl::$agora->name.' - '.Req::curUrl(false).'</i>'.		//"Votre compte utilisateur vient d'être créé sur 'Mon espace - www.mon-espace.net'"
@@ -391,15 +417,15 @@ class MdlUser extends MdlPerson
 		if($this->editRight()){
 			$options["objOptions"][]=[
 				"actionJs"=>"lightboxOpen('?ctrl=user&action=userEditMessenger&typeId=".$this->typeId."')",
-				"iconSrc"=>"messenger.png",
+				"iconSrc"=>"chat.svg",
 				"label"=>Txt::trad("USER_livecounterVisibility")
 			];
 		}
 		////	"Retirer l'utilisateur de l'espace courant ?"
 		if($this->deleteFromCurSpaceRight()){
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('index.php?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."')",
-				"iconSrc"=>"deleteRemove.png",
+				"actionJs"=>"confirmRedir('index.php?ctrl=user&action=deleteFromCurSpace&objectsTypeId[".static::objectType."]=".$this->_id."', '".Txt::trad("USER_deleteFromCurSpaceConfirm",true)."');",
+				"iconSrc"=>"remove.svg",
 				"label"=>Txt::trad("USER_deleteFromCurSpace").' <i>'.Ctrl::$curSpace->getLabel().'</i>'
 			];
 		}
@@ -412,14 +438,14 @@ class MdlUser extends MdlPerson
 			}
 			$options["objOptions"][]=[
 				"separator"=>"<hr>",
-				"iconSrc"=>"space.png",
+				"iconSrc"=>"space.svg",
 				"label"=>$spaceList
 			];
 		}
 		////	Exporter au format vCard
 		$options["objOptions"][]=[
 			"actionJs"=>"redir('index.php?ctrl=user&action=ExportVcard&typeId=".$this->typeId."');",
-			"iconSrc"=>"vcard.png",
+			"iconSrc"=>"contact.svg",
 			"label"=>Txt::trad("export_vcard"),
 		];
 		////	"Modifier le profil utilisateur"  et  "Supprimer définitivement"

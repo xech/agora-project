@@ -23,11 +23,11 @@ img[src*='delete']		{margin-left:20px;}
 				<?= $tmpVersion["name"] ?>
 				<div class="versionDetails">
 					<?php
-					echo Txt::dateLabel("default",$tmpVersion["dateCrea"]).'<img src="app/img/separator.png">'.
-					Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel().'<img src="app/img/separator.png">'.
+					echo Txt::dateLabel("default",$tmpVersion["dateCrea"]).'<img src="app/img/separator.svg">'.
+					Ctrl::getObj("user",$tmpVersion["_idUser"])->getLabel().'<img src="app/img/separator.svg">'.
 					File::sizeLabel($tmpVersion["octetSize"]).'<br>'.
-					'<a href="'.$curObj->urlDownload($tmpVersion["dateCrea"]).'" target="_blank"><img src="app/img/download.png"> '.Txt::trad("download").'</a>'.
-					'<a onclick="confirmDeleteVersion(\''.urlencode($tmpVersion["dateCrea"]).'\')"><img src="app/img/delete.png"> '.Txt::trad("delete").'</a>';
+					'<a href="'.$curObj->urlDownload($tmpVersion["dateCrea"]).'" target="_blank"><img src="app/img/download.svg"> '.Txt::trad("download").'</a>'.
+					'<a onclick="confirmDeleteVersion(\''.urlencode($tmpVersion["dateCrea"]).'\')"><img src="app/img/delete.svg"> '.Txt::trad("delete").'</a>';
 					?>
 				</div>
 			</li>

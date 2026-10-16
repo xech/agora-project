@@ -25,8 +25,8 @@ class MdlFileFolder extends MdlFolder
 		////	"Télécharger le dossier"
 		if($this->isRootFolder()==false && Ctrl::$curUser->isUser() && $this->readRight()){
 			$options["objOptions"][]=[
-				"actionJs"=>"window.open('?ctrl=".static::moduleName."&action=downloadArchive&objectsTypeId[fileFolder]=".$this->_id."')",
-				"iconSrc"=>"download.png",
+				"actionJs"=>"confirmRedir('?ctrl=".static::moduleName."&action=downloadArchive&objectsTypeId[fileFolder]=".$this->_id."', TRAD_confirmDownload);",
+				"iconSrc"=>"download.svg",
 				"label"=>Txt::trad("downloadFolder")
 			];
 		}

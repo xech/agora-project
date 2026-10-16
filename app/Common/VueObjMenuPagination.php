@@ -7,10 +7,10 @@
 
 <div class="objMenuBottom">
 	<div class="miscContent" id="menuPagination">
-		<a <?= $pageUrlPrev ?> ><img src="app/img/arrowLeftNav.png"></a>
+		<a <?= $pageUrlPrev ?> ><img src="app/img/arrowLeft.svg"></a>
 		<?php for($pageNbTmp=1; $pageNbTmp<=$pageNbTotal; $pageNbTmp++){ ?>
 			<a href="<?= $pageUrl.$pageNbTmp ?>" class="<?= $pageNbTmp==$pageNbCur?'linkSelect':null ?>" <?=Txt::tooltip(Txt::trad("goToPage").' '.$pageNbTmp) ?> ><?= $pageNbTmp ?></a>
 		<?php } ?>
-		<a <?= $pageUrlNext ?> ><img src="app/img/arrowRightNav.png"></a>
+		<a <?= $pageUrlNext ?> ><img src="app/img/arrowRight.svg"></a>
 	</div>
 </div>

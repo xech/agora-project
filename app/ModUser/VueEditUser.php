@@ -39,7 +39,7 @@ function mainFormControl(){
 
 	<!--IMAGE-->
 	<div class="objField">
-		<div><?= $curObj->isProfileImg()  ?  "<div class='personProfileImg'>".$curObj->tagProfileImg()."</div>"  :  "<img src='app/img/person/photo.png'> ".Txt::trad("pictureProfil") ?></div>
+		<div><?= $curObj->isProfileImg()  ?  "<div class='personImgDiv'>".$curObj->tagProfileImg()."</div>"  :  "<img src='app/img/user.svg'> ".Txt::trad("pictureProfil") ?></div>
 		<div><?= $curObj->menuProfileImg() ?></div>
 	</div>
 
@@ -57,6 +57,14 @@ function mainFormControl(){
 		<div><?= Txt::inputPassword("password",$curObj->isNew()) ?></div>
 	</div>
 
+	<!--DOUBLE AUTHENTIFICATION-->
+	<?php if($curObj->dblAuthAvailable()){ ?>
+	<div class="objField" <?= Txt::tooltip("USER_dblAuthEnabledTooltip") ?>>
+		<div><label for="dblAuthEnabled"><img src="app/img/keys.svg"><?= Txt::trad("USER_dblAuthEnabled") ?></label></div>
+		<div><input type="checkbox" name="dblAuthEnabled" id="dblAuthEnabled" value="1" <?= !empty($curObj->dblAuthEnabled)?'checked':null ?> ></div>
+	</div>
+	<?php } ?>
+
 	<hr><!--SEPARATE-->
 
 	<!-- CHAMPS PRINCIPAUX !-->
@@ -67,29 +75,21 @@ function mainFormControl(){
 	<!--ESPACE DE CONNEXION-->
 	<?php if(count($curObj->spaceList())>0){ ?>
 	<div class="objField">
-		<div><img src="app/img/space.png"><?= Txt::trad("USER_connectionSpace") ?></div>
+		<div><img src="app/img/space.svg"><?= Txt::trad("USER_connectionSpace") ?></div>
 		<div><select name="connectionSpace" id="connectionSpace"><?php foreach($curObj->spaceList() as $tmpSpace)  {echo "<option value='".$tmpSpace->_id."' ".($tmpSpace->_id==$curObj->connectionSpace?'selected':null).">".$tmpSpace->name."</option>";} ?></select></div>
 	</div>
 	<?php } ?>
 
 	<!--LANGUE DE L'USER-->
 	<div class="objField">
-		<div><img src="app/img/country.png"><?= Txt::trad("USER_langs") ?></div>
+		<div><img src="app/img/earth.svg"><?= Txt::trad("USER_langs") ?></div>
 		<div><?= MdlUser::selectTrad("user",$curObj->lang) ?></div>
 	</div>
-
-	<!--DOUBLE AUTHENTIFICATION-->
-	<?php if($curObj->dblAuthAvailable()){ ?>
-	<div class="objField" <?= Txt::tooltip("USER_dblAuthEnabledTooltip") ?>>
-		<div><label for="dblAuthEnabled"><img src="app/img/keys.png"> <?= Txt::trad("USER_dblAuthEnabled") ?></label></div>
-		<div><input type="checkbox" name="dblAuthEnabled" id="dblAuthEnabled" value="1" <?= !empty($curObj->dblAuthEnabled)?'checked':null ?> ></div>
-	</div>
-	<?php } ?>
 
 	<!--NOTIF MAIL DE CREATION D'USER-->
 	<?php if(empty($curObj->_id) && Tool::mailEnabled()){ ?>
 	<div class="objField">
-		<div><label for="notifMail"><img src="app/img/mail.png"> <?= Txt::trad("EDIT_notifMail2") ?></label></div>
+		<div><label for="notifMail"><img src="app/img/mail.svg"><?= Txt::trad("EDIT_notifMail2") ?></label></div>
 		<div><input type="checkbox" name="notifMail" id="notifMail" value="1" checked='checked'></div>
 	</div>
 	<?php } ?>
@@ -97,15 +97,15 @@ function mainFormControl(){
 	<!--AGENDA PERSO DESACTIVE (ADMIN GENERAL)-->
 	<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
 	<div class="objField" <?= Txt::tooltip("USER_persoCalendarDisabledTooltip") ?>>
-		<div><label for="calendarDisabled"><img src="app/img/calendar/iconSmall.png"> <?= Txt::trad("USER_persoCalendarDisabled") ?></label></div>
+		<div><label for="calendarDisabled"><img src="app/img/calendar/icon.svg"> <?= Txt::trad("USER_persoCalendarDisabled") ?></label></div>
 		<div><input type="checkbox" name="calendarDisabled" id="calendarDisabled" value="1" <?= !empty($curObj->calendarDisabled)?'checked':null ?> ></div>
 	</div>
 	<?php } ?>
 
-	<!--ADMIN GENERAL-->
+	<!--ADMIN GENERAL (ADMIN GENERAL, SAUF POUR LUI MEME)-->
 	<?php if($curObj->editAdminGeneralRight()){ ?>
 	<div class="objField" <?= Txt::tooltip("USER_adminGeneralTooltip") ?>>
-		<div><label for="generalAdmin"><img src="app/img/user/userAdminGeneral.png"> <?= Txt::trad("USER_adminGeneral") ?></label></div>
+		<div><label for="generalAdmin"><img src="app/img/userAdminGeneral.svg"> <?= Txt::trad("USER_adminGeneral") ?></label></div>
 		<div><input type="checkbox" name="generalAdmin" id="generalAdmin" value="1" <?= !empty($curObj->generalAdmin)?'checked':null ?>></div>
 	</div>
 	<?php } ?>
@@ -119,8 +119,8 @@ function mainFormControl(){
 		<!--ENTETE-->
 		<div class="spaceAffectLine">
 			<div>&nbsp;</div>
-			<div><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
-			<div><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
+			<div><img src="app/img/user.svg"> <?= Txt::trad("SPACE_user") ?></div>
+			<div><img src="app/img/userAdmin.svg"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
 		<!--LISTE DES ESPACES (cf app.js)-->
 		<?php

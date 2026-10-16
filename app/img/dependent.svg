@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+ <g transform="matrix(.82835 0 0 .67714 6.8311 -.6848)" fill="#ccc" data-name="01">
+  <g fill="#ccc">
+   <path d="m11 26a9 9 0 0 1-9-9v-14a1 1 0 0 1 2 0v14a7 7 0 0 0 7 7 1 1 0 0 1 0 2z"/>
+   <path d="m2.0227 17.019a9 9 0 0 0 9.003 8.997l14-0.0047a1 1 0 0 0-6.64e-4 -2l-14 0.0047a7 7 0 0 1-7.0023-6.9977 1 1 0 0 0-2 6.64e-4z"/>
+  </g>
+ </g>
+</svg>

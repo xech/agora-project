@@ -223,7 +223,7 @@ class MdlObject
 				elseif(preg_match("/^G/",$aff["target"]))	{$aff["targetType"]="group";		$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("userGroup",$aff["targetId"])->getLabel();}
 				elseif($aff["target"]=="spaceUsers")		{$aff["targetType"]="spaceUsers";	$aff["targetId"]=(int)$aff["_idSpace"];			 $aff["label"]=Txt::trad("accessAllUsers");}
 				//Label de l'espace : "tous les utilisateurs" || affectation sur un autre espace
-				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRightSmall.png">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
+				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRightLabel.svg">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
 				//Ajoute l'affectation
 				$this->_affectations[$targetKey]=$aff;
 			}
@@ -271,18 +271,18 @@ class MdlObject
 	public function accessRight()
 	{
 		if($this->_accessRight===null){
-			$this->_accessRight=0;																															//INIT
-			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//FULL ACCESS : ADMIN GÉNÉRAL / AUTEUR DE L'OBJET / NOUVEL OBJET
-			elseif($this->isRootFolder() || $this->externalIdControl())							{$this->_accessRight=1;}									//LECTURE : DOSSIER RACINE / ACCES EXTERNE DE L'OBJET
-			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //EN FONCTION DU CONTENEUR PARENT
-			elseif($this->hasAccessRight()){																											 	//EN FONCTION DES AFFECTATIONS
-				$isPersoCalendar=(static::objectType=="calendar" && $this->isPersonal());
-				$sqlSelection="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;//SELECTION SQL DE L'OBJET ET L'ESPACE
-				//// ACCES TOTAL :  ADMIN DE L'ESPACE  +  OBJET AFFECTÉ À L'ESPACE  +  PAS UN AGENDA PERSO (PAS DE PRIVILÈGE ADMIN)
+			$this->_accessRight=0;
+			if(Ctrl::$curUser->isGeneralAdmin() || $this->isAutor() || $this->createRight())	{$this->_accessRight=3;}									//FULL ACCESS : admin général || auteur de l'objet || nouvel objet
+			elseif($this->isRootFolder() || $this->externalIdControl())							{$this->_accessRight=1;}									//LECTURE : 	dossier racine / acces externe de l'objet
+			elseif($this->hasContainerAccessRight())											{$this->_accessRight=$this->containerObj()->accessRight();} //Droit en fonction du conteneur parent
+			elseif($this->hasAccessRight()){																											 	//Droit en fonction des affectations :
+				$isPersoCalendar=(static::objectType=="calendar" && $this->isPersonal());																							//Agenda perso ?
+				$sqlSelection="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;	//TypeId de l'objet et espace courant
+				//// ACCES TOTAL :  admin de l'espace  + objet sur l'espace  + pas un agenda perso (aucun privilège admin)
 				if(Ctrl::$curUser->isSpaceAdmin()  &&  Db::getVal("SELECT COUNT(*) ".$sqlSelection)>0  &&  $isPersoCalendar==false){
 					$this->_accessRight=3;
 				}
-				//// ACCES EN FONCTION DES AFFECTATIONS EN BDD
+				//// ACCES SELON LES AFFECTATIONS EN BDD
 				else{
 					$this->_accessRight=Db::getVal("SELECT MAX(accessRight) ".$sqlSelection." AND target IN (".static::sqlAffectations().")");	//Droit le + important pour l'user courant
 					if(Ctrl::$curUser->isUser()==false  &&  $this->_accessRight>1)  {$this->_accessRight=1;}									//Droit en lecture pour les Guests
@@ -580,8 +580,8 @@ class MdlObject
 			else								{$message=$this->getLabel();}			//Label principal (title, name, etc)
 			if($descriptionLabel==false && !empty($this->description))  {$message.='<br><br><b>'.$this->descriptionMail().'</b>';}//Ajoute si besoin la description (ex: fichiers uploadés)
 			////	Message : mise en forme
-			$message='<div style="margin:20px 0px;">'.$subject.' :</div>
-					  <div style="margin:20px 0px;max-width:95%;padding:10px 20px;background:#eee;border:1px solid #bbb;border-radius:7px;">'.$message.'</div>
+			$message='<div style="margin-top:10px">'.$subject.' :</div>
+					  <div style="margin:20px 0px;max-width:95%;padding:5px 10px;background:#f5f5f5;border:1px solid #ccc;border-radius:10px;">'.$message.'</div>
 					  <a href="'.$this->getUrlExternal().'" target="_blank">'.Txt::trad("MAIL_elemAccessLink").'</a>';
 			////	Destinataires de la notif :  Users spécifiés ou affectés à l'objet
 			$mailUserIds=[];
@@ -660,7 +660,7 @@ class MdlObject
 		$pluginsList=[];
 		foreach(static::getPluginObjects($params) as $objFolder)
 		{
-			$objFolder->pluginIcon="folder/folderSmall.png";
+			$objFolder->pluginIcon="folder.svg";
 			$objFolder->pluginLabel=$objFolder->name;
 			$objFolder->pluginTooltip=$objFolder->folderPath("text");
 			if(!empty($objFolder->description))  {$objFolder->pluginTooltip.="<hr>".Txt::reduce($objFolder->description);}
@@ -738,7 +738,7 @@ class MdlObject
 			$autorLabel='<span onclick="'.$objUser->lightboxVue().'">'.$autorLabel.'</span>';  							//Lien vers le profil de l'user
 		}
 		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;				//Date de créa/modif
-		return $autorLabel.'&nbsp;<img src="app/img/arrowRightSmall.png">&nbsp;'.Txt::dateLabel("default",$dateEdit);	//Garder "&nbsp;" au cas où <img> est masqué
+		return $autorLabel.'<img src="app/img/arrowRightLabel.svg">'.Txt::dateLabel("default",$dateEdit);
 	}
 
 	/********************************************************************************************************
@@ -809,15 +809,15 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * FICHIERS JOINTS : MENU DES FICHIERS JOINTS  (cf menuContext & Co)
+	 * FICHIERS JOINTS : MENU "INLINE" DES FICHIERS JOINTS  (cf menuContext & Co)
 	 ********************************************************************************************************/
 	public function attachedFileMenu($separator=true)
 	{
 		if(!empty($this->attachedFileList())){
 			$ListMenu="";
 			foreach($this->attachedFileList() as $tmpFile){
-				$onclick="confirmRedir('".$tmpFile["urlDownload"]."', '".Txt::trad("confirmDownload",true)."')";
-				$ListMenu.='<div '.Txt::tooltip("download").' class="attachedFileMenu" onclick="'.$onclick.'"><img src="app/img/attachment.png"> '.$tmpFile["name"].'</div>';
+				$onclick="confirmRedir('".$tmpFile["urlDownload"]."', TRAD_confirmDownload);";
+				$ListMenu.='<div '.Txt::tooltip("download").' class="attachedFileMenu" onclick="'.$onclick.'"><img src="app/img/attachment.svg"> '.$tmpFile["name"].'</div>';
 			}
 			$separator=($separator==true) ? "<hr>" : null; 
 			return $separator.$ListMenu;

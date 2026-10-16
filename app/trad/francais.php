@@ -22,7 +22,7 @@ class Trad extends Txt
 
 			////	Divers
 			"mainMenu"=>"Menu principal",
-			"menuOptions"=>"Options",
+			"menuOptions"=>"Menu des options",
 			"emptyFields"=>"Merci de remplir les champs du formulaire",
 			"requiredFields"=>"Merci de remplir le champ",
 			"inaccessibleElem"=>"L'élément demandé n'est pas accessible",
@@ -34,7 +34,7 @@ class Trad extends Txt
 			"or"=>"ou",
 			"and"=>"et",
 			"goToPage"=>"Aller à la page",
-			"alphabetFilter"=>"Filtre alphabétique",
+			"alphabetFilter"=>"Filtrer par nom",
 			"displayAll"=>"Tout afficher",
 			"show"=>"Afficher",
 			"hide"=>"Masquer",
@@ -61,12 +61,12 @@ class Trad extends Txt
 			"copyUrl"=>"Copier le lien de partage",
 			"copyUrlTooltip"=>"Copier le lien (URL) pour partager l'élément par email, messagerie, etc.",
 			"copyUrlNotif"=>"Le lien a bien été copiée",
-			"footerGeneratedTime"=>"Page générée en",
 
 			////	Confirm et Suppression
-			"confirm"=>"Confirmer",
+			"confirmValidate"=>"Confirmer",
 			"confirmCancel"=>"Annuler",
-			"confirmDownload"=>"Télécharger le fichier ?",
+			"confirmDownload"=>"Télécharger ?",
+			"confirmDownloadInfo"=>"Le téléchargement peut prendre quelques minutes",
 			"confirmCloseForm"=>"Fermer le formulaire sans enregistrer ?",
 			"delete"=>"Supprimer",
 			"confirmDelete"=>"Confirmer la suppression ?",
@@ -74,7 +74,7 @@ class Trad extends Txt
 			"confirmDeleteNotify"=>"La suppression a bien été effectuée",
 			"confirmDeleteSelect"=>"Confirmer la suppression définitive des éléments sélectionnés ?",
 			"confirmDeleteSelectNb"=>"éléments sélectionnés",
-			"confirmDeleteFolder"=>"Certains sous-dossiers ne vous sont pas accessibles en lecture : confirmer tout de même ?",
+			"confirmDeleteFolder"=>"Certains sous-dossiers ne vous sont pas accessibles : confirmer la suppression ?",
 			"confirmDeleteWait"=>"Merci de patienter un instant : la suppression du dossier peut prendre quelques secondes",
 			"notifDeleteFolderUncomplete"=>"Certains éléments n'ont pas été supprimé car vous n'avez pas les droits d'accès nécessaires",
 
@@ -122,7 +122,7 @@ class Trad extends Txt
 			"passwordResetMailNotRegistered"=>"L'email ne correspond à aucun compte enregistré",
 
 			////	Type d'affichage
-			"displayMode"=>"Disposition",
+			"displayMode"=>"Affichage",
 			"displayMode_line"=>"ligne",
 			"displayMode_block"=>"grille",
 			
@@ -235,11 +235,10 @@ class Trad extends Txt
 			"accessWrite"=>"Ecriture",
 			"accessWriteDetail" =>"Accès --OBJ_LABEL_TO-- en lecture et écriture",
 			"accessWriteDetailContainer"=>"Accès --OBJ_LABEL_TO-- en lecture et écriture :<br> Droit d'ajouter, modifier et supprimer tous --OBJ_LABEL_CONTENT--",
-			"accessFullDetail"=>"Administrateur et Auteur : <br> Edition et accès complet --OBJ_LABEL_TO--",
-			"accessAllUsers"=>"Tous les utilisateurs",
-			"accessAllUsersDetail"=>"Droit d'accès pour les utilisateurs de l'espace <i>--SPACENAME--</i>",
-			"accessAllUsersGuests"=>"Tous les utilisateurs et invités",
-			"accessAllUsersGuestsDetail"=>"Droit d'accès pour les utilisateurs et invités de l'espace <i>--SPACENAME--</i>.<hr>Invités (accès libre sans authentification) : accès limité par défaut en lecture seule",
+			"accessFullDetail"=>"Administrateur / Auteur : édition et accès complet --OBJ_LABEL_TO--",
+			"accessAllUsers"=>"Tout le monde",
+			"accessAllUsersTooltip"=>"Droit d'accès pour tous les utilisateurs de l'espace <i>--SPACENAME--</i>",
+			"accessAllUsersTooltipGuest"=>"Accès limité en lecture pour les invités de l'espace (accès sans authentification)",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Espace",								//ModSpace
@@ -307,7 +306,7 @@ class Trad extends Txt
 			"MAIL_fromTheSpace"=>"Accéder à l'espace",
 			"MAIL_elemCreatedBy"=>"--OBJ_LABEL-- créé par",
 			"MAIL_elemModifiedBy"=>"--OBJ_LABEL-- modifié par",
-			"MAIL_elemAccessLink"=>"Voir sur mon espace",
+			"MAIL_elemAccessLink"=>"Consulter sur mon espace",
 			
 			////	Dossier & fichier
 			"gigaOctet"=>"Go",
@@ -331,8 +330,8 @@ class Trad extends Txt
 			"postalCode"=>"Code postal",
 			"city"=>"Ville",
 			"country"=>"Pays",
-			"telephone"=>"Téléphone",
-			"telmobile"=>"Tél. mobile",
+			"telephone"=>"Téléphone fixe",
+			"telmobile"=>"Téléphone mobile",
 			"mail"=>"Email",
 			"function"=>"Fonction",
 			"companyOrganization"=>"Organisme / Société",
@@ -424,9 +423,9 @@ class Trad extends Txt
 			"HEADER_shortcuts"=>"Raccourcis",
 
 			////	Messenger / Visio
-			"MESSENGER_MODULE_NAME"=>"Messagerie",
-			"MESSENGER_MODULE_DESCRIPTION"=>"Discutez ou lancez une visioconférence avec les personnes en ligne",
-			"MESSENGER_messengerMultiUsers"=>"Discuter à plusieurs sur la messagerie <br>(volet de gauche pour choisir les destinataires)",
+			"MESSENGER_MODULE_NAME"=>"Messages",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Discuter ou lancer une visioconférence avec les personnes en ligne",
+			"MESSENGER_messengerMultiUsers"=>"Voir tous les messages et discuter avec plusieurs interlocuteurs",
 			"MESSENGER_chatWithMulti"=>"Discuter avec",
 			"MESSENGER_chatWith"=>"Discuter ou lancer une visio avec",
 			"MESSENGER_messageFrom"=>"Message de",
@@ -436,7 +435,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Merci de spécifier un message",
 			"MESSENGER_visioProposeTo"=>"Proposer une visioconférence à",
 			"MESSENGER_visioProposeToSelection"=>"Proposer une visioconférence aux personnes sélectionnées",
-			"MESSENGER_visioProposeToUsers"=>"Lancer une visioconférence entre",
+			"MESSENGER_visioProposeToUsers"=>"Lancer une visioconférence",
 			"MESSENGER_nobody"=>"Aucun autre utilisateur n'est connecté actuellement",
 
 			////	Lancer une Visio
@@ -497,15 +496,15 @@ class Trad extends Txt
 			"INSTALL_installOk"=>"Votre espace a été correctement installé",
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espace de partage et de travail collaboratif",
-			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre espace de partage &nbsp; <img src="app/img/logoSmall.png"></h3>
-											<h4><img src="app/img/file/iconSmall.png"> <a href="index.php?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
-											<h4><img src="app/img/calendar/iconSmall.png"> <a href="index.php?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
-											<h4><img src="app/img/dashboard/iconSmall.png"> <a href="index.php?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
-											<h4><img src="app/img/task/iconSmall.png"> <a href="index.php?ctrl=task">Gérez vos tâches et projets pour organiser votre activité</a></h4>
-											<h4><img src="app/img/messengerSmall.png"> <a href="index.php?ctrl=forum">Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
-											<h4><img src="app/img/mail/iconSmall.png"> <a href="index.php?ctrl=mail">Envoyez des newsletters pour diffuser des mails d\'information.</a></h4>
-											<h4><img src="app/img/documentation.png"> <a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref">Consultez le guide d\'utilisation pour découvrir le fonctionnement votre espace</a></h4>
-											<h4><img src="app/img/mailBig.png"> <a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>',
+			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre espace de partage &nbsp; <img src="app/img/logo.png"></h3>
+											<h4><img src="app/img/file/icon.svg"> <a href="index.php?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
+											<h4><img src="app/img/calendar/icon.svg"> <a href="index.php?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
+											<h4><img src="app/img/dashboard/icon.svg"> <a href="index.php?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
+											<h4><img src="app/img/task/icon.svg"> <a href="index.php?ctrl=task">Gérez vos tâches et projets pour organiser votre activité</a></h4>
+											<h4><img src="app/img/chat.svg"> <a href="index.php?ctrl=forum">Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
+											<h4><img src="app/img/mail/icon.svg"> <a href="index.php?ctrl=mail">Envoyez des newsletters pour diffuser des mails d\'information.</a></h4>
+											<h4><img src="app/img/documentation.svg"> <a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref">Consultez le guide d\'utilisation pour découvrir le fonctionnement votre espace</a></h4>
+											<h4><img src="app/img/mail.svg"> <a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Que pensez-vous du fil d'actualité ?",
 			"INSTALL_dataDashboardPollA"=>"Très intéressant !",
 			"INSTALL_dataDashboardPollB"=>"Intéressant",
@@ -526,10 +525,9 @@ class Trad extends Txt
 			"AGORA_phpLdapDisabled"=>"Fonction PHP LDAP désactivée",
 			"AGORA_phpGD2Disabled"=> "Fonction PHP GD2 désactivée",
 			"AGORA_backupFull"=>"Sauvegarde complète",
-			"AGORA_backupFullTooltip"=>"Récupérer la sauvegarde complète de l'espace : ensemble des fichiers ainsi que la base de données",
+			"AGORA_backupFullTooltip"=>"Récupérer la sauvegarde complète de l'espace :<br> ensemble des fichiers ainsi que la base de données",
 			"AGORA_backupDb"=>"Sauvegarder la base de données",
 			"AGORA_backupDbTooltip"=>"Récupérer uniquement la sauvegarde de la base de données de l'espace",
-			"AGORA_backupConfirm"=>"La récupération de la sauvegarde peut durer quelques minutes : confirmer tout de même ?",
 			"AGORA_diskSpaceInvalid"=>"L'espace disque pour les fichiers doit être un entier",
 			"AGORA_visioHostInvalid"=>"L'URL du serveur de visioconférence est invalide : elle doit commencer par 'https'",
 			"AGORA_gApiKeyInvalid"=>"Si vous choisissez Google Map comme outil de cartographie, vous devez y spécifier un 'API Key'",
@@ -538,8 +536,8 @@ class Trad extends Txt
 			"AGORA_name"=>"Nom de l'espace principal",
 			"AGORA_nameTooltip"=>"Nom affiché en page de connexion, dans les emails, etc.",
 			"AGORA_description"=>"Description en page de connexion",
-			"AGORA_footerHtml"=>"Texte en bas à gauche de chaque page",
-			"AGORA_logo"=>"Logo en bas à droite de chaque page",
+			"AGORA_footerHtml"=>"Texte de footer des pages",
+			"AGORA_logo"=>"Logo de footer des pages",
 			"AGORA_logoUrl"=>"URL",
 			"AGORA_logoConnect"=>"Logo en page de connexion",
 			"AGORA_logoConnectTooltip"=>"Logo affiché en tête du formulaire de connexion",
@@ -557,7 +555,7 @@ class Trad extends Txt
 			"AGORA_white"=>"Affichage clair",
 			"AGORA_userMailDisplay"=>"Adresses email des utilisateurs visibles par tous",
 			"AGORA_userMailDisplayTooltip"=>"Afficher/Masquer l'email dans le profil de chaque utilisateur, les notifications par mail, etc.<br>Note : l'administrateur principal pourra toujours consulter l'email de chaque utilisateur",
-			"AGORA_moduleLabelDisplay"=>"Nom des modules dans la barre de menu",
+			"AGORA_moduleLabelDisplay"=>"Nom des modules dans la barre principale",
 			"AGORA_folderDisplayMode"=>"Affichage par défaut des dossiers",
 			"AGORA_wallpaperLogoError"=>"Le fond d'écran et le logo doivent être au format .jpg ou .png",
 			"AGORA_deleteWallpaper"=>"Supprimer le fond d'écran",
@@ -574,7 +572,7 @@ class Trad extends Txt
 			"AGORA_gOAuthTooltip"=>"Les utilisateurs ayant un identifiant avec une adresse <i>@gmail.com</i> pourront aussi se connecter via leur compte Google",
 			"AGORA_gOAuthClientId"=>"Client ID pour la connexion via Google",
 			"AGORA_gOAuthClientIdTooltip"=>"Parametrage obligatoire pour la connexion via un compte Google :<br> https://developers.google.com/identity/protocols/oauth2",
-			"AGORA_messengerDisplay"=>"Messagerie",
+			"AGORA_messengerDisplay"=>"Messages",
 			"AGORA_personsSort"=>"Tri par défaut des utilisateurs et contacts",
 			//SMTP
 			"AGORA_smtpLabel"=>"Connexion SMTP & sendMail",
@@ -625,8 +623,8 @@ class Trad extends Txt
 			////
 			"SPACE_MODULE_NAME"=>"Espaces",
 			"SPACE_moduleTooltip"=>"L'espace principal peut être composé d'un ou plusieurs espaces de travail.",
-			"SPACE_config"=>"Gérer l'espace de travail",
-			"SPACE_configInfo"=>"Gérer l'espace de travail, ses modules (outils) et les droits d'accès des utlisateurs",
+			"SPACE_config"=>"Editer l'espace de travail",
+			"SPACE_configInfo"=>"Editer l'espace de travail, ses modules (outils) et les droits d'accès des utlisateurs",
 			"SPACE_space"=>"espace de travail",
 			"SPACE_spaces"=>"espaces de travail",
 			"SPACE_accessRightUndefined"=>"A définir !",
@@ -654,7 +652,7 @@ class Trad extends Txt
 			"USER_MODULE_DESCRIPTION"=>"Utilisateurs de l'espace",
 			"USER_OPTION_allUsersAddGroup"=>"Tous les utilisateurs peuvent créer des groupes",
 			"USER_spaceOrAllUsersTooltip"=>"Utilisateurs de l'espace courant / Utilisateurs de tous les espaces de travail (admin)",
-			"USER_spaceUsers"=>"Gérer les utilisateurs de l'espace",
+			"USER_spaceUsers"=>"Utilisateurs de l'espace",
 			"USER_allUsers"=>"Gérer tous les utilisateurs",
 			"USER_allUsersToolip"=>"Gérer les utilisateurs de tous les espaces de travail",
 			"USER_deleteDefinitely"=>"Supprimer définitivement",
@@ -678,7 +676,8 @@ class Trad extends Txt
 			"USER_adminSpace"=>"Administrateur de l'espace",
 			"USER_userSpace"=>"Utilisateur de l'espace",
 			"USER_profilEdit"=>"Modifier le profil utilisateur",
-			"USER_myProfilEdit"=>"Modifier mon profil",
+			"USER_myProfile"=>"Mon profil",
+			"USER_myProfileTooltip"=>"Modifier mon profil utilisateur",
 			// Invitations
 			"USER_sendInvitation"=>"Envoyer des invitations",
 			"USER_sendInvitationTooltip"=>"Envoyer des mails d'invitation à rejoindre l'espace courant :<br> Dès qu'une invitation est validée, un compte utilisateur est automatiquement créé pour la personne concernée.",
@@ -719,18 +718,19 @@ class Trad extends Txt
 			"USER_mailNotifContent2"=>"Connectez-vous ici avec les coordonnées suivantes",
 			"USER_mailNotifContent3"=>"Pensez à conserver cet email dans vos archives",
 			// Edition du Livecounter/Messenger
-			"USER_livecounterVisibility"=>"Présence sur la messagerie",
-			"USER_livecounterAllUsers"=>"Afficher ma présence aux autres utilisateurs quand je suis connecté",
-			"USER_livecounterDisabled"=>"Masquer ma présence aux autres utilisateurs quand je suis connecté",
-			"USER_livecounterSomeUsers"=>"Afficher ma présence pour certains utilisateurs uniquement",
-			//Double authentification
+			"USER_livecounterVisibility"=>"Présence en ligne",
+			"USER_livecounterVisibilityTooltip"=>"Affiche ma présence aux autres utilisateurs connectés, pour discuter via la messagerie",
+			"USER_livecounterAllUsers"=>"Afficher ma présence pour tout le monde",
+			"USER_livecounterDisabled"=>"Masquer ma présence en ligne",
+			"USER_livecounterSomeUsers"=>"Afficher ma présence pour certains",
+			//Double authentification / code de vérification
 			"USER_dblAuthEnabled"=>"Double Authentification par email",
 			"USER_dblAuthEnabledTooltip"=>"Activer la double Authentification par email : valider la connexion à l'espace via un code temporaire envoyé par email (login)",
-			"USER_dblAuthMailSubject"=>"Code d'authentification",
-			"USER_dblAuthMailMessage"=>"Voici le code d'authentification à valider en page de connexion (valide 10mn)",
-			"USER_dblAuthCodeFormTitle"=>"Code d'authentification <br><br> Envoyé à",
-			"USER_dblAuthCodeExpired"=>"Code d'authentification expiré",
-			"USER_dblAuthCodeFalse"=>"Code d'authentification erroné",
+			"USER_dblAuthMailSubject"=>"Code de vérification",
+			"USER_dblAuthMailMessage"=>"Voici le code de vérification à valider en page de connexion (valide 10mn)",
+			"USER_dblAuthFormTitle"=>"Code de vérification <br><br> Envoyé à",
+			"USER_dblAuthExpired"=>"Code de vérification expiré",
+			"USER_dblAuthError"=>"Code de vérification erroné",
 
 			////	MOD : DASHBOARD
 			////
@@ -748,7 +748,7 @@ class Trad extends Txt
 			"DASHBOARD_noNews"=>"Aucune actualité pour le moment",
 			"DASHBOARD_POLLS_addPoll"=>"Nouveau sondage",
 			"DASHBOARD_POLLS_onlyVoted"=>"Sondages votés",
-			"DASHBOARD_POLLS_onlyVotedInfo"=>"Afficher uniquement les sondages déjà voté",
+			"DASHBOARD_POLLS_onlyVotedInfo"=>"Afficher uniquement les sondages déjà votés",
 			"DASHBOARD_POLLS_toVoteNb"=>"sondages à voter",
 			"DASHBOARD_POLLS_voteSubmit"=>"Voter et voir les résultats",
 			"DASHBOARD_POLLS_voteTooltip"=>"Le vote est anonyme : personne n'aura connaissance de votre choix",
@@ -796,7 +796,6 @@ class Trad extends Txt
 			"FILE_MODULE_DESCRIPTION"=>"Gestionnaire de fichiers",
 			"FILE_OPTION_adminRootAddContent"=>"Seul les administrateurs peuvent ajouter des dossiers et fichiers du dossier principal",
 			"FILE_addFile"=>"Nouveau fichier",
-			"FILE_folderAccessError"=>"Dossier inaccessible sur le serveur",
 			"FILE_downloadSelection"=>"télécharger la sélection",
 			"FILE_fileDownload"=>"Télécharger",
 			"FILE_fileSize"=>"Taille du fichier",
@@ -869,12 +868,12 @@ class Trad extends Txt
 			"CALENDAR_evtProposeDecline"=>"Décliner la proposition",
 			"CALENDAR_evtProposeDeclined"=>"La proposition a été décliné <br>Un email de notification a été envoyé à l'auteur",
 			"CALENDAR_evtProposeDeclinedMail"=>"Votre proposition d'événement a été déclinée",
-			"CALENDAR_evtEdit"=>"Modifier l'événement et ses affectations aux agendas",
+			"CALENDAR_evtEdit"=>"Modifier l'événement",
 			"CALENDAR_evtDelete"=>"Supprimer l'événement",
 			"CALENDAR_evtRemoveFromCal"=>"Retirer l'événement de l'agenda",
-			"CALENDAR_evtRemoveFromDate"=>"Retirer l'événement de cette date",
+			"CALENDAR_evtRemoveFromDate"=>"Retirer l'événement à cette date",
 			"CALENDAR_evtPrivate"=>"Événement privé",
-			"CALENDAR_evtAutor"=>"Événements que j'ai créés",
+			"CALENDAR_evtAutor"=>"Afficher mes événements",
 			"CALENDAR_evtAutorInfo"=>"Afficher les événements que j'ai créés",
 			"CALENDAR_evtAutorSortCrea"=>"Trier par date de création (desc)",
 			"CALENDAR_evtAutorSortBegin"=>"Trier par date de début de l'événement (desc)",

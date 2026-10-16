@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+ <g transform="translate(-37.432 .63445)" clip-rule="evenodd" fill-rule="evenodd">
+  <path d="m168.58 0h173.38l153.1 153.07v294c0 35.729-29.233 64.933-64.932 64.933h-261.55c-35.7 0-64.933-29.204-64.933-64.933v-382.13c0-35.73 29.234-64.933 64.933-64.933z" fill="#008bf5"/>
+  <path d="m341.96 0 153.1 153.07h-136.57c-9.1 0-16.533-7.403-16.533-16.504z" fill="#6cbfff"/>
+ </g>
+ <g transform="matrix(.96885 0 0 1 -35.262 .63445)" fill="#fff">
+  <rect x="157.54" y="383.51" width="307.36" height="22.84" stroke-width="1.033"/>
+  <rect x="157.54" y="220.58" width="143.8" height="22.84" stroke-width=".70656"/>
+  <rect x="157.54" y="274.89" width="143.8" height="22.84" stroke-width=".70656"/>
+  <rect x="157.54" y="329.2" width="307.49" height="22.84" stroke-width="1.0332"/>
+ </g>
+ <g transform="matrix(.79797 0 0 1 28.579 .63445)">
+  <rect x="326.74" y="219.52" width="158.2" height="78.037" ry="15.861" fill="#6cbfff" stroke-width="1.233"/>
+  <ellipse cx="450.26" cy="237.52" rx="12.79" ry="9.834" fill="#fff" stroke-width="3.3619"/>
+  <path d="m341.11 289.28h131.08l-130.93-47.201z" fill="#fff" stroke-width="1.1665"/>
+ </g>
+</svg>

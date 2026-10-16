@@ -121,9 +121,9 @@ class MdlPerson extends MdlObject
 		elseif($fieldName=="mail"){
 			if($this->userMailDisplay()==false || empty($fieldVal))  {$fieldVal="";}//Tjs vide si on masque l'email de l'user
 			else{
-				$sendMailTo=Txt::trad("sendMailTo").' '.$this->getLabel().' : '.$fieldVal;																								//Label et email du destinataire
-				if(Ctrl::$curSpace->moduleEnabled("mail"))	{$mailLink='onclick="window.top.confirmRedir(\'index.php?ctrl=mail&checkMail='.$fieldVal.'\', \''.addslashes($sendMailTo).'\')"';}	//Module Mail
-				else										{$mailLink='href="mailto:'.$fieldVal.'"';}																					//Mailto
+				$sendMailTo=Txt::trad("sendMailTo").' '.$this->getLabel().' : '.$fieldVal;																											//Label et email du destinataire
+				if(Ctrl::$curSpace->moduleEnabled("mail"))	{$mailLink='onclick="window.top.confirmRedir(\'index.php?ctrl=mail&checkMail='.$fieldVal.'\', \''.addslashes($sendMailTo).'\');"';}		//Redir vers le module Mail
+				else										{$mailLink='href="mailto:'.$fieldVal.'"';}																								//Mailto
 				$fieldVal='<a '.$mailLink.' '.Txt::tooltip($sendMailTo).'>'.$fieldVal.'</a>';
 			}
 		}
@@ -135,7 +135,7 @@ class MdlPerson extends MdlObject
 		}
 		//Adresse complete : affiche une carte 
 		elseif($fieldName=="fullAdress" && $this->hasAdress()){
-			$fieldVal='<a onclick="lightboxOpen(\'?ctrl=misc&action=PersonsMap&objectsTypeId['.static::objectType.']='.$this->_id.'\')" '.Txt::tooltip("mapLocalize").'><img src="app/img/map.png"> '.$this->adress.' '.$this->postalCode.' '.$this->city.'</a>';
+			$fieldVal='<a onclick="lightboxOpen(\'?ctrl=misc&action=PersonsMap&objectsTypeId['.static::objectType.']='.$this->_id.'\')" '.Txt::tooltip("mapLocalize").'><img src="app/img/map.svg">'.$this->adress.' '.$this->postalCode.' '.$this->city.'</a>';
 		}
 		//Commentaire
 		elseif($fieldName=="comment"){
@@ -143,8 +143,8 @@ class MdlPerson extends MdlObject
 		}
 		//Retourne le champ dans son conteneur
 		if(!empty($fieldVal)){
-			if($mode=="index")	{return '<div class="personField">'.$fieldVal.'</div><img src="app/img/separator.png" class="personFieldSeparator">';}
-			else				{return '<div class="objField"><div><img src="app/img/person/'.$fieldName.'.png"> '.Txt::trad($fieldName).'</div><div>'.$fieldVal.'</div></div>';}
+			if($mode=="index")	{return '<div class="personField">'.$fieldVal.'</div><img src="app/img/separator.svg" class="personFieldSeparator">';}
+			else				{return '<div class="objField"><div>'.Txt::trad($fieldName).'</div><div>'.$fieldVal.'</div></div>';}
 		}
 	}
 

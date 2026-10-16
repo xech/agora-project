@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="presentation_clip_path">
+   <rect width="21167" height="21167"/>
+  </clipPath><clipPath id="clip_path_1">
+          <path d="m0 0h21166v21166h-21166v-21166z"/>
+         </clipPath></defs><g data-name="Layer 2"><g id="add"><circle id="background" cx="256" cy="256" r="256" fill="#528eb7"/><path d="m374.41 222.68h-85.09v-85.09a12.59 12.59 0 0 0-12.59-12.59h-41.46a12.59 12.59 0 0 0-12.59 12.59v85.09h-85.09a12.59 12.59 0 0 0-12.59 12.59v41.46a12.59 12.59 0 0 0 12.59 12.59h85.09v85.09a12.59 12.59 0 0 0 12.59 12.59h41.46a12.59 12.59 0 0 0 12.59-12.59v-85.09h85.09a12.59 12.59 0 0 0 12.59-12.59v-41.46a12.59 12.59 0 0 0-12.59-12.59z" fill="#fff"/></g></g><rect x="19.585" y="376.66" width="161.5" height="100.49" fill="#fff" stroke-width="1.0197"/><g transform="matrix(.01137 .0033507 -7.0987e-5 .010026 .81004 304.47)" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222"><g class="SlideGroup">
+  
+   
+    <g class="Slide" clip-path="url(#presentation_clip_path)">
+     <g class="Page">
+      <g class="Graphic">
+       
+        <rect class="BoundingBox" width="21167" height="21167" fill="none"/>
+        
+        <g clip-path="url(#clip_path_1)">
+         <path d="m20960 4805c-207-224-526-306-816-211l-14643 4836c-424 141-767 457-942 868l-2381 5614-109-7867 13848-4642-29-2102c-2-149-76-288-198-374-122-87-277-108-418-61l-7700 2595c-168 57-353 14-478-111l-1458-1450c-124-124-309-167-476-112l-4840 1608c-193 63-323 245-320 448l221 16021c3 148 75 287 197 373 120 86 276 110 417 63l16137-5332c127-43 230-137 283-261l3849-9072c120-281 63-606-144-831z" fill="#595959"/>
+        </g>
+       
+      </g>
+     </g>
+    </g>
+   
+  
+ </g></g></svg>

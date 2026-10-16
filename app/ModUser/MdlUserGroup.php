@@ -30,9 +30,10 @@ class MdlUserGroup extends MdlObject
 		$this->_idUsersTab=(array)array_intersect($groupUsersIds, $spaceUsersIds);
 		//// Libellé des users
 		$this->usersLabel=null;
-		foreach($this->_idUsersTab as $userId)
-			{$this->usersLabel.=Ctrl::getObj("user",$userId)->getLabel().", ";}
-		$this->usersLabel=@trim($this->usersLabel,", ");
+		foreach($this->_idUsersTab as $userKey=>$userId){
+			$brTag=($userKey%2==0) ? ' - ' : '<br>';
+			$this->usersLabel.=Ctrl::getObj("user",$userId)->getLabel().$brTag;
+		}
 	}
 
 	/********************************************************************************************************

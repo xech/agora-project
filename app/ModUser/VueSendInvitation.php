@@ -112,7 +112,7 @@ button											{width:330px; height:55px;}
 
 
 <div>
-	<div class="lightboxTitle" <?= Txt::tooltip("USER_sendInvitationTooltip") ?>><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.png"></div>
+	<div class="lightboxTitle" <?= Txt::tooltip("USER_sendInvitationTooltip") ?>><?= Txt::trad("USER_sendInvitation") ?> <img src="app/img/info.svg"></div>
 
 	<!--INVITATION SIMPLE-->
 	<form id="invitationForm">
@@ -138,14 +138,14 @@ button											{width:330px; height:55px;}
 	<?php if(!empty($invitationList)){ ?>
 	<div id="invitationList">
 		<hr id="invitationListHr">
-		<div onclick="$('#invitationListDiv').slideToggle();"><img src="app/img/mail.png">&nbsp; <?= count($invitationList)." ".Txt::trad("USER_mailInvitationWait") ?></div>
+		<div onclick="$('#invitationListDiv').slideToggle();"><img src="app/img/mail.svg">&nbsp; <?= count($invitationList)." ".Txt::trad("USER_mailInvitationWait") ?></div>
 		<ul id="invitationListDiv">
 			<?php
 			//Invitations déjà envoyées
 			foreach($invitationList as $tmpInvitation){
 				$objSpace=Ctrl::getObj("space",$tmpInvitation["_idSpace"]);
-				$deleteInvitationImg="<img src='app/img/delete.png' style='height:20px' ".Txt::tooltip("delete")." onclick=\"confirmDelete('?ctrl=user&action=sendInvitation&deleteInvitation=true&_idInvitation=".$tmpInvitation["_idInvitation"]."')\" >";
-				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::dateLabel("dateMini",$tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowRightSmall.png' style='height:8px'> ".$objSpace->name."</li>";
+				$deleteInvitationImg="<img src='app/img/delete.svg' style='height:20px' ".Txt::tooltip("delete")." onclick=\"confirmDelete('?ctrl=user&action=sendInvitation&deleteInvitation=true&_idInvitation=".$tmpInvitation["_idInvitation"]."')\" >";
+				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::dateLabel("dateMini",$tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowRightLabel.svg'> ".$objSpace->name."</li>";
 			}
 			?>
 		</ul>

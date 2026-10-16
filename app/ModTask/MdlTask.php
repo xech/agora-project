@@ -54,7 +54,7 @@ class MdlTask extends MdlObject
 	public function priorityLabel()
 	{
 		if(!empty($this->priority))
-			{return '<span class="priorityLabel"><img src="app/img/task/priority'.$this->priority.'.png">&nbsp; '.Txt::trad("TASK_priority").' '.Txt::trad("TASK_priority".$this->priority).'</span>';}
+			{return '<span class="priorityLabel"><img src="app/img/task/priority'.$this->priority.'.svg">&nbsp; '.Txt::trad("TASK_priority").' '.Txt::trad("TASK_priority".$this->priority).'</span>';}
 	}
 
 	/********************************************************************************************************
@@ -75,8 +75,8 @@ class MdlTask extends MdlObject
 			$usersLabel=trim($usersLabel,', ');
 			$usersLabel=($labelFull==true)  ?  $usersTooltip  :  Txt::reduce($usersLabel,35);
 			//// Tooltip / Label
-			$barTooltip='<img src="app/img/task/responsiblePersons.png"> '.Txt::trad("TASK_assignedTo").' :&nbsp; '.$usersTooltip;
-			$barLabel='<img src="app/img/task/responsiblePersons.png"> <span class="progressBarLabel">'.Txt::trad("TASK_assignedTo").' '.$usersLabel.'</span>';
+			$barTooltip='<img src="app/img/users.svg"> '.Txt::trad("TASK_assignedTo").' :&nbsp; '.$usersTooltip;
+			$barLabel='<img src="app/img/users.svg"> <span class="progressBarLabel">'.Txt::trad("TASK_assignedTo").' '.$usersLabel.'</span>';
 			//// Retourne la "progressBar"
 			return Tool::progressBar($barLabel, $barTooltip);
 		}
@@ -90,7 +90,7 @@ class MdlTask extends MdlObject
 		if($this->dateBegin || $this->dateEnd){
 			//// Label
 			$barLabel=($barLabelFull==true)  ?  Txt::dateLabel("dateDefault",$this->dateBegin,$this->dateEnd)  :  Txt::dateLabel("dateMini",$this->dateBegin,$this->dateEnd);
-			$barLabel='<img src="app/img/task/date.png"> <span class="progressBarLabel">'.$barLabel.'</span>';
+			$barLabel='<img src="app/img/clock.svg"> <span class="progressBarLabel">'.$barLabel.'</span>';
 			//// Tooltip
 			$barTooltip=$this->title;
 			if($this->dateBegin && $this->dateEnd)	{$barTooltip.='<hr>'.Txt::trad("beginEnd").' : '.Txt::dateLabel("dateDefault",$this->dateBegin,$this->dateEnd);}
@@ -115,7 +115,7 @@ class MdlTask extends MdlObject
 	{
 		if($this->advancement){
 			$barLabel=($barLabelFull==true)  ?  Txt::trad("TASK_advancement").' : '  :  null;
-			$barLabel  ='<img src="app/img/task/advancement.png"> <span class="progressBarLabel">'.$barLabel.$this->advancement.' %</span>';
+			$barLabel  ='<img src="app/img/check.svg"> <span class="progressBarLabel">'.$barLabel.$this->advancement.' %</span>';
 			return Tool::progressBar($barLabel, $this->advancementLabel(), $this->advancement, $this->isDelayed);
 		}
 	}

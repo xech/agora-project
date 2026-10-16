@@ -57,13 +57,13 @@ function mainFormControl(){
 	<!--OPTION DE NOTIFICATION PAR EMAIL À CHAQUE PROPOSITION D'ÉVÉNEMENT-->
 	<div class="vCalOption" <?= Txt::tooltip("CALENDAR_propositionNotifTooltip") ?> >
 		<input type="checkbox" name="propositionNotify" value="1" <?= !empty($curObj->propositionNotify)?'checked':null ?> id="inputPropositionNotify">
-		<label for="inputPropositionNotify"><?= Txt::trad("CALENDAR_propositionNotif") ?> <img src="app/img/mail.png"></label>
+		<label for="inputPropositionNotify"><?= Txt::trad("CALENDAR_propositionNotif") ?> <img src="app/img/mail.svg"></label>
 	</div>
 
 	<!--OPTION DE PROPOSITION D'ÉVÉNEMENT POUR LES GUESTS-->
 	<div class="vCalOption" id="divPropositionGuest" <?= Txt::tooltip("CALENDAR_propositionGuestTooltip") ?> >
 		<input type="checkbox" name="propositionGuest" value="1" <?= !empty($curObj->propositionGuest)?'checked':null ?> id="inputPropositionGuest">
-		<label for="inputPropositionGuest"><?= Txt::trad("CALENDAR_propositionGuest") ?> <img src="app/img/plusSmall.png"></label>
+		<label for="inputPropositionGuest"><?= Txt::trad("CALENDAR_propositionGuest") ?> <img src="app/img/add.svg"></label>
 	</div>
 
 	<!--MENU COMMUN-->

@@ -16,13 +16,16 @@ ready(function(){
 
 <style>
 .lightboxTitle img	{margin-right:20px;}
-.vDivRadio			{margin-bottom:20px;}
+.vDivRadio			{margin-bottom:15px;}
 #divSomeUsers		{display:<?= empty($someUsers)?"none":"inline-block" ?>; padding-top:10px;}
 .vDivSomeUser		{display:inline-block; width:33%; padding-top:10px; padding-left:10px;}
 </style>
 
 <form action="index.php" method="post">
-	<div class="lightboxTitle"><img src="app/img/messenger.png"><?= ucfirst(Txt::trad("USER_livecounterVisibility")) ?></div>
+	<div class="lightboxTitle">
+		<img src="app/img/chat.svg"><?= Txt::trad("USER_livecounterVisibility") ?>
+		<div class="lightboxTitleDetail"><?= Txt::trad("USER_livecounterVisibilityTooltip") ?></div>
+	</div>
 
 	<div class="vDivRadio">
 		<input type="radio" name="messengerDisplay" value="all" id="messengerDisplayAll" <?= $allUsers==true?"checked":null ?>>

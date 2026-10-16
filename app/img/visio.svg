@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" data-name="Layer 2" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+ <g id="Social_Icon" transform="matrix(.93556 0 0 .93556 16.496 16.496)" data-name="Social Icon">
+  <g id="VideoCamera">
+   <rect id="Background" width="512" height="512" rx="150" fill="#a00"/>
+   <path d="m389.44 147.94-82.23 50.61v-26.05c0-20.49-16.61-37.11-37.11-37.11h-166.99c-20.49 0-37.11 16.61-37.11 37.11v166.99c0 20.5 16.61 37.11 37.11 37.11h166.99c20.49 0 37.11-16.61 37.11-37.11v-26.05l82.23 50.61c24.72 15.22 56.56-2.57 56.56-31.6v-152.91c0-29.03-31.84-46.82-56.56-31.6z" fill="#fff"/>
+  </g>
+ </g>
+</svg>

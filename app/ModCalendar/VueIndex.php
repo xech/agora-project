@@ -152,7 +152,7 @@ function evtDropConfirm(evtDrag, cellDrop, newTimeBegin)
 		////	Parametrage du confirm()
 		const confirmParams={
 			title:"<?= Txt::trad("CALENDAR_evtChangeTime") ?>",
-			content:'<div class="vEvtConfirmOldDate"><img src="app/img/arrowRight.png"> '+oldDateLabel+'</div><img src="app/img/arrowRight.png"> '+newDateLabel,
+			content:'<div class="vEvtConfirmOldDate"><img src="app/img/arrowRightLabel.svg">'+oldDateLabel+'</div><img src="app/img/arrowRightLabel.svg">'+newDateLabel,
 			buttons:{
 				////	Annulation
 				reject:{
@@ -165,7 +165,7 @@ function evtDropConfirm(evtDrag, cellDrop, newTimeBegin)
 				},
 				////	Confirmation acceptée
 				accept:{
-					text:"<?= Txt::trad("confirm") ?>",
+					text:"<?= Txt::trad("confirmValidate") ?>",
 					btnClass:"btn-green",
 					action:function(){
 						////	TypeId de l'evt + Url d'enregistrement du nouveau datetime
@@ -285,7 +285,6 @@ ready(function(){
 
 <style>
 /*Page principale + Menu du module + Footer*/
-#pageFooterHtml, #pageFooterIcon				{display:none;}
 #pageFull										{margin-bottom:0px;}
 #pageContent									{padding-bottom:10px;}/*Surcharge*/
 .evtPropositionTitle, .evtProposition			{padding:7px;}
@@ -298,8 +297,9 @@ ready(function(){
 .vReadableCalendar								{display:table; width:100%; margin-block:1.5px;}/*idem .menuLine*/
 .vReadableCalendar>div							{display:table-cell; vertical-align:middle;}  /*idem .menuLine*/
 .vReadableCalendarOption label					{display:block; padding-inline:5px;}/*toute la ligne clickable : annule le margin-block de .option*/
-.vReadableCalendarMenu							{width:0px; max-width:20px;}/*masqué par défaut*/
+.vReadableCalendarMenu							{width:0px; max-width:24x;}/*masqué par défaut*/
 .vReadableCalendarOption input, .vReadableCalendar:not(:hover) .vReadableCalendarMenu img	{display:none;}/*.vReadableCalendarMenu : masquer uniquement l'img*/
+.vAddSharedCalendar								{filter:saturate(0); width:22px!important; height:22px!important;}
 .ui-datepicker									{box-shadow:none; width:100%; border:0px!important;}/*surcharge*/
 .ui-datepicker thead							{display:none;}										/*Header: ligne du label des jours*/
 .ui-datepicker .ui-state-default				{padding-block:5px;}								/*surcharge*/
@@ -329,8 +329,9 @@ ready(function(){
 .vCalHeaderLeft, .vCalHeaderRight				{table-layout:fixed; width:40%;}/*table-layout pour fixer un width equivalent*/
 .vCalHeaderLeftLabel							{margin-right:10px; vertical-align:middle;}
 .vCalHeaderCenter								{text-align:center; min-width:250px;}
-.vCalHeaderCenter .vCalPrevNext					{padding:10px 15px; border-radius:var(--radius-field);}
-.vCalHeaderCenter .vCalPrevNext:hover			{background-color:#eee;}
+.vCalHeaderCenter>span							{display:inline-block; line-height:22px; padding:8px;}
+.vCalHeaderCenter>span.vCalHeaderMonth			{padding:8px 0px;}
+.vCalPrevNext:hover								{background-color:#eee; border-radius:50%;}
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{text-align:right; min-width:480px;}/*tester avec "semaine de travail"*/
@@ -341,9 +342,11 @@ ready(function(){
 /*Evenements*/
 .vEvtBlock										{min-height:22px; padding:3px; padding-right:20px;/*cf menu burger*/ box-shadow:1px 1px 2px #555; border-radius:4px!important;}
 .vCellDay .vEvtBlock							{position:relative; height:22px; max-width:99%; margin-bottom:2px;}/*Evt sur une ligne : evts du mois ou journée entière*/
-.vCellDay .menuContextLaunchFloat				{top:0px; right:0px;}/*décale le menu "burger"*/
+.vEvtBlock .menuContextLaunchFloat				{top:0px; right:0px; padding:0px;}/*décale le menu "burger"*/
+.vEvtBlock .menuContextLaunchFloat img			{width:20px; height:20px;}
 .vEvtLabel										{overflow:hidden; text-overflow:ellipsis; color:white;}
-.vEvtBlock[data-ispast='true'] .vEvtLabel		{opacity:0.7;}/*événements passés*/
+.vEvtLabel img									{max-width:15px; max-height:15px; margin-left:5px;}
+.vEvtBlock[data-ispast='true'] .vEvtLabel		{opacity:0.75;}/*événements passés*/
 .vCellDay .vEvtLabel							{font-size:0.85rem; white-space:nowrap;}/*white-space : texte sur une seule ligne*/
 .vEvtConfirmOldDate								{opacity:0.5; margin-bottom:7px;}
 .vEvtConfirmOldDate img							{visibility:hidden;}/*1er arrowRight masqué"*/
@@ -356,11 +359,11 @@ ready(function(){
 	.vReadableCalendarMenu						{display:none!important;}/*contextMenu()*/
 	.vCalMain									{width:100%; box-shadow:none; margin-bottom:0;}
 	.vCalHeader									{white-space:nowrap;}
-	.vCalHeader>div								{padding:4px; width:auto; text-transform:lowercase;}
+	.vCalHeader>div								{padding:2px; width:auto; text-transform:lowercase;}
 	.vCalHeaderLeft, .vCalHeaderCenter			{min-width:100px;}
+	.vCalHeaderCenter>span						{padding:4px!important;}
 	.vCalHeaderLeftLabel						{display:inline-block; font-size:1rem; max-width:140px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalHeaderLeftLabel::first-letter			{text-transform:uppercase}
-	.vCalHeaderCenter .vCalPrevNext				{padding:4px;}
 	.vCalHeaderCenter .vCalPrevNextPulsate		{background-color:#ddd;}
 	.vCalHeaderRight							{min-width:auto; width:auto;}
 	.vCalHeaderRight>span						{display:inline-block; line-height:35px; vertical-align:middle;}
@@ -393,7 +396,7 @@ ready(function(){
 		<!--PROPOSITIONS D'EVT-->
 		<?php if(!empty($evtPropositions)){ ?>
 			<div class="miscContent">
-				<div class="evtPropositionTitle pulsate"><img src="app/img/important.png">&nbsp;<?= Txt::trad("CALENDAR_evtProposition") ?></div>
+				<div class="evtPropositionTitle pulsate"><img src="app/img/important.svg">&nbsp;<?= Txt::trad("CALENDAR_evtProposition") ?></div>
 				<?php foreach($evtPropositions as $evtTmp){ ?>
 					<div class="evtProposition optionSelect" data-idevt="<?= $evtTmp["_idEvt"] ?>" data-idcal="<?= $evtTmp["_idCal"] ?>" data-details="<?= strip_tags($evtTmp["evtPropDetails"],'<br><hr>') ?>" <?= Txt::tooltip($evtTmp["evtPropDetails"]) ?> >
 						<?= $evtTmp["evtPropLabel"] ?>
@@ -409,7 +412,7 @@ ready(function(){
 					<!--TITRE + OPTION D'AFFICHAGE ADMIN-->
 					<div id="readableCalendarsTitle">
 						<div><?= Txt::trad("CALENDAR_readableCalendars") ?> :</div>
-						<div id="readableCalsAdmin"><?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/plusSmall.png" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?></div>
+						<div id="readableCalsAdmin"><?php if(Ctrl::$curUser->isSpaceAdmin()){ ?><img src="app/img/eye.svg" <?= Txt::tooltip("CALENDAR_displayAdmin") ?> onclick="redir('index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>')"><?php } ?></div>
 					</div>
 					<!--LISTE DES AGENDAS (Cf "getPref('displayedCalendars')")-->
 					<?php foreach($readableCalendars as $tmpCal){ ?>
@@ -433,7 +436,7 @@ ready(function(){
 			<!--CREER UN AGENDA PARTAGE-->
 			<?php if(MdlCalendar::addRight()){ ?>
 			<div class="menuLine" onclick="lightboxOpen('<?= MdlCalendar::getUrlNew() ?>');" <?= Txt::tooltip("CALENDAR_addSharedCalendarTooltip") ?>>
-				<div class="menuIcon"><img src="app/img/calendar/calendarAdd.png"></div>
+				<div class="menuIcon"><img src="app/img/add.svg" class="vAddSharedCalendar"></div>
 				<div><?= Txt::trad("CALENDAR_addSharedCalendar") ?></div>
 			</div>
 			<?php } ?>
@@ -441,7 +444,7 @@ ready(function(){
 			<!--EVTS PROPRIO-->
 			<?php if(Ctrl::$curUser->isUser()){ ?>
 			<div class="menuLine" onclick="lightboxOpen('?ctrl=calendar&action=MyEvents')" <?= Txt::tooltip("CALENDAR_evtAutorInfo") ?>>
-				<div class="menuIcon"><img src="app/img/edit.png"></div>
+				<div class="menuIcon"><img src="app/img/edit.svg"></div>
 				<div><?= Txt::trad("CALENDAR_evtAutor") ?></div>
 			</div>
 			<?php } ?>
@@ -449,7 +452,7 @@ ready(function(){
 			<!--IMPRIMER LA PAGE-->
 			<?php if(Req::isMobile()==false){ ?>
 			<div class="menuLine" onclick="calendarDisplay(true);print();" <?= Txt::tooltip("CALENDAR_printCalendarsInfos") ?>>
-				<div class="menuIcon"><img src="app/img/print.png"></div>
+				<div class="menuIcon"><img src="app/img/print.svg"></div>
 				<div><?= Txt::trad("CALENDAR_printCalendars") ?></div>
 			</div>
 			<?php } ?>
@@ -476,7 +479,7 @@ ready(function(){
 						<div class="vSynthLabel" onclick="$('#calBlock<?= $tmpCal->typeId ?>').scrollTo();"><?= $tmpCal->title ?></div>
 						<?php
 						foreach($periodSynthese as $tmpDay){
-							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.$tmpCal->title.' <img src="app/img/arrowRight.png"> '.Txt::dateLabel("dateDefault",$tmpDay["dayTimeBegin"]).' :';
+							$tmpEvtTooltip='<div class="vSynthDayEvtTooltip">'.$tmpCal->title.' <img src="app/img/arrowRightLabel.svg">'.Txt::dateLabel("dateDefault",$tmpDay["dayTimeBegin"]).' :';
 							foreach($tmpDay["dayEvtList"][$tmpCal->_id] as $tmpEvt)	{$tmpEvtTooltip.='<br>'.$tmpEvt->dateLabel("mini").' : '.Txt::reduce($tmpEvt->title,60);}
 							$tmpEvtTooltip.='</div>';
 							$syntheseDayCalWE=$syntheseDayEvts=null;
@@ -508,30 +511,30 @@ ready(function(){
 				</div>
 				<!--PERIODE AFFICHEE  +  PRECEDENT/SUIVANT  +  MENU CONTEXT MONTHS/YEARS-->
 				<div class="vCalHeaderCenter">
-					<span class="vCalPrevNext vCalPrev" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeftNav.png"></span>
-					<span class="menuContextLaunch vCalHeaderMonth" for="monthsYearsMenu<?= $tmpCal->typeId ?>"><?= ucfirst($monthLabel) ?></span>
+					<span class="vCalPrevNext vCalPrev" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeft.svg"></span>
+					<span class="vCalHeaderMonth menuContextLaunch" for="monthsYearsMenu<?= $tmpCal->typeId ?>"><?= ucfirst($monthLabel) ?></span>
 					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
-					<span class="vCalPrevNext vCalNext" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRightNav.png"></span>
+					<span class="vCalPrevNext vCalNext" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRight.svg"></span>
 				</div>
 				
 				<!--PROPOSER/AJOUTER UN EVT  +  "AUJOURD'HUI"  +  AFFICHAGE MONTH/WEEK/ETC-->
 				<div class="vCalHeaderRight">
 					<span onclick="redir('index.php?ctrl=calendar&curTime=<?= time() ?>')" <?= Txt::tooltip("displayToday") ?> >
-						<?= Req::isMobile() ? '<img src="app/img/calendar/displayToday.png">' : '<button>'.Txt::trad("today").'</button>' ?>
+						<?= Req::isMobile() ? '<img src="app/img/calendar/displayToday.svg">' : '<button>'.Txt::trad("today").'</button>' ?>
 					</span>
 					<span class="menuContextLaunch" for="menuDisplayMode<?= $tmpCal->typeId ?>">
-						<?= Req::isMobile() ? '<img src="app/img/calendar/display'.ucfirst($displayMode).'.png">' : '<button>'.Txt::trad("CALENDAR_display_".$displayMode).' <img src="app/img/arrowBottom.png"></button>' ?>
+						<?= Req::isMobile() ? '<img src="app/img/calendar/display'.ucfirst($displayMode).'.svg">' : '<button>'.Txt::trad("CALENDAR_display_".$displayMode).' <img src="app/img/arrowDown.svg"></button>' ?>
 					</span>
 					<div class="menuContext" id="menuDisplayMode<?= $tmpCal->typeId ?>">
 						<?php foreach($displayModeList as $displayModeTmp){ ?>
 						<div class="menuLine <?= $displayModeTmp==$displayMode?"linkSelect":null ?>" onclick="redir('index.php?ctrl=calendar&calendarDisplayMode=<?= $displayModeTmp ?>')">
-							<div class="menuIcon"><img src="app/img/calendar/display<?= ucfirst($displayModeTmp) ?>.png"></div><div><?= ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp)) ?></div>
+							<div class="menuIcon"><img src="app/img/calendar/display<?= ucfirst($displayModeTmp) ?>.svg"></div><div><?= ucfirst(Txt::trad("CALENDAR_display_".$displayModeTmp)) ?></div>
 						</div>
 						<?php } ?>
 					</div>
 					<?php if($tmpCal->addProposeEvt()){ ?>
 					<span onclick="lightboxOpen('<?= $tmpCal->urlNewEvt ?>')" <?= $tmpCal->addEvtTooltip ?> >
-						<?= Req::isMobile() ? '<img src="app/img/plus.png">' : '<button><img src="app/img/plusSmall.png">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
+						<?= Req::isMobile() ? '<img src="app/img/add.svg">' : '<button><img src="app/img/add.svg">&nbsp; '.Txt::trad("CALENDAR_addEvt").'</button>' ?>
 					</span>
 					<?php } ?>
 				</div>

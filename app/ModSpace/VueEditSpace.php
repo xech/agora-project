@@ -68,7 +68,7 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 .vModuleIcon, .changeOrder		{width:30px; max-width:30px;}/*icone du module et du "sortable()"*/
 .moduleOption					{display:table; margin-top:8px;}
 .moduleOption>div				{display:table-cell;}
-.moduleOption>div:first-child	{width:55px; padding-left:10px;}/*checkbox de l'option*/
+.moduleOption>div:first-child	{width:60px; padding-left:5px;}/*checkbox de l'option*/
 .vModuleTab:not(:has(.moduleInput:checked)) .moduleOption						{display:none;}/*Modules désactivés : masque les options*/
 .vModuleTab:has(.moduleInput[value='calendar']:checked) #moduleCalendarDisabled	{display:none;}/*Module Calendar activé : masque "Le module agenda reste toujours accessible.."*/
 
@@ -87,12 +87,12 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 
 	<!--ESPACE PUBLIC (avec password?)-->
 	<div class="vSpaceOption">
-		<img src="app/img/user/accessGuest.png">
+		<img src="app/img/earth.svg">
 		<input type="checkbox" name="public" value="1" id="publicSpaceBox" class="vSpaceOptionBox" <?= (!empty($curObj->public))?'checked':null ?>>
 		<label for="publicSpaceBox" <?= Txt::tooltip("SPACE_publicSpaceTooltip") ?> ><?= Txt::trad("SPACE_publicSpace") ?></label>
 		<!--MOT DE PASSE ET INFOS SUR LA RGPD-->
 		<div class="vSpaceOptionSub">
-			<img src="app/img/dependency.png"> <?= Txt::trad("password") ?> : 
+			<img src="app/img/dependent.svg"> <?= Txt::trad("password") ?> : 
 			<input type="text" name="password" value="<?= $curObj->password ?>" id="publicSpacePassword">
 			<div class="infos"><?= Txt::trad("SPACE_publicSpaceRGPD") ?></div>
 		</div>
@@ -100,12 +100,12 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 
 	<!--INSCRIPTION A L'ESPACE-->
 	<div class="vSpaceOption">
-		<img src="app/img/edit.png">
+		<img src="app/img/edit.svg">
 		<input type="checkbox" name="userInscription" value="1" id="userInscriptionBox" class="vSpaceOptionBox" <?= (!empty($curObj->userInscription))?'checked':null ?>>
 		<label for="userInscriptionBox" <?= Txt::tooltip("userInscriptionEditTooltip") ?> ><?= Txt::trad("userInscriptionEdit") ?></label>
 		<!--NOTIF MAIL A CHAQUE INSCRIPTION-->
 		<div class="vSpaceOptionSub" id="divUserInscriptionNotify" <?= Txt::tooltip("userInscriptionNotifTooltip") ?> >
-			<img src="app/img/dependency.png">
+			<img src="app/img/dependent.svg">
 			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curObj->userInscriptionNotify))?'checked':null ?>>
 			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotif") ?></label>
 		</div>
@@ -113,7 +113,7 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 
 	<!--INVITATIONS PAR MAIL-->
 	<div class="vSpaceOption" <?= Txt::tooltip("SPACE_usersInvitationTooltip") ?> >
-		<img src="app/img/mail.png"> <input type="checkbox" name="usersInvitation" id="usersInvitationBox" value="1" <?= (!empty($curObj->usersInvitation))?'checked':null ?>>
+		<img src="app/img/mail.svg"> <input type="checkbox" name="usersInvitation" id="usersInvitationBox" value="1" <?= (!empty($curObj->usersInvitation))?'checked':null ?>>
 		<label for="usersInvitationBox"><?= Txt::trad("SPACE_usersInvitation") ?></label>
 	</div>
 
@@ -130,7 +130,7 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 			<!--BLOCK DES MODULES DE L'ESPACE-->
 			<?php foreach($curObj->moduleList(true) as $modName=>$module){ ?>
 				<div class="vModuleTab lineSelect">
-					<div class="vModuleIcon"><img src="app/img/<?= $modName ?>/iconSmall.png"></div>
+					<div class="vModuleIcon"><img src="app/img/<?= $modName ?>/icon.svg"></div>
 					<div>
 						<!--INPUT DU MODULE-->
 						<input type="checkbox" name="moduleList[]" value="<?= $modName ?>" class="moduleInput" id="moduleInput<?= $modName ?>" data-module-name="<?= $modName ?>" <?= isset($module["enabled"])?'checked':null ?> >
@@ -144,14 +144,14 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 							$checked=($optionName=="createSpaceCalendar"  ||  (isset($module["options"]) && stristr($module["options"],$optionName)))  ?  "checked"  :  null;//Check l'option
 						?>
 							<div class="moduleOption">
-								<div><img src="app/img/dependency.png"><input type="checkbox" name="<?= $modName ?>_options[]" value="<?= $optionName ?>" id="<?= $inputTradId ?>" <?= $checked ?>></div>
+								<div><img src="app/img/dependent.svg"><input type="checkbox" name="<?= $modName ?>_options[]" value="<?= $optionName ?>" id="<?= $inputTradId ?>" <?= $checked ?>></div>
 								<div><label for="<?= $inputTradId ?>" <?= $optionTooltip ?> ><?= Txt::trad($inputTradId) ?></label></div>
 							</div>
 						<?php } ?>
 						<!--MODULE CALENDAR "Le module agenda reste toujours accessible.."-->
-						<?php if($modName=="calendar"){ ?><div class="infos" id="moduleCalendarDisabled"><img src="app/img/important.png"> <?= Txt::trad("CALENDAR_moduleAlwaysEnabledInfo") ?></div><?php } ?>
+						<?php if($modName=="calendar"){ ?><div class="infos" id="moduleCalendarDisabled"><img src="app/img/important.svg"> <?= Txt::trad("CALENDAR_moduleAlwaysEnabledInfo") ?></div><?php } ?>
 					</div>
-					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?>><img src="app/img/changeOrder.png"></div>
+					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?>><img src="app/img/verticalMove.svg"></div>
 				</div>
 			<?php } ?>
 		</div>
@@ -164,12 +164,12 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 		<!--ENTETE-->
 		<div class="spaceAffectLine">
 			<div>&nbsp;</div>
-			<div><img src="app/img/user/user.png"> <?= Txt::trad("SPACE_user") ?></div>
-			<div><img src="app/img/user/userAdminSpace.png"> <?= Txt::trad("SPACE_admin") ?></div>
+			<div><img src="app/img/user.svg"> <?= Txt::trad("SPACE_user") ?></div>
+			<div><img src="app/img/userAdmin.svg"> <?= Txt::trad("SPACE_admin") ?></div>
 		</div>
 		<!--TOUS LES USERS-->
 		<div class="spaceAffectLine" <?= Txt::tooltip(Txt::trad("SPACE_allUsersTooltip").' <i>'.$curObj->getLabel().'</i>') ?>>
-			<div><label for="spaceAffecAllUsers"><img src="app/img/user/accessAllUsers.png"> <?= ucfirst(Txt::trad("SPACE_allUsers")) ?></label></div>
+			<div><label for="spaceAffecAllUsers"><img src="app/img/users.svg"> <?= ucfirst(Txt::trad("SPACE_allUsers")) ?></label></div>
 			<div><input type="checkbox" name="allUsers" value="allUsers" id="spaceAffecAllUsers" <?= $curObj->allUsersAffected()?'checked':null ?>></div>
 			<div>&nbsp;</div>
 		</div>

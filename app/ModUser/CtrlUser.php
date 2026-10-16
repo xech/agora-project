@@ -45,7 +45,7 @@ class CtrlUser extends Ctrl
 		$pluginsList=[];
 		if($params["type"]!="shortcut"){
 			foreach(MdlUser::getPluginObjects($params) as $tmpObj){
-				$tmpObj->pluginIcon="user/user.png";
+				$tmpObj->pluginIcon=self::moduleName."/icon.svg";
 				$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 				$tmpObj->pluginTooltip=$tmpObj->pluginLabel;
 				$tmpObj->pluginJsIcon=$tmpObj->pluginJsLabel=$tmpObj->lightboxVue();
@@ -311,7 +311,7 @@ class CtrlUser extends Ctrl
 			//Envoi de chaque invitation
 			if(!empty($invitList)){
 				foreach($invitList as $invitationTmp){
-					$_idInvitation=uniqId();
+					$_idInvitation=Txt::randomId();
 					$password=Txt::defaultPassword();
 					$confirmUrl=Req::curUrl()."/index.php?ctrl=offline&_idInvitation=".$_idInvitation."&mail=".urlencode($invitationTmp["mail"]);
 					//Envoi du mail d'invitation

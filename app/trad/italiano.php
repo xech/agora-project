@@ -61,12 +61,12 @@ class Trad extends Txt
 			"copyUrl"=>"Copia il link di condivisione",
 			"copyUrlTooltip"=>"Copia il link di condivisione (URL) per inviarlo tramite email, messaggio, ecc.",
 			"copyUrlNotif"=>"Il link è stato copiato correttamente",
-			"footerGeneratedTime"=>"Pagina generata in",
 		
 			////	Confirm et Suppression
-			"confirm"=>"Conferma",
+			"confirmValidate"=>"Conferma",
 			"confirmCancel"=>"Cancellare",
 			"confirmDownload"=>"Scaricare il file ?",
+			"confirmDownloadInfo"=>"Il download può richiedere alcuni secondi/minuti",
 			"confirmCloseForm"=>"Sei sicuro di voler chiudere il modulo ?",
 			"delete"=>"Elimina",
 			"confirmDelete"=>"Confermare la cancellazione ?",
@@ -237,9 +237,8 @@ class Trad extends Txt
 			"accessWriteDetailContainer"=>"Accesso in lettura e scrittura --OBJ_LABEL_TO-- :<br>Diritto di aggiungere, modificare ed eliminare tutti i --OBJ_LABEL_CONTENT--",
 			"accessFullDetail"=>"Amministratore e Autore:<br>Accesso completo in lettura e scrittura --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"Tutti gli utenti",
-			"accessAllUsersDetail"=>"Diritti di accesso per gli utenti dello spazio <i>--SPACENAME--</i>",
-			"accessAllUsersGuests"=>"Tutti gli utenti e ospiti",
-			"accessAllUsersGuestsDetail"=>"Diritti di accesso per utenti e ospiti dello spazio <i>--SPACENAME--</i>.<hr>Limitato a sola lettura per gli ospiti (senza account utente)",
+			"accessAllUsersTooltip"=>"Diritti di accesso per gli utenti dello spazio <i>--SPACENAME--</i>",
+			"accessAllUsersTooltipGuest"=>"Diritti di accesso per gli ospiti dell'area (accesso libero senza autenticazione): limitato alla sola lettura",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Spazio",								//ModSpace
@@ -436,7 +435,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Specifica un messaggio",
 			"MESSENGER_visioProposeTo"=>"Proponi una videoconferenza a",
 			"MESSENGER_visioProposeToSelection"=>"Proponi una videoconferenza alle persone selezionate",
-			"MESSENGER_visioProposeToUsers"=>"Avviare la videoconferenza tra",
+			"MESSENGER_visioProposeToUsers"=>"Avviare la videoconferenza",
 			"MESSENGER_nobody"=>"Nessun altro utente è attualmente connesso",
 			
 			////	Lancer une Visio
@@ -498,14 +497,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Spazio per la condivisione e il lavoro collaborativo",
 			"INSTALL_dataDashboardNews"=>  '<h3>Benvenuti nel vostro nuovo spazio di lavoro collaborativo!</h3>
-											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png">Condividi i tuoi file con il tuo team nel file manager</a></h4>
-											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Crea eventi sul tuo calendario condiviso o sul tuo calendario personale</a></h4>
-											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Utilizza il feed di notizie per trasmettere informazioni sulla tua attività</a></h4>
-											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png">Comunicare tramite forum, messaggistica o videoconferenze</a></h4>
-											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png"> Gestisci le tue attività e i tuoi progetti per organizzare la tua attività</a></h4>
-											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Invia newsletter per distribuire email informative sulla tua attività.</a></h4>
-											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png">Consulta la guida utente per scoprire il tuo spazio di lavoro</a></h4>
-											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Invia inviti via email per unirti allo spazio</a></h4>',
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/icon.svg">Condividi i tuoi file con il tuo team nel file manager</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/icon.svg"> Crea eventi sul tuo calendario condiviso o sul tuo calendario personale</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/icon.svg"> Utilizza il feed di notizie per trasmettere informazioni sulla tua attività</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/chat.svg">Comunicare tramite forum, messaggistica o videoconferenze</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/icon.svg"> Gestisci le tue attività e i tuoi progetti per organizzare la tua attività</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/icon.svg"> Invia newsletter per distribuire email informative sulla tua attività.</a></h4>
+											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.svg">Consulta la guida utente per scoprire il tuo spazio di lavoro</a></h4>
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.svg">Invia inviti via email per unirti allo spazio</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Cosa ne pensi del news feed?",
 			"INSTALL_dataDashboardPollA"=>"Molto interessante!",
 			"INSTALL_dataDashboardPollB"=>"Interessante",
@@ -529,7 +528,6 @@ class Trad extends Txt
 			"AGORA_backupFullTooltip"=>"Ripristina il backup completo dello spazio: tutti i file e il database",
 			"AGORA_backupDb"=>"Backup del database",
 			"AGORA_backupDbTooltip"=>"Recupera solo il backup del database dello spazio",
-			"AGORA_backupConfirm"=>"Questa operazione potrebbe richiedere alcuni minuti: confermi il download?",
 			"AGORA_diskSpaceInvalid"=>"Lo spazio su disco per i file deve essere un numero intero",
 			"AGORA_visioHostInvalid"=>"L'indirizzo web del server di videoconferenza non è valido: deve iniziare con 'https'",
 			"AGORA_gApiKeyInvalid"=>"Se scegli Google Map come strumento di mappatura, devi specificare una 'Chiave API'",
@@ -678,7 +676,8 @@ class Trad extends Txt
 			"USER_adminSpace"=>"Amministratore dello spazio",
 			"USER_userSpace"=>"Utente dello spazio",
 			"USER_profilEdit"=>"Modifica profilo",
-			"USER_myProfilEdit"=>"Modifica il mio profilo utente",
+			"USER_myProfile"=>"Mio profilo",
+			"USER_myProfileTooltip"=>"Modifica il mio profilo utente",
 			// Invitations
 			"USER_sendInvitation"=>"Invia inviti via email",
 			"USER_sendInvitationTooltip"=>"Invia inviti via email per entrare a far parte dello spazio corrente :<br> Non appena un invito viene convalidato, viene automaticamente creato un account utente per la persona interessata",
@@ -718,18 +717,19 @@ class Trad extends Txt
 			"USER_mailNotifContent2"=>"Connettiti con il seguente login e password",
 			"USER_mailNotifContent3"=>"Grazie per aver archiviato questa email",
 			// Edition du Livecounter/Messenger
-			"USER_livecounterVisibility"=>"Visibilità su messaggistica",
-			"USER_livecounterAllUsers"=>"Visualizza la mia presenza quando sono connesso: messaggistica/video abilitati",
-			"USER_livecounterDisabled"=>"Nascondi la mia presenza quando sono connesso: messaggistica/video disattivati",
-			"USER_livecounterSomeUsers"=>"Solo alcuni utenti possono vedermi quando sono connesso",
+			"USER_livecounterVisibility"=>"Presenza online",
+			"USER_livecounterVisibilityTooltip"=>"Mostra la mia presenza agli altri utenti connessi per poter conversare tramite la messaggistica",
+			"USER_livecounterAllUsers"=>"Mostra la mia presenza a tutti",
+			"USER_livecounterDisabled"=>"Nascondi la mia presenza online",
+			"USER_livecounterSomeUsers"=>"Mostra la mia presenza solo ad alcune persone",
 			//Double authentification
 			"USER_dblAuthEnabled"=>"Autenticazione a due fattori tramite email",
 			"USER_dblAuthEnabledTooltip"=>"Attivare l'autenticazione a due fattori tramite email: validare l'autenticazione e l'accesso allo spazio tramite un codice temporaneo inviato via email",
 			"USER_dblAuthMailSubject"=>"Codice di autenticazione",
 			"USER_dblAuthMailMessage"=>"Codice di autenticazione da inserire nella pagina di accesso (valido per 10 minuti)",
-			"USER_dblAuthCodeFormTitle"=>"Codice di autenticazione <br> Inviato a",
-			"USER_dblAuthCodeExpired"=>"Codice di autenticazione scaduto",
-			"USER_dblAuthCodeFalse"=>"Codice di autenticazione errato",
+			"USER_dblAuthFormTitle"=>"Codice di autenticazione <br> Inviato a",
+			"USER_dblAuthExpired"=>"Codice di autenticazione scaduto",
+			"USER_dblAuthError"=>"Codice di autenticazione errato",
 
 			////	MOD : DASHBOARD
 			////	
@@ -795,7 +795,6 @@ class Trad extends Txt
 			"FILE_MODULE_DESCRIPTION"=>"Festore di file",
 			"FILE_OPTION_adminRootAddContent"=>"Solo l'amministratore può aggiungere cartelle e file nella cartella principale",
 			"FILE_addFile"=>"Aggiungi file",
-			"FILE_folderAccessError"=>"Cartella sul server non accessibile",
 			"FILE_downloadSelection"=>"Selezione download",
 			"FILE_fileDownload"=>"Download",
 			"FILE_fileSize"=>"Dimensione file",

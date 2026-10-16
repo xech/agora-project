@@ -42,22 +42,22 @@ ready(function(){
 		<!--A LA UNE-->
 		<div>
 			<input type="checkbox" name="une" value="1" id="uneCheckbox" <?= $curObj->une==1?"checked":null ?> >
-			<label for="uneCheckbox" <?= Txt::tooltip("DASHBOARD_topNewsTooltip") ?> ><?= Txt::trad("DASHBOARD_topNews") ?> <img src="app/img/dashboard/topNews.png"></label>	
+			<label for="uneCheckbox" <?= Txt::tooltip("DASHBOARD_topNewsTooltip") ?> ><?= Txt::trad("DASHBOARD_topNews") ?> <img src="app/img/dashboard/topNews.svg"></label>	
 		</div>
 		<!--IS OFFLINE-->
 		<div>
 			<input type="checkbox" name="offline" value="1" id="offlineCheckbox" <?= $curObj->offline==1?"checked":null ?>>
-			<label for="offlineCheckbox"><?= Txt::trad("DASHBOARD_offline") ?> <img src="app/img/dashboard/newsOffline.png"></label>
+			<label for="offlineCheckbox"><?= Txt::trad("DASHBOARD_offline") ?> <img src="app/img/archive.svg"></label>
 		</div>
 		<!--DATE ONLINE-->
 		<div>
 			<input type="text" name="dateOnline" class="dateBegin" value="<?= Txt::formatDate($curObj->dateOnline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOnline") ?>" <?= Txt::tooltip("DASHBOARD_dateOnlineTooltip") ?> >
-			<img src="app/img/datePending.png">
+			<img src="app/img/pending.svg">
 		</div>
 		<!--DATE OFFLINE-->
 		<div>
 			<input type="text" name="dateOffline" class="dateEnd" value="<?= Txt::formatDate($curObj->dateOffline,"dbDatetime","inputDate") ?>" placeholder="<?= Txt::trad("DASHBOARD_dateOffline") ?>" <?= Txt::tooltip("DASHBOARD_dateOfflineTooltip") ?> >
-			<img src="app/img/dateEnd.png">
+			<img src="app/img/finish.svg">
 		</div>
 	</div>
 

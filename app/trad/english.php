@@ -61,12 +61,12 @@ class Trad extends Txt
 			"copyUrl"=>"Copy the share link",
 			"copyUrlTooltip"=>"Copy the share link (URL) to send it via email, messaging, etc.",
 			"copyUrlNotif"=>"The link has been successfully copied",
-			"footerGeneratedTime"=>"Page generated in",
 
 			////	Confirm et Suppression
-			"confirm"=>"Confirm",
+			"confirmValidate"=>"Confirm",
 			"confirmCancel"=>"Cancel",
 			"confirmDownload"=>"Download the file ?",
+			"confirmDownloadInfo"=>"The download may take a few seconds/minutes",
 			"confirmCloseForm"=>"Close the form without saving ?",
 			"delete"=>"Delete",
 			"confirmDelete"=>"Confirm deletion ?",
@@ -237,9 +237,8 @@ class Trad extends Txt
 			"accessWriteDetailContainer"=>"Read and write access --OBJ_LABEL_TO-- :<br>Right to add, modify, and delete all --OBJ_LABEL_CONTENT--",
 			"accessFullDetail"=>"Administrator and Author:<br>Full read and write access --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"All users",
-			"accessAllUsersDetail"=>"Access rights for users in the <i>--SPACENAME--</i> space",
-			"accessAllUsersGuests"=>"All users and guests",
-			"accessAllUsersGuestsDetail"=>"Access rights for users and guests in the <i>--SPACENAME--</i> space.<hr>Read-only for guests (without user account)",
+			"accessAllUsersTooltip"=>"Access rights for users in the <i>--SPACENAME--</i> space",
+			"accessAllUsersTooltipGuest"=>"Access rights for space guests (free access without authentication): read-only limited",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Space", 								//ModSpace
@@ -425,8 +424,8 @@ class Trad extends Txt
 
 			////	Messenger / Visio
 			"MESSENGER_MODULE_NAME"=>"Messaging",
-			"MESSENGER_MODULE_DESCRIPTION"=>"Chat or start a video conference with people online",
-			"MESSENGER_messengerMultiUsers"=>"Chat with several people on the messaging (left pane to select recipients)",
+			"MESSENGER_MODULE_DESCRIPTION"=>"Chat or start a video conference with people who are online.",
+			"MESSENGER_messengerMultiUsers"=>"View all messages and chat with multiple people",
 			"MESSENGER_chatWithMulti"=>"Chat with",
 			"MESSENGER_chatWith"=>"Chat or start a video conference with",
 			"MESSENGER_messageFrom"=>"Message from",
@@ -436,7 +435,7 @@ class Trad extends Txt
 			"MESSENGER_addMessageNotif"=>"Please specify a message",
 			"MESSENGER_visioProposeTo"=>"Propose a video conference to",
 			"MESSENGER_visioProposeToSelection"=>"Propose a video conference to the selected people",
-			"MESSENGER_visioProposeToUsers"=>"Start a video conference between",
+			"MESSENGER_visioProposeToUsers"=>"Start a video conference",
 			"MESSENGER_nobody"=>"No other users are currently logged in",
 			
 			////	Lancer une Visio
@@ -498,14 +497,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Space for sharing and collaborative work",
 			"INSTALL_dataDashboardNews"=>  '<h3>Welcome to your new collaborative workspace !</h3>
-											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png"> Share your files with your team in the file manager</a></h4>
-											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Create events on your shared calendar or personal calendar</a></h4>
-											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Use the news feed to broadcast information about your activity</a></h4>
-											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png"> Communicate via the forum, messaging or videoconferences</a></h4>
-											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png"> Manage your tasks and projects to organize your activity</a></h4>
-											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Send newsletters to distribute information emails about your activity.</a></h4>
-											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Consult the user guide to discover your workspace</a></h4>
-											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png">Send email invitations to join the space</a></h4>',
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/icon.svg"> Share your files with your team in the file manager</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/icon.svg"> Create events on your shared calendar or personal calendar</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/icon.svg"> Use the news feed to broadcast information about your activity</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/chat.svg"> Communicate via the forum, messaging or videoconferences</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/icon.svg"> Manage your tasks and projects to organize your activity</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/icon.svg"> Send newsletters to distribute information emails about your activity.</a></h4>
+											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.svg"> Consult the user guide to discover your workspace</a></h4>
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.svg">Send email invitations to join the space</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"What do you think of the news feed ?",
 			"INSTALL_dataDashboardPollA"=>"Very interesting !",
 			"INSTALL_dataDashboardPollB"=>"Interesting",
@@ -529,7 +528,6 @@ class Trad extends Txt
 			"AGORA_backupFullTooltip"=>"Recover the full backup of the space: all the files as well as the database",
 			"AGORA_backupDb"=>"Back up the database",
 			"AGORA_backupDbTooltip"=>"Recover only the space database backup",
-			"AGORA_backupConfirm"=>"This operation can take several minutes: confirm the download?",
 			"AGORA_diskSpaceInvalid"=>"Disk space for files must be an integer",
 			"AGORA_visioHostInvalid"=>"The web address of your videocall server is invalid : it must start with 'https'",
 			"AGORA_gApiKeyInvalid"=>"If you choose Google Map as the mapping tool, you must specify an 'API Key'",
@@ -678,7 +676,8 @@ class Trad extends Txt
 			"USER_adminSpace"=>"Administrator of the space",
 			"USER_userSpace"=>"User of the space",
 			"USER_profilEdit"=>"Modify profile",
-			"USER_myProfilEdit"=>"Modify my user profile",
+			"USER_myProfile"=>"My profile",
+			"USER_myProfileTooltip"=>"Modify my user profile",
 			// Invitations
 			"USER_sendInvitation"=>"Send invitations by email",
 			"USER_sendInvitationTooltip"=>"Send email invitations to join the current space :<br> As soon as an invitation is validated, a user account is automatically created for the person concerned",
@@ -718,18 +717,19 @@ class Trad extends Txt
 			"USER_mailNotifContent2"=>"Connect with the following login and password",
 			"USER_mailNotifContent3"=>"Thank you for archiving this email.",
 			// Edition du Livecounter/Messenger
-			"USER_livecounterVisibility"=>"Presence on messaging",
-			"USER_livecounterAllUsers"=>"Show my presence to other users when I'm logged in",
-			"USER_livecounterDisabled"=>"Hide my presence to other users when I'm logged in",
-			"USER_livecounterSomeUsers"=>"Show my presence to certain users",
+			"USER_livecounterVisibility"=>"Online presence",
+			"USER_livecounterVisibilityTooltip"=>"Shows my presence to other connected users so they can chat with me via the messaging system",
+			"USER_livecounterAllUsers"=>"Show my presence to everyone",
+			"USER_livecounterDisabled"=>"Hide my online presence",
+			"USER_livecounterSomeUsers"=>"Show my presence only to certain people",
 			//Double authentification
 			"USER_dblAuthEnabled"=>"Email Two-Factor Authentication",
 			"USER_dblAuthEnabledTooltip"=>"Enable Two-Factor Authentication via email: validate authentication and login using a temporary code sent by email",
 			"USER_dblAuthMailSubject"=>"Authentication code",
 			"USER_dblAuthMailMessage"=>"Authentication code to enter on the login page (valid for 10 minutes)",
-			"USER_dblAuthCodeFormTitle"=>"Authentication code <br> Sent to",
-			"USER_dblAuthCodeExpired"=>"Authentication code expired",
-			"USER_dblAuthCodeFalse"=>"Incorrect authentication code",
+			"USER_dblAuthFormTitle"=>"Authentication code <br> Sent to",
+			"USER_dblAuthExpired"=>"Authentication code expired",
+			"USER_dblAuthError"=>"Incorrect authentication code",
 
 			////	MOD : DASHBOARD
 			////	
@@ -795,7 +795,6 @@ class Trad extends Txt
 			"FILE_MODULE_DESCRIPTION"=>"File manager",
 			"FILE_OPTION_adminRootAddContent"=>"Only the administrator can add folders and files in the root folder",
 			"FILE_addFile"=>"Add files",
-			"FILE_folderAccessError"=>"Folder on the server not accessible",
 			"FILE_downloadSelection"=>"Download Selection",
 			"FILE_fileDownload"=>"Download",
 			"FILE_fileSize"=>"File size",

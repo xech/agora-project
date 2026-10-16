@@ -33,38 +33,33 @@ class CtrlOffline extends Ctrl
 				////	ETAPE 2 : MODIF DU PASSWORD
 				elseif(Req::isParam("passwordResetId")){
 					if($tmpUser->passwordResetIdVerif()==false)		{self::notify("passwordResetIdExpired");}	//passwordResetId expiré
-					elseif(Req::isParam("newPassword")==false)		{$vDatas["passwordResetChangeForm"]=true;}	//Affiche le formulaire du nouveau password
+					elseif(Req::isParam("newPassword")==false)		{$vDatas["passwordResetFormUpdate"]=true;}	//Affiche le formulaire du nouveau password
 					else											{$tmpUser->passwordResetRecord();}			//Enregistre le nouveau password
 				}
 			}
 		}
 
 		////	Confirme une invitation
-		if(Req::isParam(["_idInvitation","mail"])){
-			$tmpInvit=Db::getLine("SELECT * FROM ap_invitation WHERE _idInvitation=".Db::param("_idInvitation")." AND mail=".Db::param("mail"));
-			if(empty($tmpInvit))  					{Ctrl::notify("USER_exired_idInvitation");}														//Invitation expiré
-			elseif(MdlUser::usersQuotaOk()==false)  {Ctrl::notify("USER_quotaExceeded");}															//Quota d'users atteint
-			elseif(Req::isParam("newPassword")){																									//Invitation valide : créé un nouvel user avec le "newPassword"
-				$newUser=new MdlUser();
-				$sqlFields="name=".Db::format($tmpInvit["name"]).", firstName=".Db::format($tmpInvit["firstName"]).", mail=".Db::format($tmpInvit["mail"]);
-				$newUser=$newUser->editRecord($sqlFields, $tmpInvit["mail"], Req::param("newPassword"), $tmpInvit["_idSpace"]);
-				if(is_object($newUser)){
-					Db::query("DELETE FROM ap_invitation WHERE _idInvitation=".Db::format($tmpInvit["_idInvitation"]));
-					$_COOKIE["AGORAP_LOG"]=$tmpInvit["mail"];//Préremplis le 'login'
-					$newUser->createCredentialsMail(Req::param("newPassword"),true);
-					Ctrl::notify("USER_invitationValidated","success");
-				}
+		$invitation=MdlUser::confirmInvitation();
+		if(!empty($invitation)){
+			$newUser=new MdlUser();
+			$sqlFields="name=".Db::format($invitation["name"]).", firstName=".Db::format($invitation["firstName"]).", mail=".Db::format($invitation["mail"]);
+			$newUser=$newUser->editRecord($sqlFields, $invitation["mail"], Req::param("newPassword"), $invitation["_idSpace"]);
+			if(is_object($newUser)){
+				Db::query("DELETE FROM ap_invitation WHERE _idInvitation=".Db::format($invitation["_idInvitation"]));
+				$_COOKIE["AGORAP_LOG"]=$invitation["mail"];//Préremplis le 'login'
+				$newUser->createCredentialsMail(Req::param("newPassword"),true);
+				Ctrl::notify("USER_invitationValidated","success");
 			}
 		}
-	
+
 		////	Affiche la vue
 		$vDatas["isUserInscription"]=(Db::getVal("select count(*) from ap_space where userInscription=1")>0  &&  Req::isMobileApp()==false);
 		$vDatas["objPublicSpaces"]=Db::getObjTab("space", "SELECT * FROM ap_space WHERE public=1 ORDER BY `name`");
-		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}		//Login par défaut : en parametre
-		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}	//Login par défaut : en cookie
-		else									{$vDatas["defaultLogin"]=null;}
-		if(Req::isParam("dblAuthCodeForm") && !empty($_SESSION["dblAuthToken"]))					//Double Authentification
-			{$vDatas["dblAuthCodeForm"]=true;}
+		if(Req::isParam("login"))				{$vDatas["defaultLogin"]=Req::param("login");}					//Login par défaut : en parametre
+		elseif(!empty($_COOKIE["AGORAP_LOG"]))	{$vDatas["defaultLogin"]=$_COOKIE["AGORAP_LOG"];}				//Login par défaut : en cookie
+		else									{$vDatas["defaultLogin"]=null;}									//login : Aucun 
+		if(Req::isParam("dblAuthForm") && !empty($_SESSION['dblAuthToken']))   {$vDatas["dblAuthForm"]=true;}	//Double Authentification demandée
 		static::displayPage("VueConnection.php",$vDatas);
 	}
 

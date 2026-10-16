@@ -4,7 +4,7 @@
 	echo "<div class='lightboxTitle'>".$curObj->lightboxMenu().$curObj->getLabel("full")."</div>";
 	
 	////	IMAGE & DETAILS DU CONTACT
-	echo "<div class='personProfileImg'>".$curObj->tagProfileImg()."</div>
+	echo "<div class='personImgDiv'>".$curObj->tagProfileImg()."</div>
 		  <div class='personVueFields'>".$curObj->getFields("profile")."</div>".
 		  $curObj->attachedFileMenu();
 	?>

@@ -254,9 +254,9 @@ class File
 	 ********************************************************************************************************/
 	public static function rm($targetPath, $errorMessage=true)
 	{
-		//Suppr le dernier "/"
+		//// Suppr le dernier "/"
 		$targetPath=rtrim($targetPath,"/");
-		//Fichier/dossier accessible en écriture
+		//// Fichier/dossier accessible en écriture
 		if(file_exists($targetPath) && is_writable($targetPath) && $targetPath!=PATH_MOD_FILE){
 			if(is_file($targetPath))	{return unlink($targetPath);}											//Supprime un fichier
 			elseif(is_dir($targetPath)){																		//Supprime un dossier :
@@ -266,9 +266,10 @@ class File
 				return rmdir($targetPath);																		//Supprime enfin le dossier
 			}
 		}
-		//Return false avec si besoin un message d'erreur
+		//// Return false (debug=path)
 		else{
-			if($errorMessage==true)  {Ctrl::notify(Txt::trad("NOTIF_fileOrFolderAccess").' -> '.str_replace(PATH_MOD_FILE,"",$targetPath));}
+			if($errorMessage==true && Req::isDevServer())
+				{Ctrl::notify(Txt::trad("NOTIF_fileOrFolderAccess").' > '.str_replace(PATH_MOD_FILE,"",$targetPath));}
 			return false;
 		}
 	}
@@ -359,7 +360,7 @@ class File
 				elseif(is_file($tmpFile["realPath"])){															//Fichier accessible ?
 					$zip->addFile($tmpFile["realPath"],$tmpFile["zipPath"]);									//Ajoute le fichier
 					$fileIndex=$zip->locateName($tmpFile["zipPath"]);											//Index du fichier dans l'archive
-        			$zip->setCompressionIndex($fileIndex, ZipArchive::CM_STORE);								//Désactive la compression car bien + rapide
+        			$zip->setCompressionIndex($fileIndex, ZipArchive::CM_STORE);								//Désactive la compression : bien plus rapide !
 				}
 			}
 			//Ferme l'archive, Download le zip, puis le supprime
@@ -396,10 +397,10 @@ class File
 			$tmpDir=rtrim(PATH_TMP,"/");
 			if(!is_dir($tmpDir))  {mkdir($tmpDir,0770);}//Créé le dossier /DATAS/tmp/
 		}
-		//// Supprime les fichiers tmp de + de 24h
+		//// Supprime les fichiers/dossiers tmp de + de 24h
 		foreach(scandir($tmpDir) as $fileName){
 			$filePath=$tmpDir.'/'.$fileName;
-			if(!in_array($fileName,['.','..']) && is_file($filePath) && (time()-filemtime($filePath))>86400)
+			if(!in_array($fileName,['.','..'])  &&  (is_file($filePath) || is_dir($filePath))  &&  (time()-filemtime($filePath))>86400)
 				{self::rm($filePath);}
 		}
 		//// Renvoie le path

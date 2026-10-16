@@ -45,7 +45,7 @@ form							{text-align:center;}
 	<?php }else{ ?>
 		<table class="evtListTable">
 			<tr class="evtListHeader">
-				<td class="evtCheckbox" <?= Txt::tooltip("selectAll") ?> onclick="$(':checkbox[name^=eventList]').prop('checked',true)"><img src="app/img/checkSelectAll.png"></td>
+				<td class="evtCheckbox" <?= Txt::tooltip("selectAll") ?> onclick="$(':checkbox[name^=eventList]').prop('checked',true)"><img src="app/img/checkAll.svg"></td>
 				<td class="evtDates"><?= Txt::trad("begin")."-".Txt::trad("end") ?></td>
 				<td class="evtTitle"><?= Txt::trad("title") ?></td>
 				<td class="evtDescription"><?= Txt::trad("description") ?></td>

@@ -1,11 +1,7 @@
-<?php
-////	ICONE BURGER  (LAUNCHER)
-$launchFloatClass=stristr($burgerLauncher,"float")  ?  'menuContextLaunchFloat'  :  null;
-$burgerImg=(stristr($burgerLauncher,"small"))  ?  "menuSmall.png"  : "menu.png";
-if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
-?>
-<span for="<?= $objMenuId ?>" class="menuContextLaunch <?= $launchFloatClass ?>" <?= Txt::tooltip("menuOptions") ?>>
-	<img src="app/img/<?= $burgerImg ?>">
+
+
+<span for="<?= $objMenuId ?>" class="menuContextLaunch <?= stristr($burgerLauncher,"float")?'menuContextLaunchFloat':null ?>" <?= Txt::tooltip("menuOptions") ?>>
+	<img src="app/img/menuDot.svg" class="<?= $curObj->isRecent()?'menuContextLaunchRecent':null ?>">
 	<?= $burgerLauncherLabel ?>
 </span>
 
@@ -20,7 +16,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 	<!--MODIFIER-->
 	<?php if($curObj->editRight()){ ?>
 		<div class="menuLine" onclick="lightboxOpen('<?= $curObj->getUrl('edit') ?>')">
-			<div class="menuIcon"><img src="app/img/edit.png"></div>
+			<div class="menuIcon"><img src="app/img/edit.svg"></div>
 			<div><?= $editLabel ?></div>
 		</div>
 	<?php } ?>
@@ -28,7 +24,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 	<!--CHANGER DE DOSSIER-->
 	<?php if(!empty($moveObjectUrl)){ ?>
 		<div class="menuLine" onclick="lightboxOpen('<?= $moveObjectUrl ?>')">
-			<div class="menuIcon"><img src="app/img/folder/folderMove.png"></div>
+			<div class="menuIcon"><img src="app/img/folderMove.svg"></div>
 			<div><?= Txt::trad("changeFolder") ?></div>
 		</div>
 	<?php } ?>
@@ -36,7 +32,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 	<!--SUPPRIMER-->
 	<?php if(!empty($deleteLabel)){ ?>
 		<div class="menuLine" onclick="<?= $confirmDeleteJs ?>">
-			<div class="menuIcon"><img src="app/img/delete.png"></div>
+			<div class="menuIcon"><img src="app/img/delete.svg"></div>
 			<div><?= $deleteLabel ?></div>
 		</div>
 	<?php } ?>
@@ -44,7 +40,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 	<!--SELECTIONNER-->
 	<?php if($curObj->isSelectable()){ ?>
 		<div class="menuLine" onclick="objSelectSwitch('<?= $curObj->uniqId('objCheckbox') ?>')">
-			<div class="menuIcon"><img src="app/img/check.png"></div>
+			<div class="menuIcon"><img src="app/img/check.svg"></div>
 			<div><?= Txt::trad("selectUnselect") ?></div>
 		</div>
 		<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="<?= $curObj->typeId ?>" id="<?= $curObj->uniqId('objCheckbox') ?>">
@@ -53,7 +49,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 	<!--HISTORIQUE/LOGS-->
 	<?php if(!empty($logUrl)){ ?>
 		<div class="menuLine" onclick="lightboxOpen('<?= $logUrl ?>')">
-			<div class="menuIcon"><img src="app/img/log.png"></div>
+			<div class="menuIcon"><img src="app/img/history.svg"></div>
 			<div><?= Txt::trad("objHistory") ?></div>
 		</div>
 	<?php } ?>
@@ -61,7 +57,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 	<!--URL DE PARTAGE-->
 	<?php if(!empty($getUrlExternal)){ ?>
 		<div class="menuLine" onclick="navigator.clipboard.writeText('<?= $getUrlExternal ?>');notify('<?= Txt::trad('copyUrlNotif',true) ?>');" <?= Txt::tooltip("copyUrlTooltip") ?> >
-			<div class="menuIcon"><img src="app/img/share.png"></div>
+			<div class="menuIcon"><img src="app/img/share.svg"></div>
 			<div><?= Txt::trad("copyUrl") ?></div>
 		</div>
 	<?php } ?>
@@ -102,7 +98,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 		<?php if($curObj->isRecent()){ ?>
 			<div class="menuLine" <?= Txt::tooltip("objNewTooltip") ?> >
 				<div class="menuContextTxtLeft">&nbsp;</div>
-				<div><?= Txt::trad("objNew") ?></div>
+				<div><img src="app/img/clock.svg" class="menuContextLaunchRecent"> <?= Txt::trad("objNew") ?></div>
 			</div>
 		<?php } ?>
 	<?php } ?>
@@ -141,11 +137,11 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 
 <!--ICONES SOUS LE LAUNCHER DU MENU CONTEXT-->
 <?php if($burgerLauncher=="big-float"){ ?>
-	<div class="menuContextUnder">
+	<div class="menuContextObj">
 
 		<!--FICHIERS JOINTS-->
 		<?php if($curObj->attachedFileMenu()){ ?>
-			<div><img src="app/img/attachment.png"></div>
+			<div><img src="app/img/attachment.svg"></div>
 		<?php } ?>
 
 		<!--LIKES-->
@@ -157,7 +153,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 		 ?>
 			<div id="usersLike_<?= $curObj->typeId ?>" class="<?= $classHide ?>" onclick="<?= $likeOnclick ?>" <?= Txt::tooltip($curObj->usersLikeTooltip()) ?> >
 				<span class="circleNb"><?= $circleNb ?></span>
-				<img src="app/img/usersLike.png">
+				<img src="app/img/like.svg">
 			</div>
 		<?php } ?>
 
@@ -171,7 +167,7 @@ if($curObj->isRecent())  {$burgerImg=str_ireplace('menu','menuNew',$burgerImg);}
 		?>
 			<div id="usersComment_<?= $curObj->typeId ?>" class="<?= $classHide ?>" onclick="<?= $commentOnclick ?>" <?= Txt::tooltip($commentTooltip) ?> >
 				<span class="circleNb"><?= $circleNb ?></span>
-				<img src="app/img/usersComment.png">
+				<img src="app/img/comment.svg">
 			</div>
 		<?php } ?>
 	</div>

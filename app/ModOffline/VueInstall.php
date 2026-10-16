@@ -57,7 +57,7 @@ input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 	<div id="pageContent" class="miscContent">
 		<?php
 		////	PAS D'ACCES AU DOSSIER DATAS  ||  FORMULAIRE D'INSTALL
-		if(!is_writable(PATH_DATAS))  {echo '<h2><img src="app/img/importantBig.png"> &nbsp; '.Txt::trad("NOTIF_chmodDATAS").'</h2>';}
+		if(!is_writable(PATH_DATAS))  {echo '<h2><img src="app/img/important.svg"> &nbsp; '.Txt::trad("NOTIF_chmodDATAS").'</h2>';}
 		else{
 		?>
 			<form action="index.php" method="post" id="installForm" enctype="multipart/form-data">

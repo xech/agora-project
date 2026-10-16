@@ -45,7 +45,7 @@ tfoot select option[value=""]		{background-color:#bbb;}								/*Option par déf
 		<div class="miscContent">
 			<!--TELECHARGEMENT DES LOGS-->
 			<div id="logsDownload">
-				<a href="index.php?ctrl=log&action=logsDownload"><img src="app/img/download.png"> <?= Txt::trad("LOG_download") ?></a>
+				<a href="index.php?ctrl=log&action=logsDownload"><img src="app/img/download.svg"> <?= Txt::trad("LOG_download") ?></a>
 			</div>
 		</div>
 	</div>
@@ -53,7 +53,7 @@ tfoot select option[value=""]		{background-color:#bbb;}								/*Option par déf
 	<div id="pageContent">
 		<div class="miscContent">
 			<!--TITRE DES LOGS-->
-			<div id="logTitle"><img src="app/img/log.png"> <?= Txt::trad("LOG_MODULE_DESCRIPTION").' : '.Ctrl::$curSpace->getLabel() ?></div>
+			<div id="logTitle"><img src="app/img/history.svg"> <?= Txt::trad("LOG_MODULE_DESCRIPTION").' : '.Ctrl::$curSpace->getLabel() ?></div>
 			<hr>
 			<!--TABLEAU DES LOGS-->
 			<table id="logTable">

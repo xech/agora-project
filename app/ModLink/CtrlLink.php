@@ -33,7 +33,7 @@ class CtrlLink extends Ctrl
 	{
 		$pluginsList=MdlLinkFolder::getPluginFolders($params);
 		foreach(MdlLink::getPluginObjects($params) as $tmpObj){
-			$tmpObj->pluginIcon=self::moduleName."/icon.png";
+			$tmpObj->pluginIcon=self::moduleName."/icon.svg";
 			$tmpObj->pluginLabel=(!empty($tmpObj->description))  ?  $tmpObj->description  :  $tmpObj->adress;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier

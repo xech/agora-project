@@ -20,69 +20,77 @@ function objSelectSwitch(menuId)
 }
 
 ////	Action sur les objets sélectionnés
-async function menuSelectAction(urlRedir, lightbox)
-{
-	let objectsSelector=".objSelectCheckbox:checked";																	// Sélecteur JQuery des objets
-	if($(objectsSelector).length>0){																					// Vérif s'il y a des objets sélectionnés
-		let confirmDetails=$(objectsSelector).length+" <?= Txt::trad("confirmDeleteSelectNb") ?>";						// Nb d'objets sélectionnés (ex: "55 éléments sélectionnés")
-		let curTypeId=null;																								// Init curTypeId
-		$(objectsSelector).each(function(){																				// Parcourt chaque objet sélectionné
-			let typeId=this.value.split("-");																			// TypeId en tableau (ex: "file-22" -> ["file",22])
-			if(curTypeId!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];  curTypeId=typeId[0];}	// Ajoute à l'url un nouveau "objectsTypeId"  (ex: "&objectsTypeId[file]=22")
-			else						{urlRedir+="-"+typeId[1];}														// Ajoute à l'url le "_id" de l'objet courant (ex: "-33")
-		});
-		//// Désaffectation d'users à l'espace courant
-		if(/deleteFromCurSpace/i.test(urlRedir)){
-			if(await confirmAlt("<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?>",confirmDetails)==false)  {return false;}
+ready(function(){
+	$(".menuSelectAction").on("click", function(){
+		let selectAction=this.getAttribute("data-select-action");
+		let urlRedir=this.getAttribute("data-select-url");
+		let objSelector=".objSelectCheckbox:checked";
+		//// Vérif s'il y a des objets sélectionnés
+		if($(objSelector).length>0){
+			//// Affiche le nombre d'objets sélectionnés  &&  Ajoute les "objectsTypeId" dans l'url 
+			let confirmInfo=$(objSelector).length+" <?= Txt::trad("confirmDeleteSelectNb") ?>";								// Nombre d'objets sélectionnés
+			let curTypeId=null;																								// Init curTypeId
+			$(objSelector).each(function(){																					// Parcourt chaque objet sélectionné
+				let typeId=this.value.split("-");																			// TypeId en tableau (ex: "file-22" -> ["file",22])
+				if(curTypeId!=typeId[0])	{urlRedir+="&objectsTypeId["+typeId[0]+"]="+typeId[1];  curTypeId=typeId[0];}	// Ajoute à l'url un nouveau "objectsTypeId"  (ex: "&objectsTypeId[file]=22")
+				else						{urlRedir+="-"+typeId[1];}														// Ajoute à l'url le "_id" de l'objet courant (ex: "-33")
+			});
+			//// "DESAFFECTER DE L'ESPACE"
+			if(selectAction=="user"){
+				confirmRedir(urlRedir, "<?= Txt::trad("USER_deleteFromCurSpaceConfirm") ?>", confirmInfo);
+			}
+			//// "SUPPRIMER"
+			if(selectAction=="delete"){
+				confirmDelete(urlRedir, confirmInfo);
+			}
+			//// "TELECHARGER LES FICHIERS"
+			if(selectAction=="download"){
+				confirmRedir(urlRedir, TRAD_confirmDownload, confirmInfo);
+			}
+			//// "VOIR SUR UNE CARTE" || "DEPLACER VERS UN AUTRE DOSSIER"
+			if(selectAction=="map" || selectAction=="move"){
+				lightboxOpen(urlRedir);
+			}
 		}
-		//// Suppression d'objets
-		else if(/delete/i.test(urlRedir)){
-			if(await confirmDelete(urlRedir,confirmDetails)==false)  {return false;}
-		}
-		//// Redirection (ex: download d'archive)
-		else if(typeof lightbox=="undefined" && await confirmAlt())
-			{redir(urlRedir);}
-		//// Ouvre une lightbox (ex: folderMove)
-		else if(typeof lightbox!="undefined" && lightbox==true)
-			{lightboxOpen(urlRedir);}
-	}
-}
+	});
+});
 </script>
 
 
 <style>
 /*menu masqué par défaut*/
-#objSelectMenu	{display:none;}	
+#objSelectMenu		{display:none;}
+.menuSelectAction	{cursor:pointer;}
 </style>
 
 
 <div id="objSelectMenu" class="miscContent">
-	<!--"TELECHARGER LES FICHIERS" (file)-->
+	<!--"TELECHARGER LES FICHIERS"-->
 	<?php if(Req::$curCtrl=="file"){ ?>
-	<div class="menuLine" onclick="menuSelectAction('?ctrl=file&action=downloadArchive')"><div class="menuIcon"><img src="app/img/download.png"></div><div><?= Txt::trad("FILE_downloadSelection") ?></div></div>
+	<div class="menuLine menuSelectAction" data-select-action="download" data-select-url="?ctrl=file&action=downloadArchive"?ctrl=file&action=downloadArchive><div class="menuIcon"><img src="app/img/download.svg"></div><div><?= Txt::trad("FILE_downloadSelection") ?></div></div>
 	<?php } ?>
 
-	<!--"VOIR SUR UNE CARTE" (user / contact)-->
+	<!--"VOIR SUR UNE CARTE"-->
 	<?php if(Req::$curCtrl=="user" || Req::$curCtrl=="contact"){ ?>
-		<div class="menuLine" onclick="menuSelectAction('?ctrl=misc&action=PersonsMap',true)" <?= Txt::tooltip("showOnMapTooltip") ?> ><div class="menuIcon"><img src="app/img/map.png"></div><div><?= Txt::trad("showOnMap") ?></div></div>
+	<div class="menuLine menuSelectAction" data-select-action="map" data-select-url="?ctrl=misc&action=PersonsMap" <?= Txt::tooltip("showOnMapTooltip") ?> ><div class="menuIcon"><img src="app/img/map.svg"></div><div><?= Txt::trad("showOnMap") ?></div></div>
 	<?php } ?>
 
 	<!--"DEPLACER VERS UN AUTRE DOSSIER"-->
 	<?php if($folderMoveOption==true){ ?>
-	<div class="menuLine" onclick="menuSelectAction('?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->typeId ?>',true)"><div class="menuIcon"><img src="app/img/folder/folderMove.png"></div><div><?= Txt::trad("changeFolder") ?></div></div>
+	<div class="menuLine menuSelectAction" data-select-action="move" data-select-url="?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->typeId ?>"><div class="menuIcon"><img src="app/img/folderMove.svg"></div><div><?= Txt::trad("changeFolder") ?></div></div>
 	<?php } ?>
 
-	<!--"DESAFFECTER DE L'ESPACE" (user)-->
+	<!--"DESAFFECTER DE L'ESPACE"-->
 	<?php if($deleteFromSpaceOption==true){ ?>
-	<div class="menuLine" onclick="menuSelectAction('?ctrl=user&action=DeleteFromCurSpace')"><div class="menuIcon"><img src="app/img/delete.png"></div><div><?= Txt::trad("USER_deleteFromCurSpace") ?></div></div>
+	<div class="menuLine menuSelectAction" data-select-action="user" data-select-url="?ctrl=user&action=DeleteFromCurSpace"><div class="menuIcon"><img src="app/img/delete.svg"></div><div><?= Txt::trad("USER_deleteFromCurSpace") ?></div></div>
 	<?php } ?>
 
 	<!--"SUPPRIMER"-->
 	<?php if($deleteOption==true){ ?>
-	<div class="menuLine" onclick="menuSelectAction('?ctrl=object&action=Delete')"><div class="menuIcon"><img src="app/img/delete.png"></div><div><?= Req::$curCtrl=="user" ? Txt::trad("USER_deleteDefinitely") : Txt::trad("deleteElems") ?></div></div>
+	<div class="menuLine menuSelectAction" data-select-action="delete" data-select-url="?ctrl=object&action=Delete"><div class="menuIcon"><img src="app/img/delete.svg"></div><div><?= Req::$curCtrl=="user" ? Txt::trad("USER_deleteDefinitely") : Txt::trad("deleteElems") ?></div></div>
 	<?php } ?>
 
 	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
-	<div class="menuLine link" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkSelectAll.png"></div><div><?= Txt::trad("selectAll") ?></div></div>
-	<div class="menuLine link" id="objUnselectAll"><div class='menuIcon'><img src="app/img/checkUnselectAll.png"></div><div><?= Txt::trad("unselectAll") ?></div></div>
+	<div class="menuLine link" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkAll.svg"></div><div><?= Txt::trad("selectAll") ?></div></div>
+	<div class="menuLine link" id="objUnselectAll"><div class='menuIcon'><img src="app/img/checkNone.svg"></div><div><?= Txt::trad("unselectAll") ?></div></div>
 </div>

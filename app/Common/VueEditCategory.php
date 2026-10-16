@@ -90,6 +90,7 @@ fieldset							{margin-top:30px!important;}/*surcharge*/
 form								{display:none; margin-top:25px;}/*masque par défaut*/
 form input[name='title']			{width:300px; max-width:80%; color:white; margin-right:5px;}
 form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5px;}
+.vColorPickerImg					{width:30px!important; height:30px!important;}
 .vSpaceList							{margin-top:10px; max-height:150px; overflow-y:auto;}
 .vSpaceList>div						{display:inline-block; width:48%; margin:10px 10px 0px 0px;}
 .vLabelAllSpaces					{font-style:italic;}
@@ -105,7 +106,7 @@ form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5p
 
 <div>
 	<div class="lightboxTitle">
-		<img src="app/img/category.png"><?= Txt::trad($tradModulePrefix."_CAT_editTitle") ?>
+		<img src="app/img/categories.svg"><?= Txt::trad($tradModulePrefix."_CAT_editTitle") ?>
 		<div class="lightboxTitleDetail"><?= Txt::trad($tradModulePrefix."_CAT_editInfo") ?></div>
 	</div>
 	<div id="categoryList">
@@ -118,21 +119,21 @@ form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5p
 						<div><?= $tmpObj->getLabel() ?></div>
 						<div class="vCategoryAutor"><?= Txt::trad("createdBy").' '.$tmpObj->autorLabel() ?></div>
 					</div>
-					<div class="vCategoryModif vCategoryEdit link"><img src="app/img/edit.png"> <?= Txt::trad("modify") ?></div>
-					<div class="vCategoryDelete" onclick="confirmDelete('<?= $tmpObj->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("delete") ?></div>
+					<div class="vCategoryModif vCategoryEdit link"><img src="app/img/edit.svg"> <?= Txt::trad("modify") ?></div>
+					<div class="vCategoryDelete" onclick="confirmDelete('<?= $tmpObj->getUrl('delete') ?>')"><img src="app/img/delete.svg"> <?= Txt::trad("delete") ?></div>
 					<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
-					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?> ><img src="app/img/changeOrder.png"><input type="hidden" name="changeOrderIds[]" value="<?= $tmpObj->_id ?>"></div>
+					<div class="changeOrder" <?= Txt::tooltip("changeOrder") ?> ><img src="app/img/verticalMove.svg"><input type="hidden" name="changeOrderIds[]" value="<?= $tmpObj->_id ?>"></div>
 					<?php } ?>
 				<!--AJOUTER UNE NOUVELLE CATEGORIE-->
 				<?php }else{ ?>
-					<div class="vCategoryAdd vCategoryEdit link"><img src="app/img/plus.png">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
+					<div class="vCategoryAdd vCategoryEdit link"><img src="app/img/add.svg">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
 				<?php } ?>
 			</div>
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
 			<form action="index.php" method="post">
 				<input type="text" name="title" value="<?= $tmpObj->title ?>" id="titleInput<?= $tmpObj->_id ?>" placeholder="<?= Txt::trad("title") ?>" style="background:<?= $tmpObj->color ?>">
-				<img src="app/img/colorPicker.png" class="menuContextLaunch" for="colorPickerDiv<?= $tmpObj->_id ?>">
-				<div class="colorPicker menuContext" id="colorPickerDiv<?= $tmpObj->_id ?>">
+				<img src="app/img/colors.svg" class="menuContextLaunch vColorPickerImg" for="colorPickerDiv<?= $tmpObj->_id ?>">
+				<div class="menuContext" id="colorPickerDiv<?= $tmpObj->_id ?>">
 					<div id="colorPickerMenu<?= $tmpObj->_id ?>"></div>
 					<script>
 						////	Créé un nouveau colorPicker pour la catégorie courante

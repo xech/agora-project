@@ -15,18 +15,18 @@ ready(function(){
 
 	<!--TOUT SELECTIONNER-->
 	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',false).trigger('click')">
-		<img src="app/img/checkSelectAll.png"> <?= Txt::trad("selectAll") ?>
+		<img src="app/img/checkAll.svg"> <?= Txt::trad("selectAll") ?>
 	</div>
 
 	<!--TOUT DESELECTIONNER-->
 	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',true).trigger('click')">
-		<img src="app/img/checkUnselectAll.png"> <?= Txt::trad("unselectAll") ?>
+		<img src="app/img/checkNone.svg"> <?= Txt::trad("unselectAll") ?>
 	</div>
 
 	<!--SELECTION D'UN GROUPE D'USERS-->
 	<?php foreach($userGroupList as $tmpGroup){ ?>
-		<div class="userInputDiv" onclick="userGroupSelect('<?= $inputSelector ?>','<?= implode(',',$tmpGroup->_idUsersTab) ?>')" <?=Txt::tooltip(Txt::trad("select")." : ".$tmpGroup->usersLabel) ?> >
-			<img src="app/img/user/accessGroup.png">&nbsp; <?= $tmpGroup->title ?>
+		<div class="userInputDiv" onclick="userGroupSelect('<?= $inputSelector ?>','<?= implode(',',$tmpGroup->_idUsersTab) ?>')" <?=Txt::tooltip(Txt::trad("select")." :<br>".$tmpGroup->usersLabel) ?> >
+			<img src="app/img/usersGroup.svg">&nbsp; <?= $tmpGroup->title ?>
 		</div>
 	<?php } ?>
 </div>

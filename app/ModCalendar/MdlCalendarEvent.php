@@ -85,7 +85,7 @@ class MdlCalendarEvent extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : VERIF LE DROIT POUR L'USER COURANT DE CRÉER UN NOUVEL EVT
+	 * SURCHARGE : DROIT POUR L'USER COURANT DE CRÉER DE CRÉER UN NOUVEL EVT
 	 ********************************************************************************************************/
 	public function createRight()
 	{
@@ -148,30 +148,30 @@ class MdlCalendarEvent extends MdlObject
 		if(!empty($options["_idCal"])  &&  $this->affectationDeleteRight($options["_idCal"])  &&  count($this->affectedCalendars())>=2){
 			$curCalendar=Ctrl::getObj("calendar",$options["_idCal"]);
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&_idCalDeleteAffectation=".$curCalendar->_id."')",
-				"iconSrc"=>"deleteRemove.png",
+				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&_idCalDeleteAffectation=".$curCalendar->_id."');",
+				"iconSrc"=>"remove.svg",
 				"label"=>Txt::trad("CALENDAR_evtRemoveFromCal").' <i>'.$curCalendar->getLabel().'</i>'
 			];
 		}
 		////	"Retirer l'événement de cette date" (cf. Evt répétés)
 		if(!empty($options["evtDeleteTime"])  &&  !empty($this->periodType)  &&  $this->editRight()){
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date('Y-m-d',$options["evtDeleteTime"])."')",
-				"iconSrc"=>"deleteRemove.png",
+				"actionJs"=>"confirmRedir('".$this->getUrl("delete")."&periodDateExceptionsAdd=".date('Y-m-d',$options["evtDeleteTime"])."');",
+				"iconSrc"=>"remove.svg",
 				"label"=>Txt::trad("CALENDAR_evtRemoveFromDate")
 			];
 		}
 		////	Agendas où est affecté l'evenement
 		$options["objOptions"][]=[
 			"separator"=>"<hr>",
-			"iconSrc"=>"calendar/iconSmall.png",
+			"iconSrc"=>"calendar/icon.svg",
 			"label"=>$this->affectedCalendarsLabel()
 		];
 		////	Acces en lecture seule
 		if($this->editRight()==false){
 			$options["objOptions"][]=[
 				"separator"=>"<hr>",
-				"iconSrc"=>"info.png",
+				"iconSrc"=>"info.svg",
 				"label"=>$this->tradObj("accessReadDetail")
 			];
 		}
@@ -300,7 +300,7 @@ class MdlCalendarEvent extends MdlObject
 		//// Evt "allDay"
 		elseif($format!="mini"){
 			return Txt::dateLabel("dateDefault", $this->timeBegin, $this->timeEnd).
-					'&nbsp;<img src="app/img/arrowRightSmall.png">'.Txt::trad("CALENDAR_allDay").'&nbsp;<img src="app/img/calendar/allDay.png">';
+					'<img src="app/img/arrowRightLabel.svg">'.Txt::trad("CALENDAR_allDay").'<img src="app/img/calendar/allDay.svg">';
 		}
 	}
 
@@ -327,7 +327,7 @@ class MdlCalendarEvent extends MdlObject
 			}
 			//// Exceptions de périodicité
 			if(!empty($this->periodDateExceptions)){
-				$periodLabel.='<br><br><img src="app/img/calendar/periodDateExceptions.png"> '.Txt::trad("CALENDAR_periodDateExceptions").' : ';
+				$periodLabel.='<br><br><img src="app/img/cycleNot.svg"> '.Txt::trad("CALENDAR_periodDateExceptions").' : ';
 				foreach(array_filter(Txt::txt2tab($this->periodDateExceptions)) as $tmpKey=>$tmpVal){	//"array_filter" enlève les valeurs vides
 					if($tmpKey>0)  {$periodLabel.=", ";}
 					$periodLabel.=ucfirst(Txt::dateLabel("dateDefault",$tmpVal));
@@ -335,7 +335,7 @@ class MdlCalendarEvent extends MdlObject
 			}
 			//// Fin de périodicité
 			if(!empty($this->periodDateEnd)){
-				$periodLabel.='<br><br><img src="app/img/dateEnd.png"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel("dateDefault",$this->periodDateEnd));
+				$periodLabel.='<br><br><img src="app/img/finish.svg"> '.Txt::trad("CALENDAR_periodDateEnd").' : '.ucfirst(Txt::dateLabel("dateDefault",$this->periodDateEnd));
 			}
 			//// Renvoie le résultat
 			return $periodLabel;

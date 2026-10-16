@@ -77,7 +77,7 @@ class CtrlMisc extends Ctrl
 					if(Req::isMobile())					{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//Mobile : "Will 11:00"
 					elseif($autorObj->isProfileImg())	{$dateAutor=date("H:i",$message["date"]).$autorObj->tagProfileImg(false,true);}		//Mode normal avec icone de l'user : "11:00 <img>"
 					else								{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
-					if(count($destList)>2)  {$dateAutor.="<img src='app/img/user/iconSmall.png' class='iconUsersMultiple'>";}				//Ajoute si besoin l'icone de discussion à plusieurs
+					if(count($destList)>2)  {$dateAutor.='<img src="app/img/users.svg" class="vMessengerUsersIcon">';}						//Icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires
 					$oldMessageClass="vMessengerOldMessage";
 					$messageTooltip=Txt::dateLabel("default",$message["date"])." : ".Txt::trad("MESSENGER_messageFrom")." ".$autorObj->getLabel()." ".Txt::trad("MESSENGER_messageSentTo")." ";	//Tooltip des détails du message 
@@ -277,7 +277,7 @@ class CtrlMisc extends Ctrl
 				$tmpAdress=trim($tmpPerson->adress.", ".$tmpPerson->postalCode." ".str_ireplace("cedex","",$tmpPerson->city)." ".$tmpPerson->country,  ", ");
 				$tmpLabel=$tmpPerson->getLabel()." <br> ".$tmpAdress;
 				if(!empty($tmpPerson->companyOrganization) || !empty($tmpPerson->function))  {$tmpLabel.="<br>".trim($tmpPerson->function." - ".$tmpPerson->companyOrganization, " - ");}
-				$tmpImg=($tmpPerson->isProfileImg())  ?  $tmpPerson->pathProfileImg()  :  "app/img/mapBig.png";
+				$tmpImg=($tmpPerson->isProfileImg())  ?  $tmpPerson->pathProfileImg()  :  "app/img/map.svg";
 				$adressList[]=["adress"=>$tmpAdress, "personLabel"=>$tmpLabel, "personImg"=>$tmpImg];
 			}
 		}

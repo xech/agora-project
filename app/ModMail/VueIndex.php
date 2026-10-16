@@ -95,7 +95,7 @@ ready(function(){
 		<div id="pageMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
 			<div id="recipientMainMenu" class="miscContent" >
-				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.png">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRight.png"><hr></div>
+				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.svg">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRightLabel.svg"><hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS D'UN ESPACE || CONTACTS D'UN DOSSIER
 				foreach($containerList as $tmpContainer){
@@ -107,8 +107,8 @@ ready(function(){
 					<!--BLOCK D'USERS/CONTACTS-->
 					<div class="vMailsBlock" <?= $containerTreeLevel ?> >
 						<div class="vMailsLabel link" onclick="$('#<?= $containerId ?>').slideToggle();">
-							<div><img src="app/img/mail/<?= $tmpContainer::objectType=="space"?'user.png':'contact.png' ?>"></div>
-							<div><?= $tmpContainer->name ?> <img src="app/img/arrowBottom.png"></div>
+							<div><img src="app/img/<?= $tmpContainer::objectType=="space"?'space.svg':'contact/icon.svg' ?>"></div>
+							<div><?= $tmpContainer->name ?> <img src="app/img/arrowDown.svg"></div>
 						</div>
 						<div class="vMailsMenu <?= $containerClass ?>" id="<?= $containerId ?>">
 							<?php
@@ -131,8 +131,8 @@ ready(function(){
 							<?= $tmpContainer::objectType=="space" ?  MdlUser::selectUsersGroups($tmpContainer,$personInputSelector)  : null ?>
 							<!--SELECTION DE CONTACTS-->
 							<?php if($tmpContainer::objectType=="contactFolder"){ ?>
-								<div onclick="$('<?= $personInputSelector ?>').prop('checked',false).trigger('click')"><img src="app/img/checkSelectAll.png"> <?= Txt::trad("selectAll") ?></div>
-								<div onclick="$('<?= $personInputSelector ?>').prop('checked',true).trigger('click')"><img src="app/img/checkUnselectAll.png"> <?= Txt::trad("unselectAll") ?></div>
+								<div onclick="$('<?= $personInputSelector ?>').prop('checked',false).trigger('click')"><img src="app/img/checkAll.svg"> <?= Txt::trad("selectAll") ?></div>
+								<div onclick="$('<?= $personInputSelector ?>').prop('checked',true).trigger('click')"><img src="app/img/checkNone.svg"> <?= Txt::trad("unselectAll") ?></div>
 							<?php } ?>
 						</div>
 					</div>
@@ -140,7 +140,7 @@ ready(function(){
 			</div>
 
 			<!--HISTORIQUE DES MAILS ENVOYES-->
-			<div id="historyLabel" class="miscContent" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/log.png"> <?= Txt::trad("MAIL_historyTitle") ?></div>
+			<div id="historyLabel" class="miscContent" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/history.svg"> <?= Txt::trad("MAIL_historyTitle") ?></div>
 		</div>
 
 		<div id="pageContent">
@@ -159,14 +159,14 @@ ready(function(){
 					<div>
 						<!--AJOUTER UNE VISIO-->
 						<?php if(Ctrl::$agora->visioEnabled()){ ?>
-							<div id="visioUrlAdd" class="link" <?= Txt::tooltip("VISIO_urlAddConfirm") ?> ><img src="app/img/visioSmall.png">&nbsp;<?= Txt::trad("VISIO_urlAdd") ?></div>
+							<div id="visioUrlAdd" class="link" <?= Txt::tooltip("VISIO_urlAddConfirm") ?> ><img src="app/img/visio.svg">&nbsp;<?= Txt::trad("VISIO_urlAdd") ?></div>
 						<?php } ?>
 						<!--JOINDRE DES FICHIERS-->
 						<?= $curObj->attachedFileEdit() ?>
 					</div>
 					<div>
 						<!--BOUTON"SUBMIT"-->
-						<?= Txt::submitButton("<img src='app/img/mailSend.png'>&nbsp; ".Txt::trad("MAIL_sendMail")) ?>
+						<?= Txt::submitButton("<img src='app/img/post.svg'>&nbsp; ".Txt::trad("MAIL_sendMail")) ?>
 						<!--EMAIL RAPPELÉ (cf "reloadMailTypeId")-->
 						<?php if(Req::isParam("reloadMailTypeId")){ ?><input type="hidden" name="reloadMailTypeId" value="<?= Req::param("reloadMailTypeId") ?>"><?php } ?>
 					</div>

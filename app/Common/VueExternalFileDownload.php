@@ -9,7 +9,7 @@
 <div id="pageCenter">
 	<!--DOWNLOAD LE FICHIER-->
 	<button onclick="redir('<?= $urlDownload ?>')">
-		<img src="app/img/download.png"><?= Txt::trad("FILE_fileDownload") ?> : <span><?= Req::param("fileName") ?></span>
+		<img src="app/img/download.svg"><?= Txt::trad("FILE_fileDownload") ?> : <span><?= Req::param("fileName") ?></span>
 	</button>
 	<br><br>
 

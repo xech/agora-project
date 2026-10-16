@@ -20,9 +20,9 @@
 <div id="pageFull">
 	<div id="pageMenu">
 		<div class="miscContent">
-			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/plus.png"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
+			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/add.svg"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
-			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.png"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
+			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.svg"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
 		</div>
 	</div>
 
@@ -37,7 +37,7 @@
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>
 					<div class="vModules">
 						<?php foreach($tmpSpace->moduleList(false,true) as $tmpModule){ ?>
-							<img src="app/img/<?= $tmpModule["moduleName"] ?>/iconSmall.png" <?= Txt::tooltip($tmpModule["description"]) ?> >
+							<img src="app/img/<?= $tmpModule["moduleName"] ?>/icon.svg" <?= Txt::tooltip($tmpModule["description"]) ?> >
 						<?php } ?>
 					</div>
 					<hr>
@@ -48,12 +48,12 @@
 
 					<!--"ESPACE PUBLIC"-->
 					<?php if(!empty($tmpSpace->public)){ ?>
-						<div class="vSpaceAffectation"><img src="app/img/user/accessGuest.png"> <?= Txt::trad("SPACE_publicSpace") ?></div>
+						<div class="vSpaceAffectation"><img src="app/img/earth.svg"> <?= Txt::trad("SPACE_publicSpace") ?></div>
 					<?php } ?>
 
 					<!--"TOUS LES UTILISATEURS"-->
 					<?php if($tmpSpace->allUsersAffected()){ ?>
-						<div class="vSpaceAffectation"><img src="app/img/user/accessAllUsers.png"> <?= Txt::trad("SPACE_allUsers") ?></div>
+						<div class="vSpaceAffectation"><img src="app/img/users.svg"> <?= Txt::trad("SPACE_allUsers") ?></div>
 					<?php } ?>
 
 					<!--LISTE DES USERS AFFECTES-->
@@ -61,7 +61,7 @@
 						$accessRight=$tmpSpace->accessRightUser($tmpUser);
 						if($tmpSpace->allUsersAffected() && $accessRight==1)  {continue;}//Simple user et tous les users affectés à l'espace
 					?>
-						<div class="vSpaceAffectation" onclick="<?= $tmpUser->lightboxVue() ?>"><img src="app/img/user/<?= $accessRight==2?"userAdminSpace.png":"accessUser.png" ?>"> <?= $tmpUser->getLabel() ?></div>
+						<div class="vSpaceAffectation" onclick="<?= $tmpUser->lightboxVue() ?>"><img src="app/img/<?= $accessRight==2?'userAdmin.svg':'user.svg' ?>"> <?= $tmpUser->getLabel() ?></div>
 					<?php } ?>
 				</div>
 			</div>

@@ -33,7 +33,7 @@ class CtrlContact extends Ctrl
 	{
 		$pluginsList=MdlContactFolder::getPluginFolders($params);
 		foreach(MdlContact::getPluginObjects($params) as $tmpObj){
-			$tmpObj->pluginIcon=self::moduleName."/icon.png";
+			$tmpObj->pluginIcon=self::moduleName."/icon.svg";
 			$tmpObj->pluginLabel=$tmpObj->getLabel("full");
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier

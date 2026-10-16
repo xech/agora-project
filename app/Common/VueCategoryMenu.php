@@ -15,7 +15,7 @@ foreach($categoryList as $tmpCat){
 <!--EDITION DES CATEGORIES-->
 <?php if(isset($urlEditObjects)){ ?>
 <div class="menuLine" onclick="lightboxOpen('<?= $urlEditObjects ?>')">
-	<div class="menuIcon"><img src="app/img/edit.png"></div>
+	<div class="menuIcon"><img src="app/img/edit.svg"></div>
 	<div><?= Txt::trad($tradPrefix."_CAT_editTitle") ?></div>
 </div>
 <?php } ?>

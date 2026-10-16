@@ -24,7 +24,7 @@
 	foreach($logsList as $tmpLog){
 		$logoLog=(preg_match("/(add|modif)/i",$tmpLog["action"]))  ?  "edit"  :  "eye";
 		echo "<div class='vLogsRow lineHover'>
-				<div class='vLogAction'><img src='app/img/".$logoLog.".png'> ".ucfirst(Txt::trad("LOG_".$tmpLog["action"]))."</div>
+				<div class='vLogAction'><img src='app/img/".$logoLog.".svg'> ".ucfirst(Txt::trad("LOG_".$tmpLog["action"]))."</div>
 				<div class='vLogDate'>".Txt::dateLabel("default",$tmpLog["timestamp"])."</div>
 				<div class='vLogUser'>".Ctrl::getObj("user",$tmpLog["_idUser"])->getLabel()."</div>
 				<div>".$tmpLog["comment"]."</div>

@@ -168,7 +168,7 @@
 <!--TOOGLE DE DESCRIPTION-->
 <?php if($toggleButton==true){ ?>
 	<div id="descriptionToggle" onclick="$('#descriptionTextarea').slideToggle()">
-		<img src="app/img/description.png">&nbsp; <label><?= Txt::trad("description") ?> <img src="app/img/arrowBottom.png"></label>
+		<img src="app/img/description.svg"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowDown.svg"></label>
 	</div>
 <?php } ?>
 

@@ -157,7 +157,7 @@ input[name='location']				{width:400px;}
 .vPeriodDateExceptionsInput:has(input[value=''])	{display:none;}
 
 /*VISIOCONFERENCE*/
-#visioUrlInput													{width:250px; font-size:0.9rem;}
+#visioUrlInput													{width:270px;}
 <?= empty($curObj->visioUrl)?'#visioInputs':'#visioUrlAdd' ?>	{display:none;}/*masque l'input de la visio OU "Ajouter une visio"*/
 
 /*AFFECTATION AUX AGENDAS*/
@@ -166,6 +166,7 @@ input[name='location']				{width:400px;}
 .vCalAffectation>div								{display:table-cell;}
 .vCalAffectation label								{display:block; line-height:20px; padding-inline:3px;}
 .vCalAffectation input								{margin:0px!important;}/*Surcharge le margin-block des inputs*/
+.vCalAffectation img								{width:16px; height:16px; filter:brightness(1.5);}
 .vCalAffectation .vCalInput							{display:none;}/*input principal, toujours hidden*/
 .vCalPropose										{width:25px; text-align:right; cursor:help;}
 .vCalPropose input									{position:relative;}/*input de proposition*/
@@ -207,7 +208,7 @@ input[name='location']				{width:400px;}
 		<span class="beginEndLabel"><?= Txt::trad("begin") ?></span>
 		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("begin") ?>>
 		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("begin") ?>>
-		<span id="beginEndSeparator"><img src="app/img/arrowRightSmall.png"></span>
+		<span id="beginEndSeparator"><img src="app/img/arrowRightLabel.svg"></span>
 		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("end") ?>>
 		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("end") ?>>
@@ -216,7 +217,7 @@ input[name='location']				{width:400px;}
 	<!--TOUTE LA JOURNEE-->
 	<div class="vEvtOptionInline">
 		<input type="checkbox" name="allDay" id="allDayCheckbox" value="1" <?= $curObj->allDay==1?'checked':null ?> >
-		<label for="allDayCheckbox"><?= Txt::trad("CALENDAR_allDay") ?> <img src="app/img/calendar/allDay.png"></label>
+		<label for="allDayCheckbox"><?= Txt::trad("CALENDAR_allDay") ?> <img src="app/img/calendar/allDay.svg"></label>
 	</div>
 
 	<!--PERIODICITE : SELECTION DU TYPE-->
@@ -232,7 +233,7 @@ input[name='location']				{width:400px;}
 	<!--PERIODICITE : DETAILS-->
 	<fieldset id="periodFieldset" class="vEvtGuestHide">
 		<!--DETAIL DES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
-		<legend><img src="app/img/calendar/period.png"> <span id="periodLegend"></span></legend>
+		<legend><img src="app/img/cycle.svg"> <span id="periodLegend"></span></legend>
 		<!--PERIODICITE : JOURS DE LA SEMAINE-->
 		<div id="periodType_weekDay">
 			<?php for($cpt=1; $cpt<=7; $cpt++){ ?>
@@ -253,18 +254,18 @@ input[name='location']				{width:400px;}
 		</div>
 		<!--PERIODICITE : DATES D'EXCEPTION-->
 		<div id="periodDateExceptions">
-			<label id="periodDateExceptionsAdd" <?= Txt::tooltip("add") ?>><img src="app/img/calendar/periodDateExceptions.png"> <?= Txt::trad("CALENDAR_periodDateExceptions") ?> <img src="app/img/plusSmall.png"></label>
+			<label id="periodDateExceptionsAdd" <?= Txt::tooltip("add") ?>><img src="app/img/cycleNot.svg"> <?= Txt::trad("CALENDAR_periodDateExceptions") ?> <img src="app/img/add.svg"></label>
 			<?php for($cpt=0; $cpt<20; $cpt++){ ?>
 			<span class="vPeriodDateExceptionsInput">
-				<img src="app/img/arrowRight.png">
+				<img src="app/img/arrowRightLabel.svg">
 				<input type="text" name="periodDateExceptions[]" value="<?= isset($periodDateExceptions[$cpt]) ? $periodDateExceptions[$cpt] : null ?>" class="dateInput">
-				<img src="app/img/delete.png" class="vPeriodDateExceptionsDelete link" <?= Txt::tooltip("delete") ?> >
+				<img src="app/img/delete.svg" class="vPeriodDateExceptionsDelete link" <?= Txt::tooltip("delete") ?> >
 			</span>
 			<?php } ?>
 		</div>
 		<!--PERIODICITE : FIN-->
 		<div id="periodDateEnd">
-			<img src="app/img/dateEnd.png"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowRight.png">
+			<img src="app/img/finish.svg"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowRightLabel.svg">
 			<input type="text" name="periodDateEnd" class="dateInput" value="<?= Txt::formatDate($curObj->periodDateEnd,"dbDate","inputDate") ?>">
 		</div>
 	</fieldset>
@@ -280,7 +281,7 @@ input[name='location']				{width:400px;}
 	<!--IMPORTANT-->
 	<div class="vEvtOptionInline vEvtGuestHide">
 		<input type="checkbox" name="important" id="importantCheckbox" value="1" <?= $curObj->important==1?'checked':null ?> >
-		<label for="importantCheckbox"><?= Txt::trad("CALENDAR_importantEvent") ?> <img src="app/img/important.png"></label>
+		<label for="importantCheckbox"><?= Txt::trad("CALENDAR_importantEvent") ?> <img src="app/img/important.svg"></label>
 	</div>
 
 	<!--VISIBILITE-->
@@ -300,11 +301,12 @@ input[name='location']				{width:400px;}
 	<!--VISIOCONFERENCE-->
 	<?php if(Ctrl::$agora->visioEnabled()){ ?>
 	<div class="vEvtOptionInline vEvtGuestHide">
-		<span id="visioUrlAdd" class="link" <?= Txt::tooltip("VISIO_urlAddConfirm") ?>><img src="app/img/visioSmall.png"> <?= Txt::trad("VISIO_urlAdd") ?></span>
+		<img src="app/img/visio.svg">
+		<label id="visioUrlAdd" <?= Txt::tooltip("VISIO_urlAddConfirm") ?>><?= Txt::trad("VISIO_urlAdd") ?></label>
 		<span id="visioInputs">
 			<input type="text" name="visioUrl" value="<?= $curObj->visioUrl ?>" id="visioUrlInput" readonly>
-			<img src="app/img/copy.png" id="visioUrlCopy" class="link" <?= Txt::tooltip("VISIO_urlCopy") ?>>
-			<img src="app/img/delete.png" id="visioUrlDelete" class="link" <?= Txt::tooltip("VISIO_urlDelete") ?>>
+			<img src="app/img/copy.svg" id="visioUrlCopy" class="link" <?= Txt::tooltip("VISIO_urlCopy") ?>>
+			<img src="app/img/delete.svg" id="visioUrlDelete" class="link" <?= Txt::tooltip("VISIO_urlDelete") ?>>
 		</span>
 	</div>
 	<?php } ?>
@@ -324,7 +326,7 @@ input[name='location']				{width:400px;}
 					<!--AFFECTATION A L'AGENDA-->
 					<div <?= Txt::tooltip($tmpCal->tooltip) ?>>
 						<input type="checkbox" name="affectationCalendars[]" value="<?= $tmpCal->_id ?>" class="vCalInput" id="calInput<?= $tmpCal->typeId ?>" <?= $tmpCalAttr ?> >
-						<label for="calInput<?= $tmpCal->typeId ?>" ><?= ($tmpCal->isRessource()?'<img src="app/img/calendar/typeRessource.png">':null)." ".$tmpCal->title ?></label>
+						<label for="calInput<?= $tmpCal->typeId ?>" ><?= ($tmpCal->isRessource()?'<img src="app/img/space.svg">':null)." ".$tmpCal->title ?></label>
 					</div>
 					<!--OPTION DE PROPOSITION-->
 					<?php if($tmpCal->proposeOption==true){ ?>

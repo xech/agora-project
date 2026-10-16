@@ -121,8 +121,8 @@ class CtrlCalendar extends Ctrl
 				$tmpCal->evtListDays[$dayYmd]=[];																								//Init les evts du jour
 				$evtListDay=MdlCalendar::dayEvtList($tmpCal->evtListDisplayed,$tmpDay["dayTimeBegin"],$tmpDay["dayTimeEnd"]);					//Récupère uniquement les evts du jour
 				foreach($evtListDay as $tmpEvt){																								//Parcourt chaque événement du jour :
-					if(!empty($tmpEvt->important))	{$tmpEvt->title.='&nbsp;<img src="app/img/importantSmall.png">';}							//Evt important
-					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='&nbsp;<img src="app/img/calendar/periodSmall.png">';}						//Evt periodique/répété
+					if(!empty($tmpEvt->important))	{$tmpEvt->title.='<img src="app/img/important.svg">';}										//Evt important
+					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='<img src="app/img/cycle.svg">';}											//Evt periodique/répété
 					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.$tmpEvt->dateLabel();																//Tooltip avec title et date détaillée
 					$tmpEvt->contextMenuOptions=["burgerLauncher"=>"small-float", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
 					$tmpCal->evtListDays[$dayYmd][]=$tmpEvt;																					//Ajoute l'evt à la liste !
@@ -212,7 +212,7 @@ class CtrlCalendar extends Ctrl
 			foreach($tmpCal->evtList(null, null, 1, false, $params) as $tmpEvt){
 				//// Vérif si l'evt n'a pas déjà été ajouté (car peut être affecté à plusieurs agendas) && se limite à 100 evt max (cf. affichage des nouveaux evt après import de fichier Ical)
 				if(empty($pluginsList[$tmpEvt->typeId]) && count($pluginsList)<100){
-					$tmpEvt->pluginIcon=self::moduleName."/icon.png";
+					$tmpEvt->pluginIcon=self::moduleName."/icon.svg";
 					$tmpEvt->pluginLabel  =$tmpEvt->dateLabel("dateNum")." : ".$tmpEvt->title;
 					$tmpEvt->pluginTooltip=$tmpEvt->dateLabel()."<hr>".$tmpEvt->affectedCalendarsLabel();
 					$tmpEvt->pluginJsIcon="window.top.redir('".$tmpEvt->getUrl()."')";//Affiche l'evt dans son principal agenda (surcharge "getUrl()")

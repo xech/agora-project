@@ -30,13 +30,13 @@ function sendOldMail(typeId){
 
 
 <div>
-	<div class="lightboxTitle"><img src="app/img/log.png"> <?= Txt::trad("MAIL_historyTitle") ?></div>
+	<div class="lightboxTitle"><img src="app/img/history.svg"> <?= Txt::trad("MAIL_historyTitle") ?></div>
 
 	<!--SUPPRESSION DES ANCIENS MAILS-->
 	<?php if(!empty($mailList)){ ?>
-		<div id="deleteMailsLabel" class="link"><?= Txt::trad("MAIL_historyDelete") ?> <img src="app/img/delete.png"></div>
+		<div id="deleteMailsLabel" class="link"><?= Txt::trad("MAIL_historyDelete") ?> <img src="app/img/delete.svg"></div>
 		<form action="index.php" method="post" id="deleteMailsForm">
-			<img src="app/img/delete.png"> <?= Txt::trad("MAIL_historyDelete") ?>
+			<img src="app/img/delete.svg"> <?= Txt::trad("MAIL_historyDelete") ?>
 			<select name="historyDeleteDays">
 				<?php foreach([7,15,30,60,90,180,365,730] as $nbDays){ ?><option value="<?= $nbDays ?>"><?= str_replace("--NB_DAYS--",$nbDays,Txt::trad("MAIL_historyDeleteXDays")) ?></option><?php } ?>
 			</select>
@@ -46,12 +46,12 @@ function sendOldMail(typeId){
 
 	<!--HISTORIQUE DES MAILS ENVOYÉS-->
 	<?php foreach($mailList as $tmpMail){ ?>
-		<div class="vMailLabel option" onclick="$('#mailDetails<?= $tmpMail->_id ?>').slideToggle()"><img src="app/img/mail.png">&nbsp; <?= $tmpMail->title ?></div>
+		<div class="vMailLabel option" onclick="$('#mailDetails<?= $tmpMail->_id ?>').slideToggle()"><img src="app/img/mail.svg">&nbsp; <?= $tmpMail->title ?></div>
 		<fieldset class="vMailDetails" id="mailDetails<?= $tmpMail->_id ?>">
 			<div><?= Txt::trad("MAIL_sendBy").' '.$tmpMail->autorDate(true) ?></div>
 			<div><?= Txt::trad("MAIL_recipients").' : '.str_replace(',',' - ',$tmpMail->recipients) ?></div>
-			<div class="link" onclick="sendOldMail('<?= $tmpMail->typeId ?>')" <?= Txt::tooltip("MAIL_resendInfo") ?>><img src="app/img/mail/resend.png"> <?= Txt::trad("MAIL_resend") ?></div>
-			<div class="link" onclick="confirmDelete('<?= $tmpMail->getUrl('delete') ?>')"><img src="app/img/delete.png"> <?= Txt::trad("MAIL_delete") ?></div>
+			<div class="link" onclick="sendOldMail('<?= $tmpMail->typeId ?>')" <?= Txt::tooltip("MAIL_resendInfo") ?>><img src="app/img/shortcut.svg"> <?= Txt::trad("MAIL_resend") ?></div>
+			<div class="link" onclick="confirmDelete('<?= $tmpMail->getUrl('delete') ?>')"><img src="app/img/delete.svg"> <?= Txt::trad("MAIL_delete") ?></div>
 			<div class="miscContent"><?= $tmpMail->description ?></div>
 		</fieldset>
 	<?php } ?>

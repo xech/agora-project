@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg data-name="Camada 1" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ <g transform="matrix(1.0152 0 0 1.2114 -.75859 -10.76)" stroke-width="1.506">
+  <g fill="#ccc">
+   <rect x="21.685" y="21.416" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x=".74723" y="21.416" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="42.593" y="21.416" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="63.561" y="21.272" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="21.44" y="43.407" width="14.811" height="12.625" rx="1.6964"/>
+  </g>
+  <rect x=".74723" y="43.407" width="14.811" height="12.625" rx="1.6964" fill="#808080"/>
+  <g fill="#ccc">
+   <rect x="42.593" y="43.407" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="63.561" y="43.696" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="63.561" y="65.988" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="84.439" y="21.416" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="84.439" y="43.407" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="84.439" y="66.133" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="21.44" y="66.133" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x=".74723" y="66.133" width="14.811" height="12.625" rx="1.6964"/>
+   <rect x="42.593" y="66.133" width="14.811" height="12.625" rx="1.6964"/>
+  </g>
+ </g>
+</svg>

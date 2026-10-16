@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6.61mm" height="6.61mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 661 661" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+ <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
+   <rect width="661" height="661"/>
+  </clipPath></defs>
+ 
+ 
+ 
+  <g class="Master_Slide">
+   
+   
+  </g>
+ 
+ <g class="SlideGroup" transform="matrix(.94796 0 0 .96035 21.296 11.467)">
+  
+   
+    <g class="Slide" clip-path="url(#presentation_clip_path)">
+     <g class="Page">
+      <g class="Graphic">
+       <g>
+        <rect class="BoundingBox" x="-65" y="-66" width="773" height="773" fill="none"/><g fill="#595959">
+        <path d="m4 73c0-38 32-70 70-70h401c39 0 70 32 70 70v401c0 39-31 70-70 70h-401c-38 0-70-31-70-70zm70-23c-13 0-23 10-23 23v401c0 13 10 24 23 24h401c13 0 24-11 24-24v-401c0-13-11-23-24-23z"/>
+        <path d="m630 127c13 0 23 10 23 23v448c0 30-24 54-54 54h-448c-13 0-23-10-23-23s10-23 23-23h448c4 0 8-4 8-8v-448c0-13 10-23 23-23z"/>
+        <path d="m414 176c10 8 10 23 1 32l-155 159c-8 9-23 10-32 1l-93-85c-9-9-10-24-1-33s23-10 33-1l76 70 139-143c9-9 23-9 32 0z"/>
+       </g></g>
+      </g>
+     </g>
+    </g>
+   
+  
+ </g>
+</svg>

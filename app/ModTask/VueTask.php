@@ -1,5 +1,5 @@
 <style>
-.lightboxTitleInfos > span	{display:inline-block; margin:10px 10px 0px;}
+.lightboxTitleDetail > span	{display:inline-block; margin-right:10px;}/*categories/priorité */
 .vProgressBars				{text-align:center;}
 .progressBar				{margin:10px; padding:8px 12px;}
 </style>
@@ -8,7 +8,7 @@
 	<!--MENU CONTEXT  /  TITRE  /  CATEGORIE  /  PRIORITE-->
 	<div class="lightboxTitle">
 		<?= $curObj->lightboxMenu().$curObj->title ?>
-		<div class="lightboxTitleInfos"><?= $curObj->categoryLabel().$curObj->priorityLabel() ?></div>
+		<div class="lightboxTitleDetail"><?= $curObj->categoryLabel().$curObj->priorityLabel() ?></div>
 	</div>
 
 	<!--DESCRIPTION  /  RESPONSABLES  /  AVANCEMENT  /  DATES DEBUT & FIN  /  FICHIERS JOINTS-->

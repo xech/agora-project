@@ -149,11 +149,11 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResponseFile img					{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
 .vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
 .vPollsContainer button					{width:240px!important;}/*surcharge*/
-.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:var(--radius-field); background:#fafafa; box-shadow:0px 1px 5px #ddd inset;}
-.vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:var(--radius-field); box-shadow:0px 1px 3px #bbb;}
-.vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #fcfcfc, #ececec);}
-.vPollsResultBar50						{background:linear-gradient(to top, #fd9215, #ffc55b, #fecf15);}
-.vPollsResultBar100						{background:linear-gradient(to top, #86bf24, #98d829, #99e21b);}
+.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:var(--radius-field); background:#fafafa;}
+.vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:var(--radius-field);}
+.vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #ececec);}
+.vPollsResultBar50						{background:linear-gradient(to top, #d8b113, #fcdb57);}
+.vPollsResultBar100						{background:linear-gradient(to top, #85cc29, #a6ff33);}
 /*** RESPONSIVE TABLET-SMARTPHONE*/
 @media screen and (max-width:1199px){
 	.vPollsContainer ul		{padding-left:0px!important;}
@@ -179,13 +179,13 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 				<!--AJOUTE UNE NEWS-->
 				<?php if(MdlDashboardNews::addRight()){ ?>
 				<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardNews::getUrlNew() ?>')">
-					<div class="menuIcon"><img src="app/img/plus.png"></div>
+					<div class="menuIcon"><img src="app/img/add.svg"></div>
 					<div><?= Txt::trad("DASHBOARD_addNews") ?></div>
 				</div>
 				<?php } ?>
 				<!--NEWS "OFFLINE"-->
 				<div class="menuLine <?= !empty($_SESSION["offlineNews"])?'optionSelect':'option' ?>" <?= Txt::tooltip("DASHBOARD_offlineNewsInfo") ?> >
-					<div class="menuIcon"><img src="app/img/dashboard/newsOffline.png"></div>
+					<div class="menuIcon"><img src="app/img/archive.svg"></div>
 					<div onclick="redir('index.php?ctrl=dashboard&offlineNews=<?= empty($_SESSION['offlineNews'])?'true':'false' ?>')">
 						<?= Txt::trad("DASHBOARD_offlineNews").(!empty($offlineNewsNb) ? '<span class="circleNb">'.$offlineNewsNb.'</span>' : null) ?>
 					</div>
@@ -215,14 +215,14 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					<!--Ajoute un sondage-->
 					<?php if(MdlDashboardPoll::addRight()){ ?>
 						<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardPoll::getUrlNew() ?>')">
-							<div class="menuIcon"><img src="app/img/plus.png"></div>
+							<div class="menuIcon"><img src="app/img/add.svg"></div>
 							<div><?= Txt::trad("DASHBOARD_POLLS_addPoll") ?></div>
 						</div>
 					<?php } ?>
 					<!--Voir uniquement les sondages votés-->
 					<?php if(!empty($pollsVotedNb)){ ?>
 						<div class="menuLine <?= $_SESSION["pollsVotedOnly"]==true?'optionSelect':'option' ?>" <?= Txt::tooltip("DASHBOARD_POLLS_onlyVotedInfo") ?> >
-							<div class="menuIcon"><img src="app/img/check.png"></div>
+							<div class="menuIcon"><img src="app/img/check.svg"></div>
 							<div onclick="redir('index.php?ctrl=dashboard&dashboardPoll=true&pollsVotedOnly=<?= $_SESSION['pollsVotedOnly']==true?'false':'true' ?>')">
 								<?= Txt::trad("DASHBOARD_POLLS_onlyVoted").(!empty($pollsVotedNb) ? '<span class="circleNb">'.$pollsVotedNb.'</span>' : null) ?>
 							</div>
@@ -317,7 +317,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					<!--LABEL DU MODULE + HR-->
 					<?php if($showModuleLabel==true){ ?>
 						<div class="vContentElemsModuleLabel">
-							<img src="app/img/<?= $tmpObj::moduleName ?>/iconSmall.png">&nbsp; <?= Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME") ?>
+							<img src="app/img/<?= $tmpObj::moduleName ?>/icon.svg">&nbsp; <?= Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME") ?>
 							<hr>
 						</div>
 					<?php } ?>

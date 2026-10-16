@@ -26,30 +26,28 @@ class CtrlFile extends Ctrl
 		if(Ctrl::$curUser->isGeneralAdmin()){
 			//Verif l'accès en écriture
 			if(!is_writable(Ctrl::$curContainer->folderPath("real")))
-				{Ctrl::notify(Txt::trad("FILE_folderAccessError")." (fileFolderId=".Ctrl::$curContainer->_id.")", "error");}
+				{Ctrl::notify(Txt::trad("NOTIF_fileOrFolderAccess")." (fileFolderId=".Ctrl::$curContainer->_id.")", "error");}
 			//Occupation d'espace disque
 			$folderSize=File::folderSize(PATH_MOD_FILE);
-			$barPercent=ceil(($folderSize/limite_espace_disque)*100);
-			$barLabel=Txt::trad("diskSpaceUsed")." : ".$barPercent."%";
-			$barTooltip=Txt::trad("diskSpaceUsedModFile")." : ".File::sizeLabel($folderSize)." ".Txt::trad("from")." ".File::sizeLabel(limite_espace_disque);
-			$vDatas["diskSpaceAlert"]=($barPercent>70);
-			$vDatas["diskSpaceBar"]=Tool::progressBar($barLabel, $barTooltip, $barPercent, $vDatas["diskSpaceAlert"]);
+			$vDatas["diskSpacePercent"]=ceil(($folderSize/limite_espace_disque)*100);
+			$vDatas["diskSpaceLabel"]=Txt::trad("diskSpaceUsed")." : ".$vDatas["diskSpacePercent"]."%";
+			$vDatas["diskSpaceTooltip"]=Txt::tooltip(Txt::trad("diskSpaceUsedModFile")." : ".File::sizeLabel($folderSize)." ".Txt::trad("from")." ".File::sizeLabel(limite_espace_disque));
 		}
 		////	Dossiers & Fichiers
 		$vDatas["filesList"]=Db::getObjTab("file", "SELECT * FROM ap_file WHERE ".MdlFile::sqlDisplay(self::$curContainer).MdlFile::sqlSort());
 		foreach($vDatas["filesList"] as $fileKey=>$tmpFile){
 			////	Url du label/icone
-			$tmpFile->labelLink='onclick="confirmRedir(\''.$tmpFile->urlDownload().'\',\''.Txt::trad("download").' ?\')"';
+			$tmpFile->labelLink="onclick=\"confirmRedir('".$tmpFile->urlDownload()."','".Txt::trad("download")." ?');\"";
 			if(File::isType("editorImage",$tmpFile->name))			{$tmpFile->iconLink='data-src="'.$tmpFile->urlDisplay().'" data-fancybox="images"';}	//Image
 			elseif(File::isType("lightboxTxt",$tmpFile->name))		{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->urlDisplay().'\')"';}			//Pdf/txt
 			elseif(File::isType("lightboxPlayer",$tmpFile->name))	{$tmpFile->iconLink='onclick="lightboxOpen(\''.$tmpFile->filePath().'\')"';}			//Vidéo/Mp3
 			else													{$tmpFile->iconLink=$tmpFile->labelLink;}												//Idem labelLink
 			////	Tooltip
-			$tooltipBase='&nbsp; <i>'.$tmpFile->name.'</i><hr>'.Txt::trad("FILE_fileSize").' : '.File::sizeLabel($tmpFile->octetSize);	//Nom et taille du fichier
-			if(!empty($tmpFile->description))  {$tooltipBase.='<hr>'.$tmpFile->description;}											//Ajoute la description
-			$tmpFile->labelTooltip=Txt::trad("FILE_fileDownload").$tooltipBase;															//Tooltip du label : download
-			if(stristr($tmpFile->iconLink,"redir"))	{$tmpFile->iconTooltip=$tmpFile->labelTooltip;}										//Tooltip de l'icone : idem labelTooltip
-			else									{$tmpFile->iconTooltip=Txt::trad("show").$tooltipBase;}								//Tooltip de l'icone : lightboxOpen()
+			$tooltipBase=' <i>'.$tmpFile->name.'</i><hr>'.Txt::trad("FILE_fileSize").' : '.File::sizeLabel($tmpFile->octetSize);			//Nom et taille du fichier
+			if(!empty($tmpFile->description))  {$tooltipBase.='<hr>'.$tmpFile->description;}												//Ajoute la description
+			$tmpFile->labelTooltip='<img src="app/img/download.svg"> '.Txt::trad("FILE_fileDownload").$tooltipBase;							//Tooltip du label : download
+			if(stristr($tmpFile->iconLink,"redir"))	{$tmpFile->iconTooltip=$tmpFile->labelTooltip;}											//Tooltip de l'icone : idem labelTooltip
+			else									{$tmpFile->iconTooltip='<img src="app/img/eye.svg"> '.Txt::trad("show").$tooltipBase;}	//Tooltip de l'icone : lightboxOpen()
 			////	Fichier image
 			if(File::isType("editorImage",$tmpFile->name) && $tmpFile->hasTumb()){
 				list($imgWidth,$imgHeight)=getimagesize($tmpFile->filePath());
@@ -71,11 +69,11 @@ class CtrlFile extends Ctrl
 	{
 		$pluginsList=MdlFileFolder::getPluginFolders($params);
 		foreach(MdlFile::getPluginObjects($params) as $tmpObj){
-			$tmpObj->pluginIcon=self::moduleName."/fileType/misc.png";
+			$tmpObj->pluginIcon=self::moduleName."/icon.svg";
 			$tmpObj->pluginLabel=$tmpObj->name;
 			$tmpObj->pluginTooltip=$tmpObj->containerObj()->folderPath("text");
 			$tmpObj->pluginJsIcon="window.top.redir('".$tmpObj->getUrl()."')";//Affiche dans son dossier
-			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."','".Txt::trad("confirmDownload",true)."')";
+			$tmpObj->pluginJsLabel="confirmRedir('".$tmpObj->urlDownload()."',TRAD_confirmDownload);";
 			$pluginsList[]=$tmpObj;
 		}
 		return $pluginsList;

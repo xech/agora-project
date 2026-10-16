@@ -49,7 +49,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 	<?= $curObj->titleMobile("DASHBOARD_POLLS_addPoll") ?>
 	
 	<!--SONDAGE DEJA VOTÉ : AFFICHE UNE NOTIFICATION "Attention : dès que le sondage est voté la modif des réponses est impossible"-->
-	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.png"> <?= Txt::trad("DASHBOARD_POLLS_votedNotif") ?></div><?php } ?>
+	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.svg"> <?= Txt::trad("DASHBOARD_POLLS_votedNotif") ?></div><?php } ?>
 
 	<!--TITRE / DESCRIPTION-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("DASHBOARD_POLLS_titleQuestion") ?>">
@@ -69,20 +69,20 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		}else{
 			$respFileClass=null;
 			$respFileContent='<div id="respFileName'.$respId.'">
-								<a href="'.$respTmp["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$respTmp["fileName"].'</a> &nbsp; 
-								<img src="app/img/delete.png" '.Txt::tooltip("delete").' onclick="deleteResponseFile(\''.$respId.'\');">
+								<a href="'.$respTmp["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.svg"> '.$respTmp["fileName"].'</a> &nbsp; 
+								<img src="app/img/delete.svg" '.Txt::tooltip("delete").' onclick="deleteResponseFile(\''.$respId.'\');">
 							  </div>';
 		}
 	?>
 		<div class="vPollResponseDiv <?= $respClass ?>">
 			<input type="text" name="responses[<?= $respId ?>]" value="<?= $respValue ?>" placeholder="<?= Txt::trad("DASHBOARD_POLLS_responseNb").($tmpKey+1) ?>">
-			<img src="app/img/attachment.png" onclick="$('#responseFile<?= $respId ?>').slideToggle()" <?= Txt::tooltip("EDIT_attachedFileAdd") ?>>
+			<img src="app/img/attachment.svg" onclick="$('#responseFile<?= $respId ?>').slideToggle()" <?= Txt::tooltip("EDIT_attachedFileAdd") ?>>
 			<div id="responseFile<?= $respId ?>" class="responseFile <?= $respFileClass ?>"><?= $respFileContent ?></div>
 		 </div>
 	<?php } ?>
 
 	<!--SONDAGE PAS ENCORE VOTÉ : AJOUTER UNE REPONSE-->
-	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_POLLS_responseAdd") ?>&nbsp; <img src="app/img/plusSmall.png"></div><?php } ?>
+	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_POLLS_responseAdd") ?>&nbsp; <img src="app/img/add.svg"></div><?php } ?>
 
 	<!--REPONSES MULTIPLES  &&  VOTE PUBLIC  &&  AFFICHAGE AVEC LES NEWS ("checked" par défaut)  &&  DATE DE FIN-->
 	<br><br>
@@ -99,7 +99,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 		<label for="toVoteWithNewsInput"><?= Txt::trad("DASHBOARD_POLLS_toVoteWithNews") ?>
 	</div>
 	<div class="pollOptions">
-		<img src="app/img/dateEnd.png">
+		<img src="app/img/finish.svg">
 		<?= Txt::trad("DASHBOARD_POLLS_dateEnd") ?> :
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>">
 	</div>

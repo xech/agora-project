@@ -48,7 +48,7 @@ class CtrlForum extends Ctrl
 		$pluginsList=[];
 		//Sujets
 		foreach(MdlForumSubject::getPluginObjects($params) as $objSubject){
-			$objSubject->pluginIcon=self::moduleName."/icon.png";
+			$objSubject->pluginIcon=self::moduleName."/icon.svg";
 			$objSubject->pluginLabel=(!empty($objSubject->title))  ?  $objSubject->title  :  Txt::reduce($objSubject->description);
 			$objSubject->pluginTooltip=$objSubject->pluginLabel;
 			$objSubject->pluginJsIcon="window.top.redir('".$objSubject->getUrl()."')";//Redir vers le sujet
@@ -58,7 +58,7 @@ class CtrlForum extends Ctrl
 		//Messages
 		if($params["type"]!="shortcut"){
 			foreach(MdlForumMessage::getPluginObjects($params) as $objMessage){
-				$objMessage->pluginIcon=self::moduleName."/icon.png";
+				$objMessage->pluginIcon=self::moduleName."/icon.svg";
 				$objMessage->pluginLabel=(!empty($objMessage->title))  ?  $objMessage->title  :  Txt::reduce($objMessage->description);
 				$objMessage->pluginTooltip=$objMessage->pluginLabel;
 				$objMessage->pluginJsIcon="window.top.redir('".$objMessage->getUrl()."')";//Redir vers le message et son sujet

@@ -88,14 +88,14 @@ class MdlCalendar extends MdlObject
 			$labelTmp=Txt::trad("CALENDAR_icalUrl").'<input id="urlIcal'.$this->typeId.'" value="'.$this->getUrlExternalDownload("ctrl=misc&action=DisplayIcal").'" style="display:none;">';
 			$options["objOptions"][]=[
 				"actionJs"=>$actionJsTmp,
-				"iconSrc"=>"share.png",
+				"iconSrc"=>"share.svg",
 				"label"=>$labelTmp,
 				"tooltip"=>Txt::trad("CALENDAR_icalUrlCopy")
 			];
 			////	"Exporter les événements au format Ical"
 			$options["objOptions"][]=[
-				"actionJs"=>"confirmRedir('index.php?ctrl=calendar&action=exportEvents&typeId=".$this->typeId."','".Txt::trad("CALENDAR_exportIcal",true)."')",
-				"iconSrc"=>"dataImportExport.png",
+				"actionJs"=>"confirmRedir('index.php?ctrl=calendar&action=exportEvents&typeId=".$this->typeId."', '".Txt::trad("CALENDAR_exportIcal",true)."');",
+				"iconSrc"=>"exchange.svg",
 				"label"=>Txt::trad("CALENDAR_exportIcal")
 			];
 		}
@@ -103,7 +103,7 @@ class MdlCalendar extends MdlObject
 		if($this->editContentRight()){
 			$options["objOptions"][]=[
 				"actionJs"=>"lightboxOpen('?ctrl=calendar&action=importEvents&typeId=".$this->typeId."')",
-				"iconSrc"=>"dataImportExport.png",
+				"iconSrc"=>"exchange.svg",
 				"label"=>Txt::trad("CALENDAR_importIcal")
 			];
 		}

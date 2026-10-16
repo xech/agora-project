@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14.55mm" height="14.55mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 1455 1455" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+ 
+ 
+ 
+ 
+  
+ 
+ <g class="SlideGroup" transform="matrix(1.2113 0 0 1.2113 -153.64 -153.64)" fill="#666">
+  
+   
+    
+   
+  
+ <path d="m595 172c-15 0-27 12-27 26v370h-165c-23 0-35 29-19 46l324 323c11 11 27 11 38 0l324-323c16-17 4-46-19-46h-165v-370c0-14-12-26-27-26zm-397 793c-14 0-26 12-26 26v265c0 14 12 26 26 26h1058c14 0 26-12 26-26v-265c0-14-12-26-26-26h-265c-6 0-13 2-18 7l-98 92h-296l-98-92c-5-5-12-7-18-7z" fill="#666"/></g>
+</svg>

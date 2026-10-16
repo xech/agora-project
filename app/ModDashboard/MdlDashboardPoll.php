@@ -241,7 +241,7 @@ class MdlDashboardPoll extends MdlObject
 			}
 			////	Nom du fichier avec un lien de téléchargement
 			else{
-				$responseFileDiv='<a href="'.$tmpResponse["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.png"> '.$tmpResponse["fileName"].'</a>';
+				$responseFileDiv='<a href="'.$tmpResponse["fileUrlDownload"].'" '.Txt::tooltip("download").'><img src="app/img/attachment.svg"> '.$tmpResponse["fileName"].'</a>';
 			}
 			////	Retour l'image
 			return "<div class='vPollsResponseFile'>".$responseFileDiv."</div>";
@@ -270,7 +270,7 @@ class MdlDashboardPoll extends MdlObject
 		if(Ctrl::$curUser->isGeneralAdmin()){
 			$options["objOptions"][]=[
 				"actionJs"=>"redir('index.php?ctrl=dashboard&action=ExportPollResult&typeId=".$this->typeId."')",
-				"iconSrc"=>"download.png",
+				"iconSrc"=>"download.svg",
 				"label"=>Txt::trad("DASHBOARD_POLLS_exportPdf")
 			];
 		}
@@ -278,20 +278,20 @@ class MdlDashboardPoll extends MdlObject
 		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  Txt::tooltip($this->votesUsers())  :  null;
 		$options["objOptions"][]=[
 			"separator"=>"<hr>",
-			"iconSrc"=>"info.png",
+			"iconSrc"=>"info.svg",
 			"label"=>'<span class="cursorHelp" '.$tooltipVotedBy.'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_POLLS_votesNbBis")).'</span>'
 		];
 		////	Date de fin de vote
 		if(!empty($this->dateEnd)){
 			$options["objOptions"][]=[
-				"iconSrc"=>"dateEnd.png",
+				"iconSrc"=>"finish.svg",
 				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_dateEnd")." : ".Txt::dateLabel("dateDefault",$this->dateEnd)."</span>"
 			];
 		}
 		////	Le vote est public
 		if(!empty($this->publicVote)){
 			$options["objOptions"][]=[
-				"iconSrc"=>"eye.png",
+				"iconSrc"=>"eye.svg",
 				"label"=>"<span style='cursor:default'>".Txt::trad("DASHBOARD_POLLS_publicVote")."</span>"
 			];
 		}

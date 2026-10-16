@@ -47,11 +47,13 @@
 		fancyboxLang			=Fancybox.l10n.<?= Txt::trad("FANCYBOXLANG") ?>;	
 		valueUploadMaxFilesize	=<?= File::uploadMaxFilesize() ?>;
 		TRAD_uploadMaxFilesize	="<?= File::uploadMaxFilesize("error") ?>";
-		TRAD_confirm			="<?= Txt::trad("confirm") ?>";
+		TRAD_confirmValidate	="<?= Txt::trad("confirmValidate") ?>";
 		TRAD_confirmCancel		="<?= Txt::trad("confirmCancel") ?>";
 		TRAD_confirmCloseForm	="<?= Txt::trad("confirmCloseForm") ?>";
 		TRAD_confirmDelete		="<?= Txt::trad("confirmDelete") ?>";
 		TRAD_confirmDeleteInfo	="<?= Txt::trad("confirmDeleteInfo") ?>";
+		TRAD_confirmDownload	="<?= Txt::trad("confirmDownload") ?>";
+		TRAD_confirmDownloadInfo="<?= Txt::trad("confirmDownloadInfo") ?>";
 		TRAD_beginEndError		="<?= Txt::trad("beginEndError") ?>";
 		TRAD_dateFormatError	="<?= Txt::trad("dateFormatError") ?>";
 		TRAD_timeFormatError	="<?= Txt::trad("timeFormatError") ?>";
@@ -85,7 +87,7 @@
 	</head>
 
 
-	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>">
+	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="bodySkin<?= ucfirst(Ctrl::$agora->skin) ?>">
 	
 		<!--CONTENU PRINCIPAL DE LA PAGE-->
 		<?php
@@ -96,20 +98,20 @@
 
 		<!--FOOTER EN PAGE PRINCIPALE-->
 		<?php if(isset($footerLogoUrl)){ ?>
-			<div id="pageFooterHtml"><?= is_object(Ctrl::$agora) ? Ctrl::$agora->footerHtml : null ?></div>
-			<div id="pageFooterIcon"><a href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a></div>
+			<span id="pageFooterText"><?= is_object(Ctrl::$agora) ? Ctrl::$agora->footerHtml : null ?></span>
+			<a id="pageFooterLogo" href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a>
 		<?php } ?>
 
 		<!--MOBILE : MENU CONTEXT-->
 		<div id="menuMobileBg"></div>
 		<div id="menuMobileMain">
-			<div id="menuMobileClose"><img src="app/img/close.png"></div>
+			<div id="menuMobileClose"><img src="app/img/close.svg"></div>
 			<div id="menuMobileHeader"></div>
 			<div id="menuMobileContent"></div>
 		</div>
 
 		<!--MOBILE : BOUTON "+" EN BAS A DROITE-->
-		<div id="mobileAddElem"><img src="app/img/plusBig.png"></div>
+		<div id="mobileAddElem"><img src="app/img/add.svg"></div>
 
 	</body>
 </html>

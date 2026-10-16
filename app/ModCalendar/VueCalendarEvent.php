@@ -17,21 +17,21 @@ hr:last-of-type					{display:none;}
 	<!--DESCRIPTION-->
 	<?php if(!empty($curObj->description)){ ?>
 		<div class="vEvtDetail">
-			<div class="vEvtDetailIcon"><img src="app/img/description.png"></div>
+			<div class="vEvtDetailIcon"><img src="app/img/description.svg"></div>
 			<div><?= $curObj->description ?></div>
 		</div><hr>
 	<?php } ?>
 
 	<!--DATE-->
 	<div class="vEvtDetail">
-		<div class="vEvtDetailIcon"><img src="app/img/calendar/clock.png"></div>
+		<div class="vEvtDetailIcon"><img src="app/img/clock.svg"></div>
 		<div><?= $curObj->dateLabel() ?></div>
 	</div><hr>
 
 	<!--PERIODICITE-->
 	<?php if(!empty($labelPeriod)){ ?>
 		<div class="vEvtDetail">
-			<div class="vEvtDetailIcon"><img src="app/img/calendar/period.png"></div>
+			<div class="vEvtDetailIcon"><img src="app/img/cycle.svg"></div>
 			<div><?= $labelPeriod ?></div>
 		</div><hr>
 	<?php } ?>
@@ -46,7 +46,7 @@ hr:last-of-type					{display:none;}
 	<!--IMPORTANT-->
 	<?php if($curObj->important){ ?>
 		<div class="vEvtDetail">
-			<div class="vEvtDetailIcon"><img src="app/img/important.png"></div>
+			<div class="vEvtDetailIcon"><img src="app/img/important.svg"></div>
 			<div><?= Txt::trad("CALENDAR_importantEvent") ?></div>
 		</div><hr>
 	<?php } ?>
@@ -54,7 +54,7 @@ hr:last-of-type					{display:none;}
 	<!--AFFECTATIONS AUX AGENDAS-->
 	<?php if(Ctrl::$curUser->isUser()){ ?>
 		<div class="vEvtDetail">
-			<div class="vEvtDetailIcon"><img src="app/img/calendar/iconSmall.png"></div>
+			<div class="vEvtDetailIcon"><img src="app/img/calendar/icon.svg"></div>
 			<div><?= $curObj->affectedCalendarsLabel() ?></div>
 		</div><hr>
 	<?php } ?>
@@ -62,15 +62,15 @@ hr:last-of-type					{display:none;}
 	<!--VISIBILITE SPECIALE-->
 	<?php if(!empty($contentVisibility)){ ?>
 		<div class="vEvtDetail">
-			<div class="vEvtDetailIcon"><img src="app/img/displayHide.png"></div>
-			<div><?= Txt::tooltip("CALENDAR_visibilityTooltip")." : ".$contentVisibility ?></div>
+			<div class="vEvtDetailIcon"><img src="app/img/eyeHide.svg"></div>
+			<div><?= Txt::trad("CALENDAR_visibilityTooltip")." : ".$contentVisibility ?></div>
 		</div><hr>
 	<?php } ?>
 
 	<!--VISIOCONFERENCE-->
 	<?php if(!empty($curObj->visioUrl)){ ?>
 		<div class="vEvtDetail">
-			<div class="vEvtDetailIcon"><img src="app/img/visioSmall.png"></div>
+			<div class="vEvtDetailIcon"><img src="app/img/visio.svg"></div>
 			<div><a href="index.php?ctrl=misc&action=LaunchVisio&visioURL=<?= urlencode($curObj->visioUrl) ?>" class="lightboxOpenHref"><?= Txt::trad("VISIO_launchFromEvent") ?></a></div>
 		</div><hr>
 	<?php } ?>

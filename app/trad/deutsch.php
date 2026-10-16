@@ -61,12 +61,12 @@ class Trad extends Txt
 			"copyUrl"=>"Link zum Teilen kopieren",
 			"copyUrlTooltip"=>"Link (URL) zum Teilen kopieren und per E-Mail, Messenger usw. versenden.",
 			"copyUrlNotif"=>"Link erfolgreich kopiert.",
-			"footerGeneratedTime"=>"Zeit zum Generieren der Seite:",
 
 			////	Confirm et Suppression
-			"confirm"=>"Bestätigen",
+			"confirmValidate"=>"Bestätigen",
 			"confirmCancel"=>"Abbrechen",
 			"confirmDownload"=>"Datei herunterladen ?",
+			"confirmDownloadInfo"=>"Der Download kann einige Sekunden/Minuten dauern",
 			"confirmCloseForm"=>"Formular schließen ohne zu speichern?",
 			"delete"=>"Löschen",
 			"confirmDelete"=>"Löschen bestätigen?",
@@ -237,9 +237,8 @@ class Trad extends Txt
 			"accessWriteDetailContainer"=>"Lese- und Schreibzugriff --OBJ_LABEL_TO--:<br>Berechtigung zum Hinzufügen, Bearbeiten und Löschen aller --OBJ_LABEL_CONTENT--",
 			"accessFullDetail"=>"Administrator und Autor:<br>Voller Lese- und Schreibzugriff --OBJ_LABEL_TO--",
 			"accessAllUsers"=>"Alle Benutzer",
-			"accessAllUsersDetail"=>"Zugriffsrechte für Benutzer im Bereich <i>--SPACENAME--</i>",
-			"accessAllUsersGuests"=>"Alle Benutzer und Gäste",
-			"accessAllUsersGuestsDetail"=>"Zugriffsrechte für Benutzer und Gäste im Bereich <i>--SPACENAME--</i>.<hr>Nur Lesen für Gäste (ohne Benutzerkonto)",
+			"accessAllUsersTooltip"=>"Zugriffsrechte für Benutzer im Bereich <i>--SPACENAME--</i>",
+			"accessAllUsersTooltipGuest"=>"Zugriffsrechte für Gäste des Bereichs (freier Zugriff ohne Authentifizierung): auf Nur-Lesezugriff beschränkt",
 
 			////	Libellé des objets (cf. "::objectType")
 			"OBJ_space"=>"Leerzeichen",						   //ModSpace
@@ -498,14 +497,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Freigabe- und gemeinsamer Arbeitsbereich",
 			"INSTALL_dataDashboardNews"=>  '<h3>Willkommen in Ihrem neuen Freigabebereich!</h3>
-											<h4><a href="index.php?ctrl=file"><img src="app/img/file/iconSmall.png">Teilen Sie Ihre Dateien mit Ihrem Team im Dateimanager</a></h4>
-											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/iconSmall.png"> Erstellen Sie Ereignisse in Ihrem freigegebenen Kalender oder persönlichen Kalender</a></h4>
-											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/iconSmall.png"> Verwenden Sie den Newsfeed, um Informationen über Ihre Aktivitäten zu verbreiten</a></h4>
-											<h4><a href="index.php?ctrl=forum"><img src="app/img/messenger.png">Kommunizieren Sie über Forum, Messaging oder Videokonferenzen</a></h4>
-											<h4><a href="index.php?ctrl=task"><img src="app/img/task/iconSmall.png">Verwalten Sie Ihre Aufgaben und Projekte, um Ihre Aktivitäten zu organisieren</a></h4>
-											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/iconSmall.png"> Senden Sie Newsletter, um Informations-Emails über Ihre Aktivitäten zu verteilen.</a></h4>
-											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.png"> Konsultieren Sie das Benutzerhandbuch, um Ihren Bereich zu entdecken</a></h4>
-											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.png"> Senden Sie Email-Einladungen zum Beitritt zum Space</a></h4>',
+											<h4><a href="index.php?ctrl=file"><img src="app/img/file/icon.svg">Teilen Sie Ihre Dateien mit Ihrem Team im Dateimanager</a></h4>
+											<h4><a href="index.php?ctrl=calendar"><img src="app/img/calendar/icon.svg"> Erstellen Sie Ereignisse in Ihrem freigegebenen Kalender oder persönlichen Kalender</a></h4>
+											<h4><a href="index.php?ctrl=dashboard"><img src="app/img/dashboard/icon.svg"> Verwenden Sie den Newsfeed, um Informationen über Ihre Aktivitäten zu verbreiten</a></h4>
+											<h4><a href="index.php?ctrl=forum"><img src="app/img/chat.svg">Kommunizieren Sie über Forum, Messaging oder Videokonferenzen</a></h4>
+											<h4><a href="index.php?ctrl=task"><img src="app/img/task/icon.svg">Verwalten Sie Ihre Aufgaben und Projekte, um Ihre Aktivitäten zu organisieren</a></h4>
+											<h4><a href="index.php?ctrl=mail"><img src="app/img/mail/icon.svg"> Senden Sie Newsletter, um Informations-Emails über Ihre Aktivitäten zu verteilen.</a></h4>
+											<h4><a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref"><img src="app/img/documentation.svg"> Konsultieren Sie das Benutzerhandbuch, um Ihren Bereich zu entdecken</a></h4>
+											<h4><a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref"><img src="app/img/mail.svg"> Senden Sie Email-Einladungen zum Beitritt zum Space</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Was halten Sie vom Newsfeed?",
 			"INSTALL_dataDashboardPollA"=>"Sehr interessant!",
 			"INSTALL_dataDashboardPollB"=>"Interessant",
@@ -529,7 +528,6 @@ class Trad extends Txt
 			"AGORA_backupFullTooltip"=>"Vollständige Sicherung des Speicherplatzes wiederherstellen: alle Dateien und die Datenbank",
 			"AGORA_backupDb"=>"Datenbank sichern",
 			"AGORA_backupDbTooltip"=>"Nur das Datenbank-Backup des Speicherplatzes abrufen",
-			"AGORA_backupConfirm"=>"Dieser Vorgang kann mehrere Minuten dauern: Download bestätigen?",
 			"AGORA_diskSpaceInvalid"=>"Der Speicherplatz für Dateien muss eine Ganzzahl sein",
 			"AGORA_visioHostInvalid"=>"Die Adresse des Videokonferenzservers ist ungültig: Sie muss mit 'https' beginnen",
 			"AGORA_gApiKeyInvalid"=>"Wenn Sie Google Map als Kartentool wählen, müssen Sie dort einen 'API-Schlüssel' angeben",
@@ -678,7 +676,8 @@ class Trad extends Txt
 			"USER_adminSpace"=>"Bereichsadministrator",
 			"USER_userSpace"=>"Benutzerbereich",
 			"USER_profilEdit"=>"Benutzerprofil bearbeiten",
-			"USER_myProfilEdit"=>"Mein Profil bearbeiten",
+			"USER_myProfile"=>"Mein Profil",
+			"USER_myProfileTooltip"=>"Mein Profil bearbeiten",
 			// Invitations
 			"USER_sendInvitation"=>"Einladungen versenden",
 			"USER_sendInvitationTooltip"=>"Einladungs-Emails zum Beitritt zum aktuellen Space versenden:<br> Sobald eine Einladung bestätigt ist, wird automatisch ein Benutzerkonto für die betreffende Person angelegt.",
@@ -718,18 +717,19 @@ class Trad extends Txt
 			"USER_mailNotifContent2"=>"Melden Sie sich hier mit folgenden Angaben an",
 			"USER_mailNotifContent3"=>"Denken Sie daran, diese Email in Ihrem Archiv zu behalten",
 			// Edition du Livecounter/Messenger
-			"USER_livecounterVisibility"=>"Sichtbarkeit bei Nachrichten",
-			"USER_livecounterAllUsers"=>"Meine Anwesenheit anzeigen, wenn ich angemeldet bin",
-			"USER_livecounterDisabled"=>"Meine Anwesenheit immer verbergen",
-			"USER_livecounterSomeUsers"=>"Einigen Benutzern meine Anwesenheit anzeigen",
+			"USER_livecounterVisibility"=>"Online-Präsenz",
+			"USER_livecounterVisibilityTooltip"=>"Zeigt anderen angemeldeten Benutzern meine Präsenz an, damit sie über den Messenger mit mir chatten können",
+			"USER_livecounterAllUsers"=>"Meine Präsenz für alle anzeigen",
+			"USER_livecounterDisabled"=>"Meine Online-Präsenz verbergen",
+			"USER_livecounterSomeUsers"=>"Meine Präsenz nur für bestimmte Personen anzeigen",
 			//Double authentification
 			"USER_dblAuthEnabled"=>"Zwei-Faktor-Authentifizierung per Email",
 			"USER_dblAuthEnabledTooltip"=>"Zwei-Faktor-Authentifizierung per E-Mail aktivieren: Authentifizierung und Anmeldung im Bereich über einen temporären Code, der per E-Mail gesendet wird, validieren",
 			"USER_dblAuthMailSubject"=>"Authentifizierungscode",
 			"USER_dblAuthMailMessage"=>"Authentifizierungscode, der auf der Anmeldeseite einzugeben ist (10 Minuten gültig)",
-			"USER_dblAuthCodeFormTitle"=>"Authentifizierungscode <br> Gesendet an",
-			"USER_dblAuthCodeExpired"=>"Authentifizierungscode abgelaufen",
-			"USER_dblAuthCodeFalse"=>"Falscher Authentifizierungscode",
+			"USER_dblAuthFormTitle"=>"Authentifizierungscode <br> Gesendet an",
+			"USER_dblAuthExpired"=>"Authentifizierungscode abgelaufen",
+			"USER_dblAuthError"=>"Falscher Authentifizierungscode",
 
 			////	MOD : DASHBOARD
 			////
@@ -795,7 +795,6 @@ class Trad extends Txt
 			"FILE_MODULE_DESCRIPTION"=>"Dateimanager",
 			"FILE_OPTION_adminRootAddContent"=>"Nur der Administrator kann Ordner und Dateien im Stammverzeichnis erstellen",
 			"FILE_addFile"=>"Datei hinzufügen",
-			"FILE_folderAccessError"=>"Auf den Serverordner kann nicht geschrieben werden",
 			"FILE_downloadSelection"=>"Auswahl herunterladen",
 			"FILE_fileDownload"=>"Herunterladen",
 			"FILE_fileSize"=>"Dateigröße",

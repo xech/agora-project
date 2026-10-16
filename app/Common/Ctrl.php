@@ -154,29 +154,31 @@ abstract class Ctrl
 			////	DOUBLE AUTHENTIFICATION -> ETAPE 1 : ENVOIE DE L'EMAIL
 			if($connectViaForm==true && self::$userAuthentified==true && $authUser->dblAuthEnabled()){
 				self::$userAuthentified=false;															//Suspend l'authentification
-				$_SESSION["dblAuthCode"]=random_int(100000,999999);										//code temporaire envoyé par email
-				$_SESSION["dblAuthCodeTime"]=time();													//Timestamp du controle de validité du code
-				$_SESSION["dblAuthToken"]=Txt::randomId();												//Token de validation du code temporaire
-				$_SESSION["dblAuthUserId"]=$authUser->_id;												//User authentifié
-				$_SESSION["dblAuthUserLogin"]=$authUser->login;											//User authentifié
+				$_SESSION['dblAuthCode']=random_int(100000,999999);										//code temporaire envoyé par email
+				$_SESSION['dblAuthToken']=Txt::randomId();												//Token de validation du code temporaire
+				$_SESSION['dblAuthTime']=time();														//Timestamp du controle de validité
+				$_SESSION['dblAuthUserId']=$authUser->_id;												//User authentifié
+				$_SESSION['dblAuthUserLogin']=$authUser->login;											//User authentifié
+				$_SESSION['dblAuthRememberMe']=Req::param("rememberMe");								//RememberMe
 				$mailsTo=$authUser->login;																//Email de destination
 				$mailSubject=Txt::trad("USER_dblAuthMailSubject");										//Sujet du mail
 				$mailMessage=Txt::trad("MAIL_hello").', <br><br>'.										//Message contenant le code
 								Txt::trad("USER_dblAuthMailMessage").' : <br><br>'.
-								'<b style="font-size:1.5rem">'.$_SESSION["dblAuthCode"].'</b>';
+								'<b style="font-size:1.5rem">'.$_SESSION['dblAuthCode'].'</b>';
 				Tool::sendMail($mailsTo, $mailSubject, $mailMessage, ["noNotify"]);						//Envoie l'email, sans notif
-				Ctrl::redir("index.php?ctrl=offline&dblAuthCodeForm=true");								//Redir en page d'accueil et affiche le formulaire
+				Ctrl::redir("index.php?ctrl=offline&dblAuthForm=true");									//Redir en page d'accueil et affiche le formulaire
 			}
 			////	DOUBLE AUTHENTIFICATION -> ETAPE 2 : VALIDE LA DOUBLE AUTHENTIFICATION
 			elseif($connectViaDblAuth==true){
 				//// Code expiré (10 mn maximum)
-				if((time()-$_SESSION["dblAuthCodeTime"]) > 600)
-					{self::notify("USER_dblAuthCodeExpired");}
+				if((time()-$_SESSION['dblAuthTime']) > 600)
+					{self::notify("USER_dblAuthExpired");}
 				//// Code erroné
-				elseif(Req::param("dblAuthCode")!=$_SESSION["dblAuthCode"] || Req::param("dblAuthToken")!=$_SESSION["dblAuthToken"])
-					{self::notify("USER_dblAuthCodeFalse");}
+				elseif(Req::param("dblAuthCode")!=$_SESSION['dblAuthCode'] || Req::param("dblAuthToken")!=$_SESSION['dblAuthToken'])
+					{self::notify("USER_dblAuthError");}
 				//// Code validé
 				else{
+					$_SESSION['dblAuthCode']=$_SESSION['dblAuthToken']=null;
 					$tmpUser=Db::getLine("SELECT * FROM ap_user WHERE _id=".(int)Req::param("dblAuthUserId")." AND `login`=".Db::param("dblAuthUserLogin"));
 					$authUser=self::getObj("user",$tmpUser);
 					self::$userAuthentified=true;
@@ -191,17 +193,17 @@ abstract class Ctrl
 				self::$curUser=$authUser;
 				self::addLog("connexion");
 
-				//// Update "lastconnection" / "previousconnection" (connexion courante / précédente)
+				//// Reinitialise le token de connexion auto
+				if(Req::isParam("rememberMe"))
+					{self::userAuthToken(true,$authUser->_id);}
+
+				//// Update "lastconnection" / "previousconnection" (courante/précédente)
 				$previousConnection=(!empty($authUser->lastConnection))  ?  $authUser->lastConnection  :  time();
 				Db::query("UPDATE ap_user SET lastConnection='".time()."', previousConnection=".Db::format($previousConnection)." WHERE `_id`=".$authUser->_id);
 
 				//// Charge les preferences de l'user en session
 				foreach(Db::getTab("SELECT * FROM ap_userPreference WHERE _idUser=".$authUser->_id) as $tmpPref)
 					{$_SESSION["pref"][$tmpPref["keyVal"]]=$tmpPref["value"];}
-
-				//// Reinitialise le token de connexion auto
-				if($connectViaToken==true  || ($connectViaForm==true && Req::isParam("rememberMe")))
-					{self::userAuthToken(true,$authUser->_id);}
 			}
 			////	ERREUR D'AUTHENTIFICATION
 			else{
@@ -370,8 +372,8 @@ abstract class Ctrl
 				elseif(!empty(self::$agora->wallpaper))	{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper(self::$agora->wallpaper);}
 				else									{$vDatas["pathWallpaper"]=CtrlMisc::pathWallpaper();}
 				$vDatas["footerLogoUrl"]=(empty(self::$agora->logoUrl))  ?  OMNISPACE_URL_PUBLIC  :  self::$agora->logoUrl;
-				$vDatas["footerLogoTooltip"]=Txt::trad("footerGeneratedTime")." ".round((microtime(true)-TPS_EXEC_BEGIN),2).' sec.';
-				////self::notify($vDatas["footerLogoTooltip"]);//Debug: Affichage du temps de réponse
+				$vDatas["footerLogoTooltip"]=OMNISPACE_URL_LABEL;
+				if(Req::isDevServer())  {$vDatas["footerLogoTooltip"].='<br> generated in '.round((microtime(true)-TPS_EXEC_BEGIN),2).' sec';}
 			}
 		}
 		////	NOTIFS  +  RECUPERE LA VUE PRINCIPALE  +  AFFICHE LA VUE COMPLETE
@@ -492,10 +494,10 @@ abstract class Ctrl
 		$isSameOrigin = (empty($host) || $host===$currentHost);
 		//// Host identique (URL relative)  ||  URL validée (URL absolue)
 		if($isSameOrigin==true || filter_var($URL,FILTER_VALIDATE_URL)){
-			if($isSameOrigin==true)  {$URL.=self::urlNotify();}				//Ajoute les notifs
-			$URL=filter_var($URL,FILTER_SANITIZE_URL);						//Nettoye l'URL
-			if($lightboxRedir==false)	{header("Location: ".$URL);}																	//Redirection Header
-			else						{echo '<script> window.top.location.href="'.htmlspecialchars($URL,ENT_QUOTES).'"; </script>';}	//Redirection en page principale ou depuis lightbox (ex: actionDelete)
+			if($isSameOrigin==true)  {$URL.=self::urlNotify();}												//Ajoute les notifs
+			$URL=filter_var($URL,FILTER_SANITIZE_URL);														//Nettoye l'URL ('>' '<', '"', etc)
+			if($lightboxRedir==false)	{header("Location: ".$URL);}										//Redirection Header
+			else						{echo '<script> window.top.location.href="'.$URL.'"; </script>';}	//Redirection en page principale ou depuis lightbox (ex: actionDelete)
 			exit;
 		}
 	}
@@ -537,7 +539,7 @@ abstract class Ctrl
 	 ********************************************************************************************************/
 	public static function noAccessExit($keyTrad="inaccessibleElem")
 	{
-		echo "<h2><img src='app/img/important.png'> ".Txt::trad($keyTrad)."</h2>";
+		echo "<h2><img src='app/img/important.svg'> ".Txt::trad($keyTrad)."</h2>";
 		exit;
 	}
 }

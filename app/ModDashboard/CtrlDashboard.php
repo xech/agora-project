@@ -86,7 +86,7 @@ class CtrlDashboard extends Ctrl
 		$pluginsList=[];
 		if($params["type"]=="search"){
 			foreach(MdlDashboardNews::getPluginObjects($params) as $curObj){
-				$curObj->pluginIcon=self::moduleName."/icon.png";
+				$curObj->pluginIcon=self::moduleName."/icon.svg";
 				$curObj->pluginLabel=$curObj->description;
 				$curObj->pluginJsIcon=null;
 				$curObj->pluginJsLabel=null;
@@ -274,7 +274,7 @@ class CtrlDashboard extends Ctrl
 		}
 
 		////	FOOTER DU PDF  &&  DOWNLOAD DU FICHIER
-		$pdf->Image("app/img/logoLabel.png", 150, 270, null, null, null, Txt::utf8Decode(OMNISPACE_URL_LABEL));
+		$pdf->Image("app/img/logo.png", 150, 270, null, null, null, Txt::utf8Decode(OMNISPACE_URL_LABEL));
 		$fileName=Txt::clean($curObj->getLabel())."_".date("d-m-Y").".pdf";
 		$pdf->Output($fileName, "D");
 	}
