@@ -1,9 +1,18 @@
 
 
+<!--LAUNCHER DU MENU-->
 <span for="<?= $objMenuId ?>" class="menuContextLaunch <?= stristr($burgerLauncher,"float")?'menuContextLaunchFloat':null ?>" <?= Txt::tooltip("menuOptions") ?>>
 	<img src="app/img/menuDot.svg" class="<?= $curObj->isRecent()?'menuContextLaunchRecent':null ?>">
 	<?= $burgerLauncherLabel ?>
 </span>
+
+
+<!--SELECTIONNER : CHECKBOX-->
+<?php if(!empty($isSelectMenu)){ ?>
+	<div class="objSelectCheckboxDiv">
+		<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="<?= $curObj->typeId ?>" id="<?= $curObj->uniqId('objCheckbox') ?>">
+	</div>
+<?php } ?>
 
 
 <!--MENU CONTEXTUEL-->
@@ -21,44 +30,19 @@
 		</div>
 	<?php } ?>
 
+	<!--SELECTIONNER-->
+	<?php if(!empty($isSelectMenu)){ ?>
+		<div class="menuLine" onclick="objSelectSwitch('<?= $curObj->uniqId('objCheckbox') ?>')">
+			<div class="menuIcon"><img src="app/img/check.svg"></div>
+			<div><?= Txt::trad("selectUnselect") ?></div>
+		</div>
+	<?php } ?>
+
 	<!--CHANGER DE DOSSIER-->
 	<?php if(!empty($moveObjectUrl)){ ?>
 		<div class="menuLine" onclick="lightboxOpen('<?= $moveObjectUrl ?>')">
 			<div class="menuIcon"><img src="app/img/folderMove.svg"></div>
 			<div><?= Txt::trad("changeFolder") ?></div>
-		</div>
-	<?php } ?>
-
-	<!--SUPPRIMER-->
-	<?php if(!empty($deleteLabel)){ ?>
-		<div class="menuLine" onclick="<?= $confirmDeleteJs ?>">
-			<div class="menuIcon"><img src="app/img/delete.svg"></div>
-			<div><?= $deleteLabel ?></div>
-		</div>
-	<?php } ?>
-
-	<!--SELECTIONNER-->
-	<?php if($curObj->isSelectable()){ ?>
-		<div class="menuLine" onclick="objSelectSwitch('<?= $curObj->uniqId('objCheckbox') ?>')">
-			<div class="menuIcon"><img src="app/img/check.svg"></div>
-			<div><?= Txt::trad("selectUnselect") ?></div>
-		</div>
-		<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="<?= $curObj->typeId ?>" id="<?= $curObj->uniqId('objCheckbox') ?>">
-	<?php } ?>
-
-	<!--HISTORIQUE/LOGS-->
-	<?php if(!empty($logUrl)){ ?>
-		<div class="menuLine" onclick="lightboxOpen('<?= $logUrl ?>')">
-			<div class="menuIcon"><img src="app/img/history.svg"></div>
-			<div><?= Txt::trad("objHistory") ?></div>
-		</div>
-	<?php } ?>
-
-	<!--URL DE PARTAGE-->
-	<?php if(!empty($getUrlExternal)){ ?>
-		<div class="menuLine" onclick="navigator.clipboard.writeText('<?= $getUrlExternal ?>');notify('<?= Txt::trad('copyUrlNotif',true) ?>');" <?= Txt::tooltip("copyUrlTooltip") ?> >
-			<div class="menuIcon"><img src="app/img/share.svg"></div>
-			<div><?= Txt::trad("copyUrl") ?></div>
 		</div>
 	<?php } ?>
 
@@ -73,9 +57,31 @@
 			<?php if(!empty($tmpOption["iconSrc"])){ ?><div class="menuIcon"><img src="app/img/<?= $tmpOption["iconSrc"] ?>"></div><?php } ?>
 			<div><?= $tmpOption["label"] ?></div>
 		</div>
-	<?php 
-	}
-	?>
+	<?php } ?>
+
+	<!--URL DE PARTAGE-->
+	<?php if(!empty($getUrlExternal)){ ?>
+		<div class="menuLine" onclick="navigator.clipboard.writeText('<?= $getUrlExternal ?>');notify('<?= Txt::trad('copyUrlNotif',true) ?>');" <?= Txt::tooltip("copyUrlTooltip") ?> >
+			<div class="menuIcon"><img src="app/img/share.svg"></div>
+			<div><?= Txt::trad("copyUrl") ?></div>
+		</div>
+	<?php } ?>
+
+	<!--HISTORIQUE/LOGS-->
+	<?php if(!empty($logUrl)){ ?>
+		<div class="menuLine" onclick="lightboxOpen('<?= $logUrl ?>')">
+			<div class="menuIcon"><img src="app/img/history.svg"></div>
+			<div><?= Txt::trad("objHistory") ?></div>
+		</div>
+	<?php } ?>
+
+	<!--SUPPRIMER-->
+	<?php if(!empty($deleteLabel)){ ?>
+		<div class="menuLine" onclick="<?= $confirmDeleteJs ?>">
+			<div class="menuIcon"><img src="app/img/delete.svg"></div>
+			<div><?= $deleteLabel ?></div>
+		</div>
+	<?php } ?>
 
 	<!--AUTEUR/DATE DE CREATION/MODIF-->
 	<?php if(!empty($autorDateCrea)){ ?>

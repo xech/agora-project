@@ -1,26 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="4.76mm" height="4.76mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 476 476" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
- <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
-   <rect width="476" height="476"/>
-  </clipPath></defs>
+<svg width="4.76mm" height="4.76mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 476 476" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="linearGradient3" x1="239.5" x2="239.5" y1="467.5" y2="8.5" gradientUnits="userSpaceOnUse"><stop stop-color="#656565" offset="0"/><stop stop-color="#a3a3a3" offset="1"/></linearGradient></defs>
  
  
  
- <g class="SlideGroup" transform="matrix(1.0105 0 0 1.0105 -2.5025 -2.5025)">
-  
-   
-    <g class="Slide" clip-path="url(#presentation_clip_path)">
-     <g class="Page">
-      <g class="Graphic">
-       <g>
-        <rect class="BoundingBox" x="-19" y="-24" width="519" height="526" fill="none"/>
-        <path d="m314 223c-8 13-19 24-32 32s-28 12-42 12c-15 0-30-4-43-12-14-8-24-19-32-32s-12-27-12-43c0-15 4-31 12-44s18-24 32-32c13-8 28-12 42-12 15 0 30 4 43 12s24 19 32 32 12 29 12 44c0 16-4 30-12 43z" fill="#595959"/>
-        <path d="m10 239c0-42 10-82 31-117 20-36 49-65 84-85 35-21 74-32 114-32 41 0 80 11 115 32 35 20 64 49 84 85 21 35 31 75 31 115v2c0 40-10 80-31 115-20 35-49 65-84 85-35 21-74 32-114 32-41 0-80-11-115-32-35-20-64-50-84-85-21-35-31-75-31-115zm230-204h-1c-35 0-70 8-100 26-31 19-56 44-74 75-17 31-26 66-26 101 0 37 9 72 26 103 5 9 11 18 17 25 21-33 66-69 158-69 91 0 136 36 157 69 6-7 12-16 17-25 17-31 26-66 26-103 0-35-9-70-26-101-19-31-44-56-74-75-30-18-65-26-101-26z" fill="#595959"/>
-       </g>
-      </g>
-     </g>
-    </g>
-   
-  
- </g>
+ 
+ <path transform="matrix(1.0105 0 0 1.0105 -2.5025 -2.5025)" d="m10 239c0-42 10-82 31-117 20-36 49-65 84-85 35-21 74-32 114-32 41 0 80 11 115 32 35 20 64 49 84 85 21 35 31 75 31 115v2c0 40-10 80-31 115-20 35-49 65-84 85-35 21-74 32-114 32-41 0-80-11-115-32-35-20-64-50-84-85-21-35-31-75-31-115zm230-204h-1c-35 0-70 8-100 26-31 19-56 44-74 75-17 31-26 66-26 101 0 37 9 72 26 103 5 9 11 18 17 25 21-33 66-69 158-69 91 0 136 36 157 69 6-7 12-16 17-25 17-31 26-66 26-103 0-35-9-70-26-101-19-31-44-56-74-75-30-18-65-26-101-26z" fill="url(#linearGradient3)"/><path transform="matrix(1.0105 0 0 1.0105 -2.5025 -2.5025)" d="m314 223c-8 13-19 24-32 32s-28 12-42 12c-15 0-30-4-43-12-14-8-24-19-32-32s-12-27-12-43c0-15 4-31 12-44s18-24 32-32c13-8 28-12 42-12 15 0 30 4 43 12s24 19 32 32 12 29 12 44c0 16-4 30-12 43z" fill="#666"/>
 </svg>

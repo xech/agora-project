@@ -13,10 +13,12 @@ ready(function(){
 ////	Switch la sélection d'un objet
 function objSelectSwitch(menuId)
 {
-	var menuId=menuId.replace(/(objCheckbox|objContent)/i,"");												//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
-	$("#objCheckbox"+menuId).prop("checked", !$("#objCheckbox"+menuId).prop("checked"));					//Swich la sélection de la checkbox
-	$("#objContent"+menuId).toggleClass("objContentSelected", $("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection/class du block de l'objet
-	if($(".objSelectCheckbox:checked").length>0)	{$("#objSelectMenu").slideDown(300);}					//Affiche le menu des objets sélectionnés
+	var menuId=menuId.replace(/(objCheckbox|objContent)/i,"");								//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
+	$("#objCheckbox"+menuId).prop("checked", !$("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection de la checkbox
+	if($(".objSelectCheckbox:checked").length>0){											//Au moins un objet sélectionné
+		$("#objSelectMenu").slideDown();													//Affiche le menu de sélection
+		$(".objSelectCheckboxDiv").show();													//Affiche les inputs checkbox
+	}
 }
 
 ////	Action sur les objets sélectionnés

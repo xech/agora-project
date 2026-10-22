@@ -43,8 +43,9 @@ class MdlUserGroup extends MdlObject
 	{
 		if($this->_accessRight===null){
 			$this->_accessRight=parent::accessRight();
-			//Ajoute l'accès en lecture si :  User courant se trouve dans le groupe  OU  l'espace du groupe fait partie des espaces de l'user (pour les affectations d'objet)
-			if(empty($this->_accessRight) && (in_array(Ctrl::$curUser->_id,$this->_idUsersTab) || in_array($this->_idSpace,Ctrl::$curUser->spaceList("ids"))))	{$this->_accessRight=1;}
+			//Accès en lecture :  User courant affecté au groupe  OU  Espace du groupe présent dans les espaces de l'user (cf affectations d'objet)
+			if(empty($this->_accessRight) && (in_array(Ctrl::$curUser->_id,$this->_idUsersTab) || in_array($this->_idSpace,Ctrl::$curUser->spaceList("ids"))))
+				{$this->_accessRight=1;}
 		}
 		return $this->_accessRight;
 	}
@@ -58,11 +59,11 @@ class MdlUserGroup extends MdlObject
 	}
 
 	/********************************************************************************************************
-	 * SURCHARGE : DROIT D'ÉDITION  =>  ADMIN D'ESPACE  ||  AUTEUR 
+	 * SURCHARGE : DROIT D'ÉDITION  =>  FULL ACCESS  ||  GROUPE SUR L'ESPACE + ADMIN D'ESPACE
 	 ********************************************************************************************************/
 	public function editRight()
 	{
-		return (parent::editRight() || $this->isAutor());
+		return (parent::editRight() || (Ctrl::$curSpace->_id==$this->_idSpace && Ctrl::$curUser->isSpaceAdmin()));
 	}
 
 	/********************************************************************************************************

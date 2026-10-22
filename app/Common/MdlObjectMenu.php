@@ -54,6 +54,7 @@ trait MdlObjectMenu
 	{
 		////	PAS DE MENU POUR LES GUESTS
 		if(Ctrl::$curUser->isGuest())  {return false;}
+	
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
 		$vDatas["objMenuId"]=$this->uniqId("objMenu");
@@ -61,6 +62,7 @@ trait MdlObjectMenu
 		$vDatas["objOptions"]			=isset($options["objOptions"]) ? $options["objOptions"] : [];
 		$vDatas["burgerLauncher"]		=isset($options["burgerLauncher"]) ? $options["burgerLauncher"] : 'big-float';
 		$vDatas["burgerLauncherLabel"]	=isset($options["burgerLauncherLabel"]) ? $options["burgerLauncherLabel"] : null;
+		$vDatas["isSelectMenu"]			=($this->isSelectable() && Ctrl::$isMainPage==true);
 
 		////	EDITION
 		if($this->editRight()){

@@ -1,5 +1,5 @@
 <?php if($curObj::descriptionEditor==true){ ?>
-	<script type="text/javascript" src="app/js/tinymce_7.9.1/tinymce.min.js"></script>
+	<script type="text/javascript" src="app/js/tinymce_8.10.0/tinymce.min.js"></script>
 	<script>
 	ready(function(){
 		/******************************************************************************************
@@ -116,9 +116,9 @@
 		////	Créé le Tag html du fichier (cf. ".attachedFileTag" du "app.css")
 		let tagId= (isNewFile==true)  ?  "attachedFileTagTmp"+fileId  :  "attachedFileTag"+fileId;	//Id de la balise : Temporaire si nouveau fichier ||  Final si fichier dejà sur le serveur
 		let tagSrc=(isNewFile==true)  ?  "attachedFileSrcTmp"+fileId  :  displayUrl;				//Src du fichier  : Idem
-		if(isType("editorImage",displayUrl))		{var fileTag='<p><img   id="'+tagId+'" class="attachedFileTag fancyboxImages" src="'+tagSrc+'"></p>';}/*Pas de "data-fancybox" : cf HTMLPurifier*/
-		else if(isType("editorVideo",displayUrl))	{var fileTag='<p><video id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="video/'+extension(displayUrl)+'">HTML5 Video</video></p>';}
-		else if(isType("mp3",displayUrl))			{var fileTag='<p><audio id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="audio/mpeg">HTML5 Audio</audio></p>';}
+		if(isType("editorImage",displayUrl))		{var fileTag='<br><br><img   id="'+tagId+'" class="attachedFileTag fancyboxImages" src="'+tagSrc+'"><br><br>';}/*PAS de <p> (cf center) ni de "data-fancybox" (cf HTMLPurifier)*/
+		else if(isType("editorVideo",displayUrl))	{var fileTag='<br><br><video id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="video/'+extension(displayUrl)+'">HTML5 Video</video><br><br>';}
+		else if(isType("mp3",displayUrl))			{var fileTag='<br><br><audio id="'+tagId+'" class="attachedFileTag" controls><source src="'+tagSrc+'" type="audio/mpeg">HTML5 Audio</audio><br><br>';}
 		////	Nouvelle image : remplace  src="attachedFileSrcTmpXX"  par le contenu binaire de l'image
 		if(isNewFile==true && isType("editorImage",displayUrl)){					//Verif si c'est une nouvelle image
 			let reader=new FileReader();											//Créé un nouveau "FileReader" pour récupérer l'image au format "blob"

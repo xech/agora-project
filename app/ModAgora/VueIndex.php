@@ -91,7 +91,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 			<img src="app/img/disk.svg" <?= $diskSpaceAlert==true?'class="diskSpaceAlert"':null ?>> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
 			<hr>
 			Agora-Project version <?= Req::appVersion()?>
-			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/description.svg"> <?= Txt::trad("AGORA_Changelog") ?></button>
+			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/history.svg"> <?= Txt::trad("AGORA_Changelog") ?></button>
 			PHP <?= phpversion().' - '.Db::dbVersion()?>
 			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
@@ -196,7 +196,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 				</div>
 
 				<!--AFFICHAGE DU NOM DES MODULES-->
-				<div class="objField">
+				<div class="objField" <?= Txt::tooltip("AGORA_moduleLabelDisplayInfo") ?> >
 					<div><img src="app/img/eye.svg"><?= Txt::trad("AGORA_moduleLabelDisplay") ?></div>
 					<div>
 						<?php

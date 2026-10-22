@@ -13,10 +13,10 @@
 #menuMainTab .editButton					{visibility:hidden; float:right; cursor:pointer; margin-left:10px; height:20px; transform:scaleX(-1);}/*Image "edit" d'espace. "scaleX" : inverse l'image*/
 #menuMainTab .menuLine:hover .editButton	{visibility:visible;}
 .vHeaderModule								{display:inline-block; margin:0px; padding:8px; border:1px solid transparent; border-radius:20px; text-align:center; vertical-align:middle; cursor:pointer;}
+.vHeaderModule img							{<?= $moduleLabelDisplay==true?'width:24px;height:24px;':'width:45px;height:45px;' ?>}
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
 .vHeaderModuleCurrent						{font-weight:bold;}
-.vHeaderModuleCurrent img					{opacity:1; filter:var(--blue-filter);}
-.vHeaderModuleCurrent,.vHeaderModule:hover	{background:<?= Ctrl::$agora->skin=="black"?"#383838":"white"?>; border:solid 1px <?= Ctrl::$agora->skin=="black"?"#555":"#d8d8d8"?>!important;}
+.vHeaderModuleCurrent, .vHeaderModule:hover	{background:<?= Ctrl::$agora->skin=="black"?"#383838":"white"?>; border:solid 1px <?= Ctrl::$agora->skin=="black"?"#555":"#d8d8d8"?>!important;}
 /*** RESPONSIVE REDUIT DU HEADER*/
 @media screen and (min-width:1200px) and (max-width:1430px){
 	.vHeaderModule							{padding:4px 12px 5px 12px;}
@@ -104,7 +104,7 @@
 						<!--CONFIG DU MESSENGER-->
 						<?php if(MdlUser::agoraMessengerEnabled()){ ?>
 						<div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=<?= Ctrl::$curUser->typeId ?>');">
-							<div class="menuIcon"><img src="app/img/chat.svg"></div>
+							<div class="menuIcon"><img src="app/img/chat2.svg"></div>
 							<div><?= Txt::trad("USER_livecounterVisibility") ?></div>
 						</div>
 						<?php } ?>
@@ -128,11 +128,6 @@
 								<div class="menuIcon"><img src="app/img/users.svg"></div>
 								<div><a href="index.php?ctrl=user&displayUsers=all"><?= Txt::trad("USER_allUsers") ?></a></div>
 							</div>
-							<!--GERER TOUS LES ESPACES-->
-							<div class="menuLine" <?= Txt::tooltip("SPACE_moduleTooltip") ?>>
-								<div class="menuIcon"><img src="app/img/space.svg"></div>
-								<div><a href="index.php?ctrl=space"><?= Txt::trad("HEADER_manageAllSpaces") ?></a></div>
-							</div>
 							<!--PARAMETRAGE GENERAL-->
 							<div class="menuLine">
 								<div class="menuIcon"><img src="app/img/setting.svg"></div>
@@ -146,6 +141,7 @@
 				<!--COLONNE 2 : ESPACES-->
 				<div>
 					<?php
+					////	AFFICHE CHAQUE ESPACE
 					foreach($spaceList as $tmpSpace){
 						$spaceLabelClass=$spaceSwitchTrad=null;
 						if($tmpSpace->isCurSpace())	{$spaceLabelClass='lineSelect';}
@@ -175,6 +171,14 @@
 								<a href="index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>"><img src="app/img/eye.svg"><?= Txt::trad("HEADER_displayAdmin") ?></a>
 							</div>
 						<?php } ?>
+					<?php } ?>
+					<!--GERER TOUS LES ESPACES - OPTIONS ADMIN GENERAL-->
+					<?php if(Ctrl::$curUser->isGeneralAdmin()){ ?>
+						<hr>
+						<div class="menuLine" <?= Txt::tooltip("SPACE_moduleTooltip") ?>>
+							<div class="menuIcon"><img src="app/img/space.svg"></div>
+							<div><a href="index.php?ctrl=space"><?= Txt::trad("HEADER_manageAllSpaces") ?></a></div>
+						</div>
 					<?php } ?>
 				</div>
 

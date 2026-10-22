@@ -1,35 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="6.87mm" height="6.87mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 687 687" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
- <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
-   <rect width="687" height="687"/>
-  </clipPath></defs>
+ 
  
  
  
   
  
- <g class="SlideGroup" transform="matrix(1.0496 0 0 1.0508 -13.621 -12.77)">
-  
-   
-    <g class="Slide" clip-path="url(#presentation_clip_path)">
-     <g class="Page">
-      <g class="Graphic">
-       
-        <rect class="BoundingBox" width="687" height="687" fill="none"/><g fill="#616161">
-        <path d="m17 86c0-38 32-70 70-70h400c39 0 70 32 70 70v400c0 39-31 70-70 70h-400c-38 0-70-31-70-70zm70-23c-13 0-23 10-23 23v400c0 13 10 24 23 24h400c13 0 24-11 24-24v-400c0-13-11-23-24-23z"/>
-        <path d="m642 140c13 0 23 10 23 23v447c0 30-24 54-54 54h-447c-13 0-23-10-23-23s10-23 23-23h447c4 0 8-4 8-8v-447c0-13 10-23 23-23z"/>
-        
-       </g>
-      
-      
-       
-        <rect class="BoundingBox" x="112" y="91" width="362" height="362" fill="none"/>
-        
-       
-      </g>
-     </g>
-    </g>
-   
-  
- </g>
+ <path transform="matrix(1.0533 0 0 1.052 -15.323 -13.621)" d="m642 140c13 0 23 10 23 23v447c0 30-24 54-54 54h-447c-13 0-23-10-23-23s10-23 23-23h447c4 0 8-4 8-8v-447c0-13 10-23 23-23z" fill="#666"/><path transform="matrix(1.0533 0 0 1.052 -15.323 -13.621)" d="m17 86c0-38 32-70 70-70h400c39 0 70 32 70 70v400c0 39-31 70-70 70h-400c-38 0-70-31-70-70zm70-23c-13 0-23 10-23 23v400c0 13 10 24 23 24h400c13 0 24-11 24-24v-400c0-13-11-23-24-23z" fill="#666"/>
 </svg>

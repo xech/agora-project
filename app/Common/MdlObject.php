@@ -278,7 +278,7 @@ class MdlObject
 			elseif($this->hasAccessRight()){																											 	//Droit en fonction des affectations :
 				$isPersoCalendar=(static::objectType=="calendar" && $this->isPersonal());																							//Agenda perso ?
 				$sqlSelection="FROM `ap_objectTarget` WHERE `objectType`=".Db::format(static::objectType)." AND `_idObject`=".$this->_id." AND `_idSpace`=".Ctrl::$curSpace->_id;	//TypeId de l'objet et espace courant
-				//// ACCES TOTAL :  admin de l'espace  + objet sur l'espace  + pas un agenda perso (aucun privilège admin)
+				//// ACCES TOTAL :  admin de l'espace  + objet sur l'espace  + aucun privilège admin sur un agenda perso
 				if(Ctrl::$curUser->isSpaceAdmin()  &&  Db::getVal("SELECT COUNT(*) ".$sqlSelection)>0  &&  $isPersoCalendar==false){
 					$this->_accessRight=3;
 				}
@@ -314,7 +314,7 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET  =>  CONTENEURS = 3  ||  AUTRES = 2
+	 * DROIT POUR L'USER COURANT D'ÉDITER L'OBJET  =>  CONTENEUR = FULL ACCESS  ||  OBJETS INDEPENDANT = 2
 	 ********************************************************************************************************/
 	public function editRight()
 	{

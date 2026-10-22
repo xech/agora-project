@@ -4,17 +4,19 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 -----------------------------------
 
 
-VERSION 26.10.2
+VERSION 26.10.3
 ---------------
 Nouvelle option d'authentification à deux facteurs (2FA)
 Nouvelle présentation et modification des icones au format svg, optimisé en responsive
 Amélioration du drag and drop de la messagerie instantanée, désormais accessible sur tout le formulaire
 Amélioration de la présentation et l'ergonomie de la messagerie instantanée
-Amélioration de la présentation et l'ergonomie de l'upload de fichiers
-Amélioration du procesus de téléchargement de dossier et archives de fichiers
+Amélioration de l'ergonomie de l'upload de fichiers
+Amélioration de l'ergonomie de la sélection d'objet
+Amélioration du téléchargement de dossier et archives de fichiers
 Liste des destinataires des notifications triés en fonction de l'option du paramétrage général
 Optimisation de la procédure de Backups volumineux (10 Go ou+)
 Correction du lancement de Visio via le Messenger
+Mise à jour de l'éditeur TinyMce en v8.10.0
 -----
 New two-factor authentication (2FA) option
 New presentation and updated SVG-format icons, optimized for mobile.
@@ -22,10 +24,12 @@ Improved drag and drop in instant messaging: the feature is now available across
 Improved main icons, now in SVG format
 Improved ergonomics of the file upload form
 Improved ergonomics of messenger
+Improved ergonomics of object selection
 Improved archive creation and file folder download process
 Notification recipient list sorted according to the general settings option
 Optimized procedure for large backups (10 GB or more)
 Fixed Visio launch via Messenger
+TinyMce editor update to v8.10.0
 
 
 VERSION 26.9.8

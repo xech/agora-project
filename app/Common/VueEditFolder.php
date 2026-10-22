@@ -37,6 +37,7 @@ function mainFormControl(){
 #folderIcon>div		{display:table-cell;}
 #folderIcon select	{height:80px; margin-left:20px; padding:5px;}
 #folderIcon option	{padding:2px;}
+#folderIconImg		{width:80px; height:80px;}
 </style>
 
 
@@ -56,13 +57,13 @@ function mainFormControl(){
 		<div>
 			<select name="icon" size="5">
 				<?php
-				for($cpt=0; $cpt<=18; $cpt++){
+				for($cpt=0; $cpt<=19; $cpt++){
 					if($cpt>0)	{$iconValue="folder".$cpt.".png";	$iconImg=$iconValue;	$iconLabel="folder ".$cpt;}
 					else		{$iconValue=null;					$iconImg="folder.svg";	$iconLabel=Txt::trad("byDefault");}
 					$iconSelect=($iconValue==$curObj->icon || ($cpt==0 && empty($curObj->icon)))  ?  "selected"  :  null;
-					echo "<option value=\"".$iconValue."\" data-file-path=\"".PATH_ICON_FOLDER.$iconImg."\" ".$iconSelect.">".$iconLabel."</option>";
-				}
 				?>
+					<option value="<?= $iconValue ?>" data-file-path="<?= PATH_ICON_FOLDER.$iconImg ?>" <?= $iconSelect ?>><?= $iconLabel ?></option>
+				<?php } ?>
 			</select>
 		</div>
 	</div>

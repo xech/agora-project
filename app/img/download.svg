@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="14.55mm" height="14.55mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 1455 1455" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
- 
- 
- 
- 
-  
- 
- <g class="SlideGroup" transform="matrix(1.2113 0 0 1.2113 -153.64 -153.64)" fill="#666">
-  
-   
-    
-   
-  
- <path d="m595 172c-15 0-27 12-27 26v370h-165c-23 0-35 29-19 46l324 323c11 11 27 11 38 0l324-323c16-17 4-46-19-46h-165v-370c0-14-12-26-27-26zm-397 793c-14 0-26 12-26 26v265c0 14 12 26 26 26h1058c14 0 26-12 26-26v-265c0-14-12-26-26-26h-265c-6 0-13 2-18 7l-98 92h-296l-98-92c-5-5-12-7-18-7z" fill="#666"/></g>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+
+<path d="m382.56 233.38c-2.592-5.728-8.288-9.376-14.56-9.376h-64v-208c0-8.832-7.168-16-16-16h-64c-8.832 0-16 7.168-16 16v208h-64c-6.272 0-11.968 3.68-14.56 9.376-2.624 5.728-1.6 12.416 2.528 17.152l112 128c3.04 3.488 7.424 5.472 12.032 5.472s8.992-2.016 12.032-5.472l112-128c4.16-4.704 5.12-11.424 2.528-17.152z" enable-background="new 0 0 512 512" fill="#666"/><path d="M432,352v96H80v-96H16v128c0,17.696,14.336,32,32,32h416c17.696,0,32-14.304,32-32V352H432z" enable-background="new 0 0 512 512" fill="#666"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </svg>

@@ -1,18 +1,18 @@
 <style>
-.objBlocks .objContent							{height:150px; min-width:150px; max-width:220px;}					/*surcharge*/
+.objBlocks .objContent							{height:150px; min-width:150px; max-width:220px;}						/*surcharge*/
 .objBlocks .objIcon								{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:var(--radius-block);}/*centre l'icone*/
-.objBlocks .objContent:not(.hasThumb) .objIcon	{padding-top:20px;}													/*icone de dossier/fichier*/
-.objBlocks .objContent:not(.hasThumb) .objIcon img[src*=svg]	{width:70px; height:70px;}							/*icone de fichier*/
+.objBlocks .objContent:not(.hasThumb) .objIcon	{padding-top:20px;}														/*icone de dossier/fichier*/
+.objBlocks .objContent:not(.hasThumb) .objIcon img[src*=svg]	{width:70px; height:70px;}								/*icone de fichier*/
 .objBlocks .objIcon img:is(.thumbLandscape,.thumbPortrait)		{min-width:100%!important; max-width:200%!important; min-height:100%!important; max-height:200%!important;}/*surcharge ".objIcon img" : full zize*/
-.objBlocks .objIcon img.thumbLandscape			{height:100%; margin-left:50%; transform:translateX(-50%);}			/*image landscape  : 100% de haut + centrage horizontal*/
-.objBlocks .objIcon img.thumbPortrait			{width:100%;  margin-top:50%;  transform:translateY(-50%);}			/*images portrait : 100% de large + centrage vertical*/
-.objBlocks .hasThumb .menuContextLaunchFloat	{filter:contrast(200%);}											/*vignettes : surligne l'icone burger*/
-.objBlocks .objContentSelected .objLabel		{background-color:var(--blue-bg)!important;}						/*surcharge la sélection de fichiers avec vignette*/
-.objBlocks .objContentSelected .objLabel a		{color:white!important;}											/*idem pour les liens*/
+.objBlocks .objIcon img.thumbLandscape			{height:100%; margin-left:50%; transform:translateX(-50%);}				/*image landscape  : 100% de haut + centrage horizontal*/
+.objBlocks .objIcon img.thumbPortrait			{width:100%;  margin-top:50%;  transform:translateY(-50%);}				/*images portrait : 100% de large + centrage vertical*/
+.objBlocks .hasThumb .menuContextLaunchFloat	{filter:contrast(200%);}												/*vignettes : surligne l'icone burger*/
+.objBlocks .objContent:has(.objSelectCheckbox:checked) .objLabel		{background-color:var(--blue-bg)!important;}	/*surcharge la sélection de fichiers avec vignette*/
+.objBlocks .objContent:has(.objSelectCheckbox:checked) .objLabel a		{color:white!important;}						/*idem pour les liens*/
 .objBlocks .objLabel							{position:absolute; background-color:<?= Ctrl::$agora->skin ?>; bottom:0px; width:100%; padding:7px 4px; text-align:center; border-radius:0px 0px var(--radius-block) var(--radius-block);}	/*label "bandeau" d'un dossier/fichier (modFile)*/
-.objLines .objContent:not(.hasThumb) .objIcon img	{width:40px; height:40px;}										/*icone de dossier/fichier*/
-.objLines .objLabel>span						{padding:10px 50px 10px 0px;}										/*Zone clickable élargie*/
-.objLabel .versionsMenu							{margin-left:10px;}													/*icone "versionsMenu()"*/
+.objLines .objContent:not(.hasThumb) .objIcon img	{width:40px; height:40px;}											/*icone de dossier/fichier*/
+.objLines .objLabel>span						{padding:10px 50px 10px 0px;}											/*Zone clickable élargie*/
+.objLabel .versionsMenu							{margin-left:10px;}														/*icone "versionsMenu()"*/
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
