@@ -4,7 +4,7 @@
 	--blue-filter:  var(--color-filter) hue-rotate(150deg) brightness(80%);		/*- Bleu*/
 	--green-filter: var(--color-filter) hue-rotate(100deg) brightness(65%);		/*- Vert*/
 	--red-filter:   var(--color-filter) hue-rotate(330deg) brightness(65%);		/*- Rouge*/
-	--blue-bg:#528eb7;															/*Button .circleNb etc*/
+	--blue-bg:#3484b9;															/*Button .circleNb etc*/
 	--radius-block:8px;															/*.objContent .menuContext button etc*/
 	--radius-field:4px;															/*inputs .progressBar etc*/
 	--footer-height:80px;														/*hauteur du footer*/
@@ -232,8 +232,7 @@ textarea												{width:100%; height:65px;}
 .tox-tinymce											{border-radius:10px!important;}/*Editeur TinyMCE : idem textarea*/
 .tox-promotion											{display:none;}/*Editeur TinyMCE : masque le bouton "Upgrade"*/
 select option											{font-size:1.05rem;}
-button													{padding:5px 8px; cursor:pointer; vertical-align:middle;}
-button[type=submit]										{border-radius:var(--radius-block);}
+button													{border-radius:var(--radius-block); padding:5px 8px; cursor:pointer; vertical-align:middle;}
 .dateInput, .dateBegin, .dateEnd						{width:90px;}															/*DATEPICKER : calendrier JQUERY-UI*/
 .ui-datepicker											{width:350px; max-width:100%; z-index:110!important;}					/*tableau du calendrier. z-index idem menuContext*/
 .ui-datepicker-header									{background-color:transparent; border:none;}							/*Header: label du mois affiché*/

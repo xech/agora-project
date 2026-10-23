@@ -437,7 +437,6 @@ class MdlUser extends MdlPerson
 				foreach($this->spaceList() as $tmpSpace)  {$spaceList.='<br>- '.$tmpSpace->name;}
 			}
 			$options["objOptions"][]=[
-				"separator"=>"<hr>",
 				"iconSrc"=>"space.svg",
 				"label"=>$spaceList
 			];

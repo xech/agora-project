@@ -166,7 +166,7 @@ input[name='location']				{width:400px;}
 .vCalAffectation>div								{display:table-cell;}
 .vCalAffectation label								{display:block; line-height:20px; padding-inline:3px;}
 .vCalAffectation input								{margin:0px!important;}/*Surcharge le margin-block des inputs*/
-.vCalAffectation img								{width:16px; height:16px; filter:brightness(1.5);}
+.vCalAffectation img								{width:16px; height:16px;}
 .vCalAffectation .vCalInput							{display:none;}/*input principal, toujours hidden*/
 .vCalPropose										{width:25px; text-align:right; cursor:help;}
 .vCalPropose input									{position:relative;}/*input de proposition*/

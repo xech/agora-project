@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with sK1/UniConvertor (http://sk1project.org/) -->
 <svg width="100pt" height="100pt" fill-rule="evenodd" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
- <g transform="matrix(4.5018 0 0 4.5681 -1.1231 -3747.9)" fill="#666">
-  <path d="m1.01 835.82h6.34v3.03h-6.34z"/>
-  <path d="m1.01 821.64h20.798v3.04h-20.798z"/>
-  <path d="m1.01 828.73h11.14v3.04h-11.14z"/>
-  <path d="m19.24 830.25v-7.6 15.19z"/>
-  <path d="m18.48 826.7v10.13h3.73l-5.51 5.06-5.5-5.06h3.73v-10.13z"/>
+ <g fill="#666">
+  <path transform="matrix(4.5018,0,0,4.5681,-1.1231,-3747.9)" d="m1.01 835.82h6.34v3.03h-6.34z"/>
+  <path transform="matrix(4.5018,0,0,4.5681,-1.1231,-3747.9)" d="m1.01 821.64h20.798v3.04h-20.798z"/>
+  <path transform="matrix(4.5018,0,0,4.5681,-1.1231,-3747.9)" d="m1.01 828.73h11.14v3.04h-11.14z"/>
+  <path transform="matrix(4.5018,0,0,4.5681,-1.1231,-3747.9)" d="m19.24 830.25v-7.6 15.19z"/>
  </g>
+ <path transform="matrix(4.5018,0,0,4.5681,-1.1231,-3747.9)" d="m18.48 826.7v10.13h3.73l-5.51 5.06-5.5-5.06h3.73v-10.13z" fill="#3484b9"/>
 </svg>

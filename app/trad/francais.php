@@ -58,7 +58,7 @@ class Trad extends Txt
 			"objNew"=>"Nouvel élément",
 			"objNewTooltip"=>"Créé aujourd'hui ou depuis ma précédente connexion",
 			"personalAccess"=>"Accès personnel",
-			"copyUrl"=>"Copier le lien de partage",
+			"copyUrl"=>"Copier le lien pour partager",
 			"copyUrlTooltip"=>"Copier le lien (URL) pour partager l'élément par email, messagerie, etc.",
 			"copyUrlNotif"=>"Le lien a bien été copiée",
 

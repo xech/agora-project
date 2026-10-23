@@ -86,23 +86,27 @@ fieldset					{margin-top:10px;}/*surcharge*/
 <div id="pageCenter">
 
 	<div id="pageMenu">
-		<!--ESPACE DISQUE UTILISÉ & VERSIONS D'AGORA & FONCTIONS PHP DÉSACTIVÉES-->
 		<div class="miscContent" id="pageMenuContent">
+			<!--ESPACE DISQUE UTILISÉ-->
 			<img src="app/img/disk.svg" <?= $diskSpaceAlert==true?'class="diskSpaceAlert"':null ?>> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
 			<hr>
-			Agora-Project version <?= Req::appVersion()?>
-			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/history.svg"> <?= Txt::trad("AGORA_Changelog") ?></button>
-			PHP <?= phpversion().' - '.Db::dbVersion()?>
+
+			<!--OPTIONS DE BACKUP-->
+			<?php if(Req::isMobile()==false){ ?>
+			<button class="buttonBackup" data-type-backup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.svg"> <?= Txt::trad("AGORA_backupDb") ?></button>
+			<button class="buttonBackup" data-type-backup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.svg"> <?= Txt::trad("AGORA_backupFull") ?></button>
+			<hr>
+			<?php } ?>
+
+			<!--VERSIONS D'AGORA-PROJECT / PHP / MARIADB-->
+			<p>PHP <?= phpversion() ?></p>
+			<p><?=  Db::dbVersion() ?></p>
+			<p>Agora-Project <?= Req::appVersion()?></p>
+			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/history.svg"><?= Txt::trad("AGORA_Changelog") ?></button>
+			<!--FONCTIONS PHP DÉSACTIVÉES-->
 			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
 			<?php if(!function_exists("ldap_connect")){ ?>			<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpLdapDisabled") ?><?php } ?>
-
-			<!--VOPTIONS DE BACKUP-->
-			<?php if(Req::isMobile()==false){ ?>
-				<hr>
-				<button class="buttonBackup" data-type-backup="db"  <?= Txt::tooltip("AGORA_backupDbTooltip") ?> ><img src="app/img/download.svg"> <?= Txt::trad("AGORA_backupDb") ?></button>
-				<button class="buttonBackup" data-type-backup="all" <?= Txt::tooltip("AGORA_backupFullTooltip") ?> ><img src="app/img/download.svg"> <?= Txt::trad("AGORA_backupFull") ?></button>
-			<?php } ?>
 		</div>
 	</div>
 

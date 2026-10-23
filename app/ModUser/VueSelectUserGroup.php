@@ -6,22 +6,13 @@ ready(function(){
 </script>
 
 <style>
-.selectUserGroup hr	{margin-block:7px;}
+.selectUserGroup hr	{margin-block:3px;}
 </style>
 
 
 <div class="selectUserGroup" id="selectUserGroup<?= $menuId ?>">
+
 	<hr>
-
-	<!--TOUT SELECTIONNER-->
-	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',false).trigger('click')">
-		<img src="app/img/checkAll.svg"> <?= Txt::trad("selectAll") ?>
-	</div>
-
-	<!--TOUT DESELECTIONNER-->
-	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',true).trigger('click')">
-		<img src="app/img/checkNone.svg"> <?= Txt::trad("unselectAll") ?>
-	</div>
 
 	<!--SELECTION D'UN GROUPE D'USERS-->
 	<?php foreach($userGroupList as $tmpGroup){ ?>
@@ -29,4 +20,17 @@ ready(function(){
 			<img src="app/img/usersGroup.svg">&nbsp; <?= $tmpGroup->title ?>
 		</div>
 	<?php } ?>
+
+	<hr>
+
+	<!--TOUT SELECTIONNER-->
+	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',false).trigger('click')">
+		<img src="app/img/checkAll.svg"> <?= Txt::trad("selectAll") ?>
+	</div>
+	<!--TOUT DESELECTIONNER-->
+	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',true).trigger('click')">
+		<img src="app/img/checkNone.svg"> <?= Txt::trad("unselectAll") ?>
+	</div>
+
+
 </div>

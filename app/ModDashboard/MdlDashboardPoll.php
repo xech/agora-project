@@ -277,7 +277,6 @@ class MdlDashboardPoll extends MdlObject
 		////	Ajoute le nombre de votes pour le sondage (avec Tooltip si admin)
 		$tooltipVotedBy=(Ctrl::$curUser->isSpaceAdmin())  ?  Txt::tooltip($this->votesUsers())  :  null;
 		$options["objOptions"][]=[
-			"separator"=>"<hr>",
 			"iconSrc"=>"info.svg",
 			"label"=>'<span class="cursorHelp" '.$tooltipVotedBy.'>'.str_replace('--NB_VOTES--',$this->votesNbTotal(),Txt::trad("DASHBOARD_POLLS_votesNbBis")).'</span>'
 		];

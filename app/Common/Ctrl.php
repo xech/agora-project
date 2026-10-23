@@ -539,7 +539,7 @@ abstract class Ctrl
 	 ********************************************************************************************************/
 	public static function noAccessExit($keyTrad="inaccessibleElem")
 	{
-		echo "<h2><img src='app/img/important.svg'> ".Txt::trad($keyTrad)."</h2>";
+		echo '<img src="app/img/important.svg" style="height:50px"> <h2 style="text-align:center">'.Txt::trad($keyTrad).'</h2>';
 		exit;
 	}
 }

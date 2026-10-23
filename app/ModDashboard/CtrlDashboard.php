@@ -184,7 +184,6 @@ class CtrlDashboard extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionPollVote()
 	{
-		//Récupère le sondage et Controle l'accès
 		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		//Enregistre le vote du sondage (..si aucun vote n'a déjà été fait par l'user courant)
@@ -205,7 +204,6 @@ class CtrlDashboard extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionResponseDownloadFile()
 	{
-		//Récupère le sondage et Controle l'accès
 		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		//Download le fichier de la réponse

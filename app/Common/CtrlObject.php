@@ -277,7 +277,6 @@ class CtrlObject extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionUsersComment()
 	{
-		////	Charge l'element
 		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		////	Ajoute un commentaire

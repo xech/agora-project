@@ -163,14 +163,12 @@ class MdlCalendarEvent extends MdlObject
 		}
 		////	Agendas où est affecté l'evenement
 		$options["objOptions"][]=[
-			"separator"=>"<hr>",
 			"iconSrc"=>"calendar/icon.svg",
 			"label"=>$this->affectedCalendarsLabel()
 		];
 		////	Acces en lecture seule
 		if($this->editRight()==false){
 			$options["objOptions"][]=[
-				"separator"=>"<hr>",
 				"iconSrc"=>"info.svg",
 				"label"=>$this->tradObj("accessReadDetail")
 			];

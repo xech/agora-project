@@ -49,6 +49,7 @@ class CtrlMail extends Ctrl
 			$curObj=$curObj->editRecord("`title`=".Db::param("title").", `description`=".Db::param("description").", recipients=".Db::format(trim($mailTo,",")));
 			if(Req::isParam("reloadMailTypeId")){																		//Email reloadé -> on copie chaque pièce jointe :
 				$oldMail=Ctrl::getCurObj(Req::param("reloadMailTypeId"));												//Charge l'ancien mail
+				$oldMail->editControl();																				//Controle d'accès
 				foreach($oldMail->attachedFileList() as $oldFile){														//Parcourt chaque fichier joint
 					$_idNewFile=Db::query("INSERT INTO ap_objectAttachedFile SET name=".Db::format($oldFile["name"]).", objectType='mail', _idObject=".$curObj->_id, true);//Enregistre en BDD
 					copy($oldFile["path"], PATH_OBJECT_ATTACHMENT.$_idNewFile.'.'.File::extension($oldFile["name"]));	//Copie dans DATAS
@@ -83,8 +84,9 @@ class CtrlMail extends Ctrl
 			$tmpContainer->personList=Db::getObjTab("contact", "SELECT * FROM ap_contact WHERE LENGTH(mail)>0 AND ".MdlContact::sqlDisplay($tmpContainer).MdlContact::sqlSort());
 			if(!empty($tmpContainer->personList))  {$vDatas["containerList"][]=$tmpContainer;}
 		}
-		////	Charge un ancien mail ou un nouveau mail  &&  Affiche la page
+		////	Charge un ancien mail ou un nouveau mail  &&  Controle d'accès  &&  Affiche la page
 		$vDatas["curObj"]=Req::isParam("reloadMailTypeId")  ?  Ctrl::getCurObj(Req::param("reloadMailTypeId"))  :  Ctrl::getObj("mail");
+		$vDatas["curObj"]->editControl();
 		static::displayPage("VueIndex.php",$vDatas);
 	}
 

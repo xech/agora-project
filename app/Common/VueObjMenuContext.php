@@ -1,9 +1,9 @@
 
 
 <!--LAUNCHER DU MENU-->
-<span for="<?= $objMenuId ?>" class="menuContextLaunch <?= stristr($burgerLauncher,"float")?'menuContextLaunchFloat':null ?>" <?= Txt::tooltip("menuOptions") ?>>
+<span for="<?= $objMenuId ?>" class="menuContextLaunch <?= stristr($launcherPosition,"float")?'menuContextLaunchFloat':null ?>" <?= Txt::tooltip("menuOptions") ?>>
 	<img src="app/img/menuDot.svg" class="<?= $curObj->isRecent()?'menuContextLaunchRecent':null ?>">
-	<?= $burgerLauncherLabel ?>
+	<?= $launcherLabel ?>
 </span>
 
 
@@ -47,15 +47,10 @@
 	<?php } ?>
 
 	<!--OPTIONS SPECIFIQUES A L'OBJET-->
-	<?php 
-	foreach($objOptions as $tmpOption){
-		$actionJsTmp=(!empty($tmpOption["actionJs"])) ?  'onclick="'.$tmpOption["actionJs"].'"'  :  null;
-		$tooltipTmp =(!empty($tmpOption["tooltip"]))  ?  Txt::tooltip($tmpOption["tooltip"])  :  null;
-	?>
-		<?= isset($tmpOption["separator"]) ? $tmpOption["separator"] : null ?>
-		<div class="menuLine menuLineSpecific" <?= $actionJsTmp.$tooltipTmp ?>>
-			<?php if(!empty($tmpOption["iconSrc"])){ ?><div class="menuIcon"><img src="app/img/<?= $tmpOption["iconSrc"] ?>"></div><?php } ?>
-			<div><?= $tmpOption["label"] ?></div>
+	<?php foreach($objOptions as $option){ ?>
+		<div class="menuLine menuLineSpecific" <?= !empty($option["actionJs"]) ? 'onclick="'.$option["actionJs"].'"' : null ?>  <?= !empty($option["tooltip"]) ? Txt::tooltip($option["tooltip"]) : null ?> >
+			<?php if(!empty($option["iconSrc"])){ ?><div class="menuIcon"><img src="app/img/<?= $option["iconSrc"] ?>"></div><?php } ?>
+			<div><?= $option["label"] ?></div>
 		</div>
 	<?php } ?>
 
@@ -104,7 +99,7 @@
 		<?php if($curObj->isRecent()){ ?>
 			<div class="menuLine" <?= Txt::tooltip("objNewTooltip") ?> >
 				<div class="menuContextTxtLeft">&nbsp;</div>
-				<div><img src="app/img/clock.svg" class="menuContextLaunchRecent"> <?= Txt::trad("objNew") ?></div>
+				<div><?= Txt::trad("objNew") ?> &nbsp;<img src="app/img/clock.svg" class="menuContextLaunchRecent"></div>
 			</div>
 		<?php } ?>
 	<?php } ?>
@@ -142,7 +137,7 @@
 
 
 <!--ICONES SOUS LE LAUNCHER DU MENU CONTEXT-->
-<?php if($burgerLauncher=="big-float"){ ?>
+<?php if($launcherPosition=="float"){ ?>
 	<div class="menuContextObj">
 
 		<!--FICHIERS JOINTS-->

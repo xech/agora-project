@@ -4,7 +4,7 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 -----------------------------------
 
 
-VERSION 26.10.3
+VERSION 26.10.4
 ---------------
 Nouvelle option d'authentification à deux facteurs (2FA)
 Nouvelle présentation et modification des icones au format svg, optimisé en responsive

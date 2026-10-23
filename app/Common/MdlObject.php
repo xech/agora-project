@@ -346,11 +346,10 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE LE DROIT POUR L'USER COURANT DE LIRE L'OBJET
+	 * CONTROLE LE DROIT POUR L'USER COURANT DE LIRE UN OBJET EXISTANT
 	 ********************************************************************************************************/
 	public function readControl()
 	{
-		//Controle le droit d'accès en lecture && Controle si l'objet existe
 		if($this->accessRight()==0 || empty($this->_id))  {Ctrl::noAccessExit();}
 	}
 
@@ -359,10 +358,13 @@ class MdlObject
 	 ********************************************************************************************************/
 	public function editControl()
 	{
-		//Controle l'accès en écriture  &&  Notif si un autre user édite le même objet (cf. "messengerUpdate()")
+		//// Controle l'accès en écriture
 		if($this->editRight()==false)  {Ctrl::noAccessExit();}
-		$otherUserEdit=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editTypeId=".Db::param("typeId")." AND `date` > ".(time()-30));
-		if($this->isNew()==false && !empty($otherUserEdit))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser").' '.Ctrl::getObj("user",$otherUserEdit)->getLabel());}
+		//// Notify si un autre user édite le même objet (cf. "messengerUpdate()")
+		if($this->isNew()==false){
+			$otherUserId=Db::getVal("SELECT _idUser FROM ap_userLivecouter WHERE _idUser!=".Ctrl::$curUser->_id." AND editTypeId=".Db::param("typeId")." AND `date` > ".(time()-30));
+			if(!empty($otherUserId))  {Ctrl::notify(Txt::trad("elemEditedByAnotherUser").' '.Ctrl::getObj("user",$otherUserId)->getLabel());}
+		}
 	}
 
 	/********************************************************************************************************
@@ -430,19 +432,11 @@ class MdlObject
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE L'IDENTIFIANT D'ACCES EXTERNE PASSÉ EN PARAMETRE (md5Id=>retro-compat ical)
+	 * CONTROLE L'IDENTIFIANT D'ACCES EXTERNE PASSÉ EN PARAMETRE
 	 ********************************************************************************************************/
 	public function externalIdControl()
 	{
-		return ( (Req::isParam("externalId") && Req::param("externalId")==$this->externalId)  ||  (Req::isParam("md5Id") && Req::param("md5Id")==$this->md5Id() && static::objectType=="calendar") );
-	}
-
-	/********************************************************************************************************
-	 * IDENTIFIANT DE L'OBJET VIA MD5
-	 ********************************************************************************************************/
-	public function md5Id()
-	{
-		return md5($this->_id.$this->dateCrea.$this->_idUser);
+		return (Req::isParam("externalId") && Req::param("externalId")==$this->externalId);
 	}
 
 	/********************************************************************************************************

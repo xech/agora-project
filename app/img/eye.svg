@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="135.99mm" height="135.99mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 13599 13599" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
- <defs class="ClipPathGroup"><clipPath id="presentation_clip_path">
-   <rect width="13599" height="13599"/>
-  </clipPath></defs>
+ 
  
  
  
   
  
- <g class="SlideGroup" transform="matrix(1.0805 0 0 1 -522.39 -101.11)">
-  
-   
-    <g class="Slide" clip-path="url(#presentation_clip_path)">
-     <g class="Page">
-      <g class="Graphic">
-       
-        <rect class="BoundingBox" y="-947" width="13599" height="14781" fill="none"/>
-        <path d="m4016 6442c0-1626 1245-2950 2778-2950 1529 0 2774 1324 2774 2950 0 1628-1245 2951-2774 2951-1533 0-2778-1323-2778-2951zm-3376-281c-96 185-96 379 0 564 1243 2373 3601 3847 6154 3847 2550 0 4908-1474 6151-3847 98-185 98-379 0-564-1243-2373-3601-3847-6151-3847-2553 0-4911 1474-6154 3847zm6154-1702c-1031 0-1868 890-1868 1983 0 1095 837 1985 1868 1985 1027 0 1865-890 1865-1985 0-1093-838-1983-1865-1983z" fill="#666"/>
-       
-      </g>
-     </g>
-    </g>
-   
-  
- </g>
-</svg>
+ <path transform="matrix(1.0805 0 0 1 -522.39 -101.11)" d="m4016 6442c0-1626 1245-2950 2778-2950 1529 0 2774 1324 2774 2950 0 1628-1245 2951-2774 2951-1533 0-2778-1323-2778-2951zm-3376-281c-96 185-96 379 0 564 1243 2373 3601 3847 6154 3847 2550 0 4908-1474 6151-3847 98-185 98-379 0-564-1243-2373-3601-3847-6151-3847-2553 0-4911 1474-6154 3847zm6154-1702c-1031 0-1868 890-1868 1983 0 1095 837 1985 1868 1985 1027 0 1865-890 1865-1985 0-1093-838-1983-1865-1983z" fill="#666"/>
+<ellipse cx="6871.6" cy="6309.5" rx="2200.6" ry="2166.9" fill="#fff" fill-rule="evenodd" stroke-width="35.751"/><circle cx="6818.4" cy="6402.1" r="1754" fill="#376584" fill-rule="evenodd" stroke-width="28.717"/></svg>

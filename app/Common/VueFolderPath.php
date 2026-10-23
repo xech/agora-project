@@ -9,7 +9,7 @@
 		if(Req::isMobile() && $tmpFolder->_id!=$curFolder->_id)  {continue;}								//Mobile : affiche uniquement le dossier courant
 		$leftIcon=(empty($tmpFolder->_idContainer))  ?  "folder.svg"  :  "arrowRightLabel.svg";					//Icone "Folder" (dossier racine)  OU  "arrowRight" (sous-dossier)
 		$folderLink=($curFolder->_id!=$tmpFolder->_id)  ?  "onclick=\"redir('".$tmpFolder->getUrl()."')\""  :  null;	//Lien vers le dossier (sauf dossier courant)
-		$contextMenu=($curFolder->isRootFolder()==false && Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id)  ?  $tmpFolder->contextMenu(["burgerLauncher"=>"small-inline"])  :  null;
+		$contextMenu=($curFolder->isRootFolder()==false && Req::isMobile()==false && $curFolder->_id==$tmpFolder->_id)  ?  $tmpFolder->contextMenu(["launcherPosition"=>"inline"])  :  null;
 		echo '<div '.$folderLink.' '.Txt::tooltip($tmpFolder->description).'>
 				<img src="app/img/'.$leftIcon.'">'.Txt::reduce($tmpFolder->name,40).' '.$contextMenu.'
 			  </div>';

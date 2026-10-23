@@ -124,7 +124,7 @@ class CtrlCalendar extends Ctrl
 					if(!empty($tmpEvt->important))	{$tmpEvt->title.='<img src="app/img/important.svg">';}										//Evt important
 					if(!empty($tmpEvt->periodType))	{$tmpEvt->title.='<img src="app/img/cycle.svg">';}											//Evt periodique/répété
 					$tmpEvt->tooltip=$tmpEvt->title.'<br>'.$tmpEvt->dateLabel();																//Tooltip avec title et date détaillée
-					$tmpEvt->contextMenuOptions=["burgerLauncher"=>"small-float", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
+					$tmpEvt->contextMenuOptions=["launcherPosition"=>"float", "_idCal"=>$tmpCal->_id, "evtDeleteTime"=>$tmpEvt->timeBegin];	//Options du menu contextuel
 					$tmpCal->evtListDays[$dayYmd][]=$tmpEvt;																					//Ajoute l'evt à la liste !
 				}
 				////	Tri des evts par Heure: Minute
@@ -404,7 +404,7 @@ class CtrlCalendar extends Ctrl
 	public static function actionVueCalendarEvent()
 	{
 		$curObj=Ctrl::getCurObj();
-		$curObj->readControl();							//Controle d'accès
+		$curObj->readControl();
 		$vDatas["curObj"]=$curObj;						//Récup l'evt
 		$vDatas["labelPeriod"]=$curObj->periodLabel();	//Périodicité de l'événement
 		if($curObj->contentVisible=="prive")				{$vDatas["contentVisibility"]=Txt::trad("CALENDAR_visibilityPrivate");}		//Visibilité privée
@@ -506,7 +506,6 @@ class CtrlCalendar extends Ctrl
 	 ********************************************************************************************************/
 	public static function actionExportEvents()
 	{
-		////	Charge l'objet + Controle d'accès + Création du fichier .ical 
 		$objCalendar=Ctrl::getCurObj();
 		$objCalendar->readControl();
 		self::getIcal($objCalendar);
@@ -566,9 +565,9 @@ class CtrlCalendar extends Ctrl
 					"END:VTIMEZONE".$RL;
 			////	Liste des evenements
 			foreach($eventList as $tmpEvt){
-				//// DEBUT DU VEVENT
+				//// DEBUT DU VEVENT (UID: idem old 'md5Id()')
 				$ICAL.= 'BEGIN:VEVENT'.$RL.
-						'UID:'.$tmpEvt->md5Id().$RL.
+						'UID:'.md5($tmpEvt->_id.$tmpEvt->dateCrea.$tmpEvt->_idUser).$RL.
 						'SEQUENCE:0'.$RL.
 						'STATUS:CONFIRMED'.$RL.
 						"CREATED:".self::icalDate($tmpEvt->dateCrea).$RL.

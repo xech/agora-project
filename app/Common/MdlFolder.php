@@ -272,7 +272,6 @@
 	{
 		////	"Contenu du dossier"
 		$options["objOptions"][]=[
-			"separator"=>"<hr>",
 			"iconSrc"=>"folder.svg",
 			"label"=>Txt::trad("folderContent").' : '.$this->contentDescription()
 		];

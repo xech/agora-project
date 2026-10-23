@@ -44,11 +44,11 @@ trait MdlObjectMenu
 
 	/*****************************************************************************************************************************************************************************************************
 	 * VUE : MENU CONTEXTUEL (édition, droit d'accès, etc)
-	 * $options["objOptions"]			: Liste d'options spécifiques à l'objet (avec les propriétés "actionJs", "tooltip", "separator", "iconSrc", "label")
-	 * $options["burgerLauncher"]		: Icone burger du launcher  "big-float" (par défaut) / "small-float" / "big-inline" / "small-inline"
-	 * $options["burgerLauncherLabel"]	: Label à droite de l'icone burger (MdlCalendar)
-	 * $options["editLabel"]			: Label spécifique de modif
-	 * $options["deleteLabel"]			: Label spécifique de suppression
+	 * $options["objOptions"]		: Liste d'options spécifiques à l'objet (avec les propriétés "actionJs", "tooltip", "separator", "iconSrc", "label")
+	 * $options["launcherPosition"]	: Icone du launcher  "float" (par défaut) ou "inline"
+	 * $options["launcherLabel"]	: Label à droite du launcher "inline" (cf MdlCalendar)
+	 * $options["editLabel"]		: Label spécifique de modif
+	 * $options["deleteLabel"]		: Label spécifique de suppression
 	 *****************************************************************************************************************************************************************************************************/
 	public function contextMenu($options=null)
 	{
@@ -59,10 +59,10 @@ trait MdlObjectMenu
 		$vDatas["curObj"]=$this;
 		$vDatas["objMenuId"]=$this->uniqId("objMenu");
 		$vDatas["options"]=$options;
-		$vDatas["objOptions"]			=isset($options["objOptions"]) ? $options["objOptions"] : [];
-		$vDatas["burgerLauncher"]		=isset($options["burgerLauncher"]) ? $options["burgerLauncher"] : 'big-float';
-		$vDatas["burgerLauncherLabel"]	=isset($options["burgerLauncherLabel"]) ? $options["burgerLauncherLabel"] : null;
-		$vDatas["isSelectMenu"]			=($this->isSelectable() && Ctrl::$isMainPage==true);
+		$vDatas["objOptions"]		=isset($options["objOptions"]) ? $options["objOptions"] : [];
+		$vDatas["launcherPosition"]	=isset($options["launcherPosition"]) ? $options["launcherPosition"] : 'float';
+		$vDatas["launcherLabel"]	=isset($options["launcherLabel"]) ? $options["launcherLabel"] : null;
+		$vDatas["isSelectMenu"]		=($this->isSelectable() && Ctrl::$isMainPage==true);
 
 		////	EDITION
 		if($this->editRight()){
@@ -198,7 +198,7 @@ trait MdlObjectMenu
 	 ********************************************************************************************************/
 	public function lightboxMenu()
 	{
-		return '<span class="lightboxMenu">'.$this->contextMenu(["burgerLauncher"=>"big-inline"]).$this->editButtom().'</span>';
+		return '<span class="lightboxMenu">'.$this->contextMenu(["launcherPosition"=>"inline"]).$this->editButtom().'</span>';
 	}
 
 	/********************************************************************************************************

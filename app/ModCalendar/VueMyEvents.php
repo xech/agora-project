@@ -20,7 +20,7 @@
 	<div class="vEvtTable">
 		<?php foreach($myEvents as $tmpEvt){ ?>
 		<div class="vEvtRow lineHover" <?= Txt::tooltip($tmpEvt->description) ?>>
-			<div><?= $tmpEvt->contextMenu(["burgerLauncher"=>"big-inline"]) ?></div>
+			<div><?= $tmpEvt->contextMenu(["launcherPosition"=>"inline"]) ?></div>
 			<div><img src="app/img/edit.svg" onclick="lightboxOpen('<?= $tmpEvt->getUrl('edit') ?>')"></div>
 			<div onclick="lightboxOpen('<?= $tmpEvt->getUrl('vue') ?>')"><?= $tmpEvt->title ?></div>
 			<div><?= $tmpEvt->dateLabel() ?></div>

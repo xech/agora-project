@@ -126,7 +126,7 @@ if(Req::isParam("searchText")){
 				<div class="vModuleLabel"><hr><img src="app/img/<?= $tmpObj::moduleName ?>/icon.svg"><?= Txt::trad(strtoupper($tmpObj::moduleName)."_MODULE_NAME") ?></div>
 			<?php } ?>
 			<div class="menuLine lineHover">
-				<div class="vContextMenu"><?= $tmpObj->contextMenu(["burgerLauncher"=>"small-inline"]) ?></div>
+				<div class="vContextMenu"><?= $tmpObj->contextMenu(["launcherPosition"=>"inline"]) ?></div>
 				<div onclick="<?= $tmpObj->pluginJsIcon ?>" class="menuIcon"><img src="app/img/<?= $tmpObj->pluginIcon ?>"></div>
 				<div onclick="<?= $tmpObj->pluginJsLabel ?>" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> ><?= $tmpObj->pluginLabel ?></div>
 			</div>

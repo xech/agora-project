@@ -104,7 +104,7 @@
 						<!--CONFIG DU MESSENGER-->
 						<?php if(MdlUser::agoraMessengerEnabled()){ ?>
 						<div class="menuLine" onclick="lightboxOpen('?ctrl=user&action=UserEditMessenger&typeId=<?= Ctrl::$curUser->typeId ?>');">
-							<div class="menuIcon"><img src="app/img/chat2.svg"></div>
+							<div class="menuIcon"><img src="app/img/chat.svg"></div>
 							<div><?= Txt::trad("USER_livecounterVisibility") ?></div>
 						</div>
 						<?php } ?>

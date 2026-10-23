@@ -421,7 +421,7 @@ ready(function(){
 								<input type="checkbox" name="displayedCalendars[]" value="<?= $tmpCal->_id ?>" id="boxDisplay<?= $tmpCal->typeId ?>" <?= $tmpCal->isDisplayed==true?'checked':null ?> >
 								<label for="boxDisplay<?= $tmpCal->typeId ?>"><?= $tmpCal->title ?></label>
 							</div>
-							<div class="vReadableCalendarMenu"><?= $tmpCal->contextMenu(["burgerLauncher"=>"small-inline"]) ?></div>
+							<div class="vReadableCalendarMenu"><?= $tmpCal->contextMenu(["launcherPosition"=>"inline"]) ?></div>
 						</div>
 					<?php } ?>
 					<input type="hidden" name="ctrl" value="<?= Req::$curCtrl ?>">
@@ -506,7 +506,7 @@ ready(function(){
 					////	LABEL DE L'AGENDA  +  L'ICONE DE L'USER  +  MENU CONTEXT
 					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';
 					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->tagProfileImg(true,true);}
-					echo $tmpCal->contextMenu(["burgerLauncher"=>"small-inline", "burgerLauncherLabel"=>$calLabel]);
+					echo $tmpCal->contextMenu(["launcherPosition"=>"inline", "launcherLabel"=>$calLabel]);
 					?>
 				</div>
 				<!--PERIODE AFFICHEE  +  PRECEDENT/SUIVANT  +  MENU CONTEXT MONTHS/YEARS-->
