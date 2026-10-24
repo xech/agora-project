@@ -275,7 +275,7 @@ class File
 	}
 
 	/********************************************************************************************************
-	 * REDIMENSIONNE UNE IMAGE ("imgSrc.png"= "imgDest.jpg")
+	 * REDIMENSIONNE UNE IMAGE ("imgSrc.jpg"= "imgDest.jpg")
 	 ********************************************************************************************************/
 	public static function imageResize($imgPathSrc, $imgPathDest, $maxWidth, $maxHeight=null)
 	{

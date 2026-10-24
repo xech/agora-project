@@ -240,7 +240,7 @@ async function launchVisioPropose()
 #messengerFormUsers>div, #messengerNobodyDiv	{background:#333;}
 #messengerFormMain								{height:50px; padding-bottom:50px; text-align:center;}/*padding-bottom idem #livecounterMain*/
 #messengerPostDiv								{padding:10px;}
-#messengerFormInput, #messengerFormButton		{height:40px; border-radius:var(--radius-block);}
+#messengerFormInput, #messengerFormButton		{height:40px; border-radius:var(--radius_block);}
 #messengerFormInput								{width:65%;}
 #messengerFormButton							{width:120px; margin-left:5px; margin-bottom:3px;}
 #launchVisioButton								{cursor:pointer; margin-left:20px; width:35px; height:35px;}

@@ -109,7 +109,7 @@ function dashboardPollVote()
 /*Menu Actualités / Sondages / Nouveaux elements*/
 *:is(#pageMenu,#tabMenus) .circleNb			{margin-left:5px;}
 #tabMenus									{width:100%; table-layout:fixed;}/*largeur des cells identiques / fixes*/
-#tabMenus .option							{border-radius:var(--radius-block); text-align:center; line-height:22px;}
+#tabMenus .option							{border-radius:var(--radius_block); text-align:center; line-height:22px;}
 #contentNews,#contentPolls,#contentElems	{display:none;}/*Masque par défaut les contenus principaux*/
 .infiniteScrollHidden						{display:none;}
 .infiniteScrollLoading						{text-align:center;}
@@ -149,8 +149,8 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResponseFile img					{max-width:300px; max-height:120px; vertical-align:middle;}/*idem*/
 .vPollResponseInput .vPollsResponseFile	{margin-left:25px;}
 .vPollsContainer button					{width:240px!important;}/*surcharge*/
-.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:var(--radius-field); background:#fafafa;}
-.vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:var(--radius-field);}
+.vPollsResultBarContainer				{width:90%; margin-top:8px; padding:2px; border-radius:var(--radius_field); background:#fafafa;}
+.vPollsResultBar						{display:inline-block; min-width:35px; height:28px; line-height:28px; color:#555; text-align:right; padding-right:5px; border-radius:var(--radius_field);}
 .vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #ececec);}
 .vPollsResultBar50						{background:linear-gradient(to top, #d8b113, #fcdb57);}
 .vPollsResultBar100						{background:linear-gradient(to top, #85cc29, #a6ff33);}

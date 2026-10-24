@@ -87,7 +87,7 @@
 	</head>
 
 
-	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="bodyColor_<?= Ctrl::$agora->skin ?>">
+	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="body<?= ucfirst(Ctrl::$agora->skin) ?>">
 	
 		<!--CONTENU PRINCIPAL DE LA PAGE-->
 		<?php

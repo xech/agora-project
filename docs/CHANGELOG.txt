@@ -4,7 +4,7 @@ CHANGELOG - HISTORIQUE DES VERSIONS
 -----------------------------------
 
 
-VERSION 26.10.4
+VERSION 26.10.5
 ---------------
 Nouvelle option d'authentification à deux facteurs (2FA)
 Nouvelle présentation et modification des icones au format svg, optimisé en responsive
@@ -21,7 +21,6 @@ Mise à jour de l'éditeur TinyMce en v8.10.0
 New two-factor authentication (2FA) option
 New presentation and updated SVG-format icons, optimized for mobile.
 Improved drag and drop in instant messaging: the feature is now available across the entire form
-Improved main icons, now in SVG format
 Improved ergonomics of the file upload form
 Improved ergonomics of messenger
 Improved ergonomics of object selection

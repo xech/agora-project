@@ -1,7 +1,7 @@
 <style>
 .menuSortAscDesc		{text-align:right!important;}
 .menuSortAscDesc img	{cursor:pointer;}
-.menuSortArrowSelect	{filter:var(--blue-filter)!important;}
+.menuSortArrowSelect	{filter:var(--blue_filter)!important;}
 </style>
 
 <div class="menuLine">

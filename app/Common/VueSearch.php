@@ -29,7 +29,7 @@ ready(function(){
 .vModuleLabel img					{max-height:28px; margin-right:8px;}
 .menuLine .vContextMenu				{width:30px; padding-top:10px; vertical-align:top;}
 .menuLine mark						{padding:4px 2px;}/*mots surlignés dans les résultats de la recherche*/
-.vPluginNews						{display:none; padding:5px; background:#eee; border-radius:var(--radius-block); cursor:default;}/*affichage complet d'une news*/
+.vPluginNews						{display:none; padding:5px; background:#eee; border-radius:var(--radius_block); cursor:default;}/*affichage complet d'une news*/
 .emptyContent						{margin-top:20px;}
 
 /*** RESPONSIVE SMARTPHONE*/

@@ -99,10 +99,10 @@ fieldset					{margin-top:10px;}/*surcharge*/
 			<?php } ?>
 
 			<!--VERSIONS D'AGORA-PROJECT / PHP / MARIADB-->
+			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/history.svg"><?= Txt::trad("AGORA_Changelog") ?></button>
+			<p>Agora-Project <?= Req::appVersion()?></p>
 			<p>PHP <?= phpversion() ?></p>
 			<p><?=  Db::dbVersion() ?></p>
-			<p>Agora-Project <?= Req::appVersion()?></p>
-			<button class="vButtonLogs" onclick="lightboxOpen('docs/CHANGELOG.txt')"><img src="app/img/history.svg"><?= Txt::trad("AGORA_Changelog") ?></button>
 			<!--FONCTIONS PHP DÉSACTIVÉES-->
 			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>

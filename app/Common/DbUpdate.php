@@ -1072,7 +1072,7 @@ class DbUpdate extends Db
 				}
 			}
 
-			if(self::updateVersion("26.10.4"))
+			if(self::updateVersion("26.10.5"))
 			{
 				//// Option de double authentification par email
 				self::fieldExist("ap_user", "dblAuthEnabled", "ALTER TABLE `ap_user` ADD `dblAuthEnabled` TINYINT DEFAULT NULL AFTER `connectionSpace`");

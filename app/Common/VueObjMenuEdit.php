@@ -120,7 +120,7 @@ function accessRightStyle()
 
 /*DROITS D'ACCÈS*/
 #menuAccessRight					{text-align:center;}/*Tableau des droits d'accès*/
-.vSpaceTable						{display:inline-block; user-select:none; max-width:600px; border:1px solid <?= Ctrl::$agora->skin=='white'?'#e5e5e5':'#555' ?>; border-radius:var(--radius-block);}
+.vSpaceTable						{display:inline-block; user-select:none; max-width:600px; border:1px solid <?= Ctrl::$agora->skin=='white'?'#e5e5e5':'#555' ?>; border-radius:var(--radius_block);}
 .vSpaceTable:not(:last-child)		{margin-bottom:40px;}
 .vSpaceTable>div					{display:table-row;}
 .vSpaceTable>div>div				{display:table-cell; padding:6px; text-align:center;}

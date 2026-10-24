@@ -14,10 +14,10 @@ body, a, .link																{color:#444;}
 }
 
 /*** LIENS & OPTIONS*/
-.accessRead, a:hover, .link:hover, .linkSelect, .menuContextLaunch:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .optionSelect	{color:#2d6a92}/*--blue-bg en + foncé*/
+.accessRead, a:hover, .link:hover, .linkSelect, .menuContextLaunch:hover, [onclick]:hover, button:hover, label:hover, input:checked+label, .optionSelect	{color:#2d6a92}/*--blue_bg en + foncé*/
 .accessWrite					{color:#500;}
 .option							{border:solid 1px transparent;}
-.optionSelect, .option:hover 	{border:solid 1px #d5d5d5; border-radius:var(--radius-field);}
+.optionSelect, .option:hover 	{border:solid 1px #d5d5d5; border-radius:var(--radius_field);}
 
 
 /*** INPUTS*/
@@ -29,7 +29,7 @@ button																{background:linear-gradient(#fff,#eee);}
 button:hover:not(.f-button)											{background:linear-gradient(#fff,#f9f9f9);}
 
 /*** DIVERS*/
-.objMenuTab, .objMenuMain, fieldset		{background:#fbfbfb; border:solid 1px #ccc; border-radius:var(--radius-block);}/*VueObjMenuEdit + fieldset*/
+.objMenuTab, .objMenuMain, fieldset		{background:#fbfbfb; border:solid 1px #ccc; border-radius:var(--radius_block);}/*VueObjMenuEdit + fieldset*/
 .objMenuTab								{background:transparent;}/*VueObjMenuEdit : onglet non sélectionnés*/
 .objMenuTab:not(.objMenuTabSelect)		{border-color:#ddd #ddd #bbb #ddd;}
 .objMenuTab:hover, .objMenuTabSelect	{background:#fbfbfb;}/*VueObjMenuEdit : onglet sélectionnés/survolé*/

@@ -1,21 +1,25 @@
-/**************    VARIABLES CSS*/
+/**************    VARIABLES*/
 :root{
-	--color-filter:invert(50%) sepia(20%) saturate(1500%);						/*Filtre des icones svg, etc*/
-	--blue-filter:  var(--color-filter) hue-rotate(150deg) brightness(80%);		/*- Bleu*/
-	--green-filter: var(--color-filter) hue-rotate(100deg) brightness(65%);		/*- Vert*/
-	--red-filter:   var(--color-filter) hue-rotate(330deg) brightness(65%);		/*- Rouge*/
-	--blue-bg:#3484b9;															/*Button .circleNb etc*/
-	--radius-block:8px;															/*.objContent .menuContext button etc*/
-	--radius-field:4px;															/*inputs .progressBar etc*/
-	--footer-height:80px;														/*hauteur du footer*/
+	--color_filter:invert(50%) sepia(20%) saturate(1500%);						/*Filtre des icones svg, etc*/
+	--blue_filter:  var(--color_filter) hue-rotate(150deg) brightness(80%);		/*- Bleu*/
+	--green_filter: var(--color_filter) hue-rotate(100deg) brightness(65%);		/*- Vert*/
+	--red_filter:   var(--color_filter) hue-rotate(330deg) brightness(65%);		/*- Rouge*/
+	--blue_bg:#3484b9;															/*Button .circleNb etc*/
+	--radius_block:8px;															/*.objContent .menuContext button etc*/
+	--radius_field:4px;															/*inputs .progressBar etc*/
+	--footer_height:80px;														/*hauteur du footer*/
 }
-.bodyColor_white{
-	--translucid:#dddddd70;	/*pastilles translucides*/
-	--select-bg:#eee;			/*objets ou ligne sélectionnées*/
+.bodyWhite{
+	--translucid:#ffffff98;									/*pastilles translucides*/
+	--select_bg:#e5e5e5;										/*objets/lignes sélectionnés*/
+	--box_shadow:0 10px 20px rgba(0, 0, 0, 0.25);				/*ombres portées*/
+	--box_shadow_hover:0 10px 20px rgba(0, 0, 0, 0.45);		/*ombres portées des blocks survolées*/
 }
-.bodyColor_black{
-	--translucid:#33333370;	/*pastilles translucides*/
-	--select-bg:#444;			/*objets ou ligne sélectionnées*/
+.bodyBlack{
+	--translucid:#00000090;									/*pastilles translucides*/
+	--select_bg:#444444;										/*objets/lignes sélectionnés*/
+	--box_shadow:0px 10px 20px rgba(255, 255, 255, 0.25);		/*ombres portées*/
+	--box_shadow_hover:0px 10px 20px rgba(255, 255, 255, 0.4);	/*ombres portées des blocks survolées*/
 }
 
 
@@ -32,11 +36,11 @@ abbr						{border-bottom: 1px dotted #777; cursor:help;}					/*idem tag <acronym
 ::-webkit-scrollbar			{width:14px; border-radius:10px;}								/*largeur de scrollbar*/
 ::-webkit-scrollbar-thumb 	{border-radius:10px;}											/*Arrondi de la scrollbar*/
 #headerBarContainer, #pageFull, #pageCenter, #menuMobileBg, #menuMobileMain							{max-width:100dvw;}/*100% max du width de la page (Dynamique Vue Width : sans la scrollbar)*/
-#headerBar, .objContent, .miscContent, .menuContext, #messengerMain, .tox-tinymce, .ui-datepicker	{box-shadow:0 10px 20px rgba(0, 0, 0, 0.2); transition:box-shadow 0.3s ease-in-out;}/*Ombres portées noires*/
-.objContent:hover, .miscContent:hover, .bodyColor_black .menuContext 								{box-shadow:0 10px 20px rgba(255, 255, 255, 0.2);}/*Ombres portées blanches*/
+#headerBar, .objContent, .miscContent, .menuContext, #messengerMain, .tox-tinymce, .ui-datepicker	{box-shadow:var(--box_shadow); transition:box-shadow 0.4s ease-in-out;}
+.objContent:hover, .miscContent:hover, .bodyBlack .menuContext 										{box-shadow:var(--box_shadow_hover);}
 a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLaunch					{cursor:pointer; text-decoration:none; user-select:none;}/*Liens et menus*/
-.lineSelect, .objContent:has(.objSelectCheckbox:checked), #objSelectMenu							{background:var(--select-bg)!important;}
-.optionSelect																						{background:var(--select-bg); font-weight:bold;}
+.lineSelect, .objContent:has(.objSelectCheckbox:checked), #objSelectMenu							{background:var(--select_bg)!important;}
+.optionSelect																						{background:var(--select_bg); font-weight:bold;}
 
 
 /*** RESPONSIVE SMARTPHONE*/
@@ -56,8 +60,8 @@ a, [onclick], label, .link, .linkSelect, .option, .optionSelect, .menuContextLau
 
 /**************    ICONES SVG*/
 img[src*=svg]										{width:20px; height:20px;}						/*dimensions par défaut*/
-.bodyColor_black img[src*=svg]:not(img[src*=add])	{filter:brightness(120%);}						/*affichage sombre : icones éclaircies (cf <body>)*/
-.menuLine:hover .menuIcon img:not(img[src*=add])	{filter:var(--blue-filter);}					/*icone des menus survolés*/
+.bodyBlack img[src*=svg]:not(img[src*=add])			{filter:brightness(120%);}						/*affichage sombre : icones éclaircies (cf <body>)*/
+.menuLine:hover .menuIcon img:not(img[src*=add])	{filter:var(--blue_filter);}					/*icone des menus survolés*/
 #pageMenu img[src*='/add']							{width:30px; height:30px;}						/*icones "plus"*/
 img[src*=arrow]										{width:18px; height:18px; margin-inline:3px;}	/*icones "arrow"*/
 
@@ -78,14 +82,14 @@ img[src*=arrow]										{width:18px; height:18px; margin-inline:3px;}	/*icones 
 #pageFull								{width:100%;}			/*Conteneur sur toute la largeur : Files, Tasks..*/
 #pageCenter								{margin-inline:auto;}	/*Conteneur centré : News, Forum..*/
 #pageMenu								{display:table-cell; padding-left:10px; width:350px; max-width:350px; transition:padding-top 0.2s;}/*Menu de gauche du module : menu principal*/
-#pageContent							{display:table-cell; padding-inline:10px; padding-bottom:var(--footer-height);}/*contenu principal de la page*/
+#pageContent							{display:table-cell; padding-inline:10px; padding-bottom:var(--footer_height);}/*contenu principal de la page*/
 #pageCenter #pageContent				{width:920px;}/*Contenu centré*/
-.miscContent							{padding:10px; border-radius:var(--radius-block); user-select:none;}
+.miscContent							{padding:10px; border-radius:var(--radius_block); user-select:none;}
 #pageMenu .miscContent					{margin-bottom:10px;}/*espace entre chaque block*/
 #bodyLightbox							{padding:25px;}/*contenu des lightbox*/
 #pageFooterText							{position:fixed; z-index:100; bottom:15px; left:15px; color:#eee; text-shadow:0px 0px 9px #000;}
-#pageFooterLogo							{position:fixed; z-index:100; bottom:5px; right:5px; max-width:200px; max-height:var(--footer-height);}
-#pageFooterLogo img						{max-width:200px; max-height:var(--footer-height);}
+#pageFooterLogo							{position:fixed; z-index:100; bottom:5px; right:5px; max-width:200px; max-height:var(--footer_height);}
+#pageFooterLogo img						{max-width:200px; max-height:var(--footer_height);}
 
 /*** RESPONSIVE TABLET-SMARTPHONE*/
 @media screen and (max-width:1199px){
@@ -102,9 +106,9 @@ img[src*=arrow]										{width:18px; height:18px; margin-inline:3px;}	/*icones 
 .menuContextLaunch						{display:inline-block;}/*launcher du menu context*/
 .menuContextLaunchFloat					{position:absolute; z-index:50; top:5px; right:0px; padding:5px;}/*launcher burger en position absolute top-right*/
 .objContent:hover .menuContextLaunchFloat	{border-radius:50%; background:var(--translucid);}/*pastille transparente*/
-.objSelectCheckboxDiv					{position:absolute; z-index:50; top:0px; left:0px; display:none; padding:7px; border-radius:8px 0px 8px 0px; background:var(--translucid);}/*checkbox de sélection : masqué par défaut*/
-.menuContextLaunchRecent				{filter:var(--blue-filter);}
-.menuContext							{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:10px; overflow-y:auto; border-radius:var(--radius-block);}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+.objSelectCheckboxDiv					{position:absolute; z-index:50; top:0px; left:0px; display:none; padding:8px; border-radius:8px 0px 8px 0px; background:var(--translucid);}/*checkbox de sélection : masqué par défaut*/
+.menuContextLaunchRecent				{filter:var(--blue_filter);}
+.menuContext							{display:none; position:absolute; z-index:110; text-align:left; cursor:default; padding:10px; overflow-y:auto; border-radius:var(--radius_block);}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
 #bodyLightbox .menuContext				{overflow-y:visible; max-height:1000px!important;}/*Affiche le menu en toute hauteur dans les petites lightbox : cf lightboxResize()*/
 .menuContextLabel						{text-align:center; padding-block:10px;}/*label principal du menu context (cf. VueObjMenuContext)*/
 .menuContext .menuLine					{padding-block:4px; min-width:200px;}
@@ -114,9 +118,9 @@ img[src*=arrow]										{width:18px; height:18px; margin-inline:3px;}	/*icones 
 .menuContextObj							{top:35px; right:3px; width:35px; position:absolute; z-index:50; text-align:right;}	/*Sous .menuContextLaunch : Like, Comment, Attachment etc */
 .menuContextObj>div						{display:inline-block; margin-top:5px; padding:3px;}
 .menuContextObj img						{width:18px; height:18px;}
-.menuContextObj img:hover				{filter:var(--blue-filter);}
+.menuContextObj img:hover				{filter:var(--blue_filter);}
 .objLines .menuContextObj				{top:-5px; right:25px;}
-.circleNb								{width:22px; height:22px; line-height:22px; font-size:14px; display:inline-block; background:var(--blue-bg); border-radius:50%; color:white; text-align:center;}/*Voir aussi menu du Dashboard*/
+.circleNb								{width:22px; height:22px; line-height:22px; font-size:14px; display:inline-block; background:var(--blue_bg); border-radius:50%; color:white; text-align:center;}/*Voir aussi menu du Dashboard*/
 .menuContextObj .circleNb				{width:14px; height:14px; line-height:14px; font-size:9px; position:relative; z-index:50; margin-right:-11px;}/*Nb de likes / commentaires*/
 .userInputDiv							{display:inline-block; width:32.5%; min-width:230px; margin-block:1px; padding:3px;}/*sélection d'user ou de groupe d'users (cf .option)*/
 .objContent:not(:hover) .menuContextObj .hide, .circleNb:empty, #mobileAddElem	{display:none;}/*Masque les .menuContextObj (par défaut)  && l'input hidden de sélection/désélection d'objet  && icone "Plus" du footer sur mobile*/
@@ -162,7 +166,7 @@ img[src*=arrow]										{width:18px; height:18px; margin-inline:3px;}	/*icones 
 
 
 /**************    DIV DES OBJETS*/
-.objContent											{position:relative; max-width:100%; margin-bottom:7px; border-radius:var(--radius-block); user-select:none;}
+.objContent											{position:relative; max-width:100%; margin-bottom:7px; border-radius:var(--radius_block); user-select:none;}
 .objContentScroll									{height:inherit; min-height:inherit; overflow-y:auto; overflow-x:hidden;}	/*"height"+"min-height" correspond au ".objContent" + permet l'overflow "scroll" du ".objContentTab" ci-dessous*/
 .emptyContent										{padding:30px; text-align:center;}											/*Aucun contenu sur la page*/
 .emptyContent div									{margin-top:20px;}															/*Idem*/
@@ -197,8 +201,8 @@ img[src*=arrow]										{width:18px; height:18px; margin-inline:3px;}	/*icones 
 video.attachedFileTag								{width:600px; height:400px;}												/*Vidéo*/
 audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 .objMenuBottom										{clear:both; margin-top:30px; text-align:center;}							/*Menus centrés : pagination & Co ("clear" le float des .objBlocks)*/
-.objMenuBottom>.miscContent							{display:inline-block; padding:15px; border-radius:var(--radius-block);}
-.progressBar										{display:inline-block; padding:4px 8px; font-size:0.9rem; background:linear-gradient(#f8f8f8,#d8d8d8); border-radius:var(--radius-field);}/*cf. Tool::progressBar()*/
+.objMenuBottom>.miscContent							{display:inline-block; padding:15px; border-radius:var(--radius_block);}
+.progressBar										{display:inline-block; padding:4px 8px; font-size:0.9rem; background:linear-gradient(#f8f8f8,#d8d8d8); border-radius:var(--radius_field);}/*cf. Tool::progressBar()*/
 .progressBar img									{width:18px; height:18px;}
 
 /*** RESPONSIVE TABLET-SMARTPHONE*/
@@ -218,7 +222,7 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 
 
 /**************    INPUTS*/
-input:not(input[type=radio],input[type=checkbox]), textarea, select, button		{min-height:33px; max-width:100%; padding:5px; border-radius:var(--radius-field); font-size:1rem; font-family:inherit; outline:none;}
+input:not(input[type=radio],input[type=checkbox]), textarea, select, button		{min-height:33px; max-width:100%; padding:5px; border-radius:var(--radius_field); font-size:1rem; font-family:inherit; outline:none;}
 *:is(input,textarea,button):read-only, *:is(input,textarea,button):disabled		{opacity:0.85;}
 ::placeholder 											{padding-left:3px; font-size:0.95rem; color:#a5a5a5;}/*texte par défaut*/
 input:is(input[type=radio],input[type=checkbox])		{vertical-align:middle; margin-block:3px 5px;}
@@ -232,7 +236,7 @@ textarea												{width:100%; height:65px;}
 .tox-tinymce											{border-radius:10px!important;}/*Editeur TinyMCE : idem textarea*/
 .tox-promotion											{display:none;}/*Editeur TinyMCE : masque le bouton "Upgrade"*/
 select option											{font-size:1.05rem;}
-button													{border-radius:var(--radius-block); padding:5px 8px; cursor:pointer; vertical-align:middle;}
+button													{border-radius:var(--radius_block); padding:5px 8px; cursor:pointer; vertical-align:middle;}
 .dateInput, .dateBegin, .dateEnd						{width:90px;}															/*DATEPICKER : calendrier JQUERY-UI*/
 .ui-datepicker											{width:350px; max-width:100%; z-index:110!important;}					/*tableau du calendrier. z-index idem menuContext*/
 .ui-datepicker-header									{background-color:transparent; border:none;}							/*Header: label du mois affiché*/
@@ -240,13 +244,13 @@ button													{border-radius:var(--radius-block); padding:5px 8px; cursor:p
 .ui-datepicker-header  .ui-datepicker-next .ui-icon		{background:url("../../img/arrowRight.svg") 100% 100% / 16px 16px no-repeat;}	/*Header: icone du mois suivant*/
 .ui-datepicker .ui-state-default						{padding-block:10px; text-align:center; border:0px;}					/*cellules par défaut des jours*/
 .ui-datepicker .ui-state-highlight						{background:#ddd; color:black;}				  						/*aujourd'hui / période affichée*/
-.ui-datepicker .ui-state-active							{background:var(--blue-bg); color:white;}		 						/*jour sélectionné*/
+.ui-datepicker .ui-state-active							{background:var(--blue_bg); color:white;}		 						/*jour sélectionné*/
 .ui-timepicker-wrapper									{max-height:450px;}														/*TIMEPICKER : pseudo <select> JQUERY-UI*/
 .ui-timepicker-list li 									{padding:7px 15px;}														/*<li> des heures*/
-li.ui-timepicker-selected, .ui-timepicker-list li:hover	{background-color:var(--blue-bg)!important; color:white!important;}	/*<li> sélectionnée/survolée*/
+li.ui-timepicker-selected, .ui-timepicker-list li:hover	{background-color:var(--blue_bg)!important; color:white!important;}	/*<li> sélectionnée/survolée*/
 .ui-timepicker-list li:nth-child(4n+1)					{background-color:#eee;}												/*<li> des heures pleines (1 sur 4)*/	
 input[type=time]										{width:80px;}																									
-input[type=time]::-webkit-calendar-picker-indicator		{margin:0px; filter:var(--blue-filter);}/*icone "horloge" dans l'input*/
+input[type=time]::-webkit-calendar-picker-indicator		{margin:0px; filter:var(--blue_filter);}/*icone "horloge" dans l'input*/
 .passwordDiv											{display:inline-block; position:relative;}
 .passwordDisplay										{content:url("../../img/eyeClosed.svg"); width:25px; height:25px; opacity:0.8; position:absolute; top:50%; transform:translateY(-50%); right:5px; cursor:pointer;}/*Affiche/Masque un password*/
 .passwordDisplayShow									{content:url("../../img/eye.svg"); width:25px; height:25px; opacity:0.8;}
@@ -255,19 +259,19 @@ fieldset:not(:first-child)								{margin-top:25px;}/*pas de margin-top si 1er e
 legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 .focusPulsate											{animation:focusPulsate 1.5s linear infinite;}
 @keyframes focusPulsate 								{  0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;}  }
-.submitButton button									{position:relative; background:var(--blue-bg)!important; color:white!important; font-weight:bold; border:0px;}
+.submitButton button									{position:relative; background:var(--blue_bg)!important; color:white!important; font-weight:bold; border:0px;}
 .submitButton button:hover								{filter:saturate(1.3);}
 .submitButton button:disabled							{filter:saturate(0.2); color:#ccc!important;}
 .submitButtonMain										{display:block; margin-top:40px; text-align:center;}
 .submitButtonInline										{display:inline-block;}
 .submitButtonMain button								{width:250px; height:50px;}
-.submitButtonInline	button								{width:100px; margin-left:10px; border-radius:var(--radius-field);}
+.submitButtonInline	button								{width:100px; margin-left:10px; border-radius:var(--radius_field);}
 .loadingImage											{width:40px; height:40px; filter:contrast(300%);}/*dimensions du svg*/
 .submitButton .loadingImage								{position:absolute; display:none;}/*affiché à la validation du form*/
 .submitButtonMain .loadingImage							{width:40px; height:40px; top:5px; right:5px;}
 .submitButtonInline .loadingImage						{width:35px; height:35px; top:3px; right:3px;}
 .connectForm .submitButtonMain							{margin-top:0px;}
-.connectForm *:is(input[type=text],input[type=password],button)  {display:inline-block; margin-block:8px; width:330px; height:45px; border-radius:var(--radius-block);}
+.connectForm *:is(input[type=text],input[type=password],button)  {display:inline-block; margin-block:8px; width:330px; height:45px; border-radius:var(--radius_block);}
 
 /*** RESPONSIVE SMARTPHONE*/
 @media screen and (max-width:499px){
@@ -356,7 +360,7 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 
 
 /**************    JQUERY UI + PLUGINS*/
-.tippy-box										{padding:7px!important; font-size:1rem; border-radius:var(--radius-block)!important;}/*Tooltip*/
+.tippy-box										{padding:7px!important; font-size:1rem; border-radius:var(--radius_block)!important;}/*Tooltip*/
 .toast-item										{padding:15px; padding-right:30px;}/*Notify()*/
 .toast-position-top-center						{top:5px;}
 .jconfirm-box									{border-radius:15px!important; padding-block:40px 30px!important;}/*confirmAlt()*/
@@ -366,7 +370,7 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 .jconfirm-content-pane							{margin-bottom:5px!important;}/*surcharge*/
 .jconfirm-content-pane .confirmDeleteInfo		{margin-top:10px; color:#400!important;}/*Label de delete*/
 .jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important;}
-.jconfirm-buttons .btn-blue						{background:var(--blue-bg)!important;}
+.jconfirm-buttons .btn-blue						{background:var(--blue_bg)!important;}
 .jconfirm-buttons .btn-green					{background:#25a55b!important;}
 
 /*** RESPONSIVE SMARTPHONE*/
@@ -379,7 +383,7 @@ legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
 
 /**************    DIVERS*/
 .diskSpaceAlert					{filter:var(--icon-red);}
-.infos							{display:block; border:solid 1px #ddd; margin-block:15px; padding:8px; border-radius:var(--radius-field); text-align:center; }
+.infos							{display:block; border:solid 1px #ddd; margin-block:15px; padding:8px; border-radius:var(--radius_field); text-align:center; }
 .pluginModule					{margin-top:15px;}
 .pluginModule img				{float:right; margin-top:-5px; max-height:24px;}
 .changeOrder					{width:30px; vertical-align:middle; text-align:right; cursor:move; user-select:none;}/*Change l'ordre d'affichage d'une liste*/

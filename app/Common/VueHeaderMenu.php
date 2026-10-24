@@ -1,5 +1,6 @@
 <style>
-:root										{--headerMenuBorder:<?= Ctrl::$agora->skin=="black"?"#333":"#eee"?> solid 1px;}
+.bodyWhite									{--headerMenuBorder:#e5e5e5; --headerMenuBackground:white;}
+.bodyBlack									{--headerMenuBorder:#333333; --headerMenuBackground:#383838;}
 #headerBarLeft								{padding-left:10px; white-space:nowrap;}/*padding > nowrap > labels sur une ligne pour pas éclater l'affichage*/
 #headerBarLeft>span							{display:inline-block; max-width:200px; line-height:22px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
 #headerMobileModule							{display:none;}
@@ -7,7 +8,7 @@
 #headerBar>div#menuMainContext				{display:none; border-radius:20px; top:5px!important; left:5px!important;}/*surcharge "#headerBar>div"*/
 #menuMainTab								{display:table;}
 #menuMainTab>div							{display:table-cell; padding:5px;}
-#menuMainTab>div:not(:first-child)			{border-left:var(--headerMenuBorder);}/*Colonnes du menu principal*/
+#menuMainTab>div:not(:first-child)			{border-left:solid 1px var(--headerMenuBorder);}/*Colonnes du menu principal*/
 .menuMainSub								{padding-left:40px;}
 .menuMainSub img							{max-width:20px; margin-right:10px;}
 #menuMainTab .editButton					{visibility:hidden; float:right; cursor:pointer; margin-left:10px; height:20px; transform:scaleX(-1);}/*Image "edit" d'espace. "scaleX" : inverse l'image*/
@@ -16,12 +17,14 @@
 .vHeaderModule img							{<?= $moduleLabelDisplay==true?'width:24px;height:24px;':'width:45px;height:45px;' ?>}
 .vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
 .vHeaderModuleCurrent						{font-weight:bold;}
-.vHeaderModuleCurrent, .vHeaderModule:hover	{background:<?= Ctrl::$agora->skin=="black"?"#383838":"white"?>; border:solid 1px <?= Ctrl::$agora->skin=="black"?"#555":"#d8d8d8"?>!important;}
+.vHeaderModuleCurrent, .vHeaderModule:hover	{background:var(--headerMenuBackground); transition:background 0.4s; border:solid 1px var(--headerMenuBorder);}
+
 /*** RESPONSIVE REDUIT DU HEADER*/
 @media screen and (min-width:1200px) and (max-width:1430px){
 	.vHeaderModule							{padding:4px 12px 5px 12px;}
 	.vHeaderModule label					{margin:0px; margin-top:4px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
 }
+
 /*** RESPONSIVE TABLET-SMARTPHONE*/
 @media screen and (max-width:1199px){
 	#headerBarLeft, #headerMobileModule		{display:inline-block; font-size:1.1em; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
