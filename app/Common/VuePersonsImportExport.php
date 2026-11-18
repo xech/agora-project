@@ -132,7 +132,7 @@ form							{text-align:center;}
 		}
 		////	RECUPERE LES VALEURS DE L'IMPORT LDAP
 		elseif(Req::param("importType")=="ldap"){
-			$ldapSearch=MdlPerson::ldapSearch($importLoginPassword, Req::param("importLdapDn"), Req::param("importLdapFilter"));
+			$ldapSearch=MdlPerson::ldapSearch(Req::param("importLdapDn"), Req::param("importLdapFilter"));
 			if(!empty($ldapSearch)){
 				$importFields=$ldapSearch["headerFields"];	//Récupère chaque champ du header
 				$importList=$ldapSearch["ldapPersons"];		//Liste des personnes à importer
@@ -175,7 +175,7 @@ form							{text-align:center;}
 						<td><input type="checkbox" name="personsImport[]" value="<?= $lineCpt ?>" class="vLineImportCheckbox" checked="checked"></td>
 						<?php
 						foreach($lineValues as $fieldCpt=>$fieldVal){
-							$fieldVal=$fieldLabel=Txt::utf8Encode($fieldVal);
+							$fieldVal=$fieldLabel=Txt::clean(Txt::utf8Encode($fieldVal),"min");
 							if(array_key_exists($fieldCpt,$importFields) && $importFields[$fieldCpt]=="password" && $fieldVal!="password")  {$fieldLabel="**********";}
 						?>
 							<td><?= $fieldLabel ?><input type="hidden" name="personFields[<?= $lineCpt ?>][<?= $fieldCpt ?>]" value="<?= $fieldVal ?>"></td>
@@ -223,5 +223,5 @@ form							{text-align:center;}
 	?>
 
 	<!--BOUTON DE VALIDATION-->
-	<?= Txt::submitButton("validate") ?>
+	<?= Tool::submitButton("validate") ?>
 </form>

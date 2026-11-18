@@ -67,19 +67,19 @@ ready(function(){
 .vMailsMenu							{padding-left:5px!important;}
 .vMailsMenu:not(.vMailsMenuDisplay,:has(input:checked)) {display:none;}
 .vMailsMenu>div						{padding:5px;}
-.vMailsMenu img[src*=check]			{margin-right:4px;}
+.vMailsMenu img[src*='check']		{margin-right:4px;}
 
 /*formulaire principal*/
-#pageContent .miscContent			{padding:15px;}
+#pageContent .miscContainer			{padding:15px;}
 #pageContent [name='title']			{width:100%; height:35px; margin-bottom:20px;}
 #mailOptions						{display:table; width:100%; margin-top:30px;}/*tableau d'options*/
 #mailOptions>div					{display:table-cell; width:33%; vertical-align:top;}/*colonnes d'options et bouton "Envoyer"*/
 #mailOptions>div>div				{padding-block:5px;}/*ligne d'option*/
-#mailOptions img[src*=dependency]	{display:none;}
+#mailOptions img[src*='dependent']	{display:none;}
 .submitButton						{text-align:right; margin-top:0px;}/*surcharge*/
 .submitButton button				{width:220px;}
 
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
 	#historyLabel					{border-bottom:none; margin:0px;}
 	#mobileRecipients, #mailOptions	{margin-top:30px; border:1px solid #ccc; border-radius:3px;}
@@ -94,8 +94,8 @@ ready(function(){
 	<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 		<div id="pageMenu">
 			<!--DESTINATAIRES DU PRESENT MAIL-->
-			<div id="recipientMainMenu" class="miscContent" >
-				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.svg">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowRightLabel.svg"><hr></div>
+			<div id="recipientMainMenu" class="miscContainer" >
+				<div id="recipientLabel" <?= Txt::tooltip("MAIL_recipientsTooltip") ?>><img src="app/img/mail.svg">&nbsp; <?= Txt::trad("MAIL_recipients") ?> <img src="app/img/arrowLabel.svg"><hr></div>
 				<?php
 				////	LISTE DES DESTINATAIRES : USERS D'UN ESPACE || CONTACTS D'UN DOSSIER
 				foreach($containerList as $tmpContainer){
@@ -132,7 +132,7 @@ ready(function(){
 							<!--SELECTION DE CONTACTS-->
 							<?php if($tmpContainer::objectType=="contactFolder"){ ?>
 								<div onclick="$('<?= $personInputSelector ?>').prop('checked',false).trigger('click')"><img src="app/img/checkAll.svg"> <?= Txt::trad("selectAll") ?></div>
-								<div onclick="$('<?= $personInputSelector ?>').prop('checked',true).trigger('click')"><img src="app/img/checkNone.svg"> <?= Txt::trad("unselectAll") ?></div>
+								<div onclick="$('<?= $personInputSelector ?>').prop('checked',true).trigger('click')"><img src="app/img/checkNone.svg"> <?= Txt::trad("selectNone") ?></div>
 							<?php } ?>
 						</div>
 					</div>
@@ -140,11 +140,11 @@ ready(function(){
 			</div>
 
 			<!--HISTORIQUE DES MAILS ENVOYES-->
-			<div id="historyLabel" class="miscContent" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/history.svg"> <?= Txt::trad("MAIL_historyTitle") ?></div>
+			<div id="historyLabel" class="miscContainer" onclick="lightboxOpen('?ctrl=mail&action=mailHistory');"><img src="app/img/history.svg"> <?= Txt::trad("MAIL_historyTitle") ?></div>
 		</div>
 
 		<div id="pageContent">
-			<div class="miscContent">
+			<div class="miscContainer">
 				<!--TITRE / DESCRIPTION / MOBILE : LISTE DES DESTINATAIRES-->
 				<input type="text" name="title" value="<?= $curObj->title ?>" placeholder="<?= Txt::trad("MAIL_title") ?>" required>
 				<?= $curObj->descriptionEditor(false) ?>
@@ -166,7 +166,7 @@ ready(function(){
 					</div>
 					<div>
 						<!--BOUTON"SUBMIT"-->
-						<?= Txt::submitButton("<img src='app/img/post.svg'>&nbsp; ".Txt::trad("MAIL_sendMail")) ?>
+						<?= Tool::submitButton("<img src='app/img/post.svg'>&nbsp; ".Txt::trad("MAIL_sendMail")) ?>
 						<!--EMAIL RAPPELÉ (cf "reloadMailTypeId")-->
 						<?php if(Req::isParam("reloadMailTypeId")){ ?><input type="hidden" name="reloadMailTypeId" value="<?= Req::param("reloadMailTypeId") ?>"><?php } ?>
 					</div>

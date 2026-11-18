@@ -69,7 +69,7 @@ class CtrlOffline extends Ctrl
 	public static function actionUserInscription()
 	{
 		////	Valide le formulaire via Ajax
-		if(Req::isParam("formValidate"))
+		if(Tool::formControl())
 		{
 			////	Verif l'existance du login/mail
 			if(MdlUser::loginExists(Req::param("mail")))  {$result=Txt::trad("USER_loginExists");}
@@ -153,7 +153,7 @@ class CtrlOffline extends Ctrl
 			{self::noAccessExit("INSTALL_errorDbNoSqlFile");}
 
 		////	VALIDE LE FORMULAIRE
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			////	CONTROLES LES PARAMS D'ACCES A LA BDD
 			$dbControl=DbInstall::dbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
 			if(preg_match("/error/i",$dbControl))  {$result=Txt::trad("INSTALL_".$dbControl);}

@@ -20,8 +20,8 @@ ready(function(){
 
 <style>
 #labelSpaceName					{font-style:italic;}
-.miscContent					{margin-top:40px; border:#999 1px solid;}
-.miscContent:first-of-type		{display:none; border:#999 2px solid;}/*masque le 1er formulaire : ajout d'element*/
+.miscContainer					{margin-top:40px; border:#999 1px solid;}
+.miscContainer:first-of-type	{display:none; border:#999 2px solid;}/*masque le 1er formulaire : ajout d'element*/
 input[name='title']				{width:50%;}
 .vUserListMenu					{margin-top:20px; overflow:auto; max-height:150px;}
 .userListUser					{display:inline-block; width:33%; padding:2px;}
@@ -30,7 +30,10 @@ input[name='title']				{width:50%;}
 .vAutorSubmit>div:first-child	{font-style:italic; font-weight:normal;}
 .vAutorSubmit>div:last-child	{text-align:right;}
 .vAutorSubmit button			{width:120px; margin-right:10px;}
-/*** RESPONSIVE SMARTPHONE*/
+.vAddGroup						{text-align:center;}
+.vAddGroup button				{width:230px; height:50px;}
+
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vAutorSubmit, .vAutorSubmit>div  {display:block; margin-top:20px;}
 	.userListUser	{width:48%; padding:5px;}
@@ -44,8 +47,8 @@ input[name='title']				{width:50%;}
 		<div class="lightboxTitleDetail"><?= Txt::trad("USER_groupEditInfo") ?></div>
 	</div>
 
-	<div class="lightboxAddElem">
-		<button onclick="$('form:first-of-type').slideToggle().find('[name=title]').focusAlt()"><img src="app/img/add.svg"> <?= Txt::trad("USER_addGroup") ?></button>	
+	<div class="vAddGroup">
+		<button onclick="$('form:first-of-type').slideToggle().find('[name=title]').focusAlt()"><img src="app/img/addBlue.svg"> <?= Txt::trad("USER_addGroup") ?></button>	
 	</div>
 
 	<?php
@@ -63,9 +66,9 @@ input[name='title']				{width:50%;}
 							  </div>";
 		}
 		//Affichage du formulaire
-		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Txt::submitButton("add",false)  :  Txt::submitButton("modify",false);
+		$buttonsSubmitDelete=($tmpGroup->isNew())  ?  Tool::submitButton("add",false)  :  Tool::submitButton("modify",false);
 		if($tmpGroup->isNew()==false)  {$buttonsSubmitDelete.="<img src='app/img/delete.svg' ".Txt::tooltip("delete")." onclick=\"confirmDelete('".$tmpGroup->getUrl("delete")."')\">";}
-		echo "<form action='index.php' method='post' class='miscContent'>
+		echo "<form action='index.php' method='post' class='miscContainer'>
 				<input type='text' name='title' value=\"".$tmpGroup->title."\" placeholder=\"".Txt::trad("title")."\">
 				<div class='vUserListMenu'>".$userListInputs."</div>
 				<div class='vAutorSubmit'>

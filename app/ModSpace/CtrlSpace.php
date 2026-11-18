@@ -34,7 +34,7 @@ class CtrlSpace extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			////	Enregistre & recharge l'objet
 			$oldSpaceName=($curObj->isNewRecord()==false)  ?  $curObj->name  :  null;
 			$curObj=$curObj->editRecord("name=".Db::param("name").", description=".Db::param("description").", public=".Db::param("public").", `password`=".Db::param("password").", userInscription=".Db::param("userInscription").", userInscriptionNotify=".Db::param("userInscriptionNotify").", usersInvitation=".Db::param("usersInvitation").", wallpaper=".Db::param("wallpaper"));

@@ -96,7 +96,7 @@ form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5p
 .vLabelAllSpaces					{font-style:italic;}
 .submitButton						{margin-block:25px;}/*surcharge du button*/
 .changeOrderShadow					{height:50px;}/*surcharge*/
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vSpaceList>div 					{display:block; width:100%; margin:15px 0px;}
 	.vCategoryModif, .vCategoryDelete	{font-size:0.9rem;}
@@ -126,7 +126,7 @@ form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5p
 					<?php } ?>
 				<!--AJOUTER UNE NOUVELLE CATEGORIE-->
 				<?php }else{ ?>
-					<div class="vCategoryAdd vCategoryEdit link"><img src="app/img/add.svg">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
+					<div class="vCategoryAdd vCategoryEdit link"><img src="app/img/addBlue.svg">&nbsp; <?= Txt::trad($tradModulePrefix."_CAT_editAdd") ?></div>
 				<?php } ?>
 			</div>
 			<!--FORMULAIRE D'EDITION DE LA CATEGORIE-->
@@ -167,7 +167,7 @@ form textarea[name='description']	{width:100%; margin-top:15px; margin-bottom:5p
 				</div>
 				<input type="hidden" name="objectType" value="<?= Req::param("objectType") ?>">
 				<input type="hidden" name="typeId" value="<?= $tmpObj->typeId ?>">
-				<?= Txt::submitButton() ?>
+				<?= Tool::submitButton() ?>
 			</form>
 		</fieldset>
 		<?php } ?>

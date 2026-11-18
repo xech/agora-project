@@ -106,7 +106,8 @@
 
 
 	<style>
-	:root											{--table-border:1px solid <?= Ctrl::$agora->skin=='white'?'#dededf':'#333' ?>;}
+	.bodyWhite										{--table-border:1px solid #dededf;}
+	.bodyBlack										{--table-border:1px solid #333333;}
 	.vCalVue										{height:100%;}
 	.vWeekScroller									{position:relative; width:100%; max-width:100%; overflow-y:scroll;}				/*Partie visible de l'agenda*/
 	.vWeekScroller::-webkit-scrollbar, .vWeekHeaderScrollbar	{width:13px;}														/*scrollbar des agendas et Width "fantome"*/
@@ -118,19 +119,19 @@
 	.vWeekHeaderAllday								{display:none;}													/*masque par défaut*/
 	.vWeekHeaderAlldayCell							{vertical-align:top;}
 	.vWeekHourLabel									{width:40px; text-align:center; vertical-align:top; color:#888; font-size:0.9rem;}/*Libellé des heures : 1ere colonne du tableau*/
-	.vWeekCell										{padding:0px; border-left:var(--table-border); }						/*Cellules du tableau : créneaux de 15mn*/
-	.vWeekTable tr:nth-child(4n+1) .vWeekCell 		{border-top:var(--table-border);}										/*borter-top toutes les 4 lignes (1er 1/4 d'heure)*/
-	.vWeekCellRedLine								{border-top:solid 1px #f00;}										   /*Heure courante : border-top rouge*/
-	.vLineNotTimeSlot								{background:<?= Ctrl::$agora->skin=="white"?"#fbfbfb" : "#222" ?>} /*Heures en dehors du TimeSlot*/
-	.vWeekScroller .vEvtBlock						{position:absolute;}/*Tester un evt de 15mn*/
-	.vWeekScroller .menuContextLaunchFloat			{top:2px; right:2px;}/*idem*/
-	.vWeekScroller .vEvtLabel						{font-size:0.9rem;}
-	.vEvtBlockSuperposed							{box-shadow:0px 0px 3px black;}			/*Evts superposés*/
-	.vEvtLabelHM									{margin-top:2px;}						/*Label de l'heure*/
-	.vEvtLabelHMdragged								{font-size:1.2rem; font-weight:bold;}	/*Label durant un drag & drop*/
+	.vWeekCell										{padding:0px; border-left:var(--table-border); }	/*Cellules du tableau : créneaux de 15mn*/
+	.vWeekTable tr:nth-child(4n+1) .vWeekCell 		{border-top:var(--table-border);}					/*borter-top toutes les 4 lignes (1er 1/4 d'heure)*/
+	.vWeekCellRedLine								{border-top:solid 1px #f00;}						 /*Heure courante : border-top rouge*/
+	.bodyWhite .vLineNotTimeSlot					{background:#fbfbfb;} 								/*Heures en dehors du TimeSlot*/
+	.bodyBlack .vLineNotTimeSlot					{background:#222222;} 								/*Heures en dehors du TimeSlot*/
+	.vWeekScroller .vEvtBlock						{position:absolute;}								/*Tester un evt de 15mn*/
+	.vWeekScroller .vEvtLabel						{font-size:0.9rem;}									/*Evts labels*/
+	.vEvtBlockSuperposed							{box-shadow:0px 0px 3px black;}						/*Evts superposés*/
+	.vEvtLabelHM									{margin-top:2px;}									/*Label de l'heure*/
+	.vEvtLabelHMdragged								{font-size:1.2rem; font-weight:bold;}				/*Label durant un drag & drop*/
 	.vMobileAddEvt									{display:none;}
 
-	/*** RESPONSIVE TABLET-SMARTPHONE*/
+	/*****    RESPONSIVE LARGE*/
 	@media screen and (max-width:1199px){
 		.vWeekTable							{max-width:99%;}
 		.vWeekHourLabel, .vEvtLabel			{font-size:0.8rem;}
@@ -213,7 +214,7 @@
 						<!--CELLULE DU 1/4 D'HEURE & D'AJOUT D'EVT-->
 						<td class="<?= $cellClass ?> " title="<?= date('H:i',$cellTimeBegin) ?>" <?= $cellAttributes ?>>
 							<?php if(Req::isMobile() && $isHourBegin==true){ ?>
-								<img src="app/img/add.svg" class="vMobileAddEvt" onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$cellTimeBegin ?>')">
+								<img src="app/img/addBlue.svg" class="vMobileAddEvt" onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$cellTimeBegin ?>')">
 							<?php } ?>
 						</td>
 					<?php } ?>
@@ -226,7 +227,7 @@
 		foreach($tmpCal->evtListDays as $evtList){
 			foreach($evtList as $tmpEvt){
 		?>
-			<?= $tmpEvt->objContentDiv("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
+			<?= $tmpEvt->objContainer("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
 				<div class="vEvtLabel" <?= Txt::tooltip($tmpEvt->tooltip) ?> onclick="<?= $tmpEvt->lightboxVue() ?>">
 					<?= $tmpEvt->title ?>
 					<div class="vEvtLabelHM"><?= $tmpEvt->dateLabel("mini") ?></div>

@@ -93,7 +93,7 @@ class CtrlForum extends Ctrl
 		if($curObj->isNew() && MdlForumSubject::addRight()==false)	{self::noAccessExit();}
 		else														{$curObj->editControl();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
+		if(Tool::formControl())
 		{
 			//Enregistre & recharge l'objet
 			$dateLastMessage=($curObj->isNew())  ?  ", dateLastMessage=".Db::dateNow()  :  null;//Init "dateLastMessage" pour un nouveau sujet (classement des sujets)
@@ -118,7 +118,7 @@ class CtrlForum extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$idMessageParent=Req::isParam("_idMessageParent")  ?  ", _idMessageParent=".(int)Db::param("_idMessageParent")  :  null;//Rattaché à un message parent (integer)
 			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").$idMessageParent);

@@ -1,8 +1,8 @@
 
 <!--AFFICHE CHAQUE DOSSIERS DE LA VUE-->
 <?php foreach($foldersList as $tmpFolder){ ?>
-	<?= $tmpFolder->objContentDiv($containerClass) ?>
-		<div class="objContentTab objFolders" >
+	<?= $tmpFolder->objContainer("objContainerFolder") ?>
+		<div class="objContainerTab" >
 			<div class="objIcon">
 				<img src="<?= $tmpFolder->iconPath() ?>" onclick="redir('<?= $tmpFolder->getUrl() ?>')">
 			</div>

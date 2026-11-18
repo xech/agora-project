@@ -3,4 +3,5 @@ Télécharger la dernière version "Community" de prod.				-> https://www.tiny.c
 Télécharger les traductions "de" + "es" + "fr_FR" + "it" + "pt_PT"	-> https://www.tiny.cloud/download/language-packages/
 Modifier le path dans "/app/Common/VueObjEditor.php"
 Remplacer  "Zone de Texte Riche"  par  "" dans la trad française
+Supprimer les skins "oxide-dark" + "oxide" dans le dossier "/skins/ui"
 Vérifier le fonctionnement : inclusion d'image dans le texte, récupération d'un brouillon/draft, autoresize de l'editeur, etc

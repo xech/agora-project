@@ -186,7 +186,7 @@
 			else{
 				$return=null;
 				foreach($foldersList as $cpt=>$objFolder){
-					if($typeReturn=="text")		{$return.=($cpt>0?'<img src="app/img/arrowRightLabel.svg">':null).$objFolder->name; }//format "text" : Dossier racine > Mon sous-dossier
+					if($typeReturn=="text")		{$return.=($cpt>0?'<img src="app/img/arrowLabel.svg">':null).$objFolder->name; }//format "text" : Dossier racine > Mon sous-dossier
 					elseif($typeReturn=="zip")	{$return.=Txt::clean($objFolder->name).'/';}									//format "zip" : Dossier_racine/mon_sous-dossier/
 				}
 				return $return;

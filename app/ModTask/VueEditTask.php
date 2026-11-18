@@ -16,7 +16,7 @@ ready(function(){
 .vTaskOptionsButton img		{max-height:18px;}
 #responsiblePersonsBlock	{display:none; margin-top:15px; overflow:auto; max-height:300px;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vTaskOptions			{display:block; margin:30px 0px 0px 0px;}
 }
@@ -34,7 +34,7 @@ ready(function(){
 	<!--DATE DEBUT & FIN-->
 	<div class="vTaskOptions">
 		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("begin") ?>" <?= Txt::tooltip("begin") ?> >
-		<img src="app/img/arrowRightLabel.svg">
+		<img src="app/img/arrowLabel.svg">
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDate","inputDate") ?>" placeholder="<?= Txt::trad("end") ?>" <?= Txt::tooltip("end") ?> >
 	</div>
 

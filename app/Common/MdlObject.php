@@ -223,7 +223,7 @@ class MdlObject
 				elseif(preg_match("/^G/",$aff["target"]))	{$aff["targetType"]="group";		$aff["targetId"]=(int)substr($aff["target"],1);	 $aff["label"]=Ctrl::getObj("userGroup",$aff["targetId"])->getLabel();}
 				elseif($aff["target"]=="spaceUsers")		{$aff["targetType"]="spaceUsers";	$aff["targetId"]=(int)$aff["_idSpace"];			 $aff["label"]=Txt::trad("accessAllUsers");}
 				//Label de l'espace : "tous les utilisateurs" || affectation sur un autre espace
-				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowRightLabel.svg">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
+				if($aff["targetType"]=="spaceUsers" || $aff["_idSpace"]!=Ctrl::$curSpace->_id)   {$aff["label"].='<img src="app/img/arrowLabel.svg">'.Ctrl::getObj("space",$aff["_idSpace"])->getLabel();}
 				//Ajoute l'affectation
 				$this->_affectations[$targetKey]=$aff;
 			}
@@ -388,11 +388,11 @@ class MdlObject
 	public function getUrl($display=null)
 	{
 		$url="index.php?ctrl=".static::moduleName;
-		if($display=="vue")					{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->typeId;}		//Vue dans une lightbox (Task/User/Contact/etc)
-		elseif($display=="edit")			{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->typeId;}	//Edition un objet
-		elseif($display=="delete")			{return "index.php?ctrl=object&action=delete&typeId=".$this->typeId;}					//Suppression d'un objet via "actionDelete()"
-		elseif(static::isInContainer())		{return $url."&typeId=".$this->containerObj()->typeId."&typeIdTarget=".$this->typeId;}	//Affichage du conteneur d'un objet (File/Task/CalendarEvent/etc)
-		else								{return $url."&typeId=".$this->typeId;}													//Affichage par défaut (News/Folder/etc)
+		if($display=="delete")			{return "index.php?ctrl=object&action=delete&typeId=".$this->typeId;}					//Suppression d'un objet via actionDelete()
+		elseif($display=="edit")		{return $url."&action=VueEdit".ucfirst(static::objectType)."&typeId=".$this->typeId;}	//Edition un objet
+		elseif($display=="vue")			{return $url."&action=Vue".ucfirst(static::objectType)."&typeId=".$this->typeId;}		//Vue dans une lightbox : Task / User / Contact...
+		elseif(static::isInContainer())	{return $url."&typeId=".$this->containerObj()->typeId."&typeIdTarget=".$this->typeId;}	//Affiche un objet dans son conteneur : File / Task / CalendarEvent...
+		else							{return $url."&typeId=".$this->typeId;}													//Affichage par défaut : News / Folder...
 	}
 
 	/********************************************************************************************************
@@ -732,7 +732,7 @@ class MdlObject
 			$autorLabel='<span onclick="'.$objUser->lightboxVue().'">'.$autorLabel.'</span>';  							//Lien vers le profil de l'user
 		}
 		$dateEdit=($isModif==true && !empty($this->dateModif))  ?  $this->dateModif  :  $this->dateCrea;				//Date de créa/modif
-		return $autorLabel.'<img src="app/img/arrowRightLabel.svg">'.Txt::dateLabel("default",$dateEdit);
+		return $autorLabel.'<img src="app/img/arrowLabel.svg"><span>'.Txt::dateLabel("dateTime",$dateEdit).'</span>';
 	}
 
 	/********************************************************************************************************

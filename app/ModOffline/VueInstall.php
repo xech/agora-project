@@ -22,8 +22,8 @@ ready(function(){
 	
 		//// Controle le nom de la DB & le mail & le password
 		if(/^[a-z0-9-_]+$/i.test($("[name='db_name']").val())==false)  	{notify("<?= Txt::trad("INSTALL_errorDbNameFormat") ?>");  $("[name='db_name']").focusPulsate();  return false;}
-		if($("[name='adminMailLogin']").isMail()==false)  				{notify("<?= Txt::trad("mailInvalid") ?>");			return false;}
-		if($("[name='adminPassword']").isPassword()==false)				{notify("<?= Txt::trad("passwordInvalid") ?>");		return false;}
+		if($("[name='adminMailLogin']").isMail()==false)  				{notify("<?= Txt::trad("mailInvalid") ?>");				return false;}
+		if($("[name='adminPassword']").isPassword()==false)				{notify("<?= Txt::trad("passwordRequiredChars") ?>");	return false;}
 
 		//// Formulaire validé et confirmé : "Post" via Ajax
 		if(await confirmAlt("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
@@ -54,7 +54,7 @@ input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 
 
 <div id="pageCenter">
-	<div id="pageContent" class="miscContent">
+	<div id="pageContent" class="miscContainer">
 		<?php
 		////	PAS D'ACCES AU DOSSIER DATAS  ||  FORMULAIRE D'INSTALL
 		if(!is_writable(PATH_DATAS))  {echo '<h2><img src="app/img/important.svg"> &nbsp; '.Txt::trad("NOTIF_chmodDATAS").'</h2>';}
@@ -72,13 +72,13 @@ input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbHost") ?></div><div><input type="text" name="db_host"></div></div>
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbName") ?></div><div><input type="text" name="db_name"></div></div>
 				<div class="objField"><div><?= Txt::trad("INSTALL_dbLogin") ?></div><div><input type="text" name="db_login"></div></div>
-				<div class="objField"><div><?= Txt::trad("password") ?></div><div><?= Txt::inputPassword("db_password",true) ?></div></div>
+				<div class="objField"><div><?= Txt::trad("password") ?></div><div><?= Tool::inputPassword("db_password",true) ?></div></div>
 				<!--ADMIN GENERAL DE L'ESPACE-->
 				<h3><?= Txt::trad("INSTALL_adminAgora") ?></h3>
 				<div class="objField"><div><?= Txt::trad("name") ?></div><div><input type="text" name="adminName"></div></div>
 				<div class="objField"><div><?= Txt::trad("firstName") ?></div><div><input type="text" name="adminFirstName"></div></div>
 				<div class="objField"><div><?= Txt::trad("mailLlogin") ?></div><div><input type="text" name="adminMailLogin"></div></div>
-				<div class="objField"><div><?= Txt::trad("password") ?></div><div><?= Txt::inputPassword("adminPassword",true) ?></div></div>
+				<div class="objField"><div><?= Txt::trad("password") ?></div><div><?= Tool::inputPassword("adminPassword",true) ?></div></div>
 				<!--PARAMETRAGE GENERAL DE L'ESPACE-->
 				<h3><?= Txt::trad("AGORA_generalSettings") ?></h3>
 				<div class="objField">
@@ -93,14 +93,14 @@ input#spaceDiskLimit		{width:50px!important;}/*surcharge*/
 				<div class="objField"><div><?= Txt::trad("AGORA_name") ?></div><div><input type="text" name="spaceName"></div></div>
 				<div class="objField"><div><?= Txt::trad("AGORA_description") ?></div><div><textarea name="spaceDescription"></textarea></div></div>
 				<div class="objField">
-					<div><?= Txt::trad("SPACE_publicSpace") ?></div>
+					<div><?= Txt::trad("SPACE_publicLabel") ?></div>
 					<select name="spacePublic">
 						<option value="0"><?= Txt::trad("no") ?></option>
 						<option value="1"><?= Txt::trad("yes") ?></option>
 					</select>
 				</div>
 				<!--VALIDATION-->
-				<?= Txt::submitButton("validate") ?>
+				<?= Tool::submitButton("validate") ?>
 			</form>
 		<?php } ?>
 	</div>

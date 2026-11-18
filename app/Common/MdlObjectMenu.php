@@ -18,27 +18,31 @@ trait MdlObjectMenu
 	/********************************************************************************************************
 	 * IDENTIFIANT UNIQUE DE L'OBJET : CONTENEUR DE L'OBJET, MENU CONTEXTUEL, ETC
 	 ********************************************************************************************************/
-	public function uniqId($prefix)
+	public function uniqId()
 	{
-		if(empty($this->objUniqId))  {$this->objUniqId=uniqid();}	//Un seul ID par instance de l'objet (cf. evt répétés)
-		return $prefix.$this->objUniqId;							//Retourne l'id avec un prefix : "objContent", "objMenu", "objCheckbox", "objAttachment", etc
+		if(empty($this->objUniqId))  {$this->objUniqId=uniqid();}	//Un seul ID par instance de l'objet : cf. plusieurs menus pour un même objet affiché
+		return $this->objUniqId;									//Retourne l'id
 	}
 
 	/********************************************************************************************************
-	 * DIV PRINCIPAL DE L'OBJET (.objContent)  +  MENU CONTEXTUEL
-	 * objMenu 	: id du menu contextuel via click droit et "menuContext()"
+	 * DIV PRINCIPAL DE L'OBJET (.objContainer)  +  MENU CONTEXTUEL
 	 ********************************************************************************************************/
-	public function objContentDiv($classes=null, $menuOptions=null)
+	public function objContainer($classes=null, $menuOptions=null)
 	{
-		////	Classe principale  + Classes en paramètre  + classe si sélectionnables
-		$classes='objContent '.$classes.' '.($this->isSelectable()?'isSelectable':null);		
-		////	Attributs du Div
-		$attributes=$this->editRight()  ?  ' data-url-edit="'.$this->getUrl("edit").'" '  :  "";
-		if(method_exists($this,"attributes")){
-			foreach($this->attributes() as $attrKey=>$attrValue)  {$attributes.=' '.$attrKey.'="'.$attrValue.'" ';}
+		////	Attributs de base du Div : typeId de l'objet et uniqId du container
+		$attributes='data-typeid="'.$this->typeId.'" data-uniqId="'.$this->uniqId().'"';
+		////	Url d'édition de l'objet
+		if($this->editRight()){
+			$attributes.=' data-url-edit="'.$this->getUrl("edit").'" ';
 		}
-		////	Retourne le Div
-		return  '<div id="'.$this->uniqId("objContent").'" class="'.$classes.'" for="'.$this->uniqId("objMenu").'" data-typeid="'.$this->typeId.'" '.$attributes.'>'.
+		////	Attributs spécifiques de l'objet (evt & co)
+		if(method_exists($this,"attributes")){
+			foreach($this->attributes() as $attrKey=>$attrValue){
+				$attributes.=' '.$attrKey.'="'.$attrValue.'" ';
+			}
+		}
+		////	Retourne le Div  ("objMenuId" : menu contextuel via click droit)
+		return  '<div class="objContainer '.$classes.'" for="objMenuId'.$this->uniqId().'" '.$attributes.'>'.
 					$this->contextMenu($menuOptions);
 	}
 
@@ -57,7 +61,6 @@ trait MdlObjectMenu
 	
 		////	INIT  &  DIVERSES OPTIONS
 		$vDatas["curObj"]=$this;
-		$vDatas["objMenuId"]=$this->uniqId("objMenu");
 		$vDatas["options"]=$options;
 		$vDatas["objOptions"]		=isset($options["objOptions"]) ? $options["objOptions"] : [];
 		$vDatas["launcherPosition"]	=isset($options["launcherPosition"]) ? $options["launcherPosition"] : 'float';
@@ -80,7 +83,7 @@ trait MdlObjectMenu
 		////	SUPPRIMER
 		if($this->deleteRight()){
 			$ajaxControlUrl =(static::isFolder==true)  ?  "'?ctrl=object&action=folderDeleteControl&typeId=".$this->typeId."'"  :  "null";	//Controle d'accès aux sous-dossiers
-			$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."', $('#".$this->uniqId("objLabel")."').text(), ".$ajaxControlUrl.")";
+			$vDatas["confirmDeleteJs"]="confirmDelete('".$this->getUrl("delete")."', $('#objLabelId".$this->uniqId()."').text(), ".$ajaxControlUrl.")";
 			$vDatas["deleteLabel"]=isset($options["deleteLabel"])  ?  $options["deleteLabel"]  :  Txt::trad("delete");
 		}
 
@@ -145,7 +148,7 @@ trait MdlObjectMenu
 					////	Lignes des users de l'espace
 					foreach($tmpSpace->getUsers() as $tmpUser){
 						$targetId=$tmpSpace->_id."_U".$tmpUser->_id;//ex: "1_U55"
-						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="userAdmin.svg";	$targetTooltip=$accessFullDetail;	$accessFull=true;}//Auteur/Admin
+						if($tmpUser->_id==Ctrl::$curUser->_id || $tmpSpace->accessRightUser($tmpUser)==2)	{$targetIcon="userAutor.svg";	$targetTooltip=$accessFullDetail;	$accessFull=true;}//Auteur/Admin
 						else																				{$targetIcon="user.svg";		$targetTooltip=null;				$accessFull=false;}
 						$tmpSpace->targetLines[$targetId]=["icon"=>$targetIcon, "label"=>$tmpUser->getLabel(), "tooltip"=>$targetTooltip, "accessFull"=>$accessFull];
 					}
@@ -240,8 +243,8 @@ trait MdlObjectMenu
 	 ********************************************************************************************************/
 	public static function menuSelectDisplay()
 	{
-		//Type d'objet sélectionnable + Mode desktop + User identifié
-		return (static::isSelectable && Req::isMobile()==false && Ctrl::$curUser->isUser());
+		//Type d'objet sélectionnable + User authentifé
+		return (static::isSelectable && Ctrl::$curUser->isUser());
 	}
 
 	/********************************************************************************************************
@@ -321,7 +324,7 @@ trait MdlObjectMenu
 	}
 
 	/********************************************************************************************************
-	 * STATIC : SUR MOBILE, ON AFFICHE TOUJOURS EN MODE "BLOCK" (SI DISPO)
+	 * STATIC : SUR MOBILE, AFFICHE EN MODE "BLOCK" SI DISPONIBLE
 	 ********************************************************************************************************/
 	public static function isMobileDisplayBlock()
 	{
@@ -385,9 +388,11 @@ trait MdlObjectMenu
 		foreach($tabRadios as $tmpRadio){
 			$inputId=$inputName.'_'.$tmpRadio["value"];
 			$inputChecked=($curValue==$tmpRadio["value"])  ?  "checked"  :  null;
-			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'">&nbsp;'  :  null;
-			$radioButtons.='<input type="radio" name="'.$inputName.'" value="'.$tmpRadio["value"].'" id="'.$inputId.'" '.$inputChecked.'>
-							<label for="'.$inputId.'">'.$inputImg.Txt::trad($tmpRadio["trad"]).'</label>';
+			$inputImg=(!empty($tmpRadio["img"]))  ?  '<img src="app/img/'.$tmpRadio["img"].'"> &nbsp;'  :  null;
+			$radioButtons.='<div class="radioButtons">
+								<input type="radio" name="'.$inputName.'" value="'.$tmpRadio["value"].'" id="'.$inputId.'" '.$inputChecked.'>
+								<label for="'.$inputId.'">'.$inputImg.Txt::trad($tmpRadio["trad"]).'</label>
+							</div>';
 		}
 		return $radioButtons;
 	}

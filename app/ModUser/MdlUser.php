@@ -261,7 +261,7 @@ class MdlUser extends MdlPerson
 		if($this->_usersVisibles===null){
 			$idsSql=null;
 			foreach($this->spaceList() as $objSpace)  {$idsSql.=",".$objSpace->getUsers("idsSql");}
-			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY ".Ctrl::$agora->personsSort);
+			$this->_usersVisibles=Db::getObjTab("user", "SELECT * FROM ap_user WHERE _id IN (".trim($idsSql,",").") ORDER BY `".Txt::clean(Ctrl::$agora->personsSort)."`");
 		}
 		////	Enlève l'user courant  ||  Uniquement les users avec mail ("mailFilter")
 		$usersVisibles=$this->_usersVisibles;

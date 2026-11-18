@@ -22,7 +22,7 @@ class CtrlAgora extends Ctrl
 		////	Controle d'accès
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			////	Update le parametrage
 			Db::query("UPDATE ap_agora SET 
 				`name`=".Db::param("name").",
@@ -40,7 +40,7 @@ class CtrlAgora extends Ctrl
 				gIdentity=".Db::param("gIdentity").",
 				gIdentityClientId=".Db::param("gIdentityClientId").",
 				messengerDisplay=".Db::param("messengerDisplay").",
-				moduleLabelDisplay=".Db::param("moduleLabelDisplay").",
+				moduleIconFlat=".Db::param("moduleIconFlat").",
 				folderDisplayMode=".Db::param("folderDisplayMode").",
 				personsSort=".Db::param("personsSort").",
 				userMailDisplay=".Db::param("userMailDisplay").",

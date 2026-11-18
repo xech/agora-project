@@ -234,7 +234,7 @@ class CtrlCalendar extends Ctrl
 		if($curObj->isNew() && MdlCalendar::addRight()==false)	{self::noAccessExit();}
 		else													{$curObj->editControl();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$timeSlot=Req::param("timeSlotBegin")."-".Req::param("timeSlotEnd");
 			$typeCalendar=$curObj->isNew() ? ", type='ressource'" : null;
@@ -257,7 +257,7 @@ class CtrlCalendar extends Ctrl
 		$curObj->editControl();
 	
 		////	VALIDE LE FORMULAIRE
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			////	EDITE LES PRINCIPAUX CHAMPS DE L'ÉVÉNEMENT (date, périodicité, etc)
 			$dateBegin=Txt::formatDate(Req::param("dateBegin")." ".Req::param("timeBegin"), "inputDatetime", "dbDatetime");
 			$dateEnd  =Txt::formatDate(Req::param("dateEnd")." ".Req::param("timeEnd"), "inputDatetime", "dbDatetime");
@@ -422,7 +422,7 @@ class CtrlCalendar extends Ctrl
 		if($objCalendar->editContentRight()==false)  {Ctrl::noAccessExit();}
 		$vDatas=[];
 		////	VALIDE LE FORMULAIRE (sélection du fichier ou des evts à importer)
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			////	PRÉPARE LE TABLEAU D'IMPORT
 			if(isset($_FILES["importFile"]) && is_file($_FILES["importFile"]["tmp_name"])){
 				require 'ICalParser.php';

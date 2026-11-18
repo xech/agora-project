@@ -32,5 +32,5 @@ ready(function(){
 	<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, ".vUserInput") ?>
 	
 	<!--BOUTON DE VALIDATION-->
-	<?= Txt::submitButton("send") ?>
+	<?= Tool::submitButton("send") ?>
 </form>

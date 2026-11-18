@@ -1,8 +1,8 @@
 <style>
 /* BLOCKS DE CONTENU */
 #pageMenu .infos			{text-align:left;}
-.objBlocks .objContent	{height:220px; min-width:400px; max-width:700px;}/*surcharge*/
-.objContentScroll			{padding:10px;}
+.objBlocks .objContainer	{height:220px; min-width:400px; max-width:700px;}/*surcharge*/
+.objContainerScroll			{padding:10px;}
 .vSpaceName					{font-size:1.1rem;}
 .vSpaceDescription			{margin-top:10px; font-weight:normal;}
 .vModules					{margin:15px 0px;}
@@ -10,7 +10,7 @@
 .vSpaceAffectation			{display:inline-block; width:32%; padding:5px; font-size:0.85rem;}
 .vSpaceAffectation img		{max-height:17px;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vSpaceAffectation		{width:48%;}
 	.vSpaceAffectation img	{max-height:15px;}
@@ -19,8 +19,8 @@
 
 <div id="pageFull">
 	<div id="pageMenu">
-		<div class="miscContent">
-			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/add.svg"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
+		<div class="miscContainer">
+			<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlSpace::getUrlNew() ?>')"><div class="menuIcon"><img src="app/img/addBlue.svg"></div><div><?= Txt::trad("SPACE_addSpace") ?></div></div>
 			<?= MdlSpace::menuSort() ?>
 			<div class="menuLine"><div class="menuIcon"><img src="app/img/info.svg"></div><div><?= count($spaceList)." ".Txt::trad(count($spaceList)>1?"SPACE_spaces":"SPACE_space") ?></div></div>
 		</div>
@@ -30,9 +30,9 @@
 		<?php
 		////	LISTE DES ESPACES
 		foreach($spaceList as $tmpSpace){
-			echo $tmpSpace->objContentDiv();
+			echo $tmpSpace->objContainer();
 		?>
-				<div class="objContentScroll">
+				<div class="objContainerScroll">
 					<div class="vSpaceName"><?= $tmpSpace->name ?></div>
 					<div class="vSpaceDescription" <?= Txt::tooltip($tmpSpace->description) ?> ><?= Txt::reduce($tmpSpace->description,80) ?></div>
 					<div class="vModules">
@@ -48,7 +48,7 @@
 
 					<!--"ESPACE PUBLIC"-->
 					<?php if(!empty($tmpSpace->public)){ ?>
-						<div class="vSpaceAffectation"><img src="app/img/earth.svg"> <?= Txt::trad("SPACE_publicSpace") ?></div>
+						<div class="vSpaceAffectation"><img src="app/img/earth.svg"> <?= Txt::trad("SPACE_publicLabel") ?></div>
 					<?php } ?>
 
 					<!--"TOUS LES UTILISATEURS"-->

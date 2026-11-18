@@ -106,8 +106,8 @@ class Req
 	public static function param($key)
 	{
 		if(self::isParam($key)){
-			if($key=="notify")							{return (array)self::$_paramsGP[$key];}	//"notify" tjs en array, même s'il ya qu'une notif
-			elseif(is_string(self::$_paramsGP[$key]))	{return trim(self::$_paramsGP[$key]);}	//trim tjs le texte
+			if($key=="notify")							{return (array)self::$_paramsGP[$key];}	//"notify" tjs en array
+			elseif(is_string(self::$_paramsGP[$key]))	{return trim(self::$_paramsGP[$key]);}	//trim du text
 			else										{return self::$_paramsGP[$key];}
 		}
 	}
@@ -242,18 +242,21 @@ class Req
 		////	Install en Auto-hébergement
 		if(preg_match("/dbInstall/i",$except->getMessage()) && self::isInstalling()==false && self::isHost()==false)
 			{Ctrl::redir("index.php?ctrl=offline&action=install&disconnect=1");}
-		////	Affiche le message et lien "Retour"
-        echo '<div style="text-align:center">
-				<h1 style="line-height:100px"><img src="app/img/important.svg"> &nbsp; '.$except->getMessage().'</h1>
+		////	Message et lien "Retour"
+        echo '<div style="text-align:center;padding:100px;">
+				<img src="app/img/important.svg" style="height:50px;float:left;">
+				<h2>'.$except->getMessage().'</h2>
 				<h2><a href="index.php">Retour</a></h2>
 			  </div>';
 		exit;
     }
 
 
+
 	/********************************************************************************************************
 	 *************************************	SPECIFIC METHODS	*********************************************
 	 ********************************************************************************************************/
+
 
 
 	/********************************************************************************************************

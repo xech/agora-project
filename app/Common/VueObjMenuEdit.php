@@ -7,7 +7,7 @@ ready(function(){
 		event.preventDefault();
 		////	Controles asynchrones :  Captcha (guest)  ||  Controle spécifique (ex: controle Ajax de champs)
 		if(typeof captchaControl=="function"  && await captchaControl()!=true)		{return false;}
-		if(typeof mainFormControl=="function" && await mainFormControl()!=true)		{return false;}
+		if(typeof formControl=="function" && await formControl()!=true)				{return false;}
 		////	Controle les mails
 		if($("input[name='mail']").notEmpty() && $("input[name='mail']").isMail()==false)   {notify("<?= Txt::trad("mailInvalid"); ?>");  return false;}
 		////	Controle la description de l'éditeur
@@ -99,33 +99,31 @@ ready(function(){
  **********************************************************************************************************/
 function accessRightStyle()
 {
-	$(".vAffectLine:visible").removeClass("lineSelect accessRead accessWrite");	//Réinit le style des lignes
-	$(".vAffectLine:has(input:checked)").each(function(){							//Parcourt les lignes sélectionnées
-		if($(this).find("input[value$='_2']").is(":checked"))	{$(this).addClass("lineSelect accessWrite");}
-		else													{$(this).addClass("lineSelect accessRead");}
-	});
+	$(".vAffectLine:visible").removeClass("lineSelect accessUser");			//Réinit le style des lignes
+	$(".vAffectLine:has(input:checked)").addClass("lineSelect accessUser");	//Style des lignes sélectionnées
 }
 </script>
 
 
 <style>
-/*OPTIONS D'EDITION (cf. white.css & black.css) */
+/*OPTIONS D'EDITION*/
+.objMenuMain, .objMenuTabSelect, .objMenuTab:hover	{background:var(--bg_fieldset);}
 #objMenuTabs						{display:table; table-layout:fixed; margin-top:35px; margin-bottom:-35px; width:100%; max-width:100%;}		/*table-layout: meme largeur pour chaque colonne*/
-.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.75; text-align:center; vertical-align:middle; word-wrap:break-word; border-radius:8px 8px 0px 0px; user-select:none; cursor:pointer;}
-
-.objMenuTabSelect					{opacity:1; border-bottom:none;}
+.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.75; text-align:center; vertical-align:middle; word-wrap:break-word; border:solid 1px var(--color_border); border-radius:var(--radius_block) var(--radius_block) 0px 0px; user-select:none; cursor:pointer;}
 .objMenuTab img						{margin-right:5px;}
+.objMenuTabSelect					{opacity:1; border-bottom:none;}
+.objMenuTabSelect img				{filter:var(--icon_blue);}
 #objMenuTabs:has(.objMenuTab:nth-child(4)) img {margin-right:6px;} /*Edit Task : réduit le margin si ya 4 onglets dans le menu*/
-.objMenuMain						{margin-top:35px; padding:25px; border-top:0px; border-radius:0px 0px 8px 8px; text-align:left;}
+.objMenuMain						{margin-top:35px; padding:25px; border:solid 1px var(--color_border); border-top:0px; border-radius:0px 0px var(--radius_block) var(--radius_block); text-align:left;}
 
 /*DROITS D'ACCÈS*/
 #menuAccessRight					{text-align:center;}/*Tableau des droits d'accès*/
-.vSpaceTable						{display:inline-block; user-select:none; max-width:600px; border:1px solid <?= Ctrl::$agora->skin=='white'?'#e5e5e5':'#555' ?>; border-radius:var(--radius_block);}
+.vSpaceTable						{display:inline-block; user-select:none; max-width:600px;}
 .vSpaceTable:not(:last-child)		{margin-bottom:40px;}
 .vSpaceTable>div					{display:table-row;}
 .vSpaceTable>div>div				{display:table-cell; padding:6px; text-align:center;}
 .vSpaceHeader>div					{vertical-align:top; padding-block:10px!important;}
-.vSpaceHeader .vAffectLabel			{padding-left:35px;}/*Nom de l'espace*/
+.vSpaceHeader .vAffectLabel			{padding-left:10px;}/*Nom de l'espace*/
 .vAffectLabel						{width:300px; text-align:left!important; cursor:pointer;}/*Label d'une target*/
 .vAffectLabel img					{margin-right:8px;}
 .vAffectBox							{width:70px;}/*colonne des checkboxes*/
@@ -136,16 +134,16 @@ function accessRightStyle()
 #notifMailOptions, #notifMailUsers	{margin-top:10px; text-align:left; display:none;}/*surcharge fieldset*/
 #notifMailUsersPlus					{margin-top:15px; text-align:center;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
-	#objMenuTabs						{font-size:0.9rem;}
-	.objMenuMain						{padding-inline:10px;}						/*détail des options*/
-	.vSpaceTable						{border:0px;}								/*tableau des droits d'accès*/
-	.vSpaceTable>div>div				{padding:8px 4px;}							/*cellules du tableau des droits d'accès*/
-	.vSpaceHeader .vAffectBox			{font-size:0.85rem;} 						/*entête des droits d'accès*/
-	.vSpaceHeader .vAffectLabel			{padding-left:5px;}							/*Nom de l'espace*/
-	.vAffectBox							{width:50px;}								/*colonne des checkboxes des droits d'accès*/
-	.objMenuTab img, .vSpaceTable img, .vAffectLabel img  {display:none;}
+	#objMenuTabs											{font-size:0.9rem;}
+	.objMenuMain											{padding-inline:10px;}	/*détail des options*/
+	.vSpaceTable											{border:0px;}			/*tableau des droits d'accès*/
+	.vSpaceTable>div>div									{padding:8px 4px;}		/*cellules du tableau des droits d'accès*/
+	.vSpaceHeader .vAffectBox								{font-size:0.9rem;} 	/*entête des droits d'accès*/
+	.vSpaceHeader .vAffectLabel								{padding-left:5px;}		/*Nom de l'espace*/
+	.vAffectBox												{width:50px;}			/*colonne des checkboxes des droits d'accès*/
+	.objMenuTab img, .vSpaceTable img, .vAffectLabel img	{display:none;}
 }
 </style>
 
@@ -159,7 +157,7 @@ function accessRightStyle()
 		<!--AFFECTATIONS-->
 		<?php if(!empty($menuAccessRight)){ ?>
 			<div class="objMenuTab" for="menuAccessRight">
-				<img src="app/img/access.svg"> <?= Txt::trad("EDIT_accessRight") ?>
+				<img src="app/img/users.svg"> <?= Txt::trad("EDIT_accessRight") ?>
 			</div>
 		<?php } ?>
 		<!--NOTIF MAIL-->
@@ -302,4 +300,4 @@ function accessRightStyle()
 
 
 <!--BOUTON DE VALIDATION-->
-<?= Txt::submitButton($curObj->isNew()?"add":"modify") ?>
+<?= Tool::submitButton($curObj->isNew()?"add":"modify") ?>

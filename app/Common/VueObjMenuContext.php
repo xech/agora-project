@@ -1,7 +1,7 @@
 
 
 <!--LAUNCHER DU MENU-->
-<span for="<?= $objMenuId ?>" class="menuContextLaunch <?= stristr($launcherPosition,"float")?'menuContextLaunchFloat':null ?>" <?= Txt::tooltip("menuOptions") ?>>
+<span for="objMenuId<?= $curObj->uniqId() ?>" class="menuContextLaunch <?= stristr($launcherPosition,"float")?'menuContextLaunchFloat':null ?>" <?= Txt::tooltip("menuOptions") ?>>
 	<img src="app/img/menuDot.svg" class="<?= $curObj->isRecent()?'menuContextLaunchRecent':null ?>">
 	<?= $launcherLabel ?>
 </span>
@@ -9,17 +9,17 @@
 
 <!--SELECTIONNER : CHECKBOX-->
 <?php if(!empty($isSelectMenu)){ ?>
-	<div class="objSelectCheckboxDiv">
-		<input type="checkbox" name="objectsTypeId[]" class="objSelectCheckbox" value="<?= $curObj->typeId ?>" id="<?= $curObj->uniqId('objCheckbox') ?>">
+	<div class="objSelectBoxDiv">
+		<input type="checkbox" name="objectsTypeId[]" class="objSelectBox" value="<?= $curObj->typeId ?>" id="objCheckboxId<?= $curObj->uniqId() ?>">
 	</div>
 <?php } ?>
 
 
 <!--MENU CONTEXTUEL-->
-<div id="<?= $objMenuId ?>" class="menuContext">
+<div id="objMenuId<?= $curObj->uniqId() ?>" class="menuContext">
 
 	<!--LABEL DE L'OBJET-->
-	<div class="menuContextLabel" id="<?= $curObj->uniqId("objLabel") ?>"><?= $curObj->getLabel() ?></div>
+	<div class="menuContextLabel" id="objLabelId<?= $curObj->uniqId() ?>"><?= $curObj->getLabel() ?></div>
 	<hr>
 
 	<!--MODIFIER-->
@@ -32,7 +32,7 @@
 
 	<!--SELECTIONNER-->
 	<?php if(!empty($isSelectMenu)){ ?>
-		<div class="menuLine" onclick="objSelectSwitch('<?= $curObj->uniqId('objCheckbox') ?>')">
+		<div class="menuLine" onclick="objSelectSwitch('<?= $curObj->uniqId() ?>')">
 			<div class="menuIcon"><img src="app/img/check.svg"></div>
 			<div><?= Txt::trad("selectUnselect") ?></div>
 		</div>
@@ -109,21 +109,21 @@
 		<hr>
 		<!--AFFECTATIONS EN ECRITURE-->
 		<?php if(!empty($affectLabels["2"])){ ?>
-			<div class="menuLine accessWrite" <?= Txt::tooltip($affectTooltips["2"]) ?> >
+			<div class="menuLine accessUser" <?= Txt::tooltip($affectTooltips["2"]) ?> >
 				<div class="menuContextTxtLeft"><?= Txt::trad("accessWrite") ?></div>
 				<div><?= $affectLabels["2"] ?></div>
 			</div>
 		<?php } ?>
 		<!--AFFECTATIONS EN ECRITURE LIMITE-->
 		<?php if(!empty($affectLabels["1.5"])){ ?>
-			<div class="menuLine accessWrite" <?= Txt::tooltip($affectTooltips["1.5"]) ?> >
+			<div class="menuLine accessUser" <?= Txt::tooltip($affectTooltips["1.5"]) ?> >
 				<div class="menuContextTxtLeft"><?= Txt::trad("accessWriteLimit") ?></div>
 				<div><?= $affectLabels["1.5"] ?></div>
 			</div>
 		<?php } ?>
 		<!--AFFECTATIONS EN LECTURE-->
 		<?php if(!empty($affectLabels["1"])){ ?>
-			<div class="menuLine accessRead" <?= Txt::tooltip($affectTooltips["1"]) ?> >
+			<div class="menuLine accessUser" <?= Txt::tooltip($affectTooltips["1"]) ?> >
 				<div class="menuContextTxtLeft"><?= Txt::trad("accessRead") ?></div>
 				<div><?= $affectLabels["1"] ?></div>
 			</div>
@@ -138,7 +138,7 @@
 
 <!--ICONES SOUS LE LAUNCHER DU MENU CONTEXT-->
 <?php if($launcherPosition=="float"){ ?>
-	<div class="menuContextObj">
+	<div class="menuLikeComment">
 
 		<!--FICHIERS JOINTS-->
 		<?php if($curObj->attachedFileMenu()){ ?>
@@ -148,12 +148,9 @@
 		<!--LIKES-->
 		<?php if($curObj->hasUsersLike()){
 			$likeNb=(int)count($curObj->getUsersLike());
-			if(empty($likeNb))	{$classHide='hide';	$circleNb=null;}
-			else				{$classHide=null;  	$circleNb=$likeNb;}
-			$likeOnclick="usersLikeUpdate('".$curObj->typeId."')";
 		 ?>
-			<div id="usersLike_<?= $curObj->typeId ?>" class="<?= $classHide ?>" onclick="<?= $likeOnclick ?>" <?= Txt::tooltip($curObj->usersLikeTooltip()) ?> >
-				<span class="circleNb"><?= $circleNb ?></span>
+			<div id="usersLike_<?= $curObj->typeId ?>" onclick="usersLikeUpdate('<?= $curObj->typeId ?>');" <?= Txt::tooltip($curObj->usersLikeTooltip()) ?> >
+				<span class="circleNb"><?= !empty($likeNb)?$likeNb:null ?></span>
 				<img src="app/img/like.svg">
 			</div>
 		<?php } ?>
@@ -161,13 +158,10 @@
 		<!--COMMENTAIRES-->
 		<?php if($curObj->hasUsersComment()){
 			$commentNb=(int)count($curObj->getUsersComment());
-			if(empty($commentNb))	{$classHide='hide';	$circleNb=null;}
-			else					{$classHide=null;  	$circleNb=$commentNb;}
-			$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." : ".Txt::trad("commentAdd");
-			$commentOnclick="lightboxOpen('?ctrl=object&action=UsersComment&typeId=".$curObj->typeId."')";
+			$commentTooltip=$commentNb." ".Txt::trad($commentNb>1?"AGORA_usersComments":"AGORA_usersComment")." <br> ".Txt::trad("commentAdd");
 		?>
-			<div id="usersComment_<?= $curObj->typeId ?>" class="<?= $classHide ?>" onclick="<?= $commentOnclick ?>" <?= Txt::tooltip($commentTooltip) ?> >
-				<span class="circleNb"><?= $circleNb ?></span>
+			<div id="usersComment_<?= $curObj->typeId ?>" onclick="lightboxOpen('?ctrl=object&action=UsersComment&typeId=<?= $curObj->typeId ?>');" <?= Txt::tooltip($commentTooltip) ?> >
+				<span class="circleNb"><?= !empty($commentNb)?$commentNb:null ?></span>
 				<img src="app/img/comment.svg">
 			</div>
 		<?php } ?>

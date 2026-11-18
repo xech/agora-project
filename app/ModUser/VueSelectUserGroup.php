@@ -29,7 +29,7 @@ ready(function(){
 	</div>
 	<!--TOUT DESELECTIONNER-->
 	<div class="userInputDiv userSelectOption" onclick="$('<?= $inputSelector ?>').prop('checked',true).trigger('click')">
-		<img src="app/img/checkNone.svg"> <?= Txt::trad("unselectAll") ?>
+		<img src="app/img/checkNone.svg"> <?= Txt::trad("selectNone") ?>
 	</div>
 
 

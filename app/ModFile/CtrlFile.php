@@ -157,7 +157,7 @@ class CtrlFile extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge le fichier + update la dernière version
 			$fileName=Txt::clean(Req::param("name").Req::param("dotExtension"));
 			$curObj=$curObj->editRecord("name=".Db::format($fileName).", description=".Db::param("description"));
@@ -187,7 +187,7 @@ class CtrlFile extends Ctrl
 		if(is_dir($folderPath) && !is_writable($folderPath) && !preg_match('#^/tmp/#i',$folderPath))
 			{Ctrl::noAccessExit(Txt::trad("NOTIF_fileOrFolderAccess").' : '.$curObj->containerObj()->name);}
 		////	VALIDE LE FORMULAIRE
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			$newFiles=$notifFilesLabel=$notifFiles=[];
 			////	AUGMENTE LE TEMPS D'EXECUTION
 			Tool::setTimeLimit(600);

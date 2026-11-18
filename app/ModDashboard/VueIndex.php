@@ -17,7 +17,7 @@ ready(function(){
 				}
 				//Charge les news suivantes (via ".get()" et non ".ajax")
 				if($("#contentNews").isVisible() && loadMoreNews==true){
-					$("#contentNews").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="loadingImage"></div>');
+					$("#contentNews").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="submitLoadingIcon"></div>');
 					$.get("index.php?ctrl=dashboard&action=GetMoreNews&newsOffset="+newsOffset, function(vueNewsList){
 						if(vueNewsList.length==0)  {loadMoreNews=false;}//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
@@ -31,7 +31,7 @@ ready(function(){
 				}
 				//Charge les sondages suivants (via ".get()" et non ".ajax")
 				if($("#contentPolls").isVisible() && loadMorePolls==true){
-					$("#contentPolls").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="loadingImage"></div>');
+					$("#contentPolls").append('<div class="infiniteScrollLoading"><img src="app/img/loadingLine.svg" class="submitLoadingIcon"></div>');
 					$.get("index.php?ctrl=dashboard&action=GetMorePolls&pollsToVoteWithNews=<?= Req::param("pollsToVoteWithNews") ?>&pollsOffset="+pollsOffset, function(vuePollsList){
 						if(vuePollsList.length==0)  {loadMorePolls=false;}	//Passe à false si ya plus rien à charger : évite les requêtes inutiles
 						else{
@@ -107,7 +107,7 @@ function dashboardPollVote()
 
 <style>
 /*Menu Actualités / Sondages / Nouveaux elements*/
-*:is(#pageMenu,#tabMenus) .circleNb			{margin-left:5px;}
+:is(#pageMenu,#tabMenus) .circleNb			{margin-left:5px;}
 #tabMenus									{width:100%; table-layout:fixed;}/*largeur des cells identiques / fixes*/
 #tabMenus .option							{border-radius:var(--radius_block); text-align:center; line-height:22px;}
 #contentNews,#contentPolls,#contentElems	{display:none;}/*Masque par défaut les contenus principaux*/
@@ -115,17 +115,17 @@ function dashboardPollVote()
 .infiniteScrollLoading						{text-align:center;}
 
 /*News*/
-.vNewsContainer.objContent				{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContent : height adapté au contenu*/
+.vNewsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge de .objContainer : height adapté au contenu*/
 .vNewsDescription						{font-weight:normal;}
 .vNewsDescription h3					{text-align:center;}/*1ere news par défaut : cf. "INSTALL_dataDashboardNews"*/
 .vNewsDescription h4					{font-weight:normal; font-size:1.05rem;}
 .vNewsDescription h4 img				{max-width:30px; max-height:25px; margin-inline:10px;}
 .vNewsDescription h4:last-child			{margin-bottom:30px;}
-.vNewsDetail							{margin-top:20px; text-align:center;}						/*Détails centrés*/
-.vNewsDetail>div						{display:inline-block; margin:4px 12px; line-height:20px;}	/*"line-height" : idem max-height des img ci-dessous*/
-.vNewsDetail img						{max-height:20px;}											/*Icones des details (à la une, fichier joint, etc)*/
-.vNewsTopNews							{color:#a40;}												/*texte "Actualité à la une"*/
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+.vNewsDetail							{margin-top:20px; text-align:center; vertical-align:middle; line-height:20px;}		/*Détails centrés*/
+.vNewsDetail>div						{display:inline-block; margin-inline:10px;}											/*"line-height" : idem max-height des img ci-dessous*/
+.vNewsDetail img						{max-height:20px;}																	/*Icones des details (à la une, fichier joint, etc)*/
+.vNewsTopNews							{color:#a40;}																		/*texte "Actualité à la une"*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
 	#tabMenus							{table-layout:auto;}								/*adapte la largeur des cells au contenu*/
 	.vNewsDescription h3				{font-size:1.3rem;}									/*New par défaut*/
@@ -137,7 +137,7 @@ function dashboardPollVote()
 #pageMenu .vPollsTitle					{margin-block:20px 10px; font-weight:bold;}
 #pageMenu .vPollsContainer ul			{padding-left:10px; margin:0px;}
 #pageMenu .submitButton					{margin-block:15px;}
-.vPollsContainer.objContent				{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
+.vPollsContainer.objContainer			{height:auto!important; padding:15px; padding-right:35px;}/*surcharge : height adapté au contenu*/
 .vPollsTitle, .vPollsDescription		{text-align:center; margin:15px 0px;}/*Titre et Description*/
 #contentPolls .vPollsTitle				{font-size:1.2rem;}/*Titre de l'affichage principal (pas avec les news)*/
 .vPollsDescription img					{max-height:400px;}/*Affichage des images dans la description*/
@@ -154,7 +154,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 .vPollsResultBar0						{background:linear-gradient(to top, #e5e5e5, #ececec);}
 .vPollsResultBar50						{background:linear-gradient(to top, #d8b113, #fcdb57);}
 .vPollsResultBar100						{background:linear-gradient(to top, #85cc29, #a6ff33);}
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
 	.vPollsContainer ul		{padding-left:0px!important;}
 	.vPollsDetails>div		{display:block; margin:8px;}
@@ -172,14 +172,14 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 
 <div id="pageCenter">
 	<div id="pageMenu">
-		<div class="miscContent">
+		<div class="miscContainer">
 
 			<!--MENU CONTEXT DES ACTUALITÉS-->
 			<div id="modMenuNews">
 				<!--AJOUTE UNE NEWS-->
 				<?php if(MdlDashboardNews::addRight()){ ?>
 				<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardNews::getUrlNew() ?>')">
-					<div class="menuIcon"><img src="app/img/add.svg"></div>
+					<div class="menuIcon"><img src="app/img/addBlue.svg"></div>
 					<div><?= Txt::trad("DASHBOARD_addNews") ?></div>
 				</div>
 				<?php } ?>
@@ -215,7 +215,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 					<!--Ajoute un sondage-->
 					<?php if(MdlDashboardPoll::addRight()){ ?>
 						<div class="menuLine forMobileAddElem" onclick="lightboxOpen('<?= MdlDashboardPoll::getUrlNew() ?>')">
-							<div class="menuIcon"><img src="app/img/add.svg"></div>
+							<div class="menuIcon"><img src="app/img/addBlue.svg"></div>
 							<div><?= Txt::trad("DASHBOARD_POLLS_addPoll") ?></div>
 						</div>
 					<?php } ?>
@@ -255,7 +255,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 
 		<!--MENU DU DASHBORAD-->
 		<?php if($isPolls==true || $showNewElems==true){ ?>
-			<div class="pathMenu miscContent">
+			<div class="pathMenu miscContainer">
 				<table id="tabMenus">
 					<tr>
 						<!--ACTUALITÉS-->
@@ -290,7 +290,7 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			<!--PREMIÈRES NEWS (AVANT INFINITE SCROLL)-->
 			<?= $vueNewsListInitial ?>
 			<!--AUCUNE NEWS-->
-			<?php if(empty($vueNewsListInitial)){ ?><div class="miscContent emptyContent"><?= Txt::trad("DASHBOARD_noNews") ?></div><?php } ?>
+			<?php if(empty($vueNewsListInitial)){ ?><div class="miscContainer emptyContent"><?= Txt::trad("DASHBOARD_noNews") ?></div><?php } ?>
 		</div>
 
 		<!--LISTE DES SONDAGES-->
@@ -299,14 +299,14 @@ div.vPollsDescription:empty, .vPollsDetails:empty	{display:none;}/*masque les di
 			<!--PREMIERS SONDAGES (AVANT INFINITE SCROLL)-->
 			<?= $vuePollsListInitial ?>
 			<!--AUCUN SONDAGE-->
-			<?php if(empty($vuePollsListInitial)){ ?><div class="miscContent emptyContent"><?= Txt::trad("DASHBOARD_POLLS_noPolls") ?></div><?php } ?>
+			<?php if(empty($vuePollsListInitial)){ ?><div class="miscContainer emptyContent"><?= Txt::trad("DASHBOARD_POLLS_noPolls") ?></div><?php } ?>
 		</div>
 		<?php } ?>
 		
 		<!--LISTE DES NOUVEAUX ELEMENTS (PLUGIN)-->
 		<?php if($showNewElems==true){ ?>
 		<div id="contentElems">
-			<div class="miscContent">
+			<div class="miscContainer">
 				<!--AFFICHE CHAQUE NOUVEAUTE-->
 				<?php foreach($pluginsList as $tmpObj){
 					$showModuleLabel=(empty($tmpModuleName) || $tmpModuleName!=$tmpObj::moduleName);

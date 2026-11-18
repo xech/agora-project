@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with sK1/UniConvertor (http://sk1project.org/) -->
 <svg width="100pt" height="100pt" fill-rule="evenodd" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
- <g fill="#666" stroke-width="4.8899">
-  <path d="m0.93526 10.579h98.129v15h-98.129z"/>
-  <path d="m1.1105 42.478h98.129v15h-98.129z"/>
-  <path d="m0.93526 74.376h98.129v15h-98.129z"/>
+ <g fill="#666" stroke-width="1.0514">
+  <path d="m0.13141 10.629h99.737v17.071h-99.737z"/>
+  <path d="m0.13141 41.612h99.737v17.071h-99.737z"/>
+  <path d="m0.13141 72.595h99.737v17.071h-99.737z"/>
  </g>
 </svg>

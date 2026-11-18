@@ -20,7 +20,7 @@ ready(function(){
 	 *	FORMULAIRE DE RESET DU PASSWORD ET FORMULAIRE DE VALIDATION D'INVIT. : CONTROLE DES CHAMPS "PASSWORD"
 	 **********************************************************************************************************/
 	$("#passwordResetFormUpdate, #invitationPasswordForm").on("submit",function(){
-		if($(this).find("[name='newPassword']").isPassword()==false)   {notify("<?= Txt::trad("passwordInvalid"); ?>");  return false;}//Password invalide
+		if($(this).find("[name='newPassword']").isPassword()==false)   {notify("<?= Txt::trad("passwordRequiredChars"); ?>");  return false;}//Password invalide
 	});
 
 	/**********************************************************************************************************
@@ -57,9 +57,9 @@ ready(function(){
 <style>
 #headerBar>div:first-child			{text-align:center!important;}/*surcharge*/
 #pageCenter							{margin-top:100px;}
-.miscContent						{margin-bottom:20px; width:500px; padding:30px 20px; border-radius:12px!important; text-align:center;}/*surcharge*/
-.miscContent button>img				{margin-right:10px;}
-.miscContent hr						{margin:30px 0px;}
+.miscContainer						{margin-bottom:20px; width:500px; padding:30px 20px; border-radius:12px!important; text-align:center;}/*surcharge*/
+.miscContainer button>img				{margin-right:10px;}
+.miscContainer hr						{margin:30px 0px;}
 #customLogo							{background-color:rgba(250, 250, 250, 40%); padding:10px;}
 #customLogo img						{max-width:100%; max-height:180px;}
 #publicSpaceTab						{display:inline-table;} 
@@ -70,10 +70,10 @@ ready(function(){
 .connectOptions>div					{display:table-cell; padding:20px 10px; line-height:26px;}
 .g_id_signin						{margin-inline:auto; margin-top:40px; width:330px;}/*width idem "data-width" */
 
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
-	.miscContent							{width:auto;}
-	.miscContent							{margin-bottom:30px; padding:30px;}/*surcharge*/
+	.miscContainer							{width:auto;}
+	.miscContainer							{margin-bottom:30px; padding:30px;}/*surcharge*/
 	#publicSpaceTab, #publicSpaceTab>div	{display:block; width:100%!important; text-align:left!important;}
 	.publicSpaceOption						{margin-left:40px; margin-top:10px;}
 	.connectOptions, .connectOptions>div	{display:block;}
@@ -82,10 +82,8 @@ ready(function(){
 </style>
 
 
-<div id="headerBarContainer">
-	<div id="headerBar">
-		<div><?= ucfirst(Ctrl::$agora->name).(!empty(Ctrl::$agora->description)?' - '.Txt::reduce(Ctrl::$agora->description):null) ?></div>
-	</div>
+<div id="headerBar">
+	<div><?= ucfirst(Ctrl::$agora->name).(!empty(Ctrl::$agora->description)?' - '.Txt::reduce(Ctrl::$agora->description):null) ?></div>
 </div>
 
 
@@ -93,12 +91,12 @@ ready(function(){
 
 	<!--LOGO CUSTOM-->
 	<?php if(Ctrl::$agora->pathLogoConnect()) { ?>
-		<div id="customLogo" class="miscContent"><img src="<?= Ctrl::$agora->pathLogoConnect() ?>"></div>
+		<div id="customLogo" class="miscContainer"><img src="<?= Ctrl::$agora->pathLogoConnect() ?>"></div>
 	<?php } ?>
 
 	<!--CONNEXION A UN ESPACE PUBLIC (INVITE)-->
 	<?php if(!empty($objPublicSpaces)){ ?>
-	<div class="miscContent">
+	<div class="miscContainer">
 		<div id="publicSpaceTab">
 			<div><img src="app/img/earth.svg"> <?= Txt::trad("guestAccess") ?> :</div>
 			<div>
@@ -111,17 +109,17 @@ ready(function(){
 	<form id="publicSpaceForm" class="lightboxInline">
 		<div class="lightboxTitle"><?= Txt::trad("guestAccess") ?> : <span id="spaceNamePublic"></span></div>
 		<input type="hidden" name="_idSpaceAccess" id="idSpacePublic">
-		<?= Txt::inputPassword("publicSpacePassword",true).Txt::submitButton("validate",false) ?>
+		<?= Tool::inputPassword("publicSpacePassword",true).Tool::submitButton("validate",false) ?>
 	</form>
 	<?php }  ?>
 
 
-	<div class="miscContent">
+	<div class="miscContainer">
 
 		<!--FORMULAIRE D'AUTHENTIFICATION-->
 		<form action="index.php" method="post" class="connectForm">
-			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" id="connectLogin" placeholder="<?= Txt::trad("mailLlogin") ?>" <?= Txt::tooltip("mailLlogin") ?>  class="isAutocomplete" required>
-			<?= Txt::inputPassword("connectPassword",true,true).Txt::submitButton("connect") ?>			<!--input password + bouton validation-->
+			<input type="text" name="connectLogin" value="<?= $defaultLogin ?>" id="connectLogin" placeholder="<?= Txt::trad("mailLlogin") ?>" <?= Txt::tooltip("mailLlogin") ?>  <?= Tool::inputLoginAttr() ?> >
+			<?= Tool::inputPassword("connectPassword",true,true).Tool::submitButton("connect") ?>		<!--input password + bouton validation-->
 			<input type="hidden" name="objUrl" value="<?= Req::param("objUrl") ?>" id="objUrlExternal">	<!--accès direct via "getUrlExternal()"-->
 			<input type="hidden" name="_idSpaceAccess" value="<?= Req::param("_idSpaceAccess") ?>">		<!--idem-->
 			<div class="connectOptions">
@@ -136,14 +134,14 @@ ready(function(){
 			<div class="lightboxTitle"><?= Txt::trad("passwordResetYourMail") ?></div>
 			<input type="text" name="passwordResetMail" placeholder="<?= Txt::trad("mail") ?>" required>
 			<input type="hidden" name="passwordResetSendMail" value="1">
-			<?= Txt::submitButton("send",false) ?>
+			<?= Tool::submitButton("send",false) ?>
 		</form>
 
 		<!--RESET DU PASSWORD -> ETAPE 2 : FORMULAIRE DE MODIF DU PASSWORD-->
 		<?php if(!empty($passwordResetFormUpdate)){ ?>
 			<form action="index.php" method="post" id="passwordResetFormUpdate" class="lightboxInline">
 				<div class="lightboxTitle"><?= Txt::trad("passwordModif") ?></div>
-				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>				<!--input password + bouton validation-->
+				<?= Tool::inputPassword("newPassword",true).Tool::submitButton("validate",false) ?>				<!--input password + bouton validation-->
 				<input type="hidden" name="passwordResetMail" value="<?= Req::param("passwordResetMail") ?>">	<!--email du reset-->
 				<input type="hidden" name="passwordResetId" value="<?= Req::param("passwordResetId") ?>">		<!--ID de vérif-->
 				<input type="hidden" name="connectLogin" value="<?= Req::param("passwordResetMail") ?>">		<!--pour le pré-remplissage après reset-->
@@ -162,7 +160,7 @@ ready(function(){
 				<input type="hidden" name="dblAuthUserId" value="<?= $_SESSION['dblAuthUserId'] ?>">
 				<input type="hidden" name="dblAuthUserLogin" value="<?= $_SESSION['dblAuthUserLogin'] ?>">
 				<input type="hidden" name="rememberMe" value="<?= $_SESSION['dblAuthRememberMe'] ?>">
-				<?= Txt::submitButton("validate") ?>
+				<?= Tool::submitButton("validate") ?>
 			</form>
 			<!--Affiche le formulaire-->
 			<div><a data-fancybox="inline" data-src="#dblAuthForm"><b><?= Txt::trad("USER_dblAuthMailSubject") ?></b></a></div>
@@ -175,7 +173,7 @@ ready(function(){
 				<div class="lightboxTitle"><?= Txt::trad("USER_invitPassword2") ?></div>
 				<input type="hidden" name="mail" value="<?= Req::param("mail") ?>">						<!--Affichage initial-->
 				<input type="hidden" name="_idInvitation" value="<?= Req::param("_idInvitation") ?>">	<!--ID de vérif-->
-				<?= Txt::inputPassword("newPassword",true).Txt::submitButton("validate",false) ?>
+				<?= Tool::inputPassword("newPassword",true).Tool::submitButton("validate",false) ?>
 			</form>
 			<!--Affiche le formulaire-->
 			<div><a data-fancybox="inline" data-src="#invitationPasswordForm"><b><?= Txt::trad("USER_invitPassword") ?></b></a></div>

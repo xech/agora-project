@@ -14,7 +14,7 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		var ajaxUrl="index.php?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&controledName="+encodeURIComponent($("[name='title']").val());
 		$.ajax(ajaxUrl).done(function(result){
@@ -63,7 +63,7 @@ function mainFormControl(){
 	<!--OPTION DE PROPOSITION D'ÉVÉNEMENT POUR LES GUESTS-->
 	<div class="vCalOption" id="divPropositionGuest" <?= Txt::tooltip("CALENDAR_propositionGuestTooltip") ?> >
 		<input type="checkbox" name="propositionGuest" value="1" <?= !empty($curObj->propositionGuest)?'checked':null ?> id="inputPropositionGuest">
-		<label for="inputPropositionGuest"><?= Txt::trad("CALENDAR_propositionGuest") ?> <img src="app/img/add.svg"></label>
+		<label for="inputPropositionGuest"><?= Txt::trad("CALENDAR_propositionGuest") ?> <img src="app/img/addBlue.svg"></label>
 	</div>
 
 	<!--MENU COMMUN-->

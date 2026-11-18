@@ -1,64 +1,68 @@
 <style>
-.bodyWhite									{--headerMenuBorder:#e5e5e5; --headerMenuBackground:white;}
-.bodyBlack									{--headerMenuBorder:#333333; --headerMenuBackground:#383838;}
-#headerBarLeft								{padding-left:10px; white-space:nowrap;}/*padding > nowrap > labels sur une ligne pour pas éclater l'affichage*/
-#headerBarLeft>span							{display:inline-block; max-width:200px; line-height:22px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
-#headerMobileModule							{display:none;}
-#headerMainMenuImg							{margin-right:5px;}
-#headerBar>div#menuMainContext				{display:none; border-radius:20px; top:5px!important; left:5px!important;}/*surcharge "#headerBar>div"*/
-#menuMainTab								{display:table;}
-#menuMainTab>div							{display:table-cell; padding:5px;}
-#menuMainTab>div:not(:first-child)			{border-left:solid 1px var(--headerMenuBorder);}/*Colonnes du menu principal*/
-.menuMainSub								{padding-left:40px;}
-.menuMainSub img							{max-width:20px; margin-right:10px;}
-#menuMainTab .editButton					{visibility:hidden; float:right; cursor:pointer; margin-left:10px; height:20px; transform:scaleX(-1);}/*Image "edit" d'espace. "scaleX" : inverse l'image*/
-#menuMainTab .menuLine:hover .editButton	{visibility:visible;}
-.vHeaderModule								{display:inline-block; margin:0px; padding:8px; border:1px solid transparent; border-radius:20px; text-align:center; vertical-align:middle; cursor:pointer;}
-.vHeaderModule img							{<?= $moduleLabelDisplay==true?'width:24px;height:24px;':'width:45px;height:45px;' ?>}
-.vHeaderModule label						{margin-left:5px; min-width:40px; display:<?= $moduleLabelDisplay==true?'inline-block':'none' ?>}/*'min-width' pour un affichage homogène*/
-.vHeaderModuleCurrent						{font-weight:bold;}
-.vHeaderModuleCurrent, .vHeaderModule:hover	{background:var(--headerMenuBackground); transition:background 0.4s; border:solid 1px var(--headerMenuBorder);}
+.bodyWhite										{--headerMenuBorder:#e5e5e5; --headerMenuBackground:white;}
+.bodyBlack										{--headerMenuBorder:#333333; --headerMenuBackground:#383838;}
+#headerBar img[src*='menu.svg']					{margin-inline:5px;}
+#headerBarLeft									{white-space:nowrap;}/*labels sur une ligne pour pas éclater l'affichage*/
+#headerBarLeft>span								{max-width:200px; line-height:20px; overflow:hidden; text-overflow:ellipsis;}/*"ellipsis" pour le dépassement de texte*/
+#menuContextMainDiv								{display:none; border-radius:20px; top:5px!important; left:5px!important;}/*conteneur du #menuContextMain*/
+#menuContextMain								{display:table;}					/*Tableau du menu principal*/
+#menuContextMain>div							{display:table-cell; padding:5px;}	/*Colonnes du menu principal*/
+#menuContextMain>div:not(:last-child)			{border-right:solid 1px var(--headerMenuBorder);}
+#menuContextMain .menuMainSubmenu				{padding-left:40px;}
+#menuContextMain .menuMainSubmenu img			{max-width:20px; margin-right:10px;}
+#menuContextMain .editButton					{visibility:hidden; float:right; cursor:pointer; margin-left:15px;}
+#menuContextMain .menuLine:hover .editButton	{visibility:visible;}
+#headerBarRight									{text-align:right;}
+.vHeaderModule									{display:inline-block; min-width:70px; margin-block:3px; padding:3px 8px; border:1px solid transparent; text-align:center;}/*min-width: largeurs uniformes*/
+.vHeaderModule img[src*='svg']					{width:24px; height:24px;}/*flat icons*/
+.vHeaderModule img[src*='png']					{width:28px; height:28px;}/*old icons*/
+.vHeaderModule label							{display:block; margin-top:3px;}
+.vHeaderModuleCurrent, .vHeaderModule:hover		{background:var(--headerMenuBackground); transition:background 0.4s; border:1px solid var(--headerMenuBorder); border-radius:10px;}
+.vHeaderModuleCurrent img[src*='svg']			{filter:var(--icon_blue);}
+#headerBar>div:is(#menuContextMainDiv,#headerBarRightMobile)	{display:none;}/*surcharge "#headerBar>div"*/
 
-/*** RESPONSIVE REDUIT DU HEADER*/
-@media screen and (min-width:1200px) and (max-width:1430px){
-	.vHeaderModule							{padding:4px 12px 5px 12px;}
-	.vHeaderModule label					{margin:0px; margin-top:4px; display:<?= $moduleLabelDisplay==true?'block':'none' ?>}
-}
 
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
-	#headerBarLeft, #headerMobileModule		{display:inline-block; font-size:1.1em; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
-	#headerBarLeft>span						{line-height:25px;}
-	#headerUserLabel						{display:none!important;}
-	#headerSpaceLabel						{max-width:180px; text-transform:capitalize;}
-	#menuMainTab, #menuMainTab>div			{display:block; padding:0px; border-left:none!important;}/*cf. --headerMenuBorder*/
-	#menuMainTab>div						{padding-block:15px;}
-	#menuMainTab>div:not(:first-child)		{border-top:var(--headerMenuBorder);}
-	#menuMainTab .editButton				{visibility:visible;}/*tjs visible*/
-	.vHeaderModule							{display:inline-block; width:49%; padding:6px 2px; text-align:left;}/*Modules affichés dans "#menuMobileMain"*/
-	.vHeaderModuleCurrent					{width:99%; text-align:center; margin-block:15px;}/*Module courant sur toute la largeur*/
-	#headerBarRight .vHeaderModule			{display:none;}/*Modules masqués dans le header car affichés dans "#menuMobileMain"*/
-	.vHeaderModule label					{display:inline-block; margin-left:10px;}/*toujours affiché : cf. $moduleLabelDisplay*/
+	#headerBarLeft, #headerBarRightMobile		{font-size:1.1em; white-space:nowrap;}/*Label de l'espace et du module courant. "nowrap" pour laisser les labels sur une seule ligne et pas éclater l'affichage!*/
+	#headerBarRightMobile						{display:table-cell!important; text-align:right;}/*surcharge "#headerBar>div"*/
+	#headerBarRightMobile img[src*='menu.svg']	{transform:scaleX(-1);}/*inverse l'image*/
+	#headerSpaceLabel							{max-width:40%; line-height:25px!important;}/*aligner les labels avec menu.svg*/
+	#menuContextMain,#menuContextMain>div		{display:block; padding:0px;}
+	#menuContextMain>div						{padding-block:15px;}
+	#menuContextMain>div:not(:last-child)		{border-right:none; border-bottom:solid 2px var(--headerMenuBorder); padding-bottom:20px; margin-bottom:10px;}
+	#menuContextMain hr							{display: none;}
+	.vHeaderModule								{display:inline-block; width:49%; padding:5px; text-align:left;}/*Liste des modules: affichés dans "#menuMobileMain"*/
+	.vHeaderModule label						{display:inline-block; margin-left:10px;}/*toujours affiché : cf. $moduleLabelDisplay*/
+	.vHeaderModuleCurrent						{width:100%; margin-block:15px; text-align:center; border-inline:0px; border-block:1px solid var(--headerMenuBorder); border-radius:0px;}/*Module courant sur toute la largeur*/
+	#headerUserLabel, #headerBarRight .vHeaderModule	{display:none!important;}/*Masque le labelk de l'user + La liste des modules: affichés dans "#menuMobileMain"*/
 }
 </style>
 
 
+
+<div id="headerBarMarginShadow">&nbsp;</div>
 <div id="headerBarContainer">
 	<div id="headerBar">
 
 		<!--HEADERBAR LEFT :  LOGO PRINCIPAL  +  LABEL DE L'USER  +  LABEL L'ESPACE  +  VALIDATION D'INSCRIPTION-->
-		<div>
-			<div id="headerBarLeft" class="menuContextLaunch" for="menuMainContext" <?= Txt::tooltip("mainMenu") ?> >
-				<img src="app/img/menu.svg" id="headerMainMenuImg">
-				<?php if(Ctrl::$curUser->isUser()){ ?><span id="headerUserLabel"><?= Ctrl::$curUser->getLabel("firstName") ?><img src="app/img/arrowRightLabel.svg"></span><?php } ?>
-				<span id="headerSpaceLabel"><?= Ctrl::$curSpace->name ?></span>
-				<?php if($userInscriptionValidate==true){ ?><img src="app/img/arrowRightLabel.svg"><img src="app/img/subscribe.svg" class="pulsate" <?= Txt::tooltip("userInscriptionValidateTooltip") ?>><?php } ?>
-			</div>
+		<div id="headerBarLeft" class="menuContextLaunch" for="menuContextMainDiv" <?= Txt::tooltip("mainMenu") ?> >
+			<img src="app/img/menu.svg">
+			<?php if(Ctrl::$curUser->isUser()){ ?>
+				<span id="headerUserLabel"><?= Ctrl::$curUser->getLabel() ?>&nbsp;<img src="app/img/arrowLabel.svg"></span>
+			<?php } ?>
+			<span id="headerSpaceLabel">
+				<?= Ctrl::$curSpace->name ?>
+			</span>
+			<?php if($userInscriptionValidate==true){ ?>
+				<span><img src="app/img/arrowLabel.svg"><img src="app/img/subscribe.svg" <?= Txt::tooltip("userInscriptionValidateTooltip") ?> class="pulsate"></span>
+			<?php } ?>
 		</div>
 
+
 		<!--MENU CONTEXT PRINCIPAL-->
-		<div class="menuContext" id="menuMainContext">
-			<div id="menuMainTab">
+		<div class="menuContext" id="menuContextMainDiv">
+			<div id="menuContextMain">
 
 				<!--COLONNE 1 : MENU PRINCIPAL-->
 				<div>
@@ -158,19 +162,19 @@
 						<!--OPTIONS ADMIN D'ESPACE-->
 						<?php if(Ctrl::$curSpace->_id==$tmpSpace->_id && $tmpSpace->editRight()){ ?>
 							<!--GERER L'ESPACE-->
-							<div class="menuLine menuMainSub" onclick="lightboxOpen('<?= $tmpSpace->getUrl('edit') ?>')" <?= Txt::tooltip("SPACE_configInfo") ?>>
+							<div class="menuLine menuMainSubmenu" onclick="lightboxOpen('<?= $tmpSpace->getUrl('edit') ?>')" <?= Txt::tooltip("SPACE_configInfo") ?>>
 								<img src="app/img/edit.svg"><?= Txt::trad("SPACE_config") ?>
 							</div>
 							<!--USERS DE L'ESPACE-->
-							<div class="menuLine menuMainSub">
+							<div class="menuLine menuMainSubmenu">
 								<a href="index.php?ctrl=user&displayUsers=space"><img src="app/img/users.svg"><?= Txt::trad("USER_spaceUsers") ?></a>
 							</div>
 							<!--LOGS DE L'ESPACE-->
-							<div class="menuLine menuMainSub">
+							<div class="menuLine menuMainSubmenu">
 								<a href="index.php?ctrl=log"><img src="app/img/history.svg"><?= Txt::trad("LOG_MODULE_DESCRIPTION") ?></a>
 							</div>
 							<!--AFFICHAGE ADMIN-->
-							<div class="menuLine menuMainSub <?= empty($_SESSION['displayAdmin']) ? null : 'optionSelect' ?>" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>>
+							<div class="menuLine menuMainSubmenu <?= empty($_SESSION['displayAdmin']) ? null : 'optionSelect' ?>" <?= Txt::tooltip("HEADER_displayAdminInfo") ?>>
 								<a href="index.php?ctrl=<?= Req::$curCtrl ?>&displayAdmin=<?= empty($_SESSION['displayAdmin'])?'true':'false' ?>"><img src="app/img/eye.svg"><?= Txt::trad("HEADER_displayAdmin") ?></a>
 							</div>
 						<?php } ?>
@@ -193,7 +197,7 @@
 						<div><?= Txt::trad("HEADER_shortcuts") ?> :</div>
 					</div>
 					<?php foreach($pluginsShortcut as $tmpObj){ ?>
-					<div class="menuLine menuMainSub" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> >
+					<div class="menuLine menuMainSubmenu" <?= Txt::tooltip($tmpObj->pluginTooltip) ?> >
 						<img src="app/img/<?= $tmpObj->pluginIcon ?>" onclick="<?= $tmpObj->pluginJsIcon ?>">
 						<span onclick="<?= $tmpObj->pluginJsLabel ?>"><?= Txt::reduce($tmpObj->pluginLabel,50) ?></span>
 						<?= $tmpObj->editButtom() ?>
@@ -206,34 +210,32 @@
 		</div>
 
 		<!--MENU RIGHT : MODULES DISPONIBLES-->
-		<div>
-			<div id="headerBarRight">
-				<!--MODULES DE L'ESPACE-->
-				<?php
-				foreach($moduleList as $tmpMod){
-					$moduleCurrent=($tmpMod["moduleName"]==static::moduleName);															//Module courant ?
-					$modCurIcon='app/img/'.$tmpMod["moduleName"].'/';																	//Path des images du module
-					$modCurIcon.=($moduleLabelDisplay==true)  ?  'icon.svg'  :  'icon.png';												//Icone svg / Grande icone
-					if($moduleCurrent==true)  {$modCurMobileIcon='<img src="'.$modCurIcon.'"> <label>'.$tmpMod["label"].'</label>';}	//Icone du menu mobile
-				?>
-					<div onclick="redir('<?= $tmpMod['url'] ?>')" class="vHeaderModule <?= $moduleCurrent==true?'vHeaderModuleCurrent':null ?>" <?= Txt::tooltip($tmpMod["description"]) ?> >
-						<img src="<?= $modCurIcon ?>"><label><?= $tmpMod["label"] ?></label>
-					</div>
-				<?php } ?>
-				
-				<!--MENU MESSENGER-->
-				<?php if(Ctrl::$curUser->messengerEnabled()){ ?>
-					<div onclick="messengerDisplay('all')" class="vHeaderModule" id="headerModuleMessenger" <?= Txt::tooltip("MESSENGER_MODULE_DESCRIPTION") ?> >
-						<img src="app/img/chat.svg"><label><?= Txt::trad("MESSENGER_MODULE_NAME") ?></label>
-					</div>
-				<?php } ?>
-			</div>
-
-			<!--MENU MOBILE : LABEL DU MODULE COURANT-->
-			<div id="headerMobileModule" class="menuContextLaunch" for="headerBarRight"><?= !empty($modCurMobileIcon) ? $modCurMobileIcon : 'Menu' ?><img src="app/img/menuDot.svg"></div>
+		<div id="headerBarRight">
+			<!--MODULES DE L'ESPACE-->
+			<?php
+			foreach($moduleList as $tmpMod){
+				if($tmpMod["moduleName"]==static::moduleName)	{$curModClass='vHeaderModuleCurrent';  $curModLabel='<label>'.$tmpMod["label"].'</label>';}	//Module courant
+				else											{$curModClass=null;}																		//Autres modules
+				$modCurIcon='app/img/'.$tmpMod["moduleName"].'/'.(!empty(Ctrl::$agora->moduleIconFlat)?'icon.svg':'icon.png');								//Icone svg / Grande png (old)
+			?>
+				<div onclick="redir('<?= $tmpMod['url'] ?>')" class="vHeaderModule <?= $curModClass ?>" <?= Txt::tooltip($tmpMod["description"]) ?> >
+					<img src="<?= $modCurIcon ?>"><label><?= $tmpMod["label"] ?></label>
+				</div>
+			<?php } ?>
+			
+			<!--MENU MESSENGER-->
+			<?php if(Ctrl::$curUser->messengerEnabled()){ ?>
+				<div onclick="messengerDisplay('all')" class="vHeaderModule" id="headerModuleMessenger" <?= Txt::tooltip("MESSENGER_MODULE_DESCRIPTION") ?> >
+					<img src="app/img/chat.svg"><label><?= Txt::trad("MESSENGER_MODULE_NAME") ?></label>
+				</div>
+			<?php } ?>
 		</div>
+
+		<!--MENU MOBILE : LABEL DU MODULE COURANT-->
+		<div id="headerBarRightMobile" class="menuContextLaunch" for="headerBarRight"><?= !empty($curModLabel) ? $curModLabel : 'Menu' ?>
+			<img src="app/img/menu.svg">
+		</div>
+
+
 	</div>
 </div>
-
-<!--MARGE ENTRE LA HEADERBAR ET LE CONTENU DE LA PAGE-->
-<div id="headerBarMargin">&nbsp;</div>

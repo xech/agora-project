@@ -37,6 +37,6 @@ define("COOKIES_OPTIONS", [
 	'path'		=> COOKIES_OPTIONS_PATH,	//Path du host courant (cf createHost) ou valeur par défaut
 	'expires'	=> (time() + TIME_1YEAR),	//1 an max
 	'secure'	=> true,					//HTTPS uniquement
-	'httponly'	=> true,					//Inaccessible via JavaScript (anti-XSS).
+	'httponly'	=> true,					//Inaccessible via JavaScript (XSS).
 	'samesite'	=> 'Lax'
 ]);

@@ -16,7 +16,7 @@ ready(function(){
 <style>
 #bodyLightbox						{max-width:800px;}
 #searchMainField					{text-align:center;}
-#searchMainField *:is(input,button)	{height:40px; margin:10px;}
+#searchMainField :is(input,button)	{height:40px; margin:10px;}
 #searchMainField input				{width:250px;}
 #searchMainField button				{width:200px;}
 #advancedSearchLabel				{margin-top:20px;}
@@ -32,9 +32,9 @@ ready(function(){
 .vPluginNews						{display:none; padding:5px; background:#eee; border-radius:var(--radius_block); cursor:default;}/*affichage complet d'une news*/
 .emptyContent						{margin-top:20px;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){	
-#searchMainField *:is(input,button)	{width:300px;}
+	#searchMainField :is(input,button)				{width:300px;}
 	.vAdvancedSearchTab, .vAdvancedSearchTab>div	{display:block;}
 	.vAdvancedSearchTab								{margin-top:30px;}
 	.vAdvancedSearchTab>div:first-child				{margin-bottom:10px;}
@@ -50,7 +50,7 @@ ready(function(){
 	<!--CHAMP DE RECHERCHE PRINCIPAL & SUBMIT-->
 	<div id="searchMainField">
 		<input type="text" name="searchText" value="<?= isset($_SESSION["searchText"]) ? $_SESSION["searchText"] : null ?>" placeholder="<?= Txt::trad("keywords") ?>">
-		<?= Txt::submitButton("search",false) ?>
+		<?= Tool::submitButton("search",false) ?>
 		<div id="advancedSearchLabel" class="link" onclick="$('#advancedSearchBlock').show();$('#advancedSearchInput').val(1);"><?= Txt::trad("advancedSearch") ?> <img src="app/img/arrowDown.svg"></div>
 		<input type="hidden" name="advancedSearch" value="<?= Req::param("advancedSearch") ?>" id="advancedSearchInput">
 	</div>
@@ -133,5 +133,5 @@ if(Req::isParam("searchText")){
 		<?php
 	}
 	//Aucun résultat à afficher
-	if(empty($pluginsList))  {echo '<div class="miscContent emptyContent">'.Txt::trad("noResults").'</div>';}
+	if(empty($pluginsList))  {echo '<div class="miscContainer emptyContent">'.Txt::trad("noResults").'</div>';}
 }

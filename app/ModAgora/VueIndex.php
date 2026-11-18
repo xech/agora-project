@@ -78,15 +78,16 @@ input[type='radio']+label	{margin-right:30px;}/*espace entre chaque input + labe
 #logoImg, #logoConnectImg	{margin:0px 10px; max-width:80px; max-height:40px;}/*surcharge ".objField img"*/
 #logoUrl					{margin-top:10px;}
 #limite_espace_disque		{width:40px;}
-#smtpConfig, #ldapConfig	{padding:10px; margin-bottom:20px;}
+#smtpConfig					{padding:10px; margin-bottom:20px;}
 fieldset					{margin-top:10px;}/*surcharge*/
+.radioButtons				{display:inline-block; min-width:150px;}
 </style>
 
 
 <div id="pageCenter">
 
 	<div id="pageMenu">
-		<div class="miscContent" id="pageMenuContent">
+		<div class="miscContainer" id="pageMenuContent">
 			<!--ESPACE DISQUE UTILISÉ-->
 			<img src="app/img/disk.svg" <?= $diskSpaceAlert==true?'class="diskSpaceAlert"':null ?>> <?= Txt::trad("diskSpaceUsed") ?> : <?= $diskSpacePercent.'% '.Txt::trad("from").' '.File::sizeLabel(limite_espace_disque) ?>
 			<hr>
@@ -106,12 +107,11 @@ fieldset					{margin-top:10px;}/*surcharge*/
 			<!--FONCTIONS PHP DÉSACTIVÉES-->
 			<?php if(!function_exists("mail")){ ?>					<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpMailDisabled") ?><?php } ?>
 			<?php if(!function_exists("imagecreatetruecolor")){ ?>	<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpGD2Disabled") ?><?php } ?>
-			<?php if(!function_exists("ldap_connect")){ ?>			<hr><img src="app/img/info.svg"><?= Txt::trad("AGORA_phpLdapDisabled") ?><?php } ?>
 		</div>
 	</div>
 
 	<div id="pageContent">
-		<div class="miscContent">
+		<div class="miscContainer">
 			<form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 				<div id="vMainFormLabel"><img src="app/img/setting.svg"> <?= Txt::trad("AGORA_generalSettings") ?></div>
 				<hr>
@@ -188,6 +188,17 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					</div>
 				</div>
 
+				<!--ICONES DES MODULES-->
+				<div class="objField" <?= Txt::tooltip("AGORA_moduleIconInfo") ?> >
+					<div><img src="app/img/eye.svg"><?= Txt::trad("AGORA_moduleIcon") ?></div>
+					<div>
+						<?php
+						$tabRadios=[ ["value"=>"1","trad"=>"AGORA_moduleIconFlat"], ["value"=>null,"trad"=>"AGORA_moduleIcon3D"] ];
+						echo MdlAgora::radioButtons("moduleIconFlat", Ctrl::$agora->moduleIconFlat, $tabRadios);
+						?>
+					</div>
+				</div>
+
 				<!--AFFICHAGE PAR DEFAUT DES DOSSIERS (BLOCK/LINE)-->
 				<div class="objField">
 					<div><img src="app/img/folder.svg"><?= Txt::trad("AGORA_folderDisplayMode") ?></div>
@@ -195,17 +206,6 @@ fieldset					{margin-top:10px;}/*surcharge*/
 						<?php
 						$tabRadios=[ ["value"=>"block","trad"=>"displayMode_block","img"=>"displayMode_block.svg"], ["value"=>"line","trad"=>"displayMode_line","img"=>"displayMode_line.svg"] ];
 						echo MdlAgora::radioButtons("folderDisplayMode", Ctrl::$agora->folderDisplayMode, $tabRadios);
-						?>
-					</div>
-				</div>
-
-				<!--AFFICHAGE DU NOM DES MODULES-->
-				<div class="objField" <?= Txt::tooltip("AGORA_moduleLabelDisplayInfo") ?> >
-					<div><img src="app/img/eye.svg"><?= Txt::trad("AGORA_moduleLabelDisplay") ?></div>
-					<div>
-						<?php
-						$tabRadios=[ ["value"=>"1","trad"=>"show","img"=>"eye.svg"], ["value"=>null,"trad"=>"hide","img"=>"eyeHide.svg"] ];
-						echo MdlAgora::radioButtons("moduleLabelDisplay", Ctrl::$agora->moduleLabelDisplay, $tabRadios);
 						?>
 					</div>
 				</div>
@@ -333,7 +333,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					</div>
 				</div>
 
-				<!--GOOGLE MAP APIKEY (AUTO-HEBERGEMENT)-->
+				<!--AUTO-HEBERGEMENT : GOOGLE MAP APIKEY-->
 				<?php if(Req::isHost()==false){ ?>
 					<div class="objField" id="gApiKeyDiv" <?= Txt::tooltip("AGORA_gApiKeyTooltip") ?> >
 						<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gApiKey") ?></div>
@@ -352,7 +352,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					</div>
 				</div>
 
-				<!--GOOGLE OAUTH "CLIENT ID" (AUTO-HEBERGEMENT)-->
+				<!--AUTO-HEBERGEMENT : GOOGLE OAUTH-->
 				<?php if(Req::isHost()==false){ ?>
 					<div class="objField" id="gIdentityClientIdDiv" <?= Txt::tooltip("AGORA_gOAuthClientIdTooltip") ?> >
 						<div><img src="app/img/google.png"><?= Txt::trad("AGORA_gOAuthClientId") ?></div>
@@ -360,7 +360,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					</div>
 				<?php } ?>
 
-				<!--PARAMETRAGE SMTP POUR L'ENVOI DE MAILS (AUTO-HEBERGEMENT)-->
+				<!--AUTO-HEBERGEMENT : PARAMETRAGE SMTP ET ENVOI DE MAIL-->
 				<?php if(Req::isHost()==false){ ?>
 					<div class="objField" onclick="$('#smtpConfig').slideToggle()">
 						<div><img src="app/img/mail.svg"> <?= Txt::trad("AGORA_smtpLabel") ?> <img src="app/img/arrowDown.svg"></div>
@@ -393,37 +393,8 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					</fieldset>
 				<?php } ?>
 
-				<!--PARAMETRAGE LDAP-->
-				<?php if(function_exists("ldap_connect")){ ?>
-					<div class="objField" onclick="$('#ldapConfig').slideToggle()" <?= Txt::tooltip("AGORA_ldapLabelTooltip") ?> >
-						<div><img src="app/img/disk.svg"> <?= Txt::trad("AGORA_ldapLabel") ?> <img src="app/img/arrowDown.svg"></div>
-					</div>
-					<fieldset id="ldapConfig" <?= empty(Ctrl::$agora->ldap_server)?"style='display:none'":null ?>>
-						<div class="objField" <?= Txt::tooltip("AGORA_ldapUriTooltip") ?> >
-							<div><?= Txt::trad("AGORA_ldapUri") ?></div>
-							<div><input type="text" name="ldap_server" value="<?= Ctrl::$agora->ldap_server ?>"></div>
-						</div>
-						<div class="objField" <?= Txt::tooltip("AGORA_ldapPortTooltip") ?> >
-							<div><?= Txt::trad("AGORA_ldapPort") ?></div>
-							<div><input type="text" name="ldap_server_port" value="<?= Ctrl::$agora->ldap_server_port ?>"></div>
-						</div>
-						<div class="objField" <?= Txt::tooltip("AGORA_ldapLoginTooltip") ?> >
-							<div><?= Txt::trad("AGORA_ldapLogin") ?></div>
-							<div><input type="text" name="ldap_admin_login" value="<?= Ctrl::$agora->ldap_admin_login ?>"></div>
-						</div>
-						<div class="objField">
-							<div><?= Txt::trad("AGORA_ldapPass") ?></div>
-							<div><input type="password" name="ldap_admin_pass" value="<?= Ctrl::$agora->ldap_admin_pass ?>"></div>
-						</div>
-						<div class="objField" <?= Txt::tooltip("AGORA_ldapDnTooltip") ?> >
-							<div><?= Txt::trad("AGORA_ldapDn") ?></div>
-							<div><input type="text" name="ldap_base_dn" value="<?= Ctrl::$agora->ldap_base_dn ?>"></div>
-						</div>
-					</fieldset>
-				<?php } ?>
-
 				<!--VALIDATION DU FORMULAIRE-->
-				<?= Txt::submitButton() ?>
+				<?= Tool::submitButton() ?>
 			</form>
 		</div>
 	</div>

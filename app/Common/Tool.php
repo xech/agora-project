@@ -66,7 +66,7 @@ class Tool
 
 			////	Expediteur
 			$serverName=str_replace("www.","",$_SERVER["SERVER_NAME"]);																	//Domaine du serveur (pas de $_SERVER['HTTP_HOST'])
-			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "notifications-noreply@".$serverName;	//Email du paramétrage général OU du domaine courant
+			$setFromMail=(!empty(Ctrl::$agora->sendmailFrom))  ?  Ctrl::$agora->sendmailFrom  :  "notification-noreply@".$serverName;	//Email du paramétrage général OU du domaine courant
 			$setFromName=Req::isHost() ?  ucfirst($serverName)." - ".ucfirst(HOST_DOMAINE)  :  ucfirst($serverName);					//Nom de l'expediteur (ex: "monespace.fr")
 			$mail->SetFrom($setFromMail, $setFromName);																					//"SetFrom" fixe (score des mailtesters)
 
@@ -104,21 +104,21 @@ class Tool
 			}
 
 			////	Sujet & message
-			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".htmlspecialchars_decode(Ctrl::$agora->name)  :  ucfirst($subject);		//"Sujet de mon email - Mon espace"
-			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){												//Footer du message :
-				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																									//Label de l'espace
-				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}		//Ajoute le nom du sous-espace (">> sous-espace")
-				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy").' '.Ctrl::$curUser->getLabel().'. '  :  null;							//"Envoyé par boby SMITH"
+			$mail->Subject=(!empty(Ctrl::$agora->name))  ?  ucfirst($subject)." - ".htmlspecialchars_decode(Ctrl::$agora->name)  :  ucfirst($subject);			//"Sujet de mon email - Mon espace"
+			if(in_array("noFooter",$options)==false && !empty(Ctrl::$agora->name) && !empty(Ctrl::$curUser)){													//Footer du message :
+				$curSpaceLabel=ucfirst(Ctrl::$agora->name);																										//Label de l'espace
+				if(!empty(Ctrl::$curSpace->name) && Ctrl::$agora->name!=Ctrl::$curSpace->name)  {$curSpaceLabel.=" &raquo; ".Ctrl::$curSpace->name;}			//Ajoute le nom du sous-espace (">> sous-espace")
+				$curUserLabel=(Ctrl::$curUser->isUser())  ?  Txt::trad("MAIL_sendBy").' '.Ctrl::$curUser->getLabel()  :  null;									//"Envoyé par boby SMITH"
 				$message.='<br><br>'.$curUserLabel.'<br>'.Txt::trad("MAIL_fromTheSpace").' <a href="'.Req::curUrl().'" target="_blank">'.$curSpaceLabel.'</a>';	//"Espace <a>mon-espace</a>"
 			}
-			$message='<html><head><meta charset="UTF-8"></head><body>'.$message.'</body></html>';															//Ajoute les balise <html> (score des mailtesters)
-			$mail->msgHTML($message);																														//Ajoute le message HTML (avant AddEmbeddedImage)
+			$message='<html><head><meta charset="UTF-8"></head><body>'.$message.'</body></html>';																//Ajoute les balise <html> (score des mailtesters)
+			$mail->msgHTML($message);																															//Ajoute le message HTML (avant AddEmbeddedImage)
 
 			////	Logo du footer en fin de mail : logo spécifique ou par défaut avec un "alt" (score des mailtesters)
-			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logo.png";
+			$logoFooterPath=(!empty(Ctrl::$agora->logo))  ?  Ctrl::$agora->pathLogoFooter()  :  "app/img/logoMail.png";
 			if(in_array("noFooter",$options)==false && is_file($logoFooterPath)){
 				$mail->AddEmbeddedImage($logoFooterPath,"logoFooterId");
-				$mail->msgHTML($message.'<br><img src="cid:logoFooterId" style="max-height:80px" alt="Logo Footer">');
+				$mail->msgHTML($message.'<br><br><img src="cid:logoFooterId" style="max-height:100px" alt="Logo Footer">');
 			}
 
 			////	Fichiers joints
@@ -150,6 +150,14 @@ class Tool
 		catch (Exception $error){
 			Ctrl::notify(Txt::trad("MAIL_notifSendFail")."<br><br>Mailer Error :<br>".Txt::clean($mail->ErrorInfo));
 		}
+	}
+
+	/********************************************************************************************************
+	 * ENVOI DES MAILS ACTIVÉ SUR LE SERVEUR
+	 ********************************************************************************************************/
+	public static function mailEnabled()
+	{
+		return (function_exists("mail") || (!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)));
 	}
 
 	/********************************************************************************************************
@@ -210,12 +218,6 @@ class Tool
 		}
 	}
 
-
-	/********************************************************************************************************
-	 ************************************	SPECIFIC METHODS	********************************************
-	/********************************************************************************************************/
-
-
 	/********************************************************************************************************
 	 *  TABLEAU DES TIMESZONES
 	 ********************************************************************************************************/
@@ -267,14 +269,6 @@ class Tool
 	}
 
 	/********************************************************************************************************
-	 * ENVOI DES MAILS ACTIVÉ SUR LE SERVEUR
-	 ********************************************************************************************************/
-	public static function mailEnabled()
-	{
-		return (function_exists("mail") || (!empty(Ctrl::$agora->smtpHost) && !empty(Ctrl::$agora->smtpPort)));
-	}
-
-	/********************************************************************************************************
 	 * BARRE DE PROGRESSION EN %
 	 ********************************************************************************************************/
 	public static function progressBar($label, $tooltip, $percent=0, $alertBar=false)
@@ -292,5 +286,74 @@ class Tool
 		}
 		// Renvoie la progressBar
 		return '<div class="progressBar" '.$barStyle.' '.Txt::tooltip($tooltip).'>'.$label.'</div>';
+	}
+
+	/********************************************************************************************************
+	 * INPUT PASSWORD
+	 ********************************************************************************************************/
+	public static function inputPassword($inputName, $isRequired)
+	{
+		$tooltip=Txt::trad("passwordRequiredChars");
+		if($isRequired==true){
+			$requiredAttr='required';
+			$notRequiredInfo=null;
+		}else{
+			$requiredAttr=null;
+			$notRequiredInfo='<div class="infos">'.Txt::trad("passwordOptional").'</div>';
+			$tooltip=Txt::trad("passwordOptional").'<hr>'.$tooltip;
+		}
+		$requiredAttr =($isRequired==true) ?  'required'  : null;
+		$notRequiredInfo=($isRequired==false) ?  '<div class="infos">'.Txt::trad("passwordOptional").'</div>'  : null;
+		return '<div class="passwordDiv" '.Txt::tooltip($tooltip).'>
+					<input type="password" name="'.$inputName.'" id="input_'.$inputName.'" placeholder="'.Txt::trad("password").'" '.$requiredAttr.' autocomplete="on">
+					<img class="passwordDisplay" '.Txt::tooltip("passwordDisplay").' for="input_'.$inputName.'">
+				</div>'.$notRequiredInfo;
+	}
+
+	/********************************************************************************************************
+	 * INPUT LOGIN : ATTRIBUTS POUR MOBILE (majuscule auto, correction orthographique, etc)
+	 ********************************************************************************************************/
+	public static function inputLoginAttr()
+	{
+		return ' autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="username" required ';
+	}
+
+	/********************************************************************************************************
+	 * BOUTON SUBMIT DU FORMULAIRE  &&  INPUTS HIDDEN (Ctrl, Action, etc)
+	 ********************************************************************************************************/
+	public static function submitButton($keyTrad="record", $isMainButton=true)
+	{
+		$formToken=Txt::randomId();				//Token CSRF du formulaire
+		$_SESSION["formToken"][]=$formToken;	//Enregistre le token en session
+		return '<div class="submitButton '.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
+					<button type="submit">'.Txt::trad($keyTrad).' <img src="app/img/loadingCircle.svg" class="submitLoadingIcon"></button>
+				</div>
+				<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
+				<input type="hidden" name="action" value="'.Req::$curAction.'">
+				<input type="hidden" name="formToken" value="'.$formToken.'">'.
+				(Req::isParam("typeId") ? '<input type="hidden" name="typeId" value="'.Req::param("typeId").'">' : null);
+	}
+
+	/********************************************************************************************************
+	 * CONTROLE LA VALIDATION DU FORMULAIRE : TOKEN CSRF & ORIGINE DU POST
+	 ********************************************************************************************************/
+	public static function formControl()
+	{
+		//// Validation d'un form  avec token
+		if(Req::isParam("formToken") && !empty($_SESSION["formToken"])){
+			//// Controle le token
+			if(!in_array(Req::param("formToken"),$_SESSION["formToken"])){
+				Ctrl::notify("submit token expired");
+				return false;
+			}
+			//// Ne garder que les 20 derniers token (si plusieurs forms en cours d'édition)
+			if(count($_SESSION["formToken"]) > 20){
+				$_SESSION["formToken"]=array_slice($_SESSION["formToken"], -20);
+			}
+			//// Host à l'origine du POST et host courrant correspondent ?
+			$hostOrigin  =parse_url($_SERVER['HTTP_ORIGIN'] ?? '', PHP_URL_HOST);//HTTP_ORIGIN 'undefined'?
+			$hostCurrent =parse_url('//'.$_SERVER['HTTP_HOST'], PHP_URL_HOST);
+			return ($hostOrigin===$hostCurrent);
+		}
 	}
 }

@@ -52,7 +52,7 @@ class CtrlLink extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//// Enregistre & reload l'objet
 			$URL=Req::param("adress");
 			$URL=(filter_var($URL,FILTER_VALIDATE_URL))  ?  filter_var($URL,FILTER_SANITIZE_URL)  :  "";//Valide l'URL absolue (https://) et filtre l'URL

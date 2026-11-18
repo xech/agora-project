@@ -125,7 +125,7 @@ function timeSlotBusy()
 }
 
 ////	Controle spécifique (cf. "VueObjMenuEdit.php")
-function mainFormControl()
+function formControl()
 {
 	return new Promise((resolve)=>{
 		if($(".vCalInput:checked").isEmpty())															{resolve(false);  notify("<?= Txt::trad("CALENDAR_verifCalNb") ?>");}	//Aucune affectation aux agendas
@@ -145,7 +145,7 @@ function mainFormControl()
 #beginEndSeparator					{display:inline-block;}
 #guestMenu							{text-align:center;}
 input[name='guestMail']				{margin-left:20px;}
-input[name='location']				{width:400px;}
+input[name='location']				{width:370px;}
 <?= Ctrl::$curUser->isGuest() ? '.vEvtGuestHide {display:none;}' : null ?>
 
 /*PÉRIODICITÉ*/
@@ -178,13 +178,12 @@ input[name='location']				{width:400px;}
 #timeSlotBusy table:first-child		{margin-top:10px;}
 #timeSlotBusy table td:first-child	{min-width:150px; vertical-align:top; padding-right:20px;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vEvtOptionInline								{display:block; margin:20px 0px;}
 	#beginEndSeparator								{display:block; visibility:hidden; line-height:15px;}
 	.beginEndLabel									{display:inline-block; width:60px; line-height:35px;}
 	.vPeriodCheckboxDays, .vPeriodCheckboxMonths	{width:33%!important;}
-	#timeSeparator									{display:none;}
 	#calAffectations legend							{padding-inline:10px;}
 	#calAffectationsOverflow						{max-height:300px;}
 	.vCalAffectation								{width:100%;}
@@ -208,7 +207,7 @@ input[name='location']				{width:400px;}
 		<span class="beginEndLabel"><?= Txt::trad("begin") ?></span>
 		<input type="text" name="dateBegin" class="dateBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("begin") ?>>
 		<input type="time" name="timeBegin" class="timeBegin" value="<?= Txt::formatDate($curObj->dateBegin,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("begin") ?>>
-		<span id="beginEndSeparator"><img src="app/img/arrowRightLabel.svg"></span>
+		<span id="beginEndSeparator"><img src="app/img/arrowLabel.svg"></span>
 		<span class="beginEndLabel"><?= Txt::trad("end") ?></span>
 		<input type="text" name="dateEnd" class="dateEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputDate") ?>" <?= Txt::tooltip("end") ?>>
 		<input type="time" name="timeEnd" class="timeEnd" value="<?= Txt::formatDate($curObj->dateEnd,"dbDatetime","inputHM") ?>" <?= Txt::tooltip("end") ?>>
@@ -220,7 +219,12 @@ input[name='location']				{width:400px;}
 		<label for="allDayCheckbox"><?= Txt::trad("CALENDAR_allDay") ?> <img src="app/img/calendar/allDay.svg"></label>
 	</div>
 
-	<!--PERIODICITE : SELECTION DU TYPE-->
+	<!--CATEGORIE DE L'EVT-->
+	<div class="vEvtOptionInline">
+		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
+	</div>
+
+	<!--PERIODICITE : SELECT TYPE-->
 	<div class="vEvtOptionInline vEvtGuestHide">
 		<select name="periodType">
 			<option value=""><?= Txt::trad("CALENDAR_noRepeat") ?></option>
@@ -229,7 +233,6 @@ input[name='location']				{width:400px;}
 			<option value="year"><?= Txt::trad("CALENDAR_period_year") ?></option>
 		</select>
 	</div>
-
 	<!--PERIODICITE : DETAILS-->
 	<fieldset id="periodFieldset" class="vEvtGuestHide">
 		<!--DETAIL DES PERIODICITES MOIS/ANNEE (ex: "le 22 du mois")-->
@@ -254,10 +257,10 @@ input[name='location']				{width:400px;}
 		</div>
 		<!--PERIODICITE : DATES D'EXCEPTION-->
 		<div id="periodDateExceptions">
-			<label id="periodDateExceptionsAdd" <?= Txt::tooltip("add") ?>><img src="app/img/cycleNot.svg"> <?= Txt::trad("CALENDAR_periodDateExceptions") ?> <img src="app/img/add.svg"></label>
+			<label id="periodDateExceptionsAdd" <?= Txt::tooltip("add") ?>><img src="app/img/cycleNot.svg"> <?= Txt::trad("CALENDAR_periodDateExceptions") ?> <img src="app/img/addBlue.svg"></label>
 			<?php for($cpt=0; $cpt<20; $cpt++){ ?>
 			<span class="vPeriodDateExceptionsInput">
-				<img src="app/img/arrowRightLabel.svg">
+				<img src="app/img/arrowLabel.svg">
 				<input type="text" name="periodDateExceptions[]" value="<?= isset($periodDateExceptions[$cpt]) ? $periodDateExceptions[$cpt] : null ?>" class="dateInput">
 				<img src="app/img/delete.svg" class="vPeriodDateExceptionsDelete link" <?= Txt::tooltip("delete") ?> >
 			</span>
@@ -265,24 +268,10 @@ input[name='location']				{width:400px;}
 		</div>
 		<!--PERIODICITE : FIN-->
 		<div id="periodDateEnd">
-			<img src="app/img/finish.svg"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowRightLabel.svg">
+			<img src="app/img/finish.svg"> <?= Txt::trad("CALENDAR_periodDateEnd") ?> <img src="app/img/arrowLabel.svg">
 			<input type="text" name="periodDateEnd" class="dateInput" value="<?= Txt::formatDate($curObj->periodDateEnd,"dbDate","inputDate") ?>">
 		</div>
 	</fieldset>
-
-	<!--SEPARATEUR DE FIN DES PARAMETRE DE TEMPS-->
-	<br id="timeSeparator">
-
-	<!--CATEGORIE DE L'EVT-->
-	<div class="vEvtOptionInline">
-		<?= MdlCalendarCategory::selectInput($curObj->_idCat) ?>
-	</div>
-
-	<!--IMPORTANT-->
-	<div class="vEvtOptionInline vEvtGuestHide">
-		<input type="checkbox" name="important" id="importantCheckbox" value="1" <?= $curObj->important==1?'checked':null ?> >
-		<label for="importantCheckbox"><?= Txt::trad("CALENDAR_importantEvent") ?> <img src="app/img/important.svg"></label>
-	</div>
 
 	<!--VISIBILITE-->
 	<div class="vEvtOptionInline vEvtGuestHide">
@@ -295,7 +284,13 @@ input[name='location']				{width:400px;}
 
 	<!--ADRESSE-->
 	<div class="vEvtOptionInline">
-		<input type="text" name="location" value="<?= $curObj->location ?>" id="locationInput" placeholder="<?= Txt::trad("adress") ?>" <?= Txt::tooltip("adress") ?> >
+		<input type="text" name="location" value="<?= $curObj->location ?>" placeholder="<?= Txt::trad("adress") ?>" <?= Txt::tooltip("adress") ?> >
+	</div>
+
+	<!--IMPORTANT-->
+	<div class="vEvtOptionInline vEvtGuestHide">
+		<input type="checkbox" name="important" id="importantCheckbox" value="1" <?= $curObj->important==1?'checked':null ?> >
+		<label for="importantCheckbox"><?= Txt::trad("CALENDAR_importantEvent") ?> <img src="app/img/important.svg"></label>
 	</div>
 
 	<!--VISIOCONFERENCE-->
@@ -340,7 +335,7 @@ input[name='location']				{width:400px;}
 		<!--SELECTION D'USERS & GROUPES-->
 		<?= MdlUser::selectUsersGroups(Ctrl::$curSpace, "#calAffectations .vCalInput") ?>
 		<!--CRENEAU HORAIRE DEJA OCCUPE DANS LES AGENDAS SELECTIONNES-->
-		<div id="timeSlotBusy" class="sAccessRead">
+		<div id="timeSlotBusy">
 			<hr>
 			<?= Txt::trad("CALENDAR_busyTimeSlot") ?>
 			<div class="timeSlotBusyContent"></div>

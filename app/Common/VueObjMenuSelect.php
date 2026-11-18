@@ -1,32 +1,37 @@
 <script>
-ready(function(){
-	////	Sélectionne tous les objets : passe tout à "false" puis switch la sélection
-	$("#objSelectAll").on("click",function(){
-		$(".objSelectCheckbox").prop("checked",false).each(function(){ objSelectSwitch(this.id); });
-	});
-	////	Désélectionne tous les objets : passe tout à "true" puis switch la sélection
-	$("#objUnselectAll").on("click",function(){
-		$(".objSelectCheckbox").prop("checked",true).each(function(){ objSelectSwitch(this.id); });
-	});
-});
-
 ////	Switch la sélection d'un objet
-function objSelectSwitch(menuId)
+function objSelectSwitch(uniqId)
 {
-	var menuId=menuId.replace(/(objCheckbox|objContent)/i,"");								//Récupère le "MenuId" de l'objet (sans préfixe : cf. "VueObjMenuContext")
-	$("#objCheckbox"+menuId).prop("checked", !$("#objCheckbox"+menuId).prop("checked"));	//Swich la sélection de la checkbox
-	if($(".objSelectCheckbox:checked").length>0){											//Au moins un objet sélectionné
-		$("#objSelectMenu").slideDown();													//Affiche le menu de sélection
-		$(".objSelectCheckboxDiv").show();													//Affiche les inputs checkbox
-	}
+	var toCheck=($("#objCheckboxId"+uniqId).prop("checked")==false);		//Swich la sélection de la checkbox
+	$("#objCheckboxId"+uniqId).prop("checked",toCheck).trigger("change");	//Applique la sélection
+	if(isMobile())	{menuMobileClose();}									//Ferme si besoin le menuMobile
 }
 
-////	Action sur les objets sélectionnés
 ready(function(){
-	$(".menuSelectAction").on("click", function(){
+	/********************************************************************************************************************************
+	 * Click d'un .objContainer : sélectionne l'objet  ("off()" annule les triggers précédents si relance de "mainTriggers()")
+	 ********************************************************************************************************************************/
+	if(!isMobile()){
+		$(".objContainer:has(.objSelectBox)").off("click").on("click",function(){
+			objSelectSwitch(this.getAttribute("data-uniqId"));
+		});
+	}
+
+	/**********************************************************************************************************
+	 * Affiche / Masque le menu de sélection
+	 **********************************************************************************************************/
+	$(".objSelectBox").on("change",function(){
+		if($(".objSelectBox:checked").length>0)	{$("#objSelectMenu").slideDown();}
+		else									{$("#objSelectMenu").slideUp();}
+	});
+
+	/**********************************************************************************************************
+	 * Action sur les objets sélectionnés
+	 **********************************************************************************************************/
+	$("div[data-select-action]").on("click", function(){
 		let selectAction=this.getAttribute("data-select-action");
 		let urlRedir=this.getAttribute("data-select-url");
-		let objSelector=".objSelectCheckbox:checked";
+		let objSelector=".objSelectBox:checked";
 		//// Vérif s'il y a des objets sélectionnés
 		if($(objSelector).length>0){
 			//// Affiche le nombre d'objets sélectionnés  &&  Ajoute les "objectsTypeId" dans l'url 
@@ -59,40 +64,56 @@ ready(function(){
 </script>
 
 
-<style>
-/*menu masqué par défaut*/
-#objSelectMenu		{display:none;}
-.menuSelectAction	{cursor:pointer;}
-</style>
-
-
-<div id="objSelectMenu" class="miscContent">
+<div id="objSelectMenu" class="miscContainer">
 	<!--"TELECHARGER LES FICHIERS"-->
 	<?php if(Req::$curCtrl=="file"){ ?>
-	<div class="menuLine menuSelectAction" data-select-action="download" data-select-url="?ctrl=file&action=downloadArchive"?ctrl=file&action=downloadArchive><div class="menuIcon"><img src="app/img/download.svg"></div><div><?= Txt::trad("FILE_downloadSelection") ?></div></div>
+	<div class="menuLine link" data-select-action="download" data-select-url="?ctrl=file&action=downloadArchive"?ctrl=file&action=downloadArchive>
+		<div class="menuIcon"><img src="app/img/download.svg"></div>
+		<div><?= Txt::trad("FILE_downloadSelection") ?></div>
+	</div>
 	<?php } ?>
 
 	<!--"VOIR SUR UNE CARTE"-->
 	<?php if(Req::$curCtrl=="user" || Req::$curCtrl=="contact"){ ?>
-	<div class="menuLine menuSelectAction" data-select-action="map" data-select-url="?ctrl=misc&action=PersonsMap" <?= Txt::tooltip("showOnMapTooltip") ?> ><div class="menuIcon"><img src="app/img/map.svg"></div><div><?= Txt::trad("showOnMap") ?></div></div>
+	<div class="menuLine link" data-select-action="map" data-select-url="?ctrl=misc&action=PersonsMap" <?= Txt::tooltip("mapShowTooltip") ?> >
+		<div class="menuIcon"><img src="app/img/map.svg"></div>
+		<div><?= Txt::trad("mapShow") ?></div>
+	</div>
 	<?php } ?>
 
 	<!--"DEPLACER VERS UN AUTRE DOSSIER"-->
 	<?php if($folderMoveOption==true){ ?>
-	<div class="menuLine menuSelectAction" data-select-action="move" data-select-url="?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->typeId ?>"><div class="menuIcon"><img src="app/img/folderMove.svg"></div><div><?= Txt::trad("changeFolder") ?></div></div>
+	<div class="menuLine link" data-select-action="move" data-select-url="?ctrl=object&action=FolderMove&typeId=<?= Ctrl::$curContainer->typeId ?>">
+		<div class="menuIcon"><img src="app/img/folderMove.svg"></div>
+		<div><?= Txt::trad("changeFolder") ?></div>
+	</div>
 	<?php } ?>
 
 	<!--"DESAFFECTER DE L'ESPACE"-->
 	<?php if($deleteFromSpaceOption==true){ ?>
-	<div class="menuLine menuSelectAction" data-select-action="user" data-select-url="?ctrl=user&action=DeleteFromCurSpace"><div class="menuIcon"><img src="app/img/delete.svg"></div><div><?= Txt::trad("USER_deleteFromCurSpace") ?></div></div>
+	<div class="menuLine link" data-select-action="user" data-select-url="?ctrl=user&action=DeleteFromCurSpace">
+		<div class="menuIcon"><img src="app/img/delete.svg"></div>
+		<div><?= Txt::trad("USER_deleteFromCurSpace") ?></div>
+	</div>
 	<?php } ?>
 
 	<!--"SUPPRIMER"-->
 	<?php if($deleteOption==true){ ?>
-	<div class="menuLine menuSelectAction" data-select-action="delete" data-select-url="?ctrl=object&action=Delete"><div class="menuIcon"><img src="app/img/delete.svg"></div><div><?= Req::$curCtrl=="user" ? Txt::trad("USER_deleteDefinitely") : Txt::trad("deleteElems") ?></div></div>
+	<div class="menuLine link" data-select-action="delete" data-select-url="?ctrl=object&action=Delete">
+		<div class="menuIcon"><img src="app/img/delete.svg"></div>
+		<div><?= Req::$curCtrl=="user" ? Txt::trad("USER_deleteDefinitely") : Txt::trad("deleteElems") ?></div>
+	</div>
 	<?php } ?>
 
-	<!--"SELECTIONNER TOUT" && "INVERSER LA SELECTION"-->
-	<div class="menuLine link" id="objSelectAll"><div class='menuIcon'><img src="app/img/checkAll.svg"></div><div><?= Txt::trad("selectAll") ?></div></div>
-	<div class="menuLine link" id="objUnselectAll"><div class='menuIcon'><img src="app/img/checkNone.svg"></div><div><?= Txt::trad("unselectAll") ?></div></div>
+	<!--"SELECTIONNER TOUT"-->
+	<div class="menuLine link" onclick="$('.objSelectBox').prop('checked',true);">
+		<div class='menuIcon'><img src="app/img/checkAll.svg"></div>
+		<div><?= Txt::trad("selectAll") ?></div>
+	</div>
+
+	<!--"INVERSER LA SELECTION"-->
+	<div class="menuLine link" onclick="$('.objSelectBox').prop('checked',false);">
+		<div class='menuIcon'><img src="app/img/checkNone.svg"></div>
+		<div><?= Txt::trad("selectNone") ?></div>
+	</div>
 </div>

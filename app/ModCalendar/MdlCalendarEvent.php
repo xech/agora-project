@@ -298,7 +298,7 @@ class MdlCalendarEvent extends MdlObject
 		//// Evt "allDay"
 		elseif($format!="mini"){
 			return Txt::dateLabel("dateDefault", $this->timeBegin, $this->timeEnd).
-					'<img src="app/img/arrowRightLabel.svg">'.Txt::trad("CALENDAR_allDay").'<img src="app/img/calendar/allDay.svg">';
+					'<img src="app/img/arrowLabel.svg">'.Txt::trad("CALENDAR_allDay").'<img src="app/img/calendar/allDay.svg">';
 		}
 	}
 

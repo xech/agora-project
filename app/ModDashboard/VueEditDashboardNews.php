@@ -20,12 +20,12 @@ ready(function(){
 <style>
 #bodyLightbox			{max-width:900px;}
 #newsOptions			{margin-top:22px; text-align:center;}
-#newsOptions>div		{display:inline-block; line-height:30px; margin-right:25px;}
-.dateBegin, .dateEnd	{width:160px;}/*surcharge pour afficher les placeholders*/
-/*** RESPONSIVE SMARTPHONE*/
+#newsOptions>div		{display:inline-block; line-height:30px; margin-right:20px;}
+.dateBegin, .dateEnd	{width:180px;}/*surcharge pour afficher les placeholders*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	#newsOptions>div		{display:block; margin-bottom:20px;}
-	.dateBegin, .dateEnd	{width:230px;}/*surcharge pour afficher les placeholders*/
+	.dateBegin, .dateEnd	{width:240px;}
 }
 </style>
 

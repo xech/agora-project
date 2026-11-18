@@ -106,7 +106,7 @@ class CtrlDashboard extends Ctrl
 		$curObj->editControl();
 		if(MdlDashboardNews::addRight()==false)  {self::noAccessExit();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$curObj=$curObj->editRecord("description=".Db::param("description").", une=".Db::param("une").", offline=".Db::param("offline").", dateOnline=".Db::param("dateOnline","inputDate").", dateOffline=".Db::param("dateOffline","inputDate"));
 			//Notif par mail & Ferme la page
@@ -129,13 +129,11 @@ class CtrlDashboard extends Ctrl
 		else														{$curObj->editControl();}
 		$pollIsVoted=($curObj->votesNbTotal()>0);
 		////	Valide le formulaire
-		if(Req::isParam("formValidate"))
-		{
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", multipleResponses=".Db::param("multipleResponses").", publicVote=".Db::param("publicVote").", toVoteWithNews=".Db::param("toVoteWithNews").", dateEnd=".Db::param("dateEnd","inputDate"));
 			//Si le sondage n'a pas encore été voté : possibilité d'éditer les réponses
-			if($pollIsVoted==false)
-			{
+			if($pollIsVoted==false){
 				//Affiche la notif "Attention : dès que le sondage est voté la modif des réponses est impossible"
 				Ctrl::notify("DASHBOARD_POLLS_votedNotif");
 				//Récupère les réponses et éventuellement leur fichier associé ("_idResponse" comme clé)

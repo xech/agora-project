@@ -255,10 +255,11 @@ abstract class Ctrl
 			//// Espace sélectionné : charge l'espace + redirection
 			if(!empty($idSpaceSelected)){
 				$_SESSION["_idSpace"]=$idSpaceSelected;																		//Charge l'espace courant
-				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();											//Récup les modules de l'espace courant		
-				if(Req::isParam("objUrl"))		{self::redir(Req::param("objUrl"));}										//Redir vers un objet de l'espace (cf. "getUrlExternal()")
+				$spaceModules=self::getObj("space",$idSpaceSelected)->moduleList();											//Récup les modules de l'espace courant
+				$isObjUrl=(Req::isParam("objUrl") && preg_match("/^index/",Req::param("objUrl")));							//Verif la présence et validité d'une URL vers un objet ("index" : "getUrlExternal()" et "getUrl()")
+				if($isObjUrl==true)				{self::redir(Req::param("objUrl"));}										//Redir vers un objet : 
 				elseif(!empty($spaceModules))	{self::redir("index.php?ctrl=".key($spaceModules));}						//Redir vers le premier module de l'espace
-				else							{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module disponible sur l'espace (notif et déconnexion)
+				else							{self::notify("NOTIF_noAccess");  self::redir("index.php?disconnect=1");}	//Aucun module dispo sur l'espace : déconnexion
 			}
 			//// User identifié mais affecté à aucun espace (notif et déconnexion)
 			elseif(self::$userAuthentified==true)   {self::notify("NOTIF_noAccessNoSpaceAffected");  self::redir("index.php?disconnect=1");}
@@ -292,9 +293,8 @@ abstract class Ctrl
 			require_once('app/misc/Browser.php');																		//Charge la classe "Browser()"
 			$browserObj=new Browser();																					//Récup les infos du browser (mobile/desktop)
 			$browserId=(is_object($browserObj)) ?  $browserObj->getBrowser()."-".$browserObj->getPlatform()  : null;	//Identifie le browser et l'OS
-			$tokenCookie=bin2hex(random_bytes(32));																		//Token aléatoire (64 Carac) stocké dans le Cookie
+			$tokenCookie=Txt::randomId();																				//Token aléatoire stocké dans le Cookie
 			$tokenHashed=password_hash($tokenCookie,PASSWORD_DEFAULT);													//Token hashé stocké en DB
-		////$tokenHashed=$tokenCookie;																					//Test OLD $token
 			$cookieValue=$_idUser."@@@".$tokenCookie;																	//Créé le token du cookie
 			$cookieOptions=COOKIES_OPTIONS;																				//Options par défaut des Cookies
 			$cookieOptions['expires']=(time() + TIME_3MONTHS);															//Valide 3 mois max
@@ -360,7 +360,6 @@ abstract class Ctrl
 				$vDatasHeader["spaceList"]=self::$curUser->spaceList();
 				$vDatasHeader["moduleList"]=self::$curSpace->moduleList();
 				$vDatasHeader["userInscriptionValidate"]=(count(CtrlUser::userInscriptionValidate())>0);
-				$vDatasHeader["moduleLabelDisplay"]=(!empty(self::$agora->moduleLabelDisplay) || Req::isMobile());
 				$vDatasHeader["connectSpaceSwitchLabel"]=Req::connectSpaceSwitch()  ?  Txt::trad('connectSpaceSwitchInfo',true).' '.(Req::isHost()?HOST_DOMAINE:null)  :  null;
 				$vDatas["headerMenu"]=self::getVue(Req::commonPath."VueHeaderMenu.php",$vDatasHeader);
 				//Messenger (cf. "CtrlMisc::actionMessengerUpdate()")
@@ -376,9 +375,12 @@ abstract class Ctrl
 				if(Req::isDevServer())  {$vDatas["footerLogoTooltip"].='<br> generated in '.round((microtime(true)-TPS_EXEC_BEGIN),2).' sec';}
 			}
 		}
-		////	NOTIFS  +  RECUPERE LA VUE PRINCIPALE  +  AFFICHE LA VUE COMPLETE
-		foreach((array)Req::param("notify") as $tmpNotif)  {self::notify($tmpNotif);}
-		if(strstr($vuePathMain,Req::commonPath)==false)  {$vuePathMain=Req::curModPath().$vuePathMain;}//Path du module courant
+		////	NOTIFS
+		foreach((array)Req::param("notify") as $tmpNotif)
+			{self::notify($tmpNotif);}
+		////	VUE PRINCIPALE + STRUCTURE
+		if(strstr($vuePathMain,Req::commonPath)==false)
+			{$vuePathMain=Req::curModPath().$vuePathMain;}
 		$vDatas["mainContent"]=self::getVue($vuePathMain, $vDatasMain);
 		echo self::getVue(Req::commonPath."VueStructure.php",$vDatas);
 	}
@@ -539,7 +541,12 @@ abstract class Ctrl
 	 ********************************************************************************************************/
 	public static function noAccessExit($keyTrad="inaccessibleElem")
 	{
-		echo '<img src="app/img/important.svg" style="height:50px"> <h2 style="text-align:center">'.Txt::trad($keyTrad).'</h2>';
+		////	Message et lien "Retour"
+        echo '<div style="text-align:center;padding:100px;">
+				<img src="app/img/important.svg" style="height:50px;float:left;">
+				<h2>'.Txt::trad($keyTrad).'</h2>
+				<h2><a href="index.php">Retour</a></h2>
+			  </div>';
 		exit;
 	}
 }

@@ -97,7 +97,7 @@ class Txt
 			$text=str_replace('"','&quot;',$text);																				//Remplace les doubles quotes
 			if(stristr($text,'http'))																							//Créé un hyperlien (tester via modLink)
 				{$text=preg_replace("/(https?:\/\/\S{4,})\s{0,}/ims", "<a href='$0' target='_blank'><u>$0</u></a>", $text);}
-			return ($titleAttr==true)  ?  'title="'.$text.'"'  :  $text;														//Retourne le résultat : avec ou sans `title=`
+			return ($titleAttr==true)  ?  ' title="'.$text.'" '  :  $text;														//Retourne le résultat : avec ou sans `title=`
 		}
 	}
 
@@ -160,20 +160,6 @@ class Txt
 	}
 
 	/********************************************************************************************************
-	 * BOUTON SUBMIT DU FORMULAIRE  &&  INPUTS HIDDEN (Ctrl, Action, TypeId, etc)
-	 ********************************************************************************************************/
-	public static function submitButton($keyTrad="record", $isMainButton=true)
-	{
-		return '<div class="submitButton '.($isMainButton==true?'submitButtonMain':'submitButtonInline').'">
-					<button type="submit">'.self::trad($keyTrad).' <img src="app/img/loadingCircle.svg" class="loadingImage"></button>
-				</div>
-				<input type="hidden" name="ctrl" value="'.Req::$curCtrl.'">
-				<input type="hidden" name="action" value="'.Req::$curAction.'">
-				<input type="hidden" name="formValidate" value="1">'.
-				(Req::isParam("typeId") ? '<input type="hidden" name="typeId" value="'.Req::param("typeId").'">' : null);
-	}
-
-	/********************************************************************************************************
 	 * CONTROLE LA VALIDITÉ D'UN EMAIL
 	 ********************************************************************************************************/
 	public static function isMail($email){ 
@@ -181,11 +167,11 @@ class Txt
 	}
 
 	/********************************************************************************************************
-	 * RECUPERE UN IDENTIFIANT RAMDOM SUR 32 CARACTERES (hexadécimaux : 0-9 et a-f))
+	 * RECUPERE UN IDENTIFIANT RAMDOM  (64 carac. hexadécimal / 32 octets)
 	 ********************************************************************************************************/
 	public static function randomId()
 	{
-		return bin2hex(random_bytes(16));
+		return bin2hex(random_bytes(32));
 	}
 
 	/********************************************************************************************************
@@ -193,37 +179,16 @@ class Txt
 	 ********************************************************************************************************/
 	public static function defaultPassword()
 	{
-		return substr(self::randomId(), 0, 12);
+		return substr(self::randomId(), 0, 10);
 	}
 
 	/********************************************************************************************************
-	 * CONTROLE UN PASSWORD : AU MOINS 12 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+	 * CONTROLE UN PASSWORD : AU MOINS 10 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
 	 ********************************************************************************************************/
 	public static function isPassword($password)
 	{
-		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{12,}$/', $password);
+		return preg_match('/^(?=.*[a-zA-Z])(?=.*\d).{10,}$/', $password);
 	}
-
-	/********************************************************************************************************
-	 * INPUT PASSWORD
-	 ********************************************************************************************************/
-	public static function inputPassword($inputName, $isRequired, $isAutocomplete=false)
-	{
-		$optionTooltip=($isRequired==false) ?  self::trad("passwordOptional")  : null;
-		$required =($isRequired==true) ?  'required'  : null;
-		$divOption=($isRequired==false) ?  '<div class="infos">'.self::trad("passwordOptional").'</div>'  : null;
-		$autocomplete=($isAutocomplete==true) ?  'class="isAutocomplete"'  : null;
-		return '<div class="passwordDiv" '.self::tooltip($optionTooltip).'>
-					<input type="password" name="'.$inputName.'" id="input_'.$inputName.'" placeholder="'.self::trad("password").'" '.$required.' '.$autocomplete.'>
-					<img class="passwordDisplay" '.self::tooltip("passwordDisplay").' for="input_'.$inputName.'">
-				</div>'.$divOption;
-	}
-
-
-	/********************************************************************************************************
-	 **********************************		FORMATAGE DES DATES		*****************************************
-	 ********************************************************************************************************/
-
 
 	/********************************************************************************************************
 	 * INIT "IntlDateFormatter" POUR FORMATER UN TIMESTAMP EN FONCTION DE LA LANG ET TIMEZONE
@@ -241,10 +206,11 @@ class Txt
 	 * FORMATAGE D'UNE DATE/HEURE EN FONCTION D'UN TIMESTAMP
 	 * Note : les objets "task" peuvent avoir une $dateEnd sans $timeBegin
 	 * $format	=>	"default"		->	"lun. 8 fevrier 9:05"
-	 * 			=>	"mini"			->	"9:05"  ||  "8 fev. 9:05" ($diffDays)
 	 * 			=>	"dateDefault"	->	"lun. 8 fevrier"
 	 * 			=>	"dateMini"		->	"8 fev."
 	 * 			=>	"dateNum"		->	"08/02/2050"
+	 * 			=>	"dateTime"		->	"08/02/2050 9:05"
+	 * 			=>	"mini"			->	"9:05"  ||  "8 fev. 9:05" (si $diffDays)
 	 ********************************************************************************************************/
 	public static function dateLabel($format, $timeBegin, $timeEnd=null)
 	{
@@ -259,7 +225,7 @@ class Txt
 			if(is_object($formatter)){
 				//Init (pas de "null" pour le pattern!)
 				$label=$pattern="";
-				$withHM=preg_match("/^(default|mini)$/i",$format);
+				$withHM=($format=="default" || $format=="dateTime" || $format=="mini");
 				$diffDays=$diffHours=false;
 				if($timeBegin!=null && $timeEnd!=null){
 					if(date("Ymd",$timeBegin)!=date("Ymd",$timeEnd))  {$diffDays=true;}
@@ -268,11 +234,11 @@ class Txt
 
 				//Formatage de la date (https://unicode-org.github.io/icu/userguide/format_parse/datetime/)
 				if(preg_match("/mini/i",$format)==false && date("Ymd",$timeBegin)==date("Ymd"))		{$label=self::trad("today");}	//"Aujourd'hui"
-				elseif(preg_match("/^(default|dateDefault)$/i",$format))							{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
+				elseif(preg_match("/default/i",$format))											{$pattern="eee d MMMM";}		//ex: "lun. 8 fevrier"
 				elseif($format=="dateMini" || ($format=="mini" && $diffDays==true))					{$pattern="d MMM";}				//ex: "8 fev."
-				elseif(preg_match("/dateNum/i",$format))											{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
+				elseif(preg_match("/dateNum|dateTime/i",$format))									{$pattern="dd/MM/yyyy";}		//ex: "08/02/2050"
 				//Année différente de celle en cours
-				if(preg_match("/^(default|dateDefault)$/i",$format)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y')))){
+				if(preg_match("/default/i",$format)  &&  (date('Y',$timeBegin)!=date('Y') || (!empty($timeEnd) && date('Y',$timeEnd)!=date('Y')))){
 					$pattern=str_replace("MMMM","MMM",$pattern)." yyyy";//ex : "8 fevrier" -> "8 fev. 2050"
 				}
 				//Ajoute l'heure si on affiche pas que la date (ex: "9:05")
@@ -286,7 +252,7 @@ class Txt
 				}
 				if($timeEnd!=null){
 					if($diffDays==false && $diffHours==true && $withHM==true)	{$formatter->setPattern("H:mm");  $label.='-'.$formatter->format($timeEnd);}		//Même jour + diff heures	-> Ex: "11:30-12:30"
-					elseif($diffDays==true)										{$label.='<img src="app/img/arrowRightLabel.svg">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
+					elseif($diffDays==true)										{$label.='<img src="app/img/arrowLabel.svg">'.$formatter->format($timeEnd);}	//Jours différents 			-> $pattern idem $timeBegin
 					elseif($timeBegin==null)									{$label.=self::trad("end").' : '.$formatter->format($timeEnd);}						//Date de fin sans début	-> $pattern idem $timeBegin
 				}
 

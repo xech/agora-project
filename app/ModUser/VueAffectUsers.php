@@ -26,7 +26,7 @@ ready(function(){
 			<div><input type="text" name="searchFields[<?= $tmpField ?>]" value="<?= $searchFieldsValues[$tmpField] ?? null ?>"></div>
 		 </div>
 	<?php } ?>
-	<?= Txt::submitButton("USER_submitSearch") ?>
+	<?= Tool::submitButton("USER_submitSearch") ?>
 </form>
 
 
@@ -42,7 +42,7 @@ ready(function(){
 					<label for="userId_<?= $tmpUser->_id ?>"><?= $tmpUser->getLabel() ?></label>
 				</div></div>			
 			<?php } ?>
-			<?= Txt::submitButton("add") ?>
+			<?= Tool::submitButton("add") ?>
 		</fieldset>
 	</form>
 <?php } ?>

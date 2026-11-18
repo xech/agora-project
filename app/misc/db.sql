@@ -18,7 +18,7 @@ CREATE TABLE `ap_agora` (
   `gIdentity` tinyint DEFAULT '1',
   `gIdentityClientId` varchar(255) DEFAULT NULL,
   `messengerDisplay` tinyint DEFAULT '1',
-  `moduleLabelDisplay` tinyint DEFAULT '1',
+  `moduleIconFlat` tinyint DEFAULT '1',
   `folderDisplayMode` varchar(255) DEFAULT 'block',
   `personsSort` varchar(255) DEFAULT 'firstName',
   `userMailDisplay` tinyint DEFAULT NULL,

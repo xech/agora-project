@@ -98,7 +98,7 @@ class MdlSpace extends MdlObject
 	public function getUsers($return="objects")
 	{
 		if($this->_spaceUsers===null){
-			$personsSort="ORDER BY ".Ctrl::$agora->personsSort;
+			$personsSort="ORDER BY `".Txt::clean(Ctrl::$agora->personsSort)."`";
 			$objUsers=($this->allUsersAffected())  ?  Db::getObjTab("user","SELECT * FROM ap_user ".$personsSort)  :  Db::getObjTab("user","SELECT DISTINCT T1.* FROM ap_user T1, ap_joinSpaceUser T2 WHERE T1._id=T2._idUser AND T2._idSpace=".$this->_id." ".$personsSort);
 			$this->_spaceUsers=$objUsers;
 		}

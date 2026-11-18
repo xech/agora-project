@@ -954,7 +954,7 @@ class DbUpdate extends Db
 			{
 				//"gPeopleApiKey" & "mapApiKey" fusionnés avec "gApiKey"
 				if(self::fieldExist("ap_agora","gPeopleApiKey"))	{self::query("ALTER TABLE `ap_agora` DROP `gPeopleApiKey`");}
-				if(self::fieldExist("ap_agora", "mapApiKey"))		{self::query("ALTER TABLE `ap_agora` CHANGE `mapApiKey` `gApiKey` VARCHAR(255) DEFAULT NULL");}
+				if(self::fieldExist("ap_agora","mapApiKey"))		{self::query("ALTER TABLE `ap_agora` CHANGE `mapApiKey` `gApiKey` VARCHAR(255) DEFAULT NULL");}
 			}
 
 			if(self::updateVersion("25.3.3"))
@@ -1077,9 +1077,16 @@ class DbUpdate extends Db
 				//// Option de double authentification par email
 				self::fieldExist("ap_user", "dblAuthEnabled", "ALTER TABLE `ap_user` ADD `dblAuthEnabled` TINYINT DEFAULT NULL AFTER `connectionSpace`");
 				//// Remplace les icones dans la description d'install des dashboardNews
-				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`,'iconSmall.png','icon.svg'), `description`=REPLACE(`description`,'postMessage.png','post.svg'), `description`=REPLACE(`description`,'mailBig.png','post.svg'), `description`=REPLACE(`description`,'pdf.png','pdf.svg'), `description`=REPLACE(`description`,'messengerSmall.png','chat.svg'), `description`=REPLACE(`description`,'documentation.png','documentation.svg')");
+				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`,'iconSmall.png','icon.svg'), `description`=REPLACE(`description`,'postMessage.png','post.svg'), `description`=REPLACE(`description`,'mailBig.png','post.svg'), `description`=REPLACE(`description`,'pdf.png','pdf.svg'), `description`=REPLACE(`description`,'messengerSmall.png','chat.svg'), `description`=REPLACE(`description`,'messenger.png','chat.svg'), `description`=REPLACE(`description`,'documentation.png','documentation.svg')");
 			}
-			///////////////////////		+ UPDATE DB.SQL !
+
+			if(self::updateVersion("26.11.1"))
+			{
+				//// Option d'affichage des icones du menu principal
+				if(self::fieldExist("ap_agora","moduleLabelDisplay"))
+					{self::query("ALTER TABLE `ap_agora` CHANGE `moduleLabelDisplay` `moduleIconFlat` TINYINT(4) NULL DEFAULT '1'");}
+			}
+			///////////////////////		MODIFIER  DB.SQL  !!!
 			///////////////////////
 
 

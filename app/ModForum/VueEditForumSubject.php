@@ -8,7 +8,7 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		//// Retourne false s'il n'y a que des accès en lecture
 		if($("[name='objectRight[]']:checked").length==$("[name='objectRight[]'][value$='_1']:checked").length)	 {resolve(false);  notify("<?= Txt::trad("FORUM_notifOnlyReadAccess") ?>");}
@@ -19,12 +19,11 @@ function mainFormControl(){
 
 
 <style>
-#bodyLightbox			{max-width:900px;}
-[name='title']			{width:45%;}
-[name="_idTheme"]		{min-width:200px; margin-left:30px;}
-#descriptionTextarea	{margin-top:30px!important;}/*surcharge*/
+#bodyLightbox		{max-width:900px;}
+[name='title']		{width:45%;}
+[name="_idTheme"]	{min-width:200px; margin-left:30px;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	[name='title'], [name="_idTheme"]	{width:100%;}
 	[name="_idTheme"]					{margin-left:0px; margin-top:20px;}

@@ -37,5 +37,5 @@ input[type=text], textarea	{width:100%!important;}
 	<div><input type="text" name="firstName" placeholder="<?= Txt::trad("firstName"); ?>" required></div>
 	<div><input type="text" name="mail" placeholder="<?= Txt::trad("mail"); ?>" required></div>
 	<div><textarea name="message" placeholder="<?= Txt::trad("comment")." (".Txt::trad("option").")" ?>"><?= Req::param("message") ?></textarea></div>
-	<div><?= CtrlMisc::menuCaptcha().Txt::submitButton("send") ?></div>
+	<div><?= CtrlMisc::menuCaptcha().Tool::submitButton("send") ?></div>
 </form>

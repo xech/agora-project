@@ -1,8 +1,9 @@
 <style>
-.menuSortAscDesc		{text-align:right!important;}
+.menuSortAscDesc		{text-align:right!important; padding-left:10px;}
 .menuSortAscDesc img	{cursor:pointer;}
-.menuSortArrowSelect	{filter:var(--blue_filter)!important;}
+.menuSortArrowSelect	{filter:var(--icon_blue)!important;}
 </style>
+
 
 <div class="menuLine">
 	<div class="menuIcon"><img src="app/img/sort.svg"></div>

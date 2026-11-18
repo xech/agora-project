@@ -19,7 +19,7 @@ ready(function(){
 	$("#spaceAffecAllUsers").on("change",async function(){
 		////	Confirm "Tout sélectionner" / "Tout déselectionner"
 		let isChecked=this.checked;
-		let tradSelect=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("unselectAll") ?>";
+		let tradSelect=(isChecked==true)  ?  "<?= Txt::trad("selectAll") ?>"  :  "<?= Txt::trad("selectNone") ?>";
 		if(await confirmAlt(tradSelect+" ?")){
 			$(".spaceAffectLine input[value$='_1']").prop("checked",isChecked).prop("disabled",isChecked);	//Si besoin Check et disabled toutes les Box
 			spaceAffectStyle();																				//Style des .spaceAffectLabel
@@ -32,11 +32,11 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		////	Password de l'espace public : OK ?
-		if($("#publicSpace").prop("checked") && $("#publicSpacePassword").notEmpty() && $("#publicSpacePassword").isPassword()==false){
-			notify("<?= Txt::trad("passwordInvalid") ?>");
+		if($("#publicBox").prop("checked") && $("#publicPassword").notEmpty() && $("#publicPassword").isPassword()==false){
+			notify("<?= Txt::trad("passwordRequiredChars") ?>");
 			resolve(false);
 		}
 		////	Nombre de modules sélectionnés : OK ?
@@ -54,11 +54,11 @@ function mainFormControl(){
 
 
 <style>
-.vSpaceOption					{margin:20px 0px;}
-.vSpaceOption>img				{max-width:18px;}
-.vSpaceOptionSub				{margin-top:5px; margin-left:30px;}
-.vSpaceOptionSub .infos			{margin-block:10px 20px;}
-.vSpaceOption:not(:has(.vSpaceOptionBox:checked)) .vSpaceOptionSub  {display:none;}/*masque le sous-menu si l'option n'est pas électionnée*/
+.vOption					{margin:20px 0px;}
+.vOption>img				{max-width:18px;}
+.vOptionSub					{margin-top:5px; margin-left:30px;}
+.vOptionSub .infos			{margin-block:10px 20px;}
+.vOption:not(:has(.vOptionBox:checked)) .vOptionSub  {display:none;}/*masque le sous-menu si l'option n'est pas électionnée*/
 label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 
 /*modules*/
@@ -72,7 +72,7 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 .vModuleTab:not(:has(.moduleInput:checked)) .moduleOption						{display:none;}/*Modules désactivés : masque les options*/
 .vModuleTab:has(.moduleInput[value='calendar']:checked) #moduleCalendarDisabled	{display:none;}/*Module Calendar activé : masque "Le module agenda reste toujours accessible.."*/
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vModuleIcon, .changeOrder  {display:none!important;}
 }
@@ -86,25 +86,25 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 	<?= $curObj->descriptionEditor() ?>
 
 	<!--ESPACE PUBLIC (avec password?)-->
-	<div class="vSpaceOption">
+	<div class="vOption">
 		<img src="app/img/earth.svg">
-		<input type="checkbox" name="public" value="1" id="publicSpaceBox" class="vSpaceOptionBox" <?= (!empty($curObj->public))?'checked':null ?>>
-		<label for="publicSpaceBox" <?= Txt::tooltip("SPACE_publicSpaceTooltip") ?> ><?= Txt::trad("SPACE_publicSpace") ?></label>
+		<input type="checkbox" name="public" value="1" id="publicBox" class="vOptionBox" <?= (!empty($curObj->public))?'checked':null ?>>
+		<label for="publicBox" <?= Txt::tooltip("SPACE_publicTooltip") ?> ><?= Txt::trad("SPACE_publicLabel") ?></label>
 		<!--MOT DE PASSE ET INFOS SUR LA RGPD-->
-		<div class="vSpaceOptionSub">
+		<div class="vOptionSub">
 			<img src="app/img/dependent.svg"> <?= Txt::trad("password") ?> : 
-			<input type="text" name="password" value="<?= $curObj->password ?>" id="publicSpacePassword">
-			<div class="infos"><?= Txt::trad("SPACE_publicSpaceRGPD") ?></div>
+			<input type="text" name="password" value="<?= $curObj->password ?>" id="publicPassword">
+			<div class="infos"><?= Txt::trad("SPACE_publicRGPD") ?></div>
 		</div>
 	</div>
 
 	<!--INSCRIPTION A L'ESPACE-->
-	<div class="vSpaceOption">
+	<div class="vOption">
 		<img src="app/img/edit.svg">
-		<input type="checkbox" name="userInscription" value="1" id="userInscriptionBox" class="vSpaceOptionBox" <?= (!empty($curObj->userInscription))?'checked':null ?>>
+		<input type="checkbox" name="userInscription" value="1" id="userInscriptionBox" class="vOptionBox" <?= (!empty($curObj->userInscription))?'checked':null ?>>
 		<label for="userInscriptionBox" <?= Txt::tooltip("userInscriptionEditTooltip") ?> ><?= Txt::trad("userInscriptionEdit") ?></label>
 		<!--NOTIF MAIL A CHAQUE INSCRIPTION-->
-		<div class="vSpaceOptionSub" id="divUserInscriptionNotify" <?= Txt::tooltip("userInscriptionNotifTooltip") ?> >
+		<div class="vOptionSub" id="divUserInscriptionNotify" <?= Txt::tooltip("userInscriptionNotifTooltip") ?> >
 			<img src="app/img/dependent.svg">
 			<input type="checkbox" name="userInscriptionNotify" id="userInscriptionNotify" value="1" <?= (!empty($curObj->userInscriptionNotify))?'checked':null ?>>
 			<label for="userInscriptionNotify"><?= Txt::trad("userInscriptionNotif") ?></label>
@@ -112,13 +112,13 @@ label[for='spaceAffecAllUsers']	{font-size:1.15rem;}
 	</div>
 
 	<!--INVITATIONS PAR MAIL-->
-	<div class="vSpaceOption" <?= Txt::tooltip("SPACE_usersInvitationTooltip") ?> >
+	<div class="vOption" <?= Txt::tooltip("SPACE_usersInvitationTooltip") ?> >
 		<img src="app/img/mail.svg"> <input type="checkbox" name="usersInvitation" id="usersInvitationBox" value="1" <?= (!empty($curObj->usersInvitation))?'checked':null ?>>
 		<label for="usersInvitationBox"><?= Txt::trad("SPACE_usersInvitation") ?></label>
 	</div>
 
 	<!--WALLPAPER-->
-	<div class="vSpaceOption">
+	<div class="vOption">
 		<div><?= Txt::trad("wallpaper") ?></div>
 		<div><?= CtrlMisc::menuWallpaper($curObj->wallpaper) ?></div>
 	</div>

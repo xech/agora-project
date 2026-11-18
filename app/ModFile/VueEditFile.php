@@ -1,6 +1,6 @@
 <script>
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		let controledName=$("[name='name']").val()+$("[name='dotExtension']").val();
 		let ajaxUrl ="index.php?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&typeIdContainer=<?= $curObj->containerObj()->typeId ?>&controledName="+encodeURIComponent(controledName);

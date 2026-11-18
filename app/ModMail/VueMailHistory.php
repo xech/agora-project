@@ -40,7 +40,7 @@ function sendOldMail(typeId){
 			<select name="historyDeleteDays">
 				<?php foreach([7,15,30,60,90,180,365,730] as $nbDays){ ?><option value="<?= $nbDays ?>"><?= str_replace("--NB_DAYS--",$nbDays,Txt::trad("MAIL_historyDeleteXDays")) ?></option><?php } ?>
 			</select>
-			<?= Txt::submitButton("validate",false) ?>
+			<?= Tool::submitButton("validate",false) ?>
 		</form>
 	<?php } ?>
 
@@ -52,7 +52,7 @@ function sendOldMail(typeId){
 			<div><?= Txt::trad("MAIL_recipients").' : '.str_replace(',',' - ',$tmpMail->recipients) ?></div>
 			<div class="link" onclick="sendOldMail('<?= $tmpMail->typeId ?>')" <?= Txt::tooltip("MAIL_resendInfo") ?>><img src="app/img/shortcut.svg"> <?= Txt::trad("MAIL_resend") ?></div>
 			<div class="link" onclick="confirmDelete('<?= $tmpMail->getUrl('delete') ?>')"><img src="app/img/delete.svg"> <?= Txt::trad("MAIL_delete") ?></div>
-			<div class="miscContent"><?= $tmpMail->description ?></div>
+			<div class="miscContainer"><?= $tmpMail->description ?></div>
 		</fieldset>
 	<?php } ?>
 

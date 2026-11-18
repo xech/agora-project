@@ -64,7 +64,7 @@ function folderMove(newFolderId){
 .vTreeFolderLabel.linkSelect		{font-weight:bold;}
 .vIconOpened						{transform:rotate(30deg); filter:brightness(0.5);}
 
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
 	#menuMobileMain #treeFolders	{position:relative; max-height:400px; overflow-y:auto;}/*menu mobile: "relative" car les "arrow" d'ouverture de dossier sont en position absolute*/
 }
@@ -90,7 +90,7 @@ function folderMove(newFolderId){
 		$folderLabelCheckbox=($context=="move" && $isCurFolder==false)  ?  '<input type="checkbox" name="newFolderId" class="vNewFolderId" value="'.$tmpFolder->_id.'" disabled>'  :  null;
 		//Affiche le dossier
 		echo '<div class="vTreeFolder" data-folderid="'.$tmpFolder->_id.'" data-parent-folderid="'.$tmpFolder->_idContainer.'" data-folder-tree-level="'.$tmpFolder->treeLevel.'" '.Txt::tooltip($folderTooltip).'>
-				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowRightLabel.svg" class="vIconOpen"><img src="app/img/folder.svg" class="vIconFolder"></div>
+				<div class="vTreeFolderIcon" onclick="folderTreeDisplay('.$tmpFolder->_id.',true)"><img src="app/img/arrowLabel.svg" class="vIconOpen"><img src="app/img/folder.svg" class="vIconFolder"></div>
 				<div class="vTreeFolderLabel '.$folderLabelClass.'" onclick="'.$folderLabelActionJs.'">'.Txt::reduce($tmpFolder->name,80).$folderLabelCheckbox.'</div>
 			  </div>';
 	}
@@ -98,7 +98,7 @@ function folderMove(newFolderId){
 	////	DEPLACEMENT DE DOSSIER : SUBMIT ET FIN DU FORMULAIRE
 	if($context=="move"){
 		foreach(Req::param("objectsTypeId") as $objType=>$objIds)  {echo '<input type="hidden" name="objectsTypeId['.$objType.']" value="'.$objIds.'">';}
-		echo Txt::submitButton()."</form>";
+		echo Tool::submitButton()."</form>";
 	}
 	////	NAVIGATION DE DOSSIERS : SEPARATION "HR"
 	if($context=="nav")  {echo "<hr>";}

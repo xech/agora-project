@@ -8,10 +8,10 @@ ready(function(){
 
 	////	Edition/suppression d'un commentaire : update le "circleNb"  (idem "usersLikeUpdate()")
 	<?php if(Req::isParam("actionComment")){ ?>
-		var menuId="#usersComment_<?= $curObj->typeId ?>";																						//Id du menu
-		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).addClass("hide").find(".circleNb").html("");}									//Masque l'icone et le nb de commentaires
-		else								{window.top.$(menuId).removeClass("hide").find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone
-		window.top.$(menuId).tooltipUpdate("<?= $commentsTitle ?>");																			//Update le Tooltip
+		var menuId="#usersComment_<?= $curObj->typeId ?>";																	//Id du menu
+		if(<?= count($commentList) ?>==0)	{window.top.$(menuId).find(".circleNb").html("");}								//Masque l'icone et le nb de commentaires
+		else								{window.top.$(menuId).find(".circleNb").html("<?= count($commentList) ?>");}	//Affiche l'icone
+		window.top.$(menuId).tooltipUpdate("<?= $commentsTitle ?>");														//Update le Tooltip
 	<?php } ?>
 });
 </script>
@@ -29,7 +29,7 @@ fieldset						{margin-bottom:30px;}/*surcharge*/
 .vCommentAddForm				{margin-top:40px;}
 .submitButton					{margin-top:15px;}/*surcharge*/			
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vCommentsTable		{font-size:0.9rem;}
 	.vCommentDateUser	{font-size:0.8rem; width:130px;}
@@ -65,7 +65,7 @@ fieldset						{margin-bottom:30px;}/*surcharge*/
 			<textarea name="comment" maxlength="200"><?= $tmpComment['comment'] ?></textarea>
 			<input type="hidden" name="idComment" value="<?= $tmpId ?>">
 			<input type="hidden" name="actionComment" value="modif">
-			<?= Txt::submitButton("modify") ?>
+			<?= Tool::submitButton("modify") ?>
 		</form>
 	</fieldset>
 	<?php } ?>
@@ -74,6 +74,6 @@ fieldset						{margin-bottom:30px;}/*surcharge*/
 	<form action="index.php" method="post" class="vCommentAddForm">
 		<textarea name="comment" maxlength="200" placeholder="<?= Txt::trad("commentAdd") ?>" class="vCommentAddTextarea"></textarea>
 		<input type="hidden" name="actionComment" value="add">
-		<?= Txt::submitButton("add"); ?>
+		<?= Tool::submitButton("add"); ?>
 	</form>
 </div>

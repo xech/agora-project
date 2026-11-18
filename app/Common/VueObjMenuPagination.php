@@ -6,7 +6,7 @@
 </style>
 
 <div class="objMenuBottom">
-	<div class="miscContent" id="menuPagination">
+	<div class="miscContainer" id="menuPagination">
 		<a <?= $pageUrlPrev ?> ><img src="app/img/arrowLeft.svg"></a>
 		<?php for($pageNbTmp=1; $pageNbTmp<=$pageNbTotal; $pageNbTmp++){ ?>
 			<a href="<?= $pageUrl.$pageNbTmp ?>" class="<?= $pageNbTmp==$pageNbCur?'linkSelect':null ?>" <?=Txt::tooltip(Txt::trad("goToPage").' '.$pageNbTmp) ?> ><?= $pageNbTmp ?></a>

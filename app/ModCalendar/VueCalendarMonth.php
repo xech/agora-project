@@ -24,21 +24,25 @@
 
 
 	<style>
-	.vMonthHeader, .vMonthTable				{width:100%; border-collapse:collapse; table-layout:fixed;}					/*Tableau du libellé des jours et de la grille des heures*/
-	.vWeekNbOfYear							{width:18px; font-size:0.8rem; opacity:0.5;}								/*numero des semaines dans l'année*/
-	.vMonthTable .vWeekNbOfYear:hover		{background-color:<?= Ctrl::$agora->skin=="white"?"#eee":"#444" ?>;}	  /*numero des semaines dans l'année*/
-	.vMonthRow								{height:17%; min-height:17%;}												/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
+	.vMonthHeader, .vMonthTable						{width:100%; border-collapse:collapse; table-layout:fixed;}			/*Tableau du libellé des jours et de la grille des heures*/
+	.vWeekNbOfYear									{width:18px; font-size:0.8rem; opacity:0.5;}						/*numero des semaines dans l'année*/
+	.bodyWhite .vMonthTable .vWeekNbOfYear:hover	{background-color:#eee;}	  										/*numero des semaines dans l'année*/
+	.bodyBlack .vMonthTable .vWeekNbOfYear:hover	{background-color:#444;}
+	.vMonthRow										{height:17%; min-height:17%;}										/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 	/*Cellules du jour*/
-	.vMonthDayCell							{position:relative; vertical-align:top; padding:0px; <?= Ctrl::$agora->skin=="white" ? "background:white;border:1px solid #e2e2e2;color:#222;" : "background:black;border:1px solid #333;color:#fff;" ?>}
-	.vMonthDayOtherMonth					{background:<?= Ctrl::$agora->skin=="white"?"#fafafa":"#111" ?>;} 	  /*Cell des autres mois*/
-	.vMonthDayHeader						{width:100%; height:25px;}													/*Label du jour + jour ferie + ajout d'evt*/
+	.vMonthDayCell							{position:relative; vertical-align:top; padding:0px;}						/*cells du jour*/
+	.bodyWhite .vMonthDayCell				{background:white; border:1px solid #e2e2e2; color:#222;}					/*- background white*/
+	.bodyBlack .vMonthDayCell				{background:#111111; border:1px solid #333; color:#fff;}					/*- background black*/
+	.bodyWhite .vMonthDayOtherMonth			{background:#fbfbfb;} 	  													/*Cell des autres mois*/
+	.bodyBlack .vMonthDayOtherMonth			{background:#222222;} 	  													/*idem black*/
+	.vMonthDayHeader						{width:100%; height:27px;}													/*Label du jour + jour ferie + ajout d'evt*/
+	.vMonthDayHeader img[src*='add']		{width:23px; height:23px;}
 	.vMonthDayNb							{width:25px; text-align:center;}											/*Numéro du jour du mois*/
-	.vMonthDayNb .circleNb					{width:25px; height:25px; line-height:25px; font-size:1rem;}				/*surcharge*/
 	.vMonthDayPublicHoliday					{color:#080; font-size:0.85rem;}											/*Libellé du jour férié*/
 	.vMonthDayHeader .vMonthDayAddEvt		{width:25px; visibility:hidden; cursor:pointer;}							/*Ajout d'evt "Plus" : masqué par défaut*/
 	.vMonthDayHeader:hover .vMonthDayAddEvt	{visibility:visible;}														/*Idem : affiche au survol label du jour*/
 
-	/*** RESPONSIVE TABLET-SMARTPHONE*/
+	/*****    RESPONSIVE LARGE*/
 	@media screen and (max-width:1199px){
 		.vMonthDayHeader					{font-size:0.7em; font-weight:normal;}
 		.vEvtLabel							{font-size:0.8rem; line-height:12px;}
@@ -71,12 +75,12 @@
 						<tr>
 							<td class="vMonthDayNb"><span class="<?= $tmpDay["isToday"]==true?'circleNb':null ?>"><?= $tmpDay["dayOfMonth"] ?></span></td>
 							<td class="vMonthDayPublicHoliday"><?= $tmpDay["publicHoliday"] ?></td>
-							<?php if($tmpCal->addProposeEvt()){ ?><td class="vMonthDayAddEvt"><img src="app/img/add.svg"<?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$tmpDay['newEvtTimeBegin'] ?>')"></td><?php } ?>
+							<?php if($tmpCal->addProposeEvt()){ ?><td class="vMonthDayAddEvt"><img src="app/img/addBlue.svg"<?= $tmpCal->addEvtTooltip ?> onclick="lightboxOpen('<?= $tmpCal->urlNewEvt.'&newEvtTimeBegin='.$tmpDay['newEvtTimeBegin'] ?>')"></td><?php } ?>
 						</tr>
 					</table>
 					<!--EVENEMENTS DU JOUR-->
 					<?php foreach($tmpCal->evtListDays[$dayYmd] as $tmpEvt){ ?>
-						<?= $tmpEvt->objContentDiv("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
+						<?= $tmpEvt->objContainer("vEvtBlock",$tmpEvt->contextMenuOptions) ?>
 							<div class="vEvtLabel" onclick="<?= $tmpEvt->lightboxVue() ?>" <?= Txt::tooltip($tmpEvt->tooltip) ?>>
 								<span class="vEvtLabelDate"><?= $tmpEvt->dateLabel("mini",true) ?></span>
 								<?= $tmpEvt->title ?>

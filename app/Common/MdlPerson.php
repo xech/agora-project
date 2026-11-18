@@ -135,7 +135,7 @@ class MdlPerson extends MdlObject
 		}
 		//Adresse complete : affiche une carte 
 		elseif($fieldName=="fullAdress" && $this->hasAdress()){
-			$fieldVal='<a onclick="lightboxOpen(\'?ctrl=misc&action=PersonsMap&objectsTypeId['.static::objectType.']='.$this->_id.'\')" '.Txt::tooltip("mapLocalize").'><img src="app/img/map.svg">'.$this->adress.' '.$this->postalCode.' '.$this->city.'</a>';
+			$fieldVal='<a onclick="lightboxOpen(\'?ctrl=misc&action=PersonsMap&objectsTypeId['.static::objectType.']='.$this->_id.'\')" '.Txt::tooltip("mapShow").'><img src="app/img/map.svg">'.$this->adress.' '.$this->postalCode.' '.$this->city.'</a>';
 		}
 		//Commentaire
 		elseif($fieldName=="comment"){
@@ -305,7 +305,7 @@ class MdlPerson extends MdlObject
 	/********************************************************************************************************
 	 * CONNEXION A UN SERVEUR LDAP
 	 ********************************************************************************************************/
-	public static function ldapConnect($ldap_server=null, $ldap_server_port=null, $ldap_admin_login=null, $ldap_admin_pass=null, $displayError=true)
+	public static function ldapConnect($ldap_server=null, $ldap_server_port=null, $ldap_admin_login=null, $ldap_admin_pass=null, $errorNotify=true)
 	{
 		// Controle si la connexion LDAP est activée
 		if(!function_exists("ldap_connect"))  {return false;}
@@ -320,7 +320,7 @@ class MdlPerson extends MdlObject
 		ldap_set_option($ldapConnectServer, LDAP_OPT_REFERRALS, 0);			//Pour Active Directory
 		// Lien de connexion au serveur Ldap (identification) en tant qu'admin
 		$ldapConnect=ldap_bind($ldapConnectServer, $ldap_admin_login, $ldap_admin_pass);
-		if($ldapConnect==false && $displayError==true)  {Ctrl::notify("AGORA_ldapConnectError");}
+		if($ldapConnect==false && $errorNotify==true)  {Ctrl::notify("AGORA_ldapConnectError");}
 		// Retourne la connexion ldap si c'est ok
 		return ($ldapConnect==false)  ?  false  :  $ldapConnectServer;
 	}
@@ -328,7 +328,7 @@ class MdlPerson extends MdlObject
 	/*********************************************************************************************************************
 	 * RECUPERES DES PERSONNES DE L'ANNUAIRE LDAP  (exple de $importLdapFilter -> "(&(samaccountname=MONLOGIN)(cn=*))" )
 	 *********************************************************************************************************************/
-	public static function ldapSearch($importLoginPassword, $importLdapDn, $importLdapFilter)
+	public static function ldapSearch($importLdapDn, $importLdapFilter)
 	{
 		$ldapConnect=self::ldapConnect();
 		if($ldapConnect!=false){
@@ -347,11 +347,6 @@ class MdlPerson extends MdlObject
 				"function"				=>["title","titleall","function"],
 				"comment"				=>["description","comment"]
 			);
-			// Champs Agora  => On ajoute le login/password s'il s'agit d'utilisateurs
-			if($importLoginPassword==true){
-				$ldapFields["login"]=["uid","samaccountname"];
-				$ldapFields["password"]=["userpassword","password"];
-			}
 			// Récupere les users LDAP
 			$ldapSearch=ldap_search($ldapConnect, $importLdapDn, $importLdapFilter);
 			if($ldapSearch!=false){

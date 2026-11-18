@@ -44,20 +44,20 @@ function mainDisplay()
 	////	Fenêtre principale
 	if(isMainPage==true){
 		document.cookie="windowWidth="+windowTopWidth+"; Max-Age=31536000; SameSite=lax;";	//Width de la fenêtre dans un Cookie d'un an
-		$("#headerBarMargin").css("height", ($("#headerBar").outerHeight() + 30));			//Marge de entre la headerBar et le contenu de la page
+		$("#headerBarMarginShadow").css("height", ($("#headerBar").outerHeight() + 30));	//Marge de entre la headerBar et le contenu de la page
 		if(typeof moduleDisplay=="function")  {moduleDisplay();}							//Affichage spécifique d'un module : ModCalendar, ModTask
 
 		////	Width des objets en affichage "block"
-		if($(".objBlocks .objContent").exist()){
-			let pageContentWidth=$("#pageContent").width() - (isMobile() ? 0 : 14);												//Width de #pageContent - width de ::-webkit-scrollbar
-			let objMargins=parseFloat($(".objContent").css("margin-left")) + parseFloat($(".objContent").css("margin-right"));	//Marges des objets (cf. "app.css")
-			let widthMin  =parseFloat($(".objContent").css("min-width")) + objMargins;											//width Min
-			let widthMax  =parseFloat($(".objContent").css("max-width")) + objMargins;											//width Max
-			let lineObjNb=Math.ceil(pageContentWidth / widthMax);																//Nb d'objets par ligne : tester sur mobile !
-			if(pageContentWidth < (widthMin*2))			{widthObj=pageContentWidth;}											//Un objet par ligne : width 100%
-			else if($(".objContent").length<lineObjNb)	{widthObj=widthMax;}													//Tous les objets sur une seule ligne : largeur max
-			else										{widthObj=Math.floor(pageContentWidth/lineObjNb);}						//Width en fonction de pageContentWidth et lineObjNb
-			$(".objContent").outerWidth(widthObj,true);																			//Applique le width des objets (true pour prendre en compte les margins)
+		if($(".objBlocks .objContainer").exist()){
+			let pageContentWidth=$("#pageContent").width() - (isMobile() ? 0 : 14);													//Width de #pageContent - width de ::-webkit-scrollbar
+			let objMargins=parseFloat($(".objContainer").css("margin-left")) + parseFloat($(".objContainer").css("margin-right"));	//Marges des objets (cf. "app.css")
+			let widthMin  =parseFloat($(".objContainer").css("min-width")) + objMargins;											//width Min
+			let widthMax  =parseFloat($(".objContainer").css("max-width")) + objMargins;											//width Max
+			let lineObjNb=Math.ceil(pageContentWidth / widthMax);																	//Nb d'objets par ligne : tester sur mobile !
+			if(pageContentWidth < (widthMin*2))			{widthObj=pageContentWidth;}												//Un objet par ligne : width 100%
+			else if($(".objContainer").length<lineObjNb)	{widthObj=widthMax;}													//Tous les objets sur une seule ligne : largeur max
+			else										{widthObj=Math.floor(pageContentWidth/lineObjNb);}							//Width en fonction de pageContentWidth et lineObjNb
+			$(".objContainer").outerWidth(widthObj,true);																			//Applique le width des objets (true pour prendre en compte les margins)
 		}
 	}
 }
@@ -94,14 +94,13 @@ function mainTriggers()
 	Fancybox.bind("[data-fancybox='images'],.fancyboxImages", {l10n:fancyboxLang, Thumbs:fancyboxThumbs, Toolbar:fancyboxToolbar});
 	Fancybox.bind("[data-fancybox='inline']", {l10n:fancyboxLang, type:"html"});
 
-	////	Objets :  Click = sélection  ||  DblClick = édition (sauf mobile)
-	$(".objContent").off("click dblclick").on("click dblclick",function(event){//"off()" annule les triggers précédents si mainTriggers() est relancé 
-		if(event.type=="dblclick" && this.hasAttribute("data-url-edit"))	{lightboxOpen(this.getAttribute("data-url-edit"));}
-		else if(event.type=="click" && $(".objSelectCheckbox").exist())		{objSelectSwitch(this.id);}
+	////	DblClick .objContainer : ouvre une lightbox pour éditer l'objet  ("off()" annule les triggers précédents si relance de "mainTriggers()")
+	$(".objContainer[data-url-edit]").off("dblclick").on("dblclick",function(){
+		lightboxOpen(this.getAttribute("data-url-edit"));
 	});
 
-	////	Ouvre un lien dans une lightbox (cf. HTMLPurifier)
-	$("a.lightboxOpenHref").off("click").on("click",function(event){//"off()" annule les triggers précédents si mainTriggers() est relancé 
+	////	Ouvre un lien dans une lightbox  ("off()" annule les triggers précédents si relance de "mainTriggers()")
+	$("a.lightboxOpenHref").off("click").on("click",function(event){
 		event.preventDefault();
 		lightboxOpen(this.getAttribute("href"));
 	});
@@ -132,7 +131,7 @@ function mainTriggers()
 function controleFields()
 {
 	////	Pas d'autocomplétion des inputs
-	$("form input:not(.isAutocomplete)").attr("autocomplete","off");
+	$("form input:not([autocomplete])").attr("autocomplete","off");
 
 	////	Formulaire édité : passe "confirmCloseForm" à true. Timeout le tps de finaliser les controles de form
 	setTimeout(function(){
@@ -231,10 +230,8 @@ function menuContext()
 	$(".menuContext").on("mouseleave",function(){  $(".menuContext").hide();  });														//Masque le menu si mouseleave sur .menuContext
 	$(document).on("click",function(){  $(".menuContext").hide();  });																	//Masque si click sur la page, hors du menu (cf Tablette mode paysage)
 	$("#menuMobileClose,#menuMobileBg").on("click",function(){  menuMobileClose();  });													//Masque si click sur #menuMobileClose ou #menuMobileBg (black opacity)
-	$(".objSelectCheckbox,.menuContextLaunch,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });	//Pas de propagation de click (cf download ou sélection via "objSelectSwitch()")
-	if(windowTopWidth>=1300){																											//Click droit sur .objContent si width > 1300px
-		$(".objContent").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });							//"return false" pour annuler le menu du browser
-	}
+	$(".objSelectBoxDiv,.menuContextLaunch,.menuContext,[href],[onclick]").on("click",function(event){  event.stopPropagation();  });	//Pas de propagation de click sur tout le .objContainer
+	$(".objContainer").on("contextmenu",function(event){  menuContextShow(this,event);  return false;  });								//"return false" pour annuler le menu context du browser (par défaut)
 
 	////	Affichage via swipe sur mobile
 	if(isTouchDevice()){
@@ -245,13 +242,13 @@ function menuContext()
 			percentToBorderRight=Math.round(((windowTopWidth-touchStartX) / windowTopWidth) * 100);
 		});
 		document.addEventListener("touchmove",(event)=>{
-			swipeToLeft =(touchStartX - event.touches[0].clientX);														//Diff entre la position X de départ et celle en cours (variable globale !)
-			swipeToRight=(event.touches[0].clientX - touchStartX);														//Idem
-			swipeAmplitudeY=Math.abs(touchStartY - event.touches[0].clientY);											//Amplitude verticale du swipe : Math.abs car doit être > 0 (variable globale !)
-			if(swipeMenuOn==true && swipeAmplitudeY < 80 ){																//Swipe actif  + Amplitude verticale < 80px
-				let swipeMenuShow=(typeof swipeMenuShowOff=="undefined" && $("#menuMobileMain").isVisible()==false);	//Affichage du menu pas désactivé (cf calendar)  +  Menu pas encore affiché
-				if(swipeToLeft > 100  &&  swipeMenuShow==true  &&  percentToBorderRight < 35)	{menuMobileShow();}		//swipe vers la gauche > 100px et à moins de 35% du bord droit de la page
-				else if(swipeToRight > 100  &&  $("#menuMobileMain").isVisible())				{menuMobileClose();}	//swipe vers la droite > 100px
+			swipeToLeft =(touchStartX - event.touches[0].clientX);																		//Diff entre la position X de départ et celle en cours (variable globale !)
+			swipeToRight=(event.touches[0].clientX - touchStartX);																		//Idem
+			swipeAmplitudeY=Math.abs(touchStartY - event.touches[0].clientY);															//Amplitude verticale du swipe : Math.abs car doit être > 0 (variable globale !)
+			if(swipeMenuOn==true && swipeAmplitudeY < 80 ){																				//swipe actif  + Amplitude verticale < 80px
+				let swipeMenuShow=(typeof swipeMenuDisable=="undefined" && $("#menuMobileMain,.fancybox__content").isVisible()==false);	//swipe pas désactivé (cf calendar) + Menu pas encore affiché + pas de fancybox (swipe d'images)
+				if(swipeToLeft > 100  &&  swipeMenuShow==true  &&  percentToBorderRight < 35)	{menuMobileShow();}						//swipe vers la gauche > 100px et à moins de 35% du bord droit de la page
+				else if(swipeToRight > 100  &&  $("#menuMobileMain").isVisible())				{menuMobileClose();}					//swipe vers la droite > 100px
 			}
 		});
 		$(window).add("div").on("scroll",function(){										//// Scroll en cours (page ou div Task Gantt, tinyMce mobile...)
@@ -297,7 +294,7 @@ function menuMobileShow(launcher)
 			menuMobileHeader=(launcher)  ?  "#"+$(launcher).attr("for")  :  "#headerBarRight";					//menuMobileHeader : attr. "for" du launcher ou #headerBarRight si swipe (liste des modules ou autre)
 			menuMobileContent=(menuMobileHeader=="#headerBarRight")  ?  "#pageMenu"  :  null;					//Affiche aussi #pageMenu (menu de gauche)
 			if($(menuMobileHeader).exist()){																	//Vérif l'exisence de menuMobileHeader
-				$(menuMobileHeader+">*").appendTo("#menuMobileHeader");											//Déplace le contenu de menuMobileHeader dans menuMobileHeader
+				$(menuMobileHeader+":first>*").appendTo("#menuMobileHeader");									//Déplace le contenu de menuMobileHeader dans menuMobileHeader (1er menu dispo si affiché plusieurs fois : cf calendars)
 				if($(menuMobileContent).exist())  {$(menuMobileContent+">*").appendTo("#menuMobileContent");}	//Déplace le contenu de menuMobileContent dans #menuMobileContent
 				$('#menuMobileHeader .vHeaderModuleCurrent').appendTo('#menuMobileHeader');						//Déplace le module courant à la fin de la liste des modules
 				$("#menuMobileBg,#menuMobileHeader,#menuMobileContent").show();									//Affiche le/les contenus
@@ -356,11 +353,11 @@ function isMail(mail)
 }
 
 /************************************************************************************************************
- * CONTROLE UN PASSWORD : AU MOINS 12 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
+ * CONTROLE UN PASSWORD : AU MOINS 10 CARACTERES AVEC LETTRE + CHIFFRE + EVENTUELLEMENT CARAC. SPECIAUX
  ************************************************************************************************************/
 function isPassword(password)
 {
-	let regex=/^(?=.*[a-zA-Z])(?=.*\d).{12,}$/;
+	let regex=/^(?=.*[a-zA-Z])(?=.*\d).{10,}$/;
 	return regex.test(password);
 }
 
@@ -428,7 +425,7 @@ async function confirmRedir(urlRedir, confirmTitle, confirmInfo)
 		if(isDownload==false)	{window.top.location.href=urlRedir;}				//Redirection en page courante
 		else{																		//Nouvelle fenêtre : pour pas stopper la création d'archive si l'user change de page durant le processus
 			window.open(urlRedir);
-			notify(TRAD_confirmDownloadInfo+' <img src="app/img/loadingLine.svg" class="loadingImage">');
+			notify(TRAD_confirmDownloadInfo+' <img src="app/img/loadingLine.svg" class="submitLoadingIcon">');
 		}
 	}
 }
@@ -447,10 +444,10 @@ async function redir(locationUrl)
  ************************************************************************************************************/
 async function confirmDelete(deleteUrl, confirmInfo, ajaxControlUrl)
 {
-	confirmInfo=(isValue(confirmInfo))  ?  '<img src="app/img/arrowRightLabel.svg">'+confirmInfo  :  '';	// Nb d'objets sélectionnés, Label de l'objet, etc.
-	confirmInfo=confirmInfo+'<div class="confirmDeleteInfo">'+TRAD_confirmDeleteInfo+'</div>';			// "Supprimer définitivement"
-	if(await confirmAlt(TRAD_confirmDelete,confirmInfo)){												// "Confirmer la suppression ?"
-		if(!isValue(ajaxControlUrl))  {window.location.href=deleteUrl;}									// Suppression directe (pas de "window.top.location" : cf. lightbox des commentaires ou autre)
+	confirmInfo=(isValue(confirmInfo))  ?  '<img src="app/img/arrowLabel.svg">'+confirmInfo  :  '';	// Nb d'objets sélectionnés, Label de l'objet, etc.
+	confirmInfo=confirmInfo+'<div class="confirmDeleteInfo">'+TRAD_confirmDeleteInfo+'</div>';		// "Supprimer définitivement"
+	if(await confirmAlt(TRAD_confirmDelete,confirmInfo)){											// "Confirmer la suppression ?"
+		if(!isValue(ajaxControlUrl))  {window.location.href=deleteUrl;}								// Suppression directe (pas de "window.top.location" : cf. lightbox des commentaires ou autre)
 		else{
 			$.ajax({url:ajaxControlUrl, dataType:"json"}).done(async function(result){																// Controle Ajax avant suppression de dossier :
 				if(isValue(result.confirmDeleteWait)) 															{notify(result.confirmDeleteWait);}	// "Merci de patienter un instant" (gros dossiers)
@@ -476,11 +473,11 @@ ready(function(){
  ************************************************************************************************************/
 function submitLoading()
 {
-	$(".loadingImage").show();
+	$(".submitLoadingIcon").show();
 	$("button[type='submit']").prop("disabled",true);
 	let timeoutMS=($("form input[type='file'").exist())  ?  1000000 : 3000;//Tester upload big file
 	setTimeout(function(){
-		$(".loadingImage").hide();
+		$(".submitLoadingIcon").hide();
 		$("button[type='submit']").prop("disabled",false);
 	 },timeoutMS);
 }
@@ -716,11 +713,8 @@ ready(function(){
  ************************************************************************************************************/
 function spaceAffectStyle()
 {
-	$(".spaceAffectLine").removeClass("lineSelect accessRead accessWrite");	//Réinit le style des lignes
-	$(".spaceAffectLine:has(.spaceAffectBox input:checked)").each(function(){	//Parcourt les lignes sélectionnées (.spaceAffectBox uniquement)
-		if($(this).find("input[value$='_2']").is(":checked"))	{$(this).addClass("lineSelect accessWrite");}
-		else													{$(this).addClass("lineSelect accessRead");}
-	});
+	$(".spaceAffectLine").removeClass("lineSelect accessUser");					//Réinit le style des lignes
+	$(".spaceAffectLine:has(input:checked)").addClass("lineSelect accessUser");	//Style des lignes sélectionnées
 }
 
 /************************************************************************************************************
@@ -742,8 +736,8 @@ function usersLikeUpdate(typeId)
 	if(isValue(typeId)){
 		$.ajax({url:"index.php?ctrl=object&action=usersLike&typeId="+typeId, dataType:"json"}).done(function(result){	//Requête Ajax pour switcher le "like"
 			let menuId="#usersLike_"+typeId;																			//Id du menu
-			if(result.likeNb==0)	{$(menuId).addClass("hide").find(".circleNb").html("");}							//Masque l'icone et le nb de likes
-			else					{$(menuId).removeClass("hide").find(".circleNb").html(result.likeNb).pulsate(1);}	//Affiche l'icone
+			if(result.likeNb==0)	{$(menuId).find(".circleNb").html("");}												//Masque l'icone et le nb de likes
+			else					{$(menuId).find(".circleNb").html(result.likeNb).pulsate(1);}						//Affiche l'icone
 			$(menuId).tooltipUpdate(result.likeTooltip);																//Update les tooltips
 		});
 	}

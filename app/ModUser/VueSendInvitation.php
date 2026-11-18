@@ -119,7 +119,7 @@ button											{width:330px; height:55px;}
 		<!--ENVOI D'UNE INVITATION-->
 		<?php foreach($userFields as $tmpField){ ?><input type="text" name="<?= $tmpField ?>" placeholder="<?= Txt::trad($tmpField) ?>"><?php } ?>
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>
-		<?= Txt::submitButton("send") ?>
+		<?= Tool::submitButton("send") ?>
 	</form>
 
 	<!--INVITATION AVEC IMPORT DES CONTACTS GMAIL-->
@@ -130,7 +130,7 @@ button											{width:330px; height:55px;}
 	</div>
 	<form id="gPeopleForm">
 		<textarea name="comment" placeholder="<?= Txt::trad("commentAdd") ?>"><?= Req::param("comment") ?></textarea>
-		<?= Txt::submitButton("send") ?>
+		<?= Tool::submitButton("send") ?>
 	</form>
 	<?php } ?>
 
@@ -145,7 +145,7 @@ button											{width:330px; height:55px;}
 			foreach($invitationList as $tmpInvitation){
 				$objSpace=Ctrl::getObj("space",$tmpInvitation["_idSpace"]);
 				$deleteInvitationImg="<img src='app/img/delete.svg' style='height:20px' ".Txt::tooltip("delete")." onclick=\"confirmDelete('?ctrl=user&action=sendInvitation&deleteInvitation=true&_idInvitation=".$tmpInvitation["_idInvitation"]."')\" >";
-				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::dateLabel("dateMini",$tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowRightLabel.svg'> ".$objSpace->name."</li>";
+				echo "<li>".$tmpInvitation["name"]." ".$tmpInvitation["firstName"]." - ".$tmpInvitation["mail"]." - ".Txt::dateLabel("dateMini",$tmpInvitation["dateCrea"])."&nbsp; ".$deleteInvitationImg."<br><img src='app/img/arrowLabel.svg'> ".$objSpace->name."</li>";
 			}
 			?>
 		</ul>

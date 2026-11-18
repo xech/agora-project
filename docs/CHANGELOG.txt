@@ -3,11 +3,25 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
+VERSION 26.11.1
+---------------
+Consolidation des protections anti XSS et CSRF
+Amélioration de la présentation du menu principal du header
+Amélioration des menus contextuels sur mobile
+Optimisation de la présentation de l'éditeur avec le "thème sombre"
+Optimisation des scripts CSS principaux
+-----
+Strengthening of anti-XSS and anti-CSRF protections
+Improved presentation of the main header menu
+Enhanced contextual menus for mobile
+Optimized editor layout for "dark mode"
+Optimizing main CSS scripts
+
 
 VERSION 26.10.5
 ---------------
 Nouvelle option d'authentification à deux facteurs (2FA)
-Nouvelle présentation et modification des icones au format svg, optimisé en responsive
+Nouvelle présentation et modification des icones au format svg, optimisées en responsive
 Amélioration du drag and drop de la messagerie instantanée, désormais accessible sur tout le formulaire
 Amélioration de la présentation et l'ergonomie de la messagerie instantanée
 Amélioration de l'ergonomie de l'upload de fichiers

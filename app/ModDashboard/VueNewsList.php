@@ -3,7 +3,7 @@
 $infiniteScrollHidden=(!empty($infiniteSroll)) ? 'infiniteScrollHidden' : null;
 foreach($newsList as $tmpNews)
 {
-	echo $tmpNews->objContentDiv('vNewsContainer '.$infiniteScrollHidden).
+	echo $tmpNews->objContainer('vNewsContainer '.$infiniteScrollHidden).
 			'<div class="vNewsDescription">'.$tmpNews->description.'</div>'.
 			'<div class="vNewsDetail">'.
 				(!empty($tmpNews->dateCrea) ?		'<div>'.$tmpNews->autorDate(true).'</div>'  : null).

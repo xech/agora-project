@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="18.24mm" height="18.24mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 1824 1824" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="linearGradient104" x1="5" x2="1817" y1="903.5" y2="903.5" gradientUnits="userSpaceOnUse"><stop stop-color="#575757" offset="0"/><stop stop-color="#969696" offset="1"/></linearGradient></defs>
+<svg width="18.24mm" height="18.24mm" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 1824 1824" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="linearGradient104" x1="5" x2="1817" y1="903.5" y2="903.5" gradientUnits="userSpaceOnUse"><stop stop-color="#575757" offset="0"/><stop stop-color="#969696" offset="1"/></linearGradient><linearGradient id="linearGradient10" x1="5" x2="1817" y1="903.5" y2="903.5" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient104"/></defs>
  
  
  
  
   
  
- <g class="SlideGroup" transform="matrix(1.0056 0 0 .93944 -5.0281 54.716)" fill="url(#linearGradient104)">
+ <g class="SlideGroup" transform="matrix(1.0047 0 0 1.0104 -2.6264 -13.4)" fill="url(#linearGradient10)">
   
    
     

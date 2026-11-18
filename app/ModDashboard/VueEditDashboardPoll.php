@@ -20,7 +20,7 @@ async function deleteResponseFile(_idReponse)
 }
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		let responsesNb=$(".vPollResponseDiv input[name^='responses']").filter(function(){ return this.value; }).length;	//Nombre de "Réponses" spécifiées
 		if(responsesNb < 2)		{resolve(false);  notify("<?= Txt::trad("DASHBOARD_controlResponseNb") ?>");}				//Au moins 2 réponses au sondage
@@ -82,7 +82,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 	<?php } ?>
 
 	<!--SONDAGE PAS ENCORE VOTÉ : AJOUTER UNE REPONSE-->
-	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_POLLS_responseAdd") ?>&nbsp; <img src="app/img/add.svg"></div><?php } ?>
+	<?php if($pollIsVoted==false){ ?><div id="responseAdd" onclick="$('.vPollResponseDiv:hidden:first').fadeIn().find('input').focusAlt()"><?= Txt::trad("DASHBOARD_POLLS_responseAdd") ?>&nbsp; <img src="app/img/addBlue.svg"></div><?php } ?>
 
 	<!--REPONSES MULTIPLES  &&  VOTE PUBLIC  &&  AFFICHAGE AVEC LES NEWS ("checked" par défaut)  &&  DATE DE FIN-->
 	<br><br>

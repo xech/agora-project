@@ -20,7 +20,7 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		var ajaxUrl="index.php?ctrl=object&action=ControlDuplicateName&typeId=<?= $curObj->typeId ?>&controledName="+encodeURIComponent($("input[name='name']").val())+"&typeIdContainer=<?= $curObj->containerObj()->typeId ?>";
 		$.ajax(ajaxUrl).done(function(result){

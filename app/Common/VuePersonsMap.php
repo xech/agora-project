@@ -80,7 +80,7 @@ function displayAdress(adressKey)
 			}
 			//..Erreur "Adresse non trouvé"
 			else{
-				notify("<?= Txt::trad("mapLocalizationFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapLocalizationFailure2") ?>");
+				notify("<?= Txt::trad("mapShowFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapShowFailure2") ?>");
 			}
 			//// Géolocalise l'adresse suivante  OU  Affichage final : recentre et ajuste le zoom en fonction des limites de la carte (bounds)
 			if(getAdressKeyNext(adressKey))			{displayAdress(getAdressKeyNext(adressKey));}
@@ -92,7 +92,7 @@ function displayAdress(adressKey)
 		//// Géocode et marque chaque adresse
 		$.ajax({url:"https://nominatim.openstreetmap.org/search?format=json&q="+encodeURIComponent(tmpAdress.adress), dataType:"json"}).done(function(result){
 			//// "Adresse non trouvé"  OU  Adresse trouvée et placée sur la carte
-			if(result.length==0)  {notify("<?= Txt::trad("mapLocalizationFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapLocalizationFailure2") ?>");}
+			if(result.length==0)  {notify("<?= Txt::trad("mapShowFailure") ?> :<br>"+tmpAdress.adress+"<br><br><?= Txt::trad("mapShowFailure2") ?>");}
 			else{
 				//DEBUG
 				//notify(tmpAdress.adress+"<br>->"+result[0].display_name+"<br>->"+result[0].lat+"<br>->"+result[0].lon);

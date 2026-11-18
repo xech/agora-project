@@ -44,7 +44,7 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		//// Sélectionner au moins un fichier
 		let isPlupload=$("#uploadMultiple").isVisible();
@@ -88,11 +88,10 @@ function mainFormControl(){
 .plupload_file_status 					{position:absolute; bottom:15px; right:15px;}												/*% de progression*/
 .ui-state-highlight						{background-color:#d2f5b8!important; border-block-color:#ccc!important;}					/*fichier en cours d'upload*/
 #uploadOptions							{display:table; margin-inline:auto; margin-top:30px;}										/*options d'upload*/
-#uploadOptions>div						{display:table-cell; padding-inline:20px; vertical-align:middle;}							/*idem*/
-#descriptionTextarea					{margin-top:20px;}																			/*textarea description*/
-#uploadSimple, #uploadOptions #resizeImage, #descriptionTextarea, .plupload_progress_container, .plupload_file_status											{display:none;}				/*masque par défaut*/
+#uploadOptions>div						{display:table-cell; width:auto; padding-inline:20px; vertical-align:middle;}				/*idem*/
+#uploadSimple, #uploadOptions #resizeImage, .plupload_progress_container, .plupload_file_status		{display:none;}					/*masque par défaut*/
 .plupload_header, .plupload_filelist_header, .plupload_start, .plupload_filelist_footer td:is(.plupload_file_action,.plupload_file_size), .ui-resizable-handle	{display:none!important;}	/*masque toujours*/
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.plupload_droptext 	{display:none!important;}
 	#uploadOptions>div	{display:inline-block; padding:10px;}
@@ -117,27 +116,32 @@ function mainFormControl(){
 		<input type="hidden" name="tmpFolderName" value="<?= $tmpFolderName ?>">
 	<?php } ?>
 		
-	<!--OPTIONS : UPLOAD MULTIPLE/SIMPLE  &&  IMAGERESIZE  &&  DESCRIPTION-->
+	<!--OPTIONS :   &&    &&  -->
 	<div id="uploadOptions">
+		<!--UPLOAD MULTIPLE/SIMPLE-->
 		<?php if(Req::isParam("addVersion")==false){ ?>
-		<div id="uploadMultipleSimple" <?= Txt::tooltip("FILE_uploadSimpleMultiple") ?>>
-			<select name="uploadForm" onchange="$('#uploadMultiple,#uploadSimple').hide();$('#'+this.value).show();">
-				<option value="uploadMultiple"><?= Txt::trad("FILE_uploadMultiple") ?></option>
-				<option value="uploadSimple"><?= Txt::trad("FILE_uploadSimple") ?></option>
-			</select>
-		</div>
+			<div id="uploadMultipleSimple" <?= Txt::tooltip("FILE_uploadSimpleMultiple") ?>>
+				<select name="uploadForm" onchange="$('#uploadMultiple,#uploadSimple').hide();$('#'+this.value).show();">
+					<option value="uploadMultiple"><?= Txt::trad("FILE_uploadMultiple") ?></option>
+					<option value="uploadSimple"><?= Txt::trad("FILE_uploadSimple") ?></option>
+				</select>
+			</div>
 		<?php } ?>
+		<!--IMAGERESIZE-->
 		<div id="resizeImage">
 			<input type="checkbox" name="imageResize" id="imageResizeInput" value="1" checked> 
 			<label for="imageResizeInput"><?= Txt::trad("FILE_imgReduce") ?></label>
 		</div>
-		<div id="uploadDescription" onclick="$('#descriptionTextarea').slideToggle();">
-			<img src="app/img/description.svg"> <?= Txt::trad("description") ?> <img src="app/img/arrowDown.svg">
+		<!--TEXTAREA/DESCRIPTION : LABEL TOOGLE-->
+		<div id="textareaToogle" onclick="$('#textareaDiv').slideToggle()">
+			<img src="app/img/description.svg"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowDown.svg"></label>
 		</div>
 	</div>
-	
-	<!--DESCRIPTION TEXTAREA-->
-	<textarea name="description" placeholder="<?= Txt::trad("description") ?>" id="descriptionTextarea"></textarea>
+
+	<!--TEXTAREA/DESCRIPTION : FIELD-->
+	<div id="textareaDiv">
+		<textarea name="description" placeholder="<?= Txt::trad("description") ?>"></textarea>
+	</div>
 
 	<!--MENU D'EDITION & VALIDATION DU FORM-->
 	<?= $curObj->editMenuSubmit() ?>

@@ -9,11 +9,11 @@ ready(function(){
 });
 
 ////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
-function mainFormControl(){
+function formControl(){
 	return new Promise((resolve)=>{
 		//// Vérif de base
 		if($("input[name='login']").isEmpty())													{resolve(false);  notify("<?= Txt::trad("specifyLogin") ?>");}//Login obligatoire
-		if($("[name='password']").notEmpty() && $("[name='password']").isPassword()==false)		{resolve(false);  notify("<?= Txt::trad("passwordInvalid") ?>");}//Password invalide
+		if($("[name='password']").notEmpty() && $("[name='password']").isPassword()==false)		{resolve(false);  notify("<?= Txt::trad("passwordRequiredChars") ?>");}//Password invalide
 		//// Vérif si le Login email est identique à l'email
 		if($("input[name='login']").isMail()  &&  $("input[name='mail']").isMail()  &&  $("input[name='mail']").val()!=$("input[name='login']").val())
 			{resolve(false);  notify("<?= Txt::trad("USER_loginAndMailDifferent") ?>");}
@@ -54,7 +54,7 @@ function mainFormControl(){
 	<!--PASSWORD-->
 	<div class="objField">
 		<div><?= Txt::trad("password") ?></div>
-		<div><?= Txt::inputPassword("password",$curObj->isNew()) ?></div>
+		<div><?= Tool::inputPassword("password",$curObj->isNew()) ?></div>
 	</div>
 
 	<!--DOUBLE AUTHENTIFICATION-->

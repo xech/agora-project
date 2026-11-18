@@ -1,14 +1,16 @@
 <style>
-#displayUsersSelect		{margin:10px; height:40px; border-radius:var(--radius_field); font-weight:bold; cursor:pointer;}
+.objBlocks .objContainer	{height:150px;}/*surcharge*/
+#displayUsersSelect			{margin:10px; height:40px; border-radius:var(--radius_field); font-weight:bold; cursor:pointer;}
 #displayUsersSelect:has(option[value='all']:checked)	{background-color:#059; color:white!important}
-#menuAlphabet a			{display:inline-block; padding:8px; font-weight:bold;}
-.vAdminIcon				{margin-left:5px;}
+#menuAlphabet a				{display:inline-block; padding:8px; font-weight:bold;}
+.vAdminIcon					{margin-left:5px;}
 </style>
+
 
 <div id="pageFull">
 	<div id="pageMenu">
 		<?= MdlUser::menuSelect() ?>
-		<div class="miscContent">
+		<div class="miscContainer">
 
 			<!--"USERS DE L'ESPACE" / "TOUS LES USERS"-->
 			<?php if($menuDisplayUsers==true){ ?>
@@ -22,11 +24,11 @@
 			<!--ADD USER /  INVITATIONS  /  IMPORTER DES USERS  /  ENVOI DES CREDENTIALS  /  AFFECT USER -->
 			<?php
 			$affectNewUsers=(Ctrl::$curUser->isSpaceAdmin() && Ctrl::$curSpace->allUsersAffected()==false);
-			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
+			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlUser::getUrlNew().'\')" '.Txt::tooltip($_SESSION["displayUsers"]=='all'?'USER_addUserSite':'USER_addUserSpace').'><div class="menuIcon"><img src="app/img/addBlue.svg"></div><div>'.Txt::trad("USER_addUser").'</div></div>';}
 			if(Ctrl::$curUser->sendInvitationRight())	{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=SendInvitation\')" '.Txt::tooltip("USER_sendInvitationTooltip").'><div class="menuIcon"><img src="app/img/mail.svg"></div><div>'.Txt::trad("USER_sendInvitation").'</div></div>';}
 			if(Ctrl::$curUser->isGeneralAdmin())		{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=PasswordResetUsers\')" '.Txt::tooltip("USER_sendCoordsTooltip").'><div class="menuIcon"><img src="app/img/keys.svg"></div><div>'.Txt::trad("USER_sendCoords").'</div></div>';}
 			if(Ctrl::$curUser->isSpaceAdmin())			{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=vueImportExport\')"><div class="menuIcon"><img src="app/img/exchange.svg"></div><div>'.Txt::trad("importExport_user").'</div></div>';}
-			if($affectNewUsers==true)  					{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=AffectUsers\')" '.Txt::tooltip("USER_addExistUserTitle").'><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("USER_addExistUser").'</div></div>';}
+			if($affectNewUsers==true)  					{echo '<div class="menuLine" onclick="lightboxOpen(\'?ctrl=user&action=AffectUsers\')" '.Txt::tooltip("USER_addExistUserTitle").'><div class="menuIcon"><img src="app/img/addBlue.svg"></div><div>'.Txt::trad("USER_addExistUser").'</div></div>';}
 			?>
 
 			<!--GROUPES D'UTILISATEURS-->
@@ -42,7 +44,7 @@
 					<?php foreach($userGroups as $tmpGroup){ ?>
 						<div class="menuLine cursorHelp" <?= Txt::tooltip($tmpGroup->usersLabel) ?>>
 							<div class="menuIcon">&nbsp;</div>
-							<div><img src='app/img/arrowRightLabel.svg'> <?= ucfirst($tmpGroup->title) ?></div>
+							<div><img src='app/img/arrowLabel.svg'> <?= ucfirst($tmpGroup->title) ?></div>
 						</div>
 					<?php } ?>
 					<!--EDITION DES GROUPES-->
@@ -84,9 +86,9 @@
 		<!--LISTE DES USERS-->
 		<?php foreach($displayedUsers as $tmpUser){ ?>
 			<!--BLOCK DE L'USER-->
-			<?= $tmpUser->objContentDiv("objPerson") ?>
-				<div class="objContentScroll">
-					<div class="objContentTab">
+			<?= $tmpUser->objContainer() ?>
+				<div class="objContainerScroll">
+					<div class="objContainerTab">
 						<div class="objIcon"><?= $tmpUser->tagProfileImg(true,false) ?></div>
 						<div class="objLabel" onclick="<?= $tmpUser->lightboxVue() ?>">
 							<div class="personLabel">
@@ -107,7 +109,7 @@
 
 		<!--AUCUN CONTENU -->
 		<?php if(empty($displayedUsers)){ ?>
-			<div class="miscContent emptyContent"><?= Txt::trad("USER_noUser") ?></div>
+			<div class="miscContainer emptyContent"><?= Txt::trad("USER_noUser") ?></div>
 		<?php } ?>
 
 		<!--MENU DE PAGINATION-->

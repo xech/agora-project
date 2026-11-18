@@ -4,7 +4,7 @@ $infiniteScrollHidden=(!empty($infiniteSroll)) ? 'infiniteScrollHidden' : null;
 foreach($pollsList as $tmpPoll)
 {
 	$pollContent=($tmpPoll->curUserHasVoted() || $tmpPoll->isFinished())  ?  $tmpPoll->vuePollResult()  :  $tmpPoll->vuePollForm();//Formulaire OU Résultat du sondage
-	echo $tmpPoll->objContentDiv('vPollsContainer '.$infiniteScrollHidden).
+	echo $tmpPoll->objContainer('vPollsContainer '.$infiniteScrollHidden).
 			'<div class="vPollsTitle">'.$tmpPoll->title.'</div>'.
 			'<div class="vPollsDescription">'.$tmpPoll->description.'</div>'.
 			'<div class="vPollContent'.$tmpPoll->_id.'">'.$pollContent.'</div>'.

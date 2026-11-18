@@ -169,7 +169,7 @@ class CtrlMisc extends Ctrl
 			}
 		}
 		//// Resultat de recherche
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Paramétrage de la récupération des plugins
 			$vDatas["pluginsList"]=[];
 			$pluginParams=array("type"=>"search", "searchText"=>Req::param("searchText"), "searchMode"=>Req::param("searchMode"), "creationDate"=>Req::param("creationDate"), "searchFields"=>Req::param("searchFields"), "searchModules"=>Req::param("searchModules"));
@@ -201,7 +201,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * VUE : MENU "CAPTCHA"
+	 *  CAPTCHA : VUE DU MENU
 	 ********************************************************************************************************/
 	public static function menuCaptcha()
 	{
@@ -209,7 +209,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * AJAX : CONTROLE DU CAPTCHA
+	 * CAPTCHA : CONTROLE AJAX
 	 ********************************************************************************************************/
 	public static function actionCaptchaControl()
 	{
@@ -217,7 +217,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 *  ACTION : AFFICHE L'IMAGE D'UN MENU "CAPTCHA"
+	 *  CAPTCHA : IMAGE DE LA VUE DU MENU
 	 ********************************************************************************************************/
 	public static function actionCaptchaImg()
 	{
@@ -239,8 +239,7 @@ class CtrlMisc extends Ctrl
 		//Dessine le texte
 		$_SESSION["captcha"]="";
 		$y=($height/2) + ($fontSize/2);
-		for($i=0; $i < $caracNb; $i++)
-		{
+		for($i=0; $i < $caracNb; $i++){
 			// pour chaque caractere : Police + couleur + angulation
 			$captchaFont="app/misc/captchaFonts/".mt_rand(1,3).".ttf";
 			$color=self::captchaColor($colorFonts[mt_rand(0,count($colorFonts)-1)]);
@@ -257,7 +256,7 @@ class CtrlMisc extends Ctrl
 	}
 
 	/********************************************************************************************************
-	 * COULEUR AU FORMAT HEXADECIMAL POUR UN CAPTCHA
+	 * CAPTCHA : COULEUR HEXADECIMALE
 	 ********************************************************************************************************/
 	protected static function captchaColor($colors)
 	{

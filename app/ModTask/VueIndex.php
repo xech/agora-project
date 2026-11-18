@@ -13,12 +13,11 @@ function moduleDisplay(){
 /*LABEL/DETAILS DES TACHES*/
 .vObjTasks .objLabelDetail					{margin-top:10px; font-size:0.9rem;}		/*.categoryLabel et .priorityLabel*/
 .vObjTasks .objLabelDetail span				{display:inline-block; margin-right:10px;}	/*idem*/
-.objLines .objContent						{height:65px;}								/*surcharge*/
 .objLines .progressBar						{margin-left:15px;}							/*.progressBar*/
 .objBlocks .objIconOpacity					{display:none;}								/*masque l'icone*/
 .objLines .objIconOpacity img				{width:30px;}								/*surcharge*/
 .objBlocks .objDetails						{display:table-cell; width:40px; text-align:right;}/*cellule des .progressBar*/
-.objBlocks .objFolders .objDetails			{width:100px;}								/*détail des dossiers*/
+.objBlocks .objContainerFolder .objDetails	{width:100px; line-height:25px;}			/*détail des dossiers*/
 .objBlocks .objDetails .progressBar			{margin-block:2px;}							/*.progressBar au format icone : sans label*/
 .objBlocks .progressBarLabel				{display:none;}								/*idem*/
 .progressBarDelayed							{color:#740;}
@@ -36,15 +35,15 @@ function moduleDisplay(){
 .vTimelineLeftBorder						{border-left:#ccc solid 1px;}
 .vTimelineLeftBorder2						{border-left:#eee solid 1px;}
 #timelineMain .progressBar					{width:100%; margin:0px!important; padding:5px 2px;}/*100% de width des cellules : cf "colspan"*/
-#timelineMain .progressBar img[src*=date]	{display:none;}
+#timelineMain .progressBar img[src*='date']	{display:none;}
 #timelineMain  .progressBarLabel			{display:inline-block;}/*affiche toujours le contenu du .progressBarLabel*/
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
-	#timelineMain							{font-size:0.9rem;}
-	#timelineMain td:not(:first-child)		{min-width:22px;}
-	#timelineMain img						{display:none;}
-	.vTimelineTitle							{max-width:220px;}
+	#timelineMain										{font-size:0.9rem;}
+	#timelineMain td:not(:first-child)					{min-width:22px;}
+	#timelineMain img									{display:none;}
+	.vTimelineTitle										{max-width:220px;}
 }
 </style>
 
@@ -52,12 +51,12 @@ function moduleDisplay(){
 <div id="pageFull">
 	<div id="pageMenu">
 		<?= MdlTask::menuSelect() ?>
-		<div class="miscContent">
+		<div class="miscContainer">
 			<?php
 			////	MENU D'AJOUT D'ELEMENTS
 			if(Ctrl::$curContainer->addContentRight()){
-				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
-					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/addFolder.svg"></div><div>'.Txt::trad("addFolder").'</div></div>
+				echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlTask::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/addBlue.svg"></div><div>'.Txt::trad("TASK_addTask").'</div></div>
+					  <div class="menuLine" onclick="lightboxOpen(\''.MdlTaskFolder::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/addBlueFolder.svg"></div><div>'.Txt::trad("addFolder").'</div></div>
 					  <hr>';
 			}
 			////	ARBORESCENCE  &  MENU DES STATUS  &  MENU D'AFFICHAGE  &  MENU DE TRI  &  DESCRIPTION DU CONTENU
@@ -73,10 +72,10 @@ function moduleDisplay(){
 		////	PATH DU DOSSIER COURANT  + LISTE DES DOSSIERS  + LISTE DES TACHES
 		echo MdlFolder::menuPath(Txt::trad("TASK_addTask"),MdlTask::getUrlNew()).CtrlObject::vueFolders();
 		foreach($tasksList as $tmpTask){
-			echo $tmpTask->objContentDiv();
+			echo $tmpTask->objContainer();
 		?>
-				<div class="objContentScroll">
-					<div class="objContentTab vObjTasks">
+				<div class="objContainerScroll">
+					<div class="objContainerTab vObjTasks">
 						<div class="objIcon objIconOpacity"><img src="app/img/task/icon.svg"></div>
 						<div class="objLabel" onclick="<?= $tmpTask->lightboxVue() ?>">
 							<?= ucfirst($tmpTask->title) ?>
@@ -91,16 +90,16 @@ function moduleDisplay(){
 
 		<!--AUCUN CONTENU + AJOUTER-->
 		<?php if(empty(CtrlObject::vueFolders()) && empty($tasksList)){ ?>
-			<div class="miscContent emptyContent">
+			<div class="miscContainer emptyContent">
 				<?= Txt::trad("TASK_noTask") ?>
-				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlTask::getUrlNew() ?>')"><img src="app/img/add.svg"> <?= Txt::trad("TASK_addTask") ?></div><?php } ?>
+				<?php if(Ctrl::$curContainer->addContentRight()){ ?><div onclick="lightboxOpen('<?= MdlTask::getUrlNew() ?>')"><img src="app/img/addBlue.svg"> <?= Txt::trad("TASK_addTask") ?></div><?php } ?>
 			</div>
 		<?php } ?>
 
 		<!--TIMELINE-->
 		<?php if(!empty($timelineBegin)){ ?>
 			<hr id="timelineSeparator">
-			<div id="timelineMain" class="miscContent">
+			<div id="timelineMain" class="miscContainer">
 				<table>
 
 					<?php

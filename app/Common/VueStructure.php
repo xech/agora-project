@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<?= Txt::trad("CURLANG") ?>" id="<?= Ctrl::$isMainPage==true?'htmlMainPage':'htmlLightbox' ?>">
+<html lang="<?= Txt::trad("CURLANG") ?>">
 	<head>
 		<!-- AGORA-PROJECT :: UNDER THE GENERAL PUBLIC LICENSE V2 :: https://www.gnu.org -->
 		<meta charset="UTF-8">
@@ -39,8 +39,12 @@
 		<!-- JAVASCRIPT & CSS PRINCIPAUX (TJS À LA FIN)-->
 		<script src="app/Common/js-css-<?= Req::appVersion() ?>/app.js"></script>
 		<link  href="app/Common/js-css-<?= Req::appVersion() ?>/app.css" rel="stylesheet" type="text/css">
-		<link  href="app/Common/js-css-<?= Req::appVersion() ?>/<?= (is_object(Ctrl::$agora) && Ctrl::$agora->skin=="black")?"black.css":"white.css" ?>" rel="stylesheet" type="text/css">
-
+		
+		<!--WALLPAPER FULLSIZE-->
+		<?php if(Ctrl::$isMainPage==true && isset($pathWallpaper)){ ?>
+			<style> html {background:url('<?= addslashes($pathWallpaper) ?>') no-repeat center fixed; background-size:cover;}  </style>
+		<?php } ?>
+	
 		<script>
 		////	Parametres et trads pour app.js
 		isMobileApp				=<?= Req::isMobileApp()==true ? "true" : "false" ?>;
@@ -78,31 +82,25 @@
 			}
 		});
 		</script>
-
-		
-		<!--WALLPAPER FULLSIZE-->
-		<?php if(isset($pathWallpaper)){ ?>
-			<style>  html  {background:url('<?= addslashes($pathWallpaper) ?>') no-repeat center fixed; background-size:cover;}  </style>
-		<?php } ?>
 	</head>
 
 
-	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="body<?= ucfirst(Ctrl::$agora->skin) ?>">
+	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="<?= Ctrl::$agora->skin=='black'?'bodyBlack':'bodyWhite' ?>">
 	
-		<!--CONTENU PRINCIPAL DE LA PAGE-->
+		<!--HEADER MENU + MAIN CONTENT + MESSENGER-->
 		<?php
 		if(!empty($headerMenu))		{echo $headerMenu;}
 		if(!empty($mainContent))	{echo $mainContent;}
 		if(!empty($messenger))		{echo $messenger;}
 		?>
 
-		<!--FOOTER EN PAGE PRINCIPALE-->
+		<!--FOOTER DE LA PAGE-->
 		<?php if(isset($footerLogoUrl)){ ?>
 			<span id="pageFooterText"><?= is_object(Ctrl::$agora) ? Ctrl::$agora->footerHtml : null ?></span>
 			<a id="pageFooterLogo" href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a>
 		<?php } ?>
 
-		<!--MOBILE : MENU CONTEXT-->
+		<!--MOBILE > MENU CONTEXT-->
 		<div id="menuMobileBg"></div>
 		<div id="menuMobileMain">
 			<div id="menuMobileClose"><img src="app/img/close.svg"></div>
@@ -110,8 +108,8 @@
 			<div id="menuMobileContent"></div>
 		</div>
 
-		<!--MOBILE : BOUTON "+" EN BAS A DROITE-->
-		<div id="mobileAddElem"><img src="app/img/add.svg"></div>
+		<!--MOBILE > BOUTON "ADD"-->
+		<div id="mobileAddElem"><img src="app/img/addBlue.svg"></div>
 
 	</body>
 </html>

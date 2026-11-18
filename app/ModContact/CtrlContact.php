@@ -63,7 +63,7 @@ class CtrlContact extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$curObj=$curObj->editRecord("name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment"));
 			//Ajoute/supprime l'image / Notifie par mail & Ferme la page
@@ -85,7 +85,7 @@ class CtrlContact extends Ctrl
 		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxRedir();}
 		$curContainer=Ctrl::$curContainer;//cf param "typeId"
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//// Export de contacts
 			if(Req::param("actionImportExport")=="export"){
 				$contactList=Db::getObjTab("contact", "SELECT * FROM ".MdlContact::dbTable." WHERE ".MdlContact::sqlDisplay($curContainer));

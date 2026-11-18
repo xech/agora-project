@@ -60,7 +60,7 @@ class CtrlObject extends Ctrl
 	public static function actionFolderMove()
 	{
 		//Validation du formulaire
-		if(Req::isParam(["formValidate","newFolderId"])){
+		if(Tool::formControl() && Req::isParam("newFolderId")){
 			foreach(self::getCurObjects() as $tmpObj)  {$tmpObj->folderMove(Req::param("newFolderId"));}
 			static::lightboxRedir();
 		}
@@ -74,15 +74,9 @@ class CtrlObject extends Ctrl
 	public static function vueFolders()
 	{
 		if(self::$vueFolders===null){
-			//// Récupère le dossier courant et les dossiers qu'il contient
 			$curFolder=Ctrl::$curContainer;
 			$vDatas["foldersList"]=Db::getObjTab($curFolder::objectType, "SELECT * FROM ".$curFolder::dbTable." WHERE ".$curFolder::sqlDisplay($curFolder).$curFolder::sqlSort());
-			//// Aucun dossier / Liste des dossiers
-			if(empty($vDatas["foldersList"]))  {self::$vueFolders="";}
-			else{
-				$vDatas["containerClass"]=$curFolder::moduleName=="contact" ? "objPerson" : null;
-				self::$vueFolders=Ctrl::getVue(Req::commonPath."VueFolders.php",$vDatas);
-			}
+			self::$vueFolders=(!empty($vDatas["foldersList"]))  ?  Ctrl::getVue(Req::commonPath."VueFolders.php",$vDatas)  :  null;
 		}
 		return self::$vueFolders;
 	}
@@ -96,7 +90,7 @@ class CtrlObject extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//// Enregistre et recharge l'objet
 			$curObj=$curObj->editRecord("name=".Db::param("name").", description=".Db::param("description").", icon=".Db::param("icon"));
 			//// Etend les droits aux sous dossiers
@@ -123,7 +117,7 @@ class CtrlObject extends Ctrl
 		$MdlObject="Mdl".ucfirst(Req::param("objectType"));
 		if($MdlObject::addRight()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : edite une des categories
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			$curObj=Ctrl::getCurObj();
 			$curObj->editControl();
 			$_idSpaces=(in_array("allSpaces",Req::param("spaceList")))  ?  null : Txt::tab2txt(Req::param("spaceList"));
@@ -280,7 +274,7 @@ class CtrlObject extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->readControl();
 		////	Ajoute un commentaire
-		if(Req::isParam(["formValidate","comment"]) && Req::param("actionComment")=="add"){
+		if(Tool::formControl() && Req::isParam("comment") && Req::param("actionComment")=="add"){
 			Db::query("INSERT INTO ap_objectComment SET objectType='".$curObj::objectType."', _idObject=".$curObj->_id.", _idUser=".self::$curUser->_id.", dateCrea=".Db::dateNow().", `comment`=".Db::param("comment"));
 		}
 		////	Modif / Supprime un commentaire

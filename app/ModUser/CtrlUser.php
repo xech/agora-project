@@ -78,7 +78,7 @@ class CtrlUser extends Ctrl
 		$curObj->editControl();
 		if($curObj->isNew() && MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$sqlFields="name=".Db::param("name").", firstName=".Db::param("firstName").", civility=".Db::param("civility").", mail=".Db::param("mail").", telephone=".Db::param("telephone").", telmobile=".Db::param("telmobile").", adress=".Db::param("adress").", postalCode=".Db::param("postalCode").", city=".Db::param("city").", country=".Db::param("country").", `function`=".Db::param("function").", companyOrganization=".Db::param("companyOrganization").", `comment`=".Db::param("comment").", connectionSpace=".Db::param("connectionSpace").", lang=".Db::param("lang").", dblAuthEnabled=".Db::param("dblAuthEnabled");
 			if($curObj->editAdminGeneralRight())	{$sqlFields.=", generalAdmin=".Db::param("generalAdmin");}
@@ -139,7 +139,7 @@ class CtrlUser extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam(["formValidate","messengerDisplay"])){
+		if(Tool::formControl() && Req::isParam("messengerDisplay")){
 			//Réinitialise
 			Db::query("DELETE FROM ap_userMessenger WHERE _idUserMessenger=".$curObj->_id);
 			//Affectation à tous OU à certains users?
@@ -167,7 +167,7 @@ class CtrlUser extends Ctrl
 		////	Controle d'accès && nombre max d'utilisateurs
 		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//// Export d'users
 			if(Req::param("actionImportExport")=="export"){
 				$userList=Db::getObjTab("user", "SELECT * FROM ".MdlUser::dbTable." WHERE ".MdlUser::sqlDisplay().MdlUser::sqlSort());
@@ -243,7 +243,7 @@ class CtrlUser extends Ctrl
 		//Administrateur de l'espace courant?
 		if(Ctrl::$curUser->isSpaceAdmin()==false)  {static::lightboxRedir();}
 		////	Valide l'un des deux formulaires
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			////	Recherche d'users
 			if(Req::isParam("searchFields")){
 				$sqlSearch=null;
@@ -279,7 +279,7 @@ class CtrlUser extends Ctrl
 		////	Controle d'accès
 		if(Ctrl::$curUser->isGeneralAdmin()==false)  {static::lightboxRedir();}
 		////	Formulaire validé : envoi un mail pour chaque user
-		if(Req::isParam(["formValidate","usersList"])){
+		if(Tool::formControl() && Req::isParam("usersList")){
 			foreach(Req::param("usersList") as $userId)   {Ctrl::getObj("user",$userId)->passwordResetSendMail();}
 			Ctrl::notify("passwordResetNotif");//Notif spécifique
 			static::lightboxRedir();
@@ -297,7 +297,7 @@ class CtrlUser extends Ctrl
 		////	Droit d'envoyer des invitations?  Nb max d'utilisateurs dépassé?
 		if(Ctrl::$curUser->sendInvitationRight()==false || MdlUser::usersQuotaOk()==false)   {static::lightboxRedir();}
 		////	Validation du formulaire (Ajax)
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			$invitList=[];
 			//Contacts du formulaire simple
 			if(Txt::isMail(Req::param("mail")))  {$invitList[]=["firstName"=>Req::param("firstName"), "name"=>Req::param("name"), "mail"=>Req::param("mail")];}
@@ -368,7 +368,7 @@ class CtrlUser extends Ctrl
 		////	Droit d'editer/ajouter un groupe?
 		if(MdlUserGroup::addRight()==false)  {static::lightboxRedir();}
 		////	Valide le formulaire : edit un groupe
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			$curObj=Ctrl::getCurObj();
 			$curObj->editControl();
 			$curObj->editRecord("title=".Db::param("title").", _idSpace=".Ctrl::$curSpace->_id.", _idUsers=".Db::formatTab2txt(Req::param("userList")));
@@ -416,7 +416,7 @@ class CtrlUser extends Ctrl
 		////	Administrateur de l'espace courant?  Nb max d'utilisateurs dépassé?
 		if(Ctrl::$curUser->isSpaceAdmin()==false || MdlUser::usersQuotaOk()==false)  {static::lightboxRedir();}
 		////	Validation du formulaire
-		if(Req::isParam(["formValidate","inscriptionValidate"])){
+		if(Tool::formControl() && Req::isParam("inscriptionValidate")){
 			////	Traite chaque inscription
 			foreach(Req::param("inscriptionValidate") as $idInscription){
 				//Récupère l'inscription

@@ -45,6 +45,6 @@ fieldset li					{line-height:25px;}
 		</div>
 		<!--BOUTON D'INVALIDATION  /  BOUTON DE VALIDATION-->
 		<div class="submitButtonInline"><button type="submit" name="submitInvalidate" value="true"><img src="app/img/delete.svg"><?= Txt::trad("userInscriptionSelectInvalidate") ?></button></div>
-		<?= Txt::submitButton("<img src='app/img/check.svg'>".Txt::trad("userInscriptionSelectValidate"), false) ?>
+		<?= Tool::submitButton("<img src='app/img/check.svg'>".Txt::trad("userInscriptionSelectValidate"), false) ?>
 	</div>
 </form>

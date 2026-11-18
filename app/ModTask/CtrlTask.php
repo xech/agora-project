@@ -114,7 +114,7 @@ class CtrlTask extends Ctrl
 		$curObj=Ctrl::getCurObj();
 		$curObj->editControl();
 		////	Valide le formulaire
-		if(Req::isParam("formValidate")){
+		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
 			$dateBegin=Txt::formatDate(Req::param("dateBegin"), "inputDate", "dbDate");
 			$dateEnd=Txt::formatDate(Req::param("dateEnd"), "inputDate", "dbDate");

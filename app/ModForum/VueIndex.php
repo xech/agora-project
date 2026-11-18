@@ -14,8 +14,8 @@ ready(function(){
 
 <style>
 /*Affichage des sujets & messages*/
-.objContent					{height:auto!important; min-height:auto!important; vertical-align:top; padding:15px 40px 15px 15px;}/*surcharge : hauteur variable des sujets/messages en fonction du texte affiché*/
-.objContentTab>div					{display:block; width:100%;}/*surcharge*/
+.objContainer					{height:auto!important; min-height:auto!important; vertical-align:top; padding:15px 40px 15px 15px;}/*surcharge : hauteur variable des sujets/messages en fonction du texte affiché*/
+.objContainerTab>div			{display:block; width:100%;}/*surcharge*/
 .vTitle							{font-weight:bold;}
 .vTitle:empty					{display:none;}
 .vDescription					{margin:15px 0px; font-size:0.95rem; user-select:text;}/*description des sujets/messages*/
@@ -23,10 +23,10 @@ ready(function(){
 .vDetails>div					{display:table-cell; vertical-align:middle; line-height:25px;}/*'line-height' : cf '.personImgSmall'*/
 .vDetails>div:last-child		{text-align:right;}
 .vLastMessage					{margin-top:5px;}
-.vMessageQuoted					{position:relative; display:block; overflow:auto; max-height:100px; margin:15px 0px; padding:10px; padding-left:40px; font-style:italic;}/*"position:relative" : cf. "vMessageQuotedImg" */
+.vMessageQuoted					{position:relative; overflow:auto; max-height:100px; margin-bottom:20px; padding:10px; padding-left:40px; font-style:italic;}
 .vMessageQuotedImg				{position:absolute; top:5px; left:5px; opacity:0.5;}
 
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
 	.vMessages					{border-radius:var(--radius_field);}
 	.vDetails, .vDetails>div	{display:block;}
@@ -38,16 +38,16 @@ ready(function(){
 <div id="pageCenter">
 	<div id="pageMenu">
 		<?= MdlForumSubject::menuSelect() ?>
-		<div class="miscContent">
+		<div class="miscContainer">
 		<?php
 		////	LISTE DES SUJETS :  AJOUT DE SUJET  &  MENU DES THEMES  &  TRI D'AFFICHAGE  &  NB DE SUJETS
 		if($forumDisplay=="subjectList"){
-			if(MdlForumSubject::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumSubject::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("FORUM_addSubject").'</div></div><hr>';}
+			if(MdlForumSubject::addRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumSubject::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/addBlue.svg"></div><div>'.Txt::trad("FORUM_addSubject").'</div></div><hr>';}
 			echo MdlForumTheme::displayMenu().MdlForumSubject::menuSort().'<div class="menuLine"><div class="menuIcon"><img src="app/img/info.svg"></div><div>'.$subjectsTotalNb.' '.Txt::trad($subjectsTotalNb>1?"FORUM_subjects":"FORUM_subject").'</div></div>';
 		}
 		////	SUJET & MESSAGES ASSOCIES :  AJOUT DE MESSAGE  &  NOTIF PAR MAIL  &  TRI D'AFFICHAGE  &  NB DE MESSAGES
 		elseif($forumDisplay=="suject"){
-			if($curSubject->addContentRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/add.svg"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
+			if($curSubject->addContentRight())  {echo '<div class="menuLine forMobileAddElem" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><div class="menuIcon"><img src="app/img/addBlue.svg"></div><div>'.Txt::trad("FORUM_addMessage").'</div></div>';}
 			if(!empty(Ctrl::$curUser->mail))  	{echo '<div class="menuLine '.($curSubject->curUserNotifyLastMessage()?'optionSelect':'option').'" id="notifyLastMessage" '.Txt::tooltip("FORUM_notifyLastPostTooltip").'><div class="menuIcon"><img src="app/img/mail.svg"></div><div>'.Txt::trad("FORUM_notifyLastPost").'</div></div>';}
 			echo "<hr>".MdlForumMessage::menuSort();
 		}
@@ -59,9 +59,9 @@ ready(function(){
 		<?php
 		////	SUJET COURANT : MENU "RETOUR VERS L'ACCUEIL"
 		if($forumDisplay=="suject"){
-			echo '<div class="pathMenu miscContent">
+			echo '<div class="pathMenu miscContainer">
 					<div class="pathMenuHome" onclick="redir(\'index.php?ctrl=forum\')"><img src="app/img/home.svg">'.Txt::trad("FORUM_forumRoot").'</div>
-					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/add.svg"></div>' : null).'
+					'.($curSubject->addContentRight() ? '<div class="pathMenuAdd" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')" '.Txt::tooltip("FORUM_addMessage").'><img src="app/img/addBlue.svg"></div>' : null).'
 					</div>';
 		}
 
@@ -79,8 +79,8 @@ ready(function(){
 					$subjectLastMessage='<div class="vLastMessage">'.$messagesNb.' '.(Txt::trad($messagesNb>1?'FORUM_messages':'FORUM_message')).' : '.Txt::trad("FORUM_lastMessageFrom").' '.$lastMessage->autorDate(false).'</div>';
 				}
 			}
-			echo $tmpSubject->objContentDiv().
-				'<div class="objContentTab '.$newSubjectClass.'" '.$subjectLink.'>
+			echo $tmpSubject->objContainer().
+				'<div class="objContainerTab '.$newSubjectClass.'" '.$subjectLink.'>
 					<div class="vTitle">'.$tmpSubject->title.'</div>
 					<div class="vDescription">'.$tmpSubject->description.'</div>
 					<div class="vDetails">
@@ -93,7 +93,7 @@ ready(function(){
 
 		////	LISTE DES SUJETS : "AUCUN CONTENU"  ||  MENU DE PAGINATION
 		if($forumDisplay=="subjectList"){
-			if(empty($subjectList))	{echo '<div class="miscContent emptyContent">'.Txt::trad("FORUM_noSubject").'</div>';}
+			if(empty($subjectList))	{echo '<div class="miscContainer emptyContent">'.Txt::trad("FORUM_noSubject").'</div>';}
 			else					{echo MdlForumSubject::menuPagination($subjectsTotalNb);}
 		}
 
@@ -110,8 +110,8 @@ ready(function(){
 				}
 				$subjMessQuote=($curSubject->addContentRight())  ?  '<div onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'&_idMessageParent='.$tmpMessage->_id.'\')" '.Txt::tooltip("FORUM_quoteMessageInfo").'>'.Txt::trad("FORUM_quoteMessage").' <img src="app/img/forum/quote.svg"> </div>'  :  null;
 				//Affichage
-				echo $tmpMessage->objContentDiv("vMessages").
-						'<div class="objContentTab">
+				echo $tmpMessage->objContainer("vMessages").
+						'<div class="objContainerTab">
 							'.$quotedMessage.'
 							<div class="vTitle">'.$tmpMessage->title.'</div>
 							<div class="vDescription">'.$tmpMessage->description.'</div>'
@@ -125,7 +125,7 @@ ready(function(){
 			}
 			//"Ajouter un message" en fin de page
 			if($curSubject->addContentRight() && Req::isMobile()==false)
-				{echo '<div class="objMenuBottom"><div class="miscContent" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/add.svg">&nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
+				{echo '<div class="objMenuBottom"><div class="miscContainer" onclick="lightboxOpen(\''.MdlForumMessage::getUrlNew().'\')"><img src="app/img/addBlue.svg">&nbsp; '.Txt::trad("FORUM_addMessage").'</div></div>';}
 		}
 		?>
 	</div>

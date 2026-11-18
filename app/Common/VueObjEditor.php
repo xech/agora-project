@@ -11,8 +11,8 @@
 			license_key: "gpl",																//Licence Key
 			placeholder: "<?= Txt::trad("description") ?>",									//Placeholder du textarea (text par défaut)
 			language:"<?= Txt::trad("EDITORLANG") ?>",										//Langue du menu de l'éditeur
-			skin: "<?= Ctrl::$agora->skin=="black" ? "tinymce-5-dark" : "tinymce-5" ?>",	//Editeur blanc/noir
-			content_css:"app/Common/js-css-<?= Req::appVersion() ?>/editor.css",			//Style du contenu dans l'éditeur et "font-size" par défaut
+			skin: "<?= Ctrl::$agora->skin=="black" ? "tinymce-5-dark" : "tinymce-5" ?>",	//Menus de l'editeur
+			content_css:"app/Common/js-css-<?= Req::appVersion()."/".(Ctrl::$agora->skin=="black"?"editorBlack.css":'editorWhite.css') ?>",//Contenu/text dans l'éditeur
 			width: "100%",																	//Largeur de l'éditeur
 			min_height:(<?= $toggleButton==true?150:250 ?>),								//Hauteur par défaut de l'éditeur
 			convert_urls: false,															//Urls des liens : ne pas les convertir en "relatives"
@@ -165,15 +165,14 @@
 
 
 
-<!--TOOGLE DE DESCRIPTION-->
+<!--TEXTAREA/DESCRIPTION : LABEL TOOGLE-->
 <?php if($toggleButton==true){ ?>
-	<div id="descriptionToggle" onclick="$('#descriptionTextarea').slideToggle()">
+	<div id="textareaToogle" onclick="$('#textareaDiv').slideToggle()">
 		<img src="app/img/description.svg"> <label><?= Txt::trad("description") ?> <img src="app/img/arrowDown.svg"></label>
 	</div>
 <?php } ?>
 
-
-<!--DESCRIPTION-->
-<div id="descriptionTextarea">
+<!--TEXTAREA/DESCRIPTION : FIELD-->
+<div id="textareaDiv">
 	<textarea name="description" placeholder="<?= Txt::trad("description") ?>"><?= $curObj->description ?></textarea>
 </div>

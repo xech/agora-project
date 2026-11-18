@@ -203,14 +203,14 @@ async function launchVisioPropose()
 #livecounterMain, #messengerMain  				{display:none; position:fixed; max-width:100%!important; max-height:100%!important; color:#ddd!important;}
 
 /*Livecounter principal*/
-#livecounterMain								{z-index:121;/*idem #menuMobileMain +1*/ bottom:5px; background:#222; box-shadow:2px 2px 10px #222; padding:4px 10px; border-radius:30px;}/*box-shadow idem #messengerMain*/
+#livecounterMain								{z-index:201;/*idem #messengerMain +1*/ bottom:5px; background:#222; box-shadow:2px 2px 10px #222; padding:4px 10px; border-radius:30px;}/*box-shadow idem #messengerMain*/
 #livecounterMainIcon img						{width:30px; height:30px; margin:10px; cursor:pointer;}
 .vLivecounterUser								{display:inline-block; line-height:35px; padding:4px 8px; margin-left:10px; border:solid 1px transparent; color:white!important;}/*Label des users (cf. "actionMessengerUpdate()")*/
 .vLivecounterUser:hover,.vLivecounterUserSelect	{background:#333; border-radius:20px;}/*Label d'un user sélectionné*/
 .vLivecounterUser .personImg					{width:35px; height:35px; margin-right:8px;}/*Image des users (cf. "actionMessengerUpdate()")*/
 
 /*Messenger principal*/
-#messengerMain									{bottom:20px; z-index:120;/*idem #menuMobileMain*/ background:#222; padding:10px; width:800px; min-width:350px; border-radius:15px; border:0px;}/*z-index idem .menuContext*/
+#messengerMain									{bottom:20px; z-index:200;/*idem #menuMobileMain*/ background:#222; padding:10px; width:800px; min-width:350px; border-radius:15px; border:0px;}/*z-index idem .menuContext*/
 #messengerMain td								{vertical-align:top;}
 #messengerClose									{height:30px; text-align:right;}
 #messengerClose img								{height:30px!important; width:30px!important;}/*close.svg*/
@@ -246,7 +246,7 @@ async function launchVisioPropose()
 #launchVisioButton								{cursor:pointer; margin-left:20px; width:35px; height:35px;}
 #messengerNobodyDiv								{padding:20px;}
 
-/*** RESPONSIVE TABLET-SMARTPHONE*/
+/*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
 	.vLivecounterUser							{margin:0px;}
 	.vLivecounterUser .personImg				{display:none;}

@@ -23,7 +23,7 @@ class CtrlMail extends Ctrl
 		////	Controle d'accès && Supprime les mails de plus d'un an
 		if(Ctrl::$curUser->isGuest())  {Ctrl::noAccessExit();}
 		////	Envoi un mail
-		if(Req::isParam("formValidate","title","description") && (Req::isParam("personList") || Req::isParam("groupList"))){
+		if(Tool::formControl() && Req::isParam("title","description") && (Req::isParam("personList") || Req::isParam("groupList"))){
 			////	Destinataires : users/contacts (personList)
 			$mailTo=null;
 			if(Req::isParam("personList")){
@@ -96,7 +96,7 @@ class CtrlMail extends Ctrl
 	public static function actionMailHistory()
 	{
 		////	Valide le formulaire de suppression d'anciens mails
-		if(Req::isParam(["formValidate","historyDeleteDays"]) && Req::param("historyDeleteDays")>5){
+		if(Tool::formControl() && Req::isParam("historyDeleteDays") && Req::param("historyDeleteDays")>5){
 			$deleteTime=intval(time() - (86400 * Req::param("historyDeleteDays")));
 			$mailsDelete=Db::getObjTab("mail", "SELECT * FROM ap_mail WHERE _idUser=".Ctrl::$curUser->_id." AND UNIX_TIMESTAMP(dateCrea) < ".$deleteTime);
 			$mailDeleteNotif=Txt::trad("MAIL_historyDeleteNotif")." : ".count($mailsDelete);

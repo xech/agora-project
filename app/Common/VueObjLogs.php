@@ -7,7 +7,7 @@
 .vLogAction img			{max-height:16px;}
 .vNoLogs				{padding:15px; text-align:center;}
 
-/*** RESPONSIVE SMARTPHONE*/
+/*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	.vLogsRow, .vLogsRow>div	{display:block!important; width:100%!important;}
 	.vLogsRow					{margin-bottom:20px;}
