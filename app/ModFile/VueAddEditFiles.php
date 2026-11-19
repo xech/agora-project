@@ -101,7 +101,7 @@ function formControl(){
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("FILE_addFile") ?>
+	<?= $curObj->lightboxTitle("FILE_addFile") ?>
 
 	<!--NOUVELLE VERSION D'UN FICHIER  ||  AJOUT DE FICHIERS DE FICHIERS VIA PLUPLOAD OU INPUT FILE-->
 	<?php if(Req::isParam("addVersion")){ ?>

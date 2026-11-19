@@ -35,7 +35,7 @@
 		?>
 				<div class="objContainerScroll">
 					<div class="objContainerTab">
-						<div class="objIcon"><?= $tmpContact->tagProfileImg(true,false) ?></div>
+						<div class="objIcon"><?= $tmpContact->profileImg(true,false) ?></div>
 						<div class="objLabel" onclick="<?= $tmpContact->lightboxVue() ?>">
 							<div class="personLabel"><?= $tmpContact->getLabel("full") ?></div>
 							<?= $tmpContact->getFields("index") ?>

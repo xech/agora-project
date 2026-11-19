@@ -221,7 +221,7 @@ class Trad extends Txt
 			"modifBy"=>"Modifié par",
 			"objHistory"=>"Historique de l'élément",
 			"all"=>"tous",
-			"deletedUser"=>"Ancien compte utilisateur",
+			"deletedUser"=>"Compte supprimé",
 			"categoryNotifSpaceAccess"=>"n'est accessible que sur l'espace",
 			"categoryNotifChangeOrder"=>"L'ordre d'affichage a bien été modifié",
 			"folderContent"=>"Contenu du dossier",
@@ -371,7 +371,7 @@ class Trad extends Txt
 			"userInscriptionEdit"=>"Formulaire d'inscription en page de connexion",
 			"userInscriptionEditTooltip"=>"Les visiteurs peuvent demander à s'inscrire sur l'espace pour avoir un compte utilisateur&nbsp;: la demande est ensuite validée par l'administrateur de l'espace",
 			"userInscriptionNotif"=>"Notifier les administrateurs par email à chaque nouvelle inscription",
-			"userInscriptionNotifTooltip"=>"Envoyer une notification par mail aux administrateurs de l'espace après chaque inscription",
+			"userInscriptionNotifTooltip"=>"Envoyer une notification par email aux administrateurs de l'espace après chaque inscription",
 			"userInscriptionValidate"=>"Valider les demandes d'inscription",
 			"userInscriptionValidateTooltip"=>"Valider les demandes d'inscription à l'espace",
 			"userInscriptionSelectValidate"=>"Valider les inscriptions sélectionnées",
@@ -496,14 +496,14 @@ class Trad extends Txt
 			// Premiers enregistrements en DB
 			"INSTALL_agoraDescription"=>"Espace de partage et de travail collaboratif",
 			"INSTALL_dataDashboardNews"=>  '<h3>Bienvenue sur votre espace de partage &nbsp; <img src="app/img/logo.png"></h3>
+											<h4><img src="app/img/mail.svg"> <a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>
 											<h4><img src="app/img/file/icon.svg"> <a href="index.php?ctrl=file">Partagez vos fichiers avec votre équipe dans le gestionnaire de fichiers</a></h4>
 											<h4><img src="app/img/calendar/icon.svg"> <a href="index.php?ctrl=calendar">Créez des événements sur l\'agenda partagé ou votre agenda personnel</a></h4>
 											<h4><img src="app/img/dashboard/icon.svg"> <a href="index.php?ctrl=dashboard">Utilisez le fil d\'actualité pour diffuser des informations</a></h4>
 											<h4><img src="app/img/task/icon.svg"> <a href="index.php?ctrl=task">Gérez vos tâches et projets pour organiser votre activité</a></h4>
 											<h4><img src="app/img/chat.svg"> <a href="index.php?ctrl=forum">Communiquez via le forum, la messagerie ou les visioconférences</a></h4>
-											<h4><img src="app/img/mail/icon.svg"> <a href="index.php?ctrl=mail">Envoyez des newsletters pour diffuser des mails d\'information.</a></h4>
-											<h4><img src="app/img/documentation.svg"> <a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref">Consultez le guide d\'utilisation pour découvrir le fonctionnement votre espace</a></h4>
-											<h4><img src="app/img/mail.svg"> <a href="index.php?ctrl=user&action=SendInvitation" class="lightboxOpenHref">Envoyez des invitations par email pour ajouter de nouveaux utilisateurs à votre espace</a></h4>',
+											<h4><img src="app/img/mail/icon.svg"> <a href="index.php?ctrl=mail">Envoyez des newsletters pour diffuser des emails d\'information.</a></h4>
+											<h4><img src="app/img/documentation.svg"> <a href="docs/DOCUMENTATION_FR.pdf?displayFile=true" class="lightboxOpenHref">Consultez le guide d\'utilisation pour découvrir le fonctionnement votre espace</a></h4>',
 			"INSTALL_dataDashboardPoll"=>"Que pensez-vous du fil d'actualité ?",
 			"INSTALL_dataDashboardPollA"=>"Très intéressant !",
 			"INSTALL_dataDashboardPollB"=>"Intéressant",
@@ -520,9 +520,8 @@ class Trad extends Txt
 			////
 			"AGORA_generalSettings"=>"Paramétrage général",
 			"AGORA_Changelog"=>"Journal des versions",
-			"AGORA_phpMailDisabled"=>"Fonction PHP Mail désactivée",
-			"AGORA_phpLdapDisabled"=>"Fonction PHP LDAP désactivée",
-			"AGORA_phpGD2Disabled"=> "Fonction PHP GD2 désactivée",
+			"AGORA_phpMailDisabled"=>"Librairie PHPMailer désactivée",
+			"AGORA_phpGD2Disabled"=> "Librairie PHP GD2 désactivée",
 			"AGORA_backupFull"=>"Sauvegarde complète",
 			"AGORA_backupFullTooltip"=>"Récupérer la sauvegarde complète de l'espace :<br> ensemble des fichiers ainsi que la base de données",
 			"AGORA_backupDb"=>"Sauvegarder la base de données",
@@ -549,13 +548,13 @@ class Trad extends Txt
 			"AGORA_visioHostTooltip"=>"Url du serveur de visioconférence principal. Exemple : https://framatalk.org ou https://meet.jit.si",
 			"AGORA_visioHostAlt"=>"Serveur de visioconférence alternatif",
 			"AGORA_visioHostAltTooltip"=>"Url du serveur de visioconférence alternatif : en cas d'indisponibilité du serveur Jitsi principal",
-			"AGORA_skin"=>"Couleur de l'interface",
+			"AGORA_skin"=>"Mode d'affichage",
 			"AGORA_black"=>"Thème sombre",
 			"AGORA_white"=>"Thème clair",
-			"AGORA_userMailDisplay"=>"Adresses email des utilisateurs visibles par tous",
+			"AGORA_userMailDisplay"=>"Email des utilisateurs visibles par tous",
 			"AGORA_userMailDisplayTooltip"=>"Afficher/Masquer l'email dans le profil de chaque utilisateur, les notifications par mail, etc.<br>Note : l'administrateur principal pourra toujours consulter l'email de chaque utilisateur",
-			"AGORA_moduleIcon"=>"Icônes des modules dans la barre de menu",
-			"AGORA_moduleIconInfo"=>"Icônes des modules dans la barre de menu : flat/moderne ou 3D (anciennes)",
+			"AGORA_moduleIcon"=>"Icônes dans la barre de menu",
+			"AGORA_moduleIconInfo"=>"Icônes des modules dans la barre de menu (haut de page)",
 			"AGORA_moduleIconFlat"=>"Flat / moderne",
 			"AGORA_moduleIcon3D"=>"3D (old)",
 			"AGORA_folderDisplayMode"=>"Affichage par défaut des dossiers",
@@ -927,15 +926,15 @@ class Trad extends Txt
 			"FORUM_CAT_showAllTooltip"=>"Afficher tous les thèmes",
 			"FORUM_CAT_undefined"=>"Thème non défini",
 			"FORUM_CAT_editTitle"=>"Editer les thèmes du forum",
-			"FORUM_CAT_editInfo"=>"Chaque theme peut être modifié par son auteur ou par l'admin général",
-			"FORUM_CAT_editAdd"=>"Ajouter un theme",
+			"FORUM_CAT_editInfo"=>"Chaque thème peut être modifié par son auteur ou par l'admin général",
+			"FORUM_CAT_editAdd"=>"Ajouter un thème",
 			"SORT_dateLastMessage"=>"dernier message",
 			"FORUM_forumRoot"=>"Accueil du forum",
 			"FORUM_subject"=>"sujet",
 			"FORUM_subjects"=>"sujets",
 			"FORUM_message"=>"message",
 			"FORUM_messages"=>"messages",
-			"FORUM_lastMessageFrom"=>"dernier de",
+			"FORUM_lastMessageFrom"=>"dernier du",
 			"FORUM_noSubject"=>"Aucun sujet pour le moment",
 			"FORUM_subjectBy"=>"Sujet de",
 			"FORUM_addSubject"=>"Nouveau sujet",

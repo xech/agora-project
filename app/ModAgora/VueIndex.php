@@ -328,7 +328,7 @@ fieldset					{margin-top:10px;}/*surcharge*/
 					<div>
 						<select name="mapTool">
 							<option value="leaflet">OpenStreetMap</option>
-							<option value="gmap" <?= Ctrl::$agora->mapTool=="gmap"?"selected":null ?>>Google Map</option>
+							<option value="gmap" <?= (Ctrl::$agora->mapTool=="gmap" && !empty(Ctrl::$agora->gApiKey))?"selected":null ?>>Google Map</option>
 						</select>
 					</div>
 				</div>

@@ -89,7 +89,7 @@
 			<?= $tmpUser->objContainer() ?>
 				<div class="objContainerScroll">
 					<div class="objContainerTab">
-						<div class="objIcon"><?= $tmpUser->tagProfileImg(true,false) ?></div>
+						<div class="objIcon"><?= $tmpUser->profileImg(true,false) ?></div>
 						<div class="objLabel" onclick="<?= $tmpUser->lightboxVue() ?>">
 							<div class="personLabel">
 								<?= $tmpUser->getLabel("full") ?>

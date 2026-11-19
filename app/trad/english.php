@@ -521,7 +521,6 @@ class Trad extends Txt
 			"AGORA_generalSettings"=>"General Settings",
 			"AGORA_Changelog"=>"Release notes",
 			"AGORA_phpMailDisabled"=>"PHP Mail function disabled",
-			"AGORA_phpLdapDisabled"=>"PHP LDAP function disabled",
 			"AGORA_phpGD2Disabled"=> "PHP GD2 function disabled",
 			"AGORA_backupFull"=>"Full backup",
 			"AGORA_backupFullTooltip"=>"Recover the full backup of the space: all the files as well as the database",

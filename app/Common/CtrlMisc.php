@@ -56,7 +56,7 @@ class CtrlMisc extends Ctrl
 			if($result["livecounterUpdate"]==true){
 				$_SESSION["livecounterUsersHtml"]=$_SESSION["livecounterFormHtml"]="";//Réinit
 				foreach($_SESSION["livecounterUsers"] as $tmpUser){
-					$userImg=(Req::isMobile()==false && $tmpUser->isProfileImg())  ?  $tmpUser->tagProfileImg(false,true)  :  null;	//Image de l'user
+					$userImg=(Req::isMobile()==false && $tmpUser->isProfileImg())  ?  $tmpUser->profileImg(false,true)  :  null;	//Image de l'user
 					$userTooltip=$tmpUser->getLabel()." &nbsp;".$userImg;															//Tooltip du label de l'user
 					$userFirstName=$tmpUser->getLabel("firstName");																	//Prénom de l'user
 					//Affichage dans le livecounter et le formulaire du messenger (checkbox)
@@ -75,7 +75,7 @@ class CtrlMisc extends Ctrl
 					$destList=Txt::txt2tab($message["_idUsers"]);																			//List des destinataires
 					$autorObj=self::getObj("user",$message["_idUser"]);																		//Label/icone de l'auteur
 					if(Req::isMobile())					{$dateAutor=$autorObj->getLabel("firstName")."<br>".date("H:i",$message["date"]);}	//Mobile : "Will 11:00"
-					elseif($autorObj->isProfileImg())	{$dateAutor=date("H:i",$message["date"]).$autorObj->tagProfileImg(false,true);}		//Mode normal avec icone de l'user : "11:00 <img>"
+					elseif($autorObj->isProfileImg())	{$dateAutor=date("H:i",$message["date"]).$autorObj->profileImg(false,true);}		//Mode normal avec icone de l'user : "11:00 <img>"
 					else								{$dateAutor=date("H:i",$message["date"])." - ".$autorObj->getLabel("firstName");}	//Mode normal avec label de l'user : "11:00 - Will"
 					if(count($destList)>2)  {$dateAutor.='<img src="app/img/users.svg" class="vMessengerUsersIcon">';}						//Icone de discussion à plusieurs
 					//Title de l'auteur et des destinataires

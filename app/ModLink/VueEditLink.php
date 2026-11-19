@@ -5,7 +5,7 @@ input[name='adress']	{width:100%;}
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("LINK_addLink") ?>
+	<?= $curObj->lightboxTitle("LINK_addLink") ?>
 	
 	<!--URL & DESCRIPTION-->
 	<input type="url" name="adress" value="<?= empty($curObj->adress)?"https://":$curObj->adress ?>" placeholder="<?= Txt::trad("LINK_adress") ?>" pattern="https?://.+" required>

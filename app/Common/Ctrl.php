@@ -35,7 +35,7 @@ abstract class Ctrl
 		session_cache_limiter("nocache");												//Désactive la mise en cache
 		ini_set('session.use_strict_mode', 1);											//Verif le cookie de session via "Strict mode"
 		session_set_cookie_params(['secure'=>true,'httponly'=>true,'samesite'=>'Lax']);	//Parametrage du cookie de session
-		if(defined("db_name"))  {session_name("SESSION_".db_name);}						//Nomde de la session
+		if(defined("db_name"))  {session_name("SESSION_".db_name);}						//Nom de de la session
 		session_start();
 
 		////	Réinitialise la session

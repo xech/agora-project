@@ -11,17 +11,18 @@
 	--footer_height:80px;	/*hauteur max des éléments du footer*/
 }
 .bodyWhite{
-	--color_text:#444444;
-	--color_text_select:#286b97;
-	--color_border:#cccccc;
+	--color:#444444;
+	--color_select:#286b97;
+	--border_color:#cccccc;
+	--border_color_table:#e2e2e2;
 	--bg_page:white;
 	--bg_headerbar:linear-gradient(white,#e8e8e8);
 	--bg_container:white;
-	--bg_select:#dddddd;
 	--bg_fieldset:#fafafa;
+	--bg_select:#dddddd;
 	--bg_input:#fcfcfc;
-	--bg_hr:linear-gradient(90deg,#eeeeee,#dadada,#eeeeee);
 	--bg_button:linear-gradient(#fefefe,#f2f2f2);
+	--bg_hr:linear-gradient(90deg,#eeeeee,#dadada,#eeeeee);
 	--box_shadow:0px 10px 15px rgba(0, 0, 0, 0.2);
 	--box_shadow_hover:0px 10px 15px rgba(0, 0, 0, 0.5);
 	--box_shadow_responsive:0px 0px 2px #888;
@@ -29,17 +30,18 @@
 	--scrollbar_bg_thumb:#888888;
 }
 .bodyBlack{
-	--color_text:#dddddd;
-	--color_text_select:#5298b8;
-	--color_border:#444444;
+	--color:#dddddd;
+	--color_select:#5298b8;
+	--border_color:#444444;
+	--border_color_table:#333333;
 	--bg_page:black;
 	--bg_headerbar:linear-gradient(#333333,#111111);
 	--bg_container:#222222;
+	--bg_fieldset:#2a2a2a;
 	--bg_select:#3d3d3d;
-	--bg_fieldset:#333333;
 	--bg_input:#2c2c2c;
-	--bg_hr:linear-gradient(90deg,#444444,#777777,#444444);
 	--bg_button:linear-gradient(#333333,#292929);
+	--bg_hr:linear-gradient(90deg,#444444,#777777,#444444);
 	--box_shadow:0px 10px 20px rgba(0, 0, 0, 0.5);
 	--box_shadow_hover:0px 10px 20px rgba(255, 255, 255, 0.4);
 	--box_shadow_responsive:0px 0px 2px #cccccc;
@@ -50,9 +52,9 @@
 
 /**************    PRINCIPAUX TAGS*/
 html						{background:var(--bg_page);}										/*background sous le wallpaper*/
-html, body					{color:var(--color_text); font-size:15px; font-family:Arial,Helvetica,sans-serif; margin:0px;}/*"font-size " du "html" pour le calcul en "rem" + "color" du "body" + réinit le margin du browser*/
+html, body					{color:var(--color); font-size:15px; font-family:Arial,Helvetica,sans-serif; margin:0px;}/*"font-size " du "html" pour le calcul en "rem" + "color" du "body" + réinit le margin du browser*/
 body *						{-webkit-tap-highlight-color:transparent; box-sizing:border-box;}	/*width avec prise en compte des borders + pas de background lors d'un "touch" (mobile)*/
-a, .link					{color:var(--color_text);}											/*text des liens*/
+a, .link					{color:var(--color);}											/*text des liens*/
 div							{vertical-align:top;}												/*contenu des <div> aligné verticalement*/
 span, label					{vertical-align:middle;}											/*contenu des <span> et <label> alignés*/
 img							{border:0px; vertical-align:middle;}								/*alignemment des images*/
@@ -81,10 +83,11 @@ abbr						{border-bottom: 1px dotted #777; cursor:help;}						/*idem tag <acrony
 
 
 /**************    ICONES SVG*/
-img[src*='svg']											{width:18px; height:18px;}											/*dimensions par défaut*/
-img[src*='addBlue']										{width:30px!important; height:30px!important;}						/*icones "addBlue", "addBlueFolder", etc*/
-img[src*='arrow']										{width:16px!important; height:16px!important; margin-inline:3px;}	/*icones "arrowRight", "arrowLeft", etc*/
-.menuLine:hover .menuIcon img:not(img[src*='addBlue'])	{filter:var(--icon_blue);}											/*icone des menus survolés*/
+img[src*='svg']											{width:18px; height:18px;}						/*dimensions par défaut*/
+img[src*='arrow']										{width:16px; height:16px; margin-inline:3px;}	/*icones "arrowRight", "arrowLeft", etc*/
+.img25													{width:25px!important; height:25px!important;}	/*icone en 25 x 25*/
+img[src*='addBlue']										{width:30px; height:30px;}						/*icones "plus"*/
+.menuLine:hover .menuIcon img:not(img[src*='addBlue'])	{filter:var(--icon_blue);}						/*icone des menus survolés en bleu*/
 /*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
 	img[src*='svg']										{width:22px; height:22px;}
@@ -117,7 +120,7 @@ img[src*='arrow']										{width:16px!important; height:16px!important; margin-
 #mobileAddElem				{display:none;}
 /*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
-	#headerBar																	{border-top:solid 1px var(--color_border)!important;}/*séparation "appBar" <> smartphone manu*/
+	#headerBar																	{border-top:solid 1px var(--border_color)!important;}/*séparation "appBar" <> smartphone manu*/
 	#pageFull, #pageCenter, #pageMenu, #pageContent								{width:100%; max-width:100%; word-break:break-word;/*cf longues URL de modLink*/}
 	#mobileAddElem																{bottom:5px; right:5px;}/*Bouton "Plus" du footer*/
 	#mobileAddElem img															{width:50px; height:50px;}
@@ -128,11 +131,11 @@ img[src*='arrow']										{width:16px!important; height:16px!important; margin-
 
 /**************   LIENS ET OPTIONS*/
 a, [onclick], .link, label, .option, .linkSelect, .optionSelect, .menuContextLaunch																			{cursor:pointer; text-decoration:none; user-select:none;}
-a:hover, [onclick]:hover, .link:hover, label:hover, option:hover, .linkSelect, .optionSelect, .accessUser, input:checked+label, .menuContextLaunch:hover	{color:var(--color_text_select);}
+a:hover, [onclick]:hover, .link:hover, label:hover, option:hover, .linkSelect, .optionSelect, .accessUser, input:checked+label, .menuContextLaunch:hover	{color:var(--color_select);}
 .optionSelect, .lineSelect, .objLines .objContainer:hover, .objContainer:has(.objSelectBox:checked), .menuContext .menuLine:hover, .lineHover:hover			{background:var(--bg_select);}
 .option, .optionSelect							{display:block; width:100%; margin-block:1px!important; padding:3px!important;}/*important car un div peut avoir la classe .option et .menuLine*/
 .option											{border:solid 1px transparent;}
-.optionSelect, .option:hover 					{border:solid 1px var(--color_border); border-radius:var(--radius_field);}
+.optionSelect, .option:hover 					{border:solid 1px var(--border_color); border-radius:var(--radius_field);}
 .userInputDiv									{display:inline-block; width:32.5%; min-width:230px; margin-block:1px; padding:3px;}/*sélection d'user ou de groupe d'users (cf .option)*/
 /*****    RESPONSIVE SMALL*/
 @media screen and (max-width:499px){
@@ -145,7 +148,7 @@ a:hover, [onclick]:hover, .link:hover, label:hover, option:hover, .linkSelect, .
 .menuLine>div									{display:table-cell; vertical-align:middle; text-align:left; max-width:500px;}
 .menuLine .menuIcon								{width:35px; padding-right:10px; vertical-align:top!important; text-align:center!important;}
 .menuContextLaunch								{display:inline-block;}/*launcher "inline" du menu context*/
-.menuContext									{display:none; position:absolute; z-index:300; text-align:left; cursor:default; padding:10px; overflow-y:auto; border:solid 1px var(--color_border); border-radius:var(--radius_block);}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
+.menuContext									{display:none; position:absolute; z-index:300; text-align:left; cursor:default; padding:10px; overflow-y:auto; border:solid 1px var(--border_color); border-radius:var(--radius_block);}/*cursor 'default' pour pas prendre celui des .objBlocks (cf. modFile)*/
 #bodyLightbox .menuContext						{overflow-y:visible; max-height:1000px!important;}/*Affiche le menu en toute hauteur dans les lightbox : cf lightboxResize()*/
 .menuContextLabel								{text-align:center; padding-block:10px;}/*label principal du menu context (cf. VueObjMenuContext)*/
 .menuContext .menuLine							{min-width:200px;}
@@ -153,10 +156,9 @@ a:hover, [onclick]:hover, .link:hover, label:hover, option:hover, .linkSelect, .
 .menuContextTxtLeft								{width:90px; min-width:90px; padding-right:10px; vertical-align:top!important;}/*Auteur, Droits d'accès, etc*/
 .menuContextLaunchRecent						{filter:var(--icon_blue);}
 .objSelectBoxDiv, .menuContextLaunchFloat, .menuLikeComment   									{position:absolute; z-index:50; padding:6px;}	/*Icones flottantes*/
-.objSelectBoxDiv, .objContainer:hover :is(.menuContextLaunchFloat,.menuLikeComment:not(:empty))	{background:var(--bg_container); opacity:0.9; border-radius:var(--radius_block);}/*BG translucide*/
+.objSelectBoxDiv, .objContainer:hover :is(.menuContextLaunchFloat,.menuLikeComment:not(:empty))	{background:var(--bg_container); opacity:0.95; border-radius:var(--radius_block);}/*BG translucide*/
 .objSelectBoxDiv								{top:0; left:0px; display:none;}/*box de sélection d'objet*/
 .objSelectBoxDiv .objSelectBox					{margin:0px!important;}/*surcharge*/
-.objLines .objSelectBoxDiv						{padding:10px;}
 .menuContextLaunchFloat							{top:0px;  right:0px;}/*launcher du menu context*/
 .menuLikeComment								{top:35px; right:0px; width:35px; text-align:center; padding:0px;}/*likes / comments*/
 .menuLikeComment>div							{display:inline-block; padding-block:4px;}
@@ -217,7 +219,7 @@ a:hover, [onclick]:hover, .link:hover, label:hover, option:hover, .linkSelect, .
 .objBlocks .objIconOpacity							{width:30px;}																/*réduit la largeur ci-dessus pour les icones opaques link/task*/
 .objBlocks .objDetails, .objBlocks .objAutorDate	{display:none;}																/*Details + Auteur/Date : masqués par défaut*/
 /*DIPLAY "LINE"*/
-.objLines .objContainer								{height:55px; margin:0px; box-shadow:none; padding-right:70px; border-bottom:solid 1px var(--color_border);}/*"padding-right" => .menuLikeComment"*/
+.objLines .objContainer								{height:55px; margin:0px; box-shadow:none; padding-right:70px; border-bottom:solid 1px var(--border_color);}/*"padding-right" => .menuLikeComment"*/
 .objLines .objIcon									{width:55px; max-height:80%;}												/*Icone/image de l'objet (fichier, user, etc)*/
 .objLines .objIcon img								{max-width:50px!important; max-height:45px!important;}						/*Cf vignettes de fichiers*/
 .objLines .objDetails								{text-align:right; max-width:400px;}										/*Details : fichiers, tasks, etc.*/
@@ -237,7 +239,7 @@ video.attachedFileTag								{width:600px; height:400px;}												/*Vidéo*/
 audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 .objMenuBottom										{clear:both; margin-top:30px; text-align:center;}							/*Menus centrés : pagination & Co ("clear" le float des .objBlocks)*/
 .objMenuBottom>.miscContainer						{display:inline-block; padding:15px; border-radius:var(--radius_block);}
-.progressBar										{display:inline-block; padding:4px 8px; font-size:0.9rem; background:linear-gradient(#f8f8f8,#d8d8d8); border-radius:var(--radius_field);}/*cf. Tool::progressBar()*/
+.progressBar										{display:inline-block; padding:4px 8px; font-size:0.9rem; color:#222222; background:linear-gradient(#f8f8f8,#d8d8d8); border-radius:var(--radius_field);}/*cf. Tool::progressBar()*/
 .progressBar img									{width:18px; height:18px;}
 /*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
@@ -256,7 +258,7 @@ audio.attachedFileTag								{width:600px; height:100px;}												/*Audio*/
 
 
 /**************    INPUTS*/
-:is(input:not([type=radio],[type=checkbox]), textarea, select)			{min-height:33px; max-width:100%; background:var(--bg_input); padding:4px 8px; color:var(--color_text); font-size:1rem; font-family:inherit; border:1px solid var(--color_border); border-radius:var(--radius_field); transition:box-shadow 0.3s ease-in-out; outline:none;}
+:is(input:not([type=radio],[type=checkbox]), textarea, select)			{min-height:33px; max-width:100%; background:var(--bg_input); padding:4px 8px; color:var(--color); font-size:1rem; font-family:inherit; border:1px solid var(--border_color); border-radius:var(--radius_field); transition:box-shadow 0.3s ease-in-out; outline:none;}
 :is(input:not([type=radio],[type=checkbox]), textarea, select):focus	{box-shadow:3px 3px var(--blue_bg);}
 :is(input, textarea):disabled							{opacity:0.9;}/*pas read-only*/
 ::placeholder 											{padding-left:6px; font-size:0.95rem; color:#a5a5a5;}/*texte par défaut*/
@@ -272,8 +274,10 @@ textarea												{width:100%; height:65px;}
 .passwordDisplay										{content:url("../../img/eyeClosed.svg"); width:20px; height:20px; opacity:0.8; position:absolute; top:50%; transform:translateY(-50%); right:5px; cursor:pointer;}/*Affiche/Masque un password*/
 .passwordDisplayShow									{content:url("../../img/eye.svg"); width:20px; height:20px; opacity:0.8;}
 legend													{padding:5px 15px; text-align:center; font-size:1.05rem;}
-fieldset												{margin:0px; padding:10px; border:solid 1px var(--color_border);}
+fieldset												{margin:0px; padding:10px; background:var(--bg_fieldset); border:solid 1px var(--border_color); border-radius:var(--radius_block);}
 fieldset:not(:first-child)								{margin-top:25px;}/*pas de margin-top si 1er element affiché*/
+.fieldsetQuote											{position:relative; overflow:auto; max-height:100px; margin-bottom:25px; padding:10px; padding-left:40px; font-style:italic;}
+.fieldsetQuote img[src*='quote']						{position:absolute; top:5px; left:5px; opacity:0.5;}
 .focusPulsate											{animation:focusPulsate 1.5s linear infinite;}
 @keyframes focusPulsate 								{ 0% {box-shadow:0px 0px 6px #0064c8;}  50% {box-shadow:0px 0px 6px #80bfff;}  100% {box-shadow:0px 0px 6px #0064c8;} }
 /*****    RESPONSIVE SMALL*/
@@ -307,7 +311,7 @@ input[type=time]::-webkit-calendar-picker-indicator		{margin:0px; filter:var(--i
 }
 
 /**************    SUBMIT & BUTTON*/
-button										{background:var(--bg_button); padding:5px 8px; border:solid 1px var(--color_border); border-radius:var(--radius_block); color:var(--color_text); font-size:1rem; font-family:inherit; cursor:pointer;}
+button										{background:var(--bg_button); padding:5px 8px; border:solid 1px var(--border_color); border-radius:var(--radius_block); color:var(--color); font-size:1rem; font-family:inherit; cursor:pointer;}
 .submitButton button						{position:relative; background:var(--blue_bg)!important; color:white!important; font-weight:bold; border:0px;}
 .submitButton button:hover					{filter:saturate(1.2);}
 .submitButton button:disabled				{opacity:0.8;}
@@ -324,7 +328,7 @@ button										{background:var(--bg_button); padding:5px 8px; border:solid 1px 
 
 
 /**************    EDITEUR TINYMCE*/
-.tox-tinymce								{border-radius:var(--radius_block)!important; border:solid 1px var(--color_border)!important;}
+.tox-tinymce								{border-radius:var(--radius_block)!important; border:solid 1px var(--border_color)!important;}
 .tox-edit-area__iframe						{background:var(--bg_input);}/*-Background du texte de l'éditeur*/
 .tox-promotion								{display:none;}				 /*-masque "upgrade"*/
 
@@ -349,7 +353,7 @@ button										{background:var(--bg_button); padding:5px 8px; border:solid 1px 
 /**************    PERSONS : CONTACTS / USERS*/
 .personImgDiv								{text-align:center;}											/*Image du profile*/
 .personImgDiv img							{max-width:100%; max-height:200px;}								/*Idem*/
-.personImgSmall								{border-radius:50%; height:30px; width:30px;}					/*Image du profile arrondi*/
+.personImgSmall								{border-radius:50%; height:25px; width:25px;}					/*Image du profile arrondi*/
 .personVueFields							{margin-top:20px;}
 .objLines .personImg						{max-width:60px; max-height:70px!important;}					/*Image du profile*/
 .personLabel								{margin-bottom:5px;}											/*Label principal*/
@@ -378,7 +382,7 @@ button										{background:var(--bg_button); padding:5px 8px; border:solid 1px 
 .f-zoomInUp										{animation:var(--f-transition-duration, 0.1s) ease 0.1s both f-zoomInUp}							/*surcharge la durée d'affichage des lightboxes (fadein)*/
 .f-thumbs__slide__button						{box-shadow:none;}																					/*surcharge les vignettes d'images*/
 [data-fancybox='images'], .fancyboxImages		{cursor:zoom-in;}																					/*Cursor des images à afficher*/
-.lightboxTitle									{margin-bottom:30px; padding-bottom:15px; text-align:center; font-size:1.1rem; line-height:22px; border-bottom:solid 1px var(--color_border);}	/*Titre du lightbox*/
+.lightboxTitle									{margin-bottom:35px; padding-bottom:10px; text-align:center; font-size:1.1rem; line-height:20px; border-bottom:solid 1px var(--border_color);}	/*Titre du lightbox*/
 .lightboxTitle:has(.lightboxMenu)				{position:relative; padding-left:70px; padding-right:30px;}											/*padding-left pour .lightboxMenu / padding-right pour .is-close-btn*/
 .lightboxMenu									{position:absolute; top:0px; left:0px;}																/*Icones du menu context + d'édition de l'objet*/
 .lightboxMenu .editButton						{margin-left:10px;}																					/*Icone d'édition*/
@@ -398,7 +402,7 @@ button										{background:var(--bg_button); padding:5px 8px; border:solid 1px 
 
 
 /**************    TOOLTIP (TITLE) & CONFIRM*/
-.tippy-box										{padding:7px!important; font-size:1rem; color:var(--color_text)!important; background:var(--bg_container)!important; border:solid 1px var(--color_border); border-radius:var(--radius_block)!important; box-shadow:var(--box_shadow)!important;}/*Tooltip*/
+.tippy-box										{padding:7px!important; font-size:1rem; color:var(--color)!important; background:var(--bg_container)!important; border:solid 1px var(--border_color); border-radius:var(--radius_block)!important; box-shadow:var(--box_shadow)!important;}/*Tooltip*/
 .jconfirm-box									{background:var(--bg_page)!important; box-shadow:var(--box_shadow)!important; border-radius:15px!important; padding-block:40px 30px!important;}/*confirmAlt()*/
 .jconfirm-bg									{opacity:0.5!important;}
 .jconfirm-title-c, .jconfirm-content-pane, .jconfirm-buttons	{width:100%!important; padding:0px!important; text-align:center!important; font-size:1.2rem!important;}
@@ -406,7 +410,7 @@ button										{background:var(--bg_button); padding:5px 8px; border:solid 1px 
 .jconfirm-content-pane							{margin-bottom:5px!important;}/*surcharge*/
 .jconfirm-content-pane .confirmDeleteInfo		{margin-top:10px;}/*Label de delete*/
 .jconfirm-buttons button						{margin:10px!important; padding:10px 20px!important;}
-.jconfirm-buttons .btn-default					{background:var(--bg_button)!important; color:var(--color_text)!important;}
+.jconfirm-buttons .btn-default					{background:var(--bg_button)!important; color:var(--color)!important;}
 .jconfirm-buttons .btn-blue						{background:var(--blue_bg)!important; color:white!important;}
 .jconfirm-buttons .btn-green					{background:#219e55!important; color:white!important;}
 .bodyWhite .confirmDeleteInfo 					{color:#400!important;}

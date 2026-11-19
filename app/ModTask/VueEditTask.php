@@ -25,7 +25,7 @@ ready(function(){
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("TASK_addTask") ?>
+	<?= $curObj->lightboxTitle("TASK_addTask") ?>
 
 	<!--TITRE / DESCRIPTION (EDITOR)-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>">

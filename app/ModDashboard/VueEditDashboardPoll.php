@@ -46,7 +46,7 @@ form .infos								{margin:0px; margin-bottom:20px;}
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("DASHBOARD_POLLS_addPoll") ?>
+	<?= $curObj->lightboxTitle("DASHBOARD_POLLS_addPoll") ?>
 	
 	<!--SONDAGE DEJA VOTÉ : AFFICHE UNE NOTIFICATION "Attention : dès que le sondage est voté la modif des réponses est impossible"-->
 	<?php if($pollIsVoted==true){ ?><div class="infos"><img src="app/img/important.svg"> <?= Txt::trad("DASHBOARD_POLLS_votedNotif") ?></div><?php } ?>

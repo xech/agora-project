@@ -106,7 +106,7 @@
 						<!--PROFIL UTILISATEUR-->
 						<div class="menuLine" onclick="lightboxOpen('<?= Ctrl::$curUser->getUrl('edit') ?>');" <?= Txt::tooltip("USER_myProfileTooltip") ?>>
 							<div class="menuIcon"><img src="app/img/edit.svg"></div>
-							<div><?= Txt::trad("USER_myProfile") ?> &nbsp; <?= Ctrl::$curUser->tagProfileImg(false,true) ?></div>
+							<div><?= Txt::trad("USER_myProfile") ?> &nbsp; <?= Ctrl::$curUser->profileImg(false,true) ?></div>
 						</div>
 						<!--CONFIG DU MESSENGER-->
 						<?php if(MdlUser::agoraMessengerEnabled()){ ?>

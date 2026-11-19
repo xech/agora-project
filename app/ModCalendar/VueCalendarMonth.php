@@ -24,23 +24,20 @@
 
 
 	<style>
-	.vMonthHeader, .vMonthTable						{width:100%; border-collapse:collapse; table-layout:fixed;}			/*Tableau du libellé des jours et de la grille des heures*/
-	.vWeekNbOfYear									{width:18px; font-size:0.8rem; opacity:0.5;}						/*numero des semaines dans l'année*/
-	.bodyWhite .vMonthTable .vWeekNbOfYear:hover	{background-color:#eee;}	  										/*numero des semaines dans l'année*/
-	.bodyBlack .vMonthTable .vWeekNbOfYear:hover	{background-color:#444;}
-	.vMonthRow										{height:17%; min-height:17%;}										/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
+	.vMonthHeader, .vMonthTable				{width:100%; border-collapse:collapse; table-layout:fixed;}	/*Tableau du libellé des jours et de la grille des heures*/
+	.vWeekNbOfYear							{width:18px; font-size:0.8rem; opacity:0.5;}				/*numero des semaines dans l'année*/
+	.vMonthTable .vWeekNbOfYear:hover		{background:var(--bg_select);}	  							/*numero des semaines dans l'année*/
+	.vMonthRow								{height:17%; min-height:17%;}								/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 	/*Cellules du jour*/
-	.vMonthDayCell							{position:relative; vertical-align:top; padding:0px;}						/*cells du jour*/
-	.bodyWhite .vMonthDayCell				{background:white; border:1px solid #e2e2e2; color:#222;}					/*- background white*/
-	.bodyBlack .vMonthDayCell				{background:#111111; border:1px solid #333; color:#fff;}					/*- background black*/
-	.bodyWhite .vMonthDayOtherMonth			{background:#fbfbfb;} 	  													/*Cell des autres mois*/
-	.bodyBlack .vMonthDayOtherMonth			{background:#222222;} 	  													/*idem black*/
-	.vMonthDayHeader						{width:100%; height:27px;}													/*Label du jour + jour ferie + ajout d'evt*/
-	.vMonthDayHeader img[src*='add']		{width:23px; height:23px;}
-	.vMonthDayNb							{width:25px; text-align:center;}											/*Numéro du jour du mois*/
-	.vMonthDayPublicHoliday					{color:#080; font-size:0.85rem;}											/*Libellé du jour férié*/
-	.vMonthDayHeader .vMonthDayAddEvt		{width:25px; visibility:hidden; cursor:pointer;}							/*Ajout d'evt "Plus" : masqué par défaut*/
-	.vMonthDayHeader:hover .vMonthDayAddEvt	{visibility:visible;}														/*Idem : affiche au survol label du jour*/
+	.vMonthDayCell							{position:relative; vertical-align:top; padding:0px; background:var(--bg_container);}/*cells du jour*/
+	.vMonthDayCell							{border:1px solid var(--border_color_table);}				/*bordure des cells des jours*/
+	.vMonthDayOtherMonth					{background:var(--bg_fieldset);} 	  						/*Cell des jours des autres mois*/
+	.vMonthDayHeader						{width:100%; height:27px;}									/*Label du jour + jour ferie + ajout d'evt*/
+	.vMonthDayHeader img[src*='add']		{width:23px; height:23px;}									/*ajouter un evt*/
+	.vMonthDayNb							{width:25px; text-align:center;}							/*Numéro du jour du mois*/
+	.vMonthDayPublicHoliday					{color:#080; font-size:0.85rem;}							/*Libellé du jour férié*/
+	.vMonthDayHeader .vMonthDayAddEvt		{width:25px; visibility:hidden; cursor:pointer;}			/*Ajout d'evt "Plus" : masqué par défaut*/
+	.vMonthDayHeader:hover .vMonthDayAddEvt	{visibility:visible;}										/*Idem : affiche au survol label du jour*/
 
 	/*****    RESPONSIVE LARGE*/
 	@media screen and (max-width:1199px){

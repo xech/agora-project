@@ -9,7 +9,7 @@
 	<div class="lightboxTitle"><?= $curObj->lightboxMenu().$curObj->getLabel("full") ?></div>
 
 	<!--IMAGE & DETAILS DE l'USER-->
-	<div class="personImgDiv"><?= $curObj->tagProfileImg() ?></div>
+	<div class="personImgDiv"><?= $curObj->profileImg() ?></div>
 	<div class="personVueFields"><?= $curObj->getFields("profile") ?></div>
 
 	<!--GROUPES D'UTILISATEURS-->

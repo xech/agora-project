@@ -1,16 +1,14 @@
 <script>
-////	INIT
+////	Sélectionne l'accès en écriture pour tout le monde : "L'accès en ''Ecriture'' est destiné aux modérateurs du sujet"
 ready(function(){
-	//// Sélectionne l'accès en écriture pour tout le monde : "L'accès en ''Ecriture'' est destiné aux modérateurs du sujet"
 	$("[name='objectRight[]'][value$='spaceUsers_2']").on("change",function(){
 		if(this.checked)  {notify("<?= Txt::trad("FORUM_notifWriteAccess") ?>");}
 	});
 });
 
-////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")
+////	Controle spécifique du formulaire (cf. "VueObjMenuEdit.php")  :  Retourne false s'il n'y a que des accès en lecture
 function formControl(){
 	return new Promise((resolve)=>{
-		//// Retourne false s'il n'y a que des accès en lecture
 		if($("[name='objectRight[]']:checked").length==$("[name='objectRight[]'][value$='_1']:checked").length)	 {resolve(false);  notify("<?= Txt::trad("FORUM_notifOnlyReadAccess") ?>");}
 		else																									 {resolve(true);}
 	});
@@ -32,12 +30,13 @@ function formControl(){
 
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
-	<?php
-	////	TITRE MOBILE &&  INPUT TITRE  &&  <SELECT> DU THEME  &&  DESCRIPTION (EDITOR)  &&  MENU COMMUN
-	echo $curObj->titleMobile("FORUM_addSubject").
-		'<input type="text" name="title" value="'.$curObj->title.'" class="inputTitleName" placeholder="'.Txt::trad("title")." ".Txt::trad("optional").'">'.
-		 MdlForumTheme::selectInput($curObj->_idTheme).
-		 $curObj->descriptionEditor(false).
-		 $curObj->editMenuSubmit();
-	?>
+
+	<!--TITRE DE LIGHTBOX-->
+	<?= $curObj->lightboxTitle("FORUM_addSubject") ?>
+
+	<!--TITRE DU SUJET-->
+	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title").' '.Txt::trad("optional") ?>">
+
+	<!--THEME  &  DESCRIPTION  &  MENU COMMUN-->
+	<?= MdlForumTheme::selectInput($curObj->_idTheme).$curObj->descriptionEditor(false).$curObj->editMenuSubmit() ?>
 </form>

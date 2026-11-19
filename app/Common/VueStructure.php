@@ -8,8 +8,8 @@
 		<link rel="icon" type="image/png" href="app/img/favicon.png">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,<?= Req::isMobileApp()?'user-scalable=no':'maximum-scale=2.0' ?>">
 		<!--REFERENCEMENT/SEO-->
-		<title><?= !empty(Ctrl::$agora->name) ? Ctrl::$agora->name : "Omnispace.fr - Agora-Project" ?></title>
-		<meta name="application-name" content="Agora-Project - Omnispace">
+		<title>Omnispace Agora-Project</title>
+		<meta name="application-name" content="Omnispace Agora-Project">
 		<meta name="application-url" content="https://www.agora-project.net">
 		<meta name="Description" content="Agora-Project : a workspace for your team to share your files, calendars, tasks and projects">
 		<!--JQUERY-->
@@ -85,7 +85,7 @@
 	</head>
 
 
-	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="<?= Ctrl::$agora->skin=='black'?'bodyBlack':'bodyWhite' ?>">
+	<body id="<?= Ctrl::$isMainPage==true?'bodyMainPage':'bodyLightbox' ?>" class="<?= (is_object(Ctrl::$agora) && Ctrl::$agora->skin=='black')?'bodyBlack':'bodyWhite' ?>">
 	
 		<!--HEADER MENU + MAIN CONTENT + MESSENGER-->
 		<?php
@@ -97,7 +97,7 @@
 		<!--FOOTER DE LA PAGE-->
 		<?php if(isset($footerLogoUrl)){ ?>
 			<span id="pageFooterText"><?= is_object(Ctrl::$agora) ? Ctrl::$agora->footerHtml : null ?></span>
-			<a id="pageFooterLogo" href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= Ctrl::$agora->pathLogoFooter() ?>"></a>
+			<a id="pageFooterLogo" href="<?= $footerLogoUrl ?>" target="_blank" <?= Txt::tooltip($footerLogoTooltip) ?> ><img src="<?= is_object(Ctrl::$agora) ? Ctrl::$agora->pathLogoFooter() : null ?>"></a>
 		<?php } ?>
 
 		<!--MOBILE > MENU CONTEXT-->

@@ -727,7 +727,7 @@ class MdlObject
 		}else{																											//USER
 			if($isModif==true && !empty($this->_idUserModif))	{$objUser=Ctrl::getObj("user",$this->_idUserModif);}	//Auteur de la modif
 			else												{$objUser=Ctrl::getObj("user",$this->_idUser);}			//Auteur de la création
-			if($profileImg==true)	{$autorLabel=$objUser->tagProfileImg(false,true).' &nbsp;'.$objUser->getLabel();}	//Image + Label
+			if($profileImg==true)	{$autorLabel=$objUser->profileImg(false,true).' &nbsp;'.$objUser->getLabel();}		//Image + Label
 			else					{$autorLabel=$objUser->getLabel();}													//Label uniquement
 			$autorLabel='<span onclick="'.$objUser->lightboxVue().'">'.$autorLabel.'</span>';  							//Lien vers le profil de l'user
 		}

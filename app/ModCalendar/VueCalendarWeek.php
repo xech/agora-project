@@ -59,7 +59,7 @@
 					this.style.left=evtX+'px';																	//Positonne l'evt en X
 					this.style.top =evtY+'px';																	//Positonne l'evt en Y
 					//this.style.zIndex=evtDayIndex+10;															//Applique un z-index (10+n) => CONTROLER L'AFFICHAGE DES .menuContext
-					$(this).outerWidth(evtWidth-2).outerHeight(evtHeight-2);									//Dimensions de l'evt (-2px pour les distinguer)
+					$(this).outerWidth(evtWidth-2).outerHeight(evtHeight-1);									//Dimensions de l'evt (-1/-2 pour les distinguer)
 					$(this).find(".vEvtLabel").outerHeight($(this).height());									//Hauteur au vEvtLabel (pas de css "height:inherit")
 					////	UPDATE DE VARIABLES
 					if(evtY < weekScrollTop && this.getAttribute("data-timefromdaybegin")!=0)  {$(calVueTmp).find(".vWeekScroller").scrollTop(evtY);}	//Ajuste le scrolltop de l'agenda si l'evt est plus tôt
@@ -106,8 +106,6 @@
 
 
 	<style>
-	.bodyWhite										{--table-border:1px solid #dededf;}
-	.bodyBlack										{--table-border:1px solid #333333;}
 	.vCalVue										{height:100%;}
 	.vWeekScroller									{position:relative; width:100%; max-width:100%; overflow-y:scroll;}				/*Partie visible de l'agenda*/
 	.vWeekScroller::-webkit-scrollbar, .vWeekHeaderScrollbar	{width:13px;}														/*scrollbar des agendas et Width "fantome"*/
@@ -118,12 +116,11 @@
 	.vWeekDayLabel:not(:hover) .vWeekDayAddEvt		{visibility:hidden;}											/*Icone pour ajouter un evt sur le jour*/
 	.vWeekHeaderAllday								{display:none;}													/*masque par défaut*/
 	.vWeekHeaderAlldayCell							{vertical-align:top;}
-	.vWeekHourLabel									{width:40px; text-align:center; vertical-align:top; color:#888; font-size:0.9rem;}/*Libellé des heures : 1ere colonne du tableau*/
-	.vWeekCell										{padding:0px; border-left:var(--table-border); }	/*Cellules du tableau : créneaux de 15mn*/
-	.vWeekTable tr:nth-child(4n+1) .vWeekCell 		{border-top:var(--table-border);}					/*borter-top toutes les 4 lignes (1er 1/4 d'heure)*/
+	.vWeekHourLabel									{width:40px; vertical-align:top; text-align:center; opacity:0.8; font-size:0.85rem;}/*Libellé des heures : 1ere colonne du tableau*/
+	.vWeekCell										{padding:0px; border-left:solid 1px var(--border_color_table); }	/*Cellules du tableau : créneaux de 15mn*/
+	.vWeekTable tr:nth-child(4n+1) .vWeekCell 		{border-top:solid 1px var(--border_color_table);}					/*borter-top toutes les 4 lignes (1er 1/4 d'heure)*/
 	.vWeekCellRedLine								{border-top:solid 1px #f00;}						 /*Heure courante : border-top rouge*/
-	.bodyWhite .vLineNotTimeSlot					{background:#fbfbfb;} 								/*Heures en dehors du TimeSlot*/
-	.bodyBlack .vLineNotTimeSlot					{background:#222222;} 								/*Heures en dehors du TimeSlot*/
+	.vLineNotTimeSlot								{background:var(--bg_fieldset);} 						/*Heures en dehors du TimeSlot*/
 	.vWeekScroller .vEvtBlock						{position:absolute;}								/*Tester un evt de 15mn*/
 	.vWeekScroller .vEvtLabel						{font-size:0.9rem;}									/*Evts labels*/
 	.vEvtBlockSuperposed							{box-shadow:0px 0px 3px black;}						/*Evts superposés*/
@@ -193,9 +190,13 @@
 			?>
 				<tr <?= ($tmp15mn < ($tmpCal->timeSlotBegin*4) || ($tmpCal->timeSlotEnd*4) <= $tmp15mn) ?  'class="vLineNotTimeSlot"'  : null ?> >
 					<!--COLONNE DES HEURES (modulo '%' verif si multiple de 4)-->
-					<?php if($isHourBegin==true){ ?><td class="vWeekHourLabel" rowspan="4"><?= ($tmp15mn/4) ?><span class="vWeekHourLabel00">:00</span></td><?php } ?>
+					<?php if($isHourBegin==true){ ?>
+					<td class="vWeekHourLabel" rowspan="4">
+						<span><?= ($tmp15mn/4) ?></span>:<span class="vWeekHourLabel00">00</span>
+					</td>
+					<?php } ?>
+					<!--CELLULE DE CHAQUE JOUR AFFICHÉ-->
 					<?php
-					////	CELLULE DE CHAQUE JOUR AFFICHÉ
 					foreach($periodDays as $dayYmd=>$tmpDay){
 						$cellClass="vWeekCell notooltip";
 						$cellTimeBegin=$tmpDay["dayTimeBegin"]+($tmp15mn*900);										//Time du début du 1/4 d'heure

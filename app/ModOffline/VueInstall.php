@@ -29,17 +29,18 @@ ready(function(){
 		if(await confirmAlt("<?= Txt::trad("INSTALL_confirmInstall") ?>")){
 			submitLoading();																			//Img "loading"
 			$.ajax({url:"index.php", data:$(this).serialize(), method:"POST"}).done(function(result){	//Submit Ajax
-				if(/installOk/i.test(result)==false)	{notify(result);}								//Erreur
-				else{																					//Install Ok
+				if(/InstallError/i.test(result))  {notify(result);}										//Install Error
+				else if(/InstallOk/i.test(result)){														//Install Ok
 					notify("<?= Txt::trad("INSTALL_installOk") ?>");									//Notify
 					window.top.confirmCloseForm=false;													//Reinit confirmCloseForm
-					setTimeout(function(){ redir("index.php?ctrl=offline&disconnect=1"); },3000);		//Redir en page d'accueil avec un Timeout de 3sec minimum
+					setTimeout(function(){ redir("index.php?ctrl=offline&disconnect=1"); },3000);		//Redir en page d'accueil
 				}												
 			});
 		}
 	});
 });
 </script>
+
 
 <style>
 #pageCenter					{margin-top:50px;}

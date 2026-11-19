@@ -11,16 +11,16 @@ function moduleDisplay()
 	$(".vSynthDay").outerWidth(  ($("#synthHeader").width()-$(".vSynthLabel").width()) / $("#synthHeader .vSynthDay").length  );	//Width des .vSynthDay (Synthese des agendas)
 	$(".vCalMain").outerHeight(  (windowTopHeight - $("#pageContent").offset().top - <?= $footerHeight ?>)  );						//Height des .vCalMain
 	$(".vCalVue").outerHeight(   $(".vCalMain").innerHeight() - $(".vCalHeader").outerHeight()  );									//Height des .vCalVue en fonction de .vCalMain
-	$(".vEvtBlock").each(function(){									//Background de chaque evt :
-		let bgColor=this.getAttribute("data-bgcolor");					//- Récupère le bgColor
-		$(this).css("background-color",bgColor);						//- Applique le bgColor
-		$(this).find(".vEvtLabel").css("color",contrastColor(bgColor));	//- Couleur de texte en contraste avec bgColor
+	$(".vEvtBlock").each(function(){																								//Background de chaque evt :
+		let bgColor=this.getAttribute("data-bgcolor");																				//- Récupère le bgColor
+		$(this).css("background-color",bgColor);																					//- Applique le bgColor
+		$(this).find(".vEvtLabel").css("color",contrastColor(bgColor));																//- Couleur de texte en contraste avec bgColor
 	});
-	if(typeof calendarDisplayTimeout!="undefined")  {clearTimeout(calendarDisplayTimeout);}		//Non cumul de Timeout
-	calendarDisplayTimeout=setTimeout(function(){												//Timeout le tps de calculer le width de .vWeekScroller
-		calendarDisplay();																		//Dimensions des agendas Month/Week
-		evtDraggable();																			//Draggable des evt : tjs après calendarDisplay()
-		$(".vCalMain").css("visibility","visible");												//Affiche les agendas après calendarDisplay()
+	if(typeof calendarDisplayTimeout!="undefined")  {clearTimeout(calendarDisplayTimeout);}											//Non cumul de Timeout
+	calendarDisplayTimeout=setTimeout(function(){																					//Timeout le tps de calculer le width de .vWeekScroller
+		calendarDisplay();																											//Dimensions des agendas Month/Week
+		evtDraggable();																												//Draggable des evt : tjs après calendarDisplay()
+		$(".vCalMain").css("visibility","visible");																					//Affiche les agendas après calendarDisplay()
 	},10);
 }
 
@@ -66,17 +66,13 @@ function evtDraggable()
 	interact(".vCellDay").dropzone({
 		accept:".vCellDay .vEvtBlock",
 		ondragenter(event){
-			const evtDrag=event.relatedTarget;
-			const cellDrop=event.target;
-			$(".tippy-box").hide();														//Masque les tooltips
-			if($(cellDrop).find(evtDrag).exist()==false)  {cellDrop.append(evtDrag);}	//Autre cellDrop que celle où se trouve l'evt : Déplace en fin de liste
+			$(".tippy-box").hide();						//Masque les tooltips
+			event.target.append(event.relatedTarget);	//Autre cellDrop que celle où se trouve l'evt : Déplace en fin de liste
 		},
 		ondrop(event){
-			const evtDrag=event.relatedTarget;
-			const cellDrop=event.target;
-			newDateString=cellDrop.getAttribute("data-ymd")+"T"+evtDrag.getAttribute("data-hm")+":00";	//format ISO (ex: "2036-04-02T15:30:00")
-			newTimeBegin=new Date(newDateString).getTime() / 1000;										//Timestamp du nouveau begin
-			evtDropConfirm(evtDrag, cellDrop, newTimeBegin);											//confirme le changement d'heure
+			newDateString=event.target.getAttribute("data-ymd")+"T"+event.relatedTarget.getAttribute("data-hm")+":00";	//format ISO (ex: "2036-04-02T15:30:00")
+			newTimeBegin=new Date(newDateString).getTime() / 1000;														//Timestamp du nouveau begin
+			evtDropConfirm(event.relatedTarget, event.target, newTimeBegin);											//confirme le changement d'heure
 		}
 	});
 
@@ -305,7 +301,7 @@ ready(function(){
 .ui-datepicker .ui-state-default				{padding-block:5px;}								/*surcharge*/
 
 /*Synthese des agendas*/
-#synthBlock.miscContainer							{padding:2px 8px; margin-bottom:20px;}/*surcharge*/
+#synthBlock.miscContainer						{padding:2px 8px; margin-bottom:20px;}/*surcharge*/
 #synthTable										{display:table; width:100%; max-width:100%;}
 #synthHeader, .vSynthLine						{display:table-row;}
 #synthHeader									{font-size:0.9em!important;}
@@ -317,8 +313,8 @@ ready(function(){
 .vSynthDayEvts:hover							{opacity:0.8;}
 .vSynthDayEvtTooltip							{text-align:left;}
 .vSynthDayEvtTooltip ul							{margin:0px; margin-top:5px; padding-left:10px;}
-.vSynthDayCal									{background:#ddd; border:dotted 1px #eee;}
-.vSynthDayCal.vSynthDayCalWE					{background:#ccc;}
+.vSynthDayCal									{background:var(--bg_container); border:solid 1px var(--border_color); border-collapse:collapse; table-layout:fixed;}
+.vSynthDayCal.vSynthDayCalWE					{background:var(--bg_select);}
 
 /*Vue de chaque agenda*/
 .vCalMain										{min-height:500px; padding:0px; visibility:hidden;}/*Masqué le tps du calcul de l'affichage*/
@@ -331,27 +327,29 @@ ready(function(){
 .vCalHeaderCenter								{text-align:center; min-width:250px;}
 .vCalHeaderCenter>span							{display:inline-block; line-height:22px; padding:8px;}
 .vCalHeaderCenter>span.vCalHeaderMonth			{padding:8px 0px;}
-.vCalPrevNext:hover								{background-color:#eee; border-radius:50%;}
+.vCalPrevNext:hover								{background:var(--bg_select); border-radius:50%;}
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{text-align:right; min-width:480px;}/*tester avec "semaine de travail"*/
 .vCalHeaderRight>span							{margin-inline:2px;}
-.vCalHeaderRight button							{box-shadow:none;}
-.vCalHeaderRight button img[src*='arrowDown']	{max-width:14px; margin:0px;}
+.vCalHeaderRight button							{box-shadow:none; height:35px;}
+.vCalHeaderRight button img[src*='arrowDown']	{width:14px; margin:0px;}
+.vCalHeaderRight button img[src*='addBlue']		{max-height:25px;}/*surcharge*/
 .vCalLabelDays									{padding:8px 4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
-.vEvtBlock										{min-height:22px; padding:3px; padding-right:20px;/*cf menu burger*/ box-shadow:1px 1px 2px #555; border-radius:4px!important;}
-.vCellDay .vEvtBlock							{position:relative; height:22px; max-width:99%; margin-bottom:2px;}/*Evt sur une ligne : evts du mois ou journée entière*/
-.vEvtBlock .menuContextLaunchFloat				{top:0px; right:-2px; padding:2px;}/*décale le menu "burger"*/
-.vEvtBlock .menuContextLaunchFloat img			{width:20px; height:20px;}
+.vEvtBlock										{min-height:22px; margin:0px;/*surcharge objContainer*/ padding:3px; padding-right:20px;/*cf menuContextLaunch*/ box-shadow:none; border-radius:4px!important;}
+.vEvtBlock:hover								{box-shadow:none;}/*surcharge*/
+:is(.vMonthTable,.vWeekHeaderAllday) .vEvtBlock	{position:relative; height:22px; max-width:99%; margin-bottom:1px;}/*Evt sur une ligne*/
+.vEvtBlock .menuContextLaunchFloat				{top:0px; right:0px; padding:1px 2px; opacity:0.7}/*surchage*/
+.vEvtBlock .menuContextLaunchFloat img			{filter:brightness(150%);}/*surchage*/
 .vEvtLabel										{overflow:hidden; text-overflow:ellipsis; color:white;}
 .vEvtLabel img									{max-width:15px; max-height:15px; margin-left:5px;}
 .vEvtBlock[data-ispast='true'] .vEvtLabel		{opacity:0.75;}/*événements passés*/
 .vCellDay .vEvtLabel							{font-size:0.85rem; white-space:nowrap;}/*white-space : texte sur une seule ligne*/
 .vEvtConfirmOldDate								{opacity:0.5; margin-bottom:7px;}
 .vEvtConfirmOldDate img							{visibility:hidden;}/*1er arrowRight masqué"*/
-.vEvtDrag										{z-index:200!important; box-shadow:1px 1px 10px 4px #888;}/*Evt en cours de déplacement*/
+.vEvtDrag										{z-index:200!important; box-shadow:var(--box_shadow_hover)!important;}/*Evt en cours de déplacement*/
 
 /*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
@@ -506,7 +504,7 @@ ready(function(){
 					<?php
 					////	LABEL DE L'AGENDA  +  L'ICONE DE L'USER  +  MENU CONTEXT
 					$calLabel='<span class="vCalHeaderLeftLabel" '.Txt::tooltip($tmpCal->description).'>'.$tmpCal->title.'</span>';
-					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->tagProfileImg(true,true);}
+					if($tmpCal->isPersonal())  {$calLabel.=Ctrl::getObj("user",$tmpCal->_idUser)->profileImg(true,true);}
 					echo $tmpCal->contextMenu(["launcherPosition"=>"inline", "launcherLabel"=>$calLabel]);
 					?>
 				</div>

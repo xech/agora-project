@@ -43,7 +43,7 @@ function formControl(){
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("addFolder") ?>
+	<?= $curObj->lightboxTitle("addFolder") ?>
 
 	<!--NOM & DESCRIPTION-->
 	<input type="text" name="name" value="<?= $curObj->name ?>" class="inputTitleName" placeholder="<?= Txt::trad("name") ?>">

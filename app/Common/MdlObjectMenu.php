@@ -197,7 +197,7 @@ trait MdlObjectMenu
 	}
 
 	/********************************************************************************************************
-	 * VUE D'UN OBJET : MENU CONTEXTUEL + BOUTON D'EDITION
+	 * VUE : MENU CONTEXTUEL + BOUTON D'EDITION
 	 ********************************************************************************************************/
 	public function lightboxMenu()
 	{
@@ -205,11 +205,11 @@ trait MdlObjectMenu
 	}
 
 	/********************************************************************************************************
-	 * VUE : TITRE DE L'OBJET SUR MOBILE (ex: "Nouveau dossier", "Mon dossier")
+	 * VUE : TITRE  (ex: "Nouveau dossier", "Mon dossier")
 	 ********************************************************************************************************/
-	public function titleMobile($keyTrad)
+	public function lightboxTitle($keyTrad)
 	{
-		if(Req::isMobile())  {echo '<div class="lightboxTitle">'.($this->isNew() ? Txt::trad($keyTrad) : $this->getLabel()).'</div>';}
+		echo '<div class="lightboxTitle">'.($this->isNew() ? Txt::trad($keyTrad) : $this->getLabel()).'</div>';
 	}
 
 	/********************************************************************************************************

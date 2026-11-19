@@ -120,8 +120,7 @@ class CtrlForum extends Ctrl
 		////	Valide le formulaire
 		if(Tool::formControl()){
 			//Enregistre & recharge l'objet
-			$idMessageParent=Req::isParam("_idMessageParent")  ?  ", _idMessageParent=".(int)Db::param("_idMessageParent")  :  null;//Rattaché à un message parent (integer)
-			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").$idMessageParent);
+			$curObj=$curObj->editRecord("title=".Db::param("title").", description=".Db::param("description").", _idMessageParent=".Db::param("_idMessageParent"));
 			//MAJ "dateLastMessage" & "usersConsultLastMessage" du sujet conteneur
 			Db::query("UPDATE ap_forumSubject SET dateLastMessage=".Db::dateNow().", usersConsultLastMessage=".Db::formatTab2txt([Ctrl::$curUser->_id])." WHERE `_id`=".$curObj->_idContainer);
 			//Notif "auto" si c'est un nouveau message (cf. "Me notifier par mail")
@@ -136,7 +135,9 @@ class CtrlForum extends Ctrl
 		}
 		////	Affiche la vue
 		$vDatas["curObj"]=$curObj;
-		$vDatas["messageParent"]=Req::isParam("_idMessageParent")  ?  self::getObj("forumMessage",Req::param("_idMessageParent"))  :  null;
+		$vDatas["messageParent"]=null;
+		if(!empty($curObj->_idMessageParent))		{$vDatas["messageParent"]=self::getObj("forumMessage",$curObj->_idMessageParent);}
+		elseif(Req::isParam("_idMessageParent"))	{$vDatas["messageParent"]=self::getObj("forumMessage",Req::param("_idMessageParent"));}
 		static::displayPage("VueEditForumMessage.php",$vDatas);
 	}
 }

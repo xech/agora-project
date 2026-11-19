@@ -13,20 +13,19 @@ ready(function(){
 
 
 <style>
-#bodyLightbox								{max-width:1400px;}
-form										{text-align:center;}
-.evtListTable								{width:100%;}
-.evtListTable img							{vertical-align:middle;}
-.evtListHeader								{text-align:center;}
-.evtListTable td							{padding:5px;}
-.evtLine									{text-align:left;}
-.evtCheckbox								{width:60px; cursor:pointer;}
-.evtDates									{width:300px;}
-.evtTitle									{width:400px;}
-.evtDescription								{font-size:0.9rem;}
-.evtPresent									{width:100px; font-size:0.9rem;}
-.bodyWhite .lineHover:has(input:checked)	{background:#ddd;}
-.bodyBlack .lineHover:has(input:checked)	{background:#333;}
+#bodyLightbox					{max-width:1400px;}
+form							{text-align:center;}
+.evtListTable					{width:100%;}
+.evtListTable img				{vertical-align:middle;}
+.evtListHeader					{text-align:center;}
+.evtListTable td				{padding:5px;}
+.evtLine						{text-align:left;}
+.evtCheckbox					{width:60px; cursor:pointer;}
+.evtDates						{width:300px;}
+.evtTitle						{width:400px;}
+.evtDescription					{font-size:0.9rem;}
+.evtPresent						{width:100px; font-size:0.9rem;}
+.lineHover:has(input:checked)	{background:var(--bg_select);}
 </style>
 
 

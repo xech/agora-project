@@ -3,7 +3,7 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
-VERSION 26.11.1
+VERSION 26.11.2
 ---------------
 Consolidation des protections anti XSS et CSRF
 Amélioration de la présentation du menu principal du header
@@ -15,7 +15,7 @@ Strengthening of anti-XSS and anti-CSRF protections
 Improved presentation of the main header menu
 Enhanced contextual menus for mobile
 Optimized editor layout for "dark mode"
-Optimizing main CSS scripts
+Optimized main CSS scripts
 
 
 VERSION 26.10.5

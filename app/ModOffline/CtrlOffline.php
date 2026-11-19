@@ -69,17 +69,18 @@ class CtrlOffline extends Ctrl
 	public static function actionUserInscription()
 	{
 		////	Valide le formulaire via Ajax
-		if(Tool::formControl())
-		{
+		if(Tool::formControl()){
 			////	Verif l'existance du login/mail
-			if(MdlUser::loginExists(Req::param("mail")))  {$result=Txt::trad("USER_loginExists");}
+			if(MdlUser::loginExists(Req::param("mail"))){
+				echo Txt::trad("USER_loginExists");
+				return false;
+			}
 			////	Enregistre l'inscription
 			else{
-				//// Enregistre en DB
-				$result="inscriptionOK";
+				////	Enregistre en DB
 				$password=Txt::defaultPassword();
 				Db::query("INSERT INTO ap_userInscription SET `_idSpace`=".Db::param("_idSpace").", `name`=".Db::param("name").", `firstName`=".Db::param("firstName").", `mail`=".Db::param("mail").", `password`=".Db::format($password).", `message`=".Db::param("message").", `date`=".Db::dateNow());
-				//// Envoie un mail de notif aux admins de l'espace ?
+				////	Envoie un mail de notif aux admins de l'espace ?
 				$curSpace=Ctrl::getObj("space",Req::param("_idSpace"));
 				if(!empty($curSpace->userInscriptionNotify)){
 					$adminMails=[];
@@ -93,9 +94,10 @@ class CtrlOffline extends Ctrl
 						Tool::sendMail($adminMails, $subject, $mainMessage, ["noNotify"]);
 					}
 				}
+				////	Return OK
+				echo "inscriptionOK";
+				return false;
 			}
-			//// Retourne le résultat
-			echo $result;
 		}
 		////	Affiche le formulaire
 		else{
@@ -144,6 +146,7 @@ class CtrlOffline extends Ctrl
 		////	Init
 		static::$isMainPage=true;
 		$dbFile="app/misc/db.sql";
+		session_start();//cf. $_SESSION["formToken"]
 
 		////	CONTROLES :  Version PHP  &&  Install déjà réalisée  &&  Accès à "db.sql"
 		Req::verifPhpVersion();
@@ -156,7 +159,10 @@ class CtrlOffline extends Ctrl
 		if(Tool::formControl()){
 			////	CONTROLES LES PARAMS D'ACCES A LA BDD
 			$dbControl=DbInstall::dbControl(Req::param("db_host"),Req::param("db_login"), Req::param("db_password"), Req::param("db_name"));
-			if(preg_match("/error/i",$dbControl))  {$result=Txt::trad("INSTALL_".$dbControl);}
+			if(preg_match("/error/i",$dbControl)){
+				echo "InstallError : ".Txt::trad("INSTALL_".$dbControl);
+				return false;
+			}
 			////	CONTROLE OK : INSTALL
 			else{
 				////	CHMOD DE "PATH_DATAS" & MODIF DU FICHIER DE CONFIG
@@ -168,7 +174,7 @@ class CtrlOffline extends Ctrl
 				////	CREE LA BASE DE DONNEES DU NOUVEL ESPACE  &&  PUIS ON S'Y CONNECTE !
 				if($dbControl=="dbAbsent"){
 					$objPDO=new PDO("mysql:host=".Req::param("db_host"),Req::param("db_login"),Req::param("db_password"));
-					$objPDO->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
+					$objPDO->query("CREATE DATABASE `".Req::param("db_name")."` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci");
 				}
 				//Se connecte au sgbd && Importe la Bdd
 				$objPDO=new PDO("mysql:host=".Req::param("db_host").";dbname=".Req::param("db_name").";charset=utf8;", Req::param("db_login"), Req::param("db_password"));
@@ -176,8 +182,6 @@ class CtrlOffline extends Ctrl
 				foreach(explode(";",fread($handle,filesize($dbFile))) as $tmpQuery){
 					if(strlen($tmpQuery)>5)  {$objPDO->query($tmpQuery);}
 				}
-				//Supprime le fichier Sql après l'import
-				//File::rm($dbFile);
 
 				////	INSTALL LES PARAMETRES DE BASE DE LA DB (nom, description, 1er user, etc)
 				$installParams=[
@@ -193,12 +197,10 @@ class CtrlOffline extends Ctrl
 					"adminPassword"=>		password_hash(Req::param("adminPassword"),PASSWORD_DEFAULT)
 				];
 				DbInstall::initParams($objPDO, $installParams);
-
-				//REDIRECTION AVEC NOTIFICATION
-				$result="installOk";
+				////	Return OK
+				echo "InstallOk";
+				return false;
 			}
-			//RETOURNE LE RESULTAT
-			echo $result;
 		}
 		////	AFFICHE LE FORMULAIRE !!
 		else {static::displayPage("VueInstall.php");}

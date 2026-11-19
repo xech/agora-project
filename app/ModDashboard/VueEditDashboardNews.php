@@ -33,7 +33,7 @@ ready(function(){
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("DASHBOARD_addNews") ?>
+	<?= $curObj->lightboxTitle("DASHBOARD_addNews") ?>
 
 	<!--DESCRIPTION -->
 	<?= $curObj->descriptionEditor(false) ?>

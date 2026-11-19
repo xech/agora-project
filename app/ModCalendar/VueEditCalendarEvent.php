@@ -196,7 +196,7 @@ input[name='location']				{width:370px;}
 
 <form action="index.php" method="post" id="mainForm" enctype="multipart/form-data">
 	<!--TITRE MOBILE-->
-	<?= $curObj->titleMobile("CALENDAR_addEvt") ?>
+	<?= $curObj->lightboxTitle("CALENDAR_addEvt") ?>
 
 	<!--TITRE / DESCRIPTION-->
 	<input type="text" name="title" value="<?= $curObj->title ?>" class="inputTitleName" placeholder="<?= Txt::trad("title") ?>">

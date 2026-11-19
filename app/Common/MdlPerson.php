@@ -160,7 +160,7 @@ class MdlPerson extends MdlObject
 	/********************************************************************************************************
 	 *  IMAGE DU PROFIL : BALISE <IMG>
 	 ********************************************************************************************************/
-	public function tagProfileImg($openProfile=false, $smallImg=false)
+	public function profileImg($openProfile=false, $smallImg=false)
 	{
 		if($this->isProfileImg()){
 			//Path de l'image avec le param "version" pour l'update du cache
