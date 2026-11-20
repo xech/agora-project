@@ -1080,7 +1080,7 @@ class DbUpdate extends Db
 				self::query("UPDATE `ap_dashboardNews` SET `description`=REPLACE(`description`,'iconSmall.png','icon.svg'), `description`=REPLACE(`description`,'postMessage.png','post.svg'), `description`=REPLACE(`description`,'mailBig.png','post.svg'), `description`=REPLACE(`description`,'pdf.png','pdf.svg'), `description`=REPLACE(`description`,'messengerSmall.png','chat.svg'), `description`=REPLACE(`description`,'messenger.png','chat.svg'), `description`=REPLACE(`description`,'documentation.png','documentation.svg')");
 			}
 
-			if(self::updateVersion("26.11.2"))
+			if(self::updateVersion("26.11.3"))
 			{
 				//// Option d'affichage des icones du menu principal
 				if(self::fieldExist("ap_agora","moduleLabelDisplay"))

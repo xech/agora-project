@@ -108,7 +108,8 @@
 	<style>
 	.vCalVue										{height:100%;}
 	.vWeekScroller									{position:relative; width:100%; max-width:100%; overflow-y:scroll;}				/*Partie visible de l'agenda*/
-	.vWeekScroller::-webkit-scrollbar, .vWeekHeaderScrollbar	{width:13px;}														/*scrollbar des agendas et Width "fantome"*/
+	.vWeekHeaderScrollbarShadow						{width:10px;}																	/*scrollbar "fantome" des agendas*/
+	@supports (-moz-appearance:none){  .vWeekHeaderScrollbarShadow  {width:0px;}  }													/*Firefox : scrollbar toujours réduite à 4px!*/
 	.vWeekHeader, .vWeekHeaderAllday, .vWeekTable	{width:100%; max-width:100%; border-collapse:collapse; table-layout:fixed;}		/*fusionne les border + table-layout pour fixer un width equivalent (sauf .vWeekHourLabel)*/
 	.vWeekDayLabel 									{height:32px; line-height:32px; text-align:center; text-transform:capitalize;}
 	.vWeekDayLabel .circleNb						{width:30px; height:30px; line-height:30px; font-size:1.1rem;}	/*surcharge*/
@@ -117,10 +118,10 @@
 	.vWeekHeaderAllday								{display:none;}													/*masque par défaut*/
 	.vWeekHeaderAlldayCell							{vertical-align:top;}
 	.vWeekHourLabel									{width:40px; vertical-align:top; text-align:center; opacity:0.8; font-size:0.85rem;}/*Libellé des heures : 1ere colonne du tableau*/
-	.vWeekCell										{padding:0px; border-left:solid 1px var(--border_color_table); }	/*Cellules du tableau : créneaux de 15mn*/
-	.vWeekTable tr:nth-child(4n+1) .vWeekCell 		{border-top:solid 1px var(--border_color_table);}					/*borter-top toutes les 4 lignes (1er 1/4 d'heure)*/
-	.vWeekCellRedLine								{border-top:solid 1px #f00;}						 /*Heure courante : border-top rouge*/
-	.vLineNotTimeSlot								{background:var(--bg_fieldset);} 						/*Heures en dehors du TimeSlot*/
+	.vWeekCell										{padding:0px; border-left:var(--border_table); }	/*Cellules du tableau : créneaux de 15mn*/
+	.vWeekTable tr:nth-child(4n+1) .vWeekCell 		{border-top:var(--border_table);}					/*borter-top toutes les 4 lignes (1er 1/4 d'heure)*/
+	.vWeekCellRedLine								{border-top:solid 1px #f00;}					  /*Heure courante : border-top rouge*/
+	.vLineNotTimeSlot								{background:var(--bg_fieldset);} 					/*Heures en dehors du TimeSlot*/
 	.vWeekScroller .vEvtBlock						{position:absolute;}								/*Tester un evt de 15mn*/
 	.vWeekScroller .vEvtLabel						{font-size:0.9rem;}									/*Evts labels*/
 	.vEvtBlockSuperposed							{box-shadow:0px 0px 3px black;}						/*Evts superposés*/
@@ -165,7 +166,7 @@
 					<?php if(!empty($tmpDay["publicHoliday"])){ ?><img src="app/img/calendar/holiday.svg" class="vPublicHoliday"><?php } ?>
 				</td>
 			<?php } ?>
-			<td class="vWeekHeaderScrollbar">&nbsp;</td>
+			<td class="vWeekHeaderScrollbarShadow">&nbsp;</td>
 		</tr>
 	</table>
 
@@ -176,7 +177,7 @@
 			<?php foreach($periodDays as $dayYmd=>$tmpDay){ ?>
 				<td class="vWeekHeaderAlldayCell vCellDay" data-datelabel="<?= Txt::dateLabel("dateDefault",$tmpDay["dayTimeBegin"]) ?>" data-ymd="<?= $dayYmd ?>"></td>
 			<?php } ?>
-			<td class="vWeekHeaderScrollbar">&nbsp;</td>
+			<td class="vWeekHeaderScrollbarShadow">&nbsp;</td>
 		</tr>
 	</table>
 

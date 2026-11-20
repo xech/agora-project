@@ -3,19 +3,23 @@
 CHANGELOG - HISTORIQUE DES VERSIONS 
 -----------------------------------
 
-VERSION 26.11.2
+VERSION 26.11.3
 ---------------
 Consolidation des protections anti XSS et CSRF
 Amélioration de la présentation du menu principal du header
 Amélioration des menus contextuels sur mobile
-Optimisation de la présentation de l'éditeur avec le "thème sombre"
 Optimisation des scripts CSS principaux
+Optimisation de l'affichage de l'éditeur en mode "sombre"
+Correction de l'impression des agendas en mode "sombre"
+Correction de la validation de fermeture de fenêtre d'un élément en cours d'édition
 -----
-Strengthening of anti-XSS and anti-CSRF protections
+Strengthened anti-XSS and CSRF protections
 Improved presentation of the main header menu
 Enhanced contextual menus for mobile
-Optimized editor layout for "dark mode"
-Optimized main CSS scripts
+Optimized core CSS scripts
+Optimized editor display in "dark" mode
+Fixed calendar printing in "dark" mode
+Fixed window-closing validation when an item is being edited
 
 
 VERSION 26.10.5

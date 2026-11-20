@@ -313,7 +313,7 @@ ready(function(){
 .vSynthDayEvts:hover							{opacity:0.8;}
 .vSynthDayEvtTooltip							{text-align:left;}
 .vSynthDayEvtTooltip ul							{margin:0px; margin-top:5px; padding-left:10px;}
-.vSynthDayCal									{background:var(--bg_container); border:solid 1px var(--border_color); border-collapse:collapse; table-layout:fixed;}
+.vSynthDayCal									{background:var(--bg_container); border:var(--border_table); border-collapse:collapse; table-layout:fixed;}
 .vSynthDayCal.vSynthDayCalWE					{background:var(--bg_select);}
 
 /*Vue de chaque agenda*/
@@ -325,9 +325,9 @@ ready(function(){
 .vCalHeaderLeft, .vCalHeaderRight				{table-layout:fixed; min-width:200px; width:33%;}/*table-layout pour fixer un width equivalent*/
 .vCalHeaderLeftLabel							{margin-right:10px; vertical-align:middle;}
 .vCalHeaderCenter								{text-align:center; min-width:250px;}
-.vCalHeaderCenter>span							{display:inline-block; line-height:22px; padding:8px;}
-.vCalHeaderCenter>span.vCalHeaderMonth			{padding:8px 0px;}
-.vCalPrevNext:hover								{background:var(--bg_select); border-radius:50%;}
+.vCalHeaderCenter>span							{display:inline-block; line-height:20px;}
+.vCalHeaderCenter .vCalPrevNext					{padding:5px;}
+.vCalHeaderCenter .vCalPrevNext:hover			{background:var(--bg_select); border-radius:50%;}
 [id^=monthsYearsMenu]							{width:300px; overflow:visible;}
 #monthsYearsMenuContainer a						{display:inline-block; width:85px; padding:5px; text-align:left;}
 .vCalHeaderRight								{text-align:right; min-width:480px;}/*tester avec "semaine de travail"*/
@@ -338,11 +338,11 @@ ready(function(){
 .vCalLabelDays									{padding:8px 4px; text-align:center; text-transform:capitalize;}
 
 /*Evenements*/
-.vEvtBlock										{min-height:22px; margin:0px;/*surcharge objContainer*/ padding:3px; padding-right:20px;/*cf menuContextLaunch*/ box-shadow:none; border-radius:4px!important;}
+.vEvtBlock										{min-height:22px; margin:0px;/*surcharge objContainer*/ padding:3px; padding-right:20px;/*cf menuContextLaunch*/ box-shadow:none; border-radius:var(--border_radius_min)!important;}
 .vEvtBlock:hover								{box-shadow:none;}/*surcharge*/
 :is(.vMonthTable,.vWeekHeaderAllday) .vEvtBlock	{position:relative; height:22px; max-width:99%; margin-bottom:1px;}/*Evt sur une ligne*/
-.vEvtBlock .menuContextLaunchFloat				{top:0px; right:0px; padding:1px 2px; opacity:0.7}/*surchage*/
-.vEvtBlock .menuContextLaunchFloat img			{filter:brightness(150%);}/*surchage*/
+.vEvtBlock .menuContextLaunchFloat				{top:0px; right:0px; padding:1px 2px; border-radius:var(--border_radius_min)!important;}/*surchage*/
+.vEvtBlock .menuContextLaunchFloat img			{filter:brightness(130%);}/*surchage*/
 .vEvtLabel										{overflow:hidden; text-overflow:ellipsis; color:white;}
 .vEvtLabel img									{max-width:15px; max-height:15px; margin-left:5px;}
 .vEvtBlock[data-ispast='true'] .vEvtLabel		{opacity:0.75;}/*événements passés*/
@@ -360,13 +360,13 @@ ready(function(){
 	.vCalHeader									{white-space:nowrap;}
 	.vCalHeader>div								{padding:2px; width:auto; text-transform:lowercase;}
 	.vCalHeaderLeft, .vCalHeaderCenter			{min-width:100px;}
-	.vCalHeaderCenter>span						{padding:4px!important;}
 	.vCalHeaderLeftLabel						{display:inline-block; font-size:1rem; max-width:140px; margin-inline:0px; overflow:hidden; text-overflow:ellipsis;}/*Max-width avec inline-block + hidden + ellipsis*/
 	.vCalHeaderLeftLabel::first-letter			{text-transform:uppercase}
+	.vCalHeaderCenter .vCalPrevNext				{padding:3px;}
 	.vCalHeaderCenter .vCalPrevNextPulsate		{background-color:#ddd;}
 	.vCalHeaderRight							{min-width:auto; width:auto;}
 	.vCalHeaderRight>span						{display:inline-block; line-height:35px; vertical-align:middle;}
-	.vCalHeaderRight img						{min-height:20px;}
+	.vCalHeaderRight img						{width:26px; height:26px;}
 	.vEvtBlock									{overflow:hidden; padding-right:3px;}
 	.vCalHeader .personImgSmall, .vEvtBlock .menuContextLaunchFloat {display:none!important;}/*Masque les icone des users, les dates des evt, le bouton burger des evt*/
 }
@@ -511,7 +511,7 @@ ready(function(){
 				<!--PERIODE AFFICHEE  +  PRECEDENT/SUIVANT  +  MENU CONTEXT MONTHS/YEARS-->
 				<div class="vCalHeaderCenter">
 					<span class="vCalPrevNext vCalPrev" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timePrev ?>')" <?= Txt::tooltip("CALENDAR_periodPrev") ?>><img src="app/img/arrowLeft.svg"></span>
-					<span class="vCalHeaderMonth menuContextLaunch" for="monthsYearsMenu<?= $tmpCal->typeId ?>"><?= ucfirst($monthLabel) ?></span>
+					<span class="vCalHeaderMonthLabel menuContextLaunch" for="monthsYearsMenu<?= $tmpCal->typeId ?>"><?= ucfirst($monthLabel) ?></span>
 					<?php if(!empty($monthsYearsMenu))  {echo "<div class='menuContext' id='monthsYearsMenu".$tmpCal->typeId."'><div id='monthsYearsMenuContainer'>".$monthsYearsMenu."</div></div>";} ?>
 					<span class="vCalPrevNext vCalNext" onclick="redir('index.php?ctrl=calendar&curTime=<?= $timeNext ?>')" <?= Txt::tooltip("CALENDAR_periodNext") ?>><img src="app/img/arrowRight.svg"></span>
 				</div>

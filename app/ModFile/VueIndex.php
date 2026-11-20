@@ -1,6 +1,6 @@
 <style>
 .objBlocks .objContainer											{height:150px; min-width:150px; max-width:220px;}				/*surcharge*/
-.objBlocks .objIcon													{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:var(--radius_block);}/*centre l'icone*/
+.objBlocks .objIcon													{position:absolute; overflow:hidden; width:100%!important; height:100%!important; border-radius:var(--border_radius_max);}/*centre l'icone*/
 .objBlocks .objContainer:not(.hasThumb) .objIcon					{padding-top:20px;}												/*icone de dossier/fichier*/
 .objBlocks .objContainer:not(.hasThumb) .objIcon img[src*='svg']	{width:70px; height:70px;}										/*icone de fichier*/
 .objBlocks .objIcon img:is(.thumbLandscape,.thumbPortrait)			{min-width:100%!important; max-width:200%!important; min-height:100%!important; max-height:200%!important;}/*surcharge ".objIcon img" : full zize*/
@@ -9,7 +9,7 @@
 .objBlocks .hasThumb .menuContextLaunchFloat						{filter:contrast(200%);}										/*vignettes : surligne l'icone burger*/
 .objBlocks .objContainer:has(.objSelectBox:checked) .objLabel		{background-color:var(--blue_bg)!important;}					/*surcharge la sélection de fichiers avec vignette*/
 .objBlocks .objContainer:has(.objSelectBox:checked) .objLabel a 	{color:white!important;}										/*idem pour les liens*/
-.objBlocks .objLabel												{position:absolute; background:var(--bg_container); bottom:0px; width:100%; padding:7px 4px; text-align:center; border-radius:0px 0px var(--radius_block) var(--radius_block);}	/*label "bandeau" d'un dossier/fichier (modFile)*/
+.objBlocks .objLabel												{position:absolute; background:var(--bg_container); bottom:0px; width:100%; padding:7px 4px; text-align:center; border-radius:0px 0px var(--border_radius_max) var(--border_radius_max);}	/*label "bandeau" d'un dossier/fichier (modFile)*/
 .objLines .objContainer:not(.hasThumb) .objIcon img					{width:40px; height:40px;}										/*icone de dossier/fichier*/
 .objLines .objLabel>span											{padding:10px 50px 10px 0px;}									/*Zone clickable élargie*/
 .objLabel .versionsMenu												{margin-left:10px;}												/*icone "versionsMenu()"*/

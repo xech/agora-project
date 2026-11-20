@@ -26,7 +26,7 @@ ready(function(){
 
 /*****    RESPONSIVE LARGE*/
 @media screen and (max-width:1199px){
-	.vMessages					{border-radius:var(--radius_field);}
+	.vMessages					{border-radius:var(--border_radius_min);}
 	.vDetails, .vDetails>div	{display:block;}
 	.vDetails>div:last-child	{text-align:left; margin-top:15px;}
 }

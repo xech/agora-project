@@ -509,7 +509,9 @@ function lightboxOpen(fileSrc)
 					shouldClose:function(fancybox,slide){																			//Controle à la fermeture du Fancybox
 						if(window.top.confirmCloseForm==true){																		//Formulaire en cours d'édition : fermeture à confirmer
 							slide.preventDefault();																					//- Suspend la fermeture via Fancybox
-							confirmAlt(TRAD_confirmCloseForm).then(()=>{  window.top.confirmCloseForm=false; fancybox.close();  });	//- Fermeture confirmée : relance récursivement fancybox.close()
+							confirmAlt(TRAD_confirmCloseForm).then((resolve)=>{														//- Fermeture confirmée : relance récursivement fancybox.close()
+								if(resolve==true)  {window.top.confirmCloseForm=false;  fancybox.close();}
+							});	
 						}
 					}
 				}

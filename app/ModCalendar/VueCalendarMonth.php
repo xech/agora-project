@@ -30,7 +30,7 @@
 	.vMonthRow								{height:17%; min-height:17%;}								/*Hauteur des lignes basé sur 6 semaines (soit 17%)*/
 	/*Cellules du jour*/
 	.vMonthDayCell							{position:relative; vertical-align:top; padding:0px; background:var(--bg_container);}/*cells du jour*/
-	.vMonthDayCell							{border:1px solid var(--border_color_table);}				/*bordure des cells des jours*/
+	.vMonthDayCell							{border:var(--border_table);}								/*bordure des cells des jours*/
 	.vMonthDayOtherMonth					{background:var(--bg_fieldset);} 	  						/*Cell des jours des autres mois*/
 	.vMonthDayHeader						{width:100%; height:27px;}									/*Label du jour + jour ferie + ajout d'evt*/
 	.vMonthDayHeader img[src*='add']		{width:23px; height:23px;}									/*ajouter un evt*/

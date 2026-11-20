@@ -109,12 +109,12 @@ function accessRightStyle()
 /*OPTIONS D'EDITION*/
 .objMenuMain, .objMenuTabSelect, .objMenuTab:hover	{background:var(--bg_fieldset);}
 #objMenuTabs						{display:table; table-layout:fixed; margin-top:35px; margin-bottom:-35px; width:100%; max-width:100%;}		/*table-layout: meme largeur pour chaque colonne*/
-.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.9; text-align:center; vertical-align:middle; word-wrap:break-word; border:solid 1px var(--border_color); border-radius:var(--radius_block) var(--radius_block) 0px 0px; user-select:none; cursor:pointer;}
+.objMenuTab							{display:table-cell; width:auto; height:50px; padding:5px; opacity:0.9; text-align:center; vertical-align:middle; word-wrap:break-word; border:var(--border); border-radius:var(--border_radius_max) var(--border_radius_max) 0px 0px; user-select:none; cursor:pointer;}
 .objMenuTab img						{margin-right:5px;}
 .objMenuTabSelect					{opacity:1; border-bottom:none;}
 .objMenuTabSelect img				{filter:var(--icon_blue);}
 #objMenuTabs:has(.objMenuTab:nth-child(4)) img {margin-right:6px;} /*Edit Task : réduit le margin si ya 4 onglets dans le menu*/
-.objMenuMain						{margin-top:35px; padding:25px; border:solid 1px var(--border_color); border-top:0px; border-radius:0px 0px var(--radius_block) var(--radius_block); text-align:left;}
+.objMenuMain						{margin-top:35px; padding:25px; border:var(--border); border-top:0px; border-radius:0px 0px var(--border_radius_max) var(--border_radius_max); text-align:left;}
 
 /*DROITS D'ACCÈS*/
 #menuAccessRight					{text-align:center;}/*Tableau des droits d'accès*/

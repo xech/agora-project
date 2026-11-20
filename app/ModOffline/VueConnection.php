@@ -58,8 +58,8 @@ ready(function(){
 #headerBar>div:first-child			{text-align:center!important;}/*surcharge*/
 #pageCenter							{margin-top:100px;}
 .miscContainer						{margin-bottom:20px; width:500px; padding:30px 20px; border-radius:12px!important; text-align:center;}/*surcharge*/
-.miscContainer button>img				{margin-right:10px;}
-.miscContainer hr						{margin:30px 0px;}
+.miscContainer button>img			{margin-right:10px;}
+.miscContainer hr					{margin:30px 0px;}
 #customLogo							{background-color:rgba(250, 250, 250, 40%); padding:10px;}
 #customLogo img						{max-width:100%; max-height:180px;}
 #publicSpaceTab						{display:inline-table;} 

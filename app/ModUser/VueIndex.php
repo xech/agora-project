@@ -1,6 +1,6 @@
 <style>
 .objBlocks .objContainer	{height:150px;}/*surcharge*/
-#displayUsersSelect			{margin:10px; height:40px; border-radius:var(--radius_field); font-weight:bold; cursor:pointer;}
+#displayUsersSelect			{margin:10px; height:40px; border-radius:var(--border_radius_min); font-weight:bold; cursor:pointer;}
 #displayUsersSelect:has(option[value='all']:checked)	{background-color:#059; color:white!important}
 #menuAlphabet a				{display:inline-block; padding:8px; font-weight:bold;}
 .vAdminIcon					{margin-left:5px;}
